@@ -32,11 +32,11 @@ import Interop.PTSControl as p
 
 # WORKSPACE = r'C:\Users\rmstoi\Documents\Profile Tuning Suite\AOSP on Mako\AOSP on Mako.pqw6'
 # WORKSPACE = r'C:\Users\rmstoi\Documents\Profile Tuning Suite\AOSP on HammerHead\AOSP on HammerHead.pqw6'
-
 WORKSPACE = r'C:\Users\rmstoi\Documents\Profile Tuning Suite\AOSP on Flo\AOSP on Flo.pqw6'
 
 # TODO: adb root should be executed beforehand, otherwise none of the commands will work on device
-ADB = r"C:\Users\rmstoi\AppData\Local\Android\android-sdk\platform-tools\adb.exe"
+# make sure adb is in path or modify this variable
+ADB = "adb.exe"
 USE_ADB = True
 
 BD_ADDR = ""
@@ -131,12 +131,19 @@ class Sender(p.IPTSImplicitSendCallbackEx):
 
         response_is_present.Value = 1
 
-        # answer yes to yes/no question, like in case of
-        # if wid == 22 and project_name == "L2CAP" and test_case == "TC_COS_CFC_BV_01_C":
+        # MMI_Style_Yes_No1
         if style == 0x11044:
-            libc.wcscpy_s(response, response_size, u"Yes")
 
-        # actually style == 0x11141
+            # answer No
+            if wid == 19 and project_name == "L2CAP" and test_case == "TC_ERM_BV_07_C" or \
+               wid == 19 and project_name == "L2CAP" and test_case == "TC_ERM_BV_22_C":
+                libc.wcscpy_s(response, response_size, u"No")
+
+            # answer Yes
+            else:
+                libc.wcscpy_s(response, response_size, u"Yes")
+
+        # actually style == 0x11141, MMI_Style_Ok_Cancel2
         else:
             libc.wcscpy_s(response, response_size, u"OK")
 
@@ -191,6 +198,32 @@ class Sender(p.IPTSImplicitSendCallbackEx):
             stop_child = True
         if wid == 14 and project_name == "L2CAP" and test_case == "TC_CMC_BV_11_C":
             stop_child = True
+        if wid == 14 and project_name == "L2CAP" and test_case == "TC_CMC_BI_01_C":
+            stop_child = True
+        if wid == 14 and project_name == "L2CAP" and test_case == "TC_CMC_BI_02_C":
+            stop_child = True
+        if wid == 14 and project_name == "L2CAP" and test_case == "TC_CMC_BI_03_C":
+            stop_child = True
+        if wid == 14 and project_name == "L2CAP" and test_case == "TC_CMC_BI_04_C":
+            stop_child = True
+        if wid == 22 and project_name == "L2CAP" and test_case == "TC_CMC_BI_05_C":
+            stop_child = True
+        if wid == 22 and project_name == "L2CAP" and test_case == "TC_CMC_BI_06_C":
+            stop_child = True
+        if wid == 22 and project_name == "L2CAP" and test_case == "TC_LE_CPU_BV_02_C":
+            stop_child = True
+        if wid == 22 and project_name == "L2CAP" and test_case == "TC_LE_CPU_BI_01_C":
+            stop_child = True
+        if wid == 22 and project_name == "L2CAP" and test_case == "TC_LE_REJ_BI_01_C":
+            stop_child = True
+        if wid == 22 and project_name == "L2CAP" and test_case == "TC_LE_REJ_BI_02_C":
+            stop_child = True
+        if wid == 22 and project_name == "L2CAP" and test_case == "TC_LE_CFC_BV_02_C":
+            stop_child = True
+        if wid == 22 and project_name == "L2CAP" and test_case == "TC_LE_CFC_BV_07_C":
+            stop_child = True
+        if wid == 14 and project_name == "L2CAP" and test_case == "TC_LE_CFC_BV_08_C":
+            stop_child = True
 
         if stop_child and CHILD_PROCESS:
             print "STOPPING CHILD CAUSE OF MMI REQUEST"
@@ -199,6 +232,62 @@ class Sender(p.IPTSImplicitSendCallbackEx):
         print "END OnImplicitSend:"
         print "********************"
         print 
+
+def pts_update_pixit_param(project_name, param_name, new_param_value):
+    '''Wrapper to catch exceptions that PTS throws if PIXIT param is already
+    set to the same value.
+
+    PTS throws exception if the value passed to UpdatePixitParam is the same as
+    the value when PTS was started.
+
+    In C++ HRESULT error with this value is returned:
+    PTSCONTROL_E_PIXIT_PARAM_NOT_CHANGED (0x849C0021)
+
+    The wrapped COM method is:
+    HRESULT UpdatePixitParam(LPCWSTR pszProjectName, LPCWSTR pszParamName,
+                             LPCWSTR pszNewParamValue);
+
+    '''
+    print "\nUpdatePixitParam(%s, %s, %s)" % (project_name, param_name, new_param_value)
+
+    try:
+        PTS.UpdatePixitParam(project_name, param_name, new_param_value)
+    except System.Runtime.InteropServices.COMException as e:
+        print 'Exception in UpdatePixitParam "%s", is pixit param aready set?' % (e.Message,)
+
+def pts_update_pics(project_name, entry_name, bool_value):
+    '''Wrapper to catch exceptions that PTS throws if PICS entry is already
+    set to the same value.
+
+    PTS throws exception if the value passed to UpdatePics is the same as
+    the value when PTS was started.
+
+    In C++ HRESULT error with this value is returned:
+    PTSCONTROL_E_PICS_ENTRY_NOT_CHANGED (0x849C0032)
+
+    The wrapped COM method is:
+    HRESULT UpdatePics(LPCWSTR pszProjectName, LPCWSTR pszEntryName,
+                       BOOL bValue);
+    '''
+    print "\nUpdatePics(%s, %s, %s)" % (project_name, entry_name, bool_value)
+
+    try:
+        PTS.UpdatePics(project_name, entry_name, bool_value)
+    except System.Runtime.InteropServices.COMException as e:
+        print 'Exception in UpdatePics "%s", is pics value aready set?' % (e.Message,)
+
+def exec_iut_cmd(iut_cmd, wait = False):
+    if USE_ADB:
+        cmd = "%s shell %s" % (ADB, iut_cmd)
+    else:
+        cmd = iut_cmd
+
+    print "starting child process", repr(cmd)
+    p = subprocess.Popen(cmd)
+    if wait:
+        p.wait()
+
+    return p
 
 def run_test_case(project, test_case, command = None):
     global CHILD_PROCESS_COMMAND
@@ -214,13 +303,7 @@ def run_test_case(project, test_case, command = None):
     # with RFCOMM, but does not seem to work with L2CAP, more general
     # solution is needed
     if CHILD_PROCESS_COMMAND:
-        if USE_ADB:
-            cmd = "%s shell %s" % (ADB, CHILD_PROCESS_COMMAND)
-        else:
-            cmd = CHILD_PROCESS_COMMAND
-
-        print "starting child process", CHILD_PROCESS_COMMAND
-        CHILD_PROCESS = subprocess.Popen(cmd)
+        CHILD_PROCESS = exec_iut_cmd(CHILD_PROCESS_COMMAND)
 
     PTS.RunTestCase(project, test_case)
 
@@ -295,6 +378,7 @@ def test_l2cap():
     run_test_case("L2CAP", "TC_EXF_BV_03_C")
     run_test_case("L2CAP", "TC_EXF_BV_05_C")
 
+    # to pass TSPX_delete_link_key must be set to TRUE
     run_test_case("L2CAP", "TC_CMC_BV_01_C", "l2test -r -X ertm -P 4113")
     run_test_case("L2CAP", "TC_CMC_BV_02_C", "l2test -r -X ertm -P 4113")
     run_test_case("L2CAP", "TC_CMC_BV_03_C", "l2test -r -X ertm -P 4113")
@@ -302,7 +386,6 @@ def test_l2cap():
     run_test_case("L2CAP", "TC_CMC_BV_05_C", "l2test -r -X streaming -P 4113")
     run_test_case("L2CAP", "TC_CMC_BV_06_C", "l2test -r -X streaming -P 4113")
     run_test_case("L2CAP", "TC_CMC_BV_07_C", "l2test -r -X ertm -P 4113")
-    # TODO: these two seem to be reluctant to pass, with UI removing link key solves it
     run_test_case("L2CAP", "TC_CMC_BV_08_C", "l2test -r -X streaming -P 4113")
     run_test_case("L2CAP", "TC_CMC_BV_09_C", "l2test -r -X basic -P 4113")
     run_test_case("L2CAP", "TC_CMC_BV_10_C", "l2test -n -P 4113 %s" % (BD_ADDR,))
@@ -312,7 +395,8 @@ def test_l2cap():
     run_test_case("L2CAP", "TC_CMC_BV_14_C",  "l2test -r -X streaming -P 4113")
     run_test_case("L2CAP", "TC_CMC_BV_15_C",  "l2test -r -X streaming -P 4113")
 
-    # TODO: seem to get INCONC, need to remove link key?
+    # these pass if TSPX_security_enabled is FALSE
+    # connectable must be on
     run_test_case("L2CAP", "TC_CMC_BI_01_C",  "l2test -r -X ertm -P 4113")
     run_test_case("L2CAP", "TC_CMC_BI_02_C",  "l2test -r -X ertm -P 4113")
     run_test_case("L2CAP", "TC_CMC_BI_03_C",  "l2test -r -X streaming -P 4113")
@@ -320,7 +404,6 @@ def test_l2cap():
     run_test_case("L2CAP", "TC_CMC_BI_05_C",  "l2test -r -X basic -P 4113")
     run_test_case("L2CAP", "TC_CMC_BI_06_C",  "l2test -r -X basic -P 4113")
 
-    # TODO: inconc
     run_test_case("L2CAP", "TC_FOC_BV_01_C",  "l2test -r -X ertm -P 4113 -F 0")
     run_test_case("L2CAP", "TC_FOC_BV_02_C",  "l2test -r -X ertm -P 4113 -F 0")
     run_test_case("L2CAP", "TC_FOC_BV_03_C",  "l2test -r -X ertm -P 4113 -F 0")
@@ -343,7 +426,17 @@ def test_l2cap():
     run_test_case("L2CAP", "TC_ERM_BV_07_C",  "l2test -r -H 1000 -K 10000 -X ertm -P 4113")
     run_test_case("L2CAP", "TC_ERM_BV_08_C",  "l2test -x -X ertm -P 4113 -N 1")
     run_test_case("L2CAP", "TC_ERM_BV_09_C",  "l2test -X ertm -P 4113")
+
+    # TODO: occasionally on flo fails with PTS has received an unexpected
+    # L2CAP_DISCONNECT_REQ from the IUT. Sometimes passes.
     run_test_case("L2CAP", "TC_ERM_BV_10_C",  "l2test -x -X ertm -P 4113 -N 1")
+
+    # BUG In PTS???
+    # LOG: PTS_LOGTYPE_IMPLICIT_SEND PTS ControlServer  Server: SUCCESS with response=OK
+    # LOG: PTS_LOGTYPE_EVENT_SUMMARY Event:     MTC: The IUT correctly set the S bits to indicate RR or Receiver Ready condition.
+    # LOG: PTS_LOGTYPE_EVENT_SUMMARY Event:     MTC: The IUT successfully sent an S frame indicating Poll bit set (P=1) and has exceeded Max Transmit = 1. The IUT should disconnect the L2CAP channel.
+    # LOG: PTS_LOGTYPE_EVENT_SUMMARY Event:     MTC: User cancel the test while waiting for monitor timeout to expired which IUT will send L2CAP_disconnectReq.
+    #
     run_test_case("L2CAP", "TC_ERM_BV_11_C",  "l2test -x -X ertm -P 4113 -N 1 -Q 1")
     run_test_case("L2CAP", "TC_ERM_BV_12_C",  "l2test -x -X ertm -P 4113 -R -N 1 -Q 1")
     run_test_case("L2CAP", "TC_ERM_BV_13_C",  "l2test -x -X ertm -P 4113 -N 2")
@@ -366,34 +459,62 @@ def test_l2cap():
     run_test_case("L2CAP", "TC_STM_BV_02_C",  "l2test -d -X streaming -P 4113")
     run_test_case("L2CAP", "TC_STM_BV_03_C",  "l2test -x -X streaming -P 4113 -N 2")
 
-    run_test_case("L2CAP", "TC_FIX_BV_01_C",  "l2test -z -P 4113 %s" % (BD_ADDR,))
+    # TODO DANGEROUS CASE: crashes pts sometimes, report to  as pts bug?
+    # run_test_case("L2CAP", "TC_FIX_BV_01_C",  "l2test -z -P 4113 %s" % (BD_ADDR,))
 
-    run_test_case("L2CAP", "TC_LE_CPU_BV_01_C",  "l2test -n -V le_public -J 4")
+    run_test_case("L2CAP", "TC_LE_CPU_BV_01_C",  "l2test -n -V le_public -J 4 %s" % (BD_ADDR,))
+    exec_iut_cmd("btmgmt advertising off", True)
     run_test_case("L2CAP", "TC_LE_CPU_BV_02_C",  "l2test -n -V le_public -J 4 %s" % (BD_ADDR,))
 
     run_test_case("L2CAP", "TC_LE_CPU_BI_01_C",  "l2test -n -V le_public -J 4 %s" % (BD_ADDR,))
+    exec_iut_cmd("btmgmt advertising on", True)
     run_test_case("L2CAP", "TC_LE_CPU_BI_02_C",  "l2test -r -V le_public -J 4")
 
     run_test_case("L2CAP", "TC_LE_REJ_BI_01_C",  "l2test -n -V le_public -J 4 %s" % (BD_ADDR,))
     run_test_case("L2CAP", "TC_LE_REJ_BI_02_C",  "l2test -n -V le_public -J 4 %s" % (BD_ADDR,))
 
     run_test_case("L2CAP", "TC_LE_CFC_BV_01_C",  "l2test -n -V le_public -P 37 %s" % (BD_ADDR,))
-    run_test_case("L2CAP", "TC_LE_CFC_BV_02_C",  "l2test -n -V le_public -P 37 %s" % (BD_ADDR,))
+
+    # TODO: this case passes in PTS gui but in automation mode it prints lots of
+    # "Have enough credits. Sending LE frame.." and PTS crashes. Also, btmon
+    # shows too early connection termination:
+    # > HCI Event: Disconnect Complete (0x05) plen 4                 [hci0] 13.808696
+    #         Status: Success (0x00)
+    #         Handle: 5
+    #         Reason: Connection Timeout (0x08)
+    # @ Device Disconnected: 00:1B:DC:07:32:03 (1) reason 1
+    # Bug in PTS? Occasionaly this case seems to pass in automation mode too.
+    # run_test_case("L2CAP", "TC_LE_CFC_BV_02_C",  "l2test -n -V le_public -P 37 %s" % (BD_ADDR,))
+
+    # TODO INCONC PTS bug? gives Unknown L2CA CM message. MMI Error
     # Note: PIXIT TSPX_iut_role_initiator=FALSE
     # run_test_case("L2CAP", "TC_LE_CFC_BV_03_C",  "l2test -x -N 1 -V le_public %s" % (BD_ADDR,))
+
+    # TODO: PTS BUG? INCONC with MMI Error
     run_test_case("L2CAP", "TC_LE_CFC_BV_04_C",  "l2test -n -V le_public -P 241 %s" % (BD_ADDR,))
 
-    # Note: PIXIT TSPX_iut_role_initiator=FALSE
-    # run_test_case("L2CAP", "TC_LE_CFC_BV_05_C",  "l2test -r -V le_public -J 4")
 
+    # Note: PIXIT TSPX_iut_role_initiator=FALSE
+    pts_update_pixit_param("L2CAP", "TSPX_iut_role_initiator", "FALSE")
+    run_test_case("L2CAP", "TC_LE_CFC_BV_05_C",  "l2test -r -V le_public -J 4")
+    # TODO: MMI error from pts
     # PTS issue #12853
     # Note: PIXIT TSPX_iut_role_initiator=FALSE
-    # run_test_case("L2CAP", "TC_LE_CFC_BV_06_C",  "l2test -x -b 1 -V le_public %s" % (BD_ADDR,))
+    run_test_case("L2CAP", "TC_LE_CFC_BV_06_C",  "l2test -x -b 1 -V le_public %s" % (BD_ADDR,))
+    pts_update_pixit_param("L2CAP", "TSPX_iut_role_initiator", "TRUE")
+
+    # TODO: MMI error
+    exec_iut_cmd("btmgmt advertising off", True)
     run_test_case("L2CAP", "TC_LE_CFC_BV_07_C",  "l2test -u -V le_public %s" % (BD_ADDR,))
+    # TODO: MMI error
     run_test_case("L2CAP", "TC_LE_CFC_BI_01_C",  "l2test -u -V le_public %s" % (BD_ADDR,))
     run_test_case("L2CAP", "TC_LE_CFC_BV_08_C",  "l2test -n -V le_public -P 37 %s" % (BD_ADDR,))
+
+    # TODO: MMI Error for both of these cases
     run_test_case("L2CAP", "TC_LE_CFC_BV_09_C",  "l2test -n -V le_public -P 37 %s" % (BD_ADDR,))
     run_test_case("L2CAP", "TC_LE_CFC_BV_16_C",  "l2test -n -V le_public -P 37 %s" % (BD_ADDR,))
+
+    exec_iut_cmd("btmgmt advertising on", True)
 
     # PTS issue #12730
     # l2test -s -N 1 <bdaddr>
@@ -459,12 +580,12 @@ def main():
 
     print "Workspace", WORKSPACE
     PTS.OpenWorkspace(WORKSPACE)
-    
+
     print "\n\n\nRunning test cases..."
 
     test_l2cap()
-#    test_rfcomm()
-#    run_test_case("DID", "TC_SDI_BV_1_I")
+    # test_rfcomm()
+    # run_test_case("DID", "TC_SDI_BV_1_I")
 
     print_results()
 
