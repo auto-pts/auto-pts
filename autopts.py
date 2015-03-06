@@ -55,6 +55,19 @@ class TestCase:
     def __str__(self):
         return "%s %s %s" % (self.project, self.test_case, self.status)
 
+class btmgmt:
+    '''Incomplete wrapper around btmgmt. The methods are added as needed.'''
+
+    @staticmethod
+    def advertising_on():
+        exec_iut_cmd("btmgmt advertising on", True)
+
+    @staticmethod
+    def advertising_off():
+        exec_iut_cmd("btmgmt advertising off", True)
+
+
+
 # list of executed test cases (TestCase objects)
 # TODO: which with print_results could become a class of its own, could also
 # get rid of [-1] this way, with something like update_current_result
@@ -70,7 +83,7 @@ def print_results():
     for test_case in RESULTS:
         print test_case
 
-class Logger(p.IPTSControlClientLogger):
+class PTSLogger(p.IPTSControlClientLogger):
 
     def __init__(self):
         pass
@@ -115,7 +128,7 @@ class Logger(p.IPTSControlClientLogger):
 #                     [in] unsigned long responseSize, 
 #                     [in, out] long* pbResponseIsPresent);
 # };
-class Sender(p.IPTSImplicitSendCallbackEx):
+class PTSSender(p.IPTSImplicitSendCallbackEx):
     def OnImplicitSend(self, project_name, wid, test_case, description, style,
                        response, response_size, response_is_present):
         print "\n********************"
@@ -322,6 +335,24 @@ def run_test_case(project, test_case, command = None):
     CHILD_PROCESS_COMMAND = None
 
 def test_l2cap():
+    '''Initial IUT config: powered connectable br/edr le advertising
+    Bluetooth in UI should be turned off then:
+
+    Not needed for Nexus 7
+    echo 1 > /sys/class/rfkill/rfkill0/state
+
+    setprop ctl.start hciattach
+    btmgmt le on
+    btmgmt connectable on
+    btmgmt advertising on
+    btmgmt ssp on
+    btmgmt power on
+
+    PIXIT TSPX_delete_link_key must be set to TRUE, that is cause in automation
+    there is no API call respective to the "Delete Link Key" PTS toolbar
+    button.
+
+    '''
     run_test_case("L2CAP", "TC_COS_CED_BV_01_C", "l2test -n -P 4113 %s" % (BD_ADDR,))
     run_test_case("L2CAP", "TC_COS_CED_BV_03_C", "l2test -y -N 1 -P 4113 %s" % (BD_ADDR,))
     run_test_case("L2CAP", "TC_COS_CED_BV_04_C", "l2test -n -P 4113 %s" % (BD_ADDR,))
@@ -365,7 +396,8 @@ def test_l2cap():
     # run_test_case("L2CAP", "TC_COS_CFC_BV_02_C", "l2test -y -N 1 -b 1 -V le_public -P 37 %s" % (BD_ADDR,))
     # TODO: this one gets huge amount of messages, unlike unlike ui and does not pass
     # run_test_case("L2CAP", "TC_COS_CFC_BV_03_C", "l2test -u -V le_public -P 37 %s" % (BD_ADDR,))
-    run_test_case("L2CAP", "TC_COS_CFC_BV_04_C", "l2test -u -V le_public -P 37 %s" % (BD_ADDR,))
+    # TODO: this one gets huge amount of messages, unlike unlike ui and does not pass
+    # run_test_case("L2CAP", "TC_COS_CFC_BV_04_C", "l2test -u -V le_public -P 37 %s" % (BD_ADDR,))
     # TODO: this one requiers two l2test processes
     # run_test_case("L2CAP", "TC_COS_CFC_BV_05_C", "l2test -u -V le_public -P 37 %s" % (BD_ADDR,))
 
@@ -378,7 +410,6 @@ def test_l2cap():
     run_test_case("L2CAP", "TC_EXF_BV_03_C")
     run_test_case("L2CAP", "TC_EXF_BV_05_C")
 
-    # to pass TSPX_delete_link_key must be set to TRUE
     run_test_case("L2CAP", "TC_CMC_BV_01_C", "l2test -r -X ertm -P 4113")
     run_test_case("L2CAP", "TC_CMC_BV_02_C", "l2test -r -X ertm -P 4113")
     run_test_case("L2CAP", "TC_CMC_BV_03_C", "l2test -r -X ertm -P 4113")
@@ -395,8 +426,6 @@ def test_l2cap():
     run_test_case("L2CAP", "TC_CMC_BV_14_C",  "l2test -r -X streaming -P 4113")
     run_test_case("L2CAP", "TC_CMC_BV_15_C",  "l2test -r -X streaming -P 4113")
 
-    # these pass if TSPX_security_enabled is FALSE
-    # connectable must be on
     run_test_case("L2CAP", "TC_CMC_BI_01_C",  "l2test -r -X ertm -P 4113")
     run_test_case("L2CAP", "TC_CMC_BI_02_C",  "l2test -r -X ertm -P 4113")
     run_test_case("L2CAP", "TC_CMC_BI_03_C",  "l2test -r -X streaming -P 4113")
@@ -408,7 +437,6 @@ def test_l2cap():
     run_test_case("L2CAP", "TC_FOC_BV_02_C",  "l2test -r -X ertm -P 4113 -F 0")
     run_test_case("L2CAP", "TC_FOC_BV_03_C",  "l2test -r -X ertm -P 4113 -F 0")
 
-    # TODO: inconc
     run_test_case("L2CAP", "TC_OFS_BV_01_C",  "l2test -x -X ertm -P 4113 -F 0 -N 1")
     run_test_case("L2CAP", "TC_OFS_BV_02_C",  "l2test -r -X ertm -P 4113 -F 0")
     run_test_case("L2CAP", "TC_OFS_BV_03_C",  "l2test -x -X streaming -P 4113 -F 0 -N 1")
@@ -429,9 +457,15 @@ def test_l2cap():
 
     # TODO: occasionally on flo fails with PTS has received an unexpected
     # L2CAP_DISCONNECT_REQ from the IUT. Sometimes passes.
+    # sometimes: "MTC: The Retransmission Timeout Timer (adjusted) of PTS
+    # has timed out. The IUT should have sent a S-frame by now."
+    # Sometimes passes.
+    # also fails in gui if you restart l2cap and run test case again.
+    # only solvable by clicking "Delete Link Key" toolbar button of PTS.
+    # thought TSPX_delete_link_key is set to TRUE
     run_test_case("L2CAP", "TC_ERM_BV_10_C",  "l2test -x -X ertm -P 4113 -N 1")
 
-    # BUG In PTS???
+    # TODO: BUG In PTS???
     # LOG: PTS_LOGTYPE_IMPLICIT_SEND PTS ControlServer  Server: SUCCESS with response=OK
     # LOG: PTS_LOGTYPE_EVENT_SUMMARY Event:     MTC: The IUT correctly set the S bits to indicate RR or Receiver Ready condition.
     # LOG: PTS_LOGTYPE_EVENT_SUMMARY Event:     MTC: The IUT successfully sent an S frame indicating Poll bit set (P=1) and has exceeded Max Transmit = 1. The IUT should disconnect the L2CAP channel.
@@ -463,13 +497,14 @@ def test_l2cap():
     # run_test_case("L2CAP", "TC_FIX_BV_01_C",  "l2test -z -P 4113 %s" % (BD_ADDR,))
 
     run_test_case("L2CAP", "TC_LE_CPU_BV_01_C",  "l2test -n -V le_public -J 4 %s" % (BD_ADDR,))
-    exec_iut_cmd("btmgmt advertising off", True)
+    btmgmt.advertising_off()
     run_test_case("L2CAP", "TC_LE_CPU_BV_02_C",  "l2test -n -V le_public -J 4 %s" % (BD_ADDR,))
 
     run_test_case("L2CAP", "TC_LE_CPU_BI_01_C",  "l2test -n -V le_public -J 4 %s" % (BD_ADDR,))
-    exec_iut_cmd("btmgmt advertising on", True)
+    btmgmt.advertising_on()
     run_test_case("L2CAP", "TC_LE_CPU_BI_02_C",  "l2test -r -V le_public -J 4")
-
+    btmgmt.advertising_off()
+    # TODO: MMI error
     run_test_case("L2CAP", "TC_LE_REJ_BI_01_C",  "l2test -n -V le_public -J 4 %s" % (BD_ADDR,))
     run_test_case("L2CAP", "TC_LE_REJ_BI_02_C",  "l2test -n -V le_public -J 4 %s" % (BD_ADDR,))
 
@@ -492,7 +527,7 @@ def test_l2cap():
 
     # TODO: PTS BUG? INCONC with MMI Error
     run_test_case("L2CAP", "TC_LE_CFC_BV_04_C",  "l2test -n -V le_public -P 241 %s" % (BD_ADDR,))
-
+    btmgmt.advertising_on()
 
     # Note: PIXIT TSPX_iut_role_initiator=FALSE
     pts_update_pixit_param("L2CAP", "TSPX_iut_role_initiator", "FALSE")
@@ -504,7 +539,7 @@ def test_l2cap():
     pts_update_pixit_param("L2CAP", "TSPX_iut_role_initiator", "TRUE")
 
     # TODO: MMI error
-    exec_iut_cmd("btmgmt advertising off", True)
+    btmgmt.advertising_off()
     run_test_case("L2CAP", "TC_LE_CFC_BV_07_C",  "l2test -u -V le_public %s" % (BD_ADDR,))
     # TODO: MMI error
     run_test_case("L2CAP", "TC_LE_CFC_BI_01_C",  "l2test -u -V le_public %s" % (BD_ADDR,))
@@ -514,7 +549,7 @@ def test_l2cap():
     run_test_case("L2CAP", "TC_LE_CFC_BV_09_C",  "l2test -n -V le_public -P 37 %s" % (BD_ADDR,))
     run_test_case("L2CAP", "TC_LE_CFC_BV_16_C",  "l2test -n -V le_public -P 37 %s" % (BD_ADDR,))
 
-    exec_iut_cmd("btmgmt advertising on", True)
+    btmgmt.advertising_on()
 
     # PTS issue #12730
     # l2test -s -N 1 <bdaddr>
@@ -553,13 +588,13 @@ def main():
     global BD_ADDR
     global PTS
 
-    logger = Logger()
-    sender = Sender()
+    pts_logger = PTSLogger()
+    pts_sender = PTSSender()
 
     PTS = p.PTSControlClass()
 
-    PTS.SetControlClientLoggerCallback(logger)
-    PTS.RegisterImplicitSendCallbackEx(sender)
+    PTS.SetControlClientLoggerCallback(pts_logger)
+    PTS.RegisterImplicitSendCallbackEx(pts_sender)
 
     pts_version = clr.StrongBox[System.UInt32]()
     PTS.GetPTSVersion(pts_version)
