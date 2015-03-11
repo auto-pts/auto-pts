@@ -34,7 +34,6 @@ import Interop.PTSControl as p
 # WORKSPACE = r'C:\Users\rmstoi\Documents\Profile Tuning Suite\AOSP on HammerHead\AOSP on HammerHead.pqw6'
 WORKSPACE = r'C:\Users\rmstoi\Documents\Profile Tuning Suite\AOSP on Flo\AOSP on Flo.pqw6'
 
-# TODO: adb root should be executed beforehand, otherwise none of the commands will work on device
 # make sure adb is in path or modify this variable
 ADB = "adb.exe"
 USE_ADB = True
@@ -331,8 +330,8 @@ def pts_update_pics(project_name, entry_name, bool_value):
     except System.Runtime.InteropServices.COMException as e:
         print 'Exception in UpdatePics "%s", is pics value aready set?' % (e.Message,)
 
-def exec_iut_cmd(iut_cmd, wait = False):
-    if USE_ADB:
+def exec_iut_cmd(iut_cmd, wait = False, use_adb_shell = USE_ADB):
+    if use_adb_shell:
         cmd = "%s shell %s" % (ADB, iut_cmd)
     else:
         cmd = iut_cmd
@@ -343,6 +342,12 @@ def exec_iut_cmd(iut_cmd, wait = False):
         p.wait()
 
     return p
+
+def exec_adb_root():
+    '''Runs "adb root" command'''
+    exec_iut_cmd("adb root", True, False)
+    # it takes an instance of time to get adbd restarted with root permissions
+    exec_iut_cmd("adb wait-for-device", True, False)
 
 def run_test_case(project, test_case, command = None):
     global CHILD_PROCESS_COMMAND
@@ -731,6 +736,9 @@ def main():
 
     print "Workspace", WORKSPACE
     PTS.OpenWorkspace(WORKSPACE)
+
+    if USE_ADB: # IUT commands require root permissions
+        exec_adb_root()
 
     print "\n\n\nRunning test cases..."
 
