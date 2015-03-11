@@ -39,9 +39,13 @@ WORKSPACE = r'C:\Users\rmstoi\Documents\Profile Tuning Suite\AOSP on Flo\AOSP on
 ADB = "adb.exe"
 USE_ADB = True
 
+# PTS bluetooth address in standard form
 BD_ADDR = ""
+
+# instance of PTSControl COM class
 PTS = None
 
+# child process required by the test case
 CHILD_PROCESS = None
 CHILD_PROCESS_COMMAND = None
 
@@ -59,6 +63,14 @@ class btmgmt:
     '''Incomplete wrapper around btmgmt. The methods are added as needed.'''
 
     @staticmethod
+    def power_off():
+        exec_iut_cmd("btmgmt power off", True)
+
+    @staticmethod
+    def power_on():
+        exec_iut_cmd("btmgmt power on", True)
+
+    @staticmethod
     def advertising_on():
         exec_iut_cmd("btmgmt advertising on", True)
 
@@ -66,7 +78,33 @@ class btmgmt:
     def advertising_off():
         exec_iut_cmd("btmgmt advertising off", True)
 
+    @staticmethod
+    def connectable_on():
+        exec_iut_cmd("btmgmt connectable on", True)
 
+    @staticmethod
+    def connectable_off():
+        exec_iut_cmd("btmgmt connectable off", True)
+
+    @staticmethod
+    def discoverable_on():
+        exec_iut_cmd("btmgmt discov on", True)
+
+    @staticmethod
+    def discoverable_off():
+        exec_iut_cmd("btmgmt discov off", True)
+
+    @staticmethod
+    def discoverable_limited(limit):
+        exec_iut_cmd("btmgmt discov limited %d" % limit, True)
+
+    @staticmethod
+    def bredr_on():
+        exec_iut_cmd("btmgmt bredr on", True)
+
+    @staticmethod
+    def bredr_off():
+        exec_iut_cmd("btmgmt bredr off", True)
 
 # list of executed test cases (TestCase objects)
 # TODO: which with print_results could become a class of its own, could also
@@ -149,7 +187,11 @@ class PTSSender(p.IPTSImplicitSendCallbackEx):
 
             # answer No
             if wid == 19 and project_name == "L2CAP" and test_case == "TC_ERM_BV_07_C" or \
-               wid == 19 and project_name == "L2CAP" and test_case == "TC_ERM_BV_22_C":
+               wid == 19 and project_name == "L2CAP" and test_case == "TC_ERM_BV_22_C" or \
+               wid == 120 and project_name == "GAP" and test_case == "TC_DISC_LIMM_BV_01_C" or \
+               wid == 120 and project_name == "GAP" and test_case == "TC_DISC_LIMM_BV_03_C" or \
+               wid == 120 and project_name == "GAP" and test_case == "TC_DISC_GENM_BV_01_C" or \
+               wid == 120 and project_name == "GAP" and test_case == "TC_DISC_GENM_BV_03_C":
                 libc.wcscpy_s(response, response_size, u"No")
 
             # answer Yes
@@ -390,9 +432,9 @@ def test_l2cap():
     run_test_case("L2CAP", "TC_COS_ECH_BV_01_C")
     run_test_case("L2CAP", "TC_COS_ECH_BV_02_C", "l2ping -c1 %s" % (BD_ADDR,))
 
-    # TODO: the following three cases require advertising to be off
-    # todo this one gives Unknown L2CA CM message, even in pts
-    # run_test_case("L2CAP", "TC_COS_CFC_BV_01_C", "l2test -y -N 1 -b 40 -V le_public -P 37 %s" % (BD_ADDR,))
+    btmgmt.advertising_off()
+    run_test_case("L2CAP", "TC_COS_CFC_BV_01_C", "l2test -y -N 1 -b 40 -V le_public -P 37 %s" % (BD_ADDR,))
+    # TODO: INCONC
     # run_test_case("L2CAP", "TC_COS_CFC_BV_02_C", "l2test -y -N 1 -b 1 -V le_public -P 37 %s" % (BD_ADDR,))
     # TODO: this one gets huge amount of messages, unlike unlike ui and does not pass
     # run_test_case("L2CAP", "TC_COS_CFC_BV_03_C", "l2test -u -V le_public -P 37 %s" % (BD_ADDR,))
@@ -400,6 +442,7 @@ def test_l2cap():
     # run_test_case("L2CAP", "TC_COS_CFC_BV_04_C", "l2test -u -V le_public -P 37 %s" % (BD_ADDR,))
     # TODO: this one requiers two l2test processes
     # run_test_case("L2CAP", "TC_COS_CFC_BV_05_C", "l2test -u -V le_public -P 37 %s" % (BD_ADDR,))
+    btmgmt.advertising_on()
 
     run_test_case("L2CAP", "TC_CLS_UCD_BV_01_C")
     run_test_case("L2CAP", "TC_CLS_UCD_BV_02_C", "l2test -s -G -N 1 -P 4113 %s" % (BD_ADDR,))
@@ -583,6 +626,79 @@ def test_rfcomm():
 
     run_test_case("RFCOMM", "TC_RFC_BV_25_C", "rctest -r -P 1 %s" % (BD_ADDR,))
 
+def test_gap():
+    btmgmt.discoverable_off()
+    run_test_case("GAP", "TC_MOD_NDIS_BV_01_C")
+
+    btmgmt.discoverable_limited(30)
+    run_test_case("GAP", "TC_MOD_LDIS_BV_01_C")
+    btmgmt.discoverable_limited(30)
+    run_test_case("GAP", "TC_MOD_LDIS_BV_02_C")
+    btmgmt.discoverable_limited(30)
+    run_test_case("GAP", "TC_MOD_LDIS_BV_03_C")
+
+    btmgmt.discoverable_on()
+    run_test_case("GAP", "TC_MOD_GDIS_BV_01_C")
+    run_test_case("GAP", "TC_MOD_GDIS_BV_02_C")
+
+    btmgmt.connectable_off()
+    run_test_case("GAP", "TC_MOD_NCON_BV_01_C")
+
+    btmgmt.connectable_on()
+    run_test_case("GAP", "TC_MOD_CON_BV_01_C")
+
+    btmgmt.connectable_off()
+    btmgmt.advertising_on()
+    run_test_case("GAP", "TC_DISC_NONM_BV_01_C")
+
+    btmgmt.connectable_on()
+    btmgmt.discoverable_off()
+    run_test_case("GAP", "TC_DISC_NONM_BV_02_C")
+
+    btmgmt.discoverable_limited(30)
+    run_test_case("GAP", "TC_DISC_LIMM_BV_01_C")
+
+    btmgmt.discoverable_limited(30)
+    run_test_case("GAP", "TC_DISC_LIMM_BV_02_C")
+
+    btmgmt.discoverable_limited(30)
+    run_test_case("GAP", "TC_DISC_LIMM_BV_03_C")
+
+    btmgmt.discoverable_off()
+    btmgmt.power_off()
+    btmgmt.bredr_off()
+    btmgmt.power_on()
+    btmgmt.discoverable_limited(30)
+    run_test_case("GAP", "TC_DISC_LIMM_BV_04_C")
+
+    btmgmt.discoverable_on()
+    run_test_case("GAP", "TC_DISC_GENM_BV_01_C")
+
+    btmgmt.bredr_on()
+    run_test_case("GAP", "TC_DISC_GENM_BV_02_C")
+    run_test_case("GAP", "TC_DISC_GENM_BV_03_C")
+
+    btmgmt.power_off()
+    btmgmt.bredr_off()
+    btmgmt.power_on()
+    btmgmt.discoverable_on()
+    run_test_case("GAP", "TC_DISC_GENM_BV_04_C")
+    btmgmt.bredr_on()
+
+    # TODO grep for pts in output of "find -l" to find the answer to the last
+    # pts dialog
+    run_test_case("GAP", "TC_DISC_LIMP_BV_01_C", "btmgmt find -l")
+    run_test_case("GAP", "TC_DISC_LIMP_BV_02_C", "btmgmt find -l")
+    run_test_case("GAP", "TC_DISC_LIMP_BV_03_C", "btmgmt find -l")
+    run_test_case("GAP", "TC_DISC_LIMP_BV_04_C", "btmgmt find -l")
+    run_test_case("GAP", "TC_DISC_LIMP_BV_05_C", "btmgmt find -l")
+
+    run_test_case("GAP", "TC_DISC_GENP_BV_01_C", "btmgmt find -l")
+    run_test_case("GAP", "TC_DISC_GENP_BV_02_C", "btmgmt find -l")
+    run_test_case("GAP", "TC_DISC_GENP_BV_03_C", "btmgmt find -l")
+    run_test_case("GAP", "TC_DISC_GENP_BV_04_C", "btmgmt find -l")
+    run_test_case("GAP", "TC_DISC_GENP_BV_05_C", "btmgmt find -l")
+
 def main():
     '''Main.'''
     global BD_ADDR
@@ -618,7 +734,8 @@ def main():
 
     print "\n\n\nRunning test cases..."
 
-    test_l2cap()
+    test_gap()
+    # test_l2cap()
     # test_rfcomm()
     # run_test_case("DID", "TC_SDI_BV_1_I")
 
