@@ -541,6 +541,7 @@ def test_l2cap():
     run_test_case("L2CAP", "TC_STM_BV_02_C",  "l2test -d -X streaming -P 4113")
     run_test_case("L2CAP", "TC_STM_BV_03_C",  "l2test -x -X streaming -P 4113 -N 2")
 
+    # https://www.bluetooth.org/pts/issues/view_issue.cfm?id=13206
     # TODO DANGEROUS CASE: crashes pts sometimes, report to  as pts bug?
     # run_test_case("L2CAP", "TC_FIX_BV_01_C",  "l2test -z -P 4113 %s" % (BD_ADDR,))
 
