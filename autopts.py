@@ -248,6 +248,8 @@ class PTSSender(p.IPTSImplicitSendCallbackEx):
             stop_child = True
         if wid == 22 and project_name == "L2CAP" and test_case == "TC_COS_CFC_BV_04_C":
             stop_child = True
+        if wid == 22 and project_name == "L2CAP" and test_case == "TC_COS_CFC_BV_05_C":
+            stop_child = True
         if wid == 14 and project_name == "L2CAP" and test_case == "TC_CMC_BV_10_C":
             stop_child = True
         if wid == 14 and project_name == "L2CAP" and test_case == "TC_CMC_BV_11_C":
@@ -273,6 +275,8 @@ class PTSSender(p.IPTSImplicitSendCallbackEx):
         if wid == 22 and project_name == "L2CAP" and test_case == "TC_LE_REJ_BI_02_C":
             stop_child = True
         if wid == 22 and project_name == "L2CAP" and test_case == "TC_LE_CFC_BV_02_C":
+            stop_child = True
+        if wid == 22 and project_name == "L2CAP" and test_case == "TC_LE_CFC_BV_03_C":
             stop_child = True
         if wid == 22 and project_name == "L2CAP" and test_case == "TC_LE_CFC_BV_07_C":
             stop_child = True
@@ -439,12 +443,9 @@ def test_l2cap():
 
     btmgmt.advertising_off()
     run_test_case("L2CAP", "TC_COS_CFC_BV_01_C", "l2test -y -N 1 -b 40 -V le_public -P 37 %s" % (BD_ADDR,))
-    # TODO: INCONC
-    # run_test_case("L2CAP", "TC_COS_CFC_BV_02_C", "l2test -y -N 1 -b 1 -V le_public -P 37 %s" % (BD_ADDR,))
-    # TODO: this one gets huge amount of messages, unlike unlike ui and does not pass
-    # run_test_case("L2CAP", "TC_COS_CFC_BV_03_C", "l2test -u -V le_public -P 37 %s" % (BD_ADDR,))
-    # TODO: this one gets huge amount of messages, unlike unlike ui and does not pass
-    # run_test_case("L2CAP", "TC_COS_CFC_BV_04_C", "l2test -u -V le_public -P 37 %s" % (BD_ADDR,))
+    run_test_case("L2CAP", "TC_COS_CFC_BV_02_C", "l2test -y -N 1 -b 1 -V le_public -P 37 %s" % (BD_ADDR,))
+    run_test_case("L2CAP", "TC_COS_CFC_BV_03_C", "l2test -u -V le_public -P 37 %s" % (BD_ADDR,))
+    run_test_case("L2CAP", "TC_COS_CFC_BV_04_C", "l2test -u -V le_public -P 37 %s" % (BD_ADDR,))
     # TODO: this one requiers two l2test processes
     # run_test_case("L2CAP", "TC_COS_CFC_BV_05_C", "l2test -u -V le_public -P 37 %s" % (BD_ADDR,))
     btmgmt.advertising_on()
@@ -513,12 +514,6 @@ def test_l2cap():
     # thought TSPX_delete_link_key is set to TRUE
     run_test_case("L2CAP", "TC_ERM_BV_10_C",  "l2test -x -X ertm -P 4113 -N 1")
 
-    # TODO: BUG In PTS???
-    # LOG: PTS_LOGTYPE_IMPLICIT_SEND PTS ControlServer  Server: SUCCESS with response=OK
-    # LOG: PTS_LOGTYPE_EVENT_SUMMARY Event:     MTC: The IUT correctly set the S bits to indicate RR or Receiver Ready condition.
-    # LOG: PTS_LOGTYPE_EVENT_SUMMARY Event:     MTC: The IUT successfully sent an S frame indicating Poll bit set (P=1) and has exceeded Max Transmit = 1. The IUT should disconnect the L2CAP channel.
-    # LOG: PTS_LOGTYPE_EVENT_SUMMARY Event:     MTC: User cancel the test while waiting for monitor timeout to expired which IUT will send L2CAP_disconnectReq.
-    #
     run_test_case("L2CAP", "TC_ERM_BV_11_C",  "l2test -x -X ertm -P 4113 -N 1 -Q 1")
     run_test_case("L2CAP", "TC_ERM_BV_12_C",  "l2test -x -X ertm -P 4113 -R -N 1 -Q 1")
     run_test_case("L2CAP", "TC_ERM_BV_13_C",  "l2test -x -X ertm -P 4113 -N 2")
@@ -553,48 +548,35 @@ def test_l2cap():
     btmgmt.advertising_on()
     run_test_case("L2CAP", "TC_LE_CPU_BI_02_C",  "l2test -r -V le_public -J 4")
     btmgmt.advertising_off()
-    # TODO: MMI error
     run_test_case("L2CAP", "TC_LE_REJ_BI_01_C",  "l2test -n -V le_public -J 4 %s" % (BD_ADDR,))
     run_test_case("L2CAP", "TC_LE_REJ_BI_02_C",  "l2test -n -V le_public -J 4 %s" % (BD_ADDR,))
 
     run_test_case("L2CAP", "TC_LE_CFC_BV_01_C",  "l2test -n -V le_public -P 37 %s" % (BD_ADDR,))
 
-    # TODO: this case passes in PTS gui but in automation mode it prints lots of
-    # "Have enough credits. Sending LE frame.." and PTS crashes. Also, btmon
-    # shows too early connection termination:
-    # > HCI Event: Disconnect Complete (0x05) plen 4                 [hci0] 13.808696
-    #         Status: Success (0x00)
-    #         Handle: 5
-    #         Reason: Connection Timeout (0x08)
-    # @ Device Disconnected: 00:1B:DC:07:32:03 (1) reason 1
-    # Bug in PTS? Occasionaly this case seems to pass in automation mode too.
-    # run_test_case("L2CAP", "TC_LE_CFC_BV_02_C",  "l2test -n -V le_public -P 37 %s" % (BD_ADDR,))
+    run_test_case("L2CAP", "TC_LE_CFC_BV_02_C",  "l2test -n -V le_public -P 37 %s" % (BD_ADDR,))
 
-    # TODO INCONC PTS bug? gives Unknown L2CA CM message. MMI Error
     # Note: PIXIT TSPX_iut_role_initiator=FALSE
-    # run_test_case("L2CAP", "TC_LE_CFC_BV_03_C",  "l2test -x -N 1 -V le_public %s" % (BD_ADDR,))
+    pts_update_pixit_param("L2CAP", "TSPX_iut_role_initiator", "FALSE")
+    run_test_case("L2CAP", "TC_LE_CFC_BV_03_C",  "l2test -x -N 1 -V le_public %s" % (BD_ADDR,))
+    pts_update_pixit_param("L2CAP", "TSPX_iut_role_initiator", "TRUE")
 
-    # TODO: PTS BUG? INCONC with MMI Error
     run_test_case("L2CAP", "TC_LE_CFC_BV_04_C",  "l2test -n -V le_public -P 241 %s" % (BD_ADDR,))
     btmgmt.advertising_on()
 
     # Note: PIXIT TSPX_iut_role_initiator=FALSE
     pts_update_pixit_param("L2CAP", "TSPX_iut_role_initiator", "FALSE")
     run_test_case("L2CAP", "TC_LE_CFC_BV_05_C",  "l2test -r -V le_public -J 4")
-    # TODO: MMI error from pts
     # PTS issue #12853
     # Note: PIXIT TSPX_iut_role_initiator=FALSE
     run_test_case("L2CAP", "TC_LE_CFC_BV_06_C",  "l2test -x -b 1 -V le_public %s" % (BD_ADDR,))
     pts_update_pixit_param("L2CAP", "TSPX_iut_role_initiator", "TRUE")
 
-    # TODO: MMI error
     btmgmt.advertising_off()
+    # does not pass in automation mode:
+    # https://www.bluetooth.org/pts/issues/view_issue.cfm?id=13225
     run_test_case("L2CAP", "TC_LE_CFC_BV_07_C",  "l2test -u -V le_public %s" % (BD_ADDR,))
-    # TODO: MMI error
     run_test_case("L2CAP", "TC_LE_CFC_BI_01_C",  "l2test -u -V le_public %s" % (BD_ADDR,))
     run_test_case("L2CAP", "TC_LE_CFC_BV_08_C",  "l2test -n -V le_public -P 37 %s" % (BD_ADDR,))
-
-    # TODO: MMI Error for both of these cases
     run_test_case("L2CAP", "TC_LE_CFC_BV_09_C",  "l2test -n -V le_public -P 37 %s" % (BD_ADDR,))
     run_test_case("L2CAP", "TC_LE_CFC_BV_16_C",  "l2test -n -V le_public -P 37 %s" % (BD_ADDR,))
 
