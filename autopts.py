@@ -32,7 +32,7 @@ import Interop.PTSControl as p
 
 # WORKSPACE = r'C:\Users\rmstoi\Documents\Profile Tuning Suite\AOSP on Mako\AOSP on Mako.pqw6'
 # WORKSPACE = r'C:\Users\rmstoi\Documents\Profile Tuning Suite\AOSP on HammerHead\AOSP on HammerHead.pqw6'
-WORKSPACE = r'C:\Users\rmstoi\Documents\Profile Tuning Suite\AOSP on Flo\AOSP on Flo.pqw6'
+WORKSPACE = r'C:\Users\rmstoi\Documents\Profile Tuning Suite\New AOSP on Flo\New AOSP on Flo.pqw6'
 
 # make sure adb is in path or modify this variable
 ADB = "adb.exe"
@@ -44,21 +44,104 @@ BD_ADDR = ""
 # instance of PTSControl COM class
 PTS = None
 
-# child process required by the test case
-CHILD_PROCESS = None
-CHILD_PROCESS_COMMAND = None
+# currently executed test case: to make on_implicit_send accessible from
+# PTSSender.OnImplicitSend and set test case status in logger
+RUNNING_TEST_CASE = None
 
-class TestCase:
-    def __init__(self, project, test_case, status = "init"):
-        self.project = project
-        self.test_case = test_case
-        # final verdict
-        self.status = status
+class TestCommand:
+    '''A command ran in IUT during test case execution'''
+
+    def __init__(self, command, start_wid = None, stop_wid = None):
+        self.command = command
+        self.start_wid = start_wid
+        self.stop_wid = stop_wid
+        self.process = None
+
+    def start(self):
+        print "starting child process", self
+        self.process = exec_iut_cmd(self.command)
+
+    def stop(self):
+        print "stopping child process", self
+        self.process.kill()
 
     def __str__(self):
-        return "%s %s %s" % (self.project, self.test_case, self.status)
+        return "%s %s %s" % (self.command, self.start_wid, self.stop_wid)
+
+class TestCase:
+    def __init__(self, project_name, test_case_name, cmds = []):
+        '''cmds - a list of TestCommand or single instance of TestCommand'''
+        self.project_name = project_name
+        self.name = test_case_name
+        # a.k.a. final verdict
+        self.status = "init"
+
+        if isinstance(cmds, TestCommand):
+            self.cmds = [cmds]
+        else:
+            self.cmds = cmds
+
+    def __str__(self):
+        return "%s %s %s" % (self.project_name, self.name, self.status)
+
+    def on_implicit_send(self, project_name, wid, test_case_name, description, style,
+                         response, response_size, response_is_present):
+
+        # this should never happen, pts does not run tests in parallel
+        assert project_name == self.project_name and \
+            test_case_name == self.name
+
+        response_is_present.Value = 1
+
+        # MMI_Style_Yes_No1
+        if style == 0x11044:
+            # answer No
+            if wid in self.no_wids: # TODO: self.no_wids to be added
+                libc.wcscpy_s(response, response_size, u"No")
+
+            # answer Yes
+            else:
+                libc.wcscpy_s(response, response_size, u"Yes")
+
+        # actually style == 0x11141, MMI_Style_Ok_Cancel2
+        else:
+            libc.wcscpy_s(response, response_size, u"OK")
+
+        # start/stop command if triggered by wid
+        for cmd in self.cmds:
+            # start command
+            if cmd.start_wid == wid:
+                cmd.start()
+
+            # stop command
+            if cmd.stop_wid == wid:
+                cmd.stop()
+
+    def run(self):
+
+        global RUNNING_TEST_CASE
+        RUNNING_TEST_CASE = self
+
+        # start commands that don't have start trigger (lack start_wid)
+        for cmd in self.cmds:
+            if cmd.start_wid is None:
+                cmd.start()
+
+        PTS.RunTestCase(self.project_name, self.name)
+
+        # in accordance with PTSControlClient.cpp:
+        # // Allow device to settle down
+        # Sleep(3000);
+        # otherwise 4th test case just blocks eternally
+        time.sleep(3)
+
+        for cmd in self.cmds:
+            cmd.stop()
+
+        RUNNING_TEST_CASE = None
 
 class btmgmt:
+
     '''Incomplete wrapper around btmgmt. The methods are added as needed.'''
 
     @staticmethod
@@ -105,21 +188,6 @@ class btmgmt:
     def bredr_off():
         exec_iut_cmd("btmgmt bredr off", True)
 
-# list of executed test cases (TestCase objects)
-# TODO: which with print_results could become a class of its own, could also
-# get rid of [-1] this way, with something like update_current_result
-RESULTS = []
-
-def print_results():
-    if not RESULTS:
-        return
-            
-    print "Results:"
-    print "========"
-    
-    for test_case in RESULTS:
-        print test_case
-
 class PTSLogger(p.IPTSControlClientLogger):
 
     def __init__(self):
@@ -138,7 +206,7 @@ class PTSLogger(p.IPTSControlClientLogger):
 
         # mark test case as started
         if log_type == p._PTS_LOGTYPE.PTS_LOGTYPE_START_TEST:
-            RESULTS[-1].status = "Started"
+            RUNNING_TEST_CASE.status = "Started"
 
         # mark the final verdict of the test case
         elif log_type == p._PTS_LOGTYPE.PTS_LOGTYPE_FINAL_VERDICT:
@@ -152,7 +220,7 @@ class PTSLogger(p.IPTSControlClientLogger):
                 verdict = "UNKNOWN VERDICT: %s" % log_message
 
             print verdict    
-            RESULTS[-1].status = verdict
+            RUNNING_TEST_CASE.status = verdict
 
 # interface IPTSImplicitSendCallbackEx : IUnknown {
 #     HRESULT _stdcall OnImplicitSend(
@@ -166,126 +234,37 @@ class PTSLogger(p.IPTSControlClientLogger):
 #                     [in, out] long* pbResponseIsPresent);
 # };
 class PTSSender(p.IPTSImplicitSendCallbackEx):
-    def OnImplicitSend(self, project_name, wid, test_case, description, style,
-                       response, response_size, response_is_present):
+    def OnImplicitSend(self, project_name, wid, test_case_name, description,
+                       style, response, response_size, response_is_present):
         print "\n********************"
         print "BEGIN OnImplicitSend:"
         print "project_name:", project_name
         print "wid:", wid
-        print "test_case:", test_case
+        print "test_case_name:", test_case_name
         print "description:", description
         print "style: Ox%x" % style
         print "response:", repr(response), type(response), id(response)
         print "response_size:", response_size
         print "response_is_present:", response_is_present, type(response_is_present)
 
-        response_is_present.Value = 1
+        try:
+            if RUNNING_TEST_CASE:
+                RUNNING_TEST_CASE.on_implicit_send(
+                    project_name, wid, test_case_name, description, style,
+                    response, response_size, response_is_present)
+        except Exception as e:
+            print "Caught exception"
+            print e
+            # exit does not work, cause app is blocked in PTS.RunTestCase?
+            sys.exit("Exception in OnImplicitSend")
 
-        # MMI_Style_Yes_No1
-        if style == 0x11044:
-
-            # answer No
-            if wid == 19 and project_name == "L2CAP" and test_case == "TC_ERM_BV_07_C" or \
-               wid == 19 and project_name == "L2CAP" and test_case == "TC_ERM_BV_22_C" or \
-               wid == 120 and project_name == "GAP" and test_case == "TC_DISC_LIMM_BV_01_C" or \
-               wid == 120 and project_name == "GAP" and test_case == "TC_DISC_LIMM_BV_03_C" or \
-               wid == 120 and project_name == "GAP" and test_case == "TC_DISC_GENM_BV_01_C" or \
-               wid == 120 and project_name == "GAP" and test_case == "TC_DISC_GENM_BV_03_C":
-                libc.wcscpy_s(response, response_size, u"No")
-
-            # answer Yes
-            else:
-                libc.wcscpy_s(response, response_size, u"Yes")
-
-        # actually style == 0x11141, MMI_Style_Ok_Cancel2
-        else:
-            libc.wcscpy_s(response, response_size, u"OK")
+        print "after test case on_implicit_send (setting respose):"
 
         print "written resonse is:"
         libc._putws(response)
         libc.fflush(None); 
-
-        print "after setting respose:"
         print "response:", response, type(response), id(response)
         print "response_is_present:", response_is_present, type(response_is_present)
-
-        stop_child = False
-
-        # some test cases require the child process to be termintated (Ctrl-C
-        # on terminal)
-        if wid == 15 and project_name == "RFCOMM" and test_case == "TC_RFC_BV_04_C":
-            stop_child = True
-        if wid == 14 and project_name == "RFCOMM" and test_case == "TC_RFC_BV_07_C":
-            stop_child = True
-
-        if wid == 14 and project_name == "L2CAP" and test_case == "TC_COS_CED_BV_01_C":
-            stop_child = True
-        if wid == 14 and project_name == "L2CAP" and test_case == "TC_COS_CED_BV_03_C":
-            stop_child = True
-        if wid == 14 and project_name == "L2CAP" and test_case == "TC_COS_CED_BV_04_C":
-            stop_child = True
-        if wid == 14 and project_name == "L2CAP" and test_case == "TC_COS_CED_BV_09_C":
-            stop_child = True
-        if wid == 14 and project_name == "L2CAP" and test_case == "TC_COS_CFD_BV_02_C":
-            stop_child = True
-        if wid == 14 and project_name == "L2CAP" and test_case == "TC_COS_CFD_BV_03_C":
-            stop_child = True
-        if wid == 14 and project_name == "L2CAP" and test_case == "TC_COS_CFD_BV_08_C":
-            stop_child = True
-        if wid == 14 and project_name == "L2CAP" and test_case == "TC_COS_CFD_BV_09_C":
-            stop_child = True
-        if wid == 14 and project_name == "L2CAP" and test_case == "TC_COS_CFD_BV_11_C":
-            stop_child = True
-        if wid == 14 and project_name == "L2CAP" and test_case == "TC_COS_CFD_BV_12_C":
-            stop_child = True
-        if wid == 22 and project_name == "L2CAP" and test_case == "TC_COS_IEX_BV_01_C":
-            stop_child = True
-        if wid == 22 and project_name == "L2CAP" and test_case == "TC_COS_CFC_BV_01_C":
-            stop_child = True
-        if wid == 22 and project_name == "L2CAP" and test_case == "TC_COS_CFC_BV_02_C":
-            stop_child = True
-        if wid == 22 and project_name == "L2CAP" and test_case == "TC_COS_CFC_BV_03_C":
-            stop_child = True
-        if wid == 22 and project_name == "L2CAP" and test_case == "TC_COS_CFC_BV_04_C":
-            stop_child = True
-        if wid == 22 and project_name == "L2CAP" and test_case == "TC_COS_CFC_BV_05_C":
-            stop_child = True
-        if wid == 14 and project_name == "L2CAP" and test_case == "TC_CMC_BV_10_C":
-            stop_child = True
-        if wid == 14 and project_name == "L2CAP" and test_case == "TC_CMC_BV_11_C":
-            stop_child = True
-        if wid == 14 and project_name == "L2CAP" and test_case == "TC_CMC_BI_01_C":
-            stop_child = True
-        if wid == 14 and project_name == "L2CAP" and test_case == "TC_CMC_BI_02_C":
-            stop_child = True
-        if wid == 14 and project_name == "L2CAP" and test_case == "TC_CMC_BI_03_C":
-            stop_child = True
-        if wid == 14 and project_name == "L2CAP" and test_case == "TC_CMC_BI_04_C":
-            stop_child = True
-        if wid == 22 and project_name == "L2CAP" and test_case == "TC_CMC_BI_05_C":
-            stop_child = True
-        if wid == 22 and project_name == "L2CAP" and test_case == "TC_CMC_BI_06_C":
-            stop_child = True
-        if wid == 22 and project_name == "L2CAP" and test_case == "TC_LE_CPU_BV_02_C":
-            stop_child = True
-        if wid == 22 and project_name == "L2CAP" and test_case == "TC_LE_CPU_BI_01_C":
-            stop_child = True
-        if wid == 22 and project_name == "L2CAP" and test_case == "TC_LE_REJ_BI_01_C":
-            stop_child = True
-        if wid == 22 and project_name == "L2CAP" and test_case == "TC_LE_REJ_BI_02_C":
-            stop_child = True
-        if wid == 22 and project_name == "L2CAP" and test_case == "TC_LE_CFC_BV_02_C":
-            stop_child = True
-        if wid == 22 and project_name == "L2CAP" and test_case == "TC_LE_CFC_BV_03_C":
-            stop_child = True
-        if wid == 22 and project_name == "L2CAP" and test_case == "TC_LE_CFC_BV_07_C":
-            stop_child = True
-        if wid == 14 and project_name == "L2CAP" and test_case == "TC_LE_CFC_BV_08_C":
-            stop_child = True
-
-        if stop_child and CHILD_PROCESS:
-            print "STOPPING CHILD CAUSE OF MMI REQUEST"
-            CHILD_PROCESS.kill()
 
         print "END OnImplicitSend:"
         print "********************"
@@ -352,38 +331,6 @@ def exec_adb_root():
     exec_iut_cmd("adb root", True, False)
     # it takes an instance of time to get adbd restarted with root permissions
     exec_iut_cmd("adb wait-for-device", True, False)
-
-def run_test_case(project, test_case, command = None):
-    global CHILD_PROCESS_COMMAND
-    global CHILD_PROCESS
-
-    print "Running test case:", project, test_case, command
-
-    CHILD_PROCESS_COMMAND = command
-
-    RESULTS.append(TestCase(project, test_case))
-
-    # TODO: Starting commands before running test case in pts works
-    # with RFCOMM, but does not seem to work with L2CAP, more general
-    # solution is needed
-    if CHILD_PROCESS_COMMAND:
-        CHILD_PROCESS = exec_iut_cmd(CHILD_PROCESS_COMMAND)
-
-    PTS.RunTestCase(project, test_case)
-
-    # TODO: pointless to sleep with last test case
-
-    # in accordance with PTSControlClient.cpp:
-    # // Allow device to settle down
-    # Sleep(3000);
-    # otherwise 4th test case just blocks eternally
-    time.sleep(3)
-
-    if CHILD_PROCESS:
-        CHILD_PROCESS.kill()
-
-    CHILD_PROCESS = None
-    CHILD_PROCESS_COMMAND = None
 
 def test_l2cap():
     '''Initial IUT config: powered connectable br/edr le advertising
@@ -593,26 +540,55 @@ def test_l2cap():
     # l2test -w -N 1 -V le_public
     # run_test_case("L2CAP", "TC_LE_CID_BV_01_C",  "")
 
-def test_rfcomm():
-    run_test_case("RFCOMM", "TC_RFC_BV_01_C", "rctest -n -P 1 %s" % (BD_ADDR,))
-    run_test_case("RFCOMM", "TC_RFC_BV_02_C", "rctest -r -P 1 %s" % (BD_ADDR,))
-    run_test_case("RFCOMM", "TC_RFC_BV_03_C", "rctest -r -P 1 %s" % (BD_ADDR,))
-    run_test_case("RFCOMM", "TC_RFC_BV_04_C", "rctest -r -P 1 %s" % (BD_ADDR,))
-    run_test_case("RFCOMM", "TC_RFC_BV_05_C", "rctest -n -P 4 %s" % (BD_ADDR,))
-    run_test_case("RFCOMM", "TC_RFC_BV_06_C", "rctest -r -P 1 %s" % (BD_ADDR,))
-    run_test_case("RFCOMM", "TC_RFC_BV_07_C", "rctest -r -P 1 %s" % (BD_ADDR,))
-    run_test_case("RFCOMM", "TC_RFC_BV_08_C", "rctest -r -P 1 %s" % (BD_ADDR,))
-    run_test_case("RFCOMM", "TC_RFC_BV_11_C", "rctest -r -P 1 %s" % (BD_ADDR,))
-    run_test_case("RFCOMM", "TC_RFC_BV_13_C", "rctest -r -P 1 %s" % (BD_ADDR,))
-    run_test_case("RFCOMM", "TC_RFC_BV_15_C", "rctest -r -P 1 %s" % (BD_ADDR,))
-    run_test_case("RFCOMM", "TC_RFC_BV_17_C", "rctest -d -P 1 %s" % (BD_ADDR,))
-    run_test_case("RFCOMM", "TC_RFC_BV_19_C")
+def get_test_cases_rfcomm():
+    test_cases = [
+        TestCase("RFCOMM", "TC_RFC_BV_01_C",
+                 TestCommand("rctest -n -P 1 %s" % BD_ADDR, 20)),
 
-    # INC PTS issue #13011
-    run_test_case("RFCOMM", "TC_RFC_BV_21_C")
-    run_test_case("RFCOMM", "TC_RFC_BV_22_C")
+        TestCase("RFCOMM", "TC_RFC_BV_02_C",
+                 TestCommand("rctest -r -P 1 %s" % BD_ADDR)),
 
-    run_test_case("RFCOMM", "TC_RFC_BV_25_C", "rctest -r -P 1 %s" % (BD_ADDR,))
+        TestCase("RFCOMM", "TC_RFC_BV_03_C",
+                 TestCommand("rctest -r -P 1 %s" % BD_ADDR)),
+
+        TestCase("RFCOMM", "TC_RFC_BV_04_C",
+                 TestCommand("rctest -r -P 1 %s" % BD_ADDR, stop_wid = 15)),
+
+        TestCase("RFCOMM", "TC_RFC_BV_05_C",
+                 TestCommand("rctest -n -P 4 %s" % BD_ADDR, 20)),
+
+        TestCase("RFCOMM", "TC_RFC_BV_06_C",
+                 TestCommand("rctest -r -P 1 %s" % BD_ADDR)),
+
+        TestCase("RFCOMM", "TC_RFC_BV_07_C",
+                 TestCommand("rctest -r -P 1 %s" % BD_ADDR, stop_wid = 14)),
+
+        TestCase("RFCOMM", "TC_RFC_BV_08_C",
+                 TestCommand("rctest -r -P 1 %s" % BD_ADDR)),
+
+        TestCase("RFCOMM", "TC_RFC_BV_11_C",
+                 TestCommand("rctest -r -P 1 %s" % BD_ADDR)),
+
+        TestCase("RFCOMM", "TC_RFC_BV_13_C",
+                 TestCommand("rctest -r -P 1 %s" % BD_ADDR)),
+
+        TestCase("RFCOMM", "TC_RFC_BV_15_C",
+                 TestCommand("rctest -r -P 1 %s" % BD_ADDR)),
+
+        TestCase("RFCOMM", "TC_RFC_BV_17_C",
+                 TestCommand("rctest -d -P 1 %s" % BD_ADDR)),
+
+        TestCase("RFCOMM", "TC_RFC_BV_19_C"),
+
+        # INC PTS issue #13011
+        TestCase("RFCOMM", "TC_RFC_BV_21_C"),
+        TestCase("RFCOMM", "TC_RFC_BV_22_C"),
+
+        TestCase("RFCOMM", "TC_RFC_BV_25_C",
+                 TestCommand("rctest -r -P 1 %s" % BD_ADDR))
+    ]
+
+    return test_cases
 
 def test_gap():
     btmgmt.discoverable_off()
@@ -723,14 +699,18 @@ def main():
     if USE_ADB: # IUT commands require root permissions
         exec_adb_root()
 
+    test_cases = get_test_cases_rfcomm()
+
     print "\n\n\nRunning test cases..."
+    for test_case in test_cases:
+        test_case.run()
 
-    test_gap()
-    # test_l2cap()
-    # test_rfcomm()
-    # run_test_case("DID", "TC_SDI_BV_1_I")
 
-    print_results()
+    print "\nResults:"
+    print "========"
+
+    for test_case in test_cases:
+        print test_case
 
     print "\nBye!"
 
