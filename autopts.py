@@ -15,11 +15,13 @@ ipy.exe autopts.py
 
 '''
 
-import clr
+import os
 import sys
-
-import subprocess
 import time
+import logging
+import subprocess
+
+import clr
 import System
 import ctypes
 libc = ctypes.cdll.msvcrt # for wcscpy_s
@@ -44,33 +46,54 @@ BD_ADDR = ""
 # instance of PTSControl COM class
 PTS = None
 
-# currently executed test case: to make on_implicit_send accessible from
-# PTSSender.OnImplicitSend and set test case status in logger
+# currently executed test case: to make its method on_implicit_send accessible
+# from PTSSender.OnImplicitSend and set test case status in PTSLogger.Log
 RUNNING_TEST_CASE = None
+
+log = logging.debug
 
 class TestCommand:
     '''A command ran in IUT during test case execution'''
 
-    def __init__(self, command, start_wid = None, stop_wid = None):
+    def __init__(self, command, is_cleanup = False, start_wid = None, stop_wid = None):
+        '''stop_wid - some test cases require the child process (this test command) to
+                      be termintated (Ctrl-C on terminal) in reponse to dialog
+                      with this wid
+           is_cleanup - a command is a clean-up command, which is run after test case execution
+
+        '''
         self.command = command
         self.start_wid = start_wid
         self.stop_wid = stop_wid
         self.process = None
+        self.__started = False
+        self.is_cleanup = is_cleanup
+
+        if self.is_cleanup:
+            assert start_wid == None and stop_wid == None
 
     def start(self):
-        print "starting child process", self
+        if self.__started:
+            return
+
+        self.__started = True
+
+        log("starting child process %s" % self)
         self.process = exec_iut_cmd(self.command)
 
     def stop(self):
-        print "stopping child process", self
+        if not self.__started:
+            return
+
+        log("stopping child process %s" % self)
         self.process.kill()
 
     def __str__(self):
         return "%s %s %s" % (self.command, self.start_wid, self.stop_wid)
-
 class TestCase:
-    def __init__(self, project_name, test_case_name, cmds = []):
-        '''cmds - a list of TestCommand or single instance of TestCommand'''
+    def __init__(self, project_name, test_case_name, cmds = [], no_wid = None):
+        '''cmds - a list of TestCommand or single instance of TestCommand
+        no_wid - a wid (tag) to respond No to'''
         self.project_name = project_name
         self.name = test_case_name
         # a.k.a. final verdict
@@ -81,8 +104,13 @@ class TestCase:
         else:
             self.cmds = cmds
 
+        if no_wid is not None and not isinstance(no_wid, int):
+            raise Exception("no_wid should be int, and not %s" % (repr(no_wid),))
+
+        self.no_wid = no_wid
+
     def __str__(self):
-        return "%s %s %s" % (self.project_name, self.name, self.status)
+        return "%s %s" % (self.project_name, self.name)
 
     def on_implicit_send(self, project_name, wid, test_case_name, description, style,
                          response, response_size, response_is_present):
@@ -96,7 +124,7 @@ class TestCase:
         # MMI_Style_Yes_No1
         if style == 0x11044:
             # answer No
-            if wid in self.no_wids: # TODO: self.no_wids to be added
+            if self.no_wid and wid == self.no_wid:
                 libc.wcscpy_s(response, response_size, u"No")
 
             # answer Yes
@@ -124,10 +152,17 @@ class TestCase:
 
         # start commands that don't have start trigger (lack start_wid)
         for cmd in self.cmds:
-            if cmd.start_wid is None:
+            if cmd.start_wid is None and not cmd.is_cleanup:
                 cmd.start()
 
+        log("Running test case %s %s" % (self.project_name, self.name))
         PTS.RunTestCase(self.project_name, self.name)
+        log("Done Running test case %s %s" % (self.project_name, self.name))
+
+        # run the clean-up commands
+        for cmd in self.cmds:
+            if cmd.is_cleanup:
+                cmd.start()
 
         # in accordance with PTSControlClient.cpp:
         # // Allow device to settle down
@@ -201,8 +236,10 @@ class PTSLogger(p.IPTSControlClientLogger):
 #                     [in] LPWSTR pszMessage);
 # };
     def Log(self, log_type, logtype_string, log_time, log_message):
-        print "LOG:",
-        print log_type, logtype_string, log_time, log_message
+        logger = logging.getLogger(self.__class__.__name__)
+        log = logger.info
+
+        log("%s %s %s %s" % (log_type, logtype_string, log_time, log_message))
 
         # mark test case as started
         if log_type == p._PTS_LOGTYPE.PTS_LOGTYPE_START_TEST:
@@ -219,7 +256,7 @@ class PTSLogger(p.IPTSControlClientLogger):
             else:
                 verdict = "UNKNOWN VERDICT: %s" % log_message
 
-            print verdict    
+            log(verdict)
             RUNNING_TEST_CASE.status = verdict
 
 # interface IPTSImplicitSendCallbackEx : IUnknown {
@@ -236,16 +273,19 @@ class PTSLogger(p.IPTSControlClientLogger):
 class PTSSender(p.IPTSImplicitSendCallbackEx):
     def OnImplicitSend(self, project_name, wid, test_case_name, description,
                        style, response, response_size, response_is_present):
-        print "\n********************"
-        print "BEGIN OnImplicitSend:"
-        print "project_name:", project_name
-        print "wid:", wid
-        print "test_case_name:", test_case_name
-        print "description:", description
-        print "style: Ox%x" % style
-        print "response:", repr(response), type(response), id(response)
-        print "response_size:", response_size
-        print "response_is_present:", response_is_present, type(response_is_present)
+        logger = logging.getLogger(self.__class__.__name__)
+        log = logger.info
+
+        log("********************")
+        log("BEGIN OnImplicitSend:")
+        log("project_name: %s" % project_name)
+        log("wid: %s" % wid)
+        log("test_case_name: %s" % test_case_name)
+        log("description: %s" % description)
+        log("style: Ox%x" % style)
+        log("response: %s %s %s" % (repr(response), type(response), id(response)))
+        log("response_size: %s" % response_size)
+        log("response_is_present: %s %s" % (response_is_present, type(response_is_present)))
 
         try:
             if RUNNING_TEST_CASE:
@@ -253,22 +293,22 @@ class PTSSender(p.IPTSImplicitSendCallbackEx):
                     project_name, wid, test_case_name, description, style,
                     response, response_size, response_is_present)
         except Exception as e:
-            print "Caught exception"
-            print e
+            log("Caught exception")
+            log(e)
             # exit does not work, cause app is blocked in PTS.RunTestCase?
             sys.exit("Exception in OnImplicitSend")
 
-        print "after test case on_implicit_send (setting respose):"
+        log("after test case on_implicit_send (setting respose):")
 
-        print "written resonse is:"
-        libc._putws(response)
-        libc.fflush(None); 
-        print "response:", response, type(response), id(response)
-        print "response_is_present:", response_is_present, type(response_is_present)
+        log("written resonse is:")
+        # not easy to to redirect libc stdout to the log file
+        # libc._putws(response)
+        # libc.fflush(None); 
+        log("response: %s %s %s" % (response, type(response), id(response)))
+        log("response_is_present: %s %s" % (response_is_present, type(response_is_present)))
 
-        print "END OnImplicitSend:"
-        print "********************"
-        print 
+        log("END OnImplicitSend:")
+        log("********************")
 
 def pts_update_pixit_param(project_name, param_name, new_param_value):
     '''Wrapper to catch exceptions that PTS throws if PIXIT param is already
@@ -285,12 +325,12 @@ def pts_update_pixit_param(project_name, param_name, new_param_value):
                              LPCWSTR pszNewParamValue);
 
     '''
-    print "\nUpdatePixitParam(%s, %s, %s)" % (project_name, param_name, new_param_value)
+    log("\nUpdatePixitParam(%s, %s, %s)" % (project_name, param_name, new_param_value))
 
     try:
         PTS.UpdatePixitParam(project_name, param_name, new_param_value)
     except System.Runtime.InteropServices.COMException as e:
-        print 'Exception in UpdatePixitParam "%s", is pixit param aready set?' % (e.Message,)
+        log('Exception in UpdatePixitParam "%s", is pixit param aready set?' % (e.Message,))
 
 def pts_update_pics(project_name, entry_name, bool_value):
     '''Wrapper to catch exceptions that PTS throws if PICS entry is already
@@ -306,12 +346,12 @@ def pts_update_pics(project_name, entry_name, bool_value):
     HRESULT UpdatePics(LPCWSTR pszProjectName, LPCWSTR pszEntryName,
                        BOOL bValue);
     '''
-    print "\nUpdatePics(%s, %s, %s)" % (project_name, entry_name, bool_value)
+    log("\nUpdatePics(%s, %s, %s)" % (project_name, entry_name, bool_value))
 
     try:
         PTS.UpdatePics(project_name, entry_name, bool_value)
     except System.Runtime.InteropServices.COMException as e:
-        print 'Exception in UpdatePics "%s", is pics value aready set?' % (e.Message,)
+        log('Exception in UpdatePics "%s", is pics value aready set?' % (e.Message,))
 
 def exec_iut_cmd(iut_cmd, wait = False, use_adb_shell = USE_ADB):
     if use_adb_shell:
@@ -319,12 +359,22 @@ def exec_iut_cmd(iut_cmd, wait = False, use_adb_shell = USE_ADB):
     else:
         cmd = iut_cmd
 
-    print "starting child process", repr(cmd)
-    p = subprocess.Popen(cmd)
-    if wait:
-        p.wait()
+    process = subprocess.Popen(cmd,
+                               stdout = subprocess.PIPE,
+                               stderr = subprocess.STDOUT)
 
-    return p
+    process_desc = "%s pid %s" % (repr(cmd), process.pid)
+
+    log("started child process %s" % process_desc)
+
+    if wait:
+        process.wait()
+        
+    output = process.communicate()[0]
+    if output:
+        log("child process %s output:\n%s", process_desc, output)
+
+    return process
 
 def exec_adb_root():
     '''Runs "adb root" command'''
@@ -668,6 +718,14 @@ def main():
     global BD_ADDR
     global PTS
 
+    script_name = os.path.basename(sys.argv[0]) # in case it is full path
+    script_name_no_ext = os.path.splitext(script_name)[0]
+    log_filename = "%s.log" % (script_name_no_ext,)
+    logging.basicConfig(format = '%(name)s [%(asctime)s] %(message)s',
+                        filename = log_filename,
+                        filemode = 'w',
+                        level = logging.DEBUG)
+
     pts_logger = PTSLogger()
     pts_sender = PTSSender()
 
@@ -678,12 +736,12 @@ def main():
 
     pts_version = clr.StrongBox[System.UInt32]()
     PTS.GetPTSVersion(pts_version)
-    print "PTS Version: %x" % int(pts_version)
+    log("PTS Version: %x" % int(pts_version))
 
     bt_address = clr.StrongBox[System.UInt64]()
     PTS.GetPTSBluetoothAddress(bt_address)
     bt_address_int = int(bt_address)
-    print "PTS Bluetooth Address: %x" % bt_address_int
+    log("PTS Bluetooth Address: %x" % bt_address_int)
 
     bt_address_upper = ("%x" % bt_address_int).upper()
 
@@ -691,26 +749,21 @@ def main():
     for i in range(0, len(bt_address_upper), 2):
         BD_ADDR += ":" + bt_address_upper[i:i + 2]
 
-    print "PTS BD_ADDR:", BD_ADDR
+    log("PTS BD_ADDR: %s" % BD_ADDR)
 
-    print "Workspace", WORKSPACE
+    log("Workspace %s" % WORKSPACE)
     PTS.OpenWorkspace(WORKSPACE)
 
     if USE_ADB: # IUT commands require root permissions
         exec_adb_root()
 
     test_cases = get_test_cases_rfcomm()
+    log("Running test cases...")
 
-    print "\n\n\nRunning test cases..."
     for test_case in test_cases:
+        print test_case,
         test_case.run()
-
-
-    print "\nResults:"
-    print "========"
-
-    for test_case in test_cases:
-        print test_case
+        print test_case.status
 
     print "\nBye!"
 
