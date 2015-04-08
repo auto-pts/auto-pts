@@ -52,25 +52,19 @@ RUNNING_TEST_CASE = None
 
 log = logging.debug
 
-class TestCommand:
+class TestCmd:
     '''A command ran in IUT during test case execution'''
 
-    def __init__(self, command, is_cleanup = False, start_wid = None, stop_wid = None):
+    def __init__(self, command, start_wid = None, stop_wid = None):
         '''stop_wid - some test cases require the child process (this test command) to
-                      be termintated (Ctrl-C on terminal) in reponse to dialog
+                      be termintated (Ctrl-C on terminal) in response to dialog
                       with this wid
-           is_cleanup - a command is a clean-up command, which is run after test case execution
-
         '''
         self.command = command
         self.start_wid = start_wid
         self.stop_wid = stop_wid
         self.process = None
         self.__started = False
-        self.is_cleanup = is_cleanup
-
-        if self.is_cleanup:
-            assert start_wid == None and stop_wid == None
 
     def start(self):
         if self.__started:
@@ -90,19 +84,48 @@ class TestCommand:
 
     def __str__(self):
         return "%s %s %s" % (self.command, self.start_wid, self.stop_wid)
+
+class TestFunc:
+    '''Some test commands, like setting PIXIT, PICS are functions. This is a
+    wrapper around functions'''
+    def __init__(self, func, *args, **kwds):
+        self.__func = func
+        self.__args = args
+        self.__kwds = kwds
+        self.start_wid = None
+        self.stop_wid = None
+
+    def start(self):
+        log("Starting test function: %s" % str(self))
+        self.__func(*self.__args, **self.__kwds)
+
+    def stop(self):
+        pass
+
+    def __str__(self):
+        return "%s %s %s" % (self.__func, self.__args, self.__kwds)
+
+class TestFuncCleanUp(TestFunc):
+    '''Clean-up function that is invoked after running test case in PTS.'''
+    pass
+
+def is_cleanup_func(func):
+    ''''Retruns True if func is an in an instance of TestFuncCleanUp'''
+    return isinstance(func, TestFuncCleanUp)
+
 class TestCase:
     def __init__(self, project_name, test_case_name, cmds = [], no_wid = None):
-        '''cmds - a list of TestCommand or single instance of TestCommand
+        '''cmds - a list of TestCmd and TestFunc or single instance of them
         no_wid - a wid (tag) to respond No to'''
         self.project_name = project_name
         self.name = test_case_name
         # a.k.a. final verdict
         self.status = "init"
 
-        if isinstance(cmds, TestCommand):
-            self.cmds = [cmds]
-        else:
+        if isinstance(cmds, list):
             self.cmds = cmds
+        else:
+            self.cmds = [cmds]
 
         if no_wid is not None and not isinstance(no_wid, int):
             raise Exception("no_wid should be int, and not %s" % (repr(no_wid),))
@@ -150,9 +173,10 @@ class TestCase:
         global RUNNING_TEST_CASE
         RUNNING_TEST_CASE = self
 
-        # start commands that don't have start trigger (lack start_wid)
+        # start commands that don't have start trigger (lack start_wid) and are
+        # not cleanup functions
         for cmd in self.cmds:
-            if cmd.start_wid is None and not cmd.is_cleanup:
+            if cmd.start_wid is None and not is_cleanup_func(cmd):
                 cmd.start()
 
         log("Running test case %s %s" % (self.project_name, self.name))
@@ -161,7 +185,7 @@ class TestCase:
 
         # run the clean-up commands
         for cmd in self.cmds:
-            if cmd.is_cleanup:
+            if is_cleanup_func(cmd):
                 cmd.start()
 
         # in accordance with PTSControlClient.cpp:
@@ -246,7 +270,8 @@ class PTSLogger(p.IPTSControlClientLogger):
             RUNNING_TEST_CASE.status = "Started"
 
         # mark the final verdict of the test case
-        elif log_type == p._PTS_LOGTYPE.PTS_LOGTYPE_FINAL_VERDICT:
+        elif log_type == p._PTS_LOGTYPE.PTS_LOGTYPE_FINAL_VERDICT and \
+             logtype_string == "Final verdict": # avoiding "Encrypted Verdict"
             if "PASS" in log_message:
                 verdict = "PASS" 
             elif "INCONC" in log_message:
@@ -367,12 +392,15 @@ def exec_iut_cmd(iut_cmd, wait = False, use_adb_shell = USE_ADB):
 
     log("started child process %s" % process_desc)
 
+    # TODO: communicate waits, this means output of not waited commands is not
+    # logged, using logging.root.handlers[0].stream as stdout and stderr when
+    # creating process causes exceptions "IOError: System.IO.IOException: The
+    # OS handle's position is not what FileStream expected.". So find a trivial
+    # way to log the output of non-blocking (wait is False) processes
     if wait:
-        process.wait()
-        
-    output = process.communicate()[0]
-    if output:
-        log("child process %s output:\n%s", process_desc, output)
+        output = process.communicate()[0]
+        if output:
+            log("child process %s output:\n%s", process_desc, output)
 
     return process
 
@@ -382,7 +410,7 @@ def exec_adb_root():
     # it takes an instance of time to get adbd restarted with root permissions
     exec_iut_cmd("adb wait-for-device", True, False)
 
-def test_l2cap():
+def get_test_cases_l2cap():
     '''Initial IUT config: powered connectable br/edr le advertising
     Bluetooth in UI should be turned off then:
 
@@ -401,232 +429,344 @@ def test_l2cap():
     button.
 
     '''
-    run_test_case("L2CAP", "TC_COS_CED_BV_01_C", "l2test -n -P 4113 %s" % (BD_ADDR,))
-    run_test_case("L2CAP", "TC_COS_CED_BV_03_C", "l2test -y -N 1 -P 4113 %s" % (BD_ADDR,))
-    run_test_case("L2CAP", "TC_COS_CED_BV_04_C", "l2test -n -P 4113 %s" % (BD_ADDR,))
 
-    # TODO: PTS issue #12351
-    # the command is
-    # btmgmt power off && btmgmt ssp off && btmgmt power on && l2test -r -P 4113 00:1B:DC:07:32:03 && btmgmt ssp on
-    #
-    # for some reason without power off I get
-    # "Set Secure Simple Pairing for hci0 failed with status 0x0a (Busy)"
-    # so problem with that command also ssp on won't run before l2test is killed, which
-    # will kill whole command
-    #
-    # Hence, support for multiple commands is needed
-    # run_test_case("L2CAP", "TC_COS_CED_BV_05_C", "btmgmt ssp off;l2test -r -P 4113 %s; btmgmt ssp on" % (BD_ADDR,))
-    run_test_case("L2CAP", "TC_COS_CED_BV_07_C", "l2test -n -P 4113 %s" % (BD_ADDR,))
-    run_test_case("L2CAP", "TC_COS_CED_BV_08_C", "l2test -n -P 4113 %s" % (BD_ADDR,))
-    run_test_case("L2CAP", "TC_COS_CED_BV_09_C", "l2test -n -P 4113 %s" % (BD_ADDR,))
-    run_test_case("L2CAP", "TC_COS_CED_BV_11_C", "l2test -u -P 4113 %s" % (BD_ADDR,))
 
-    run_test_case("L2CAP", "TC_COS_CED_BI_01_C")
+    test_cases = [
+        TestCase("L2CAP", "TC_COS_CED_BV_01_C",
+                 TestCmd("l2test -n -P 4113 %s" % BD_ADDR, start_wid = 13, stop_wid = 14)),
+        TestCase("L2CAP", "TC_COS_CED_BV_03_C",
+                 TestCmd("l2test -y -N 1 -P 4113 %s" % BD_ADDR, start_wid = 13, stop_wid = 14)),
+        TestCase("L2CAP", "TC_COS_CED_BV_04_C",
+                 TestCmd("l2test -n -P 4113 %s" % BD_ADDR, start_wid = 13, stop_wid = 14)),
 
-    # TODO: just like TC_COS_CED_BV_05_C
-    # run_test_case("L2CAP", "TC_COS_CFD_BV_01_C")
-    run_test_case("L2CAP", "TC_COS_CFD_BV_02_C", "l2test -n -P 4113 %s" % (BD_ADDR,))
-    run_test_case("L2CAP", "TC_COS_CFD_BV_03_C", "l2test -n -P 4113 %s" % (BD_ADDR,))
-    run_test_case("L2CAP", "TC_COS_CFD_BV_08_C", "l2test -n -P 4113 %s" % (BD_ADDR,))
-    run_test_case("L2CAP", "TC_COS_CFD_BV_09_C", "l2test -n -P 4113 %s" % (BD_ADDR,))
-    run_test_case("L2CAP", "TC_COS_CFD_BV_11_C", "l2test -n -P 4113 %s" % (BD_ADDR,))
-    run_test_case("L2CAP", "TC_COS_CFD_BV_12_C", "l2test -n -P 4113 %s" % (BD_ADDR,))
+        # TODO: PTS issue #12351
+        # the command is
+        # btmgmt power off && btmgmt ssp off && btmgmt power on && l2test -r -P 4113 00:1B:DC:07:32:03 && btmgmt ssp on
+        #
+        # for some reason without power off I get
+        # "Set Secure Simple Pairing for hci0 failed with status 0x0a (Busy)"
+        # so problem with that command also ssp on won't run before l2test is killed, which
+        # will kill whole command
+        #
+        # Hence, support for multiple commands is needed
+        # run_test_case("L2CAP", "TC_COS_CED_BV_05_C", "btmgmt ssp off;l2test -r -P 4113 %s; btmgmt ssp on" % (BD_ADDR,))
+        TestCase("L2CAP", "TC_COS_CED_BV_07_C",
+                 TestCmd("l2test -n -P 4113 %s" % BD_ADDR, start_wid = 13)),
+        TestCase("L2CAP", "TC_COS_CED_BV_08_C",
+                 TestCmd("l2test -n -P 4113 %s" % BD_ADDR, start_wid = 13)),
+        TestCase("L2CAP", "TC_COS_CED_BV_09_C",
+                 TestCmd("l2test -n -P 4113 %s" % BD_ADDR, start_wid = 13, stop_wid = 14)),
+        TestCase("L2CAP", "TC_COS_CED_BV_11_C",
+                 TestCmd("l2test -u -P 4113 %s" % BD_ADDR, start_wid = 13)),
 
-    run_test_case("L2CAP", "TC_COS_IEX_BV_01_C", "l2test -n -P 4113 %s" % (BD_ADDR,))
-    run_test_case("L2CAP", "TC_COS_IEX_BV_02_C")
+        TestCase("L2CAP", "TC_COS_CED_BI_01_C"),
 
-    run_test_case("L2CAP", "TC_COS_ECH_BV_01_C")
-    run_test_case("L2CAP", "TC_COS_ECH_BV_02_C", "l2ping -c1 %s" % (BD_ADDR,))
+        # TODO: just like TC_COS_CED_BV_05_C
+        # TestCase("L2CAP", "TC_COS_CFD_BV_01_C")
+        TestCase("L2CAP", "TC_COS_CFD_BV_02_C",
+                 TestCmd("l2test -n -P 4113 %s" % BD_ADDR, start_wid = 13, stop_wid = 14)),
+        TestCase("L2CAP", "TC_COS_CFD_BV_03_C",
+                 TestCmd("l2test -n -P 4113 %s" % BD_ADDR, start_wid = 13, stop_wid = 14)),
+        TestCase("L2CAP", "TC_COS_CFD_BV_08_C",
+                 TestCmd("l2test -n -P 4113 %s" % BD_ADDR, start_wid = 13, stop_wid = 14)),
+        TestCase("L2CAP", "TC_COS_CFD_BV_09_C",
+                 TestCmd("l2test -n -P 4113 %s" % BD_ADDR, start_wid = 13, stop_wid = 14)),
+        TestCase("L2CAP", "TC_COS_CFD_BV_11_C",
+                 TestCmd("l2test -n -P 4113 %s" % BD_ADDR, start_wid = 13, stop_wid = 14)),
+        TestCase("L2CAP", "TC_COS_CFD_BV_12_C",
+                 TestCmd("l2test -n -P 4113 %s" % BD_ADDR, start_wid = 13, stop_wid = 14)),
+        TestCase("L2CAP", "TC_COS_IEX_BV_01_C",
+                 TestCmd("l2test -n -P 4113 %s" % BD_ADDR, start_wid = 13, stop_wid = 22)),
+        TestCase("L2CAP", "TC_COS_IEX_BV_02_C"),
 
-    btmgmt.advertising_off()
-    run_test_case("L2CAP", "TC_COS_CFC_BV_01_C", "l2test -y -N 1 -b 40 -V le_public -P 37 %s" % (BD_ADDR,))
-    run_test_case("L2CAP", "TC_COS_CFC_BV_02_C", "l2test -y -N 1 -b 1 -V le_public -P 37 %s" % (BD_ADDR,))
-    run_test_case("L2CAP", "TC_COS_CFC_BV_03_C", "l2test -u -V le_public -P 37 %s" % (BD_ADDR,))
-    run_test_case("L2CAP", "TC_COS_CFC_BV_04_C", "l2test -u -V le_public -P 37 %s" % (BD_ADDR,))
-    # TODO: this one requiers two l2test processes
-    # run_test_case("L2CAP", "TC_COS_CFC_BV_05_C", "l2test -u -V le_public -P 37 %s" % (BD_ADDR,))
-    btmgmt.advertising_on()
+        TestCase("L2CAP", "TC_COS_ECH_BV_01_C"),
+        TestCase("L2CAP", "TC_COS_ECH_BV_02_C",
+                 TestCmd("l2ping -c1 %s" % BD_ADDR, start_wid = 26)),
 
-    run_test_case("L2CAP", "TC_CLS_UCD_BV_01_C")
-    run_test_case("L2CAP", "TC_CLS_UCD_BV_02_C", "l2test -s -G -N 1 -P 4113 %s" % (BD_ADDR,))
-    run_test_case("L2CAP", "TC_CLS_UCD_BV_03_C", "l2test -s -E -G -N 1 -P 4113 %s" % (BD_ADDR,))
+        TestCase("L2CAP", "TC_COS_CFC_BV_01_C",
+                 [TestFunc(btmgmt.advertising_off),
+                  TestCmd("l2test -y -N 1 -b 40 -V le_public -P 37 %s" % BD_ADDR, stop_wid = 22)]),
+        TestCase("L2CAP", "TC_COS_CFC_BV_02_C",
+                 TestCmd("l2test -y -N 1 -b 1 -V le_public -P 37 %s" % BD_ADDR, stop_wid = 22)),
+        TestCase("L2CAP", "TC_COS_CFC_BV_03_C",
+                 TestCmd("l2test -u -V le_public -P 37 %s" % BD_ADDR, stop_wid = 22)),
+        TestCase("L2CAP", "TC_COS_CFC_BV_04_C",
+                 [TestCmd("l2test -u -V le_public -P 37 %s" % BD_ADDR, stop_wid = 22),
+                  TestFunc(btmgmt.advertising_on)]),
+    
+        # TODO: this one requiers two l2test processes
+        # TestCase("L2CAP", "TC_COS_CFC_BV_05_C", "l2test -u -V le_public -P 37 %s" % BD_ADDR, stop_wid = 22),
 
-    run_test_case("L2CAP", "TC_EXF_BV_01_C")
-    run_test_case("L2CAP", "TC_EXF_BV_02_C")
-    run_test_case("L2CAP", "TC_EXF_BV_03_C")
-    run_test_case("L2CAP", "TC_EXF_BV_05_C")
+        TestCase("L2CAP", "TC_CLS_UCD_BV_01_C"),
+        TestCase("L2CAP", "TC_CLS_UCD_BV_02_C",
+                 TestCmd("l2test -s -G -N 1 -P 4113 %s" % BD_ADDR, start_wid = 13)),
+        TestCase("L2CAP", "TC_CLS_UCD_BV_03_C",
+                 TestCmd("l2test -s -E -G -N 1 -P 4113 %s" % BD_ADDR, start_wid = 13)),
 
-    run_test_case("L2CAP", "TC_CMC_BV_01_C", "l2test -r -X ertm -P 4113")
-    run_test_case("L2CAP", "TC_CMC_BV_02_C", "l2test -r -X ertm -P 4113")
-    run_test_case("L2CAP", "TC_CMC_BV_03_C", "l2test -r -X ertm -P 4113")
-    run_test_case("L2CAP", "TC_CMC_BV_04_C", "l2test -r -X streaming -P 4113")
-    run_test_case("L2CAP", "TC_CMC_BV_05_C", "l2test -r -X streaming -P 4113")
-    run_test_case("L2CAP", "TC_CMC_BV_06_C", "l2test -r -X streaming -P 4113")
-    run_test_case("L2CAP", "TC_CMC_BV_07_C", "l2test -r -X ertm -P 4113")
-    run_test_case("L2CAP", "TC_CMC_BV_08_C", "l2test -r -X streaming -P 4113")
-    run_test_case("L2CAP", "TC_CMC_BV_09_C", "l2test -r -X basic -P 4113")
-    run_test_case("L2CAP", "TC_CMC_BV_10_C", "l2test -n -P 4113 %s" % (BD_ADDR,))
-    run_test_case("L2CAP", "TC_CMC_BV_11_C", "l2test -n -P 4113 %s" % (BD_ADDR,))
-    run_test_case("L2CAP", "TC_CMC_BV_12_C",  "l2test -z -X ertm %s" % (BD_ADDR,))
-    run_test_case("L2CAP", "TC_CMC_BV_13_C",  "l2test -z -X streaming %s" % (BD_ADDR,))
-    run_test_case("L2CAP", "TC_CMC_BV_14_C",  "l2test -r -X streaming -P 4113")
-    run_test_case("L2CAP", "TC_CMC_BV_15_C",  "l2test -r -X streaming -P 4113")
+        TestCase("L2CAP", "TC_EXF_BV_01_C"),
+        TestCase("L2CAP", "TC_EXF_BV_02_C"),
+        TestCase("L2CAP", "TC_EXF_BV_03_C"),
+        TestCase("L2CAP", "TC_EXF_BV_05_C"),
 
-    run_test_case("L2CAP", "TC_CMC_BI_01_C",  "l2test -r -X ertm -P 4113")
-    run_test_case("L2CAP", "TC_CMC_BI_02_C",  "l2test -r -X ertm -P 4113")
-    run_test_case("L2CAP", "TC_CMC_BI_03_C",  "l2test -r -X streaming -P 4113")
-    run_test_case("L2CAP", "TC_CMC_BI_04_C",  "l2test -r -X streaming -P 4113")
-    run_test_case("L2CAP", "TC_CMC_BI_05_C",  "l2test -r -X basic -P 4113")
-    run_test_case("L2CAP", "TC_CMC_BI_06_C",  "l2test -r -X basic -P 4113")
+        TestCase("L2CAP", "TC_CMC_BV_01_C",
+                  TestCmd("l2test -r -X ertm -P 4113")),
+        TestCase("L2CAP", "TC_CMC_BV_02_C",
+                 TestCmd("l2test -r -X ertm -P 4113")),
+        TestCase("L2CAP", "TC_CMC_BV_03_C",
+                 TestCmd("l2test -r -X ertm -P 4113")),
+        TestCase("L2CAP", "TC_CMC_BV_04_C",
+                 TestCmd("l2test -r -X streaming -P 4113")),
+        TestCase("L2CAP", "TC_CMC_BV_05_C",
+                 TestCmd("l2test -r -X streaming -P 4113")),
+        TestCase("L2CAP", "TC_CMC_BV_06_C",
+                 TestCmd("l2test -r -X streaming -P 4113")),
+        TestCase("L2CAP", "TC_CMC_BV_07_C",
+                 TestCmd("l2test -r -X ertm -P 4113")),
+        TestCase("L2CAP", "TC_CMC_BV_08_C",
+                 TestCmd("l2test -r -X streaming -P 4113")),
+        TestCase("L2CAP", "TC_CMC_BV_09_C",
+                 TestCmd("l2test -r -X basic -P 4113")),
+        TestCase("L2CAP", "TC_CMC_BV_10_C",
+                 TestCmd("l2test -n -P 4113 %s" % BD_ADDR, start_wid = 13, stop_wid = 14)),
 
-    run_test_case("L2CAP", "TC_FOC_BV_01_C",  "l2test -r -X ertm -P 4113 -F 0")
-    run_test_case("L2CAP", "TC_FOC_BV_02_C",  "l2test -r -X ertm -P 4113 -F 0")
-    run_test_case("L2CAP", "TC_FOC_BV_03_C",  "l2test -r -X ertm -P 4113 -F 0")
+        TestCase("L2CAP", "TC_CMC_BV_11_C",
+                 TestCmd("l2test -n -P 4113 %s" % BD_ADDR, start_wid = 13, stop_wid = 14)),
+        TestCase("L2CAP", "TC_CMC_BV_12_C",
+                 TestCmd("l2test -z -X ertm %s" % BD_ADDR, start_wid = 13)),
+        TestCase("L2CAP", "TC_CMC_BV_13_C",
+                 TestCmd("l2test -z -X streaming %s" % BD_ADDR, start_wid = 13)),
+        TestCase("L2CAP", "TC_CMC_BV_14_C",
+                 TestCmd("l2test -r -X streaming -P 4113")),
+        TestCase("L2CAP", "TC_CMC_BV_15_C",
+                 TestCmd("l2test -r -X streaming -P 4113")),
 
-    run_test_case("L2CAP", "TC_OFS_BV_01_C",  "l2test -x -X ertm -P 4113 -F 0 -N 1")
-    run_test_case("L2CAP", "TC_OFS_BV_02_C",  "l2test -r -X ertm -P 4113 -F 0")
-    run_test_case("L2CAP", "TC_OFS_BV_03_C",  "l2test -x -X streaming -P 4113 -F 0 -N 1")
-    run_test_case("L2CAP", "TC_OFS_BV_04_C",  "l2test -d -X streaming -P 4113 -F 0")
-    run_test_case("L2CAP", "TC_OFS_BV_05_C",  "l2test -x -X ertm -P 4113 -N 1")
-    run_test_case("L2CAP", "TC_OFS_BV_06_C",  "l2test -r -X ertm -P 4113")
-    run_test_case("L2CAP", "TC_OFS_BV_07_C",  "l2test -x -X streaming -P 4113 -F 0 -N 1")
-    run_test_case("L2CAP", "TC_OFS_BV_08_C",  "l2test -d -X streaming -P 4113")
+        TestCase("L2CAP", "TC_CMC_BI_01_C",
+                 TestCmd("l2test -r -X ertm -P 4113", stop_wid = 22)),
+        TestCase("L2CAP", "TC_CMC_BI_02_C",
+                 TestCmd("l2test -r -X ertm -P 4113", stop_wid = 14)),
+        TestCase("L2CAP", "TC_CMC_BI_03_C",
+                 TestCmd("l2test -r -X streaming -P 4113", stop_wid = 14)),
+        TestCase("L2CAP", "TC_CMC_BI_04_C",
+                 TestCmd("l2test -r -X streaming -P 4113", stop_wid = 14)),
+        TestCase("L2CAP", "TC_CMC_BI_05_C",
+                 TestCmd("l2test -r -X basic -P 4113", stop_wid = 22)),
+        TestCase("L2CAP", "TC_CMC_BI_06_C",
+                 TestCmd("l2test -r -X basic -P 4113", stop_wid = 22)),
 
-    run_test_case("L2CAP", "TC_ERM_BV_01_C",  "l2test -x -X ertm -P 4113 -N 3 -Y 3")
-    run_test_case("L2CAP", "TC_ERM_BV_02_C",  "l2test -r -X ertm -P 4113")
-    run_test_case("L2CAP", "TC_ERM_BV_03_C",  "l2test -r -X ertm -P 4113")
-    run_test_case("L2CAP", "TC_ERM_BV_05_C",  "l2test -x -X ertm -P 4113 -N 2 -Y 2")
-    run_test_case("L2CAP", "TC_ERM_BV_06_C",  "l2test -x -X ertm -P 4113 -N 2 -Y 2")
-    run_test_case("L2CAP", "TC_ERM_BV_07_C",  "l2test -r -H 1000 -K 10000 -X ertm -P 4113")
-    run_test_case("L2CAP", "TC_ERM_BV_08_C",  "l2test -x -X ertm -P 4113 -N 1")
-    run_test_case("L2CAP", "TC_ERM_BV_09_C",  "l2test -X ertm -P 4113")
+        TestCase("L2CAP", "TC_FOC_BV_01_C",
+                 TestCmd("l2test -r -X ertm -P 4113 -F 0")),
+        TestCase("L2CAP", "TC_FOC_BV_02_C",
+                 TestCmd("l2test -r -X ertm -P 4113 -F 0")),
+        TestCase("L2CAP", "TC_FOC_BV_03_C",
+                 TestCmd("l2test -r -X ertm -P 4113 -F 0")),
 
-    # TODO: occasionally on flo fails with PTS has received an unexpected
-    # L2CAP_DISCONNECT_REQ from the IUT. Sometimes passes.
-    # sometimes: "MTC: The Retransmission Timeout Timer (adjusted) of PTS
-    # has timed out. The IUT should have sent a S-frame by now."
-    # Sometimes passes.
-    # also fails in gui if you restart l2cap and run test case again.
-    # only solvable by clicking "Delete Link Key" toolbar button of PTS.
-    # thought TSPX_delete_link_key is set to TRUE
-    run_test_case("L2CAP", "TC_ERM_BV_10_C",  "l2test -x -X ertm -P 4113 -N 1")
+        TestCase("L2CAP", "TC_OFS_BV_01_C",
+                 TestCmd("l2test -x -X ertm -P 4113 -F 0 -N 1")),
+        TestCase("L2CAP", "TC_OFS_BV_02_C",
+                 TestCmd("l2test -r -X ertm -P 4113 -F 0")),
+        TestCase("L2CAP", "TC_OFS_BV_03_C",
+                 TestCmd("l2test -x -X streaming -P 4113 -F 0 -N 1")),
+        TestCase("L2CAP", "TC_OFS_BV_04_C",
+                 TestCmd("l2test -d -X streaming -P 4113 -F 0")),
+        TestCase("L2CAP", "TC_OFS_BV_05_C",
+                 TestCmd("l2test -x -X ertm -P 4113 -N 1")),
+        TestCase("L2CAP", "TC_OFS_BV_06_C",
+                 TestCmd("l2test -r -X ertm -P 4113")),
+        TestCase("L2CAP", "TC_OFS_BV_07_C",
+                 TestCmd("l2test -x -X streaming -P 4113 -F 0 -N 1")),
+        TestCase("L2CAP", "TC_OFS_BV_08_C",
+                 TestCmd("l2test -d -X streaming -P 4113")),
 
-    run_test_case("L2CAP", "TC_ERM_BV_11_C",  "l2test -x -X ertm -P 4113 -N 1 -Q 1")
-    run_test_case("L2CAP", "TC_ERM_BV_12_C",  "l2test -x -X ertm -P 4113 -R -N 1 -Q 1")
-    run_test_case("L2CAP", "TC_ERM_BV_13_C",  "l2test -x -X ertm -P 4113 -N 2")
-    run_test_case("L2CAP", "TC_ERM_BV_14_C",  "l2test -x -X ertm -P 4113 -N 4")
-    run_test_case("L2CAP", "TC_ERM_BV_15_C",  "l2test -x -X ertm -P 4113 -N 4")
-    run_test_case("L2CAP", "TC_ERM_BV_17_C",  "l2test -X ertm -P 4113")
-    run_test_case("L2CAP", "TC_ERM_BV_18_C",  "l2test -x -X ertm -P 4113 -N 1")
-    run_test_case("L2CAP", "TC_ERM_BV_19_C",  "l2test -x -X ertm -P 4113 -N 1")
-    run_test_case("L2CAP", "TC_ERM_BV_20_C",  "l2test -x -X ertm -P 4113 -N 1")
-    run_test_case("L2CAP", "TC_ERM_BV_21_C",  "l2test -x -X ertm -P 4113 -D 2000 -N 2")
-    run_test_case("L2CAP", "TC_ERM_BV_22_C",  "l2test -r -H 1000 -K 10000 -X ertm -P 4113")
-    run_test_case("L2CAP", "TC_ERM_BV_23_C",  "l2test -x -X ertm -P 4113 -N 2")
+        TestCase("L2CAP", "TC_ERM_BV_01_C",
+                 TestCmd("l2test -x -X ertm -P 4113 -N 3 -Y 3")),
+        TestCase("L2CAP", "TC_ERM_BV_02_C",
+                 TestCmd("l2test -r -X ertm -P 4113")),
+        TestCase("L2CAP", "TC_ERM_BV_03_C",
+                 TestCmd("l2test -r -X ertm -P 4113")),
+        TestCase("L2CAP", "TC_ERM_BV_05_C",
+                 TestCmd("l2test -x -X ertm -P 4113 -N 2 -Y 2")),
+        TestCase("L2CAP", "TC_ERM_BV_06_C",
+                 TestCmd("l2test -x -X ertm -P 4113 -N 2 -Y 2")),
+        TestCase("L2CAP", "TC_ERM_BV_07_C",
+                 TestCmd("l2test -r -H 1000 -K 10000 -X ertm -P 4113", start_wid = 15),
+                 no_wid = 19),
+        TestCase("L2CAP", "TC_ERM_BV_08_C",
+                 TestCmd("l2test -x -X ertm -P 4113 -N 1")),
+        TestCase("L2CAP", "TC_ERM_BV_09_C",
+                 TestCmd("l2test -X ertm -P 4113")),
 
-    run_test_case("L2CAP", "TC_ERM_BI_02_C",  "l2test -X ertm -P 4113")
-    run_test_case("L2CAP", "TC_ERM_BI_03_C",  "l2test -x -X ertm -P 4113 -N 2")
-    run_test_case("L2CAP", "TC_ERM_BI_04_C",  "l2test -x -X ertm -P 4113 -N 2")
-    run_test_case("L2CAP", "TC_ERM_BI_05_C",  "l2test -x -X ertm -P 4113 -N 2")
+        # TODO: occasionally on flo fails with PTS has received an unexpected
+        # L2CAP_DISCONNECT_REQ from the IUT. Sometimes passes.
+        # sometimes: "MTC: The Retransmission Timeout Timer (adjusted) of PTS
+        # has timed out. The IUT should have sent a S-frame by now."
+        # Sometimes passes.
+        # also fails in gui if you restart l2cap and run test case again.
+        # only solvable by clicking "Delete Link Key" toolbar button of PTS.
+        # thought TSPX_delete_link_key is set to TRUE
+        TestCase("L2CAP", "TC_ERM_BV_10_C",
+                 TestCmd("l2test -x -X ertm -P 4113 -N 1")),
 
-    run_test_case("L2CAP", "TC_STM_BV_01_C",  "l2test -x -X streaming -P 4113 -N 3 -Y 3")
-    run_test_case("L2CAP", "TC_STM_BV_02_C",  "l2test -d -X streaming -P 4113")
-    run_test_case("L2CAP", "TC_STM_BV_03_C",  "l2test -x -X streaming -P 4113 -N 2")
+        TestCase("L2CAP", "TC_ERM_BV_11_C",
+                 TestCmd("l2test -x -X ertm -P 4113 -N 1 -Q 1")),
+        TestCase("L2CAP", "TC_ERM_BV_12_C",
+                 TestCmd("l2test -x -X ertm -P 4113 -R -N 1 -Q 1")),
+        TestCase("L2CAP", "TC_ERM_BV_13_C",
+                 TestCmd("l2test -x -X ertm -P 4113 -N 2")),
+        TestCase("L2CAP", "TC_ERM_BV_14_C",
+                 TestCmd("l2test -x -X ertm -P 4113 -N 4")),
+        TestCase("L2CAP", "TC_ERM_BV_15_C",
+                 TestCmd("l2test -x -X ertm -P 4113 -N 4")),
+        TestCase("L2CAP", "TC_ERM_BV_17_C",
+                 TestCmd("l2test -X ertm -P 4113")),
+        TestCase("L2CAP", "TC_ERM_BV_18_C",
+                 TestCmd("l2test -x -X ertm -P 4113 -N 1")),
+        TestCase("L2CAP", "TC_ERM_BV_19_C",
+                 TestCmd("l2test -x -X ertm -P 4113 -N 1")),
+        TestCase("L2CAP", "TC_ERM_BV_20_C",
+                 TestCmd("l2test -x -X ertm -P 4113 -N 1")),
+        TestCase("L2CAP", "TC_ERM_BV_21_C",
+                 TestCmd("l2test -x -X ertm -P 4113 -D 2000 -N 2")),
+        TestCase("L2CAP", "TC_ERM_BV_22_C",
+                 TestCmd("l2test -r -H 1000 -K 10000 -X ertm -P 4113", start_wid = 15),
+                 no_wid = 19),
+        TestCase("L2CAP", "TC_ERM_BV_23_C",
+                 TestCmd("l2test -x -X ertm -P 4113 -N 2")),
 
-    # https://www.bluetooth.org/pts/issues/view_issue.cfm?id=13206
-    # TODO DANGEROUS CASE: crashes pts sometimes, report to  as pts bug?
-    # run_test_case("L2CAP", "TC_FIX_BV_01_C",  "l2test -z -P 4113 %s" % (BD_ADDR,))
+        TestCase("L2CAP", "TC_ERM_BI_02_C",
+                 TestCmd("l2test -X ertm -P 4113")),
+        TestCase("L2CAP", "TC_ERM_BI_03_C",
+                 TestCmd("l2test -x -X ertm -P 4113 -N 2")),
+        TestCase("L2CAP", "TC_ERM_BI_04_C",
+                 TestCmd("l2test -x -X ertm -P 4113 -N 2")),
+        TestCase("L2CAP", "TC_ERM_BI_05_C",
+                 TestCmd("l2test -x -X ertm -P 4113 -N 2")),
 
-    run_test_case("L2CAP", "TC_LE_CPU_BV_01_C",  "l2test -n -V le_public -J 4 %s" % (BD_ADDR,))
-    btmgmt.advertising_off()
-    run_test_case("L2CAP", "TC_LE_CPU_BV_02_C",  "l2test -n -V le_public -J 4 %s" % (BD_ADDR,))
+        TestCase("L2CAP", "TC_STM_BV_01_C",
+                 TestCmd("l2test -x -X streaming -P 4113 -N 3 -Y 3")),
+        TestCase("L2CAP", "TC_STM_BV_02_C",
+                 TestCmd("l2test -d -X streaming -P 4113")),
+        TestCase("L2CAP", "TC_STM_BV_03_C",
+                 TestCmd("l2test -x -X streaming -P 4113 -N 2")),
 
-    run_test_case("L2CAP", "TC_LE_CPU_BI_01_C",  "l2test -n -V le_public -J 4 %s" % (BD_ADDR,))
-    btmgmt.advertising_on()
-    run_test_case("L2CAP", "TC_LE_CPU_BI_02_C",  "l2test -r -V le_public -J 4")
-    btmgmt.advertising_off()
-    run_test_case("L2CAP", "TC_LE_REJ_BI_01_C",  "l2test -n -V le_public -J 4 %s" % (BD_ADDR,))
-    run_test_case("L2CAP", "TC_LE_REJ_BI_02_C",  "l2test -n -V le_public -J 4 %s" % (BD_ADDR,))
+        # https://www.bluetooth.org/pts/issues/view_issue.cfm?id=13206
+        # TODO DANGEROUS CASE: crashes pts sometimes, report to  as pts bug?
+        # TestCase("L2CAP", "TC_FIX_BV_01_C",
+        #          TestCmd("l2test -z -P 4113 %s" % BD_ADDR))
 
-    run_test_case("L2CAP", "TC_LE_CFC_BV_01_C",  "l2test -n -V le_public -P 37 %s" % (BD_ADDR,))
+        TestCase("L2CAP", "TC_LE_CPU_BV_01_C",
+                 TestCmd("l2test -n -V le_public -J 4 %s" % BD_ADDR)),
+        TestCase("L2CAP", "TC_LE_CPU_BV_02_C",
+                 [TestFunc(btmgmt.advertising_off),
+                  TestCmd("l2test -n -V le_public -J 4 %s" % BD_ADDR, stop_wid = 22)]),
 
-    run_test_case("L2CAP", "TC_LE_CFC_BV_02_C",  "l2test -n -V le_public -P 37 %s" % (BD_ADDR,))
+        TestCase("L2CAP", "TC_LE_CPU_BI_01_C",
+                 TestCmd("l2test -n -V le_public -J 4 %s" % BD_ADDR, stop_wid = 22)),
+        TestCase("L2CAP", "TC_LE_CPU_BI_02_C",
+                 [TestFunc(btmgmt.advertising_on),
+                  TestCmd("l2test -r -V le_public -J 4")]),
 
-    # Note: PIXIT TSPX_iut_role_initiator=FALSE
-    pts_update_pixit_param("L2CAP", "TSPX_iut_role_initiator", "FALSE")
-    run_test_case("L2CAP", "TC_LE_CFC_BV_03_C",  "l2test -x -N 1 -V le_public %s" % (BD_ADDR,))
-    pts_update_pixit_param("L2CAP", "TSPX_iut_role_initiator", "TRUE")
+        TestCase("L2CAP", "TC_LE_REJ_BI_01_C",
+                 [TestFunc(btmgmt.advertising_off),
+                  TestCmd("l2test -n -V le_public -J 4 %s" % BD_ADDR, stop_wid = 22)]),
+        TestCase("L2CAP", "TC_LE_REJ_BI_02_C",
+                 TestCmd("l2test -n -V le_public -J 4 %s" % BD_ADDR, stop_wid = 22)),
 
-    run_test_case("L2CAP", "TC_LE_CFC_BV_04_C",  "l2test -n -V le_public -P 241 %s" % (BD_ADDR,))
-    btmgmt.advertising_on()
+        TestCase("L2CAP", "TC_LE_CFC_BV_01_C",
+                 TestCmd("l2test -n -V le_public -P 37 %s" % BD_ADDR)),
 
-    # Note: PIXIT TSPX_iut_role_initiator=FALSE
-    pts_update_pixit_param("L2CAP", "TSPX_iut_role_initiator", "FALSE")
-    run_test_case("L2CAP", "TC_LE_CFC_BV_05_C",  "l2test -r -V le_public -J 4")
-    # PTS issue #12853
-    # Note: PIXIT TSPX_iut_role_initiator=FALSE
-    run_test_case("L2CAP", "TC_LE_CFC_BV_06_C",  "l2test -x -b 1 -V le_public %s" % (BD_ADDR,))
-    pts_update_pixit_param("L2CAP", "TSPX_iut_role_initiator", "TRUE")
+        TestCase("L2CAP", "TC_LE_CFC_BV_02_C",
+                 TestCmd("l2test -n -V le_public -P 37 %s" % BD_ADDR, stop_wid = 22)),
 
-    btmgmt.advertising_off()
-    # does not pass in automation mode:
-    # https://www.bluetooth.org/pts/issues/view_issue.cfm?id=13225
-    run_test_case("L2CAP", "TC_LE_CFC_BV_07_C",  "l2test -u -V le_public %s" % (BD_ADDR,))
-    run_test_case("L2CAP", "TC_LE_CFC_BI_01_C",  "l2test -u -V le_public %s" % (BD_ADDR,))
-    run_test_case("L2CAP", "TC_LE_CFC_BV_08_C",  "l2test -n -V le_public -P 37 %s" % (BD_ADDR,))
-    run_test_case("L2CAP", "TC_LE_CFC_BV_09_C",  "l2test -n -V le_public -P 37 %s" % (BD_ADDR,))
-    run_test_case("L2CAP", "TC_LE_CFC_BV_16_C",  "l2test -n -V le_public -P 37 %s" % (BD_ADDR,))
+        # Note: PIXIT TSPX_iut_role_initiator=FALSE
+        TestCase("L2CAP", "TC_LE_CFC_BV_03_C",
+                 [TestFunc(btmgmt.advertising_on),
+                  TestFunc(pts_update_pixit_param, "L2CAP", "TSPX_iut_role_initiator", "FALSE"),
+                  TestCmd("l2test -x -N 1 -V le_public %s" % BD_ADDR, stop_wid = 22),
+                  TestFuncCleanUp(btmgmt.advertising_off),
+                  TestFuncCleanUp(pts_update_pixit_param, "L2CAP", "TSPX_iut_role_initiator", "TRUE")]),
 
-    btmgmt.advertising_on()
+        TestCase("L2CAP", "TC_LE_CFC_BV_04_C",
+                 TestCmd("l2test -n -V le_public -P 241 %s" % BD_ADDR)),
 
-    # PTS issue #12730
-    # l2test -s -N 1 <bdaddr>
-    # l2test -s -N 1 -V le_public <bdaddr>
-    # run_test_case("L2CAP", "TC_LE_CID_BV_02_I",  "")
+        # Note: PIXIT TSPX_iut_role_initiator=FALSE
+        TestCase("L2CAP", "TC_LE_CFC_BV_05_C",
+                 [TestFunc(btmgmt.advertising_on),
+                  TestFunc(pts_update_pixit_param, "L2CAP", "TSPX_iut_role_initiator", "FALSE"),
+                  TestCmd("l2test -r -V le_public -J 4")]),
 
-    # PTS issue #12730
-    # Note: PIXIT TSPX_iut_role_initiator=FALSE
-    # l2test -w -N 1
-    # l2test -w -N 1 -V le_public
-    # run_test_case("L2CAP", "TC_LE_CID_BV_01_C",  "")
+        # PTS issue #12853
+        # Note: PIXIT TSPX_iut_role_initiator=FALSE
+        TestCase("L2CAP", "TC_LE_CFC_BV_06_C",
+                 [TestCmd("l2test -x -b 1 -V le_public %s" % BD_ADDR),
+                  TestFuncCleanUp(pts_update_pixit_param, "L2CAP", "TSPX_iut_role_initiator", "TRUE")]),
+
+        # does not pass in automation mode and makes PTS unstable:
+        # https://www.bluetooth.org/pts/issues/view_issue.cfm?id=13225
+        # TestCase("L2CAP", "TC_LE_CFC_BV_07_C",
+        #          [TestFunc(btmgmt.advertising_off),
+        #           TestCmd("l2test -u -V le_public %s" % BD_ADDR, stop_wid = 22)]),
+        TestCase("L2CAP", "TC_LE_CFC_BI_01_C",
+                 [TestFunc(btmgmt.advertising_off),
+                  TestCmd("l2test -u -V le_public %s" % BD_ADDR)]),
+        TestCase("L2CAP", "TC_LE_CFC_BV_08_C",
+                 TestCmd("l2test -n -V le_public -P 37 %s" % BD_ADDR, stop_wid = 14)),
+        TestCase("L2CAP", "TC_LE_CFC_BV_09_C",
+                 TestCmd("l2test -n -V le_public -P 37 %s" % BD_ADDR)),
+        TestCase("L2CAP", "TC_LE_CFC_BV_16_C",
+                 [TestCmd("l2test -n -V le_public -P 37 %s" % BD_ADDR),
+                  TestFuncCleanUp(btmgmt.advertising_on)])
+
+        # PTS issue #12730
+        # l2test -s -N 1 <bdaddr>
+        # l2test -s -N 1 -V le_public <bdaddr>
+        # TestCase("L2CAP", "TC_LE_CID_BV_02_I",  "")
+
+        # PTS issue #12730
+        # Note: PIXIT TSPX_iut_role_initiator=FALSE
+        # l2test -w -N 1
+        # l2test -w -N 1 -V le_public
+        # TestCase("L2CAP", "TC_LE_CID_BV_01_C",  "")
+    ]
+
+    return test_cases
 
 def get_test_cases_rfcomm():
     test_cases = [
         TestCase("RFCOMM", "TC_RFC_BV_01_C",
-                 TestCommand("rctest -n -P 1 %s" % BD_ADDR, 20)),
+                 TestCmd("rctest -n -P 1 %s" % BD_ADDR, 20)),
 
         TestCase("RFCOMM", "TC_RFC_BV_02_C",
-                 TestCommand("rctest -r -P 1 %s" % BD_ADDR)),
+                 TestCmd("rctest -r -P 1 %s" % BD_ADDR)),
 
         TestCase("RFCOMM", "TC_RFC_BV_03_C",
-                 TestCommand("rctest -r -P 1 %s" % BD_ADDR)),
+                 TestCmd("rctest -r -P 1 %s" % BD_ADDR)),
 
         TestCase("RFCOMM", "TC_RFC_BV_04_C",
-                 TestCommand("rctest -r -P 1 %s" % BD_ADDR, stop_wid = 15)),
+                 TestCmd("rctest -r -P 1 %s" % BD_ADDR, stop_wid = 15)),
 
         TestCase("RFCOMM", "TC_RFC_BV_05_C",
-                 TestCommand("rctest -n -P 4 %s" % BD_ADDR, 20)),
+                 TestCmd("rctest -n -P 4 %s" % BD_ADDR, 20)),
 
         TestCase("RFCOMM", "TC_RFC_BV_06_C",
-                 TestCommand("rctest -r -P 1 %s" % BD_ADDR)),
+                 TestCmd("rctest -r -P 1 %s" % BD_ADDR)),
 
         TestCase("RFCOMM", "TC_RFC_BV_07_C",
-                 TestCommand("rctest -r -P 1 %s" % BD_ADDR, stop_wid = 14)),
+                 TestCmd("rctest -r -P 1 %s" % BD_ADDR, stop_wid = 14)),
 
         TestCase("RFCOMM", "TC_RFC_BV_08_C",
-                 TestCommand("rctest -r -P 1 %s" % BD_ADDR)),
+                 TestCmd("rctest -r -P 1 %s" % BD_ADDR)),
 
         TestCase("RFCOMM", "TC_RFC_BV_11_C",
-                 TestCommand("rctest -r -P 1 %s" % BD_ADDR)),
+                 TestCmd("rctest -r -P 1 %s" % BD_ADDR)),
 
         TestCase("RFCOMM", "TC_RFC_BV_13_C",
-                 TestCommand("rctest -r -P 1 %s" % BD_ADDR)),
+                 TestCmd("rctest -r -P 1 %s" % BD_ADDR)),
 
         TestCase("RFCOMM", "TC_RFC_BV_15_C",
-                 TestCommand("rctest -r -P 1 %s" % BD_ADDR)),
+                 TestCmd("rctest -r -P 1 %s" % BD_ADDR)),
 
         TestCase("RFCOMM", "TC_RFC_BV_17_C",
-                 TestCommand("rctest -d -P 1 %s" % BD_ADDR)),
+                 TestCmd("rctest -d -P 1 %s" % BD_ADDR)),
 
         TestCase("RFCOMM", "TC_RFC_BV_19_C"),
 
@@ -635,7 +775,7 @@ def get_test_cases_rfcomm():
         TestCase("RFCOMM", "TC_RFC_BV_22_C"),
 
         TestCase("RFCOMM", "TC_RFC_BV_25_C",
-                 TestCommand("rctest -r -P 1 %s" % BD_ADDR))
+                 TestCmd("rctest -r -P 1 %s" % BD_ADDR))
     ]
 
     return test_cases
@@ -757,7 +897,9 @@ def main():
     if USE_ADB: # IUT commands require root permissions
         exec_adb_root()
 
-    test_cases = get_test_cases_rfcomm()
+    # test_cases = get_test_cases_rfcomm()
+    test_cases = get_test_cases_l2cap()
+
     log("Running test cases...")
 
     for test_case in test_cases:
