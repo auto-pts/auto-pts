@@ -780,78 +780,79 @@ def get_test_cases_rfcomm():
 
     return test_cases
 
-def test_gap():
-    btmgmt.discoverable_off()
-    run_test_case("GAP", "TC_MOD_NDIS_BV_01_C")
+def get_test_cases_gap():
+    test_cases = [
+        TestCase("GAP", "TC_MOD_NDIS_BV_01_C",
+                 TestFunc(btmgmt.discoverable_off)),
 
-    btmgmt.discoverable_limited(30)
-    run_test_case("GAP", "TC_MOD_LDIS_BV_01_C")
-    btmgmt.discoverable_limited(30)
-    run_test_case("GAP", "TC_MOD_LDIS_BV_02_C")
-    btmgmt.discoverable_limited(30)
-    run_test_case("GAP", "TC_MOD_LDIS_BV_03_C")
+        TestCase("GAP", "TC_MOD_LDIS_BV_01_C",
+                 TestFunc(btmgmt.discoverable_limited, 30)),
+        TestCase("GAP", "TC_MOD_LDIS_BV_02_C",
+                 TestFunc(btmgmt.discoverable_limited, 30)),
+        TestCase("GAP", "TC_MOD_LDIS_BV_03_C",
+                 TestFunc(btmgmt.discoverable_limited, 30)),
 
-    btmgmt.discoverable_on()
-    run_test_case("GAP", "TC_MOD_GDIS_BV_01_C")
-    run_test_case("GAP", "TC_MOD_GDIS_BV_02_C")
+        TestCase("GAP", "TC_MOD_GDIS_BV_01_C",
+                 TestFunc(btmgmt.discoverable_on)),
+        TestCase("GAP", "TC_MOD_GDIS_BV_02_C"),
 
-    btmgmt.connectable_off()
-    run_test_case("GAP", "TC_MOD_NCON_BV_01_C")
+        TestCase("GAP", "TC_MOD_NCON_BV_01_C",
+                 TestFunc(btmgmt.connectable_off)),
 
-    btmgmt.connectable_on()
-    run_test_case("GAP", "TC_MOD_CON_BV_01_C")
+        TestCase("GAP", "TC_MOD_CON_BV_01_C",
+                 TestFunc(btmgmt.connectable_on)),
 
-    btmgmt.connectable_off()
-    btmgmt.advertising_on()
-    run_test_case("GAP", "TC_DISC_NONM_BV_01_C")
+        TestCase("GAP", "TC_DISC_NONM_BV_01_C",
+                 [TestFunc(btmgmt.connectable_off),
+                  TestFunc(btmgmt.advertising_on)]),
 
-    btmgmt.connectable_on()
-    btmgmt.discoverable_off()
-    run_test_case("GAP", "TC_DISC_NONM_BV_02_C")
+        TestCase("GAP", "TC_DISC_NONM_BV_02_C",
+                 [TestFunc(btmgmt.connectable_on),
+                  TestFunc(btmgmt.discoverable_off)]),
 
-    btmgmt.discoverable_limited(30)
-    run_test_case("GAP", "TC_DISC_LIMM_BV_01_C")
+        TestCase("GAP", "TC_DISC_LIMM_BV_01_C",
+                 TestFunc(btmgmt.discoverable_limited, 30), no_wid = 120),
+        TestCase("GAP", "TC_DISC_LIMM_BV_02_C",
+                 TestFunc(btmgmt.discoverable_limited, 30)),
+        TestCase("GAP", "TC_DISC_LIMM_BV_03_C",
+                 TestFunc(btmgmt.discoverable_limited, 30), no_wid = 120),
 
-    btmgmt.discoverable_limited(30)
-    run_test_case("GAP", "TC_DISC_LIMM_BV_02_C")
+        TestCase("GAP", "TC_DISC_LIMM_BV_04_C",
+                 [TestFunc(btmgmt.discoverable_off),
+                  TestFunc(btmgmt.power_off),
+                  TestFunc(btmgmt.bredr_off),
+                  TestFunc(btmgmt.power_on),
+                  TestFunc(btmgmt.discoverable_limited, 30)]),
 
-    btmgmt.discoverable_limited(30)
-    run_test_case("GAP", "TC_DISC_LIMM_BV_03_C")
+        TestCase("GAP", "TC_DISC_GENM_BV_01_C",
+                 TestFunc(btmgmt.discoverable_on), no_wid = 120),
+        TestCase("GAP", "TC_DISC_GENM_BV_02_C",
+                 TestFunc(btmgmt.bredr_on)),
+        TestCase("GAP", "TC_DISC_GENM_BV_03_C", no_wid = 120),
 
-    btmgmt.discoverable_off()
-    btmgmt.power_off()
-    btmgmt.bredr_off()
-    btmgmt.power_on()
-    btmgmt.discoverable_limited(30)
-    run_test_case("GAP", "TC_DISC_LIMM_BV_04_C")
+        TestCase("GAP", "TC_DISC_GENM_BV_04_C",
+                 [TestFunc(btmgmt.power_off),
+                  TestFunc(btmgmt.bredr_off),
+                  TestFunc(btmgmt.power_on),
+                  TestFunc(btmgmt.discoverable_on),
+                  TestFuncCleanUp(btmgmt.bredr_on)]),
 
-    btmgmt.discoverable_on()
-    run_test_case("GAP", "TC_DISC_GENM_BV_01_C")
+        # TODO grep for pts in output of "find -l" to find the answer to the last
+        # pts dialog
+        TestCase("GAP", "TC_DISC_LIMP_BV_01_C", TestCmd("btmgmt find -l")),
+        TestCase("GAP", "TC_DISC_LIMP_BV_02_C", TestCmd("btmgmt find -l")),
+        TestCase("GAP", "TC_DISC_LIMP_BV_03_C", TestCmd("btmgmt find -l")),
+        TestCase("GAP", "TC_DISC_LIMP_BV_04_C", TestCmd("btmgmt find -l")),
+        TestCase("GAP", "TC_DISC_LIMP_BV_05_C", TestCmd("btmgmt find -l")),
 
-    btmgmt.bredr_on()
-    run_test_case("GAP", "TC_DISC_GENM_BV_02_C")
-    run_test_case("GAP", "TC_DISC_GENM_BV_03_C")
+        TestCase("GAP", "TC_DISC_GENP_BV_01_C", TestCmd("btmgmt find -l")),
+        TestCase("GAP", "TC_DISC_GENP_BV_02_C", TestCmd("btmgmt find -l")),
+        TestCase("GAP", "TC_DISC_GENP_BV_03_C", TestCmd("btmgmt find -l")),
+        TestCase("GAP", "TC_DISC_GENP_BV_04_C", TestCmd("btmgmt find -l")),
+        TestCase("GAP", "TC_DISC_GENP_BV_05_C", TestCmd("btmgmt find -l"))
+    ]
 
-    btmgmt.power_off()
-    btmgmt.bredr_off()
-    btmgmt.power_on()
-    btmgmt.discoverable_on()
-    run_test_case("GAP", "TC_DISC_GENM_BV_04_C")
-    btmgmt.bredr_on()
-
-    # TODO grep for pts in output of "find -l" to find the answer to the last
-    # pts dialog
-    run_test_case("GAP", "TC_DISC_LIMP_BV_01_C", "btmgmt find -l")
-    run_test_case("GAP", "TC_DISC_LIMP_BV_02_C", "btmgmt find -l")
-    run_test_case("GAP", "TC_DISC_LIMP_BV_03_C", "btmgmt find -l")
-    run_test_case("GAP", "TC_DISC_LIMP_BV_04_C", "btmgmt find -l")
-    run_test_case("GAP", "TC_DISC_LIMP_BV_05_C", "btmgmt find -l")
-
-    run_test_case("GAP", "TC_DISC_GENP_BV_01_C", "btmgmt find -l")
-    run_test_case("GAP", "TC_DISC_GENP_BV_02_C", "btmgmt find -l")
-    run_test_case("GAP", "TC_DISC_GENP_BV_03_C", "btmgmt find -l")
-    run_test_case("GAP", "TC_DISC_GENP_BV_04_C", "btmgmt find -l")
-    run_test_case("GAP", "TC_DISC_GENP_BV_05_C", "btmgmt find -l")
+    return test_cases
 
 def main():
     '''Main.'''
@@ -898,7 +899,8 @@ def main():
         exec_adb_root()
 
     # test_cases = get_test_cases_rfcomm()
-    test_cases = get_test_cases_l2cap()
+    # test_cases = get_test_cases_l2cap()
+    test_cases = get_test_cases_gap()
 
     log("Running test cases...")
 
