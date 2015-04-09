@@ -30,7 +30,7 @@ libc = ctypes.cdll.msvcrt # for wcscpy_s
 clr.AddReferenceToFileAndPath(
     r"C:\Program Files (x86)\Bluetooth SIG\Bluetooth PTS\bin\Interop.PTSControl.dll")
 
-import Interop.PTSControl as p
+import Interop.PTSControl as PTSControl
 
 # WORKSPACE = r'C:\Users\rmstoi\Documents\Profile Tuning Suite\AOSP on Mako\AOSP on Mako.pqw6'
 # WORKSPACE = r'C:\Users\rmstoi\Documents\Profile Tuning Suite\AOSP on HammerHead\AOSP on HammerHead.pqw6'
@@ -247,7 +247,7 @@ class btmgmt:
     def bredr_off():
         exec_iut_cmd("btmgmt bredr off", True)
 
-class PTSLogger(p.IPTSControlClientLogger):
+class PTSLogger(PTSControl.IPTSControlClientLogger):
 
     def __init__(self):
         pass
@@ -266,11 +266,11 @@ class PTSLogger(p.IPTSControlClientLogger):
         log("%s %s %s %s" % (log_type, logtype_string, log_time, log_message))
 
         # mark test case as started
-        if log_type == p._PTS_LOGTYPE.PTS_LOGTYPE_START_TEST:
+        if log_type == PTSControl._PTS_LOGTYPE.PTS_LOGTYPE_START_TEST:
             RUNNING_TEST_CASE.status = "Started"
 
         # mark the final verdict of the test case
-        elif log_type == p._PTS_LOGTYPE.PTS_LOGTYPE_FINAL_VERDICT and \
+        elif log_type == PTSControl._PTS_LOGTYPE.PTS_LOGTYPE_FINAL_VERDICT and \
              logtype_string == "Final verdict": # avoiding "Encrypted Verdict"
             if "PASS" in log_message:
                 verdict = "PASS" 
@@ -295,7 +295,7 @@ class PTSLogger(p.IPTSControlClientLogger):
 #                     [in] unsigned long responseSize, 
 #                     [in, out] long* pbResponseIsPresent);
 # };
-class PTSSender(p.IPTSImplicitSendCallbackEx):
+class PTSSender(PTSControl.IPTSImplicitSendCallbackEx):
     def OnImplicitSend(self, project_name, wid, test_case_name, description,
                        style, response, response_size, response_is_present):
         logger = logging.getLogger(self.__class__.__name__)
@@ -870,7 +870,7 @@ def main():
     pts_logger = PTSLogger()
     pts_sender = PTSSender()
 
-    PTS = p.PTSControlClass()
+    PTS = PTSControl.PTSControlClass()
 
     PTS.SetControlClientLoggerCallback(pts_logger)
     PTS.RegisterImplicitSendCallbackEx(pts_sender)
