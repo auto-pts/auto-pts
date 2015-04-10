@@ -1,4 +1,4 @@
-'''PTS automation IronPython script
+"""PTS automation IronPython script
 
 To use it you have to have installed COM interop assembly to the bin directory
 of PTS, like:
@@ -13,12 +13,13 @@ Run this is script in admin terminal as follows:
 
 ipy.exe autopts.py
 
-'''
+"""
 
 import os
 import sys
 import time
 import logging
+import argparse
 import subprocess
 
 import clr
@@ -31,10 +32,6 @@ clr.AddReferenceToFileAndPath(
     r"C:\Program Files (x86)\Bluetooth SIG\Bluetooth PTS\bin\Interop.PTSControl.dll")
 
 import Interop.PTSControl as PTSControl
-
-# WORKSPACE = r'C:\Users\rmstoi\Documents\Profile Tuning Suite\AOSP on Mako\AOSP on Mako.pqw6'
-# WORKSPACE = r'C:\Users\rmstoi\Documents\Profile Tuning Suite\AOSP on HammerHead\AOSP on HammerHead.pqw6'
-WORKSPACE = r'C:\Users\rmstoi\Documents\Profile Tuning Suite\New AOSP on Flo\New AOSP on Flo.pqw6'
 
 # make sure adb is in path or modify this variable
 ADB = "adb.exe"
@@ -53,13 +50,13 @@ RUNNING_TEST_CASE = None
 log = logging.debug
 
 class TestCmd:
-    '''A command ran in IUT during test case execution'''
+    """A command ran in IUT during test case execution"""
 
     def __init__(self, command, start_wid = None, stop_wid = None):
-        '''stop_wid - some test cases require the child process (this test command) to
+        """stop_wid - some test cases require the child process (this test command) to
                       be termintated (Ctrl-C on terminal) in response to dialog
                       with this wid
-        '''
+        """
         self.command = command
         self.start_wid = start_wid
         self.stop_wid = stop_wid
@@ -86,8 +83,8 @@ class TestCmd:
         return "%s %s %s" % (self.command, self.start_wid, self.stop_wid)
 
 class TestFunc:
-    '''Some test commands, like setting PIXIT, PICS are functions. This is a
-    wrapper around functions'''
+    """Some test commands, like setting PIXIT, PICS are functions. This is a
+    wrapper around functions"""
     def __init__(self, func, *args, **kwds):
         self.__func = func
         self.__args = args
@@ -106,17 +103,17 @@ class TestFunc:
         return "%s %s %s" % (self.__func, self.__args, self.__kwds)
 
 class TestFuncCleanUp(TestFunc):
-    '''Clean-up function that is invoked after running test case in PTS.'''
+    """Clean-up function that is invoked after running test case in PTS."""
     pass
 
 def is_cleanup_func(func):
-    ''''Retruns True if func is an in an instance of TestFuncCleanUp'''
+    """'Retruns True if func is an in an instance of TestFuncCleanUp"""
     return isinstance(func, TestFuncCleanUp)
 
 class TestCase:
     def __init__(self, project_name, test_case_name, cmds = [], no_wid = None):
-        '''cmds - a list of TestCmd and TestFunc or single instance of them
-        no_wid - a wid (tag) to respond No to'''
+        """cmds - a list of TestCmd and TestFunc or single instance of them
+        no_wid - a wid (tag) to respond No to"""
         self.project_name = project_name
         self.name = test_case_name
         # a.k.a. final verdict
@@ -201,7 +198,7 @@ class TestCase:
 
 class btmgmt:
 
-    '''Incomplete wrapper around btmgmt. The methods are added as needed.'''
+    """Incomplete wrapper around btmgmt. The methods are added as needed."""
 
     @staticmethod
     def power_off():
@@ -336,7 +333,7 @@ class PTSSender(PTSControl.IPTSImplicitSendCallbackEx):
         log("********************")
 
 def pts_update_pixit_param(project_name, param_name, new_param_value):
-    '''Wrapper to catch exceptions that PTS throws if PIXIT param is already
+    """Wrapper to catch exceptions that PTS throws if PIXIT param is already
     set to the same value.
 
     PTS throws exception if the value passed to UpdatePixitParam is the same as
@@ -349,7 +346,7 @@ def pts_update_pixit_param(project_name, param_name, new_param_value):
     HRESULT UpdatePixitParam(LPCWSTR pszProjectName, LPCWSTR pszParamName,
                              LPCWSTR pszNewParamValue);
 
-    '''
+    """
     log("\nUpdatePixitParam(%s, %s, %s)" % (project_name, param_name, new_param_value))
 
     try:
@@ -358,7 +355,7 @@ def pts_update_pixit_param(project_name, param_name, new_param_value):
         log('Exception in UpdatePixitParam "%s", is pixit param aready set?' % (e.Message,))
 
 def pts_update_pics(project_name, entry_name, bool_value):
-    '''Wrapper to catch exceptions that PTS throws if PICS entry is already
+    """Wrapper to catch exceptions that PTS throws if PICS entry is already
     set to the same value.
 
     PTS throws exception if the value passed to UpdatePics is the same as
@@ -370,7 +367,7 @@ def pts_update_pics(project_name, entry_name, bool_value):
     The wrapped COM method is:
     HRESULT UpdatePics(LPCWSTR pszProjectName, LPCWSTR pszEntryName,
                        BOOL bValue);
-    '''
+    """
     log("\nUpdatePics(%s, %s, %s)" % (project_name, entry_name, bool_value))
 
     try:
@@ -405,13 +402,13 @@ def exec_iut_cmd(iut_cmd, wait = False, use_adb_shell = USE_ADB):
     return process
 
 def exec_adb_root():
-    '''Runs "adb root" command'''
+    """Runs "adb root" command"""
     exec_iut_cmd("adb root", True, False)
     # it takes an instance of time to get adbd restarted with root permissions
     exec_iut_cmd("adb wait-for-device", True, False)
 
 def get_test_cases_l2cap():
-    '''Initial IUT config: powered connectable br/edr le advertising
+    """Initial IUT config: powered connectable br/edr le advertising
     Bluetooth in UI should be turned off then:
 
     Not needed for Nexus 7
@@ -428,7 +425,7 @@ def get_test_cases_l2cap():
     there is no API call respective to the "Delete Link Key" PTS toolbar
     button.
 
-    '''
+    """
 
 
     test_cases = [
@@ -854,18 +851,41 @@ def get_test_cases_gap():
 
     return test_cases
 
-def main():
-    '''Main.'''
-    global PTS_BD_ADDR
-    global PTS
+def parse_args():
+    """Parses command line arguments and options"""
+    required_ext = ".pqw6" # valid PTS workspace file extension
 
-    script_name = os.path.basename(sys.argv[0]) # in case it is full path
-    script_name_no_ext = os.path.splitext(script_name)[0]
-    log_filename = "%s.log" % (script_name_no_ext,)
-    logging.basicConfig(format = '%(name)s [%(asctime)s] %(message)s',
-                        filename = log_filename,
-                        filemode = 'w',
-                        level = logging.DEBUG)
+    arg_parser = argparse.ArgumentParser(
+        description = "PTS automation IronPython script")
+
+    arg_parser.add_argument(
+        "workspace",
+        help = "Path to PTS workspace to use for testing. It should have %s "
+        "extension" % (required_ext,))
+
+    args = arg_parser.parse_args()
+
+    # check that aruments and options are sane
+    if not os.path.isfile(args.workspace):
+        raise Exception("Workspace file '%s' does not exist" %
+                        (args.workspace,))
+
+    specified_ext = os.path.splitext(args.workspace)[1]
+    if required_ext != specified_ext:
+        raise Exception(
+            "Workspace file '%s' extension is wrong, should be %s" %
+            (args.workspace, required_ext))
+
+    return args
+
+def init_pts(workspace):
+    """Initializes PTS COM objects
+    
+    workspace -- Path to PTS workspace to use for testing.
+
+    """
+    global PTS
+    global PTS_BD_ADDR
 
     pts_logger = PTSLogger()
     pts_sender = PTSSender()
@@ -884,7 +904,7 @@ def main():
     pts_bt_address_int = int(pts_bt_address)
     log("PTS Bluetooth Address: %x" % pts_bt_address_int)
 
-    pts_bt_address_upper = ("%x" % bt_address_int).upper()
+    pts_bt_address_upper = ("%x" % pts_bt_address_int).upper()
 
     PTS_BD_ADDR = "00"
     for i in range(0, len(pts_bt_address_upper), 2):
@@ -892,11 +912,31 @@ def main():
 
     log("PTS BD_ADDR: %s" % PTS_BD_ADDR)
 
-    log("Workspace %s" % WORKSPACE)
-    PTS.OpenWorkspace(WORKSPACE)
+    log("Workspace %s" % workspace)
+    PTS.OpenWorkspace(workspace)
+
+def init():
+    "Initialization procedure"
+
+    args = parse_args()
+
+    script_name = os.path.basename(sys.argv[0]) # in case it is full path
+    script_name_no_ext = os.path.splitext(script_name)[0]
+
+    log_filename = "%s.log" % (script_name_no_ext,)
+    logging.basicConfig(format = '%(name)s [%(asctime)s] %(message)s',
+                        filename = log_filename,
+                        filemode = 'w',
+                        level = logging.DEBUG)
+
+    init_pts(args.workspace)
 
     if USE_ADB: # IUT commands require root permissions
         exec_adb_root()
+
+def main():
+    """Main."""
+    init()
 
     # test_cases = get_test_cases_rfcomm()
     # test_cases = get_test_cases_l2cap()
