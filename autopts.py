@@ -847,8 +847,30 @@ def get_test_cases_gap():
         TestCase("GAP", "TC_DISC_GENP_BV_03_C", TestCmd("btmgmt find -l")),
         TestCase("GAP", "TC_DISC_GENP_BV_04_C", TestCmd("btmgmt find -l")),
         TestCase("GAP", "TC_DISC_GENP_BV_05_C", TestCmd("btmgmt find -l"))
-    ]
 
+        TestCase("GAP", "TC_IDLE_GIN_BV_01_C",
+                 TestCmd("btmgmt find", start_wid = 146)),
+        TestCase("GAP", "TC_IDLE_LIN_BV_01_C",
+                 TestCmd("hcitool scan --iac=liac", start_wid = 146)),
+
+        # TODO: how to script haltest
+        # TestCase("GAP", "TC_IDLE_NAMP_BV_01_C"),
+
+        TestCase("GAP", "TC_IDLE_NAMP_BV_02_C",
+                 TestFunc(btmgmt.advertising_on)),
+
+        TestCase("GAP", "TC_CONN_NCON_BV_01_C",
+                 TestFunc(btmgmt.connectable_off), no_wid = 120),
+        TestCase("GAP", "TC_CONN_NCON_BV_02_C", no_wid = 120),
+        TestCase("GAP", "TC_CONN_NCON_BV_03_C", no_wid = 120),
+
+        TestCase("GAP", "TC_CONN_DCON_BV_01_C",
+                 TestFunc(btmgmt.connectable_on), no_wid = 120),
+
+        TestCase("GAP", "TC_CONN_UCON_BV_01_C"),
+        TestCase("GAP", "TC_CONN_UCON_BV_02_C"),
+        TestCase("GAP", "TC_CONN_UCON_BV_03_C")
+    ]
     return test_cases
 
 def parse_args():
