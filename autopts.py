@@ -170,6 +170,11 @@ class TestCase:
         global RUNNING_TEST_CASE
         RUNNING_TEST_CASE = self
 
+        log("About to run test case %s %s with commands:" %
+            (self.project_name, self.name))
+        for cmd in self.cmds:
+            log(cmd)
+
         # start commands that don't have start trigger (lack start_wid) and are
         # not cleanup functions
         for cmd in self.cmds:
@@ -319,6 +324,7 @@ class PTSSender(PTSControl.IPTSImplicitSendCallbackEx):
 
         try:
             if RUNNING_TEST_CASE:
+                log("Calling test cases on_implicit_send")
                 RUNNING_TEST_CASE.on_implicit_send(
                     project_name, wid, test_case_name, description, style,
                     response, response_size, response_is_present)
@@ -1070,8 +1076,8 @@ def main():
 
     log("Running test cases...")
 
-    for test_case in test_cases:
-        print test_case,
+    for index, test_case in enumerate(test_cases):
+        print "%d/%d %s" % (index + 1, len(test_cases), test_case),
         test_case.run()
         print test_case.status
 
