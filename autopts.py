@@ -1066,6 +1066,26 @@ def init():
     if USE_ADB: # IUT commands require root permissions
         exec_adb_root()
 
+def get_max_test_case_desc(test_cases):
+    '''Takes a list of test cases and return a tuple of longest project name
+    and test case name.
+    '''
+
+    max_project_name = 0
+    max_test_case_name = 0
+
+    for test_case in test_cases:
+        project_name_len = len(test_case.project_name)
+        test_case_name_len = len(test_case.name)
+
+        if project_name_len > max_project_name:
+            max_project_name = project_name_len
+
+        if test_case_name_len > max_test_case_name:
+            max_test_case_name = test_case_name_len
+
+    return (max_project_name, max_test_case_name)
+
 def main():
     """Main."""
     init()
@@ -1076,8 +1096,17 @@ def main():
 
     log("Running test cases...")
 
+    num_test_cases = len(test_cases)
+    num_test_cases_width = len(str(num_test_cases))
+    max_project_name, max_test_case_name = get_max_test_case_desc(test_cases)
+    margin = 3
+
     for index, test_case in enumerate(test_cases):
-        print "%d/%d %s" % (index + 1, len(test_cases), test_case),
+        print (str(index + 1).rjust(num_test_cases_width) +
+               "/" +
+               str(num_test_cases).ljust(num_test_cases_width + margin) +
+               test_case.project_name.ljust(max_project_name + margin) +
+               test_case.name.ljust(max_test_case_name + margin - 1)),
         test_case.run()
         print test_case.status
 
