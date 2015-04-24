@@ -22,16 +22,10 @@ import logging
 import argparse
 import subprocess
 
-import clr
-import System
 import ctypes
 libc = ctypes.cdll.msvcrt # for wcscpy_s
 
-# load the PTS interop assembly
-clr.AddReferenceToFileAndPath(
-    r"C:\Program Files (x86)\Bluetooth SIG\Bluetooth PTS\bin\Interop.PTSControl.dll")
-
-import Interop.PTSControl as PTSControl
+import ptscontrol
 
 # make sure adb is in path or modify this variable
 ADB = "adb.exe"
@@ -40,12 +34,8 @@ USE_ADB = True
 # PTS bluetooth address in standard form
 PTS_BD_ADDR = ""
 
-# instance of PTSControl COM class
+# instance of ptscontrol.PyPTS
 PTS = None
-
-# currently executed test case: to make its method on_implicit_send accessible
-# from PTSSender.OnImplicitSend and set test case status in PTSLogger.Log
-RUNNING_TEST_CASE = None
 
 log = logging.debug
 
@@ -135,6 +125,8 @@ class TestCase:
     def on_implicit_send(self, project_name, wid, test_case_name, description, style,
                          response, response_size, response_is_present):
 
+        log("%s %s", self, self.on_implicit_send.__name__)
+
         # this should never happen, pts does not run tests in parallel
         assert project_name == self.project_name and \
             test_case_name == self.name
@@ -167,9 +159,6 @@ class TestCase:
 
     def run(self):
 
-        global RUNNING_TEST_CASE
-        RUNNING_TEST_CASE = self
-
         log("About to run test case %s %s with commands:" %
             (self.project_name, self.name))
         for cmd in self.cmds:
@@ -182,7 +171,7 @@ class TestCase:
                 cmd.start()
 
         log("Running test case %s %s" % (self.project_name, self.name))
-        PTS.RunTestCase(self.project_name, self.name)
+        PTS.run_test_case_object(self)
         log("Done Running test case %s %s" % (self.project_name, self.name))
 
         # run the clean-up commands
@@ -198,8 +187,6 @@ class TestCase:
 
         for cmd in self.cmds:
             cmd.stop()
-
-        RUNNING_TEST_CASE = None
 
 class btmgmt:
 
@@ -256,138 +243,6 @@ class btmgmt:
     @staticmethod
     def bredr_off():
         exec_iut_cmd("btmgmt bredr off", True)
-
-class PTSLogger(PTSControl.IPTSControlClientLogger):
-
-    def __init__(self):
-        pass
-
-# interface IPTSControlClientLogger : IUnknown {
-#     HRESULT _stdcall Log(
-#                     [in] _PTS_LOGTYPE logType, 
-#                     [in] LPWSTR szLogType, 
-#                     [in] LPWSTR szTime, 
-#                     [in] LPWSTR pszMessage);
-# };
-    def Log(self, log_type, logtype_string, log_time, log_message):
-        logger = logging.getLogger(self.__class__.__name__)
-        log = logger.info
-
-        log("%s %s %s %s" % (log_type, logtype_string, log_time, log_message))
-
-        # mark test case as started
-        if log_type == PTSControl._PTS_LOGTYPE.PTS_LOGTYPE_START_TEST:
-            RUNNING_TEST_CASE.status = "Started"
-
-        # mark the final verdict of the test case
-        elif log_type == PTSControl._PTS_LOGTYPE.PTS_LOGTYPE_FINAL_VERDICT and \
-             logtype_string == "Final verdict": # avoiding "Encrypted Verdict"
-            if "PASS" in log_message:
-                verdict = "PASS" 
-            elif "INCONC" in log_message:
-                verdict = "INCONC"
-            elif "FAIL" in log_message:
-                verdict = "FAIL"
-            else:
-                verdict = "UNKNOWN VERDICT: %s" % log_message
-
-            log(verdict)
-            RUNNING_TEST_CASE.status = verdict
-
-# interface IPTSImplicitSendCallbackEx : IUnknown {
-#     HRESULT _stdcall OnImplicitSend(
-#                     [in] LPWSTR pszProjectName, 
-#                     [in] unsigned short wID, 
-#                     [in] LPWSTR pszTestCase, 
-#                     [in] LPWSTR pszDescription, 
-#                     [in] unsigned long style, 
-#                     [in, out] LPWSTR pszResponse, 
-#                     [in] unsigned long responseSize, 
-#                     [in, out] long* pbResponseIsPresent);
-# };
-class PTSSender(PTSControl.IPTSImplicitSendCallbackEx):
-    def OnImplicitSend(self, project_name, wid, test_case_name, description,
-                       style, response, response_size, response_is_present):
-        logger = logging.getLogger(self.__class__.__name__)
-        log = logger.info
-
-        log("********************")
-        log("BEGIN OnImplicitSend:")
-        log("project_name: %s" % project_name)
-        log("wid: %s" % wid)
-        log("test_case_name: %s" % test_case_name)
-        log("description: %s" % description)
-        log("style: Ox%x" % style)
-        log("response: %s %s %s" % (repr(response), type(response), id(response)))
-        log("response_size: %s" % response_size)
-        log("response_is_present: %s %s" % (response_is_present, type(response_is_present)))
-
-        try:
-            if RUNNING_TEST_CASE:
-                log("Calling test cases on_implicit_send")
-                RUNNING_TEST_CASE.on_implicit_send(
-                    project_name, wid, test_case_name, description, style,
-                    response, response_size, response_is_present)
-        except Exception as e:
-            log("Caught exception")
-            log(e)
-            # exit does not work, cause app is blocked in PTS.RunTestCase?
-            sys.exit("Exception in OnImplicitSend")
-
-        log("after test case on_implicit_send (setting respose):")
-
-        log("written resonse is:")
-        # not easy to to redirect libc stdout to the log file
-        # libc._putws(response)
-        # libc.fflush(None); 
-        log("response: %s %s %s" % (response, type(response), id(response)))
-        log("response_is_present: %s %s" % (response_is_present, type(response_is_present)))
-
-        log("END OnImplicitSend:")
-        log("********************")
-
-def pts_update_pixit_param(project_name, param_name, new_param_value):
-    """Wrapper to catch exceptions that PTS throws if PIXIT param is already
-    set to the same value.
-
-    PTS throws exception if the value passed to UpdatePixitParam is the same as
-    the value when PTS was started.
-
-    In C++ HRESULT error with this value is returned:
-    PTSCONTROL_E_PIXIT_PARAM_NOT_CHANGED (0x849C0021)
-
-    The wrapped COM method is:
-    HRESULT UpdatePixitParam(LPCWSTR pszProjectName, LPCWSTR pszParamName,
-                             LPCWSTR pszNewParamValue);
-
-    """
-    log("\nUpdatePixitParam(%s, %s, %s)" % (project_name, param_name, new_param_value))
-
-    try:
-        PTS.UpdatePixitParam(project_name, param_name, new_param_value)
-    except System.Runtime.InteropServices.COMException as e:
-        log('Exception in UpdatePixitParam "%s", is pixit param aready set?' % (e.Message,))
-
-def pts_update_pics(project_name, entry_name, bool_value):
-    """Wrapper to catch exceptions that PTS throws if PICS entry is already
-    set to the same value.
-
-    PTS throws exception if the value passed to UpdatePics is the same as
-    the value when PTS was started.
-
-    In C++ HRESULT error with this value is returned:
-    PTSCONTROL_E_PICS_ENTRY_NOT_CHANGED (0x849C0032)
-
-    The wrapped COM method is:
-    HRESULT UpdatePics(LPCWSTR pszProjectName, LPCWSTR pszEntryName,
-                       BOOL bValue);
-    """
-    log("\nUpdatePics(%s, %s, %s)" % (project_name, entry_name, bool_value))
-
-    try:
-        PTS.UpdatePics(project_name, entry_name, bool_value)
-    except System.Runtime.InteropServices.COMException as e:
-        log('Exception in UpdatePics "%s", is pics value aready set?' % (e.Message,))
 
 def exec_iut_cmd(iut_cmd, wait = False, use_adb_shell = USE_ADB):
     if use_adb_shell:
@@ -662,7 +517,7 @@ def get_test_cases_l2cap():
         # https://www.bluetooth.org/pts/issues/view_issue.cfm?id=13206
         # TODO DANGEROUS CASE: crashes pts sometimes, report to  as pts bug?
         # TestCase("L2CAP", "TC_FIX_BV_01_C",
-        #          TestCmd("l2test -z -P 4113 %s" % PTS_BD_ADDR))
+        #          TestCmd("l2test -z -P 4113 %s" % PTS_BD_ADDR, start_wid = 49))
 
         TestCase("L2CAP", "TC_LE_CPU_BV_01_C",
                  TestCmd("l2test -n -V le_public -J 4 %s" % PTS_BD_ADDR)),
@@ -691,10 +546,10 @@ def get_test_cases_l2cap():
         # Note: PIXIT TSPX_iut_role_initiator=FALSE
         TestCase("L2CAP", "TC_LE_CFC_BV_03_C",
                  [TestFunc(btmgmt.advertising_on),
-                  TestFunc(pts_update_pixit_param, "L2CAP", "TSPX_iut_role_initiator", "FALSE"),
+                  TestFunc(PTS.update_pixit_param, "L2CAP", "TSPX_iut_role_initiator", "FALSE"),
                   TestCmd("l2test -x -N 1 -V le_public %s" % PTS_BD_ADDR, stop_wid = 22),
                   TestFuncCleanUp(btmgmt.advertising_off),
-                  TestFuncCleanUp(pts_update_pixit_param, "L2CAP", "TSPX_iut_role_initiator", "TRUE")]),
+                  TestFuncCleanUp(PTS.update_pixit_param, "L2CAP", "TSPX_iut_role_initiator", "TRUE")]),
 
         TestCase("L2CAP", "TC_LE_CFC_BV_04_C",
                  TestCmd("l2test -n -V le_public -P 241 %s" % PTS_BD_ADDR)),
@@ -702,14 +557,14 @@ def get_test_cases_l2cap():
         # Note: PIXIT TSPX_iut_role_initiator=FALSE
         TestCase("L2CAP", "TC_LE_CFC_BV_05_C",
                  [TestFunc(btmgmt.advertising_on),
-                  TestFunc(pts_update_pixit_param, "L2CAP", "TSPX_iut_role_initiator", "FALSE"),
+                  TestFunc(PTS.update_pixit_param, "L2CAP", "TSPX_iut_role_initiator", "FALSE"),
                   TestCmd("l2test -r -V le_public -J 4")]),
 
         # PTS issue #12853
         # Note: PIXIT TSPX_iut_role_initiator=FALSE
         TestCase("L2CAP", "TC_LE_CFC_BV_06_C",
                  [TestCmd("l2test -x -b 1 -V le_public %s" % PTS_BD_ADDR),
-                  TestFuncCleanUp(pts_update_pixit_param, "L2CAP", "TSPX_iut_role_initiator", "TRUE")]),
+                  TestFuncCleanUp(PTS.update_pixit_param, "L2CAP", "TSPX_iut_role_initiator", "TRUE")]),
 
         # does not pass in automation mode and makes PTS unstable:
         # https://www.bluetooth.org/pts/issues/view_issue.cfm?id=13225
@@ -1017,35 +872,14 @@ def init_pts(workspace):
 
     """
     global PTS
-    global PTS_BD_ADDR
 
-    pts_logger = PTSLogger()
-    pts_sender = PTSSender()
+    PTS = ptscontrol.PyPTS()
 
-    PTS = PTSControl.PTSControlClass()
+    log("PTS Version: %x", PTS.get_version())
+    log("PTS Bluetooth Address: %x", PTS.get_bluetooth_address())
+    log("PTS BD_ADDR: %s" % PTS.bd_addr())
 
-    PTS.SetControlClientLoggerCallback(pts_logger)
-    PTS.RegisterImplicitSendCallbackEx(pts_sender)
-
-    pts_version = clr.StrongBox[System.UInt32]()
-    PTS.GetPTSVersion(pts_version)
-    log("PTS Version: %x" % int(pts_version))
-
-    pts_bt_address = clr.StrongBox[System.UInt64]()
-    PTS.GetPTSBluetoothAddress(pts_bt_address)
-    pts_bt_address_int = int(pts_bt_address)
-    log("PTS Bluetooth Address: %x" % pts_bt_address_int)
-
-    pts_bt_address_upper = ("%x" % pts_bt_address_int).upper()
-
-    PTS_BD_ADDR = "00"
-    for i in range(0, len(pts_bt_address_upper), 2):
-        PTS_BD_ADDR += ":" + pts_bt_address_upper[i:i + 2]
-
-    log("PTS BD_ADDR: %s" % PTS_BD_ADDR)
-
-    log("Workspace %s" % workspace)
-    PTS.OpenWorkspace(workspace)
+    PTS.open_workspace(workspace)
 
 def init():
     "Initialization procedure"
