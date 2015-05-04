@@ -296,11 +296,11 @@ def get_test_cases_l2cap():
 
     test_cases = [
         TestCase("L2CAP", "TC_COS_CED_BV_01_C",
-                 TestCmd("l2test -n -P 4113 %s" % PTS.bd_addr(), start_wid = 13, stop_wid = 14)),
+                 TestCmd("l2test -n -P 4113 %s" % PTS.bd_addr(), start_wid = 49, stop_wid = 14)),
         TestCase("L2CAP", "TC_COS_CED_BV_03_C",
-                 TestCmd("l2test -y -N 1 -P 4113 %s" % PTS.bd_addr(), start_wid = 13, stop_wid = 14)),
+                 TestCmd("l2test -y -N 1 -P 4113 %s" % PTS.bd_addr(), start_wid = 49, stop_wid = 14)),
         TestCase("L2CAP", "TC_COS_CED_BV_04_C",
-                 TestCmd("l2test -n -P 4113 %s" % PTS.bd_addr(), start_wid = 13, stop_wid = 14)),
+                 TestCmd("l2test -n -P 4113 %s" % PTS.bd_addr(), start_wid = 49, stop_wid = 14)),
 
         # TODO: PTS issue #12351
         # the command is
@@ -314,32 +314,32 @@ def get_test_cases_l2cap():
         # Hence, support for multiple commands is needed
         # run_test_case("L2CAP", "TC_COS_CED_BV_05_C", "btmgmt ssp off;l2test -r -P 4113 %s; btmgmt ssp on" % (PTS.bd_addr(),))
         TestCase("L2CAP", "TC_COS_CED_BV_07_C",
-                 TestCmd("l2test -n -P 4113 %s" % PTS.bd_addr(), start_wid = 13)),
+                 TestCmd("l2test -n -P 4113 %s" % PTS.bd_addr(), start_wid = 49)),
         TestCase("L2CAP", "TC_COS_CED_BV_08_C",
-                 TestCmd("l2test -n -P 4113 %s" % PTS.bd_addr(), start_wid = 13)),
+                 TestCmd("l2test -n -P 4113 %s" % PTS.bd_addr(), start_wid = 49)),
         TestCase("L2CAP", "TC_COS_CED_BV_09_C",
-                 TestCmd("l2test -n -P 4113 %s" % PTS.bd_addr(), start_wid = 13, stop_wid = 14)),
+                 TestCmd("l2test -n -P 4113 %s" % PTS.bd_addr(), start_wid = 49, stop_wid = 14)),
         TestCase("L2CAP", "TC_COS_CED_BV_11_C",
-                 TestCmd("l2test -u -P 4113 %s" % PTS.bd_addr(), start_wid = 13)),
+                 TestCmd("l2test -u -P 4113 %s" % PTS.bd_addr(), start_wid = 49)),
 
         TestCase("L2CAP", "TC_COS_CED_BI_01_C"),
 
         # TODO: just like TC_COS_CED_BV_05_C
         # TestCase("L2CAP", "TC_COS_CFD_BV_01_C")
         TestCase("L2CAP", "TC_COS_CFD_BV_02_C",
-                 TestCmd("l2test -n -P 4113 %s" % PTS.bd_addr(), start_wid = 13, stop_wid = 14)),
+                 TestCmd("l2test -n -P 4113 %s" % PTS.bd_addr(), start_wid = 49, stop_wid = 14)),
         TestCase("L2CAP", "TC_COS_CFD_BV_03_C",
-                 TestCmd("l2test -n -P 4113 %s" % PTS.bd_addr(), start_wid = 13, stop_wid = 14)),
+                 TestCmd("l2test -n -P 4113 %s" % PTS.bd_addr(), start_wid = 49, stop_wid = 14)),
         TestCase("L2CAP", "TC_COS_CFD_BV_08_C",
-                 TestCmd("l2test -n -P 4113 %s" % PTS.bd_addr(), start_wid = 13, stop_wid = 14)),
+                 TestCmd("l2test -n -P 4113 %s" % PTS.bd_addr(), start_wid = 49, stop_wid = 14)),
         TestCase("L2CAP", "TC_COS_CFD_BV_09_C",
-                 TestCmd("l2test -n -P 4113 %s" % PTS.bd_addr(), start_wid = 13, stop_wid = 14)),
+                 TestCmd("l2test -n -P 4113 %s" % PTS.bd_addr(), start_wid = 49, stop_wid = 14)),
         TestCase("L2CAP", "TC_COS_CFD_BV_11_C",
-                 TestCmd("l2test -n -P 4113 %s" % PTS.bd_addr(), start_wid = 13, stop_wid = 14)),
+                 TestCmd("l2test -n -P 4113 %s" % PTS.bd_addr(), start_wid = 49, stop_wid = 14)),
         TestCase("L2CAP", "TC_COS_CFD_BV_12_C",
-                 TestCmd("l2test -n -P 4113 %s" % PTS.bd_addr(), start_wid = 13, stop_wid = 14)),
+                 TestCmd("l2test -n -P 4113 %s" % PTS.bd_addr(), start_wid = 49, stop_wid = 14)),
         TestCase("L2CAP", "TC_COS_IEX_BV_01_C",
-                 TestCmd("l2test -n -P 4113 %s" % PTS.bd_addr(), start_wid = 13, stop_wid = 22)),
+                 TestCmd("l2test -n -P 4113 %s" % PTS.bd_addr(), start_wid = 49, stop_wid = 22)),
         TestCase("L2CAP", "TC_COS_IEX_BV_02_C"),
 
         TestCase("L2CAP", "TC_COS_ECH_BV_01_C"),
@@ -362,9 +362,9 @@ def get_test_cases_l2cap():
 
         TestCase("L2CAP", "TC_CLS_UCD_BV_01_C"),
         TestCase("L2CAP", "TC_CLS_UCD_BV_02_C",
-                 TestCmd("l2test -s -G -N 1 -P 4113 %s" % PTS.bd_addr(), start_wid = 13)),
+                 TestCmd("l2test -s -G -N 1 -P 4113 %s" % PTS.bd_addr(), start_wid = 49)),
         TestCase("L2CAP", "TC_CLS_UCD_BV_03_C",
-                 TestCmd("l2test -s -E -G -N 1 -P 4113 %s" % PTS.bd_addr(), start_wid = 13)),
+                 TestCmd("l2test -s -E -G -N 1 -P 4113 %s" % PTS.bd_addr(), start_wid = 49)),
 
         TestCase("L2CAP", "TC_EXF_BV_01_C"),
         TestCase("L2CAP", "TC_EXF_BV_02_C"),
@@ -390,14 +390,14 @@ def get_test_cases_l2cap():
         TestCase("L2CAP", "TC_CMC_BV_09_C",
                  TestCmd("l2test -r -X basic -P 4113")),
         TestCase("L2CAP", "TC_CMC_BV_10_C",
-                 TestCmd("l2test -n -P 4113 %s" % PTS.bd_addr(), start_wid = 13, stop_wid = 14)),
+                 TestCmd("l2test -n -P 4113 %s" % PTS.bd_addr(), start_wid = 49, stop_wid = 14)),
 
         TestCase("L2CAP", "TC_CMC_BV_11_C",
-                 TestCmd("l2test -n -P 4113 %s" % PTS.bd_addr(), start_wid = 13, stop_wid = 14)),
+                 TestCmd("l2test -n -P 4113 %s" % PTS.bd_addr(), start_wid = 49, stop_wid = 14)),
         TestCase("L2CAP", "TC_CMC_BV_12_C",
-                 TestCmd("l2test -z -X ertm %s" % PTS.bd_addr(), start_wid = 13)),
+                 TestCmd("l2test -z -X ertm %s" % PTS.bd_addr(), start_wid = 49)),
         TestCase("L2CAP", "TC_CMC_BV_13_C",
-                 TestCmd("l2test -z -X streaming %s" % PTS.bd_addr(), start_wid = 13)),
+                 TestCmd("l2test -z -X streaming %s" % PTS.bd_addr(), start_wid = 49)),
         TestCase("L2CAP", "TC_CMC_BV_14_C",
                  TestCmd("l2test -r -X streaming -P 4113")),
         TestCase("L2CAP", "TC_CMC_BV_15_C",
