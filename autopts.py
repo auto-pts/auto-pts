@@ -570,7 +570,8 @@ def get_test_cases_l2cap():
         # https://www.bluetooth.org/pts/issues/view_issue.cfm?id=13225
         # TestCase("L2CAP", "TC_LE_CFC_BV_07_C",
         #          [TestFunc(btmgmt.advertising_off),
-        #           TestCmd("l2test -u -V le_public %s" % PTS_BD_ADDR, stop_wid = 22)]),
+        #           TestCmd("l2test -u -V le_public %s" % PTS_BD_ADDR,
+        #                   start_wid = 51, stop_wid = 22)]),
         TestCase("L2CAP", "TC_LE_CFC_BI_01_C",
                  [TestFunc(btmgmt.advertising_off),
                   TestCmd("l2test -u -V le_public %s" % PTS_BD_ADDR)]),
