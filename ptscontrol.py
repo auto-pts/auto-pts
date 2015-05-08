@@ -136,6 +136,7 @@ class PyPTS:
 
     def __init__(self):
         """Constructor"""
+        log("%s", self.__init__.__name__)
 
         self.__pts = PTSControl.PTSControlClass()
 
@@ -150,6 +151,10 @@ class PyPTS:
         self.set_control_client_logger_callback(self.__pts_logger)
 
         self.register_implicit_send_callback_ex(self.__pts_sender)
+
+        log("PTS Version: %x", self.get_version())
+        log("PTS Bluetooth Address: %x", self.get_bluetooth_address())
+        log("PTS BD_ADDR: %s" % self.bd_addr())
 
     def create_workspace(self, bd_addr, pts_file_path, workspace_name,
                          workspace_path):
@@ -276,7 +281,9 @@ class PyPTS:
             test_case)
 
         RUNNING_TEST_CASE = test_case
+        test_case.pre_run()
         self.run_test_case(test_case.project_name, test_case.name)
+        test_case.post_run()
         RUNNING_TEST_CASE = None
 
         log("Done TestCase %s %s", self.run_test_case.__name__, test_case)
