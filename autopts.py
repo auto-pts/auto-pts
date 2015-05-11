@@ -23,7 +23,7 @@ import argparse
 from ptsprojects.utils import exec_adb_root
 from ptsprojects.testcase import get_max_test_case_desc
 import ptscontrol
-import ptsprojects
+import ptsprojects.android as autoprojects
 
 # instance of ptscontrol.PyPTS
 PTS = None
@@ -89,9 +89,9 @@ def main():
     """Main."""
     init()
 
-    test_cases = ptsprojects.rfcomm.test_cases(PTS)
-    # test_cases = ptsprojects.l2cap.test_cases(PTS)
-    # test_cases = ptsprojects.gap.test_cases(PTS)
+    test_cases = autoprojects.rfcomm.test_cases(PTS)
+    # test_cases = autoprojects.l2cap.test_cases(PTS)
+    # test_cases = autoprojects.gap.test_cases(PTS)
 
     log("Running test cases...")
 

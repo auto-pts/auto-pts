@@ -1,7 +1,18 @@
 """L2CAP test cases"""
 
-from testcase import TestCase, TestCmd, TestFunc, TestFuncCleanUp
-from utils import btmgmt
+try:
+    from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
+        TestFuncCleanUp
+    from ptsprojects.utils import btmgmt
+
+except ImportError: # running this module as script
+    import sys
+    sys.path.append("../..") # to be able to locate the following imports
+
+    from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
+        TestFuncCleanUp
+    from ptsprojects.utils import btmgmt
+
 
 def test_cases(pts):
     """Returns a list of L2CAP test cases
@@ -330,8 +341,6 @@ def test_cases(pts):
 def main():
     """Main."""
 
-    import sys
-    sys.path.append("..") # to be able to locate ptscontrol
     import ptscontrol
     pts = ptscontrol.PyPTS()
 

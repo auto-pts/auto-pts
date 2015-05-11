@@ -1,6 +1,14 @@
 """RFCOMM test cases"""
 
-from testcase import TestCase, TestCmd
+try:
+    from ptsprojects.testcase import TestCase, TestCmd
+
+except ImportError: # running this module as script
+    import sys
+    sys.path.append("../..") # to be able to locate the following imports
+
+    from ptsprojects.testcase import TestCase, TestCmd
+
 
 def test_cases(pts):
     """Returns a list of RFCOMM test cases
@@ -58,8 +66,6 @@ def test_cases(pts):
 def main():
     """Main."""
 
-    import sys
-    sys.path.append("..") # to be able to locate ptscontrol
     import ptscontrol
     pts = ptscontrol.PyPTS()
 
