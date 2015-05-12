@@ -23,7 +23,7 @@ import argparse
 from ptsprojects.utils import exec_adb_root
 from ptsprojects.testcase import get_max_test_case_desc
 import ptscontrol
-import ptsprojects.android as autoprojects
+import ptsprojects.aosp_bluez as autoprojects
 
 # instance of ptscontrol.PyPTS
 PTS = None
