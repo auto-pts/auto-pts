@@ -1,10 +1,5 @@
 """PTS automation IronPython script
 
-To use it you have to have installed COM interop assembly to the bin directory
-of PTS, like:
-
-cp Interop.PTSConrol.dll C:\Program Files (x86)\Bluetooth SIG\Bluetooth PTS\bin\
-
 Since PTS requires admin rights, you have to run this script as admin. You need
 to use 32 bit IronPython to run this script because PTS is a 32 bit
 application.

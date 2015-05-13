@@ -11,8 +11,7 @@ import ctypes
 libc = ctypes.cdll.msvcrt # for wcscpy_s
 
 # load the PTS interop assembly
-clr.AddReferenceToFileAndPath(
-    r"C:\Program Files (x86)\Bluetooth SIG\Bluetooth PTS\bin\Interop.PTSControl.dll")
+clr.AddReferenceToFile("Interop.PTSControl.dll")
 
 import Interop.PTSControl as PTSControl
 
