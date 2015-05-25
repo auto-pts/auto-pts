@@ -3,10 +3,8 @@
 import time
 import logging
 
-import ctypes
-libc = ctypes.cdll.msvcrt # for wcscpy_s
-
 from utils import exec_iut_cmd
+import ptstypes
 
 log = logging.debug
 
@@ -79,7 +77,50 @@ def is_cleanup_func(func):
     """'Retruns True if func is an in an instance of TestFuncCleanUp"""
     return isinstance(func, TestFuncCleanUp)
 
-class TestCase:
+class AbstractMethodException(Exception):
+    """Exception raised if an abstract method is called."""
+    pass
+
+class PTSCallback:
+    """Base class for PTS callback implementors"""
+
+    def __init__(self):
+        pass
+
+    def log(self, log_type, logtype_string, log_time, log_message):
+        """Implements:
+
+        interface IPTSControlClientLogger : IUnknown {
+            HRESULT _stdcall Log(
+                            [in] _PTS_LOGTYPE logType,
+                            [in] LPWSTR szLogType,
+                            [in] LPWSTR szTime,
+                            [in] LPWSTR pszMessage);
+        };
+        """
+        raise AbstractMethodException()
+
+    def on_implicit_send(self, project_name, wid, test_case_name, description,
+                         style, response, response_size, response_is_present):
+        """Implements:
+
+        interface IPTSImplicitSendCallbackEx : IUnknown {
+        HRESULT _stdcall OnImplicitSend(
+                    [in] LPWSTR pszProjectName,
+                    [in] unsigned short wID,
+                    [in] LPWSTR pszTestCase,
+                    [in] LPWSTR pszDescription,
+                    [in] unsigned long style,
+                    [in, out] LPWSTR pszResponse,
+                    [in] unsigned long responseSize,
+                    [in, out] long* pbResponseIsPresent);
+        };
+
+        return -- response as a python string
+        """
+        raise AbstractMethodException()
+
+class TestCase(PTSCallback):
     """A PTS test case"""
 
     def __init__(self, project_name, test_case_name, cmds = [], no_wid = None):
@@ -104,30 +145,58 @@ class TestCase:
         """Returns string representation"""
         return "%s %s" % (self.project_name, self.name)
 
+    def log(self, log_type, logtype_string, log_time, log_message):
+        """Overrides PTSCallback method. Handles
+        PTSControl.IPTSControlClientLogger.Log"""
+
+        new_status = None
+
+        # mark test case as started
+        if log_type == ptstypes.PTS_LOGTYPE_START_TEST
+            new_status = "Started"
+
+        # mark the final verdict of the test case
+        elif log_type == ptstypes.PTS_LOGTYPE_FINAL_VERDICT and \
+             logtype_string == "Final verdict": # avoid "Encrypted Verdict"
+
+            if "PASS" in log_message:
+                new_status = "PASS"
+            elif "INCONC" in log_message:
+                new_status = "INCONC"
+            elif "FAIL" in log_message:
+                new_status = "FAIL"
+            else:
+                new_status = "UNKNOWN VERDICT: %s" % log_message
+
+        if new_status:
+            self.status = new_status
+            log("New status %s - %s", str(self), new_status)
+
     def on_implicit_send(self, project_name, wid, test_case_name, description, style,
                          response, response_size, response_is_present):
-        """Handles PTSControl.IPTSImplicitSendCallbackEx.OnImplicitSend"""
+        """Overrides PTSCallback method. Handles
+        PTSControl.IPTSImplicitSendCallbackEx.OnImplicitSend"""
         log("%s %s", self, self.on_implicit_send.__name__)
 
         # this should never happen, pts does not run tests in parallel
         assert project_name == self.project_name and \
             test_case_name == self.name
 
-        response_is_present.Value = 1
+        my_response = ""
 
         # MMI_Style_Yes_No1
         if style == 0x11044:
             # answer No
             if self.no_wid and wid == self.no_wid:
-                libc.wcscpy_s(response, response_size, u"No")
+                my_response = "No"
 
             # answer Yes
             else:
-                libc.wcscpy_s(response, response_size, u"Yes")
+                my_response = "Yes"
 
         # actually style == 0x11141, MMI_Style_Ok_Cancel2
         else:
-            libc.wcscpy_s(response, response_size, u"OK")
+            my_response = "OK"
 
         # start/stop command if triggered by wid
         for cmd in self.cmds:
@@ -138,6 +207,8 @@ class TestCase:
             # stop command
             if cmd.stop_wid == wid:
                 cmd.stop()
+
+        return my_response
 
     def pre_run(self):
         """Method called before test case is run in PTS"""
