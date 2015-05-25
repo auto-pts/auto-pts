@@ -15,7 +15,7 @@ import ptsprojects.aosp_bluez as autoprojects
 from ptsprojects.testcase import TestCase, TestCmd, PTSCallback
 from ptsprojects.testcase import get_max_test_case_desc
 from ptsprojects.utils import exec_adb_root
-import ptsprojects.ptstypes
+import ptsprojects.ptstypes as ptstypes
 
 log = logging.debug
 
@@ -143,9 +143,9 @@ def parse_args():
 
     arg_parser.add_argument(
         "workspace",
-        help = "Path to PTS workspace to use for testing. It should have %s "
+        help = "Path to PTS workspace to use for testing. It should have pqw6 "
         "extension. The file should be located on the Windows machine, where "
-        "the PTS automation server is running" % (required_ext,))
+        "the PTS automation server is running")
 
     args = arg_parser.parse_args()
 
@@ -213,12 +213,12 @@ def init():
 
     exec_adb_root()
 
-    return args
+    return (proxy, args)
 
 def main():
     """Main."""
 
-    args = init()
+    proxy, args = init()
 
     test_cases = autoprojects.rfcomm.test_cases(proxy)
     # test_cases = autoprojects.l2cap.test_cases(proxy)

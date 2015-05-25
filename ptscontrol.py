@@ -209,6 +209,19 @@ class PyPTS:
         """Opens existing workspace"""
 
         log("%s %s", self.open_workspace.__name__, workspace_path)
+
+        required_ext = ".pqw6" # valid PTS workspace file extension
+
+        if not os.path.isfile(workspace_path):
+            raise Exception("Workspace file '%s' does not exist" %
+                            (workspace_path,))
+
+        specified_ext = os.path.splitext(workspace_path)[1]
+        if required_ext != specified_ext:
+            raise Exception(
+                "Workspace file '%s' extension is wrong, should be %s" %
+                (workspace_path, required_ext))
+
         self._pts.OpenWorkspace(workspace_path)
 
     def get_project_count(self):

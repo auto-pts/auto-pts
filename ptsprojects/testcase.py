@@ -152,7 +152,7 @@ class TestCase(PTSCallback):
         new_status = None
 
         # mark test case as started
-        if log_type == ptstypes.PTS_LOGTYPE_START_TEST
+        if log_type == ptstypes.PTS_LOGTYPE_START_TEST:
             new_status = "Started"
 
         # mark the final verdict of the test case
