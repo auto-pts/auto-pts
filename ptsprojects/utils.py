@@ -2,7 +2,7 @@ import logging
 import subprocess
 
 # make sure adb is in path or modify this variable
-ADB = "adb.exe"
+ADB = "adb"
 USE_ADB = True
 
 log = logging.debug
@@ -63,19 +63,27 @@ class btmgmt:
         exec_iut_cmd("btmgmt bredr off", True)
 
 def exec_iut_cmd(iut_cmd, wait = False, use_adb_shell = USE_ADB):
-    """Runs command in the IUT"""
+    """Runs command in the IUT
+
+    [1] Command is split to make this function platform independent, this is
+    cause on Linux command must be a sequence or shell=True must be passed to
+    Popen. On Windows in IronPython command can be a string.
+
+    """
     if use_adb_shell:
         cmd = "%s shell %s" % (ADB, iut_cmd)
     else:
         cmd = iut_cmd
 
-    process = subprocess.Popen(cmd,
+    log("starting child process %s", iut_cmd)
+
+    process = subprocess.Popen(cmd.split(), # see [1]
                                stdout = subprocess.PIPE,
                                stderr = subprocess.STDOUT)
 
     process_desc = "%s pid %s" % (repr(cmd), process.pid)
 
-    log("started child process %s" % process_desc)
+    log("started child process %s", process_desc)
 
     # TODO: communicate waits, this means output of not waited commands is not
     # logged, using logging.root.handlers[0].stream as stdout and stderr when
