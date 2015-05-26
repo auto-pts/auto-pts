@@ -242,15 +242,20 @@ def main():
 
     proxy.unregister_xmlrpc_ptscallback()
 
-    # not the cleanest but the easiest way to exit the blocking thread
+    # not the cleanest but the easiest way to exit the server thread
     os._exit(0)
 
 if __name__ == "__main__":
+
+    # os._exit: not the cleanest but the easiest way to exit the server thread
     try:
         main()
-    except: # any exception, including KeyboardInterrupt
-        # import traceback
-        # traceback.print_exc()
 
-        # not the cleanest but the easiest way to exit the blocking thread
+    # SystemExit is thrown in arg_parser.parse_args
+    except (KeyboardInterrupt, SystemExit):
         os._exit(15)
+
+    except:
+        import traceback
+        traceback.print_exc()
+        os._exit(16)
