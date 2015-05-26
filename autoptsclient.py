@@ -236,11 +236,6 @@ def main():
 
         test_cases = autoprojects.gap.test_cases()
 
-        autoprojects.iut_ctrl.cleanup()
-
-        # TODO - temporary exit because of no test cases defined and iut project api
-        os._exit(0)
-
     num_test_cases = len(test_cases)
     num_test_cases_width = len(str(num_test_cases))
     max_project_name, max_test_case_name = get_max_test_case_desc(test_cases)
@@ -255,6 +250,9 @@ def main():
         sys.stdout.flush()
         run_test_case(proxy, test_case)
         print test_case.status
+
+    if atgs.iut_type == 'V':
+        autoprojects.iut_ctrl.cleanup()
 
     print "\nBye!"
 
