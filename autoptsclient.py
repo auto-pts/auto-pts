@@ -195,19 +195,19 @@ def init():
     thread = threading.Thread(target = start_callback)
     thread.start()
 
-    print get_my_ip_address()
+    log("my IP address is: %s", get_my_ip_address())
 
     proxy = xmlrpclib.ServerProxy(
         "http://{}:{}/".format(args.server_address, SERVER_PORT),
         allow_none = True,)
 
-    print proxy.system.listMethods()
-    print proxy.bd_addr()
-    print "%x" % proxy.get_version()
+    log("Server methods: %s", proxy.system.listMethods())
+    log("PTS Version: %x", proxy.get_version())
+    log("PTS BD_ADDR: %s", proxy.bd_addr())
 
     proxy.register_xmlrpc_ptscallback(get_my_ip_address(), SERVER_PORT)
 
-    print "opening", repr(args.workspace)
+    log("Opening workspace: %s", repr(args.workspace))
     proxy.open_workspace(args.workspace)
 
     exec_adb_root()
