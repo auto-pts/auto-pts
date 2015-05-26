@@ -232,7 +232,12 @@ def main():
     elif args.iut_type == 'V':
         import ptsprojects.viper as autoprojects
 
+        autoprojects.iut_ctrl.init()
+
         test_cases = autoprojects.gap.test_cases()
+
+        autoprojects.iut_ctrl.cleanup()
+
         # TODO - temporary exit because of no test cases defined and iut project api
         os._exit(0)
 
