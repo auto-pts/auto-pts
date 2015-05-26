@@ -24,8 +24,15 @@ def test_cases():
     pts -- Instance of PyPTS"""
 
     test_cases = [
-        TestCase("GAP", "TC_IDLE_NAMP_BV_02_C", TestFunc(ViperCtl.new_viper,
-                    VIPER_SRC_PATH + "samples/bluetooth/peripheral/", APP_BIN_NAME)),
+        TestCase("GAP", "TC_IDLE_NAMP_BV_02_C",
+                 [TestFunc(ViperCtl.new_viper, VIPER_SRC_PATH + "samples/bluetooth/peripheral/", APP_BIN_NAME),
+                  TestFuncCleanUp(ViperCtl.close_viper)]),
+        TestCase("GAP", "TC_CONN_UCON_BV_01_C",
+                 [TestFunc(ViperCtl.new_viper, VIPER_SRC_PATH + "samples/bluetooth/peripheral/", APP_BIN_NAME),
+                  TestFuncCleanUp(ViperCtl.close_viper)]),
+        TestCase("GAP", "TC_CONN_UCON_BV_02_C",
+                 [TestFunc(ViperCtl.new_viper, VIPER_SRC_PATH + "samples/bluetooth/peripheral/", APP_BIN_NAME),
+                  TestFuncCleanUp(ViperCtl.close_viper)]),
         ]
 
     return test_cases
