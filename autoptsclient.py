@@ -211,7 +211,9 @@ def init():
     log("Opening workspace: %s", args.workspace)
     proxy.open_workspace(args.workspace)
 
-    exec_adb_root()
+    # exec adb root only for android iut project
+    if args.iut_type == 'A':
+        exec_adb_root()
 
     return (proxy, args)
 
