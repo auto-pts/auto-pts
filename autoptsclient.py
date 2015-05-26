@@ -11,7 +11,6 @@ from SimpleXMLRPCServer import SimpleXMLRPCServer
 
 from ptsprojects.testcase import TestCase, TestCmd, PTSCallback
 from ptsprojects.testcase import get_max_test_case_desc
-from ptsprojects.utils import exec_adb_root
 import ptsprojects.ptstypes as ptstypes
 
 log = logging.debug
@@ -211,10 +210,6 @@ def init():
     log("Opening workspace: %s", args.workspace)
     proxy.open_workspace(args.workspace)
 
-    # exec adb root only for android iut project
-    if args.iut_type == 'A':
-        exec_adb_root()
-
     return (proxy, args)
 
 def main():
@@ -232,9 +227,9 @@ def main():
     elif args.iut_type == 'V':
         import ptsprojects.viper as autoprojects
 
-        autoprojects.iut_ctrl.init()
-
         test_cases = autoprojects.gap.test_cases()
+
+    autoprojects.iut_ctrl.init()
 
     num_test_cases = len(test_cases)
     num_test_cases_width = len(str(num_test_cases))
@@ -251,8 +246,7 @@ def main():
         run_test_case(proxy, test_case)
         print test_case.status
 
-    if atgs.iut_type == 'V':
-        autoprojects.iut_ctrl.cleanup()
+    autoprojects.iut_ctrl.cleanup()
 
     print "\nBye!"
 
