@@ -7,7 +7,6 @@ import logging
 import argparse
 import xmlrpclib
 import threading
-import traceback
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 
 import ptsprojects.aosp_bluez as autoprojects
@@ -250,6 +249,8 @@ if __name__ == "__main__":
     try:
         main()
     except: # any exception, including KeyboardInterrupt
+        # import traceback
+        # traceback.print_exc()
+
         # not the cleanest but the easiest way to exit the blocking thread
-        traceback.print_exc()
         os._exit(15)
