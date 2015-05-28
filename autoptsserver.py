@@ -2,6 +2,7 @@ import os
 import sys
 import logging
 import xmlrpclib
+import System.IO.IOException
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 
 import ptscontrol
@@ -60,10 +61,14 @@ def main():
     script_name_no_ext = os.path.splitext(script_name)[0]
 
     log_filename = "%s.log" % (script_name_no_ext,)
-    logging.basicConfig(format = '%(name)s [%(asctime)s] %(message)s',
-                        filename = log_filename,
-                        filemode = 'w',
-                        level = logging.DEBUG)
+    try:
+        logging.basicConfig(format = '%(name)s [%(asctime)s] %(message)s',
+                            filename = log_filename,
+                            filemode = 'w',
+                            level = logging.DEBUG)
+    except IOError as e:
+        print "I/O error({0}): {1}, script needs to be run as administrator".format(e.errno, e.strerror)
+        sys.exit()
 
     print "Starting PTS"
 
