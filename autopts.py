@@ -15,6 +15,7 @@ import sys
 import logging
 import argparse
 
+import winutils
 from ptsprojects.utils import exec_adb_root
 from ptsprojects.testcase import get_max_test_case_desc
 import ptscontrol
@@ -53,6 +54,7 @@ def init_pts(workspace):
 
 def init():
     "Initialization procedure"
+    winutils.exit_if_not_admin()
 
     args = parse_args()
 
