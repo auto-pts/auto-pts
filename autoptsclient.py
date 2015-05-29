@@ -207,7 +207,7 @@ def init():
 
     proxy.register_xmlrpc_ptscallback(get_my_ip_address(), SERVER_PORT)
 
-    log("Opening workspace: %s", repr(args.workspace))
+    log("Opening workspace: %s", args.workspace)
     proxy.open_workspace(args.workspace)
 
     exec_adb_root()
