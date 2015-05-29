@@ -7,61 +7,6 @@ USE_ADB = True
 
 log = logging.debug
 
-class btmgmt:
-    """Incomplete wrapper around btmgmt. The methods are added as needed."""
-
-    @staticmethod
-    def power_off():
-        exec_iut_cmd("btmgmt power off", True)
-
-    @staticmethod
-    def power_on():
-        exec_iut_cmd("btmgmt power on", True)
-
-    @staticmethod
-    def advertising_on():
-        exec_iut_cmd("btmgmt advertising on", True)
-
-    @staticmethod
-    def advertising_off():
-        exec_iut_cmd("btmgmt advertising off", True)
-
-    @staticmethod
-    def connectable_on():
-        exec_iut_cmd("btmgmt connectable on", True)
-
-    @staticmethod
-    def connectable_off():
-        exec_iut_cmd("btmgmt connectable off", True)
-
-    @staticmethod
-    def bondable_on():
-        exec_iut_cmd("btmgmt bondable on", True)
-
-    @staticmethod
-    def bondable_off():
-        exec_iut_cmd("btmgmt bondable off", True)
-
-    @staticmethod
-    def discoverable_on():
-        exec_iut_cmd("btmgmt discov on", True)
-
-    @staticmethod
-    def discoverable_off():
-        exec_iut_cmd("btmgmt discov off", True)
-
-    @staticmethod
-    def discoverable_limited(limit):
-        exec_iut_cmd("btmgmt discov limited %d" % limit, True)
-
-    @staticmethod
-    def bredr_on():
-        exec_iut_cmd("btmgmt bredr on", True)
-
-    @staticmethod
-    def bredr_off():
-        exec_iut_cmd("btmgmt bredr off", True)
-
 def exec_iut_cmd(iut_cmd, wait = False, use_adb_shell = USE_ADB):
     """Runs command in the IUT
 
