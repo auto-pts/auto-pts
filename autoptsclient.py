@@ -9,11 +9,8 @@ import xmlrpclib
 import threading
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 
-import ptsprojects.aosp_bluez as autoprojects
-
 from ptsprojects.testcase import TestCase, TestCmd, PTSCallback
 from ptsprojects.testcase import get_max_test_case_desc
-from ptsprojects.utils import exec_adb_root
 import ptsprojects.ptstypes as ptstypes
 
 log = logging.debug
@@ -137,6 +134,9 @@ def parse_args():
     arg_parser = argparse.ArgumentParser(
         description = "PTS automation client")
 
+    arg_parser.add_argument("iut_type", choices = ['V', 'A'],
+                            help = "Type of IUT, V-Viper, A-Android")
+
     arg_parser.add_argument("server_address",
                             help = "IP address of the PTS automation server")
 
@@ -207,10 +207,8 @@ def init():
 
     proxy.register_xmlrpc_ptscallback(get_my_ip_address(), SERVER_PORT)
 
-    log("Opening workspace: %s", repr(args.workspace))
+    log("Opening workspace: %s", args.workspace)
     proxy.open_workspace(args.workspace)
-
-    exec_adb_root()
 
     return (proxy, args)
 
@@ -219,9 +217,19 @@ def main():
 
     proxy, args = init()
 
-    test_cases = autoprojects.rfcomm.test_cases(proxy)
-    # test_cases = autoprojects.l2cap.test_cases(proxy)
-    # test_cases = autoprojects.gap.test_cases(proxy)
+    if args.iut_type == 'A':
+        import ptsprojects.aosp_bluez as autoprojects
+
+        # test_cases = autoprojects.rfcomm.test_cases(proxy)
+        # test_cases = autoprojects.l2cap.test_cases(proxy)
+        test_cases = autoprojects.gap.test_cases(proxy)
+
+    elif args.iut_type == 'V':
+        import ptsprojects.viper as autoprojects
+
+        test_cases = autoprojects.gap.test_cases()
+
+    autoprojects.iut_ctrl.init()
 
     num_test_cases = len(test_cases)
     num_test_cases_width = len(str(num_test_cases))
@@ -237,6 +245,8 @@ def main():
         sys.stdout.flush()
         run_test_case(proxy, test_case)
         print test_case.status
+
+    autoprojects.iut_ctrl.cleanup()
 
     print "\nBye!"
 
