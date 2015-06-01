@@ -8,12 +8,8 @@ import argparse
 import xmlrpclib
 import threading
 from SimpleXMLRPCServer import SimpleXMLRPCServer
-
-import ptsprojects.aosp_bluez as autoprojects
-
-from ptsprojects.testcase import TestCase, TestCmd, PTSCallback
 from ptsprojects.testcase import get_max_test_case_desc
-from ptsprojects.utils import exec_adb_root
+from ptsprojects.testcase import TestCase, TestCmd, PTSCallback
 import ptsprojects.ptstypes as ptstypes
 
 log = logging.debug
@@ -131,25 +127,6 @@ def get_my_ip_address():
 
 get_my_ip_address.cached_address = None
 
-def parse_args():
-    """Parses command line arguments and options"""
-
-    arg_parser = argparse.ArgumentParser(
-        description = "PTS automation client")
-
-    arg_parser.add_argument("server_address",
-                            help = "IP address of the PTS automation server")
-
-    arg_parser.add_argument(
-        "workspace",
-        help = "Path to PTS workspace to use for testing. It should have pqw6 "
-        "extension. The file should be located on the Windows machine, where "
-        "the PTS automation server is running")
-
-    args = arg_parser.parse_args()
-
-    return args
-
 def start_callback():
     """Starts the xmlrpc callback server"""
 
@@ -177,10 +154,8 @@ def run_test_case(pts, test_case):
 
     log("Done TestCase %s %s", run_test_case.__name__, test_case)
 
-def init():
+def init_core(server_address, workspace_path):
     "Initialization procedure"
-
-    args = parse_args()
 
     script_name = os.path.basename(sys.argv[0]) # in case it is full path
     script_name_no_ext = os.path.splitext(script_name)[0]
@@ -198,7 +173,7 @@ def init():
     log("my IP address is: %s", get_my_ip_address())
 
     proxy = xmlrpclib.ServerProxy(
-        "http://{}:{}/".format(args.server_address, SERVER_PORT),
+        "http://{}:{}/".format(server_address, SERVER_PORT),
         allow_none = True,)
 
     log("Server methods: %s", proxy.system.listMethods())
@@ -207,21 +182,12 @@ def init():
 
     proxy.register_xmlrpc_ptscallback(get_my_ip_address(), SERVER_PORT)
 
-    log("Opening workspace: %s", repr(args.workspace))
-    proxy.open_workspace(args.workspace)
+    log("Opening workspace: %s", workspace_path)
+    proxy.open_workspace(workspace_path)
 
-    exec_adb_root()
+    return proxy
 
-    return (proxy, args)
-
-def main():
-    """Main."""
-
-    proxy, args = init()
-
-    test_cases = autoprojects.rfcomm.test_cases(proxy)
-    # test_cases = autoprojects.l2cap.test_cases(proxy)
-    # test_cases = autoprojects.gap.test_cases(proxy)
+def run_test_cases(proxy, test_cases):
 
     num_test_cases = len(test_cases)
     num_test_cases_width = len(str(num_test_cases))
@@ -237,25 +203,3 @@ def main():
         sys.stdout.flush()
         run_test_case(proxy, test_case)
         print test_case.status
-
-    print "\nBye!"
-
-    proxy.unregister_xmlrpc_ptscallback()
-
-    # not the cleanest but the easiest way to exit the server thread
-    os._exit(0)
-
-if __name__ == "__main__":
-
-    # os._exit: not the cleanest but the easiest way to exit the server thread
-    try:
-        main()
-
-    # SystemExit is thrown in arg_parser.parse_args
-    except (KeyboardInterrupt, SystemExit):
-        os._exit(15)
-
-    except:
-        import traceback
-        traceback.print_exc()
-        os._exit(16)
