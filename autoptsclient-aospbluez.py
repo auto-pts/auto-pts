@@ -33,9 +33,9 @@ def main():
 
     proxy = autoptsclient.init_core(args.server_address, args.workspace)
 
-    # test_cases = autoprojects.rfcomm.test_cases(proxy)
+    test_cases = autoprojects.rfcomm.test_cases(proxy)
     # test_cases = autoprojects.l2cap.test_cases(proxy)
-    test_cases = autoprojects.gap.test_cases(proxy)
+    # test_cases = autoprojects.gap.test_cases(proxy)
 
     autoprojects.iut_ctrl.init()
     autoptsclient.run_test_cases(proxy, test_cases)
