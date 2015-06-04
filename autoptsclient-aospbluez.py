@@ -2,7 +2,7 @@
 
 import os
 import argparse
-import autoptsclient
+import autoptsclient_common as autoptsclient
 import ptsprojects.aosp_bluez as autoprojects
 
 def parse_args():
