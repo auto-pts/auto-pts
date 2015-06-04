@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+"""AOSP BlueZ auto PTS client"""
+
 import os
 import argparse
 import autoptsclient_common as autoptsclient

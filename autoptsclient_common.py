@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+"""Common code for the auto PTS clients"""
+
 import os
 import sys
 import socket
