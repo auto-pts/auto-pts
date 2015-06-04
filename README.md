@@ -16,20 +16,28 @@ running in the GUI mode. Hence, before running these scripts close the PTS GUI.
 
 # Running
 
+Before running any scipts you have to create a workspace in the PTS, add needed
+projects to the workspace and configure PICs and PIXITs.
+
 To run standalone Windows PTS automation script:
 
 `ipy.exe autopts.py`
 
 The framework also supports client server architecture. With this setup the PTS
-automation server runs on Windows and client runs on GNU/Linux. So on Windows
+automation server runs on Windows and the client runs on GNU/Linux. So on Windows
 you start the server:
 
 `ipy.exe autoptsserver.py`
 
-And on GNU/Linux you modify autoptsclient.py to set the correct server address,
-then you start the client:
+And on GNU/Linux you select the either the Android or Viper client, then pass
+it the IP address of the server and the path to the PTS project file on the
+Windows machine. So for AOSP BlueZ projects:
 
-`./autoptsclient.py`
+`./autoptsclient-aospbluez.py IP_ADDRESS "C:\Users\USER_NAME\Documents\Profile Tuning Suite\PTS_PROJECT\PTS_PROJECT.pqw6"`
+
+And for Viper projects:
+
+`./autoptsclient-viper.py IP_ADDRESS "C:\Users\USER_NAME\Documents\Profile Tuning Suite\PTS_PROJECT\PTS_PROJECT.pqw6"`
 
 # Generating Interop Assembly
 
