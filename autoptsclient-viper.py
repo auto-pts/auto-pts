@@ -3,6 +3,7 @@
 """Viper auto PTS client"""
 
 import os
+import sys
 import argparse
 import autoptsclient_common as autoptsclient
 import ptsprojects.viper as autoprojects
@@ -28,6 +29,8 @@ def parse_args():
 
 def main():
     """Main."""
+    if os.geteuid() == 0: # root privileges are not needed
+        sys.exit("Please do not run this program as root.")
 
     args = parse_args()
 
@@ -52,9 +55,12 @@ if __name__ == "__main__":
     try:
         main()
 
-    # SystemExit is thrown in arg_parser.parse_args
-    except (KeyboardInterrupt, SystemExit):
-        os._exit(15)
+    except KeyboardInterrupt: # Ctrl-C
+        os._exit(14)
+
+    # SystemExit is thrown in arg_parser.parse_args and in sys.exit
+    except SystemExit:
+        raise # let the default handlers do the work
 
     except:
         import traceback
