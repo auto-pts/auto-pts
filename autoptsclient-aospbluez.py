@@ -18,10 +18,11 @@ def parse_args():
                             help = "IP address of the PTS automation server")
 
     arg_parser.add_argument("workspace",
-                            help = "Path to PTS workspace to use for testing." \
-                            "It should have pqw6 extension. The file should " \
-                            "be located on the Windows machine, where the PTS" \
-                            "automation server is running")
+                            help = ("Path to PTS workspace file to use for "
+                                    "testing. It should have pqw6 extension. "
+                                    "The file should be located on the "
+                                    "Windows machine, where the PTS "
+                                    "automation server is running"))
 
     args = arg_parser.parse_args()
 
