@@ -19,7 +19,7 @@ import winutils
 from ptsprojects.utils import exec_adb_root
 from ptsprojects.testcase import get_max_test_case_desc
 import ptscontrol
-import ptsprojects.aosp_bluez as autoprojects
+import ptsprojects.aospbluez as autoprojects
 
 # instance of ptscontrol.PyPTS
 PTS = None

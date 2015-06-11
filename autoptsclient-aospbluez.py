@@ -6,7 +6,7 @@ import os
 import sys
 import argparse
 import autoptsclient_common as autoptsclient
-import ptsprojects.aosp_bluez as autoprojects
+import ptsprojects.aospbluez as autoprojects
 
 def parse_args():
     """Parses command line arguments and options"""
