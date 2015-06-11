@@ -5,7 +5,7 @@ import os
 try:
     from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
         TestFuncCleanUp
-    from ptsprojects.viper.iut_ctrl import ViperCtl
+    from ptsprojects.viper.iutctrl import ViperCtl
 
 except ImportError: # running this module as script
     import sys
@@ -13,7 +13,7 @@ except ImportError: # running this module as script
 
     from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
         TestFuncCleanUp
-    from ptsprojects.viper.iut_ctrl import ViperCtl
+    from ptsprojects.viper.iutctrl import ViperCtl
 
 # TODO should be set in config file
 VIPER_SRC_PATH = "/home/kolodgrz/src/forto-comm/"
