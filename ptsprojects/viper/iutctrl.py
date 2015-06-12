@@ -6,6 +6,9 @@ VIPER_P = None
 # qemu binary should be installed in shell PATH
 QEMU_BIN = "qemu-system-i386"
 
+# qemu log file object
+QEMU_LOG_FO = None
+
 class ViperCtl:
     '''Viper System Control Class'''
 
@@ -30,8 +33,9 @@ class ViperCtl:
         # TODO check if viper process has started correctly
         VIPER_P = subprocess.Popen("exec " + v_run_cmd,
                                    shell = True,
-                                   stdout = subprocess.PIPE,
-                                   stderr = subprocess.STDOUT)
+                                   stdout = QEMU_LOG_FO,
+                                   stderr = QEMU_LOG_FO)
+
     @staticmethod
     def close_viper():
         if VIPER_P != None:
@@ -40,8 +44,11 @@ class ViperCtl:
 
 def init():
     """IUT init routine"""
-    pass
+    global QEMU_LOG_FO
+    QEMU_LOG_FO = open("qemu-viper.log", "w")
 
 def cleanup():
     """IUT cleanup routine"""
-    pass
+    global QEMU_LOG_FO
+    QEMU_LOG_FO.close()
+    QEMU_LOG_FO = None
