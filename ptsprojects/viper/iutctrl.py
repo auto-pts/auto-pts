@@ -44,5 +44,4 @@ def init():
 
 def cleanup():
     """IUT cleanup routine"""
-    # TODO extra cleanup check since post routine should handle this
-    ViperCtl.close_viper()
+    pass
