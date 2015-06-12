@@ -1,10 +1,10 @@
 import subprocess
 import os
-import shlex
 
 VIPER_P = None
 
-QEMU_PATH = "/home/kolodgrz/bin/qemu-system-i386"
+# qemu binary should be installed in shell PATH
+QEMU_BIN = "qemu-system-i386"
 
 class ViperCtl:
     '''Viper System Control Class'''
@@ -25,17 +25,18 @@ class ViperCtl:
                     "-no-hpet -L /usr/share/qemu -bios bios.bin -serial " \
                     "mon:stdio -machine type=pc-0.14 -pidfile qemu.pid " \
                     "-serial unix:/tmp/bt-server-bredr -kernel %s" \
-                    % (QEMU_PATH, app_path + "outdir/" + app_name)
+                    % (QEMU_BIN, app_path + "outdir/" + app_name)
 
         # TODO check if viper process has started correctly
-        VIPER_P = subprocess.Popen(shlex.split(v_run_cmd), shell = False,
+        VIPER_P = subprocess.Popen("exec " + v_run_cmd,
+                                   shell = True,
                                    stdout = subprocess.PIPE,
                                    stderr = subprocess.STDOUT)
-
     @staticmethod
     def close_viper():
         if VIPER_P != None:
             VIPER_P.terminate()
+            VIPER_P.wait() # do not let zombies take over
 
 def init():
     """IUT init routine"""
