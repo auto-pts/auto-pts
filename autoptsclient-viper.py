@@ -44,6 +44,7 @@ def main():
     autoprojects.iutctrl.cleanup()
 
     print "\nBye!"
+    sys.stdout.flush()
 
     proxy.unregister_xmlrpc_ptscallback()
 
