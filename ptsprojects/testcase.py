@@ -67,7 +67,8 @@ class TestFunc:
 
     def __str__(self):
         """Returns string representation"""
-        return "%s %s %s" % (self.__func, self.__args, self.__kwds)
+        return "%s %s %s %s" % \
+            (self.__class__, self.__func, self.__args, self.__kwds)
 
 class TestFuncCleanUp(TestFunc):
     """Clean-up function that is invoked after running test case in PTS."""
@@ -81,7 +82,7 @@ class AbstractMethodException(Exception):
     """Exception raised if an abstract method is called."""
     pass
 
-class PTSCallback:
+class PTSCallback(object):
     """Base class for PTS callback implementors"""
 
     def __init__(self):
@@ -126,13 +127,14 @@ class TestCase(PTSCallback):
     def __init__(self, project_name, test_case_name, cmds = [], no_wid = None):
         """cmds - a list of TestCmd and TestFunc or single instance of them
         no_wid - a wid (tag) to respond No to"""
+
         self.project_name = project_name
         self.name = test_case_name
         # a.k.a. final verdict
         self.status = "init"
 
         if isinstance(cmds, list):
-            self.cmds = cmds
+            self.cmds = list(cmds)
         else:
             self.cmds = [cmds]
 
@@ -216,8 +218,8 @@ class TestCase(PTSCallback):
 
         log("About to run test case %s %s with commands:" %
             (self.project_name, self.name))
-        for cmd in self.cmds:
-            log(cmd)
+        for index, cmd in enumerate(self.cmds):
+            log("%d) %s", index, cmd)
 
         # start commands that don't have start trigger (lack start_wid) and are
         # not cleanup functions

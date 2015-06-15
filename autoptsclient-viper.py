@@ -24,6 +24,10 @@ def parse_args():
                                     "Windows machine, where the PTS "
                                     "automation server is running"))
 
+    arg_parser.add_argument("kernel_image",
+                            help = ("Viper OS kernel image to be used in QEMU. "
+                                    "Normally a microkernel.elf file."))
+
     args = arg_parser.parse_args()
 
     return args
@@ -37,10 +41,11 @@ def main():
 
     proxy = autoptsclient.init_core(args.server_address, args.workspace)
 
-    test_cases = autoprojects.gap.test_cases()
+    autoprojects.iutctrl.init(args.kernel_image)
 
-    autoprojects.iutctrl.init()
+    test_cases = autoprojects.gap.test_cases()
     autoptsclient.run_test_cases(proxy, test_cases)
+
     autoprojects.iutctrl.cleanup()
 
     print "\nBye!"

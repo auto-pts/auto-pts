@@ -1,7 +1,9 @@
 import subprocess
 import os
+import logging
 
-VIPER_P = None
+log = logging.debug
+
 
 # qemu binary should be installed in shell PATH
 QEMU_BIN = "qemu-system-i386"
@@ -9,43 +11,64 @@ QEMU_BIN = "qemu-system-i386"
 # qemu log file object
 QEMU_LOG_FO = None
 
+# microkernel.elf
+VIPER_KERNEL_IMAGE = None
+
 class ViperCtl:
-    '''Viper System Control Class'''
+    '''Viper OS Control Class'''
 
-    @staticmethod
-    def new_viper(app_path, app_name):
-        global VIPER_P
+    def __init__(self):
+        """Constructor."""
 
-        if not os.path.exists(app_path):
-            raise Exception("wrong qemu project path '%s'" % app_path)
+        assert VIPER_KERNEL_IMAGE, "Kernel image file is not set!"
 
-        if not os.path.exists(app_path + "outdir/" + app_name):
-            raise Exception("wrong project binary file name '%s' - doesn't exist"
-                            % (app_path + "outdir/" + app_name))
 
-        v_run_cmd = "%s -m 32 -cpu qemu32 -no-reboot -nographic -display none " \
-                    "-net none -clock dynticks -no-acpi -balloon none " \
-                    "-no-hpet -L /usr/share/qemu -bios bios.bin -serial " \
-                    "mon:stdio -machine type=pc-0.14 -pidfile qemu.pid " \
-                    "-serial unix:/tmp/bt-server-bredr -kernel %s" \
-                    % (QEMU_BIN, app_path + "outdir/" + app_name)
+        self.kernel_image = VIPER_KERNEL_IMAGE
+        self.qemu_process = None
+
+    def start(self):
+        """Starts the Viper OS"""
+
+        log("%s.%s", self.__class__, self.start.__name__)
+
+        qemu_cmd = "%s -m 32 -cpu qemu32 -no-reboot -nographic -display none " \
+                   "-net none -clock dynticks -no-acpi -balloon none " \
+                   "-no-hpet -L /usr/share/qemu -bios bios.bin -serial " \
+                   "mon:stdio -machine type=pc-0.14 -pidfile qemu.pid " \
+                   "-serial unix:/tmp/bt-server-bredr -kernel %s" \
+                   % (QEMU_BIN, self.kernel_image)
+
+        log("Starting QEMU viper process: %s", qemu_cmd)
 
         # TODO check if viper process has started correctly
-        VIPER_P = subprocess.Popen("exec " + v_run_cmd,
-                                   shell = True,
-                                   stdout = QEMU_LOG_FO,
-                                   stderr = QEMU_LOG_FO)
+        self.qemu_process = subprocess.Popen("exec " + qemu_cmd,
+                                             shell = True,
+                                             stdout = QEMU_LOG_FO,
+                                             stderr = QEMU_LOG_FO)
 
-    @staticmethod
-    def close_viper():
-        if VIPER_P != None:
-            VIPER_P.terminate()
-            VIPER_P.wait() # do not let zombies take over
+    def stop(self):
+        """Powers off the Viper OS"""
+        log("%s.%s", self.__class__, self.stop.__name__)
 
-def init():
-    """IUT init routine"""
+        if self.qemu_process != None:
+            self.qemu_process.terminate()
+            self.qemu_process.wait() # do not let zombies take over
+
+def init(kernel_image):
+    """IUT init routine
+
+    kernel_image -- Path to Viper kernel image"""
+
     global QEMU_LOG_FO
+    global VIPER_KERNEL_IMAGE
+
     QEMU_LOG_FO = open("qemu-viper.log", "w")
+
+    if not os.path.isfile(kernel_image):
+        raise Exception("QEMU kernel image %s is not a file!" %
+                        repr(kernel_image))
+
+    VIPER_KERNEL_IMAGE = kernel_image
 
 def cleanup():
     """IUT cleanup routine"""
