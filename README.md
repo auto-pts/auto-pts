@@ -37,7 +37,10 @@ Windows machine. So for AOSP BlueZ projects:
 
 And for Zephyr projects:
 
-`./autoptsclient-zephyr.py IP_ADDRESS "C:\Users\USER_NAME\Documents\Profile Tuning Suite\PTS_PROJECT\PTS_PROJECT.pqw6"`
+Start a proxy for bluetooth adapter by using btproxy from BlueZ:
+sudo bluez/tools/btproxy -u
+
+`./autoptsclient-zephyr.py IP_ADDRESS "C:\Users\USER_NAME\Documents\Profile Tuning Suite\PTS_PROJECT\PTS_PROJECT.pqw6" microkernel.elf`
 
 # Generating Interop Assembly
 
