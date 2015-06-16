@@ -1,8 +1,8 @@
-"""Test case that manages Viper QEMU"""
+"""Test case that manages Zephyr QEMU"""
 
 from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
     TestFuncCleanUp
-from ptsprojects.viper.iutctrl import ViperCtl
+from ptsprojects.zephyr.iutctrl import ZephyrCtl
 
 class QTestCase(TestCase):
         """A test case that uses QEMU as DUT"""
@@ -16,10 +16,10 @@ class QTestCase(TestCase):
                                             cmds,
                                             no_wid)
 
-            self.viperctl = ViperCtl()
+            self.zephyrctl = ZephyrCtl()
 
             # first command is to start QEMU
-            self.cmds.insert(0, TestFunc(self.viperctl.start))
+            self.cmds.insert(0, TestFunc(self.zephyrctl.start))
 
             # last command is to stop QEMU
-            self.cmds.append(TestFuncCleanUp(self.viperctl.stop))
+            self.cmds.append(TestFuncCleanUp(self.zephyrctl.stop))

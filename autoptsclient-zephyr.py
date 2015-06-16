@@ -1,12 +1,12 @@
 #!/usr/bin/env python
 
-"""Viper auto PTS client"""
+"""Zephyr auto PTS client"""
 
 import os
 import sys
 import argparse
 import autoptsclient_common as autoptsclient
-import ptsprojects.viper as autoprojects
+import ptsprojects.zephyr as autoprojects
 
 def parse_args():
     """Parses command line arguments and options"""
@@ -25,7 +25,7 @@ def parse_args():
                                     "automation server is running"))
 
     arg_parser.add_argument("kernel_image",
-                            help = ("Viper OS kernel image to be used in QEMU. "
+                            help = ("Zephyr OS kernel image to be used in QEMU. "
                                     "Normally a microkernel.elf file."))
 
     args = arg_parser.parse_args()

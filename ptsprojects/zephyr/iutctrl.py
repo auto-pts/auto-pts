@@ -12,22 +12,22 @@ QEMU_BIN = "qemu-system-i386"
 QEMU_LOG_FO = None
 
 # microkernel.elf
-VIPER_KERNEL_IMAGE = None
+ZEPHYR_KERNEL_IMAGE = None
 
-class ViperCtl:
-    '''Viper OS Control Class'''
+class ZephyrCtl:
+    '''Zephyr OS Control Class'''
 
     def __init__(self):
         """Constructor."""
 
-        assert VIPER_KERNEL_IMAGE, "Kernel image file is not set!"
+        assert ZEPHYR_KERNEL_IMAGE, "Kernel image file is not set!"
 
 
-        self.kernel_image = VIPER_KERNEL_IMAGE
+        self.kernel_image = ZEPHYR_KERNEL_IMAGE
         self.qemu_process = None
 
     def start(self):
-        """Starts the Viper OS"""
+        """Starts the Zephyr OS"""
 
         log("%s.%s", self.__class__, self.start.__name__)
 
@@ -38,16 +38,16 @@ class ViperCtl:
                    "-serial unix:/tmp/bt-server-bredr -kernel %s" \
                    % (QEMU_BIN, self.kernel_image)
 
-        log("Starting QEMU viper process: %s", qemu_cmd)
+        log("Starting QEMU zephyr process: %s", qemu_cmd)
 
-        # TODO check if viper process has started correctly
+        # TODO check if zephyr process has started correctly
         self.qemu_process = subprocess.Popen("exec " + qemu_cmd,
                                              shell = True,
                                              stdout = QEMU_LOG_FO,
                                              stderr = QEMU_LOG_FO)
 
     def stop(self):
-        """Powers off the Viper OS"""
+        """Powers off the Zephyr OS"""
         log("%s.%s", self.__class__, self.stop.__name__)
 
         if self.qemu_process != None:
@@ -57,18 +57,18 @@ class ViperCtl:
 def init(kernel_image):
     """IUT init routine
 
-    kernel_image -- Path to Viper kernel image"""
+    kernel_image -- Path to Zephyr kernel image"""
 
     global QEMU_LOG_FO
-    global VIPER_KERNEL_IMAGE
+    global ZEPHYR_KERNEL_IMAGE
 
-    QEMU_LOG_FO = open("qemu-viper.log", "w")
+    QEMU_LOG_FO = open("qemu-zephyr.log", "w")
 
     if not os.path.isfile(kernel_image):
         raise Exception("QEMU kernel image %s is not a file!" %
                         repr(kernel_image))
 
-    VIPER_KERNEL_IMAGE = kernel_image
+    ZEPHYR_KERNEL_IMAGE = kernel_image
 
 def cleanup():
     """IUT cleanup routine"""

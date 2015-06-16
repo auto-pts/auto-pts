@@ -29,15 +29,15 @@ you start the server:
 
 `ipy.exe autoptsserver.py`
 
-And on GNU/Linux you select the either the Android or Viper client, then pass
+And on GNU/Linux you select the either the Android or Zephyr client, then pass
 it the IP address of the server and the path to the PTS project file on the
 Windows machine. So for AOSP BlueZ projects:
 
 `./autoptsclient-aospbluez.py IP_ADDRESS "C:\Users\USER_NAME\Documents\Profile Tuning Suite\PTS_PROJECT\PTS_PROJECT.pqw6"`
 
-And for Viper projects:
+And for Zephyr projects:
 
-`./autoptsclient-viper.py IP_ADDRESS "C:\Users\USER_NAME\Documents\Profile Tuning Suite\PTS_PROJECT\PTS_PROJECT.pqw6"`
+`./autoptsclient-zephyr.py IP_ADDRESS "C:\Users\USER_NAME\Documents\Profile Tuning Suite\PTS_PROJECT\PTS_PROJECT.pqw6"`
 
 # Generating Interop Assembly
 

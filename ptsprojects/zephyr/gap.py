@@ -5,7 +5,7 @@ import os
 try:
     from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
         TestFuncCleanUp
-    from ptsprojects.viper.qtestcase import QTestCase
+    from ptsprojects.zephyr.qtestcase import QTestCase
 
 except ImportError: # running this module as script
     import sys
@@ -13,7 +13,7 @@ except ImportError: # running this module as script
 
     from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
         TestFuncCleanUp
-    from ptsprojects.viper.qtestcase import QTestCase
+    from ptsprojects.zephyr.qtestcase import QTestCase
 
 def test_cases():
     """Returns a list of GAP test cases
@@ -30,10 +30,10 @@ def test_cases():
 def main():
     """Main."""
     import sys
-    import ptsprojects.viper.iutctrl as iutctrl
+    import ptsprojects.zephyr.iutctrl as iutctrl
 
-    # to be able to successfully create ViperCtl in QTestCase
-    iutctrl.VIPER_KERNEL_IMAGE = sys.argv[0]
+    # to be able to successfully create ZephyrCtl in QTestCase
+    iutctrl.ZEPHYR_KERNEL_IMAGE = sys.argv[0]
 
     test_cases_ = test_cases()
 
