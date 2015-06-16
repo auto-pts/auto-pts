@@ -38,6 +38,7 @@ Windows machine. So for AOSP BlueZ projects:
 And for Zephyr projects:
 
 Start a proxy for bluetooth adapter by using btproxy from BlueZ:
+
 `sudo bluez/tools/btproxy -u`
 
 Then start the client:
