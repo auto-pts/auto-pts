@@ -41,12 +41,12 @@ def main():
 
     proxy = autoptsclient.init_core(args.server_address, args.workspace)
 
-    autoprojects.iutctrl.init(args.kernel_image)
+    autoprojects.iutctl.init(args.kernel_image)
 
     test_cases = autoprojects.gap.test_cases()
     autoptsclient.run_test_cases(proxy, test_cases)
 
-    autoprojects.iutctrl.cleanup()
+    autoprojects.iutctl.cleanup()
 
     print "\nBye!"
     sys.stdout.flush()

@@ -2,7 +2,7 @@
 
 from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
     TestFuncCleanUp
-from ptsprojects.zephyr.iutctrl import ZephyrCtl
+from ptsprojects.zephyr.iutctl import ZephyrCtl
 
 class QTestCase(TestCase):
         """A test case that uses QEMU as DUT"""

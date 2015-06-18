@@ -30,10 +30,10 @@ def test_cases():
 def main():
     """Main."""
     import sys
-    import ptsprojects.zephyr.iutctrl as iutctrl
+    import ptsprojects.zephyr.iutctl as iutctl
 
     # to be able to successfully create ZephyrCtl in QTestCase
-    iutctrl.ZEPHYR_KERNEL_IMAGE = sys.argv[0]
+    iutctl.ZEPHYR_KERNEL_IMAGE = sys.argv[0]
 
     test_cases_ = test_cases()
 

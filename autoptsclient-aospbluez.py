@@ -41,9 +41,9 @@ def main():
     # test_cases = autoprojects.l2cap.test_cases(proxy)
     # test_cases = autoprojects.gap.test_cases(proxy)
 
-    autoprojects.iutctrl.init()
+    autoprojects.iutctl.init()
     autoptsclient.run_test_cases(proxy, test_cases)
-    autoprojects.iutctrl.cleanup()
+    autoprojects.iutctl.cleanup()
 
     print "\nBye!"
 
