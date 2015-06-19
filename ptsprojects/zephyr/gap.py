@@ -18,9 +18,22 @@ def test_cases():
     pts -- Instance of PyPTS"""
 
     test_cases = [
-        QTestCase("GAP", "TC_IDLE_NAMP_BV_02_C"),
+        #QTestCase("GAP", "TC_IDLE_NAMP_BV_02_C"),
+        #QTestCase("GAP", "TC_CONN_UCON_BV_01_C"),
+        #QTestCase("GAP", "TC_CONN_UCON_BV_02_C")
+
+        QTestCase("GAP", "TC_ADV_BV_03_C",),
+        QTestCase("GAP", "TC_CONN_CPUP_BV_01_C"),
+        QTestCase("GAP", "TC_CONN_CPUP_BV_02_C"),
+        QTestCase("GAP", "TC_CONN_CPUP_BV_03_C"),
+        QTestCase("GAP", "TC_DISC_GENM_BV_04_C"),
+        QTestCase("GAP", "TC_GAT_BV_01_C"),
+        QTestCase("GAP", "TC_CONN_NCON_BV_01_C"),
         QTestCase("GAP", "TC_CONN_UCON_BV_01_C"),
-        QTestCase("GAP", "TC_CONN_UCON_BV_02_C")
+        QTestCase("GAP", "TC_DISC_NONM_BV_02_C"),
+        QTestCase("GAP", "TC_DISC_NONM_BV_01_C"),
+        QTestCase("GAP", "TC_CONN_TERM_BV_01_C"),
+        QTestCase("GAP", "TC_CONN_UCON_BV_02_C"),
     ]
 
     return test_cases
