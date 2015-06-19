@@ -1,6 +1,10 @@
 import subprocess
 import os
 import logging
+import socket
+import binascii
+from btpparser import enc_frame, dec_hdr, dec_data
+from msgdefs import HDR_LEN
 
 log = logging.debug
 
@@ -26,6 +30,9 @@ class ZephyrCtl:
 
         self.kernel_image = ZEPHYR_KERNEL_IMAGE
         self.qemu_process = None
+        self.sock = None
+        self.conn = None
+        self.addr = None
 
     def start(self):
         """Starts the Zephyr OS"""
@@ -52,6 +59,81 @@ class ZephyrCtl:
         if self.qemu_process != None:
             self.qemu_process.terminate()
             self.qemu_process.wait() # do not let zombies take over
+
+    def socks_open(self):
+        """Open sockets for Viper"""
+        if os.path.exists(QEMU_UNIX_PATH):
+            os.remove(QEMU_UNIX_PATH)
+
+        self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        self.sock.bind(QEMU_UNIX_PATH)
+
+        #queue only one connection
+        self.sock.listen(1)
+
+    def socks_accept(self):
+        """Accept incomming Zephyr connection"""
+        #This will hang forever if Zephyr don't try to connect
+        self.conn, self.addr = self.sock.accept()
+
+        self.conn.setblocking(0)
+
+    def sock_read(self, svc_id, op, data):
+        """Read BTP data from socket"""
+        toread_hdr_len = HDR_LEN
+        hdr = bytearray(toread_hdr_len)
+        hdr_memview = memoryview(hdr)
+
+        #Gather frame header
+        while toread_hdr_len:
+            try:
+                nbytes = self.conn.recv_into(hdr_memview, toread_hdr_len)
+                hdr_memview = hdr_memview[nbytes:]
+                toread_hdr_len -= nbytes
+            except:
+                #TODO timeout
+                continue
+
+        tuple_hdr = dec_hdr(hdr)
+        toread_data_len = tuple_hdr.data_len
+
+        log("Received hdr: %s", tuple_hdr)
+
+        if not toread_data_len:
+            if tuple_hdr.svc_id != svc_id:
+                log("Received wrong hdr, expected svc id = %s, got = %s",
+                    binascii.hexlify(svc_id), binascii.hexlify(tuple_hdr.svc_id))
+            if tuple_hdr.op != op:
+                log("Received wrong hdr, expected opcode = %s, got = %s",
+                    binascii.hexlify(op), binascii.hexlify(tuple_hdr.op))
+            return
+
+        data = bytearray(toread_data_len)
+        data_memview = memoryview(data)
+
+        #Gather optional frame data
+        while toread_data_len:
+            try:
+                nbytes = self.conn.recv_into(data_memview, toread_data_len)
+                data_memview = data_memview[nbytes:]
+                toread_data_len -= nbytes
+            except:
+                #TODO timeout
+                continue
+
+        tuple_data = dec_data(data)
+
+        log("Received data: %s", tuple_data)
+
+        if tuple_data != data:
+            #TODO handle if received other than expected data
+            log("Received wrong data, expected data = %s, got = %s",
+                    binascii.hexlify(data), binascii.hexlify(tuple_data))
+
+    def sock_send(self, svc_id, op, data):
+        """Send BTP formated data over socket"""
+        bin = enc_frame(svc_id, op, data)
+        self.conn.send(bin)
 
 def init(kernel_image):
     """IUT init routine
