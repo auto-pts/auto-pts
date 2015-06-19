@@ -6,7 +6,8 @@ log = logging.debug
 
 
 # qemu binary should be installed in shell PATH
-QEMU_BIN = "qemu-system-i386"
+QEMU_BIN = "qemu-system-arm"
+QEMU_UNIX_PATH = "/tmp/ubt_tester"
 
 # qemu log file object
 QEMU_LOG_FO = None
@@ -31,12 +32,10 @@ class ZephyrCtl:
 
         log("%s.%s", self.__class__, self.start.__name__)
 
-        qemu_cmd = "%s -m 32 -cpu qemu32 -no-reboot -nographic -display none " \
-                   "-net none -clock dynticks -no-acpi -balloon none " \
-                   "-no-hpet -L /usr/share/qemu -bios bios.bin -serial " \
-                   "mon:stdio -machine type=pc-0.14 -pidfile qemu.pid " \
-                   "-serial unix:/tmp/bt-server-bredr -kernel %s" \
-                   % (QEMU_BIN, self.kernel_image)
+        qemu_cmd = "%s -cpu cortex-m3 -machine lm3s6965evb -nographic " \
+                        "-serial mon:stdio -serial unix:/tmp/bt-server-bredr " \
+                        "-serial unix:%s -kernel %s" \
+                        % (QEMU_BIN, QEMU_UNIX_PATH, self.kernel_image)
 
         log("Starting QEMU zephyr process: %s", qemu_cmd)
 
