@@ -13,16 +13,24 @@ except ImportError: # running this module as script
         TestFuncCleanUp
     from ptsprojects.zephyr.qtestcase import QTestCase
 
+from ptsprojects.zephyr.iutctl import get_zephyr
+from msgdefs import *
+
 def test_cases():
     """Returns a list of GAP test cases
     pts -- Instance of PyPTS"""
+
+    zephyrctl = get_zephyr()
 
     test_cases = [
         #QTestCase("GAP", "TC_IDLE_NAMP_BV_02_C"),
         #QTestCase("GAP", "TC_CONN_UCON_BV_01_C"),
         #QTestCase("GAP", "TC_CONN_UCON_BV_02_C")
 
-        QTestCase("GAP", "TC_ADV_BV_03_C",),
+        QTestCase("GAP", "TC_ADV_BV_03_C",
+                  [TestFunc(zephyrctl.sock_send, SERVICE_ID['SERVICE_ID_CORE'], CORE_SERVICE_OP['OP_REGISTER_SERVICE'],
+                            (SERVICE_ID['SERVICE_ID_GAP'],) ),
+                   TestFunc(zephyrctl.sock_read)]),
         QTestCase("GAP", "TC_CONN_CPUP_BV_01_C"),
         QTestCase("GAP", "TC_CONN_CPUP_BV_02_C"),
         QTestCase("GAP", "TC_CONN_CPUP_BV_03_C"),
