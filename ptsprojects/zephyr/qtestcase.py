@@ -2,7 +2,7 @@
 
 from ptsprojects.testcase import TestCase, TestFunc, \
     TestFuncCleanUp
-from ptsprojects.zephyr.iutctl import ZephyrCtl
+from ptsprojects.zephyr.iutctl import get_zephyr
 
 class QTestCase(TestCase):
         """A test case that uses QEMU as DUT"""
@@ -16,7 +16,7 @@ class QTestCase(TestCase):
                                             cmds,
                                             no_wid)
 
-            self.zephyrctl = ZephyrCtl()
+            self.zephyrctl = get_zephyr()
 
             # first command is to start QEMU
             self.cmds.insert(0, TestFunc(self.zephyrctl.socks_open))

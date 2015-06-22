@@ -7,7 +7,7 @@ from btpparser import enc_frame, dec_hdr, dec_data
 from msgdefs import HDR_LEN
 
 log = logging.debug
-
+ZEPHYR = None
 
 # qemu binary should be installed in shell PATH
 QEMU_BIN = "qemu-system-arm"
@@ -55,6 +55,10 @@ class ZephyrCtl:
     def stop(self):
         """Powers off the Zephyr OS"""
         log("%s.%s", self.__class__, self.stop.__name__)
+
+        self.sock = None
+        self.conn = None
+        self.addr = None
 
         if self.qemu_process != None:
             self.qemu_process.terminate()
@@ -135,6 +139,9 @@ class ZephyrCtl:
         bin = enc_frame(svc_id, op, data)
         self.conn.send(bin)
 
+def get_zephyr():
+    return ZEPHYR
+
 def init(kernel_image):
     """IUT init routine
 
@@ -142,6 +149,7 @@ def init(kernel_image):
 
     global QEMU_LOG_FO
     global ZEPHYR_KERNEL_IMAGE
+    global ZEPHYR
 
     QEMU_LOG_FO = open("qemu-zephyr.log", "w")
 
@@ -151,8 +159,19 @@ def init(kernel_image):
 
     ZEPHYR_KERNEL_IMAGE = kernel_image
 
+    ZEPHYR = ZephyrCtl()
+
 def cleanup():
     """IUT cleanup routine"""
     global QEMU_LOG_FO
     QEMU_LOG_FO.close()
     QEMU_LOG_FO = None
+
+    #TODO - problems with this variable ??? why zephyr is not global here
+    ZEPHYR = get_zephyr()
+
+    if ZEPHYR is None:
+        return
+
+    ZEPHYR.stop()
+    ZEPHYR = None
