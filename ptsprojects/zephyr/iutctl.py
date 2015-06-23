@@ -3,6 +3,7 @@ import os
 import logging
 import socket
 import binascii
+import shlex
 from btpparser import enc_frame, dec_hdr, dec_data
 from msgdefs import HDR_LEN
 
@@ -47,8 +48,8 @@ class ZephyrCtl:
         log("Starting QEMU zephyr process: %s", qemu_cmd)
 
         # TODO check if zephyr process has started correctly
-        self.qemu_process = subprocess.Popen("exec " + qemu_cmd,
-                                             shell = True,
+        self.qemu_process = subprocess.Popen(shlex.split(qemu_cmd),
+                                             shell = False,
                                              stdout = QEMU_LOG_FO,
                                              stderr = QEMU_LOG_FO)
 
