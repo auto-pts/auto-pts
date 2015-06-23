@@ -1,6 +1,6 @@
 """Test case that manages Zephyr QEMU"""
 
-from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
+from ptsprojects.testcase import TestCase, TestFunc, \
     TestFuncCleanUp
 from ptsprojects.zephyr.iutctl import ZephyrCtl
 

@@ -1,7 +1,5 @@
 """GAP test cases"""
 
-import os
-
 try:
     from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
         TestFuncCleanUp
