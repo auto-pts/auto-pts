@@ -163,12 +163,9 @@ def init(kernel_image):
 
 def cleanup():
     """IUT cleanup routine"""
-    global QEMU_LOG_FO
+    global QEMU_LOG_FO, ZEPHYR
     QEMU_LOG_FO.close()
     QEMU_LOG_FO = None
-
-    #TODO - problems with this variable ??? why zephyr is not global here
-    ZEPHYR = get_zephyr()
 
     if ZEPHYR is None:
         return
