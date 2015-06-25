@@ -61,7 +61,7 @@ class ZephyrCtl:
         self.conn = None
         self.addr = None
 
-        if self.qemu_process != None:
+        if self.qemu_process.poll() is None:
             self.qemu_process.terminate()
             self.qemu_process.wait() # do not let zombies take over
 
