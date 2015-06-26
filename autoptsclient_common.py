@@ -6,7 +6,6 @@ import os
 import sys
 import socket
 import logging
-import argparse
 import xmlrpclib
 import threading
 from SimpleXMLRPCServer import SimpleXMLRPCServer
