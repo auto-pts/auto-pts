@@ -30,31 +30,29 @@ def timeout(seconds=10, error_message=os.strerror(errno.ETIME)):
 
     return decorator
 
-def help():
+def help(params):
     print "Avilable commands: "
     menu = cmds.viewkeys()
     print list(menu)
 
     return
 
-def exec_cmd(choice):
+def exec_cmd(choice, params):
     ch = choice.lower()
-    if ch == '':
-        cmds['help']()
-    else:
-        try:
-            cmds[ch]()
-        except KeyError:
-            print "Invalid selection, please try again.\n"
-            cmds['help']()
+    try:
+        cmds[ch](params)
+    except KeyError:
+        print "Invalid selection, please try again.\n"
+        cmds['help'](params)
+
     return
 
-def send():
+def send(params):
     print "send: "
 
     return
 
-def receive():
+def receive(params):
     print "receive: "
 
     return
@@ -70,7 +68,7 @@ def listen_accept():
 
     return
 
-def listen():
+def listen(params):
     global sock
 
     if conn is not None:
@@ -96,13 +94,21 @@ def listen():
 
     return
 
-def exit():
+def exit(params):
     os._exit(0)
 
 def prompt():
     while True:
         input = raw_input(" >> ")
-        exec_cmd(input)
+
+        if input == '':
+            continue
+
+        words = input.split()
+        choice = words[0]
+        params = words[1:]
+
+        exec_cmd(choice, params)
 
     return
 
