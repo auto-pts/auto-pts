@@ -42,7 +42,7 @@ def exec_cmd(choice, params):
     try:
         cmds[ch](params)
     except KeyError:
-        print "Invalid selection, please try again.\n"
+        print "error: Invalid selection, please try again.\n"
         cmds['help'](params)
 
     return
@@ -85,12 +85,12 @@ def listen(params):
 
         #queue only one connection
         sock.listen(1)
-        print "created fd %s, listenieng..." % QEMU_UNIX_PATH
+        print "created fd %s, listening..." % QEMU_UNIX_PATH
 
     try:
         listen_accept()
     except TimeoutError:
-        print "connection timeout..."
+        print "error: Connection timeout..."
 
     return
 
