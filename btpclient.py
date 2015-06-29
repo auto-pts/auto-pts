@@ -62,6 +62,8 @@ def exec_cmd(choice, params):
     return
 
 def send(params):
+    if conn_chk() is False:
+        return
     print "send: "
 
     return
@@ -110,6 +112,13 @@ def listen(params):
 
 def exit(params):
     os._exit(0)
+
+def conn_chk():
+    if conn is None:
+        print "error: btp client is not connected"
+        return False
+
+    return True
 
 def prompt():
     while True:
