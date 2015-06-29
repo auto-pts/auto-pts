@@ -2,6 +2,7 @@ import sys, os
 import socket
 import signal
 import errno
+import readline
 from functools import wraps
 
 sock = None
@@ -11,6 +12,19 @@ QEMU_UNIX_PATH = "/tmp/ubt_tester"
 
 class TimeoutError(Exception):
     pass
+
+class Completer:
+    def __init__(self, words):
+        self.words = words
+        self.prefix = None
+    def complete(self, prefix, index):
+        if prefix != self.prefix:
+            self.matching_words = [ w for w in self.words if w.startswith(prefix) ]
+            self.prefix = prefix
+        try:
+            return self.matching_words[index]
+        except IndexError:
+            return None
 
 def timeout(seconds=10, error_message=os.strerror(errno.ETIME)):
     def decorator(func):
@@ -112,7 +126,15 @@ def prompt():
 
     return
 
+def setup_completion():
+    completer = Completer(cmds)
+
+    readline.parse_and_bind("tab: complete")
+    readline.set_completer(completer.complete)
+
 def main():
+    setup_completion()
+
     try:
         prompt()
     except:
