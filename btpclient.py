@@ -106,7 +106,11 @@ def send(params):
     frame = enc_frame(char_svc_id, char_op, hex_data)
 
     conn.send(frame)
-    receive(None)
+
+    try:
+        receive(None)
+    except TimeoutError:
+        print "error: problem with receiving response from server"
 
     return
 
@@ -126,7 +130,6 @@ def receive(params):
             hdr_memview = hdr_memview[nbytes:]
             toread_hdr_len -= nbytes
         except:
-            #TODO timeout
             continue
 
     tuple_hdr = dec_hdr(hdr)
@@ -144,7 +147,6 @@ def receive(params):
             data_memview = data_memview[nbytes:]
             toread_data_len -= nbytes
         except:
-            #TODO timeout
             continue
 
     tuple_data = dec_data(data)
