@@ -106,11 +106,50 @@ def send(params):
     frame = enc_frame(char_svc_id, char_op, hex_data)
 
     conn.send(frame)
+    receive(None)
 
     return
 
+@timeout(2)
 def receive(params):
-    print "receive: "
+    if conn_chk() is False:
+        return
+
+    toread_hdr_len = HDR_LEN
+    hdr = bytearray(toread_hdr_len)
+    hdr_memview = memoryview(hdr)
+
+    #Gather frame header
+    while toread_hdr_len:
+        try:
+            nbytes = conn.recv_into(hdr_memview, toread_hdr_len)
+            hdr_memview = hdr_memview[nbytes:]
+            toread_hdr_len -= nbytes
+        except:
+            #TODO timeout
+            continue
+
+    tuple_hdr = dec_hdr(hdr)
+    toread_data_len = tuple_hdr.data_len
+
+    print "Received: hdr", tuple_hdr
+
+    data = bytearray(toread_data_len)
+    data_memview = memoryview(data)
+
+    #Gather optional frame data
+    while toread_data_len:
+        try:
+            nbytes = conn.recv_into(data_memview, toread_data_len)
+            data_memview = data_memview[nbytes:]
+            toread_data_len -= nbytes
+        except:
+            #TODO timeout
+            continue
+
+    tuple_data = dec_data(data)
+
+    print "Received data: ", tuple_data
 
     return
 
