@@ -61,6 +61,8 @@ def exec_cmd(choice, params):
     except KeyError:
         print "error: Invalid selection, please try again.\n"
         cmds['help'](params)
+    except TimeoutError:
+        print "error: requested command timed out"
 
     return
 
