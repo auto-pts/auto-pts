@@ -3,7 +3,10 @@ import socket
 import signal
 import errno
 import readline
+import binascii
+from ptsprojects.zephyr.msgdefs import *
 from functools import wraps
+from ptsprojects.zephyr.btpparser import enc_frame, dec_hdr, dec_data
 
 sock = None
 conn = None
@@ -64,7 +67,45 @@ def exec_cmd(choice, params):
 def send(params):
     if conn_chk() is False:
         return
-    print "send: "
+
+    try:
+        svc_id = params[0]
+        op = params[1]
+    except IndexError:
+        print "Invalid send frame format/data, usage: send 0 0 00 or send 0 0"
+        return
+
+    try:
+        data = params[2]
+    except IndexError:
+        data = ""
+
+    try:
+        char_svc_id = chr(int(svc_id))
+    except ValueError:
+        print "error: Wrong svc_id format, possible values: ", SERVICE_ID
+        return
+
+    if char_svc_id not in SERVICE_ID.values():
+        print "error: Given service ID not supported!"
+        return
+
+    try:
+        char_op = chr(int(op))
+    except ValueError:
+        print "error: Wrong op format, should be an int: \"0-255\""
+        return
+
+    try:
+        hex_data = binascii.unhexlify(data)
+    except TypeError:
+        print "error: Wrong data type, should be e.g.: \"0011223344ff\""
+        return
+
+
+    frame = enc_frame(char_svc_id, char_op, hex_data)
+
+    conn.send(frame)
 
     return
 
