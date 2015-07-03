@@ -44,6 +44,8 @@ def main():
     autoprojects.iutctl.init(args.kernel_image)
 
     test_cases = autoprojects.gap.test_cases()
+    test_cases += autoprojects.gatt.test_cases()
+
     autoptsclient.run_test_cases(proxy, test_cases)
 
     autoprojects.iutctl.cleanup()
