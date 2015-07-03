@@ -70,6 +70,25 @@ def init():
     init_pts(args.workspace)
     exec_adb_root()
 
+def run_test_case(pts, test_case):
+    """Runs the test case specified by a TestCase instance.
+
+    This method will cause the status of TestCase to be updated
+    automatically and its on_implicit_send to be called from PTSSender
+
+    """
+    log("Starting TestCase %s %s", run_test_case.__name__, test_case)
+
+    pts.register_ptscallback(test_case)
+
+    test_case.pre_run()
+    error_code = pts.run_test_case(test_case.project_name, test_case.name)
+    test_case.post_run(error_code)
+
+    pts.unregister_ptscallback()
+
+    log("Done TestCase %s %s", run_test_case.__name__, test_case)
+
 def main():
     """Main."""
     init()
@@ -93,7 +112,7 @@ def main():
                str(num_test_cases).ljust(num_test_cases_width + margin) +
                test_case.project_name.ljust(max_project_name + margin) +
                test_case.name.ljust(max_test_case_name + margin - 1)),
-        PTS.run_test_case_object(test_case)
+        run_test_case(PTS, test_case)
         print test_case.status
 
     print "\nBye!"

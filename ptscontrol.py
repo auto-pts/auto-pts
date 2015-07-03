@@ -338,29 +338,6 @@ class PyPTS:
 
         return error_code
 
-    def run_test_case_object(self, test_case):
-        """Runs the test case specified by a TestCase instance.
-
-        This method will cause the status of TestCase to be updated
-        automatically and its on_implicit_send to be called from PTSSender
-
-        NOTE: cannot be used over xmlrpc, unless marshalling of TestCase is
-        implemented
-
-        """
-        log("Starting TestCase %s %s", self.run_test_case_object.__name__,
-            test_case)
-
-        self.register_ptscallback(test_case)
-
-        test_case.pre_run()
-        error_code = self.run_test_case(test_case.project_name, test_case.name)
-        test_case.post_run(error_code)
-
-        self.unregister_ptscallback()
-
-        log("Done TestCase %s %s", self.run_test_case.__name__, test_case)
-
     def stop_test_case(self, project_name, test_case_name):
         """NOTE: According to documentation 'StopTestCase() is not currently
         implemented'"""
