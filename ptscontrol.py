@@ -310,15 +310,33 @@ class PyPTS:
         return is_active_bool
 
     def run_test_case(self, project_name, test_case_name):
-        """Executes the specified Test Case."""
+        """Executes the specified Test Case.
+
+        If an error occurs when running test case returns code of an error as a
+        string, otherwise returns an empty string
+        """
 
         log("Starting %s %s %s", self.run_test_case.__name__, project_name,
             test_case_name)
 
-        self._pts.RunTestCase(project_name, test_case_name)
+        error_code = ""
 
-        log("Done %s %s %s", self.run_test_case.__name__, project_name,
-            test_case_name)
+        try:
+            self._pts.RunTestCase(project_name, test_case_name)
+
+        except System.Runtime.InteropServices.COMException as exc:
+            log("Exception in %s", self.run_test_case.__name__)
+            log(exc)
+            # timeout set by SetPTSCallTimeout expired, exception is thrown
+            # with HRESULT PTSCONTROL_E_TESTCASE_TIMEOUT (0x849C0017)
+            hresult = System.UInt32(exc.HResult)
+            if hresult.Equals(System.UInt32(0x849C0017)):
+                error_code = "PTSCONTROL_E_TESTCASE_TIMEOUT"
+
+        log("Done %s %s %s out: %s", self.run_test_case.__name__,
+            project_name, test_case_name, error_code)
+
+        return error_code
 
     def run_test_case_object(self, test_case):
         """Runs the test case specified by a TestCase instance.
@@ -336,8 +354,8 @@ class PyPTS:
         self.register_ptscallback(test_case)
 
         test_case.pre_run()
-        self.run_test_case(test_case.project_name, test_case.name)
-        test_case.post_run()
+        error_code = self.run_test_case(test_case.project_name, test_case.name)
+        test_case.post_run(error_code)
 
         self.unregister_ptscallback()
 

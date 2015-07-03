@@ -227,9 +227,18 @@ class TestCase(PTSCallback):
             if cmd.start_wid is None and not is_cleanup_func(cmd):
                 cmd.start()
 
-    def post_run(self):
-        """Method called after test case is run in PTS"""
-        log("%s %s %s" % (self.post_run.__name__, self.project_name, self.name))
+    def post_run(self, error_code):
+        """Method called after test case is run in PTS
+
+        error_code -- String code of an error that occured during test run
+        """
+        log("%s %s %s %s" % (self.post_run.__name__, self.project_name,
+                             self.name, error_code))
+
+        if error_code == "PTSCONTROL_E_TESTCASE_TIMEOUT":
+            self.status = "TIMEOUT"
+        elif error_code:
+            raise Exception("Unknown error code!")
 
         # run the clean-up commands
         for cmd in self.cmds:

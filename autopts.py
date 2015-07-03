@@ -85,6 +85,8 @@ def main():
     max_project_name, max_test_case_name = get_max_test_case_desc(test_cases)
     margin = 3
 
+    PTS.set_call_timeout(120000) # milliseconds
+
     for index, test_case in enumerate(test_cases):
         print (str(index + 1).rjust(num_test_cases_width) +
                "/" +

@@ -141,20 +141,6 @@ def start_callback():
     server.register_introspection_functions()
     server.serve_forever()
 
-def run_test_case(pts, test_case):
-    """Runs the test case specified by a TestCase instance."""
-    log("Starting TestCase %s %s", run_test_case.__name__, test_case)
-
-    global RUNNING_TEST_CASE
-    RUNNING_TEST_CASE = test_case
-
-    test_case.pre_run()
-    pts.run_test_case(test_case.project_name, test_case.name)
-    test_case.post_run()
-    RUNNING_TEST_CASE = None
-
-    log("Done TestCase %s %s", run_test_case.__name__, test_case)
-
 def init_core(server_address, workspace_path):
     "Initialization procedure"
 
@@ -188,7 +174,24 @@ def init_core(server_address, workspace_path):
 
     return proxy
 
-def run_test_cases(proxy, test_cases):
+def run_test_case(pts, test_case):
+    """Runs the test case specified by a TestCase instance."""
+    log("Starting TestCase %s %s", run_test_case.__name__, test_case)
+
+    global RUNNING_TEST_CASE
+    RUNNING_TEST_CASE = test_case
+
+    test_case.pre_run()
+    error_code = pts.run_test_case(test_case.project_name, test_case.name)
+    test_case.post_run(error_code)
+    RUNNING_TEST_CASE = None
+
+    log("Done TestCase %s %s", run_test_case.__name__, test_case)
+
+def run_test_cases(pts, test_cases):
+    """Runs a list of test cases"""
+
+    pts.set_call_timeout(120000) # milliseconds
 
     num_test_cases = len(test_cases)
     num_test_cases_width = len(str(num_test_cases))
@@ -202,5 +205,5 @@ def run_test_cases(proxy, test_cases):
                test_case.project_name.ljust(max_project_name + margin) +
                test_case.name.ljust(max_test_case_name + margin - 1)),
         sys.stdout.flush()
-        run_test_case(proxy, test_case)
+        run_test_case(pts, test_case)
         print test_case.status
