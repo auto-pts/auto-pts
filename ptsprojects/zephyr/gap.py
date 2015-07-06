@@ -23,10 +23,6 @@ def test_cases():
     zephyrctl = get_zephyr()
 
     test_cases = [
-        #QTestCase("GAP", "TC_IDLE_NAMP_BV_02_C"),
-        #QTestCase("GAP", "TC_CONN_UCON_BV_01_C"),
-        #QTestCase("GAP", "TC_CONN_UCON_BV_02_C")
-
         QTestCase("GAP", "TC_CONN_CPUP_BV_01_C",
                   [TestFunc(zephyrctl.sock_send, SERVICE_ID['SERVICE_ID_CORE'], CORE_SERVICE_OP['OP_REGISTER_SERVICE'],
                             (SERVICE_ID['SERVICE_ID_GAP'],) ),
@@ -75,12 +71,30 @@ def test_cases():
                    TestFunc(zephyrctl.sock_send, SERVICE_ID['SERVICE_ID_GAP'], GAP_SERVICE_OP['OP_GAP_START_ADV'],
                             (ADV_TYPE['ADV_IND'],) ),
                   ]),
-        QTestCase("GAP", "TC_DISC_GENM_BV_04_C"),
-        QTestCase("GAP", "TC_DISC_NONM_BV_01_C"),
-        QTestCase("GAP", "TC_CONN_NCON_BV_01_C"),
-        QTestCase("GAP", "TC_ADV_BV_03_C"),
-        QTestCase("GAP", "TC_GAT_BV_01_C"),
-        QTestCase("GAP", "TC_CONN_TERM_BV_01_C"),
+        #TODO No needed implementation of setting discoverable mode
+        #QTestCase("GAP", "TC_DISC_GENM_BV_04_C"),
+        QTestCase("GAP", "TC_DISC_NONM_BV_01_C",
+                  [TestFunc(zephyrctl.sock_send, SERVICE_ID['SERVICE_ID_CORE'], CORE_SERVICE_OP['OP_REGISTER_SERVICE'],
+                            (SERVICE_ID['SERVICE_ID_GAP'],) ),
+                   TestFunc(zephyrctl.sock_read, SERVICE_ID['SERVICE_ID_CORE'], CORE_SERVICE_OP['OP_REGISTER_SERVICE'],
+                            None),
+                   TestFunc(zephyrctl.sock_send, SERVICE_ID['SERVICE_ID_GAP'], GAP_SERVICE_OP['OP_GAP_START_ADV'],
+                            (ADV_TYPE['ADV_NONCONN_IND'],) ),
+                  ]),
+        QTestCase("GAP", "TC_CONN_NCON_BV_01_C",
+                  [TestFunc(zephyrctl.sock_send, SERVICE_ID['SERVICE_ID_CORE'], CORE_SERVICE_OP['OP_REGISTER_SERVICE'],
+                            (SERVICE_ID['SERVICE_ID_GAP'],) ),
+                   TestFunc(zephyrctl.sock_read, SERVICE_ID['SERVICE_ID_CORE'], CORE_SERVICE_OP['OP_REGISTER_SERVICE'],
+                            None),
+                   TestFunc(zephyrctl.sock_send, SERVICE_ID['SERVICE_ID_GAP'], GAP_SERVICE_OP['OP_GAP_START_ADV'],
+                            (ADV_TYPE['ADV_NONCONN_IND'],) ),
+                  ]),
+        #TODO No support to set flags in adv data
+        #QTestCase("GAP", "TC_ADV_BV_03_C"),
+        #TODO Mandatory GAP services missing on IUT
+        #QTestCase("GAP", "TC_GAT_BV_01_C"),
+        #TODO implementation of ZEPHYR disconnect is needed
+        #QTestCase("GAP", "TC_CONN_TERM_BV_01_C"),
     ]
 
     return test_cases
