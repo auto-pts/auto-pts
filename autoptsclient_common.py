@@ -133,7 +133,7 @@ def start_callback():
 
     callback = ClientCallback()
 
-    print "Serving on port {}...".format(SERVER_PORT)
+    print "Serving on port {} ...\n".format(SERVER_PORT)
 
     server = SimpleXMLRPCServer(("", SERVER_PORT),
                                 allow_none = True, logRequests = False)
@@ -153,15 +153,22 @@ def init_core(server_address, workspace_path):
                         filemode = 'w',
                         level = logging.DEBUG)
 
-    # to prevent SimpleXMLRPCServer blocking whole app start it in a thread
-    thread = threading.Thread(target = start_callback)
-    thread.start()
-
     log("my IP address is: %s", get_my_ip_address())
 
     proxy = xmlrpclib.ServerProxy(
         "http://{}:{}/".format(server_address, SERVER_PORT),
         allow_none = True,)
+
+    print "Starting PTS ...",
+    sys.stdout.flush()
+    proxy.restart_pts()
+    print "OK"
+
+    # to prevent SimpleXMLRPCServer blocking whole app start it in a thread
+    thread = threading.Thread(target = start_callback)
+    thread.start()
+
+    proxy.set_call_timeout(120000) # milliseconds
 
     log("Server methods: %s", proxy.system.listMethods())
     log("PTS Version: %x", proxy.get_version())
@@ -190,8 +197,6 @@ def run_test_case(pts, test_case):
 
 def run_test_cases(pts, test_cases):
     """Runs a list of test cases"""
-
-    pts.set_call_timeout(120000) # milliseconds
 
     num_test_cases = len(test_cases)
     num_test_cases_width = len(str(num_test_cases))
