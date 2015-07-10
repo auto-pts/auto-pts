@@ -5,6 +5,7 @@ Cause of tight coupling with PTS, this module is Windows specific
 
 import os
 import sys
+import time
 import logging
 import argparse
 
@@ -177,6 +178,45 @@ class PyPTS:
         """Constructor"""
         log("%s", self.__init__.__name__)
 
+        self._pts = None
+
+        self._pts_logger = None
+        self._pts_sender = None
+
+        # Cached frequently used PTS attributes: for optimisation reasons it is
+        # avoided to contact PTS. These attributes should not change anyway.
+        self.__bd_addr = None
+
+        # This is done to have valid _pts in case client does not restart_pts
+        # and uses other methods. Normally though, the client should
+        # restart_pts, see its docstring for the details
+        self.start_pts()
+
+    def restart_pts(self):
+        """Restarts PTS
+
+        Timeouts break some PTS functionality, hence it is good idea to start a
+        new instance of PTS every time. For details see:
+
+        https://www.bluetooth.org/pts/issues/view_issue.cfm?id=13794
+
+        This function will block for couple of seconds while PTS starts
+
+        """
+
+        log("%s", self.restart_pts.__name__)
+
+        self.stop_pts()
+        time.sleep(3) # otherwise there are COM errors occasionally
+        self.start_pts()
+
+    def start_pts(self):
+        """Starts PTS
+
+        This function will block for couple of seconds while PTS starts"""
+
+        log("%s", self.start_pts.__name__)
+
         self._pts = PTSControl.PTSControlClass()
 
         self._pts_logger = PTSLogger()
@@ -194,6 +234,20 @@ class PyPTS:
         log("PTS Version: %x", self.get_version())
         log("PTS Bluetooth Address: %x", self.get_bluetooth_address())
         log("PTS BD_ADDR: %s" % self.bd_addr())
+
+    def stop_pts(self):
+        """Stops PTS"""
+
+        log("%s", self.stop_pts.__name__)
+
+        pts_process_list = System.Diagnostics.Process.GetProcessesByName("PTS")
+
+        log("Got PTS process list: %s", pts_process_list)
+
+        # in reality there should be only one pts process
+        for pts_process in pts_process_list:
+            log("About to kill PTS process: %s", pts_process)
+            pts_process.Kill()
 
     def create_workspace(self, bd_addr, pts_file_path, workspace_name,
                          workspace_path):
