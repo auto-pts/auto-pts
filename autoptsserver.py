@@ -17,6 +17,9 @@ class PyPTSWithXmlRpcCallback(ptscontrol.PyPTS):
 
     def __init__(self):
         """Constructor"""
+
+        log("%s", self.__init__.__name__)
+
         ptscontrol.PyPTS.__init__(self)
 
         # address of the auto-pts client that started it's own xmlrpc server to
@@ -33,6 +36,9 @@ class PyPTSWithXmlRpcCallback(ptscontrol.PyPTS):
         client_port -- TCP port
         """
 
+        log("%s %s %d", self.register_xmlrpc_ptscallback.__name__,
+            client_address, client_port)
+
         self.client_address = client_address
         self.client_port = client_port
 
@@ -47,7 +53,9 @@ class PyPTSWithXmlRpcCallback(ptscontrol.PyPTS):
 
     def unregister_xmlrpc_ptscallback(self):
         """Unregisters the client callback"""
+
         log("%s", self.unregister_xmlrpc_ptscallback.__name__)
+
         self.unregister_ptscallback()
 
         self.client_address = None
