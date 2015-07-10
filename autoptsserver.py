@@ -75,11 +75,11 @@ def main():
                         filemode = 'w',
                         level = logging.DEBUG)
 
-    print "Starting PTS"
-
+    print "Starting PTS ...",
     pts = PyPTSWithXmlRpcCallback()
+    print "OK"
 
-    print "Serving on port {}...".format(PORT)
+    print "Serving on port {} ...".format(PORT)
 
     server = SimpleXMLRPCServer(("", PORT), allow_none = True)
     server.register_instance(pts)
