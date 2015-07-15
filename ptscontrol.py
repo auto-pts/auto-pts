@@ -187,10 +187,37 @@ class PyPTS:
         # avoided to contact PTS. These attributes should not change anyway.
         self.__bd_addr = None
 
+        # dictionay of PTS settings to recover after timeout, key is a method,
+        # and value is the method arguments
+        self._recov = {}
+
         # This is done to have valid _pts in case client does not restart_pts
         # and uses other methods. Normally though, the client should
         # restart_pts, see its docstring for the details
         self.start_pts()
+
+    def recover_from_timeout(self):
+        """Recovers from timeout set by SetPTSCallTimeout. The only way to correctly
+        recover is to restart PTS and restore its settings.
+
+        Timeouts break some PTS functionality, hence it is good idea to start a
+        new instance of PTS every time. For details see:
+
+        https://www.bluetooth.org/pts/issues/view_issue.cfm?id=13794
+
+        PTS timeouts also break run_test_case in a way that the status of
+        completed test cases is incorrect.
+
+        """
+
+        log("%s", self.recover_from_timeout.__name__)
+        log("recov=%s", self._recov)
+
+        self.restart_pts()
+
+        for func, args in self._recov.iteritems():
+            log("Recovering: %s, %s", func, args)
+            func(*args)
 
     def restart_pts(self):
         """Restarts PTS
@@ -277,6 +304,7 @@ class PyPTS:
                 (workspace_path, required_ext))
 
         self._pts.OpenWorkspace(workspace_path)
+        self._recov[self.open_workspace] = (workspace_path,)
 
     def get_project_count(self):
         """Returns number of projects available in the current workspace"""
@@ -386,6 +414,7 @@ class PyPTS:
             hresult = System.UInt32(exc.HResult)
             if hresult.Equals(System.UInt32(0x849C0017)):
                 error_code = "PTSCONTROL_E_TESTCASE_TIMEOUT"
+                self.recover_from_timeout()
 
         log("Done %s %s %s out: %s", self.run_test_case.__name__,
             project_name, test_case_name, error_code)
@@ -482,6 +511,11 @@ class PyPTS:
 
         log("%s %s", self.set_call_timeout.__name__, timeout)
         self._pts.SetPTSCallTimeout(timeout)
+
+        if timeout:
+            self._recov[self.set_call_timeout] = (timeout,)
+        else: # timeout 0 = no timeout
+            self._recov.pop(self.set_call_timeout, None)
 
     def save_test_history_log(self, save):
         """This function enables automation clients to specify whether test
@@ -582,6 +616,8 @@ class PyPTS:
         self._pts_logger.set_callback(callback)
         self._pts_sender.set_callback(callback)
 
+        self._recov[self.register_ptscallback] = (callback,)
+
     def unregister_ptscallback(self):
         """Unregisters the testcase.PTSCallback callback"""
 
@@ -589,6 +625,8 @@ class PyPTS:
 
         self._pts_logger.unset_callback()
         self._pts_sender.unset_callback()
+
+        self._recov.pop(self.register_ptscallback)
 
 def parse_args():
     """Parses command line arguments and options"""
