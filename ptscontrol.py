@@ -194,7 +194,12 @@ class PyPTS:
         # This is done to have valid _pts in case client does not restart_pts
         # and uses other methods. Normally though, the client should
         # restart_pts, see its docstring for the details
-        self.start_pts()
+        #
+        # Another reason: PTS starting from version 6.2 returns
+        # PTSCONTROL_E_IMPLICIT_SEND_CALLBACK_ALREADY_REGISTERED 0x849C004 in
+        # RegisterImplicitSendCallbackEx if PTS from previous autoptsserver is
+        # used
+        self.restart_pts()
 
     def recover_from_timeout(self):
         """Recovers from timeout set by SetPTSCallTimeout. The only way to correctly
