@@ -62,8 +62,6 @@ def help(params):
 
     print "\nEvery command has its own minihelp, type: \"<cmd> help\", to get specific help"
 
-    return
-
 def exec_cmd(choice, params):
     ch = choice.lower()
     try:
@@ -73,8 +71,6 @@ def exec_cmd(choice, params):
         cmds['help'](params)
     except TimeoutError:
         print "error: requested command timed out"
-
-    return
 
 def send(params):
     if params[0] == "help":
@@ -124,9 +120,7 @@ def send(params):
         print "error: Wrong data type, should be e.g.: \"0011223344ff\""
         return
 
-
     frame = enc_frame(char_svc_id, char_op, hex_data)
-
     conn.send(frame)
 
     try:
@@ -164,7 +158,7 @@ def receive(params):
     tuple_hdr = dec_hdr(hdr)
     toread_data_len = tuple_hdr.data_len
 
-    print "Received: hdr", tuple_hdr
+    print "Received: hdr: ", tuple_hdr
 
     data = bytearray(toread_data_len)
     data_memview = memoryview(data)
@@ -181,8 +175,6 @@ def receive(params):
     tuple_data = dec_data(data)
 
     print "Received data: ", tuple_data
-
-    return
 
 @timeout(10)
 def listen_accept():
@@ -207,7 +199,6 @@ def listen(params):
 
     if conn is not None:
         print "btpclient is already connected to btp server"
-
         return
 
     if sock is None:
@@ -225,8 +216,6 @@ def listen(params):
         listen_accept()
     except TimeoutError:
         print "error: Connection timeout..."
-
-    return
 
 def exit(params):
     os._exit(0)
@@ -250,8 +239,6 @@ def prompt():
         params = words[1:]
 
         exec_cmd(choice, params)
-
-    return
 
 def setup_completion():
     completer = Completer(cmds)
