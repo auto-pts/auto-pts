@@ -21,6 +21,14 @@ class Completer:
         self.words = words
         self.prefix = None
     def complete(self, prefix, index):
+        if len(prefix.split()) > 1:
+            return None
+        if prefix.split()[0] in self.words and len(prefix.split()) == 1:
+            try:
+                return prefix.split()[index] + ' ' + "help"
+            except IndexError:
+                return None
+
         if prefix != self.prefix:
             self.matching_words = [ w for w in self.words if w.startswith(prefix) ]
             self.prefix = prefix
@@ -74,7 +82,7 @@ def send(params):
         svc_id = params[0]
         op = params[1]
     except IndexError:
-        print "Invalid send frame format/data, usage: send 0 0 00 or send 0 0"
+        print "Invalid send frame format/data (check - send help)"
         return
 
     try:
@@ -224,6 +232,7 @@ def setup_completion():
 
     readline.parse_and_bind("tab: complete")
     readline.set_completer(completer.complete)
+    readline.set_completer_delims('')
 
 def main():
     setup_completion()
