@@ -60,6 +60,8 @@ def help(params):
     menu = cmds.viewkeys()
     print list(menu)
 
+    print "\nEvery command has its own minihelp, type: \"<cmd> help\", to get specific help"
+
     return
 
 def exec_cmd(choice, params):
@@ -75,6 +77,16 @@ def exec_cmd(choice, params):
     return
 
 def send(params):
+    if params[0] == "help":
+        print "\nUsage:"
+        print "\tsend <service_id> <opcode> [<data>]"
+        print "\nExample:"
+        print "\tsend 0 1 01"
+        print "\nDescription:"
+        print "\tsend <int> <int> <hex>"
+        print "\t(send SERVICE_ID_CORE = 0x00, OP_REGISTER_SERVICE = 0x01, SERVICE_ID_GAP = 0x01...)"
+        return
+
     if conn_chk() is False:
         return
 
@@ -126,6 +138,13 @@ def send(params):
 
 @timeout(2)
 def receive(params):
+    if params[0] == "help":
+        print "\nUsage:"
+        print "\treceive"
+        print "\nDescription:"
+        print "\tThis method waits (timeout = 2sec) and reads data from btp socket"
+        return
+
     if conn_chk() is False:
         return
 
@@ -178,6 +197,13 @@ def listen_accept():
 
 def listen(params):
     global sock
+
+    if params[0] == "help":
+        print "\nUsage:"
+        print "\tlisten"
+        print "\nDescription:"
+        print "\tThis method starts listening btpclient for btpserver connection with 10sec timeout"
+        return
 
     if conn is not None:
         print "btpclient is already connected to btp server"
