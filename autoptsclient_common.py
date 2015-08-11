@@ -141,7 +141,7 @@ def start_callback():
     server.register_introspection_functions()
     server.serve_forever()
 
-def init_core(server_address, workspace_path):
+def init_core(server_address, workspace_path, bd_addr):
     "Initialization procedure"
 
     script_name = os.path.basename(sys.argv[0]) # in case it is full path
@@ -178,6 +178,13 @@ def init_core(server_address, workspace_path):
 
     log("Opening workspace: %s", workspace_path)
     proxy.open_workspace(workspace_path)
+
+    if bd_addr:
+        project_count = proxy.get_project_count()
+        for index in range(project_count):
+            project_name = proxy.get_project_name(index)
+            log("Set bd_addr PIXIT: %s for project: %s", bd_addr, project_name)
+            proxy.update_pixit_param(project_name, "TSPX_bd_addr_iut", bd_addr)
 
     return proxy
 
