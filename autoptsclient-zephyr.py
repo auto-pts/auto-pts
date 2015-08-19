@@ -18,15 +18,18 @@ def parse_args():
                             help = "IP address of the PTS automation server")
 
     arg_parser.add_argument("workspace",
-                            help = ("Path to PTS workspace file to use for "
+                            help = "Path to PTS workspace file to use for "
                                     "testing. It should have pqw6 extension. "
                                     "The file should be located on the "
                                     "Windows machine, where the PTS "
-                                    "automation server is running"))
+                                    "automation server is running")
 
     arg_parser.add_argument("kernel_image",
-                            help = ("Zephyr OS kernel image to be used in QEMU. "
-                                    "Normally a microkernel.elf file."))
+                            help = "Zephyr OS kernel image to be used in QEMU. "
+                                    "Normally a microkernel.elf file.")
+
+    arg_parser.add_argument("--bd-addr",
+                            help = "Clients bluetooth address")
 
     args = arg_parser.parse_args()
 
@@ -39,7 +42,8 @@ def main():
 
     args = parse_args()
 
-    proxy = autoptsclient.init_core(args.server_address, args.workspace)
+    proxy = autoptsclient.init_core(args.server_address, args.workspace,
+                                    args.bd_addr)
 
     autoprojects.iutctl.init(args.kernel_image)
 
