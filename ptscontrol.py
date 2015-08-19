@@ -285,7 +285,7 @@ class PyPTS:
                          workspace_path):
         """Creates a new workspace"""
 
-        log("%s %s %s %s", self.create_workspace.__name__, bd_addr,
+        log("%s %s %s %s %s", self.create_workspace.__name__, bd_addr,
             pts_file_path, workspace_name, workspace_path)
 
         self._pts.CreateWorkspace(bd_addr, pts_file_path, workspace_name,
