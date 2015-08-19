@@ -289,7 +289,7 @@ class PyPTS:
             pts_file_path, workspace_name, workspace_path)
 
         self._pts.CreateWorkspace(bd_addr, pts_file_path, workspace_name,
-                                   workspace_path)
+                                  workspace_path)
 
     def open_workspace(self, workspace_path):
         """Opens existing workspace"""
