@@ -738,11 +738,6 @@ def main():
     pts.save_test_history_log(True)
     pts.save_test_history_log(False)
 
-    pts.register_implicit_send_callback_ex(None)
-    pts.unregister_implicit_send_callback_ex(None)
-
-    pts.set_control_client_logger_callback(None)
-
     print
     print "PTS Bluetooth Address: %x" % pts.get_bluetooth_address()
     print "PTS BD_ADDR:", pts.bd_addr()
