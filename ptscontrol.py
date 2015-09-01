@@ -178,14 +178,7 @@ class PyPTS:
         """Constructor"""
         log("%s", self.__init__.__name__)
 
-        self._pts = None
-
-        self._pts_logger = None
-        self._pts_sender = None
-
-        # Cached frequently used PTS attributes: for optimisation reasons it is
-        # avoided to contact PTS. These attributes should not change anyway.
-        self.__bd_addr = None
+        self._init_attributes()
 
         # dictionay of PTS settings to recover after timeout, key is a method,
         # and value is the method arguments
@@ -200,6 +193,18 @@ class PyPTS:
         # RegisterImplicitSendCallbackEx if PTS from previous autoptsserver is
         # used
         self.restart_pts()
+
+    def _init_attributes(self):
+        """Initializes class attributes"""
+
+        self._pts = None
+
+        self._pts_logger = None
+        self._pts_sender = None
+
+        # Cached frequently used PTS attributes: for optimisation reasons it is
+        # avoided to contact PTS. These attributes should not change anyway.
+        self.__bd_addr = None
 
     def recover_from_timeout(self):
         """Recovers from timeout set by SetPTSCallTimeout. The only way to correctly
@@ -280,6 +285,8 @@ class PyPTS:
         for pts_process in pts_process_list:
             log("About to kill PTS process: %s", pts_process)
             pts_process.Kill()
+
+        self._init_attributes()
 
     def create_workspace(self, bd_addr, pts_file_path, workspace_name,
                          workspace_path):
