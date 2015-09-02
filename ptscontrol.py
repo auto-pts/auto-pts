@@ -15,6 +15,11 @@ import System
 import ctypes
 libc = ctypes.cdll.msvcrt # for wcscpy_s
 
+# workaround to a bug in IronPython: cwd in missing from sys.path under pdb
+# https://github.com/IronLanguages/main/issues/1225
+if "pdb" in sys.modules:
+    sys.path.insert(0, os.getcwd())
+
 # load the PTS interop assembly
 clr.AddReferenceToFile("Interop.PTSControl.dll")
 
