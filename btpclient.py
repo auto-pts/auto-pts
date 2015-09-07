@@ -73,7 +73,7 @@ def exec_cmd(choice, params):
         print "error: requested command timed out"
 
 def send(params):
-    if params[0] == "help":
+    if len(params) == 1 and params[0] == "help":
         print "\nUsage:"
         print "\tsend <service_id> <opcode> [<data>]"
         print "\nExample:"
@@ -132,7 +132,7 @@ def send(params):
 
 @timeout(2)
 def receive(params):
-    if params[0] == "help":
+    if params != None and params[0] == "help":
         print "\nUsage:"
         print "\treceive"
         print "\nDescription:"
@@ -190,7 +190,7 @@ def listen_accept():
 def listen(params):
     global sock
 
-    if params[0] == "help":
+    if len(params) == 1 and params[0] == "help":
         print "\nUsage:"
         print "\tlisten"
         print "\nDescription:"
