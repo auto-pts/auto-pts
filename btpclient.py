@@ -11,7 +11,7 @@ from ptsprojects.zephyr.btpparser import enc_frame, dec_hdr, dec_data
 sock = None
 conn = None
 addr = None
-QEMU_UNIX_PATH = "/tmp/ubt_tester"
+QEMU_UNIX_PATH = "/tmp/bt-stack-tester"
 
 class TimeoutError(Exception):
     pass
@@ -75,12 +75,13 @@ def exec_cmd(choice, params):
 def send(params):
     if len(params) == 1 and params[0] == "help":
         print "\nUsage:"
-        print "\tsend <service_id> <opcode> [<data>]"
+        print "\tsend <service_id> <opcode> <index> [<data>]"
         print "\nExample:"
-        print "\tsend 0 1 01"
+        print "\tsend 0 1 0 01"
         print "\nDescription:"
-        print "\tsend <int> <int> <hex>"
-        print "\t(send SERVICE_ID_CORE = 0x00, OP_REGISTER_SERVICE = 0x01, SERVICE_ID_GAP = 0x01...)"
+        print "\tsend <int> <int> <int> <hex>"
+        print "\t(send SERVICE_ID_CORE = 0x00, OP_CORE_REGISTER_SERVICE = 0x03,"\
+              "Controller Index = 0, SERVICE_ID_GAP = 0x01...)"
         return
 
     if conn_chk() is False:
@@ -89,15 +90,17 @@ def send(params):
     try:
         svc_id = params[0]
         op = params[1]
+        ctrl_index = params[2]
     except IndexError:
         print "Invalid send frame format/data (check - send help)"
         return
 
     try:
-        data = params[2]
+        data = params[3]
     except IndexError:
         data = ""
 
+    # Parse Service ID
     try:
         char_svc_id = chr(int(svc_id))
     except ValueError:
@@ -108,19 +111,28 @@ def send(params):
         print "error: Given service ID not supported!"
         return
 
+    # Parse Opcode
     try:
         char_op = chr(int(op))
     except ValueError:
         print "error: Wrong op format, should be an int: \"0-255\""
         return
 
+    # Parse Controler Index
+    try:
+        char_ctrl_index = chr(int(ctrl_index))
+    except ValueError:
+        print "error: Wrong Controler Index format, shoulb be an int: \"0-255\""
+        return
+
+    # Parse Data
     try:
         hex_data = binascii.unhexlify(data)
     except TypeError:
         print "error: Wrong data type, should be e.g.: \"0011223344ff\""
         return
 
-    frame = enc_frame(char_svc_id, char_op, hex_data)
+    frame = enc_frame(char_svc_id, char_op, char_ctrl_index, hex_data)
     conn.send(frame)
 
     try:
