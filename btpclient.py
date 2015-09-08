@@ -136,7 +136,7 @@ def send(params):
     conn.send(frame)
 
     try:
-        receive(None)
+        receive("")
     except TimeoutError:
         print "error: problem with receiving response from server"
 
@@ -144,7 +144,7 @@ def send(params):
 
 @timeout(2)
 def receive(params):
-    if params != None and params[0] == "help":
+    if len(params) == 1 and params[0] == "help":
         print "\nUsage:"
         print "\treceive"
         print "\nDescription:"
