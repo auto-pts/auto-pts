@@ -20,18 +20,19 @@ def parse_frame_generic(hdr, data):
         raise Exception("Wrong Service ID of received frame")
 
 #BTP frame format
-#0            8       16            32     Data Length
-#+------------+--------+-------------+---------------+
-#| Service ID | Opcode | Data Length |     Data      |
-#+------------+--------+-------------+---------------+
+#0            8       16                 24            40
+#+------------+--------+------------------+-------------+
+#| Service ID | Opcode | Controller Index | Data Length |
+#+------------+--------+------------------+-------------+
 def dec_hdr(bin):
-    header = namedtuple('header', 'svc_id op data_len')
+    header = namedtuple('header', 'svc_id op ctrl_index data_len')
 
     svc_id = struct.unpack('c', bin[0:1])
     op = struct.unpack('c', bin[1:2])[0]
-    data_len = struct.unpack('H', bin[2:4])[0]
+    ctrl_index = struct.unpack('c', bin[2:3])[0]
+    data_len = struct.unpack('H', bin[3:5])[0]
 
-    hdr = header(svc_id[0], op, data_len)
+    hdr = header(svc_id[0], op, ctrl_index, data_len)
 
     return hdr
 
@@ -41,10 +42,11 @@ def dec_data(bin):
 
     return data
 
-def enc_frame(svc_id, op, data):
+def enc_frame(svc_id, op, ctrl_index, data):
     str_data = str(bytearray(data))
     int_len = len(str_data)
     hex_len = struct.pack('h', int_len)
-    bin = struct.pack('<cc2s%ds' % int_len, svc_id, op, hex_len, str_data)
+    bin = struct.pack('<ccc2s%ds' % int_len, svc_id, op, ctrl_index, hex_len,
+                      str_data)
 
     return bin
