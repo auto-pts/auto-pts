@@ -186,7 +186,10 @@ def receive(params):
 
     tuple_data = dec_data(data)
 
-    print "Received data: ", tuple_data
+    hex_str = binascii.hexlify(tuple_data[0])
+    hex_str_byte = " ".join(hex_str[i:i+2] for i in range(0, len(hex_str), 2))
+    print "Received data (hex): %s" % hex_str_byte
+    print "Received data (ascii):", tuple_data
 
 @timeout(10)
 def listen_accept():
