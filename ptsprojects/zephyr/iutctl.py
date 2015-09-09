@@ -83,7 +83,7 @@ class ZephyrCtl:
 
         self.conn.setblocking(0)
 
-    def sock_read(self, svc_id, op, data):
+    def sock_read(self, svc_id, op, ctrl_index, data):
         """Read BTP data from socket"""
         toread_hdr_len = HDR_LEN
         hdr = bytearray(toread_hdr_len)
@@ -111,6 +111,10 @@ class ZephyrCtl:
             if tuple_hdr.op != op:
                 log("Received wrong hdr, expected opcode = %s, got = %s",
                     binascii.hexlify(op), binascii.hexlify(tuple_hdr.op))
+            if tuple_hdr.ctrl_index != ctrl_index:
+                log("Received wrong ctrl index, expected = %s, got = %s",
+                    binascii.hexlify(ctrl_index), binascii.hexlify(tuple_hdr.ctrl_index))
+
             return
 
         data = bytearray(toread_data_len)
@@ -135,9 +139,9 @@ class ZephyrCtl:
             log("Received wrong data, expected data = %s, got = %s",
                     binascii.hexlify(data), binascii.hexlify(tuple_data))
 
-    def sock_send(self, svc_id, op, data):
+    def sock_send(self, svc_id, op, ctrl_index, data):
         """Send BTP formated data over socket"""
-        bin = enc_frame(svc_id, op, data)
+        bin = enc_frame(svc_id, op, ctrl_index, data)
         self.conn.send(bin)
 
 def get_zephyr():
