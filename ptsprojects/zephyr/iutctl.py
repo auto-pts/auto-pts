@@ -12,7 +12,7 @@ ZEPHYR = None
 
 # qemu binary should be installed in shell PATH
 QEMU_BIN = "qemu-system-arm"
-QEMU_UNIX_PATH = "/tmp/ubt_tester"
+QEMU_UNIX_PATH = "/tmp/bt-stack-tester"
 
 # qemu log file object
 QEMU_LOG_FO = None
