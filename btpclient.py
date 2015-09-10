@@ -7,6 +7,7 @@ import binascii
 from ptsprojects.zephyr.msgdefs import *
 from functools import wraps
 from ptsprojects.zephyr.btpparser import enc_frame, dec_hdr, dec_data
+from ptsprojects.zephyr.btp import CORE, GAP
 
 sock = None
 conn = None
@@ -18,19 +19,37 @@ class TimeoutError(Exception):
 
 class Completer:
     def __init__(self, words):
-        self.words = words
+        self.menu = words[0]
+        self.core = words[1]
+        self.gap = words[2]
         self.prefix = None
+
     def complete(self, prefix, index):
-        if len(prefix.split()) > 1:
-            return None
-        if prefix.split()[0] in self.words and len(prefix.split()) == 1:
-            try:
-                return prefix.split()[index] + ' ' + "help"
-            except IndexError:
+        words_arr = prefix.split()
+        words_cnt = len(words_arr)
+
+        if words_cnt == 1:
+            if words_arr[0] in ['core', 'gap']:
+                if words_arr[0] == 'core':
+                    c = self.core.keys()
+                    self.matching_words = ["core " + s for s in c]
+                elif words_arr[0] == 'gap':
+                    c = self.gap.keys()
+                    self.matching_words = ["gap " + s for s in c]
+            else:
+                c = [ w for w in self.menu if w.startswith(words_arr[0]) ]
+                self.matching_words = c
+        elif words_cnt == 2:
+            if words_arr[0] == "core":
+                c = [ w for w in self.core if w.startswith(words_arr[1]) ]
+                self.matching_words = ["core " + s for s in c]
+            elif words_arr[0] == "gap":
+                c = [ w for w in self.gap if w.startswith(words_arr[1]) ]
+                self.matching_words = ["gap " + s for s in c]
+            else:
                 return None
 
         if prefix != self.prefix:
-            self.matching_words = [ w for w in self.words if w.startswith(prefix) ]
             self.prefix = prefix
         try:
             return self.matching_words[index]
@@ -235,6 +254,32 @@ def listen(params):
 def exit(params):
     os._exit(0)
 
+def generic_srvc_cmd_handler(svc, cmd):
+    if len(cmd) == 0 or len(cmd) == 1 and cmd == "help":
+        print "\nAdditional command must be given"
+        print "\nPossible core commands:"
+        print svc.keys()
+        return
+
+    if len(svc[cmd[0]]) == 0:
+        print "Command not yet defined"
+        return
+
+    frame = []
+
+    for i in range(len(svc[cmd[0]]) - 1):
+        frame.append(str(ord(svc[cmd[0]][i])))
+
+    frame.append(binascii.hexlify(''.join(svc[cmd[0]][3])))
+
+    send(frame)
+
+def core_cmd(params):
+    generic_srvc_cmd_handler(CORE, params)
+
+def gap_cmd(params):
+    generic_srvc_cmd_handler(GAP, params)
+
 def conn_chk():
     if conn is None:
         print "error: btp client is not connected"
@@ -256,7 +301,8 @@ def prompt():
         exec_cmd(choice, params)
 
 def setup_completion():
-    completer = Completer(cmds)
+    words = (cmds, CORE, GAP)
+    completer = Completer(words)
 
     readline.parse_and_bind("tab: complete")
     readline.set_completer(completer.complete)
@@ -278,6 +324,9 @@ cmds = {
     'send': send,
     'receive': receive,
     'exit': exit,
+
+    'core': core_cmd,
+    'gap': gap_cmd,
 }
 
 if __name__ == "__main__":
