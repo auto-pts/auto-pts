@@ -91,6 +91,13 @@ def exec_cmd(choice, params):
     except TimeoutError:
         print "error: requested command timed out"
 
+def clean_conn():
+    global sock, conn, addr
+
+    sock = None
+    conn = None
+    addr = None
+
 def send(params):
     if len(params) == 1 and params[0] == "help":
         print "\nUsage:"
@@ -152,7 +159,14 @@ def send(params):
         return
 
     frame = enc_frame(char_svc_id, char_op, char_ctrl_index, hex_data)
-    conn.send(frame)
+
+    try:
+        conn.send(frame)
+    except socket.error as serr:
+        if serr.errno == errno.EPIPE:
+            clean_conn()
+            print "error: Connection error, please connect btp again"
+            return
 
     try:
         receive("")
