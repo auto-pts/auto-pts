@@ -268,6 +268,20 @@ def listen(params):
 def exit(params):
     os._exit(0)
 
+def disconnect(params):
+    if len(params) == 1 and params[0] == "help":
+        print "\nUsage:"
+        print "\tdisconnect"
+        print "\nDescription:"
+        print "\tClear btp socket connection data"
+        return
+
+    if conn_chk() is False:
+        return
+
+    clean_conn()
+    print "info: Connection cleared"
+
 def generic_srvc_cmd_handler(svc, cmd):
     if len(cmd) == 0 or len(cmd) == 1 and cmd == "help":
         print "\nAdditional command must be given"
@@ -338,6 +352,7 @@ cmds = {
     'send': send,
     'receive': receive,
     'exit': exit,
+    'disconnect': disconnect,
 
     'core': core_cmd,
     'gap': gap_cmd,
