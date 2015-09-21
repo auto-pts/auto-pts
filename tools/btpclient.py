@@ -4,8 +4,12 @@ import signal
 import errno
 import readline
 import binascii
-from ptsprojects.zephyr.msgdefs import *
 from functools import wraps
+
+# to be able to find ptsprojects module
+sys.path.insert(0, os.path.abspath(os.path.join(os.getcwd(), "../")))
+
+from ptsprojects.zephyr.msgdefs import *
 from ptsprojects.zephyr.btpparser import enc_frame, dec_hdr, dec_data
 from ptsprojects.zephyr.btp import CORE, GAP
 
