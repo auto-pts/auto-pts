@@ -9,7 +9,8 @@ import binascii
 from functools import wraps
 
 # to be able to find ptsprojects module
-sys.path.insert(0, os.path.abspath(os.path.join(os.getcwd(), "../")))
+sys.path.insert(
+    0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from ptsprojects.zephyr.msgdefs import *
 from ptsprojects.zephyr.btpparser import enc_frame, dec_hdr, dec_data
