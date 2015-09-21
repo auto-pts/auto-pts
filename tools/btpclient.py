@@ -82,7 +82,7 @@ def timeout(seconds=10, error_message=os.strerror(errno.ETIME)):
     return decorator
 
 def help(params):
-    print "Avilable commands: "
+    print "Available commands: "
     menu = cmds.viewkeys()
     print list(menu)
 
