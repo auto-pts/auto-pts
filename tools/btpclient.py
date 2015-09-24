@@ -274,7 +274,7 @@ def listen(params):
         print "error: Connection timeout..."
 
 def exit(params):
-    os._exit(0)
+    sys.exit(0)
 
 def disconnect(params):
     if len(params) == 1 and params[0] == "help":
@@ -346,13 +346,7 @@ def setup_completion():
 
 def main():
     setup_completion()
-
-    try:
-        prompt()
-    except:
-        import traceback
-        traceback.print_exc()
-        os._exit(16)
+    prompt()
 
 cmds = {
     'help': help,
@@ -367,4 +361,18 @@ cmds = {
 }
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+
+    except KeyboardInterrupt: # Ctrl-C
+        sys.exit("")
+
+    # SystemExit is thrown in arg_parser.parse_args and in sys.exit
+    except SystemExit:
+        raise # let the default handlers do the work
+
+    except:
+        import traceback
+        traceback.print_exc()
+        sys.exit(16)
+
