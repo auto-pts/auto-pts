@@ -172,8 +172,6 @@ def cleanup():
     QEMU_LOG_FO.close()
     QEMU_LOG_FO = None
 
-    if ZEPHYR is None:
-        return
-
-    ZEPHYR.stop()
-    ZEPHYR = None
+    if ZEPHYR:
+        ZEPHYR.stop()
+        ZEPHYR = None
