@@ -40,10 +40,10 @@ class ZephyrCtl:
 
         log("%s.%s", self.__class__, self.start.__name__)
 
-        qemu_cmd = "%s -cpu cortex-m3 -machine lm3s6965evb -nographic " \
-                        "-serial mon:stdio -serial unix:/tmp/bt-server-bredr " \
-                        "-serial unix:%s -kernel %s" \
-                        % (QEMU_BIN, QEMU_UNIX_PATH, self.kernel_image)
+        qemu_cmd = ("%s -cpu cortex-m3 -machine lm3s6965evb -nographic "
+                    "-serial mon:stdio -serial unix:/tmp/bt-server-bredr "
+                    "-serial unix:%s -kernel %s" %
+                    (QEMU_BIN, QEMU_UNIX_PATH, self.kernel_image))
 
         log("Starting QEMU zephyr process: %s", qemu_cmd)
 
