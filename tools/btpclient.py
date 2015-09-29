@@ -5,6 +5,7 @@ import sys
 import socket
 import signal
 import errno
+import logging
 import readline
 import binascii
 from functools import wraps
@@ -327,7 +328,7 @@ def conn_chk():
 
     return True
 
-def prompt():
+def cmd_loop():
     while True:
         input = raw_input(" >> ")
 
@@ -349,29 +350,24 @@ def setup_completion():
     readline.set_completer_delims('')
 
 def main():
-    setup_completion()
-    prompt()
+    script_name = os.path.basename(sys.argv[0]) # in case it is full path
+    script_name_no_ext = os.path.splitext(script_name)[0]
 
-cmds = {
-    'help': help,
-    'listen': listen,
-    'send': send,
-    'receive': receive,
-    'exit': exit,
-    'disconnect': disconnect,
+    log_filename = "%s.log" % (script_name_no_ext,)
+    logging.basicConfig(format = '%(name)s [%(asctime)s] %(message)s',
+                        filename = log_filename,
+                        filemode = 'w',
+                        level = logging.DEBUG)
 
-    'core': core_cmd,
-    'gap': gap_cmd,
-}
-
-if __name__ == "__main__":
-    HISTORY_FILE = os.path.expanduser("~/.btpclient_history")
+    history_filename = os.path.expanduser("~/.%s_history" % script_name_no_ext)
 
     try:
-        if os.path.exists(HISTORY_FILE):
-            readline.read_history_file(HISTORY_FILE)
+        if os.path.exists(history_filename):
+            logging.debug("Reading history file %s" % history_filename)
+            readline.read_history_file(history_filename)
 
-        main()
+        setup_completion()
+        cmd_loop()
 
     except KeyboardInterrupt: # Ctrl-C
         sys.exit("")
@@ -389,4 +385,20 @@ if __name__ == "__main__":
         sys.exit(16)
 
     finally:
-        readline.write_history_file(HISTORY_FILE)
+        logging.debug("Writing history file %s" % history_filename)
+        readline.write_history_file(history_filename)
+
+cmds = {
+    'help': help,
+    'listen': listen,
+    'send': send,
+    'receive': receive,
+    'exit': exit,
+    'disconnect': disconnect,
+
+    'core': core_cmd,
+    'gap': gap_cmd,
+}
+
+if __name__ == "__main__":
+    main()
