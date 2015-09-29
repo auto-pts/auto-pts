@@ -1,11 +1,13 @@
 """Wrapper around btp messages. The functions are added as needed."""
 
 from iutctl import get_zephyr
-from msgdefs import SERVICE_ID, CORE_SERVICE_OP, GAP_SERVICE_OP, BTP_INDEX_NONE, CONTROLLER_INDEX
+import btpdef
+
+CONTROLLER_INDEX = '\x00'
 
 CORE = {
-    "gap_reg": (SERVICE_ID['SERVICE_ID_CORE'], CORE_SERVICE_OP['CORE_REGISTER_SERVICE'],
-        BTP_INDEX_NONE, (SERVICE_ID['SERVICE_ID_GAP'],)),
+    "gap_reg": (btpdef.BTP_SERVICE_ID_CORE, btpdef.CORE_REGISTER_SERVICE,
+                btpdef.BTP_INDEX_NONE, btpdef.BTP_SERVICE_ID_GAP),
 }
 
 GAP = {
@@ -18,8 +20,8 @@ GAP = {
     "set_fast_connectable": '',
     "set_discov": '',
     "set_bond": '',
-    "start_adv": (SERVICE_ID['SERVICE_ID_GAP'], GAP_SERVICE_OP['GAP_START_ADVERTISING'],
-        CONTROLLER_INDEX, ()),
+    "start_adv": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_START_ADVERTISING,
+                  CONTROLLER_INDEX, ()),
     "stop_adv": '',
     "start_discov": '',
     "stop_discov": '',

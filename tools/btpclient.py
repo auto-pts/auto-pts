@@ -13,8 +13,8 @@ from functools import wraps
 sys.path.insert(
     0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from ptsprojects.zephyr.msgdefs import *
-from ptsprojects.zephyr.btpparser import enc_frame, dec_hdr, dec_data
+from ptsprojects.zephyr import btpparser
+from ptsprojects.zephyr import btpdef
 from ptsprojects.zephyr.btp import CORE, GAP
 
 sock = None
@@ -134,27 +134,31 @@ def send(params):
     except IndexError:
         data = ""
 
+    service_ids = {item : getattr(btpdef, item) for item in dir(btpdef)
+                   if item.startswith("BTP_SERVICE_ID")}
+
     # Parse Service ID
     try:
-        char_svc_id = chr(int(svc_id))
+        int_svc_id = int(svc_id)
     except ValueError:
-        print "error: Wrong svc_id format, possible values: ", SERVICE_ID
+        print "error: Wrong svc_id format, possible values: ", service_ids
         return
 
-    if char_svc_id not in SERVICE_ID.values():
-        print "error: Given service ID not supported!"
+    if int_svc_id not in service_ids.values():
+        print ("error: Given service ID %c not supported, supported are %s!" %
+               (int_svc_id, repr(service_ids.values())))
         return
 
     # Parse Opcode
     try:
-        char_op = chr(int(op))
+        int_op = int(op)
     except ValueError:
         print "error: Wrong op format, should be an int: \"0-255\""
         return
 
     # Parse Controler Index
     try:
-        char_ctrl_index = chr(int(ctrl_index))
+        int_ctrl_index = int(ctrl_index)
     except ValueError:
         print "error: Wrong Controler Index format, shoulb be an int: \"0-255\""
         return
@@ -166,7 +170,7 @@ def send(params):
         print "error: Wrong data type, should be e.g.: \"0011223344ff\""
         return
 
-    frame = enc_frame(char_svc_id, char_op, char_ctrl_index, hex_data)
+    frame = btparser.enc_frame(int_svc_id, int_op, int_ctrl_index, hex_data)
 
     try:
         conn.send(frame)
@@ -195,7 +199,7 @@ def receive(params):
     if conn_chk() is False:
         return
 
-    toread_hdr_len = HDR_LEN
+    toread_hdr_len = btparser.HDR_LEN
     hdr = bytearray(toread_hdr_len)
     hdr_memview = memoryview(hdr)
 
@@ -208,7 +212,7 @@ def receive(params):
         except:
             continue
 
-    tuple_hdr = dec_hdr(hdr)
+    tuple_hdr = btparser.dec_hdr(hdr)
     toread_data_len = tuple_hdr.data_len
 
     print "Received: hdr: ", tuple_hdr
@@ -225,7 +229,7 @@ def receive(params):
         except:
             continue
 
-    tuple_data = dec_data(data)
+    tuple_data = btparser.dec_data(data)
 
     hex_str = binascii.hexlify(tuple_data[0])
     hex_str_byte = " ".join(hex_str[i:i+2] for i in range(0, len(hex_str), 2))

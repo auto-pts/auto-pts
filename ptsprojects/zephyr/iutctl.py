@@ -4,8 +4,7 @@ import logging
 import socket
 import binascii
 import shlex
-from btpparser import enc_frame, dec_hdr, dec_data
-from msgdefs import HDR_LEN
+from btpparser import enc_frame, dec_hdr, dec_data, HDR_LEN
 
 log = logging.debug
 ZEPHYR = None
