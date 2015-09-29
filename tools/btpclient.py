@@ -170,7 +170,7 @@ def send(params):
         print "error: Wrong data type, should be e.g.: \"0011223344ff\""
         return
 
-    frame = btparser.enc_frame(int_svc_id, int_op, int_ctrl_index, hex_data)
+    frame = btpparser.enc_frame(int_svc_id, int_op, int_ctrl_index, hex_data)
 
     try:
         conn.send(frame)
@@ -199,7 +199,7 @@ def receive(params):
     if conn_chk() is False:
         return
 
-    toread_hdr_len = btparser.HDR_LEN
+    toread_hdr_len = btpparser.HDR_LEN
     hdr = bytearray(toread_hdr_len)
     hdr_memview = memoryview(hdr)
 
@@ -212,7 +212,7 @@ def receive(params):
         except:
             continue
 
-    tuple_hdr = btparser.dec_hdr(hdr)
+    tuple_hdr = btpparser.dec_hdr(hdr)
     toread_data_len = tuple_hdr.data_len
 
     print "Received: hdr: ", tuple_hdr
@@ -229,7 +229,7 @@ def receive(params):
         except:
             continue
 
-    tuple_data = btparser.dec_data(data)
+    tuple_data = btpparser.dec_data(data)
 
     hex_str = binascii.hexlify(tuple_data[0])
     hex_str_byte = " ".join(hex_str[i:i+2] for i in range(0, len(hex_str), 2))
