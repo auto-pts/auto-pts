@@ -27,12 +27,7 @@ def parse_frame_generic(hdr, data):
 def dec_hdr(bin):
     header = namedtuple('header', 'svc_id op ctrl_index data_len')
 
-    svc_id = struct.unpack('c', bin[0:1])
-    op = struct.unpack('c', bin[1:2])[0]
-    ctrl_index = struct.unpack('c', bin[2:3])[0]
-    data_len = struct.unpack('H', bin[3:5])[0]
-
-    hdr = header(svc_id[0], op, ctrl_index, data_len)
+    hdr = header._make(struct.unpack("<cccH", bin))
 
     return hdr
 
