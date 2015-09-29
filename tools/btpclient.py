@@ -376,6 +376,9 @@ if __name__ == "__main__":
     except KeyboardInterrupt: # Ctrl-C
         sys.exit("")
 
+    except EOFError: # Ctrl-D
+        sys.exit("")
+
     # SystemExit is thrown in arg_parser.parse_args and in sys.exit
     except SystemExit:
         raise # let the default handlers do the work
