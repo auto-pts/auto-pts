@@ -365,7 +365,12 @@ cmds = {
 }
 
 if __name__ == "__main__":
+    HISTORY_FILE = os.path.expanduser("~/.btpclient_history")
+
     try:
+        if os.path.exists(HISTORY_FILE):
+            readline.read_history_file(HISTORY_FILE)
+
         main()
 
     except KeyboardInterrupt: # Ctrl-C
@@ -380,3 +385,5 @@ if __name__ == "__main__":
         traceback.print_exc()
         sys.exit(16)
 
+    finally:
+        readline.write_history_file(HISTORY_FILE)
