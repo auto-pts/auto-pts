@@ -239,7 +239,7 @@ def listen_accept():
     conn, addr = sock.accept()
     conn.setblocking(0)
 
-    print "btp server connected sucesfully"
+    print "btp server connected successfully"
 
     return
 
