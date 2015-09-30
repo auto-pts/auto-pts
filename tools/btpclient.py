@@ -31,10 +31,10 @@ class Completer:
         self.menu = words[0]
         self.core = words[1]
         self.gap = words[2]
-        self.prefix = None
+        self.text = None
 
-    def complete(self, prefix, index):
-        words_arr = prefix.split()
+    def complete(self, text, state):
+        words_arr = text.split()
         words_cnt = len(words_arr)
 
         if words_cnt == 1:
@@ -58,13 +58,13 @@ class Completer:
             else:
                 return None
 
-        if not prefix: # words_cnt == 0
+        if not text: # words_cnt == 0
             self.matching_words = self.menu.keys()
 
-        if prefix != self.prefix:
-            self.prefix = prefix
+        if text != self.text:
+            self.text = text
         try:
-            return self.matching_words[index]
+            return self.matching_words[state]
         except IndexError:
             return None
 
