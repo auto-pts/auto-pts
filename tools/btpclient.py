@@ -31,7 +31,6 @@ class Completer:
         self.menu = words[0]
         self.core = words[1]
         self.gap = words[2]
-        self.text = None
 
     def complete(self, text, state):
         words_arr = text.split()
@@ -61,8 +60,6 @@ class Completer:
         if not text: # words_cnt == 0
             self.matching_words = self.menu.keys()
 
-        if text != self.text:
-            self.text = text
         try:
             return self.matching_words[state]
         except IndexError:
