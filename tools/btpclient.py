@@ -58,6 +58,9 @@ class Completer:
             else:
                 return None
 
+        if not prefix: # words_cnt == 0
+            self.matching_words = self.menu.keys()
+
         if prefix != self.prefix:
             self.prefix = prefix
         try:
