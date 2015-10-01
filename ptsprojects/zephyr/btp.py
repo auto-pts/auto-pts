@@ -3,7 +3,7 @@
 from iutctl import get_zephyr
 import btpdef
 
-CONTROLLER_INDEX = '\x00'
+CONTROLLER_INDEX = 0
 
 CORE = {
     "gap_reg": (btpdef.BTP_SERVICE_ID_CORE, btpdef.CORE_REGISTER_SERVICE,
@@ -21,7 +21,7 @@ GAP = {
     "set_discov": '',
     "set_bond": '',
     "start_adv": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_START_ADVERTISING,
-                  CONTROLLER_INDEX, ()),
+                  CONTROLLER_INDEX),
     "stop_adv": '',
     "start_discov": '',
     "stop_discov": '',

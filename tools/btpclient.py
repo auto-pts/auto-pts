@@ -108,6 +108,8 @@ def clean_conn():
     addr = None
 
 def send(params):
+    logging.debug("%s %r", send.__name__, params)
+
     if len(params) == 1 and params[0] == "help":
         print "\nUsage:"
         print "\tsend <service_id> <opcode> <index> [<data>]"
@@ -173,6 +175,10 @@ def send(params):
 
     frame = btpparser.enc_frame(int_svc_id, int_op, int_ctrl_index, hex_data)
 
+    logging.debug("Sending: %d %d %d %r" %
+                  (int_svc_id, int_op, int_ctrl_index, hex_data))
+    logging.debug("Sending frame: %r" % frame)
+
     try:
         conn.send(frame)
     except socket.error as serr:
@@ -190,6 +196,8 @@ def send(params):
 
 @timeout(2)
 def receive(params):
+    logging.debug("%s %r", receive.__name__, params)
+
     if len(params) == 1 and params[0] == "help":
         print "\nUsage:"
         print "\treceive"
@@ -217,6 +225,7 @@ def receive(params):
     toread_data_len = tuple_hdr.data_len
 
     print "Received: hdr: ", tuple_hdr
+    logging.debug("Received: hdr: %r %r", tuple_hdr, hdr)
 
     data = bytearray(toread_data_len)
     data_memview = memoryview(data)
@@ -237,8 +246,11 @@ def receive(params):
     print "Received data (hex): %s" % hex_str_byte
     print "Received data (ascii):", tuple_data
 
+    logging.debug("Received data %r %r", data, tuple_data)
+
 @timeout(10)
 def listen_accept():
+    logging.debug("%s", listen_accept.__name__)
     global conn, addr
 
     conn, addr = sock.accept()
@@ -249,6 +261,7 @@ def listen_accept():
     return
 
 def listen(params):
+    logging.debug("%s %r", listen.__name__, params)
     global sock
 
     if len(params) == 1 and params[0] == "help":
@@ -296,22 +309,38 @@ def disconnect(params):
     print "info: Connection cleared"
 
 def generic_srvc_cmd_handler(svc, cmd):
+    logging.debug("%s svc=%r cmd=%r",
+                  generic_srvc_cmd_handler.__name__, svc, cmd)
+
     if len(cmd) == 0 or len(cmd) == 1 and cmd == "help":
         print "\nAdditional command must be given"
         print "\nPossible core commands:"
         print svc.keys()
         return
 
-    if len(svc[cmd[0]]) == 0:
+    # a tuple representing btp packet
+    btp_cmd = svc[cmd[0]]
+
+    if len(btp_cmd) == 0:
         print "Command not yet defined"
         return
 
     frame = []
 
-    for i in range(len(svc[cmd[0]]) - 1):
-        frame.append(str(ord(svc[cmd[0]][i])))
+    # 3 cause: service id, opcode, controller index
+    for i in range(3):
+        frame.append(str(btp_cmd[i]))
 
-    frame.append(binascii.hexlify(''.join(svc[cmd[0]][3])))
+    # add data if there is any
+    if len(btp_cmd) > 3:
+        data = str(btp_cmd[3])
+
+        if len(data) == 1:
+            frame.append("0%s" %  data)
+        else:
+            frame.append(binascii.hexlify(''.join(data)))
+
+    logging.debug("frame %r", frame)
 
     send(frame)
 
