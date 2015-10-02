@@ -5,9 +5,12 @@ import sys
 import socket
 import signal
 import errno
+import shlex
 import logging
 import readline
 import binascii
+import threading
+import subprocess
 from functools import wraps
 
 # to be able to find ptsprojects module
@@ -17,11 +20,13 @@ sys.path.insert(
 from ptsprojects.zephyr import btpparser
 from ptsprojects.zephyr import btpdef
 from ptsprojects.zephyr.btp import CORE, GAP
+from ptsprojects.zephyr.iutctl import get_qemu_cmd
 
 sock = None
 conn = None
 addr = None
 QEMU_UNIX_PATH = "/tmp/bt-stack-tester"
+QEMU_PROCESS = None
 
 class TimeoutError(Exception):
     pass
@@ -106,6 +111,83 @@ def clean_conn():
     sock = None
     conn = None
     addr = None
+
+def start_zephyr(params):
+    logging.debug("%s %r", start_zephyr.__name__, params)
+
+    if len(params) == 1 and params[0] == "help":
+        print "\nUsage:"
+        print "\tstart-zephyr kernel_image"
+        print "\nNote: xterm must be installed for this command to work"
+        print "\nDescription:"
+        print "\nStarts Zephyr QEMU process"
+        print "\nExample:"
+        print "\tstart-zephyr ./microkernel.elf"
+        return
+
+    global QEMU_PROCESS
+
+    if QEMU_PROCESS:
+        print "Zephyr is already up and running"
+        return
+
+    if len(params) != 1:
+        print "error: kernel image file not specified"
+        return
+
+    kernel_image = params[0]
+
+    if not os.path.isfile(kernel_image):
+        print "QEMU kernel image %s is not a file!" % repr(kernel_image)
+        return
+
+    qemu_cmd = get_qemu_cmd(kernel_image)
+
+    script_name = os.path.basename(sys.argv[0]) # in case it is full path
+    script_name_no_ext = os.path.splitext(script_name)[0]
+
+    # why running under xterm? cause of -serial mon:stdio: running qemu as
+    # subprocess make terminal input impossible in the parent application, also
+    # it is impossible to daemonize qemu
+    xterm_qemu_cmd = ('xterm -e sh -c "%s 2>&1|tee qemu-%s.log"' %
+                      (qemu_cmd, script_name_no_ext))
+
+    # start listening
+    logging.debug("Starting listen thread")
+    thread = threading.Thread(target = listen, args = ([],))
+    thread.start()
+
+    # start qemu
+    logging.debug("Starting qemu: %r", xterm_qemu_cmd)
+    QEMU_PROCESS = subprocess.Popen(shlex.split(xterm_qemu_cmd))
+
+    thread.join()
+
+    print "Zephyr started"
+
+def stop_zephyr(params = []):
+    logging.debug("%s %r", stop_zephyr.__name__, params)
+
+    if len(params) == 1 and params[0] == "help":
+        print "\nUsage:"
+        print "\tstop-zephyr"
+        print "\nDescription:"
+        print "\nStops Zephyr QEMU process"
+        return
+
+    global QEMU_PROCESS
+
+    if not QEMU_PROCESS:
+        print "Zephyr is not running"
+        return
+
+    if QEMU_PROCESS:
+        if QEMU_PROCESS.poll() is None:
+            logging.debug("qemu process is running, will terminate it")
+            QEMU_PROCESS.terminate()
+            QEMU_PROCESS.wait() # do not let zombies take over
+            logging.debug("Completed termination of qemu process")
+            QEMU_PROCESS = None
 
 def send(params):
     logging.debug("%s %r", send.__name__, params)
@@ -248,21 +330,11 @@ def receive(params):
 
     logging.debug("Received data %r %r", data, tuple_data)
 
-@timeout(10)
-def listen_accept():
-    logging.debug("%s", listen_accept.__name__)
-    global conn, addr
-
-    conn, addr = sock.accept()
-    conn.setblocking(0)
-
-    print "btp server connected successfully"
-
-    return
-
 def listen(params):
     logging.debug("%s %r", listen.__name__, params)
     global sock
+    global conn
+    global addr
 
     if len(params) == 1 and params[0] == "help":
         print "\nUsage:"
@@ -287,9 +359,14 @@ def listen(params):
         print "created fd %s, listening..." % QEMU_UNIX_PATH
 
     try:
-        listen_accept()
-    except TimeoutError:
-        print "error: Connection timeout..."
+        conn, addr = sock.accept()
+        conn.setblocking(0)
+        print "btp server connected successfully"
+
+    except KeyboardInterrupt:
+        print "\nListen interrupted!"
+        conn = None
+        addr = None
 
 def exit(params):
     sys.exit(0)
@@ -414,6 +491,8 @@ def main():
         sys.exit(16)
 
     finally:
+        logging.debug("Exiting...")
+        stop_zephyr()
         logging.debug("Writing history file %s" % history_filename)
         readline.write_history_file(history_filename)
 
@@ -424,6 +503,8 @@ cmds = {
     'receive': receive,
     'exit': exit,
     'disconnect': disconnect,
+    'start-zephyr' : start_zephyr,
+    'stop-zephyr' : stop_zephyr,
 
     'core': core_cmd,
     'gap': gap_cmd,
