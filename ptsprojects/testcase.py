@@ -158,8 +158,10 @@ class TestCase(PTSCallback):
             new_status = "Started"
 
         # mark the final verdict of the test case
+        # check for "final verdict" to avoid "Encrypted Verdict"
+        # it could be 'Final verdict' or 'Final Verdict'
         elif log_type == ptstypes.PTS_LOGTYPE_FINAL_VERDICT and \
-             logtype_string == "Final verdict": # avoid "Encrypted Verdict"
+             logtype_string.lower() == "final verdict":
 
             if "PASS" in log_message:
                 new_status = "PASS"
