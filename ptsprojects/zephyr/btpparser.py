@@ -1,6 +1,7 @@
 import struct
 import btpdef
 from collections import namedtuple
+import logging
 
 HDR_LEN = 5
 
@@ -27,6 +28,8 @@ def parse_frame_generic(hdr, data):
 #| Service ID | Opcode | Controller Index | Data Length |
 #+------------+--------+------------------+-------------+
 def dec_hdr(bin):
+    logging.debug("%s, %r", dec_hdr.__name__, bin)
+
     header = namedtuple('header', 'svc_id op ctrl_index data_len')
 
     hdr = header._make(struct.unpack("<BBBH", bin))
@@ -34,12 +37,17 @@ def dec_hdr(bin):
     return hdr
 
 def dec_data(bin):
+    logging.debug("%s, %r", dec_data.__name__, bin)
+
     data_len = len(bin)
     data = struct.unpack('<%ds' % data_len, bin[:data_len])
 
     return data
 
 def enc_frame(svc_id, op, ctrl_index, data):
+    logging.debug("%s, %r %r %r %r",
+                  enc_frame.__name__, svc_id, op, ctrl_index, data)
+
     str_data = str(bytearray(data))
     int_len = len(str_data)
     hex_len = struct.pack('h', int_len)

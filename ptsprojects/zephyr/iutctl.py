@@ -140,7 +140,7 @@ class ZephyrCtl:
 
         tuple_data = dec_data(data)
 
-        log("Received data: %s", tuple_data)
+        log("Received data: %r, %r", tuple_data, data)
 
         if tuple_data != data:
             #TODO handle if received other than expected data
@@ -149,6 +149,16 @@ class ZephyrCtl:
 
     def sock_send(self, svc_id, op, ctrl_index, data):
         """Send BTP formated data over socket"""
+        logging.debug("%s, %r %r %r %r",
+                      self.sock_send.__name__, svc_id, op, ctrl_index, data)
+
+
+        # TODO: these send/receive routines should be unified with btpclient
+        data = str(data)
+        if len(data) == 1:
+            data = "0%s" %  data
+            data = binascii.unhexlify(data)
+
         bin = enc_frame(svc_id, op, ctrl_index, data)
         self.conn.send(bin)
 
