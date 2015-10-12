@@ -86,13 +86,16 @@ class ZephyrCtl:
 
     def socks_accept(self):
         """Accept incomming Zephyr connection"""
+        logging.debug("%s", self.socks_accept.__name__)
+
         #This will hang forever if Zephyr don't try to connect
         self.conn, self.addr = self.sock.accept()
 
         self.conn.setblocking(0)
 
-    def sock_read(self, svc_id, op, ctrl_index, data):
+    def sock_read(self):
         """Read BTP data from socket"""
+        logging.debug("%s", self.sock_read.__name__)
         toread_hdr_len = HDR_LEN
         hdr = bytearray(toread_hdr_len)
         hdr_memview = memoryview(hdr)
@@ -109,21 +112,6 @@ class ZephyrCtl:
 
         tuple_hdr = dec_hdr(hdr)
         toread_data_len = tuple_hdr.data_len
-
-        log("Received hdr: %s", tuple_hdr)
-
-        if not toread_data_len:
-            if tuple_hdr.svc_id != svc_id:
-                log("Received wrong hdr, expected svc id = %s, got = %s",
-                    binascii.hexlify(svc_id), binascii.hexlify(tuple_hdr.svc_id))
-            if tuple_hdr.op != op:
-                log("Received wrong hdr, expected opcode = %s, got = %s",
-                    binascii.hexlify(op), binascii.hexlify(tuple_hdr.op))
-            if tuple_hdr.ctrl_index != ctrl_index:
-                log("Received wrong ctrl index, expected = %s, got = %s",
-                    binascii.hexlify(ctrl_index), binascii.hexlify(tuple_hdr.ctrl_index))
-
-            return
 
         data = bytearray(toread_data_len)
         data_memview = memoryview(data)
@@ -142,10 +130,7 @@ class ZephyrCtl:
 
         log("Received data: %r, %r", tuple_data, data)
 
-        if tuple_data != data:
-            #TODO handle if received other than expected data
-            log("Received wrong data, expected data = %s, got = %s",
-                    binascii.hexlify(data), binascii.hexlify(tuple_data))
+        return tuple_hdr, tuple_data
 
     def sock_send(self, svc_id, op, ctrl_index, data):
         """Send BTP formated data over socket"""
@@ -160,6 +145,8 @@ class ZephyrCtl:
             data = binascii.unhexlify(data)
 
         bin = enc_frame(svc_id, op, ctrl_index, data)
+
+        logging.debug("sending frame %r", bin)
         self.conn.send(bin)
 
 def get_zephyr():
