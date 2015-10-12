@@ -19,7 +19,7 @@ sys.path.insert(
 
 from ptsprojects.zephyr import btpparser
 from ptsprojects.zephyr import btpdef
-from ptsprojects.zephyr.btp import CORE, GAP
+from ptsprojects.zephyr.btp import CORE, GAP, GATTS
 from ptsprojects.zephyr.iutctl import get_qemu_cmd
 
 sock = None
@@ -36,19 +36,23 @@ class Completer:
         self.menu = words[0]
         self.core = words[1]
         self.gap = words[2]
+        self.gatts = words[3]
 
     def complete(self, text, state):
         words_arr = text.split()
         words_cnt = len(words_arr)
 
         if words_cnt == 1:
-            if words_arr[0] in ['core', 'gap']:
+            if words_arr[0] in ['core', 'gap', 'gatts']:
                 if words_arr[0] == 'core':
                     c = self.core.keys()
                     self.matching_words = ["core " + s for s in c]
                 elif words_arr[0] == 'gap':
                     c = self.gap.keys()
                     self.matching_words = ["gap " + s for s in c]
+                elif words_arr[0] == 'gatts':
+                    c = self.gatts.keys()
+                    self.matching_words = ["gatts " + s for s in c]
             else:
                 c = [ w for w in self.menu if w.startswith(words_arr[0]) ]
                 self.matching_words = c
@@ -59,6 +63,9 @@ class Completer:
             elif words_arr[0] == "gap":
                 c = [ w for w in self.gap if w.startswith(words_arr[1]) ]
                 self.matching_words = ["gap " + s for s in c]
+            elif words_arr[0] == "gatts":
+                c = [ w for w in self.gatts if w.startswith(words_arr[1]) ]
+                self.matching_words = ["gatts " + s for s in c]
             else:
                 return None
 
@@ -408,6 +415,8 @@ def generic_srvc_cmd_handler(svc, cmd):
     for i in range(3):
         frame.append(str(btp_cmd[i]))
 
+    data = None
+
     # add data if there is any
     if len(btp_cmd) > 3:
         data = str(btp_cmd[3])
@@ -416,6 +425,10 @@ def generic_srvc_cmd_handler(svc, cmd):
             frame.append("0%s" %  data)
         else:
             frame.append(binascii.hexlify(''.join(data)))
+
+    elif len(cmd) > 1: # some commands pass data from command line
+        data = cmd[1]
+        frame.append(data)
 
     logging.debug("frame %r", frame)
 
@@ -426,6 +439,9 @@ def core_cmd(params):
 
 def gap_cmd(params):
     generic_srvc_cmd_handler(GAP, params)
+
+def gatts_cmd(params):
+    generic_srvc_cmd_handler(GATTS, params)
 
 def conn_chk():
     if conn is None:
@@ -448,7 +464,7 @@ def cmd_loop():
         exec_cmd(choice, params)
 
 def setup_completion():
-    words = (cmds, CORE, GAP)
+    words = (cmds, CORE, GAP, GATTS)
     completer = Completer(words)
 
     readline.parse_and_bind("tab: complete")
@@ -508,6 +524,7 @@ cmds = {
 
     'core': core_cmd,
     'gap': gap_cmd,
+    'gatts': gatts_cmd,
 }
 
 if __name__ == "__main__":
