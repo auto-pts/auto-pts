@@ -148,7 +148,10 @@ def init_core(server_address, workspace_path, bd_addr):
     script_name_no_ext = os.path.splitext(script_name)[0]
 
     log_filename = "%s.log" % (script_name_no_ext,)
-    logging.basicConfig(format = '%(name)s [%(asctime)s] %(message)s',
+    format = ("%(asctime)s %(name)s %(levelname)s %(filename)-25s "
+              "%(lineno)-5s %(funcName)-25s : %(message)s")
+
+    logging.basicConfig(format = format,
                         filename = log_filename,
                         filemode = 'w',
                         level = logging.DEBUG)
