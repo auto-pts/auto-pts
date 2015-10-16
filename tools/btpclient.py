@@ -511,7 +511,8 @@ def main():
 
     finally:
         logging.debug("Exiting...")
-        stop_zephyr()
+        if QEMU_PROCESS:
+            stop_zephyr()
         logging.debug("Writing history file %s" % history_filename)
         readline.write_history_file(history_filename)
 
