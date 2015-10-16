@@ -21,6 +21,7 @@ from ptsprojects.zephyr import btpparser
 from ptsprojects.zephyr import btpdef
 from ptsprojects.zephyr.btp import CORE, GAP, GATTS
 from ptsprojects.zephyr.iutctl import get_qemu_cmd
+from ptsprojects.testcase import AbstractMethodException
 
 sock = None
 conn = None
@@ -33,12 +34,17 @@ class TimeoutError(Exception):
 
 class Completer:
     def __init__(self, words):
+        logging.debug("%s.%s %r", self.__class__, self.__init__.__name__, words)
         self.menu = words[0]
         self.core = words[1]
         self.gap = words[2]
         self.gatts = words[3]
 
+        logging.debug("menu=%r\ncore=%r\ngap=%r\ngatts=%r",
+                      self.menu, self.core, self.gap, self.gatts)
+
     def complete(self, text, state):
+        # logging.debug("%s %r %r", self.complete.__name__, text, state)
         words_arr = text.split()
         words_cnt = len(words_arr)
 
@@ -95,20 +101,322 @@ def timeout(seconds=10, error_message=os.strerror(errno.ETIME)):
 
     return decorator
 
-def help(params):
-    print "Available commands: "
-    menu = cmds.viewkeys()
-    print list(menu)
+class Cmd(object):
+    def __init__(self):
+        # string name of the command used to invoke it in shell
+        self.name = "no_name"
+        raise AbstractMethodException()
 
-    print "\nEvery command has its own minihelp, type: \"<cmd> help\", to get specific help"
+    def help_short(self):
+        raise AbstractMethodException()
 
-def exec_cmd(choice, params):
-    ch = choice.lower()
+    def help(self):
+        raise AbstractMethodException()
+
+    def run(self):
+        raise AbstractMethodException()
+
+class StartZephyrCmd(Cmd):
+    def __init__(self):
+        self.name = "start-zephyr"
+
+    def help_short(self):
+        return "Start Zephyr OS under QEMU"
+
+    def help(self):
+        help_txt = (
+            "\nUsage:\n"
+            "\tstart-zephyr kernel_image\n"
+            "\nNote: xterm must be installed for this command to work\n"
+            "\nDescription:\n"
+            "\nStart Zephyr OS under QEMU process\n"
+            "\nExample:\n"
+            "\tstart-zephyr ./microkernel.elf")
+
+        return help_txt
+
+    def run(self, kernel_image):
+        global QEMU_PROCESS
+
+        if QEMU_PROCESS:
+            print "Zephyr is already up and running"
+            return
+
+        if not os.path.isfile(kernel_image):
+            print "QEMU kernel image %s not found!" % repr(kernel_image)
+            return
+
+        qemu_cmd = get_qemu_cmd(kernel_image)
+
+        script_name = os.path.basename(sys.argv[0]) # in case it is full path
+        script_name_no_ext = os.path.splitext(script_name)[0]
+
+        # why running under xterm? cause of -serial mon:stdio: running qemu as
+        # subprocess make terminal input impossible in the parent application, also
+        # it is impossible to daemonize qemu
+        xterm_qemu_cmd = ('xterm -e sh -c "%s 2>&1|tee qemu-%s.log"' %
+                          (qemu_cmd, script_name_no_ext))
+
+        # start listening
+        logging.debug("Starting listen thread")
+        thread = threading.Thread(target = listen, args = ([],))
+        thread.start()
+
+        # start qemu
+        logging.debug("Starting qemu: %r", xterm_qemu_cmd)
+        QEMU_PROCESS = subprocess.Popen(shlex.split(xterm_qemu_cmd))
+
+        thread.join()
+
+class StopZephyrCmd(object):
+    def __init__(self):
+        self.name = "stop-zephyr"
+
+    def help_short(self):
+        return "Terminate Zephyr QEMU process"
+
+    def help(self):
+        help_txt = (
+            "\nUsage:\n"
+            "\tstop-zephyr\n"
+            "\nDescription:\n"
+            "\nStop Zephyr QEMU process")
+
+        return help_txt
+
+    def run(self):
+
+        global QEMU_PROCESS
+
+        if not QEMU_PROCESS:
+            print "Zephyr is not running"
+            return
+
+        if QEMU_PROCESS:
+            if QEMU_PROCESS.poll() is None:
+                logging.debug("qemu process is running, will terminate it")
+                QEMU_PROCESS.terminate()
+                QEMU_PROCESS.wait() # do not let zombies take over
+                logging.debug("Completed termination of qemu process")
+                QEMU_PROCESS = None
+
+class SendCmd(object):
+    def __init__(self):
+        self.name = "send"
+
+    def help_short(self):
+        return "Send BTP command to tester"
+
+    def help(self):
+        help_txt = (
+            "\nUsage:\n"
+            "\tsend <service_id> <opcode> <index> [<data>]\n"
+            "\nExample:\n"
+            "\tsend 0 1 0 01\n"
+            "\nDescription:\n"
+            "\tsend <int> <int> <int> <hex>\n"
+            "\t(send SERVICE_ID_CORE = 0x00, OP_CORE_REGISTER_SERVICE = 0x03,"
+            "Controller Index = 0, SERVICE_ID_GAP = 0x01...)")
+
+        return help_txt
+
+    def run(self, svc_id, op, ctrl_index, data = ""):
+        # TODO: should data be None and later check be done to append or not
+        # append data to the frame?
+        logging.debug(
+            "%s %d %d %d", self.SendCmd.__name__, svc_id, op, ctrl_index)
+
+        send(svc_id, op, ctrl_index, data)
+
+class ReceiveCmd(object):
+    def __init__(self):
+        self.name = "receive"
+
+    def help_short(self):
+        return "Receive BTP command from tester"
+
+    def help(self):
+        help_txt = (
+            "\nUsage:\n"
+            "\treceive\n"
+            "\nDescription:\n"
+            "\tThis method waits (timeout = 2sec) and reads data from btp socket")
+
+        return help_txt
+
+    def run(self):
+        receive("")
+
+class ListenCmd(object):
+    def __init__(self):
+        self.name = "listen"
+
+    def help_short(self):
+        return "Listen to BTP messages from tester"
+
+    def help(self):
+        help_txt = (
+            "\nUsage:\n"
+            "\tlisten\n"
+            "\nDescription:\n"
+            "\tThis method starts listening btpclient for btpserver connection with 10sec timeout")
+
+        return help_txt
+
+    def run(self):
+        listen([])
+
+class DisconnectCmd(object):
+    def __init__(self):
+        self.name = "disconnect"
+
+    def help_short(self):
+        return "Disconnect from BTP tester"
+
+    def help(self):
+        help_txt = (
+            "\nUsage:\n"
+            "\tdisconnect\n"
+            "\nDescription:\n"
+            "\tClear btp socket connection data")
+
+        return help_txt
+
+    def run(self):
+        if conn_chk() is False:
+            return
+
+        clean_conn()
+        print "Connection cleared"
+
+class CoreCmd(object):
+    def __init__(self):
+        self.name = "core"
+
+    def help_short(self):
+        return "Send core command to BTP tester"
+
+    def help(self):
+        help_txt = ("\nUsage: %s [command]\n"
+                    "\nAvailable commands are:\n" % self.name)
+        for cmd_name in sorted(CORE.keys()):
+            help_txt += "    %s\n" % (cmd_name,)
+
+        return help_txt
+
+    def run(self, cmd):
+        core_cmd(cmd)
+
+class GapCmd(object):
+    def __init__(self):
+        self.name = "gap"
+
+    def help_short(self):
+        return "Send GAP command to BTP tester"
+
+    def help(self):
+
+        help_txt = ("\nUsage: %s [command]\n"
+                    "\nAvailable commands are:\n" % self.name)
+        for cmd_name in sorted(GAP.keys()):
+            help_txt += "    %s\n" % (cmd_name,)
+
+        return help_txt
+
+    def run(self, cmd):
+        gap_cmd(cmd)
+
+class GattsCmd(object):
+    def __init__(self):
+        self.name = "gatts"
+
+    def help_short(self):
+        return "Send GATT server command to BTP tester"
+
+    def help(self):
+
+        help_txt = ("\nUsage: %s [command]\n"
+                    "\nAvailable commands are:\n" % self.name)
+        for cmd_name in sorted(GATTS.keys()):
+            help_txt += "    %s\n" % (cmd_name,)
+
+        return help_txt
+
+    def run(self, cmd):
+        gatts_cmd(cmd)
+
+class ExitCmd(object):
+    def __init__(self):
+        self.name = "exit"
+
+    def help_short(self):
+        return "Exit the shell"
+
+    def help(self):
+        return "\n" + self.help_short()
+
+    def run(self):
+        sys.exit(0)
+
+class HelpCmd(object):
+
+    def __init__(self, cmds_dict):
+        self.name = "help"
+        self.cmds_dict = cmds_dict
+
+    def help_short(self):
+        return "Display help information about commands"
+
+    def help(self):
+
+        help_txt = (
+            "%s\n"
+            "\nSynopsis: help [command]\n"
+            "%s"
+            "\nRun 'help command' to see detailed help about specific command" %
+            (self.help_short(), self.available_cmds()))
+
+        return help_txt
+
+    def available_cmds(self):
+        """Returns string with available commands"""
+
+        cmds_str = "\nAvailable commands are:\n"
+
+        for cmd_name in sorted(self.cmds_dict.keys()):
+            cmd = self.cmds_dict[cmd_name]
+            cmds_str += "    %-15s %s\n" % (cmd_name, cmd.help_short())
+
+        return cmds_str
+
+    def run(self, cmd_name = None):
+        if not cmd_name:
+            print self.help()
+            return
+
+        try:
+            print self.cmds_dict[cmd_name].help()
+        except KeyError:
+            print "\n%r is not a valid command!" % cmd_name
+            print self.available_cmds()
+
+def exec_cmd(choice, params, cmds_dict):
+    logging.debug("%s choice=%r params=%r cmds_dict=%r",
+                  exec_cmd.__name__, choice, params, cmds_dict)
+
+    cmd_name = choice.lower()
+
+    help_cmd = cmds_dict["help"]
+
     try:
-        cmds[ch](params)
+        cmds_dict[cmd_name].run(*params)
     except KeyError:
-        print "error: Invalid selection, please try again.\n"
-        cmds['help'](params)
+        print "\n%r is not a valid command!" % cmd_name
+        print help_cmd.available_cmds()
+    except TypeError as e:
+        print "Please enter correct arguments to command!"
+        logging.debug(e)
+        help_cmd.run(cmd_name)
     except TimeoutError:
         print "error: requested command timed out"
 
@@ -119,112 +427,14 @@ def clean_conn():
     conn = None
     addr = None
 
-def start_zephyr(params):
-    logging.debug("%s %r", start_zephyr.__name__, params)
-
-    if len(params) == 1 and params[0] == "help":
-        print "\nUsage:"
-        print "\tstart-zephyr kernel_image"
-        print "\nNote: xterm must be installed for this command to work"
-        print "\nDescription:"
-        print "\nStarts Zephyr QEMU process"
-        print "\nExample:"
-        print "\tstart-zephyr ./microkernel.elf"
-        return
-
-    global QEMU_PROCESS
-
-    if QEMU_PROCESS:
-        print "Zephyr is already up and running"
-        return
-
-    if len(params) != 1:
-        print "error: kernel image file not specified"
-        return
-
-    kernel_image = params[0]
-
-    if not os.path.isfile(kernel_image):
-        print "QEMU kernel image %s is not a file!" % repr(kernel_image)
-        return
-
-    qemu_cmd = get_qemu_cmd(kernel_image)
-
-    script_name = os.path.basename(sys.argv[0]) # in case it is full path
-    script_name_no_ext = os.path.splitext(script_name)[0]
-
-    # why running under xterm? cause of -serial mon:stdio: running qemu as
-    # subprocess make terminal input impossible in the parent application, also
-    # it is impossible to daemonize qemu
-    xterm_qemu_cmd = ('xterm -e sh -c "%s 2>&1|tee qemu-%s.log"' %
-                      (qemu_cmd, script_name_no_ext))
-
-    # start listening
-    logging.debug("Starting listen thread")
-    thread = threading.Thread(target = listen, args = ([],))
-    thread.start()
-
-    # start qemu
-    logging.debug("Starting qemu: %r", xterm_qemu_cmd)
-    QEMU_PROCESS = subprocess.Popen(shlex.split(xterm_qemu_cmd))
-
-    thread.join()
-
-    print "Zephyr started"
-
-def stop_zephyr(params = []):
-    logging.debug("%s %r", stop_zephyr.__name__, params)
-
-    if len(params) == 1 and params[0] == "help":
-        print "\nUsage:"
-        print "\tstop-zephyr"
-        print "\nDescription:"
-        print "\nStops Zephyr QEMU process"
-        return
-
-    global QEMU_PROCESS
-
-    if not QEMU_PROCESS:
-        print "Zephyr is not running"
-        return
-
-    if QEMU_PROCESS:
-        if QEMU_PROCESS.poll() is None:
-            logging.debug("qemu process is running, will terminate it")
-            QEMU_PROCESS.terminate()
-            QEMU_PROCESS.wait() # do not let zombies take over
-            logging.debug("Completed termination of qemu process")
-            QEMU_PROCESS = None
-
-def send(params):
-    logging.debug("%s %r", send.__name__, params)
-
-    if len(params) == 1 and params[0] == "help":
-        print "\nUsage:"
-        print "\tsend <service_id> <opcode> <index> [<data>]"
-        print "\nExample:"
-        print "\tsend 0 1 0 01"
-        print "\nDescription:"
-        print "\tsend <int> <int> <int> <hex>"
-        print "\t(send SERVICE_ID_CORE = 0x00, OP_CORE_REGISTER_SERVICE = 0x03,"\
-              "Controller Index = 0, SERVICE_ID_GAP = 0x01...)"
-        return
+def send(svc_id, op, ctrl_index, data = ""):
+    # TODO: should data be None and later check be done to append or not
+    # append data to the frame?
+    logging.debug(
+        "%s %r %r %r", send.__name__, svc_id, op, ctrl_index)
 
     if conn_chk() is False:
         return
-
-    try:
-        svc_id = params[0]
-        op = params[1]
-        ctrl_index = params[2]
-    except IndexError:
-        print "Invalid send frame format/data (check - send help)"
-        return
-
-    try:
-        data = params[3]
-    except IndexError:
-        data = ""
 
     service_ids = {item : getattr(btpdef, item) for item in dir(btpdef)
                    if item.startswith("BTP_SERVICE_ID")}
@@ -304,7 +514,9 @@ def receive(params):
     #Gather frame header
     while toread_hdr_len:
         try:
+            logging.debug("recv_into before")
             nbytes = conn.recv_into(hdr_memview, toread_hdr_len)
+            logging.debug("recv_into after, %d", nbytes)
             hdr_memview = hdr_memview[nbytes:]
             toread_hdr_len -= nbytes
         except:
@@ -375,9 +587,6 @@ def listen(params):
         conn = None
         addr = None
 
-def exit(params):
-    sys.exit(0)
-
 def disconnect(params):
     if len(params) == 1 and params[0] == "help":
         print "\nUsage:"
@@ -396,14 +605,8 @@ def generic_srvc_cmd_handler(svc, cmd):
     logging.debug("%s svc=%r cmd=%r",
                   generic_srvc_cmd_handler.__name__, svc, cmd)
 
-    if len(cmd) == 0 or len(cmd) == 1 and cmd == "help":
-        print "\nAdditional command must be given"
-        print "\nPossible core commands:"
-        print svc.keys()
-        return
-
     # a tuple representing btp packet
-    btp_cmd = svc[cmd[0]]
+    btp_cmd = svc[cmd]
 
     if len(btp_cmd) == 0:
         print "Command not yet defined"
@@ -432,16 +635,17 @@ def generic_srvc_cmd_handler(svc, cmd):
 
     logging.debug("frame %r", frame)
 
-    send(frame)
+    send(*frame)
 
-def core_cmd(params):
-    generic_srvc_cmd_handler(CORE, params)
+# TODO: not needed? just move to run method of the respective class?
+def core_cmd(cmd):
+    generic_srvc_cmd_handler(CORE, cmd)
 
-def gap_cmd(params):
-    generic_srvc_cmd_handler(GAP, params)
+def gap_cmd(cmd):
+    generic_srvc_cmd_handler(GAP, cmd)
 
-def gatts_cmd(params):
-    generic_srvc_cmd_handler(GATTS, params)
+def gatts_cmd(cmd):
+    generic_srvc_cmd_handler(GATTS, cmd)
 
 def conn_chk():
     if conn is None:
@@ -450,9 +654,9 @@ def conn_chk():
 
     return True
 
-def cmd_loop():
+def cmd_loop(cmds_dict):
     while True:
-        input = raw_input(" >> ")
+        input = raw_input(">> ")
 
         if input == '':
             continue
@@ -461,10 +665,11 @@ def cmd_loop():
         choice = words[0]
         params = words[1:]
 
-        exec_cmd(choice, params)
+        # TODO: exec_cmd catches TimeoutError
+        exec_cmd(choice, params, cmds_dict)
 
-def setup_completion():
-    words = (cmds, CORE, GAP, GATTS)
+def setup_completion(cmds_dict):
+    words = (cmds_dict, CORE, GAP, GATTS)
     completer = Completer(words)
 
     readline.parse_and_bind("tab: complete")
@@ -486,13 +691,34 @@ def main():
 
     history_filename = os.path.expanduser("~/.%s_history" % script_name_no_ext)
 
-    try:
-        if os.path.exists(history_filename):
-            logging.debug("Reading history file %s" % history_filename)
-            readline.read_history_file(history_filename)
+    if os.path.exists(history_filename):
+        logging.debug("Reading history file %s" % history_filename)
+        readline.read_history_file(history_filename)
 
-        setup_completion()
-        cmd_loop()
+    cmds = [
+        ListenCmd(),
+        SendCmd(),
+        ReceiveCmd(),
+        ExitCmd(),
+        DisconnectCmd(),
+        StartZephyrCmd(),
+        CoreCmd(),
+        GapCmd(),
+        GattsCmd()
+    ]
+
+    cmds_dict = { cmd.name : cmd for cmd in cmds }
+
+    stop_zephyr_cmd = StopZephyrCmd()
+    cmds_dict[stop_zephyr_cmd.name] = stop_zephyr_cmd
+
+    # add help, that can provide help for all commands
+    help_cmd = HelpCmd(cmds_dict)
+    cmds_dict[help_cmd.name] = help_cmd
+
+    try:
+        setup_completion(cmds_dict)
+        cmd_loop(cmds_dict)
 
     except KeyboardInterrupt: # Ctrl-C
         sys.exit("")
@@ -512,24 +738,9 @@ def main():
     finally:
         logging.debug("Exiting...")
         if QEMU_PROCESS:
-            stop_zephyr()
+            stop_zephyr_cmd.run()
         logging.debug("Writing history file %s" % history_filename)
         readline.write_history_file(history_filename)
-
-cmds = {
-    'help': help,
-    'listen': listen,
-    'send': send,
-    'receive': receive,
-    'exit': exit,
-    'disconnect': disconnect,
-    'start-zephyr' : start_zephyr,
-    'stop-zephyr' : stop_zephyr,
-
-    'core': core_cmd,
-    'gap': gap_cmd,
-    'gatts': gatts_cmd,
-}
 
 if __name__ == "__main__":
     main()
