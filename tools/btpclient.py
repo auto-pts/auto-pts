@@ -29,6 +29,13 @@ addr = None
 QEMU_UNIX_PATH = "/tmp/bt-stack-tester"
 QEMU_PROCESS = None
 
+def get_my_name():
+    """Returns name of the script without extension"""
+    script_name = os.path.basename(sys.argv[0]) # in case it is full path
+    script_name_no_ext = os.path.splitext(script_name)[0]
+
+    return script_name_no_ext
+
 class TimeoutError(Exception):
     pass
 
@@ -148,14 +155,11 @@ class StartZephyrCmd(Cmd):
 
         qemu_cmd = get_qemu_cmd(kernel_image)
 
-        script_name = os.path.basename(sys.argv[0]) # in case it is full path
-        script_name_no_ext = os.path.splitext(script_name)[0]
-
         # why running under xterm? cause of -serial mon:stdio: running qemu as
         # subprocess make terminal input impossible in the parent application, also
         # it is impossible to daemonize qemu
         xterm_qemu_cmd = ('xterm -e sh -c "%s 2>&1|tee qemu-%s.log"' %
-                          (qemu_cmd, script_name_no_ext))
+                          (qemu_cmd, get_my_name()))
 
         # start listening
         logging.debug("Starting listen thread")
@@ -655,8 +659,10 @@ def conn_chk():
     return True
 
 def cmd_loop(cmds_dict):
+    my_name = get_my_name()
+
     while True:
-        input = raw_input(">> ")
+        input = raw_input("\x1B[94m[%s]\x1B[0m$ " % my_name)
 
         if input == '':
             continue
@@ -677,10 +683,9 @@ def setup_completion(cmds_dict):
     readline.set_completer_delims('')
 
 def main():
-    script_name = os.path.basename(sys.argv[0]) # in case it is full path
-    script_name_no_ext = os.path.splitext(script_name)[0]
+    my_name = get_my_name()
 
-    log_filename = "%s.log" % (script_name_no_ext,)
+    log_filename = "%s.log" % (my_name,)
     format = ("%(asctime)s %(name)s %(levelname)s %(filename)-25s "
               "%(lineno)-5s %(funcName)-25s : %(message)s")
 
@@ -689,7 +694,7 @@ def main():
                         filemode = 'w',
                         level = logging.DEBUG)
 
-    history_filename = os.path.expanduser("~/.%s_history" % script_name_no_ext)
+    history_filename = os.path.expanduser("~/.%s_history" % my_name)
 
     if os.path.exists(history_filename):
         logging.debug("Reading history file %s" % history_filename)
