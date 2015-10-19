@@ -40,61 +40,75 @@ class TimeoutError(Exception):
     pass
 
 class Completer:
-    def __init__(self, words):
-        logging.debug("%s.%s %r", self.__class__, self.__init__.__name__, words)
-        self.menu = words[0]
-        self.core = words[1]
-        self.gap = words[2]
-        self.gatts = words[3]
+    def __init__(self, options):
+        self.log = logging.getLogger(self.__class__.__name__)
+        self.log.setLevel(logging.ERROR)
+        # use DEBUG for extra info
+        # self.log.setLevel(logging.DEBUG)
 
-        logging.debug("menu=%r\ncore=%r\ngap=%r\ngatts=%r",
-                      self.menu, self.core, self.gap, self.gatts)
+        self.log.debug("%s.%s %r", self.__class__, self.__init__.__name__,
+                       options)
+
+        self.options = options
+
+        self.matches = []
+
+    def find_matches(self, text):
+
+        origline = readline.get_line_buffer()
+        begin = readline.get_begidx()
+        end = readline.get_endidx()
+        being_completed = origline[begin:end]
+        words = origline.split()
+
+        self.log.debug('origline=%r', repr(origline))
+        self.log.debug('begin=%r', begin)
+        self.log.debug('end=%r', end)
+        self.log.debug('being_completed=%r', being_completed)
+        self.log.debug('words=%r', words)
+
+        if not words:
+            self.matches = sorted(self.options.keys())
+        else:
+            # first word
+            if begin == 0:
+                candidates = [word + " " for word in self.options.keys()]
+
+            # later word
+            else:
+                first = words[0]
+                candidates = self.options[first].sub_cmds.keys()
+
+            # match options with portion of input being completed
+            if being_completed:
+                self.matches = [word for word in candidates
+                                if word.startswith(being_completed)]
+
+            # matching empty string so use all candidates
+            else:
+                self.matches = candidates
+
+        self.log.debug("matches=%r", self.matches)
 
     def complete(self, text, state):
-        # logging.debug("%s %r %r", self.complete.__name__, text, state)
-        words_list = text.split()
-        words_count = len(words_list)
+        self.log.debug("%s %r %r", self.complete.__name__, text, state)
 
-        if words_count == 1:
-            if words_list[0] in ['core', 'gap', 'gatts', 'help']:
-                if words_list[0] == 'core':
-                    c = self.core.keys()
-                    self.matching_words = ["core " + s for s in c]
-                elif words_list[0] == 'gap':
-                    c = self.gap.keys()
-                    self.matching_words = ["gap " + s for s in c]
-                elif words_list[0] == 'gatts':
-                    c = self.gatts.keys()
-                    self.matching_words = ["gatts " + s for s in c]
-                elif words_list[0] == 'help':
-                    c = self.menu.keys()
-                    self.matching_words = ["help " + s for s in c]
-            else:
-                c = [ w for w in self.menu if w.startswith(words_list[0]) ]
-                self.matching_words = c
-        elif words_count == 2:
-            if words_list[0] == "core":
-                c = [ w for w in self.core if w.startswith(words_list[1]) ]
-                self.matching_words = ["core " + s for s in c]
-            elif words_list[0] == "gap":
-                c = [ w for w in self.gap if w.startswith(words_list[1]) ]
-                self.matching_words = ["gap " + s for s in c]
-            elif words_list[0] == "gatts":
-                c = [ w for w in self.gatts if w.startswith(words_list[1]) ]
-                self.matching_words = ["gatts " + s for s in c]
-            elif words_list[0] == "help":
-                c = [ w for w in self.menu.keys() if w.startswith(words_list[1]) ]
-                self.matching_words = ["help " + s for s in c]
-            else:
-                return None
-
-        if not text: # words_count == 0
-            self.matching_words = self.menu.keys()
+        # first call for this text: build the match list
+        if state == 0:
+            try:
+                self.find_matches(text)
+            except Exception as error:
+                logging.error("Match search exception!", exc_info = 1)
+                self.matches = []
 
         try:
-            return self.matching_words[state]
+            response = self.matches[state]
         except IndexError:
-            return None
+            response = None
+
+        self.log.debug("%s text=%r state=%r matches=%r", self.complete.__name__,
+                      text, state, self.matches)
+        return response
 
 def timeout(seconds=10, error_message=os.strerror(errno.ETIME)):
     def decorator(func):
@@ -118,7 +132,7 @@ class Cmd(object):
     def __init__(self):
         # string name of the command used to invoke it in shell
         self.name = "no_name"
-        raise AbstractMethodException()
+        self.sub_cmds = None
 
     def help_short(self):
         raise AbstractMethodException()
@@ -131,6 +145,7 @@ class Cmd(object):
 
 class StartZephyrCmd(Cmd):
     def __init__(self):
+        Cmd.__init__(self)
         self.name = "start-zephyr"
 
     def help_short(self):
@@ -178,8 +193,9 @@ class StartZephyrCmd(Cmd):
 
         thread.join()
 
-class StopZephyrCmd(object):
+class StopZephyrCmd(Cmd):
     def __init__(self):
+        Cmd.__init__(self)
         self.name = "stop-zephyr"
 
     def help_short(self):
@@ -210,8 +226,9 @@ class StopZephyrCmd(object):
                 logging.debug("Completed termination of qemu process")
                 QEMU_PROCESS = None
 
-class SendCmd(object):
+class SendCmd(Cmd):
     def __init__(self):
+        Cmd.__init__(self)
         self.name = "send"
 
     def help_short(self):
@@ -238,8 +255,9 @@ class SendCmd(object):
 
         send(svc_id, op, ctrl_index, data)
 
-class ReceiveCmd(object):
+class ReceiveCmd(Cmd):
     def __init__(self):
+        Cmd.__init__(self)
         self.name = "receive"
 
     def help_short(self):
@@ -257,8 +275,9 @@ class ReceiveCmd(object):
     def run(self):
         receive("")
 
-class ListenCmd(object):
+class ListenCmd(Cmd):
     def __init__(self):
+        Cmd.__init__(self)
         self.name = "listen"
 
     def help_short(self):
@@ -276,8 +295,9 @@ class ListenCmd(object):
     def run(self):
         listen([])
 
-class DisconnectCmd(object):
+class DisconnectCmd(Cmd):
     def __init__(self):
+        Cmd.__init__(self)
         self.name = "disconnect"
 
     def help_short(self):
@@ -299,9 +319,11 @@ class DisconnectCmd(object):
         clean_conn()
         print "Connection cleared"
 
-class CoreCmd(object):
+class CoreCmd(Cmd):
     def __init__(self):
+        Cmd.__init__(self)
         self.name = "core"
+        self.sub_cmds = CORE
 
     def help_short(self):
         return "Send core command to BTP tester"
@@ -317,9 +339,11 @@ class CoreCmd(object):
     def run(self, cmd):
         core_cmd(cmd)
 
-class GapCmd(object):
+class GapCmd(Cmd):
     def __init__(self):
+        Cmd.__init__(self)
         self.name = "gap"
+        self.sub_cmds = GAP
 
     def help_short(self):
         return "Send GAP command to BTP tester"
@@ -336,9 +360,11 @@ class GapCmd(object):
     def run(self, cmd):
         gap_cmd(cmd)
 
-class GattsCmd(object):
+class GattsCmd(Cmd):
     def __init__(self):
+        Cmd.__init__(self)
         self.name = "gatts"
+        self.sub_cmds = GATTS
 
     def help_short(self):
         return "Send GATT server command to BTP tester"
@@ -355,8 +381,9 @@ class GattsCmd(object):
     def run(self, cmd):
         gatts_cmd(cmd)
 
-class ExitCmd(object):
+class ExitCmd(Cmd):
     def __init__(self):
+        Cmd.__init__(self)
         self.name = "exit"
 
     def help_short(self):
@@ -368,11 +395,12 @@ class ExitCmd(object):
     def run(self):
         sys.exit(0)
 
-class HelpCmd(object):
+class HelpCmd(Cmd):
 
     def __init__(self, cmds_dict):
+        Cmd.__init__(self)
         self.name = "help"
-        self.cmds_dict = cmds_dict
+        self.sub_cmds = cmds_dict
 
     def help_short(self):
         return "Display help information about commands"
@@ -393,8 +421,8 @@ class HelpCmd(object):
 
         cmds_str = "\nAvailable commands are:\n"
 
-        for cmd_name in sorted(self.cmds_dict.keys()):
-            cmd = self.cmds_dict[cmd_name]
+        for cmd_name in sorted(self.sub_cmds.keys()):
+            cmd = self.sub_cmds[cmd_name]
             cmds_str += "    %-15s %s\n" % (cmd_name, cmd.help_short())
 
         return cmds_str
@@ -405,7 +433,7 @@ class HelpCmd(object):
             return
 
         try:
-            print self.cmds_dict[cmd_name].help()
+            print self.sub_cmds[cmd_name].help()
         except KeyError:
             print "\n%r is not a valid command!" % cmd_name
             print self.available_cmds()
@@ -680,14 +708,6 @@ def cmd_loop(cmds_dict):
         # TODO: exec_cmd catches TimeoutError
         exec_cmd(choice, params, cmds_dict)
 
-def setup_completion(cmds_dict):
-    words = (cmds_dict, CORE, GAP, GATTS)
-    completer = Completer(words)
-
-    readline.parse_and_bind("tab: complete")
-    readline.set_completer(completer.complete)
-    readline.set_completer_delims('')
-
 def main():
     my_name = get_my_name()
 
@@ -727,8 +747,10 @@ def main():
     help_cmd = HelpCmd(cmds_dict)
     cmds_dict[help_cmd.name] = help_cmd
 
+    readline.set_completer(Completer(cmds_dict).complete)
+    readline.parse_and_bind("tab: complete")
+
     try:
-        setup_completion(cmds_dict)
         cmd_loop(cmds_dict)
 
     except KeyboardInterrupt: # Ctrl-C
