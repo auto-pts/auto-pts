@@ -52,37 +52,43 @@ class Completer:
 
     def complete(self, text, state):
         # logging.debug("%s %r %r", self.complete.__name__, text, state)
-        words_arr = text.split()
-        words_cnt = len(words_arr)
+        words_list = text.split()
+        words_count = len(words_list)
 
-        if words_cnt == 1:
-            if words_arr[0] in ['core', 'gap', 'gatts']:
-                if words_arr[0] == 'core':
+        if words_count == 1:
+            if words_list[0] in ['core', 'gap', 'gatts', 'help']:
+                if words_list[0] == 'core':
                     c = self.core.keys()
                     self.matching_words = ["core " + s for s in c]
-                elif words_arr[0] == 'gap':
+                elif words_list[0] == 'gap':
                     c = self.gap.keys()
                     self.matching_words = ["gap " + s for s in c]
-                elif words_arr[0] == 'gatts':
+                elif words_list[0] == 'gatts':
                     c = self.gatts.keys()
                     self.matching_words = ["gatts " + s for s in c]
+                elif words_list[0] == 'help':
+                    c = self.menu.keys()
+                    self.matching_words = ["help " + s for s in c]
             else:
-                c = [ w for w in self.menu if w.startswith(words_arr[0]) ]
+                c = [ w for w in self.menu if w.startswith(words_list[0]) ]
                 self.matching_words = c
-        elif words_cnt == 2:
-            if words_arr[0] == "core":
-                c = [ w for w in self.core if w.startswith(words_arr[1]) ]
+        elif words_count == 2:
+            if words_list[0] == "core":
+                c = [ w for w in self.core if w.startswith(words_list[1]) ]
                 self.matching_words = ["core " + s for s in c]
-            elif words_arr[0] == "gap":
-                c = [ w for w in self.gap if w.startswith(words_arr[1]) ]
+            elif words_list[0] == "gap":
+                c = [ w for w in self.gap if w.startswith(words_list[1]) ]
                 self.matching_words = ["gap " + s for s in c]
-            elif words_arr[0] == "gatts":
-                c = [ w for w in self.gatts if w.startswith(words_arr[1]) ]
+            elif words_list[0] == "gatts":
+                c = [ w for w in self.gatts if w.startswith(words_list[1]) ]
                 self.matching_words = ["gatts " + s for s in c]
+            elif words_list[0] == "help":
+                c = [ w for w in self.menu.keys() if w.startswith(words_list[1]) ]
+                self.matching_words = ["help " + s for s in c]
             else:
                 return None
 
-        if not text: # words_cnt == 0
+        if not text: # words_count == 0
             self.matching_words = self.menu.keys()
 
         try:
