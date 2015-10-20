@@ -97,7 +97,7 @@ class Completer:
         if state == 0:
             try:
                 self.find_matches(text)
-            except Exception as error:
+            except Exception:
                 logging.error("Match search exception!", exc_info = 1)
                 self.matches = []
 
@@ -535,13 +535,6 @@ def send(svc_id, op, ctrl_index, data = ""):
 def receive(params):
     logging.debug("%s %r", receive.__name__, params)
 
-    if len(params) == 1 and params[0] == "help":
-        print "\nUsage:"
-        print "\treceive"
-        print "\nDescription:"
-        print "\tThis method waits (timeout = 2sec) and reads data from btp socket"
-        return
-
     if conn_chk() is False:
         return
 
@@ -593,13 +586,6 @@ def listen(params):
     global conn
     global addr
 
-    if len(params) == 1 and params[0] == "help":
-        print "\nUsage:"
-        print "\tlisten"
-        print "\nDescription:"
-        print "\tThis method starts listening btpclient for btpserver connection with 10sec timeout"
-        return
-
     if conn is not None:
         print "btpclient is already connected to btp server"
         return
@@ -626,12 +612,6 @@ def listen(params):
         addr = None
 
 def disconnect(params):
-    if len(params) == 1 and params[0] == "help":
-        print "\nUsage:"
-        print "\tdisconnect"
-        print "\nDescription:"
-        print "\tClear btp socket connection data"
-        return
 
     if conn_chk() is False:
         return
