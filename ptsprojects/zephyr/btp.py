@@ -51,13 +51,13 @@ def core_reg_svc_gap():
     logging.debug("%s", core_reg_svc_gap.__name__)
 
     zephyrctl = get_zephyr()
-    zephyrctl.sock_send(*CORE['gap_reg'])
+    zephyrctl.btp_socket.send(*CORE['gap_reg'])
 
 def core_reg_svc_gatts():
     logging.debug("%s", core_reg_svc_gatts.__name__)
 
     zephyrctl = get_zephyr()
-    zephyrctl.sock_send(*CORE['gatts_reg'])
+    zephyrctl.btp_socket.send(*CORE['gatts_reg'])
 
 def core_reg_svc_rsp_succ():
     logging.debug("%s", core_reg_svc_rsp_succ.__name__)
@@ -69,7 +69,7 @@ def core_reg_svc_rsp_succ():
                        0),
                       ('',))
 
-    tuple_hdr, tuple_data = zephyrctl.sock_read()
+    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
 
     logging.debug("received %r %r", tuple_hdr, tuple_data)
     logging.debug("expected %r", expected_frame)
@@ -84,7 +84,7 @@ def gap_adv_ind_on():
     logging.debug("%s", gap_adv_ind_on.__name__)
     zephyrctl = get_zephyr()
 
-    zephyrctl.sock_send(*GAP['start_adv'])
+    zephyrctl.btp_socket.send(*GAP['start_adv'])
 
 def gatts_add_svc(svc_type = None, uuid = None):
     logging.debug("%s %r %r", gatts_add_svc.__name__, svc_type, uuid)
@@ -97,20 +97,20 @@ def gatts_add_svc(svc_type = None, uuid = None):
     data_ba.extend(chr(len(uuid) / 2))
     data_ba.extend(uuid_ba)
 
-    zephyrctl.sock_send(*GATTS['add_svc'], data = data_ba)
+    zephyrctl.btp_socket.send(*GATTS['add_svc'], data = data_ba)
 
 def gatts_start_server():
     logging.debug("%s", gatts_start_server.__name__)
 
     zephyrctl = get_zephyr()
-    zephyrctl.sock_send(*GATTS['start_server'])
+    zephyrctl.btp_socket.send(*GATTS['start_server'])
 
 def gatts_command_succ_rsp():
     logging.debug("%s", gatts_command_succ_rsp.__name__)
 
     zephyrctl = get_zephyr()
 
-    tuple_hdr, tuple_data = zephyrctl.sock_read()
+    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
     if tuple_hdr.svc_id != btpdef.BTP_SERVICE_ID_GATT:

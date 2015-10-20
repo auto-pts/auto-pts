@@ -19,9 +19,7 @@ class QTestCase(TestCase):
         self.zephyrctl = get_zephyr()
 
         # first command is to start QEMU
-        self.cmds.insert(0, TestFunc(self.zephyrctl.socks_open))
-        self.cmds.insert(1, TestFunc(self.zephyrctl.start))
-        self.cmds.insert(2, TestFunc(self.zephyrctl.socks_accept))
+        self.cmds.insert(0, TestFunc(self.zephyrctl.start))
 
         # last command is to stop QEMU
         self.cmds.append(TestFuncCleanUp(self.zephyrctl.stop))

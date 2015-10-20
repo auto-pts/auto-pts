@@ -31,50 +31,13 @@ def get_qemu_cmd(kernel_image):
 
     return qemu_cmd
 
-class ZephyrCtl:
-    '''Zephyr OS Control Class'''
-
+class BTPSocket(object):
     def __init__(self):
-        """Constructor."""
-
-        assert ZEPHYR_KERNEL_IMAGE, "Kernel image file is not set!"
-
-
-        self.kernel_image = ZEPHYR_KERNEL_IMAGE
-        self.qemu_process = None
         self.sock = None
         self.conn = None
         self.addr = None
 
-    def start(self):
-        """Starts the Zephyr OS"""
-
-        log("%s.%s", self.__class__, self.start.__name__)
-
-        qemu_cmd = get_qemu_cmd(self.kernel_image)
-
-        log("Starting QEMU zephyr process: %s", qemu_cmd)
-
-        # TODO check if zephyr process has started correctly
-        self.qemu_process = subprocess.Popen(shlex.split(qemu_cmd),
-                                             shell = False,
-                                             stdout = QEMU_LOG_FO,
-                                             stderr = QEMU_LOG_FO)
-
-    def stop(self):
-        """Powers off the Zephyr OS"""
-        log("%s.%s", self.__class__, self.stop.__name__)
-
-        self.sock = None
-        self.conn = None
-        self.addr = None
-
-        if self.qemu_process and self.qemu_process.poll() is None:
-            self.qemu_process.terminate()
-            self.qemu_process.wait() # do not let zombies take over
-            self.qemu_process = None
-
-    def socks_open(self):
+    def open(self):
         """Open sockets for Viper"""
         if os.path.exists(QEMU_UNIX_PATH):
             os.remove(QEMU_UNIX_PATH)
@@ -85,18 +48,18 @@ class ZephyrCtl:
         #queue only one connection
         self.sock.listen(1)
 
-    def socks_accept(self):
+    def accept(self):
         """Accept incomming Zephyr connection"""
-        logging.debug("%s", self.socks_accept.__name__)
+        logging.debug("%s", self.accept.__name__)
 
         #This will hang forever if Zephyr don't try to connect
         self.conn, self.addr = self.sock.accept()
 
         self.conn.setblocking(0)
 
-    def sock_read(self):
+    def read(self):
         """Read BTP data from socket"""
-        logging.debug("%s", self.sock_read.__name__)
+        logging.debug("%s", self.read.__name__)
         toread_hdr_len = HDR_LEN
         hdr = bytearray(toread_hdr_len)
         hdr_memview = memoryview(hdr)
@@ -113,6 +76,8 @@ class ZephyrCtl:
 
         tuple_hdr = dec_hdr(hdr)
         toread_data_len = tuple_hdr.data_len
+
+        logging.debug("Received: hdr: %r %r", tuple_hdr, hdr)
 
         data = bytearray(toread_data_len)
         data_memview = memoryview(data)
@@ -133,22 +98,76 @@ class ZephyrCtl:
 
         return tuple_hdr, tuple_data
 
-    def sock_send(self, svc_id, op, ctrl_index, data):
+    def send(self, svc_id, op, ctrl_index, data):
         """Send BTP formated data over socket"""
         logging.debug("%s, %r %r %r %r",
-                      self.sock_send.__name__, svc_id, op, ctrl_index, data)
+                      self.send.__name__, svc_id, op, ctrl_index, data)
 
 
-        # TODO: these send/receive routines should be unified with btpclient
-        data = str(data)
-        if len(data) == 1:
-            data = "0%s" %  data
-            data = binascii.unhexlify(data)
+        if isinstance(data, int):
+            data = str(data)
+            if len(data) == 1:
+                data = "0%s" %  data
+                data = binascii.unhexlify(data)
 
         bin = enc_frame(svc_id, op, ctrl_index, data)
 
         logging.debug("sending frame %r", bin)
         self.conn.send(bin)
+
+    def close(self):
+        self.sock.shutdown(socket.SHUT_RDWR)
+        self.sock.close()
+
+        self.sock = None
+        self.conn = None
+        self.addr = None
+
+class ZephyrCtl:
+    '''Zephyr OS Control Class'''
+
+    def __init__(self):
+        """Constructor."""
+
+        assert ZEPHYR_KERNEL_IMAGE, "Kernel image file is not set!"
+
+
+        self.kernel_image = ZEPHYR_KERNEL_IMAGE
+        self.qemu_process = None
+        self.btp_socket = None
+
+    def start(self):
+        """Starts the Zephyr OS"""
+
+        log("%s.%s", self.__class__, self.start.__name__)
+
+        qemu_cmd = get_qemu_cmd(self.kernel_image)
+
+        self.btp_socket = BTPSocket()
+        self.btp_socket.open()
+
+        log("Starting QEMU zephyr process: %s", qemu_cmd)
+
+        # TODO check if zephyr process has started correctly
+        self.qemu_process = subprocess.Popen(shlex.split(qemu_cmd),
+                                             shell = False,
+                                             stdout = QEMU_LOG_FO,
+                                             stderr = QEMU_LOG_FO)
+
+        self.btp_socket.accept()
+
+    def stop(self):
+        """Powers off the Zephyr OS"""
+        log("%s.%s", self.__class__, self.stop.__name__)
+
+        if self.btp_socket:
+            self.btp_socket.close()
+            self.btp_socket = None
+
+        if self.qemu_process and self.qemu_process.poll() is None:
+            self.qemu_process.terminate()
+            self.qemu_process.wait() # do not let zombies take over
+            self.qemu_process = None
 
 def get_zephyr():
     return ZEPHYR

@@ -20,13 +20,10 @@ sys.path.insert(
 from ptsprojects.zephyr import btpparser
 from ptsprojects.zephyr import btpdef
 from ptsprojects.zephyr.btp import CORE, GAP, GATTS
-from ptsprojects.zephyr.iutctl import get_qemu_cmd
+from ptsprojects.zephyr.iutctl import get_qemu_cmd, QEMU_UNIX_PATH, BTPSocket
 from ptsprojects.testcase import AbstractMethodException
 
-sock = None
-conn = None
-addr = None
-QEMU_UNIX_PATH = "/tmp/bt-stack-tester"
+BTP_SOCKET = None
 QEMU_PROCESS = None
 
 def get_my_name():
@@ -313,10 +310,10 @@ class DisconnectCmd(Cmd):
         return help_txt
 
     def run(self):
-        if conn_chk() is False:
+        if not conn_check():
             return
 
-        clean_conn()
+        conn_clean()
         print "Connection cleared"
 
 class CoreCmd(Cmd):
@@ -458,20 +455,13 @@ def exec_cmd(choice, params, cmds_dict):
     except TimeoutError:
         print "error: requested command timed out"
 
-def clean_conn():
-    global sock, conn, addr
-
-    sock = None
-    conn = None
-    addr = None
-
 def send(svc_id, op, ctrl_index, data = ""):
     # TODO: should data be None and later check be done to append or not
     # append data to the frame?
     logging.debug(
         "%s %r %r %r", send.__name__, svc_id, op, ctrl_index)
 
-    if conn_chk() is False:
+    if conn_check() is False:
         return
 
     service_ids = {item : getattr(btpdef, item) for item in dir(btpdef)
@@ -510,17 +500,14 @@ def send(svc_id, op, ctrl_index, data = ""):
         print "error: Wrong data type, should be e.g.: \"0011223344ff\""
         return
 
-    frame = btpparser.enc_frame(int_svc_id, int_op, int_ctrl_index, hex_data)
-
     logging.debug("Sending: %d %d %d %r" %
                   (int_svc_id, int_op, int_ctrl_index, hex_data))
-    logging.debug("Sending frame: %r" % frame)
 
     try:
-        conn.send(frame)
+        BTP_SOCKET.send(int_svc_id, int_op, int_ctrl_index, hex_data)
     except socket.error as serr:
         if serr.errno == errno.EPIPE:
-            clean_conn()
+            conn_clean()
             print "error: Connection error, please connect btp again"
             return
 
@@ -535,89 +522,36 @@ def send(svc_id, op, ctrl_index, data = ""):
 def receive(params):
     logging.debug("%s %r", receive.__name__, params)
 
-    if conn_chk() is False:
+    if conn_check() is False:
         return
 
-    toread_hdr_len = btpparser.HDR_LEN
-    hdr = bytearray(toread_hdr_len)
-    hdr_memview = memoryview(hdr)
-
-    #Gather frame header
-    while toread_hdr_len:
-        try:
-            logging.debug("recv_into before")
-            nbytes = conn.recv_into(hdr_memview, toread_hdr_len)
-            logging.debug("recv_into after, %d", nbytes)
-            hdr_memview = hdr_memview[nbytes:]
-            toread_hdr_len -= nbytes
-        except:
-            continue
-
-    tuple_hdr = btpparser.dec_hdr(hdr)
-    toread_data_len = tuple_hdr.data_len
+    tuple_hdr, tuple_data = BTP_SOCKET.read()
 
     print "Received: hdr: ", tuple_hdr
-    logging.debug("Received: hdr: %r %r", tuple_hdr, hdr)
-
-    data = bytearray(toread_data_len)
-    data_memview = memoryview(data)
-
-    #Gather optional frame data
-    while toread_data_len:
-        try:
-            nbytes = conn.recv_into(data_memview, toread_data_len)
-            data_memview = data_memview[nbytes:]
-            toread_data_len -= nbytes
-        except:
-            continue
-
-    tuple_data = btpparser.dec_data(data)
 
     hex_str = binascii.hexlify(tuple_data[0])
     hex_str_byte = " ".join(hex_str[i:i+2] for i in range(0, len(hex_str), 2))
     print "Received data (hex): %s" % hex_str_byte
     print "Received data (ascii):", tuple_data
 
-    logging.debug("Received data %r %r", data, tuple_data)
-
 def listen(params):
     logging.debug("%s %r", listen.__name__, params)
-    global sock
-    global conn
-    global addr
 
-    if conn is not None:
+    if BTP_SOCKET.conn is not None:
         print "btpclient is already connected to btp server"
         return
 
-    if sock is None:
-        if os.path.exists(QEMU_UNIX_PATH):
-            os.remove(QEMU_UNIX_PATH)
-
-        sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        sock.bind(QEMU_UNIX_PATH)
-
-        #queue only one connection
-        sock.listen(1)
-        print "created fd %s, listening..." % QEMU_UNIX_PATH
+    BTP_SOCKET.open()
+    print "created fd %s, listening..." % QEMU_UNIX_PATH
 
     try:
-        conn, addr = sock.accept()
-        conn.setblocking(0)
+        BTP_SOCKET.accept()
         print "btp server connected successfully"
 
     except KeyboardInterrupt:
         print "\nListen interrupted!"
         conn = None
         addr = None
-
-def disconnect(params):
-
-    if conn_chk() is False:
-        return
-
-    clean_conn()
-    print "info: Connection cleared"
 
 def generic_srvc_cmd_handler(svc, cmd):
     logging.debug("%s svc=%r cmd=%r",
@@ -655,12 +589,20 @@ def generic_srvc_cmd_handler(svc, cmd):
 
     send(*frame)
 
-def conn_chk():
-    if conn is None:
+def conn_check():
+    if BTP_SOCKET is None:
+        return False
+
+    if BTP_SOCKET.conn is None:
         print "error: btp client is not connected"
         return False
 
     return True
+
+def conn_clean():
+    global BTP_SOCKET
+    BTP_SOCKET.close()
+    BTP_SOCKET = None
 
 def cmd_loop(cmds_dict):
     my_name = get_my_name()
@@ -719,6 +661,9 @@ def main():
 
     readline.set_completer(Completer(cmds_dict).complete)
     readline.parse_and_bind("tab: complete")
+
+    global BTP_SOCKET
+    BTP_SOCKET = BTPSocket()
 
     try:
         cmd_loop(cmds_dict)
