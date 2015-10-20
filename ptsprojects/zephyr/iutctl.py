@@ -69,9 +69,10 @@ class ZephyrCtl:
         self.conn = None
         self.addr = None
 
-        if self.qemu_process.poll() is None:
+        if self.qemu_process and self.qemu_process.poll() is None:
             self.qemu_process.terminate()
             self.qemu_process.wait() # do not let zombies take over
+            self.qemu_process = None
 
     def socks_open(self):
         """Open sockets for Viper"""
