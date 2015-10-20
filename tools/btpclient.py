@@ -250,8 +250,8 @@ class SendCmd(Cmd):
     def run(self, svc_id, op, ctrl_index, data = ""):
         # TODO: should data be None and later check be done to append or not
         # append data to the frame?
-        logging.debug(
-            "%s %d %d %d", self.SendCmd.__name__, svc_id, op, ctrl_index)
+        logging.debug("%s.%s %r %r %r", self.__class__.__name__,
+                      self.run.__name__, svc_id, op, ctrl_index)
 
         send(svc_id, op, ctrl_index, data)
 
@@ -336,8 +336,8 @@ class CoreCmd(Cmd):
 
         return help_txt
 
-    def run(self, cmd):
-        core_cmd(cmd)
+    def run(self, *cmd):
+        generic_srvc_cmd_handler(CORE, cmd)
 
 class GapCmd(Cmd):
     def __init__(self):
@@ -357,8 +357,8 @@ class GapCmd(Cmd):
 
         return help_txt
 
-    def run(self, cmd):
-        gap_cmd(cmd)
+    def run(self, *cmd):
+        generic_srvc_cmd_handler(GAP, cmd)
 
 class GattsCmd(Cmd):
     def __init__(self):
@@ -378,8 +378,8 @@ class GattsCmd(Cmd):
 
         return help_txt
 
-    def run(self, cmd):
-        gatts_cmd(cmd)
+    def run(self, *cmd):
+        generic_srvc_cmd_handler(GATTS, cmd)
 
 class ExitCmd(Cmd):
     def __init__(self):
@@ -644,7 +644,7 @@ def generic_srvc_cmd_handler(svc, cmd):
                   generic_srvc_cmd_handler.__name__, svc, cmd)
 
     # a tuple representing btp packet
-    btp_cmd = svc[cmd]
+    btp_cmd = svc[cmd[0]]
 
     if len(btp_cmd) == 0:
         print "Command not yet defined"
@@ -674,16 +674,6 @@ def generic_srvc_cmd_handler(svc, cmd):
     logging.debug("frame %r", frame)
 
     send(*frame)
-
-# TODO: not needed? just move to run method of the respective class?
-def core_cmd(cmd):
-    generic_srvc_cmd_handler(CORE, cmd)
-
-def gap_cmd(cmd):
-    generic_srvc_cmd_handler(GAP, cmd)
-
-def gatts_cmd(cmd):
-    generic_srvc_cmd_handler(GATTS, cmd)
 
 def conn_chk():
     if conn is None:
