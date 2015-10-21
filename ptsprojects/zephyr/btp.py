@@ -2,6 +2,7 @@
 
 import logging
 import binascii
+import struct
 
 from iutctl import get_zephyr
 import btpdef
@@ -45,6 +46,15 @@ GATTS = {
 
     "start_server": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_START_SERVER,
                      CONTROLLER_INDEX, ""),
+
+    "add_inc_svc": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_ADD_INCLUDED_SERVICE,
+                    CONTROLLER_INDEX),
+
+    "add_char": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_ADD_CHARACTERISTIC,
+                 CONTROLLER_INDEX),
+
+    "add_desc": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_ADD_DESCRIPTOR,
+                 CONTROLLER_INDEX),
 }
 
 def core_reg_svc_gap():
@@ -98,6 +108,51 @@ def gatts_add_svc(svc_type = None, uuid = None):
     data_ba.extend(uuid_ba)
 
     zephyrctl.btp_socket.send(*GATTS['add_svc'], data = data_ba)
+
+def gatts_add_inc_svc(hdl = None):
+    logging.debug("%s %r", gatts_add_inc_svc.__name__, hdl)
+
+    zephyrctl = get_zephyr()
+
+    data_ba = bytearray()
+    hdl_ba = struct.pack('H', hdl)
+    data_ba.extend(hdl_ba)
+
+    zephyrctl.btp_socket.send(*GATTS['add_inc_svc'], data = data_ba)
+
+def gatts_add_char(hdl = None, prop = None, perm = None, uuid = None):
+    logging.debug("%s %r %r %r %r", gatts_add_char.__name__, hdl, prop, perm,
+                  uuid)
+
+    zephyrctl = get_zephyr()
+
+    data_ba = bytearray()
+    hdl_ba = struct.pack('H', hdl)
+    uuid_ba = binascii.unhexlify(bytearray(uuid))
+
+    data_ba.extend(hdl_ba)
+    data_ba.extend(chr(prop))
+    data_ba.extend(chr(perm))
+    data_ba.extend(chr(len(uuid) / 2))
+    data_ba.extend(uuid_ba)
+
+    zephyrctl.btp_socket.send(*GATTS['add_char'], data = data_ba)
+
+def gatts_add_desc(hdl = None, perm = None, uuid = None):
+    logging.debug("%s %r %r %r", gatts_add_desc.__name__, hdl, perm, uuid)
+
+    zephyrctl = get_zephyr()
+
+    data_ba = bytearray()
+    hdl_ba = struct.pack('H', hdl)
+    uuid_ba = binascii.unhexlify(bytearray(uuid))
+
+    data_ba.extend(hdl_ba)
+    data_ba.extend(chr(perm))
+    data_ba.extend(chr(len(uuid) / 2))
+    data_ba.extend(uuid_ba)
+
+    zephyrctl.btp_socket.send(*GATTS['add_desc'], data = data_ba)
 
 def gatts_start_server():
     logging.debug("%s", gatts_start_server.__name__)
