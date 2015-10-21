@@ -125,17 +125,69 @@ def timeout(seconds=10, error_message=os.strerror(errno.ETIME)):
 
     return decorator
 
+class Help(object):
+    """Help text manager for Cmd classes"""
+
+    def __init__(self):
+        self.short = None
+        self.long = None
+
+    def build(self, short_help, synopsis = None, description = None,
+              example = None, sub_cmds = None):
+        """
+        sub_cmds -- List of sub-command names, or dictionary with sub-command
+                    names as keys and command help as values
+        """
+
+        self.short = short_help
+
+        margin = " " * 4
+        help_text = short_help
+
+        if synopsis:
+            help_text += ("\n\nSynopsis:\n"
+                          "%s%s\n") % (margin, synopsis)
+
+        if sub_cmds:
+            help_text += "\nAvailable commands are:\n"
+
+            if isinstance(sub_cmds, list):
+                for cmd_name in sorted(sub_cmds):
+                    help_text += margin + "%s\n" % (cmd_name,)
+            else: # dict
+                for cmd_name in sorted(sub_cmds.keys()):
+                    cmd_help = sub_cmds[cmd_name]
+                    help_text += margin + "%-15s %s\n" % (cmd_name, cmd_help)
+
+        if description:
+            help_text += "\nDescription:"
+            for line in description.splitlines():
+                help_text += "\n%s%s" % (margin, line)
+
+        if example:
+            help_text += "\n\nExample:\n%s%s" % (margin, example)
+
+        # if sub_cmds are last in the text extra newline is there
+        if help_text[-1] == "\n":
+            help_text = help_text[:-1] # remove last newline
+
+        self.long = help_text
+
 class Cmd(object):
     def __init__(self):
         # string name of the command used to invoke it in shell
         self.name = "no_name"
+
         self.sub_cmds = None
 
-    def help_short(self):
-        raise AbstractMethodException()
+        # child class must build the text
+        self.help = Help()
 
-    def help(self):
-        raise AbstractMethodException()
+    def help_short(self):
+        return self.help.short
+
+    def help_long(self):
+        return self.help.long
 
     def run(self):
         raise AbstractMethodException()
@@ -145,20 +197,13 @@ class StartZephyrCmd(Cmd):
         Cmd.__init__(self)
         self.name = "start-zephyr"
 
-    def help_short(self):
-        return "Start Zephyr OS under QEMU"
-
-    def help(self):
-        help_txt = (
-            "\nUsage:\n"
-            "\tstart-zephyr kernel_image\n"
-            "\nNote: xterm must be installed for this command to work\n"
-            "\nDescription:\n"
-            "\nStart Zephyr OS under QEMU process\n"
-            "\nExample:\n"
-            "\tstart-zephyr ./microkernel.elf")
-
-        return help_txt
+        self.help.build(
+            short_help = "Start Zephyr OS under QEMU",
+            synopsis = "%s kernel_image" % self.name,
+            description = ("Start QEMU with Zephyr OS image"
+                           "\nNote: xterm must be installed for "
+                           "this command to work."),
+            example = "%s ./microkernel.elf" % self.name)
 
     def run(self, kernel_image):
         global QEMU_PROCESS
@@ -195,17 +240,10 @@ class StopZephyrCmd(Cmd):
         Cmd.__init__(self)
         self.name = "stop-zephyr"
 
-    def help_short(self):
-        return "Terminate Zephyr QEMU process"
-
-    def help(self):
-        help_txt = (
-            "\nUsage:\n"
-            "\tstop-zephyr\n"
-            "\nDescription:\n"
-            "\nStop Zephyr QEMU process")
-
-        return help_txt
+        self.help.build(
+            short_help = "Terminate Zephyr QEMU process",
+            synopsis = "%s" % self.name,
+            description = "Stop Zephyr QEMU process")
 
     def run(self):
 
@@ -228,21 +266,13 @@ class SendCmd(Cmd):
         Cmd.__init__(self)
         self.name = "send"
 
-    def help_short(self):
-        return "Send BTP command to tester"
-
-    def help(self):
-        help_txt = (
-            "\nUsage:\n"
-            "\tsend <service_id> <opcode> <index> [<data>]\n"
-            "\nExample:\n"
-            "\tsend 0 1 0 01\n"
-            "\nDescription:\n"
-            "\tsend <int> <int> <int> <hex>\n"
-            "\t(send SERVICE_ID_CORE = 0x00, OP_CORE_REGISTER_SERVICE = 0x03,"
-            "Controller Index = 0, SERVICE_ID_GAP = 0x01...)")
-
-        return help_txt
+        self.help.build(
+            short_help = "Send BTP command to tester",
+            synopsis = "%s <service_id> <opcode> <index> [<data>]" % self.name,
+            description = ("send <int> <int> <int> <hex>\n"
+            "(send SERVICE_ID_CORE = 0x00, OP_CORE_REGISTER_SERVICE = 0x03,"
+            "Controller Index = 0, SERVICE_ID_GAP = 0x01...)"),
+            example = "%s 0 1 0 01" % self.name)
 
     def run(self, svc_id, op, ctrl_index, data = ""):
         # TODO: should data be None and later check be done to append or not
@@ -257,17 +287,11 @@ class ReceiveCmd(Cmd):
         Cmd.__init__(self)
         self.name = "receive"
 
-    def help_short(self):
-        return "Receive BTP command from tester"
-
-    def help(self):
-        help_txt = (
-            "\nUsage:\n"
-            "\treceive\n"
-            "\nDescription:\n"
-            "\tThis method waits (timeout = 2sec) and reads data from btp socket")
-
-        return help_txt
+        self.help.build(
+            short_help = "Receive BTP command from tester",
+            synopsis = "%s" % self.name,
+            description = "This command waits (timeout = 2sec) and reads " \
+            "data from BTP socket")
 
     def run(self):
         receive("")
@@ -277,17 +301,11 @@ class ListenCmd(Cmd):
         Cmd.__init__(self)
         self.name = "listen"
 
-    def help_short(self):
-        return "Listen to BTP messages from tester"
-
-    def help(self):
-        help_txt = (
-            "\nUsage:\n"
-            "\tlisten\n"
-            "\nDescription:\n"
-            "\tThis method starts listening btpclient for btpserver connection with 10sec timeout")
-
-        return help_txt
+        self.help.build(
+            short_help = "Listen to BTP messages from tester",
+            synopsis = "%s" % self.name,
+            description = ("This command starts listening for BTP server "
+                           "connection.\nCan be interrupted with Ctrl-C"))
 
     def run(self):
         listen([])
@@ -297,17 +315,10 @@ class DisconnectCmd(Cmd):
         Cmd.__init__(self)
         self.name = "disconnect"
 
-    def help_short(self):
-        return "Disconnect from BTP tester"
-
-    def help(self):
-        help_txt = (
-            "\nUsage:\n"
-            "\tdisconnect\n"
-            "\nDescription:\n"
-            "\tClear btp socket connection data")
-
-        return help_txt
+        self.help.build(
+            short_help = "Disconnect from BTP tester",
+            synopsis = "%s" % self.name,
+            description = "Clear btp socket connection data")
 
     def run(self):
         if not conn_check():
@@ -322,16 +333,10 @@ class CoreCmd(Cmd):
         self.name = "core"
         self.sub_cmds = CORE
 
-    def help_short(self):
-        return "Send core command to BTP tester"
-
-    def help(self):
-        help_txt = ("\nUsage: %s [command]\n"
-                    "\nAvailable commands are:\n" % self.name)
-        for cmd_name in sorted(CORE.keys()):
-            help_txt += "    %s\n" % (cmd_name,)
-
-        return help_txt
+        self.help.build(
+            short_help = "Send core command to BTP tester",
+            synopsis = "%s [command]" % self.name,
+            sub_cmds = self.sub_cmds.keys())
 
     def run(self, *cmd):
         if not cmd:
@@ -345,17 +350,10 @@ class GapCmd(Cmd):
         self.name = "gap"
         self.sub_cmds = GAP
 
-    def help_short(self):
-        return "Send GAP command to BTP tester"
-
-    def help(self):
-
-        help_txt = ("\nUsage: %s [command]\n"
-                    "\nAvailable commands are:\n" % self.name)
-        for cmd_name in sorted(GAP.keys()):
-            help_txt += "    %s\n" % (cmd_name,)
-
-        return help_txt
+        self.help.build(
+            short_help = "Send GAP command to BTP tester",
+            synopsis = "%s [command]" % self.name,
+            sub_cmds = self.sub_cmds.keys())
 
     def run(self, *cmd):
         if not cmd:
@@ -369,17 +367,10 @@ class GattsCmd(Cmd):
         self.name = "gatts"
         self.sub_cmds = GATTS
 
-    def help_short(self):
-        return "Send GATT server command to BTP tester"
-
-    def help(self):
-
-        help_txt = ("\nUsage: %s [command]\n"
-                    "\nAvailable commands are:\n" % self.name)
-        for cmd_name in sorted(GATTS.keys()):
-            help_txt += "    %s\n" % (cmd_name,)
-
-        return help_txt
+        self.help.build(
+            short_help = "Send GATT server command to BTP tester",
+            synopsis = "%s [command]" % self.name,
+            sub_cmds = self.sub_cmds.keys())
 
     def run(self, *cmd):
         if not cmd:
@@ -392,11 +383,7 @@ class ExitCmd(Cmd):
         Cmd.__init__(self)
         self.name = "exit"
 
-    def help_short(self):
-        return "Exit the shell"
-
-    def help(self):
-        return "\n" + self.help_short()
+        self.help.build(short_help = "Exit the shell")
 
     def run(self):
         sys.exit(0)
@@ -408,38 +395,42 @@ class HelpCmd(Cmd):
         self.name = "help"
         self.sub_cmds = cmds_dict
 
-    def help_short(self):
-        return "Display help information about commands"
+    def __build_help(self):
+        """Builds help. This is not done in constructor as with the other commands
+        cause then this class is not created, hence it is not in the cmds_dict,
+        from which commands and their help text are obtained.
 
-    def help(self):
+        So, by building help after the constructor of this class we also get
+        the help for this class in the list of available commands when running:
+        "help help" or "help.
 
-        help_txt = (
-            "%s\n"
-            "\nSynopsis: help [command]\n"
-            "%s"
-            "\nRun 'help command' to see detailed help about specific command" %
-            (self.help_short(), self.available_cmds()))
+        """
 
-        return help_txt
+        short_help = "Display help information about commands"
 
-    def available_cmds(self):
-        """Returns string with available commands"""
+        # needed by the following dictionary comprehension
+        self.help.short = short_help
 
-        cmds_str = "\nAvailable commands are:\n"
+        cmds = { cmd.name : cmd.help.short
+                 for cmd_name, cmd in self.sub_cmds.iteritems() }
 
-        for cmd_name in sorted(self.sub_cmds.keys()):
-            cmd = self.sub_cmds[cmd_name]
-            cmds_str += "    %-15s %s\n" % (cmd_name, cmd.help_short())
-
-        return cmds_str
+        self.help.build(
+            short_help = short_help,
+            synopsis = "%s [command]" % self.name,
+            description = "Run '%s command' to see detailed help about "
+            "specific command" % self.name,
+            sub_cmds = cmds)
 
     def run(self, cmd_name = None):
+        if not self.help.short:
+            self.__build_help()
+
         if not cmd_name:
-            print self.help()
+            print self.help_long()
             return
 
         try:
-            print self.sub_cmds[cmd_name].help()
+            print self.sub_cmds[cmd_name].help_long()
         except KeyError:
             print "\n%r is not a valid command!" % cmd_name
             print self.available_cmds()
