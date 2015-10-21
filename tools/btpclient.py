@@ -334,6 +334,9 @@ class CoreCmd(Cmd):
         return help_txt
 
     def run(self, *cmd):
+        if not cmd:
+            raise TypeError("Command arguments are missing")
+
         generic_srvc_cmd_handler(CORE, cmd)
 
 class GapCmd(Cmd):
@@ -355,6 +358,9 @@ class GapCmd(Cmd):
         return help_txt
 
     def run(self, *cmd):
+        if not cmd:
+            raise TypeError("Command arguments are missing")
+
         generic_srvc_cmd_handler(GAP, cmd)
 
 class GattsCmd(Cmd):
@@ -376,6 +382,9 @@ class GattsCmd(Cmd):
         return help_txt
 
     def run(self, *cmd):
+        if not cmd:
+            raise TypeError("Command arguments are missing")
+
         generic_srvc_cmd_handler(GATTS, cmd)
 
 class ExitCmd(Cmd):
