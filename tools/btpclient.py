@@ -132,6 +132,25 @@ class Help(object):
         self.short = None
         self.long = None
 
+        self.available_sub_cmds = None
+
+    def build_available_sub_cmds(self, sub_cmds, margin):
+        help_text = "\nAvailable commands are:\n"
+
+        if isinstance(sub_cmds, list):
+            for cmd_name in sorted(sub_cmds):
+                help_text += margin + "%s\n" % (cmd_name,)
+        else: # dict
+            for cmd_name in sorted(sub_cmds.keys()):
+                cmd_help = sub_cmds[cmd_name]
+                help_text += margin + "%-15s %s\n" % (cmd_name, cmd_help)
+
+        help_text = help_text[:-1] # remove last newline
+
+        self.available_sub_cmds = help_text
+
+        return help_text
+
     def build(self, short_help, synopsis = None, description = None,
               example = None, sub_cmds = None):
         """
@@ -149,15 +168,7 @@ class Help(object):
                           "%s%s\n") % (margin, synopsis)
 
         if sub_cmds:
-            help_text += "\nAvailable commands are:\n"
-
-            if isinstance(sub_cmds, list):
-                for cmd_name in sorted(sub_cmds):
-                    help_text += margin + "%s\n" % (cmd_name,)
-            else: # dict
-                for cmd_name in sorted(sub_cmds.keys()):
-                    cmd_help = sub_cmds[cmd_name]
-                    help_text += margin + "%-15s %s\n" % (cmd_name, cmd_help)
+            help_text += self.build_available_sub_cmds(sub_cmds, margin)
 
         if description:
             help_text += "\nDescription:"
@@ -166,10 +177,6 @@ class Help(object):
 
         if example:
             help_text += "\n\nExample:\n%s%s" % (margin, example)
-
-        # if sub_cmds are last in the text extra newline is there
-        if help_text[-1] == "\n":
-            help_text = help_text[:-1] # remove last newline
 
         self.long = help_text
 
@@ -432,8 +439,8 @@ class HelpCmd(Cmd):
         try:
             print self.sub_cmds[cmd_name].help_long()
         except KeyError:
-            print "\n%r is not a valid command!" % cmd_name
-            print self.available_cmds()
+            print "%r is not a valid command!" % cmd_name
+            print self.help.available_sub_cmds
 
 def exec_cmd(choice, params, cmds_dict):
     logging.debug("%s choice=%r params=%r cmds_dict=%r",
@@ -446,10 +453,9 @@ def exec_cmd(choice, params, cmds_dict):
     try:
         cmds_dict[cmd_name].run(*params)
     except KeyError:
-        print "\n%r is not a valid command!" % cmd_name
-        print help_cmd.available_cmds()
+        help_cmd.run(cmd_name) # invalid command
     except TypeError as e:
-        print "Please enter correct arguments to command!"
+        print "Please enter correct arguments to command!\n"
         logging.debug(e)
         help_cmd.run(cmd_name)
     except TimeoutError:
