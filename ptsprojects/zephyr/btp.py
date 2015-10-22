@@ -102,7 +102,8 @@ def gatts_add_svc(svc_type = None, uuid = None):
     zephyrctl = get_zephyr()
 
     data_ba = bytearray()
-    uuid_ba = binascii.unhexlify(bytearray(uuid))
+    uuid_swp = ''.join([c[1] + c[0] for c in zip(uuid[::2], uuid[1::2])])
+    uuid_ba = binascii.unhexlify(bytearray(uuid_swp))
     data_ba.extend(chr(svc_type))
     data_ba.extend(chr(len(uuid) / 2))
     data_ba.extend(uuid_ba)
@@ -128,7 +129,8 @@ def gatts_add_char(hdl = None, prop = None, perm = None, uuid = None):
 
     data_ba = bytearray()
     hdl_ba = struct.pack('H', hdl)
-    uuid_ba = binascii.unhexlify(bytearray(uuid))
+    uuid_swp = ''.join([c[1] + c[0] for c in zip(uuid[::2], uuid[1::2])])
+    uuid_ba = binascii.unhexlify(bytearray(uuid_swp))
 
     data_ba.extend(hdl_ba)
     data_ba.extend(chr(prop))
@@ -145,7 +147,8 @@ def gatts_add_desc(hdl = None, perm = None, uuid = None):
 
     data_ba = bytearray()
     hdl_ba = struct.pack('H', hdl)
-    uuid_ba = binascii.unhexlify(bytearray(uuid))
+    uuid_swp = ''.join([c[1] + c[0] for c in zip(uuid[::2], uuid[1::2])])
+    uuid_ba = binascii.unhexlify(bytearray(uuid_swp))
 
     data_ba.extend(hdl_ba)
     data_ba.extend(chr(perm))
