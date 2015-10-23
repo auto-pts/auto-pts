@@ -70,6 +70,20 @@ class TestFunc:
         return "%s %s %s %s" % \
             (self.__class__, self.__func, self.__args, self.__kwds)
 
+class TestIntr:
+    """TODO"""
+    def __init__(self, no_wid, key_yes, key_no = None, exp = None):
+        """Constructor"""
+        self.no_wid = no_wid
+        self.key_yes = key_yes
+        self.key_no = key_no
+        self.exp = exp
+
+    def __str__(self):
+        """Returns string representation"""
+        return "%s %s %s %s" % \
+            (self.__class__, self.no_wid, self.key, self.exp)
+
 class TestFuncCleanUp(TestFunc):
     """Clean-up function that is invoked after running test case in PTS."""
     pass
@@ -124,7 +138,7 @@ class PTSCallback(object):
 class TestCase(PTSCallback):
     """A PTS test case"""
 
-    def __init__(self, project_name, test_case_name, cmds = [], no_wid = None):
+    def __init__(self, project_name, test_case_name, cmds = [], intr = None, no_wid = None):
         """cmds - a list of TestCmd and TestFunc or single instance of them
         no_wid - a wid (tag) to respond No to"""
 
@@ -132,6 +146,7 @@ class TestCase(PTSCallback):
         self.name = test_case_name
         # a.k.a. final verdict
         self.status = "init"
+        self.intr = intr
 
         if isinstance(cmds, list):
             self.cmds = list(cmds)
@@ -187,20 +202,7 @@ class TestCase(PTSCallback):
             test_case_name == self.name
 
         my_response = ""
-
-        # MMI_Style_Yes_No1
-        if style == 0x11044:
-            # answer No
-            if self.no_wid and wid == self.no_wid:
-                my_response = "No"
-
-            # answer Yes
-            else:
-                my_response = "Yes"
-
-        # actually style == 0x11141, MMI_Style_Ok_Cancel2
-        else:
-            my_response = "OK"
+        my_intr = None
 
         # start/stop command if triggered by wid
         for cmd in self.cmds:
@@ -212,7 +214,31 @@ class TestCase(PTSCallback):
             if cmd.stop_wid == wid:
                 cmd.stop()
 
-        return my_response
+        # search for interaction
+        if self.intr is not None:
+            for i in self.intr:
+                if i.no_wid == wid:
+                    my_intr = i
+                else:
+                    # no response
+                    pass
+
+        # check for equality
+        if my_intr is not None:
+            if my_intr.exp:
+                # parse description to check if received data is ok with expecations
+                for m in my_intr.exp:
+                    if m in description is False:
+                        my_response = my_intr.key_no
+                        break
+
+            # not matching expecations
+            if my_response == my_intr.key_no:
+                pass
+            else:
+               my_response = my_intr.key_yes
+
+            return my_response
 
     def pre_run(self):
         """Method called before test case is run in PTS"""
