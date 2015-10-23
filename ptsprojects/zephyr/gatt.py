@@ -1,7 +1,7 @@
 """GATT test cases"""
 
 try:
-    from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
+    from ptsprojects.testcase import TestCase, TestCmd, TestFunc, TestIntr, \
         TestFuncCleanUp
     from ptsprojects.zephyr.qtestcase import QTestCase
 
@@ -9,7 +9,7 @@ except ImportError: # running this module as script
     import sys
     sys.path.append("../..") # to be able to locate the following imports
 
-    from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
+    from ptsprojects.testcase import TestCase, TestCmd, TestFunc, TestIntr, \
         TestFuncCleanUp
     from ptsprojects.zephyr.qtestcase import QTestCase
 
