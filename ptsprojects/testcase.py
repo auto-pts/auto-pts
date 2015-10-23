@@ -225,10 +225,10 @@ class TestCase(PTSCallback):
 
         # check for equality
         if my_intr is not None:
-            if my_intr.exp:
+            if my_intr.exp is not None:
                 # parse description to check if received data is ok with expecations
                 for m in my_intr.exp:
-                    if m in description is False:
+                    if (m in description) == False:
                         my_response = my_intr.key_no
                         break
 
