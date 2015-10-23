@@ -53,6 +53,9 @@ GATTS = {
     "add_char": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_ADD_CHARACTERISTIC,
                  CONTROLLER_INDEX),
 
+    "set_val": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_SET_VALUE,
+                 CONTROLLER_INDEX),
+
     "add_desc": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_ADD_DESCRIPTOR,
                  CONTROLLER_INDEX),
 }
@@ -139,6 +142,24 @@ def gatts_add_char(hdl = None, prop = None, perm = None, uuid = None):
     data_ba.extend(uuid_ba)
 
     zephyrctl.btp_socket.send(*GATTS['add_char'], data = data_ba)
+
+def gatts_set_val(hdl = None, val = None):
+    logging.debug("%s %r %r ", gatts_set_val.__name__, hdl, val)
+
+    zephyrctl = get_zephyr()
+
+    val_len = len(val) / 2
+
+    data_ba = bytearray()
+    hdl_ba = struct.pack('H', hdl)
+    val_len_ba = struct.pack('H', val_len)
+    val_ba = binascii.unhexlify(bytearray(val))
+
+    data_ba.extend(hdl_ba)
+    data_ba.extend(val_len_ba)
+    data_ba.extend(val_ba)
+
+    zephyrctl.btp_socket.send(*GATTS['set_val'], data = data_ba)
 
 def gatts_add_desc(hdl = None, perm = None, uuid = None):
     logging.debug("%s %r %r %r", gatts_add_desc.__name__, hdl, perm, uuid)
