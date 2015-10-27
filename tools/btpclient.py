@@ -9,6 +9,7 @@ import shlex
 import logging
 import readline
 import binascii
+import argparse
 import threading
 import subprocess
 from functools import wraps
@@ -626,7 +627,54 @@ def cmd_loop(cmds_dict):
         # TODO: exec_cmd catches TimeoutError
         exec_cmd(choice, params, cmds_dict)
 
+def exec_cmds_file(filename, cmds_dict):
+    """Runs commands from a text file
+
+    Each command should be on a separate line in the file. Comment lines start
+    with the hash character.
+
+    """
+    print "Running commands from file"
+
+    if not os.path.isfile(filename):
+        sys.exit("Commands file %r does not exits!" % filename)
+
+    for line in open(filename):
+        line = line.strip()
+
+        if line.startswith("#"): # comment
+            continue
+
+        words = line.split()
+        choice = words[0]
+        params = words[1:]
+
+        print "\n" + line
+
+        exec_cmd(choice, params, cmds_dict)
+
+    print "\nDone running commands from file"
+
+def parse_args():
+    """Parses command line arguments and options"""
+
+    arg_parser = argparse.ArgumentParser(
+        description = "Bluetooth Test Protocol command line client")
+
+    arg_parser.add_argument("--cmds-file",
+                            "-c",
+                            metavar = "FILE",
+                            help = "File with initial commands to run. Each "
+                            "command should be on a separate line in the "
+                            "file.  Comment lines start with the hash "
+                            "character.")
+
+    args = arg_parser.parse_args()
+
+    return args
+
 def main():
+    args = parse_args()
     my_name = get_my_name()
 
     log_filename = "%s.log" % (my_name,)
@@ -672,6 +720,9 @@ def main():
     BTP_SOCKET = BTPSocket()
 
     try:
+        if args.cmds_file:
+            exec_cmds_file(args.cmds_file, cmds_dict)
+
         cmd_loop(cmds_dict)
 
     except KeyboardInterrupt: # Ctrl-C
