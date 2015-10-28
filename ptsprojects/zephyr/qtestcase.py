@@ -7,12 +7,13 @@ from ptsprojects.zephyr.iutctl import get_zephyr
 class QTestCase(TestCase):
     """A test case that uses QEMU as DUT"""
 
-    def __init__(self, project_name, test_case_name, cmds = [], no_wid = None):
+    def __init__(self, project_name, test_case_name, intr = [], cmds = [], no_wid = None):
         """cmds - a list of TestCmd and TestFunc or single instance of them
         no_wid - a wid (tag) to respond No to"""
 
         super(QTestCase, self).__init__(project_name,
                                         test_case_name,
+                                        intr,
                                         cmds,
                                         no_wid)
 
