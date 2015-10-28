@@ -70,6 +70,20 @@ class TestFunc:
         return "%s %s %s %s" % \
             (self.__class__, self.__func, self.__args, self.__kwds)
 
+class TestIntr:
+    """TODO"""
+    def __init__(self, no_wid, key_yes, key_no = None, exp = None):
+        """Constructor"""
+        self.no_wid = no_wid
+        self.key_yes = key_yes
+        self.key_no = key_no
+        self.exp = exp
+
+    def __str__(self):
+        """Returns string representation"""
+        return "%s %s %s %s" % \
+            (self.__class__, self.no_wid, self.key, self.exp)
+
 class TestFuncCleanUp(TestFunc):
     """Clean-up function that is invoked after running test case in PTS."""
     pass
@@ -124,7 +138,7 @@ class PTSCallback(object):
 class TestCase(PTSCallback):
     """A PTS test case"""
 
-    def __init__(self, project_name, test_case_name, cmds = [], no_wid = None):
+    def __init__(self, project_name, test_case_name, cmds = [], interactions = None, no_wid = None):
         """cmds - a list of TestCmd and TestFunc or single instance of them
         no_wid - a wid (tag) to respond No to"""
 
@@ -132,6 +146,7 @@ class TestCase(PTSCallback):
         self.name = test_case_name
         # a.k.a. final verdict
         self.status = "init"
+        self.interaction = interactions
 
         if isinstance(cmds, list):
             self.cmds = list(cmds)
@@ -187,20 +202,7 @@ class TestCase(PTSCallback):
             test_case_name == self.name
 
         my_response = ""
-
-        # MMI_Style_Yes_No1
-        if style == 0x11044:
-            # answer No
-            if self.no_wid and wid == self.no_wid:
-                my_response = "No"
-
-            # answer Yes
-            else:
-                my_response = "Yes"
-
-        # actually style == 0x11141, MMI_Style_Ok_Cancel2
-        else:
-            my_response = "OK"
+        my_interaction = None
 
         # start/stop command if triggered by wid
         for cmd in self.cmds:
@@ -212,7 +214,26 @@ class TestCase(PTSCallback):
             if cmd.stop_wid == wid:
                 cmd.stop()
 
-        return my_response
+        # search for wid interaction definition in test case implementation
+        if self.interactions is not None:
+            for i in self.interactions:
+                if i.no_wid == wid:
+                    my_interaction = i
+
+        # check if optional requirements are met
+        if my_interaction is not None:
+            if my_interaction.exp is not None:
+                for m in my_interaction.exp:
+                    if not m in description:
+                        my_response = my_interaction.key_no
+                        break
+
+            if my_response == my_interaction.key_no:
+                pass
+            else:
+               my_response = my_interaction.key_yes
+
+            return my_response
 
     def pre_run(self):
         """Method called before test case is run in PTS"""

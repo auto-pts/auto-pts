@@ -2,6 +2,7 @@
 
 import logging
 import binascii
+import struct
 
 from iutctl import get_zephyr
 import btpdef
@@ -45,6 +46,18 @@ GATTS = {
 
     "start_server": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_START_SERVER,
                      CONTROLLER_INDEX, ""),
+
+    "add_inc_svc": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_ADD_INCLUDED_SERVICE,
+                    CONTROLLER_INDEX),
+
+    "add_char": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_ADD_CHARACTERISTIC,
+                 CONTROLLER_INDEX),
+
+    "set_val": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_SET_VALUE,
+                 CONTROLLER_INDEX),
+
+    "add_desc": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_ADD_DESCRIPTOR,
+                 CONTROLLER_INDEX),
 }
 
 def core_reg_svc_gap():
@@ -92,12 +105,81 @@ def gatts_add_svc(svc_type = None, uuid = None):
     zephyrctl = get_zephyr()
 
     data_ba = bytearray()
-    uuid_ba = binascii.unhexlify(bytearray(uuid))
+    uuid_byte_table = [uuid[i:i+2] for i in range(0, len(uuid), 2)]
+    uuid_swp = ''.join([c[1] + c[0] for c in zip(uuid_byte_table[::2], uuid_byte_table[1::2])])
+    uuid_ba = binascii.unhexlify(bytearray(uuid_swp))
     data_ba.extend(chr(svc_type))
     data_ba.extend(chr(len(uuid) / 2))
     data_ba.extend(uuid_ba)
 
     zephyrctl.btp_socket.send(*GATTS['add_svc'], data = data_ba)
+
+def gatts_add_inc_svc(hdl = None):
+    logging.debug("%s %r", gatts_add_inc_svc.__name__, hdl)
+
+    zephyrctl = get_zephyr()
+
+    data_ba = bytearray()
+    hdl_ba = struct.pack('H', hdl)
+    data_ba.extend(hdl_ba)
+
+    zephyrctl.btp_socket.send(*GATTS['add_inc_svc'], data = data_ba)
+
+def gatts_add_char(hdl = None, prop = None, perm = None, uuid = None):
+    logging.debug("%s %r %r %r %r", gatts_add_char.__name__, hdl, prop, perm,
+                  uuid)
+
+    zephyrctl = get_zephyr()
+
+    data_ba = bytearray()
+    hdl_ba = struct.pack('H', hdl)
+    uuid_byte_table = [uuid[i:i+2] for i in range(0, len(uuid), 2)]
+    uuid_swp = ''.join([c[1] + c[0] for c in zip(uuid_byte_table[::2], uuid_byte_table[1::2])])
+    uuid_ba = binascii.unhexlify(bytearray(uuid_swp))
+
+    data_ba.extend(hdl_ba)
+    data_ba.extend(chr(prop))
+    data_ba.extend(chr(perm))
+    data_ba.extend(chr(len(uuid) / 2))
+    data_ba.extend(uuid_ba)
+
+    zephyrctl.btp_socket.send(*GATTS['add_char'], data = data_ba)
+
+def gatts_set_val(hdl = None, val = None):
+    logging.debug("%s %r %r ", gatts_set_val.__name__, hdl, val)
+
+    zephyrctl = get_zephyr()
+
+    val_len = len(val) / 2
+
+    data_ba = bytearray()
+    hdl_ba = struct.pack('H', hdl)
+    val_len_ba = struct.pack('H', val_len)
+    val_ba = binascii.unhexlify(bytearray(val))
+
+    data_ba.extend(hdl_ba)
+    data_ba.extend(val_len_ba)
+    data_ba.extend(val_ba)
+
+    zephyrctl.btp_socket.send(*GATTS['set_val'], data = data_ba)
+
+def gatts_add_desc(hdl = None, perm = None, uuid = None):
+    logging.debug("%s %r %r %r", gatts_add_desc.__name__, hdl, perm, uuid)
+
+    zephyrctl = get_zephyr()
+
+    data_ba = bytearray()
+    hdl_ba = struct.pack('H', hdl)
+    uuid_byte_table = [uuid[i:i+2] for i in range(0, len(uuid), 2)]
+    uuid_swp = ''.join([c[1] + c[0] for c in zip(uuid_byte_table[::2], uuid_byte_table[1::2])])
+    uuid_ba = binascii.unhexlify(bytearray(uuid_swp))
+
+    data_ba.extend(hdl_ba)
+    data_ba.extend(chr(perm))
+    data_ba.extend(chr(len(uuid) / 2))
+    data_ba.extend(uuid_ba)
+
+    zephyrctl.btp_socket.send(*GATTS['add_desc'], data = data_ba)
 
 def gatts_start_server():
     logging.debug("%s", gatts_start_server.__name__)
