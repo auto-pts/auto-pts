@@ -47,6 +47,15 @@ GATTS = {
                      CONTROLLER_INDEX, ""),
 }
 
+class BTPError(Exception):
+    """Exception raised if BTP error occurs.
+
+    If this exception is raised the status of the running test case is updated
+    accordingly to show that BTP error has occurred.
+
+    """
+    pass
+
 def core_reg_svc_gap():
     logging.debug("%s", core_reg_svc_gap.__name__)
 
@@ -76,7 +85,7 @@ def core_reg_svc_rsp_succ():
 
     if (tuple_hdr, tuple_data) != expected_frame:
         logging.error("frames mismatch")
-        raise Exception("BTP: Unexpected response received!")
+        raise BTPError("Unexpected response received!")
     else:
         logging.debug("response is valid")
 
@@ -114,9 +123,9 @@ def gatts_command_succ_rsp():
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
     if tuple_hdr.svc_id != btpdef.BTP_SERVICE_ID_GATT:
-        raise Exception(
-            "BTP: Incorrect service ID %r  in response, should be %r!",
+        raise BTPError(
+            "Incorrect service ID %r  in response, should be %r!",
             tuple_hdr.svc_id, btpdef.SERVICE_ID_GATT)
 
     if tuple_hdr.op == 0:
-        raise Exception("BTP: Error opcode in response!")
+        raise BTPError("Error opcode in response!")

@@ -11,6 +11,7 @@ import threading
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 from ptsprojects.testcase import get_max_test_case_desc
 from ptsprojects.testcase import TestCase, TestCmd, PTSCallback
+from ptsprojects.zephyr.btp import BTPError
 import ptsprojects.ptstypes as ptstypes
 
 log = logging.debug
@@ -191,19 +192,33 @@ def init_core(server_address, workspace_path, bd_addr):
 
     return proxy
 
-def run_test_case(pts, test_case):
+def _run_test_case(pts, test_case):
     """Runs the test case specified by a TestCase instance."""
-    log("Starting TestCase %s %s", run_test_case.__name__, test_case)
+    log("Starting TestCase %s %s", _run_test_case.__name__, test_case)
 
     global RUNNING_TEST_CASE
     RUNNING_TEST_CASE = test_case
-
     test_case.pre_run()
     error_code = pts.run_test_case(test_case.project_name, test_case.name)
     test_case.post_run(error_code)
     RUNNING_TEST_CASE = None
 
     log("Done TestCase %s %s", run_test_case.__name__, test_case)
+
+def run_test_case(pts, test_case):
+    """Wrapper around _run_test_case to catch BTP errors."""
+    log("Starting TestCase %s %s", run_test_case.__name__, test_case)
+
+    try:
+        _run_test_case(pts, test_case)
+    except BTPError as error:
+        btp_error = "BTP ERROR"
+
+        logging.error(
+            "%s, previous test case status was %r",
+            btp_error, test_case.status, exc_info = 1)
+
+        test_case.status = btp_error
 
 def run_test_cases(pts, test_cases):
     """Runs a list of test cases"""
