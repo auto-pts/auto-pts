@@ -366,7 +366,7 @@ def test_cases():
                    TestFunc(btp.gatts_command_succ_rsp),
                    TestFunc(btp.gap_adv_ind_on)],
                   [TestIntr(1, "OK"),
-                   TestIntr(110, "0002")]),
+                   TestIntr(110, "0003")]),
         QTestCase("GATT", "TC_GAR_SR_BI_19_C",
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.core_reg_svc_rsp_succ),
