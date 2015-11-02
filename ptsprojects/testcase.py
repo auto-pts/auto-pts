@@ -124,9 +124,20 @@ class PTSCallback(object):
 class TestCase(PTSCallback):
     """A PTS test case"""
 
-    def __init__(self, project_name, test_case_name, cmds = [], no_wid = None):
-        """cmds - a list of TestCmd and TestFunc or single instance of them
-        no_wid - a wid (tag) to respond No to"""
+    def __init__(self, project_name, test_case_name, cmds = [], no_wid = None,
+                 edit1_wids = None):
+        """
+        cmds -- a list of TestCmd and TestFunc or single instance of them
+
+        no_wid -- a wid (tag) to respond No to
+
+        edit1_wids -- A dictionary of wids as keys and string input as values.
+                      The value is send to PTS in response to MMI_Style_Edit1
+                      style prompts with matching wid.
+
+        """
+        log("%r, %r, %r, %r %r", project_name, test_case_name, cmds, no_wid,
+            edit1_wids)
 
         self.project_name = project_name
         self.name = test_case_name
@@ -142,6 +153,7 @@ class TestCase(PTSCallback):
             raise Exception("no_wid should be int, and not %s" % (repr(no_wid),))
 
         self.no_wid = no_wid
+        self.edit1_wids = edit1_wids
 
     def __str__(self):
         """Returns string representation"""
@@ -198,6 +210,12 @@ class TestCase(PTSCallback):
             else:
                 my_response = "Yes"
 
+        # MMI_Style_Edit1
+        elif style == 0x12040:
+            log("Handling 0x12040, edit1_wids=%r", self.edit1_wids)
+            if self.edit1_wids and wid in self.edit1_wids.keys():
+                my_response = self.edit1_wids[wid]
+
         # actually style == 0x11141, MMI_Style_Ok_Cancel2
         else:
             my_response = "OK"
@@ -212,6 +230,8 @@ class TestCase(PTSCallback):
             if cmd.stop_wid == wid:
                 cmd.stop()
 
+
+        log("Sending response %r", my_response)
         return my_response
 
     def pre_run(self):
