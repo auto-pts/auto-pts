@@ -127,7 +127,7 @@ def gatts_add_svc(svc_type = None, uuid = None):
 
     zephyrctl.btp_socket.send(*GATTS['add_svc'], data = data_ba)
 
-    gatts_command_succ_rsp()
+    gatts_command_rsp_succ()
 
 def gatts_add_inc_svc(hdl = None):
     logging.debug("%s %r", gatts_add_inc_svc.__name__, hdl)
@@ -140,7 +140,7 @@ def gatts_add_inc_svc(hdl = None):
 
     zephyrctl.btp_socket.send(*GATTS['add_inc_svc'], data = data_ba)
 
-    gatts_command_succ_rsp()
+    gatts_command_rsp_succ()
 
 def gatts_add_char(hdl = None, prop = None, perm = None, uuid = None):
     logging.debug("%s %r %r %r %r", gatts_add_char.__name__, hdl, prop, perm,
@@ -162,7 +162,7 @@ def gatts_add_char(hdl = None, prop = None, perm = None, uuid = None):
 
     zephyrctl.btp_socket.send(*GATTS['add_char'], data = data_ba)
 
-    gatts_command_succ_rsp()
+    gatts_command_rsp_succ()
 
 def gatts_set_val(hdl = None, val = None):
     logging.debug("%s %r %r ", gatts_set_val.__name__, hdl, val)
@@ -182,7 +182,7 @@ def gatts_set_val(hdl = None, val = None):
 
     zephyrctl.btp_socket.send(*GATTS['set_val'], data = data_ba)
 
-    gatts_command_succ_rsp()
+    gatts_command_rsp_succ()
 
 def gatts_add_desc(hdl = None, perm = None, uuid = None):
     logging.debug("%s %r %r %r", gatts_add_desc.__name__, hdl, perm, uuid)
@@ -202,7 +202,7 @@ def gatts_add_desc(hdl = None, perm = None, uuid = None):
 
     zephyrctl.btp_socket.send(*GATTS['add_desc'], data = data_ba)
 
-    gatts_command_succ_rsp()
+    gatts_command_rsp_succ()
 
 def gatts_start_server():
     logging.debug("%s", gatts_start_server.__name__)
@@ -210,10 +210,10 @@ def gatts_start_server():
     zephyrctl = get_zephyr()
     zephyrctl.btp_socket.send(*GATTS['start_server'])
 
-    gatts_command_succ_rsp()
+    gatts_command_rsp_succ()
 
-def gatts_command_succ_rsp():
-    logging.debug("%s", gatts_command_succ_rsp.__name__)
+def gatts_command_rsp_succ():
+    logging.debug("%s", gatts_command_rsp_succ.__name__)
 
     zephyrctl = get_zephyr()
 
