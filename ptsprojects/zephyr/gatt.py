@@ -23,7 +23,14 @@ def test_cases():
     zephyrctl = get_zephyr()
 
     test_cases = [
-        #QTestCase("GATT", "TC_GAC_SR_BV_01_C"),
+        QTestCase("GATT", "TC_GAC_SR_BV_01_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gatts_add_svc, 0, 'AAAA'),
+                   TestFunc(btp.gatts_add_char, 1, 0x1a, 0x03, 'BBBB'),
+                   TestFunc(btp.gatts_set_val, 2, '0123456789ABCDEF' * 10),
+                   TestFunc(btp.gatts_start_server),
+                   TestFunc(btp.gap_adv_ind_on)]),
         QTestCase("GATT", "TC_GAD_SR_BV_01_C",
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.core_reg_svc_gatts),
