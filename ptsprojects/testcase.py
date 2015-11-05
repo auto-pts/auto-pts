@@ -288,8 +288,10 @@ class TestCase(PTSCallback):
 
         if error_code == "PTSCONTROL_E_TESTCASE_TIMEOUT":
             self.status = "TIMEOUT"
+        elif error_code == "BTP ERROR":
+            self.status = error_code
         elif error_code:
-            raise Exception("Unknown error code!")
+            raise Exception("Unknown error code %r!" % error_code)
 
         # run the clean-up commands
         for cmd in self.cmds:
