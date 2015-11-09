@@ -154,7 +154,7 @@ class TestCase(PTSCallback):
     """A PTS test case"""
 
     def __init__(self, project_name, test_case_name, cmds = [], no_wid = None,
-                 edit1_wids = None):
+                 edit1_wids = None, verify_wids = None):
         """
         cmds -- a list of TestCmd and TestFunc or single instance of them
 
@@ -164,9 +164,13 @@ class TestCase(PTSCallback):
                       The value is send to PTS in response to MMI_Style_Edit1
                       style prompts with matching wid.
 
+        verify_wids -- A dictionary of wids as keys and a tuple of strings as
+                       values. The strings are used with MMI_Style_Yes_No1 to
+                       confirm/verify that the MMI description contains all of
+                       the strings in the tuple.
         """
-        log("%r, %r, %r, %r %r", project_name, test_case_name, cmds, no_wid,
-            edit1_wids)
+        log("%r %r %r %r %r %r", project_name, test_case_name, cmds, no_wid,
+            edit1_wids, verify_wids)
 
         self.project_name = project_name
         self.name = test_case_name
@@ -183,6 +187,7 @@ class TestCase(PTSCallback):
 
         self.no_wid = no_wid
         self.edit1_wids = edit1_wids
+        self.verify_wids = verify_wids
 
     def __str__(self):
         """Returns string representation"""
@@ -217,6 +222,67 @@ class TestCase(PTSCallback):
             self.status = new_status
             log("New status %s - %s", str(self), new_status)
 
+
+    def handle_mmi_style_yes_no1(self, wid, description):
+        """Implements implicit send handling for MMI_Style_Yes_No1"""
+        log("%s, %r %r", self.handle_mmi_style_yes_no1.__name__,
+            wid, description)
+
+        yes_response = "Yes"
+        no_response = "No"
+        my_response = ""
+
+        # answer No
+        if self.no_wid and wid == self.no_wid:
+            my_response = no_response
+
+        # answer No if description does not contain text from verify_wids
+        elif self.verify_wids and self.verify_wids[wid]:
+
+            for verify in self.verify_wids[wid]:
+                log("Verifying: %r", verify)
+                if verify not in description:
+                    log("Verification failed: not in description")
+                    my_response = no_response
+                    break
+            else:
+                log("All verifications passed")
+                my_response = yes_response
+
+        # answer Yes
+        else:
+            my_response = yes_response
+
+        return my_response
+
+    def handle_mmi_style_edit1(self, wid):
+        """Implements implicit send handling for MMI_Style_Edit1"""
+        log("%s, %r edit1_wids=%r", self.handle_mmi_style_edit1.__name__, wid,
+            self.edit1_wids)
+
+        my_response = ""
+
+        if self.edit1_wids and wid in self.edit1_wids.keys():
+            my_response = self.edit1_wids[wid]
+
+        return my_response
+
+    def start_stop_cmds_by_wid(self, wid):
+        """Starts/stops commands
+
+        The commands started/stopped are the ones that have the same start_wid
+        or stop_wid as the argument
+
+        """
+        for cmd in self.cmds:
+            # start command
+            if cmd.start_wid == wid:
+                cmd.start()
+
+            # stop command
+            if cmd.stop_wid == wid:
+                cmd.stop()
+
     def on_implicit_send(self, project_name, wid, test_case_name, description, style,
                          response, response_size, response_is_present):
         """Overrides PTSCallback method. Handles
@@ -231,34 +297,18 @@ class TestCase(PTSCallback):
 
         # MMI_Style_Yes_No1
         if style == 0x11044:
-            # answer No
-            if self.no_wid and wid == self.no_wid:
-                my_response = "No"
-
-            # answer Yes
-            else:
-                my_response = "Yes"
+            my_response = self.handle_mmi_style_yes_no1(wid, description)
 
         # MMI_Style_Edit1
         elif style == 0x12040:
-            log("Handling 0x12040, edit1_wids=%r", self.edit1_wids)
-            if self.edit1_wids and wid in self.edit1_wids.keys():
-                my_response = self.edit1_wids[wid]
+            my_response = self.handle_mmi_style_edit1(wid)
 
         # actually style == 0x11141, MMI_Style_Ok_Cancel2
         else:
             my_response = "OK"
 
         # start/stop command if triggered by wid
-        for cmd in self.cmds:
-            # start command
-            if cmd.start_wid == wid:
-                cmd.start()
-
-            # stop command
-            if cmd.stop_wid == wid:
-                cmd.stop()
-
+        self.start_stop_cmds_by_wid(wid)
 
         log("Sending response %r", my_response)
         return my_response
