@@ -236,6 +236,8 @@ class TestCase(PTSCallback):
         log("%s, %r %r", self.handle_mmi_style_yes_no1.__name__,
             wid, description)
 
+        log("no_wid=%r verify_wids=%r", self.no_wid, self.verify_wids)
+
         yes_response = "Yes"
         no_response = "No"
         my_response = ""
@@ -246,6 +248,7 @@ class TestCase(PTSCallback):
 
         # answer No if description does not contain text from verify_wids
         elif self.verify_wids and self.verify_wids[wid]:
+            log("Starting verification of: %r", self.verify_wids)
 
             for verify in self.verify_wids[wid]:
                 log("Verifying: %r", verify)
