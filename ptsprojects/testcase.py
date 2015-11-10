@@ -182,8 +182,16 @@ class TestCase(PTSCallback):
         else:
             self.cmds = [cmds]
 
-        if no_wid is not None and not isinstance(no_wid, int):
-            raise Exception("no_wid should be int, and not %s" % (repr(no_wid),))
+        # catch test case implementation syntax errors
+        if no_wid:
+            assert isinstance(no_wid, int), \
+                "no_wid should be int, and not %r" % no_wid
+        if edit1_wids:
+            assert isinstance(edit1_wids, dict), \
+                "edit1_wids should be dict, and not %r" % edit1_wids
+        if verify_wids:
+            assert isinstance(verify_wids, dict), \
+                "verify_wids should be dict, and not %r" % verify_wids
 
         self.no_wid = no_wid
         self.edit1_wids = edit1_wids
