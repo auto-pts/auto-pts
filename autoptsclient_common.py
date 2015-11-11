@@ -13,6 +13,7 @@ from ptsprojects.testcase import get_max_test_case_desc
 from ptsprojects.testcase import TestCase, TestCmd, PTSCallback
 from ptsprojects.zephyr.btp import BTPError
 import ptsprojects.ptstypes as ptstypes
+from ptsprojects.utils import MMI_STYLE_NAMES
 
 log = logging.debug
 
@@ -81,7 +82,7 @@ class ClientCallback(PTSCallback):
         log("wid: %s" % wid)
         log("test_case_name: %s" % test_case_name)
         log("description: %s" % description)
-        log("style: Ox%x" % style)
+        log("style: %s 0x%x", MMI_STYLE_NAMES[style], style)
         log("response: %s %s %s" % (repr(response), type(response),
                                     id(response)))
         log("response_size: %s" % response_size)
@@ -101,7 +102,7 @@ class ClientCallback(PTSCallback):
                     response_size,
                     response_is_present)
 
-                log("test case returned on_implicit_send, respose: %s",
+                log("test case returned on_implicit_send, response: %s",
                     testcase_response)
 
         except Exception as e:

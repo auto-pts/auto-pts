@@ -7,6 +7,17 @@ USE_ADB = True
 
 log = logging.debug
 
+MMI_STYLE_NAMES = {
+    0x11041 : "MMI_Style_Ok_Cancel1",
+    0x11141 : "MMI_Style_Ok_Cancel2",
+    0x11040 : "MMI_Style_Ok",
+    0x11044 : "MMI_Style_Yes_No1",
+    0x11043 : "MMI_Style_Yes_No_Cancel1",
+    0x11042 : "MMI_Style_Abort_Retry1",
+    0x12040 : "MMI_Style_Edit1",
+    0x12140 : "MMI_Style_Edit2"
+}
+
 def exec_iut_cmd(iut_cmd, wait = False, use_adb_shell = USE_ADB):
     """Runs command in the IUT
 
