@@ -58,6 +58,9 @@ GATTS = {
 
     "add_desc": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_ADD_DESCRIPTOR,
                  CONTROLLER_INDEX),
+
+    "set_enc_key_size": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_SET_ENC_KEY_SIZE,
+                         CONTROLLER_INDEX),
 }
 
 class BTPError(Exception):
@@ -209,6 +212,21 @@ def gatts_start_server():
 
     zephyrctl = get_zephyr()
     zephyrctl.btp_socket.send(*GATTS['start_server'])
+
+    gatts_command_rsp_succ()
+
+def gatts_set_enc_key_size(hdl = None, enc_key_size = None):
+    logging.debug("%s %r %r", gatts_set_enc_key_size.__name__, hdl, enc_key_size)
+
+    zephyrctl = get_zephyr()
+
+    data_ba = bytearray()
+    hdl_ba = struct.pack('H', hdl)
+
+    data_ba.extend(hdl_ba)
+    data_ba.extend(chr(enc_key_size))
+
+    zephyrctl.btp_socket.send(*GATTS['set_enc_key_size'], data = data_ba)
 
     gatts_command_rsp_succ()
 
