@@ -16,9 +16,8 @@ except ImportError: # running this module as script
 from ptsprojects.zephyr.iutctl import get_zephyr
 import btp
 
-def test_cases():
-    """Returns a list of GAP test cases
-    pts -- Instance of PyPTS"""
+def test_cases_server():
+    """Returns a list of GATT Server test cases"""
 
     zephyrctl = get_zephyr()
 
@@ -899,6 +898,12 @@ def test_cases():
                                          "Namespace = 0x01",
                                          "Description = 0x0001")}),
     ]
+
+    return test_cases
+
+def test_cases():
+    """Returns a list of GATT test cases"""
+    test_cases = test_cases_server()
 
     return test_cases
 
