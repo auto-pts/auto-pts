@@ -217,6 +217,35 @@ def run_test_case(pts, test_case):
 
     log("Done TestCase %s %s", run_test_case.__name__, test_case)
 
+def print_summary(test_cases, margin):
+    """Prints test case list status summary"""
+    print "\nSummary:\n"
+
+    status_count = {}
+
+    status_str = "Status"
+    max_status = len(status_str)
+    num_test_cases_width = len(str(len(test_cases)))
+
+    for test_case in test_cases:
+        if not status_count.has_key(test_case.status):
+            status_count[test_case.status] = 1
+            if len(test_case.status) > max_status:
+                max_status = len(test_case.status)
+        else:
+            status_count[test_case.status] += 1
+
+    status_just = max_status + margin
+    count_just = num_test_cases_width + margin
+
+    title_str = status_str.ljust(status_just) + "Count".rjust(count_just)
+    print title_str
+    print "=" * len(title_str)
+
+    for status in sorted(status_count.keys()):
+        count = status_count[status]
+        print status.ljust(status_just) + str(count).rjust(count_just)
+
 def run_test_cases(pts, test_cases):
     """Runs a list of test cases"""
 
@@ -234,3 +263,5 @@ def run_test_cases(pts, test_cases):
         sys.stdout.flush()
         run_test_case(pts, test_case)
         print test_case.status
+
+    print_summary(test_cases, margin)
