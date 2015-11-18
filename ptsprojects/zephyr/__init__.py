@@ -4,3 +4,4 @@ import ptsprojects.zephyr.iutctl
 
 import ptsprojects.zephyr.gap
 import ptsprojects.zephyr.gatt
+import ptsprojects.zephyr.sm

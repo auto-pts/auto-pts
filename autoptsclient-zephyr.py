@@ -49,6 +49,7 @@ def main():
 
     test_cases = autoprojects.gap.test_cases()
     test_cases += autoprojects.gatt.test_cases(proxy)
+    test_cases += autoprojects.sm.test_cases()
 
     autoptsclient.run_test_cases(proxy, test_cases)
 
