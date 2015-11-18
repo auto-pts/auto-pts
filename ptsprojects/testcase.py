@@ -313,15 +313,13 @@ class TestCase(PTSCallback):
 
         my_response = ""
 
-        # MMI_Style_Yes_No1
-        if style == 0x11044:
+        if style == ptstypes.MMI_Style_Yes_No1:
             my_response = self.handle_mmi_style_yes_no1(wid, description)
 
-        # MMI_Style_Edit1
-        elif style == 0x12040:
+        elif style == ptstypes.MMI_Style_Edit1:
             my_response = self.handle_mmi_style_edit1(wid)
 
-        # actually style == 0x11141, MMI_Style_Ok_Cancel2
+        # actually style == MMI_Style_Ok_Cancel2
         else:
             my_response = "OK"
 

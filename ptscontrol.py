@@ -15,7 +15,7 @@ import System
 import ctypes
 libc = ctypes.cdll.msvcrt # for wcscpy_s
 
-from ptsprojects.utils import MMI_STYLE_NAMES
+import ptsprojects.ptstypes as ptstypes
 
 # workaround to a bug in IronPython: cwd in missing from sys.path under pdb
 # https://github.com/IronLanguages/main/issues/1225
@@ -123,7 +123,7 @@ class PTSSender(PTSControl.IPTSImplicitSendCallbackEx):
         log("wid: %d %s" % (wid, type(wid)))
         log("test_case_name: %s %s" % (test_case_name, type(test_case_name)))
         log("description: %s %s" % (description, type(description)))
-        log("style: %s 0x%x", MMI_STYLE_NAMES[style], style)
+        log("style: %s 0x%x", ptstypes.MMI_STYLE_STRING[style], style)
         log("response:  %s %s %s" % (repr(response), type(response), id(response)))
         log("response_size: %d %s" % (response_size, type(response_size)))
         log("response_is_present:  %s %s" % (response_is_present, type(response_is_present)))
