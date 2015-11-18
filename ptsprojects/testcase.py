@@ -264,6 +264,13 @@ class TestCase(PTSCallback):
         else:
             my_response = yes_response
 
+        # log warning if confimation/verification is unhandled
+        if not self.verify_wids or wid not in self.verify_wids:
+            search_strings = ["confirm", "verify"]
+
+            if any(str in description.lower() for str in search_strings):
+                logging.warning("Verification missing for: %r", description)
+
         return my_response
 
     def handle_mmi_style_edit1(self, wid):
