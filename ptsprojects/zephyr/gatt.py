@@ -269,7 +269,7 @@ def test_cases_server():
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on)]),
         QTestCase("GATT", "TC_GAR_SR_BI_11_C",
-                  edit1_wids = {121 : "0002", 122 : "AA51"},
+                  edit1_wids = {121 : "0003", 122 : "AA51"},
                   cmds = [TestFunc(btp.core_reg_svc_gap),
                           TestFunc(btp.core_reg_svc_gatts),
                           TestFunc(btp.gatts_add_svc, 0, 'AA50'),
