@@ -23,8 +23,12 @@ def test_cases():
     zephyrctl = get_zephyr()
 
     test_cases = [
-        #QTestCase("SM", "TC_PROT_BV_01_C",
-        #QTestCase("SM", "TC_PROT_BV_02_C",
+        QTestCase("SM", "TC_PROT_BV_01_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                    TestFunc(btp.gap_conn, "00:1B:DC:06:06:CA", 0, start_wid = 100),
+                    TestFunc(btp.gap_connected_ev, "00:1B:DC:06:06:CA", 1, start_wid = 100),
+                    TestFunc(btp.gap_pair, "00:1B:DC:06:06:CA", 0, start_wid = 100)]),
+        QTestCase("SM", "TC_PROT_BV_02_C",
         #QTestCase("SM", "TC_JW_BV_02_C",
         #QTestCase("SM", "TC_JW_BV_05_C",
         #QTestCase("SM", "TC_JW_BI_01_C",
