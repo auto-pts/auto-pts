@@ -110,6 +110,10 @@ class BTPSocket(object):
                 data = "0%s" %  data
                 data = binascii.unhexlify(data)
 
+        hex_data = binascii.hexlify(data)
+        logging.debug("btpclient command: send %d %d %d %s",
+                      svc_id, op, ctrl_index, hex_data)
+
         bin = enc_frame(svc_id, op, ctrl_index, data)
 
         logging.debug("sending frame %r", bin)
