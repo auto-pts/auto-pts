@@ -12,9 +12,9 @@ class TestCmd:
     """A command ran in IUT during test case execution"""
 
     def __init__(self, command, start_wid = None, stop_wid = None):
-        """stop_wid - some test cases require the child process (this test command) to
-                      be termintated (Ctrl-C on terminal) in response to dialog
-                      with this wid
+        """stop_wid -- some test cases require the child process (this test command) to
+                       be termintated (Ctrl-C on terminal) in response to dialog
+                       with this wid
         """
         self.command = command
         self.start_wid = start_wid
@@ -45,11 +45,22 @@ class TestCmd:
         return "%s %s %s" % (self.command, self.start_wid, self.stop_wid)
 
 class TestFunc:
-    """Some test commands, like setting PIXIT, PICS are functions. This is a
-    wrapper around functions"""
+    """A wrapper around test functions"""
 
     def __init__(self, func, *args, **kwds):
-        """Constructor"""
+        """Constructor of TestFunc
+
+        start_wid -- wid to start TestFunc
+
+        stop_wid -- not used by TestFunc, because function stopping is not easy
+                    to implement. Provided only for compatibility with TestCmd.
+
+        start_wid and stop_wid must be passed in as keyword arguments. This is
+        because all other arguments will be passed to the func. For example:
+
+        TestFunc(my_function, arg1, arg2, kwd1 = 5, start_wid = 117)
+
+        """
         self.__read_start_stop_wids(kwds)
         self.func = func
         self.args = args
