@@ -51,9 +51,9 @@ class TestFunc:
     def __init__(self, func, *args, **kwds):
         """Constructor"""
         self.__read_start_stop_wids(kwds)
-        self.__func = func
-        self.__args = args
-        self.__kwds = kwds
+        self.func = func
+        self.args = args
+        self.kwds = kwds
 
     def __read_start_stop_wids(self, kwds):
         """Reads start_wid and stop_wid from arbitrary keyword argument
@@ -61,10 +61,10 @@ class TestFunc:
 
         start_wid and stop_wid are not specified in the constructor as normal
         aruments cause they are not always used and when not used they would be
-        consuming function (__func) arguments (__args).
+        consuming function (func) arguments (args).
 
         start_wid and stop_wid are used by this class and not passed to the
-        __func, hence they are removed from kwds.
+        func, hence they are removed from kwds.
 
         Note: with test functions stop_wid is only there to be compatible with
         TestCmd interface. But since functions cannot be stopped, stop_wid is
@@ -87,7 +87,7 @@ class TestFunc:
     def start(self):
         """Starts the function"""
         log("Starting test function: %s" % str(self))
-        self.__func(*self.__args, **self.__kwds)
+        self.func(*self.args, **self.kwds)
 
     def stop(self):
         """Does nothing, since not easy job to stop a function"""
@@ -96,8 +96,8 @@ class TestFunc:
     def __str__(self):
         """Returns string representation"""
         return "%s %s %s %s %s %s" % \
-            (self.__class__, self.__func, self.start_wid, self.stop_wid,
-             self.__args, self.__kwds)
+            (self.__class__, self.func, self.start_wid, self.stop_wid,
+             self.args, self.kwds)
 
 class TestFuncCleanUp(TestFunc):
     """Clean-up function that is invoked after running test case in PTS."""

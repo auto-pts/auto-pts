@@ -1205,7 +1205,16 @@ def main():
             print "verify_wids: %r" % test_case.verify_wids
 
         for index, cmd in enumerate(test_case.cmds):
-            print "%d) %s" % (index, cmd)
+            str_cmd = str(cmd)
+
+            if isinstance(cmd, TestFunc):
+                if cmd.func == btp.gatts_add_char:
+                    str_cmd += ", Properties: %s" % Prop.decode(cmd.args[1])
+                    str_cmd += ", Permissions: %s" % Perm.decode(cmd.args[2])
+                elif cmd.func == btp.gatts_add_desc:
+                    str_cmd += ", Permissions: %s" % Perm.decode(cmd.args[1])
+
+            print "%d) %s" % (index, str_cmd)
 
 if __name__ == "__main__":
     main()
