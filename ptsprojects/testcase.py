@@ -166,19 +166,22 @@ class TestCase(PTSCallback):
 
     def __init__(self, project_name, test_case_name, cmds = [], no_wid = None,
                  edit1_wids = None, verify_wids = None):
-        """
+        """TestCase constructor
+
         cmds -- a list of TestCmd and TestFunc or single instance of them
 
         no_wid -- a wid (tag) to respond No to
 
-        edit1_wids -- A dictionary of wids as keys and string input as values.
-                      The value is send to PTS in response to MMI_Style_Edit1
-                      style prompts with matching wid.
+        edit1_wids -- A dictionary of wids as keys and string or callable as
+                      values. The string value or the string returned from the
+                      callable value is send to PTS in response to
+                      MMI_Style_Edit1 style prompts with matching wid.
 
         verify_wids -- A dictionary of wids as keys and a tuple of strings as
                        values. The strings are used with MMI_Style_Yes_No1 to
                        confirm/verify that the MMI description contains all of
                        the strings in the tuple.
+
         """
         log("%r %r %r %r %r %r", project_name, test_case_name, cmds, no_wid,
             edit1_wids, verify_wids)
@@ -292,7 +295,11 @@ class TestCase(PTSCallback):
         my_response = ""
 
         if self.edit1_wids and wid in self.edit1_wids.keys():
-            my_response = self.edit1_wids[wid]
+            response = self.edit1_wids[wid]
+            if callable(response):
+                my_response = response()
+            else:
+                my_response = response
 
         return my_response
 
