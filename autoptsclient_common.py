@@ -198,6 +198,8 @@ def run_test_case(pts, test_case):
 
     global RUNNING_TEST_CASE
 
+    error_code = None
+
     try:
         RUNNING_TEST_CASE = test_case
         test_case.pre_run()
@@ -211,6 +213,9 @@ def run_test_case(pts, test_case):
             error_code, test_case.status, exc_info = 1)
 
     finally:
+        if not error_code: # unknown exception occured
+           raise
+
         test_case.post_run(error_code)
         RUNNING_TEST_CASE = None
 
