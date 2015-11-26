@@ -209,8 +209,8 @@ def run_test_case(pts, test_case):
         error_code = "BTP ERROR"
 
         logging.error(
-            "%s, previous test case status was %r",
-            error_code, test_case.status, exc_info = 1)
+            "%s: %s\nPrevious test case status was %r",
+            error_code, str(error), test_case.status, exc_info = 1)
 
     finally:
         if not error_code: # unknown exception occured
