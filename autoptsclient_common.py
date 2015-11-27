@@ -213,10 +213,7 @@ def run_test_case(pts, test_case):
             error_code, str(error), test_case.status, exc_info = 1)
 
     finally:
-        if not error_code: # unknown exception occured
-           raise
-
-        test_case.post_run(error_code)
+        test_case.post_run(error_code) # stop qemu and other commands
         RUNNING_TEST_CASE = None
 
     log("Done TestCase %s %s", run_test_case.__name__, test_case)
