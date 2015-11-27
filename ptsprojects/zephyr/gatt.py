@@ -1176,9 +1176,53 @@ def test_cases_server():
 
     return test_cases
 
+def test_cases_client():
+    """Returns a list of GATT Client test cases"""
+
+    zephyrctl = get_zephyr()
+
+    test_cases = [
+        #QTestCase("GATT", "TC_GAR_CL_BV_01_C",
+        #QTestCase("GATT", "TC_GAR_CL_BI_01_C",
+        #QTestCase("GATT", "TC_GAR_CL_BI_02_C",
+        #QTestCase("GATT", "TC_GAR_CL_BI_03_C",
+        #QTestCase("GATT", "TC_GAR_CL_BI_04_C",
+        #QTestCase("GATT", "TC_GAR_CL_BI_05_C",
+        #QTestCase("GATT", "TC_GAR_CL_BV_04_C",
+        #QTestCase("GATT", "TC_GAR_CL_BI_12_C",
+        #QTestCase("GATT", "TC_GAR_CL_BI_13_C",
+        #QTestCase("GATT", "TC_GAR_CL_BI_14_C",
+        #QTestCase("GATT", "TC_GAR_CL_BI_15_C",
+        #QTestCase("GATT", "TC_GAR_CL_BI_16_C",
+        #QTestCase("GATT", "TC_GAR_CL_BI_17_C",
+        #QTestCase("GATT", "TC_GAR_CL_BV_05_C",
+        #QTestCase("GATT", "TC_GAR_CL_BI_18_C",
+        #QTestCase("GATT", "TC_GAR_CL_BI_19_C",
+        #QTestCase("GATT", "TC_GAR_CL_BI_20_C",
+        #QTestCase("GATT", "TC_GAR_CL_BI_21_C",
+        #QTestCase("GATT", "TC_GAR_CL_BI_22_C",
+        #QTestCase("GATT", "TC_GAR_CL_BV_06_C",
+        #QTestCase("GATT", "TC_GAR_CL_BI_23_C",
+        #QTestCase("GATT", "TC_GAR_CL_BI_24_C",
+        #QTestCase("GATT", "TC_GAR_CL_BI_25_C",
+        #QTestCase("GATT", "TC_GAR_CL_BI_26_C",
+        #QTestCase("GATT", "TC_GAR_CL_BI_27_C",
+        #QTestCase("GATT", "TC_GAR_CL_BV_07_C",
+        #QTestCase("GATT", "TC_GAR_CL_BI_28_C",
+        #QTestCase("GATT", "TC_GAR_CL_BI_29_C",
+        #QTestCase("GATT", "TC_GAR_CL_BI_30_C",
+        #QTestCase("GATT", "TC_GAR_CL_BI_31_C",
+        #QTestCase("GATT", "TC_GAR_CL_BI_32_C",
+        #QTestCase("GATT", "TC_GAR_CL_BI_33_C",
+        #QTestCase("GATT", "TC_GAR_CL_BI_35_C",
+    ]
+
+    return test_cases
+
 def test_cases():
     """Returns a list of GATT test cases"""
     test_cases = test_cases_server()
+    test_cases += test_cases_client()
 
     return test_cases
 
