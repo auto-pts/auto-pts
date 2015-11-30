@@ -1196,6 +1196,11 @@ def test_cases_client(pts_bd_addr):
                    TestFunc(btp.gattc_write_long_rsp, start_wid = 69),
                    TestFunc(btp.gap_disconn, pts_bd_addr, 0, start_wid = 3),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr, 1, start_wid = 3)]),
+        #QTestCase("GATT", "TC_GAD_CL_BV_02_C",
+        #QTestCase("GATT", "TC_GAD_CL_BV_03_C",
+        #QTestCase("GATT", "TC_GAD_CL_BV_04_C",
+        #QTestCase("GATT", "TC_GAD_CL_BV_05_C",
+        #QTestCase("GATT", "TC_GAD_CL_BV_06_C",
     ]
 
     return test_cases
