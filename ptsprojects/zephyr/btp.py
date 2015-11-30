@@ -7,6 +7,9 @@ import struct
 from iutctl import get_zephyr
 import btpdef
 
+#Global temporary objects
+PASSKEY = None
+
 CONTROLLER_INDEX = 0
 
 CORE = {
@@ -38,6 +41,7 @@ GAP = {
     "conn": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_CONNECT, CONTROLLER_INDEX),
     "pair": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_PAIR, CONTROLLER_INDEX),
     "disconn": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_DISCONNECT, CONTROLLER_INDEX),
+    "set_io_cap": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_SET_IO_CAP, CONTROLLER_INDEX),
     "stop_adv": '',
     "start_discov": '',
     "stop_discov": '',
@@ -194,6 +198,14 @@ def gap_disconn(bd_addr = None, bd_addr_type = None):
 
     gap_command_rsp_succ()
 
+def gap_set_io_cap(io_cap = None):
+    logging.debug("%s %r", gap_set_io_cap.__name__, io_cap)
+    zephyrctl = get_zephyr()
+
+    zephyrctl.btp_socket.send(*GAP['set_io_cap'], data = chr(io_cap))
+
+    gap_command_rsp_succ()
+
 def gap_pair(bd_addr = None, bd_addr_type = None):
     logging.debug("%s %r %r", gap_pair.__name__, bd_addr, bd_addr_type)
     zephyrctl = get_zephyr()
@@ -208,6 +220,47 @@ def gap_pair(bd_addr = None, bd_addr_type = None):
 
     #Expected result
     gap_command_rsp_succ()
+
+def var_get_passkey():
+    return str(PASSKEY)
+
+def var_get_wrong_passkey():
+    #Passkey is in range 0-999999
+    if PASSKEY > 0:
+        return str(PASSKEY - 1)
+    else:
+        return str(PASSKEY + 1)
+
+def gap_passkey_disp_ev(bd_addr = None, bd_addr_type = None, store = False):
+    logging.debug("%s %r %r", gap_passkey_disp_ev.__name__, bd_addr, bd_addr_type)
+    zephyrctl = get_zephyr()
+
+    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    logging.debug("received %r %r", tuple_hdr, tuple_data)
+
+    if tuple_hdr.svc_id != btpdef.BTP_SERVICE_ID_GAP:
+        raise BTPError(
+            "Incorrect service ID %r  in response, should be %r!",
+            tuple_hdr.svc_id, btpdef.BTP_SERVICE_ID_GAP)
+
+    if tuple_hdr.op == 0:
+        raise BTPError("Error opcode in response!")
+
+    data_ba = bytearray()
+    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+
+    data_ba.extend(chr(bd_addr_type))
+    data_ba.extend(bd_addr_ba)
+
+    if tuple_data[0][:7] != data_ba:
+        raise BTPError("Error in address of passkey display data")
+
+    passkey_local = struct.unpack('I', tuple_data[0][7:11])[0]
+    logging.debug("passkey = %r", passkey_local)
+
+    if store:
+        global PASSKEY
+        PASSKEY = passkey_local
 
 def gap_command_rsp_succ():
     logging.debug("%s", gap_command_rsp_succ.__name__)
