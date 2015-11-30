@@ -70,6 +70,11 @@ GATTS = {
                          CONTROLLER_INDEX),
 }
 
+GATTC = {
+    "exchange_mtu": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_EXCHANGE_MTU,
+                     CONTROLLER_INDEX, ""),
+}
+
 class BTPError(Exception):
     """Exception raised if BTP error occurs.
 
@@ -390,6 +395,20 @@ def gatts_set_enc_key_size(hdl = None, enc_key_size = None):
     data_ba.extend(chr(enc_key_size))
 
     zephyrctl.btp_socket.send(*GATTS['set_enc_key_size'], data = data_ba)
+
+    gatt_command_rsp_succ()
+
+def gattc_exchange_mtu(bd_addr = None, bd_addr_type = None):
+    logging.debug("%s %r %r", gattc_exchange_mtu.__name__, bd_addr, bd_addr_type)
+    zephyrctl = get_zephyr()
+
+    data_ba = bytearray()
+    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+
+    data_ba.extend(chr(bd_addr_type))
+    data_ba.extend(bd_addr_ba)
+
+    zephyrctl.btp_socket.send(*GATTC['exchange_mtu'], data = data_ba)
 
     gatt_command_rsp_succ()
 
