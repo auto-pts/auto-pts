@@ -423,7 +423,7 @@ def gatt_command_rsp_succ():
     if tuple_hdr.svc_id != btpdef.BTP_SERVICE_ID_GATT:
         raise BTPError(
             "Incorrect service ID %r  in response, should be %r!",
-            tuple_hdr.svc_id, btpdef.SERVICE_ID_GATT)
+            tuple_hdr.svc_id, btpdef.BTP_SERVICE_ID_GATT)
 
     if tuple_hdr.op == btpdef.BTP_STATUS:
         raise BTPError("Error opcode in response!")
