@@ -36,6 +36,7 @@ GAP = {
     "start_adv": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_START_ADVERTISING,
                   CONTROLLER_INDEX, ""),
     "conn": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_CONNECT, CONTROLLER_INDEX),
+    "pair": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_PAIR, CONTROLLER_INDEX),
     "stop_adv": '',
     "start_discov": '',
     "stop_discov": '',
@@ -152,6 +153,21 @@ def gap_conn(bd_addr = None, bd_addr_type = None):
 
     zephyrctl.btp_socket.send(*GAP['conn'], data = data_ba)
 
+    gap_command_rsp_succ()
+
+def gap_pair(bd_addr = None, bd_addr_type = None):
+    logging.debug("%s %r %r", gap_pair.__name__, bd_addr, bd_addr_type)
+    zephyrctl = get_zephyr()
+
+    data_ba = bytearray()
+    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+
+    data_ba.extend(chr(bd_addr_type))
+    data_ba.extend(bd_addr_ba)
+
+    zephyrctl.btp_socket.send(*GAP['pair'], data = data_ba)
+
+    #Expected result
     gap_command_rsp_succ()
 
 def gatts_add_svc(svc_type = None, uuid = None):
