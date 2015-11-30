@@ -170,6 +170,22 @@ def gap_pair(bd_addr = None, bd_addr_type = None):
     #Expected result
     gap_command_rsp_succ()
 
+def gap_command_rsp_succ():
+    logging.debug("%s", gap_command_rsp_succ.__name__)
+
+    zephyrctl = get_zephyr()
+
+    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    logging.debug("received %r %r", tuple_hdr, tuple_data)
+
+    if tuple_hdr.svc_id != btpdef.BTP_SERVICE_ID_GAP:
+        raise BTPError(
+            "Incorrect service ID %r  in response, should be %r!",
+            tuple_hdr.svc_id, btpdef.BTP_SERVICE_ID_GAP)
+
+    if tuple_hdr.op == 0:
+        raise BTPError("Error opcode in response!")
+
 def gatts_add_svc(svc_type = None, uuid = None):
     logging.debug("%s %r %r", gatts_add_svc.__name__, svc_type, uuid)
 
