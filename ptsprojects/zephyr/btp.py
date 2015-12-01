@@ -463,3 +463,33 @@ def gatt_command_rsp_succ():
 
     if tuple_hdr.op == btpdef.BTP_STATUS:
         raise BTPError("Error opcode in response!")
+
+def gattc_disc_prim_uuid_rsp():
+    logging.debug("%s", gattc_disc_prim_uuid_rsp.__name__)
+
+def gattc_find_included_rsp():
+    logging.debug("%s", gattc_find_included_rsp.__name__)
+
+def gattc_disc_all_chrc_rsp():
+    logging.debug("%s", gattc_disc_all_chrc_rsp.__name__)
+
+def gattc_disc_chrc_uuid_rsp():
+    logging.debug("%s", gattc_disc_chrc_uuid_rsp.__name__)
+
+def gattc_disc_all_desc_rsp():
+    logging.debug("%s", gattc_disc_all_desc_rsp.__name__)
+
+def gattc_read_rsp():
+    logging.debug("%s", gattc_read_rsp.__name__)
+
+def gattc_read_long_rsp():
+    logging.debug("%s", gattc_read_long_rsp.__name__)
+
+def gattc_read_multiple_rsp():
+    logging.debug("%s", gattc_read_multiple_rsp.__name__)
+
+def gattc_write_rsp():
+    logging.debug("%s", gattc_write_rsp.__name__)
+
+def gattc_write_long_rsp():
+    logging.debug("%s", gattc_write_long_rsp.__name__)
