@@ -1,5 +1,6 @@
 """PTS test case python implementation"""
 
+import re
 import time
 import logging
 
@@ -7,6 +8,101 @@ from utils import exec_iut_cmd
 import ptstypes
 
 log = logging.debug
+
+class MmiParser(object):
+    """"Interface to parsing arguments from description of MMI
+
+    It is assumed that all arguments in description are enclosed in single
+    quotes.
+
+    """
+
+    min_arg = 1
+    # hopefully this is the max number of arguments in MMI description
+    max_arg = 10
+
+    arg_name_prefix = "arg_"
+    arg_value_prefix = "MMI_arg_value_"
+
+    def __init__(self):
+        """Constructor of the parser"""
+
+        # list of the parsed argument values from MMI description
+        self.args = []
+
+        # create attributes to reference the args
+        for i in range(self.min_arg, self.max_arg):
+            index = str(i)
+            mmi_arg_name = self.arg_name_prefix + index
+            mmi_arg_value = self.arg_value_prefix + index
+            setattr(self, mmi_arg_name, mmi_arg_value)
+
+    def parse_description(self, description):
+        """Parses PTS MMI description text for argument values. It is necessary to do
+        it for now, but in future PTS will provide API to get the values
+
+        An example of MMI that requires parsing is listed below. For that MMI
+        00D3 should be converted to hexadecimal 0xD3 and size to int 45
+
+        project_name: GATT
+        wid: 69
+        test_case_name: TC_GAC_CL_BV_01_C
+
+        Please send prepare write request with handle = '00D3'O and size = '45' to the PTS.
+
+        Description: Verify that the Implementation Under Test (IUT) can send data according to negotiate MTU size."
+
+        """
+        log("%s %r", self.parse_description.__name__, description)
+
+        pattern = r"'(\S+)'" # any text surrounded by single quotes
+        matches = re.findall(pattern, description)
+
+        int_matches = []
+
+        # convert text to numbers
+        for match in matches:
+            if match.startswith("00"): # hex number
+                int_matches.append(int(match, 16))
+            else:
+                int_matches.append(int(match))
+
+        self.args = int_matches
+
+        log("Parse result: %r", self.args)
+
+    def reset(self):
+        """Resets the args
+
+        To be used when parsed values are not needed anymore
+
+        """
+        self.args = []
+
+    def process_args(self, args):
+        """Replaces the MMI keywords arguments (e.g. MMI.arg_1) with the respective
+        argument values from MMI description
+
+        """
+        log("%s: %s", self.process_args.__name__, args)
+        log("MMI.args now %r", self.args)
+
+        args_list = list(args)
+
+        for arg_index, arg in enumerate(args):
+            if not isinstance(arg, basestring): # omit not strings
+                continue
+
+            if arg.startswith(MMI.arg_value_prefix):
+                mmi_index = int(arg[arg.rfind("_") + 1:])
+
+                args_list[arg_index] = self.args[mmi_index - 1]
+
+        out_args = tuple(args_list)
+        log("returning %r", out_args)
+        return out_args
+
+MMI = MmiParser()
 
 class TestCmd:
     """A command ran in IUT during test case execution"""
@@ -50,6 +146,13 @@ class TestFunc:
     def __init__(self, func, *args, **kwds):
         """Constructor of TestFunc
 
+        MMI.arg_X -- Passing these keywords in args would enable parsing the
+                     description of PTS MMI for values. Each of the keywords
+                     has the value of the description. For example: for
+                     description "Please send prepare write request with handle
+                     = '00D3'O and size = '45' to the PTS" MMI.arg_1 will have
+                     the value 0xD3 and MMI.arg_2 will have the value 45
+
         start_wid -- wid to start TestFunc
 
         stop_wid -- not used by TestFunc, because function stopping is not easy
@@ -65,6 +168,14 @@ class TestFunc:
         self.func = func
         self.args = args
         self.kwds = kwds
+
+        # true if parsing of MMI description text is needed by this test func
+        self.desc_parsing_needed = False
+
+        for arg in args:
+            if isinstance(arg, str) and arg.startswith(MMI.arg_value_prefix):
+                self.desc_parsing_needed = True
+                break
 
     def __read_start_stop_wids(self, kwds):
         """Reads start_wid and stop_wid from arbitrary keyword argument
@@ -84,6 +195,8 @@ class TestFunc:
         kwds -- arbitrary keyword argument dictionary
 
         """
+        log("%s: %r", self.__read_start_stop_wids, kwds)
+
         start_wid_name = "start_wid"
         stop_wid_name = "stop_wid"
 
@@ -98,7 +211,16 @@ class TestFunc:
     def start(self):
         """Starts the function"""
         log("Starting test function: %s" % str(self))
-        self.func(*self.args, **self.kwds)
+
+
+        if self.desc_parsing_needed:
+            args = MMI.process_args(self.args)
+        else:
+            args = self.args
+
+        log("Test function parameters: args=%r, kwds=%r", args, self.kwds)
+
+        self.func(*args, **self.kwds)
 
     def stop(self):
         """Does nothing, since not easy job to stop a function"""
@@ -303,7 +425,7 @@ class TestCase(PTSCallback):
 
         return my_response
 
-    def start_stop_cmds_by_wid(self, wid):
+    def start_stop_cmds_by_wid(self, wid, description):
         """Starts/stops commands
 
         The commands started/stopped are the ones that have the same start_wid
@@ -313,7 +435,13 @@ class TestCase(PTSCallback):
         for cmd in self.cmds:
             # start command
             if cmd.start_wid == wid:
+                if cmd.desc_parsing_needed:
+                    MMI.parse_description(description)
+
                 cmd.start()
+
+                if cmd.desc_parsing_needed: # clear parsed description
+                    MMI.reset()
 
             # stop command
             if cmd.stop_wid == wid:
@@ -342,7 +470,7 @@ class TestCase(PTSCallback):
             my_response = "OK"
 
         # start/stop command if triggered by wid
-        self.start_stop_cmds_by_wid(wid)
+        self.start_stop_cmds_by_wid(wid, description)
 
         log("Sending response %r", my_response)
         return my_response
