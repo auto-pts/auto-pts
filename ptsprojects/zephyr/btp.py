@@ -72,7 +72,7 @@ GATTS = {
 
 GATTC = {
     "exchange_mtu": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_EXCHANGE_MTU,
-                     CONTROLLER_INDEX, ""),
+                     CONTROLLER_INDEX),
 }
 
 class BTPError(Exception):
