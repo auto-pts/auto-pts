@@ -2,7 +2,7 @@
 
 try:
     from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
-        TestFuncCleanUp
+        TestFuncCleanUp, MMI
     from ptsprojects.zephyr.qtestcase import QTestCase
 
 except ImportError: # running this module as script
@@ -1176,9 +1176,37 @@ def test_cases_server():
 
     return test_cases
 
-def test_cases():
-    """Returns a list of GATT test cases"""
-    test_cases = test_cases_server()
+def test_cases_client(pts):
+    """Returns a list of GATT Client test cases
+
+    pts -- Instance of PyPTS
+
+    """
+    test_cases = [
+        QTestCase("GATT", "TC_GAC_CL_BV_01_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts.bd_addr(), 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts.bd_addr(), 1,
+                            start_wid = 2),
+                   TestFunc(btp.gattc_exchange_mtu, pts.bd_addr(), 0,
+                            start_wid = 12),
+                   TestFunc(btp.gattc_write_long, pts.bd_addr(), 0,
+                            MMI.arg_1, 0, '12', MMI.arg_2, start_wid = 69),
+                   TestFunc(btp.gap_disconn, pts.bd_addr(), 0, start_wid = 3)])
+    ]
+
+    return test_cases
+
+def test_cases(pts):
+    """Returns a list of GATT test cases
+
+    pts -- Instance of PyPTS
+
+    """
+
+    test_cases = test_cases_client(pts)
+    # test_cases += test_cases_server()
 
     return test_cases
 
