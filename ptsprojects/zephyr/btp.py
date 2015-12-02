@@ -73,6 +73,9 @@ GATTS = {
 GATTC = {
     "exchange_mtu": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_EXCHANGE_MTU,
                      CONTROLLER_INDEX),
+
+    "write_long" : (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_WRITE_LONG,
+                    CONTROLLER_INDEX),
 }
 
 class BTPError(Exception):
@@ -409,6 +412,39 @@ def gattc_exchange_mtu(bd_addr = None, bd_addr_type = None):
     data_ba.extend(bd_addr_ba)
 
     zephyrctl.btp_socket.send(*GATTC['exchange_mtu'], data = data_ba)
+
+    gatt_command_rsp_succ()
+
+def gattc_write_long(bd_addr = None, bd_addr_type = None, hdl = None,
+                     offset = None, val = None, length = None):
+    logging.debug("%s %r %r %r %r %r", gattc_write_long.__name__,
+                  bd_addr_type, hdl, offset, val, length)
+
+    if length:
+        val = val * length
+
+    zephyrctl = get_zephyr()
+
+    data_ba = bytearray()
+    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+
+    data_ba.extend(chr(bd_addr_type))
+    data_ba.extend(bd_addr_ba)
+
+    hdl_ba = struct.pack('H', hdl)
+    data_ba.extend(hdl_ba)
+
+    offset_ba = struct.pack('H', offset)
+    data_ba.extend(offset_ba)
+
+    val_len = len(val) / 2
+    val_len_ba = struct.pack('H', val_len)
+    val_ba = binascii.unhexlify(bytearray(val))
+
+    data_ba.extend(val_len_ba)
+    data_ba.extend(val_ba)
+
+    zephyrctl.btp_socket.send(*GATTC['write_long'], data = data_ba)
 
     gatt_command_rsp_succ()
 
