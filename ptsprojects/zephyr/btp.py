@@ -5,7 +5,10 @@ import binascii
 import struct
 
 from iutctl import get_zephyr
+from collections import namedtuple
 import btpdef
+from itertools import count
+from _struct import unpack
 
 #Global temporary objects
 PASSKEY = None
@@ -787,3 +790,108 @@ def gatt_command_rsp_succ():
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
     rsp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT, None)
+
+#BTP Single Service Attribute
+#0             16           32            40
+#+--------------+------------+-------------+------+
+#| Start Handle | End Handle | UUID Length | UUID |
+#+--------------+------------+-------------+------+
+def gatt_dec_svc_attr(data = None):
+    hdr = '<HHB'
+    hdr_len = struct.calcsize(hdr)
+
+    start_hdl, end_hdl, uuid_len = struct.unpack_from(hdr, data)
+    uuid = struct.unpack_from('%ds' % uuid_len, data, hdr_len)
+
+    return (start_hdl, end_hdl, uuid), hdr_len + uuid_len
+
+#BTP Single Included Service Attribute
+#0                16
+#+-----------------+-------------------+
+#| Included Handle | Service Attribute |
+#+-----------------+-------------------+
+def gatt_dec_incl_attr(data = None):
+    hdr = '<H'
+    hdr_len = struct.calcsize(hdr)
+
+    incl_hdl = struct.unpack_from(hdr, data)
+    svc, svc_len = gatt_dec_svc_attr(data[hdr_len:])
+
+    return (incl_hdl, svc), hdr_len + svc_len
+
+#BTP Single Characteristic Attribute
+#0       16             32           40            48
+#+--------+--------------+------------+-------------+------+
+#| Handle | Value Handle | Properties | UUID Length | UUID |
+#+--------+--------------+------------+-------------+------+
+def gatt_dec_chrc_attr(data = None):
+    hdr = '<HHBB'
+    hdr_len = struct.calcsize(hdr)
+
+    chrc_hdl, val_hdl, props, uuid_len = struct.unpack_from(hdr, data)
+    uuid = struct.unpack_from('%ds' % uuid_len, data, hdr_len)
+
+    return (chrc_hdl, val_hdl, props, uuid), hdr_len + uuid_len
+
+#BTP Single Descriptor Attribute
+#0       16            24
+#+--------+-------------+------+
+#| Handle | UUID Length | UUID |
+#+--------+-------------+------+
+def gatt_dec_desc_attr(data = None):
+    hdr = '<HB'
+    hdr_len = struct.calcsize(hdr)
+
+    hdl, uuid_len = struct.unpack_from(hdr, data)
+    uuid = struct.unpack_from('%ds' % uuid_len, data, hdr_len)
+
+    return (hdl, uuid), hdr_len + uuid_len
+
+#BTP Discovery Response frame format
+#0                  8
+#+------------------+------------+
+#| Attributes Count | Attributes |
+#+------------------+------------+
+def gatt_dec_disc_rsp(data = None, attr_type = None):
+    attrs_len = len(data) - 1
+    attr_cnt, attrs = struct.unpack('B%ds' % attrs_len, data)
+
+    attrs_list = []
+    offset = 0
+
+    for x in range(attr_cnt):
+        if attr_type == "service":
+            attr, attr_len = gatt_dec_svc_attr(attrs[offset:])
+        elif attr_type == "include":
+            attr, attr_len = gatt_dec_incl_attr(attrs[offset:])
+        elif attr_type == "characteristic":
+            attr, attr_len = gatt_dec_chrc_attr(attrs[offset:])
+        else: #descriptor
+            attr, attr_len = gatt_dec_desc_attr(attrs[offset:])
+
+        attrs_list.append(attr)
+        offset += attr_len
+
+    return tuple(attrs_list)
+
+#BTP Read Response frame format
+#0              8            24
+#+--------------+-------------+------+
+#| ATT Response | Data Length | Data |
+#+--------------+-------------+------+
+def gatt_dec_read_rsp(data = None):
+    hdr = '<BH'
+    hdr_len = struct.calcsize(hdr)
+
+    att_rsp, val_len = struct.unpack_from(hdr, data)
+    val = struct.unpack_from('%ds' % val_len, data, hdr_len)
+
+    return att_rsp, val
+
+#BTP Write Response frame format
+#0              8
+#+--------------+
+#| ATT Response |
+#+--------------+
+def gatt_dec_write_rsp(data = None):
+    return ord(data)
