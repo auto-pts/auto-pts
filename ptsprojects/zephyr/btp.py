@@ -5,7 +5,10 @@ import binascii
 import struct
 
 from iutctl import get_zephyr
+from collections import namedtuple
 import btpdef
+from itertools import count
+from _struct import unpack
 
 #Global temporary objects
 PASSKEY = None
@@ -672,6 +675,99 @@ def gatt_command_rsp_succ():
 
     if tuple_hdr.op == btpdef.BTP_STATUS:
         raise BTPError("Error opcode in response!")
+
+#BTP Single Service Attribute
+#0             16           32            40
+#+--------------+------------+-------------+------+
+#| Start Handle | End Handle | UUID Length | UUID |
+#+--------------+------------+-------------+------+
+def gatt_dec_svc_attr(data = None):
+    logging.debug("%s, %r", gatt_dec_svc_attr.__name__, data)
+
+    start_hdl, end_hdl, uuid_len = struct.unpack('HHB', data[:5])
+    if (uuid_len != 2 and uuid_len != 16):
+        BTPError("Invalid UUID length received")
+
+    uuid = struct.unpack('%ds' % uuid_len, data[5:5 + uuid_len])
+    attr_len = 5 + uuid_len
+
+    return (start_hdl, end_hdl, uuid_len, uuid[:uuid_len]), attr_len
+
+#BTP Single Included Service Attribute
+#0                16
+#+-----------------+-------------------+
+#| Included Handle | Service Attribute |
+#+-----------------+-------------------+
+def gatt_dec_incl_attr(data = None):
+    logging.debug("%s, %r", gatt_dec_incl_attr.__name__, data)
+
+    incl_hdl = struct.unpack('H', data[:2])
+    attr, attr_len = gatt_dec_svc_attr(data[2:])
+    attr_len += 2
+
+    return (incl_hdl, attr), attr_len
+
+#BTP Single Characteristic Attribute
+#0       16             32           40            48
+#+--------+--------------+------------+-------------+------+
+#| Handle | Value Handle | Properties | UUID Length | UUID |
+#+--------+--------------+------------+-------------+------+
+def gatt_dec_chrc_attr(data = None):
+    logging.debug("%s, %r", gatt_dec_chrc_attr.__name__, data)
+
+    chrc_hdl, val_hdl, props, uuid_len = struct.unpack('HHBB', data[:6])
+    if (uuid_len != 2 and uuid_len != 16):
+        BTPError("Invalid UUID length received")
+
+    uuid = struct.unpack('%ds' % uuid_len, data[6:6 + uuid_len])
+    attr_len = 6 + uuid_len
+
+    return (chrc_hdl, val_hdl, props, uuid_len, uuid), attr_len
+
+#BTP Single Descriptor Attribute
+#0       16            24
+#+--------+-------------+------+
+#| Handle | UUID Length | UUID |
+#+--------+-------------+------+
+def gatt_dec_desc_attr(data = None):
+    logging.debug("%s, %r", gatt_dec_desc_attr.__name__, data)
+
+    hdl, uuid_len = struct.unpack('HB', data[:3])
+    if (uuid_len != 2 and uuid_len != 16):
+        BTPError("Invalid UUID length received")
+
+    uuid = struct.unpack('%ds' % uuid_len, data[3:3 + uuid_len])
+    attr_len = 3 + uuid_len
+
+    return (hdl, uuid_len, uuid), attr_len
+
+#BTP Discovery Response frame format
+#0                  8
+#+------------------+------------+
+#| Attributes Count | Attributes |
+#+------------------+------------+
+def gatt_dec_disc_rsp(data = None, attr_type = None):
+    logging.debug("%s, %r", gatt_dec_disc_rsp.__name__, data)
+
+    data_len = len(data) - 1
+    attr_cnt, attrs = struct.unpack('B%ds' % data_len, data)
+
+    attrs_list = list()
+
+    for x in xrange(0, attr_cnt):
+        if attr_type == "service":
+            attr, attr_len = gatt_dec_svc_attr(attrs)
+        elif attr_type == "include":
+            attr, attr_len = gatt_dec_incl_attr(attrs)
+        elif attr_type == "characteristic":
+            attr, attr_len = gatt_dec_chrc_attr(attrs)
+        else: #descriptor
+            attr, attr_len = gatt_dec_desc_attr(attrs)
+
+        attrs_list.append(attr)
+        attrs = attrs[attr_len:]
+
+    return tuple(attrs_list)
 
 def gattc_disc_prim_uuid_rsp():
     logging.debug("%s", gattc_disc_prim_uuid_rsp.__name__)
