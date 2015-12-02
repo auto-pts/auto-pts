@@ -784,6 +784,19 @@ def gattc_disc_chrc_uuid_rsp():
 def gattc_disc_all_desc_rsp():
     logging.debug("%s", gattc_disc_all_desc_rsp.__name__)
 
+#BTP Read Response frame format
+#0              8            24
+#+--------------+-------------+------+
+#| ATT Response | Data Length | Data |
+#+--------------+-------------+------+
+def gatt_dec_read_rsp(data = None):
+    logging.debug("%s", gatt_dec_read_rsp.__name__)
+
+    data_len = len(data) - 3
+    att_rsp, val_len, val = struct.unpack('BH%ds' % data_len, data)
+
+    return att_rsp, val_len, val
+
 def gattc_read_rsp():
     logging.debug("%s", gattc_read_rsp.__name__)
 
@@ -792,6 +805,18 @@ def gattc_read_long_rsp():
 
 def gattc_read_multiple_rsp():
     logging.debug("%s", gattc_read_multiple_rsp.__name__)
+
+#BTP Write Response frame format
+#0              8
+#+--------------+
+#| ATT Response |
+#+--------------+
+def gatt_dec_write_rsp(data = None):
+    logging.debug("%s", gatt_dec_write_rsp.__name__)
+
+    att_rsp = struct.unpack('B', data)
+
+    return att_rsp[0]
 
 def gattc_write_rsp():
     logging.debug("%s", gattc_write_rsp.__name__)
