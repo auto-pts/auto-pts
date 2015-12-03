@@ -197,16 +197,15 @@ class TestFunc:
         """
         log("%s: %r", self.__read_start_stop_wids, kwds)
 
-        start_wid_name = "start_wid"
-        stop_wid_name = "stop_wid"
+        arg_names = ["start_wid", "stop_wid"]
 
-        self.start_wid = kwds.get(start_wid_name)
-        if self.start_wid:
-            kwds.pop(start_wid_name)
+        for arg_name in arg_names:
+            if arg_name in kwds:
+                arg_value = kwds.pop(arg_name)
+            else:
+                arg_value = None
 
-        self.stop_wid = kwds.get(stop_wid_name)
-        if self.stop_wid:
-            kwds.pop(stop_wid_name)
+            setattr(self, arg_name, arg_value)
 
     def start(self):
         """Starts the function"""
