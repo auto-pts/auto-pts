@@ -1,12 +1,12 @@
 These PTS prompts, i.e. MMIs, require description parsing:
 
-2015-12-03 10:52:17,871 ClientCallback.on_implicit_send INFO autoptsclient_common.py   80    on_implicit_send          : project_name: GATT
-2015-12-03 10:52:17,871 ClientCallback.on_implicit_send INFO autoptsclient_common.py   81    on_implicit_send          : wid: 69
-2015-12-03 10:52:17,871 ClientCallback.on_implicit_send INFO autoptsclient_common.py   82    on_implicit_send          : test_case_name: TC_GAC_CL_BV_01_C
-2015-12-03 10:52:17,871 ClientCallback.on_implicit_send INFO autoptsclient_common.py   83    on_implicit_send          : description: Please send prepare write request with handle = '00D3'O and size = '45' to the PTS.
+project_name: GATT
+wid: 69
+test_case_name: TC_GAC_CL_BV_01_C
+description: Please send prepare write request with handle = '00D3'O and size = '45' to the PTS.
 
 Description: Verify that the Implementation Under Test (IUT) can send data according to negotiate MTU size.
-2015-12-03 10:52:17,872 ClientCallback.on_implicit_send INFO autoptsclient_common.py   84    on_implicit_send          : style: MMI_Style_Ok_Cancel2 0x11141
+style: MMI_Style_Ok_Cancel2 0x11141
 
 
 in this case:
