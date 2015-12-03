@@ -226,7 +226,8 @@ def print_summary(test_cases, margin):
 
     status_str = "Status"
     max_status = len(status_str)
-    num_test_cases_width = len(str(len(test_cases)))
+    num_test_cases_str = str(len(test_cases))
+    num_test_cases_width = len(num_test_cases_str)
 
     for test_case in test_cases:
         if not status_count.has_key(test_case.status):
@@ -240,12 +241,19 @@ def print_summary(test_cases, margin):
     count_just = num_test_cases_width + margin
 
     title_str = status_str.ljust(status_just) + "Count".rjust(count_just)
-    print title_str
-    print "=" * len(title_str)
+    border = "=" * len(title_str)
 
+    print title_str
+    print border
+
+    # print each status and count
     for status in sorted(status_count.keys()):
         count = status_count[status]
         print status.ljust(status_just) + str(count).rjust(count_just)
+
+    # print total
+    print border
+    print "Total".ljust(status_just) + num_test_cases_str.rjust(count_just)
 
 def run_test_cases(pts, test_cases):
     """Runs a list of test cases"""
