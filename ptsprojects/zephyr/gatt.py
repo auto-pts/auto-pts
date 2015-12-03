@@ -1193,7 +1193,9 @@ def test_cases_client(pts):
                             start_wid = 12),
                    TestFunc(btp.gattc_write_long, 0, pts.bd_addr(),
                             MMI.arg_1, 0, '12', MMI.arg_2, start_wid = 69),
-                   TestFunc(btp.gap_disconn, pts.bd_addr(), 0, start_wid = 3)])
+                   TestFunc(btp.gattc_write_long_rsp, start_wid = 69),
+                   TestFunc(btp.gap_disconn, pts.bd_addr(), 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts.bd_addr(), 1, start_wid = 3)]),
     ]
 
     return test_cases
