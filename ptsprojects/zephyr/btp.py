@@ -320,11 +320,10 @@ def gatts_add_svc(svc_type = None, uuid = None):
     zephyrctl = get_zephyr()
 
     data_ba = bytearray()
-    uuid_byte_table = [uuid[i:i+2] for i in range(0, len(uuid), 2)]
-    uuid_swp = ''.join([c[1] + c[0] for c in zip(uuid_byte_table[::2], uuid_byte_table[1::2])])
-    uuid_ba = binascii.unhexlify(bytearray(uuid_swp))
+    uuid_ba = binascii.unhexlify(uuid.translate(None, "-"))[::-1]
+
     data_ba.extend(chr(svc_type))
-    data_ba.extend(chr(len(uuid) / 2))
+    data_ba.extend(chr(len(uuid_ba)))
     data_ba.extend(uuid_ba)
 
     zephyrctl.btp_socket.send(*GATTS['add_svc'], data = data_ba)
@@ -358,14 +357,12 @@ def gatts_add_char(hdl = None, prop = None, perm = None, uuid = None):
 
     data_ba = bytearray()
     hdl_ba = struct.pack('H', hdl)
-    uuid_byte_table = [uuid[i:i+2] for i in range(0, len(uuid), 2)]
-    uuid_swp = ''.join([c[1] + c[0] for c in zip(uuid_byte_table[::2], uuid_byte_table[1::2])])
-    uuid_ba = binascii.unhexlify(bytearray(uuid_swp))
+    uuid_ba = binascii.unhexlify(uuid.translate(None, "-"))[::-1]
 
     data_ba.extend(hdl_ba)
     data_ba.extend(chr(prop))
     data_ba.extend(chr(perm))
-    data_ba.extend(chr(len(uuid) / 2))
+    data_ba.extend(chr(len(uuid_ba)))
     data_ba.extend(uuid_ba)
 
     zephyrctl.btp_socket.send(*GATTS['add_char'], data = data_ba)
@@ -405,13 +402,11 @@ def gatts_add_desc(hdl = None, perm = None, uuid = None):
 
     data_ba = bytearray()
     hdl_ba = struct.pack('H', hdl)
-    uuid_byte_table = [uuid[i:i+2] for i in range(0, len(uuid), 2)]
-    uuid_swp = ''.join([c[1] + c[0] for c in zip(uuid_byte_table[::2], uuid_byte_table[1::2])])
-    uuid_ba = binascii.unhexlify(bytearray(uuid_swp))
+    uuid_ba = binascii.unhexlify(uuid.translate(None, "-"))[::-1]
 
     data_ba.extend(hdl_ba)
     data_ba.extend(chr(perm))
-    data_ba.extend(chr(len(uuid) / 2))
+    data_ba.extend(chr(len(uuid_ba)))
     data_ba.extend(uuid_ba)
 
     zephyrctl.btp_socket.send(*GATTS['add_desc'], data = data_ba)
@@ -467,13 +462,11 @@ def gattc_disc_prim_uuid(bd_addr_type=None, bd_addr=None, uuid=None):
     data_ba = bytearray()
 
     bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
-    uuid_byte_table = [uuid[i:i+2] for i in range(0, len(uuid), 2)]
-    uuid_swp = ''.join([c[1] + c[0] for c in zip(uuid_byte_table[::2], uuid_byte_table[1::2])])
-    uuid_ba = binascii.unhexlify(bytearray(uuid_swp))
+    uuid_ba = binascii.unhexlify(uuid.translate(None, "-"))[::-1]
 
     data_ba.extend(chr(bd_addr_type))
     data_ba.extend(bd_addr_ba)
-    data_ba.extend(chr(len(uuid) / 2))
+    data_ba.extend(chr(len(uuid_ba)))
     data_ba.extend(uuid_ba)
 
     zephyrctl.btp_socket.send(*GATTC['disc_prim_uuid'], data=data_ba)
@@ -548,15 +541,13 @@ def gattc_disc_chrc_uuid(bd_addr_type=None, bd_addr=None, start_hdl=None,
     bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
     start_hdl_ba = struct.pack('H', start_hdl)
     stop_hdl_ba = struct.pack('H', stop_hdl)
-    uuid_byte_table = [uuid[i:i+2] for i in range(0, len(uuid), 2)]
-    uuid_swp = ''.join([c[1] + c[0] for c in zip(uuid_byte_table[::2], uuid_byte_table[1::2])])
-    uuid_ba = binascii.unhexlify(bytearray(uuid_swp))
+    uuid_ba = binascii.unhexlify(uuid.translate(None, "-"))[::-1]
 
     data_ba.extend(chr(bd_addr_type))
     data_ba.extend(bd_addr_ba)
     data_ba.extend(start_hdl_ba)
     data_ba.extend(stop_hdl_ba)
-    data_ba.extend(chr(len(uuid) / 2))
+    data_ba.extend(chr(len(uuid_ba)))
     data_ba.extend(uuid_ba)
 
     zephyrctl.btp_socket.send(*GATTC['disc_chrc_uuid'], data=data_ba)
