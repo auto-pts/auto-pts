@@ -453,8 +453,8 @@ def gatts_set_enc_key_size(hdl = None, enc_key_size = None):
 
     gatt_command_rsp_succ()
 
-def gattc_exchange_mtu(bd_addr = None, bd_addr_type = None):
-    logging.debug("%s %r %r", gattc_exchange_mtu.__name__, bd_addr, bd_addr_type)
+def gattc_exchange_mtu(bd_addr_type = None, bd_addr = None):
+    logging.debug("%s %r %r", gattc_exchange_mtu.__name__, bd_addr_type, bd_addr)
     zephyrctl = get_zephyr()
 
     data_ba = bytearray()
