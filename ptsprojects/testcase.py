@@ -164,8 +164,8 @@ class TestFunc:
         TestFunc(my_function, arg1, arg2, kwd1 = 5, start_wid = 117)
 
         """
-        self.__read_start_stop_wids(kwds)
         self.func = func
+        self.__read_start_stop_wids(kwds)
         self.args = args
         self.kwds = kwds
 
@@ -195,7 +195,7 @@ class TestFunc:
         kwds -- arbitrary keyword argument dictionary
 
         """
-        log("%s: %r", self.__read_start_stop_wids, kwds)
+        log("%s: %r", self.func.__name__, kwds)
 
         arg_names = ["start_wid", "stop_wid"]
 
@@ -206,6 +206,8 @@ class TestFunc:
                 arg_value = None
 
             setattr(self, arg_name, arg_value)
+
+        log("Done %s: %r", self.func.__name__, kwds)
 
     def start(self):
         """Starts the function"""
