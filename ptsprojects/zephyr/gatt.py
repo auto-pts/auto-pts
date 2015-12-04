@@ -1189,7 +1189,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gap_conn, pts.bd_addr(), 0, start_wid = 2),
                    TestFunc(btp.gap_connected_ev, pts.bd_addr(), 1,
                             start_wid = 2),
-                   TestFunc(btp.gattc_exchange_mtu, pts.bd_addr(), 0,
+                   TestFunc(btp.gattc_exchange_mtu, 0, pts.bd_addr(),
                             start_wid = 12),
                    TestFunc(btp.gattc_write_long, 0, pts.bd_addr(),
                             MMI.arg_1, 0, '12', MMI.arg_2, start_wid = 69),
