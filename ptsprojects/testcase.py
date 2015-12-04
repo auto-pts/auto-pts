@@ -56,18 +56,7 @@ class MmiParser(object):
         log("%s %r", self.parse_description.__name__, description)
 
         pattern = r"'(\S+)'" # any text surrounded by single quotes
-        matches = re.findall(pattern, description)
-
-        int_matches = []
-
-        # convert text to numbers
-        for match in matches:
-            if match.startswith("00"): # hex number
-                int_matches.append(int(match, 16))
-            else:
-                int_matches.append(int(match))
-
-        self.args = int_matches
+        self.args = re.findall(pattern, description)
 
         log("Parse result: %r", self.args)
 

@@ -420,8 +420,10 @@ def gattc_write_long(bd_addr = None, bd_addr_type = None, hdl = None,
     logging.debug("%s %r %r %r %r %r", gattc_write_long.__name__,
                   bd_addr_type, hdl, offset, val, length)
 
+    hdl = int(hdl, 16) # convert string in hex format to int
+
     if length:
-        val = val * length
+        val *= int(length)
 
     zephyrctl = get_zephyr()
 
