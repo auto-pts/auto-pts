@@ -1196,11 +1196,98 @@ def test_cases_client(pts_bdaddr):
                    TestFunc(btp.gattc_write_long_rsp, start_wid = 69),
                    TestFunc(btp.gap_disconn, pts_bdaddr, 0, start_wid = 3),
                    TestFunc(btp.gap_disconnected_ev, pts_bdaddr, 1, start_wid = 3)]),
-        #QTestCase("GATT", "TC_GAD_CL_BV_02_C",
-        #QTestCase("GATT", "TC_GAD_CL_BV_03_C",
-        #QTestCase("GATT", "TC_GAD_CL_BV_04_C",
-        #QTestCase("GATT", "TC_GAD_CL_BV_05_C",
-        #QTestCase("GATT", "TC_GAD_CL_BV_06_C",
+        #FIXME Verification of data
+        #description: Please confirm IUT receive primary services uuid = '66FA'O ,
+        #Service start handle = 0x0001, end handle = 0x0003 Service start handle = 0x0030,
+        #end handle = 0x0032 Service start handle = 0x0040, end handle = 0x0042
+        #Service start handle = 0x0050, end handle = 0x0052 Service start handle = 0x0090,
+        #end handle = 0x0096 in database. Click Yes if IUT receive it, otherwise click No.
+        QTestCase("GATT", "TC_GAD_CL_BV_02_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts.bd_addr(), 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts.bd_addr(), 1,
+                            start_wid = 2),
+                   TestFunc(btp.gattc_disc_prim_uuid, 0, pts.bd_addr(),
+                            MMI.arg_1, start_wid = 18),
+                   TestFunc(btp.gattc_disc_prim_uuid_rsp, start_wid = 18),
+                   TestFunc(btp.gattc_disc_prim_uuid, 0, pts.bd_addr(),
+                            MMI.arg_1, start_wid = 20),
+                   TestFunc(btp.gattc_disc_prim_uuid_rsp, start_wid = 20),
+                   TestFunc(btp.gap_disconn, pts.bd_addr(), 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts.bd_addr(), 1, start_wid = 3)]),
+        #ZEP-336
+        #FIXME Verification of data
+        #description: Please confirm IUT receive include services:
+        #Attribute Handle = 0x0021 Included Service Attribute handle = 0x0040,
+        #End Group Handle = 0x0045,Service UUID = 0x5BE7
+        #
+        #Attribute Handle = 0x0041 Included Service Attribute handle = 0x00A0,
+        #End Group Handle = 0x00A2,Service UUID = 0x0EDA
+        #
+        #Attribute Handle = 0x0061 Included Service Attribute handle = 0x0040,
+        #End Group Handle = 0x0045,Service UUID = 0x5BE7
+        #
+        #Attribute Handle = 0x0062 Included Service Attribute handle = 0x0020,
+        #End Group Handle = 0x0026,Service UUID = 0x00003EA1000000000123456789ABCDEF
+        #
+        #Click Yes if IUT receive it, otherwise click No.
+        QTestCase("GATT", "TC_GAD_CL_BV_03_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts.bd_addr(), 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts.bd_addr(), 1,
+                            start_wid = 2),
+                   #NOTE: We cannot discover all services at first, so we look for included at once
+                   TestFunc(btp.gattc_find_included, 0, pts.bd_addr(), '0001',
+                            'FFFF', start_wid = 15),
+                   TestFunc(btp.gattc_find_included_rsp, start_wid = 15),
+                   TestFunc(btp.gap_disconn, pts.bd_addr(), 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts.bd_addr(), 1, start_wid = 3)]),
+        #ZEP-336
+        #FIXME Send command + Verification of data
+        #description: Discover all characteristics of service UUID= '180A'O,
+        #Service start handle = 0x0030, end handle = 0x0047.
+        QTestCase("GATT", "TC_GAD_CL_BV_04_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts.bd_addr(), 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts.bd_addr(), 1,
+                            start_wid = 2),
+                   TestFunc(btp.gattc_disc_all_chrc, 0, pts.bd_addr(), MMI.arg_2, MMI.arg_3, start_wid = 27),
+                   TestFunc(btp.gattc_disc_all_chrc_rsp, start_wid = 27),
+                   TestFunc(btp.gap_disconn, pts.bd_addr(), 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts.bd_addr(), 1, start_wid = 3)]),
+        #FIXME Verification of data
+        #description: Please confirm IUT receive characteristic handle=0x00E5
+        #UUID=0x4509  in database. Click Yes if IUT receive it, otherwise click No.
+        #PTS issue #14012
+        QTestCase("GATT", "TC_GAD_CL_BV_05_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts.bd_addr(), 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts.bd_addr(), 1,
+                            start_wid = 2),
+                   TestFunc(btp.gattc_disc_chrc_uuid, 0, pts.bd_addr(),
+                            MMI.arg_1, MMI.arg_2, MMI.arg_3, start_wid = 29),
+                   TestFunc(btp.gattc_disc_chrc_uuid_rsp, start_wid = 29),
+                   TestFunc(btp.gap_disconn, pts.bd_addr(), 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts.bd_addr(), 1, start_wid = 3)]),
+        #FIXME Verification of data
+        #description: Please confirm IUT receive characteristic descriptors
+        #handle=0x0013 UUID=0x2902  in database.
+        #Click Yes if IUT receive it, otherwise click No.
+        QTestCase("GATT", "TC_GAD_CL_BV_06_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts.bd_addr(), 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts.bd_addr(), 1,
+                            start_wid = 2),
+                   TestFunc(btp.gattc_disc_all_desc, 0, pts.bd_addr(),
+                            MMI.arg_1, MMI.arg_2, start_wid = 31),
+                   TestFunc(btp.gattc_disc_all_desc_rsp, start_wid = 31),
+                   TestFunc(btp.gap_disconn, pts.bd_addr(), 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts.bd_addr(), 1, start_wid = 3)]),
         #QTestCase("GATT", "TC_GAR_CL_BV_01_C",
         #QTestCase("GATT", "TC_GAR_CL_BI_01_C",
         #QTestCase("GATT", "TC_GAR_CL_BI_02_C",
