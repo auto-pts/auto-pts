@@ -1646,44 +1646,472 @@ def test_cases_client(pts_bd_addr):
                    TestFunc(btp.gattc_read_rsp, start_wid = 48),
                    TestFunc(btp.gap_disconn, pts_bd_addr, 0, start_wid = 3),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr, 1, start_wid = 3)]),
-        #QTestCase("GATT", "TC_GAW_CL_BV_01_C",
-        #QTestCase("GATT", "TC_GAW_CL_BV_02_C",
-        #QTestCase("GATT", "TC_GAW_CL_BV_03_C",
-        #QTestCase("GATT", "TC_GAW_CL_BI_02_C",
-        #QTestCase("GATT", "TC_GAW_CL_BI_03_C",
-        #QTestCase("GATT", "TC_GAW_CL_BI_04_C",
-        #QTestCase("GATT", "TC_GAW_CL_BI_05_C",
-        #QTestCase("GATT", "TC_GAW_CL_BI_06_C",
-        #QTestCase("GATT", "TC_GAW_CL_BV_05_C",
-        #QTestCase("GATT", "TC_GAW_CL_BI_07_C",
-        #QTestCase("GATT", "TC_GAW_CL_BI_08_C",
-        #QTestCase("GATT", "TC_GAW_CL_BI_09_C",
-        #QTestCase("GATT", "TC_GAW_CL_BI_11_C",
-        #QTestCase("GATT", "TC_GAW_CL_BI_12_C",
-        #QTestCase("GATT", "TC_GAW_CL_BI_13_C",
-        #QTestCase("GATT", "TC_GAW_CL_BV_08_C",
-        #QTestCase("GATT", "TC_GAW_CL_BI_20_C",
-        #QTestCase("GATT", "TC_GAW_CL_BI_21_C",
-        #QTestCase("GATT", "TC_GAW_CL_BI_22_C",
-        #QTestCase("GATT", "TC_GAW_CL_BI_23_C",
-        #QTestCase("GATT", "TC_GAW_CL_BI_24_C",
-        #QTestCase("GATT", "TC_GAW_CL_BV_09_C",
-        #QTestCase("GATT", "TC_GAW_CL_BI_25_C",
-        #QTestCase("GATT", "TC_GAW_CL_BI_26_C",
-        #QTestCase("GATT", "TC_GAW_CL_BI_27_C",
-        #QTestCase("GATT", "TC_GAW_CL_BI_29_C",
-        #QTestCase("GATT", "TC_GAW_CL_BI_30_C",
-        #QTestCase("GATT", "TC_GAW_CL_BI_31_C",
-        #QTestCase("GATT", "TC_GAW_CL_BI_33_C",
-        #QTestCase("GATT", "TC_GAW_CL_BI_34_C",
-        #QTestCase("GATT", "TC_GAW_CL_BI_35_C",
-        #QTestCase("GATT", "TC_GAW_CL_BI_36_C",
+        QTestCase("GATT", "TC_GAW_CL_BV_01_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts_bd_addr, 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, 1,
+                            start_wid = 2),
+                   TestFunc(btp.gattc_write_without_rsp, 0, pts_bd_addr,
+                            MMI.arg_1, '12', MMI.arg_2, start_wid = 70),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr, 1, start_wid = 3)]),
+        #TODO Get from MMI data length to be send
+        #description: Please send signed write command with handle = '00B1'O
+        #with one byte of any octet value to the PTS.
+        QTestCase("GATT", "TC_GAW_CL_BV_02_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts_bd_addr, 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, 1,
+                            start_wid = 2),
+                   TestFunc(btp.gattc_signed_write, 0, pts_bd_addr,
+                            MMI.arg_1, '12', None, start_wid = 72),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr, 1, start_wid = 3)]),
+        QTestCase("GATT", "TC_GAW_CL_BV_03_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts_bd_addr, 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, 1,
+                            start_wid = 2),
+                   TestFunc(btp.gattc_write, 0, pts_bd_addr,
+                            MMI.arg_1, '12', MMI.arg_2, start_wid = 74),
+                   TestFunc(btp.gattc_write_rsp, start_wid = 74),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr, 1, start_wid = 3)]),
+        #TODO Error Response Verification
+        #wid: 61, style: MMI_Style_Yes_No1
+        #description: Please confirm IUT receive Invalid handle error.
+        #Click Yes if IUT receive it, othwise click No.
+        QTestCase("GATT", "TC_GAW_CL_BI_02_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts_bd_addr, 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, 1,
+                            start_wid = 2),
+                   TestFunc(btp.gattc_write, 0, pts_bd_addr,
+                            MMI.arg_1, '12', MMI.arg_2, start_wid = 74),
+                   TestFunc(btp.gattc_write_rsp, start_wid = 74),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr, 1, start_wid = 3)]),
+        #TODO Error Response Verification
+        #wid: 62, style: MMI_Style_Yes_No1
+        #description: Please confirm IUT receive write is not permitted error.
+        #Click Yes if IUT receive it, othwise click No.
+        QTestCase("GATT", "TC_GAW_CL_BI_03_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts_bd_addr, 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, 1,
+                            start_wid = 2),
+                   TestFunc(btp.gattc_write, 0, pts_bd_addr,
+                            MMI.arg_1, '12', MMI.arg_2, start_wid = 74),
+                   TestFunc(btp.gattc_write_rsp, start_wid = 74),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr, 1, start_wid = 3)]),
+        #TODO Error Response Verification
+        #wid: 63, style: MMI_Style_Yes_No1
+        #description: Please confirm IUT receive write authorization error.
+        #Click Yes if IUT receive it, othwise click No.
+        QTestCase("GATT", "TC_GAW_CL_BI_04_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts_bd_addr, 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, 1,
+                            start_wid = 2),
+                   TestFunc(btp.gattc_write, 0, pts_bd_addr,
+                            MMI.arg_1, '12', MMI.arg_2, start_wid = 74),
+                   TestFunc(btp.gattc_write_rsp, start_wid = 74),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr, 1, start_wid = 3)]),
+        #TODO Error Response Verification
+        #wid: 64, style: MMI_Style_Yes_No1
+        #description: Please confirm IUT receive write authentication error.
+        #Click Yes if IUT receive it, othwise click No.
+        QTestCase("GATT", "TC_GAW_CL_BI_05_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts_bd_addr, 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, 1,
+                            start_wid = 2),
+                   TestFunc(btp.gattc_write, 0, pts_bd_addr,
+                            MMI.arg_1, '12', MMI.arg_2, start_wid = 74),
+                   TestFunc(btp.gattc_write_rsp, start_wid = 74),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr, 1, start_wid = 3)]),
+        #TODO Error Response Verification
+        #wid: 65, style: MMI_Style_Yes_No1
+        #description: Please confirm IUT receive write encryption key size error.
+        #Click Yes if IUT receive it, othwise click No.
+        QTestCase("GATT", "TC_GAW_CL_BI_06_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts_bd_addr, 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, 1,
+                            start_wid = 2),
+                   TestFunc(btp.gattc_write, 0, pts_bd_addr,
+                            MMI.arg_1, '12', MMI.arg_2, start_wid = 74),
+                   TestFunc(btp.gattc_write_rsp, start_wid = 74),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr, 1, start_wid = 3)]),
+        QTestCase("GATT", "TC_GAW_CL_BV_05_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts_bd_addr, 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, 1,
+                            start_wid = 2),
+                   TestFunc(btp.gattc_write_long, 0, pts_bd_addr,
+                            MMI.arg_1, 0, '12', MMI.arg_2, start_wid = 76),
+                   TestFunc(btp.gattc_write_long_rsp, start_wid = 76),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr, 1, start_wid = 3)]),
+        #TODO Error Response Verification
+        #wid: 61, style: MMI_Style_Yes_No1
+        #description: Please confirm IUT receive Invalid handle error.
+        #Click Yes if IUT receive it, othwise click No.
+        #PTS issue #14328, #14329
+        QTestCase("GATT", "TC_GAW_CL_BI_07_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts_bd_addr, 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, 1,
+                            start_wid = 2),
+                   TestFunc(btp.gattc_write_long, 0, pts_bd_addr,
+                            MMI.arg_1, 0, '12' * 23, MMI.arg_2, start_wid = 76),
+                   TestFunc(btp.gattc_write_long_rsp, start_wid = 76),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr, 1, start_wid = 3)]),
+        #TODO Error Response Verification
+        #wid: 62, style: MMI_Style_Yes_No1
+        #description: Please confirm IUT receive write is not permitted error.
+        #Click Yes if IUT receive it, othwise click No.
+        #PTS issue #14328
+        QTestCase("GATT", "TC_GAW_CL_BI_08_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts_bd_addr, 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, 1,
+                            start_wid = 2),
+                   TestFunc(btp.gattc_write_long, 0, pts_bd_addr,
+                            MMI.arg_1, 0, '12', MMI.arg_2, start_wid = 76),
+                   TestFunc(btp.gattc_write_long_rsp, start_wid = 76),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr, 1, start_wid = 3)]),
+        #TODO Error Response Verification
+        #wid: 66, style: MMI_Style_Yes_No1
+        #description: Please confirm IUT receive Invalid offset error.
+        #Click Yes if IUT receive it, othwise click No.
+        QTestCase("GATT", "TC_GAW_CL_BI_09_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts_bd_addr, 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, 1,
+                            start_wid = 2),
+                   TestFunc(btp.gattc_write_long, 0, pts_bd_addr,
+                            MMI.arg_1, MMI.arg_2, '12', None, start_wid = 77),
+                   TestFunc(btp.gattc_write_long_rsp, start_wid = 77),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr, 1, start_wid = 3)]),
+        #TODO Error Response Verification
+        #wid: 63, style: MMI_Style_Yes_No1
+        #description: Please confirm IUT receive write authorization error.
+        #Click Yes if IUT receive it, othwise click No.
+        QTestCase("GATT", "TC_GAW_CL_BI_11_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts_bd_addr, 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, 1,
+                            start_wid = 2),
+                   TestFunc(btp.gattc_write_long, 0, pts_bd_addr,
+                            MMI.arg_1, 0, '12', MMI.arg_2, start_wid = 76),
+                   TestFunc(btp.gattc_write_long_rsp, start_wid = 76),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr, 1, start_wid = 3)]),
+        #TODO Error Response Verification
+        #wid: 64, style: MMI_Style_Yes_No1
+        #description: Please confirm IUT receive write authentication error.
+        #Click Yes if IUT receive it, othwise click No.
+        QTestCase("GATT", "TC_GAW_CL_BI_12_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts_bd_addr, 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, 1,
+                            start_wid = 2),
+                   TestFunc(btp.gattc_write_long, 0, pts_bd_addr,
+                            MMI.arg_1, 0, '12', MMI.arg_2, start_wid = 76),
+                   TestFunc(btp.gattc_write_long_rsp, start_wid = 76),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr, 1, start_wid = 3)]),
+        #TODO Error Response Verification
+        #wid: 65, style: MMI_Style_Yes_No1
+        #description: Please confirm IUT receive write encryption key size error.
+        #Click Yes if IUT receive it, othwise click No.
+        QTestCase("GATT", "TC_GAW_CL_BI_13_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts_bd_addr, 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, 1,
+                            start_wid = 2),
+                   TestFunc(btp.gattc_write_long, 0, pts_bd_addr,
+                            MMI.arg_1, 0, '12', MMI.arg_2, start_wid = 76),
+                   TestFunc(btp.gattc_write_long_rsp, start_wid = 76),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr, 1, start_wid = 3)]),
+        QTestCase("GATT", "TC_GAW_CL_BV_08_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts_bd_addr, 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, 1,
+                            start_wid = 2),
+                   TestFunc(btp.gattc_write, 0, pts_bd_addr,
+                            MMI.arg_1, '12', MMI.arg_2, start_wid = 74),
+                   TestFunc(btp.gattc_write_rsp, start_wid = 74),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr, 1, start_wid = 3)]),
+        #TODO Error Response Verification
+        #wid: 61, style: MMI_Style_Yes_No1
+        #description: Please confirm IUT receive Invalid handle error.
+        #Click Yes if IUT receive it, othwise click No.
+        QTestCase("GATT", "TC_GAW_CL_BI_20_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts_bd_addr, 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, 1,
+                            start_wid = 2),
+                   TestFunc(btp.gattc_write, 0, pts_bd_addr,
+                            MMI.arg_1, '12', MMI.arg_2, start_wid = 74),
+                   TestFunc(btp.gattc_write_rsp, start_wid = 74),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr, 1, start_wid = 3)]),
+        #TODO Error Response Verification
+        #wid: 62, style: MMI_Style_Yes_No1
+        #description: Please confirm IUT receive write is not permitted error.
+        #Click Yes if IUT receive it, othwise click No.
+        QTestCase("GATT", "TC_GAW_CL_BI_21_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts_bd_addr, 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, 1,
+                            start_wid = 2),
+                   TestFunc(btp.gattc_write, 0, pts_bd_addr,
+                            MMI.arg_1, '12', MMI.arg_2, start_wid = 74),
+                   TestFunc(btp.gattc_write_rsp, start_wid = 74),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr, 1, start_wid = 3)]),
+        #TODO Error Response Verification
+        #wid: 63, style: MMI_Style_Yes_No1
+        #description: Please confirm IUT receive write authorization error.
+        #Click Yes if IUT receive it, othwise click No.
+        QTestCase("GATT", "TC_GAW_CL_BI_22_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts_bd_addr, 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, 1,
+                            start_wid = 2),
+                   TestFunc(btp.gattc_write, 0, pts_bd_addr,
+                            MMI.arg_1, '12', MMI.arg_2, start_wid = 74),
+                   TestFunc(btp.gattc_write_rsp, start_wid = 74),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr, 1, start_wid = 3)]),
+        #TODO Error Response Verification
+        #wid: 64, style: MMI_Style_Yes_No1
+        #description: Please confirm IUT receive write authentication error.
+        #Click Yes if IUT receive it, othwise click No.
+        QTestCase("GATT", "TC_GAW_CL_BI_23_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts_bd_addr, 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, 1,
+                            start_wid = 2),
+                   TestFunc(btp.gattc_write, 0, pts_bd_addr,
+                            MMI.arg_1, '12', MMI.arg_2, start_wid = 74),
+                   TestFunc(btp.gattc_write_rsp, start_wid = 74),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr, 1, start_wid = 3)]),
+        #TODO Error Response Verification
+        #wid: 65, style: MMI_Style_Yes_No1
+        #description: Please confirm IUT receive write encryption key size error.
+        #Click Yes if IUT receive it, othwise click No.
+        QTestCase("GATT", "TC_GAW_CL_BI_24_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts_bd_addr, 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, 1,
+                            start_wid = 2),
+                   TestFunc(btp.gattc_write, 0, pts_bd_addr,
+                            MMI.arg_1, '12', MMI.arg_2, start_wid = 74),
+                   TestFunc(btp.gattc_write_rsp, start_wid = 74),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr, 1, start_wid = 3)]),
+        QTestCase("GATT", "TC_GAW_CL_BV_09_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts_bd_addr, 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, 1,
+                            start_wid = 2),
+                   TestFunc(btp.gattc_write_long, 0, pts_bd_addr,
+                            MMI.arg_1, 0, '12', MMI.arg_2, start_wid = 76),
+                   TestFunc(btp.gattc_write_long_rsp, start_wid = 76),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr, 1, start_wid = 3)]),
+        #TODO Error Response Verification
+        #wid: 61, style: MMI_Style_Yes_No1
+        #description: Please confirm IUT receive Invalid handle error.
+        #Click Yes if IUT receive it, othwise click No.
+        #PTS issue #14328
+        QTestCase("GATT", "TC_GAW_CL_BI_25_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts_bd_addr, 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, 1,
+                            start_wid = 2),
+                   TestFunc(btp.gattc_write_long, 0, pts_bd_addr,
+                            MMI.arg_1, 0, '12', MMI.arg_2, start_wid = 76),
+                   TestFunc(btp.gattc_write_long_rsp, start_wid = 76),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr, 1, start_wid = 3)]),
+        #TODO Error Response Verification
+        #wid: 62, style: MMI_Style_Yes_No1
+        #PTS issue #14328
+        #description: Please confirm IUT receive write is not permitted error.
+        #Click Yes if IUT receive it, othwise click No.
+        QTestCase("GATT", "TC_GAW_CL_BI_26_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts_bd_addr, 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, 1,
+                            start_wid = 2),
+                   TestFunc(btp.gattc_write_long, 0, pts_bd_addr,
+                            MMI.arg_1, 0, '12', MMI.arg_2, start_wid = 76),
+                   TestFunc(btp.gattc_write_long_rsp, start_wid = 76),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr, 1, start_wid = 3)]),
+        #TODO Error Response Verification
+        #wid: 66, style: MMI_Style_Yes_No1
+        #description: Please confirm IUT receive Invalid offset error.
+        #Click Yes if IUT receive it, othwise click No.
+        QTestCase("GATT", "TC_GAW_CL_BI_27_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts_bd_addr, 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, 1,
+                            start_wid = 2),
+                   TestFunc(btp.gattc_write_long, 0, pts_bd_addr,
+                            MMI.arg_1, MMI.arg_2, '12', None, start_wid = 77),
+                   TestFunc(btp.gattc_write_long_rsp, start_wid = 77),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr, 1, start_wid = 3)]),
+        #wid: 63, style: MMI_Style_Yes_No1
+        #description: Please confirm IUT receive write authorization error.
+        #Click Yes if IUT receive it, othwise click No.
+        QTestCase("GATT", "TC_GAW_CL_BI_29_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts_bd_addr, 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, 1,
+                            start_wid = 2),
+                   TestFunc(btp.gattc_write_long, 0, pts_bd_addr,
+                            MMI.arg_1, 0, '12', MMI.arg_2, start_wid = 76),
+                   TestFunc(btp.gattc_write_long_rsp, start_wid = 76),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr, 1, start_wid = 3)]),
+        #TODO Error Response Verification
+        #wid: 64, style: MMI_Style_Yes_No1
+        #description: Please confirm IUT receive write authentication error.
+        #Click Yes if IUT receive it, othwise click No.
+        #PTS issue #14329
+        QTestCase("GATT", "TC_GAW_CL_BI_30_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts_bd_addr, 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, 1,
+                            start_wid = 2),
+                   TestFunc(btp.gattc_write_long, 0, pts_bd_addr,
+                            MMI.arg_1, 0, '12', MMI.arg_2, start_wid = 76),
+                   TestFunc(btp.gattc_write_long_rsp, start_wid = 76),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr, 1, start_wid = 3)]),
+        #TODO Error Response Verification
+        #wid: 65, style: MMI_Style_Yes_No1
+        #description: Please confirm IUT receive write encryption key size error.
+        #Click Yes if IUT receive it, othwise click No.
+        QTestCase("GATT", "TC_GAW_CL_BI_31_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts_bd_addr, 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, 1,
+                            start_wid = 2),
+                   TestFunc(btp.gattc_write_long, 0, pts_bd_addr,
+                            MMI.arg_1, 0, '12', MMI.arg_2, start_wid = 76),
+                   TestFunc(btp.gattc_write_long_rsp, start_wid = 76),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr, 1, start_wid = 3)]),
+        #TODO Error Response Verification
+        #wid: 67, style: MMI_Style_Yes_No1
+        #description: Please confirm IUT receive Invalid attribute value length error.
+        #Click Yes if IUT receive it, othwise click No.
+        QTestCase("GATT", "TC_GAW_CL_BI_33_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts_bd_addr, 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, 1,
+                            start_wid = 2),
+                   TestFunc(btp.gattc_write, 0, pts_bd_addr,
+                            MMI.arg_1, '1234', MMI.arg_2, start_wid = 80),
+                   TestFunc(btp.gattc_write_rsp, start_wid = 80),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr, 1, start_wid = 3)]),
+        #TODO Error Response Verification
+        #wid: 67, style: MMI_Style_Yes_No1
+        #description: Please confirm IUT receive Invalid attribute value length error.
+        #Click Yes if IUT receive it, othwise click No.
+        QTestCase("GATT", "TC_GAW_CL_BI_34_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts_bd_addr, 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, 1,
+                            start_wid = 2),
+                   TestFunc(btp.gattc_write_long, 0, pts_bd_addr,
+                            MMI.arg_1, 0, '1234', MMI.arg_2, start_wid = 81),
+                   TestFunc(btp.gattc_write_long_rsp, start_wid = 81),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr, 1, start_wid = 3)]),
+        #TODO Error Response Verification
+        #wid: 67, style: MMI_Style_Yes_No1
+        #description: Please confirm IUT receive Invalid attribute value length error.
+        #Click Yes if IUT receive it, othwise click No.
+        QTestCase("GATT", "TC_GAW_CL_BI_35_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts_bd_addr, 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, 1,
+                            start_wid = 2),
+                   TestFunc(btp.gattc_write, 0, pts_bd_addr,
+                            MMI.arg_1, '1234', MMI.arg_2, start_wid = 80),
+                   TestFunc(btp.gattc_write_rsp, start_wid = 80),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr, 1, start_wid = 3)]),
+        #TODO Error Response Verification
+        #wid: 67, style: MMI_Style_Yes_No1
+        #description: Please confirm IUT receive Invalid attribute value length error.
+        #Click Yes if IUT receive it, othwise click No.
+        QTestCase("GATT", "TC_GAW_CL_BI_36_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts_bd_addr, 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, 1,
+                            start_wid = 2),
+                   TestFunc(btp.gattc_write_long, 0, pts_bd_addr,
+                            MMI.arg_1, 0, '1234', MMI.arg_2, start_wid = 81),
+                   TestFunc(btp.gattc_write_long_rsp, start_wid = 81),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr, 1, start_wid = 3)]),
         #QTestCase("GATT", "TC_GAN_CL_BV_01_C",
         #QTestCase("GATT", "TC_GAI_CL_BV_01_C",
         #QTestCase("GATT", "TC_GAS_CL_BV_01_C",
         #QTestCase("GATT", "TC_GAT_CL_BV_01_C",
         #QTestCase("GATT", "TC_GAT_CL_BV_02_C",
-
     ]
 
     return test_cases
