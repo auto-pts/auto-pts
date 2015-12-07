@@ -1266,6 +1266,11 @@ def test_cases_client(pts_bdaddr):
         #QTestCase("GATT", "TC_GAW_CL_BI_34_C",
         #QTestCase("GATT", "TC_GAW_CL_BI_35_C",
         #QTestCase("GATT", "TC_GAW_CL_BI_36_C",
+        #QTestCase("GATT", "TC_GAN_CL_BV_01_C",
+        #QTestCase("GATT", "TC_GAI_CL_BV_01_C",
+        #QTestCase("GATT", "TC_GAS_CL_BV_01_C",
+        #QTestCase("GATT", "TC_GAT_CL_BV_01_C",
+        #QTestCase("GATT", "TC_GAT_CL_BV_02_C",
     ]
 
     return test_cases
