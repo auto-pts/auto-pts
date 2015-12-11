@@ -47,8 +47,11 @@ def main():
 
     autoprojects.iutctl.init(args.kernel_image)
 
+    pts_bdaddr = proxy.bd_addr()
+
     test_cases = autoprojects.gap.test_cases()
     test_cases += autoprojects.gatt.test_cases(proxy)
+    test_cases += autoprojects.sm.test_cases(pts_bdaddr)
 
     autoptsclient.run_test_cases(proxy, test_cases)
 

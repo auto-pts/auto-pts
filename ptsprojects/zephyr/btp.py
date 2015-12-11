@@ -130,6 +130,9 @@ def gap_adv_ind_on():
 
     zephyrctl.btp_socket.send(*GAP['start_adv'])
 
+    #TODO Command response should be checked
+    gap_command_rsp_succ()
+
 def gap_connected_ev(bd_addr = None, bd_addr_type = None):
     logging.debug("%s %r %r", gap_connected_ev.__name__, bd_addr, bd_addr_type)
     zephyrctl = get_zephyr()
