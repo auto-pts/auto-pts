@@ -1176,7 +1176,7 @@ def test_cases_server():
 
     return test_cases
 
-def test_cases_client(pts):
+def test_cases_client(pts_bd_addr):
     """Returns a list of GATT Client test cases
 
     pts -- Instance of PyPTS
@@ -1186,16 +1186,16 @@ def test_cases_client(pts):
         QTestCase("GATT", "TC_GAC_CL_BV_01_C",
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.core_reg_svc_gatts),
-                   TestFunc(btp.gap_conn, pts.bd_addr(), 0, start_wid = 2),
-                   TestFunc(btp.gap_connected_ev, pts.bd_addr(), 1,
+                   TestFunc(btp.gap_conn, pts_bd_addr, 0, start_wid = 2),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, 1,
                             start_wid = 2),
-                   TestFunc(btp.gattc_exchange_mtu, 0, pts.bd_addr(),
+                   TestFunc(btp.gattc_exchange_mtu, 0, pts_bd_addr,
                             start_wid = 12),
-                   TestFunc(btp.gattc_write_long, 0, pts.bd_addr(),
+                   TestFunc(btp.gattc_write_long, 0, pts_bd_addr,
                             MMI.arg_1, 0, '12', MMI.arg_2, start_wid = 69),
                    TestFunc(btp.gattc_write_long_rsp, start_wid = 69),
-                   TestFunc(btp.gap_disconn, pts.bd_addr(), 0, start_wid = 3),
-                   TestFunc(btp.gap_disconnected_ev, pts.bd_addr(), 1, start_wid = 3)]),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, 0, start_wid = 3),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr, 1, start_wid = 3)]),
     ]
 
     return test_cases
