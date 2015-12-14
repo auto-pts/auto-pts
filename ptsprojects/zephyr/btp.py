@@ -106,6 +106,18 @@ class BTPError(Exception):
     """
     pass
 
+def rsp_hdr_check(rcv_hdr, exp_svc_id, exp_op):
+    if rcv_hdr.svc_id != exp_svc_id:
+        raise BTPError("Incorrect service ID: " + str(rcv_hdr.svc_id) +
+                       ", expected: " + str(exp_svc_id) + "!")
+
+    if rcv_hdr.op == btpdef.BTP_STATUS:
+        raise BTPError("Error opcode in response!")
+
+    if exp_op and exp_op != rcv_hdr.op:
+        raise BTPError("Invalid opcode " + str(rcv_hdr.op) +
+                       "in the response, expected: " + str(exp_op) + "!")
+
 def core_reg_svc_gap():
     logging.debug("%s", core_reg_svc_gap.__name__)
 
@@ -774,10 +786,4 @@ def gatt_command_rsp_succ():
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
-    if tuple_hdr.svc_id != btpdef.BTP_SERVICE_ID_GATT:
-        raise BTPError(
-            "Incorrect service ID %r  in response, should be %r!",
-            tuple_hdr.svc_id, btpdef.BTP_SERVICE_ID_GATT)
-
-    if tuple_hdr.op == btpdef.BTP_STATUS:
-        raise BTPError("Error opcode in response!")
+    rsp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT, None)
