@@ -47,6 +47,8 @@ def main():
 
     autoprojects.iutctl.init(args.kernel_image)
 
+    # in some networks initial connection setup is very slow, so, contact the
+    # server only once to get data needed to create test cases
     pts_bdaddr = proxy.bd_addr()
 
     test_cases = autoprojects.gap.test_cases()
