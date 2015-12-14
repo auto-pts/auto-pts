@@ -415,6 +415,15 @@ class PyPTS:
 
         If an error occurs when running test case returns code of an error as a
         string, otherwise returns an empty string
+
+        [1] 32 bit IronPython converts error codes to long integer, which is
+            not supported by xmlrpc:
+
+            Fault: <Fault 1: "<type 'exceptions.OverflowError'>:long int
+            exceeds XML-RPC limits">
+
+            Hence, error codes are passed over xmlrpc as strings
+
         """
 
         log("Starting %s %s %s", self.run_test_case.__name__, project_name,
@@ -428,12 +437,15 @@ class PyPTS:
         except System.Runtime.InteropServices.COMException as exc:
             log("Exception in %s", self.run_test_case.__name__)
             log(exc)
-            # timeout set by SetPTSCallTimeout expired, exception is thrown
-            # with HRESULT PTSCONTROL_E_TESTCASE_TIMEOUT (0x849C0017)
-            hresult = System.UInt32(exc.HResult)
-            if hresult.Equals(System.UInt32(0x849C0017)):
-                error_code = "PTSCONTROL_E_TESTCASE_TIMEOUT"
+
+            hresult = int(System.UInt32(exc.HResult))
+            error_code = ptstypes.PTSCONTROL_E_STRING[hresult] # see [1]
+
+            # timeout set by SetPTSCallTimeout expired
+            if hresult == ptstypes.PTSCONTROL_E_TESTCASE_TIMEOUT:
                 self.recover_from_timeout()
+            else:
+                self.restart_pts()
 
         log("Done %s %s %s out: %s", self.run_test_case.__name__,
             project_name, test_case_name, error_code)
