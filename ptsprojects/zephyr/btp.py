@@ -73,9 +73,28 @@ GATTS = {
 GATTC = {
     "exchange_mtu": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_EXCHANGE_MTU,
                      CONTROLLER_INDEX),
-
-    "write_long" : (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_WRITE_LONG,
-                    CONTROLLER_INDEX),
+    "disc_prim_uuid": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_DISC_PRIM_UUID,
+                       CONTROLLER_INDEX),
+    "find_included": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_FIND_INCLUDED,
+                      CONTROLLER_INDEX),
+    "disc_all_chrc": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_DISC_ALL_CHRC,
+                      CONTROLLER_INDEX),
+    "disc_chrc_uuid": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_DISC_CHRC_UUID,
+                       CONTROLLER_INDEX),
+    "disc_all_desc": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_DISC_ALL_DESC,
+                      CONTROLLER_INDEX),
+    "read": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_READ, CONTROLLER_INDEX),
+    "read_long": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_READ_LONG,
+                  CONTROLLER_INDEX),
+    "read_multiple": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_READ_MULTIPLE,
+                      CONTROLLER_INDEX),
+    "write_without_rsp": (btpdef.BTP_SERVICE_ID_GATT,
+                          btpdef.GATT_WRITE_WITHOUT_RSP, CONTROLLER_INDEX),
+    "signed_write": (btpdef.BTP_SERVICE_ID_GATT,
+                     btpdef.GATT_SIGNED_WRITE_WITHOUT_RSP, CONTROLLER_INDEX),
+    "write": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_WRITE, CONTROLLER_INDEX),
+    "write_long": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_WRITE_LONG,
+                   CONTROLLER_INDEX),
 }
 
 class BTPError(Exception):
@@ -433,40 +452,334 @@ def gattc_exchange_mtu(bd_addr = None, bd_addr_type = None):
 
     gatt_command_rsp_succ()
 
-def gattc_write_long(bd_addr = None, bd_addr_type = None, hdl = None,
-                     offset = None, val = None, length = None):
-    logging.debug("%s %r %r %r %r %r", gattc_write_long.__name__,
-                  bd_addr_type, hdl, offset, val, length)
 
-    hdl = int(hdl, 16) # convert string in hex format to int
+def gattc_disc_prim_uuid(bd_addr_type=None, bd_addr=None, uuid=None):
+    logging.debug("%s %r %r %r", gattc_disc_prim_uuid.__name__, bd_addr_type,
+                  bd_addr, uuid)
+    zephyrctl = get_zephyr()
+
+    data_ba = bytearray()
+
+    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    uuid_byte_table = [uuid[i:i+2] for i in range(0, len(uuid), 2)]
+    uuid_swp = ''.join([c[1] + c[0] for c in zip(uuid_byte_table[::2], uuid_byte_table[1::2])])
+    uuid_ba = binascii.unhexlify(bytearray(uuid_swp))
+
+    data_ba.extend(chr(bd_addr_type))
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(chr(len(uuid) / 2))
+    data_ba.extend(uuid_ba)
+
+    zephyrctl.btp_socket.send(*GATTC['disc_prim_uuid'], data=data_ba)
+
+
+def gattc_find_included(bd_addr_type=None, bd_addr=None, start_hdl=None,
+                        stop_hdl=None):
+    logging.debug("%s %r %r %r %r", gattc_find_included.__name__,
+                  bd_addr_type, bd_addr, start_hdl, stop_hdl)
+    zephyrctl = get_zephyr()
+
+    if type(stop_hdl) is str:
+        stop_hdl = int(stop_hdl, 16)
+
+    if type(start_hdl) is str:
+        start_hdl = int(start_hdl, 16)
+
+    data_ba = bytearray()
+
+    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    start_hdl_ba = struct.pack('H', start_hdl)
+    stop_hdl_ba = struct.pack('H', stop_hdl)
+
+    data_ba.extend(chr(bd_addr_type))
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(start_hdl_ba)
+    data_ba.extend(stop_hdl_ba)
+
+    zephyrctl.btp_socket.send(*GATTC['find_included'], data=data_ba)
+
+
+def gattc_disc_all_chrc(bd_addr_type=None, bd_addr=None, start_hdl=None,
+                        stop_hdl=None):
+    logging.debug("%s %r %r %r %r", gattc_disc_all_chrc.__name__,
+                  bd_addr_type, bd_addr, start_hdl, stop_hdl)
+    zephyrctl = get_zephyr()
+
+    if type(start_hdl) is str:
+        start_hdl = int(start_hdl, 16)
+
+    if type(stop_hdl) is str:
+        stop_hdl = int(stop_hdl, 16)
+
+    data_ba = bytearray()
+
+    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    start_hdl_ba = struct.pack('H', start_hdl)
+    stop_hdl_ba = struct.pack('H', stop_hdl)
+
+    data_ba.extend(chr(bd_addr_type))
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(start_hdl_ba)
+    data_ba.extend(stop_hdl_ba)
+
+    zephyrctl.btp_socket.send(*GATTC['disc_all_chrc'], data=data_ba)
+
+
+def gattc_disc_chrc_uuid(bd_addr_type=None, bd_addr=None, start_hdl=None,
+                         stop_hdl=None, uuid=None):
+    logging.debug("%s %r %r %r %r %r", gattc_disc_chrc_uuid.__name__,
+                  bd_addr_type, bd_addr, start_hdl, stop_hdl, uuid)
+    zephyrctl = get_zephyr()
+
+    if type(stop_hdl) is str:
+        stop_hdl = int(stop_hdl, 16)
+
+    if type(start_hdl) is str:
+        start_hdl = int(start_hdl, 16)
+
+    data_ba = bytearray()
+
+    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    start_hdl_ba = struct.pack('H', start_hdl)
+    stop_hdl_ba = struct.pack('H', stop_hdl)
+    uuid_byte_table = [uuid[i:i+2] for i in range(0, len(uuid), 2)]
+    uuid_swp = ''.join([c[1] + c[0] for c in zip(uuid_byte_table[::2], uuid_byte_table[1::2])])
+    uuid_ba = binascii.unhexlify(bytearray(uuid_swp))
+
+    data_ba.extend(chr(bd_addr_type))
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(start_hdl_ba)
+    data_ba.extend(stop_hdl_ba)
+    data_ba.extend(chr(len(uuid) / 2))
+    data_ba.extend(uuid_ba)
+
+    zephyrctl.btp_socket.send(*GATTC['disc_chrc_uuid'], data=data_ba)
+
+
+def gattc_disc_all_desc(bd_addr_type=None, bd_addr=None, start_hdl=None,
+                        stop_hdl=None):
+    logging.debug("%s %r %r %r %r", gattc_disc_all_desc.__name__,
+                  bd_addr_type, bd_addr, start_hdl, stop_hdl)
+    zephyrctl = get_zephyr()
+
+    if type(start_hdl) is str:
+        start_hdl = int(start_hdl, 16)
+
+    if type(stop_hdl) is str:
+        stop_hdl = int(stop_hdl, 16)
+
+    data_ba = bytearray()
+
+    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    start_hdl_ba = struct.pack('H', start_hdl)
+    stop_hdl_ba = struct.pack('H', stop_hdl)
+
+    data_ba.extend(chr(bd_addr_type))
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(start_hdl_ba)
+    data_ba.extend(stop_hdl_ba)
+
+    zephyrctl.btp_socket.send(*GATTC['disc_all_desc'], data=data_ba)
+
+
+def gattc_read(bd_addr_type=None, bd_addr=None, hdl=None):
+    logging.debug("%s %r %r %r", gattc_read.__name__, bd_addr_type, bd_addr,
+                  hdl)
+    zephyrctl = get_zephyr()
+
+    data_ba = bytearray()
+
+    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    if type(hdl) is str:
+        hdl = int(hdl, 16)
+    hdl_ba = struct.pack('H', hdl)
+
+    data_ba.extend(chr(bd_addr_type))
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(hdl_ba)
+
+    zephyrctl.btp_socket.send(*GATTC['read'], data=data_ba)
+
+
+def gattc_read_long(bd_addr_type=None, bd_addr=None, hdl=None, off=None,
+                    modif_off=None):
+    logging.debug("%s %r %r %r %r %r", gattc_read_long.__name__, bd_addr_type,
+                  bd_addr, hdl, off, modif_off)
+    zephyrctl = get_zephyr()
+
+    data_ba = bytearray()
+
+    if type(off) is str:
+        off = int(off, 16)
+    if modif_off is not None:
+        off += modif_off
+    if type(hdl) is str:
+        hdl = int(hdl, 16)
+
+    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    hdl_ba = struct.pack('H', hdl)
+    off_ba = struct.pack('H', off)
+
+    data_ba.extend(chr(bd_addr_type))
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(hdl_ba)
+    data_ba.extend(off_ba)
+
+    zephyrctl.btp_socket.send(*GATTC['read_long'], data=data_ba)
+
+
+def gattc_read_multiple(bd_addr_type=None, bd_addr=None, hdls=None):
+    logging.debug("%s %r %r %r", gattc_read_multiple.__name__, bd_addr_type,
+                  bd_addr, hdls)
+    zephyrctl = get_zephyr()
+
+    data_ba = bytearray()
+
+    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    hdls_cnt_ba = struct.pack('H', len(hdls))
+    hdls = ''.join(hdl for hdl in hdls)
+    hdls_byte_table = [hdls[i:i+2] for i in range(0, len(hdls), 2)]
+    hdls_swp = ''.join([c[1] + c[0] for c in zip(hdls_byte_table[::2],
+                       hdls_byte_table[1::2])])
+    hdls_ba = binascii.unhexlify(bytearray(hdls_swp))
+
+    data_ba.extend(chr(bd_addr_type))
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(hdls_cnt_ba)
+    data_ba.extend(hdls_ba)
+
+    zephyrctl.btp_socket.send(*GATTC['read_multiple'], data=data_ba)
+
+
+def gattc_write_without_rsp(bd_addr_type=None, bd_addr=None, hdl=None,
+                            val=None, val_mtp=None):
+    logging.debug("%s %r %r %r %r %r", gattc_write_without_rsp.__name__,
+                  bd_addr_type, bd_addr, hdl, val, mtp)
+    zephyrctl = get_zephyr()
+
+    if type(hdl) is str:
+        hdl = int(hdl, 16)
+
+    if mtp:
+        val *= int(mtp)
+
+    data_ba = bytearray()
+
+    val_len = len(val) / 2
+
+    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    hdl_ba = struct.pack('H', hdl)
+    val_len_ba = struct.pack('H', val_len)
+    val_ba = binascii.unhexlify(bytearray(val))
+
+    data_ba.extend(chr(bd_addr_type))
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(hdl_ba)
+    data_ba.extend(val_len_ba)
+    data_ba.extend(val_ba)
+
+    zephyrctl.btp_socket.send(*GATTC['write_without_rsp'], data=data_ba)
+
+    gatt_command_rsp_succ()
+
+
+def gattc_signed_write(bd_addr_type=None, bd_addr=None, hdl=None,
+                       val=None, val_mtp=None):
+    logging.debug("%s %r %r %r %r %r", gattc_signed_write.__name__,
+                  bd_addr_type, bd_addr, hdl, val, mtp)
+    zephyrctl = get_zephyr()
+
+    if type(hdl) is str:
+        hdl = int(hdl, 16)
+
+    if mtp:
+        val *= int(mtp)
+
+    data_ba = bytearray()
+
+    val_len = len(val) / 2
+
+    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+
+    hdl_ba = struct.pack('H', hdl)
+    val_len_ba = struct.pack('H', val_len)
+    val_ba = binascii.unhexlify(bytearray(val))
+
+    data_ba.extend(chr(bd_addr_type))
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(hdl_ba)
+    data_ba.extend(val_len_ba)
+    data_ba.extend(val_ba)
+
+    zephyrctl.btp_socket.send(*GATTC['signed_write'], data=data_ba)
+
+    gatt_command_rsp_succ()
+
+
+def gattc_write(bd_addr_type=None, bd_addr=None, hdl=None, val=None,
+                val_mtp=None):
+    logging.debug("%s %r %r %r %r %r", gattc_write.__name__, bd_addr_type,
+                  bd_addr, hdl, val, mtp)
+    zephyrctl = get_zephyr()
+
+    if type(hdl) is str:
+        hdl = int(hdl, 16)
+
+    if mtp:
+        val *= int(mtp)
+
+    data_ba = bytearray()
+
+    val_len = len(val) / 2
+
+    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    hdl_ba = struct.pack('H', hdl)
+    val_len_ba = struct.pack('H', val_len)
+    val_ba = binascii.unhexlify(bytearray(val))
+
+    data_ba.extend(chr(bd_addr_type))
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(hdl_ba)
+    data_ba.extend(val_len_ba)
+    data_ba.extend(val_ba)
+
+    zephyrctl.btp_socket.send(*GATTC['write'], data=data_ba)
+
+
+def gattc_write_long(bd_addr_type=None, bd_addr=None, hdl=None,
+                     off=None, val=None, length=None):
+    logging.debug("%s %r %r %r %r %r", gattc_write_long.__name__,
+                  bd_addr_type, hdl, off, val, length)
+
+    if type(hdl) is str:
+        hdl = int(hdl, 16)  # convert string in hex format to int
+
+    if type(off) is str:
+        off = int(off, 16)
 
     if length:
         val *= int(length)
 
     zephyrctl = get_zephyr()
 
-    data_ba = bytearray()
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
-
-    data_ba.extend(chr(bd_addr_type))
-    data_ba.extend(bd_addr_ba)
-
-    hdl_ba = struct.pack('H', hdl)
-    data_ba.extend(hdl_ba)
-
-    offset_ba = struct.pack('H', offset)
-    data_ba.extend(offset_ba)
-
     val_len = len(val) / 2
+
+    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    hdl_ba = struct.pack('H', hdl)
     val_len_ba = struct.pack('H', val_len)
+    off_ba = struct.pack('H', off)
     val_ba = binascii.unhexlify(bytearray(val))
 
+    data_ba = bytearray()
+    data_ba.extend(chr(bd_addr_type))
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(hdl_ba)
+    data_ba.extend(off_ba)
     data_ba.extend(val_len_ba)
     data_ba.extend(val_ba)
 
-    zephyrctl.btp_socket.send(*GATTC['write_long'], data = data_ba)
+    zephyrctl.btp_socket.send(*GATTC['write_long'], data=data_ba)
 
-    gatt_command_rsp_succ()
 
 def gatt_command_rsp_succ():
     logging.debug("%s", gatt_command_rsp_succ.__name__)
