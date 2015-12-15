@@ -311,6 +311,9 @@ def gatts_add_inc_svc(hdl = None):
 
     zephyrctl = get_zephyr()
 
+    if type(hdl) is str:
+        hdl = int(hdl, 16)
+
     data_ba = bytearray()
     hdl_ba = struct.pack('H', hdl)
     data_ba.extend(hdl_ba)
@@ -324,6 +327,9 @@ def gatts_add_char(hdl = None, prop = None, perm = None, uuid = None):
                   uuid)
 
     zephyrctl = get_zephyr()
+
+    if type(hdl) is str:
+        hdl = int(hdl, 16)
 
     data_ba = bytearray()
     hdl_ba = struct.pack('H', hdl)
@@ -346,6 +352,9 @@ def gatts_set_val(hdl = None, val = None):
 
     zephyrctl = get_zephyr()
 
+    if type(hdl) is str:
+        hdl = int(hdl, 16)
+
     val_len = len(val) / 2
 
     data_ba = bytearray()
@@ -365,6 +374,9 @@ def gatts_add_desc(hdl = None, perm = None, uuid = None):
     logging.debug("%s %r %r %r", gatts_add_desc.__name__, hdl, perm, uuid)
 
     zephyrctl = get_zephyr()
+
+    if type(hdl) is str:
+        hdl = int(hdl, 16)
 
     data_ba = bytearray()
     hdl_ba = struct.pack('H', hdl)
@@ -393,6 +405,9 @@ def gatts_set_enc_key_size(hdl = None, enc_key_size = None):
     logging.debug("%s %r %r", gatts_set_enc_key_size.__name__, hdl, enc_key_size)
 
     zephyrctl = get_zephyr()
+
+    if type(hdl) is str:
+        hdl = int(hdl, 16)
 
     data_ba = bytearray()
     hdl_ba = struct.pack('H', hdl)
