@@ -31,6 +31,9 @@ def parse_args():
     arg_parser.add_argument("--bd-addr",
                             help = "Clients bluetooth address")
 
+    arg_parser.add_argument("--pts-debug", action='store_true', default=False,
+                            help = "Enable PTS debug logs")
+
     args = arg_parser.parse_args()
 
     return args
@@ -43,7 +46,7 @@ def main():
     args = parse_args()
 
     proxy = autoptsclient.init_core(args.server_address, args.workspace,
-                                    args.bd_addr)
+                                    args.bd_addr, args.pts_debug)
 
     autoprojects.iutctl.init(args.kernel_image)
 
@@ -52,7 +55,7 @@ def main():
     pts_bdaddr = proxy.bd_addr()
 
     test_cases = autoprojects.gap.test_cases()
-    test_cases += autoprojects.gatt.test_cases(proxy)
+    test_cases += autoprojects.gatt.test_cases(pts_bdaddr)
     test_cases += autoprojects.sm.test_cases(pts_bdaddr)
 
     autoptsclient.run_test_cases(proxy, test_cases)
