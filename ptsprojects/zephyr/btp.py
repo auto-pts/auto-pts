@@ -50,22 +50,16 @@ GAP = {
 GATTS = {
     "add_svc": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_ADD_SERVICE,
                 CONTROLLER_INDEX),
-
     "start_server": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_START_SERVER,
                      CONTROLLER_INDEX, ""),
-
     "add_inc_svc": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_ADD_INCLUDED_SERVICE,
                     CONTROLLER_INDEX),
-
     "add_char": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_ADD_CHARACTERISTIC,
                  CONTROLLER_INDEX),
-
     "set_val": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_SET_VALUE,
                  CONTROLLER_INDEX),
-
     "add_desc": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_ADD_DESCRIPTOR,
                  CONTROLLER_INDEX),
-
     "set_enc_key_size": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_SET_ENC_KEY_SIZE,
                          CONTROLLER_INDEX),
 }
