@@ -651,14 +651,14 @@ def gattc_read_multiple(bd_addr_type=None, bd_addr=None, hdls=None):
 def gattc_write_without_rsp(bd_addr_type=None, bd_addr=None, hdl=None,
                             val=None, val_mtp=None):
     logging.debug("%s %r %r %r %r %r", gattc_write_without_rsp.__name__,
-                  bd_addr_type, bd_addr, hdl, val, mtp)
+                  bd_addr_type, bd_addr, hdl, val, val_mtp)
     zephyrctl = get_zephyr()
 
     if type(hdl) is str:
         hdl = int(hdl, 16)
 
-    if mtp:
-        val *= int(mtp)
+    if val_mtp:
+        val *= int(val_mtp)
 
     data_ba = bytearray()
 
@@ -683,14 +683,14 @@ def gattc_write_without_rsp(bd_addr_type=None, bd_addr=None, hdl=None,
 def gattc_signed_write(bd_addr_type=None, bd_addr=None, hdl=None,
                        val=None, val_mtp=None):
     logging.debug("%s %r %r %r %r %r", gattc_signed_write.__name__,
-                  bd_addr_type, bd_addr, hdl, val, mtp)
+                  bd_addr_type, bd_addr, hdl, val, val_mtp)
     zephyrctl = get_zephyr()
 
     if type(hdl) is str:
         hdl = int(hdl, 16)
 
-    if mtp:
-        val *= int(mtp)
+    if val_mtp:
+        val *= int(val_mtp)
 
     data_ba = bytearray()
 
@@ -716,14 +716,14 @@ def gattc_signed_write(bd_addr_type=None, bd_addr=None, hdl=None,
 def gattc_write(bd_addr_type=None, bd_addr=None, hdl=None, val=None,
                 val_mtp=None):
     logging.debug("%s %r %r %r %r %r", gattc_write.__name__, bd_addr_type,
-                  bd_addr, hdl, val, mtp)
+                  bd_addr, hdl, val, val_mtp)
     zephyrctl = get_zephyr()
 
     if type(hdl) is str:
         hdl = int(hdl, 16)
 
-    if mtp:
-        val *= int(mtp)
+    if val_mtp:
+        val *= int(val_mtp)
 
     data_ba = bytearray()
 
