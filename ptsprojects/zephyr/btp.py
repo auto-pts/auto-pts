@@ -383,12 +383,11 @@ def gatts_set_val(hdl = None, val = None):
     if type(hdl) is str:
         hdl = int(hdl, 16)
 
-    val_len = len(val) / 2
 
     data_ba = bytearray()
     hdl_ba = struct.pack('H', hdl)
-    val_len_ba = struct.pack('H', val_len)
     val_ba = binascii.unhexlify(bytearray(val))
+    val_len_ba = struct.pack('H', len(val_ba))
 
     data_ba.extend(hdl_ba)
     data_ba.extend(val_len_ba)
@@ -657,12 +656,10 @@ def gattc_write_without_rsp(bd_addr_type = None, bd_addr = None, hdl = None,
 
     data_ba = bytearray()
 
-    val_len = len(val) / 2
-
     bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
     hdl_ba = struct.pack('H', hdl)
-    val_len_ba = struct.pack('H', val_len)
     val_ba = binascii.unhexlify(bytearray(val))
+    val_len_ba = struct.pack('H', len(val_ba))
 
     data_ba.extend(chr(bd_addr_type))
     data_ba.extend(bd_addr_ba)
@@ -688,13 +685,11 @@ def gattc_signed_write(bd_addr_type = None, bd_addr = None, hdl = None,
 
     data_ba = bytearray()
 
-    val_len = len(val) / 2
-
     bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
 
     hdl_ba = struct.pack('H', hdl)
-    val_len_ba = struct.pack('H', val_len)
     val_ba = binascii.unhexlify(bytearray(val))
+    val_len_ba = struct.pack('H', len(val_ba))
 
     data_ba.extend(chr(bd_addr_type))
     data_ba.extend(bd_addr_ba)
@@ -720,12 +715,10 @@ def gattc_write(bd_addr_type = None, bd_addr = None, hdl = None, val = None,
 
     data_ba = bytearray()
 
-    val_len = len(val) / 2
-
     bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
     hdl_ba = struct.pack('H', hdl)
-    val_len_ba = struct.pack('H', val_len)
     val_ba = binascii.unhexlify(bytearray(val))
+    val_len_ba = struct.pack('H', len(val_ba))
 
     data_ba.extend(chr(bd_addr_type))
     data_ba.extend(bd_addr_ba)
@@ -751,13 +744,11 @@ def gattc_write_long(bd_addr_type = None, bd_addr = None, hdl = None,
 
     zephyrctl = get_zephyr()
 
-    val_len = len(val) / 2
-
     bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
     hdl_ba = struct.pack('H', hdl)
-    val_len_ba = struct.pack('H', val_len)
     off_ba = struct.pack('H', off)
     val_ba = binascii.unhexlify(bytearray(val))
+    val_len_ba = struct.pack('H', len(val_ba))
 
     data_ba = bytearray()
     data_ba.extend(chr(bd_addr_type))
