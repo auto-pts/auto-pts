@@ -5,10 +5,7 @@ import binascii
 import struct
 
 from iutctl import get_zephyr
-from collections import namedtuple
 import btpdef
-from itertools import count
-from _struct import unpack
 
 #Global temporary objects
 PASSKEY = None
