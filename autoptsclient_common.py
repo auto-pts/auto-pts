@@ -8,6 +8,8 @@ import socket
 import logging
 import xmlrpclib
 import threading
+import time
+import datetime
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 from ptsprojects.testcase import get_max_test_case_desc
 from ptsprojects.testcase import TestCase, TestCmd, PTSCallback
@@ -265,6 +267,7 @@ def run_test_cases(pts, test_cases):
     max_project_name, max_test_case_name = get_max_test_case_desc(test_cases)
     margin = 3
 
+    t_main_start = time.time()
     for index, test_case in enumerate(test_cases):
         print (str(index + 1).rjust(num_test_cases_width) +
                "/" +
@@ -272,7 +275,14 @@ def run_test_cases(pts, test_cases):
                test_case.project_name.ljust(max_project_name + margin) +
                test_case.name.ljust(max_test_case_name + margin - 1)),
         sys.stdout.flush()
+        t_start = time.time()
         run_test_case(pts, test_case)
-        print test_case.status
+        t_stop = time.time()
+        print (test_case.status + "\t" + str(datetime.timedelta(seconds = t_stop - t_start))) + "\t est. left: " \
+                + str((datetime.timedelta(seconds = t_stop - t_main_start) / (index + 1)) * (num_test_cases - (index +1)))
+
+    t_main_stop = time.time()
 
     print_summary(test_cases, margin)
+    print "\nTIME: " + str(datetime.timedelta(seconds = t_main_stop - t_main_start))
+    print "AVG. TEST TIME: " + str(datetime.timedelta(seconds = (t_main_stop - t_main_start)/num_test_cases))
