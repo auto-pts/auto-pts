@@ -49,11 +49,11 @@ def main():
 
     # in some networks initial connection setup is very slow, so, contact the
     # server only once to get data needed to create test cases
-    pts_bdaddr = proxy.bd_addr()
+    pts_bd_addr = proxy.bd_addr()
 
     test_cases = autoprojects.gap.test_cases()
-    test_cases += autoprojects.gatt.test_cases(proxy)
-    test_cases += autoprojects.sm.test_cases(pts_bdaddr)
+    test_cases += autoprojects.gatt.test_cases(pts_bd_addr)
+    test_cases += autoprojects.sm.test_cases(pts_bd_addr)
 
     autoptsclient.run_test_cases(proxy, test_cases)
 
