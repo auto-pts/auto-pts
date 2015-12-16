@@ -22,12 +22,16 @@ def parse_frame_generic(hdr, data):
     else:
         raise Exception("Wrong Service ID of received frame")
 
-#BTP frame format
-#0            8       16                 24            40
-#+------------+--------+------------------+-------------+
-#| Service ID | Opcode | Controller Index | Data Length |
-#+------------+--------+------------------+-------------+
 def dec_hdr(bin):
+    """Decode BTP frame header
+
+    BTP header format
+    0            8       16                 24            40
+    +------------+--------+------------------+-------------+
+    | Service ID | Opcode | Controller Index | Data Length |
+    +------------+--------+------------------+-------------+
+
+    """
     logging.debug("%s, %r", dec_hdr.__name__, bin)
 
     header = namedtuple('header', 'svc_id op ctrl_index data_len')
