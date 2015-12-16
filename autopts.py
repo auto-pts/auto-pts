@@ -1,4 +1,4 @@
-"""PTS automation IronPython script
+"""Windows PTS automation IronPython script
 
 Since PTS requires admin rights, you have to run this script as admin. You need
 to use 32 bit IronPython to run this script because PTS is a 32 bit
