@@ -624,7 +624,7 @@ def gattc_read_long(bd_addr_type=None, bd_addr=None, hdl=None, off=None,
     zephyrctl.btp_socket.send(*GATTC['read_long'], data=data_ba)
 
 
-def gattc_read_multiple(bd_addr_type=None, bd_addr=None, hdls=None):
+def gattc_read_multiple(bd_addr_type=None, bd_addr=None, *hdls):
     logging.debug("%s %r %r %r", gattc_read_multiple.__name__, bd_addr_type,
                   bd_addr, hdls)
     zephyrctl = get_zephyr()
@@ -632,16 +632,15 @@ def gattc_read_multiple(bd_addr_type=None, bd_addr=None, hdls=None):
     data_ba = bytearray()
 
     bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
-    hdls_cnt_ba = struct.pack('H', len(hdls))
-    hdls = ''.join(hdl for hdl in hdls)
-    hdls_byte_table = [hdls[i:i+2] for i in range(0, len(hdls), 2)]
+    hdls_j = ''.join(hdl for hdl in hdls)
+    hdls_byte_table = [hdls_j[i:i+2] for i in range(0, len(hdls_j), 2)]
     hdls_swp = ''.join([c[1] + c[0] for c in zip(hdls_byte_table[::2],
                        hdls_byte_table[1::2])])
     hdls_ba = binascii.unhexlify(bytearray(hdls_swp))
 
     data_ba.extend(chr(bd_addr_type))
     data_ba.extend(bd_addr_ba)
-    data_ba.extend(hdls_cnt_ba)
+    data_ba.extend(chr(len(hdls)))
     data_ba.extend(hdls_ba)
 
     zephyrctl.btp_socket.send(*GATTC['read_multiple'], data=data_ba)
