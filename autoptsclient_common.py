@@ -8,6 +8,8 @@ import socket
 import logging
 import xmlrpclib
 import threading
+import time
+import datetime
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 from ptsprojects.testcase import get_max_test_case_desc
 from ptsprojects.testcase import TestCase, TestCmd, PTSCallback
@@ -142,7 +144,7 @@ def start_callback():
     server.register_introspection_functions()
     server.serve_forever()
 
-def init_core(server_address, workspace_path, bd_addr):
+def init_core(server_address, workspace_path, bd_addr, pts_debug):
     "Initialization procedure"
 
     script_name = os.path.basename(sys.argv[0]) # in case it is full path
@@ -189,6 +191,8 @@ def init_core(server_address, workspace_path, bd_addr):
             project_name = proxy.get_project_name(index)
             log("Set bd_addr PIXIT: %s for project: %s", bd_addr, project_name)
             proxy.update_pixit_param(project_name, "TSPX_bd_addr_iut", bd_addr)
+
+    proxy.enable_maximum_logging(pts_debug)
 
     return proxy
 
@@ -263,6 +267,7 @@ def run_test_cases(pts, test_cases):
     max_project_name, max_test_case_name = get_max_test_case_desc(test_cases)
     margin = 3
 
+    t_main_start = time.time()
     for index, test_case in enumerate(test_cases):
         print (str(index + 1).rjust(num_test_cases_width) +
                "/" +
@@ -270,7 +275,14 @@ def run_test_cases(pts, test_cases):
                test_case.project_name.ljust(max_project_name + margin) +
                test_case.name.ljust(max_test_case_name + margin - 1)),
         sys.stdout.flush()
+        t_start = time.time()
         run_test_case(pts, test_case)
-        print test_case.status
+        t_stop = time.time()
+        print (test_case.status + "\t" + str(datetime.timedelta(seconds = t_stop - t_start))) + "\t est. left: " \
+                + str((datetime.timedelta(seconds = t_stop - t_main_start) / (index + 1)) * (num_test_cases - (index +1)))
+
+    t_main_stop = time.time()
 
     print_summary(test_cases, margin)
+    print "\nTIME: " + str(datetime.timedelta(seconds = t_main_stop - t_main_start))
+    print "AVG. TEST TIME: " + str(datetime.timedelta(seconds = (t_main_stop - t_main_start)/num_test_cases))
