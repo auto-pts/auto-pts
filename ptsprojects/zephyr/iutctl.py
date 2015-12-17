@@ -19,6 +19,7 @@ QEMU_LOG_FO = None
 # microkernel.elf
 ZEPHYR_KERNEL_IMAGE = None
 
+
 def get_qemu_cmd(kernel_image):
     """Returns qemu command to start Zephyr
 
@@ -30,6 +31,7 @@ def get_qemu_cmd(kernel_image):
                 (QEMU_BIN, QEMU_UNIX_PATH, kernel_image))
 
     return qemu_cmd
+
 
 class BTPSocket(object):
     def __init__(self):
@@ -45,14 +47,14 @@ class BTPSocket(object):
         self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
         self.sock.bind(QEMU_UNIX_PATH)
 
-        #queue only one connection
+        # queue only one connection
         self.sock.listen(1)
 
     def accept(self):
         """Accept incomming Zephyr connection"""
         logging.debug("%s", self.accept.__name__)
 
-        #This will hang forever if Zephyr don't try to connect
+        # This will hang forever if Zephyr don't try to connect
         self.conn, self.addr = self.sock.accept()
 
         self.conn.setblocking(0)
@@ -64,14 +66,14 @@ class BTPSocket(object):
         hdr = bytearray(toread_hdr_len)
         hdr_memview = memoryview(hdr)
 
-        #Gather frame header
+        # Gather frame header
         while toread_hdr_len:
             try:
                 nbytes = self.conn.recv_into(hdr_memview, toread_hdr_len)
                 hdr_memview = hdr_memview[nbytes:]
                 toread_hdr_len -= nbytes
             except:
-                #TODO timeout
+                # TODO timeout
                 continue
 
         tuple_hdr = dec_hdr(hdr)
@@ -82,14 +84,14 @@ class BTPSocket(object):
         data = bytearray(toread_data_len)
         data_memview = memoryview(data)
 
-        #Gather optional frame data
+        # Gather optional frame data
         while toread_data_len:
             try:
                 nbytes = self.conn.recv_into(data_memview, toread_data_len)
                 data_memview = data_memview[nbytes:]
                 toread_data_len -= nbytes
             except:
-                #TODO timeout
+                # TODO timeout
                 continue
 
         tuple_data = dec_data(data)
@@ -103,11 +105,10 @@ class BTPSocket(object):
         logging.debug("%s, %r %r %r %r",
                       self.send.__name__, svc_id, op, ctrl_index, data)
 
-
         if isinstance(data, int):
             data = str(data)
             if len(data) == 1:
-                data = "0%s" %  data
+                data = "0%s" % data
                 data = binascii.unhexlify(data)
 
         hex_data = binascii.hexlify(data)
@@ -127,6 +128,7 @@ class BTPSocket(object):
         self.conn = None
         self.addr = None
 
+
 class ZephyrCtl:
     '''Zephyr OS Control Class'''
 
@@ -134,7 +136,6 @@ class ZephyrCtl:
         """Constructor."""
 
         assert ZEPHYR_KERNEL_IMAGE, "Kernel image file is not set!"
-
 
         self.kernel_image = ZEPHYR_KERNEL_IMAGE
         self.qemu_process = None
@@ -154,9 +155,9 @@ class ZephyrCtl:
 
         # TODO check if zephyr process has started correctly
         self.qemu_process = subprocess.Popen(shlex.split(qemu_cmd),
-                                             shell = False,
-                                             stdout = QEMU_LOG_FO,
-                                             stderr = QEMU_LOG_FO)
+                                             shell=False,
+                                             stdout=QEMU_LOG_FO,
+                                             stderr=QEMU_LOG_FO)
 
         self.btp_socket.accept()
 
@@ -170,8 +171,9 @@ class ZephyrCtl:
 
         if self.qemu_process and self.qemu_process.poll() is None:
             self.qemu_process.terminate()
-            self.qemu_process.wait() # do not let zombies take over
+            self.qemu_process.wait()  # do not let zombies take over
             self.qemu_process = None
+
 
 class ZephyrCtlStub:
     '''Zephyr OS Control Class with stubs for testing'''
@@ -187,13 +189,16 @@ class ZephyrCtlStub:
         """Powers off the Zephyr OS"""
         log("%s.%s", self.__class__, self.stop.__name__)
 
+
 def get_zephyr():
     return ZEPHYR
+
 
 def init_stub():
     """IUT init routine for testings"""
     global ZEPHYR
     ZEPHYR = ZephyrCtlStub()
+
 
 def init(kernel_image):
     """IUT init routine
@@ -213,6 +218,7 @@ def init(kernel_image):
     ZEPHYR_KERNEL_IMAGE = kernel_image
 
     ZEPHYR = ZephyrCtl()
+
 
 def cleanup():
     """IUT cleanup routine"""
