@@ -7,7 +7,7 @@ import struct
 from iutctl import get_zephyr
 import btpdef
 
-#Global temporary objects
+#  Global temporary objects
 PASSKEY = None
 
 CONTROLLER_INDEX = 0
@@ -19,10 +19,12 @@ CORE = {
     "gatts_reg": (btpdef.BTP_SERVICE_ID_CORE, btpdef.CORE_REGISTER_SERVICE,
                   btpdef.BTP_INDEX_NONE, btpdef.BTP_SERVICE_ID_GATT),
 
-    "read_supp_cmds": (btpdef.BTP_SERVICE_ID_CORE, btpdef.CORE_READ_SUPPORTED_COMMANDS,
+    "read_supp_cmds": (btpdef.BTP_SERVICE_ID_CORE,
+                       btpdef.CORE_READ_SUPPORTED_COMMANDS,
                        btpdef.BTP_INDEX_NONE, ""),
 
-    "read_supp_svcs": (btpdef.BTP_SERVICE_ID_CORE, btpdef.CORE_READ_SUPPORTED_SERVICES,
+    "read_supp_svcs": (btpdef.BTP_SERVICE_ID_CORE,
+                       btpdef.CORE_READ_SUPPORTED_SERVICES,
                        btpdef.BTP_INDEX_NONE, ""),
 }
 
@@ -40,8 +42,10 @@ GAP = {
                   CONTROLLER_INDEX, ""),
     "conn": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_CONNECT, CONTROLLER_INDEX),
     "pair": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_PAIR, CONTROLLER_INDEX),
-    "disconn": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_DISCONNECT, CONTROLLER_INDEX),
-    "set_io_cap": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_SET_IO_CAP, CONTROLLER_INDEX),
+    "disconn": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_DISCONNECT,
+                CONTROLLER_INDEX),
+    "set_io_cap": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_SET_IO_CAP,
+                   CONTROLLER_INDEX),
     "stop_adv": '',
     "start_discov": '',
     "stop_discov": '',
@@ -50,24 +54,18 @@ GAP = {
 GATTS = {
     "add_svc": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_ADD_SERVICE,
                 CONTROLLER_INDEX),
-
     "start_server": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_START_SERVER,
                      CONTROLLER_INDEX, ""),
-
-    "add_inc_svc": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_ADD_INCLUDED_SERVICE,
-                    CONTROLLER_INDEX),
-
+    "add_inc_svc": (btpdef.BTP_SERVICE_ID_GATT,
+                    btpdef.GATT_ADD_INCLUDED_SERVICE, CONTROLLER_INDEX),
     "add_char": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_ADD_CHARACTERISTIC,
                  CONTROLLER_INDEX),
-
     "set_val": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_SET_VALUE,
-                 CONTROLLER_INDEX),
-
+                CONTROLLER_INDEX),
     "add_desc": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_ADD_DESCRIPTOR,
                  CONTROLLER_INDEX),
-
-    "set_enc_key_size": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_SET_ENC_KEY_SIZE,
-                         CONTROLLER_INDEX),
+    "set_enc_key_size": (btpdef.BTP_SERVICE_ID_GATT,
+                         btpdef.GATT_SET_ENC_KEY_SIZE, CONTROLLER_INDEX),
 }
 
 GATTC = {
@@ -97,6 +95,7 @@ GATTC = {
                    CONTROLLER_INDEX),
 }
 
+
 class BTPError(Exception):
     """Exception raised if BTP error occurs.
 
@@ -106,7 +105,8 @@ class BTPError(Exception):
     """
     pass
 
-def rsp_hdr_check(rcv_hdr, exp_svc_id, exp_op = None):
+
+def rsp_hdr_check(rcv_hdr, exp_svc_id, exp_op=None):
     if rcv_hdr.svc_id != exp_svc_id:
         raise BTPError("Incorrect service ID %s in the response, expected %s!"
                        % (rcv_hdr.svc_id, exp_svc_id))
@@ -118,6 +118,7 @@ def rsp_hdr_check(rcv_hdr, exp_svc_id, exp_op = None):
         raise BTPError("Invalid opcode %s in the response, expected %s!"
                        % (rcv_hdr.op, exp_op))
 
+
 def core_reg_svc_gap():
     logging.debug("%s", core_reg_svc_gap.__name__)
 
@@ -126,6 +127,7 @@ def core_reg_svc_gap():
 
     core_reg_svc_rsp_succ()
 
+
 def core_reg_svc_gatts():
     logging.debug("%s", core_reg_svc_gatts.__name__)
 
@@ -133,6 +135,7 @@ def core_reg_svc_gatts():
     zephyrctl.btp_socket.send(*CORE['gatts_reg'])
 
     core_reg_svc_rsp_succ()
+
 
 def core_reg_svc_rsp_succ():
     logging.debug("%s", core_reg_svc_rsp_succ.__name__)
@@ -155,16 +158,18 @@ def core_reg_svc_rsp_succ():
     else:
         logging.debug("response is valid")
 
+
 def gap_adv_ind_on():
     logging.debug("%s", gap_adv_ind_on.__name__)
     zephyrctl = get_zephyr()
 
     zephyrctl.btp_socket.send(*GAP['start_adv'])
 
-    #TODO Command response should be checked
+    # TODO Command response should be checked
     gap_command_rsp_succ()
 
-def gap_connected_ev(bd_addr = None, bd_addr_type = None):
+
+def gap_connected_ev(bd_addr=None, bd_addr_type=None):
     logging.debug("%s %r %r", gap_connected_ev.__name__, bd_addr, bd_addr_type)
     zephyrctl = get_zephyr()
 
@@ -188,7 +193,8 @@ def gap_connected_ev(bd_addr = None, bd_addr_type = None):
     if tuple_data[0] != data_ba:
         raise BTPError("Error in connected event data")
 
-def gap_conn(bd_addr = None, bd_addr_type = None):
+
+def gap_conn(bd_addr=None, bd_addr_type=None):
     logging.debug("%s %r %r", gap_conn.__name__, bd_addr, bd_addr_type)
     zephyrctl = get_zephyr()
 
@@ -198,12 +204,14 @@ def gap_conn(bd_addr = None, bd_addr_type = None):
     data_ba.extend(chr(bd_addr_type))
     data_ba.extend(bd_addr_ba)
 
-    zephyrctl.btp_socket.send(*GAP['conn'], data = data_ba)
+    zephyrctl.btp_socket.send(*GAP['conn'], data=data_ba)
 
     gap_command_rsp_succ()
 
-def gap_disconnected_ev(bd_addr = None, bd_addr_type = None):
-    logging.debug("%s %r %r", gap_disconnected_ev.__name__, bd_addr, bd_addr_type)
+
+def gap_disconnected_ev(bd_addr=None, bd_addr_type=None):
+    logging.debug("%s %r %r", gap_disconnected_ev.__name__, bd_addr,
+                  bd_addr_type)
     zephyrctl = get_zephyr()
 
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
@@ -226,7 +234,8 @@ def gap_disconnected_ev(bd_addr = None, bd_addr_type = None):
     if tuple_data[0] != data_ba:
         raise BTPError("Error in connected event data")
 
-def gap_disconn(bd_addr = None, bd_addr_type = None):
+
+def gap_disconn(bd_addr=None, bd_addr_type=None):
     logging.debug("%s %r %r", gap_disconn.__name__, bd_addr, bd_addr_type)
     zephyrctl = get_zephyr()
 
@@ -236,19 +245,21 @@ def gap_disconn(bd_addr = None, bd_addr_type = None):
     data_ba.extend(chr(bd_addr_type))
     data_ba.extend(bd_addr_ba)
 
-    zephyrctl.btp_socket.send(*GAP['disconn'], data = data_ba)
+    zephyrctl.btp_socket.send(*GAP['disconn'], data=data_ba)
 
     gap_command_rsp_succ()
 
-def gap_set_io_cap(io_cap = None):
+
+def gap_set_io_cap(io_cap=None):
     logging.debug("%s %r", gap_set_io_cap.__name__, io_cap)
     zephyrctl = get_zephyr()
 
-    zephyrctl.btp_socket.send(*GAP['set_io_cap'], data = chr(io_cap))
+    zephyrctl.btp_socket.send(*GAP['set_io_cap'], data=chr(io_cap))
 
     gap_command_rsp_succ()
 
-def gap_pair(bd_addr = None, bd_addr_type = None):
+
+def gap_pair(bd_addr=None, bd_addr_type=None):
     logging.debug("%s %r %r", gap_pair.__name__, bd_addr, bd_addr_type)
     zephyrctl = get_zephyr()
 
@@ -258,23 +269,27 @@ def gap_pair(bd_addr = None, bd_addr_type = None):
     data_ba.extend(chr(bd_addr_type))
     data_ba.extend(bd_addr_ba)
 
-    zephyrctl.btp_socket.send(*GAP['pair'], data = data_ba)
+    zephyrctl.btp_socket.send(*GAP['pair'], data=data_ba)
 
-    #Expected result
+    # Expected result
     gap_command_rsp_succ()
+
 
 def var_get_passkey():
     return str(PASSKEY)
 
+
 def var_get_wrong_passkey():
-    #Passkey is in range 0-999999
+    # Passkey is in range 0-999999
     if PASSKEY > 0:
         return str(PASSKEY - 1)
     else:
         return str(PASSKEY + 1)
 
-def gap_passkey_disp_ev(bd_addr = None, bd_addr_type = None, store = False):
-    logging.debug("%s %r %r", gap_passkey_disp_ev.__name__, bd_addr, bd_addr_type)
+
+def gap_passkey_disp_ev(bd_addr=None, bd_addr_type=None, store=False):
+    logging.debug("%s %r %r", gap_passkey_disp_ev.__name__, bd_addr,
+                  bd_addr_type)
     zephyrctl = get_zephyr()
 
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
@@ -304,6 +319,7 @@ def gap_passkey_disp_ev(bd_addr = None, bd_addr_type = None, store = False):
         global PASSKEY
         PASSKEY = passkey_local
 
+
 def gap_command_rsp_succ():
     logging.debug("%s", gap_command_rsp_succ.__name__)
 
@@ -314,7 +330,8 @@ def gap_command_rsp_succ():
 
     rsp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GAP)
 
-def gatts_add_svc(svc_type = None, uuid = None):
+
+def gatts_add_svc(svc_type=None, uuid=None):
     logging.debug("%s %r %r", gatts_add_svc.__name__, svc_type, uuid)
 
     zephyrctl = get_zephyr()
@@ -326,11 +343,12 @@ def gatts_add_svc(svc_type = None, uuid = None):
     data_ba.extend(chr(len(uuid_ba)))
     data_ba.extend(uuid_ba)
 
-    zephyrctl.btp_socket.send(*GATTS['add_svc'], data = data_ba)
+    zephyrctl.btp_socket.send(*GATTS['add_svc'], data=data_ba)
 
     gatt_command_rsp_succ()
 
-def gatts_add_inc_svc(hdl = None):
+
+def gatts_add_inc_svc(hdl=None):
     logging.debug("%s %r", gatts_add_inc_svc.__name__, hdl)
 
     zephyrctl = get_zephyr()
@@ -342,11 +360,12 @@ def gatts_add_inc_svc(hdl = None):
     hdl_ba = struct.pack('H', hdl)
     data_ba.extend(hdl_ba)
 
-    zephyrctl.btp_socket.send(*GATTS['add_inc_svc'], data = data_ba)
+    zephyrctl.btp_socket.send(*GATTS['add_inc_svc'], data=data_ba)
 
     gatt_command_rsp_succ()
 
-def gatts_add_char(hdl = None, prop = None, perm = None, uuid = None):
+
+def gatts_add_char(hdl=None, prop=None, perm=None, uuid=None):
     logging.debug("%s %r %r %r %r", gatts_add_char.__name__, hdl, prop, perm,
                   uuid)
 
@@ -365,18 +384,18 @@ def gatts_add_char(hdl = None, prop = None, perm = None, uuid = None):
     data_ba.extend(chr(len(uuid_ba)))
     data_ba.extend(uuid_ba)
 
-    zephyrctl.btp_socket.send(*GATTS['add_char'], data = data_ba)
+    zephyrctl.btp_socket.send(*GATTS['add_char'], data=data_ba)
 
     gatt_command_rsp_succ()
 
-def gatts_set_val(hdl = None, val = None):
+
+def gatts_set_val(hdl=None, val=None):
     logging.debug("%s %r %r ", gatts_set_val.__name__, hdl, val)
 
     zephyrctl = get_zephyr()
 
     if type(hdl) is str:
         hdl = int(hdl, 16)
-
 
     data_ba = bytearray()
     hdl_ba = struct.pack('H', hdl)
@@ -387,11 +406,12 @@ def gatts_set_val(hdl = None, val = None):
     data_ba.extend(val_len_ba)
     data_ba.extend(val_ba)
 
-    zephyrctl.btp_socket.send(*GATTS['set_val'], data = data_ba)
+    zephyrctl.btp_socket.send(*GATTS['set_val'], data=data_ba)
 
     gatt_command_rsp_succ()
 
-def gatts_add_desc(hdl = None, perm = None, uuid = None):
+
+def gatts_add_desc(hdl=None, perm=None, uuid=None):
     logging.debug("%s %r %r %r", gatts_add_desc.__name__, hdl, perm, uuid)
 
     zephyrctl = get_zephyr()
@@ -408,9 +428,10 @@ def gatts_add_desc(hdl = None, perm = None, uuid = None):
     data_ba.extend(chr(len(uuid_ba)))
     data_ba.extend(uuid_ba)
 
-    zephyrctl.btp_socket.send(*GATTS['add_desc'], data = data_ba)
+    zephyrctl.btp_socket.send(*GATTS['add_desc'], data=data_ba)
 
     gatt_command_rsp_succ()
+
 
 def gatts_start_server():
     logging.debug("%s", gatts_start_server.__name__)
@@ -420,8 +441,10 @@ def gatts_start_server():
 
     gatt_command_rsp_succ()
 
-def gatts_set_enc_key_size(hdl = None, enc_key_size = None):
-    logging.debug("%s %r %r", gatts_set_enc_key_size.__name__, hdl, enc_key_size)
+
+def gatts_set_enc_key_size(hdl=None, enc_key_size=None):
+    logging.debug("%s %r %r", gatts_set_enc_key_size.__name__,
+                  hdl, enc_key_size)
 
     zephyrctl = get_zephyr()
 
@@ -434,12 +457,14 @@ def gatts_set_enc_key_size(hdl = None, enc_key_size = None):
     data_ba.extend(hdl_ba)
     data_ba.extend(chr(enc_key_size))
 
-    zephyrctl.btp_socket.send(*GATTS['set_enc_key_size'], data = data_ba)
+    zephyrctl.btp_socket.send(*GATTS['set_enc_key_size'], data=data_ba)
 
     gatt_command_rsp_succ()
 
-def gattc_exchange_mtu(bd_addr_type = None, bd_addr = None):
-    logging.debug("%s %r %r", gattc_exchange_mtu.__name__, bd_addr_type, bd_addr)
+
+def gattc_exchange_mtu(bd_addr_type=None, bd_addr=None):
+    logging.debug("%s %r %r", gattc_exchange_mtu.__name__, bd_addr_type,
+                  bd_addr)
     zephyrctl = get_zephyr()
 
     data_ba = bytearray()
@@ -448,7 +473,7 @@ def gattc_exchange_mtu(bd_addr_type = None, bd_addr = None):
     data_ba.extend(chr(bd_addr_type))
     data_ba.extend(bd_addr_ba)
 
-    zephyrctl.btp_socket.send(*GATTC['exchange_mtu'], data = data_ba)
+    zephyrctl.btp_socket.send(*GATTC['exchange_mtu'], data=data_ba)
 
     gatt_command_rsp_succ()
 
@@ -633,9 +658,9 @@ def gattc_read_multiple(bd_addr_type=None, bd_addr=None, *hdls):
 
     bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
     hdls_j = ''.join(hdl for hdl in hdls)
-    hdls_byte_table = [hdls_j[i:i+2] for i in range(0, len(hdls_j), 2)]
+    hdls_byte_table = [hdls_j[i:i + 2] for i in range(0, len(hdls_j), 2)]
     hdls_swp = ''.join([c[1] + c[0] for c in zip(hdls_byte_table[::2],
-                       hdls_byte_table[1::2])])
+                                                 hdls_byte_table[1::2])])
     hdls_ba = binascii.unhexlify(bytearray(hdls_swp))
 
     data_ba.extend(chr(bd_addr_type))
