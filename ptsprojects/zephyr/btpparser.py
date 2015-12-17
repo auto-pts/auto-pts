@@ -5,14 +5,17 @@ import logging
 
 HDR_LEN = 5
 
-#Service frames parsers
+
+# Service frames parsers
 def parse_svc_core(op, data_len, data):
-    if not op in CORE_SERVICE_OP.itervalues():
+    if op not in CORE_SERVICE_OP.itervalues():
         raise Exception("Wrong Core Service OP of received frame")
     pass
 
+
 def parse_svc_gap(op, data_len, data):
     pass
+
 
 def parse_frame_generic(hdr, data):
     if hdr.svc_id == btpdef.BTP_SERVICE_ID_CORE:
@@ -22,12 +25,17 @@ def parse_frame_generic(hdr, data):
     else:
         raise Exception("Wrong Service ID of received frame")
 
-#BTP frame format
-#0            8       16                 24            40
-#+------------+--------+------------------+-------------+
-#| Service ID | Opcode | Controller Index | Data Length |
-#+------------+--------+------------------+-------------+
+
 def dec_hdr(bin):
+    """Decode BTP frame header
+
+    BTP header format
+    0            8       16                 24            40
+    +------------+--------+------------------+-------------+
+    | Service ID | Opcode | Controller Index | Data Length |
+    +------------+--------+------------------+-------------+
+
+    """
     logging.debug("%s, %r", dec_hdr.__name__, bin)
 
     header = namedtuple('header', 'svc_id op ctrl_index data_len')
@@ -36,6 +44,7 @@ def dec_hdr(bin):
 
     return hdr
 
+
 def dec_data(bin):
     logging.debug("%s, %r", dec_data.__name__, bin)
 
@@ -43,6 +52,7 @@ def dec_data(bin):
     data = struct.unpack('<%ds' % data_len, bin[:data_len])
 
     return data
+
 
 def enc_frame(svc_id, op, ctrl_index, data):
     logging.debug("%s, %r %r %r %r",
