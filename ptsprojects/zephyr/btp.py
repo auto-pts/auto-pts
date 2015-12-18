@@ -1081,7 +1081,18 @@ def gattc_disc_all_desc_rsp():
     # TODO Validation
 
 
-def gattc_read_rsp():
+att_rsp_str = {0:   "No error",
+               1:   "Invalid handle error",
+               2:   "read is not permitted error",
+               5:   "authentication error",
+               7:   "Invalid offset error",
+               8:   "authorization error",
+               12:  "encryption key size error",
+               128: "Application error",
+               }
+
+
+def gattc_read_rsp(store_rsp=False, store_val=False):
     zephyrctl = get_zephyr()
 
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
@@ -1092,10 +1103,19 @@ def gattc_read_rsp():
 
     rsp, value = gatt_dec_read_rsp(tuple_data[0])
     logging.debug("%s %r %r", gattc_read_rsp.__name__, rsp, value)
-    # TODO Validation
+
+    if store_rsp or store_val:
+        global VERIFY_VALUES
+        VERIFY_VALUES = []
+
+        if store_rsp:
+            VERIFY_VALUES.append(att_rsp_str[rsp])
+
+        if store_val:
+            VERIFY_VALUES.append((binascii.hexlify(value[0])).upper())
 
 
-def gattc_read_long_rsp():
+def gattc_read_long_rsp(store_rsp=False, store_val=False):
     zephyrctl = get_zephyr()
 
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
@@ -1106,10 +1126,19 @@ def gattc_read_long_rsp():
 
     rsp, value = gatt_dec_read_rsp(tuple_data[0])
     logging.debug("%s %r %r", gattc_read_long_rsp.__name__, rsp, value)
-    # TODO Validation
+
+    if store_rsp or store_val:
+        global VERIFY_VALUES
+        VERIFY_VALUES = []
+
+        if store_rsp:
+            VERIFY_VALUES.append(att_rsp_str[rsp])
+
+        if store_val:
+            VERIFY_VALUES.append((binascii.hexlify(value[0])).upper())
 
 
-def gattc_read_multiple_rsp():
+def gattc_read_multiple_rsp(store_val=False, store_rsp=False):
     zephyrctl = get_zephyr()
 
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
@@ -1121,7 +1150,16 @@ def gattc_read_multiple_rsp():
 
     rsp, values = gatt_dec_read_rsp(tuple_data[0])
     logging.debug("%s %r %r", gattc_read_multiple_rsp.__name__, rsp, values)
-    # TODO Validation
+
+    if store_rsp or store_val:
+        global VERIFY_VALUES
+        VERIFY_VALUES = []
+
+        if store_rsp:
+            VERIFY_VALUES.append(att_rsp_str[rsp])
+
+        if store_val:
+            VERIFY_VALUES.append((binascii.hexlify(values[0])).upper())
 
 
 def gattc_write_rsp():
