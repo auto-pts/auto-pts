@@ -10,7 +10,7 @@ except ImportError:  # running this module as script
     sys.path.append("../..")  # to be able to locate the following imports
 
     from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
-        TestFuncCleanUp
+        TestFuncCleanUp, MMI
     from ptsprojects.zephyr.qtestcase import QTestCase
 
 from ptsprojects.zephyr.iutctl import get_zephyr
@@ -2282,14 +2282,10 @@ def test_cases_client(pts_bd_addr):
     return test_cases
 
 
-def test_cases(pts):
-    """Returns a list of GATT test cases
+def test_cases(pts_bd_addr):
+    """Returns a list of GATT test cases"""
 
-    pts -- Instance of PyPTS
-
-    """
-
-    test_cases = test_cases_client(pts)
+    test_cases = test_cases_client(pts_bd_addr)
     # test_cases += test_cases_server()
 
     return test_cases
@@ -2305,7 +2301,7 @@ def main():
     #  to be able to successfully create ZephyrCtl in QTestCase
     iutctl.ZEPHYR_KERNEL_IMAGE = sys.argv[0]
 
-    test_cases_ = test_cases()
+    test_cases_ = test_cases("AB:CD:EF:12:34:56")
 
     for test_case in test_cases_:
         print
