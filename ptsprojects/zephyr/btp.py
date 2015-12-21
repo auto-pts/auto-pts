@@ -10,6 +10,9 @@ import btpdef
 #  Global temporary objects
 PASSKEY = None
 
+#  A sequence of values to verify in PTS MMI description
+VERIFY_VALUES = None
+
 CONTROLLER_INDEX = 0
 
 CORE = {
@@ -104,6 +107,36 @@ class BTPError(Exception):
 
     """
     pass
+
+
+def verify_description(description):
+    """A function to verify that values are in PTS MMI description
+
+    Returns True if verification is successful, False if not.
+
+    description -- MMI description
+
+    """
+    logging.debug("description=%r", description)
+
+    global VERIFY_VALUES
+    logging.debug("Verifying values: %r", VERIFY_VALUES)
+
+    if not VERIFY_VALUES:
+        return True
+
+    for value in VERIFY_VALUES:
+        logging.debug("Verifying: %r", value)
+
+        if value not in description:
+            logging.debug("Verification failed, value not in description")
+            return False
+
+    logging.debug("All verifications passed")
+
+    VERIFY_VALUES = None
+
+    return True
 
 
 def rsp_hdr_check(rcv_hdr, exp_svc_id, exp_op=None):
@@ -956,6 +989,35 @@ def gattc_disc_prim_uuid_rsp():
 
     svcs_tuple = gatt_dec_disc_rsp(tuple_data[0], "service")
     logging.debug("%s %r", gattc_disc_prim_uuid_rsp.__name__, svcs_tuple)
+
+    global VERIFY_VALUES
+
+    VERIFY_VALUES = []
+
+    for svc in svcs_tuple:
+        start_handle = "0x%04X" % (svc[0],)
+        end_handle = "0x%04X" % (svc[1],)
+
+        uuid_ba = svc[2][0]
+        uuid = binascii.hexlify(uuid_ba[::-1]).upper()
+
+        # add hyphens to long uuid: '0000-1157-0000-0000-0123-4567-89AB-CDEF'
+        if len(uuid) > 4:
+            uuid = "-".join([uuid[i:i+4] for i in range(0, len(uuid), 4)])
+
+        VERIFY_VALUES.append(start_handle)
+        VERIFY_VALUES.append(end_handle)
+
+        # avoid repeated service uuid, it should be verified only once, for
+        # example:
+        # gattc_disc_prim_uuid_rsp ((1, 3, ('\xc9N',)),
+        # (48, 50, ('\xc9N',)), (64, 66, ('\xc9N',)),
+        # (80, 82, ('\xc9N',)), (144, 150, ('\xc9N',)))
+        if uuid not in VERIFY_VALUES:
+            VERIFY_VALUES.append(uuid)
+
+    logging.debug("Set verify values to: %r", VERIFY_VALUES)
+
     # TODO Validation
 
 

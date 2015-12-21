@@ -1243,7 +1243,9 @@ def test_cases_client(pts_bd_addr):
                    TestFunc(btp.gattc_disc_prim_uuid_rsp, start_wid=20),
                    TestFunc(btp.gap_disconn, pts_bd_addr, 0, start_wid=3),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr, 1,
-                            start_wid=3)]),
+                            start_wid=3)],
+                  verify_wids={19: btp.verify_description,
+                               21: btp.verify_description}),
         # ZEP-336
         # FIXME Verification of data
         # description: Please confirm IUT receive include services:

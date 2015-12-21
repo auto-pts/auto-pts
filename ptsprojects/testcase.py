@@ -290,9 +290,13 @@ class TestCase(PTSCallback):
                       MMI_Style_Edit1 style prompts with matching wid.
 
         verify_wids -- A dictionary of wids as keys and a tuple of strings as
-                       values. The strings are used with MMI_Style_Yes_No1 to
-                       confirm/verify that the MMI description contains all of
-                       the strings in the tuple.
+                       values or a callable as value. The strings are used with
+                       MMI_Style_Yes_No1 to confirm/verify that the MMI
+                       description contains all of the strings in the tuple. If
+                       the value is callable it will be passed PTS MMI
+                       description as a parameter. It is expected to return
+                       boolean True for the Yes and False for the No response
+                       of MMI_Style_Yes_No1.
 
         """
         log("%r %r %r %r %r %r", project_name, test_case_name, cmds, no_wid,
@@ -373,18 +377,23 @@ class TestCase(PTSCallback):
             my_response = no_response
 
         # answer No if description does not contain text from verify_wids
-        elif self.verify_wids and self.verify_wids[wid]:
+        elif self.verify_wids and wid in self.verify_wids:
             log("Starting verification of: %r", self.verify_wids)
 
-            for verify in self.verify_wids[wid]:
-                log("Verifying: %r", verify)
-                if verify not in description:
-                    log("Verification failed: not in description")
-                    my_response = no_response
-                    break
+            if callable(self.verify_wids[wid]):
+                resp = self.verify_wids[wid](description)
+                my_response = {True: yes_response, False: no_response}[resp]
+
             else:
-                log("All verifications passed")
-                my_response = yes_response
+                for verify in self.verify_wids[wid]:
+                    log("Verifying: %r", verify)
+                    if verify not in description:
+                        log("Verification failed: not in description")
+                        my_response = no_response
+                        break
+                else:
+                    log("All verifications passed")
+                    my_response = yes_response
 
         # answer Yes
         else:
