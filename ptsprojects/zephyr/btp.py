@@ -1084,10 +1084,12 @@ def gattc_disc_all_desc_rsp():
 att_rsp_str = {0:   "No error",
                1:   "Invalid handle error",
                2:   "read is not permitted error",
+               3:   "write is not permitted error",
                5:   "authentication error",
                7:   "Invalid offset error",
                8:   "authorization error",
                12:  "encryption key size error",
+               13:  "Invalid attribute value length error",
                128: "Application error",
                }
 
@@ -1162,7 +1164,7 @@ def gattc_read_multiple_rsp(store_val=False, store_rsp=False):
             VERIFY_VALUES.append((binascii.hexlify(values[0])).upper())
 
 
-def gattc_write_rsp():
+def gattc_write_rsp(store_rsp=False):
     zephyrctl = get_zephyr()
 
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
@@ -1173,10 +1175,13 @@ def gattc_write_rsp():
 
     rsp = gatt_dec_write_rsp(tuple_data[0])
     logging.debug("%s %r", gattc_write_rsp.__name__, rsp)
-    # TODO Validation
+
+    if store_rsp:
+        global VERIFY_VALUES
+        VERIFY_VALUES = att_rsp_str[rsp]
 
 
-def gattc_write_long_rsp():
+def gattc_write_long_rsp(store_rsp=False):
     zephyrctl = get_zephyr()
 
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
@@ -1188,4 +1193,7 @@ def gattc_write_long_rsp():
 
     rsp = gatt_dec_write_rsp(tuple_data[0])
     logging.debug("%s %r", gattc_write_long_rsp.__name__, rsp)
-    # TODO Validation
+
+    if store_rsp:
+        global VERIFY_VALUES
+        VERIFY_VALUES = att_rsp_str[rsp]
