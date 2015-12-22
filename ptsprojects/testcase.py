@@ -56,6 +56,7 @@ class MmiParser(object):
         log("%s %r", self.parse_description.__name__, description)
 
         pattern = r"'(\S+)'" # any text surrounded by single quotes
+        pattern = r"(?:= |')([0-9-xA-Fa-f]+)"
         self.args = re.findall(pattern, description)
 
         log("Parse result: %r", self.args)
