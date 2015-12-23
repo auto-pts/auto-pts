@@ -2,7 +2,7 @@
 
 """Script to test MMI description parser, MmiParser.
 
-The purpose of this script to keep all types of MMI descriptions that need
+The purpose of this script is to keep all types of MMI descriptions that need
 parsing in one place. This enables doing regression testing of MmiParser in
 case a new description parsing is added.
 
