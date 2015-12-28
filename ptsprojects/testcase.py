@@ -27,6 +27,9 @@ class MmiParser(object):
     def __init__(self):
         """Constructor of the parser"""
 
+        # pattern used to search for args in MMI description
+        self.pattern = re.compile(r"(?:'|=\s+)([0-9-xA-Fa-f]+)")
+
         # list of the parsed argument values from MMI description
         self.args = []
 
@@ -55,9 +58,7 @@ class MmiParser(object):
         """
         log("%s %r", self.parse_description.__name__, description)
 
-        pattern = r"'(\S+)'" # any text surrounded by single quotes
-        pattern = r"(?:= |')([0-9-xA-Fa-f]+)"
-        self.args = re.findall(pattern, description)
+        self.args = self.pattern.findall(description)
 
         log("Parse result: %r", self.args)
 
