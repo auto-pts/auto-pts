@@ -598,7 +598,12 @@ def gattc_disc_chrc_uuid(bd_addr_type=None, bd_addr=None, start_hdl=None,
     bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
     start_hdl_ba = struct.pack('H', start_hdl)
     stop_hdl_ba = struct.pack('H', stop_hdl)
-    uuid_ba = binascii.unhexlify(uuid.translate(None, "-"))[::-1]
+
+    if "-" in uuid:
+        uuid = uuid.replace("-", "")
+    if uuid.startswith("0x"):
+        uuid = uuid.replace("0x", "")
+    uuid_ba = binascii.unhexlify(uuid)[::-1]
 
     data_ba.extend(chr(bd_addr_type))
     data_ba.extend(bd_addr_ba)
@@ -977,7 +982,7 @@ def gatt_dec_write_rsp(data):
     return ord(data)
 
 
-def gattc_disc_prim_uuid_rsp():
+def gattc_disc_prim_uuid_rsp(store_rsp=False):
     zephyrctl = get_zephyr()
 
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
@@ -990,38 +995,37 @@ def gattc_disc_prim_uuid_rsp():
     svcs_tuple = gatt_dec_disc_rsp(tuple_data[0], "service")
     logging.debug("%s %r", gattc_disc_prim_uuid_rsp.__name__, svcs_tuple)
 
-    global VERIFY_VALUES
+    if store_rsp:
+        global VERIFY_VALUES
 
-    VERIFY_VALUES = []
+        VERIFY_VALUES = []
 
-    for svc in svcs_tuple:
-        start_handle = "0x%04X" % (svc[0],)
-        end_handle = "0x%04X" % (svc[1],)
+        for svc in svcs_tuple:
+            start_handle = "0x%04X" % (svc[0],)
+            end_handle = "0x%04X" % (svc[1],)
 
-        uuid_ba = svc[2][0]
-        uuid = binascii.hexlify(uuid_ba[::-1]).upper()
+            uuid_ba = svc[2][0]
+            uuid = binascii.hexlify(uuid_ba[::-1]).upper()
 
-        # add hyphens to long uuid: '0000-1157-0000-0000-0123-4567-89AB-CDEF'
-        if len(uuid) > 4:
-            uuid = "-".join([uuid[i:i+4] for i in range(0, len(uuid), 4)])
+            # add hyphens to long uuid: 0000-1157-0000-0000-0123-4567-89AB-CDEF
+            if len(uuid) > 4:
+                uuid = "-".join([uuid[i:i+4] for i in range(0, len(uuid), 4)])
 
-        VERIFY_VALUES.append(start_handle)
-        VERIFY_VALUES.append(end_handle)
+            VERIFY_VALUES.append(start_handle)
+            VERIFY_VALUES.append(end_handle)
 
-        # avoid repeated service uuid, it should be verified only once, for
-        # example:
-        # gattc_disc_prim_uuid_rsp ((1, 3, ('\xc9N',)),
-        # (48, 50, ('\xc9N',)), (64, 66, ('\xc9N',)),
-        # (80, 82, ('\xc9N',)), (144, 150, ('\xc9N',)))
-        if uuid not in VERIFY_VALUES:
-            VERIFY_VALUES.append(uuid)
+            # avoid repeated service uuid, it should be verified only once, for
+            # example:
+            # gattc_disc_prim_uuid_rsp ((1, 3, ('\xc9N',)),
+            # (48, 50, ('\xc9N',)), (64, 66, ('\xc9N',)),
+            # (80, 82, ('\xc9N',)), (144, 150, ('\xc9N',)))
+            if uuid not in VERIFY_VALUES:
+                VERIFY_VALUES.append(uuid)
 
-    logging.debug("Set verify values to: %r", VERIFY_VALUES)
-
-    # TODO Validation
+        logging.debug("Set verify values to: %r", VERIFY_VALUES)
 
 
-def gattc_find_included_rsp():
+def gattc_find_included_rsp(store_rsp=False):
     zephyrctl = get_zephyr()
 
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
@@ -1033,10 +1037,28 @@ def gattc_find_included_rsp():
 
     incls_tuple = gatt_dec_disc_rsp(tuple_data[0], "include")
     logging.debug("%s %r", gattc_find_included_rsp.__name__, incls_tuple)
-    # TODO Validation
+
+    if store_rsp:
+        global VERIFY_VALUES
+        VERIFY_VALUES = []
+
+        for incl in incls_tuple:
+            att_handle = "0x%04X" % (incl[0][0],)
+            inc_svc_handle = "0x%04X" % (incl[1][0],)
+            end_grp_handle = "0x%04X" % (incl[1][1],)
+
+            uuid_ba = incl[1][2][0]
+            uuid = "0x" + binascii.hexlify(uuid_ba[::-1]).upper()
+
+            VERIFY_VALUES.append(att_handle)
+            VERIFY_VALUES.append(inc_svc_handle)
+            VERIFY_VALUES.append(end_grp_handle)
+            VERIFY_VALUES.append(uuid)
+
+        logging.debug("Set verify values to: %r", VERIFY_VALUES)
 
 
-def gattc_disc_all_chrc_rsp():
+def gattc_disc_all_chrc_rsp(store_rsp=False):
     zephyrctl = get_zephyr()
 
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
@@ -1048,10 +1070,20 @@ def gattc_disc_all_chrc_rsp():
 
     chrcs_tuple = gatt_dec_disc_rsp(tuple_data[0], "characteristic")
     logging.debug("%s %r", gattc_disc_all_chrc_rsp.__name__, chrcs_tuple)
-    # TODO Validation
+
+    if store_rsp:
+        global VERIFY_VALUES
+        VERIFY_VALUES = []
+
+        for chrc in chrcs_tuple:
+
+            handle = "0x%04X" % (chrc[0],)
+            VERIFY_VALUES.append(handle)
+
+        logging.debug("Set verify values to: %r", VERIFY_VALUES)
 
 
-def gattc_disc_chrc_uuid_rsp():
+def gattc_disc_chrc_uuid_rsp(store_rsp=False):
     zephyrctl = get_zephyr()
 
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
@@ -1063,10 +1095,30 @@ def gattc_disc_chrc_uuid_rsp():
 
     chrcs_tuple = gatt_dec_disc_rsp(tuple_data[0], "characteristic")
     logging.debug("%s %r", gattc_disc_chrc_uuid_rsp.__name__, chrcs_tuple)
-    # TODO Validation
+
+    if store_rsp:
+        global VERIFY_VALUES
+        VERIFY_VALUES = []
+
+        for chrc in chrcs_tuple:
+            handle = "0x%04X" % (chrc[1],)
+
+            uuid_ba = chrc[3][0]
+            uuid = binascii.hexlify(uuid_ba[::-1]).upper()
+
+            # add hyphens to long uuid: 0000-1157-0000-0000-0123-4567-89AB-CDEF
+            if len(uuid) > 4:
+                uuid = "-".join([uuid[i:i+4] for i in range(0, len(uuid), 4)])
+            else:
+                uuid = "0x" + uuid
+
+            VERIFY_VALUES.append(handle)
+            VERIFY_VALUES.append(uuid)
+
+        logging.debug("Set verify values to: %r", VERIFY_VALUES)
 
 
-def gattc_disc_all_desc_rsp():
+def gattc_disc_all_desc_rsp(store_rsp=False):
     zephyrctl = get_zephyr()
 
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
@@ -1078,7 +1130,19 @@ def gattc_disc_all_desc_rsp():
 
     descs_tuple = gatt_dec_disc_rsp(tuple_data[0], "descriptor")
     logging.debug("%s %r", gattc_disc_all_desc_rsp.__name__, descs_tuple)
-    # TODO Validation
+
+    if store_rsp:
+        global VERIFY_VALUES
+        VERIFY_VALUES = []
+
+        for desc in descs_tuple:
+            handle = "0x%04X" % (desc[0],)
+            uuid_ba = desc[1][0]
+            uuid = "0x" + binascii.hexlify(uuid_ba[::-1]).upper()
+            VERIFY_VALUES.append(handle)
+            VERIFY_VALUES.append(uuid)
+
+        logging.debug("Set verify values to: %r", VERIFY_VALUES)
 
 
 att_rsp_str = {0:   "No error",
