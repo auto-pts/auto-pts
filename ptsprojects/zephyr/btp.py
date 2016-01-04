@@ -29,15 +29,6 @@ CORE = {
 }
 
 GAP = {
-    "read_supp_cmds": '',
-    "read_ctrl_index_list": '',
-    "read_ctrl_info": '',
-    "reset": '',
-    "set_powered": '',
-    "set_connectable": '',
-    "set_fast_connectable": '',
-    "set_discov": '',
-    "set_bond": '',
     "start_adv": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_START_ADVERTISING,
                   CONTROLLER_INDEX, ""),
     "conn": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_CONNECT, CONTROLLER_INDEX),
@@ -46,9 +37,6 @@ GAP = {
                 CONTROLLER_INDEX),
     "set_io_cap": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_SET_IO_CAP,
                    CONTROLLER_INDEX),
-    "stop_adv": '',
-    "start_discov": '',
-    "stop_discov": '',
 }
 
 GATTS = {
