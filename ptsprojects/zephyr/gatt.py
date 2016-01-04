@@ -2225,7 +2225,7 @@ def test_cases(pts_bd_addr):
     """Returns a list of GATT test cases"""
 
     test_cases = test_cases_client(pts_bd_addr)
-    # test_cases += test_cases_server()
+    test_cases += test_cases_server()
 
     return test_cases
 
