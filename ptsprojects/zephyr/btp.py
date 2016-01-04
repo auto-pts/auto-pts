@@ -18,14 +18,11 @@ CONTROLLER_INDEX = 0
 CORE = {
     "gap_reg": (btpdef.BTP_SERVICE_ID_CORE, btpdef.CORE_REGISTER_SERVICE,
                 btpdef.BTP_INDEX_NONE, btpdef.BTP_SERVICE_ID_GAP),
-
     "gatts_reg": (btpdef.BTP_SERVICE_ID_CORE, btpdef.CORE_REGISTER_SERVICE,
                   btpdef.BTP_INDEX_NONE, btpdef.BTP_SERVICE_ID_GATT),
-
     "read_supp_cmds": (btpdef.BTP_SERVICE_ID_CORE,
                        btpdef.CORE_READ_SUPPORTED_COMMANDS,
                        btpdef.BTP_INDEX_NONE, ""),
-
     "read_supp_svcs": (btpdef.BTP_SERVICE_ID_CORE,
                        btpdef.CORE_READ_SUPPORTED_SERVICES,
                        btpdef.BTP_INDEX_NONE, ""),
