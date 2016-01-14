@@ -37,6 +37,16 @@ GAP = {
                 CONTROLLER_INDEX),
     "set_io_cap": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_SET_IO_CAP,
                    CONTROLLER_INDEX),
+    "set_conn": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_SET_CONNECTABLE,
+                 CONTROLLER_INDEX, 1),
+    "set_nonconn": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_SET_CONNECTABLE,
+                    CONTROLLER_INDEX, 0),
+    "set_nondiscov": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_SET_DISCOVERABLE,
+                      CONTROLLER_INDEX, btpdef.GAP_NON_DISCOVERABLE),
+    "set_gendiscov": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_SET_DISCOVERABLE,
+                      CONTROLLER_INDEX, btpdef.GAP_GENERAL_DISCOVERABLE),
+    "set_limdiscov": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_SET_DISCOVERABLE,
+                      CONTROLLER_INDEX, btpdef.GAP_LIMITED_DISCOVERABLE),
 }
 
 GATTS = {
@@ -336,6 +346,56 @@ def gap_passkey_disp_ev(bd_addr, bd_addr_type, store=False):
     if store:
         global PASSKEY
         PASSKEY = passkey_local
+
+
+def gap_set_conn():
+    logging.debug("%s", gap_set_conn.__name__)
+
+    zephyrctl = get_zephyr()
+
+    zephyrctl.btp_socket.send(*GAP['set_conn'])
+
+    gap_command_rsp_succ()
+
+
+def gap_set_nonconn():
+    logging.debug("%s", gap_set_nonconn.__name__)
+
+    zephyrctl = get_zephyr()
+
+    zephyrctl.btp_socket.send(*GAP['set_nonconn'])
+
+    gap_command_rsp_succ()
+
+
+def gap_set_nondiscov():
+    logging.debug("%s", gap_set_nondiscov.__name__)
+
+    zephyrctl = get_zephyr()
+
+    zephyrctl.btp_socket.send(*GAP['set_nondiscov'])
+
+    gap_command_rsp_succ()
+
+
+def gap_set_gendiscov():
+    logging.debug("%s", gap_set_gendiscov.__name__)
+
+    zephyrctl = get_zephyr()
+
+    zephyrctl.btp_socket.send(*GAP['set_gendiscov'])
+
+    gap_command_rsp_succ()
+
+
+def gap_set_limdiscov():
+    logging.debug("%s", gap_set_limdiscov.__name__)
+
+    zephyrctl = get_zephyr()
+
+    zephyrctl.btp_socket.send(*GAP['set_limdiscov'])
+
+    gap_command_rsp_succ()
 
 
 def gap_command_rsp_succ():
