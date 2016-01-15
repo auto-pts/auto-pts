@@ -47,6 +47,14 @@ GAP = {
                       CONTROLLER_INDEX, btpdef.GAP_GENERAL_DISCOVERABLE),
     "set_limdiscov": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_SET_DISCOVERABLE,
                       CONTROLLER_INDEX, btpdef.GAP_LIMITED_DISCOVERABLE),
+    "start_discov_pasive": (btpdef.BTP_SERVICE_ID_GAP,
+                            btpdef.GAP_START_DISCOVERY, CONTROLLER_INDEX,
+                            btpdef.GAP_DISCOVERY_LE_PASSIVE_SCAN),
+    "start_discov_active": (btpdef.BTP_SERVICE_ID_GAP,
+                            btpdef.GAP_START_DISCOVERY, CONTROLLER_INDEX,
+                            btpdef.GAP_DISCOVERY_LE_ACTIVE_SCAN),
+    "stop_discov": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_STOP_DISCOVERY,
+                    CONTROLLER_INDEX),
 }
 
 GATTS = {
@@ -394,6 +402,81 @@ def gap_set_limdiscov():
     zephyrctl = get_zephyr()
 
     zephyrctl.btp_socket.send(*GAP['set_limdiscov'])
+
+    gap_command_rsp_succ()
+
+
+def gap_device_found_ev(bd_addr_type, bd_addr, rssi=None, flags=None,
+                        eir=None):
+    logging.debug("%s %r %r %r %r %r", gap_device_found_ev.__name__,
+                  bd_addr_type, bd_addr, rssi, flags, eir)
+
+    zephyrctl = get_zephyr()
+
+    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    bd_addr_type_ba = chr(bd_addr_type)
+
+    if rssi:
+        rssi_ba = chr(rssi)
+    if flags:
+        flags_ba = chr(flags)
+    if eir:
+        eir_len_ba = struct.pack('H', len(val_ba))
+        eir_ba = binascii.unhexlify(bytearray(eir))
+
+    while True:
+        tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+        logging.debug("received %r %r", tuple_hdr, tuple_data)
+
+        if tuple_hdr.svc_id != btpdef.BTP_SERVICE_ID_GAP:
+            raise BTPError(
+                "Incorrect service ID %r  in response, should be %r!",
+                tuple_hdr.svc_id, btpdef.BTP_SERVICE_ID_GAP)
+
+        if tuple_hdr.op != btpdef.GAP_EV_DEVICE_FOUND:
+            raise BTPError("Error opcode in response!")
+
+        if tuple_data[0][0:6] != bd_addr_ba:
+            continue
+        if tuple_data[0][6:7] != bd_addr_type_ba:
+            continue
+        if rssi and tuple_data[0][7:8] != rssi_ba:
+            continue
+        if flags and tuple_data[0][8:9] != flags_ba:
+            continue
+        if (eir and tuple_data[0][9:11] != eir_len_ba and
+                tuple_data[0][11:] != bd_eir_ba):
+            continue
+
+        break
+
+
+def gap_start_discov_pasive():
+    logging.debug("%s", gap_start_discov_pasive.__name__)
+
+    zephyrctl = get_zephyr()
+
+    zephyrctl.btp_socket.send(*GAP['start_discov_pasive'])
+
+    gap_command_rsp_succ()
+
+
+def gap_start_discov_active():
+    logging.debug("%s", gap_start_discov_active.__name__)
+
+    zephyrctl = get_zephyr()
+
+    zephyrctl.btp_socket.send(*GAP['start_discov_active'])
+
+    gap_command_rsp_succ()
+
+
+def gap_stop_discov():
+    logging.debug("%s", gap_stop_discov.__name__)
+
+    zephyrctl = get_zephyr()
+
+    zephyrctl.btp_socket.send(*GAP['stop_discov'])
 
     gap_command_rsp_succ()
 
