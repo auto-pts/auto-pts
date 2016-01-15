@@ -17,15 +17,32 @@ from ptsprojects.zephyr.iutctl import get_zephyr
 import btp
 
 
-def test_cases():
+class Addr:
+    le_public = 0
+    le_random = 1
+
+
+def test_cases(pts_bd_addr):
     """Returns a list of GAP test cases
     pts -- Instance of PyPTS"""
     zephyrctl = get_zephyr()
 
     test_cases = [
-        # QTestCase("GAP", "TC_BROB_BCST_BV_01_C",),
-        # QTestCase("GAP", "TC_BROB_BCST_BV_02_C",),
-        # QTestCase("GAP", "TC_BROB_OBSV_BV_01_C",),
+        QTestCase("GAP", "TC_BROB_BCST_BV_01_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.gap_set_nonconn),
+                   TestFunc(btp.gap_adv_ind_on)]),
+        # TODO 14427 - PTS Issue
+        # QTestCase("GAP", "TC_BROB_BCST_BV_02_C",
+        #           [TestFunc(btp.core_reg_svc_gap),
+        #            TestFunc(btp.gap_set_nondiscov),
+        #            TestFunc(btp.gap_adv_ind_on)]),
+        QTestCase("GAP", "TC_BROB_OBSV_BV_01_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.gap_start_discov_pasive, start_wid=12),
+                   TestFunc(btp.gap_device_found_ev, Addr.le_public,
+                            pts_bd_addr, start_wid=4)]),
+        # TODO 14436 - PTS Issue
         # QTestCase("GAP", "TC_BROB_OBSV_BV_02_C",),
         # QTestCase("GAP", "TC_DISC_NONM_BV_01_C",),
         QTestCase("GAP", "TC_DISC_NONM_BV_02_C",
