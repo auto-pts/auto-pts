@@ -99,6 +99,10 @@ GATTC = {
     "write": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_WRITE, CONTROLLER_INDEX),
     "write_long": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_WRITE_LONG,
                    CONTROLLER_INDEX),
+    "cfg_notify": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_CFG_NOTIFY,
+                   CONTROLLER_INDEX),
+    "cfg_indicate": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_CFG_INDICATE,
+                     CONTROLLER_INDEX),
 }
 
 
@@ -948,6 +952,84 @@ def gattc_write_long(bd_addr_type, bd_addr, hdl, off, val, length=None):
     data_ba.extend(val_ba)
 
     zephyrctl.btp_socket.send(*GATTC['write_long'], data=data_ba)
+
+
+def gattc_cfg_notify(bd_addr_type, bd_addr, enable, ccc_hdl):
+    logging.debug("%s %r %r, %r, %r", gattc_cfg_notify.__name__, bd_addr_type,
+                  bd_addr, enable, ccc_hdl)
+
+    if type(ccc_hdl) is str:
+        ccc_hdl = int(ccc_hdl, 16)
+
+    zephyrctl = get_zephyr()
+
+    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    ccc_hdl_ba = struct.pack('H', ccc_hdl)
+
+    data_ba = bytearray()
+    data_ba.extend(chr(bd_addr_type))
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(chr(enable))
+    data_ba.extend(ccc_hdl_ba)
+
+    zephyrctl.btp_socket.send(*GATTC['cfg_notify'], data=data_ba)
+
+    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    logging.debug("%s received %r %r", gattc_cfg_notify.__name__,
+                  tuple_hdr, tuple_data)
+
+    rsp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
+                  btpdef.GATT_CFG_NOTIFY)
+
+
+def gattc_cfg_indicate(bd_addr_type, bd_addr, enable, ccc_hdl):
+    logging.debug("%s %r %r, %r, %r", gattc_cfg_indicate.__name__,
+                  bd_addr_type, bd_addr, enable, ccc_hdl)
+
+    if type(ccc_hdl) is str:
+        ccc_hdl = int(ccc_hdl, 16)
+
+    zephyrctl = get_zephyr()
+
+    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    ccc_hdl_ba = struct.pack('H', ccc_hdl)
+
+    data_ba = bytearray()
+    data_ba.extend(chr(bd_addr_type))
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(chr(enable))
+    data_ba.extend(ccc_hdl_ba)
+
+    zephyrctl.btp_socket.send(*GATTC['cfg_indicate'], data=data_ba)
+
+    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    logging.debug("%s received %r %r", gattc_cfg_indicate.__name__,
+                  tuple_hdr, tuple_data)
+
+    rsp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
+                  btpdef.GATT_CFG_INDICATE)
+
+
+def gattc_notification_ev(bd_addr, bd_addr_type, ev_type):
+    logging.debug("%s %r %r %r", gattc_notification_ev.__name__, bd_addr,
+                  bd_addr_type, ev_type)
+    zephyrctl = get_zephyr()
+
+    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    logging.debug("received %r %r", tuple_hdr, tuple_data)
+
+    rsp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
+                  btpdef.GATT_EV_NOTIFICATION)
+
+    data_ba = bytearray()
+    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+
+    data_ba.extend(chr(bd_addr_type))
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(chr(ev_type))
+
+    if tuple_data[0][0:len(data_ba)] != data_ba:
+        raise BTPError("Error in notification event data")
 
 
 def gatt_command_rsp_succ():
