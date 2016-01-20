@@ -31,6 +31,8 @@ CORE = {
 GAP = {
     "start_adv": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_START_ADVERTISING,
                   CONTROLLER_INDEX),
+    "stop_adv": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_STOP_ADVERTISING,
+                 CONTROLLER_INDEX, ""),
     "conn": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_CONNECT, CONTROLLER_INDEX),
     "pair": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_PAIR, CONTROLLER_INDEX),
     "disconn": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_DISCONNECT,
@@ -229,6 +231,15 @@ def gap_adv_ind_on(ad=None, sd=None):
     zephyrctl.btp_socket.send(*GAP['start_adv'], data=data_ba)
 
     gap_command_rsp_succ()
+
+
+def gap_adv_off():
+    logging.debug("%s", gap_adv_ind_on.__name__)
+    zephyrctl = get_zephyr()
+
+    zephyrctl.btp_socket.send(*GAP['stop_adv'])
+
+    gap_command_rsp_succ(btpdef.GAP_STOP_ADVERTISING)
 
 
 def gap_connected_ev(bd_addr, bd_addr_type):
@@ -487,7 +498,7 @@ def gap_stop_discov():
     gap_command_rsp_succ()
 
 
-def gap_command_rsp_succ():
+def gap_command_rsp_succ(op=None):
     logging.debug("%s", gap_command_rsp_succ.__name__)
 
     zephyrctl = get_zephyr()
