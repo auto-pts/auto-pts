@@ -175,6 +175,17 @@ def test_cases(pts_bd_addr):
                         TestFunc(btp.gap_set_io_cap, 3),
                         TestFunc(btp.gap_set_conn),
                         TestFunc(btp.gap_adv_ind_on)]),
+        # Missing functionality - We respond "None" instead of the passkey
+        # ZTestCase("GAP", "TC_BOND_BON_BV_03_C",
+        #           edit1_wids={1002: btp.var_get_passkey},
+        #           cmds=[TestFunc(btp.core_reg_svc_gap),
+        #                 TestFunc(btp.gap_set_io_cap, 0),
+        #                 TestFunc(btp.gap_set_conn),
+        #                 TestFunc(btp.gap_adv_ind_on),
+        #                 TestFunc(btp.gap_connected_ev, pts_bd_addr,
+        #                          Addr.le_public, start_wid=91),
+        #                 TestFunc(btp.gap_passkey_disp_ev, pts_bd_addr,
+        #                          Addr.le_public, True, start_wid=1002)]),
         # wid: 1001
         # style: MMI_Style_Ok 0x11040
         # description: The Secure ID is 398563. Press OK to continue.
