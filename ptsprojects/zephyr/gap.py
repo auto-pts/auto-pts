@@ -15,11 +15,24 @@ except ImportError:  # running this module as script
 
 from ptsprojects.zephyr.iutctl import get_zephyr
 import btp
+import binascii
+import gatt
 
 
 class Addr:
     le_public = 0
     le_random = 1
+
+
+init_gatt_db=[TestFunc(btp.core_reg_svc_gatts),
+              TestFunc(btp.gatts_add_svc, 0, gatt.UUID.gap_svc),
+              TestFunc(btp.gatts_add_char, 1, gatt.Prop.read | gatt.Prop.write,
+                       gatt.Perm.read | gatt.Perm.write, gatt.UUID.device_name),
+              TestFunc(btp.gatts_set_val, 2, binascii.hexlify('Tester GAP')),
+              TestFunc(btp.gatts_add_char, 1, gatt.Prop.read | gatt.Prop.write,
+                       gatt.Perm.read | gatt.Perm.write, gatt.UUID.appearance),
+              TestFunc(btp.gatts_set_val, 4, '1234'),
+              TestFunc(btp.gatts_start_server)]
 
 
 def test_cases(pts_bd_addr):
@@ -231,9 +244,29 @@ def test_cases(pts_bd_addr):
         # QTestCase("GAP", "TC_ADV_BV_04_C",),
         # QTestCase("GAP", "TC_ADV_BV_10_C",),
         # QTestCase("GAP", "TC_ADV_BV_11_C",),
-        # QTestCase("GAP", "TC_GAT_BV_01_C",),
-        # QTestCase("GAP", "TC_GAT_BV_05_C",),
-        # QTestCase("GAP", "TC_GAT_BV_06_C",),
+        QTestCase("GAP", "TC_GAT_BV_01_C",
+                  cmds=init_gatt_db + \
+                       [TestFunc(btp.core_reg_svc_gap),
+                        TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
+                                 start_wid=78),
+                        TestFunc(btp.gap_connected_ev, pts_bd_addr,
+                                 Addr.le_public, start_wid=78)]),
+        QTestCase("GAP", "TC_GAT_BV_01_C",
+                  no_wid=158,
+                  cmds=init_gatt_db + \
+                       [TestFunc(btp.core_reg_svc_gap),
+                        TestFunc(btp.gap_set_conn, start_wid=9),
+                        TestFunc(btp.gap_adv_ind_on, start_wid=9)]),
+        QTestCase("GAP", "TC_GAT_BV_05_C",
+                  cmds=init_gatt_db + \
+                      [TestFunc(btp.core_reg_svc_gap),
+                       TestFunc(btp.gap_set_conn, start_wid=91),
+                       TestFunc(btp.gap_adv_ind_on, start_wid=91)]),
+        QTestCase("GAP", "TC_GAT_BV_06_C",
+                  cmds=init_gatt_db + \
+                      [TestFunc(btp.core_reg_svc_gap),
+                       TestFunc(btp.gap_set_conn, start_wid=91),
+                       TestFunc(btp.gap_adv_ind_on, start_wid=91)]),
     ]
 
     return test_cases
