@@ -49,6 +49,22 @@ init_gatt_db=[TestFunc(btp.core_reg_svc_gatts),
               TestFunc(btp.gatts_start_server)]
 
 
+class AdType:
+    flags = 1
+    uuid16_some = 2
+    name_short = 8
+    uuid16_svc_data = 22
+    gap_appearance = 25
+    manufacturer_data = 255
+
+# Advertising data
+ad = [(AdType.uuid16_some, '1111'),
+      (AdType.gap_appearance, '1111'),
+      (AdType.name_short, binascii.hexlify('Tester')),
+      (AdType.manufacturer_data, '11111111'),
+      (AdType.uuid16_svc_data, '111111')]
+
+
 def test_cases(pts_bd_addr):
     """Returns a list of GAP test cases
     pts -- Instance of PyPTS"""
@@ -479,12 +495,32 @@ def test_cases(pts_bd_addr):
                                  start_wid=77),
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=77)]),
-        # ZTestCase("GAP", "TC_ADV_BV_01_C",),
-        # ZTestCase("GAP", "TC_ADV_BV_02_C",),
-        # ZTestCase("GAP", "TC_ADV_BV_03_C",),
-        # ZTestCase("GAP", "TC_ADV_BV_04_C",),
-        # ZTestCase("GAP", "TC_ADV_BV_10_C",),
-        # ZTestCase("GAP", "TC_ADV_BV_11_C",),
+        ZTestCase("GAP", "TC_ADV_BV_01_C",
+                  cmds=[TestFunc(btp.core_reg_svc_gap),
+                        TestFunc(btp.gap_set_conn),
+                        TestFunc(btp.gap_adv_ind_on, ad)]),
+        ZTestCase("GAP", "TC_ADV_BV_02_C",
+                  cmds=init_gatt_db + \
+                       [TestFunc(btp.core_reg_svc_gap),
+                        TestFunc(btp.gap_set_conn),
+                        TestFunc(btp.gap_adv_ind_on, ad)]),
+        ZTestCase("GAP", "TC_ADV_BV_03_C",
+                  cmds=[TestFunc(btp.core_reg_svc_gap),
+                        TestFunc(btp.gap_set_conn),
+                        TestFunc(btp.gap_set_gendiscov),
+                        TestFunc(btp.gap_adv_ind_on)]),
+        ZTestCase("GAP", "TC_ADV_BV_04_C",
+                  cmds=[TestFunc(btp.core_reg_svc_gap),
+                        TestFunc(btp.gap_set_conn),
+                        TestFunc(btp.gap_adv_ind_on, ad)]),
+        ZTestCase("GAP", "TC_ADV_BV_10_C",
+                  cmds=[TestFunc(btp.core_reg_svc_gap),
+                        TestFunc(btp.gap_set_conn),
+                        TestFunc(btp.gap_adv_ind_on, ad)]),
+        ZTestCase("GAP", "TC_ADV_BV_11_C",
+                  cmds=[TestFunc(btp.core_reg_svc_gap),
+                        TestFunc(btp.gap_set_conn),
+                        TestFunc(btp.gap_adv_ind_on, ad)]),
         ZTestCase("GAP", "TC_GAT_BV_01_C",
                   cmds=init_gatt_db + \
                        [TestFunc(btp.core_reg_svc_gap),
