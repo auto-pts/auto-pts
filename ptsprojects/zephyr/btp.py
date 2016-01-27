@@ -230,7 +230,7 @@ def gap_adv_ind_on(ad=None, sd=None):
 
     zephyrctl.btp_socket.send(*GAP['start_adv'], data=data_ba)
 
-    gap_command_rsp_succ()
+    gap_command_rsp_succ(btpdef.GAP_START_ADVERTISING)
 
 
 def gap_adv_off():
