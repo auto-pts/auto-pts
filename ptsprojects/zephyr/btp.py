@@ -30,7 +30,7 @@ CORE = {
 
 GAP = {
     "start_adv": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_START_ADVERTISING,
-                  CONTROLLER_INDEX, ""),
+                  CONTROLLER_INDEX),
     "conn": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_CONNECT, CONTROLLER_INDEX),
     "pair": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_PAIR, CONTROLLER_INDEX),
     "disconn": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_DISCONNECT,
@@ -199,13 +199,35 @@ def core_reg_svc_rsp_succ():
         logging.debug("response is valid")
 
 
-def gap_adv_ind_on():
-    logging.debug("%s", gap_adv_ind_on.__name__)
+def gap_adv_ind_on(ad=None, sd=None):
+    logging.debug("%s %r %r", gap_adv_ind_on.__name__, ad, sd)
     zephyrctl = get_zephyr()
 
-    zephyrctl.btp_socket.send(*GAP['start_adv'])
+    data_ba = bytearray()
+    ad_ba = bytearray()
+    sd_ba = bytearray()
 
-    # TODO Command response should be checked
+    if ad:
+        for entry in ad:
+            data = binascii.unhexlify(bytearray(entry[1]))
+            ad_ba.extend(chr(entry[0]))
+            ad_ba.extend(chr(len(data)))
+            ad_ba.extend(data)
+
+    if sd:
+        for entry in sd:
+            data = binascii.unhexlify(bytearray(entry[1]))
+            sd_ba.extend(chr(entry[0]))
+            sd_ba.extend(chr(len(data)))
+            sd_ba.extend(data)
+
+    data_ba.extend(chr(len(ad_ba)))
+    data_ba.extend(chr(len(sd_ba)))
+    data_ba.extend(ad_ba)
+    data_ba.extend(sd_ba)
+
+    zephyrctl.btp_socket.send(*GAP['start_adv'], data=data_ba)
+
     gap_command_rsp_succ()
 
 
