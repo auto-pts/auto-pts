@@ -6,6 +6,7 @@ import socket
 import signal
 import errno
 import shlex
+import struct
 import logging
 import readline
 import binascii
@@ -540,6 +541,11 @@ def receive(params):
     hex_str_byte = " ".join(hex_str[i:i+2] for i in range(0, len(hex_str), 2))
     print "Received data (hex): %s" % hex_str_byte
     print "Received data (ascii):", tuple_data
+
+    if tuple_hdr.svc_id == btpdef.BTP_SERVICE_ID_GAP:
+        if tuple_hdr.op == btpdef.GAP_EV_PASSKEY_DISPLAY:
+            passkey = struct.unpack('I', tuple_data[0][7:11])[0]
+            print "Passkey:", passkey
 
 def listen(params):
     logging.debug("%s %r", listen.__name__, params)
