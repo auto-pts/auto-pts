@@ -238,13 +238,8 @@ def gap_connected_ev(bd_addr, bd_addr_type):
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
-    if tuple_hdr.svc_id != btpdef.BTP_SERVICE_ID_GAP:
-        raise BTPError(
-            "Incorrect service ID %r  in response, should be %r!",
-            tuple_hdr.svc_id, btpdef.BTP_SERVICE_ID_GAP)
-
-    if tuple_hdr.op != btpdef.GAP_EV_DEVICE_CONNECTED:
-        raise BTPError("Error opcode in response!")
+    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GAP,
+                  btpdef.GAP_EV_DEVICE_CONNECTED)
 
     data_ba = bytearray()
     bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
@@ -279,13 +274,8 @@ def gap_disconnected_ev(bd_addr, bd_addr_type):
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
-    if tuple_hdr.svc_id != btpdef.BTP_SERVICE_ID_GAP:
-        raise BTPError(
-            "Incorrect service ID %r  in response, should be %r!",
-            tuple_hdr.svc_id, btpdef.BTP_SERVICE_ID_GAP)
-
-    if tuple_hdr.op == 0:
-        raise BTPError("Error opcode in response!")
+    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GAP,
+                  btpdef.GAP_EV_DEVICE_DISCONNECTED)
 
     data_ba = bytearray()
     bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
@@ -357,13 +347,8 @@ def gap_passkey_disp_ev(bd_addr, bd_addr_type, store=False):
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
-    if tuple_hdr.svc_id != btpdef.BTP_SERVICE_ID_GAP:
-        raise BTPError(
-            "Incorrect service ID %r  in response, should be %r!",
-            tuple_hdr.svc_id, btpdef.BTP_SERVICE_ID_GAP)
-
-    if tuple_hdr.op == 0:
-        raise BTPError("Error opcode in response!")
+    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GAP,
+                  btpdef.GAP_EV_PASSKEY_DISPLAY)
 
     data_ba = bytearray()
     bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
@@ -454,13 +439,8 @@ def gap_device_found_ev(bd_addr_type, bd_addr, rssi=None, flags=None,
         tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
         logging.debug("received %r %r", tuple_hdr, tuple_data)
 
-        if tuple_hdr.svc_id != btpdef.BTP_SERVICE_ID_GAP:
-            raise BTPError(
-                "Incorrect service ID %r  in response, should be %r!",
-                tuple_hdr.svc_id, btpdef.BTP_SERVICE_ID_GAP)
-
-        if tuple_hdr.op != btpdef.GAP_EV_DEVICE_FOUND:
-            raise BTPError("Error opcode in response!")
+        btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GAP,
+                      btpdef.GAP_EV_DEVICE_FOUND)
 
         if tuple_data[0][0:6] != bd_addr_ba:
             continue
