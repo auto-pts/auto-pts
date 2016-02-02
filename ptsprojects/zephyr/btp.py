@@ -146,7 +146,7 @@ def verify_description(description):
     return True
 
 
-def rsp_hdr_check(rcv_hdr, exp_svc_id, exp_op=None):
+def btp_hdr_check(rcv_hdr, exp_svc_id, exp_op=None):
     if rcv_hdr.svc_id != exp_svc_id:
         raise BTPError("Incorrect service ID %s in the response, expected %s!"
                        % (rcv_hdr.svc_id, exp_svc_id))
@@ -515,7 +515,7 @@ def gap_command_rsp_succ():
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
-    rsp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GAP)
+    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GAP)
 
 
 def gatts_add_svc(svc_type, uuid):
@@ -1000,7 +1000,7 @@ def gattc_cfg_notify(bd_addr_type, bd_addr, enable, ccc_hdl):
     logging.debug("%s received %r %r", gattc_cfg_notify.__name__,
                   tuple_hdr, tuple_data)
 
-    rsp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
+    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
                   btpdef.GATT_CFG_NOTIFY)
 
 
@@ -1028,7 +1028,7 @@ def gattc_cfg_indicate(bd_addr_type, bd_addr, enable, ccc_hdl):
     logging.debug("%s received %r %r", gattc_cfg_indicate.__name__,
                   tuple_hdr, tuple_data)
 
-    rsp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
+    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
                   btpdef.GATT_CFG_INDICATE)
 
 
@@ -1040,7 +1040,7 @@ def gattc_notification_ev(bd_addr, bd_addr_type, ev_type):
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
-    rsp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
+    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
                   btpdef.GATT_EV_NOTIFICATION)
 
     data_ba = bytearray()
@@ -1062,7 +1062,7 @@ def gatt_command_rsp_succ():
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
-    rsp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT)
+    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT)
 
 
 def gatt_dec_svc_attr(data):
@@ -1212,7 +1212,7 @@ def gattc_disc_prim_uuid_rsp(store_rsp=False):
     logging.debug("%s received %r %r", gattc_disc_prim_uuid_rsp.__name__,
                   tuple_hdr, tuple_data)
 
-    rsp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
+    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
                   btpdef.GATT_DISC_PRIM_UUID)
 
     svcs_tuple = gatt_dec_disc_rsp(tuple_data[0], "service")
@@ -1255,7 +1255,7 @@ def gattc_find_included_rsp(store_rsp=False):
     logging.debug("%s received %r %r", gattc_find_included_rsp.__name__,
                   tuple_hdr, tuple_data)
 
-    rsp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
+    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
                   btpdef.GATT_FIND_INCLUDED)
 
     incls_tuple = gatt_dec_disc_rsp(tuple_data[0], "include")
@@ -1288,7 +1288,7 @@ def gattc_disc_all_chrc_rsp(store_rsp=False):
     logging.debug("%s received %r %r", gattc_disc_all_chrc_rsp.__name__,
                   tuple_hdr, tuple_data)
 
-    rsp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
+    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
                   btpdef.GATT_DISC_ALL_CHRC)
 
     chrcs_tuple = gatt_dec_disc_rsp(tuple_data[0], "characteristic")
@@ -1313,7 +1313,7 @@ def gattc_disc_chrc_uuid_rsp(store_rsp=False):
     logging.debug("%s received %r %r", gattc_disc_chrc_uuid_rsp.__name__,
                   tuple_hdr, tuple_data)
 
-    rsp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
+    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
                   btpdef.GATT_DISC_CHRC_UUID)
 
     chrcs_tuple = gatt_dec_disc_rsp(tuple_data[0], "characteristic")
@@ -1348,7 +1348,7 @@ def gattc_disc_all_desc_rsp(store_rsp=False):
     logging.debug("%s received %r %r", gattc_disc_all_desc_rsp.__name__,
                   tuple_hdr, tuple_data)
 
-    rsp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
+    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
                   btpdef.GATT_DISC_ALL_DESC)
 
     descs_tuple = gatt_dec_disc_rsp(tuple_data[0], "descriptor")
@@ -1388,7 +1388,7 @@ def gattc_read_rsp(store_rsp=False, store_val=False):
     logging.debug("%s received %r %r", gattc_read_rsp.__name__, tuple_hdr,
                   tuple_data)
 
-    rsp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_READ)
+    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_READ)
 
     rsp, value = gatt_dec_read_rsp(tuple_data[0])
     logging.debug("%s %r %r", gattc_read_rsp.__name__, rsp, value)
@@ -1411,7 +1411,7 @@ def gattc_read_long_rsp(store_rsp=False, store_val=False):
     logging.debug("%s received %r %r", gattc_read_long_rsp.__name__, tuple_hdr,
                   tuple_data)
 
-    rsp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_READ_LONG)
+    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_READ_LONG)
 
     rsp, value = gatt_dec_read_rsp(tuple_data[0])
     logging.debug("%s %r %r", gattc_read_long_rsp.__name__, rsp, value)
@@ -1434,7 +1434,7 @@ def gattc_read_multiple_rsp(store_val=False, store_rsp=False):
     logging.debug("%s received %r %r", gattc_read_multiple_rsp.__name__,
                   tuple_hdr, tuple_data)
 
-    rsp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
+    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
                   btpdef.GATT_READ_MULTIPLE)
 
     rsp, values = gatt_dec_read_rsp(tuple_data[0])
@@ -1458,7 +1458,7 @@ def gattc_write_rsp(store_rsp=False):
     logging.debug("%s received %r %r", gattc_write_rsp.__name__, tuple_hdr,
                   tuple_data)
 
-    rsp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_WRITE)
+    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_WRITE)
 
     rsp = gatt_dec_write_rsp(tuple_data[0])
     logging.debug("%s %r", gattc_write_rsp.__name__, rsp)
@@ -1475,7 +1475,7 @@ def gattc_write_long_rsp(store_rsp=False):
     logging.debug("%s received %r %r", gattc_write_long_rsp.__name__,
                   tuple_hdr, tuple_data)
 
-    rsp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
+    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
                   btpdef.GATT_WRITE_LONG)
 
     rsp = gatt_dec_write_rsp(tuple_data[0])
