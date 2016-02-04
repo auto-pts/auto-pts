@@ -54,7 +54,7 @@ def main():
     # server only once to get data needed to create test cases
     pts_bd_addr = proxy.bd_addr()
 
-    test_cases = autoprojects.gap.test_cases()
+    test_cases = autoprojects.gap.test_cases(pts_bd_addr)
     test_cases += autoprojects.gatt.test_cases(pts_bd_addr)
     test_cases += autoprojects.sm.test_cases(pts_bd_addr)
 
