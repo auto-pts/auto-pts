@@ -24,6 +24,101 @@ class Addr:
     le_random = 1
 
 
+class UUID:
+    gap_svc = '1800'
+    device_name = '2a00'
+
+class SVC:
+    gap = (None, None, UUID.gap_svc)
+
+
+class CHAR:
+    name = (None, None, None, UUID.device_name)
+
+
+class Prop:
+    """Properties of characteresic
+
+    Specified in BTP spec:
+
+    Possible values for the Properties parameter are a bit-wise of the
+    following bits:
+
+    0       Broadcast
+    1       Read
+    2       Write Without Response
+    3       Write
+    4       Notify
+    5       Indicate
+    6       Authenticated Signed Writes
+    7       Extended Properties
+
+    """
+    broadcast     = 2 ** 0
+    read          = 2 ** 1
+    write_wo_resp = 2 ** 2
+    write         = 2 ** 3
+    nofity        = 2 ** 4
+    indicate      = 2 ** 5
+    auth_swrite   = 2 ** 6
+    ext_prop      = 2 ** 7
+
+    names = {
+        broadcast     : "Broadcast",
+        read          : "Read",
+        write_wo_resp : "Write Without Response",
+        write         : "Write",
+        nofity        : "Notify",
+        indicate      : "Indicate",
+        auth_swrite   : "Authenticated Signed Writes",
+        ext_prop      : "Extended Properties",
+    }
+
+    @staticmethod
+    def decode(prop):
+        return decode_flag_name(prop, Prop.names)
+
+
+class Perm:
+    """Permission of characteresic or descriptor
+
+    Specified in BTP spec:
+
+    Possible values for the Permissions parameter are a bit-wise of the
+    following bits:
+
+    0       Read
+    1       Write
+    2       Read with Encryption
+    3       Write with Encryption
+    4       Read with Authentication
+    5       Write with Authentication
+    6       Authorization
+
+    """
+    read        = 2 ** 0
+    write       = 2 ** 1
+    read_enc    = 2 ** 2
+    write_enc   = 2 ** 3
+    read_authn  = 2 ** 4
+    write_authn = 2 ** 5
+    authz       = 2 ** 6
+
+    names = {
+        read        : "Read",
+        write       : "Write",
+        read_enc    : "Read with Encryption",
+        write_enc   : "Write with Encryption",
+        read_authn  : "Read with Authentication",
+        write_authn : "Write with Authentication",
+        authz       : "Authorization"
+    }
+
+    @staticmethod
+    def decode(perm):
+        return decode_flag_name(perm, Perm.names)
+
+
 init_gatt_db=[TestFunc(btp.core_reg_svc_gatts),
               TestFunc(btp.gatts_add_svc, 0, gatt.UUID.gap_svc),
               TestFunc(btp.gatts_add_char, 1, gatt.Prop.read | gatt.Prop.write,
@@ -91,37 +186,168 @@ def test_cases(pts_bd_addr):
         QTestCase("GAP", "TC_DISC_NONM_BV_02_C",
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.gap_adv_ind_on)]),
-        # QTestCase("GAP", "TC_DISC_LIMM_BV_03_C",),
-        # QTestCase("GAP", "TC_DISC_LIMM_BV_04_C",),
-        # QTestCase("GAP", "TC_DISC_GENM_BV_03_C",),
-        # QTestCase("GAP", "TC_DISC_GENM_BV_04_C",),
+        QTestCase("GAP", "TC_DISC_LIMM_BV_03_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.gap_set_nonconn),
+                   TestFunc(btp.gap_set_limdiscov),
+                   TestFunc(btp.gap_adv_ind_on, start_wid=59)]),
+        QTestCase("GAP", "TC_DISC_LIMM_BV_04_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.gap_set_conn),
+                   TestFunc(btp.gap_set_limdiscov),
+                   TestFunc(btp.gap_adv_ind_on, start_wid=50)]),
+        QTestCase("GAP", "TC_DISC_GENM_BV_03_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.gap_set_nonconn),
+                   TestFunc(btp.gap_set_gendiscov),
+                   TestFunc(btp.gap_adv_ind_on, start_wid=51)]),
+        QTestCase("GAP", "TC_DISC_GENM_BV_04_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.gap_set_conn),
+                   TestFunc(btp.gap_set_gendiscov),
+                   TestFunc(btp.gap_adv_ind_on, start_wid=52)]),
+        # TODO Limited discovery procedure is not yet supported
         # QTestCase("GAP", "TC_DISC_LIMP_BV_01_C",),
+        # TODO Limited discovery procedure is not yet supported
         # QTestCase("GAP", "TC_DISC_LIMP_BV_02_C",),
+        # TODO Limited discovery procedure is not yet supported
         # QTestCase("GAP", "TC_DISC_LIMP_BV_03_C",),
+        # TODO Limited discovery procedure is not yet supported
         # QTestCase("GAP", "TC_DISC_LIMP_BV_04_C",),
+        # TODO Limited discovery procedure is not yet supported
         # QTestCase("GAP", "TC_DISC_LIMP_BV_05_C",),
-        # QTestCase("GAP", "TC_DISC_GENP_BV_01_C",),
-        # QTestCase("GAP", "TC_DISC_GENP_BV_02_C",),
-        # QTestCase("GAP", "TC_DISC_GENP_BV_03_C",),
-        # QTestCase("GAP", "TC_DISC_GENP_BV_04_C",),
-        # QTestCase("GAP", "TC_DISC_GENP_BV_05_C",),
-        # QTestCase("GAP", "TC_IDLE_NAMP_BV_01_C",),
-        # QTestCase("GAP", "TC_IDLE_NAMP_BV_02_C",),
-        # QTestCase("GAP", "TC_CONN_NCON_BV_01_C",),
-        # QTestCase("GAP", "TC_CONN_NCON_BV_02_C",),
-        # QTestCase("GAP", "TC_CONN_NCON_BV_03_C",),
+        # TODO: fails cause of ZEP-380
+        # QTestCase("GAP", "TC_DISC_GENP_BV_01_C",
+        #           [TestFunc(btp.core_reg_svc_gap),
+        #            TestFunc(btp.gap_start_discov_pasive, start_wid=23),
+        #            TestFunc(btp.gap_device_found_ev, Addr.le_public,
+        #                     pts_bd_addr, start_wid=14)]),
+        # TODO: fails cause of ZEP-380
+        # QTestCase("GAP", "TC_DISC_GENP_BV_02_C",
+        #           [TestFunc(btp.core_reg_svc_gap),
+        #            TestFunc(btp.gap_start_discov_pasive, start_wid=23),
+        #            TestFunc(btp.gap_device_found_ev, Addr.le_public,
+        #                     pts_bd_addr, start_wid=14)]),
+        # TODO: fails cause of ZEP-380
+        # QTestCase("GAP", "TC_DISC_GENP_BV_03_C",
+        #           [TestFunc(btp.core_reg_svc_gap),
+        #            TestFunc(btp.gap_start_discov_pasive, start_wid=23),
+        #            TestFunc(btp.gap_device_found_ev, Addr.le_public,
+        #                     pts_bd_addr, lim_nb_ev=50, req_pres=False,
+        #                     start_wid=11)]),
+        # TODO: fails cause of ZEP-380
+        # QTestCase("GAP", "TC_DISC_GENP_BV_04_C",
+        #           [TestFunc(btp.core_reg_svc_gap),
+        #            TestFunc(btp.gap_start_discov_pasive, start_wid=23),
+        #            TestFunc(btp.gap_device_found_ev, Addr.le_public,
+        #                     pts_bd_addr, lim_nb_ev=50, req_pres=False,
+        #                     start_wid=11)]),
+        # TODO: fails cause of ZEP-380
+        # QTestCase("GAP", "TC_DISC_GENP_BV_05_C",
+        #           [TestFunc(btp.core_reg_svc_gap),
+        #            TestFunc(btp.gap_start_discov_pasive, start_wid=23),
+        #            TestFunc(btp.gap_device_found_ev, Addr.le_public,
+        #                     pts_bd_addr, lim_nb_ev=50, req_pres=False,
+        #                     start_wid=11)]),
+        QTestCase("GAP", "TC_IDLE_NAMP_BV_01_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
+                            start_wid=78),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, Addr.le_public,
+                            start_wid=78),
+                   TestFunc(btp.gattc_disc_prim_uuid, Addr.le_public,
+                            pts_bd_addr, UUID.gap_svc, start_wid=73),
+                   TestFunc(btp.gattc_disc_prim_uuid_find_attrs_rsp,
+                            (SVC.gap,), store_attrs=True, start_wid=73),
+                   TestFunc(btp.gattc_disc_all_chrc, Addr.le_public,
+                            pts_bd_addr, None, None, (SVC.gap, 1),
+                            start_wid=73),
+                   TestFunc(btp.gattc_disc_all_chrc_find_attrs_rsp,
+                            (CHAR.name,), store_attrs=True, start_wid=73),
+                   TestFunc(btp.gattc_read_char_val, Addr.le_public,
+                            pts_bd_addr, (CHAR.name, 1), start_wid=73),
+                   TestFunc(btp.gattc_read_rsp, start_wid=73),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
+                            start_wid=77),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
+                            Addr.le_public, start_wid=77)]),
+        QTestCase("GAP", "TC_IDLE_NAMP_BV_02_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gatts_add_svc, 0, UUID.gap_svc),
+                   TestFunc(btp.gatts_add_char, 1, Prop.read,
+                            Perm.read | Perm.write, UUID.device_name),
+                   TestFunc(btp.gatts_set_val, 2, '1234'),
+                   TestFunc(btp.gatts_start_server),
+                   TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
+                            start_wid=78),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, Addr.le_public,
+                            start_wid=78)]),
+        QTestCase("GAP", "TC_CONN_NCON_BV_01_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.gap_set_nonconn, start_wid=122),
+                   TestFunc(btp.gap_adv_ind_on, start_wid=54)]),
+        QTestCase("GAP", "TC_CONN_NCON_BV_02_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.gap_set_nonconn, start_wid=122),
+                   TestFunc(btp.gap_set_gendiscov, start_wid=122),
+                   TestFunc(btp.gap_adv_ind_on, start_wid=54)]),
+        QTestCase("GAP", "TC_CONN_NCON_BV_03_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.gap_set_nonconn, start_wid=121),
+                   TestFunc(btp.gap_set_limdiscov, start_wid=121),
+                   TestFunc(btp.gap_adv_ind_on, start_wid=55)]),
         QTestCase("GAP", "TC_CONN_UCON_BV_01_C",
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.gap_adv_ind_on)]),
         QTestCase("GAP", "TC_CONN_UCON_BV_02_C",
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.gap_adv_ind_on)]),
-        # QTestCase("GAP", "TC_CONN_UCON_BV_03_C",),
-        # QTestCase("GAP", "TC_CONN_ACEP_BV_01_C",),
-        # QTestCase("GAP", "TC_CONN_GCEP_BV_01_C",),
-        # QTestCase("GAP", "TC_CONN_GCEP_BV_02_C",),
-        # QTestCase("GAP", "TC_CONN_DCEP_BV_01_C",),
-        # QTestCase("GAP", "TC_CONN_DCEP_BV_02_C",),
+        QTestCase("GAP", "TC_CONN_UCON_BV_03_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.gap_set_limdiscov, start_wid=76),
+                   TestFunc(btp.gap_adv_ind_on, start_wid=76)]),
+        QTestCase("GAP", "TC_CONN_ACEP_BV_01_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
+                            start_wid=78),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, Addr.le_public,
+                            start_wid=78),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
+                            start_wid=77),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
+                            Addr.le_public, start_wid=77)]),
+        QTestCase("GAP", "TC_CONN_GCEP_BV_01_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
+                            start_wid=78),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, Addr.le_public,
+                            start_wid=78),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
+                            start_wid=77),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
+                            Addr.le_public, start_wid=77)]),
+        QTestCase("GAP", "TC_CONN_GCEP_BV_02_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
+                            start_wid=78),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, Addr.le_public,
+                            start_wid=78),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
+                            start_wid=77),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
+                            Addr.le_public, start_wid=77)]),
+        QTestCase("GAP", "TC_CONN_DCEP_BV_01_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
+                            start_wid=78),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, Addr.le_public,
+                            start_wid=78),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
+                            start_wid=77),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
+                            Addr.le_public, start_wid=77)]),
         QTestCase("GAP", "TC_CONN_CPUP_BV_01_C",
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.gap_adv_ind_on)]),
@@ -131,10 +357,47 @@ def test_cases(pts_bd_addr):
         QTestCase("GAP", "TC_CONN_CPUP_BV_03_C",
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.gap_adv_ind_on)]),
-        # QTestCase("GAP", "TC_CONN_CPUP_BV_04_C",),
-        # QTestCase("GAP", "TC_CONN_CPUP_BV_05_C",),
-        # QTestCase("GAP", "TC_CONN_CPUP_BV_06_C",),
-        # QTestCase("GAP", "TC_CONN_TERM_BV_01_C",),
+        QTestCase("GAP", "TC_CONN_CPUP_BV_04_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
+                            start_wid=40),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, Addr.le_public,
+                            start_wid=40),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
+                            start_wid=77),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
+                            Addr.le_public, start_wid=77)]),
+        QTestCase("GAP", "TC_CONN_CPUP_BV_05_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
+                            start_wid=40),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, Addr.le_public,
+                            start_wid=40),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
+                            start_wid=77),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
+                            Addr.le_public, start_wid=77)]),
+        # TODO: fails cause of ZEP-381
+        # QTestCase("GAP", "TC_CONN_CPUP_BV_06_C",
+        #           [TestFunc(btp.core_reg_svc_gap),
+        #            TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
+        #                     start_wid=40),
+        #            TestFunc(btp.gap_connected_ev, pts_bd_addr, Addr.le_public,
+        #                     start_wid=40),
+        #            TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
+        #                     start_wid=77),
+        #            TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
+        #                     Addr.le_public, start_wid=77)]),
+        QTestCase("GAP", "TC_CONN_TERM_BV_01_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
+                            start_wid=78),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, Addr.le_public,
+                            start_wid=78),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
+                            start_wid=77),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
+                            Addr.le_public, start_wid=77)]),
         # Not supported by Zephyr yet
         # QTestCase("GAP", "TC_BOND_NBON_BV_01_C",),
         # Not supported by Zephyr yet
