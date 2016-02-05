@@ -175,11 +175,12 @@ def test_cases(pts_bd_addr):
         #           [TestFunc(btp.core_reg_svc_gap),
         #            TestFunc(btp.gap_set_nondiscov),
         #            TestFunc(btp.gap_adv_ind_on)]),
-        QTestCase("GAP", "TC_BROB_OBSV_BV_01_C",
-                  [TestFunc(btp.core_reg_svc_gap),
-                   TestFunc(btp.gap_start_discov_pasive, start_wid=12),
-                   TestFunc(btp.gap_device_found_ev, Addr.le_public,
-                            pts_bd_addr, start_wid=4)]),
+        # TODO: fails cause of ZEP-380
+        # QTestCase("GAP", "TC_BROB_OBSV_BV_01_C",
+        #           [TestFunc(btp.core_reg_svc_gap),
+        #            TestFunc(btp.gap_start_discov_pasive, start_wid=12),
+        #            TestFunc(btp.gap_device_found_ev, Addr.le_public,
+        #                     pts_bd_addr, start_wid=4)]),
         # TODO 14436 - PTS Issue
         # QTestCase("GAP", "TC_BROB_OBSV_BV_02_C",),
         # QTestCase("GAP", "TC_DISC_NONM_BV_01_C",),
