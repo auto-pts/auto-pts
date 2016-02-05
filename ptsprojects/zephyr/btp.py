@@ -724,10 +724,70 @@ def gattc_find_included(bd_addr_type, bd_addr, start_hdl, stop_hdl):
     zephyrctl.btp_socket.send(*GATTC['find_included'], data=data_ba)
 
 
-def gattc_disc_all_chrc(bd_addr_type, bd_addr, start_hdl, stop_hdl):
-    logging.debug("%s %r %r %r %r", gattc_disc_all_chrc.__name__,
-                  bd_addr_type, bd_addr, start_hdl, stop_hdl)
+def gattc_disc_all_chrc_find_attrs_rsp(exp_chars, store_attrs=False):
+    """Parse and find requested characteristics from rsp
+
+    ATTRIBUTE FORMAT (CHARACTERISTIC) - (handle, val handle, props, uuid)
+
+    """
     zephyrctl = get_zephyr()
+
+    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    logging.debug("%s received %r %r",
+                  gattc_disc_all_chrc_find_attrs_rsp.__name__, tuple_hdr,
+                  tuple_data)
+    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
+                  btpdef.GATT_DISC_ALL_CHRC)
+
+    chars_tuple = gatt_dec_disc_rsp(tuple_data[0], "characteristic")
+
+    for char in chars_tuple:
+        for exp_char in exp_chars:
+            # Check if option expected attribute parameters match
+            char_uuid = binascii.hexlify(char[3][0][::-1])
+            if ((exp_char[0] and exp_char[0] != char[0]) or
+                    (exp_char[1] and exp_char[1] != char[1]) or
+                    (exp_char[2] and exp_char[2] != char[2]) or
+                    (exp_char[3] and exp_char[3] != char_uuid)):
+
+                logging.debug("gatt char not matched = %r != %r", char,
+                              exp_char)
+
+                continue
+
+            logging.debug("gatt char matched = %r == %r", char, exp_char)
+
+            if store_attrs:
+                global GATT_CHARS
+
+                GATT_CHARS = []
+
+                GATT_CHARS.append(char)
+
+
+def gattc_disc_all_chrc(bd_addr_type, bd_addr, start_hdl, stop_hdl, svc=None):
+    logging.debug("%s %r %r %r %r %r", gattc_disc_all_chrc.__name__,
+                  bd_addr_type, bd_addr, start_hdl, stop_hdl, svc)
+    zephyrctl = get_zephyr()
+
+    if svc:
+        svc_nb = svc[1]
+        for s in GATT_SVCS:
+            if not ((svc[0][0] and svc[0][0] != s[0]) and
+                    (svc[0][1] and svc[0][1] != s[1]) and
+                    (svc[0][2] and svc[0][2] != s[2])):
+
+                    # To take n-th service
+                    svc_nb -= 1
+                    if svc_nb != 0:
+                        continue
+
+                    start_hdl = s[0]
+                    stop_hdl = s[1]
+
+                    logging.debug("Got requested service!")
+
+                    break
 
     if type(start_hdl) is str:
         start_hdl = int(start_hdl, 16)
