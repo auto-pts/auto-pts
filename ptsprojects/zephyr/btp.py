@@ -9,6 +9,7 @@ import btpdef
 
 #  Global temporary objects
 PASSKEY = None
+GATT_SVCS = None
 
 #  A sequence of values to verify in PTS MMI description
 VERIFY_VALUES = None
@@ -31,6 +32,8 @@ CORE = {
 GAP = {
     "start_adv": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_START_ADVERTISING,
                   CONTROLLER_INDEX),
+    "stop_adv": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_STOP_ADVERTISING,
+                 CONTROLLER_INDEX, ""),
     "conn": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_CONNECT, CONTROLLER_INDEX),
     "pair": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_PAIR, CONTROLLER_INDEX),
     "disconn": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_DISCONNECT,
@@ -49,9 +52,10 @@ GAP = {
                       CONTROLLER_INDEX, btpdef.GAP_LIMITED_DISCOVERABLE),
     "start_discov_pasive": (btpdef.BTP_SERVICE_ID_GAP,
                             btpdef.GAP_START_DISCOVERY, CONTROLLER_INDEX,
-                            btpdef.GAP_DISCOVERY_LE_PASSIVE_SCAN),
+                            btpdef.GAP_DISCOVERY_FLAG_LE),
     "start_discov_active": (btpdef.BTP_SERVICE_ID_GAP,
                             btpdef.GAP_START_DISCOVERY, CONTROLLER_INDEX,
+                            btpdef.GAP_DISCOVERY_FLAG_LE,
                             btpdef.GAP_DISCOVERY_LE_ACTIVE_SCAN),
     "stop_discov": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_STOP_DISCOVERY,
                     CONTROLLER_INDEX),
@@ -228,7 +232,16 @@ def gap_adv_ind_on(ad=None, sd=None):
 
     zephyrctl.btp_socket.send(*GAP['start_adv'], data=data_ba)
 
-    gap_command_rsp_succ()
+    gap_command_rsp_succ(btpdef.GAP_START_ADVERTISING)
+
+
+def gap_adv_off():
+    logging.debug("%s", gap_adv_ind_on.__name__)
+    zephyrctl = get_zephyr()
+
+    zephyrctl.btp_socket.send(*GAP['stop_adv'])
+
+    gap_command_rsp_succ(btpdef.GAP_STOP_ADVERTISING)
 
 
 def gap_connected_ev(bd_addr, bd_addr_type):
@@ -417,12 +430,16 @@ def gap_set_limdiscov():
     gap_command_rsp_succ()
 
 
+# TODO - While ZEP-380 will be fixed this needs to be refactored
 def gap_device_found_ev(bd_addr_type, bd_addr, rssi=None, flags=None,
-                        eir=None):
+                        eir=None, lim_nb_ev=None, req_pres=True):
     logging.debug("%s %r %r %r %r %r", gap_device_found_ev.__name__,
                   bd_addr_type, bd_addr, rssi, flags, eir)
 
     zephyrctl = get_zephyr()
+
+    pres = False
+    nb_ev = 0
 
     bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
     bd_addr_type_ba = chr(bd_addr_type)
@@ -442,6 +459,11 @@ def gap_device_found_ev(bd_addr_type, bd_addr, rssi=None, flags=None,
         btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GAP,
                       btpdef.GAP_EV_DEVICE_FOUND)
 
+        if lim_nb_ev and nb_ev == lim_nb_ev:
+            break
+
+        nb_ev += 1
+
         if tuple_data[0][0:6] != bd_addr_ba:
             continue
         if tuple_data[0][6:7] != bd_addr_type_ba:
@@ -454,7 +476,21 @@ def gap_device_found_ev(bd_addr_type, bd_addr, rssi=None, flags=None,
                 tuple_data[0][11:] != bd_eir_ba):
             continue
 
+        pres = True
+
         break
+
+    # If presence for event group match
+    if req_pres == pres:
+        logging.debug("Monitoring device found events finished, received %d "
+                      "events, presence match ok", nb_ev)
+        return
+    else:
+        # TODO Temporary solution - wait for test timeout to fail test case
+        logging.debug("Monitoring device found events finished, received %d "
+                      "events, presence not match", nb_ev)
+        while True:
+            pass
 
 
 def gap_start_discov_pasive():
@@ -487,7 +523,7 @@ def gap_stop_discov():
     gap_command_rsp_succ()
 
 
-def gap_command_rsp_succ():
+def gap_command_rsp_succ(op=None):
     logging.debug("%s", gap_command_rsp_succ.__name__)
 
     zephyrctl = get_zephyr()
@@ -688,10 +724,70 @@ def gattc_find_included(bd_addr_type, bd_addr, start_hdl, stop_hdl):
     zephyrctl.btp_socket.send(*GATTC['find_included'], data=data_ba)
 
 
-def gattc_disc_all_chrc(bd_addr_type, bd_addr, start_hdl, stop_hdl):
-    logging.debug("%s %r %r %r %r", gattc_disc_all_chrc.__name__,
-                  bd_addr_type, bd_addr, start_hdl, stop_hdl)
+def gattc_disc_all_chrc_find_attrs_rsp(exp_chars, store_attrs=False):
+    """Parse and find requested characteristics from rsp
+
+    ATTRIBUTE FORMAT (CHARACTERISTIC) - (handle, val handle, props, uuid)
+
+    """
     zephyrctl = get_zephyr()
+
+    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    logging.debug("%s received %r %r",
+                  gattc_disc_all_chrc_find_attrs_rsp.__name__, tuple_hdr,
+                  tuple_data)
+    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
+                  btpdef.GATT_DISC_ALL_CHRC)
+
+    chars_tuple = gatt_dec_disc_rsp(tuple_data[0], "characteristic")
+
+    for char in chars_tuple:
+        for exp_char in exp_chars:
+            # Check if option expected attribute parameters match
+            char_uuid = binascii.hexlify(char[3][0][::-1])
+            if ((exp_char[0] and exp_char[0] != char[0]) or
+                    (exp_char[1] and exp_char[1] != char[1]) or
+                    (exp_char[2] and exp_char[2] != char[2]) or
+                    (exp_char[3] and exp_char[3] != char_uuid)):
+
+                logging.debug("gatt char not matched = %r != %r", char,
+                              exp_char)
+
+                continue
+
+            logging.debug("gatt char matched = %r == %r", char, exp_char)
+
+            if store_attrs:
+                global GATT_CHARS
+
+                GATT_CHARS = []
+
+                GATT_CHARS.append(char)
+
+
+def gattc_disc_all_chrc(bd_addr_type, bd_addr, start_hdl, stop_hdl, svc=None):
+    logging.debug("%s %r %r %r %r %r", gattc_disc_all_chrc.__name__,
+                  bd_addr_type, bd_addr, start_hdl, stop_hdl, svc)
+    zephyrctl = get_zephyr()
+
+    if svc:
+        svc_nb = svc[1]
+        for s in GATT_SVCS:
+            if not ((svc[0][0] and svc[0][0] != s[0]) and
+                    (svc[0][1] and svc[0][1] != s[1]) and
+                    (svc[0][2] and svc[0][2] != s[2])):
+
+                    # To take n-th service
+                    svc_nb -= 1
+                    if svc_nb != 0:
+                        continue
+
+                    start_hdl = s[0]
+                    stop_hdl = s[1]
+
+                    logging.debug("Got requested service!")
+
+                    break
 
     if type(start_hdl) is str:
         start_hdl = int(start_hdl, 16)
@@ -769,6 +865,29 @@ def gattc_disc_all_desc(bd_addr_type, bd_addr, start_hdl, stop_hdl):
     data_ba.extend(stop_hdl_ba)
 
     zephyrctl.btp_socket.send(*GATTC['disc_all_desc'], data=data_ba)
+
+
+def gattc_read_char_val(bd_addr_type, bd_addr, char):
+    logging.debug("%s %r %r %r", gattc_read_char_val.__name__, bd_addr_type,
+                  bd_addr, char)
+
+    char_nb = char[1]
+    for c in GATT_CHARS:
+        if not ((char[0][0] and char[0][0] != c[0]) and
+                (char[0][1] and char[0][1] != c[1]) and
+                (char[0][2] and char[0][2] != c[2])
+                (char[0][3] and char[0][3] != c[3])):
+
+                # To take n-th service
+                char_nb -= 1
+                if char_nb != 0:
+                    continue
+
+                logging.debug("Got requested char, val handle = %r!", c[1])
+
+                gattc_read(bd_addr_type, bd_addr, c[1])
+
+                break
 
 
 def gattc_read(bd_addr_type, bd_addr, hdl):
@@ -1183,6 +1302,45 @@ def gatt_dec_write_rsp(data):
 
     """
     return ord(data)
+
+
+def gattc_disc_prim_uuid_find_attrs_rsp(exp_svcs, store_attrs=False):
+    """Parse and find requested services from rsp
+
+    ATTRIBUTE FORMAT (PRIMARY SERVICE) - (start handle, end handle, uuid)
+
+    """
+    zephyrctl = get_zephyr()
+
+    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    logging.debug("%s received %r %r",
+                  gattc_disc_prim_uuid_find_attrs_rsp.__name__, tuple_hdr,
+                  tuple_data)
+    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
+                  btpdef.GATT_DISC_PRIM_UUID)
+
+    svcs_tuple = gatt_dec_disc_rsp(tuple_data[0], "service")
+
+    for svc in svcs_tuple:
+        for exp_svc in exp_svcs:
+            # Check if option expected attribute parameters match
+            svc_uuid = binascii.hexlify(svc[2][0][::-1])
+            if ((exp_svc[0] and exp_svc[0] != svc[0]) or
+                    (exp_svc[1] and exp_svc[1] != svc[1]) or
+                    (exp_svc[2] and exp_svc[2] != svc_uuid)):
+
+                logging.debug("gatt svc not matched = %r != %r", svc, exp_svc)
+
+                continue
+
+            logging.debug("gatt svc matched = %r == %r", svc, exp_svc)
+
+            if store_attrs:
+                global GATT_SVCS
+
+                GATT_SVCS = []
+
+                GATT_SVCS.append(svc)
 
 
 def gattc_disc_prim_uuid_rsp(store_rsp=False):
