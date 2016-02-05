@@ -867,6 +867,29 @@ def gattc_disc_all_desc(bd_addr_type, bd_addr, start_hdl, stop_hdl):
     zephyrctl.btp_socket.send(*GATTC['disc_all_desc'], data=data_ba)
 
 
+def gattc_read_char_val(bd_addr_type, bd_addr, char):
+    logging.debug("%s %r %r %r", gattc_read_char_val.__name__, bd_addr_type,
+                  bd_addr, char)
+
+    char_nb = char[1]
+    for c in GATT_CHARS:
+        if not ((char[0][0] and char[0][0] != c[0]) and
+                (char[0][1] and char[0][1] != c[1]) and
+                (char[0][2] and char[0][2] != c[2])
+                (char[0][3] and char[0][3] != c[3])):
+
+                # To take n-th service
+                char_nb -= 1
+                if char_nb != 0:
+                    continue
+
+                logging.debug("Got requested char, val handle = %r!", c[1])
+
+                gattc_read(bd_addr_type, bd_addr, c[1])
+
+                break
+
+
 def gattc_read(bd_addr_type, bd_addr, hdl):
     logging.debug("%s %r %r %r", gattc_read.__name__, bd_addr_type, bd_addr,
                   hdl)
