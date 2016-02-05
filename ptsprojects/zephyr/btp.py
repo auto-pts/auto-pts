@@ -9,6 +9,7 @@ import btpdef
 
 #  Global temporary objects
 PASSKEY = None
+GATT_SVCS = None
 
 #  A sequence of values to verify in PTS MMI description
 VERIFY_VALUES = None
@@ -1218,6 +1219,45 @@ def gatt_dec_write_rsp(data):
 
     """
     return ord(data)
+
+
+def gattc_disc_prim_uuid_find_attrs_rsp(exp_svcs, store_attrs=False):
+    """Parse and find requested services from rsp
+
+    ATTRIBUTE FORMAT (PRIMARY SERVICE) - (start handle, end handle, uuid)
+
+    """
+    zephyrctl = get_zephyr()
+
+    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    logging.debug("%s received %r %r",
+                  gattc_disc_prim_uuid_find_attrs_rsp.__name__, tuple_hdr,
+                  tuple_data)
+    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
+                  btpdef.GATT_DISC_PRIM_UUID)
+
+    svcs_tuple = gatt_dec_disc_rsp(tuple_data[0], "service")
+
+    for svc in svcs_tuple:
+        for exp_svc in exp_svcs:
+            # Check if option expected attribute parameters match
+            svc_uuid = binascii.hexlify(svc[2][0][::-1])
+            if ((exp_svc[0] and exp_svc[0] != svc[0]) or
+                    (exp_svc[1] and exp_svc[1] != svc[1]) or
+                    (exp_svc[2] and exp_svc[2] != svc_uuid)):
+
+                logging.debug("gatt svc not matched = %r != %r", svc, exp_svc)
+
+                continue
+
+            logging.debug("gatt svc matched = %r == %r", svc, exp_svc)
+
+            if store_attrs:
+                global GATT_SVCS
+
+                GATT_SVCS = []
+
+                GATT_SVCS.append(svc)
 
 
 def gattc_disc_prim_uuid_rsp(store_rsp=False):
