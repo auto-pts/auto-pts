@@ -429,12 +429,15 @@ def gap_set_limdiscov():
     gap_command_rsp_succ()
 
 
-def gap_device_found_ev(bd_addr_type, bd_addr, rssi=None, flags=None,
-                        eir=None):
+def gap_device_found_ev(bd_addr_type, bd_addr, rssi=None, flags=None, eir=None,
+                        lim_nb_ev=None, req_pres=True):
     logging.debug("%s %r %r %r %r %r", gap_device_found_ev.__name__,
                   bd_addr_type, bd_addr, rssi, flags, eir)
 
     zephyrctl = get_zephyr()
+
+    pres = False
+    nb_ev = 0
 
     bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
     bd_addr_type_ba = chr(bd_addr_type)
@@ -449,10 +452,16 @@ def gap_device_found_ev(bd_addr_type, bd_addr, rssi=None, flags=None,
 
     while True:
         tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
-        logging.debug("received %r %r", tuple_hdr, tuple_data)
 
         btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GAP,
                       btpdef.GAP_EV_DEVICE_FOUND)
+
+        if lim_nb_ev:
+            logging.debug("Remaining device found events: %d", lim_nb_ev-nb_ev)
+            if nb_ev == lim_nb_ev:
+                break
+
+        nb_ev += 1
 
         if tuple_data[0][0:6] != bd_addr_ba:
             continue
@@ -466,7 +475,21 @@ def gap_device_found_ev(bd_addr_type, bd_addr, rssi=None, flags=None,
                 tuple_data[0][11:] != bd_eir_ba):
             continue
 
+        pres = True
+
         break
+
+    # If presence for event group match
+    if req_pres == pres:
+        logging.debug("Monitoring device found events finished, received %d "
+                      "events, presence match ok", nb_ev)
+        return
+    else:
+        # TODO Temporary solution - wait for test timeout to fail test case
+        logging.debug("Monitoring device found events finished, received %d "
+                      "events, presence not match", nb_ev)
+        while True:
+            pass
 
 
 def gap_start_discov_pasive():
