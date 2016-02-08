@@ -5,13 +5,13 @@ from ptsprojects.testcase import TestCase, TestFunc, \
 from ptsprojects.zephyr.iutctl import get_zephyr
 
 
-class QTestCase(TestCase):
+class ZTestCase(TestCase):
     """A Zephyr test case that uses QEMU or HW as DUT"""
 
     def __init__(self, *args, **kwargs):
         """Refer to TestCase.__init__ for parameters and their documentation"""
 
-        super(QTestCase, self).__init__(*args, **kwargs)
+        super(ZTestCase, self).__init__(*args, **kwargs)
 
         self.zephyrctl = get_zephyr()
 
