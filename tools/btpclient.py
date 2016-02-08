@@ -22,7 +22,7 @@ sys.path.insert(
 from ptsprojects.zephyr import btpparser
 from ptsprojects.zephyr import btpdef
 from ptsprojects.zephyr.btp import CORE, GAP, GATTS
-from ptsprojects.zephyr.iutctl import get_qemu_cmd, QEMU_UNIX_PATH, BTPSocket
+from ptsprojects.zephyr.iutctl import get_qemu_cmd, BTP_ADDRESS, BTPSocket
 from ptsprojects.testcase import AbstractMethodException
 
 BTP_SOCKET = None
@@ -555,7 +555,7 @@ def listen(params):
         return
 
     BTP_SOCKET.open()
-    print "created fd %s, listening..." % QEMU_UNIX_PATH
+    print "created fd %s, listening..." % BTP_ADDRESS
 
     try:
         BTP_SOCKET.accept()
