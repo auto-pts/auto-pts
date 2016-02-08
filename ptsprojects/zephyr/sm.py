@@ -391,10 +391,7 @@ def main():
 
     iutctl.init_stub()
 
-    # to be able to successfully create ZephyrCtl in QTestCase
-    iutctl.ZEPHYR_KERNEL_IMAGE = sys.argv[0]
-
-    test_cases_ = test_cases()
+    test_cases_ = test_cases("AB:CD:EF:12:34:56")
 
     for test_case in test_cases_:
         print
