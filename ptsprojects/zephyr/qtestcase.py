@@ -1,4 +1,4 @@
-"""Test case that manages Zephyr QEMU"""
+"""Test case that manages Zephyr IUT"""
 
 from ptsprojects.testcase import TestCase, TestFunc, \
     TestFuncCleanUp
@@ -6,7 +6,7 @@ from ptsprojects.zephyr.iutctl import get_zephyr
 
 
 class QTestCase(TestCase):
-    """A test case that uses QEMU as DUT"""
+    """A Zephyr test case that uses QEMU or HW as DUT"""
 
     def __init__(self, *args, **kwargs):
         """Refer to TestCase.__init__ for parameters and their documentation"""
@@ -15,8 +15,8 @@ class QTestCase(TestCase):
 
         self.zephyrctl = get_zephyr()
 
-        # first command is to start QEMU
+        # first command is to start QEMU or HW
         self.cmds.insert(0, TestFunc(self.zephyrctl.start))
 
-        # last command is to stop QEMU
+        # last command is to stop QEMU or HW
         self.cmds.append(TestFuncCleanUp(self.zephyrctl.stop))
