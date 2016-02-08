@@ -11,13 +11,12 @@ ZEPHYR = None
 
 # qemu binary should be installed in shell PATH
 QEMU_BIN = "qemu-system-arm"
-QEMU_UNIX_PATH = "/tmp/bt-stack-tester"
+
+# BTP communication transport: unix domain socket file name
+BTP_ADDRESS = "/tmp/bt-stack-tester"
 
 # qemu log file object
-QEMU_LOG_FO = None
-
-# microkernel.elf
-ZEPHYR_KERNEL_IMAGE = None
+IUT_LOG_FO = None
 
 
 def get_qemu_cmd(kernel_image):
@@ -28,7 +27,7 @@ def get_qemu_cmd(kernel_image):
     qemu_cmd = ("%s -cpu cortex-m3 -machine lm3s6965evb -nographic "
                 "-serial mon:stdio -serial unix:/tmp/bt-server-bredr "
                 "-serial unix:%s -kernel %s" %
-                (QEMU_BIN, QEMU_UNIX_PATH, kernel_image))
+                (QEMU_BIN, BTP_ADDRESS, kernel_image))
 
     return qemu_cmd
 
@@ -42,11 +41,11 @@ class BTPSocket(object):
 
     def open(self):
         """Open sockets for Viper"""
-        if os.path.exists(QEMU_UNIX_PATH):
-            os.remove(QEMU_UNIX_PATH)
+        if os.path.exists(BTP_ADDRESS):
+            os.remove(BTP_ADDRESS)
 
         self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        self.sock.bind(QEMU_UNIX_PATH)
+        self.sock.bind(BTP_ADDRESS)
 
         # queue only one connection
         self.sock.listen(1)
@@ -133,13 +132,25 @@ class BTPSocket(object):
 class ZephyrCtl:
     '''Zephyr OS Control Class'''
 
-    def __init__(self):
+    def __init__(self, iut_file):
         """Constructor."""
+        log("%s.%s iut_file=%s",
+            self.__class__, self.__init__.__name__, iut_file)
 
-        assert ZEPHYR_KERNEL_IMAGE, "Kernel image file is not set!"
+        self.iut_file = iut_file
 
-        self.kernel_image = ZEPHYR_KERNEL_IMAGE
+        if iut_file.startswith("/dev/tty"):
+            log("iut_file is a TTY")
+            self.iut_file_is_tty = True
+        else:
+            if not os.path.isfile(iut_file):
+                raise Exception("iut_file %s is not a file!" % repr(iut_file))
+
+            log("iut_file is a kernel image")
+            self.iut_file_is_tty = False
+
         self.qemu_process = None
+        self.socat_process = None
         self.btp_socket = None
 
     def start(self):
@@ -147,18 +158,31 @@ class ZephyrCtl:
 
         log("%s.%s", self.__class__, self.start.__name__)
 
-        qemu_cmd = get_qemu_cmd(self.kernel_image)
-
         self.btp_socket = BTPSocket()
         self.btp_socket.open()
 
-        log("Starting QEMU zephyr process: %s", qemu_cmd)
+        if self.iut_file_is_tty:
+            socat_cmd = ("socat -d -d -d -d -x -v %s UNIX-CONNECT:%s" %
+                         (self.iut_file, BTP_ADDRESS))
 
-        # TODO check if zephyr process has started correctly
-        self.qemu_process = subprocess.Popen(shlex.split(qemu_cmd),
-                                             shell=False,
-                                             stdout=QEMU_LOG_FO,
-                                             stderr=QEMU_LOG_FO)
+            log("Starting socat process: %s", socat_cmd)
+
+            # socat dies after socket is closed, so no need to kill it
+            self.socat_process = subprocess.Popen(shlex.split(socat_cmd),
+                                                  shell=False,
+                                                  stdout=IUT_LOG_FO,
+                                                  stderr=IUT_LOG_FO)
+
+        else:
+            qemu_cmd = get_qemu_cmd(self.iut_file)
+
+            log("Starting QEMU zephyr process: %s", qemu_cmd)
+
+            # TODO check if zephyr process has started correctly
+            self.qemu_process = subprocess.Popen(shlex.split(qemu_cmd),
+                                                 shell=False,
+                                                 stdout=IUT_LOG_FO,
+                                                 stderr=IUT_LOG_FO)
 
         self.btp_socket.accept()
 
@@ -202,31 +226,24 @@ def init_stub():
     ZEPHYR = ZephyrCtlStub()
 
 
-def init(kernel_image):
+def init(iut_file):
     """IUT init routine
 
-    kernel_image -- Path to Zephyr kernel image"""
+    iut_file -- Path to Zephyr kernel image or TTY file"""
 
-    global QEMU_LOG_FO
-    global ZEPHYR_KERNEL_IMAGE
+    global IUT_LOG_FO
     global ZEPHYR
 
-    QEMU_LOG_FO = open("qemu-zephyr.log", "w")
+    IUT_LOG_FO = open("iut-zephyr.log", "w")
 
-    if not os.path.isfile(kernel_image):
-        raise Exception("QEMU kernel image %s is not a file!" %
-                        repr(kernel_image))
-
-    ZEPHYR_KERNEL_IMAGE = kernel_image
-
-    ZEPHYR = ZephyrCtl()
+    ZEPHYR = ZephyrCtl(iut_file)
 
 
 def cleanup():
     """IUT cleanup routine"""
-    global QEMU_LOG_FO, ZEPHYR
-    QEMU_LOG_FO.close()
-    QEMU_LOG_FO = None
+    global IUT_LOG_FO, ZEPHYR
+    IUT_LOG_FO.close()
+    IUT_LOG_FO = None
 
     if ZEPHYR:
         ZEPHYR.stop()

@@ -19,14 +19,20 @@ def parse_args():
 
     arg_parser.add_argument("workspace",
                             help = "Path to PTS workspace file to use for "
-                                    "testing. It should have pqw6 extension. "
-                                    "The file should be located on the "
-                                    "Windows machine, where the PTS "
-                                    "automation server is running")
+                                   "testing. It should have pqw6 extension. "
+                                   "The file should be located on the "
+                                   "Windows machine, where the PTS "
+                                   "automation server is running")
 
-    arg_parser.add_argument("kernel_image",
-                            help = "Zephyr OS kernel image to be used in QEMU. "
-                                    "Normally a microkernel.elf file.")
+    arg_parser.add_argument("iut_file",
+                            help = "Either TTY file or a kernel image "
+                                   "file. Kernel image file is normally a "
+                                   "microkernel.elf file of Zephyr OS. If "
+                                   "kernel image is specified it will be "
+                                   "used to start Zephyr OS in the QEMU. "
+                                   "If TTY is specified, BTP communication "
+                                   "with Zephyr OS running on hardware will "
+                                   "be done over this TTY.")
 
     arg_parser.add_argument("--bd-addr",
                             help = "Clients bluetooth address")
@@ -48,7 +54,7 @@ def main():
     proxy = autoptsclient.init_core(args.server_address, args.workspace,
                                     args.bd_addr, args.pts_debug)
 
-    autoprojects.iutctl.init(args.kernel_image)
+    autoprojects.iutctl.init(args.iut_file)
 
     # in some networks initial connection setup is very slow, so, contact the
     # server only once to get data needed to create test cases
