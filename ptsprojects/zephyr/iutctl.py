@@ -4,6 +4,8 @@ import logging
 import socket
 import binascii
 import shlex
+import threading
+import Queue
 from btpparser import enc_frame, dec_hdr, dec_data, HDR_LEN
 
 log = logging.debug
@@ -17,6 +19,9 @@ BTP_ADDRESS = "/tmp/bt-stack-tester"
 
 # qemu log file object
 IUT_LOG_FO = None
+
+# Thread safe queue (continous recv data -> read)
+RECV_QUEUE = None
 
 
 def get_qemu_cmd(kernel_image):
@@ -32,12 +37,66 @@ def get_qemu_cmd(kernel_image):
     return qemu_cmd
 
 
+class RecvThread(threading.Thread):
+    def __init__(self, conn):
+        threading.Thread.__init__(self)
+        self.alive = True
+        self.conn = conn
+
+    def run(self):
+        while (self.alive):
+            toread_hdr_len = HDR_LEN
+            hdr = bytearray(toread_hdr_len)
+            hdr_memview = memoryview(hdr)
+
+            # Gather frame header
+            while toread_hdr_len and self.alive:
+                try:
+                    nbytes = self.conn.recv_into(hdr_memview, toread_hdr_len)
+                    hdr_memview = hdr_memview[nbytes:]
+                    toread_hdr_len -= nbytes
+                except:
+                    # TODO timeout
+                    continue
+
+            if not self.alive:
+                break
+
+            tuple_hdr = dec_hdr(hdr)
+            toread_data_len = tuple_hdr.data_len
+
+            data = bytearray(toread_data_len)
+            data_memview = memoryview(data)
+
+            # Gather optional frame data
+            while toread_data_len:
+                try:
+                    nbytes = self.conn.recv_into(data_memview, toread_data_len)
+                    data_memview = data_memview[nbytes:]
+                    toread_data_len -= nbytes
+                except:
+                    # TODO timeout
+                    continue
+
+            tuple_data = dec_data(data)
+
+            RECV_QUEUE.put((tuple_hdr, tuple_data))
+            # SOCK_BUFF.append((tuple_hdr, tuple_data))
+
+    def stop(self):
+        self.alive = False
+
+
 class BTPSocket(object):
 
     def __init__(self):
+        global RECV_QUEUE
+        RECV_QUEUE = Queue.Queue()
+
         self.sock = None
         self.conn = None
         self.addr = None
+        self.rcvt = None
 
     def open(self):
         """Open sockets for Viper"""
@@ -53,50 +112,26 @@ class BTPSocket(object):
     def accept(self):
         """Accept incomming Zephyr connection"""
         logging.debug("%s", self.accept.__name__)
+        global RCVT_RUN
 
         # This will hang forever if Zephyr don't try to connect
         self.conn, self.addr = self.sock.accept()
 
         self.conn.setblocking(0)
 
+        self.rcvt = RecvThread(self.conn)
+        self.rcvt.start()
+
     def read(self):
-        """Read BTP data from socket"""
-        logging.debug("%s", self.read.__name__)
-        toread_hdr_len = HDR_LEN
-        hdr = bytearray(toread_hdr_len)
-        hdr_memview = memoryview(hdr)
-
-        # Gather frame header
-        while toread_hdr_len:
+        while True:
             try:
-                nbytes = self.conn.recv_into(hdr_memview, toread_hdr_len)
-                hdr_memview = hdr_memview[nbytes:]
-                toread_hdr_len -= nbytes
-            except:
-                # TODO timeout
+                tuple_hdr, tuple_data = RECV_QUEUE.get()
+                break
+            except IndexError:
                 continue
 
-        tuple_hdr = dec_hdr(hdr)
-        toread_data_len = tuple_hdr.data_len
-
-        logging.debug("Received: hdr: %r %r", tuple_hdr, hdr)
-
-        data = bytearray(toread_data_len)
-        data_memview = memoryview(data)
-
-        # Gather optional frame data
-        while toread_data_len:
-            try:
-                nbytes = self.conn.recv_into(data_memview, toread_data_len)
-                data_memview = data_memview[nbytes:]
-                toread_data_len -= nbytes
-            except:
-                # TODO timeout
-                continue
-
-        tuple_data = dec_data(data)
-
-        log("Received data: %r, %r", tuple_data, data)
+        logging.debug("Received hdr: %r ", tuple_hdr)
+        logging.debug("Received data: %r ", tuple_data)
 
         return tuple_hdr, tuple_data
 
@@ -121,12 +156,18 @@ class BTPSocket(object):
         self.conn.send(bin)
 
     def close(self):
+        global RECV_QUEUE
+        self.rcvt.stop()
+        self.rcvt.join()
+        RECV_QUEUE = None
+
         self.sock.shutdown(socket.SHUT_RDWR)
         self.sock.close()
 
         self.sock = None
         self.conn = None
         self.addr = None
+        self.rcvt = None
 
 
 class ZephyrCtl:

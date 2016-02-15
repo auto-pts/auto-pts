@@ -186,8 +186,6 @@ class TestFunc:
         kwds -- arbitrary keyword argument dictionary
 
         """
-        log("%s: %r", self.func.__name__, kwds)
-
         arg_names = ["start_wid", "stop_wid"]
 
         for arg_name in arg_names:
@@ -197,8 +195,6 @@ class TestFunc:
                 arg_value = None
 
             setattr(self, arg_name, arg_value)
-
-        log("Done %s: %r", self.func.__name__, kwds)
 
     def start(self):
         """Starts the function"""
@@ -455,9 +451,10 @@ class TestCase(PTSCallback):
         log("%s %s", self, self.on_implicit_send.__name__)
 
         # this should never happen, pts does not run tests in parallel
-        assert project_name == self.project_name, \
-            "Unexpected project name %r should be %r" % \
-            (project_name, self.project_name)
+        # TODO - This is a temporary solution for PTS bug #14270
+        # assert project_name == self.project_name, \
+        #   "Unexpected project name %r should be %r" % \
+        #    (project_name, self.project_name)
 
         assert test_case_name == self.name, \
             "Unexpected test case name %r should be %r" % \

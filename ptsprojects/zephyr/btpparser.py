@@ -36,7 +36,7 @@ def dec_hdr(bin):
     +------------+--------+------------------+-------------+
 
     """
-    logging.debug("%s, %r", dec_hdr.__name__, bin)
+    # logging.debug("%s, %r", dec_hdr.__name__, bin)
 
     header = namedtuple('header', 'svc_id op ctrl_index data_len')
 
@@ -46,7 +46,7 @@ def dec_hdr(bin):
 
 
 def dec_data(bin):
-    logging.debug("%s, %r", dec_data.__name__, bin)
+    # logging.debug("%s, %r", dec_data.__name__, bin)
 
     data_len = len(bin)
     data = struct.unpack('<%ds' % data_len, bin[:data_len])
