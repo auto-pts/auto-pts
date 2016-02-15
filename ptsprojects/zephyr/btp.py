@@ -55,7 +55,7 @@ GAP = {
                             btpdef.GAP_DISCOVERY_FLAG_LE),
     "start_discov_active": (btpdef.BTP_SERVICE_ID_GAP,
                             btpdef.GAP_START_DISCOVERY, CONTROLLER_INDEX,
-                            btpdef.GAP_DISCOVERY_FLAG_LE,
+                            btpdef.GAP_DISCOVERY_FLAG_LE |
                             btpdef.GAP_DISCOVERY_LE_ACTIVE_SCAN),
     "stop_discov": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_STOP_DISCOVERY,
                     CONTROLLER_INDEX),
