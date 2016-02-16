@@ -18,6 +18,7 @@ import btp
 
 
 class UUID:
+    gap_svc = '1800'
     CEP = '2900'
     CUD = '2901'
     CCC = '2902'
