@@ -146,6 +146,15 @@ class Perm:
         return decode_flag_name(perm, Perm.names)
 
 
+def update_pixit_params(pts):
+    """Method used to update PIXIT parameters"""
+
+    pts.update_pixit_param("GATT", "TSPX_delete_link_key", "TRUE")
+    pts.update_pixit_param("GATT", "TSPX_delete_ltk", "TRUE")
+
+    return
+
+
 def test_cases_server():
     """Returns a list of GATT Server test cases"""
 
