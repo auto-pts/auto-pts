@@ -8,6 +8,7 @@ import socket
 import logging
 import xmlrpclib
 import threading
+import signal
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 from ptsprojects.testcase import get_max_test_case_desc
 from ptsprojects.testcase import TestCase, TestCmd, PTSCallback
@@ -17,6 +18,7 @@ import ptsprojects.ptstypes as ptstypes
 log = logging.debug
 
 SERVER_PORT = 65000
+TC_TIMEOUT = 180  # Test timeout is sec. After this time BTP ERROR is raised.
 
 RUNNING_TEST_CASE = None
 
@@ -257,6 +259,21 @@ def print_summary(test_cases, margin):
     print border
     print "Total".ljust(status_just) + num_test_cases_str.rjust(count_just)
 
+
+class BTPError(Exception):
+    """Exception raised if BTP error occurs.
+
+    If this exception is raised the status of the running test case is updated
+    accordingly to show that BTP error has occurred.
+
+    """
+    pass
+
+
+def timeout_handler(signum, frame):
+    raise BTPError("Timeout of test case")
+
+
 def run_test_cases(pts, test_cases):
     """Runs a list of test cases"""
 
@@ -272,7 +289,14 @@ def run_test_cases(pts, test_cases):
                test_case.project_name.ljust(max_project_name + margin) +
                test_case.name.ljust(max_test_case_name + margin - 1)),
         sys.stdout.flush()
+
+        # Some tests may be timing out because of BTP, we have to prevent
+        # tester before such stuck.
+        signal.signal(signal.SIGALRM, timeout_handler)
+        signal.alarm(TC_TIMEOUT)
         run_test_case(pts, test_case)
+        signal.alarm(0)  # Clear signal timer
+
         print test_case.status
 
     print_summary(test_cases, margin)
