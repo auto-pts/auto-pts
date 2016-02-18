@@ -127,7 +127,8 @@ class Perm:
     write_enc   = 2 ** 3
     read_authn  = 2 ** 4
     write_authn = 2 ** 5
-    authz       = 2 ** 6
+    read_authz  = 2 ** 6
+    write_authz = 2 ** 7
 
     names = {
         read        : "Read",
@@ -136,12 +137,22 @@ class Perm:
         write_enc   : "Write with Encryption",
         read_authn  : "Read with Authentication",
         write_authn : "Write with Authentication",
-        authz       : "Authorization"
+        read_authz  : "Read with Authorization",
+        write_authz : "Write with Authorization"
     }
 
     @staticmethod
     def decode(perm):
         return decode_flag_name(perm, Perm.names)
+
+
+def update_pixit_params(pts):
+    """Method used to update PIXIT parameters"""
+
+    pts.update_pixit_param("GATT", "TSPX_delete_link_key", "TRUE")
+    pts.update_pixit_param("GATT", "TSPX_delete_ltk", "TRUE")
+
+    return
 
 
 def test_cases_server():
@@ -255,8 +266,7 @@ def test_cases_server():
                    TestFunc(btp.core_reg_svc_gatts),
                    TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 1,
-                            Prop.read, Perm.read | Perm.read_enc,
-                            UUID.VND16_2),
+                            Prop.read, Perm.read_enc, UUID.VND16_2),
                    TestFunc(btp.gatts_set_val, 2, '0123456789ABCDEF'),
                    TestFunc(btp.gatts_set_enc_key_size, 2, 0x0f),
                    TestFunc(btp.gatts_start_server),
@@ -308,8 +318,7 @@ def test_cases_server():
                           TestFunc(btp.core_reg_svc_gatts),
                           TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                           TestFunc(btp.gatts_add_char, 1, Prop.read,
-                                   Perm.read | Perm.read_enc,
-                                   UUID.VND16_2),
+                                   Perm.read_enc, UUID.VND16_2),
                           TestFunc(btp.gatts_set_val, 2, '0123'),
                           TestFunc(btp.gatts_set_enc_key_size, 2, 0x0f),
                           TestFunc(btp.gatts_start_server),
@@ -367,8 +376,7 @@ def test_cases_server():
                    TestFunc(btp.core_reg_svc_gatts),
                    TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 1,
-                            Prop.read, Perm.read | Perm.read_enc,
-                            UUID.VND16_2),
+                            Prop.read, Perm.read_enc, UUID.VND16_2),
                    TestFunc(btp.gatts_set_val, 2,
                             'FEDCBA98765432100123456789ABCDEF0123456789ABCDEF'),
                    TestFunc(btp.gatts_set_enc_key_size, 2, 0x0f),
@@ -434,7 +442,7 @@ def test_cases_server():
                             Prop.read, Perm.read, UUID.appearance),
                    TestFunc(btp.gatts_set_val, 2, '0512'),
                    TestFunc(btp.gatts_add_char, 1, Prop.read,
-                            Perm.read | Perm.read_enc, UUID.gender),
+                            Perm.read_enc, UUID.gender),
                    TestFunc(btp.gatts_set_val, 4, '01'),
                    TestFunc(btp.gatts_set_enc_key_size, 4, 0x0f),
                    TestFunc(btp.gatts_add_char, 1,
@@ -493,7 +501,7 @@ def test_cases_server():
                             Prop.read, Perm.read, UUID.VND128_1),
                    TestFunc(btp.gatts_set_val, 2, '0123456789ABCDEF'),
                    TestFunc(btp.gatts_add_desc, 2,
-                            Perm.read | Perm.authz, UUID.VND16_2),
+                            Perm.read_authz, UUID.VND16_2),
                    TestFunc(btp.gatts_set_val, 4, 'FEDCBA9876543210'),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on)]),
@@ -505,8 +513,7 @@ def test_cases_server():
                             Prop.read, Perm.read, UUID.VND128_2),
                    TestFunc(btp.gatts_set_val, 2, '0123456789ABCDEF'),
                    TestFunc(btp.gatts_add_desc, 2,
-                            Perm.read | Perm.read_authn,
-                            UUID.VND128_3),
+                            Perm.read_authn, UUID.VND128_3),
                    TestFunc(btp.gatts_set_val, 4, 'FEDCBA9876543210'),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on)]),
@@ -517,8 +524,7 @@ def test_cases_server():
                    TestFunc(btp.gatts_add_char, 1,
                             Prop.read, Perm.read, UUID.VND16_2),
                    TestFunc(btp.gatts_set_val, 2, '0123456789ABCDEF'),
-                   TestFunc(btp.gatts_add_desc, 2,
-                            Perm.read | Perm.read_enc, UUID.VND16_3),
+                   TestFunc(btp.gatts_add_desc, 2, Perm.read_enc, UUID.VND16_3),
                    TestFunc(btp.gatts_set_val, 4, 'FEDCBA9876543210'),
                    TestFunc(btp.gatts_set_enc_key_size, 4, 0x0f),
                    TestFunc(btp.gatts_start_server),
@@ -605,7 +611,7 @@ def test_cases_server():
                             Prop.read, Perm.read, UUID.VND128_1),
                    TestFunc(btp.gatts_set_val, 2, '0123456789ABCDEF'),
                    TestFunc(btp.gatts_add_desc, 2,
-                            Perm.read | Perm.authz, UUID.VND16_2),
+                            Perm.read_authz, UUID.VND16_2),
                    TestFunc(
                        btp.gatts_set_val, 4, 'FEDCBA98765432100123456789ABCDEF0123456789ABCDEF0123456789ABCDEF'),
                    TestFunc(btp.gatts_start_server),
@@ -618,7 +624,7 @@ def test_cases_server():
                             Prop.read, Perm.read, UUID.VND128_2),
                    TestFunc(btp.gatts_set_val, 2, '0123456789ABCDEF'),
                    TestFunc(btp.gatts_add_desc, 2,
-                            Perm.read | Perm.read_authn, UUID.VND128_3),
+                            Perm.read_authn, UUID.VND128_3),
                    TestFunc(
                        btp.gatts_set_val, 4, 'FEDCBA98765432100123456789ABCDEF0123456789ABCDEF0123456789ABCDEF'),
                    TestFunc(btp.gatts_start_server),
@@ -630,8 +636,7 @@ def test_cases_server():
                    TestFunc(btp.gatts_add_char, 1,
                             Prop.read, Perm.read, UUID.VND16_2),
                    TestFunc(btp.gatts_set_val, 2, '0123456789ABCDEF'),
-                   TestFunc(btp.gatts_add_desc, 2,
-                            Perm.read | Perm.read_enc, UUID.VND16_3),
+                   TestFunc(btp.gatts_add_desc, 2, Perm.read_enc, UUID.VND16_3),
                    TestFunc(
                        btp.gatts_set_val, 4, 'FEDCBA98765432100123456789ABCDEF0123456789ABCDEF0123456789ABCDEF'),
                    TestFunc(btp.gatts_set_enc_key_size, 4, 0x0f),
@@ -664,8 +669,7 @@ def test_cases_server():
                    TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 1,
                             Prop.read | Prop.auth_swrite,
-                            Perm.read | Perm.write | Perm.write_authn,
-                            UUID.VND16_2),
+                            Perm.read | Perm.write_authn, UUID.VND16_2),
                    TestFunc(btp.gatts_set_val, 2, '0123456789ABCDEF'),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on)]),
@@ -705,10 +709,8 @@ def test_cases_server():
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.core_reg_svc_gatts),
                    TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
-                   TestFunc(btp.gatts_add_char, 1,
-                            Prop.read | Prop.write,
-                            Perm.read | Perm.write | Perm.write_enc,
-                            UUID.VND16_2),
+                   TestFunc(btp.gatts_add_char, 1, Prop.read | Prop.write,
+                            Perm.read | Perm.write_enc, UUID.VND16_2),
                    TestFunc(btp.gatts_set_val, 2, '0123456789ABCDEF'),
                    TestFunc(btp.gatts_set_enc_key_size, 2, 0x0f),
                    TestFunc(btp.gatts_start_server),
@@ -752,10 +754,8 @@ def test_cases_server():
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.core_reg_svc_gatts),
                    TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
-                   TestFunc(btp.gatts_add_char, 1,
-                            Prop.read | Prop.write,
-                            Perm.read | Perm.write | Perm.write_enc,
-                            UUID.VND16_2),
+                   TestFunc(btp.gatts_add_char, 1, Prop.read | Prop.write,
+                            Perm.read | Perm.write_enc, UUID.VND16_2),
                    TestFunc(btp.gatts_set_val, 2, '0123456789ABCDEF' * 10),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on)]),
@@ -764,8 +764,7 @@ def test_cases_server():
                    TestFunc(btp.core_reg_svc_gatts),
                    TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 1, Prop.read | Prop.write,
-                            Perm.read | Perm.write | Perm.write_enc,
-                            UUID.VND16_2),
+                            Perm.read | Perm.write_enc, UUID.VND16_2),
                    TestFunc(btp.gatts_set_val, 2, '0123456789ABCDEF' * 10),
                    TestFunc(btp.gatts_set_enc_key_size, 2, 0x0f),
                    TestFunc(btp.gatts_start_server),
@@ -822,10 +821,8 @@ def test_cases_server():
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.core_reg_svc_gatts),
                    TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
-                   TestFunc(btp.gatts_add_char, 1,
-                            Prop.read | Prop.write,
-                            Perm.read | Perm.write | Perm.write_enc,
-                            UUID.device_name),
+                   TestFunc(btp.gatts_add_char, 1, Prop.read | Prop.write,
+                            Perm.read | Perm.write_enc, UUID.device_name),
                    TestFunc(btp.gatts_set_val, 2, '0123'),
                    TestFunc(btp.gatts_set_enc_key_size, 2, 0x0f),
                    TestFunc(btp.gatts_start_server),
@@ -887,7 +884,7 @@ def test_cases_server():
                             Prop.read, Perm.read, UUID.VND128_1),
                    TestFunc(btp.gatts_set_val, 2, '0123456789ABCDEF'),
                    TestFunc(btp.gatts_add_desc, 2,
-                            Perm.read | Perm.write | Perm.authz, UUID.VND16_2),
+                            Perm.read | Perm.write_authz, UUID.VND16_2),
                    TestFunc(btp.gatts_set_val, 4, 'FEDCBA9876543210'),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on)]),
@@ -899,8 +896,7 @@ def test_cases_server():
                             Prop.read, Perm.read, UUID.VND128_2),
                    TestFunc(btp.gatts_set_val, 2, '0123456789ABCDEF'),
                    TestFunc(btp.gatts_add_desc, 2,
-                            Perm.read | Perm.write | Perm.write_authn,
-                            UUID.VND128_3),
+                            Perm.read | Perm.write_authn, UUID.VND128_3),
                    TestFunc(btp.gatts_set_val, 4, 'FEDCBA9876543210'),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on)]),
@@ -912,8 +908,7 @@ def test_cases_server():
                             Prop.read, Perm.read, UUID.VND16_2),
                    TestFunc(btp.gatts_set_val, 2, '0123456789ABCDEF'),
                    TestFunc(btp.gatts_add_desc, 2,
-                            Perm.read | Perm.write | Perm.write_enc,
-                            UUID.VND16_3),
+                            Perm.read | Perm.write_enc, UUID.VND16_3),
                    TestFunc(btp.gatts_set_val, 4, 'FEDCBA9876543210'),
                    TestFunc(btp.gatts_set_enc_key_size, 4, 0x0f),
                    TestFunc(btp.gatts_start_server),
@@ -982,8 +977,7 @@ def test_cases_server():
                             Prop.read, Perm.read, UUID.VND16_2),
                    TestFunc(btp.gatts_set_val, 2, '0123456789ABCDEF'),
                    TestFunc(btp.gatts_add_desc, 2,
-                            Perm.read | Perm.write | Perm.authz,
-                            UUID.VND16_3),
+                            Perm.read | Perm.write_authz, UUID.VND16_3),
                    TestFunc(
                        btp.gatts_set_val, 4, 'FEDCBA98765432100123456789ABCDEF0123456789ABCDEF0123456789ABCDEF'),
                    TestFunc(btp.gatts_start_server),
@@ -996,8 +990,7 @@ def test_cases_server():
                             Prop.read, Perm.read, UUID.VND16_2),
                    TestFunc(btp.gatts_set_val, 2, '0123456789ABCDEF'),
                    TestFunc(btp.gatts_add_desc, 2,
-                            Perm.read | Perm.write | Perm.write_authn,
-                            UUID.VND16_3),
+                            Perm.read | Perm.write_authn, UUID.VND16_3),
                    TestFunc(
                        btp.gatts_set_val, 4, 'FEDCBA98765432100123456789ABCDEF0123456789ABCDEF0123456789ABCDEF'),
                    TestFunc(btp.gatts_start_server),
@@ -1010,8 +1003,7 @@ def test_cases_server():
                             Prop.read, Perm.read, UUID.VND16_2),
                    TestFunc(btp.gatts_set_val, 2, '0123456789ABCDEF'),
                    TestFunc(btp.gatts_add_desc, 2,
-                            Perm.read | Perm.write | Perm.write_enc,
-                            UUID.VND16_2),
+                            Perm.read | Perm.write_enc, UUID.VND16_2),
                    TestFunc(
                        btp.gatts_set_val, 4, 'FEDCBA98765432100123456789ABCDEF0123456789ABCDEF0123456789ABCDEF'),
                    TestFunc(btp.gatts_set_enc_key_size, 4, 0x0f),
@@ -1179,8 +1171,8 @@ def test_cases_server():
                             Perm.read, UUID.VND16_2),
                    TestFunc(btp.gatts_set_val, 2, '1234'),
                    TestFunc(btp.gatts_add_desc, 2,
-                            Perm.read | Perm.write | Perm.write_authn | \
-                            Perm.authz, UUID.SCC),
+                            Perm.read | Perm.write_authz | Perm.write_authn,
+                            UUID.SCC),
                    TestFunc(btp.gatts_set_val, 4, '0000'),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on)],
