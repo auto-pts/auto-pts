@@ -49,7 +49,7 @@ def dec_data(bin):
     logging.debug("%s, %r", dec_data.__name__, bin)
 
     data_len = len(bin)
-    data = struct.unpack('<%ds' % data_len, bin[:data_len])
+    data = struct.unpack('<%ds' % data_len, bin)
 
     return data
 
