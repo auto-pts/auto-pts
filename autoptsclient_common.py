@@ -214,7 +214,7 @@ def run_test_case(pts, test_case):
             "%s: %s\nPrevious test case status was %r",
             error_code, str(error), test_case.status, exc_info = 1)
 
-        pts.restart_pts()
+        pts.recover_pts()
 
     finally:
         test_case.post_run(error_code) # stop qemu and other commands

@@ -213,9 +213,11 @@ class PyPTS:
         # avoided to contact PTS. These attributes should not change anyway.
         self.__bd_addr = None
 
-    def recover_from_timeout(self):
-        """Recovers from timeout set by SetPTSCallTimeout. The only way to correctly
-        recover is to restart PTS and restore its settings.
+    def recover_pts(self):
+        """Recovers PTS from errors occured during RunTestCase call.
+
+        The errors include timeout set by SetPTSCallTimeout. The only way to
+        correctly recover is to restart PTS and restore its settings.
 
         Timeouts break some PTS functionality, hence it is good idea to start a
         new instance of PTS every time. For details see:
@@ -227,7 +229,7 @@ class PyPTS:
 
         """
 
-        log("%s", self.recover_from_timeout.__name__)
+        log("%s", self.recover_pts.__name__)
         log("recov=%s", self._recov)
 
         self.restart_pts()
@@ -441,11 +443,7 @@ class PyPTS:
             hresult = int(System.UInt32(exc.HResult))
             error_code = ptstypes.PTSCONTROL_E_STRING[hresult] # see [1]
 
-            # timeout set by SetPTSCallTimeout expired
-            if hresult == ptstypes.PTSCONTROL_E_TESTCASE_TIMEOUT:
-                self.recover_from_timeout()
-            else:
-                self.restart_pts()
+            self.recover_pts()
 
         log("Done %s %s %s out: %s", self.run_test_case.__name__,
             project_name, test_case_name, error_code)
