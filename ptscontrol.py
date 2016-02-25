@@ -203,6 +203,7 @@ class PyPTS:
 
     def _init_attributes(self):
         """Initializes class attributes"""
+        log("%s", self._init_attributes.__name__)
 
         self._pts = None
 
@@ -293,7 +294,10 @@ class PyPTS:
         # in reality there should be only one pts process
         for pts_process in pts_process_list:
             log("About to kill PTS process: %s", pts_process)
-            pts_process.Kill()
+            try:
+                pts_process.Kill()
+            except Exception as error:
+                log("Exception when killing PTS process: %r", error)
 
         self._init_attributes()
 
