@@ -77,6 +77,18 @@ PTSCONTROL_E_FUNCTION_NOT_IMPLEMENTED                    = 0x849C0099
 E_NOINTERFACE                                            = 0x80004002
 CO_E_SERVER_EXEC_FAILURE                                 = 0x80080005
 
+
+# the following errors are not documented in the "EXTENDED AUTOMATING - USING
+# PTSCONTROL API", but they occur occasionally due to PTS process crash
+
+# System.Runtime.InteropServices.COMException (0x800706BA): The RPC server is
+# unavailable. (Exception from HRESULT: 0x800706BA)
+E_RPC_SERVER_UNAVAILABLE                                 = 0x800706BA
+
+# System.Runtime.InteropServices.COMException (0x800706BE): The remote
+# procedure call failed. (Exception from HRESULT: 0x800706BE)
+E_RPC_CALL_FAILED                                        = 0x800706BE
+
 PTSCONTROL_E_STRING = {
     PTSCONTROL_E_GUI_UPDATE_FAILED                           : "PTSCONTROL_E_GUI_UPDATE_FAILED",
     PTSCONTROL_E_PTS_FILE_FAILED_TO_INITIALIZE               : "PTSCONTROL_E_PTS_FILE_FAILED_TO_INITIALIZE",
@@ -105,5 +117,7 @@ PTSCONTROL_E_STRING = {
     PTSCONTROL_E_INTERNAL_ERROR                              : "PTSCONTROL_E_INTERNAL_ERROR",
     PTSCONTROL_E_FUNCTION_NOT_IMPLEMENTED                    : "PTSCONTROL_E_FUNCTION_NOT_IMPLEMENTED",
     E_NOINTERFACE                                            : "E_NOINTERFACE",
-    CO_E_SERVER_EXEC_FAILURE                                 : "CO_E_SERVER_EXEC_FAILURE"
+    CO_E_SERVER_EXEC_FAILURE                                 : "CO_E_SERVER_EXEC_FAILURE",
+    E_RPC_SERVER_UNAVAILABLE                                 : "E_RPC_SERVER_UNAVAILABLE",
+    E_RPC_CALL_FAILED                                        : "E_RPC_CALL_FAILED"
 }
