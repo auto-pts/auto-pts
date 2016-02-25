@@ -501,20 +501,11 @@ class TestCase(PTSCallback):
         log("%s %s %s %s" % (self.post_run.__name__, self.project_name,
                              self.name, error_code))
 
-        if error_code == "BTP ERROR":
-            self.status = error_code
+        if error_code in ptstypes.PTSCONTROL_E_STRING.values():
 
-        elif error_code == "XML-RPC ERROR":
-            self.status = error_code
-
-        # error code returned from pts via the auto-pts server
-        elif error_code in ptstypes.PTSCONTROL_E_STRING.values():
-
-            error_code_int = ptstypes.PTSCONTROL_E_STRING.keys()[
-                ptstypes.PTSCONTROL_E_STRING.values().index(error_code)]
-
-            # shortened status for common statuses
-            if error_code_int ==  ptstypes.PTSCONTROL_E_TESTCASE_TIMEOUT:
+            # shortened status for timeout
+            if error_code == ptstypes.PTSCONTROL_E_STRING[
+                    ptstypes.PTSCONTROL_E_TESTCASE_TIMEOUT]:
                 self.status = "TIMEOUT"
             else:
                 self.status = error_code

@@ -89,6 +89,12 @@ E_RPC_SERVER_UNAVAILABLE                                 = 0x800706BA
 # procedure call failed. (Exception from HRESULT: 0x800706BE)
 E_RPC_CALL_FAILED                                        = 0x800706BE
 
+
+# these errors are not raised by PTS on Windows, they happen on Linux only
+E_BTP_ERROR                                              = "BTP ERROR"
+E_XML_RPC_ERROR                                          = "XML-RPC ERROR"
+
+
 PTSCONTROL_E_STRING = {
     PTSCONTROL_E_GUI_UPDATE_FAILED                           : "PTSCONTROL_E_GUI_UPDATE_FAILED",
     PTSCONTROL_E_PTS_FILE_FAILED_TO_INITIALIZE               : "PTSCONTROL_E_PTS_FILE_FAILED_TO_INITIALIZE",
@@ -119,5 +125,7 @@ PTSCONTROL_E_STRING = {
     E_NOINTERFACE                                            : "E_NOINTERFACE",
     CO_E_SERVER_EXEC_FAILURE                                 : "CO_E_SERVER_EXEC_FAILURE",
     E_RPC_SERVER_UNAVAILABLE                                 : "E_RPC_SERVER_UNAVAILABLE",
-    E_RPC_CALL_FAILED                                        : "E_RPC_CALL_FAILED"
+    E_RPC_CALL_FAILED                                        : "E_RPC_CALL_FAILED",
+    E_BTP_ERROR                                              : E_BTP_ERROR,
+    E_XML_RPC_ERROR                                          : E_XML_RPC_ERROR
 }
