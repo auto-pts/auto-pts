@@ -504,6 +504,9 @@ class TestCase(PTSCallback):
         if error_code == "BTP ERROR":
             self.status = error_code
 
+        elif error_code == "XML-RPC ERROR":
+            self.status = error_code
+
         # error code returned from pts via the auto-pts server
         elif error_code in ptstypes.PTSCONTROL_E_STRING.values():
 

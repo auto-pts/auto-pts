@@ -195,7 +195,12 @@ def init_core(server_address, workspace_path, bd_addr, pts_debug):
     return proxy
 
 def run_test_case(pts, test_case):
-    """Runs the test case specified by a TestCase instance."""
+    """Runs the test case specified by a TestCase instance.
+
+    [1] xmlrpclib.Fault normally happens due to unhandled exception in the
+        autoptsserver on Windows
+
+    """
     log("Starting TestCase %s %s", run_test_case.__name__, test_case)
 
     global RUNNING_TEST_CASE
@@ -215,6 +220,13 @@ def run_test_case(pts, test_case):
             error_code, str(error), test_case.status, exc_info = 1)
 
         pts.recover_pts()
+
+    except xmlrpclib.Fault as error: # see [1]
+        error_code = "XML-RPC ERROR"
+
+        logging.error(
+            "%s: %s\nPrevious test case status was %r",
+            error_code, str(error), test_case.status, exc_info = 1)
 
     finally:
         test_case.post_run(error_code) # stop qemu and other commands
