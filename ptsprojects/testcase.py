@@ -502,13 +502,7 @@ class TestCase(PTSCallback):
                              self.name, error_code))
 
         if error_code in ptstypes.PTSCONTROL_E_STRING.values():
-
-            # shortened status for timeout
-            if error_code == ptstypes.PTSCONTROL_E_STRING[
-                    ptstypes.PTSCONTROL_E_TESTCASE_TIMEOUT]:
-                self.status = "TIMEOUT"
-            else:
-                self.status = error_code
+            self.status = error_code
 
         elif error_code:
             raise Exception("Unknown error code %r!" % error_code)
