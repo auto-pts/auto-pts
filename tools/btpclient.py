@@ -21,7 +21,7 @@ sys.path.insert(
 
 from ptsprojects.zephyr import btpparser
 from ptsprojects.zephyr import btpdef
-from ptsprojects.zephyr.btp import CORE, GAP, GATTS
+from ptsprojects.zephyr.btp import CORE, GAP, GATTS, btp_hdr_check, BTPError
 from ptsprojects.zephyr.iutctl import get_qemu_cmd, BTP_ADDRESS, BTPSocket
 from ptsprojects.testcase import AbstractMethodException
 
@@ -314,8 +314,8 @@ class ReceiveCmd(Cmd):
             description = "This command waits (timeout = 2sec) and reads " \
             "data from BTP socket")
 
-    def run(self):
-        receive("")
+    def run(self, *args, **kwds):
+        receive(*args, **kwds)
 
 class ListenCmd(Cmd):
     def __init__(self):
@@ -532,15 +532,17 @@ def send(svc_id, op, ctrl_index, data = ""):
             return
 
     try:
-        receive("")
+        receive(int_svc_id, int_op)
     except TimeoutError:
         print red("error: problem with receiving response from server")
 
     return
 
 @timeout(2)
-def receive(params):
-    logging.debug("%s %r", receive.__name__, params)
+def receive(exp_svc_id=None, exp_op=None):
+    """The parameters are the values used in the command, so response is expected
+    to have the same value"""
+    logging.debug("%s %r %r", receive.__name__, exp_svc_id, exp_op)
 
     if conn_check() is False:
         return
@@ -553,6 +555,14 @@ def receive(params):
     hex_str_byte = " ".join(hex_str[i:i+2] for i in range(0, len(hex_str), 2))
     print "Received data (hex): %s" % hex_str_byte
     print "Received data (ascii):", tuple_data
+
+    try:
+        btp_hdr_check(tuple_hdr, exp_svc_id, exp_op)
+    except BTPError as err:
+        print red("%s\nExpected svc_id=%s, op=%s" %
+                  (err.message, exp_svc_id, exp_op))
+    else:
+        print green("OK")
 
     if tuple_hdr.svc_id == btpdef.BTP_SERVICE_ID_GAP:
         if tuple_hdr.op == btpdef.GAP_EV_PASSKEY_DISPLAY:
