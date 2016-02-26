@@ -21,7 +21,7 @@ sys.path.insert(
 
 from ptsprojects.zephyr import btpparser
 from ptsprojects.zephyr import btpdef
-from ptsprojects.zephyr.btp import CORE, GAP, GATTS, btp_hdr_check, BTPError
+from ptsprojects.zephyr import btp
 from ptsprojects.zephyr.iutctl import get_qemu_cmd, BTP_ADDRESS, BTPSocket
 from ptsprojects.testcase import AbstractMethodException
 
@@ -352,7 +352,7 @@ class CoreCmd(Cmd):
     def __init__(self):
         Cmd.__init__(self)
         self.name = "core"
-        self.sub_cmds = CORE
+        self.sub_cmds = btp.CORE
 
         self.help.build(
             short_help = "Send core command to BTP tester",
@@ -363,13 +363,13 @@ class CoreCmd(Cmd):
         if not cmd:
             raise TypeError("Command arguments are missing")
 
-        generic_srvc_cmd_handler(CORE, cmd)
+        generic_srvc_cmd_handler(btp.CORE, cmd)
 
 class GapCmd(Cmd):
     def __init__(self):
         Cmd.__init__(self)
         self.name = "gap"
-        self.sub_cmds = GAP
+        self.sub_cmds = btp.GAP
 
         self.help.build(
             short_help = "Send GAP command to BTP tester",
@@ -380,13 +380,13 @@ class GapCmd(Cmd):
         if not cmd:
             raise TypeError("Command arguments are missing")
 
-        generic_srvc_cmd_handler(GAP, cmd)
+        generic_srvc_cmd_handler(btp.GAP, cmd)
 
 class GattsCmd(Cmd):
     def __init__(self):
         Cmd.__init__(self)
         self.name = "gatts"
-        self.sub_cmds = GATTS
+        self.sub_cmds = btp.GATTS
 
         self.help.build(
             short_help = "Send GATT server command to BTP tester",
@@ -397,7 +397,7 @@ class GattsCmd(Cmd):
         if not cmd:
             raise TypeError("Command arguments are missing")
 
-        generic_srvc_cmd_handler(GATTS, cmd)
+        generic_srvc_cmd_handler(btp.GATTS, cmd)
 
 class ExitCmd(Cmd):
     def __init__(self):
@@ -557,8 +557,8 @@ def receive(exp_svc_id=None, exp_op=None):
     print "Received data (ascii):", tuple_data
 
     try:
-        btp_hdr_check(tuple_hdr, exp_svc_id, exp_op)
-    except BTPError as err:
+        btp.btp_hdr_check(tuple_hdr, exp_svc_id, exp_op)
+    except btp.BTPError as err:
         print red("%s\nExpected svc_id=%s, op=%s" %
                   (err.message, exp_svc_id, exp_op))
     else:
