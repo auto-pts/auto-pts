@@ -28,6 +28,18 @@ from ptsprojects.testcase import AbstractMethodException
 BTP_SOCKET = None
 QEMU_PROCESS = None
 
+def red(text):
+    """Return red text"""
+    return "\x1B[31m%s\x1B[0m" % text
+
+def green(text):
+    """Return green text"""
+    return "\x1B[32m%s\x1B[0m" % text
+
+def blue(text):
+    """Return blue text"""
+    return "\x1B[94m%s\x1B[0m" % text
+
 def get_my_name():
     """Returns name of the script without extension"""
     script_name = os.path.basename(sys.argv[0]) # in case it is full path
@@ -522,7 +534,7 @@ def send(svc_id, op, ctrl_index, data = ""):
     try:
         receive("")
     except TimeoutError:
-        print "error: problem with receiving response from server"
+        print red("error: problem with receiving response from server")
 
     return
 
@@ -621,7 +633,7 @@ def cmd_loop(cmds_dict):
     my_name = get_my_name()
 
     while True:
-        input = raw_input("\x1B[94m[%s]\x1B[0m$ " % my_name)
+        input = raw_input(blue("[%s]" % my_name) + "$ ")
 
         if input == '':
             continue
