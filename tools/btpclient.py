@@ -247,7 +247,7 @@ class StartZephyrCmd(Cmd):
 
         # start listening
         logging.debug("Starting listen thread")
-        thread = threading.Thread(target = listen, args = ([],))
+        thread = threading.Thread(target = listen)
         thread.start()
 
         # start qemu
@@ -329,7 +329,7 @@ class ListenCmd(Cmd):
                            "connection.\nCan be interrupted with Ctrl-C"))
 
     def run(self):
-        listen([])
+        listen()
 
 class DisconnectCmd(Cmd):
     def __init__(self):
@@ -569,8 +569,8 @@ def receive(exp_svc_id=None, exp_op=None):
             passkey = struct.unpack('I', tuple_data[0][7:11])[0]
             print "Passkey:", passkey
 
-def listen(params):
-    logging.debug("%s %r", listen.__name__, params)
+def listen():
+    logging.debug("%s", listen.__name__)
 
     if BTP_SOCKET.conn is not None:
         print "btpclient is already connected to btp server"
