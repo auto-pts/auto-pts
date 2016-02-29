@@ -57,8 +57,6 @@ class BTPSocket(object):
         # This will hang forever if Zephyr don't try to connect
         self.conn, self.addr = self.sock.accept()
 
-        self.conn.setblocking(0)
-
     def read(self):
         """Read BTP data from socket"""
         logging.debug("%s", self.read.__name__)
@@ -68,13 +66,9 @@ class BTPSocket(object):
 
         # Gather frame header
         while toread_hdr_len:
-            try:
-                nbytes = self.conn.recv_into(hdr_memview, toread_hdr_len)
-                hdr_memview = hdr_memview[nbytes:]
-                toread_hdr_len -= nbytes
-            except:
-                # TODO timeout
-                continue
+            nbytes = self.conn.recv_into(hdr_memview, toread_hdr_len)
+            hdr_memview = hdr_memview[nbytes:]
+            toread_hdr_len -= nbytes
 
         tuple_hdr = dec_hdr(hdr)
         toread_data_len = tuple_hdr.data_len
@@ -86,13 +80,9 @@ class BTPSocket(object):
 
         # Gather optional frame data
         while toread_data_len:
-            try:
-                nbytes = self.conn.recv_into(data_memview, toread_data_len)
-                data_memview = data_memview[nbytes:]
-                toread_data_len -= nbytes
-            except:
-                # TODO timeout
-                continue
+            nbytes = self.conn.recv_into(data_memview, toread_data_len)
+            data_memview = data_memview[nbytes:]
+            toread_data_len -= nbytes
 
         tuple_data = dec_data(data)
 
