@@ -559,8 +559,6 @@ def listen():
 
     except KeyboardInterrupt:
         print "\nListen interrupted!"
-        conn = None
-        addr = None
 
 def generic_srvc_cmd_handler(svc, cmd):
     logging.debug("%s svc=%r cmd=%r",
