@@ -3,7 +3,6 @@
 import os
 import sys
 import socket
-import signal
 import errno
 import shlex
 import struct
@@ -13,7 +12,6 @@ import binascii
 import argparse
 import threading
 import subprocess
-from functools import wraps
 
 # to be able to find ptsprojects module
 sys.path.insert(
@@ -46,9 +44,6 @@ def get_my_name():
     script_name_no_ext = os.path.splitext(script_name)[0]
 
     return script_name_no_ext
-
-class TimeoutError(Exception):
-    pass
 
 class Completer:
     def __init__(self, options):
@@ -120,24 +115,6 @@ class Completer:
         self.log.debug("%s text=%r state=%r matches=%r", self.complete.__name__,
                       text, state, self.matches)
         return response
-
-def timeout(seconds=10, error_message=os.strerror(errno.ETIME)):
-    def decorator(func):
-        def _handle_timeout(signum, frame):
-            raise TimeoutError(error_message)
-
-        def wrapper(*args, **kwargs):
-            signal.signal(signal.SIGALRM, _handle_timeout)
-            signal.alarm(seconds)
-            try:
-                result = func(*args, **kwargs)
-            finally:
-                signal.alarm(0)
-            return result
-
-        return wraps(func)(wrapper)
-
-    return decorator
 
 class Help(object):
     """Help text manager for Cmd classes"""
@@ -311,8 +288,8 @@ class ReceiveCmd(Cmd):
         self.help.build(
             short_help = "Receive BTP command from tester",
             synopsis = "%s" % self.name,
-            description = "This command waits (timeout = 2sec) and reads " \
-            "data from BTP socket")
+            description = ("This command reads BTP commands from tester."
+                           "\nCan be interrupted with Ctrl-C."))
 
     def run(self, *args, **kwds):
         receive(*args, **kwds)
@@ -472,8 +449,6 @@ def exec_cmd(choice, params, cmds_dict):
         print "Please enter correct arguments to command!\n"
         logging.debug(e)
         help_cmd.run(cmd_name)
-    except TimeoutError:
-        print "error: requested command timed out"
 
 def send(svc_id, op, ctrl_index, data = ""):
     # TODO: should data be None and later check be done to append or not
@@ -531,14 +506,10 @@ def send(svc_id, op, ctrl_index, data = ""):
             print "error: Connection error, please connect btp again"
             return
 
-    try:
-        receive(int_svc_id, int_op)
-    except TimeoutError:
-        print red("error: problem with receiving response from server")
+    receive(int_svc_id, int_op)
 
     return
 
-@timeout(2)
 def receive(exp_svc_id=None, exp_op=None):
     """The parameters are the values used in the command, so response is expected
     to have the same value"""
@@ -547,7 +518,11 @@ def receive(exp_svc_id=None, exp_op=None):
     if conn_check() is False:
         return
 
-    tuple_hdr, tuple_data = BTP_SOCKET.read()
+    try:
+        tuple_hdr, tuple_data = BTP_SOCKET.read()
+    except KeyboardInterrupt:
+        print "\nReceive interrupted!"
+        return
 
     print "Received: hdr: ", tuple_hdr
 
