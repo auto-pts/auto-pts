@@ -17,7 +17,6 @@ import subprocess
 sys.path.insert(
     0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from ptsprojects.zephyr import btpparser
 from ptsprojects.zephyr import btpdef
 from ptsprojects.zephyr import btp
 from ptsprojects.zephyr.iutctl import get_qemu_cmd, BTP_ADDRESS, BTPSocket
