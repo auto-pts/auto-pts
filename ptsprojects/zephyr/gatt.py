@@ -1409,7 +1409,7 @@ def test_cases_client(pts_bd_addr):
                         TestFunc(btp.gap_conn, pts_bd_addr,
                                  Addr.le_public, start_wid=2),
                         TestFunc(btp.gap_connected_ev, pts_bd_addr,
-                                 Addr.le_public, start_wid=2),
+                                 Addr.le_public, start_wid=48),
                         TestFunc(btp.gattc_read, Addr.le_public,
                                  pts_bd_addr, MMI.arg_1, start_wid=48),
                         TestFunc(btp.gattc_read_rsp, store_rsp=True,
