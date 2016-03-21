@@ -1581,7 +1581,7 @@ def test_cases_client(pts_bd_addr):
                                  Addr.le_public, start_wid=3),
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=3)],
-                  verify_wids={55: btp.verify_description}),
+                  verify_wids={55: btp.verify_multiple_read_description}),
         ZTestCase("GATT", "TC_GAR_CL_BI_18_C",
                   cmds=[TestFunc(btp.core_reg_svc_gap),
                         TestFunc(btp.core_reg_svc_gatts),
