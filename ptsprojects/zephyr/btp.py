@@ -3,6 +3,7 @@
 import logging
 import binascii
 import struct
+import re
 
 from iutctl import get_zephyr
 import btpdef
@@ -144,6 +145,38 @@ def verify_description(description):
             return False
 
     logging.debug("All verifications passed")
+
+    VERIFY_VALUES = None
+
+    return True
+
+
+def verify_multiple_read_description(description):
+    """A function to verify that merged multiple read att values are in
+
+    PTS MMI description.
+
+    Returns True if verification is successful, False if not.
+
+    description -- MMI description
+
+    """
+    logging.debug("description=%r", description)
+
+    global VERIFY_VALUES
+    logging.debug("Verifying values: %r", VERIFY_VALUES)
+
+    if not VERIFY_VALUES:
+        return True
+
+    exp_mtp_read = "".join(VERIFY_VALUES)
+    got_mtp_read = "".join(re.findall(r"\b[0-9A-Fa-f]+\b", description))
+
+    if exp_mtp_read not in got_mtp_read:
+        logging.debug("Verification failed, value not in description")
+        return False
+
+    logging.debug("Multiple read verifications passed")
 
     VERIFY_VALUES = None
 
