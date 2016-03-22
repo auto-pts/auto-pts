@@ -93,6 +93,7 @@ E_RPC_CALL_FAILED                                        = 0x800706BE
 # these errors are not raised by PTS on Windows, they happen on Linux only
 E_BTP_ERROR                                              = "BTP ERROR"
 E_XML_RPC_ERROR                                          = "XML-RPC ERROR"
+E_BTP_TIMEOUT                                            = "BTP TIMEOUT"
 
 
 PTSCONTROL_E_STRING = {
@@ -129,5 +130,6 @@ PTSCONTROL_E_STRING = {
     E_RPC_SERVER_UNAVAILABLE                                 : "E_RPC_SERVER_UNAVAILABLE",
     E_RPC_CALL_FAILED                                        : "E_RPC_CALL_FAILED",
     E_BTP_ERROR                                              : E_BTP_ERROR,
-    E_XML_RPC_ERROR                                          : E_XML_RPC_ERROR
+    E_XML_RPC_ERROR                                          : E_XML_RPC_ERROR,
+    E_BTP_TIMEOUT                                            : E_BTP_TIMEOUT,
 }

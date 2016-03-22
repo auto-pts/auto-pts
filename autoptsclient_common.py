@@ -221,6 +221,15 @@ def run_test_case(pts, test_case):
 
         pts.recover_pts()
 
+    except socket.timeout as error: # timeout in BTPSocket when doing recv
+        error_code = ptstypes.E_BTP_TIMEOUT
+
+        logging.error(
+            "%s: %s\nPrevious test case status was %r",
+            error_code, str(error), test_case.status, exc_info = 1)
+
+        pts.recover_pts()
+
     except xmlrpclib.Fault as error: # see [1]
         error_code = ptstypes.E_XML_RPC_ERROR
 

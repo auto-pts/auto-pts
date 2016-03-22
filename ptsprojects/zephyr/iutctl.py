@@ -56,6 +56,7 @@ class BTPSocket(object):
 
         # This will hang forever if Zephyr don't try to connect
         self.conn, self.addr = self.sock.accept()
+        self.conn.settimeout(120) # BTP socket timeout in seconds
 
     def read(self):
         """Read BTP data from socket"""
