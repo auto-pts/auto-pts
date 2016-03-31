@@ -544,6 +544,13 @@ def receive(exp_svc_id=None, exp_op=None):
             print "Passkey:", passkey
 
 def listen():
+    """Establish connection with the BTP tester
+
+    [1] Disable socket timeouts, keyboard interrupt is used to stop socket
+        methods. This is useful when debugging the tester: cause of breakpoint
+        it might not reply for indefinite period of time.
+
+    """
     logging.debug("%s", listen.__name__)
 
     if BTP_SOCKET.conn is not None:
@@ -555,6 +562,7 @@ def listen():
 
     try:
         BTP_SOCKET.accept()
+        BTP_SOCKET.conn.settimeout(None) # see [1]
         print "btp server connected successfully"
 
     except KeyboardInterrupt:
