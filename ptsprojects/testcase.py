@@ -297,9 +297,6 @@ class TestCase(PTSCallback):
                        of MMI_Style_Yes_No1.
 
         """
-        log("%r %r %r %r %r %r", project_name, test_case_name, cmds, no_wid,
-            edit1_wids, verify_wids)
-
         self.project_name = project_name
         self.name = test_case_name
         # a.k.a. final verdict
