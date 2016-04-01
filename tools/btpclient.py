@@ -25,17 +25,31 @@ from ptsprojects.testcase import AbstractMethodException
 BTP_SOCKET = None
 QEMU_PROCESS = None
 
+# ANSI escape codes for Select Graphic Rendition (SGR) parameters
+sgr_reset = "\x1B[0m"
+sgr_fg_blue = "\x1B[94m"
+sgr_fg_green = "\x1B[32m"
+sgr_fg_red = "\x1B[31m"
+
+# based on RL_PROMPT_START_IGNORE and RL_PROMPT_END_IGNORE in readline.h
+rl_prompt_start_ignore = '\001'
+rl_prompt_end_ignore = '\002'
+
+def rl_prompt_ignore(text):
+    """Return text surrounded by prompt ignore markers of readline"""
+    return rl_prompt_start_ignore + text + rl_prompt_end_ignore
+
 def red(text):
     """Return red text"""
-    return "\x1B[31m%s\x1B[0m" % text
+    return sgr_fg_red + text + sgr_reset
 
 def green(text):
     """Return green text"""
-    return "\x1B[32m%s\x1B[0m" % text
+    return sgr_fg_green + text + sgr_reset
 
 def blue(text):
     """Return blue text"""
-    return "\x1B[94m%s\x1B[0m" % text
+    return sgr_fg_blue + text + sgr_reset
 
 def get_my_name():
     """Returns name of the script without extension"""
@@ -620,10 +634,12 @@ def conn_clean():
     BTP_SOCKET = None
 
 def cmd_loop(cmds_dict):
-    my_name = get_my_name()
+    prompt = "%s[%s]%s$ " % (rl_prompt_ignore(sgr_fg_blue),
+                             get_my_name(),
+                             rl_prompt_ignore(sgr_reset))
 
     while True:
-        input = raw_input(blue("[%s]" % my_name) + "$ ")
+        input = raw_input(prompt)
 
         if input == '':
             continue
