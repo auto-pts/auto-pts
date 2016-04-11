@@ -280,6 +280,7 @@ def test_cases_server():
                           TestFunc(btp.gatts_set_val, 2, '01234abc'),
                           TestFunc(btp.gatts_start_server),
                           TestFunc(btp.gap_adv_ind_on)]),
+        # PTS issue #14635
         ZTestCase("GATT", "TC_GAR_SR_BI_07_C",
                   edit1_wids={119: UUID.VND16_3},
                   cmds=[TestFunc(btp.core_reg_svc_gap),
@@ -535,6 +536,7 @@ def test_cases_server():
                    TestFunc(btp.gap_adv_ind_on)],
                   verify_wids={52: ("Please confirm IUT Handle='4'",
                                     "value='FEDCBA98765432100123456789ABCDEF0123456789ABCDEF0123456789ABCDEF'")}),
+        #PTS issue #14637
         ZTestCase("GATT", "TC_GAR_SR_BV_08_C",
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.core_reg_svc_gatts),
@@ -740,7 +742,7 @@ def test_cases_server():
                       TestFunc(btp.gatts_set_val, 2, '0123456789ABCDEF'),
                       TestFunc(btp.gatts_start_server),
                       TestFunc(btp.gap_adv_ind_on)]),
-        # TODO: fails cause of ZEP-315
+        # TODO: fails cause of BZ-68
         ZTestCase("GATT", "TC_GAW_SR_BI_09_C",
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.core_reg_svc_gatts),
@@ -947,6 +949,7 @@ def test_cases_server():
                           btp.gatts_set_val, 4, 'FEDCBA98765432100123456789ABCDEF0123456789ABCDEF0123456789ABCDEF'),
                       TestFunc(btp.gatts_start_server),
                       TestFunc(btp.gap_adv_ind_on)]),
+        # TODO: fails cause of BZ-68
         ZTestCase("GATT", "TC_GAW_SR_BI_27_C",
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.core_reg_svc_gatts),
@@ -1009,7 +1012,7 @@ def test_cases_server():
                    TestFunc(btp.gatts_set_val, 2, '0123456789ABCDEF'),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on)]),
-        # TODO: fails cause of ZEP-315
+        # TODO: fails cause of BZ-68
         ZTestCase("GATT", "TC_GAW_SR_BI_33_C",
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.core_reg_svc_gatts),
@@ -1031,6 +1034,7 @@ def test_cases_server():
                    TestFunc(btp.gatts_set_val, 4, '1234'),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on)]),
+        # TODO: fails cause of BZ-68
         ZTestCase("GATT", "TC_GAW_SR_BI_35_C",
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.core_reg_svc_gatts),
@@ -1166,6 +1170,7 @@ def test_cases_server():
                    TestFunc(btp.gap_adv_ind_on)],
                   verify_wids={52: ("Handle='4'",
                                     "value='0000'")}),
+        # PTS issue #14437, #14275, TSE #7063
         ZTestCase("GATT", "TC_GPA_SR_BV_11_C",
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.core_reg_svc_gatts),
@@ -1903,9 +1908,6 @@ def test_cases_client(pts_bd_addr):
                             Addr.le_public, start_wid=3),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)]),
-        # TODO Get from MMI data length to be send
-        # description: Please send signed write command with handle = '00B1'O
-        # with one byte of any octet value to the PTS.
         ZTestCase("GATT", "TC_GAW_CL_BV_02_C",
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.core_reg_svc_gatts),
@@ -2030,7 +2032,6 @@ def test_cases_client(pts_bd_addr):
                             Addr.le_public, start_wid=3),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)]),
-        # PTS issue #14328, #14329
         ZTestCase("GATT", "TC_GAW_CL_BI_07_C",
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.core_reg_svc_gatts),
@@ -2047,7 +2048,6 @@ def test_cases_client(pts_bd_addr):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)],
                   verify_wids={61: btp.verify_description}),
-        # PTS issue #14328
         ZTestCase("GATT", "TC_GAW_CL_BI_08_C",
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.core_reg_svc_gatts),
@@ -2238,7 +2238,6 @@ def test_cases_client(pts_bd_addr):
                             Addr.le_public, start_wid=3),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)]),
-        # PTS issue #14328
         ZTestCase("GATT", "TC_GAW_CL_BI_25_C",
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.core_reg_svc_gatts),
@@ -2255,7 +2254,6 @@ def test_cases_client(pts_bd_addr):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)],
                   verify_wids={61: btp.verify_description}),
-        # PTS issue #14328
         ZTestCase("GATT", "TC_GAW_CL_BI_26_C",
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.core_reg_svc_gatts),
