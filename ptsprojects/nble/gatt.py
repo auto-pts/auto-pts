@@ -19,6 +19,7 @@ import ptsprojects.zephyr.btp as btp
 
 class UUID:
     gap_svc = '1800'
+    gatt_svc = '1801'
     CEP = '2900'
     CUD = '2901'
     CCC = '2902'
@@ -169,6 +170,8 @@ def test_cases_server():
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on)],
                   verify_wids={17: ("Please confirm IUT receive primary services",
+                                    "Service = '%s'" % UUID.gap_svc,
+                                    "Service = '%s'" % UUID.gatt_svc,
                                     "Service = '%s'" % UUID.VND16_1)}),
         ZTestCase("GATT", "TC_GAD_SR_BV_02_C",
                   [TestFunc(btp.core_reg_svc_gap),
