@@ -2,7 +2,7 @@
 
 from ptsprojects.testcase import TestCase, TestFunc, \
     TestFuncCleanUp
-from ptsprojects.zephyr.iutctl import get_zephyr
+from ptsprojects.nble.iutctl import get_zephyr
 
 
 class ZTestCase(TestCase):

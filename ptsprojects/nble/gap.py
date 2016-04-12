@@ -3,7 +3,7 @@
 try:
     from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
         TestFuncCleanUp
-    from ptsprojects.zephyr.ztestcase import ZTestCase
+    from ptsprojects.nble.ztestcase import ZTestCase
 
 except ImportError:  # running this module as script
     import sys
@@ -11,9 +11,9 @@ except ImportError:  # running this module as script
 
     from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
         TestFuncCleanUp
-    from ptsprojects.zephyr.ztestcase import ZTestCase
+    from ptsprojects.nble.ztestcase import ZTestCase
 
-from ptsprojects.zephyr.iutctl import get_zephyr
+from ptsprojects.nble.iutctl import get_zephyr
 import btp
 import binascii
 import gatt
@@ -816,7 +816,7 @@ def test_cases(pts_bd_addr):
 def main():
     """Main."""
     import sys
-    import ptsprojects.zephyr.iutctl as iutctl
+    import ptsprojects.nble.iutctl as iutctl
 
     iutctl.init_stub()
 

@@ -1,7 +1,7 @@
-"""Automated PTS projects (bluetooth profiles and protocols) for Zephyr IUT"""
+"""Automated PTS projects (bluetooth profiles and protocols) for nble IUT"""
 
-import ptsprojects.zephyr.iutctl
+import ptsprojects.nble.iutctl
 
-import ptsprojects.zephyr.gap
-import ptsprojects.zephyr.gatt
-import ptsprojects.zephyr.sm
+import ptsprojects.nble.gap
+import ptsprojects.nble.gatt
+import ptsprojects.nble.sm

@@ -6,7 +6,7 @@ import os
 import sys
 import argparse
 import autoptsclient_common as autoptsclient
-import ptsprojects.zephyr as autoprojects
+import ptsprojects.nble as autoprojects
 
 def parse_args():
     """Parses command line arguments and options"""
