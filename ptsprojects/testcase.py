@@ -382,7 +382,7 @@ class TestCase(PTSCallback):
             else:
                 for verify in self.verify_wids[wid]:
                     log("Verifying: %r", verify)
-                    if verify not in description:
+                    if verify.upper() not in description.upper():
                         log("Verification failed: not in description")
                         my_response = no_response
                         break
