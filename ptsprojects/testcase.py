@@ -384,13 +384,30 @@ class TestCase(PTSCallback):
             else:
                 for verify in self.verify_wids[wid]:
                     log("Verifying: %r", verify)
-                    if verify.upper() not in description.upper():
-                        log("Verification failed: not in description")
-                        my_response = no_response
-                        break
-                else:
-                    log("All verifications passed")
-                    my_response = yes_response
+                    if isinstance(verify, list):
+                        for x in verify:
+                            if x.upper() not in description.upper():
+                                my_response = no_response
+                                log("%r not found, skipping...", x)
+                                break # for x in verify:
+                            else:
+                                my_response = yes_response
+
+                        # If all elements in the list have been successfully
+                        # verified, break here
+                        if my_response is yes_response:
+                            break # for verify in self.verify_wids[wid]:
+                    else:
+                        if verify.upper() not in description.upper():
+                            my_response = no_response
+                            break
+                        else:
+                            my_response = yes_response
+
+            if my_response is yes_response:
+                log("All verifications passed")
+            else:
+                log("Verification failed: not in description")
 
         # answer Yes
         else:
