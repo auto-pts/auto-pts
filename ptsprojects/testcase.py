@@ -290,8 +290,10 @@ class TestCase(PTSCallback):
         verify_wids -- A dictionary of wids as keys and a tuple of strings as
                        values or a callable as value. The strings are used with
                        MMI_Style_Yes_No1 to confirm/verify that the MMI
-                       description contains all of the strings in the tuple. If
-                       the value is callable it will be passed PTS MMI
+                       description contains all of the strings in the tuple.
+                       All the case-based characters are uppercased before
+                       verification to avoid fake verification errors.
+                       If the value is callable it will be passed PTS MMI
                        description as a parameter. It is expected to return
                        boolean True for the Yes and False for the No response
                        of MMI_Style_Yes_No1.
@@ -382,7 +384,7 @@ class TestCase(PTSCallback):
             else:
                 for verify in self.verify_wids[wid]:
                     log("Verifying: %r", verify)
-                    if verify not in description:
+                    if verify.upper() not in description.upper():
                         log("Verification failed: not in description")
                         my_response = no_response
                         break
