@@ -8,6 +8,10 @@ import argparse
 import autoptsclient_common as autoptsclient
 import ptsprojects.nble as autoprojects
 
+# re-use zephyr iutctl
+import ptsprojects.zephyr.iutctl
+autoprojects.iutctl = ptsprojects.zephyr.iutctl
+
 def parse_args():
     """Parses command line arguments and options"""
 

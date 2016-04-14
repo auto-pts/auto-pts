@@ -3,7 +3,7 @@
 try:
     from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
         TestFuncCleanUp
-    from ptsprojects.nble.ztestcase import ZTestCase
+    from ptsprojects.zephyr.ztestcase import ZTestCase
 
 except ImportError:  # running this module as script
     import sys
@@ -11,10 +11,10 @@ except ImportError:  # running this module as script
 
     from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
         TestFuncCleanUp
-    from ptsprojects.nble.ztestcase import ZTestCase
+    from ptsprojects.zephyr.ztestcase import ZTestCase
 
-from ptsprojects.nble.iutctl import get_zephyr
-import btp
+from ptsprojects.zephyr.iutctl import get_zephyr
+import ptsprojects.zephyr.btp as btp
 
 
 class Addr:

@@ -12,7 +12,6 @@ from SimpleXMLRPCServer import SimpleXMLRPCServer
 from ptsprojects.testcase import get_max_test_case_desc
 from ptsprojects.testcase import TestCase, TestCmd, PTSCallback
 from ptsprojects.zephyr.btp import BTPError
-from ptsprojects.nble.btp import BTPError as NBTPError
 import ptsprojects.ptstypes as ptstypes
 
 log = logging.debug
@@ -213,7 +212,7 @@ def run_test_case(pts, test_case):
         test_case.pre_run()
         error_code = pts.run_test_case(test_case.project_name, test_case.name)
 
-    except (BTPError, NBTPError) as error:
+    except BTPError as error:
         error_code = ptstypes.E_BTP_ERROR
 
         logging.error(
