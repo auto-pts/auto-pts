@@ -58,6 +58,8 @@ def update_pixit(proxy):
     proxy.update_pixit_param("GATT", "TSPX_delete_link_key", "TRUE")
     proxy.update_pixit_param("GATT", "TSPX_delete_ltk", "TRUE")
     proxy.update_pixit_param("GATT", "TSPX_iut_use_dynamic_bd_addr", "TRUE")
+    proxy.update_pixit_param("GAP", "TSPX_using_public_device_address", "FALSE")
+    proxy.update_pixit_param("GAP", "TSPX_using_random_device_address", "TRUE")
 
     return
 
