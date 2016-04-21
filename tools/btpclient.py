@@ -547,7 +547,7 @@ def receive(exp_svc_id=None, exp_op=None):
     try:
         btp.btp_hdr_check(tuple_hdr, exp_svc_id, exp_op)
     except btp.BTPError as err:
-        print red("%s\nExpected svc_id=%s, op=%s" %
+        print red("%s\nExpected svc_id=%s, op=0x%.2x" %
                   (err.message, exp_svc_id, exp_op))
     else:
         print green("OK")

@@ -192,8 +192,9 @@ def btp_hdr_check(rcv_hdr, exp_svc_id, exp_op=None):
         raise BTPError("Error opcode in response!")
 
     if exp_op and exp_op != rcv_hdr.op:
-        raise BTPError("Invalid opcode %s in the response, expected %s!"
-                       % (rcv_hdr.op, exp_op))
+        raise BTPError(
+            "Invalid opcode 0x%.2x in the response, expected 0x%.2x!" %
+            (rcv_hdr.op, exp_op))
 
 
 def core_reg_svc_gap():
