@@ -554,7 +554,10 @@ def receive(exp_svc_id=None, exp_op=None):
         print "\nReceive interrupted!"
         return
 
-    print "Received: hdr: ", tuple_hdr
+    # default __repr__ of namedtuple does not print hex
+    print ("Received header(svc_id=%d, op=0x%.2x, ctrl_index=%d, data_len=%d)" %
+           (tuple_hdr.svc_id, tuple_hdr.op, tuple_hdr.ctrl_index,
+            tuple_hdr.data_len))
 
     hex_str = binascii.hexlify(tuple_data[0])
     hex_str_byte = " ".join(hex_str[i:i+2] for i in range(0, len(hex_str), 2))
