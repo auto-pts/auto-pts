@@ -389,6 +389,23 @@ class GattsCmd(Cmd):
 
         generic_srvc_cmd_handler(btp.GATTS, cmd)
 
+class GattcCmd(Cmd):
+    def __init__(self):
+        Cmd.__init__(self)
+        self.name = "gattc"
+        self.sub_cmds = btp.GATTC
+
+        self.help.build(
+            short_help = "Send GATT client command to BTP tester",
+            synopsis = "%s [command]" % self.name,
+            sub_cmds = self.sub_cmds.keys())
+
+    def run(self, *cmd):
+        if not cmd:
+            raise TypeError("Command arguments are missing")
+
+        generic_srvc_cmd_handler(btp.GATTC, cmd)
+
 class ExitCmd(Cmd):
     def __init__(self):
         Cmd.__init__(self)
@@ -725,7 +742,8 @@ def main():
         StartZephyrCmd(),
         CoreCmd(),
         GapCmd(),
-        GattsCmd()
+        GattsCmd(),
+        GattcCmd()
     ]
 
     cmds_dict = { cmd.name : cmd for cmd in cmds }
