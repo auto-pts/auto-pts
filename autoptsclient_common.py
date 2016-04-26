@@ -6,6 +6,7 @@ import os
 import sys
 import socket
 import logging
+import datetime
 import xmlrpclib
 import threading
 from SimpleXMLRPCServer import SimpleXMLRPCServer
@@ -19,6 +20,8 @@ log = logging.debug
 SERVER_PORT = 65000
 
 RUNNING_TEST_CASE = None
+
+LOG_DIR_NAME = None
 
 class ClientCallback(PTSCallback):
     def __init__(self):
@@ -142,8 +145,15 @@ def start_callback():
     server.register_introspection_functions()
     server.serve_forever()
 
-def init_core(server_address, workspace_path, bd_addr, pts_debug):
-    "Initialization procedure"
+def init_logging():
+    """Initialize logging"""
+    global LOG_DIR_NAME
+    LOG_DIR_NAME = os.path.join("logs", datetime.datetime.now().isoformat())
+
+    while os.path.exists(LOG_DIR_NAME): # make sure it does not exit
+        LOG_DIR_NAME += "_"
+
+    os.makedirs(LOG_DIR_NAME)
 
     script_name = os.path.basename(sys.argv[0]) # in case it is full path
     script_name_no_ext = os.path.splitext(script_name)[0]
@@ -156,6 +166,12 @@ def init_core(server_address, workspace_path, bd_addr, pts_debug):
                         filename = log_filename,
                         filemode = 'w',
                         level = logging.DEBUG)
+
+    log("Created logs directory %r", LOG_DIR_NAME)
+
+def init_core(server_address, workspace_path, bd_addr, pts_debug):
+    "Initialization procedure"
+    init_logging()
 
     log("my IP address is: %s", get_my_ip_address())
 
@@ -194,6 +210,37 @@ def init_core(server_address, workspace_path, bd_addr, pts_debug):
 
     return proxy
 
+def log2file(function):
+    """Decorator to log function call into separate log file.
+
+    Currently only used with run_test_case
+
+    """
+    def wrapper(*args):
+        test_case = args[1]
+
+        log_filename = os.path.join(
+            LOG_DIR_NAME,
+            "%s_%s.log" % (test_case.project_name, test_case.name))
+
+        logger = logging.getLogger()
+        file_handler = logging.FileHandler(log_filename)
+
+        format = ("%(asctime)s %(name)s %(levelname)s %(filename)-25s "
+                  "%(lineno)-5s %(funcName)-25s : %(message)s")
+        formatter = logging.Formatter(format)
+
+        file_handler.setFormatter(formatter)
+        # file_handler.setLevel(logging.ERROR)
+        logger.addHandler(file_handler)
+
+        function(*args)
+
+        logger.removeHandler(file_handler)
+
+    return wrapper
+
+@log2file
 def run_test_case(pts, test_case):
     """Runs the test case specified by a TestCase instance.
 
