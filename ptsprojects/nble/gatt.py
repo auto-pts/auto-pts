@@ -790,7 +790,7 @@ def test_cases_server():
                    TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
                             Prop.broadcast | Prop.read | Prop.write,
-                            Perm.read | Perm.write, UUID.device_name),
+                            Perm.read | Perm.write, UUID.VND16_2),
                    TestFunc(btp.gatts_set_val, 0, '0123'),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on)]),
