@@ -123,10 +123,11 @@ class BTPSocket(object):
 class ZephyrCtl:
     '''Zephyr OS Control Class'''
 
-    def __init__(self, kernel_image, tty_file):
+    def __init__(self, kernel_image, tty_file, board_name=None):
         """Constructor."""
-        log("%s.%s kernel_image=%s tty_file=%s",
-            self.__class__, self.__init__.__name__, kernel_image, tty_file)
+        log("%s.%s kernel_image=%s tty_file=%s board_name=%s",
+            self.__class__, self.__init__.__name__, kernel_image, tty_file,
+            board_name)
 
         if tty_file:
             if not tty_file.startswith("/dev/tty"):
@@ -139,44 +140,11 @@ class ZephyrCtl:
 
         self.kernel_image = kernel_image
         self.tty_file = tty_file
+        if self.tty_file: # board is not used with qemu
+            self.board = Board(board_name, kernel_image)
         self.qemu_process = None
         self.socat_process = None
         self.btp_socket = None
-
-    def reset_dut(self):
-        """Reset HW DUT with openocd
-
-        With introduction of persistent storage in DUT flashing kernel image in
-        addition to reset will become necessary
-
-        """
-        openocd_cmd = "/opt/zephyr-sdk/sysroots/i686-pokysdk-linux/usr/bin/openocd"
-        if not os.path.isfile(openocd_cmd):
-            raise Exception("openocd %r not found!", openocd_cmd)
-
-        openocd_scripts = "/opt/zephyr-sdk/sysroots/i686-pokysdk-linux/usr/share/openocd/scripts"
-        if not os.path.isdir(openocd_scripts):
-            raise Exception("openocd scripts %r not found!", openocd_scripts)
-
-        openocd_cfg = os.path.join(
-            os.path.split(self.kernel_image)[0],
-            "../../../../boards/arduino_101/support/openocd.cfg")
-
-        if not os.path.isfile(openocd_cfg):
-            raise Exception("openocd config %r not found!", openocd_cfg)
-
-        reset_cmd = ('%s -s %s -f %s -c "init" -c "targets 1" '
-                     '-c "reset halt" -c "reset run" -c "shutdown"' %
-                     (openocd_cmd, openocd_scripts, openocd_cfg))
-
-        log("About to reset DUT: %r", reset_cmd)
-
-        reset_process = subprocess.Popen(shlex.split(reset_cmd),
-                                         shell=False,
-                                         stdout=IUT_LOG_FO,
-                                         stderr=IUT_LOG_FO)
-        if reset_process.wait():
-            logging.error("openocd reset failed")
 
     def start(self):
         """Starts the Zephyr OS"""
@@ -187,7 +155,7 @@ class ZephyrCtl:
         self.btp_socket.open()
 
         if self.tty_file:
-            self.reset_dut()
+            self.board.reset()
 
             socat_cmd = ("socat -x -v %s,raw UNIX-CONNECT:%s" %
                          (self.tty_file, BTP_ADDRESS))
@@ -243,6 +211,95 @@ class ZephyrCtlStub:
         log("%s.%s", self.__class__, self.stop.__name__)
 
 
+class Board:
+    """HW DUT board"""
+
+    arduino_101 = "arduino_101"
+    mountatlas = "mountatlas"
+
+    # for command line options
+    names = [
+        arduino_101,
+        mountatlas
+    ]
+
+    def __init__(self, board_name, kernel_image):
+        """Constructor of board"""
+        if board_name not in self.names:
+            raise Exception("Board name %s is not supported!" % board_name)
+
+        self.name = board_name
+        self.kernel_image = kernel_image
+        self.reset_cmd = self.get_reset_cmd()
+
+    def reset(self):
+        """Reset HW DUT board with openocd
+
+        With introduction of persistent storage in DUT flashing kernel image in
+        addition to reset will become necessary
+
+        """
+        log("About to reset DUT: %r", self.reset_cmd)
+
+        reset_process = subprocess.Popen(shlex.split(self.reset_cmd),
+                                         shell=False,
+                                         stdout=IUT_LOG_FO,
+                                         stderr=IUT_LOG_FO)
+        if reset_process.wait():
+            logging.error("openocd reset failed")
+
+    def get_reset_cmd(self):
+        """Return reset command for a board"""
+        reset_cmd_getters = {
+            self.arduino_101 : self._get_reset_cmd_arduino_101,
+            self.mountatlas : self._get_reset_cmd_mountatlas
+        }
+
+        reset_cmd_getter = reset_cmd_getters[self.name]
+        openocd_cmd, openocd_scripts, openocd_cfg = reset_cmd_getter()
+
+        if not os.path.isfile(openocd_cmd):
+            raise Exception("openocd %r not found!", openocd_cmd)
+
+        if not os.path.isdir(openocd_scripts):
+            raise Exception("openocd scripts %r not found!", openocd_scripts)
+
+        if not os.path.isfile(openocd_cfg):
+            raise Exception("openocd config %r not found!", openocd_cfg)
+
+        reset_cmd = ('%s -s %s -f %s -c "init" -c "targets 1" '
+                     '-c "reset halt" -c "reset run" -c "shutdown"' %
+                     (openocd_cmd, openocd_scripts, openocd_cfg))
+
+        return reset_cmd
+
+    def _get_reset_cmd_arduino_101(self):
+        """Return reset command for Arduino 101 DUT
+
+        Dependency: Zephyr SDK
+
+        """
+        openocd_cmd = "/opt/zephyr-sdk/sysroots/i686-pokysdk-linux/usr/bin/openocd"
+        openocd_scripts = "/opt/zephyr-sdk/sysroots/i686-pokysdk-linux/usr/share/openocd/scripts"
+        openocd_cfg = os.path.join(
+            os.path.split(self.kernel_image)[0],
+            "../../../../boards/arduino_101/support/openocd.cfg")
+
+        return (openocd_cmd, openocd_scripts, openocd_cfg)
+
+    def _get_reset_cmd_mountatlas(self):
+        """Return reset command for MountAtlas DUT
+
+        Dependency: zflash
+
+        """
+        openocd_cmd = "/usr/local/zflash/openocd/bin/openocd"
+        openocd_scripts = "/usr/local/zflash/openocd/share/scripts"
+        openocd_cfg = "/usr/local/zflash/boards/mountatlas/openocd.cfg"
+
+        return (openocd_cmd, openocd_scripts, openocd_cfg)
+
+
 def get_zephyr():
     return ZEPHYR
 
@@ -252,20 +309,21 @@ def init_stub():
     global ZEPHYR
     ZEPHYR = ZephyrCtlStub()
 
-
-def init(kernel_image, tty_file):
+def init(kernel_image, tty_file, board=None):
     """IUT init routine
 
     kernel_image -- Path to Zephyr kernel image
     tty_file -- Path to TTY file, if specified QEMU will not be used and
                 BTP communication with HW DUT will be done over this TTY.
+    board -- HW DUT board to use for testing. This parameter is used only
+             if tty_file is specified
     """
     global IUT_LOG_FO
     global ZEPHYR
 
     IUT_LOG_FO = open("iut-zephyr.log", "w")
 
-    ZEPHYR = ZephyrCtl(kernel_image, tty_file)
+    ZEPHYR = ZephyrCtl(kernel_image, tty_file, board)
 
 
 def cleanup():
