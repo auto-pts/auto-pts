@@ -295,7 +295,7 @@ class PyPTS:
         for pts_process in pts_process_list:
             log("About to kill PTS process: %s", pts_process)
             try:
-		pts_process.CloseMainWindow()
+                pts_process.CloseMainWindow()
             except Exception as error:
                 log("Exception when killing PTS process: %r", error)
 

@@ -164,7 +164,7 @@ def test_cases(pts):
         # TSPX_using_public_device_address: FALSE
         # TSPX_using_random_device_address: TRUE
         # echo 30 > /sys/kernel/debug/bluetooth/hci0/
-        # 				rpa_timeout
+        #                                 rpa_timeout
         # btmgmt power off
         # btmgmt privacy on
         # btmgmt power on
