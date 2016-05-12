@@ -71,6 +71,10 @@ def update_pixit(proxy):
     proxy.update_pixit_param("GATT", "TSPX_iut_use_dynamic_bd_addr", "TRUE")
     proxy.update_pixit_param("GAP", "TSPX_using_public_device_address", "FALSE")
     proxy.update_pixit_param("GAP", "TSPX_using_random_device_address", "TRUE")
+    proxy.update_pixit_param("GAP", "TSPX_iut_device_name_in_adv_packet_for_random_address",
+                             "Tester")
+    proxy.update_pixit_param("SM", "TSPX_peer_addr_type", "01")
+
 
     return
 
