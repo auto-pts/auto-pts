@@ -148,7 +148,8 @@ def start_callback():
 def init_logging():
     """Initialize logging"""
     global LOG_DIR_NAME
-    LOG_DIR_NAME = os.path.join("logs", datetime.datetime.now().isoformat())
+    now = datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S-%f")
+    LOG_DIR_NAME = os.path.join("logs", now)
 
     while os.path.exists(LOG_DIR_NAME): # make sure it does not exit
         LOG_DIR_NAME += "_"
