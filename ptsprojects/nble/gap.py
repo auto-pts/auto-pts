@@ -338,71 +338,11 @@ def test_cases(pts_bd_addr):
                                  Addr.le_public, start_wid=108),
                         TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
                                  start_wid=108)]),
-        # PTS issue #14444
-        ZTestCase("GAP", "TC_BOND_BON_BV_01_C",
-                  cmds=[TestFunc(btp.gap_set_io_cap, 2),
-                        TestFunc(btp.core_reg_svc_gap),
-                        TestFunc(btp.gap_set_conn),
-                        TestFunc(btp.gap_adv_ind_on),
-                        TestFunc(btp.gap_connected_ev, pts_bd_addr,
-                                 Addr.le_public, start_wid=108),
-                        TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
-                                 start_wid=108)]),
-        # wid: 118
-        # style: MMI_Style_Ok_Cancel1 0x11041
-        # description: Please press ok to disconnect the link.
-        #
-        # We should click ok, and then wait for gap_disconnected_ev
-        # (sth like a PostFunc)
-        # ZTestCase("GAP", "TC_BOND_BON_BV_01_C",
-        #           cmds=[TestFunc(btp.gap_set_io_cap, 3),
-        #                 TestFunc(btp.core_reg_svc_gap),
-        #                 TestFunc(btp.gap_set_conn),
-        #                 TestFunc(btp.gap_adv_ind_on),
-        #                 TestFunc(btp.gap_connected_ev, pts_bd_addr,
-        #                          Addr.le_public, start_wid=91),
-        #                 TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
-        #                          start_wid=108),
-        #                 TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
-        #                          Addr.le_public, start_wid=118)]),
-        # PTS issue #14444
-        ZTestCase("GAP", "TC_BOND_BON_BV_01_C",
-                  cmds=[TestFunc(btp.gap_set_io_cap, 4),
-                        TestFunc(btp.core_reg_svc_gap),
-                        TestFunc(btp.gap_set_conn),
-                        TestFunc(btp.gap_adv_ind_on),
-                        TestFunc(btp.gap_connected_ev, pts_bd_addr,
-                                 Addr.le_public, start_wid=108),
-                        TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
-                                 start_wid=108)]),
         ZTestCase("GAP", "TC_BOND_BON_BV_03_C",
                   cmds=[TestFunc(btp.gap_set_io_cap, 3),
                         TestFunc(btp.core_reg_svc_gap),
                         TestFunc(btp.gap_set_conn),
                         TestFunc(btp.gap_adv_ind_on)]),
-        # Missing functionality - We respond "None" instead of the passkey
-        ZTestCase("GAP", "TC_BOND_BON_BV_03_C",
-                  edit1_wids={1002: btp.var_get_passkey},
-                  cmds=[TestFunc(btp.gap_set_io_cap, 0),
-                        TestFunc(btp.core_reg_svc_gap),
-                        TestFunc(btp.gap_set_conn),
-                        TestFunc(btp.gap_adv_ind_on),
-                        TestFunc(btp.gap_connected_ev, pts_bd_addr,
-                                 Addr.le_public, start_wid=91),
-                        TestFunc(btp.gap_passkey_disp_ev, pts_bd_addr,
-                                 Addr.le_public, True, start_wid=1002)]),
-        # wid: 1001
-        # style: MMI_Style_Ok 0x11040
-        # description: The Secure ID is 398563. Press OK to continue.
-        ZTestCase("GAP", "TC_BOND_BON_BV_03_C",
-                  cmds=[TestFunc(btp.gap_set_io_cap, 2),
-                        TestFunc(btp.core_reg_svc_gap),
-                        TestFunc(btp.gap_set_conn),
-                        TestFunc(btp.gap_adv_ind_on),
-                        TestFunc(btp.gap_connected_ev, pts_bd_addr,
-                                 Addr.le_public, start_wid=91),
-                        TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
-                                 Addr.le_public, start_wid=150)]),
         # PTS issue #14650
         ZTestCase("GAP", "TC_SEC_AUT_BV_11_C",
                   edit1_wids={139: "000b",
