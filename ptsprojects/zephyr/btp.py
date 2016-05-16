@@ -131,16 +131,20 @@ def verify_description(description):
     """
     logging.debug("description=%r", description)
 
+    #Parsing description
+    pattern = re.compile(r"(?:'|=\s+)([0-9-xA-Fa-f]+)")
+    description_values = pattern.findall(description)
+    
     global VERIFY_VALUES
     logging.debug("Verifying values: %r", VERIFY_VALUES)
 
     if not VERIFY_VALUES:
         return True
 
-    for value in VERIFY_VALUES:
+    for value in description_values:
         logging.debug("Verifying: %r", value)
 
-        if value not in description:
+        if value not in VERIFY_VALUES:
             logging.debug("Verification failed, value not in description")
             return False
 
