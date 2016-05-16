@@ -467,7 +467,7 @@ class TestCase(PTSCallback):
         log("%s %s", self, self.on_implicit_send.__name__)
 
         # this should never happen, pts does not run tests in parallel
-        # TODO - This is a temporary solution for PTS bug #14270
+        # TODO - This is a temporary solution for PTS bug #14711
         # assert project_name == self.project_name, \
         #   "Unexpected project name %r should be %r" % \
         #    (project_name, self.project_name)
