@@ -194,7 +194,7 @@ def test_cases(pts_bd_addr):
         ZTestCase("GAP", "TC_BROB_BCST_BV_02_C",
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.gap_set_nonconn),
-                   TestFunc(btp.gap_adv_ind_on)]),
+                   TestFunc(btp.gap_adv_ind_on, sd=(AdData.ad_tx,))]),
         ZTestCase("GAP", "TC_BROB_BCST_BV_03_C",
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.gap_set_conn, start_wid=91),
