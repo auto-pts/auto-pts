@@ -353,7 +353,7 @@ def test_cases_server():
                         TestFunc(btp.gatts_start_server),
                         TestFunc(btp.gap_adv_ind_on)]),
         ZTestCase("GATT", "TC_GAR_SR_BI_11_C",
-                  edit1_wids={121: "0003", 122: UUID.VND16_2},
+                  edit1_wids={121: "000b", 122: UUID.VND16_2},
                   cmds=[TestFunc(btp.core_reg_svc_gap),
                           TestFunc(btp.core_reg_svc_gatts),
                           TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
