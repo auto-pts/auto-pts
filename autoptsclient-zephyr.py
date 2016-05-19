@@ -51,6 +51,9 @@ def parse_args():
                             choices=board_names,
                             default=default_board)
 
+    arg_parser.add_argument("-c", "--test-cases", nargs='+',
+                            help="Names of test cases to run.")
+
     args = arg_parser.parse_args()
 
     return args
@@ -88,6 +91,10 @@ def main():
     test_cases = autoprojects.gap.test_cases(pts_bd_addr)
     test_cases += autoprojects.gatt.test_cases(pts_bd_addr)
     test_cases += autoprojects.sm.test_cases(pts_bd_addr)
+
+    # assumes that test case names are unique across profiles
+    if args.test_cases:
+        test_cases = [tc for tc in test_cases if tc.name in args.test_cases]
 
     autoptsclient.run_test_cases(proxy, test_cases)
 
