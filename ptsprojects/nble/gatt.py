@@ -1920,7 +1920,6 @@ def test_cases_client(pts_bd_addr):
                             Addr.le_public, start_wid=3),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)]),
-        # PTS issue #14328, #14329
         ZTestCase("GATT", "TC_GAW_CL_BI_07_C",
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.core_reg_svc_gatts),
@@ -1929,7 +1928,7 @@ def test_cases_client(pts_bd_addr):
                    TestFunc(btp.gap_connected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=2),
                    TestFunc(btp.gattc_write_long, Addr.le_public,
-                            pts_bd_addr, MMI.arg_1, 0, '12' * 23, MMI.arg_2,
+                            pts_bd_addr, MMI.arg_1, 0, '12', MMI.arg_2,
                             start_wid=76),
                    TestFunc(btp.gattc_write_long_rsp, True, start_wid=76),
                    TestFunc(btp.gap_disconn, pts_bd_addr,
