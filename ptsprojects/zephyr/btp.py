@@ -6,7 +6,6 @@ import struct
 import re
 
 from iutctl import get_zephyr
-from ptsprojects.testcase import MmiParser
 import btpdef
 
 #  Global temporary objects
@@ -132,20 +131,16 @@ def verify_description(description):
     """
     logging.debug("description=%r", description)
 
-    #Parsing description
-    mmi_parser = MmiParser()
-    mmi_parser.parse_description(description)
-
     global VERIFY_VALUES
     logging.debug("Verifying values: %r", VERIFY_VALUES)
 
     if not VERIFY_VALUES:
         return True
 
-    for value in mmi_parser.args:
+    for value in VERIFY_VALUES:
         logging.debug("Verifying: %r", value)
 
-        if value not in VERIFY_VALUES:
+        if value not in description:
             logging.debug("Verification failed, value not in description")
             return False
 
