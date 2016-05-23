@@ -521,6 +521,11 @@ def test_cases(pts_bd_addr):
                         init_gatt_db + \
                       [TestFunc(btp.gap_set_conn, start_wid=91),
                        TestFunc(btp.gap_adv_ind_on, start_wid=91)]),
+        ZTestCase("GAP", "TC_IDLE_NAMP_BV_02_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.core_reg_svc_gatts),
+                   TestFunc(btp.gap_set_conn),
+                   TestFunc(btp.gap_adv_ind_on)]),
     ]
 
     return test_cases
