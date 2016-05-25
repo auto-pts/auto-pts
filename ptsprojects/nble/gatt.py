@@ -1088,7 +1088,7 @@ def test_cases_server(pts_bd_addr):
                    TestFunc(btp.gatts_set_val, 0, 'FEDCBA9876543210' * 5),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on)]),
-        # PTS Issue 14646,14728, RTOS-1523: nble shall return handles
+        # PTS Issue 14646,14728
         ZTestCase("GATT", "TC_GAN_SR_BV_01_C",
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.core_reg_svc_gatts),
@@ -1110,7 +1110,7 @@ def test_cases_server(pts_bd_addr):
                             Addr.le_public, start_wid=92),
                    TestFunc(time.sleep, 1, start_wid=92),
                    TestFunc(btp.gatts_set_val, 11, '01', start_wid=92)]),
-        # PTS Issue 14646, 14728, RTOS-1523: nble shall return handles
+        # PTS Issue 14646, 14728
         ZTestCase("GATT", "TC_GAI_SR_BV_01_C",
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.core_reg_svc_gatts),
@@ -1135,7 +1135,7 @@ def test_cases_server(pts_bd_addr):
         # PTS Issue 14646, 14728
         # Service Changed is not supported
         # ZTestCase("GATT", "TC_GAS_SR_BV_01_C",
-        # PTS Issue 14646, 14728, RTOS-1523: nble shall return handles
+        # PTS Issue 14646, 14728
         ZTestCase("GATT", "TC_GAT_SR_BV_01_C",
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.core_reg_svc_gatts),
