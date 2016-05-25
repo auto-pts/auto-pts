@@ -30,25 +30,19 @@ def test_cases(pts_bd_addr):
 
     test_cases = [
         ZTestCase("L2CAP", "TC_LE_REJ_BI_01_C",
-                  [
-		  TestFunc(btp.core_reg_svc_gap),
-		  TestFunc(btp.gap_adv_ind_on),
-		  ]),
-	ZTestCase("L2CAP", "TC_LE_CPU_BI_02_C",
-		  [
-		  TestFunc(btp.core_reg_svc_gap),
-		  TestFunc(btp.gap_adv_ind_on),
-		  ]),
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.gap_adv_ind_on)]),
+        ZTestCase("L2CAP", "TC_LE_CPU_BI_02_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.gap_adv_ind_on)]),
         ZTestCase("L2CAP", "TC_LE_CPU_BV_01_C",
-		  [
-		  TestFunc(btp.core_reg_svc_gap),
-		  TestFunc(btp.gap_set_conn),
-		  TestFunc(btp.gap_set_gendiscov),		  
-		  TestFunc(btp.gap_adv_ind_on),
-		  TestFunc(btp.gap_connected_ev, pts_bd_addr, Addr.le_public, start_wid=15),
-		  ]),
-	
-    ]
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.gap_set_conn),
+                   TestFunc(btp.gap_set_gendiscov),
+                   TestFunc(btp.gap_adv_ind_on),
+                   TestFunc(btp.gap_connected_ev,
+                            pts_bd_addr, Addr.le_public, start_wid=15)]),
+        ]
 
     return test_cases
 
