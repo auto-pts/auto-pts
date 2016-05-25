@@ -1116,14 +1116,22 @@ def test_cases_server(pts_bd_addr):
                    TestFunc(btp.core_reg_svc_gatts),
                    TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
-                            Prop.read | Prop.write | Prop.indicate,
-                            Perm.read | Perm.write, UUID.VND16_2),
+                            Prop.indicate | Prop.read, Perm.read, UUID.VND16_2),
                    TestFunc(btp.gatts_set_val, 0, '00'),
                    TestFunc(btp.gatts_add_desc, 0,
                             Perm.read | Perm.write, UUID.CCC),
+
+                   # FIXME Add another characteristic with notify property to
+                   # workaround PTS failure
+                   TestFunc(btp.gatts_add_char, 0,
+                            Prop.indicate | Prop.read, Perm.read, UUID.VND16_3),
+
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1),
-                   TestFunc(btp.gatts_set_val, 4, '01', start_wid=1)]),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr,
+                            Addr.le_public, start_wid=98),
+                   TestFunc(time.sleep, 1, start_wid=98),
+                   TestFunc(btp.gatts_set_val, 11, '01', start_wid=98)]),
         # PTS Issue 14646, 14728
         # Service Changed is not supported
         # ZTestCase("GATT", "TC_GAS_SR_BV_01_C",
@@ -1133,14 +1141,22 @@ def test_cases_server(pts_bd_addr):
                    TestFunc(btp.core_reg_svc_gatts),
                    TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
-                            Prop.read | Prop.write | Prop.indicate,
-                            Perm.read | Perm.write, UUID.VND16_2),
+                            Prop.indicate | Prop.read, Perm.read, UUID.VND16_2),
                    TestFunc(btp.gatts_set_val, 0, '00'),
                    TestFunc(btp.gatts_add_desc, 0,
                             Perm.read | Perm.write, UUID.CCC),
+
+                   # FIXME Add another characteristic with notify property to
+                   # workaround PTS failure
+                   TestFunc(btp.gatts_add_char, 0,
+                            Prop.indicate | Prop.read, Perm.read, UUID.VND16_3),
+
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1),
-                   TestFunc(btp.gatts_set_val, 4, '01', start_wid=1)]),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr,
+                            Addr.le_public, start_wid=98),
+                   TestFunc(time.sleep, 1, start_wid=98),
+                   TestFunc(btp.gatts_set_val, 11, '01', start_wid=98)]),
     ]
 
     return test_cases
