@@ -753,6 +753,8 @@ def test_cases_server():
                    TestFunc(btp.gatts_set_val, 0, '0123456789ABCDEF' * 10),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on)]),
+        # sometimes verdict is UNKNOWN VERDICT: NONE
+        # PTS issue #14780
         ZTestCase("GATT", "TC_GAW_SR_BI_13_C",
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.core_reg_svc_gatts),
