@@ -77,6 +77,7 @@ def update_pixit(proxy):
     proxy.update_pixit_param("GAP", "TSPX_iut_device_name_in_adv_packet_for_random_address",
                              "Tester")
     proxy.update_pixit_param("SM", "TSPX_peer_addr_type", "01")
+    proxy.update_pixit_param("L2CAP", "TSPX_iut_address_type_random", "TRUE")
 
 
     return
@@ -102,6 +103,7 @@ def main():
     test_cases = autoprojects.gap.test_cases(pts_bd_addr)
     test_cases += autoprojects.gatt.test_cases(pts_bd_addr)
     test_cases += autoprojects.sm.test_cases(pts_bd_addr)
+    test_cases += autoprojects.l2cap.test_cases(pts_bd_addr)
 
     # assumes that test case names are unique across profiles
     test_cases_dict = {tc.name : tc for tc in test_cases}
