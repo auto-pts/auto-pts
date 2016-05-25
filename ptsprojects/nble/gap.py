@@ -31,6 +31,9 @@ class Addr:
 class UUID:
     gap_svc = '1800'
     device_name = '2a00'
+    VND16_1 = 'AA50'
+    VND16_2 = 'AA51'
+
 
 class SVC:
     gap = (None, None, UUID.gap_svc)
@@ -425,9 +428,16 @@ def test_cases(pts_bd_addr):
         #                 TestFunc(btp.gap_passkey_disp_ev, pts_bd_addr,
         #                          Addr.le_public, True, start_wid=91)]),
         ZTestCase("GAP", "TC_SEC_AUT_BV_23_C",
-                  [TestFunc(btp.core_reg_svc_gap),
-                   TestFunc(btp.gap_set_conn, start_wid=91),
-                   TestFunc(btp.gap_adv_ind_on, start_wid=91)]),
+                  edit1_wids={144: "000b"},
+                  cmds=[TestFunc(btp.core_reg_svc_gap),
+                        TestFunc(btp.core_reg_svc_gatts),
+                        TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
+                        TestFunc(btp.gatts_add_char, 0, Prop.read,
+                                 Perm.read_authn | Perm.read_enc, UUID.VND16_2),
+                        TestFunc(btp.gatts_set_val, 0, '0123'),
+                        TestFunc(btp.gatts_start_server),
+                        TestFunc(btp.gap_set_conn, start_wid=91),
+                        TestFunc(btp.gap_adv_ind_on, start_wid=91)]),
         ZTestCase("GAP", "TC_ADV_BV_01_C",
                   cmds=[TestFunc(btp.core_reg_svc_gap),
                         TestFunc(btp.gap_set_conn),
@@ -521,6 +531,14 @@ def test_cases(pts_bd_addr):
                         init_gatt_db + \
                       [TestFunc(btp.gap_set_conn, start_wid=91),
                        TestFunc(btp.gap_adv_ind_on, start_wid=91)]),
+        ZTestCase("GAP", "TC_IDLE_NAMP_BV_01_C",
+                  [TestFunc(btp.core_reg_svc_gap),
+                   TestFunc(btp.gap_set_conn),
+                   TestFunc(btp.gap_adv_ind_on),
+                   TestFunc(btp.gattc_read, Addr.le_public, pts_bd_addr,
+                            0x0003, start_wid=73),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
+                            start_wid=77)]),
         ZTestCase("GAP", "TC_IDLE_NAMP_BV_02_C",
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.core_reg_svc_gatts),
