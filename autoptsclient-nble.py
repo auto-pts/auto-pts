@@ -104,8 +104,11 @@ def main():
     test_cases += autoprojects.sm.test_cases(pts_bd_addr)
 
     # assumes that test case names are unique across profiles
+    test_cases_dict = {tc.name : tc for tc in test_cases}
+
     if args.test_cases:
-        test_cases = [tc for tc in test_cases if tc.name in args.test_cases]
+        test_cases = [test_cases_dict[tc_name] for tc_name in args.test_cases
+                      if tc_name in test_cases_dict]
 
     autoptsclient.run_test_cases(proxy, test_cases)
 
