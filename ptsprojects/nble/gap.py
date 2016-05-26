@@ -212,7 +212,7 @@ def test_cases(pts_bd_addr):
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.gap_set_nonconn, start_wid=5),
                    TestFunc(btp.gap_set_nondiscov, start_wid=5),
-                   TestFunc(btp.gap_adv_ind_on)]),
+                   TestFunc(btp.gap_adv_ind_on, start_wid=5)]),
         ZTestCase("GAP", "TC_DISC_NONM_BV_02_C",
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.gap_adv_ind_on, start_wid=72)]),
