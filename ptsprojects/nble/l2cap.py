@@ -29,6 +29,7 @@ def test_cases(pts_bd_addr):
     zephyrctl = get_zephyr()
 
     test_cases = [
+        # PTS issue #14554
         ZTestCase("L2CAP", "TC_LE_REJ_BI_01_C",
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.gap_adv_ind_on)]),
