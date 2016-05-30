@@ -99,16 +99,12 @@ def main():
 
     pts = autoptsclient.PTSClient(proxy)
 
-    # in some networks initial connection setup is very slow, so, contact the
-    # server only once to get data needed to create test cases
-    pts_bd_addr = pts.get_bd_addr()
-
     update_pixit(pts)
 
-    test_cases = autoprojects.gap.test_cases(pts_bd_addr)
+    test_cases = autoprojects.gap.test_cases(pts)
     test_cases += autoprojects.gatt.test_cases(pts)
-    test_cases += autoprojects.sm.test_cases(pts_bd_addr)
-    test_cases += autoprojects.l2cap.test_cases(pts_bd_addr)
+    test_cases += autoprojects.sm.test_cases(pts)
+    test_cases += autoprojects.l2cap.test_cases(pts)
 
     if args.test_cases:
         test_cases = autoptsclient.get_test_cases_subset(
