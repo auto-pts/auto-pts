@@ -26,8 +26,6 @@ def test_cases(pts_bd_addr):
     """Returns a list of L2CAP test cases
     pts -- Instance of PyPTS"""
 
-    zephyrctl = get_zephyr()
-
     test_cases = [
         # PTS issue #14554
         ZTestCase("L2CAP", "TC_LE_REJ_BI_01_C",

@@ -187,7 +187,6 @@ class AdData:
 def test_cases(pts_bd_addr):
     """Returns a list of GAP test cases
     pts -- Instance of PyPTS"""
-    zephyrctl = get_zephyr()
 
     test_cases = [
         ZTestCase("GAP", "TC_BROB_BCST_BV_01_C",
