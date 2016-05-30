@@ -22,9 +22,11 @@ class Addr:
     le_random = 1
 
 
-def test_cases(pts_bd_addr):
+def test_cases(pts):
     """Returns a list of L2CAP test cases
-    pts -- Instance of PyPTS"""
+    pts -- Instance of PTSClient"""
+
+    pts_bd_addr = pts.get_bd_addr()
 
     test_cases = [
         # PTS issue #14554
