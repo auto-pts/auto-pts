@@ -155,7 +155,6 @@ class Perm:
 def test_cases_server(pts):
     """Returns a list of GATT Server test cases"""
 
-    zephyrctl = get_zephyr()
     pts_bd_addr = pts.get_bd_addr()
 
     test_cases = [
