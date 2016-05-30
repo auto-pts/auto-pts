@@ -157,7 +157,7 @@ class ZephyrCtl:
         if self.tty_file:
             self.board.reset()
 
-            socat_cmd = ("socat -x -v %s,raw UNIX-CONNECT:%s" %
+            socat_cmd = ("socat -x -v %s,raw,b115200 UNIX-CONNECT:%s" %
                          (self.tty_file, BTP_ADDRESS))
 
             log("Starting socat process: %s", socat_cmd)
