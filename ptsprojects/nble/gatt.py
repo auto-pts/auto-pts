@@ -152,10 +152,11 @@ class Perm:
         return decode_flag_name(perm, Perm.names)
 
 
-def test_cases_server(pts_bd_addr):
+def test_cases_server(pts):
     """Returns a list of GATT Server test cases"""
 
     zephyrctl = get_zephyr()
+    pts_bd_addr = pts.get_bd_addr()
 
     test_cases = [
         ZTestCase("GATT", "TC_GAC_SR_BV_01_C",
@@ -1162,12 +1163,15 @@ def test_cases_server(pts_bd_addr):
     return test_cases
 
 
-def test_cases_client(pts_bd_addr):
+def test_cases_client(pts):
     """Returns a list of GATT Client test cases
 
-    pts -- Instance of PyPTS
+    pts -- Instance of PTSClient
 
     """
+
+    pts_bd_addr = pts.get_bd_addr()
+
     test_cases = [
         # Discover All Primary Services not supported by our API
         # ZTestCase("GATT", "TC_GAD_CL_BV_01_C",
@@ -2404,11 +2408,11 @@ def test_cases_client(pts_bd_addr):
     return test_cases
 
 
-def test_cases(pts_bd_addr):
+def test_cases(pts):
     """Returns a list of GATT test cases"""
 
-    test_cases = test_cases_client(pts_bd_addr)
-    test_cases += test_cases_server(pts_bd_addr)
+    test_cases = test_cases_client(pts)
+    test_cases += test_cases_server(pts)
 
     return test_cases
 
