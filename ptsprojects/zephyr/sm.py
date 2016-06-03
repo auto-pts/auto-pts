@@ -26,8 +26,6 @@ def test_cases(pts_bd_addr):
     """Returns a list of SM test cases
     pts -- Instance of PyPTS"""
 
-    zephyrctl = get_zephyr()
-
     test_cases = [
         ZTestCase("SM", "TC_PROT_BV_01_C",
                   [TestFunc(btp.core_reg_svc_gap),

@@ -150,8 +150,6 @@ class Perm:
 def test_cases_server():
     """Returns a list of GATT Server test cases"""
 
-    zephyrctl = get_zephyr()
-
     test_cases = [
         ZTestCase("GATT", "TC_GAC_SR_BV_01_C",
                   [TestFunc(btp.core_reg_svc_gap),

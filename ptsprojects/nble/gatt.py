@@ -152,14 +152,29 @@ class Perm:
         return decode_flag_name(perm, Perm.names)
 
 
-def test_cases_server(pts_bd_addr):
+def test_cases_server(pts):
     """Returns a list of GATT Server test cases"""
 
-    zephyrctl = get_zephyr()
+    pts_bd_addr = pts.get_bd_addr()
 
     test_cases = [
+        # ZTestCase("GATT", "TC_GAC_SR_BV_01_C",
+        #           [TestFunc(btp.core_reg_svc_gap),
+        #            TestFunc(btp.core_reg_svc_gatts),
+        #            TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
+        #            TestFunc(btp.gatts_add_char, 0,
+        #                     Prop.read | Prop.write | Prop.nofity,
+        #                     Perm.read | Perm.write, UUID.VND16_2),
+        #            TestFunc(btp.gatts_set_val, 0, '0123456789ABCDEF' * 10),
+        #            TestFunc(btp.gatts_start_server),
+        #            TestFunc(btp.gap_adv_ind_on)]),
+
+        # FIXME This TC implementation workarounds PTS issue #14616
         ZTestCase("GATT", "TC_GAC_SR_BV_01_C",
-                  [TestFunc(btp.core_reg_svc_gap),
+                  [TestFunc(pts.update_pixit, "GATT",
+                                              "TSPX_iut_is_server_central",
+                                              "TRUE"),
+                   TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.core_reg_svc_gatts),
                    TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -167,7 +182,17 @@ def test_cases_server(pts_bd_addr):
                             Perm.read | Perm.write, UUID.VND16_2),
                    TestFunc(btp.gatts_set_val, 0, '0123456789ABCDEF' * 10),
                    TestFunc(btp.gatts_start_server),
-                   TestFunc(btp.gap_adv_ind_on)]),
+                   TestFunc(btp.gap_conn, pts_bd_addr,
+                            Addr.le_public, start_wid=2),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr,
+                            Addr.le_public, start_wid=2),
+                   TestFunc(btp.gap_disconn, pts_bd_addr,
+                            Addr.le_public, start_wid=3),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
+                            Addr.le_public, start_wid=3),
+                   TestFuncCleanUp(pts.update_pixit, "GATT",
+                                                     "TSPX_iut_is_server_central",
+                                                     "FALSE")]),
         ZTestCase("GATT", "TC_GAD_SR_BV_01_C",
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.core_reg_svc_gatts),
@@ -1162,12 +1187,15 @@ def test_cases_server(pts_bd_addr):
     return test_cases
 
 
-def test_cases_client(pts_bd_addr):
+def test_cases_client(pts):
     """Returns a list of GATT Client test cases
 
-    pts -- Instance of PyPTS
+    pts -- Instance of PTSClient
 
     """
+
+    pts_bd_addr = pts.get_bd_addr()
+
     test_cases = [
         # Discover All Primary Services not supported by our API
         # ZTestCase("GATT", "TC_GAD_CL_BV_01_C",
@@ -1992,7 +2020,7 @@ def test_cases_client(pts_bd_addr):
                    TestFunc(btp.gap_connected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=2),
                    TestFunc(btp.gattc_write_long, Addr.le_public,
-                            pts_bd_addr, MMI.arg_1, MMI.arg_2, '12', None,
+                            pts_bd_addr, MMI.arg_1, MMI.arg_2, '12', MMI.arg_2,
                             start_wid=77),
                    TestFunc(btp.gattc_write_long_rsp, True, start_wid=77),
                    TestFunc(btp.gap_disconn, pts_bd_addr,
@@ -2404,11 +2432,11 @@ def test_cases_client(pts_bd_addr):
     return test_cases
 
 
-def test_cases(pts_bd_addr):
+def test_cases(pts):
     """Returns a list of GATT test cases"""
 
-    test_cases = test_cases_client(pts_bd_addr)
-    test_cases += test_cases_server(pts_bd_addr)
+    test_cases = test_cases_client(pts)
+    test_cases += test_cases_server(pts)
 
     return test_cases
 
