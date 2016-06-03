@@ -2019,7 +2019,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gap_connected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=2),
                    TestFunc(btp.gattc_write_long, Addr.le_public,
-                            pts_bd_addr, MMI.arg_1, MMI.arg_2, '12', None,
+                            pts_bd_addr, MMI.arg_1, MMI.arg_2, '12', MMI.arg_2,
                             start_wid=77),
                    TestFunc(btp.gattc_write_long_rsp, True, start_wid=77),
                    TestFunc(btp.gap_disconn, pts_bd_addr,
