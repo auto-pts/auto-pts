@@ -56,7 +56,9 @@ def parse_args():
                             default=default_board)
 
     arg_parser.add_argument("-c", "--test-cases", nargs='+',
-                            help="Names of test cases to run.")
+                            help="Names of test cases to run. Groups of test "
+                            "cases can be specified by profile names: "
+                            "GATT, GATTS, GATTC, GAP, L2CAP RFCOMM, SM")
 
     args = arg_parser.parse_args()
 
@@ -105,12 +107,9 @@ def main():
     test_cases += autoprojects.sm.test_cases(pts_bd_addr)
     test_cases += autoprojects.l2cap.test_cases(pts_bd_addr)
 
-    # assumes that test case names are unique across profiles
-    test_cases_dict = {tc.name : tc for tc in test_cases}
-
     if args.test_cases:
-        test_cases = [test_cases_dict[tc_name] for tc_name in args.test_cases
-                      if tc_name in test_cases_dict]
+        test_cases = autoptsclient.get_test_cases_subset(
+            test_cases, args.test_cases)
 
     autoptsclient.run_test_cases(proxy, test_cases)
 

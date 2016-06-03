@@ -347,3 +347,46 @@ def run_test_cases(pts, test_cases):
         print test_case.status
 
     print_summary(test_cases, margin)
+
+def get_test_cases_subset(test_cases, test_case_names):
+    """Return subset of test cases
+
+    test_cases -- list of all test cases, instances on TestCase
+
+    test_case_names -- list of names of test cases. Names in this list specify
+                       the subset from test_cases to return. It is assumed that
+                       PTS test case names are unique across profiles, hence
+                       this argument has only test case names, no profiles.
+
+    """
+    # protocols and profiles
+    profiles = ("GATT", "GAP", "L2CAP", "RFCOMM", "SM")
+
+    # subsets of profiles
+    profiles_subset = {
+        "GATTC" : [tc for tc in test_cases
+                   if tc.project_name == "GATT" and "_CL_" in tc.name],
+
+        "GATTS" : [tc for tc in test_cases
+                   if tc.project_name == "GATT" and "_SR_" in tc.name]
+    }
+
+    test_cases_dict = {tc.name : tc for tc in test_cases}
+    test_cases_subset = []
+
+    for name in test_case_names:
+        # whole profile/protocol
+        if name in profiles:
+            test_cases_subset += [tc for tc in test_cases
+                                  if tc.project_name == name]
+
+        # subset of profile/protocol
+        elif name in profiles_subset.keys():
+            test_cases_subset += profiles_subset[name]
+
+        # single test case name
+        else:
+            if name in test_cases_dict:
+                test_cases_subset.append(test_cases_dict[name])
+
+    return test_cases_subset
