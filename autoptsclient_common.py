@@ -170,15 +170,60 @@ def init_logging():
 
     log("Created logs directory %r", LOG_DIR_NAME)
 
+class FakeProxy(object):
+    """Fake PTS XML-RCP proxy client.
+
+    Usefull when testing code locally and auto-pts server is not needed"""
+
+    class System(object):
+        def listMethods(self):
+            pass
+
+    def __init__(self):
+        self.system = FakeProxy.System()
+
+    def restart_pts(self):
+        pass
+
+    def set_call_timeout(self, timeout):
+        pass
+
+    def get_version(self):
+        return 0x65
+
+    def bd_addr(self):
+        return "00:01:02:03:04:05"
+
+    def register_xmlrpc_ptscallback(self, client_address, client_port):
+        pass
+
+    def unregister_xmlrpc_ptscallback(self):
+        pass
+
+    def open_workspace(self, workspace_path):
+        pass
+
+    def enable_maximum_logging(self, enable):
+        pass
+
+    def update_pixit_param(self, project_name, param_name, new_param_value):
+        pass
+
+    def run_test_case(self, project_name, test_case_name):
+        pass
+
 def init_core(server_address, workspace_path, bd_addr, pts_debug):
     "Initialization procedure"
     init_logging()
 
     log("my IP address is: %s", get_my_ip_address())
 
-    proxy = xmlrpclib.ServerProxy(
-        "http://{}:{}/".format(server_address, SERVER_PORT),
-        allow_none = True,)
+    if os.environ.has_key("AUTO_PTS_LOCAL"):
+        proxy = FakeProxy()
+    else:
+        proxy = xmlrpclib.ServerProxy(
+            "http://{}:{}/".format(server_address, SERVER_PORT),
+            allow_none = True,)
 
     print "Starting PTS ...",
     sys.stdout.flush()
@@ -257,7 +302,8 @@ def run_test_case(pts, test_case):
 
     try:
         RUNNING_TEST_CASE = test_case
-        test_case.pre_run()
+        if not isinstance(pts, FakeProxy):
+            test_case.pre_run()
         error_code = pts.run_test_case(test_case.project_name, test_case.name)
 
     except BTPError as error:
@@ -286,7 +332,8 @@ def run_test_case(pts, test_case):
             error_code, str(error), test_case.status, exc_info = 1)
 
     finally:
-        test_case.post_run(error_code) # stop qemu and other commands
+        if not isinstance(pts, FakeProxy):
+            test_case.post_run(error_code) # stop qemu and other commands
         RUNNING_TEST_CASE = None
 
     log("Done TestCase %s %s", run_test_case.__name__, test_case)
