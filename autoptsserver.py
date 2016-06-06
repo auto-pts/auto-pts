@@ -3,6 +3,7 @@ import sys
 import logging
 import xmlrpclib
 from SimpleXMLRPCServer import SimpleXMLRPCServer
+import BaseHTTPServer
 
 import winutils
 import ptscontrol
@@ -62,6 +63,10 @@ class PyPTSWithXmlRpcCallback(ptscontrol.PyPTS):
         self.client_port = None
         self.client_xmlrcp_proxy = None
 
+def new_address_string(self):
+    host, port = self.client_address[:2]
+    return '%s (no getfqdn)' % host #used to call: socket.getfqdn(host)
+
 def main():
     """Main."""
     winutils.exit_if_not_admin()
@@ -82,6 +87,8 @@ def main():
     print "OK"
 
     print "Serving on port {} ...".format(PORT)
+
+    BaseHTTPServer.BaseHTTPRequestHandler.address_string = new_address_string
 
     server = SimpleXMLRPCServer(("", PORT), allow_none = True)
     server.register_instance(pts)
