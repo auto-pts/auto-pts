@@ -507,12 +507,9 @@ def test_cases(pts_bd_addr):
                             start_wid=156)]),
         ZTestCase("GAP", "TC_GAT_BV_01_C",
                   cmds=[TestFunc(btp.core_reg_svc_gap),
-                        TestFunc(btp.core_reg_svc_gatts)] + \
-                        init_gatt_db + \
-                       [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
-                                 start_wid=78),
-                        TestFunc(btp.gap_connected_ev, pts_bd_addr,
-                                 Addr.le_public, start_wid=78)]),
+                        TestFunc(btp.core_reg_svc_gatts),
+                        TestFunc(btp.gap_set_conn),
+                        TestFunc(btp.gap_adv_ind_on)]),
         # PTS Issue 14723
         # ZTestCase("GAP", "TC_GAT_BV_01_C",
         #           no_wid=158,
