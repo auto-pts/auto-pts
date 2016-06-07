@@ -437,3 +437,18 @@ def get_test_cases_subset(test_cases, test_case_names):
                 test_cases_subset.append(test_cases_dict[name])
 
     return test_cases_subset
+
+class PTSClient():
+    def __init__(self, proxy):
+        self.proxy = proxy
+        self.pts_bd_addr = self.proxy.bd_addr()
+
+    def get_bd_addr(self):
+        """Get PTS Bluetooth address"""
+
+        return self.pts_bd_addr
+
+    def update_pixit(self, project_name, pixit_name, value):
+        """Update PIXIT parameter"""
+
+        self.proxy.update_pixit_param(project_name, pixit_name, value)
