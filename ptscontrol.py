@@ -29,6 +29,12 @@ import Interop.PTSControl as PTSControl
 
 log = logging.debug
 
+logtype_whitelist = [ptstypes.PTS_LOGTYPE_START_TEST,
+                     ptstypes.PTS_LOGTYPE_END_TEST,
+                     ptstypes.PTS_LOGTYPE_ERROR,
+                     ptstypes.PTS_LOGTYPE_FINAL_VERDICT]
+
+
 class PTSLogger(PTSControl.IPTSControlClientLogger):
     """PTS control client logger implementation"""
 
@@ -38,6 +44,7 @@ class PTSLogger(PTSControl.IPTSControlClientLogger):
         # an object that implements testcase.PTSCallback, it can either be
         # TestCase or xmlrpc SimpleXMLRPCServer running in auto pts client.
         self.callback = None
+        self.maximum_logging = False
 
     def set_callback(self, callback):
         """Sets the callback"""
@@ -71,8 +78,9 @@ class PTSLogger(PTSControl.IPTSControlClientLogger):
                 log("Calling callback.log")
                 # log_type of type PTSControl._PTS_LOGTYPE is marshalled as
                 # int since xmlrcp has not marshalling rules for _PTS_LOGTYPE
-                self.callback.log(int(log_type), logtype_string, log_time,
-                                  log_message)
+                if self.maximum_logging or int(log_type) in logtype_whitelist:
+                    self.callback.log(int(log_type), logtype_string, log_time,
+                                      log_message)
         except Exception as e:
             log("Caught exception")
             log(e)
@@ -538,6 +546,7 @@ class PyPTS:
 
         log("%s %s", self.enable_maximum_logging.__name__, enable)
         self._pts.EnableMaximumLogging(enable)
+        self._pts_logger.maximum_logging = enable
 
     def set_call_timeout(self, timeout):
         """Sets a timeout period in milliseconds for the RunTestCase() calls
