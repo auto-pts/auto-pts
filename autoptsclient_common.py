@@ -14,6 +14,7 @@ from ptsprojects.testcase import get_max_test_case_desc
 from ptsprojects.testcase import PTSCallback
 from ptsprojects.zephyr.btp import BTPError
 import ptsprojects.ptstypes as ptstypes
+import BaseHTTPServer
 
 log = logging.debug
 
@@ -139,6 +140,8 @@ def start_callback():
 
     print "Serving on port {} ...\n".format(SERVER_PORT)
 
+    BaseHTTPServer.BaseHTTPRequestHandler.address_string = new_address_string
+
     server = SimpleXMLRPCServer(("", SERVER_PORT),
                                 allow_none = True, logRequests = False)
     server.register_instance(callback)
@@ -211,6 +214,10 @@ class FakeProxy(object):
 
     def run_test_case(self, project_name, test_case_name):
         pass
+
+def new_address_string(self):
+    host, port = self.client_address[:2]
+    return '%s (no getfqdn)' % host #used to call: socket.getfqdn(host)
 
 def init_core(server_address, workspace_path, bd_addr, pts_debug):
     "Initialization procedure"
