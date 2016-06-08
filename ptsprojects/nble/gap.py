@@ -184,10 +184,11 @@ class AdData:
     ad_lr = (AdType.le_role, '03')
 
 
-def test_cases(pts_bd_addr):
+def test_cases(pts):
     """Returns a list of GAP test cases
-    pts -- Instance of PyPTS"""
-    zephyrctl = get_zephyr()
+    pts -- Instance of PTSClient"""
+
+    pts_bd_addr = pts.get_bd_addr()
 
     test_cases = [
         ZTestCase("GAP", "TC_BROB_BCST_BV_01_C",
