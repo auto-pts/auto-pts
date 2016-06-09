@@ -496,6 +496,7 @@ def test_cases(pts):
                    TestFunc(btp.gap_set_conn),
                    TestFunc(btp.gap_adv_ind_on, (AdData.ad_lr,),
                             start_wid=156)]),
+        # PTS Issue 14723
         ZTestCase("GAP", "TC_GAT_BV_01_C",
                   cmds=[TestFunc(btp.core_reg_svc_gap),
                         TestFunc(btp.core_reg_svc_gatts)] + \
@@ -522,6 +523,7 @@ def test_cases(pts):
                         init_gatt_db + \
                       [TestFunc(btp.gap_set_conn, start_wid=91),
                        TestFunc(btp.gap_adv_ind_on, start_wid=91)]),
+        # PTS Issue 14723
         ZTestCase("GAP", "TC_IDLE_NAMP_BV_01_C",
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.gap_set_conn),
