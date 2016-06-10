@@ -305,6 +305,7 @@ class PyPTS:
             try:
                 pts_process.CloseMainWindow()
                 pts_process.WaitForExit()
+                pts_process.Close()
             except Exception as error:
                 log("Exception when killing PTS process: %r", error)
 
