@@ -50,3 +50,26 @@ Then start the client:
 On Windows, run this command:
 
 `TlbImp.exe PTSControl.dll /out:Interop.PTSControl.dll /verbose`
+
+# Using configuration file
+
+Configuration file (autoptsclient.conf) contains autoptsclient related symbols and paths used by script.
+
+`PTS_WORKSPACE_PATH` - path to the PTS workspace on PTS Server.
+
+`SERVER_ADDRESS` - autoptsserver workstation IP address
+
+If you have trouble with your configuration, see sample autoptsclient.conf:
+
+```
+[DEFAULT]
+PTS_WORKSPACE_PATH=E:\Users\<user_name>\Documents\Profile Tuning Suite\%(workspace_name)s\%(workspace_name)s.pqw6
+SERVER_ADDRESS=192.168.100.1
+
+[config 1]
+WORKSPACE_NAME=foo
+
+[config 2]
+WORKSPACE_NAME=bar
+```
+
