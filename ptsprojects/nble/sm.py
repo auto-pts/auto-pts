@@ -24,9 +24,9 @@ class Addr:
 
 def test_cases(pts):
     """Returns a list of SM test cases
-    pts -- Instance of PTSClient"""
+    pts -- Instance of PyPTS"""
 
-    pts_bd_addr = pts.get_bd_addr()
+    pts_bd_addr = pts.q_bd_addr
 
     test_cases = [
         ZTestCase("SM", "TC_PROT_BV_02_C",

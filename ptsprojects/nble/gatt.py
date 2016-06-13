@@ -155,7 +155,7 @@ class Perm:
 def test_cases_server(pts):
     """Returns a list of GATT Server test cases"""
 
-    pts_bd_addr = pts.get_bd_addr()
+    pts_bd_addr = pts.q_bd_addr
 
     test_cases = [
         # ZTestCase("GATT", "TC_GAC_SR_BV_01_C",
@@ -1193,7 +1193,7 @@ def test_cases_client(pts):
 
     """
 
-    pts_bd_addr = pts.get_bd_addr()
+    pts_bd_addr = pts.q_bd_addr
 
     test_cases = [
         # Discover All Primary Services not supported by our API

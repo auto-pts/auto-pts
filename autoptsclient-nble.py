@@ -92,12 +92,10 @@ def main():
 
     args = parse_args()
 
-    proxy = autoptsclient.init_core(args.server_address, args.workspace,
-                                    args.bd_addr, args.pts_debug)
+    pts = autoptsclient.init_core(args.server_address, args.workspace,
+                                  args.bd_addr, args.pts_debug)
 
     autoprojects.iutctl.init(args.kernel_image, args.tty_file, args.board)
-
-    pts = autoptsclient.PTSClient(proxy)
 
     update_pixit(pts)
 
@@ -110,14 +108,14 @@ def main():
         test_cases = autoptsclient.get_test_cases_subset(
             test_cases, args.test_cases)
 
-    autoptsclient.run_test_cases(proxy, test_cases)
+    autoptsclient.run_test_cases(pts, test_cases)
 
     autoprojects.iutctl.cleanup()
 
     print "\nBye!"
     sys.stdout.flush()
 
-    proxy.unregister_xmlrpc_ptscallback()
+    pts.unregister_xmlrpc_ptscallback()
 
     # not the cleanest but the easiest way to exit the server thread
     os._exit(0)

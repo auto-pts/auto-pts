@@ -238,7 +238,10 @@ def init_core(server_address, workspace_path, bd_addr, pts_debug):
 
     log("Server methods: %s", proxy.system.listMethods())
     log("PTS Version: %x", proxy.get_version())
-    log("PTS BD_ADDR: %s", proxy.bd_addr())
+
+    # cache locally for quick access (avoid contacting server)
+    proxy.q_bd_addr = proxy.bd_addr()
+    log("PTS BD_ADDR: %s", proxy.q_bd_addr)
 
     proxy.register_xmlrpc_ptscallback(get_my_ip_address(), SERVER_PORT)
 
@@ -437,18 +440,3 @@ def get_test_cases_subset(test_cases, test_case_names):
                 test_cases_subset.append(test_cases_dict[name])
 
     return test_cases_subset
-
-class PTSClient():
-    def __init__(self, proxy):
-        self.proxy = proxy
-        self.pts_bd_addr = self.proxy.bd_addr()
-
-    def get_bd_addr(self):
-        """Get PTS Bluetooth address"""
-
-        return self.pts_bd_addr
-
-    def update_pixit_param(self, project_name, pixit_name, value):
-        """Update PIXIT parameter"""
-
-        self.proxy.update_pixit_param(project_name, pixit_name, value)

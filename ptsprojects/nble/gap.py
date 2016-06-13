@@ -186,9 +186,9 @@ class AdData:
 
 def test_cases(pts):
     """Returns a list of GAP test cases
-    pts -- Instance of PTSClient"""
+    pts -- Instance of PyPTS"""
 
-    pts_bd_addr = pts.get_bd_addr()
+    pts_bd_addr = pts.q_bd_addr
 
     test_cases = [
         ZTestCase("GAP", "TC_BROB_BCST_BV_01_C",
