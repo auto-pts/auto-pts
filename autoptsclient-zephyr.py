@@ -79,33 +79,29 @@ def main():
 
     args = parse_args()
 
-    proxy = autoptsclient.init_core(args.server_address, args.workspace,
-                                    args.bd_addr, args.pts_debug)
+    pts = autoptsclient.init_core(args.server_address, args.workspace,
+                                  args.bd_addr, args.pts_debug)
 
     autoprojects.iutctl.init(args.kernel_image, args.tty_file, args.board)
 
-    # in some networks initial connection setup is very slow, so, contact the
-    # server only once to get data needed to create test cases
-    pts_bd_addr = proxy.bd_addr()
+    update_pixit(pts)
 
-    update_pixit(proxy)
-
-    test_cases = autoprojects.gap.test_cases(pts_bd_addr)
-    test_cases += autoprojects.gatt.test_cases(pts_bd_addr)
-    test_cases += autoprojects.sm.test_cases(pts_bd_addr)
+    test_cases = autoprojects.gap.test_cases(pts)
+    test_cases += autoprojects.gatt.test_cases(pts)
+    test_cases += autoprojects.sm.test_cases(pts)
 
     if args.test_cases:
         test_cases = autoptsclient.get_test_cases_subset(
             test_cases, args.test_cases)
 
-    autoptsclient.run_test_cases(proxy, test_cases)
+    autoptsclient.run_test_cases(pts, test_cases)
 
     autoprojects.iutctl.cleanup()
 
     print "\nBye!"
     sys.stdout.flush()
 
-    proxy.unregister_xmlrpc_ptscallback()
+    pts.unregister_xmlrpc_ptscallback()
 
     # not the cleanest but the easiest way to exit the server thread
     os._exit(0)

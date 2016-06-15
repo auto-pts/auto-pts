@@ -160,9 +160,11 @@ ad = [(AdType.uuid16_some, '1111'),
       (AdType.uuid16_svc_data, '111111')]
 
 
-def test_cases(pts_bd_addr):
+def test_cases(pts):
     """Returns a list of GAP test cases
     pts -- Instance of PyPTS"""
+
+    pts_bd_addr = pts.q_bd_addr
 
     test_cases = [
         ZTestCase("GAP", "TC_BROB_BCST_BV_01_C",

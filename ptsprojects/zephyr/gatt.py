@@ -147,8 +147,10 @@ class Perm:
         return decode_flag_name(perm, Perm.names)
 
 
-def test_cases_server():
+def test_cases_server(pts):
     """Returns a list of GATT Server test cases"""
+
+    pts_bd_addr = pts.q_bd_addr
 
     test_cases = [
         ZTestCase("GATT", "TC_GAC_SR_BV_01_C",
@@ -1221,12 +1223,15 @@ def test_cases_server():
     return test_cases
 
 
-def test_cases_client(pts_bd_addr):
+def test_cases_client(pts):
     """Returns a list of GATT Client test cases
 
     pts -- Instance of PyPTS
 
     """
+
+    pts_bd_addr = pts.q_bd_addr
+
     test_cases = [
         ZTestCase("GATT", "TC_GAC_CL_BV_01_C",
                   [TestFunc(btp.core_reg_svc_gap),
@@ -2474,11 +2479,11 @@ def test_cases_client(pts_bd_addr):
     return test_cases
 
 
-def test_cases(pts_bd_addr):
+def test_cases(pts):
     """Returns a list of GATT test cases"""
 
-    test_cases = test_cases_client(pts_bd_addr)
-    test_cases += test_cases_server()
+    test_cases = test_cases_client(pts)
+    test_cases += test_cases_server(pts)
 
     return test_cases
 
