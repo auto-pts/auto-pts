@@ -60,15 +60,15 @@ def parse_args():
 
     return args
 
-def update_pixit(proxy):
+def update_pixit(pts):
     """Function used to update PIXIT parameters.
 
     PIXITs are set to default everytime the TPG is updated. To avoid starting
     PTS in gui mode to update the PIXITs, this can be done using this function.
     Then we're sure that those are set to appropriate value.
     """
-    proxy.update_pixit_param("GATT", "TSPX_delete_link_key", "TRUE")
-    proxy.update_pixit_param("GATT", "TSPX_delete_ltk", "TRUE")
+    pts.update_pixit_param("GATT", "TSPX_delete_link_key", "TRUE")
+    pts.update_pixit_param("GATT", "TSPX_delete_ltk", "TRUE")
 
     return
 
