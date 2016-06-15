@@ -1189,7 +1189,7 @@ def test_cases_server(pts):
 def test_cases_client(pts):
     """Returns a list of GATT Client test cases
 
-    pts -- Instance of PTSClient
+    pts -- Instance of PyPTS
 
     """
 
