@@ -78,7 +78,6 @@ def test_cases(pts):
                   edit1_wids={104: btp.var_get_passkey},
                   cmds=[TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                         TestFunc(btp.core_reg_svc_gap),
-                        TestFunc(btp.core_reg_svc_gatts),
                         TestFunc(btp.gap_set_conn),
                         TestFunc(btp.gap_adv_ind_on, start_wid=15),
                         TestFunc(btp.gap_connected_ev, pts_bd_addr,
