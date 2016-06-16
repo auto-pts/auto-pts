@@ -26,6 +26,8 @@ def test_cases(pts):
     """Returns a list of SM test cases
     pts -- Instance of PyPTS"""
 
+    pts.update_pixit_param("SM", "TSPX_peer_addr_type", "01")
+
     pts_bd_addr = pts.q_bd_addr
 
     test_cases = [

@@ -2434,6 +2434,10 @@ def test_cases_client(pts):
 def test_cases(pts):
     """Returns a list of GATT test cases"""
 
+    pts.update_pixit_param("GATT", "TSPX_delete_link_key", "TRUE")
+    pts.update_pixit_param("GATT", "TSPX_delete_ltk", "TRUE")
+    pts.update_pixit_param("GATT", "TSPX_iut_use_dynamic_bd_addr", "TRUE")
+
     test_cases = test_cases_client(pts)
     test_cases += test_cases_server(pts)
 

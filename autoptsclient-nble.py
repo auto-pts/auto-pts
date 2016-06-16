@@ -64,27 +64,6 @@ def parse_args():
 
     return args
 
-def update_pixit(pts):
-    """Function used to update PIXIT parameters.
-
-    PIXITs are set to default everytime the TPG is updated. To avoid starting
-    PTS in gui mode to update the PIXITs, this can be done using this function.
-    Then we're sure that those are set to appropriate value.
-    """
-    pts.update_pixit_param("GATT", "TSPX_delete_link_key", "TRUE")
-    pts.update_pixit_param("GATT", "TSPX_delete_ltk", "TRUE")
-    pts.update_pixit_param("GATT", "TSPX_iut_use_dynamic_bd_addr", "TRUE")
-    pts.update_pixit_param("GAP", "TSPX_using_public_device_address", "FALSE")
-    pts.update_pixit_param("GAP", "TSPX_using_random_device_address", "TRUE")
-    pts.update_pixit_param("GAP",
-                           "TSPX_iut_device_name_in_adv_packet_for_random_address",
-                           "Tester")
-    pts.update_pixit_param("SM", "TSPX_peer_addr_type", "01")
-    pts.update_pixit_param("L2CAP", "TSPX_iut_address_type_random", "TRUE")
-
-
-    return
-
 def main():
     """Main."""
     if os.geteuid() == 0: # root privileges are not needed
@@ -96,8 +75,6 @@ def main():
                                   args.bd_addr, args.pts_debug)
 
     autoprojects.iutctl.init(args.kernel_image, args.tty_file, args.board)
-
-    update_pixit(pts)
 
     test_cases = autoprojects.gap.test_cases(pts)
     test_cases += autoprojects.gatt.test_cases(pts)

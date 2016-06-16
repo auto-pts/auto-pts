@@ -188,6 +188,12 @@ def test_cases(pts):
     """Returns a list of GAP test cases
     pts -- Instance of PyPTS"""
 
+    pts.update_pixit_param("GAP", "TSPX_using_public_device_address", "FALSE")
+    pts.update_pixit_param("GAP", "TSPX_using_random_device_address", "TRUE")
+    pts.update_pixit_param("GAP",
+                           "TSPX_iut_device_name_in_adv_packet_for_random_address",
+                           "Tester")
+
     pts_bd_addr = pts.q_bd_addr
 
     test_cases = [

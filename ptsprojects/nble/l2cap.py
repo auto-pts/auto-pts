@@ -26,6 +26,8 @@ def test_cases(pts):
     """Returns a list of L2CAP test cases
     pts -- Instance of PyPTS"""
 
+    pts.update_pixit_param("L2CAP", "TSPX_iut_address_type_random", "TRUE")
+
     pts_bd_addr = pts.q_bd_addr
 
     test_cases = [
