@@ -34,8 +34,8 @@ def parse_args():
                             "be done over this TTY. Hence, QEMU will "
                             "not be used.")
 
-    arg_parser.add_argument("--bd-addr",
-                            help="Clients bluetooth address")
+    arg_parser.add_argument("-a", "--bd-addr",
+                            help="Bluetooth device address of the IUT")
 
     arg_parser.add_argument("-d", "--debug-logs", dest="enable_max_logs",
                             action='store_true', default=False,
@@ -57,7 +57,7 @@ def parse_args():
     arg_parser.add_argument("-c", "--test-cases", nargs='+',
                             help="Names of test cases to run. Groups of test "
                             "cases can be specified by profile names: "
-                            "GATT, GATTS, GATTC, GAP, L2CAP RFCOMM, SM")
+                            "GATT, GATTS, GATTC, GAP, L2CAP, RFCOMM, SM")
 
     args = arg_parser.parse_args()
 
