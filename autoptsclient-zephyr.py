@@ -72,9 +72,18 @@ def main():
 
     autoprojects.iutctl.init(args.kernel_image, args.tty_file, args.board)
 
-    test_cases = autoprojects.gap.test_cases(pts)
-    test_cases += autoprojects.gatt.test_cases(pts)
-    test_cases += autoprojects.sm.test_cases(pts)
+    # use nble test cases if script name contains "nble"
+    if "nble" in os.path.basename(sys.argv[0]):
+        import ptsprojects.nble as autoprojects_nble
+        test_cases = autoprojects_nble.gap.test_cases(pts)
+        test_cases += autoprojects_nble.gatt.test_cases(pts)
+        test_cases += autoprojects_nble.sm.test_cases(pts)
+        test_cases += autoprojects_nble.l2cap.test_cases(pts)
+
+    else: # use zephyr test cases
+        test_cases = autoprojects.gap.test_cases(pts)
+        test_cases += autoprojects.gatt.test_cases(pts)
+        test_cases += autoprojects.sm.test_cases(pts)
 
     if args.test_cases:
         test_cases = autoptsclient.get_test_cases_subset(
