@@ -37,8 +37,11 @@ def parse_args():
     arg_parser.add_argument("--bd-addr",
                             help="Clients bluetooth address")
 
-    arg_parser.add_argument("--pts-debug", action='store_true', default=False,
-                            help="Enable PTS debug logs")
+    arg_parser.add_argument("-d", "--debug-logs", dest="enable_max_logs",
+                            action='store_true', default=False,
+                            help="Enable the PTS maximum logging. Equivalent "
+                            "to running test case in PTS GUI using "
+                            "'Run (Debug Logs)'")
 
     board_names = autoprojects.iutctl.Board.names
     default_board = board_names[0]
@@ -68,7 +71,7 @@ def main():
     args = parse_args()
 
     pts = autoptsclient.init_core(args.server_address, args.workspace,
-                                  args.bd_addr, args.pts_debug)
+                                  args.bd_addr, args.enable_max_logs)
 
     autoprojects.iutctl.init(args.kernel_image, args.tty_file, args.board)
 

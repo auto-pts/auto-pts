@@ -239,7 +239,7 @@ class FakeProxy(object):
     def run_test_case(self, project_name, test_case_name):
         pass
 
-def init_core(server_address, workspace_path, bd_addr, pts_debug):
+def init_core(server_address, workspace_path, bd_addr, enable_max_logs):
     "Initialization procedure"
     init_logging()
 
@@ -282,7 +282,7 @@ def init_core(server_address, workspace_path, bd_addr, pts_debug):
             log("Set bd_addr PIXIT: %s for project: %s", bd_addr, project_name)
             proxy.update_pixit_param(project_name, "TSPX_bd_addr_iut", bd_addr)
 
-    proxy.enable_maximum_logging(pts_debug)
+    proxy.enable_maximum_logging(enable_max_logs)
 
     return proxy
 
