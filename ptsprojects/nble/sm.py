@@ -22,6 +22,13 @@ class Addr:
     le_random = 1
 
 
+class IO_Cap:
+    display_only = 0
+    display_yesno = 1
+    keyboard_only = 2
+    no_input_output = 3
+
+
 def test_cases(pts):
     """Returns a list of SM test cases
     pts -- Instance of PyPTS"""
@@ -47,7 +54,7 @@ def test_cases(pts):
                    TestFunc(btp.gap_adv_ind_on)]),
         ZTestCase("SM", "TC_PKE_BV_02_C",
                   edit1_wids={104: btp.var_get_passkey},
-                  cmds=[TestFunc(btp.gap_set_io_cap, 0),
+                  cmds=[TestFunc(btp.gap_set_io_cap, IO_Cap.display_only),
                         TestFunc(btp.core_reg_svc_gap),
                         TestFunc(btp.gap_adv_ind_on),
                         TestFunc(btp.gap_connected_ev, pts_bd_addr,
@@ -55,12 +62,12 @@ def test_cases(pts):
                         TestFunc(btp.gap_passkey_disp_ev, pts_bd_addr,
                                  Addr.le_public, True, start_wid=15)]),
         ZTestCase("SM", "TC_PKE_BV_05_C",
-                  [TestFunc(btp.gap_set_io_cap, 0),
+                  [TestFunc(btp.gap_set_io_cap, IO_Cap.display_only),
                    TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.gap_adv_ind_on)]),
         ZTestCase("SM", "TC_PKE_BI_03_C",
                   edit1_wids={106: btp.var_get_wrong_passkey},
-                  cmds=[TestFunc(btp.gap_set_io_cap, 0),
+                  cmds=[TestFunc(btp.gap_set_io_cap, IO_Cap.display_only),
                         TestFunc(btp.core_reg_svc_gap),
                         TestFunc(btp.gap_adv_ind_on),
                         TestFunc(btp.gap_connected_ev, pts_bd_addr,
@@ -69,9 +76,8 @@ def test_cases(pts):
                                  Addr.le_public, True, start_wid=15)]),
         ZTestCase("SM", "TC_OOB_BV_06_C",
                   edit1_wids={104: btp.var_get_passkey},
-                  cmds=[TestFunc(btp.gap_set_io_cap, 0),
+                  cmds=[TestFunc(btp.gap_set_io_cap, IO_Cap.display_only),
                         TestFunc(btp.core_reg_svc_gap),
-                        TestFunc(btp.core_reg_svc_gatts),
                         TestFunc(btp.gap_set_conn),
                         TestFunc(btp.gap_adv_ind_on, start_wid=15),
                         TestFunc(btp.gap_connected_ev, pts_bd_addr,
@@ -89,7 +95,7 @@ def test_cases(pts):
         # ZTestCase("SM", "TC_OOB_BI_02_C",
         ZTestCase("SM", "TC_EKS_BV_02_C",
                   edit1_wids={104: btp.var_get_passkey},
-                  cmds=[TestFunc(btp.gap_set_io_cap, 0),
+                  cmds=[TestFunc(btp.gap_set_io_cap, IO_Cap.display_only),
                         TestFunc(btp.core_reg_svc_gap),
                         TestFunc(btp.gap_adv_ind_on, start_wid=15),
                         TestFunc(btp.gap_connected_ev, pts_bd_addr,
@@ -97,12 +103,12 @@ def test_cases(pts):
                         TestFunc(btp.gap_passkey_disp_ev, pts_bd_addr,
                                  Addr.le_public, True, start_wid=15)]),
         ZTestCase("SM", "TC_EKS_BI_02_C",
-                  [TestFunc(btp.gap_set_io_cap, 0),
+                  [TestFunc(btp.gap_set_io_cap, IO_Cap.display_only),
                    TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.gap_adv_ind_on, start_wid=15)]),
         ZTestCase("SM", "TC_KDU_BV_01_C",
                   edit1_wids={104: btp.var_get_passkey},
-                  cmds=[TestFunc(btp.gap_set_io_cap, 0),
+                  cmds=[TestFunc(btp.gap_set_io_cap, IO_Cap.display_only),
                         TestFunc(btp.core_reg_svc_gap),
                         TestFunc(btp.gap_adv_ind_on, start_wid=15),
                         TestFunc(btp.gap_connected_ev, pts_bd_addr,
@@ -112,7 +118,7 @@ def test_cases(pts):
         # ZTestCase("SM", "TC_KDU_BV_02_C",
         #           edit1_wids={104: btp.var_get_passkey},
         #           cmds=[TestFunc(btp.core_reg_svc_gap),
-        #                 TestFunc(btp.gap_set_io_cap, 0),
+        #                 TestFunc(btp.gap_set_io_cap, IO_Cap.display_only),
         #                 TestFunc(btp.gap_adv_ind_on, start_wid=15),
         #                 TestFunc(btp.gap_connected_ev, pts_bd_addr,
         #                          Addr.le_public, start_wid=15),
@@ -120,7 +126,7 @@ def test_cases(pts):
         #                          Addr.le_public, True, start_wid=15)]),
         ZTestCase("SM", "TC_KDU_BV_07_C",
                   edit1_wids={104: btp.var_get_passkey},
-                  cmds=[TestFunc(btp.gap_set_io_cap, 0),
+                  cmds=[TestFunc(btp.gap_set_io_cap, IO_Cap.display_only),
                         TestFunc(btp.core_reg_svc_gap),
                         TestFunc(btp.gap_adv_ind_on, start_wid=15),
                         TestFunc(btp.gap_connected_ev, pts_bd_addr,
@@ -129,7 +135,7 @@ def test_cases(pts):
                                  Addr.le_public, True, start_wid=15)]),
         ZTestCase("SM", "TC_SIP_BV_01_C",
                   edit1_wids={104: btp.var_get_passkey},
-                  cmds=[TestFunc(btp.gap_set_io_cap, 0),
+                  cmds=[TestFunc(btp.gap_set_io_cap, IO_Cap.display_only),
                         TestFunc(btp.core_reg_svc_gap),
                         TestFunc(btp.gap_adv_ind_on, start_wid=15),
                         TestFunc(btp.gap_connected_ev, pts_bd_addr,
@@ -139,7 +145,7 @@ def test_cases(pts):
                         TestFunc(btp.gap_passkey_disp_ev, pts_bd_addr,
                                  Addr.le_public, True, start_wid=109)]),
         ZTestCase("SM", "TC_SIE_BV_01_C",
-                  [TestFunc(btp.gap_set_io_cap, 0),
+                  [TestFunc(btp.gap_set_io_cap, IO_Cap.display_only),
                    TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.gap_adv_ind_on),
                    TestFunc(btp.gap_connected_ev, pts_bd_addr, Addr.le_public,
