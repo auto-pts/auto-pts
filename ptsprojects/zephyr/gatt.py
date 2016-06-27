@@ -15,6 +15,7 @@ except ImportError:  # running this module as script
 
 from ptsprojects.zephyr.iutctl import get_zephyr
 import btp
+from time import sleep
 
 
 class UUID:
@@ -1078,20 +1079,28 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, 'FEDCBA9876543210' * 5),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on)]),
-        # PTS Issue 14646
+        # PTS Issue 14646,14728
         ZTestCase("GATT", "TC_GAN_SR_BV_01_C",
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.core_reg_svc_gatts),
                    TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
-                            Prop.read | Prop.write | Prop.nofity,
-                            Perm.read | Perm.write, UUID.VND16_2),
+                            Prop.nofity | Prop.read, Perm.read, UUID.VND16_2),
                    TestFunc(btp.gatts_set_val, 0, '00'),
                    TestFunc(btp.gatts_add_desc, 0,
                             Perm.read | Perm.write, UUID.CCC),
+
+                   # FIXME Add another characteristic with notify property to
+                   # workaround PTS failure
+                   TestFunc(btp.gatts_add_char, 0,
+                            Prop.nofity | Prop.read, Perm.read, UUID.VND16_3),
+
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1),
-                   TestFunc(btp.gatts_set_val, 0, '01', start_wid=1)]),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr,
+                            Addr.le_public, start_wid=92),
+                   TestFunc(sleep, 1, start_wid=92),
+                   TestFunc(btp.gatts_set_val, 3, '01', start_wid=92)]),
         ZTestCase("GATT", "TC_GPA_SR_BV_01_C",
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.core_reg_svc_gatts),
