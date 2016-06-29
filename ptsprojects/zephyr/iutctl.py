@@ -5,6 +5,7 @@ import socket
 import binascii
 import shlex
 from btpparser import enc_frame, dec_hdr, dec_data, HDR_LEN
+from time import sleep
 
 log = logging.debug
 ZEPHYR = None
@@ -247,6 +248,8 @@ class Board:
                                          stderr=IUT_LOG_FO)
         if reset_process.wait():
             logging.error("openocd reset failed")
+
+        sleep(5)
 
     def get_reset_cmd(self):
         """Return reset command for a board"""
