@@ -286,10 +286,11 @@ def test_cases(pts):
                             start_wid=78),
                    TestFunc(btp.gap_connected_ev, pts_bd_addr, Addr.le_public,
                             start_wid=78)]),
+        # PTS issue #14873
         ZTestCase("GAP", "TC_CONN_NCON_BV_01_C",
                   [TestFunc(btp.core_reg_svc_gap),
-                   TestFunc(btp.gap_set_nonconn, start_wid=122),
-                   TestFunc(btp.gap_adv_ind_on, start_wid=54)]),
+                   TestFunc(btp.gap_set_nonconn),
+                   TestFunc(btp.gap_adv_ind_on)]),
         ZTestCase("GAP", "TC_CONN_NCON_BV_02_C",
                   [TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.gap_set_nonconn, start_wid=122),
