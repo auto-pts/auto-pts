@@ -687,7 +687,7 @@
             <Name>TSPX_iut_address_type_random</Name>
             <Description>Device address type is random. (Default: FALSE)</Description>
             <Type>BOOLEAN</Type>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
           </Row>
           <Row>
             <Name>TSPX_tester_adv_interval_min</Name>
@@ -2243,13 +2243,13 @@
             <Name>TSPX_using_public_device_address</Name>
             <Description>Turn this to true if IUT is using public device address. (Default: TRUE)</Description>
             <Type>BOOLEAN</Type>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
           </Row>
           <Row>
             <Name>TSPX_using_random_device_address</Name>
             <Description>Turn this to true if IUT is using random device address. (Default: FALSE)</Description>
             <Type>BOOLEAN</Type>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
           </Row>
           <Row>
             <Name>TSPX_lim_adv_timeout</Name>
@@ -2459,7 +2459,7 @@ for the IUT in the IXIT. (Default: 0x00000000000000000000000000000000)</Descript
             <Name>TSPX_iut_device_name_in_adv_packet_for_random_address</Name>
             <Description>IUT advertising data device name for the random address search (Default: PTS-66DE)</Description>
             <Type>IA5STRING</Type>
-            <Value>PTS-66DE</Value>
+            <Value>Tester</Value>
           </Row>
         </Rows>
       </PIXIT>
@@ -3583,7 +3583,7 @@ for the IUT in the IXIT. (Default: 0x00000000000000000000000000000000)</Descript
             <Name>TSPX_iut_use_dynamic_bd_addr</Name>
             <Description>Device use dynamic   bd_addr. (Default: FALSE)</Description>
             <Type>BOOLEAN</Type>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
           </Row>
           <Row>
             <Name>TSPX_iut_setup_att_over_br_edr</Name>
@@ -3631,7 +3631,7 @@ for the IUT in the IXIT. (Default: 0x00000000000000000000000000000000)</Descript
             <Name>TSPX_delete_ltk</Name>
             <Description>Whether to delete Long Term Key or not. (Default: FALSE)</Description>
             <Type>BOOLEAN</Type>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
           </Row>
           <Row>
             <Name>TSPX_characteristic_readable</Name>
@@ -3807,7 +3807,7 @@ for the IUT in the IXIT. (Default: 0x00000000000000000000000000000000)</Descript
             <Name>TSPX_peer_addr_type</Name>
             <Description>Whether peer address is public(00) or random (01). This is used during creating connection.</Description>
             <Type>OCTETSTRING</Type>
-            <Value>00</Value>
+            <Value>01</Value>
           </Row>
           <Row>
             <Name>TSPX_own_addr_type</Name>
