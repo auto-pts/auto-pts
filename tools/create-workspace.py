@@ -149,7 +149,7 @@ def patch_workspace_file(workspace_file):
 
     line_count = file_line_count(workspace_file)
 
-    for line in fileinput.input(workspace_file, inplace=1, backup='.bak'):
+    for line in fileinput.input(workspace_file, inplace=1):
         line = line.rstrip()
 
         if "PATH=" in line:
