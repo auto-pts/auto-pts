@@ -299,6 +299,12 @@ def log2file(function):
             LOG_DIR_NAME,
             "%s_%s.log" % (test_case.project_name, test_case.name))
 
+        # if log file exists, append date to its name to make it unique
+        if os.path.exists(log_filename):
+            (root, ext) = os.path.splitext(log_filename)
+            now = datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S-%f")
+            log_filename = "%s_%s%s" % (root, now, ext)
+
         logger = logging.getLogger()
         file_handler = logging.FileHandler(log_filename)
 
