@@ -239,6 +239,14 @@ class FakeProxy(object):
     def run_test_case(self, project_name, test_case_name):
         pass
 
+    def get_project_count(self):
+        """Returns number of projects available in the current workspace"""
+        return 1
+
+    def get_project_name(self, project_index):
+        """Returns project name"""
+        return "Project%d" % project_index
+
 def init_core(server_address, workspace_path, bd_addr, enable_max_logs):
     "Initialization procedure"
     init_logging()
