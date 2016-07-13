@@ -351,7 +351,7 @@ class TestCase(PTSCallback):
             elif "FAIL" in log_message:
                 new_status = "FAIL"
             else:
-                new_status = "UNKNOWN VERDICT: %s" % log_message
+                new_status = "UNKNOWN VERDICT: %s" % log_message.strip()
 
         if new_status:
             self.status = new_status
