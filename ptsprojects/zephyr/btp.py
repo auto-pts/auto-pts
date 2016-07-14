@@ -137,6 +137,9 @@ def verify_description(description):
     if not VERIFY_VALUES:
         return True
 
+    # VERIFY_VALUES shall not be a string: all its characters will be verified
+    assert isinstance(VERIFY_VALUES, list), "VERIFY_VALUES should be a list!"
+
     for value in VERIFY_VALUES:
         logging.debug("Verifying: %r", value)
 
@@ -168,6 +171,9 @@ def verify_multiple_read_description(description):
 
     if not VERIFY_VALUES:
         return True
+
+    # VERIFY_VALUES shall not be a string: all its characters will be verified
+    assert isinstance(VERIFY_VALUES, list), "VERIFY_VALUES should be a list!"
 
     exp_mtp_read = "".join(VERIFY_VALUES)
     got_mtp_read = "".join(re.findall(r"\b[0-9A-Fa-f]+\b", description))
