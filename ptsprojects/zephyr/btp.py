@@ -1635,7 +1635,8 @@ def gattc_write_rsp(store_rsp=False):
 
     if store_rsp:
         global VERIFY_VALUES
-        VERIFY_VALUES = att_rsp_str[rsp]
+        VERIFY_VALUES = []
+        VERIFY_VALUES.append(att_rsp_str[rsp])
 
 
 def gattc_write_long_rsp(store_rsp=False):
@@ -1653,4 +1654,5 @@ def gattc_write_long_rsp(store_rsp=False):
 
     if store_rsp:
         global VERIFY_VALUES
-        VERIFY_VALUES = att_rsp_str[rsp]
+        VERIFY_VALUES = []
+        VERIFY_VALUES.append(att_rsp_str[rsp])
