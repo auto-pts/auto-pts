@@ -4,6 +4,7 @@
 
 import os
 import sys
+import copy
 import random
 import socket
 import logging
@@ -489,6 +490,10 @@ def get_test_cases_subset(test_cases, test_case_names):
         # single test case name
         else:
             if name in test_cases_dict:
-                test_cases_subset.append(test_cases_dict[name])
+                tc = test_cases_dict[name]
+                if tc in test_cases_subset:
+                    test_cases_subset.append(copy.deepcopy(tc))
+                else:
+                    test_cases_subset.append(tc)
 
     return test_cases_subset
