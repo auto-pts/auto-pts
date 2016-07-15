@@ -4,6 +4,7 @@
 
 import os
 import sys
+import random
 import socket
 import logging
 import datetime
@@ -22,6 +23,12 @@ SERVER_PORT = 65000
 RUNNING_TEST_CASE = None
 
 LOG_DIR_NAME = None
+
+# To test autopts client locally:
+# Envrinment variable AUTO_PTS_LOCAL must be set for FakeProxy to
+# be used. When FakeProxy is used autoptsserver on Windows will
+# not be contacted.
+AUTO_PTS_LOCAL = os.environ.has_key("AUTO_PTS_LOCAL")
 
 # xmlrpclib._Method patched to get __repr__ and __str__
 #
@@ -253,7 +260,7 @@ def init_core(server_address, workspace_path, bd_addr, enable_max_logs):
 
     log("my IP address is: %s", get_my_ip_address())
 
-    if os.environ.has_key("AUTO_PTS_LOCAL"):
+    if AUTO_PTS_LOCAL:
         proxy = FakeProxy()
     else:
         proxy = xmlrpclib.ServerProxy(
@@ -340,14 +347,19 @@ def run_test_case(pts, test_case):
     """
     log("Starting TestCase %s %s", run_test_case.__name__, test_case)
 
+    if AUTO_PTS_LOCAL: # set fake status and return
+        statuses = ["PASS", "INCONC", "FAIL", "UNKNOWN VERDICT: NONE",
+                    "BTP ERROR", "XML-RPC ERROR", "BTP TIMEOUT"]
+        test_case.status = random.choice(statuses)
+        return
+
     global RUNNING_TEST_CASE
 
     error_code = None
 
     try:
         RUNNING_TEST_CASE = test_case
-        if not isinstance(pts, FakeProxy):
-            test_case.pre_run()
+        test_case.pre_run()
         error_code = pts.run_test_case(test_case.project_name, test_case.name)
 
     except BTPError as error:
@@ -376,8 +388,7 @@ def run_test_case(pts, test_case):
             error_code, str(error), test_case.status, exc_info = 1)
 
     finally:
-        if not isinstance(pts, FakeProxy):
-            test_case.post_run(error_code) # stop qemu and other commands
+        test_case.post_run(error_code) # stop qemu and other commands
         RUNNING_TEST_CASE = None
 
     log("Done TestCase %s %s", run_test_case.__name__, test_case)
