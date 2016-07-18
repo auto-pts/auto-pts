@@ -55,6 +55,13 @@ class Value:
     long_2 = eight_bytes_2 * 4
 
 
+class IOCap:
+    display_only = 0
+    display_yesno = 1
+    keyboard_only = 2
+    no_input_output = 3
+
+
 def decode_flag_name(flag, names_dict):
     """Returns string description that corresponds to flag"""
 

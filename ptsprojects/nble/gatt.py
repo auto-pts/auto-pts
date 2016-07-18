@@ -50,6 +50,12 @@ class Addr:
     le_public = 0
     le_random = 1
 
+class IOCap:
+    display_only = 0
+    display_yesno = 1
+    keyboard_only = 2
+    no_input_output = 3
+
 
 class Value:
     one_byte = '01'
@@ -310,7 +316,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on)]),
         ZTestCase("GATT", "TC_GAR_SR_BI_04_C",
-                  [TestFunc(btp.gap_set_io_cap, 0),
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                    TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.core_reg_svc_gatts),
                    TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
