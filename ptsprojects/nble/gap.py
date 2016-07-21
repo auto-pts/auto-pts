@@ -353,7 +353,8 @@ def test_cases(pts):
         # PTS issue #14650
         ZTestCase("GAP", "TC_SEC_AUT_BV_11_C",
                   edit1_wids={139: "000b",
-                              1002: btp.var_get_passkey},
+                              1002: (btp.var_store_get_passkey, pts_bd_addr,
+                                 Addr.le_public)},
                   cmds=[TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                         TestFunc(btp.core_reg_svc_gap),
                         TestFunc(btp.core_reg_svc_gatts)] + \
@@ -361,9 +362,7 @@ def test_cases(pts):
                        [TestFunc(btp.gap_set_conn),
                         TestFunc(btp.gap_adv_ind_on),
                         TestFunc(btp.gap_connected_ev, pts_bd_addr,
-                                 Addr.le_public, start_wid=91),
-                        TestFunc(btp.gap_passkey_disp_ev, pts_bd_addr,
-                                 Addr.le_public, True, start_wid=1002)]),
+                                 Addr.le_public, start_wid=91)]),
         # PTS issue #14454
         ZTestCase("GAP", "TC_SEC_AUT_BV_14_C",
                   edit1_wids={139: "0010",
