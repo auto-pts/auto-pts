@@ -380,6 +380,11 @@ def gap_pair(bd_addr, bd_addr_type):
     gap_command_rsp_succ()
 
 
+def var_store_get_passkey(bd_addr, bd_addr_type):
+    gap_passkey_disp_ev(bd_addr, bd_addr_type, store=True)
+    return var_get_passkey()
+
+
 def var_get_passkey():
     return str(PASSKEY)
 
