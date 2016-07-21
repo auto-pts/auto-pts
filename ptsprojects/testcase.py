@@ -433,6 +433,9 @@ class TestCase(PTSCallback):
             response = self.edit1_wids[wid]
             if callable(response):
                 my_response = response()
+            elif type(response) is tuple and callable(response[0]):
+                # Handle command before responding
+                my_response = response[0](*response[1:])
             else:
                 my_response = response
 
