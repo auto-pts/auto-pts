@@ -4,6 +4,7 @@ import logging
 import socket
 import binascii
 import shlex
+import btpdef
 import time
 from btpparser import enc_frame, dec_hdr, dec_data, HDR_LEN
 
@@ -206,6 +207,16 @@ class ZephyrCtl:
             time.sleep(1) # see [1]
 
         self.btp_socket.accept()
+
+    def handshake(self):
+        tuple_hdr, tuple_data = self.btp_socket.read()
+
+        if (tuple_hdr.svc_id != btpdef.BTP_SERVICE_ID_CORE or
+            tuple_hdr.op != btpdef.CORE_EV_IUT_READY):
+            log("No handshake msg received first!")
+            self.stop()
+
+        log("Handshake msg received succesfully")
 
     def stop(self):
         """Powers off the Zephyr OS"""
