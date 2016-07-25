@@ -5,7 +5,6 @@ import socket
 import binascii
 import shlex
 import btpdef
-import time
 from btpparser import enc_frame, dec_hdr, dec_data, HDR_LEN
 
 log = logging.debug
@@ -181,7 +180,6 @@ class ZephyrCtl:
                                                  stdout=IUT_LOG_FO,
                                                  stderr=IUT_LOG_FO)
 
-        time.sleep(1)
         self.btp_socket.accept()
 
     def handshake(self):
