@@ -181,8 +181,7 @@ class ZephyrCtl:
                                                  stdout=IUT_LOG_FO,
                                                  stderr=IUT_LOG_FO)
 
-            time.sleep(1)
-
+        time.sleep(1)
         self.btp_socket.accept()
 
     def handshake(self):
