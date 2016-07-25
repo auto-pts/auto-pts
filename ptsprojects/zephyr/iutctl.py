@@ -180,8 +180,6 @@ class ZephyrCtl:
         self.btp_socket.open()
 
         if self.tty_file:
-            self.board.reset()
-
             socat_cmd = ("socat -x -v %s,raw,b115200 UNIX-CONNECT:%s" %
                          (self.tty_file, BTP_ADDRESS))
 
@@ -192,6 +190,8 @@ class ZephyrCtl:
                                                   shell=False,
                                                   stdout=IUT_LOG_FO,
                                                   stderr=IUT_LOG_FO)
+
+            self.board.reset()
 
         else:
             qemu_cmd = get_qemu_cmd(self.kernel_image)
