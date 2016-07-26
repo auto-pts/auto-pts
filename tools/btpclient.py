@@ -296,20 +296,6 @@ class SendCmd(Cmd):
 
         send(svc_id, op, ctrl_index, data)
 
-class ReceiveCmd(Cmd):
-    def __init__(self):
-        Cmd.__init__(self)
-        self.name = "receive"
-
-        self.help.build(
-            short_help = "Receive BTP command from tester",
-            synopsis = "%s" % self.name,
-            description = ("This command reads BTP commands from tester."
-                           "\nCan be interrupted with Ctrl-C."))
-
-    def run(self, *args, **kwds):
-        receive(*args, **kwds)
-
 class BTPReceive(Process):
     def __init__(self, conn):
         Process.__init__(self)
@@ -593,46 +579,7 @@ def send(svc_id, op, ctrl_index, data = ""):
             print "error: Connection error, please connect btp again"
             return
 
-    receive(int_svc_id, int_op)
-
     return
-
-def receive(exp_svc_id=None, exp_op=None):
-    """The parameters are the values used in the command, so response is expected
-    to have the same value"""
-    logging.debug("%s %r %r", receive.__name__, exp_svc_id, exp_op)
-
-    if conn_check() is False:
-        return
-
-    try:
-        tuple_hdr, tuple_data = BTP_SOCKET.read()
-    except KeyboardInterrupt:
-        print "\nReceive interrupted!"
-        return
-
-    # default __repr__ of namedtuple does not print hex
-    print ("Received header(svc_id=%d, op=0x%.2x, ctrl_index=%d, data_len=%d)" %
-           (tuple_hdr.svc_id, tuple_hdr.op, tuple_hdr.ctrl_index,
-            tuple_hdr.data_len))
-
-    hex_str = binascii.hexlify(tuple_data[0])
-    hex_str_byte = " ".join(hex_str[i:i+2] for i in range(0, len(hex_str), 2))
-    print "Received data (hex): %s" % hex_str_byte
-    print "Received data (ascii):", tuple_data
-
-    try:
-        btp.btp_hdr_check(tuple_hdr, exp_svc_id, exp_op)
-    except btp.BTPError as err:
-        print red("%s\nExpected svc_id=%s, op=0x%.2x" %
-                  (err.message, exp_svc_id, exp_op))
-    else:
-        print green("OK")
-
-    if tuple_hdr.svc_id == btpdef.BTP_SERVICE_ID_GAP:
-        if tuple_hdr.op == btpdef.GAP_EV_PASSKEY_DISPLAY:
-            passkey = struct.unpack('I', tuple_data[0][7:11])[0]
-            print "Passkey:", passkey
 
 def listen():
     """Establish connection with the BTP tester
@@ -802,7 +749,6 @@ def main():
     cmds = [
         ListenCmd(),
         SendCmd(),
-        ReceiveCmd(),
         ExitCmd(),
         DisconnectCmd(),
         StartZephyrCmd(),
