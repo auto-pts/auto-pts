@@ -316,7 +316,6 @@ def test_cases_server(pts):
                           TestFunc(btp.gatts_set_val, 0, Value.one_byte),
                           TestFunc(btp.gatts_start_server),
                           TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        # PTS issue #14635
         ZTestCase("GATT", "TC_GAR_SR_BI_07_C",
                   edit1_wids={119: UUID.VND16_3},
                   cmds=pre_conditions +
@@ -539,7 +538,6 @@ def test_cases_server(pts):
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)],
                   verify_wids={52: ("Please confirm IUT Handle='4'",
                                     "value='" + Value.long_1 + "'")}),
-        #PTS issue #14637
         ZTestCase("GATT", "TC_GAR_SR_BV_08_C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -710,7 +708,6 @@ def test_cases_server(pts):
                       TestFunc(btp.gatts_set_val, 0, Value.long_1),
                       TestFunc(btp.gatts_start_server),
                       TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        # TODO: fails cause of BZ-68
         ZTestCase("GATT", "TC_GAW_SR_BI_09_C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -719,8 +716,6 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.long_1),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        # sometimes verdict is UNKNOWN VERDICT: NONE
-        # PTS issue #14780
         ZTestCase("GATT", "TC_GAW_SR_BI_13_C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -890,7 +885,6 @@ def test_cases_server(pts):
                       TestFunc(btp.gatts_set_val, 0, Value.long_1),
                       TestFunc(btp.gatts_start_server),
                       TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        # TODO: fails cause of BZ-68
         ZTestCase("GATT", "TC_GAW_SR_BI_27_C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -944,7 +938,6 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.one_byte),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        # TODO: fails cause of BZ-68
         ZTestCase("GATT", "TC_GAW_SR_BI_33_C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -964,7 +957,6 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.two_bytes),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        # TODO: fails cause of BZ-68
         ZTestCase("GATT", "TC_GAW_SR_BI_35_C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -1245,29 +1237,6 @@ def test_cases_client(pts):
                             Addr.le_public, start_wid=3)],
                   verify_wids={19: btp.verify_description,
                                21: btp.verify_description}),
-        # TODO: bug in Zephyr bt stack:
-        #
-        # gattc_find_included_rsp   : gattc_find_included_rsp (((33,), (64, 69, ('\xe0J',))), ((65,), (160, 162, ('\x06\x1c',))), ((97,), (64, 69, ('\xe0J',))), ((98,), (32, 38, ('\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00',))))
-        # gattc_find_included_rsp   : Set verify values to: ['0x0021', '0x0040', '0x0045', '0x4AE0', '0x0041', '0x00A0', '0x00A2', '0x1C06', '0x0061', '0x0040', '0x0045', '0x4AE0', '0x0062', '0x0020', '0x0026', '0x00000000000000000000000000000000']
-        #
-        # description: Please confirm IUT receive include services:
-        # Attribute Handle = 0x0021 Included Service Attribute handle = 0x0040,End Group Handle = 0x0045,Service UUID = 0x7986
-        #
-        # Attribute Handle = 0x0041 Included Service Attribute handle = 0x00A0,End Group Handle = 0x00A2,Service UUID = 0x06C7
-        #
-        # Attribute Handle = 0x0061 Included Service Attribute handle = 0x0040,End Group Handle = 0x0045,Service UUID = 0x7986
-        #
-        # Attribute Handle = 0x0062 Included Service Attribute handle = 0x0020,End Group Handle = 0x0026,Service UUID = 0x00005D8B000000000123456789ABCDEF
-        #
-        # Attribute Handle = 0x00C1 Included Service Attribute handle = 0x00E0,End Group Handle = 0x00E5,Service UUID = 0x181B
-        #
-        # Click Yes if IUT receive it, otherwise click No.
-        #
-        # but 0x00005D8B000000000123456789ABCDEF is returned as
-        # 0x00000000000000000000000000000000:
-        # Verifying values: ['0x0021', '0x0040', '0x0045', '0x7986', '0x0041', '0x00A0', '0x00A2', '0x06C7', '0x0061', '0x0040', '0x0045', '0x7986', '0x0062', '0x0020', '0x0026', '0x00000000000000000000000000000000', '0x00C1', '0x00E0', '0x00E5', '0x181B']
-        # Verifying: '0x00000000000000000000000000000000'
-        # Verification failed, value not in description
         ZTestCase("GATT", "TC_GAD_CL_BV_03_C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
