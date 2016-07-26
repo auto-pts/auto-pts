@@ -172,10 +172,16 @@ def test_cases(pts):
 
     pts_bd_addr = pts.q_bd_addr
 
+    pre_conditions=[TestFunc(btp.core_reg_svc_gap),
+                    TestFunc(btp.gap_read_ctrl_info),
+                    TestFunc(btp.wrap, pts.update_pixit_param,
+                             "GAP", "TSPX_bd_addr_iut",
+                             btp.get_stored_bd_addr)]
+
     test_cases = [
         ZTestCase("GAP", "TC_BROB_BCST_BV_01_C",
-                  [TestFunc(btp.core_reg_svc_gap),
-                   TestFunc(btp.gap_set_nonconn, start_wid=47),
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_nonconn, start_wid=47),
                    TestFunc(btp.gap_adv_ind_on, start_wid=47)]),
         # TODO 14427 - PTS Issue
         # ZTestCase("GAP", "TC_BROB_BCST_BV_02_C",
@@ -192,26 +198,26 @@ def test_cases(pts):
         # ZTestCase("GAP", "TC_BROB_OBSV_BV_02_C",),
         # ZTestCase("GAP", "TC_DISC_NONM_BV_01_C",),
         ZTestCase("GAP", "TC_DISC_NONM_BV_02_C",
-                  [TestFunc(btp.core_reg_svc_gap),
-                   TestFunc(btp.gap_adv_ind_on, start_wid=72)]),
+                  pre_conditions +
+                  [TestFunc(btp.gap_adv_ind_on, start_wid=72)]),
         ZTestCase("GAP", "TC_DISC_LIMM_BV_03_C",
-                  [TestFunc(btp.core_reg_svc_gap),
-                   TestFunc(btp.gap_set_nonconn),
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_nonconn),
                    TestFunc(btp.gap_set_limdiscov),
                    TestFunc(btp.gap_adv_ind_on, start_wid=59)]),
         ZTestCase("GAP", "TC_DISC_LIMM_BV_04_C",
-                  [TestFunc(btp.core_reg_svc_gap),
-                   TestFunc(btp.gap_set_conn),
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_conn),
                    TestFunc(btp.gap_set_limdiscov),
                    TestFunc(btp.gap_adv_ind_on, start_wid=50)]),
         ZTestCase("GAP", "TC_DISC_GENM_BV_03_C",
-                  [TestFunc(btp.core_reg_svc_gap),
-                   TestFunc(btp.gap_set_nonconn),
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_nonconn),
                    TestFunc(btp.gap_set_gendiscov),
                    TestFunc(btp.gap_adv_ind_on, start_wid=51)]),
         ZTestCase("GAP", "TC_DISC_GENM_BV_04_C",
-                  [TestFunc(btp.core_reg_svc_gap),
-                   TestFunc(btp.gap_set_conn),
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_conn),
                    TestFunc(btp.gap_set_gendiscov),
                    TestFunc(btp.gap_adv_ind_on, start_wid=52)]),
         # TODO Limited discovery procedure is not yet supported
@@ -258,8 +264,8 @@ def test_cases(pts):
         #                     pts_bd_addr, lim_nb_ev=50, req_pres=False,
         #                     start_wid=11)]),
         ZTestCase("GAP", "TC_IDLE_NAMP_BV_01_C",
-                  [TestFunc(btp.core_reg_svc_gap),
-                   TestFunc(btp.core_reg_svc_gatts),
+                  pre_conditions +
+                  [TestFunc(btp.core_reg_svc_gatts),
                    TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
                             start_wid=78),
                    TestFunc(btp.gap_connected_ev, pts_bd_addr, Addr.le_public,
@@ -281,8 +287,8 @@ def test_cases(pts):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=77)]),
         ZTestCase("GAP", "TC_IDLE_NAMP_BV_02_C",
-                  [TestFunc(btp.core_reg_svc_gap),
-                   TestFunc(btp.core_reg_svc_gatts),
+                  pre_conditions +
+                  [TestFunc(btp.core_reg_svc_gatts),
                    TestFunc(btp.gatts_add_svc, 0, UUID.gap_svc),
                    TestFunc(btp.gatts_add_char, 0, Prop.read,
                             Perm.read | Perm.write, UUID.device_name),
@@ -294,32 +300,32 @@ def test_cases(pts):
                             start_wid=78)]),
         # PTS issue #14873
         ZTestCase("GAP", "TC_CONN_NCON_BV_01_C",
-                  [TestFunc(btp.core_reg_svc_gap),
-                   TestFunc(btp.gap_set_nonconn),
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_nonconn),
                    TestFunc(btp.gap_adv_ind_on)]),
         ZTestCase("GAP", "TC_CONN_NCON_BV_02_C",
-                  [TestFunc(btp.core_reg_svc_gap),
-                   TestFunc(btp.gap_set_nonconn, start_wid=122),
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_nonconn, start_wid=122),
                    TestFunc(btp.gap_set_gendiscov, start_wid=122),
                    TestFunc(btp.gap_adv_ind_on, start_wid=54)]),
         ZTestCase("GAP", "TC_CONN_NCON_BV_03_C",
-                  [TestFunc(btp.core_reg_svc_gap),
-                   TestFunc(btp.gap_set_nonconn, start_wid=121),
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_nonconn, start_wid=121),
                    TestFunc(btp.gap_set_limdiscov, start_wid=121),
                    TestFunc(btp.gap_adv_ind_on, start_wid=55)]),
         ZTestCase("GAP", "TC_CONN_UCON_BV_01_C",
-                  [TestFunc(btp.core_reg_svc_gap),
-                   TestFunc(btp.gap_adv_ind_on, start_wid=74)]),
+                  pre_conditions +
+                  [TestFunc(btp.gap_adv_ind_on, start_wid=74)]),
         ZTestCase("GAP", "TC_CONN_UCON_BV_02_C",
-                  [TestFunc(btp.core_reg_svc_gap),
-                   TestFunc(btp.gap_adv_ind_on, start_wid=75)]),
+                  pre_conditions +
+                  [TestFunc(btp.gap_adv_ind_on, start_wid=75)]),
         ZTestCase("GAP", "TC_CONN_UCON_BV_03_C",
-                  [TestFunc(btp.core_reg_svc_gap),
-                   TestFunc(btp.gap_set_limdiscov, start_wid=76),
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_limdiscov, start_wid=76),
                    TestFunc(btp.gap_adv_ind_on, start_wid=76)]),
         ZTestCase("GAP", "TC_CONN_ACEP_BV_01_C",
-                  [TestFunc(btp.core_reg_svc_gap),
-                   TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
+                  pre_conditions +
+                  [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
                             start_wid=78),
                    TestFunc(btp.gap_connected_ev, pts_bd_addr, Addr.le_public,
                             start_wid=77),
@@ -328,8 +334,8 @@ def test_cases(pts):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=77)]),
         ZTestCase("GAP", "TC_CONN_GCEP_BV_01_C",
-                  [TestFunc(btp.core_reg_svc_gap),
-                   TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
+                  pre_conditions +
+                  [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
                             start_wid=78),
                    TestFunc(btp.gap_connected_ev, pts_bd_addr, Addr.le_public,
                             start_wid=77),
@@ -338,8 +344,8 @@ def test_cases(pts):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=77)]),
         ZTestCase("GAP", "TC_CONN_GCEP_BV_02_C",
-                  [TestFunc(btp.core_reg_svc_gap),
-                   TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
+                  pre_conditions +
+                  [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
                             start_wid=78),
                    TestFunc(btp.gap_connected_ev, pts_bd_addr, Addr.le_public,
                             start_wid=78),
@@ -348,8 +354,8 @@ def test_cases(pts):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=77)]),
         ZTestCase("GAP", "TC_CONN_DCEP_BV_01_C",
-                  [TestFunc(btp.core_reg_svc_gap),
-                   TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
+                  pre_conditions +
+                  [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
                             start_wid=78),
                    TestFunc(btp.gap_connected_ev, pts_bd_addr, Addr.le_public,
                             start_wid=77),
@@ -358,17 +364,17 @@ def test_cases(pts):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=77)]),
         ZTestCase("GAP", "TC_CONN_CPUP_BV_01_C",
-                  [TestFunc(btp.core_reg_svc_gap),
-                   TestFunc(btp.gap_adv_ind_on, start_wid=21)]),
+                  pre_conditions +
+                  [TestFunc(btp.gap_adv_ind_on, start_wid=21)]),
         ZTestCase("GAP", "TC_CONN_CPUP_BV_02_C",
-                  [TestFunc(btp.core_reg_svc_gap),
-                   TestFunc(btp.gap_adv_ind_on)]),
+                  pre_conditions +
+                  [TestFunc(btp.gap_adv_ind_on)]),
         ZTestCase("GAP", "TC_CONN_CPUP_BV_03_C",
-                  [TestFunc(btp.core_reg_svc_gap),
-                   TestFunc(btp.gap_adv_ind_on)]),
+                  pre_conditions +
+                  [TestFunc(btp.gap_adv_ind_on)]),
         ZTestCase("GAP", "TC_CONN_CPUP_BV_04_C",
-                  [TestFunc(btp.core_reg_svc_gap),
-                   TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
+                  pre_conditions +
+                  [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
                             start_wid=40),
                    TestFunc(btp.gap_connected_ev, pts_bd_addr, Addr.le_public,
                             start_wid=40),
@@ -377,8 +383,8 @@ def test_cases(pts):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=77)]),
         ZTestCase("GAP", "TC_CONN_CPUP_BV_05_C",
-                  [TestFunc(btp.core_reg_svc_gap),
-                   TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
+                  pre_conditions +
+                  [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
                             start_wid=40),
                    TestFunc(btp.gap_connected_ev, pts_bd_addr, Addr.le_public,
                             start_wid=40),
@@ -398,8 +404,8 @@ def test_cases(pts):
         #            TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
         #                     Addr.le_public, start_wid=77)]),
         ZTestCase("GAP", "TC_CONN_TERM_BV_01_C",
-                  [TestFunc(btp.core_reg_svc_gap),
-                   TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
+                  pre_conditions +
+                  [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
                             start_wid=78),
                    TestFunc(btp.gap_connected_ev, pts_bd_addr, Addr.le_public,
                             start_wid=78),
@@ -414,8 +420,8 @@ def test_cases(pts):
         # Not supported by Zephyr yet
          # ZTestCase("GAP", "TC_BOND_NBON_BV_03_C",),
          ZTestCase("GAP", "TC_BOND_BON_BV_01_C",
-                   cmds=[TestFunc(btp.core_reg_svc_gap),
-                         TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
+                   cmds=pre_conditions +
+                        [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
                          TestFunc(btp.gap_set_conn),
                          TestFunc(btp.gap_adv_ind_on),
                          TestFunc(btp.gap_connected_ev, pts_bd_addr,
@@ -483,8 +489,8 @@ def test_cases(pts):
          #                 TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
          #                          start_wid=108)]),
          ZTestCase("GAP", "TC_BOND_BON_BV_03_C",
-                   cmds=[TestFunc(btp.core_reg_svc_gap),
-                         TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
+                   cmds=pre_conditions +
+                        [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
                          TestFunc(btp.gap_set_conn),
                          TestFunc(btp.gap_adv_ind_on)]),
          # Missing functionality - We respond "None" instead of the passkey
@@ -511,8 +517,8 @@ def test_cases(pts):
          #                 TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
          #                          Addr.le_public, start_wid=150)]),
          ZTestCase("GAP", "TC_BOND_BON_BV_04_C",
-                   cmds=[TestFunc(btp.core_reg_svc_gap),
-                         TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
+                   cmds=pre_conditions +
+                        [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
                          TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
                                   start_wid=78),
                          TestFunc(btp.gap_connected_ev, pts_bd_addr,
@@ -694,9 +700,8 @@ def test_cases(pts):
          #                 TestFunc(btp.gap_passkey_disp_ev, pts_bd_addr,
          #                          Addr.le_public, True, start_wid=1002)]),
         ZTestCase("GAP", "TC_SEC_CSIGN_BV_02_C",
-                  cmds=init_gatt_db + \
-                       [TestFunc(btp.core_reg_svc_gap),
-                        TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
+                  cmds=init_gatt_db + pre_conditions +
+                       [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
                         TestFunc(btp.gap_set_conn),
                         TestFunc(btp.gap_adv_ind_on),
                         TestFunc(btp.gap_connected_ev, pts_bd_addr,
@@ -706,9 +711,8 @@ def test_cases(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=77)]),
         ZTestCase("GAP", "TC_SEC_CSIGN_BI_01_C",
-                  cmds=init_gatt_db + \
-                       [TestFunc(btp.core_reg_svc_gap),
-                        TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
+                  cmds=init_gatt_db + pre_conditions +
+                       [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
                         TestFunc(btp.gap_set_conn),
                         TestFunc(btp.gap_adv_ind_on),
                         TestFunc(btp.gap_connected_ev, pts_bd_addr,
@@ -718,9 +722,8 @@ def test_cases(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=77)]),
         ZTestCase("GAP", "TC_SEC_CSIGN_BI_02_C",
-                  cmds=init_gatt_db + \
-                       [TestFunc(btp.core_reg_svc_gap),
-                        TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
+                  cmds=init_gatt_db + pre_conditions +
+                       [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
                         TestFunc(btp.gap_set_conn),
                         TestFunc(btp.gap_adv_ind_on),
                         TestFunc(btp.gap_connected_ev, pts_bd_addr,
@@ -746,7 +749,8 @@ def test_cases(pts):
         #                 TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
         #                          Addr.le_public, start_wid=77)]),
         ZTestCase("GAP", "TC_SEC_CSIGN_BI_04_C",
-                  cmds=[TestFunc(btp.core_reg_svc_gatts),
+                  cmds=pre_conditions +
+                       [TestFunc(btp.core_reg_svc_gatts),
                         TestFunc(btp.gatts_add_svc, 0, gatt.UUID.VND16_1),
                         TestFunc(btp.gatts_add_char, 0,
                                  gatt.Prop.read | gatt.Prop.auth_swrite,
@@ -754,7 +758,6 @@ def test_cases(pts):
                                  gatt.UUID.VND16_3),
                         TestFunc(btp.gatts_set_val, 0, '01'),
                         TestFunc(btp.gatts_start_server),
-                        TestFunc(btp.core_reg_svc_gap),
                         TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
                         TestFunc(btp.gap_set_conn),
                         TestFunc(btp.gap_adv_ind_on),
@@ -765,53 +768,48 @@ def test_cases(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=77)]),
         ZTestCase("GAP", "TC_ADV_BV_01_C",
-                  cmds=[TestFunc(btp.core_reg_svc_gap),
-                        TestFunc(btp.gap_set_conn),
+                  cmds=pre_conditions +
+                       [TestFunc(btp.gap_set_conn),
                         TestFunc(btp.gap_adv_ind_on, ad)]),
         ZTestCase("GAP", "TC_ADV_BV_02_C",
-                  cmds=init_gatt_db + \
-                       [TestFunc(btp.core_reg_svc_gap),
-                        TestFunc(btp.gap_set_conn),
+                  cmds=init_gatt_db + pre_conditions +
+                       [TestFunc(btp.gap_set_conn),
                         TestFunc(btp.gap_adv_ind_on, ad)]),
         ZTestCase("GAP", "TC_ADV_BV_03_C",
-                  cmds=[TestFunc(btp.core_reg_svc_gap),
-                        TestFunc(btp.gap_set_conn),
+                  cmds=pre_conditions +
+                       [TestFunc(btp.gap_set_conn),
                         TestFunc(btp.gap_set_gendiscov),
                         TestFunc(btp.gap_adv_ind_on)]),
         ZTestCase("GAP", "TC_ADV_BV_04_C",
-                  cmds=[TestFunc(btp.core_reg_svc_gap),
-                        TestFunc(btp.gap_set_conn),
+                  cmds=pre_conditions +
+                       [TestFunc(btp.gap_set_conn),
                         TestFunc(btp.gap_adv_ind_on, ad)]),
         ZTestCase("GAP", "TC_ADV_BV_10_C",
-                  cmds=[TestFunc(btp.core_reg_svc_gap),
-                        TestFunc(btp.gap_set_conn),
+                  cmds=pre_conditions +
+                       [TestFunc(btp.gap_set_conn),
                         TestFunc(btp.gap_adv_ind_on, ad)]),
         ZTestCase("GAP", "TC_ADV_BV_11_C",
-                  cmds=[TestFunc(btp.core_reg_svc_gap),
-                        TestFunc(btp.gap_set_conn),
+                  cmds=pre_conditions +
+                       [TestFunc(btp.gap_set_conn),
                         TestFunc(btp.gap_adv_ind_on, ad)]),
         ZTestCase("GAP", "TC_GAT_BV_01_C",
-                  cmds=init_gatt_db + \
-                       [TestFunc(btp.core_reg_svc_gap),
-                        TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
+                  cmds=init_gatt_db + pre_conditions +
+                       [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
                                  start_wid=78),
                         TestFunc(btp.gap_connected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=78)]),
         ZTestCase("GAP", "TC_GAT_BV_01_C",
                   no_wid=158,
-                  cmds=init_gatt_db + \
-                       [TestFunc(btp.core_reg_svc_gap),
-                        TestFunc(btp.gap_set_conn, start_wid=9),
+                  cmds=init_gatt_db + pre_conditions +
+                       [TestFunc(btp.gap_set_conn, start_wid=9),
                         TestFunc(btp.gap_adv_ind_on, start_wid=9)]),
         ZTestCase("GAP", "TC_GAT_BV_05_C",
-                  cmds=init_gatt_db + \
-                      [TestFunc(btp.core_reg_svc_gap),
-                       TestFunc(btp.gap_set_conn, start_wid=91),
+                  cmds=init_gatt_db + pre_conditions +
+                      [TestFunc(btp.gap_set_conn, start_wid=91),
                        TestFunc(btp.gap_adv_ind_on, start_wid=91)]),
         ZTestCase("GAP", "TC_GAT_BV_06_C",
-                  cmds=init_gatt_db + \
-                      [TestFunc(btp.core_reg_svc_gap),
-                       TestFunc(btp.gap_set_conn, start_wid=91),
+                  cmds=init_gatt_db + pre_conditions +
+                      [TestFunc(btp.gap_set_conn, start_wid=91),
                        TestFunc(btp.gap_adv_ind_on, start_wid=91)]),
     ]
 
