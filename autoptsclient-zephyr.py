@@ -21,21 +21,11 @@ def parse_args():
     arg_parser = argparse.ArgumentParser(
         description = "PTS automation client")
 
-    arg_parser.add_argument("kernel_image",
-                            help="Zephyr OS kernel image to be used for "
-                            "testing. Normally a zephyr.elf file.")
-
     arg_parser.add_argument("config",
                             help="Configuration used for testing. "
                             "It has to be specified in autoptsclient.conf. "
                             "See README for more information.",
                             choices=conf_file.sections())
-
-    arg_parser.add_argument("-t", "--tty-file",
-                            help="If TTY is specified, BTP communication "
-                            "with Zephyr OS running on hardware will "
-                            "be done over this TTY. Hence, QEMU will "
-                            "not be used.")
 
     arg_parser.add_argument("-a", "--bd-addr",
                             help="Bluetooth device address of the IUT")
@@ -45,17 +35,6 @@ def parse_args():
                             help="Enable the PTS maximum logging. Equivalent "
                             "to running test case in PTS GUI using "
                             "'Run (Debug Logs)'")
-
-    board_names = autoprojects.iutctl.Board.names
-    default_board = board_names[0]
-    arg_parser.add_argument("-b", "--board",
-                            help="Used DUT board. This option is used to "
-                            "select DUT reset command that is run before "
-                            "each test case. Supported boards: %s. "
-                            "By default %s is used." %
-                            (", ".join(board_names,), default_board),
-                            choices=board_names,
-                            default=default_board)
 
     arg_parser.add_argument("-c", "--test-cases", nargs='+',
                             help="Names of test cases to run. Groups of test "
@@ -76,19 +55,25 @@ def parse_args():
         print "PTS_WORKSPACE_PATH not specified, see README"
         os._exit(0)
 
-    return args, server_address, workspace
+    try:
+        iut_init = conf_file.get(args.config, 'IUT_INIT_SCRIPT', False)
+    except:
+        print "IUT_INIT_SCRIPT not specified, see README"
+        os._exit(0)
+
+    return args, server_address, workspace, iut_init
 
 def main():
     """Main."""
     if os.geteuid() == 0: # root privileges are not needed
         sys.exit("Please do not run this program as root.")
 
-    args, server_address, workspace = parse_args()
+    args, server_address, workspace, iut_init = parse_args()
 
     pts = autoptsclient.init_core(server_address, workspace,
                                   args.bd_addr, args.enable_max_logs)
 
-    autoprojects.iutctl.init(args.kernel_image, args.tty_file, args.board)
+    autoprojects.iutctl.init(iut_init)
 
     # use nble test cases if script name contains "nble"
     if "nble" in os.path.basename(sys.argv[0]):

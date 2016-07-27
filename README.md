@@ -43,7 +43,7 @@ Start a proxy for bluetooth adapter by using btproxy from BlueZ:
 
 Then start the client:
 
-`./autoptsclient-zephyr.py IP_ADDRESS "C:\Users\USER_NAME\Documents\Profile Tuning Suite\PTS_PROJECT\PTS_PROJECT.pqw6" microkernel.elf`
+`./autoptsclient-zephyr.py <config>`
 
 # Generating Interop Assembly
 
@@ -59,7 +59,9 @@ Configuration file (autoptsclient.conf) contains autoptsclient related symbols a
 
 `SERVER_ADDRESS` - autoptsserver workstation IP address
 
-If you have trouble with your configuration, see sample autoptsclient.conf:
+`IUT_INIT_SCRIPT` - Script that will be executed as one of TC pre-run commands. It may be used to e.g. reset IUT etc.
+
+If you have trouble with your configuration, see autoptsclient.conf example:
 
 ```
 [DEFAULT]
@@ -68,8 +70,18 @@ SERVER_ADDRESS=192.168.100.1
 
 [config 1]
 WORKSPACE_NAME=foo
+IUT_INIT_SCRIPT=./<foo_init.sh>
 
 [config 2]
 WORKSPACE_NAME=bar
+IUT_INIT_SCRIPT=./<bar_init.sh>
 ```
 
+Example QEMU init script:
+```
+#!/bin/sh
+
+KERNEL_IMAGE_PATH=<path_to_kernel_image>
+
+qemu-system-arm -cpu cortex-m3 -machine lm3s6965evb -nographic -serial mon:stdio -serial unix:/tmp/bt-server-bredr -serial unix:/tmp/bt-stack-tester -kernel ${KERNEL_IMAGE_PATH}
+```
