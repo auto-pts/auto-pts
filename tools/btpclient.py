@@ -12,6 +12,7 @@ import binascii
 import argparse
 import threading
 import subprocess
+from distutils.spawn import find_executable
 
 # to be able to find ptsprojects module
 sys.path.insert(
@@ -225,6 +226,10 @@ class StartZephyrCmd(Cmd):
 
         if not os.path.isfile(kernel_image):
             print "QEMU kernel image %s not found!" % repr(kernel_image)
+            return
+
+        if not find_executable('xterm'):
+            print "xterm is needed but not found!"
             return
 
         qemu_cmd = get_qemu_cmd(kernel_image)
