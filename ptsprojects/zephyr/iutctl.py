@@ -1,5 +1,6 @@
 import subprocess
 import os
+import signal
 import logging
 import socket
 import binascii
@@ -147,9 +148,12 @@ class ZephyrCtl:
 
         self.btp_socket = BTPSocket()
         self.btp_socket.open()
+        # The os.setsid() is passed in the argument preexec_fn so
+        # it's run after the fork() and before  exec() to run the shell.
         self.iut_process = subprocess.Popen([self.iut_init], shell=False,
                                             stdout=IUT_LOG_FO,
-                                            stderr=IUT_LOG_FO)
+                                            stderr=IUT_LOG_FO,
+                                            preexec_fn=os.setsid)
         time.sleep(1) # see [1]
         self.btp_socket.accept()
 
@@ -162,8 +166,9 @@ class ZephyrCtl:
             self.btp_socket = None
 
         if self.iut_process and self.iut_process.poll() is None:
-            self.iut_process.terminate()
-            self.iut_process.wait()  # do not let zombies take over
+            # Send the signal to all the process groups
+            os.killpg(os.getpgid(self.iut_process.pid), signal.SIGTERM)
+            self.iut_process.wait()
             self.iut_process = None
 
 
