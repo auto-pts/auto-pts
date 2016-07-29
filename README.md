@@ -43,10 +43,45 @@ Start a proxy for bluetooth adapter by using btproxy from BlueZ:
 
 Then start the client:
 
-`./autoptsclient-zephyr.py IP_ADDRESS "C:\Users\USER_NAME\Documents\Profile Tuning Suite\PTS_PROJECT\PTS_PROJECT.pqw6" microkernel.elf`
+`./autoptsclient-zephyr.py <config>`
 
 # Generating Interop Assembly
 
 On Windows, run this command:
 
 `TlbImp.exe PTSControl.dll /out:Interop.PTSControl.dll /verbose`
+
+# Using configuration file
+
+Configuration file (autoptsclient.conf) contains autoptsclient related symbols and paths used by script.
+
+`PTS_WORKSPACE_PATH` - path to the PTS workspace on PTS Server.
+
+`SERVER_ADDRESS` - autoptsserver workstation IP address
+
+`IUT_INIT_SCRIPT` - Script that will be executed as one of TC pre-run commands. It may be used to e.g. reset IUT etc.
+
+If you have trouble with your configuration, see autoptsclient.conf example:
+
+```
+[DEFAULT]
+PTS_WORKSPACE_PATH=E:\Users\<user_name>\Documents\Profile Tuning Suite\%(workspace_name)s\%(workspace_name)s.pqw6
+SERVER_ADDRESS=192.168.100.1
+
+[config 1]
+WORKSPACE_NAME=foo
+IUT_INIT_SCRIPT=./<foo_init.sh>
+
+[config 2]
+WORKSPACE_NAME=bar
+IUT_INIT_SCRIPT=./<bar_init.sh>
+```
+
+Example QEMU init script:
+```
+#!/bin/sh
+
+KERNEL_IMAGE_PATH=<path_to_kernel_image>
+
+qemu-system-arm -cpu cortex-m3 -machine lm3s6965evb -nographic -serial mon:stdio -serial unix:/tmp/bt-server-bredr -serial unix:/tmp/bt-stack-tester -kernel ${KERNEL_IMAGE_PATH}
+```

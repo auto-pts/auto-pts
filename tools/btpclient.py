@@ -10,9 +10,7 @@ import logging
 import readline
 import binascii
 import argparse
-import threading
 import subprocess
-from distutils.spawn import find_executable
 
 # to be able to find ptsprojects module
 sys.path.insert(
@@ -20,11 +18,10 @@ sys.path.insert(
 
 from ptsprojects.zephyr import btpdef
 from ptsprojects.zephyr import btp
-from ptsprojects.zephyr.iutctl import get_qemu_cmd, BTP_ADDRESS, BTPSocket
+from ptsprojects.zephyr.iutctl import BTP_ADDRESS, BTPSocket
 from ptsprojects.testcase import AbstractMethodException
 
 BTP_SOCKET = None
-QEMU_PROCESS = None
 
 # ANSI escape codes for Select Graphic Rendition (SGR) parameters
 sgr_reset = "\x1B[0m"
@@ -203,79 +200,6 @@ class Cmd(object):
 
     def run(self):
         raise AbstractMethodException()
-
-class StartZephyrCmd(Cmd):
-    def __init__(self):
-        Cmd.__init__(self)
-        self.name = "start-zephyr"
-
-        self.help.build(
-            short_help = "Start Zephyr OS under QEMU",
-            synopsis = "%s kernel_image" % self.name,
-            description = ("Start QEMU with Zephyr OS image"
-                           "\nNote: xterm must be installed for "
-                           "this command to work."),
-            example = "%s ./microkernel.elf" % self.name)
-
-    def run(self, kernel_image):
-        global QEMU_PROCESS
-
-        if QEMU_PROCESS:
-            print "Zephyr is already up and running"
-            return
-
-        if not os.path.isfile(kernel_image):
-            print "QEMU kernel image %s not found!" % repr(kernel_image)
-            return
-
-        if not find_executable('xterm'):
-            print "xterm is needed but not found!"
-            return
-
-        qemu_cmd = get_qemu_cmd(kernel_image)
-
-        # why running under xterm? cause of -serial mon:stdio: running qemu as
-        # subprocess make terminal input impossible in the parent application, also
-        # it is impossible to daemonize qemu
-        xterm_qemu_cmd = ('xterm -e sh -c "%s 2>&1|tee qemu-%s.log"' %
-                          (qemu_cmd, get_my_name()))
-
-        # start listening
-        logging.debug("Starting listen thread")
-        thread = threading.Thread(target = listen)
-        thread.start()
-
-        # start qemu
-        logging.debug("Starting qemu: %r", xterm_qemu_cmd)
-        QEMU_PROCESS = subprocess.Popen(shlex.split(xterm_qemu_cmd))
-
-        thread.join()
-
-class StopZephyrCmd(Cmd):
-    def __init__(self):
-        Cmd.__init__(self)
-        self.name = "stop-zephyr"
-
-        self.help.build(
-            short_help = "Terminate Zephyr QEMU process",
-            synopsis = "%s" % self.name,
-            description = "Stop Zephyr QEMU process")
-
-    def run(self):
-
-        global QEMU_PROCESS
-
-        if not QEMU_PROCESS:
-            print "Zephyr is not running"
-            return
-
-        if QEMU_PROCESS:
-            if QEMU_PROCESS.poll() is None:
-                logging.debug("qemu process is running, will terminate it")
-                QEMU_PROCESS.terminate()
-                QEMU_PROCESS.wait() # do not let zombies take over
-                logging.debug("Completed termination of qemu process")
-                QEMU_PROCESS = None
 
 class SendCmd(Cmd):
     def __init__(self):
@@ -747,7 +671,6 @@ def main():
         ReceiveCmd(),
         ExitCmd(),
         DisconnectCmd(),
-        StartZephyrCmd(),
         CoreCmd(),
         GapCmd(),
         GattsCmd(),
@@ -755,9 +678,6 @@ def main():
     ]
 
     cmds_dict = { cmd.name : cmd for cmd in cmds }
-
-    stop_zephyr_cmd = StopZephyrCmd()
-    cmds_dict[stop_zephyr_cmd.name] = stop_zephyr_cmd
 
     # add help, that can provide help for all commands
     help_cmd = HelpCmd(cmds_dict)
@@ -792,8 +712,6 @@ def main():
 
     finally:
         logging.debug("Exiting...")
-        if QEMU_PROCESS:
-            stop_zephyr_cmd.run()
         logging.debug("Writing history file %s" % history_filename)
         readline.write_history_file(history_filename)
 
