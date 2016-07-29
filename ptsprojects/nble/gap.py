@@ -28,6 +28,13 @@ class Addr:
     le_random = 1
 
 
+class IOCap:
+    display_only = 0
+    display_yesno = 1
+    keyboard_only = 2
+    no_input_output = 3
+
+
 class UUID:
     gap_svc = '1800'
     device_name = '2a00'
@@ -330,7 +337,7 @@ def test_cases(pts):
                    TestFunc(btp.gap_connected_ev, pts_bd_addr, Addr.le_public,
                             start_wid=118)]),
         ZTestCase("GAP", "TC_BOND_BON_BV_01_C",
-                  cmds=[TestFunc(btp.gap_set_io_cap, 3),
+                  cmds=[TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
                         TestFunc(btp.core_reg_svc_gap),
                         TestFunc(btp.gap_set_conn),
                         TestFunc(btp.gap_adv_ind_on),
@@ -339,29 +346,28 @@ def test_cases(pts):
                         TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
                                  start_wid=108)]),
         ZTestCase("GAP", "TC_BOND_BON_BV_03_C",
-                  cmds=[TestFunc(btp.gap_set_io_cap, 3),
+                  cmds=[TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
                         TestFunc(btp.core_reg_svc_gap),
                         TestFunc(btp.gap_set_conn),
                         TestFunc(btp.gap_adv_ind_on)]),
         # PTS issue #14650
         ZTestCase("GAP", "TC_SEC_AUT_BV_11_C",
                   edit1_wids={139: "000b",
-                              1002: btp.var_get_passkey},
-                  cmds=[TestFunc(btp.gap_set_io_cap, 0),
+                              1002: (btp.var_store_get_passkey, pts_bd_addr,
+                                 Addr.le_public)},
+                  cmds=[TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                         TestFunc(btp.core_reg_svc_gap),
                         TestFunc(btp.core_reg_svc_gatts)] + \
                        init_gatt_db + \
                        [TestFunc(btp.gap_set_conn),
                         TestFunc(btp.gap_adv_ind_on),
                         TestFunc(btp.gap_connected_ev, pts_bd_addr,
-                                 Addr.le_public, start_wid=91),
-                        TestFunc(btp.gap_passkey_disp_ev, pts_bd_addr,
-                                 Addr.le_public, True, start_wid=1002)]),
+                                 Addr.le_public, start_wid=91)]),
         # PTS issue #14454
         ZTestCase("GAP", "TC_SEC_AUT_BV_14_C",
                   edit1_wids={139: "0010",
                               1002: btp.var_get_passkey},
-                  cmds=[TestFunc(btp.gap_set_io_cap, 0),
+                  cmds=[TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                         TestFunc(btp.core_reg_svc_gap),
                         TestFunc(btp.core_reg_svc_gatts)] + \
                        init_gatt_db + \
@@ -374,7 +380,7 @@ def test_cases(pts):
         # PTS issue #14445, 14457
         ZTestCase("GAP", "TC_SEC_AUT_BV_18_C",
                   edit1_wids={1002: btp.var_get_passkey},
-                  cmds=[TestFunc(btp.gap_set_io_cap, 0),
+                  cmds=[TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                         TestFunc(btp.core_reg_svc_gap),
                         TestFunc(btp.core_reg_svc_gatts)] + \
                        init_gatt_db + \
@@ -394,7 +400,7 @@ def test_cases(pts):
         # (sth like a PostFunc)
         # ZTestCase("GAP", "TC_SEC_AUT_BV_20_C",
         #           edit1_wids={1002: btp.var_get_passkey},
-        #           cmds=[TestFunc(btp.gap_set_io_cap, 0),
+        #           cmds=[TestFunc(btp.gap_set_io_cap, IOCap.display_only),
         #                 TestFunc(btp.core_reg_svc_gap),
         #                 TestFunc(btp.core_reg_svc_gatts)] + \
         #                init_gatt_db + \
@@ -417,7 +423,7 @@ def test_cases(pts):
         # ZTestCase("GAP", "TC_SEC_AUT_BV_22_C",
         #           edit1_wids={1002: btp.var_get_passkey},
         #           cmds=[TestFunc(btp.core_reg_svc_gap),
-        #                 TestFunc(btp.gap_set_io_cap, 0),
+        #                 TestFunc(btp.gap_set_io_cap, IOCap.display_only),
         #                 TestFunc(btp.gap_set_conn),
         #                 TestFunc(btp.gap_adv_ind_on),
         #                 TestFunc(btp.gap_connected_ev, pts_bd_addr,

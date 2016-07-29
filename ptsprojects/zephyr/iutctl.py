@@ -4,7 +4,7 @@ import logging
 import socket
 import binascii
 import shlex
-import time
+import btpdef
 from btpparser import enc_frame, dec_hdr, dec_data, HDR_LEN
 
 log = logging.debug
@@ -57,7 +57,7 @@ class BTPSocket(object):
 
         # This will hang forever if Zephyr don't try to connect
         self.conn, self.addr = self.sock.accept()
-        self.conn.settimeout(120) # BTP socket timeout in seconds
+        self.conn.settimeout(10) # BTP socket timeout in seconds
 
     def read(self):
         """Read BTP data from socket"""
@@ -148,31 +148,7 @@ class ZephyrCtl:
         self.btp_socket = None
 
     def start(self):
-        """Start the BTP tester of the Zephyr OS
-
-        [1] Currently BTP lacks connection establishment handshake. Also, when
-            BTP tester starts, it flushes all the data from the UART pipe. Due
-            to this, tester application running in QEMU flushes first BTP
-            message it receives. Hence, BTP communication between BTP tester
-            and auto-pts breaks. This does not happen when tester application
-            runs on hardware.
-
-            There are two possible workarounds to this problem:
-
-            1. Revert zephyr commit that flushes UART pipe,
-               4800266cc652a70572255affa14dd93846d701c3
-
-            2. Put auto-pts to sleep after starting tester in QEMU
-
-            Workaround 2 is currently implemented in this function.
-
-            Once handshake is implemented in BTP the workarounds will not be
-            needed anymore.
-
-            BTP connection establishment handshake issue:
-            https://01.org/jira/browse/BZ-192
-
-        """
+        """Starts the Zephyr OS"""
 
         log("%s.%s", self.__class__, self.start.__name__)
 
@@ -180,8 +156,6 @@ class ZephyrCtl:
         self.btp_socket.open()
 
         if self.tty_file:
-            self.board.reset()
-
             socat_cmd = ("socat -x -v %s,raw,b115200 UNIX-CONNECT:%s" %
                          (self.tty_file, BTP_ADDRESS))
 
@@ -193,6 +167,8 @@ class ZephyrCtl:
                                                   stdout=IUT_LOG_FO,
                                                   stderr=IUT_LOG_FO)
 
+            self.board.reset()
+
         else:
             qemu_cmd = get_qemu_cmd(self.kernel_image)
 
@@ -203,9 +179,18 @@ class ZephyrCtl:
                                                  shell=False,
                                                  stdout=IUT_LOG_FO,
                                                  stderr=IUT_LOG_FO)
-            time.sleep(1) # see [1]
 
         self.btp_socket.accept()
+
+    def handshake(self):
+        tuple_hdr, tuple_data = self.btp_socket.read()
+
+        if (tuple_hdr.svc_id != btpdef.BTP_SERVICE_ID_CORE or
+            tuple_hdr.op != btpdef.CORE_EV_IUT_READY):
+            log("No handshake msg received first!")
+            self.stop()
+
+        log("Handshake msg received succesfully")
 
     def stop(self):
         """Powers off the Zephyr OS"""
