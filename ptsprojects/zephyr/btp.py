@@ -280,7 +280,7 @@ def gap_adv_ind_on(ad=None, sd=None):
 
 
 def gap_adv_off():
-    logging.debug("%s", gap_adv_ind_on.__name__)
+    logging.debug("%s", gap_adv_off.__name__)
     zephyrctl = iutctl.get_zephyr()
 
     zephyrctl.btp_socket.send(*GAP['stop_adv'])
