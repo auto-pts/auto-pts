@@ -20,7 +20,6 @@ BTP_ADDRESS = "/tmp/bt-stack-tester"
 # qemu log file object
 IUT_LOG_FO = None
 
-
 def get_qemu_cmd(kernel_image):
     """Returns qemu command to start Zephyr
 
@@ -143,7 +142,7 @@ class ZephyrCtl:
         self.kernel_image = kernel_image
         self.tty_file = tty_file
         if self.tty_file: # board is not used with qemu
-            self.board = Board(board_name, kernel_image)
+            self.board = Board(board_name, kernel_image, tty_file)
         self.qemu_process = None
         self.socat_process = None
         self.btp_socket = None
@@ -167,9 +166,7 @@ class ZephyrCtl:
                                                   shell=False,
                                                   stdout=IUT_LOG_FO,
                                                   stderr=IUT_LOG_FO)
-
             self.board.reset()
-
         else:
             qemu_cmd = get_qemu_cmd(self.kernel_image)
 
@@ -225,27 +222,29 @@ class ZephyrCtlStub:
         """Powers off the Zephyr OS"""
         log("%s.%s", self.__class__, self.stop.__name__)
 
-
+        
 class Board:
     """HW DUT board"""
 
     arduino_101 = "arduino_101"
     mountatlas = "mountatlas"
+    crb = "crb"
 
     # for command line options
     names = [
         arduino_101,
-        mountatlas
+        mountatlas,
+        crb
     ]
 
-    def __init__(self, board_name, kernel_image):
+    def __init__(self, board_name, kernel_image, tty_file):
         """Constructor of board"""
         if board_name not in self.names:
             raise Exception("Board name %s is not supported!" % board_name)
 
         self.name = board_name
         self.kernel_image = kernel_image
-        self.reset_cmd = self.get_reset_cmd()
+        self.reset_cmd = self.get_reset_cmd(tty_file)
 
     def reset(self):
         """Reset HW DUT board with openocd
@@ -263,28 +262,33 @@ class Board:
         if reset_process.wait():
             logging.error("openocd reset failed")
 
-    def get_reset_cmd(self):
+    def get_reset_cmd(self, tty_file):
         """Return reset command for a board"""
         reset_cmd_getters = {
             self.arduino_101 : self._get_reset_cmd_arduino_101,
-            self.mountatlas : self._get_reset_cmd_mountatlas
+            self.mountatlas : self._get_reset_cmd_mountatlas,
+            self.crb : self._get_reset_cmd_crb
         }
+        
 
         reset_cmd_getter = reset_cmd_getters[self.name]
-        openocd_cmd, openocd_scripts, openocd_cfg = reset_cmd_getter()
+        if self.name == "crb":
+            reset_cmd = reset_cmd_getter(tty_file)
+        else :
+            openocd_cmd, openocd_scripts, openocd_cfg = reset_cmd_getter()
+    
+            if not os.path.isfile(openocd_cmd):
+                raise Exception("openocd %r not found!", openocd_cmd)
+    
+            if not os.path.isdir(openocd_scripts):
+                raise Exception("openocd scripts %r not found!", openocd_scripts)
+    
+            if not os.path.isfile(openocd_cfg):
+                raise Exception("openocd config %r not found!", openocd_cfg)
 
-        if not os.path.isfile(openocd_cmd):
-            raise Exception("openocd %r not found!", openocd_cmd)
-
-        if not os.path.isdir(openocd_scripts):
-            raise Exception("openocd scripts %r not found!", openocd_scripts)
-
-        if not os.path.isfile(openocd_cfg):
-            raise Exception("openocd config %r not found!", openocd_cfg)
-
-        reset_cmd = ('%s -s %s -f %s -c "init" -c "targets 1" '
-                     '-c "reset halt" -c "reset run" -c "shutdown"' %
-                     (openocd_cmd, openocd_scripts, openocd_cfg))
+            reset_cmd = ('%s -s %s -f %s -c "init" -c "targets 1" '
+                         '-c "reset halt" -c "reset run" -c "shutdown"' %
+                         (openocd_cmd, openocd_scripts, openocd_cfg))
 
         return reset_cmd
 
@@ -314,6 +318,11 @@ class Board:
 
         return (openocd_cmd, openocd_scripts, openocd_cfg)
 
+    def _get_reset_cmd_crb(self, tty_file):
+        """Return reset command for CRB DUT
+
+        """
+        return 'sh -c \'echo -n -e "\xAA\xBB\\x00\\x00\\x00" > %s\''%tty_file
 
 def get_zephyr():
     return ZEPHYR
