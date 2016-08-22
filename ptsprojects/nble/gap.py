@@ -352,7 +352,14 @@ def test_cases(pts):
                   pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
                    TestFunc(btp.gap_set_conn),
-                   TestFunc(btp.gap_adv_ind_on, start_wid=91)]),
+                   TestFunc(btp.gap_adv_ind_on, start_wid=91),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr,
+                            Addr.le_public, start_wid=91),
+                   # Give some time to store SMP keys
+                   TestFunc(sleep, 1, start_wid=118),
+                   TestFunc(btp.gap_adv_off, start_wid=118),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
+                            Addr.le_public, post_wid=118)]),
         ZTestCase("GAP", "TC_SEC_AUT_BV_11_C",
                   edit1_wids={139: "000b",
                               1002: (btp.var_store_get_passkey, pts_bd_addr,
