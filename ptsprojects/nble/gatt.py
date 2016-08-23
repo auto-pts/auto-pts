@@ -50,6 +50,12 @@ class Addr:
     le_public = 0
     le_random = 1
 
+class IOCap:
+    display_only = 0
+    display_yesno = 1
+    keyboard_only = 2
+    no_input_output = 3
+
 
 class Value:
     one_byte = '01'
@@ -310,7 +316,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on)]),
         ZTestCase("GATT", "TC_GAR_SR_BI_04_C",
-                  [TestFunc(btp.gap_set_io_cap, 0),
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                    TestFunc(btp.core_reg_svc_gap),
                    TestFunc(btp.core_reg_svc_gatts),
                    TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -2395,7 +2401,6 @@ def test_cases_client(pts):
                             Addr.le_public, start_wid=2),
                    TestFunc(btp.gattc_read, Addr.le_public,
                             pts_bd_addr, MMI.arg_1, start_wid=48),
-                   TestFunc(btp.gattc_read_rsp, start_wid=48),
                    TestFunc(btp.gap_disconn, pts_bd_addr,
                             Addr.le_public, start_wid=3),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
@@ -2410,7 +2415,6 @@ def test_cases_client(pts):
                    TestFunc(btp.gattc_write, Addr.le_public,
                             pts_bd_addr, MMI.arg_1, '12', MMI.arg_2,
                             start_wid=74),
-                   TestFunc(btp.gattc_write_rsp, start_wid=74),
                    TestFunc(btp.gap_disconn, pts_bd_addr,
                             Addr.le_public, start_wid=3),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
