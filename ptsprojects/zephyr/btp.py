@@ -11,6 +11,7 @@ import btpdef
 #  Global temporary objects
 PASSKEY = None
 GATT_SVCS = None
+IUT_BD_ADDR = None
 
 #  A sequence of values to verify in PTS MMI description
 VERIFY_VALUES = None
@@ -60,6 +61,9 @@ GAP = {
                             btpdef.GAP_DISCOVERY_LE_ACTIVE_SCAN),
     "stop_discov": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_STOP_DISCOVERY,
                     CONTROLLER_INDEX),
+    "read_ctrl_info": (btpdef.BTP_SERVICE_ID_GAP,
+                       btpdef.GAP_READ_CONTROLLER_INFO,
+                       CONTROLLER_INDEX, ""),
 }
 
 GATTS = {
@@ -276,7 +280,7 @@ def gap_adv_ind_on(ad=None, sd=None):
 
 
 def gap_adv_off():
-    logging.debug("%s", gap_adv_ind_on.__name__)
+    logging.debug("%s", gap_adv_off.__name__)
     zephyrctl = get_zephyr()
 
     zephyrctl.btp_socket.send(*GAP['stop_adv'])
@@ -378,6 +382,11 @@ def gap_pair(bd_addr, bd_addr_type):
 
     # Expected result
     gap_command_rsp_succ()
+
+
+def var_store_get_passkey(bd_addr, bd_addr_type):
+    gap_passkey_disp_ev(bd_addr, bd_addr_type, store=True)
+    return var_get_passkey()
 
 
 def var_get_passkey():
@@ -561,6 +570,42 @@ def gap_stop_discov():
     zephyrctl.btp_socket.send(*GAP['stop_discov'])
 
     gap_command_rsp_succ()
+
+
+def wrap(func, *args):
+    """Call function with given arguments
+
+    If argument is callable it will be called so that this argument it will be
+    override with callable return value.
+    """
+    _args = []
+    for x in args:
+        if callable(x):
+            x = x()
+        _args.append(x)
+    func(*_args)
+
+
+def get_stored_bd_addr():
+    return str(IUT_BD_ADDR)
+
+
+def gap_read_ctrl_info():
+    logging.debug("%s", gap_read_ctrl_info.__name__)
+
+    zephyrctl = get_zephyr()
+
+    zephyrctl.btp_socket.send(*GAP['read_ctrl_info'])
+
+    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    logging.debug("received %r %r", tuple_hdr, tuple_data)
+
+    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GAP,
+                  btpdef.GAP_READ_CONTROLLER_INFO)
+
+    global IUT_BD_ADDR
+    IUT_BD_ADDR = binascii.hexlify((tuple_data[0][:6])[::-1])
+    logging.debug("IUT address %r", IUT_BD_ADDR)
 
 
 def gap_command_rsp_succ(op=None):
