@@ -5,7 +5,7 @@ import binascii
 import struct
 import re
 
-from iutctl import get_zephyr
+import iutctl
 import btpdef
 
 #  Global temporary objects
@@ -206,7 +206,7 @@ def btp_hdr_check(rcv_hdr, exp_svc_id, exp_op=None):
 def core_reg_svc_gap():
     logging.debug("%s", core_reg_svc_gap.__name__)
 
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
     zephyrctl.btp_socket.send(*CORE['gap_reg'])
 
     core_reg_svc_rsp_succ()
@@ -215,7 +215,7 @@ def core_reg_svc_gap():
 def core_reg_svc_gatts():
     logging.debug("%s", core_reg_svc_gatts.__name__)
 
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
     zephyrctl.btp_socket.send(*CORE['gatts_reg'])
 
     core_reg_svc_rsp_succ()
@@ -223,7 +223,7 @@ def core_reg_svc_gatts():
 
 def core_reg_svc_rsp_succ():
     logging.debug("%s", core_reg_svc_rsp_succ.__name__)
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     expected_frame = ((btpdef.BTP_SERVICE_ID_CORE,
                        btpdef.CORE_REGISTER_SERVICE,
@@ -245,7 +245,7 @@ def core_reg_svc_rsp_succ():
 
 def gap_adv_ind_on(ad=None, sd=None):
     logging.debug("%s %r %r", gap_adv_ind_on.__name__, ad, sd)
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     data_ba = bytearray()
     ad_ba = bytearray()
@@ -277,7 +277,7 @@ def gap_adv_ind_on(ad=None, sd=None):
 
 def gap_adv_off():
     logging.debug("%s", gap_adv_ind_on.__name__)
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     zephyrctl.btp_socket.send(*GAP['stop_adv'])
 
@@ -286,7 +286,7 @@ def gap_adv_off():
 
 def gap_connected_ev(bd_addr, bd_addr_type):
     logging.debug("%s %r %r", gap_connected_ev.__name__, bd_addr, bd_addr_type)
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
     logging.debug("received %r %r", tuple_hdr, tuple_data)
@@ -306,7 +306,7 @@ def gap_connected_ev(bd_addr, bd_addr_type):
 
 def gap_conn(bd_addr, bd_addr_type):
     logging.debug("%s %r %r", gap_conn.__name__, bd_addr, bd_addr_type)
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     data_ba = bytearray()
     bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
@@ -322,7 +322,7 @@ def gap_conn(bd_addr, bd_addr_type):
 def gap_disconnected_ev(bd_addr, bd_addr_type):
     logging.debug("%s %r %r", gap_disconnected_ev.__name__, bd_addr,
                   bd_addr_type)
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
     logging.debug("received %r %r", tuple_hdr, tuple_data)
@@ -342,7 +342,7 @@ def gap_disconnected_ev(bd_addr, bd_addr_type):
 
 def gap_disconn(bd_addr, bd_addr_type):
     logging.debug("%s %r %r", gap_disconn.__name__, bd_addr, bd_addr_type)
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     data_ba = bytearray()
     bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
@@ -357,7 +357,7 @@ def gap_disconn(bd_addr, bd_addr_type):
 
 def gap_set_io_cap(io_cap):
     logging.debug("%s %r", gap_set_io_cap.__name__, io_cap)
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     zephyrctl.btp_socket.send(*GAP['set_io_cap'], data=chr(io_cap))
 
@@ -366,7 +366,7 @@ def gap_set_io_cap(io_cap):
 
 def gap_pair(bd_addr, bd_addr_type):
     logging.debug("%s %r %r", gap_pair.__name__, bd_addr, bd_addr_type)
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     data_ba = bytearray()
     bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
@@ -395,7 +395,7 @@ def var_get_wrong_passkey():
 def gap_passkey_disp_ev(bd_addr, bd_addr_type, store=False):
     logging.debug("%s %r %r", gap_passkey_disp_ev.__name__, bd_addr,
                   bd_addr_type)
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
     logging.debug("received %r %r", tuple_hdr, tuple_data)
@@ -423,7 +423,7 @@ def gap_passkey_disp_ev(bd_addr, bd_addr_type, store=False):
 def gap_set_conn():
     logging.debug("%s", gap_set_conn.__name__)
 
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     zephyrctl.btp_socket.send(*GAP['set_conn'])
 
@@ -433,7 +433,7 @@ def gap_set_conn():
 def gap_set_nonconn():
     logging.debug("%s", gap_set_nonconn.__name__)
 
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     zephyrctl.btp_socket.send(*GAP['set_nonconn'])
 
@@ -443,7 +443,7 @@ def gap_set_nonconn():
 def gap_set_nondiscov():
     logging.debug("%s", gap_set_nondiscov.__name__)
 
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     zephyrctl.btp_socket.send(*GAP['set_nondiscov'])
 
@@ -453,7 +453,7 @@ def gap_set_nondiscov():
 def gap_set_gendiscov():
     logging.debug("%s", gap_set_gendiscov.__name__)
 
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     zephyrctl.btp_socket.send(*GAP['set_gendiscov'])
 
@@ -463,7 +463,7 @@ def gap_set_gendiscov():
 def gap_set_limdiscov():
     logging.debug("%s", gap_set_limdiscov.__name__)
 
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     zephyrctl.btp_socket.send(*GAP['set_limdiscov'])
 
@@ -475,7 +475,7 @@ def gap_device_found_ev(bd_addr_type, bd_addr, rssi=None, flags=None, eir=None,
     logging.debug("%s %r %r %r %r %r", gap_device_found_ev.__name__,
                   bd_addr_type, bd_addr, rssi, flags, eir)
 
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     pres = False
     nb_ev = 0
@@ -536,7 +536,7 @@ def gap_device_found_ev(bd_addr_type, bd_addr, rssi=None, flags=None, eir=None,
 def gap_start_discov_pasive():
     logging.debug("%s", gap_start_discov_pasive.__name__)
 
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     zephyrctl.btp_socket.send(*GAP['start_discov_pasive'])
 
@@ -546,7 +546,7 @@ def gap_start_discov_pasive():
 def gap_start_discov_active():
     logging.debug("%s", gap_start_discov_active.__name__)
 
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     zephyrctl.btp_socket.send(*GAP['start_discov_active'])
 
@@ -556,7 +556,7 @@ def gap_start_discov_active():
 def gap_stop_discov():
     logging.debug("%s", gap_stop_discov.__name__)
 
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     zephyrctl.btp_socket.send(*GAP['stop_discov'])
 
@@ -566,7 +566,7 @@ def gap_stop_discov():
 def gap_command_rsp_succ(op=None):
     logging.debug("%s", gap_command_rsp_succ.__name__)
 
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
     logging.debug("received %r %r", tuple_hdr, tuple_data)
@@ -577,7 +577,7 @@ def gap_command_rsp_succ(op=None):
 def gatts_add_svc(svc_type, uuid):
     logging.debug("%s %r %r", gatts_add_svc.__name__, svc_type, uuid)
 
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     data_ba = bytearray()
     uuid_ba = binascii.unhexlify(uuid.translate(None, "-"))[::-1]
@@ -594,7 +594,7 @@ def gatts_add_svc(svc_type, uuid):
 def gatts_add_inc_svc(hdl):
     logging.debug("%s %r", gatts_add_inc_svc.__name__, hdl)
 
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     if type(hdl) is str:
         hdl = int(hdl, 16)
@@ -612,7 +612,7 @@ def gatts_add_char(hdl, prop, perm, uuid):
     logging.debug("%s %r %r %r %r", gatts_add_char.__name__, hdl, prop, perm,
                   uuid)
 
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     if type(hdl) is str:
         hdl = int(hdl, 16)
@@ -635,7 +635,7 @@ def gatts_add_char(hdl, prop, perm, uuid):
 def gatts_set_val(hdl, val):
     logging.debug("%s %r %r ", gatts_set_val.__name__, hdl, val)
 
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     if type(hdl) is str:
         hdl = int(hdl, 16)
@@ -657,7 +657,7 @@ def gatts_set_val(hdl, val):
 def gatts_add_desc(hdl, perm, uuid):
     logging.debug("%s %r %r %r", gatts_add_desc.__name__, hdl, perm, uuid)
 
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     if type(hdl) is str:
         hdl = int(hdl, 16)
@@ -679,7 +679,7 @@ def gatts_add_desc(hdl, perm, uuid):
 def gatts_start_server():
     logging.debug("%s", gatts_start_server.__name__)
 
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
     zephyrctl.btp_socket.send(*GATTS['start_server'])
 
     gatt_command_rsp_succ()
@@ -689,7 +689,7 @@ def gatts_set_enc_key_size(hdl, enc_key_size):
     logging.debug("%s %r %r", gatts_set_enc_key_size.__name__,
                   hdl, enc_key_size)
 
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     if type(hdl) is str:
         hdl = int(hdl, 16)
@@ -708,7 +708,7 @@ def gatts_set_enc_key_size(hdl, enc_key_size):
 def gattc_exchange_mtu(bd_addr_type, bd_addr):
     logging.debug("%s %r %r", gattc_exchange_mtu.__name__, bd_addr_type,
                   bd_addr)
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     data_ba = bytearray()
     bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
@@ -724,7 +724,7 @@ def gattc_exchange_mtu(bd_addr_type, bd_addr):
 def gattc_disc_prim_uuid(bd_addr_type, bd_addr, uuid):
     logging.debug("%s %r %r %r", gattc_disc_prim_uuid.__name__, bd_addr_type,
                   bd_addr, uuid)
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     data_ba = bytearray()
 
@@ -742,7 +742,7 @@ def gattc_disc_prim_uuid(bd_addr_type, bd_addr, uuid):
 def gattc_find_included(bd_addr_type, bd_addr, start_hdl, stop_hdl):
     logging.debug("%s %r %r %r %r", gattc_find_included.__name__,
                   bd_addr_type, bd_addr, start_hdl, stop_hdl)
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     if type(stop_hdl) is str:
         stop_hdl = int(stop_hdl, 16)
@@ -770,7 +770,7 @@ def gattc_disc_all_chrc_find_attrs_rsp(exp_chars, store_attrs=False):
     ATTRIBUTE FORMAT (CHARACTERISTIC) - (handle, val handle, props, uuid)
 
     """
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
     logging.debug("%s received %r %r",
@@ -808,7 +808,7 @@ def gattc_disc_all_chrc_find_attrs_rsp(exp_chars, store_attrs=False):
 def gattc_disc_all_chrc(bd_addr_type, bd_addr, start_hdl, stop_hdl, svc=None):
     logging.debug("%s %r %r %r %r %r", gattc_disc_all_chrc.__name__,
                   bd_addr_type, bd_addr, start_hdl, stop_hdl, svc)
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     if svc:
         svc_nb = svc[1]
@@ -852,7 +852,7 @@ def gattc_disc_all_chrc(bd_addr_type, bd_addr, start_hdl, stop_hdl, svc=None):
 def gattc_disc_chrc_uuid(bd_addr_type, bd_addr, start_hdl, stop_hdl, uuid):
     logging.debug("%s %r %r %r %r %r", gattc_disc_chrc_uuid.__name__,
                   bd_addr_type, bd_addr, start_hdl, stop_hdl, uuid)
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     if type(stop_hdl) is str:
         stop_hdl = int(stop_hdl, 16)
@@ -885,7 +885,7 @@ def gattc_disc_chrc_uuid(bd_addr_type, bd_addr, start_hdl, stop_hdl, uuid):
 def gattc_disc_all_desc(bd_addr_type, bd_addr, start_hdl, stop_hdl):
     logging.debug("%s %r %r %r %r", gattc_disc_all_desc.__name__,
                   bd_addr_type, bd_addr, start_hdl, stop_hdl)
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     if type(start_hdl) is str:
         start_hdl = int(start_hdl, 16)
@@ -933,7 +933,7 @@ def gattc_read_char_val(bd_addr_type, bd_addr, char):
 def gattc_read(bd_addr_type, bd_addr, hdl):
     logging.debug("%s %r %r %r", gattc_read.__name__, bd_addr_type, bd_addr,
                   hdl)
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     data_ba = bytearray()
 
@@ -952,7 +952,7 @@ def gattc_read(bd_addr_type, bd_addr, hdl):
 def gattc_read_long(bd_addr_type, bd_addr, hdl, off, modif_off=None):
     logging.debug("%s %r %r %r %r %r", gattc_read_long.__name__, bd_addr_type,
                   bd_addr, hdl, off, modif_off)
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     data_ba = bytearray()
 
@@ -978,7 +978,7 @@ def gattc_read_long(bd_addr_type, bd_addr, hdl, off, modif_off=None):
 def gattc_read_multiple(bd_addr_type, bd_addr, *hdls):
     logging.debug("%s %r %r %r", gattc_read_multiple.__name__, bd_addr_type,
                   bd_addr, hdls)
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     data_ba = bytearray()
 
@@ -1000,7 +1000,7 @@ def gattc_read_multiple(bd_addr_type, bd_addr, *hdls):
 def gattc_write_without_rsp(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
     logging.debug("%s %r %r %r %r %r", gattc_write_without_rsp.__name__,
                   bd_addr_type, bd_addr, hdl, val, val_mtp)
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     if type(hdl) is str:
         hdl = int(hdl, 16)
@@ -1029,7 +1029,7 @@ def gattc_write_without_rsp(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
 def gattc_signed_write(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
     logging.debug("%s %r %r %r %r %r", gattc_signed_write.__name__,
                   bd_addr_type, bd_addr, hdl, val, val_mtp)
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     if type(hdl) is str:
         hdl = int(hdl, 16)
@@ -1059,7 +1059,7 @@ def gattc_signed_write(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
 def gattc_write(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
     logging.debug("%s %r %r %r %r %r", gattc_write.__name__, bd_addr_type,
                   bd_addr, hdl, val, val_mtp)
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     if type(hdl) is str:
         hdl = int(hdl, 16)
@@ -1096,7 +1096,7 @@ def gattc_write_long(bd_addr_type, bd_addr, hdl, off, val, length=None):
     if length:
         val *= int(length)
 
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
     hdl_ba = struct.pack('H', hdl)
@@ -1122,7 +1122,7 @@ def gattc_cfg_notify(bd_addr_type, bd_addr, enable, ccc_hdl):
     if type(ccc_hdl) is str:
         ccc_hdl = int(ccc_hdl, 16)
 
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
     ccc_hdl_ba = struct.pack('H', ccc_hdl)
@@ -1150,7 +1150,7 @@ def gattc_cfg_indicate(bd_addr_type, bd_addr, enable, ccc_hdl):
     if type(ccc_hdl) is str:
         ccc_hdl = int(ccc_hdl, 16)
 
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
     ccc_hdl_ba = struct.pack('H', ccc_hdl)
@@ -1174,7 +1174,7 @@ def gattc_cfg_indicate(bd_addr_type, bd_addr, enable, ccc_hdl):
 def gattc_notification_ev(bd_addr, bd_addr_type, ev_type):
     logging.debug("%s %r %r %r", gattc_notification_ev.__name__, bd_addr,
                   bd_addr_type, ev_type)
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
     logging.debug("received %r %r", tuple_hdr, tuple_data)
@@ -1196,7 +1196,7 @@ def gattc_notification_ev(bd_addr, bd_addr_type, ev_type):
 def gatt_command_rsp_succ():
     logging.debug("%s", gatt_command_rsp_succ.__name__)
 
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
     logging.debug("received %r %r", tuple_hdr, tuple_data)
@@ -1350,7 +1350,7 @@ def gattc_disc_prim_uuid_find_attrs_rsp(exp_svcs, store_attrs=False):
     ATTRIBUTE FORMAT (PRIMARY SERVICE) - (start handle, end handle, uuid)
 
     """
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
     logging.debug("%s received %r %r",
@@ -1384,7 +1384,7 @@ def gattc_disc_prim_uuid_find_attrs_rsp(exp_svcs, store_attrs=False):
 
 
 def gattc_disc_prim_uuid_rsp(store_rsp=False):
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
     logging.debug("%s received %r %r", gattc_disc_prim_uuid_rsp.__name__,
@@ -1427,7 +1427,7 @@ def gattc_disc_prim_uuid_rsp(store_rsp=False):
 
 
 def gattc_find_included_rsp(store_rsp=False):
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
     logging.debug("%s received %r %r", gattc_find_included_rsp.__name__,
@@ -1460,7 +1460,7 @@ def gattc_find_included_rsp(store_rsp=False):
 
 
 def gattc_disc_all_chrc_rsp(store_rsp=False):
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
     logging.debug("%s received %r %r", gattc_disc_all_chrc_rsp.__name__,
@@ -1485,7 +1485,7 @@ def gattc_disc_all_chrc_rsp(store_rsp=False):
 
 
 def gattc_disc_chrc_uuid_rsp(store_rsp=False):
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
     logging.debug("%s received %r %r", gattc_disc_chrc_uuid_rsp.__name__,
@@ -1518,7 +1518,7 @@ def gattc_disc_chrc_uuid_rsp(store_rsp=False):
 
 
 def gattc_disc_all_desc_rsp(store_rsp=False):
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
     logging.debug("%s received %r %r", gattc_disc_all_desc_rsp.__name__,
@@ -1558,7 +1558,7 @@ att_rsp_str = {0:   "No error",
 
 
 def gattc_read_rsp(store_rsp=False, store_val=False):
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
     logging.debug("%s received %r %r", gattc_read_rsp.__name__, tuple_hdr,
@@ -1581,7 +1581,7 @@ def gattc_read_rsp(store_rsp=False, store_val=False):
 
 
 def gattc_read_long_rsp(store_rsp=False, store_val=False):
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
     logging.debug("%s received %r %r", gattc_read_long_rsp.__name__, tuple_hdr,
@@ -1604,7 +1604,7 @@ def gattc_read_long_rsp(store_rsp=False, store_val=False):
 
 
 def gattc_read_multiple_rsp(store_val=False, store_rsp=False):
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
     logging.debug("%s received %r %r", gattc_read_multiple_rsp.__name__,
@@ -1628,7 +1628,7 @@ def gattc_read_multiple_rsp(store_val=False, store_rsp=False):
 
 
 def gattc_write_rsp(store_rsp=False):
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
     logging.debug("%s received %r %r", gattc_write_rsp.__name__, tuple_hdr,
@@ -1646,7 +1646,7 @@ def gattc_write_rsp(store_rsp=False):
 
 
 def gattc_write_long_rsp(store_rsp=False):
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
     logging.debug("%s received %r %r", gattc_write_long_rsp.__name__,

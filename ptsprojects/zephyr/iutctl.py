@@ -5,6 +5,7 @@ import socket
 import binascii
 import shlex
 import btpdef
+from btp import btp_hdr_check
 from btpparser import enc_frame, dec_hdr, dec_data, HDR_LEN
 
 log = logging.debug
@@ -182,15 +183,18 @@ class ZephyrCtl:
 
         self.btp_socket.accept()
 
-    def handshake(self):
+    def wait_iut_ready_event(self):
+        """Wait until IUT sends ready event after power up"""
         tuple_hdr, tuple_data = self.btp_socket.read()
 
-        if (tuple_hdr.svc_id != btpdef.BTP_SERVICE_ID_CORE or
-            tuple_hdr.op != btpdef.CORE_EV_IUT_READY):
-            log("No handshake msg received first!")
+        try:
+            btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_CORE,
+                          btpdef.CORE_EV_IUT_READY)
+        except btp.BTPError as err:
+            log("Unexpected event received (%s), expected IUT ready!", err)
             self.stop()
-
-        log("Handshake msg received succesfully")
+        else:
+            log("IUT ready event received OK")
 
     def stop(self):
         """Powers off the Zephyr OS"""
