@@ -87,6 +87,7 @@ def main():
         test_cases = autoprojects.gap.test_cases(pts)
         test_cases += autoprojects.gatt.test_cases(pts)
         test_cases += autoprojects.sm.test_cases(pts)
+        test_cases += autoprojects.l2cap.test_cases(pts)
 
     if args.test_cases:
         test_cases = autoptsclient.get_test_cases_subset(

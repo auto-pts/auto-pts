@@ -243,9 +243,20 @@ class PyPTS:
 
         self.restart_pts()
 
+        # Don't try to set workspace settings before opening it.
+        self.open_workspace(*self._recov[self.open_workspace])
+
         for func, args in self._recov.iteritems():
+            # Don't reopen workspace
+            if func == self.open_workspace:
+                continue
+
             log("Recovering: %s, %s", func, args)
-            func(*args)
+            if isinstance(args, list):
+                for x in args:
+                    func(*x, store=False)  #This is only for PICS, PIXITS
+            else:
+                func(*args)
 
     def restart_pts(self):
         """Restarts PTS
@@ -329,8 +340,8 @@ class PyPTS:
         required_ext = ".pqw6" # valid PTS workspace file extension
 
         if workspace_path == "nble":
-            workspace_path = os.path.abspath(
-                "workspaces/autopts_qsd_zephyr_mv11_20160623/autopts_qsd_zephyr_mv11_20160623.pqw6")
+            script_path = os.path.split(os.path.realpath(__file__))[0]
+            workspace_path = script_path + "/workspaces/autopts_qsd_zephyr_mv11_20160623/autopts_qsd_zephyr_mv11_20160623.pqw6"
             log("Using nble workspace: %s", workspace_path)
 
         if not os.path.isfile(workspace_path):
@@ -503,7 +514,7 @@ class PyPTS:
 
         return test_cases
 
-    def update_pics(self, project_name, entry_name, bool_value):
+    def update_pics(self, project_name, entry_name, bool_value, store=True):
         """Updates PICS
 
         This wrapper handles exceptions that PTS throws if PICS entry is
@@ -521,11 +532,21 @@ class PyPTS:
 
         try:
             self._pts.UpdatePics(project_name, entry_name, bool_value)
+
+            if not store:
+                return
+
+            if not self.update_pics in self._recov:
+                self._recov[self.update_pics] = []
+
+            self._recov[self.update_pics].append((project_name, entry_name,
+                bool_value))
         except System.Runtime.InteropServices.COMException as e:
             log('Exception in UpdatePics "%s", is pics value aready set?' %
                 (e.Message,))
 
-    def update_pixit_param(self, project_name, param_name, new_param_value):
+    def update_pixit_param(self, project_name, param_name, new_param_value,
+        store=True):
         """Updates PIXIT
 
         This wrapper handles exceptions that PTS throws if PIXIT param is
@@ -543,6 +564,15 @@ class PyPTS:
 
         try:
             self._pts.UpdatePixitParam(project_name, param_name, new_param_value)
+
+            if not store:
+                return
+
+            if not self.update_pixit_param in self._recov:
+                self._recov[self.update_pixit_param] = []
+
+            self._recov[self.update_pixit_param].append((project_name,
+                param_name, new_param_value))
         except System.Runtime.InteropServices.COMException as e:
             log(('Exception in UpdatePixitParam "%s", is pixit param aready '
                  'set?') % (e.Message,))

@@ -186,7 +186,7 @@ class TestFunc:
         kwds -- arbitrary keyword argument dictionary
 
         """
-        arg_names = ["start_wid", "stop_wid"]
+        arg_names = ["start_wid", "stop_wid", "post_wid"]
 
         for arg_name in arg_names:
             if arg_name in kwds:
@@ -216,9 +216,9 @@ class TestFunc:
 
     def __str__(self):
         """Returns string representation"""
-        return "%s %s %s %s %s %s" % \
+        return "%s %s %s %s %s %s %s" % \
             (self.__class__, self.func, self.start_wid, self.stop_wid,
-             self.args, self.kwds)
+             self.post_wid, self.args, self.kwds)
 
 class TestFuncCleanUp(TestFunc):
     """Clean-up function that is invoked after running test case in PTS."""
@@ -323,6 +323,7 @@ class TestCase(PTSCallback):
         self.no_wid = no_wid
         self.edit1_wids = edit1_wids
         self.verify_wids = verify_wids
+        self.post_wid_queue = []
 
     def __str__(self):
         """Returns string representation"""
@@ -433,6 +434,9 @@ class TestCase(PTSCallback):
             response = self.edit1_wids[wid]
             if callable(response):
                 my_response = response()
+            elif type(response) is tuple and callable(response[0]):
+                # Handle command before responding
+                my_response = response[0](*response[1:])
             else:
                 my_response = response
 
@@ -446,6 +450,9 @@ class TestCase(PTSCallback):
 
         """
         for cmd in self.cmds:
+            if cmd.post_wid == wid:
+                self.post_wid_queue.append(cmd)
+
             # start command
             if cmd.start_wid == wid:
                 if cmd.desc_parsing_needed:
@@ -460,11 +467,19 @@ class TestCase(PTSCallback):
             if cmd.stop_wid == wid:
                 cmd.stop()
 
+    def run_post_wid_cmds(self):
+        for cmd in self.post_wid_queue:
+            cmd.start()
+
+        self.post_wid_queue = []
+
     def on_implicit_send(self, project_name, wid, test_case_name, description, style,
                          response, response_size, response_is_present):
         """Overrides PTSCallback method. Handles
         PTSControl.IPTSImplicitSendCallbackEx.OnImplicitSend"""
         log("%s %s", self, self.on_implicit_send.__name__)
+
+        self.run_post_wid_cmds()
 
         # this should never happen, pts does not run tests in parallel
         # TODO - This is a temporary solution for PTS bug #14711
@@ -506,7 +521,8 @@ class TestCase(PTSCallback):
         # start commands that don't have start trigger (lack start_wid) and are
         # not cleanup functions
         for cmd in self.cmds:
-            if cmd.start_wid is None and not is_cleanup_func(cmd):
+            if cmd.start_wid is None and cmd.post_wid is None \
+            and not is_cleanup_func(cmd):
                 cmd.start()
 
     def post_run(self, error_code):
