@@ -593,7 +593,7 @@ def get_stored_bd_addr():
 def gap_read_ctrl_info():
     logging.debug("%s", gap_read_ctrl_info.__name__)
 
-    zephyrctl = get_zephyr()
+    zephyrctl = iutctl.get_zephyr()
 
     zephyrctl.btp_socket.send(*GAP['read_ctrl_info'])
 
