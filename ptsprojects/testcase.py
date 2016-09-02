@@ -518,11 +518,11 @@ class TestCase(PTSCallback):
         for index, cmd in enumerate(self.cmds):
             log("%d) %s", index, cmd)
 
-        # start commands that don't have start trigger (lack start_wid) and are
-        # not cleanup functions
+        # start commands that don't have start trigger (lack start_wid or
+        # post_wid) and are not cleanup functions
         for cmd in self.cmds:
-            if cmd.start_wid is None and cmd.post_wid is None \
-            and not is_cleanup_func(cmd):
+            if cmd.start_wid is None and cmd.post_wid is None and \
+               not is_cleanup_func(cmd):
                 cmd.start()
 
     def post_run(self, error_code):
