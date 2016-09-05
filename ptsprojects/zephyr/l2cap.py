@@ -81,6 +81,24 @@ def test_cases(pts):
                    TestFunc(btp.gap_adv_ind_on),
                    TestFunc(btp.gap_disconn, pts_bd_addr,
                             Addr.le_public, start_wid=22)]),
+
+        # LE Credit Based Flow Control Mode
+        #ZTestCase("L2CAP", "TC_COS_CFC_BV_01_C"),
+        #ZTestCase("L2CAP", "TC_COS_CFC_BV_02_C"),
+        #ZTestCase("L2CAP", "TC_COS_CFC_BV_03_C"),
+        #ZTestCase("L2CAP", "TC_COS_CFC_BV_04_C"),
+        #ZTestCase("L2CAP", "TC_COS_CFC_BV_05_C"),
+        #ZTestCase("L2CAP", "TC_LE_CFC_BV_01_C"),
+        #ZTestCase("L2CAP", "TC_LE_CFC_BV_02_C"),
+        #ZTestCase("L2CAP", "TC_LE_CFC_BV_03_C"),
+        #ZTestCase("L2CAP", "TC_LE_CFC_BV_04_C"),
+        #ZTestCase("L2CAP", "TC_LE_CFC_BV_05_C"),
+        #ZTestCase("L2CAP", "TC_LE_CFC_BV_06_C"),
+        #ZTestCase("L2CAP", "TC_LE_CFC_BV_07_C"),
+        #ZTestCase("L2CAP", "TC_LE_CFC_BI_01_C"),
+        #ZTestCase("L2CAP", "TC_LE_CFC_BV_08_C"),
+        #ZTestCase("L2CAP", "TC_LE_CFC_BV_09_C"),
+        #ZTestCase("L2CAP", "TC_LE_CFC_BV_16_C"),
         ]
 
     return test_cases
