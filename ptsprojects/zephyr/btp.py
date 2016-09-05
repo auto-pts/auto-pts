@@ -12,6 +12,7 @@ import btpdef
 PASSKEY = None
 GATT_SVCS = None
 IUT_BD_ADDR = None
+L2CAP_CHAN = []
 
 #  A sequence of values to verify in PTS MMI description
 VERIFY_VALUES = None
@@ -23,6 +24,8 @@ CORE = {
                 btpdef.BTP_INDEX_NONE, btpdef.BTP_SERVICE_ID_GAP),
     "gatts_reg": (btpdef.BTP_SERVICE_ID_CORE, btpdef.CORE_REGISTER_SERVICE,
                   btpdef.BTP_INDEX_NONE, btpdef.BTP_SERVICE_ID_GATT),
+    "l2cap_reg": (btpdef.BTP_SERVICE_ID_CORE, btpdef.CORE_REGISTER_SERVICE,
+                  btpdef.BTP_INDEX_NONE, btpdef.BTP_SERVICE_ID_L2CAP),
     "read_supp_cmds": (btpdef.BTP_SERVICE_ID_CORE,
                        btpdef.CORE_READ_SUPPORTED_COMMANDS,
                        btpdef.BTP_INDEX_NONE, ""),
@@ -112,6 +115,20 @@ GATTC = {
                    CONTROLLER_INDEX),
     "cfg_indicate": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_CFG_INDICATE,
                      CONTROLLER_INDEX),
+}
+
+L2CAP = {
+    "read_supp_cmds": (btpdef.BTP_SERVICE_ID_L2CAP,
+                       btpdef.L2CAP_READ_SUPPORTED_COMMANDS,
+                       btpdef.BTP_INDEX_NONE, ""),
+    "connect": (btpdef.BTP_SERVICE_ID_L2CAP, btpdef.L2CAP_CONNECT,
+                CONTROLLER_INDEX),
+    "disconnect": (btpdef.BTP_SERVICE_ID_L2CAP, btpdef.L2CAP_DISCONNECT,
+                   CONTROLLER_INDEX),
+    "send_data": (btpdef.BTP_SERVICE_ID_L2CAP, btpdef.L2CAP_SEND_DATA,
+                  CONTROLLER_INDEX),
+    "listen": (btpdef.BTP_SERVICE_ID_L2CAP, btpdef.L2CAP_LISTEN,
+               CONTROLLER_INDEX),
 }
 
 
@@ -221,6 +238,15 @@ def core_reg_svc_gatts():
 
     zephyrctl = iutctl.get_zephyr()
     zephyrctl.btp_socket.send(*CORE['gatts_reg'])
+
+    core_reg_svc_rsp_succ()
+
+
+def core_reg_svc_l2cap():
+    logging.debug("%s", core_reg_svc_l2cap.__name__)
+
+    zephyrctl = iutctl.get_zephyr()
+    zephyrctl.btp_socket.send(*CORE['l2cap_reg'])
 
     core_reg_svc_rsp_succ()
 
@@ -1707,3 +1733,200 @@ def gattc_write_long_rsp(store_rsp=False):
         global VERIFY_VALUES
         VERIFY_VALUES = []
         VERIFY_VALUES.append(att_rsp_str[rsp])
+
+
+def l2cap_command_rsp_succ(op=None):
+    logging.debug("%s", l2cap_command_rsp_succ.__name__)
+
+    zephyrctl = iutctl.get_zephyr()
+
+    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    logging.debug("received %r %r", tuple_hdr, tuple_data)
+
+    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_L2CAP, op)
+
+
+def l2cap_conn(bd_addr, bd_addr_type, psm):
+    logging.debug("%s %r %r %r", l2cap_conn.__name__, bd_addr, bd_addr_type,
+                  psm)
+
+    zephyrctl = iutctl.get_zephyr()
+
+    if type(psm) is str:
+        psm = int(psm, 16)
+
+    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+
+    data_ba = bytearray(chr(bd_addr_type))
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(struct.pack('H', psm))
+
+    zephyrctl.btp_socket.send(*L2CAP['connect'], data=data_ba)
+
+
+l2cap_result_str = {0:  "Connection successful",
+                    2:  "LE_PSM not supported",
+                    4:  "Insufficient Resources",
+                    5:  "insufficient authentication",
+                    6:  "insufficient authorization",
+                    7:  "insufficient encryption key size",
+                    8:  "insufficient encryption",
+                    9:  "Invalid Source CID",
+                    10: "Source CID already allocated",
+                    }
+
+
+def l2cap_conn_rsp():
+    logging.debug("%s", l2cap_conn_rsp.__name__)
+
+    zephyrctl = iutctl.get_zephyr()
+
+    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    logging.debug("received %r %r", tuple_hdr, tuple_data)
+
+    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_L2CAP, btpdef.L2CAP_CONNECT)
+
+    chan_id = struct.unpack_from('<B', tuple_data[0])[0]
+
+    global L2CAP_CHAN
+    L2CAP_CHAN.append(chan_id)
+
+    logging.debug("new L2CAP channel: id %r", chan_id)
+
+
+def l2cap_disconn(chan_id):
+    logging.debug("%s %r", l2cap_disconn.__name__, chan_id)
+
+    zephyrctl = iutctl.get_zephyr()
+
+    global L2CAP_CHAN
+    try:
+        idx = L2CAP_CHAN.index(chan_id)
+    except ValueError:
+        raise BTPError("Channel with given chan_id: %r does not exists" %
+                       (chan_id))
+
+    chan_id = L2CAP_CHAN[idx]
+
+    data_ba = bytearray(chr(chan_id))
+
+    zephyrctl.btp_socket.send(*L2CAP['disconnect'], data=data_ba)
+
+    l2cap_command_rsp_succ(btpdef.L2CAP_DISCONNECT)
+
+
+def l2cap_send_data(chan_id, val, val_mtp=None):
+    logging.debug("%s %r %r %r", l2cap_send_data.__name__, chan_id, val,
+                  val_mtp)
+
+    zephyrctl = iutctl.get_zephyr()
+
+    if val_mtp:
+        val *= int(val_mtp)
+
+    val_ba = binascii.unhexlify(bytearray(val))
+    val_len_ba = struct.pack('H', len(val_ba))
+
+    data_ba = bytearray(chr(chan_id))
+    data_ba.extend(val_len_ba)
+    data_ba.extend(val_ba)
+
+    zephyrctl.btp_socket.send(*L2CAP['send_data'], data=data_ba)
+
+    l2cap_command_rsp_succ(btpdef.L2CAP_SEND_DATA)
+
+
+def l2cap_listen(psm, transport):
+    logging.debug("%s %r %r", l2cap_le_listen.__name__, psm, transport)
+
+    zephyrctl = iutctl.get_zephyr()
+
+    if type(psm) is str:
+        psm = int(psm, 16)
+
+    data_ba = bytearray(struct.pack('H', psm))
+    data_ba.extend(struct.pack('B', transport))
+
+    zephyrctl.btp_socket.send(*L2CAP['listen'], data=data_ba)
+
+    l2cap_command_rsp_succ(btpdef.L2CAP_LISTEN)
+
+def l2cap_le_listen(psm):
+    l2cap_listen(psm, btpdef.L2CAP_TRANSPORT_LE)
+
+
+def l2cap_connected_ev():
+    logging.debug("%s", l2cap_connected_ev.__name__)
+
+    zephyrctl = iutctl.get_zephyr()
+
+    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    logging.debug("received %r %r", tuple_hdr, tuple_data)
+
+    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_L2CAP,
+                  btpdef.L2CAP_EV_CONNECTED)
+
+    chan_id, psm, bd_addr_type, bd_addr = struct.unpack_from('<BHB6s',
+                                                             tuple_data[0])
+    logging.debug("New L2CAP connection ID:%r on PSM:%r, Addr %r Type %r",
+                  chan_id, psm, bd_addr, bd_addr_type)
+
+    global L2CAP_CHAN
+
+    # Append incoming connection only
+    if chan_id not in L2CAP_CHAN:
+        L2CAP_CHAN.append(chan_id)
+
+
+def l2cap_disconnected_ev(exp_chan_id, store=False):
+    logging.debug("%s %r", l2cap_disconnected_ev.__name__, exp_chan_id)
+
+    zephyrctl = iutctl.get_zephyr()
+
+    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    logging.debug("received %r %r", tuple_hdr, tuple_data)
+
+    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_L2CAP,
+                  btpdef.L2CAP_EV_DISCONNECTED)
+
+    res, chan_id, psm, bd_addr_type, bd_addr = struct.unpack_from('<HBHB6s',
+                                                                  tuple_data[0])
+
+    global L2CAP_CHAN
+    L2CAP_CHAN.remove(chan_id)
+
+    logging.debug("L2CAP channel disconnected: id %r", chan_id)
+
+    if chan_id != exp_chan_id:
+        raise BTPError("Error in L2CAP disconnected event data")
+
+    if store:
+        global VERIFY_VALUES
+        VERIFY_VALUES = []
+        VERIFY_VALUES.append(l2cap_result_str[res])
+
+def l2cap_data_rcv_ev(chan_id=None, store=False):
+    logging.debug("%s %r %r", l2cap_data_rcv_ev.__name__, chan_id, store)
+
+    zephyrctl = iutctl.get_zephyr()
+
+    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    logging.debug("received %r %r", tuple_hdr, tuple_data)
+
+    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_L2CAP,
+                  btpdef.L2CAP_EV_DATA_RECEIVED)
+
+    data_hdr = '<BH'
+    data_hdr_len = struct.calcsize(data_hdr)
+
+    rcv_chan_id, data_len = struct.unpack_from(data_hdr, tuple_data[0])
+    data = binascii.hexlify(struct.unpack_from('%ds' % data_len, tuple_data[0],
+                                               data_hdr_len)[0])
+
+    if chan_id and chan_id != rcv_chan_id:
+        raise BTPError("Error in L2CAP data received event data")
+
+    if store:
+        global VERIFY_VALUES
+        VERIFY_VALUES = []
+        VERIFY_VALUES.append(data)
