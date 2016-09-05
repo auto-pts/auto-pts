@@ -152,6 +152,8 @@ def verify_description(description):
     """
     logging.debug("description=%r", description)
 
+    description = description.upper()
+
     global VERIFY_VALUES
     logging.debug("Verifying values: %r", VERIFY_VALUES)
 
@@ -163,6 +165,8 @@ def verify_description(description):
 
     for value in VERIFY_VALUES:
         logging.debug("Verifying: %r", value)
+
+        value = value.upper()
 
         if value not in description:
             logging.debug("Verification failed, value not in description")
