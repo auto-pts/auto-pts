@@ -176,10 +176,12 @@ def test_cases(pts):
                         TestFunc(btp.l2cap_conn, pts_bd_addr, Addr.le_public,
                                  241, start_wid=41),
                         TestFunc(btp.l2cap_conn_rsp, start_wid=41),
-                        TestFunc(btp.l2cap_disconnected_ev, 0, True,
-                                 start_wid=41)],
-                  # FIXME: Response "LE_PSM not supported"
-                  verify_wids={42: btp.verify_description}),
+                        TestFunc(btp.l2cap_disconnected_ev, 0, False,
+                                 start_wid=41)]),
+                  # "LE_PSM not supported" Result expected.
+                  # Verification is not needed, because if we received
+                  # disconnected event, that means connection was rejected.
+                  # verify_wids={42: btp.verify_description}),
         ZTestCase("L2CAP", "TC_LE_CFC_BV_05_C",
                   pre_conditions +
                   [TestFunc(btp.core_reg_svc_l2cap),
@@ -246,10 +248,12 @@ def test_cases(pts):
                         TestFunc(btp.l2cap_conn, pts_bd_addr, Addr.le_public,
                                  128, start_wid=41),
                         TestFunc(btp.l2cap_conn_rsp, start_wid=41),
-                        TestFunc(btp.l2cap_disconnected_ev, 0, True,
-                                 start_wid=41)],
-                  # FIXME: Response "LE_PSM not supported"
-                  verify_wids={48: btp.verify_description}),
+                        TestFunc(btp.l2cap_disconnected_ev, 0, False,
+                                 start_wid=41)]),
+                  # "LE_PSM not supported" Result expected.
+                  # Verification is not needed, because if we received
+                  # disconnected event, that means connection was rejected.
+                  # verify_wids={48: btp.verify_description}),
         ]
 
     return test_cases
