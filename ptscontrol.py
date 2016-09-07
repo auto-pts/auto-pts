@@ -407,8 +407,8 @@ class PyPTS:
 
         test_case_name = ""
         test_case_name = self._pts.GetTestCaseName(project_name,
-                                                    test_case_index,
-                                                    test_case_name)
+                                                   test_case_index,
+                                                   test_case_name)
 
         log("%s %s %s out: %s", self.get_test_case_name.__name__, project_name,
             test_case_index, test_case_name)
@@ -422,8 +422,10 @@ class PyPTS:
         test_case_description = self._pts.GetTestCaseDescription(
             project_name, test_case_index, test_case_description)
 
+
         log("%s %s %s out: %s", self.get_test_case_description.__name__,
-            project_name, test_case_index, test_case_description)
+            project_name, test_case_index,
+            test_case_description.encode("ascii", "ignore"))
 
         return test_case_description
 
