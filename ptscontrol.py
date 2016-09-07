@@ -721,17 +721,6 @@ def parse_args():
 
     args = arg_parser.parse_args()
 
-    # check that aruments and options are sane
-    if not os.path.isfile(args.workspace):
-        raise Exception("Workspace file '%s' does not exist" %
-                        (args.workspace,))
-
-    specified_ext = os.path.splitext(args.workspace)[1]
-    if required_ext != specified_ext:
-        raise Exception(
-            "Workspace file '%s' extension is wrong, should be %s" %
-            (args.workspace, required_ext))
-
     return args
 
 def main():
