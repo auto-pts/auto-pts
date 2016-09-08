@@ -195,9 +195,9 @@ class PyPTS:
 
         self._init_attributes()
 
-        # dictionay of PTS settings to recover after timeout, key is a method,
-        # and value is the method arguments
-        self._recov = {}
+        # list of tuples of methods and aruments to recover after PTS restart
+        self._recov = []
+        self._recov_in_progress = False
 
         # This is done to have valid _pts in case client does not restart_pts
         # and uses other methods. Normally though, the client should
@@ -222,6 +222,31 @@ class PyPTS:
         # avoided to contact PTS. These attributes should not change anyway.
         self.__bd_addr = None
 
+    def add_recov(self, func, *args, **kwds):
+        """Add function to recovery list"""
+        if not self._recov_in_progress:
+            log("%s %r %r", self.add_recov.__name__, args, kwds)
+            self._recov.append((func, args, kwds))
+
+    def del_recov(self, func, *args, **kwds):
+        """Remove function from recovery list"""
+        log("%s %r %r", self.del_recov.__name__, args, kwds)
+
+        recov_funcs = [item[0] for item in self._recov]
+
+        if func not in recov_funcs:
+            return
+
+        # no arguments specified: remove all method calls
+        if not args and not kwds:
+            self._recov = [item for item in self._recov if item[0] != func]
+
+        # remove single method call with matching arguments
+        else:
+            item = (func, args, kwds)
+            if item in self._recov:
+                self._recov.remove(item)
+
     def recover_pts(self):
         """Recovers PTS from errors occured during RunTestCase call.
 
@@ -241,22 +266,18 @@ class PyPTS:
         log("%s", self.recover_pts.__name__)
         log("recov=%s", self._recov)
 
+        self._recov_in_progress = True
+
         self.restart_pts()
 
-        # Don't try to set workspace settings before opening it.
-        self.open_workspace(*self._recov[self.open_workspace])
+        for item in self._recov:
+            func = item[0]
+            args = item[1]
+            kwds = item[2]
+            log("Recovering: %s, %r %r", func, args, kwds)
+            func(*args, **kwds)
 
-        for func, args in self._recov.iteritems():
-            # Don't reopen workspace
-            if func == self.open_workspace:
-                continue
-
-            log("Recovering: %s, %s", func, args)
-            if isinstance(args, list):
-                for x in args:
-                    func(*x, store=False)  #This is only for PICS, PIXITS
-            else:
-                func(*args)
+        self._recov_in_progress = False
 
     def restart_pts(self):
         """Restarts PTS
@@ -288,8 +309,8 @@ class PyPTS:
         self._pts_logger = PTSLogger()
         self._pts_sender = PTSSender()
 
-        # cached frequently used PTS attributes: optimisation reasons it is
-        # avoided to contact PTS. These attributes should not change anyway.
+        # cached frequently used PTS attributes: due to optimisation reasons it
+        # is avoided to contact PTS. These attributes should not change anyway.
         self.__bd_addr = None
 
         # mandatory to set at least to None if logger is not used
@@ -355,7 +376,7 @@ class PyPTS:
                 (workspace_path, required_ext))
 
         self._pts.OpenWorkspace(workspace_path)
-        self._recov[self.open_workspace] = (workspace_path,)
+        self.add_recov(self.open_workspace, workspace_path)
 
     def get_project_count(self):
         """Returns number of projects available in the current workspace"""
@@ -421,7 +442,6 @@ class PyPTS:
         test_case_description = ""
         test_case_description = self._pts.GetTestCaseDescription(
             project_name, test_case_index, test_case_description)
-
 
         log("%s %s %s out: %s", self.get_test_case_description.__name__,
             project_name, test_case_index,
@@ -516,7 +536,7 @@ class PyPTS:
 
         return test_cases
 
-    def update_pics(self, project_name, entry_name, bool_value, store=True):
+    def update_pics(self, project_name, entry_name, bool_value):
         """Updates PICS
 
         This wrapper handles exceptions that PTS throws if PICS entry is
@@ -534,21 +554,14 @@ class PyPTS:
 
         try:
             self._pts.UpdatePics(project_name, entry_name, bool_value)
+            self.add_recov(self.update_pics, project_name, entry_name,
+                           bool_value)
 
-            if not store:
-                return
-
-            if not self.update_pics in self._recov:
-                self._recov[self.update_pics] = []
-
-            self._recov[self.update_pics].append((project_name, entry_name,
-                bool_value))
         except System.Runtime.InteropServices.COMException as e:
             log('Exception in UpdatePics "%s", is pics value aready set?' %
                 (e.Message,))
 
-    def update_pixit_param(self, project_name, param_name, new_param_value,
-        store=True):
+    def update_pixit_param(self, project_name, param_name, new_param_value):
         """Updates PIXIT
 
         This wrapper handles exceptions that PTS throws if PIXIT param is
@@ -566,15 +579,9 @@ class PyPTS:
 
         try:
             self._pts.UpdatePixitParam(project_name, param_name, new_param_value)
+            self.add_recov(self.update_pixit_param, project_name, param_name,
+                           new_param_value)
 
-            if not store:
-                return
-
-            if not self.update_pixit_param in self._recov:
-                self._recov[self.update_pixit_param] = []
-
-            self._recov[self.update_pixit_param].append((project_name,
-                param_name, new_param_value))
         except System.Runtime.InteropServices.COMException as e:
             log(('Exception in UpdatePixitParam "%s", is pixit param aready '
                  'set?') % (e.Message,))
@@ -594,9 +601,9 @@ class PyPTS:
         self._pts.SetPTSCallTimeout(timeout)
 
         if timeout:
-            self._recov[self.set_call_timeout] = (timeout,)
+            self.add_recov(self.set_call_timeout, timeout)
         else: # timeout 0 = no timeout
-            self._recov.pop(self.set_call_timeout, None)
+            self.del_recov(self.set_call_timeout)
 
     def save_test_history_log(self, save):
         """This function enables automation clients to specify whether test
@@ -697,7 +704,7 @@ class PyPTS:
         self._pts_logger.set_callback(callback)
         self._pts_sender.set_callback(callback)
 
-        self._recov[self.register_ptscallback] = (callback,)
+        self.add_recov(self.register_ptscallback, callback)
 
     def unregister_ptscallback(self):
         """Unregisters the testcase.PTSCallback callback"""
@@ -707,7 +714,7 @@ class PyPTS:
         self._pts_logger.unset_callback()
         self._pts_sender.unset_callback()
 
-        self._recov.pop(self.register_ptscallback)
+        self.del_recov(self.register_ptscallback)
 
 def parse_args():
     """Parses command line arguments and options"""
