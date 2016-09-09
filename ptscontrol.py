@@ -43,16 +43,20 @@ class PTSLogger(PTSControl.IPTSControlClientLogger):
 
         # an object that implements testcase.PTSCallback, it can either be
         # TestCase or xmlrpc SimpleXMLRPCServer running in auto pts client.
-        self.callback = None
-        self.maximum_logging = False
+        self._callback = None
+        self._maximum_logging = False
 
     def set_callback(self, callback):
-        """Sets the callback"""
-        self.callback = callback
+        """Set the callback"""
+        self._callback = callback
 
     def unset_callback(self):
-        """Unsets the callback"""
-        self.callback = None
+        """Unset the callback"""
+        self._callback = None
+
+    def enable_maximum_logging(self, enable):
+        """Enable/disable maximum logging"""
+        self._maximum_logging = enable
 
     def Log(self, log_type, logtype_string, log_time, log_message):
         """Implements:
@@ -74,12 +78,12 @@ class PTSLogger(PTSControl.IPTSControlClientLogger):
         try:
             # xmrpc proxy object in boolean test calls the method __nonzero__
             # of the xmlrpc server, so "is" test is a better choice here
-            if self.callback is not None:
+            if self._callback is not None:
                 log("Calling callback.log")
                 # log_type of type PTSControl._PTS_LOGTYPE is marshalled as
                 # int since xmlrcp has not marshalling rules for _PTS_LOGTYPE
-                if self.maximum_logging or int(log_type) in logtype_whitelist:
-                    self.callback.log(int(log_type), logtype_string, log_time,
+                if self._maximum_logging or int(log_type) in logtype_whitelist:
+                    self._callback.log(int(log_type), logtype_string, log_time,
                                       log_message)
         except Exception as e:
             log("Caught exception")
@@ -95,15 +99,15 @@ class PTSSender(PTSControl.IPTSImplicitSendCallbackEx):
 
         # an object that implements testcase.PTSCallback, it can either be
         # TestCase or xmlrpc SimpleXMLRPCServer running in auto pts client.
-        self.callback = None
+        self._callback = None
 
     def set_callback(self, callback):
         """Sets the callback"""
-        self.callback = callback
+        self._callback = callback
 
     def unset_callback(self):
         """Unsets the callback"""
-        self.callback = None
+        self._callback = None
 
     def OnImplicitSend(self, project_name, wid, test_case_name, description,
                        style, response, response_size, response_is_present):
@@ -141,9 +145,9 @@ class PTSSender(PTSControl.IPTSImplicitSendCallbackEx):
         try:
             # xmrpc proxy object in boolean test calls the method __nonzero__
             # of the xmlrpc server, so "is" test is a better choice here
-            if self.callback is not None:
+            if self._callback is not None:
                 log("Calling callback.on_implicit_send")
-                callback_response = self.callback.on_implicit_send(
+                callback_response = self._callback.on_implicit_send(
                     project_name,
                     int(wid), # UInt16 cannot be marshalled
                     test_case_name,
@@ -591,7 +595,7 @@ class PyPTS:
 
         log("%s %s", self.enable_maximum_logging.__name__, enable)
         self._pts.EnableMaximumLogging(enable)
-        self._pts_logger.maximum_logging = enable
+        self._pts_logger.enable_maximum_logging(enable)
 
     def set_call_timeout(self, timeout):
         """Sets a timeout period in milliseconds for the RunTestCase() calls
