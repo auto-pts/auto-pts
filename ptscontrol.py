@@ -229,12 +229,12 @@ class PyPTS:
     def add_recov(self, func, *args, **kwds):
         """Add function to recovery list"""
         if not self._recov_in_progress:
-            log("%s %r %r", self.add_recov.__name__, args, kwds)
+            log("%s %r %r %r", self.add_recov.__name__, func, args, kwds)
             self._recov.append((func, args, kwds))
 
     def del_recov(self, func, *args, **kwds):
         """Remove function from recovery list"""
-        log("%s %r %r", self.del_recov.__name__, args, kwds)
+        log("%s %r %r %r", self.del_recov.__name__, func, args, kwds)
 
         recov_funcs = [item[0] for item in self._recov]
 
