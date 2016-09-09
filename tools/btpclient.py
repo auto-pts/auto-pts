@@ -411,6 +411,23 @@ class GattcCmd(Cmd):
 
         generic_srvc_cmd_handler(btp.GATTC, cmd)
 
+class L2capCmd(Cmd):
+    def __init__(self):
+        Cmd.__init__(self)
+        self.name = "l2cap"
+        self.sub_cmds = btp.L2CAP
+
+        self.help.build(
+            short_help = "Send L2CAP command to BTP tester",
+            synopsis = "%s [command]" % self.name,
+            sub_cmds = self.sub_cmds.keys())
+
+    def run(self, *cmd):
+        if not cmd:
+            raise TypeError("Command arguments are missing")
+
+        generic_srvc_cmd_handler(btp.L2CAP, cmd)
+
 class ExitCmd(Cmd):
     def __init__(self):
         Cmd.__init__(self)
@@ -751,7 +768,8 @@ def main():
         CoreCmd(),
         GapCmd(),
         GattsCmd(),
-        GattcCmd()
+        GattcCmd(),
+        L2capCmd()
     ]
 
     cmds_dict = { cmd.name : cmd for cmd in cmds }
