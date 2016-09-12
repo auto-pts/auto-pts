@@ -254,6 +254,58 @@ def test_cases(pts):
                   # Verification is not needed, because if we received
                   # disconnected event, that means connection was rejected.
                   # verify_wids={48: btp.verify_description}),
+        ZTestCase("L2CAP", "TC_LE_CFC_BV_18_C",
+                  pre_conditions +
+                  [TestFunc(btp.core_reg_svc_l2cap),
+                   TestFunc(btp.gap_set_conn, start_wid=15),
+                   TestFunc(btp.gap_adv_ind_on, start_wid=15),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr,
+                            Addr.le_public, start_wid=15),
+                   TestFunc(btp.l2cap_conn, pts_bd_addr, Addr.le_public,
+                            128, start_wid=41),
+                   TestFunc(btp.l2cap_conn_rsp, start_wid=41),
+                   TestFunc(btp.l2cap_disconnected_ev, 0, False,
+                            start_wid=41)]),
+        ZTestCase("L2CAP", "TC_LE_CFC_BV_19_C",
+                  pre_conditions +
+                  [TestFunc(btp.core_reg_svc_l2cap),
+                   TestFunc(btp.gap_set_conn, start_wid=15),
+                   TestFunc(btp.gap_adv_ind_on, start_wid=15),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr,
+                            Addr.le_public, start_wid=15),
+                   TestFunc(btp.l2cap_conn, pts_bd_addr, Addr.le_public,
+                            128, start_wid=41),
+                   TestFunc(btp.l2cap_conn_rsp, start_wid=41),
+                   TestFunc(btp.l2cap_disconnected_ev, 0, False,
+                            start_wid=41)]),
+        # PTS issue #15004
+        ZTestCase("L2CAP", "TC_LE_CFC_BV_20_C",
+                  pre_conditions +
+                  [TestFunc(btp.core_reg_svc_l2cap),
+                   TestFunc(btp.l2cap_le_listen, 128),
+                   TestFunc(btp.gap_conn,
+                            pts_bd_addr, Addr.le_public, start_wid=51),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr,
+                            Addr.le_public, start_wid=51),
+                   TestFunc(btp.l2cap_connected_ev, start_wid=51),
+                   TestFunc(btp.gap_disconn, pts_bd_addr,
+                            Addr.le_public, start_wid=22),
+                   TestFunc(btp.l2cap_disconnected_ev, 0, False,
+                            start_wid=22),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
+                            Addr.le_public, start_wid=22)]),
+        ZTestCase("L2CAP", "TC_LE_CFC_BV_21_C",
+                  pre_conditions +
+                  [TestFunc(btp.core_reg_svc_l2cap),
+                   TestFunc(btp.gap_set_conn, start_wid=15),
+                   TestFunc(btp.gap_adv_ind_on, start_wid=15),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr,
+                            Addr.le_public, start_wid=15),
+                   TestFunc(btp.l2cap_conn, pts_bd_addr, Addr.le_public,
+                            128, start_wid=41),
+                   TestFunc(btp.l2cap_conn_rsp, start_wid=41),
+                   TestFunc(btp.l2cap_disconnected_ev, 0, False,
+                            start_wid=41)]),
         ]
 
     return test_cases
