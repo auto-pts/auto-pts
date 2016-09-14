@@ -158,6 +158,10 @@ class AdType:
     gap_appearance = 25
     manufacturer_data = 255
 
+
+class AdData:
+    ad_manuf = (AdType.manufacturer_data, 'ABCD')
+
 # Advertising data
 ad = [(AdType.uuid16_some, '1111'),
       (AdType.gap_appearance, '1111'),
@@ -183,11 +187,11 @@ def test_cases(pts):
                   pre_conditions +
                   [TestFunc(btp.gap_set_nonconn, start_wid=47),
                    TestFunc(btp.gap_adv_ind_on, start_wid=47)]),
-        # TODO 14427 - PTS Issue
-        # ZTestCase("GAP", "TC_BROB_BCST_BV_02_C",
-        #           [TestFunc(btp.core_reg_svc_gap),
-        #            TestFunc(btp.gap_set_nondiscov),
-        #            TestFunc(btp.gap_adv_ind_on)]),
+        ZTestCase("GAP", "TC_BROB_BCST_BV_02_C",
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_nonconn),
+                   TestFunc(btp.gap_set_nondiscov),
+                   TestFunc(btp.gap_adv_ind_on, sd=(AdData.ad_manuf,))]),
         ZTestCase("GAP", "TC_BROB_OBSV_BV_01_C",
                   pre_conditions +
                   [TestFunc(btp.gap_start_discov_pasive, start_wid=12),
