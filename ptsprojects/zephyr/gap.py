@@ -204,7 +204,11 @@ def test_cases(pts):
                    TestFunc(btp.gap_device_found_ev, Addr.le_public,
                             pts_bd_addr, start_wid=4),
                    TestFuncCleanUp(btp.gap_stop_discov)]),
-        # ZTestCase("GAP", "TC_DISC_NONM_BV_01_C",),
+        ZTestCase("GAP", "TC_DISC_NONM_BV_01_C",
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_nonconn, start_wid=5),
+                   TestFunc(btp.gap_set_nondiscov, start_wid=5),
+                   TestFunc(btp.gap_adv_ind_on, start_wid=5)]),
         ZTestCase("GAP", "TC_DISC_NONM_BV_02_C",
                   pre_conditions +
                   [TestFunc(btp.gap_adv_ind_on, start_wid=72)]),
