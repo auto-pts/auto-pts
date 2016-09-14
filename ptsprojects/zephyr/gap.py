@@ -211,7 +211,8 @@ def test_cases(pts):
                    TestFunc(btp.gap_adv_ind_on, start_wid=5)]),
         ZTestCase("GAP", "TC_DISC_NONM_BV_02_C",
                   pre_conditions +
-                  [TestFunc(btp.gap_adv_ind_on, start_wid=72)]),
+                  [TestFunc(btp.gap_set_nondiscov, start_wid=72),
+                   TestFunc(btp.gap_adv_ind_on, start_wid=72)]),
         ZTestCase("GAP", "TC_DISC_LIMM_BV_03_C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_nonconn),
