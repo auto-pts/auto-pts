@@ -244,17 +244,18 @@ def test_cases(pts):
         # TODO Limited discovery procedure is not yet supported
         # ZTestCase("GAP", "TC_DISC_LIMP_BV_05_C",),
         # TODO: fails cause of ZEP-380
-        # ZTestCase("GAP", "TC_DISC_GENP_BV_01_C",
-        #           [TestFunc(btp.core_reg_svc_gap),
-        #            TestFunc(btp.gap_start_discov_pasive, start_wid=23),
-        #            TestFunc(btp.gap_device_found_ev, Addr.le_public,
-        #                     pts_bd_addr, start_wid=14)]),
-        # TODO: fails cause of ZEP-380
-        # ZTestCase("GAP", "TC_DISC_GENP_BV_02_C",
-        #           [TestFunc(btp.core_reg_svc_gap),
-        #            TestFunc(btp.gap_start_discov_pasive, start_wid=23),
-        #            TestFunc(btp.gap_device_found_ev, Addr.le_public,
-        #                     pts_bd_addr, start_wid=14)]),
+        ZTestCase("GAP", "TC_DISC_GENP_BV_01_C",
+                  pre_conditions +
+                  [TestFunc(btp.gap_start_discov_active, start_wid=23),
+                   TestFunc(btp.gap_device_found_ev, Addr.le_public,
+                            pts_bd_addr, start_wid=14),
+                   TestFuncCleanUp(btp.gap_stop_discov)]),
+        ZTestCase("GAP", "TC_DISC_GENP_BV_02_C",
+                  pre_conditions +
+                  [TestFunc(btp.gap_start_discov_active, start_wid=23),
+                   TestFunc(btp.gap_device_found_ev, Addr.le_public,
+                            pts_bd_addr, start_wid=14),
+                   TestFuncCleanUp(btp.gap_stop_discov)]),
         # TODO: fails cause of ZEP-380
         # ZTestCase("GAP", "TC_DISC_GENP_BV_03_C",
         #           [TestFunc(btp.core_reg_svc_gap),
