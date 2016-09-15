@@ -5,7 +5,7 @@ import socket
 import binascii
 import shlex
 import btpdef
-from btp import btp_hdr_check
+from btp import btp_hdr_check, BTPError
 from btpparser import enc_frame, dec_hdr, dec_data, HDR_LEN
 
 log = logging.debug
@@ -190,7 +190,7 @@ class ZephyrCtl:
         try:
             btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_CORE,
                           btpdef.CORE_EV_IUT_READY)
-        except btp.BTPError as err:
+        except BTPError as err:
             log("Unexpected event received (%s), expected IUT ready!", err)
             self.stop()
         else:
