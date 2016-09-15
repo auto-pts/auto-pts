@@ -427,12 +427,31 @@ def test_cases(pts):
                             start_wid=77),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=77)]),
-        # Not supported by Zephyr yet
-        # ZTestCase("GAP", "TC_BOND_NBON_BV_02_C",),
-        # Not supported by Zephyr yet
-        # ZTestCase("GAP", "TC_BOND_BON_BV_01_C",),
-        # Not supported by Zephyr yet
-         # ZTestCase("GAP", "TC_BOND_NBON_BV_03_C",),
+        ZTestCase("GAP", "TC_BOND_NBON_BV_01_C",
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
+                   TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
+                            start_wid=78),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, Addr.le_public,
+                            start_wid=78),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
+                            Addr.le_public, post_wid=118)]),
+        ZTestCase("GAP", "TC_BOND_NBON_BV_02_C",
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
+                   TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
+                            start_wid=78),
+                   TestFunc(btp.gap_connected_ev, pts_bd_addr, Addr.le_public,
+                            start_wid=78),
+                   TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
+                            start_wid=100),
+                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
+                            Addr.le_public, post_wid=118)]),
+         ZTestCase("GAP", "TC_BOND_NBON_BV_03_C",
+                   pre_conditions +
+                   [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
+                    TestFunc(btp.gap_set_conn, start_wid=91),
+                    TestFunc(btp.gap_adv_ind_on, start_wid=91),]),
          ZTestCase("GAP", "TC_BOND_BON_BV_01_C",
                    cmds=pre_conditions +
                         [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
