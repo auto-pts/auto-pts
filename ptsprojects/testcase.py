@@ -275,7 +275,7 @@ class TestCase(PTSCallback):
     """A PTS test case"""
 
     def __init__(self, project_name, test_case_name, cmds = [], no_wid = None,
-                 edit1_wids = None, verify_wids = None):
+                 edit1_wids = None, verify_wids = None, ok_cancel_wids = None):
         """TestCase constructor
 
         cmds -- a list of TestCmd and TestFunc or single instance of them
@@ -298,6 +298,12 @@ class TestCase(PTSCallback):
                        boolean True for the Yes and False for the No response
                        of MMI_Style_Yes_No1.
 
+        ok_cancel_wids -- A dictionary of wids as keys and bool or callable as
+                          values. The bool value or the bool returned from the
+                          callable value is converted to OK, Cancel and send to
+                          PTS in response to MMI_Style_Ok_Cancel1 and
+                          MMI_Style_Ok_Cancel2 style prompts with matching wid.
+
         """
         self.project_name = project_name
         self.name = test_case_name
@@ -319,10 +325,14 @@ class TestCase(PTSCallback):
         if verify_wids:
             assert isinstance(verify_wids, dict), \
                 "verify_wids should be dict, and not %r" % verify_wids
+        if ok_cancel_wids:
+            assert isinstance(ok_cancel_wids, dict), \
+                "ok_cancel_wids should be dict, and not %r" % ok_cancel_wids
 
         self.no_wid = no_wid
         self.edit1_wids = edit1_wids
         self.verify_wids = verify_wids
+        self.ok_cancel_wids = ok_cancel_wids
         self.post_wid_queue = []
 
     def __str__(self):
@@ -442,6 +452,31 @@ class TestCase(PTSCallback):
 
         return my_response
 
+    def handle_mmi_style_ok_cancel(self, wid):
+        """Implements implicit send handling for MMI_Style_Ok_Cancel1 and
+        MMI_Style_Ok_Cancel2"""
+        log("%s, %r ok_cancel_wids=%r",
+            self.handle_mmi_style_ok_cancel.__name__, wid, self.ok_cancel_wids)
+
+        my_response = ""
+
+        if self.ok_cancel_wids and wid in self.ok_cancel_wids.keys():
+            response = self.ok_cancel_wids[wid]
+            if callable(response):
+                my_response = response()
+            elif type(response) is tuple and callable(response[0]):
+                # Handle command before responding
+                my_response = response[0](*response[1:])
+            else:
+                my_response = response
+
+        else: # by default respond OK
+            my_response = True
+
+        response = {True: "OK", False: "Cancel"}[my_response]
+
+        return response
+
     def start_stop_cmds_by_wid(self, wid, description):
         """Starts/stops commands
 
@@ -501,7 +536,7 @@ class TestCase(PTSCallback):
 
         # actually style == MMI_Style_Ok_Cancel2
         else:
-            my_response = "OK"
+            my_response = self.handle_mmi_style_ok_cancel(wid)
 
         # start/stop command if triggered by wid
         self.start_stop_cmds_by_wid(wid, description)
