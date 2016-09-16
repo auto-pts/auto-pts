@@ -48,8 +48,9 @@ def dec_hdr(bin):
 def dec_data(bin):
     logging.debug("%s, %r", dec_data.__name__, bin)
 
-    data_len = len(bin)
-    data = struct.unpack('<%ds' % data_len, bin)
+    str_bin = str(bytearray(bin))
+    data_len = len(str_bin)
+    data = struct.unpack('<%ds' % data_len, str_bin)
 
     return data
 
