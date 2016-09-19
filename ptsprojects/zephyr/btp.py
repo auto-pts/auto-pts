@@ -63,7 +63,7 @@ GAP = {
                             btpdef.GAP_DISCOVERY_FLAG_LE |
                             btpdef.GAP_DISCOVERY_LE_ACTIVE_SCAN),
     "stop_discov": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_STOP_DISCOVERY,
-                    CONTROLLER_INDEX),
+                    CONTROLLER_INDEX, ""),
     "read_ctrl_info": (btpdef.BTP_SERVICE_ID_GAP,
                        btpdef.GAP_READ_CONTROLLER_INFO,
                        CONTROLLER_INDEX, ""),
