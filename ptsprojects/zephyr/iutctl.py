@@ -131,7 +131,7 @@ class ZephyrCtl:
             board_name)
 
         if tty_file:
-            if (not tty_file.startswith("/dev/tty") and not tty_file.startswith("/dev/pts")):
+            if not tty_file.startswith("/dev/tty"):
                 raise Exception("%s is not a TTY file!" % repr(tty_file))
             if not os.path.exists(tty_file):
                 raise Exception("%s TTY file does not exist!" % repr(tty_file))
