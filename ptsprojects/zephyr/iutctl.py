@@ -144,7 +144,7 @@ class ZephyrCtl:
         self.kernel_image = kernel_image
         self.tty_file = tty_file
         if self.tty_file: # board is not used with qemu
-            self.board = Board(board_name, kernel_image)
+            self.board = Board(board_name, kernel_image, tty_file)
         self.qemu_process = None
         self.socat_process = None
         self.btp_socket = None
@@ -232,20 +232,23 @@ class Board:
 
     arduino_101 = "arduino_101"
     mountatlas = "mountatlas"
+    crb = "crb"
 
     # for command line options
     names = [
         arduino_101,
-        mountatlas
+        mountatlas,
+        crb
     ]
 
-    def __init__(self, board_name, kernel_image):
+    def __init__(self, board_name, kernel_image, tty_file):
         """Constructor of board"""
         if board_name not in self.names:
             raise Exception("Board name %s is not supported!" % board_name)
 
         self.name = board_name
         self.kernel_image = kernel_image
+        self.tty_file = tty_file
         self.reset_cmd = self.get_reset_cmd()
 
     def reset(self):
@@ -264,18 +267,10 @@ class Board:
         if reset_process.wait():
             logging.error("openocd reset failed")
 
-    def get_reset_cmd(self):
-        """Return reset command for a board"""
-        reset_cmd_getters = {
-            self.arduino_101 : self._get_reset_cmd_arduino_101,
-            self.mountatlas : self._get_reset_cmd_mountatlas
-        }
-
-        reset_cmd_getter = reset_cmd_getters[self.name]
-        openocd_cmd, openocd_scripts, openocd_cfg = reset_cmd_getter()
-
-        if not os.path.isfile(openocd_cmd):
-            raise Exception("openocd %r not found!", openocd_cmd)
+    def get_openocd_reset_cmd(self, openocd_bin, openocd_scripts, openocd_cfg):
+        """Compute openocd reset command"""
+        if not os.path.isfile(openocd_bin):
+            raise Exception("openocd %r not found!", openocd_bin)
 
         if not os.path.isdir(openocd_scripts):
             raise Exception("openocd scripts %r not found!", openocd_scripts)
@@ -285,7 +280,21 @@ class Board:
 
         reset_cmd = ('%s -s %s -f %s -c "init" -c "targets 1" '
                      '-c "reset halt" -c "reset run" -c "shutdown"' %
-                     (openocd_cmd, openocd_scripts, openocd_cfg))
+                     (openocd_bin, openocd_scripts, openocd_cfg))
+        
+        return reset_cmd
+
+    def get_reset_cmd(self):
+        """Return reset command for a board"""
+        reset_cmd_getters = {
+            self.arduino_101 : self._get_reset_cmd_arduino_101,
+            self.mountatlas : self._get_reset_cmd_mountatlas,
+            self.crb : self._get_reset_cmd_crb
+        }
+
+        reset_cmd_getter = reset_cmd_getters[self.name]
+
+        reset_cmd = reset_cmd_getter()
 
         return reset_cmd
 
@@ -295,13 +304,14 @@ class Board:
         Dependency: Zephyr SDK
 
         """
-        openocd_cmd = "/opt/zephyr-sdk/sysroots/i686-pokysdk-linux/usr/bin/openocd"
+        openocd_bin = "/opt/zephyr-sdk/sysroots/i686-pokysdk-linux/usr/bin/openocd"
         openocd_scripts = "/opt/zephyr-sdk/sysroots/i686-pokysdk-linux/usr/share/openocd/scripts"
         openocd_cfg = os.path.join(
             os.path.split(self.kernel_image)[0],
             "../../../../../boards/arduino_101/support/openocd.cfg")
 
-        return (openocd_cmd, openocd_scripts, openocd_cfg)
+        return self.get_openocd_reset_cmd(openocd_bin, openocd_scripts,
+                                          openocd_cfg)
 
     def _get_reset_cmd_mountatlas(self):
         """Return reset command for MountAtlas DUT
@@ -309,12 +319,19 @@ class Board:
         Dependency: zflash
 
         """
-        openocd_cmd = "/usr/local/zflash/openocd/bin/openocd"
+        openocd_bin = "/usr/local/zflash/openocd/bin/openocd"
         openocd_scripts = "/usr/local/zflash/openocd/share/scripts"
         openocd_cfg = "/usr/local/zflash/boards/mountatlas/openocd.cfg"
 
-        return (openocd_cmd, openocd_scripts, openocd_cfg)
+        return self.get_openocd_reset_cmd(openocd_bin, openocd_scripts,
+                                          openocd_cfg)
 
+    def _get_reset_cmd_crb(self):
+        """Return magic string for resetting CRB DUT
+
+        """
+        return ('sh -c \'echo -n -e "\xAA\xBB\\x00\\x00\\x00" > %s\'' %
+                self.tty_file)
 
 def get_zephyr():
     return ZEPHYR
