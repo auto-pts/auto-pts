@@ -7,6 +7,7 @@ import re
 
 import iutctl
 import btpdef
+from random import randint
 
 #  Global temporary objects
 PASSKEY = None
@@ -67,6 +68,9 @@ GAP = {
     "read_ctrl_info": (btpdef.BTP_SERVICE_ID_GAP,
                        btpdef.GAP_READ_CONTROLLER_INFO,
                        CONTROLLER_INDEX, ""),
+    "passkey_entry_rsp": (btpdef.BTP_SERVICE_ID_GAP,
+                          btpdef.GAP_PASSKEY_ENTRY,
+                          CONTROLLER_INDEX),
 }
 
 GATTS = {
@@ -457,6 +461,55 @@ def gap_passkey_disp_ev(bd_addr, bd_addr_type, store=False):
     if store:
         global PASSKEY
         PASSKEY = passkey_local
+
+
+def gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey):
+    logging.debug("%s %r %r", gap_passkey_entry_rsp.__name__, bd_addr,
+                  bd_addr_type)
+    zephyrctl = iutctl.get_zephyr()
+
+    data_ba = bytearray()
+    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+
+    data_ba.extend(chr(bd_addr_type))
+    data_ba.extend(bd_addr_ba)
+
+    if isinstance(passkey, str):
+        passkey = int(passkey, 32)
+
+    passkey_ba = struct.pack('I', passkey)
+    data_ba.extend(passkey_ba)
+
+    zephyrctl.btp_socket.send(*GAP['passkey_entry_rsp'], data=data_ba)
+
+    gap_command_rsp_succ()
+
+
+def gap_passkey_entry_req_ev(bd_addr, bd_addr_type):
+    logging.debug("%s %r %r", gap_passkey_entry_req_ev.__name__, bd_addr,
+                  bd_addr_type)
+    zephyrctl = iutctl.get_zephyr()
+
+    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    logging.debug("received %r %r", tuple_hdr, tuple_data)
+
+    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GAP,
+                  btpdef.GAP_EV_PASSKEY_ENTRY_REQ)
+
+    data_ba = bytearray()
+    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+
+    data_ba.extend(chr(bd_addr_type))
+    data_ba.extend(bd_addr_ba)
+
+    if tuple_data[0][:7] != data_ba:
+        raise BTPError("Error in address of passkey entry data")
+
+    # Generate some passkey
+    global PASSKEY
+    PASSKEY = randint(0, 999999)
+
+    gap_passkey_entry_rsp(bd_addr, bd_addr_type, PASSKEY)
 
 
 def gap_set_conn():
