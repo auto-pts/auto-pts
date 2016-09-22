@@ -5,6 +5,7 @@ import binascii
 import struct
 import re
 from socket import timeout as socket_timeout
+from threading import Timer, Event
 
 import iutctl
 import btpdef
@@ -563,15 +564,19 @@ def gap_set_limdiscov():
     gap_command_rsp_succ()
 
 
+def __gap_device_found_timeout(continue_flag):
+    logging.debug("%s", __gap_device_found_timeout.__name__)
+    continue_flag.clear()
+
+
 def gap_device_found_ev(bd_addr_type, bd_addr, rssi=None, flags=None, eir=None,
-                        lim_nb_ev=None, req_pres=True):
+                        timeout=30, req_pres=True):
     logging.debug("%s %r %r %r %r %r", gap_device_found_ev.__name__,
                   bd_addr_type, bd_addr, rssi, flags, eir)
 
     zephyrctl = iutctl.get_zephyr()
 
     pres = False
-    nb_ev = 0
 
     bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
     bd_addr_type_ba = chr(bd_addr_type)
@@ -584,21 +589,20 @@ def gap_device_found_ev(bd_addr_type, bd_addr, rssi=None, flags=None, eir=None,
         eir_len_ba = struct.pack('H', len(val_ba))
         eir_ba = binascii.unhexlify(bytearray(eir))
 
-    while True:
+    continue_flag = Event()
+    continue_flag.set()
+    t = Timer(timeout, __gap_device_found_timeout, [continue_flag])
+    t.start()
+
+    while continue_flag.is_set():
         try:
-            tuple_hdr, tuple_data = zephyrctl.btp_socket.read(30)
+            # Use 1 second socket timeout to check continue_flag every second
+            tuple_hdr, tuple_data = zephyrctl.btp_socket.read(1)
         except socket_timeout:
-            return not req_pres
+            continue
 
         btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GAP,
                       btpdef.GAP_EV_DEVICE_FOUND)
-
-        if lim_nb_ev:
-            logging.debug("Remaining device found events: %d", lim_nb_ev-nb_ev)
-            if nb_ev == lim_nb_ev:
-                break
-
-        nb_ev += 1
 
         if tuple_data[0][0:6] != bd_addr_ba:
             continue
@@ -614,16 +618,17 @@ def gap_device_found_ev(bd_addr_type, bd_addr, rssi=None, flags=None, eir=None,
 
         pres = True
 
+        t.cancel()
         break
 
     # If presence for event group match
     if req_pres == pres:
-        logging.debug("Monitoring device found events finished, received %d "
-                      "events, presence match ok", nb_ev)
+        logging.debug("Monitoring device found events finished, "
+                      "presence match ok")
         return True
     else:
-        logging.debug("Monitoring device found events finished, received %d "
-                      "events, presence not match", nb_ev)
+        logging.debug("Monitoring device found events finished, "
+                      "presence not match")
         return False
 
 
