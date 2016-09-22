@@ -56,7 +56,8 @@ class BTPSocket(object):
         """Accept incomming Zephyr connection"""
         logging.debug("%s", self.accept.__name__)
 
-        # This will hang forever if Zephyr don't try to connect
+        # Set 10 second socket timeout on accept
+        self.sock.settimeout(10.0)
         self.conn, self.addr = self.sock.accept()
 
     def read(self, timeout=20.0):
