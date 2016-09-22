@@ -4,6 +4,7 @@ import logging
 import binascii
 import struct
 import re
+from socket import timeout as socket_timeout
 
 import iutctl
 import btpdef
@@ -584,7 +585,10 @@ def gap_device_found_ev(bd_addr_type, bd_addr, rssi=None, flags=None, eir=None,
         eir_ba = binascii.unhexlify(bytearray(eir))
 
     while True:
-        tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+        try:
+            tuple_hdr, tuple_data = zephyrctl.btp_socket.read(30)
+        except socket_timeout:
+            return not req_pres
 
         btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GAP,
                       btpdef.GAP_EV_DEVICE_FOUND)
@@ -616,13 +620,11 @@ def gap_device_found_ev(bd_addr_type, bd_addr, rssi=None, flags=None, eir=None,
     if req_pres == pres:
         logging.debug("Monitoring device found events finished, received %d "
                       "events, presence match ok", nb_ev)
-        return
+        return True
     else:
-        # TODO Temporary solution - wait for test timeout to fail test case
         logging.debug("Monitoring device found events finished, received %d "
                       "events, presence not match", nb_ev)
-        while True:
-            pass
+        return False
 
 
 def gap_start_discov_pasive():
