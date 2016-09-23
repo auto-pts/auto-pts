@@ -578,16 +578,8 @@ def gap_device_found_ev(bd_addr_type, bd_addr, rssi=None, flags=None, eir=None,
 
     pres = False
 
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
-    bd_addr_type_ba = chr(bd_addr_type)
-
-    if rssi:
-        rssi_ba = chr(rssi)
-    if flags:
-        flags_ba = chr(flags)
-    if eir:
-        eir_len_ba = struct.pack('H', len(val_ba))
-        eir_ba = binascii.unhexlify(bytearray(eir))
+    # Ignore colons and convert to lower case
+    bd_addr = "".join(bd_addr.split(':')).lower()
 
     continue_flag = Event()
     continue_flag.set()
@@ -604,16 +596,19 @@ def gap_device_found_ev(bd_addr_type, bd_addr, rssi=None, flags=None, eir=None,
         btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GAP,
                       btpdef.GAP_EV_DEVICE_FOUND)
 
-        if tuple_data[0][0:6] != bd_addr_ba:
+        _addr, _addr_t, _rssi, _flags, _len = struct.unpack_from('<6sBBBH',
+                                                                 tuple_data[0])
+        _addr = binascii.hexlify(_addr[::-1]).lower()
+
+        if _addr != bd_addr:
             continue
-        if tuple_data[0][6:7] != bd_addr_type_ba:
+        if _addr_t != bd_addr_type:
             continue
-        if rssi and tuple_data[0][7:8] != rssi_ba:
+        if rssi and _rssi != rssi:
             continue
-        if flags and tuple_data[0][8:9] != flags_ba:
+        if flags and _flags != flags:
             continue
-        if (eir and tuple_data[0][9:11] != eir_len_ba and
-                tuple_data[0][11:] != bd_eir_ba):
+        if (eir and _len != eir_len and tuple_data[0][11:] != eir):
             continue
 
         pres = True
