@@ -563,6 +563,76 @@ def gap_set_limdiscov():
 
     gap_command_rsp_succ()
 
+eir_type_dict = {
+            'EIR_FLAGS': (0x01, '<B', struct.calcsize('<B')),
+            'EIR_UUID16_SOME': 0x02,
+            'EIR_UUID16_ALL': 0x03,
+            'EIR_UUID32_SOME': 0x04,
+            'EIR_UUID32_ALL': 0x05,
+            'EIR_UUID128_SOME': 0x06,
+            'EIR_UUID128_ALL': 0x07,
+            'EIR_NAME_SHORT': 0x08,
+            'EIR_NAME_COMPLETE': 0x09,
+            'EIR_TX_POWER': 0x0a,
+            'EIR_CLASS_OF_DEV': 0x0d,
+            'EIR_SSP_HASH': 0x0e,
+            'EIR_SSP_RANDOMIZER': 0x0f,
+            'EIR_DEVICE_ID': 0x10,
+            'EIR_SOLICIT16': 0x14,
+            'EIR_SOLICIT128': 0x15,
+            'EIR_SVC_DATA16': 0x16,
+            'EIR_PUB_TRGT_ADDR': 0x17,
+            'EIR_RND_TRGT_ADDR': 0x18,
+            'EIR_GAP_APPEARANCE': 0x19,
+            'EIR_SOLICIT32': 0x1f,
+            'EIR_SVC_DATA32': 0x20,
+            'EIR_SVC_DATA128': 0x21,
+            'EIR_MANUFACTURER_DATA': 0xff,
+            }
+
+def __parse_eir(eir, eir_len):
+    logging.debug("%s %r %r", __parse_eir.__name__, eir, eir_len)
+
+    if eir_len is 0:
+        return
+
+    parsed_len = 0
+    parsed_data = dict(zip(eir_type_dict.keys(), [None]*len(eir_type_dict)))
+
+    while parsed_len < eir_len:
+        fmt = '<B'
+        fmt_len = struct.calcsize(fmt)
+
+        # Parse field length
+        field_len = struct.unpack_from(fmt, eir, parsed_len)[0]
+        parsed_len += fmt_len
+
+        # Parse data type
+        type = struct.unpack_from(fmt, eir, parsed_len)[0]
+        parsed_len += fmt_len
+        field_len -= fmt_len
+
+        if field_len > eir_len - parsed_len:
+            logging.debug("Invalid EIR data")
+            return None
+
+        for key, value in eir_type_dict.iteritems():
+            if isinstance(value, tuple):
+                value, fmt, fmt_len = value
+
+            if type is value:
+                if key is 'EIR_FLAGS':
+                    data = struct.unpack_from(fmt, eir, parsed_len)[0]
+                else: # TODO: Parse the rest of data depending on key
+                    fmt = '<%ds' % field_len
+                    fmt_len = struct.calcsize(fmt)
+                    data = struct.unpack_from(fmt, eir, parsed_len)[0]
+                parsed_data[key] = data
+                break
+
+        parsed_len += fmt_len
+
+    return parsed_data
 
 def __gap_device_found_timeout(continue_flag):
     logging.debug("%s", __gap_device_found_timeout.__name__)
@@ -610,6 +680,15 @@ def gap_device_found_ev(bd_addr_type, bd_addr, rssi=None, flags=None, eir=None,
             continue
         if (eir and _len != eir_len and tuple_data[0][11:] != eir):
             continue
+
+        parsed_data = __parse_eir(tuple_data[0][11:], _len)
+        if not parsed_data:
+            t.cancel()
+            # Just to trigger failing case
+            pres = not req_pres
+            break
+
+        logging.debug("%r", parsed_data)
 
         pres = True
 
