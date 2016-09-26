@@ -259,27 +259,24 @@ def test_cases(pts):
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_start_discov, start_wid=23),
                         TestFuncCleanUp(btp.gap_stop_discov)]),
-        # TODO: fails cause of ZEP-380
-        # ZTestCase("GAP", "TC_DISC_GENP_BV_03_C",
-        #           [TestFunc(btp.core_reg_svc_gap),
-        #            TestFunc(btp.gap_start_discov_pasive, start_wid=23),
-        #            TestFunc(btp.gap_device_found_ev, Addr.le_public,
-        #                     pts_bd_addr, lim_nb_ev=50, req_pres=False,
-        #                     start_wid=11)]),
-        # TODO: fails cause of ZEP-380
-        # ZTestCase("GAP", "TC_DISC_GENP_BV_04_C",
-        #           [TestFunc(btp.core_reg_svc_gap),
-        #            TestFunc(btp.gap_start_discov_pasive, start_wid=23),
-        #            TestFunc(btp.gap_device_found_ev, Addr.le_public,
-        #                     pts_bd_addr, lim_nb_ev=50, req_pres=False,
-        #                     start_wid=11)]),
-        # TODO: fails cause of ZEP-380
-        # ZTestCase("GAP", "TC_DISC_GENP_BV_05_C",
-        #           [TestFunc(btp.core_reg_svc_gap),
-        #            TestFunc(btp.gap_start_discov_pasive, start_wid=23),
-        #            TestFunc(btp.gap_device_found_ev, Addr.le_public,
-        #                     pts_bd_addr, lim_nb_ev=50, req_pres=False,
-        #                     start_wid=11)]),
+        ZTestCase("GAP", "TC_DISC_GENP_BV_03_C",
+                  ok_cancel_wids={11: (btp.gap_device_found_ev, Addr.le_public,
+                                       pts_bd_addr, None, None, None, 15, False)},
+                  cmds=pre_conditions +
+                       [TestFunc(btp.gap_start_discov, start_wid=23),
+                        TestFuncCleanUp(btp.gap_stop_discov)]),
+        ZTestCase("GAP", "TC_DISC_GENP_BV_04_C",
+                  ok_cancel_wids={11: (btp.gap_device_found_ev, Addr.le_public,
+                                       pts_bd_addr, None, None, None, 15, False)},
+                  cmds=pre_conditions +
+                       [TestFunc(btp.gap_start_discov, start_wid=23),
+                        TestFuncCleanUp(btp.gap_stop_discov)]),
+        ZTestCase("GAP", "TC_DISC_GENP_BV_05_C",
+                  ok_cancel_wids={11: (btp.gap_device_found_ev, Addr.le_public,
+                                       pts_bd_addr, None, None, None, 15, False)},
+                  cmds=pre_conditions +
+                       [TestFunc(btp.gap_start_discov, start_wid=23),
+                        TestFuncCleanUp(btp.gap_stop_discov)]),
         ZTestCase("GAP", "TC_IDLE_NAMP_BV_01_C",
                   pre_conditions +
                   [TestFunc(btp.core_reg_svc_gatts),
