@@ -171,6 +171,12 @@ ad = [(AdType.uuid16_some, '1111'),
       (AdType.uuid16_svc_data, '111111')]
 
 
+class DiscovMode:
+    observe = 0
+    limited = 1
+    general = 2
+
+
 def test_cases(pts):
     """Returns a list of GAP test cases
     pts -- Instance of PyPTS"""
@@ -195,13 +201,13 @@ def test_cases(pts):
                    TestFunc(btp.gap_adv_ind_on, sd=(AdData.ad_manuf,))]),
         ZTestCase("GAP", "TC_BROB_OBSV_BV_01_C",
                   ok_cancel_wids={4: (btp.gap_device_found_ev, Addr.le_public,
-                                      pts_bd_addr)},
+                                      pts_bd_addr, DiscovMode.observe)},
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_start_discov_pasive, start_wid=12),
                         TestFuncCleanUp(btp.gap_stop_discov)]),
         ZTestCase("GAP", "TC_BROB_OBSV_BV_02_C",
                   ok_cancel_wids={4: (btp.gap_device_found_ev, Addr.le_public,
-                                      pts_bd_addr)},
+                                      pts_bd_addr, DiscovMode.observe)},
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_start_discov_pasive, start_wid=160),
                         TestFuncCleanUp(btp.gap_stop_discov)]),
@@ -247,13 +253,13 @@ def test_cases(pts):
         # TODO: fails cause of ZEP-380
         ZTestCase("GAP", "TC_DISC_GENP_BV_01_C",
                   ok_cancel_wids={14: (btp.gap_device_found_ev, Addr.le_public,
-                                      pts_bd_addr)},
+                                      pts_bd_addr, DiscovMode.general)},
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_start_discov_active, start_wid=23),
                         TestFuncCleanUp(btp.gap_stop_discov)]),
         ZTestCase("GAP", "TC_DISC_GENP_BV_02_C",
                   ok_cancel_wids={14: (btp.gap_device_found_ev, Addr.le_public,
-                                      pts_bd_addr)},
+                                      pts_bd_addr, DiscovMode.general)},
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_start_discov_active, start_wid=23),
                         TestFuncCleanUp(btp.gap_stop_discov)]),

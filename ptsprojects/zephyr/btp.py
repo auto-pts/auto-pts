@@ -639,8 +639,8 @@ def __gap_device_found_timeout(continue_flag):
     continue_flag.clear()
 
 
-def gap_device_found_ev(bd_addr_type, bd_addr, rssi=None, flags=None, eir=None,
-                        timeout=30, req_pres=True):
+def gap_device_found_ev(bd_addr_type, bd_addr, mode=2, rssi=None,
+                        flags=None, eir=None, timeout=30, req_pres=True):
     logging.debug("%s %r %r %r %r %r", gap_device_found_ev.__name__,
                   bd_addr_type, bd_addr, rssi, flags, eir)
 
@@ -687,6 +687,20 @@ def gap_device_found_ev(bd_addr_type, bd_addr, rssi=None, flags=None, eir=None,
             # Just to trigger failing case
             pres = not req_pres
             break
+
+        # Check the flags to filter out device that shall not be discovered
+        # using discov_proc procedure
+        discov_flags = parsed_data.get('EIR_FLAGS') & 0x03
+        # Limited discovery returns devices that are in limited discoverable
+        # mode
+        if mode is 1 and discov_flags is not 0x01:
+            continue
+        # General discovery returns devices that are in limited/general
+        # discoverable mode
+        elif mode is 2 and discov_flags is 0x00:
+            continue
+        # Observer (mode == 0) ignores the flags so that broadcasting devices
+        # can be found
 
         logging.debug("%r", parsed_data)
 
