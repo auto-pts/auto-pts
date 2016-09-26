@@ -236,16 +236,41 @@ def test_cases(pts):
                   [TestFunc(btp.gap_set_conn),
                    TestFunc(btp.gap_set_gendiscov),
                    TestFunc(btp.gap_adv_ind_on, start_wid=52)]),
-        # TODO Limited discovery procedure is not yet supported
-        # ZTestCase("GAP", "TC_DISC_LIMP_BV_01_C",),
-        # TODO Limited discovery procedure is not yet supported
-        # ZTestCase("GAP", "TC_DISC_LIMP_BV_02_C",),
-        # TODO Limited discovery procedure is not yet supported
-        # ZTestCase("GAP", "TC_DISC_LIMP_BV_03_C",),
-        # TODO Limited discovery procedure is not yet supported
-        # ZTestCase("GAP", "TC_DISC_LIMP_BV_04_C",),
-        # TODO Limited discovery procedure is not yet supported
-        # ZTestCase("GAP", "TC_DISC_LIMP_BV_05_C",),
+        ZTestCase("GAP", "TC_DISC_LIMP_BV_01_C",
+                  ok_cancel_wids={10: (btp.gap_device_found_ev, Addr.le_public,
+                                       pts_bd_addr)},
+                  cmds=pre_conditions +
+                       [TestFunc(btp.gap_start_discov, mode='limited',
+                                 start_wid=13),
+                        TestFuncCleanUp(btp.gap_stop_discov)]),
+        ZTestCase("GAP", "TC_DISC_LIMP_BV_02_C",
+                  ok_cancel_wids={11: (btp.gap_device_found_ev, Addr.le_public,
+                                       pts_bd_addr, None, None, None, 15, False)},
+                  cmds=pre_conditions +
+                       [TestFunc(btp.gap_start_discov, mode='limited',
+                                 start_wid=13),
+                        TestFuncCleanUp(btp.gap_stop_discov)]),
+        ZTestCase("GAP", "TC_DISC_LIMP_BV_03_C",
+                  ok_cancel_wids={11: (btp.gap_device_found_ev, Addr.le_public,
+                                       pts_bd_addr, None, None, None, 15, False)},
+                  cmds=pre_conditions +
+                       [TestFunc(btp.gap_start_discov, mode='limited',
+                                 start_wid=13),
+                        TestFuncCleanUp(btp.gap_stop_discov)]),
+        ZTestCase("GAP", "TC_DISC_LIMP_BV_04_C",
+                  ok_cancel_wids={11: (btp.gap_device_found_ev, Addr.le_public,
+                                       pts_bd_addr, None, None, None, 15, False)},
+                  cmds=pre_conditions +
+                       [TestFunc(btp.gap_start_discov, mode='limited',
+                                 start_wid=13),
+                        TestFuncCleanUp(btp.gap_stop_discov)]),
+        ZTestCase("GAP", "TC_DISC_LIMP_BV_05_C",
+                  ok_cancel_wids={11: (btp.gap_device_found_ev, Addr.le_public,
+                                       pts_bd_addr, None, None, None, 15, False)},
+                  cmds=pre_conditions +
+                       [TestFunc(btp.gap_start_discov, mode='limited',
+                                 start_wid=13),
+                        TestFuncCleanUp(btp.gap_stop_discov)]),
         # TODO: fails cause of ZEP-380
         ZTestCase("GAP", "TC_DISC_GENP_BV_01_C",
                   ok_cancel_wids={14: (btp.gap_device_found_ev, Addr.le_public,
