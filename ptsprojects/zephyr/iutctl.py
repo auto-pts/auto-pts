@@ -281,7 +281,7 @@ class Board:
         reset_cmd = ('%s -s %s -f %s -c "init" -c "targets 1" '
                      '-c "reset halt" -c "reset run" -c "shutdown"' %
                      (openocd_bin, openocd_scripts, openocd_cfg))
-        
+
         return reset_cmd
 
     def get_reset_cmd(self):
