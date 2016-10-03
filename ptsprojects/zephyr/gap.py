@@ -162,6 +162,7 @@ class AdType:
 
 class AdData:
     ad_manuf = (AdType.manufacturer_data, 'ABCD')
+    ad_name_sh = (AdType.name_short, binascii.hexlify('Tester'))
 
 # Advertising data
 ad = [(AdType.uuid16_some, '1111'),
@@ -192,7 +193,7 @@ def test_cases(pts):
                   pre_conditions +
                   [TestFunc(btp.gap_set_nonconn),
                    TestFunc(btp.gap_set_nondiscov),
-                   TestFunc(btp.gap_adv_ind_on, sd=(AdData.ad_manuf,))]),
+                   TestFunc(btp.gap_adv_ind_on, sd=[AdData.ad_manuf, AdData.ad_name_sh])]),
         ZTestCase("GAP", "TC_BROB_OBSV_BV_01_C",
                   ok_cancel_wids={4: (btp.gap_device_found_ev, Addr.le_public,
                                       pts_bd_addr)},
