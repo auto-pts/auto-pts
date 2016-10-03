@@ -355,10 +355,12 @@ def test_cases(pts):
                    TestFunc(btp.gap_adv_ind_on, start_wid=55)]),
         ZTestCase("GAP", "TC_CONN_UCON_BV_01_C",
                   pre_conditions +
-                  [TestFunc(btp.gap_adv_ind_on, start_wid=74)]),
+                  [TestFunc(btp.gap_set_nondiscov, start_wid=74),
+                   TestFunc(btp.gap_adv_ind_on, start_wid=74)]),
         ZTestCase("GAP", "TC_CONN_UCON_BV_02_C",
                   pre_conditions +
-                  [TestFunc(btp.gap_adv_ind_on, start_wid=75)]),
+                  [TestFunc(btp.gap_set_gendiscov, start_wid=75),
+                   TestFunc(btp.gap_adv_ind_on, start_wid=75)]),
         ZTestCase("GAP", "TC_CONN_UCON_BV_03_C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_limdiscov, start_wid=76),
