@@ -4,9 +4,12 @@ import logging
 import binascii
 import struct
 import re
+from socket import timeout as socket_timeout
+from threading import Timer, Event
 
 import iutctl
 import btpdef
+from random import randint
 
 #  Global temporary objects
 PASSKEY = None
@@ -67,6 +70,9 @@ GAP = {
     "read_ctrl_info": (btpdef.BTP_SERVICE_ID_GAP,
                        btpdef.GAP_READ_CONTROLLER_INFO,
                        CONTROLLER_INDEX, ""),
+    "passkey_entry_rsp": (btpdef.BTP_SERVICE_ID_GAP,
+                          btpdef.GAP_PASSKEY_ENTRY,
+                          CONTROLLER_INDEX),
 }
 
 GATTS = {
@@ -459,6 +465,55 @@ def gap_passkey_disp_ev(bd_addr, bd_addr_type, store=False):
         PASSKEY = passkey_local
 
 
+def gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey):
+    logging.debug("%s %r %r", gap_passkey_entry_rsp.__name__, bd_addr,
+                  bd_addr_type)
+    zephyrctl = iutctl.get_zephyr()
+
+    data_ba = bytearray()
+    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+
+    data_ba.extend(chr(bd_addr_type))
+    data_ba.extend(bd_addr_ba)
+
+    if isinstance(passkey, str):
+        passkey = int(passkey, 32)
+
+    passkey_ba = struct.pack('I', passkey)
+    data_ba.extend(passkey_ba)
+
+    zephyrctl.btp_socket.send(*GAP['passkey_entry_rsp'], data=data_ba)
+
+    gap_command_rsp_succ()
+
+
+def gap_passkey_entry_req_ev(bd_addr, bd_addr_type):
+    logging.debug("%s %r %r", gap_passkey_entry_req_ev.__name__, bd_addr,
+                  bd_addr_type)
+    zephyrctl = iutctl.get_zephyr()
+
+    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    logging.debug("received %r %r", tuple_hdr, tuple_data)
+
+    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GAP,
+                  btpdef.GAP_EV_PASSKEY_ENTRY_REQ)
+
+    data_ba = bytearray()
+    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+
+    data_ba.extend(chr(bd_addr_type))
+    data_ba.extend(bd_addr_ba)
+
+    if tuple_data[0][:7] != data_ba:
+        raise BTPError("Error in address of passkey entry data")
+
+    # Generate some passkey
+    global PASSKEY
+    PASSKEY = randint(0, 999999)
+
+    gap_passkey_entry_rsp(bd_addr, bd_addr_type, PASSKEY)
+
+
 def gap_set_conn():
     logging.debug("%s", gap_set_conn.__name__)
 
@@ -508,68 +563,161 @@ def gap_set_limdiscov():
 
     gap_command_rsp_succ()
 
+eir_type_dict = {
+            'EIR_FLAGS': (0x01, '<B', struct.calcsize('<B')),
+            'EIR_UUID16_SOME': 0x02,
+            'EIR_UUID16_ALL': 0x03,
+            'EIR_UUID32_SOME': 0x04,
+            'EIR_UUID32_ALL': 0x05,
+            'EIR_UUID128_SOME': 0x06,
+            'EIR_UUID128_ALL': 0x07,
+            'EIR_NAME_SHORT': 0x08,
+            'EIR_NAME_COMPLETE': 0x09,
+            'EIR_TX_POWER': 0x0a,
+            'EIR_CLASS_OF_DEV': 0x0d,
+            'EIR_SSP_HASH': 0x0e,
+            'EIR_SSP_RANDOMIZER': 0x0f,
+            'EIR_DEVICE_ID': 0x10,
+            'EIR_SOLICIT16': 0x14,
+            'EIR_SOLICIT128': 0x15,
+            'EIR_SVC_DATA16': 0x16,
+            'EIR_PUB_TRGT_ADDR': 0x17,
+            'EIR_RND_TRGT_ADDR': 0x18,
+            'EIR_GAP_APPEARANCE': 0x19,
+            'EIR_SOLICIT32': 0x1f,
+            'EIR_SVC_DATA32': 0x20,
+            'EIR_SVC_DATA128': 0x21,
+            'EIR_MANUFACTURER_DATA': 0xff,
+            }
 
-def gap_device_found_ev(bd_addr_type, bd_addr, rssi=None, flags=None, eir=None,
-                        lim_nb_ev=None, req_pres=True):
+def __parse_eir(eir, eir_len):
+    logging.debug("%s %r %r", __parse_eir.__name__, eir, eir_len)
+
+    if eir_len is 0:
+        return
+
+    parsed_len = 0
+    parsed_data = dict(zip(eir_type_dict.keys(), [None]*len(eir_type_dict)))
+
+    while parsed_len < eir_len:
+        fmt = '<B'
+        fmt_len = struct.calcsize(fmt)
+
+        # Parse field length
+        field_len = struct.unpack_from(fmt, eir, parsed_len)[0]
+        parsed_len += fmt_len
+
+        # Parse data type
+        type = struct.unpack_from(fmt, eir, parsed_len)[0]
+        parsed_len += fmt_len
+        field_len -= fmt_len
+
+        if field_len > eir_len - parsed_len:
+            logging.debug("Invalid EIR data")
+            return None
+
+        for key, value in eir_type_dict.iteritems():
+            if isinstance(value, tuple):
+                value, fmt, fmt_len = value
+
+            if type is value:
+                if key is 'EIR_FLAGS':
+                    data = struct.unpack_from(fmt, eir, parsed_len)[0]
+                else: # TODO: Parse the rest of data depending on key
+                    fmt = '<%ds' % field_len
+                    fmt_len = struct.calcsize(fmt)
+                    data = struct.unpack_from(fmt, eir, parsed_len)[0]
+                parsed_data[key] = data
+                break
+
+        parsed_len += fmt_len
+
+    return parsed_data
+
+def __gap_device_found_timeout(continue_flag):
+    logging.debug("%s", __gap_device_found_timeout.__name__)
+    continue_flag.clear()
+
+
+def gap_device_found_ev(bd_addr_type, bd_addr, mode=2, rssi=None,
+                        flags=None, eir=None, timeout=30, req_pres=True):
     logging.debug("%s %r %r %r %r %r", gap_device_found_ev.__name__,
                   bd_addr_type, bd_addr, rssi, flags, eir)
 
     zephyrctl = iutctl.get_zephyr()
 
     pres = False
-    nb_ev = 0
 
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
-    bd_addr_type_ba = chr(bd_addr_type)
+    # Ignore colons and convert to lower case
+    bd_addr = "".join(bd_addr.split(':')).lower()
 
-    if rssi:
-        rssi_ba = chr(rssi)
-    if flags:
-        flags_ba = chr(flags)
-    if eir:
-        eir_len_ba = struct.pack('H', len(val_ba))
-        eir_ba = binascii.unhexlify(bytearray(eir))
+    continue_flag = Event()
+    continue_flag.set()
+    t = Timer(timeout, __gap_device_found_timeout, [continue_flag])
+    t.start()
 
-    while True:
-        tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    while continue_flag.is_set():
+        try:
+            # Use 1 second socket timeout to check continue_flag every second
+            tuple_hdr, tuple_data = zephyrctl.btp_socket.read(1)
+        except socket_timeout:
+            continue
 
         btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GAP,
                       btpdef.GAP_EV_DEVICE_FOUND)
 
-        if lim_nb_ev:
-            logging.debug("Remaining device found events: %d", lim_nb_ev-nb_ev)
-            if nb_ev == lim_nb_ev:
-                break
+        _addr, _addr_t, _rssi, _flags, _len = struct.unpack_from('<6sBBBH',
+                                                                 tuple_data[0])
+        _addr = binascii.hexlify(_addr[::-1]).lower()
 
-        nb_ev += 1
+        if _addr != bd_addr:
+            continue
+        if _addr_t != bd_addr_type:
+            continue
+        if rssi and _rssi != rssi:
+            continue
+        if flags and _flags != flags:
+            continue
+        if (eir and _len != eir_len and tuple_data[0][11:] != eir):
+            continue
 
-        if tuple_data[0][0:6] != bd_addr_ba:
+        parsed_data = __parse_eir(tuple_data[0][11:], _len)
+        if not parsed_data:
+            t.cancel()
+            # Just to trigger failing case
+            pres = not req_pres
+            break
+
+        # Check the flags to filter out device that shall not be discovered
+        # using discov_proc procedure
+        discov_flags = parsed_data.get('EIR_FLAGS') & 0x03
+        # Limited discovery returns devices that are in limited discoverable
+        # mode
+        if mode is 1 and discov_flags is not 0x01:
             continue
-        if tuple_data[0][6:7] != bd_addr_type_ba:
+        # General discovery returns devices that are in limited/general
+        # discoverable mode
+        elif mode is 2 and discov_flags is 0x00:
             continue
-        if rssi and tuple_data[0][7:8] != rssi_ba:
-            continue
-        if flags and tuple_data[0][8:9] != flags_ba:
-            continue
-        if (eir and tuple_data[0][9:11] != eir_len_ba and
-                tuple_data[0][11:] != bd_eir_ba):
-            continue
+        # Observer (mode == 0) ignores the flags so that broadcasting devices
+        # can be found
+
+        logging.debug("%r", parsed_data)
 
         pres = True
 
+        t.cancel()
         break
 
     # If presence for event group match
     if req_pres == pres:
-        logging.debug("Monitoring device found events finished, received %d "
-                      "events, presence match ok", nb_ev)
-        return
+        logging.debug("Monitoring device found events finished, "
+                      "presence match ok")
+        return True
     else:
-        # TODO Temporary solution - wait for test timeout to fail test case
-        logging.debug("Monitoring device found events finished, received %d "
-                      "events, presence not match", nb_ev)
-        while True:
-            pass
+        logging.debug("Monitoring device found events finished, "
+                      "presence not match")
+        return False
 
 
 def gap_start_discov_pasive():
