@@ -197,13 +197,15 @@ def test_cases(pts):
                   ok_cancel_wids={4: (btp.gap_device_found_ev, Addr.le_public,
                                       pts_bd_addr)},
                   cmds=pre_conditions +
-                       [TestFunc(btp.gap_start_discov_pasive, start_wid=12),
+                       [TestFunc(btp.gap_start_discov, type='passive',
+                                 mode='observe', start_wid=12),
                         TestFuncCleanUp(btp.gap_stop_discov)]),
         ZTestCase("GAP", "TC_BROB_OBSV_BV_02_C",
                   ok_cancel_wids={4: (btp.gap_device_found_ev, Addr.le_public,
                                       pts_bd_addr)},
                   cmds=pre_conditions +
-                       [TestFunc(btp.gap_start_discov_pasive, start_wid=160),
+                       [TestFunc(btp.gap_start_discov, type='passive',
+                                 mode='observe', start_wid=160),
                         TestFuncCleanUp(btp.gap_stop_discov)]),
         ZTestCase("GAP", "TC_DISC_NONM_BV_01_C",
                   pre_conditions +
@@ -249,13 +251,13 @@ def test_cases(pts):
                   ok_cancel_wids={14: (btp.gap_device_found_ev, Addr.le_public,
                                       pts_bd_addr)},
                   cmds=pre_conditions +
-                       [TestFunc(btp.gap_start_discov_active, start_wid=23),
+                       [TestFunc(btp.gap_start_discov, start_wid=23),
                         TestFuncCleanUp(btp.gap_stop_discov)]),
         ZTestCase("GAP", "TC_DISC_GENP_BV_02_C",
                   ok_cancel_wids={14: (btp.gap_device_found_ev, Addr.le_public,
                                       pts_bd_addr)},
                   cmds=pre_conditions +
-                       [TestFunc(btp.gap_start_discov_active, start_wid=23),
+                       [TestFunc(btp.gap_start_discov, start_wid=23),
                         TestFuncCleanUp(btp.gap_stop_discov)]),
         # TODO: fails cause of ZEP-380
         # ZTestCase("GAP", "TC_DISC_GENP_BV_03_C",

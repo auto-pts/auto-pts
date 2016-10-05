@@ -58,13 +58,8 @@ GAP = {
                       CONTROLLER_INDEX, btpdef.GAP_GENERAL_DISCOVERABLE),
     "set_limdiscov": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_SET_DISCOVERABLE,
                       CONTROLLER_INDEX, btpdef.GAP_LIMITED_DISCOVERABLE),
-    "start_discov_pasive": (btpdef.BTP_SERVICE_ID_GAP,
-                            btpdef.GAP_START_DISCOVERY, CONTROLLER_INDEX,
-                            btpdef.GAP_DISCOVERY_FLAG_LE),
-    "start_discov_active": (btpdef.BTP_SERVICE_ID_GAP,
-                            btpdef.GAP_START_DISCOVERY, CONTROLLER_INDEX,
-                            btpdef.GAP_DISCOVERY_FLAG_LE |
-                            btpdef.GAP_DISCOVERY_LE_ACTIVE_SCAN),
+    "start_discov": (btpdef.BTP_SERVICE_ID_GAP,
+                     btpdef.GAP_START_DISCOVERY, CONTROLLER_INDEX),
     "stop_discov": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_STOP_DISCOVERY,
                     CONTROLLER_INDEX, ""),
     "read_ctrl_info": (btpdef.BTP_SERVICE_ID_GAP,
@@ -627,22 +622,36 @@ def gap_device_found_ev(bd_addr_type, bd_addr, rssi=None, flags=None, eir=None,
         return False
 
 
-def gap_start_discov_pasive():
-    logging.debug("%s", gap_start_discov_pasive.__name__)
+def gap_start_discov(transport='le', type='active', mode='general'):
+    """GAP Start Discovery function.
+
+    Possible options (key: <values>):
+
+    transport: <le, bredr>
+    type: <active, passive>
+    mode: <general, limited, observe>
+
+    """
+    logging.debug("%s", gap_start_discov.__name__)
 
     zephyrctl = iutctl.get_zephyr()
 
-    zephyrctl.btp_socket.send(*GAP['start_discov_pasive'])
+    flags = 0
 
-    gap_command_rsp_succ()
+    if transport == "le":
+        flags |= btpdef.GAP_DISCOVERY_FLAG_LE
+    else:
+        flags |= btpdef.GAP_DISCOVERY_FLAG_BREDR
 
+    if type == "active":
+        flags |= btpdef.GAP_DISCOVERY_FLAG_LE_ACTIVE_SCAN
 
-def gap_start_discov_active():
-    logging.debug("%s", gap_start_discov_active.__name__)
+    if mode == "limited":
+        flags |= btpdef.GAP_DISCOVERY_FLAG_LIMITED
+    elif mode == "observe":
+        flags |= btpdef.GAP_DISCOVERY_FLAG_LE_OBSERVE
 
-    zephyrctl = iutctl.get_zephyr()
-
-    zephyrctl.btp_socket.send(*GAP['start_discov_active'])
+    zephyrctl.btp_socket.send(*GAP['start_discov'], data=chr(flags))
 
     gap_command_rsp_succ()
 
