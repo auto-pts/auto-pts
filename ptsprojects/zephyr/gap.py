@@ -239,6 +239,10 @@ def test_cases(pts):
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_start_discov, type='active',
                                  mode='observe', post_wid=160)]),
+        ZTestCase("GAP", "TC_BROB_OBSV_BV_05_C",
+                  cmds=pre_conditions,
+                  verify_wids={157: (btp.discover_and_verify, 'le', 'active',
+                                     'observe')}),
         ZTestCase("GAP", "TC_BROB_OBSV_BV_06_C",
                   edit1_wids={1002: (btp.var_store_get_passkey, pts_bd_addr,
                                      Addr.le_public)},
