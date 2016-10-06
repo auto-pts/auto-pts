@@ -238,7 +238,7 @@ def test_cases(pts):
                   ok_cancel_wids={4: (btp.gap_device_found_ev, Addr.le_public,
                                       pts_bd_addr)},
                   cmds=pre_conditions +
-                       [TestFunc(btp.gap_start_discov, type='passive',
+                       [TestFunc(btp.gap_start_discov, type='active',
                                  mode='observe', start_wid=160),
                         TestFuncCleanUp(btp.gap_stop_discov)]),
         ZTestCase("GAP", "TC_DISC_NONM_BV_01_C",
