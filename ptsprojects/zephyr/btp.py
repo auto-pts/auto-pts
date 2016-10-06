@@ -734,6 +734,23 @@ def check_discov_results(addr_type=None, addr=None, discovered=True, eir=None):
     return False
 
 
+def discover_and_verify(description, transport='le', type='active',
+                        mode='general', duration=10, addr=None, addr_type=None):
+    """Verify discovery results
+
+    This function verifies if the advertisement has been received and
+    optionally verifies the presence of specific eir data in received
+    advertisement
+
+    Returns True if verification is successful, False if not.
+
+    description -- MMI description
+    """
+    gap_start_discov(transport, type, mode, duration)
+
+    return check_discov_results(addr_type, addr)
+
+
 def __gap_stop_discov():
     logging.debug("%s", __gap_stop_discov.__name__)
 
