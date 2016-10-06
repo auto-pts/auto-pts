@@ -403,10 +403,14 @@ class TestCase(PTSCallback):
         elif self.verify_wids and wid in self.verify_wids:
             log("Starting verification of: %r", self.verify_wids)
 
-            if callable(self.verify_wids[wid]):
-                resp = self.verify_wids[wid](description)
-                my_response = {True: yes_response, False: no_response}[resp]
-
+            resp = self.verify_wids[wid]
+            if callable(resp):
+                my_response = {True: yes_response,
+                               False: no_response}[resp(description)]
+            elif isinstance(resp, tuple) and callable(resp[0]):
+                my_response = {True: yes_response,
+                               False: no_response}[resp[0](description,
+                                                           *resp[1:])]
             else:
                 for verify in self.verify_wids[wid]:
                     log("Verifying: %r", verify)
