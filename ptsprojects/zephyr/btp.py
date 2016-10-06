@@ -649,6 +649,8 @@ def gap_device_found_ev(bd_addr_type=None, bd_addr=None, rssi=None, flags=None,
 
         _addr = binascii.hexlify(_addr[::-1]).lower()
 
+        logging.debug("found %r type %r", _addr, _addr_type)
+
         if _addr != bd_addr:
             continue
         if _addr_type != bd_addr_type:
