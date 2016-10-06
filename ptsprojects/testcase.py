@@ -394,6 +394,7 @@ class TestCase(PTSCallback):
         yes_response = "Yes"
         no_response = "No"
         my_response = ""
+        bool2rsp = {True: yes_response, False: no_response}
 
         # answer No
         if self.no_wid and wid == self.no_wid:
@@ -403,10 +404,13 @@ class TestCase(PTSCallback):
         elif self.verify_wids and wid in self.verify_wids:
             log("Starting verification of: %r", self.verify_wids)
 
-            if callable(self.verify_wids[wid]):
-                resp = self.verify_wids[wid](description)
-                my_response = {True: yes_response, False: no_response}[resp]
-
+            data = self.verify_wids[wid]
+            if callable(data):
+                bool_rsp = data(description)
+                my_response = bool2rsp[bool_rsp]
+            elif isinstance(data, tuple) and callable(data[0]):
+                bool_rsp = data[0](description, *data[1:])
+                my_response = bool2rsp[bool_rsp]
             else:
                 for verify in self.verify_wids[wid]:
                     log("Verifying: %r", verify)
