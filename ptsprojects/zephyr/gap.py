@@ -342,6 +342,23 @@ def test_cases(pts):
                                        False)},
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_start_discov, post_wid=23)]),
+        ZTestCase("GAP", "TC_DISC_RPA_BV_01_C",
+                  edit1_wids={1002: (btp.var_store_get_passkey, pts_bd_addr,
+                                     Addr.le_public)},
+                  cmds=pre_conditions +
+                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+
+                        # Connect and pair to get IRK
+                        TestFunc(btp.gap_conn, start_wid=78),
+                        TestFunc(btp.gap_connected_ev, start_wid=78),
+                        TestFunc(btp.gap_pair, start_wid=108),
+                        TestFunc(btp.gap_disconnected_ev, post_wid=118)],
+
+                  # Start Discovery procedure to get Advertising Event with
+                  # resolved PTS address. Verify if advertisement was received.
+                  # The RPA shall be resolved to PTS public address
+                  verify_wids={138: (btp.discover_and_verify, 'le', 'active',
+                                     'general')}),
         ZTestCase("GAP", "TC_IDLE_NAMP_BV_01_C",
                   pre_conditions +
                   [TestFunc(btp.core_reg_svc_gatts),
