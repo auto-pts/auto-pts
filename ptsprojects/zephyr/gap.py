@@ -486,6 +486,17 @@ def test_cases(pts):
                             start_wid=77),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=77)]),
+        ZTestCase("GAP", "TC_CONN_PRDA_BV_01_C",
+                  edit1_wids={1002: (btp.var_store_get_passkey)},
+                  cmds=pre_conditions +
+                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+                        TestFunc(btp.gap_set_gendiscov, start_wid=91),
+                        TestFunc(btp.gap_adv_ind_on, start_wid=91),
+                        TestFunc(btp.gap_connected_ev, post_wid=91),
+                        TestFunc(btp.gap_identity_resolved_ev, post_wid=1002),
+                        TestFunc(btp.gap_disconn, start_wid=77),
+                        TestFunc(btp.gap_disconnected_ev, post_wid=77),
+                        TestFunc(btp.gap_adv_off, post_wid=77)]),
         ZTestCase("GAP", "TC_BOND_NBON_BV_01_C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
