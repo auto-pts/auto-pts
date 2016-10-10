@@ -773,6 +773,33 @@ def gap_read_ctrl_info():
     logging.debug("IUT address %r", IUT_BD_ADDR)
 
 
+def gap_identity_resolved_ev():
+    logging.debug("%s", gap_identity_resolved_ev.__name__)
+    zephyrctl = iutctl.get_zephyr()
+
+    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    logging.debug("received %r %r", tuple_hdr, tuple_data)
+
+    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GAP,
+                  btpdef.GAP_EV_IDENTITY_RESOLVED)
+
+    fmt = '<B6sB6s'
+    if len(tuple_data[0]) != struct.calcsize(fmt):
+        raise BTPError("Invalid data length")
+
+    _addr_t, _addr, _id_addr_t, _id_addr = struct.unpack_from('<B6sB6s',
+                                                              tuple_data[0])
+    # Convert addresses to lower case
+    _addr = binascii.hexlify(_addr[::-1]).lower()
+    _id_addr = binascii.hexlify(_id_addr[::-1]).lower()
+
+    if _addr_t != get_pts_addr_type() or _addr != get_pts_addr():
+        raise BTPError("Received data mismatch")
+
+    # Update RPA with Identity Address
+    set_pts_addr(_id_addr, _id_addr_t)
+
+
 def gap_command_rsp_succ(op=None):
     logging.debug("%s", gap_command_rsp_succ.__name__)
 
