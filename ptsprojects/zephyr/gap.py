@@ -159,9 +159,12 @@ class AdType:
     gap_appearance = 25
     manufacturer_data = 255
 
+iut_device_name = 'Tester'
+
 
 class AdData:
     ad_manuf = (AdType.manufacturer_data, 'ABCD')
+    ad_name_sh = (AdType.name_short, binascii.hexlify(iut_device_name))
 
 # Advertising data
 ad = [(AdType.uuid16_some, '1111'),
@@ -187,12 +190,43 @@ def test_cases(pts):
         ZTestCase("GAP", "TC_BROB_BCST_BV_01_C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_nonconn, start_wid=47),
+                   TestFunc(btp.gap_set_nondiscov, start_wid=47),
                    TestFunc(btp.gap_adv_ind_on, start_wid=47)]),
         ZTestCase("GAP", "TC_BROB_BCST_BV_02_C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_nonconn),
                    TestFunc(btp.gap_set_nondiscov),
-                   TestFunc(btp.gap_adv_ind_on, sd=(AdData.ad_manuf,))]),
+                   TestFunc(btp.gap_adv_ind_on, sd=[AdData.ad_manuf, AdData.ad_name_sh])]),
+        ZTestCase("GAP", "TC_BROB_BCST_BV_03_C",
+                  edit1_wids={1002: (btp.var_store_get_passkey, pts_bd_addr,
+                                     Addr.le_public)},
+                  cmds=pre_conditions +
+                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+
+                        # Enter general discoverable mode and send connectable
+                        # event so that PTS could connect and get IRK
+                        TestFunc(btp.gap_set_conn),
+                        TestFunc(btp.gap_set_gendiscov),
+                        TestFunc(btp.gap_adv_ind_on,
+                                 sd=[AdData.ad_manuf, AdData.ad_name_sh]),
+                        TestFunc(pts.update_pixit_param, "GAP",
+                                 "TSPX_iut_device_name_in_adv_packet_for_random_address",
+                                 iut_device_name),
+                        TestFunc(btp.gap_connected_ev, pts_bd_addr,
+                                 Addr.le_public, post_wid=91),
+                        TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
+                                 start_wid=77),
+                        TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
+                                 Addr.le_public, post_wid=77),
+                        TestFunc(btp.gap_adv_off, post_wid=77),
+
+                        # Enter broadcast mode
+                        TestFunc(btp.gap_set_nonconn, start_wid=80),
+                        TestFunc(btp.gap_set_nondiscov, start_wid=80),
+                        TestFunc(btp.gap_adv_ind_on,
+                                 sd=[AdData.ad_manuf, AdData.ad_name_sh],
+                                 start_wid=80),
+                        TestFuncCleanUp(btp.gap_adv_off)]),
         ZTestCase("GAP", "TC_BROB_OBSV_BV_01_C",
                   ok_cancel_wids={4: (btp.gap_device_found_ev, Addr.le_public,
                                       pts_bd_addr)},
@@ -204,7 +238,7 @@ def test_cases(pts):
                   ok_cancel_wids={4: (btp.gap_device_found_ev, Addr.le_public,
                                       pts_bd_addr)},
                   cmds=pre_conditions +
-                       [TestFunc(btp.gap_start_discov, type='passive',
+                       [TestFunc(btp.gap_start_discov, type='active',
                                  mode='observe', start_wid=160),
                         TestFuncCleanUp(btp.gap_stop_discov)]),
         ZTestCase("GAP", "TC_DISC_NONM_BV_01_C",
@@ -354,10 +388,12 @@ def test_cases(pts):
                    TestFunc(btp.gap_adv_ind_on, start_wid=55)]),
         ZTestCase("GAP", "TC_CONN_UCON_BV_01_C",
                   pre_conditions +
-                  [TestFunc(btp.gap_adv_ind_on, start_wid=74)]),
+                  [TestFunc(btp.gap_set_nondiscov, start_wid=74),
+                   TestFunc(btp.gap_adv_ind_on, start_wid=74)]),
         ZTestCase("GAP", "TC_CONN_UCON_BV_02_C",
                   pre_conditions +
-                  [TestFunc(btp.gap_adv_ind_on, start_wid=75)]),
+                  [TestFunc(btp.gap_set_gendiscov, start_wid=75),
+                   TestFunc(btp.gap_adv_ind_on, start_wid=75)]),
         ZTestCase("GAP", "TC_CONN_UCON_BV_03_C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_limdiscov, start_wid=76),
