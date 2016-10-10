@@ -897,6 +897,26 @@ def test_cases(pts):
                                  start_wid=77),
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=77)]),
+        ZTestCase("GAP", "TC_PRIV_CONN_BV_10_C",
+                  edit1_wids={1002: (btp.var_store_get_passkey, pts_bd_addr,
+                                     Addr.le_public)},
+                  cmds=pre_conditions +
+                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+                        TestFunc(pts.update_pixit_param, "GAP",
+                                 "TSPX_iut_device_name_in_adv_packet_for_random_address",
+                                 iut_device_name),
+
+                        # Set RPA update to 15 minutes (15*60*1000=900000 ms)
+                        TestFunc(pts.update_pixit_param, "GAP",
+                                 "TSPX_iut_private_address_interval", '900000'),
+                        TestFunc(btp.gap_set_conn),
+                        TestFunc(btp.gap_set_gendiscov),
+                        TestFunc(btp.gap_adv_ind_on, sd=[AdData.ad_name_sh]),
+                        TestFunc(btp.gap_connected_ev, post_wid=91,
+                                 skip_call=(2,)),
+                        # Don't disable advertising here
+                        TestFunc(btp.gap_disconn, start_wid=77),
+                        TestFunc(btp.gap_disconnected_ev, post_wid=77)]),
         ZTestCase("GAP", "TC_ADV_BV_01_C",
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_set_conn),
