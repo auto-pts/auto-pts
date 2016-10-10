@@ -56,16 +56,23 @@ class BTPSocket(object):
         """Accept incomming Zephyr connection"""
         logging.debug("%s", self.accept.__name__)
 
-        # This will hang forever if Zephyr don't try to connect
+        # Set 10 second socket timeout on accept
+        self.sock.settimeout(10.0)
         self.conn, self.addr = self.sock.accept()
-        self.conn.settimeout(20) # BTP socket timeout in seconds
 
-    def read(self):
-        """Read BTP data from socket"""
+    def read(self, timeout=20.0):
+        """Read BTP data from socket
+
+        timeout - BTP socket timeout in seconds (20 seconds by default)"""
         logging.debug("%s", self.read.__name__)
         toread_hdr_len = HDR_LEN
         hdr = bytearray(toread_hdr_len)
         hdr_memview = memoryview(hdr)
+
+        # In case of BTP events, the timeout shall be adjustable,
+        # update socket timeout if needed.
+        if self.conn.gettimeout() is not timeout:
+            self.conn.settimeout(timeout)
 
         # Gather frame header
         while toread_hdr_len:
