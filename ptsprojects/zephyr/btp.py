@@ -329,14 +329,19 @@ def gap_connected_ev(bd_addr, bd_addr_type):
     btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GAP,
                   btpdef.GAP_EV_DEVICE_CONNECTED)
 
-    data_ba = bytearray()
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    fmt = '<6sB'
+    if len(tuple_data[0]) != struct.calcsize(fmt):
+        raise BTPError("Invalid data length")
 
-    data_ba.extend(bd_addr_ba)
-    data_ba.extend(chr(bd_addr_type))
+    # Unpack and swap address
+    _addr, _addr_type = struct.unpack(fmt, tuple_data[0])
+    _addr = binascii.hexlify(_addr[::-1]).lower()
 
-    if tuple_data[0] != data_ba:
-        raise BTPError("Error in connected event data")
+    # Remove colons from address and convert to lower case
+    bd_addr = "".join(bd_addr.split(':')).lower()
+
+    if _addr_type != bd_addr_type or _addr != bd_addr:
+        raise BTPError("Received data mismatch")
 
 
 def gap_conn(bd_addr, bd_addr_type):
@@ -365,14 +370,19 @@ def gap_disconnected_ev(bd_addr, bd_addr_type):
     btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GAP,
                   btpdef.GAP_EV_DEVICE_DISCONNECTED)
 
-    data_ba = bytearray()
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    fmt = '<6sB'
+    if len(tuple_data[0]) != struct.calcsize(fmt):
+        raise BTPError("Invalid data length")
 
-    data_ba.extend(bd_addr_ba)
-    data_ba.extend(chr(bd_addr_type))
+    # Unpack and swap address
+    _addr, _addr_type = struct.unpack(fmt, tuple_data[0])
+    _addr = binascii.hexlify(_addr[::-1]).lower()
 
-    if tuple_data[0] != data_ba:
-        raise BTPError("Error in connected event data")
+    # Remove colons from address and convert to lower case
+    bd_addr = "".join(bd_addr.split(':')).lower()
+
+    if _addr_type != bd_addr_type or _addr != bd_addr:
+        raise BTPError("Received data mismatch")
 
 
 def gap_disconn(bd_addr, bd_addr_type):
@@ -443,21 +453,25 @@ def gap_passkey_disp_ev(bd_addr, bd_addr_type, store=False):
     btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GAP,
                   btpdef.GAP_EV_PASSKEY_DISPLAY)
 
-    data_ba = bytearray()
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    fmt = '<B6sI'
+    if len(tuple_data[0]) != struct.calcsize(fmt):
+        raise BTPError("Invalid data length")
 
-    data_ba.extend(chr(bd_addr_type))
-    data_ba.extend(bd_addr_ba)
+    # Unpack and swap address
+    _addr_type, _addr, _passkey = struct.unpack(fmt, tuple_data[0])
+    _addr = binascii.hexlify(_addr[::-1]).lower()
 
-    if tuple_data[0][:7] != data_ba:
-        raise BTPError("Error in address of passkey display data")
+    # Remove colons from address and convert to lower case
+    bd_addr = "".join(bd_addr.split(':')).lower()
 
-    passkey_local = struct.unpack('I', tuple_data[0][7:11])[0]
-    logging.debug("passkey = %r", passkey_local)
+    if _addr_type != bd_addr_type or _addr != bd_addr:
+        raise BTPError("Received data mismatch")
+
+    logging.debug("passkey = %r", _passkey)
 
     if store:
         global PASSKEY
-        PASSKEY = passkey_local
+        PASSKEY = _passkey
 
 
 def gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey):
@@ -493,14 +507,19 @@ def gap_passkey_entry_req_ev(bd_addr, bd_addr_type):
     btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GAP,
                   btpdef.GAP_EV_PASSKEY_ENTRY_REQ)
 
-    data_ba = bytearray()
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    fmt = '<B6s'
+    if len(tuple_data[0]) != struct.calcsize(fmt):
+        raise BTPError("Invalid data length")
 
-    data_ba.extend(chr(bd_addr_type))
-    data_ba.extend(bd_addr_ba)
+    # Unpack and swap address
+    _addr_type, _addr = struct.unpack(fmt, tuple_data[0])
+    _addr = binascii.hexlify(_addr[::-1]).lower()
 
-    if tuple_data[0][:7] != data_ba:
-        raise BTPError("Error in address of passkey entry data")
+    # Remove colons from address and convert to lower case
+    bd_addr = "".join(bd_addr.split(':')).lower()
+
+    if _addr_type != bd_addr_type or _addr != bd_addr:
+        raise BTPError("Received data mismatch")
 
     # Generate some passkey
     global PASSKEY
@@ -591,13 +610,20 @@ def gap_device_found_ev(bd_addr_type, bd_addr, rssi=None, flags=None, eir=None,
         btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GAP,
                       btpdef.GAP_EV_DEVICE_FOUND)
 
-        _addr, _addr_t, _rssi, _flags, _len = struct.unpack_from('<6sBBBH',
+        fmt = '<6sBBBH'
+        if len(tuple_data[0]) < struct.calcsize(fmt):
+            raise BTPError("Invalid data length")
+
+        _addr, _addr_type, _rssi, _flags, _len = struct.unpack_from(fmt,
                                                                  tuple_data[0])
+        if len(tuple_data[0][struct.calcsize(fmt)] != _len):
+            raise BTPError("Invalid data length")
+
         _addr = binascii.hexlify(_addr[::-1]).lower()
 
         if _addr != bd_addr:
             continue
-        if _addr_t != bd_addr_type:
+        if _addr_type != bd_addr_type:
             continue
         if rssi and _rssi != rssi:
             continue
@@ -697,8 +723,16 @@ def gap_read_ctrl_info():
     btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GAP,
                   btpdef.GAP_READ_CONTROLLER_INFO)
 
+    fmt = '<6sII3s249s11s'
+    if len(tuple_data[0]) < struct.calcsize(fmt):
+        raise BTPError("Invalid data length")
+
+    _addr, _supp_set, _curr_set, _cod, _name, _name_sh = struct.unpack_from(fmt,
+                                                                tuple_data[0])
+    _addr = binascii.hexlify(_addr[::-1]).lower()
+
     global IUT_BD_ADDR
-    IUT_BD_ADDR = binascii.hexlify((tuple_data[0][:6])[::-1])
+    IUT_BD_ADDR = _addr
     logging.debug("IUT address %r", IUT_BD_ADDR)
 
 
