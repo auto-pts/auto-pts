@@ -10,12 +10,17 @@ from threading import Timer, Event
 import iutctl
 import btpdef
 from random import randint
+from collections import namedtuple
 
 #  Global temporary objects
 PASSKEY = None
 GATT_SVCS = None
 IUT_BD_ADDR = None
 L2CAP_CHAN = []
+
+# Address
+LeAddress = namedtuple('LeAddress', 'addr_type addr')
+PTS_BD_ADDR = LeAddress(addr_type=0, addr='000000000000')
 
 #  A sequence of values to verify in PTS MMI description
 VERIFY_VALUES = None
@@ -229,6 +234,30 @@ def btp_hdr_check(rcv_hdr, exp_svc_id, exp_op=None):
             (rcv_hdr.op, exp_op))
 
 
+def bd_addr_convert(bdaddr):
+    """ Remove colons from address and convert to lower case """
+    return "".join(bdaddr.split(':')).lower()
+
+
+def pts_addr_get(bd_addr):
+    """" If address provided, convert, otherwise, use stored address. """
+    if bd_addr is None:
+        return PTS_BD_ADDR.addr
+    return bd_addr_convert(bd_addr)
+
+
+def pts_addr_type_get(bd_addr_type):
+    """" If address type provided, return it, otherwise, use stored address. """
+    if bd_addr_type is None:
+        return PTS_BD_ADDR.addr_type
+    return bd_addr_type
+
+
+def set_pts_addr(addr, addr_type):
+    global PTS_BD_ADDR
+    PTS_BD_ADDR = LeAddress(addr_type=addr_type, addr=bd_addr_convert(addr))
+
+
 def core_reg_svc_gap():
     logging.debug("%s", core_reg_svc_gap.__name__)
 
@@ -319,7 +348,7 @@ def gap_adv_off():
     gap_command_rsp_succ(btpdef.GAP_STOP_ADVERTISING)
 
 
-def gap_connected_ev(bd_addr, bd_addr_type):
+def gap_connected_ev(bd_addr=None, bd_addr_type=None):
     logging.debug("%s %r %r", gap_connected_ev.__name__, bd_addr, bd_addr_type)
     zephyrctl = iutctl.get_zephyr()
 
@@ -335,21 +364,23 @@ def gap_connected_ev(bd_addr, bd_addr_type):
 
     # Unpack and swap address
     _addr, _addr_type = struct.unpack(fmt, tuple_data[0])
-    _addr = binascii.hexlify(_addr[::-1]).lower()
+    _addr = binascii.hexlify(_addr[::-1])
 
-    # Remove colons from address and convert to lower case
-    bd_addr = "".join(bd_addr.split(':')).lower()
+    # Do not compare addresses here, because if PTS uses Privacy, addresses will
+    # be different
 
-    if _addr_type != bd_addr_type or _addr != bd_addr:
-        raise BTPError("Received data mismatch")
+    set_pts_addr(_addr, _addr_type)
 
 
-def gap_conn(bd_addr, bd_addr_type):
+def gap_conn(bd_addr=None, bd_addr_type=None):
     logging.debug("%s %r %r", gap_conn.__name__, bd_addr, bd_addr_type)
     zephyrctl = iutctl.get_zephyr()
 
+    bd_addr = pts_addr_get(bd_addr)
+    bd_addr_type = pts_addr_type_get(bd_addr_type)
+
     data_ba = bytearray()
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    bd_addr_ba = binascii.unhexlify(bd_addr)[::-1]
 
     data_ba.extend(chr(bd_addr_type))
     data_ba.extend(bd_addr_ba)
@@ -359,7 +390,7 @@ def gap_conn(bd_addr, bd_addr_type):
     gap_command_rsp_succ()
 
 
-def gap_disconnected_ev(bd_addr, bd_addr_type):
+def gap_disconnected_ev(bd_addr=None, bd_addr_type=None):
     logging.debug("%s %r %r", gap_disconnected_ev.__name__, bd_addr,
                   bd_addr_type)
     zephyrctl = iutctl.get_zephyr()
@@ -378,19 +409,22 @@ def gap_disconnected_ev(bd_addr, bd_addr_type):
     _addr, _addr_type = struct.unpack(fmt, tuple_data[0])
     _addr = binascii.hexlify(_addr[::-1]).lower()
 
-    # Remove colons from address and convert to lower case
-    bd_addr = "".join(bd_addr.split(':')).lower()
+    bd_addr = pts_addr_get(bd_addr)
+    bd_addr_type = pts_addr_type_get(bd_addr_type)
 
     if _addr_type != bd_addr_type or _addr != bd_addr:
         raise BTPError("Received data mismatch")
 
 
-def gap_disconn(bd_addr, bd_addr_type):
+def gap_disconn(bd_addr=None, bd_addr_type=None):
     logging.debug("%s %r %r", gap_disconn.__name__, bd_addr, bd_addr_type)
     zephyrctl = iutctl.get_zephyr()
 
+    bd_addr = pts_addr_get(bd_addr)
+    bd_addr_type = pts_addr_type_get(bd_addr_type)
+
     data_ba = bytearray()
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    bd_addr_ba = binascii.unhexlify(bd_addr)[::-1]
 
     data_ba.extend(chr(bd_addr_type))
     data_ba.extend(bd_addr_ba)
@@ -409,9 +443,12 @@ def gap_set_io_cap(io_cap):
     gap_command_rsp_succ()
 
 
-def gap_pair(bd_addr, bd_addr_type):
+def gap_pair(bd_addr=None, bd_addr_type=None):
     logging.debug("%s %r %r", gap_pair.__name__, bd_addr, bd_addr_type)
     zephyrctl = iutctl.get_zephyr()
+
+    bd_addr = pts_addr_get(bd_addr)
+    bd_addr_type = pts_addr_type_get(bd_addr_type)
 
     data_ba = bytearray()
     bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
@@ -425,7 +462,7 @@ def gap_pair(bd_addr, bd_addr_type):
     gap_command_rsp_succ()
 
 
-def var_store_get_passkey(bd_addr, bd_addr_type):
+def var_store_get_passkey(bd_addr=None, bd_addr_type=None):
     gap_passkey_disp_ev(bd_addr, bd_addr_type, store=True)
     return var_get_passkey()
 
@@ -442,7 +479,7 @@ def var_get_wrong_passkey():
         return str(PASSKEY + 1)
 
 
-def gap_passkey_disp_ev(bd_addr, bd_addr_type, store=False):
+def gap_passkey_disp_ev(bd_addr=None, bd_addr_type=None, store=False):
     logging.debug("%s %r %r", gap_passkey_disp_ev.__name__, bd_addr,
                   bd_addr_type)
     zephyrctl = iutctl.get_zephyr()
@@ -461,8 +498,8 @@ def gap_passkey_disp_ev(bd_addr, bd_addr_type, store=False):
     _addr_type, _addr, _passkey = struct.unpack(fmt, tuple_data[0])
     _addr = binascii.hexlify(_addr[::-1]).lower()
 
-    # Remove colons from address and convert to lower case
-    bd_addr = "".join(bd_addr.split(':')).lower()
+    bd_addr = pts_addr_get(bd_addr)
+    bd_addr_type = pts_addr_type_get(bd_addr_type)
 
     if _addr_type != bd_addr_type or _addr != bd_addr:
         raise BTPError("Received data mismatch")
@@ -496,7 +533,7 @@ def gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey):
     gap_command_rsp_succ()
 
 
-def gap_passkey_entry_req_ev(bd_addr, bd_addr_type):
+def gap_passkey_entry_req_ev(bd_addr=None, bd_addr_type=None):
     logging.debug("%s %r %r", gap_passkey_entry_req_ev.__name__, bd_addr,
                   bd_addr_type)
     zephyrctl = iutctl.get_zephyr()
@@ -515,8 +552,8 @@ def gap_passkey_entry_req_ev(bd_addr, bd_addr_type):
     _addr_type, _addr = struct.unpack(fmt, tuple_data[0])
     _addr = binascii.hexlify(_addr[::-1]).lower()
 
-    # Remove colons from address and convert to lower case
-    bd_addr = "".join(bd_addr.split(':')).lower()
+    bd_addr = pts_addr_get(bd_addr)
+    bd_addr_type = pts_addr_type_get(bd_addr_type)
 
     if _addr_type != bd_addr_type or _addr != bd_addr:
         raise BTPError("Received data mismatch")
@@ -583,8 +620,8 @@ def __gap_device_found_timeout(continue_flag):
     continue_flag.clear()
 
 
-def gap_device_found_ev(bd_addr_type, bd_addr, rssi=None, flags=None, eir=None,
-                        timeout=30, req_pres=True):
+def gap_device_found_ev(bd_addr_type=None, bd_addr=None, rssi=None, flags=None,
+                        eir=None, timeout=30, req_pres=True):
     logging.debug("%s %r %r %r %r %r", gap_device_found_ev.__name__,
                   bd_addr_type, bd_addr, rssi, flags, eir)
 
@@ -592,8 +629,8 @@ def gap_device_found_ev(bd_addr_type, bd_addr, rssi=None, flags=None, eir=None,
 
     pres = False
 
-    # Ignore colons and convert to lower case
-    bd_addr = "".join(bd_addr.split(':')).lower()
+    bd_addr = pts_addr_get(bd_addr)
+    bd_addr_type = pts_addr_type_get(bd_addr_type)
 
     continue_flag = Event()
     continue_flag.set()
@@ -616,10 +653,14 @@ def gap_device_found_ev(bd_addr_type, bd_addr, rssi=None, flags=None, eir=None,
 
         _addr, _addr_type, _rssi, _flags, _len = struct.unpack_from(fmt,
                                                                  tuple_data[0])
-        if len(tuple_data[0][struct.calcsize(fmt)] != _len):
+        _eir = tuple_data[0][struct.calcsize(fmt):]
+
+        if len(_eir) != _len:
             raise BTPError("Invalid data length")
 
         _addr = binascii.hexlify(_addr[::-1]).lower()
+
+        logging.debug("found %r type %r", _addr, _addr_type)
 
         if _addr != bd_addr:
             continue
@@ -734,6 +775,33 @@ def gap_read_ctrl_info():
     global IUT_BD_ADDR
     IUT_BD_ADDR = _addr
     logging.debug("IUT address %r", IUT_BD_ADDR)
+
+
+def gap_identity_resolved_ev():
+    logging.debug("%s", gap_identity_resolved_ev.__name__)
+    zephyrctl = iutctl.get_zephyr()
+
+    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    logging.debug("received %r %r", tuple_hdr, tuple_data)
+
+    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GAP,
+                  btpdef.GAP_EV_IDENTITY_RESOLVED)
+
+    fmt = '<B6sB6s'
+    if len(tuple_data[0]) != struct.calcsize(fmt):
+        raise BTPError("Invalid data length")
+
+    _addr_t, _addr, _id_addr_t, _id_addr = struct.unpack_from('<B6sB6s',
+                                                              tuple_data[0])
+    # Convert addresses to lower case
+    _addr = binascii.hexlify(_addr[::-1]).lower()
+    _id_addr = binascii.hexlify(_id_addr[::-1]).lower()
+
+    if _addr_t != get_pts_addr_type() or _addr != get_pts_addr():
+        raise BTPError("Received data mismatch")
+
+    # Update RPA with Identity Address
+    set_pts_addr(_id_addr, _id_addr_t)
 
 
 def gap_command_rsp_succ(op=None):
