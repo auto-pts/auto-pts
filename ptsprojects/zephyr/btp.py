@@ -680,7 +680,9 @@ def gap_device_found_ev(bd_addr_type=None, bd_addr=None, rssi=None, flags=None,
 
         _addr, _addr_type, _rssi, _flags, _len = struct.unpack_from(fmt,
                                                                  tuple_data[0])
-        if len(tuple_data[0][struct.calcsize(fmt)] != _len):
+        _eir = tuple_data[0][struct.calcsize(fmt):]
+
+        if len(_eir) != _len:
             raise BTPError("Invalid data length")
 
         _addr = binascii.hexlify(_addr[::-1]).lower()
