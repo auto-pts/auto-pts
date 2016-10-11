@@ -22,6 +22,10 @@ L2CAP_CHAN = []
 LeAddress = namedtuple('LeAddress', 'addr_type addr')
 PTS_BD_ADDR = LeAddress(addr_type=0, addr='000000000000')
 
+# Devices found
+LeAdv = namedtuple('LeAdv', 'addr_type addr rssi flags eir')
+DISCOV_RESULTS = []
+
 #  A sequence of values to verify in PTS MMI description
 VERIFY_VALUES = None
 
@@ -611,21 +615,14 @@ def __gap_device_found_timeout(continue_flag):
     continue_flag.clear()
 
 
-def gap_device_found_ev(bd_addr_type=None, bd_addr=None, rssi=None, flags=None,
-                        eir=None, timeout=30, req_pres=True):
-    logging.debug("%s %r %r %r %r %r", gap_device_found_ev.__name__,
-                  bd_addr_type, bd_addr, rssi, flags, eir)
+def __gap_device_found_ev(duration):
+    logging.debug("%s %r", __gap_device_found_ev.__name__, duration)
 
     zephyrctl = iutctl.get_zephyr()
 
-    pres = False
-
-    bd_addr = pts_addr_get(bd_addr)
-    bd_addr_type = pts_addr_type_get(bd_addr_type)
-
     continue_flag = Event()
     continue_flag.set()
-    t = Timer(timeout, __gap_device_found_timeout, [continue_flag])
+    t = Timer(duration, __gap_device_found_timeout, [continue_flag])
     t.start()
 
     while continue_flag.is_set():
@@ -653,35 +650,15 @@ def gap_device_found_ev(bd_addr_type=None, bd_addr=None, rssi=None, flags=None,
 
         logging.debug("found %r type %r", _addr, _addr_type)
 
-        if _addr != bd_addr:
-            continue
-        if _addr_type != bd_addr_type:
-            continue
-        if rssi and _rssi != rssi:
-            continue
-        if flags and _flags != flags:
-            continue
-        if eir and tuple_data[0][11:] != eir:
-            continue
-
-        pres = True
-
-        t.cancel()
-        break
-
-    # If presence for event group match
-    if req_pres == pres:
-        logging.debug("Monitoring device found events finished, "
-                      "presence match ok")
-        return True
-    else:
-        logging.debug("Monitoring device found events finished, "
-                      "presence not match")
-        return False
+        global DISCOV_RESULTS
+        DISCOV_RESULTS.append(LeAdv(_addr_type, _addr, _rssi, _flags, _eir))
 
 
-def gap_start_discov(transport='le', type='active', mode='general'):
+def gap_start_discov(transport='le', type='active', mode='general', duration=10):
     """GAP Start Discovery function.
+
+    duration - Discovery duration in seconds (10 by default).
+               After this period of time discovery will be stopped.
 
     Possible options (key: <values>):
 
@@ -713,9 +690,52 @@ def gap_start_discov(transport='le', type='active', mode='general'):
 
     gap_command_rsp_succ()
 
+    # Make sure there are no previous results
+    global DISCOV_RESULTS
+    del DISCOV_RESULTS[:]
 
-def gap_stop_discov():
-    logging.debug("%s", gap_stop_discov.__name__)
+    __gap_device_found_ev(duration)
+
+    # Stop discovery if expired
+    __gap_stop_discov()
+
+
+def check_discov_results(addr_type=None, addr=None, discovered=True, eir=None):
+
+    addr = pts_addr_get(addr)
+    addr_type = pts_addr_type_get(addr_type)
+
+    logging.debug("%s %r %r %r %r", check_discov_results.__name__, addr_type,
+                  addr, discovered, eir)
+
+    found = False
+
+    global DISCOV_RESULTS
+
+    while len(DISCOV_RESULTS):
+        result = DISCOV_RESULTS.pop()
+
+        if addr_type != result.addr_type:
+            continue
+        if addr != result.addr:
+            continue
+        if eir and eir != result.eir:
+            continue
+
+        found = True
+        break
+
+    # Cleanup
+    del DISCOV_RESULTS[:]
+
+    if discovered == found:
+        return True
+
+    return False
+
+
+def __gap_stop_discov():
+    logging.debug("%s", __gap_stop_discov.__name__)
 
     zephyrctl = iutctl.get_zephyr()
 
