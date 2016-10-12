@@ -917,6 +917,20 @@ def test_cases(pts):
                         # Don't disable advertising here
                         TestFunc(btp.gap_disconn, start_wid=77),
                         TestFunc(btp.gap_disconnected_ev, post_wid=77)]),
+        ZTestCase("GAP", "TC_PRIV_CONN_BV_11_C",
+                  edit1_wids={1002: btp.var_store_get_passkey},
+                  cmds=pre_conditions +
+                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+                        TestFunc(pts.update_pixit_param, "GAP",
+                                 "TSPX_iut_device_name_in_adv_packet_for_random_address",
+                                 iut_device_name),
+                        TestFunc(btp.gap_conn, start_wid=78),
+                        TestFunc(btp.gap_connected_ev, start_wid=78),
+                        TestFunc(btp.gap_pair, start_wid=108),
+                        TestFunc(btp.gap_disconnected_ev, post_wid=118),
+                        TestFunc(btp.gap_read_ctrl_info, start_wid=2142),
+                        TestFunc(btp.gap_conn, start_wid=2142),
+                        TestFunc(btp.gap_connected_ev, start_wid=2142)]),
         ZTestCase("GAP", "TC_ADV_BV_01_C",
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_set_conn),
