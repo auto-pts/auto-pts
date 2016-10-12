@@ -840,7 +840,7 @@ def gap_command_rsp_succ(op=None):
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
-    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GAP)
+    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GAP, op)
 
 
 def gatts_add_svc(svc_type, uuid):
