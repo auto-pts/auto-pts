@@ -53,6 +53,7 @@ GAP = {
                  CONTROLLER_INDEX, ""),
     "conn": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_CONNECT, CONTROLLER_INDEX),
     "pair": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_PAIR, CONTROLLER_INDEX),
+    "unpair": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_UNPAIR, CONTROLLER_INDEX),
     "disconn": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_DISCONNECT,
                 CONTROLLER_INDEX),
     "set_io_cap": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_SET_IO_CAP,
@@ -455,6 +456,22 @@ def gap_pair(bd_addr=None, bd_addr_type=None):
 
     # Expected result
     gap_command_rsp_succ()
+
+
+def gap_unpair(bd_addr=None, bd_addr_type=None):
+    logging.debug("%s %r %r", gap_unpair.__name__, bd_addr, bd_addr_type)
+    zephyrctl = iutctl.get_zephyr()
+
+    data_ba = bytearray()
+    bd_addr_ba = binascii.unhexlify(pts_addr_get(bd_addr))[::-1]
+
+    data_ba.extend(chr(pts_addr_type_get(bd_addr_type)))
+    data_ba.extend(bd_addr_ba)
+
+    zephyrctl.btp_socket.send(*GAP['unpair'], data=data_ba)
+
+    # Expected result
+    gap_command_rsp_succ(btpdef.GAP_UNPAIR)
 
 
 def var_store_get_passkey(bd_addr=None, bd_addr_type=None):
