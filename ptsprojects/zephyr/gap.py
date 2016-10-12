@@ -864,22 +864,20 @@ def test_cases(pts):
                                  start_wid=77),
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=77)]),
-        # By now, we cannot remove bonding 
-        # wid: 135
-        # description: Please have Upper Tester remove the bonding information
-        #              of the PTS. Press OK to continue
-        # ZTestCase("GAP", "TC_SEC_CSIGN_BI_03_C",
-        #           cmds=init_gatt_db + \
-        #                [TestFunc(btp.core_reg_svc_gap),
-        #                 TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
-        #                 TestFunc(btp.gap_set_conn),
-        #                 TestFunc(btp.gap_adv_ind_on),
-        #                 TestFunc(btp.gap_connected_ev, pts_bd_addr,
-        #                          Addr.le_public, start_wid=91),
-        #                 TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
-        #                          start_wid=77),
-        #                 TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
-        #                          Addr.le_public, start_wid=77)]),
+        ZTestCase("GAP", "TC_SEC_CSIGN_BI_03_C",
+                  cmds=init_gatt_db + pre_conditions +
+                       [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
+                        TestFunc(btp.gap_set_gendiscov, start_wid=91),
+                        TestFunc(btp.gap_set_conn, start_wid=91),
+                        TestFunc(btp.gap_adv_ind_on, start_wid=91),
+                        TestFunc(btp.gap_connected_ev, post_wid=91),
+                        TestFunc(btp.gap_adv_off, post_wid=91),
+                        TestFunc(btp.gap_disconn, start_wid=77),
+                        TestFunc(btp.gap_disconnected_ev, post_wid=77),
+                        TestFunc(btp.gap_unpair, start_wid=135),
+                        TestFunc(btp.gap_disconnected_ev, post_wid=118)],
+                  # PTS is asking if 0x000C is the handle for signed write
+                  verify_wids={161: '0x000C'}),
         ZTestCase("GAP", "TC_SEC_CSIGN_BI_04_C",
                   cmds=pre_conditions +
                        [TestFunc(btp.core_reg_svc_gatts),
