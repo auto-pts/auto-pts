@@ -433,6 +433,15 @@ def gap_disconn(bd_addr=None, bd_addr_type=None):
     gap_command_rsp_succ()
 
 
+def verify_not_connected(description):
+    logging.debug("%s", verify_not_connected.__name__)
+    try:
+        gap_connected_ev()
+        return False
+    except BTPError:
+        return  True
+
+
 def gap_set_io_cap(io_cap):
     logging.debug("%s %r", gap_set_io_cap.__name__, io_cap)
     zephyrctl = iutctl.get_zephyr()
