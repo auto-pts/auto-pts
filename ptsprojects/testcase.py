@@ -149,6 +149,8 @@ class TestFunc:
         stop_wid -- not used by TestFunc, because function stopping is not easy
                     to implement. Provided only for compatibility with TestCmd.
 
+        post_wid -- start TestFunc on the next MMI after MMI with this wid
+
         start_wid and stop_wid must be passed in as keyword arguments. This is
         because all other arguments will be passed to the func. For example:
 
