@@ -38,9 +38,9 @@ def dec_hdr(bin):
     """
     logging.debug("%s, %r", dec_hdr.__name__, bin)
 
-    header = namedtuple('header', 'svc_id op ctrl_index data_len')
+    Header = namedtuple('Header', 'svc_id op ctrl_index data_len')
 
-    hdr = header._make(struct.unpack("<BBBH", bin))
+    hdr = Header._make(struct.unpack("<BBBH", bin))
 
     return hdr
 
