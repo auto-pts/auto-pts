@@ -700,17 +700,14 @@ def test_cases(pts):
                          TestFunc(btp.gap_connected_ev, pts_bd_addr,
                                   Addr.le_public, post_wid=91)]),
          # PTS issue #14452
-         # ZTestCase("GAP", "TC_SEC_AUT_BV_12_C",
-         #           edit1_wids={139: "0008"},
-         #           cmds=init_gatt_db + \
-         #                [TestFunc(btp.core_reg_svc_gap),
-         #                 TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-         #                 TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
-         #                          start_wid=40),
-         #                 TestFunc(btp.gap_connected_ev, pts_bd_addr,
-         #                          Addr.le_public, start_wid=40),
-         #                 TestFunc(btp.gattc_exchange_mtu, Addr.le_public,
-         #                          pts_bd_addr, start_wid=40)]),
+         ZTestCase("GAP", "TC_SEC_AUT_BV_12_C",
+                   edit1_wids={139: "0008"},
+                   cmds=pre_conditions + init_gatt_db +
+                        [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+                         TestFunc(btp.gap_conn, start_wid=40),
+                         TestFunc(btp.gap_connected_ev, start_wid=40),
+                         TestFunc(btp.gattc_exchange_mtu, Addr.le_public,
+                                  pts_bd_addr, start_wid=40)]),
          # PTS issue #14454
          ZTestCase("GAP", "TC_SEC_AUT_BV_13_C",
                    edit1_wids={139: "0008",
