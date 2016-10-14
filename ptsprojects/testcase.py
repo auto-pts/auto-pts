@@ -151,6 +151,9 @@ class TestFunc:
 
         post_wid -- start TestFunc on the next MMI after MMI with this wid
 
+        skip_call -- a tuple of integers of func call numbers to skip.
+                     Starting from one so first call is 1.
+
         start_wid and stop_wid must be passed in as keyword arguments. This is
         because all other arguments will be passed to the func. For example:
 
@@ -161,6 +164,8 @@ class TestFunc:
         self.__set_attrs(kwds)
         self.args = args
         self.kwds = kwds
+
+        self.call_count = 0 # number of times func is run
 
         # true if parsing of MMI description text is needed by this test func
         self.desc_parsing_needed = False
@@ -187,7 +192,7 @@ class TestFunc:
         kwds -- arbitrary keyword argument dictionary
 
         """
-        attr_names = ["start_wid", "stop_wid", "post_wid"]
+        attr_names = ["start_wid", "stop_wid", "post_wid", "skip_call"]
 
         for attr_name in attr_names:
             if attr_name in kwds:
@@ -199,8 +204,13 @@ class TestFunc:
 
     def start(self):
         """Starts the function"""
+        self.call_count += 1
         log("Starting test function: %s" % str(self))
 
+        if isinstance(self.skip_call, tuple): # is None if not set
+            if self.call_count in self.skip_call:
+                log("Skipping starting test function")
+                return
 
         if self.desc_parsing_needed:
             args = MMI.process_args(self.args)
@@ -217,9 +227,11 @@ class TestFunc:
 
     def __str__(self):
         """Returns string representation"""
-        return "%s %s %s %s %s %s %s" % \
-            (self.__class__, self.func, self.start_wid, self.stop_wid,
-             self.post_wid, self.args, self.kwds)
+        return ("class=%s, func=%s start_wid=%s stop_wid=%s post_wid=%s "
+                "skip_call=%s call_count=%s args=%s kwds=%s" %
+                (self.__class__, self.func, self.start_wid, self.stop_wid,
+                 self.post_wid, self.skip_call, self.call_count, self.args,
+                 self.kwds))
 
 class TestFuncCleanUp(TestFunc):
     """Clean-up function that is invoked after running test case in PTS."""
