@@ -156,7 +156,7 @@ class TestFunc:
 
         """
         self.func = func
-        self.__read_start_stop_wids(kwds)
+        self.__set_attrs(kwds)
         self.args = args
         self.kwds = kwds
 
@@ -168,16 +168,15 @@ class TestFunc:
                 self.desc_parsing_needed = True
                 break
 
-    def __read_start_stop_wids(self, kwds):
-        """Reads start_wid and stop_wid from arbitrary keyword argument
-        dictionary.
+    def __set_attrs(self, kwds):
+        """Read attributes from arbitrary keyword argument dictionary.
 
-        start_wid and stop_wid are not specified in the constructor as normal
-        aruments cause they are not always used and when not used they would be
+        Attributes are not specified in the constructor as normal arguments
+        cause they are not always used and when not used they would be
         consuming function (func) arguments (args).
 
-        start_wid and stop_wid are used by this class and not passed to the
-        func, hence they are removed from kwds.
+        These attributes are used by this class and not passed to the func,
+        hence they are removed from kwds.
 
         Note: with test functions stop_wid is only there to be compatible with
         TestCmd interface. But since functions cannot be stopped, stop_wid is
@@ -186,15 +185,15 @@ class TestFunc:
         kwds -- arbitrary keyword argument dictionary
 
         """
-        arg_names = ["start_wid", "stop_wid", "post_wid"]
+        attr_names = ["start_wid", "stop_wid", "post_wid"]
 
-        for arg_name in arg_names:
-            if arg_name in kwds:
-                arg_value = kwds.pop(arg_name)
+        for attr_name in attr_names:
+            if attr_name in kwds:
+                attr_value = kwds.pop(attr_name)
             else:
-                arg_value = None
+                attr_value = None
 
-            setattr(self, arg_name, arg_value)
+            setattr(self, attr_name, attr_value)
 
     def start(self):
         """Starts the function"""
