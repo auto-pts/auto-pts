@@ -218,9 +218,9 @@ def test_cases(pts):
                                  "TSPX_iut_device_name_in_adv_packet_for_random_address",
                                  iut_device_name),
                         TestFunc(btp.gap_connected_ev, post_wid=91),
+                        TestFunc(btp.gap_adv_off, post_wid=91),
                         TestFunc(btp.gap_disconn, start_wid=77),
                         TestFunc(btp.gap_disconnected_ev, post_wid=77),
-                        TestFunc(btp.gap_adv_off, post_wid=77),
 
                         # Enter broadcast mode
                         TestFunc(btp.gap_set_nonconn, start_wid=80),
@@ -547,10 +547,10 @@ def test_cases(pts):
                         TestFunc(btp.gap_set_gendiscov, start_wid=91),
                         TestFunc(btp.gap_adv_ind_on, start_wid=91),
                         TestFunc(btp.gap_connected_ev, post_wid=91),
+                        TestFunc(btp.gap_adv_off, post_wid=91),
                         TestFunc(btp.gap_identity_resolved_ev, post_wid=1002),
                         TestFunc(btp.gap_disconn, start_wid=77),
-                        TestFunc(btp.gap_disconnected_ev, post_wid=77),
-                        TestFunc(btp.gap_adv_off, post_wid=77)]),
+                        TestFunc(btp.gap_disconnected_ev, post_wid=77)]),
         # ZTestCase("GAP", "TC_CONN_PRDA_BV_02_C",),
         ZTestCase("GAP", "TC_BOND_NBON_BV_01_C",
                   pre_conditions +
