@@ -715,6 +715,18 @@ def test_cases(pts):
                          TestFunc(btp.gattc_read_rsp, store_val=False,
                                   start_wid=112)]),
         # TODO: Inform about lost bond
+        ZTestCase("GAP", "TC_SEC_AUT_BV_21_C",
+                  edit1_wids={1002: btp.var_store_get_passkey},
+                  cmds=pre_conditions +
+                       [TestFunc(btp.core_reg_svc_gatts),
+                        TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+                        TestFunc(btp.gap_conn, start_wid=78),
+                        TestFunc(btp.gap_connected_ev, start_wid=78),
+                        TestFunc(btp.gap_disconnected_ev, post_wid=118),
+                        TestFunc(btp.gap_pair, start_wid=108),
+                        TestFunc(btp.gap_disconn, start_wid=44),
+                        TestFunc(btp.gap_disconnected_ev, start_wid=44)]),
+        # TODO: Inform about lost bond
         ZTestCase("GAP", "TC_SEC_AUT_BV_22_C",
                   edit1_wids={1002: (btp.var_store_get_passkey, pts_bd_addr,
                                      Addr.le_public)},
