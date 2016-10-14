@@ -810,6 +810,15 @@ def test_cases(pts):
                         TestFunc(btp.gap_adv_ind_on),
                         TestFunc(btp.gap_connected_ev, post_wid=91),
                         TestFunc(btp.gap_disconnected_ev, post_wid=1002)]),
+        ZTestCase("GAP", "TC_SEC_AUT_BV_24_C",
+                  edit1_wids={1002: btp.var_store_get_passkey,
+                              144: "0008"},
+                  cmds=pre_conditions + init_gatt_db +
+                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+                        TestFunc(btp.gap_conn, start_wid=78),
+                        TestFunc(btp.gap_connected_ev, start_wid=78),
+                        TestFunc(btp.gap_disconn, start_wid=44),
+                        TestFunc(btp.gap_disconnected_ev, start_wid=44)]),
          ZTestCase("GAP", "TC_SEC_CSIGN_BV_01_C",
                    pre_conditions +
                    [TestFunc(btp.core_reg_svc_gatts),
