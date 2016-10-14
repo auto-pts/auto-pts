@@ -42,7 +42,7 @@ class BTPSocket(object):
         self.addr = None
 
     def open(self):
-        """Open sockets for Viper"""
+        """Open BTP socket for Zephyr"""
         if os.path.exists(BTP_ADDRESS):
             os.remove(BTP_ADDRESS)
 
