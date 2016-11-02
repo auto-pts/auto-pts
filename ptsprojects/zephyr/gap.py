@@ -249,6 +249,10 @@ def test_cases(pts):
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
 
+                        # Set RPA update to 1 minute (60*1000=60000 ms)
+                        TestFunc(pts.update_pixit_param, "GAP",
+                                 "TSPX_iut_private_address_interval", '60000'),
+
                         # Connect and pair to get IRK
                         TestFunc(btp.gap_conn, start_wid=78),
                         TestFunc(btp.gap_connected_ev, post_wid=78),
@@ -346,6 +350,10 @@ def test_cases(pts):
                                      Addr.le_public)},
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+
+                        # Set RPA update to 1 minute (60*1000=60000 ms)
+                        TestFunc(pts.update_pixit_param, "GAP",
+                                 "TSPX_iut_private_address_interval", '60000'),
 
                         # Connect and pair to get IRK
                         TestFunc(btp.gap_conn, start_wid=78),
