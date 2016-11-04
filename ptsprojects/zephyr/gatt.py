@@ -173,7 +173,9 @@ def test_cases_server(pts):
                     TestFunc(btp.wrap, pts.update_pixit_param,
                              "GATT", "TSPX_bd_addr_iut",
                              btp.get_stored_bd_addr),
-                    TestFunc(btp.core_reg_svc_gatts)]
+                    TestFunc(btp.core_reg_svc_gatts),
+                    TestFunc(btp.gap_set_conn),
+                    TestFunc(btp.gap_set_gendiscov)]
 
     test_cases = [
         #ZTestCase("GATT", "TC_GAC_SR_BV_01_C",
