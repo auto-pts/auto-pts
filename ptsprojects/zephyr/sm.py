@@ -35,6 +35,8 @@ def test_cases(pts):
 
     pts_bd_addr = pts.q_bd_addr
 
+    pts.update_pixit_param("SM", "TSPX_peer_addr_type", "01")
+
     pre_conditions=[TestFunc(btp.core_reg_svc_gap),
                     TestFunc(btp.gap_read_ctrl_info),
                     TestFunc(btp.wrap, pts.update_pixit_param,
