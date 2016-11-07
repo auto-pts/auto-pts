@@ -69,7 +69,7 @@ def new_address_string(self):
 
 def main():
     """Main."""
-    winutils.exit_if_not_admin()
+    winutils.exit_if_admin()
 
     script_name = os.path.basename(sys.argv[0]) # in case it is full path
     script_name_no_ext = os.path.splitext(script_name)[0]
