@@ -46,3 +46,6 @@ Then start the client:
 On Windows, run this command:
 
 `TlbImp.exe PTSControl.dll /out:Interop.PTSControl.dll /verbose`
+
+Currently assembly is provided with auto-pts so you don't have to generate it
+yourself.
