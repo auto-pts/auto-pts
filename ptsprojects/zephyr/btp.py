@@ -22,6 +22,13 @@ L2CAP_CHAN = []
 LeAddress = namedtuple('LeAddress', 'addr_type addr')
 PTS_BD_ADDR = LeAddress(addr_type=0, addr='000000000000')
 
+# Devices found
+LeAdv = namedtuple('LeAdv', 'addr_type addr rssi flags eir')
+DISCOV_RESULTS = []
+
+# DUT's GAP current settings
+GAP_CURRENT_SETTINGS = None
+
 #  A sequence of values to verify in PTS MMI description
 VERIFY_VALUES = None
 
@@ -49,6 +56,7 @@ GAP = {
                  CONTROLLER_INDEX, ""),
     "conn": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_CONNECT, CONTROLLER_INDEX),
     "pair": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_PAIR, CONTROLLER_INDEX),
+    "unpair": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_UNPAIR, CONTROLLER_INDEX),
     "disconn": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_DISCONNECT,
                 CONTROLLER_INDEX),
     "set_io_cap": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_SET_IO_CAP,
@@ -307,8 +315,33 @@ def core_reg_svc_rsp_succ():
         logging.debug("response is valid")
 
 
+def __gap_current_settings_update(settings):
+    logging.debug("%s %r", __gap_current_settings_update.__name__, settings)
+    if isinstance(settings, tuple):
+        fmt = '<I'
+        if len(settings[0]) != struct.calcsize(fmt):
+            raise BTPError("Invalid data length")
+
+        settings = struct.unpack(fmt, settings[0])
+        settings = settings[0] # Result of unpack is always a tuple
+
+    global GAP_CURRENT_SETTINGS
+    GAP_CURRENT_SETTINGS = settings
+
+
+def __gap_current_settings_is_set(bit):
+    # This should maintain conformance
+    if GAP_CURRENT_SETTINGS is None or not (GAP_CURRENT_SETTINGS & (1 << bit)):
+        return False
+    return True
+
+
 def gap_adv_ind_on(ad=None, sd=None):
     logging.debug("%s %r %r", gap_adv_ind_on.__name__, ad, sd)
+
+    if __gap_current_settings_is_set(btpdef.GAP_SETTINGS_ADVERTISING):
+        return
+
     zephyrctl = iutctl.get_zephyr()
 
     data_ba = bytearray()
@@ -336,16 +369,22 @@ def gap_adv_ind_on(ad=None, sd=None):
 
     zephyrctl.btp_socket.send(*GAP['start_adv'], data=data_ba)
 
-    gap_command_rsp_succ(btpdef.GAP_START_ADVERTISING)
+    tuple_data = gap_command_rsp_succ(btpdef.GAP_START_ADVERTISING)
+    __gap_current_settings_update(tuple_data)
 
 
 def gap_adv_off():
     logging.debug("%s", gap_adv_off.__name__)
+
+    if not __gap_current_settings_is_set(btpdef.GAP_SETTINGS_ADVERTISING):
+        return
+
     zephyrctl = iutctl.get_zephyr()
 
     zephyrctl.btp_socket.send(*GAP['stop_adv'])
 
-    gap_command_rsp_succ(btpdef.GAP_STOP_ADVERTISING)
+    tuple_data = gap_command_rsp_succ(btpdef.GAP_STOP_ADVERTISING)
+    __gap_current_settings_update(tuple_data)
 
 
 def gap_connected_ev(bd_addr=None, bd_addr_type=None):
@@ -428,6 +467,15 @@ def gap_disconn(bd_addr=None, bd_addr_type=None):
     gap_command_rsp_succ()
 
 
+def verify_not_connected(description):
+    logging.debug("%s", verify_not_connected.__name__)
+    try:
+        gap_connected_ev()
+        return False
+    except BTPError:
+        return  True
+
+
 def gap_set_io_cap(io_cap):
     logging.debug("%s %r", gap_set_io_cap.__name__, io_cap)
     zephyrctl = iutctl.get_zephyr()
@@ -451,6 +499,22 @@ def gap_pair(bd_addr=None, bd_addr_type=None):
 
     # Expected result
     gap_command_rsp_succ()
+
+
+def gap_unpair(bd_addr=None, bd_addr_type=None):
+    logging.debug("%s %r %r", gap_unpair.__name__, bd_addr, bd_addr_type)
+    zephyrctl = iutctl.get_zephyr()
+
+    data_ba = bytearray()
+    bd_addr_ba = binascii.unhexlify(pts_addr_get(bd_addr))[::-1]
+
+    data_ba.extend(chr(pts_addr_type_get(bd_addr_type)))
+    data_ba.extend(bd_addr_ba)
+
+    zephyrctl.btp_socket.send(*GAP['unpair'], data=data_ba)
+
+    # Expected result
+    gap_command_rsp_succ(btpdef.GAP_UNPAIR)
 
 
 def var_store_get_passkey(bd_addr=None, bd_addr_type=None):
@@ -559,31 +623,43 @@ def gap_passkey_entry_req_ev(bd_addr=None, bd_addr_type=None):
 def gap_set_conn():
     logging.debug("%s", gap_set_conn.__name__)
 
+    if __gap_current_settings_is_set(btpdef.GAP_SETTINGS_CONNECTABLE):
+        return
+
     zephyrctl = iutctl.get_zephyr()
 
     zephyrctl.btp_socket.send(*GAP['set_conn'])
 
-    gap_command_rsp_succ()
+    tuple_data = gap_command_rsp_succ()
+    __gap_current_settings_update(tuple_data)
 
 
 def gap_set_nonconn():
     logging.debug("%s", gap_set_nonconn.__name__)
 
+    if not __gap_current_settings_is_set(btpdef.GAP_SETTINGS_CONNECTABLE):
+        return
+
     zephyrctl = iutctl.get_zephyr()
 
     zephyrctl.btp_socket.send(*GAP['set_nonconn'])
 
-    gap_command_rsp_succ()
+    tuple_data = gap_command_rsp_succ()
+    __gap_current_settings_update(tuple_data)
 
 
 def gap_set_nondiscov():
     logging.debug("%s", gap_set_nondiscov.__name__)
 
+    if not __gap_current_settings_is_set(btpdef.GAP_SETTINGS_DISCOVERABLE):
+        return
+
     zephyrctl = iutctl.get_zephyr()
 
     zephyrctl.btp_socket.send(*GAP['set_nondiscov'])
 
-    gap_command_rsp_succ()
+    tuple_data = gap_command_rsp_succ()
+    __gap_current_settings_update(tuple_data)
 
 
 def gap_set_gendiscov():
@@ -593,7 +669,8 @@ def gap_set_gendiscov():
 
     zephyrctl.btp_socket.send(*GAP['set_gendiscov'])
 
-    gap_command_rsp_succ()
+    tuple_data = gap_command_rsp_succ()
+    __gap_current_settings_update(tuple_data)
 
 
 def gap_set_limdiscov():
@@ -603,7 +680,8 @@ def gap_set_limdiscov():
 
     zephyrctl.btp_socket.send(*GAP['set_limdiscov'])
 
-    gap_command_rsp_succ()
+    tuple_data = gap_command_rsp_succ()
+    __gap_current_settings_update(tuple_data)
 
 
 def __gap_device_found_timeout(continue_flag):
@@ -611,21 +689,14 @@ def __gap_device_found_timeout(continue_flag):
     continue_flag.clear()
 
 
-def gap_device_found_ev(bd_addr_type=None, bd_addr=None, rssi=None, flags=None,
-                        eir=None, timeout=30, req_pres=True):
-    logging.debug("%s %r %r %r %r %r", gap_device_found_ev.__name__,
-                  bd_addr_type, bd_addr, rssi, flags, eir)
+def __gap_device_found_ev(duration):
+    logging.debug("%s %r", __gap_device_found_ev.__name__, duration)
 
     zephyrctl = iutctl.get_zephyr()
 
-    pres = False
-
-    bd_addr = pts_addr_get(bd_addr)
-    bd_addr_type = pts_addr_type_get(bd_addr_type)
-
     continue_flag = Event()
     continue_flag.set()
-    t = Timer(timeout, __gap_device_found_timeout, [continue_flag])
+    t = Timer(duration, __gap_device_found_timeout, [continue_flag])
     t.start()
 
     while continue_flag.is_set():
@@ -653,35 +724,15 @@ def gap_device_found_ev(bd_addr_type=None, bd_addr=None, rssi=None, flags=None,
 
         logging.debug("found %r type %r", _addr, _addr_type)
 
-        if _addr != bd_addr:
-            continue
-        if _addr_type != bd_addr_type:
-            continue
-        if rssi and _rssi != rssi:
-            continue
-        if flags and _flags != flags:
-            continue
-        if eir and tuple_data[0][11:] != eir:
-            continue
-
-        pres = True
-
-        t.cancel()
-        break
-
-    # If presence for event group match
-    if req_pres == pres:
-        logging.debug("Monitoring device found events finished, "
-                      "presence match ok")
-        return True
-    else:
-        logging.debug("Monitoring device found events finished, "
-                      "presence not match")
-        return False
+        global DISCOV_RESULTS
+        DISCOV_RESULTS.append(LeAdv(_addr_type, _addr, _rssi, _flags, _eir))
 
 
-def gap_start_discov(transport='le', type='active', mode='general'):
+def gap_start_discov(transport='le', type='active', mode='general', duration=10):
     """GAP Start Discovery function.
+
+    duration - Discovery duration in seconds (10 by default).
+               After this period of time discovery will be stopped.
 
     Possible options (key: <values>):
 
@@ -713,9 +764,69 @@ def gap_start_discov(transport='le', type='active', mode='general'):
 
     gap_command_rsp_succ()
 
+    # Make sure there are no previous results
+    global DISCOV_RESULTS
+    del DISCOV_RESULTS[:]
 
-def gap_stop_discov():
-    logging.debug("%s", gap_stop_discov.__name__)
+    __gap_device_found_ev(duration)
+
+    # Stop discovery if expired
+    __gap_stop_discov()
+
+
+def check_discov_results(addr_type=None, addr=None, discovered=True, eir=None):
+
+    addr = pts_addr_get(addr)
+    addr_type = pts_addr_type_get(addr_type)
+
+    logging.debug("%s %r %r %r %r", check_discov_results.__name__, addr_type,
+                  addr, discovered, eir)
+
+    found = False
+
+    global DISCOV_RESULTS
+
+    while len(DISCOV_RESULTS):
+        result = DISCOV_RESULTS.pop()
+
+        if addr_type != result.addr_type:
+            continue
+        if addr != result.addr:
+            continue
+        if eir and eir != result.eir:
+            continue
+
+        found = True
+        break
+
+    # Cleanup
+    del DISCOV_RESULTS[:]
+
+    if discovered == found:
+        return True
+
+    return False
+
+
+def discover_and_verify(description, transport='le', type='active',
+                        mode='general', duration=10, addr=None, addr_type=None):
+    """Verify discovery results
+
+    This function verifies if the advertisement has been received and
+    optionally verifies the presence of specific eir data in received
+    advertisement
+
+    Returns True if verification is successful, False if not.
+
+    description -- MMI description
+    """
+    gap_start_discov(transport, type, mode, duration)
+
+    return check_discov_results(addr_type, addr)
+
+
+def __gap_stop_discov():
+    logging.debug("%s", __gap_stop_discov.__name__)
 
     zephyrctl = iutctl.get_zephyr()
 
@@ -767,6 +878,8 @@ def gap_read_ctrl_info():
     IUT_BD_ADDR = _addr
     logging.debug("IUT address %r", IUT_BD_ADDR)
 
+    __gap_current_settings_update(_curr_set)
+
 
 def gap_identity_resolved_ev():
     logging.debug("%s", gap_identity_resolved_ev.__name__)
@@ -803,7 +916,9 @@ def gap_command_rsp_succ(op=None):
     tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
-    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GAP)
+    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GAP, op)
+
+    return tuple_data
 
 
 def gatts_add_svc(svc_type, uuid):
