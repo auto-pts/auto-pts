@@ -435,18 +435,16 @@ def test_cases(pts):
                         TestFunc(btp.gap_set_gendiscov, start_wid=91),
                         TestFunc(btp.gap_adv_ind_on, start_wid=91),
                         TestFunc(btp.gap_connected_ev, post_wid=91),
+                        TestFunc(btp.gap_adv_off, start_wid=77),
                         TestFunc(btp.gap_disconn, start_wid=77),
                         TestFunc(btp.gap_disconnected_ev, start_wid=77),
-                        TestFunc(btp.gap_adv_off, post_wid=77),
 
                         # Apparently PTS don't take into account value of
                         # TSPX_iut_private_address_interval, so let's simulate
                         # change of RPA
                         TestFunc(btp.gap_read_ctrl_info, start_wid=90),
                         TestFunc(btp.gap_set_gendiscov, start_wid=90),
-                        TestFunc(btp.gap_adv_ind_on, start_wid=90),
-                        TestFunc(btp.gap_connected_ev, post_wid=90),
-                        TestFunc(btp.gap_disconnected_ev, post_wid=90)]),
+                        TestFunc(btp.gap_adv_ind_on, start_wid=90)]),
         ZTestCase("GAP", "TC_CONN_ACEP_BV_01_C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
