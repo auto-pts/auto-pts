@@ -218,9 +218,9 @@ def test_cases(pts):
                                  "TSPX_iut_device_name_in_adv_packet_for_random_address",
                                  iut_device_name),
                         TestFunc(btp.gap_connected_ev, post_wid=91),
+                        TestFunc(btp.gap_adv_off, post_wid=91),
                         TestFunc(btp.gap_disconn, start_wid=77),
                         TestFunc(btp.gap_disconnected_ev, post_wid=77),
-                        TestFunc(btp.gap_adv_off, post_wid=77),
 
                         # Enter broadcast mode
                         TestFunc(btp.gap_set_nonconn, start_wid=80),
@@ -230,19 +230,40 @@ def test_cases(pts):
                                  start_wid=80),
                         TestFuncCleanUp(btp.gap_adv_off)]),
         ZTestCase("GAP", "TC_BROB_OBSV_BV_01_C",
-                  ok_cancel_wids={4: (btp.gap_device_found_ev, Addr.le_public,
-                                      pts_bd_addr)},
+                  ok_cancel_wids={4: (btp.check_discov_results)},
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_start_discov, type='passive',
-                                 mode='observe', start_wid=12),
-                        TestFuncCleanUp(btp.gap_stop_discov)]),
+                                 mode='observe', post_wid=12)]),
         ZTestCase("GAP", "TC_BROB_OBSV_BV_02_C",
-                  ok_cancel_wids={4: (btp.gap_device_found_ev, Addr.le_public,
-                                      pts_bd_addr)},
+                  ok_cancel_wids={4: (btp.check_discov_results)},
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_start_discov, type='active',
-                                 mode='observe', start_wid=160),
-                        TestFuncCleanUp(btp.gap_stop_discov)]),
+                                 mode='observe', post_wid=160)]),
+        ZTestCase("GAP", "TC_BROB_OBSV_BV_05_C",
+                  cmds=pre_conditions,
+                  verify_wids={157: (btp.discover_and_verify, 'le', 'active',
+                                     'observe')}),
+        ZTestCase("GAP", "TC_BROB_OBSV_BV_06_C",
+                  edit1_wids={1002: (btp.var_store_get_passkey, pts_bd_addr,
+                                     Addr.le_public)},
+                  cmds=pre_conditions +
+                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+
+                        # Set RPA update to 1 minute (60*1000=60000 ms)
+                        TestFunc(pts.update_pixit_param, "GAP",
+                                 "TSPX_iut_private_address_interval", '60000'),
+
+                        # Connect and pair to get IRK
+                        TestFunc(btp.gap_conn, start_wid=78),
+                        TestFunc(btp.gap_connected_ev, post_wid=78),
+                        TestFunc(btp.gap_pair, start_wid=108),
+                        TestFunc(btp.gap_disconnected_ev, post_wid=118)],
+
+                  # Start Observation procedure to get Advertising Event with
+                  # resolved PTS address. Verify if advertisement was received.
+                  # The RPA shall be resolved to PTS public address
+                  verify_wids={138: (btp.discover_and_verify, 'le', 'active',
+                                     'observe')}),
         ZTestCase("GAP", "TC_DISC_NONM_BV_01_C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_nonconn, start_wid=5),
@@ -273,71 +294,78 @@ def test_cases(pts):
                    TestFunc(btp.gap_set_gendiscov),
                    TestFunc(btp.gap_adv_ind_on, start_wid=52)]),
         ZTestCase("GAP", "TC_DISC_LIMP_BV_01_C",
-                  ok_cancel_wids={10: (btp.gap_device_found_ev, Addr.le_public,
-                                       pts_bd_addr)},
+                  ok_cancel_wids={10: (btp.check_discov_results)},
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_start_discov, mode='limited',
-                                 start_wid=13),
-                        TestFuncCleanUp(btp.gap_stop_discov)]),
+                                 post_wid=13)]),
         ZTestCase("GAP", "TC_DISC_LIMP_BV_02_C",
-                  ok_cancel_wids={11: (btp.gap_device_found_ev, Addr.le_public,
-                                       pts_bd_addr, None, None, None, 15, False)},
+                  ok_cancel_wids={11: (btp.check_discov_results, None, None,
+                                       False)},
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_start_discov, mode='limited',
-                                 start_wid=13),
-                        TestFuncCleanUp(btp.gap_stop_discov)]),
+                                 post_wid=13)]),
         ZTestCase("GAP", "TC_DISC_LIMP_BV_03_C",
-                  ok_cancel_wids={11: (btp.gap_device_found_ev, Addr.le_public,
-                                       pts_bd_addr, None, None, None, 15, False)},
+                  ok_cancel_wids={11: (btp.check_discov_results, None, None,
+                                       False)},
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_start_discov, mode='limited',
-                                 start_wid=13),
-                        TestFuncCleanUp(btp.gap_stop_discov)]),
+                                 post_wid=13)]),
         ZTestCase("GAP", "TC_DISC_LIMP_BV_04_C",
-                  ok_cancel_wids={11: (btp.gap_device_found_ev, Addr.le_public,
-                                       pts_bd_addr, None, None, None, 15, False)},
+                  ok_cancel_wids={11: (btp.check_discov_results, None, None,
+                                       False)},
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_start_discov, mode='limited',
-                                 start_wid=13),
-                        TestFuncCleanUp(btp.gap_stop_discov)]),
+                                 post_wid=13)]),
         ZTestCase("GAP", "TC_DISC_LIMP_BV_05_C",
-                  ok_cancel_wids={11: (btp.gap_device_found_ev, Addr.le_public,
-                                       pts_bd_addr, None, None, None, 15, False)},
+                  ok_cancel_wids={11: (btp.check_discov_results, None, None,
+                                       False)},
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_start_discov, mode='limited',
-                                 start_wid=13),
-                        TestFuncCleanUp(btp.gap_stop_discov)]),
-        # TODO: fails cause of ZEP-380
+                                 post_wid=13)]),
         ZTestCase("GAP", "TC_DISC_GENP_BV_01_C",
-                  ok_cancel_wids={14: (btp.gap_device_found_ev, Addr.le_public,
-                                      pts_bd_addr)},
+                  ok_cancel_wids={14: (btp.check_discov_results)},
                   cmds=pre_conditions +
-                       [TestFunc(btp.gap_start_discov, start_wid=23),
-                        TestFuncCleanUp(btp.gap_stop_discov)]),
+                       [TestFunc(btp.gap_start_discov, post_wid=23)]),
         ZTestCase("GAP", "TC_DISC_GENP_BV_02_C",
-                  ok_cancel_wids={14: (btp.gap_device_found_ev, Addr.le_public,
-                                      pts_bd_addr)},
+                  ok_cancel_wids={14: (btp.check_discov_results)},
                   cmds=pre_conditions +
-                       [TestFunc(btp.gap_start_discov, start_wid=23),
-                        TestFuncCleanUp(btp.gap_stop_discov)]),
+                       [TestFunc(btp.gap_start_discov, post_wid=23)]),
         ZTestCase("GAP", "TC_DISC_GENP_BV_03_C",
-                  ok_cancel_wids={11: (btp.gap_device_found_ev, Addr.le_public,
-                                       pts_bd_addr, None, None, None, 15, False)},
+                  ok_cancel_wids={11: (btp.check_discov_results, None, None,
+                                       False)},
                   cmds=pre_conditions +
-                       [TestFunc(btp.gap_start_discov, start_wid=23),
-                        TestFuncCleanUp(btp.gap_stop_discov)]),
+                       [TestFunc(btp.gap_start_discov, post_wid=23)]),
         ZTestCase("GAP", "TC_DISC_GENP_BV_04_C",
-                  ok_cancel_wids={11: (btp.gap_device_found_ev, Addr.le_public,
-                                       pts_bd_addr, None, None, None, 15, False)},
+                  ok_cancel_wids={11: (btp.check_discov_results, None, None,
+                                       False)},
                   cmds=pre_conditions +
-                       [TestFunc(btp.gap_start_discov, start_wid=23),
-                        TestFuncCleanUp(btp.gap_stop_discov)]),
+                       [TestFunc(btp.gap_start_discov, post_wid=23)]),
         ZTestCase("GAP", "TC_DISC_GENP_BV_05_C",
-                  ok_cancel_wids={11: (btp.gap_device_found_ev, Addr.le_public,
-                                       pts_bd_addr, None, None, None, 15, False)},
+                  ok_cancel_wids={11: (btp.check_discov_results, None, None,
+                                       False)},
                   cmds=pre_conditions +
-                       [TestFunc(btp.gap_start_discov, start_wid=23),
-                        TestFuncCleanUp(btp.gap_stop_discov)]),
+                       [TestFunc(btp.gap_start_discov, post_wid=23)]),
+        ZTestCase("GAP", "TC_DISC_RPA_BV_01_C",
+                  edit1_wids={1002: (btp.var_store_get_passkey, pts_bd_addr,
+                                     Addr.le_public)},
+                  cmds=pre_conditions +
+                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+
+                        # Set RPA update to 1 minute (60*1000=60000 ms)
+                        TestFunc(pts.update_pixit_param, "GAP",
+                                 "TSPX_iut_private_address_interval", '60000'),
+
+                        # Connect and pair to get IRK
+                        TestFunc(btp.gap_conn, start_wid=78),
+                        TestFunc(btp.gap_connected_ev, start_wid=78),
+                        TestFunc(btp.gap_pair, start_wid=108),
+                        TestFunc(btp.gap_disconnected_ev, post_wid=118)],
+
+                  # Start Discovery procedure to get Advertising Event with
+                  # resolved PTS address. Verify if advertisement was received.
+                  # The RPA shall be resolved to PTS public address
+                  verify_wids={138: (btp.discover_and_verify, 'le', 'active',
+                                     'general')}),
         ZTestCase("GAP", "TC_IDLE_NAMP_BV_01_C",
                   pre_conditions +
                   [TestFunc(btp.core_reg_svc_gatts),
@@ -373,7 +401,6 @@ def test_cases(pts):
                             start_wid=78),
                    TestFunc(btp.gap_connected_ev, pts_bd_addr, Addr.le_public,
                             start_wid=78)]),
-        # PTS issue #14873
         ZTestCase("GAP", "TC_CONN_NCON_BV_01_C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_nonconn),
@@ -408,18 +435,16 @@ def test_cases(pts):
                         TestFunc(btp.gap_set_gendiscov, start_wid=91),
                         TestFunc(btp.gap_adv_ind_on, start_wid=91),
                         TestFunc(btp.gap_connected_ev, post_wid=91),
+                        TestFunc(btp.gap_adv_off, start_wid=77),
                         TestFunc(btp.gap_disconn, start_wid=77),
                         TestFunc(btp.gap_disconnected_ev, start_wid=77),
-                        TestFunc(btp.gap_adv_off, post_wid=77),
 
                         # Apparently PTS don't take into account value of
                         # TSPX_iut_private_address_interval, so let's simulate
                         # change of RPA
                         TestFunc(btp.gap_read_ctrl_info, start_wid=90),
                         TestFunc(btp.gap_set_gendiscov, start_wid=90),
-                        TestFunc(btp.gap_adv_ind_on, start_wid=90),
-                        TestFunc(btp.gap_connected_ev, post_wid=90),
-                        TestFunc(btp.gap_disconnected_ev, post_wid=90)]),
+                        TestFunc(btp.gap_adv_ind_on, start_wid=90)]),
         ZTestCase("GAP", "TC_CONN_ACEP_BV_01_C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
@@ -438,24 +463,38 @@ def test_cases(pts):
                    TestFunc(btp.gap_disconnected_ev, start_wid=77)]),
         ZTestCase("GAP", "TC_CONN_GCEP_BV_02_C",
                   pre_conditions +
-                  [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
+
+                  # Workaround. PTS inverted privacy check
+                  [TestFunc(pts.update_pixit_param,
+                            "GAP", "TSPX_iut_privacy_enabled", "FALSE"),
+                   TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
                             start_wid=78),
                    TestFunc(btp.gap_connected_ev, pts_bd_addr, Addr.le_public,
                             start_wid=78),
                    TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
                             start_wid=77),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
-                            Addr.le_public, start_wid=77)]),
+                            Addr.le_public, start_wid=77),
+
+                   TestFuncCleanUp(pts.update_pixit_param, "GAP",
+                                   "TSPX_iut_privacy_enabled", "TRUE")]),
         ZTestCase("GAP", "TC_CONN_DCEP_BV_01_C",
                   pre_conditions +
-                  [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
+
+                  # Workaround. PTS inverted privacy check
+                  [TestFunc(pts.update_pixit_param,
+                            "GAP", "TSPX_iut_privacy_enabled", "FALSE"),
+                   TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
                             start_wid=78),
                    TestFunc(btp.gap_connected_ev, pts_bd_addr, Addr.le_public,
                             start_wid=77),
                    TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
                             start_wid=77),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
-                            Addr.le_public, start_wid=77)]),
+                            Addr.le_public, start_wid=77),
+
+                   TestFuncCleanUp(pts.update_pixit_param, "GAP",
+                                   "TSPX_iut_privacy_enabled", "TRUE")]),
         ZTestCase("GAP", "TC_CONN_DCEP_BV_03_C",
                   pre_conditions +
 
@@ -498,17 +537,6 @@ def test_cases(pts):
                             start_wid=77),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=77)]),
-        # TODO: fails cause of ZEP-381
-        # ZTestCase("GAP", "TC_CONN_CPUP_BV_06_C",
-        #           [TestFunc(btp.core_reg_svc_gap),
-        #            TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
-        #                     start_wid=40),
-        #            TestFunc(btp.gap_connected_ev, pts_bd_addr, Addr.le_public,
-        #                     start_wid=40),
-        #            TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
-        #                     start_wid=77),
-        #            TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
-        #                     Addr.le_public, start_wid=77)]),
         ZTestCase("GAP", "TC_CONN_TERM_BV_01_C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
@@ -526,10 +554,11 @@ def test_cases(pts):
                         TestFunc(btp.gap_set_gendiscov, start_wid=91),
                         TestFunc(btp.gap_adv_ind_on, start_wid=91),
                         TestFunc(btp.gap_connected_ev, post_wid=91),
+                        TestFunc(btp.gap_adv_off, post_wid=91),
                         TestFunc(btp.gap_identity_resolved_ev, post_wid=1002),
                         TestFunc(btp.gap_disconn, start_wid=77),
-                        TestFunc(btp.gap_disconnected_ev, post_wid=77),
-                        TestFunc(btp.gap_adv_off, post_wid=77)]),
+                        TestFunc(btp.gap_disconnected_ev, post_wid=77)]),
+        # ZTestCase("GAP", "TC_CONN_PRDA_BV_02_C",),
         ZTestCase("GAP", "TC_BOND_NBON_BV_01_C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
@@ -564,57 +593,6 @@ def test_cases(pts):
                                   Addr.le_public, start_wid=108),
                          TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
                                   start_wid=108)]),
-         # PTS issue #14444
-         # ZTestCase("GAP", "TC_BOND_BON_BV_01_C",
-         #           cmds=[TestFunc(btp.core_reg_svc_gap),
-         #                 TestFunc(btp.gap_set_io_cap, IOCap.keyboard_only),
-         #                 TestFunc(btp.gap_set_conn),
-         #                 TestFunc(btp.gap_adv_ind_on),
-         #                 TestFunc(btp.gap_connected_ev, pts_bd_addr,
-         #                          Addr.le_public, start_wid=108),
-         #                 TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
-         #                          start_wid=108)]),
-         # wid: 118
-         # style: MMI_Style_Ok_Cancel1 0x11041
-         # description: Please press ok to disconnect the link.
-         #
-         # We should click ok, and then wait for gap_disconnected_ev
-         # (sth like a PostFunc)
-         # ZTestCase("GAP", "TC_BOND_BON_BV_01_C",
-         #           cmds=[TestFunc(btp.core_reg_svc_gap),
-         #                 TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
-         #                 TestFunc(btp.gap_set_conn),
-         #                 TestFunc(btp.gap_adv_ind_on),
-         #                 TestFunc(btp.gap_connected_ev, pts_bd_addr,
-         #                          Addr.le_public, start_wid=91),
-         #                 TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
-         #                          start_wid=108),
-         #                 TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
-         #                          Addr.le_public, start_wid=118)]),
-         # PTS issue #14444
-         # ZTestCase("GAP", "TC_BOND_BON_BV_01_C",
-         #           cmds=[TestFunc(btp.core_reg_svc_gap),
-         #                 TestFunc(btp.gap_set_io_cap, 4),
-         #                 TestFunc(btp.gap_set_conn),
-         #                 TestFunc(btp.gap_adv_ind_on),
-         #                 TestFunc(btp.gap_connected_ev, pts_bd_addr,
-         #                          Addr.le_public, start_wid=108),
-         #                 TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
-         #                          start_wid=108)]),
-         # PTS issue #14445
-         # ZTestCase("GAP", "TC_BOND_BON_BV_02_C",
-         #           edit1_wids={1002: btp.var_get_passkey},
-         #           cmds=[TestFunc(btp.core_reg_svc_gap),
-         #                 TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-         #                 TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
-         #                          start_wid=78),
-         #                 TestFunc(btp.gap_connected_ev, pts_bd_addr,
-         #                          Addr.le_public, start_wid=78),
-         #                 TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
-         #                          start_wid=108),
-         #                 TestFunc(btp.gap_passkey_disp_ev, pts_bd_addr,
-         #                          Addr.le_public, True, start_wid=108)]),
-         # PTS issue #14449
          ZTestCase("GAP", "TC_BOND_BON_BV_02_C",
                    cmds=pre_conditions +
                         [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
@@ -631,29 +609,6 @@ def test_cases(pts):
                         [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
                          TestFunc(btp.gap_set_conn),
                          TestFunc(btp.gap_adv_ind_on)]),
-         # Missing functionality - We respond "None" instead of the passkey
-         # ZTestCase("GAP", "TC_BOND_BON_BV_03_C",
-         #           edit1_wids={1002: btp.var_get_passkey},
-         #           cmds=[TestFunc(btp.core_reg_svc_gap),
-         #                 TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-         #                 TestFunc(btp.gap_set_conn),
-         #                 TestFunc(btp.gap_adv_ind_on),
-         #                 TestFunc(btp.gap_connected_ev, pts_bd_addr,
-         #                          Addr.le_public, start_wid=91),
-         #                 TestFunc(btp.gap_passkey_disp_ev, pts_bd_addr,
-         #                          Addr.le_public, True, start_wid=1002)]),
-         # wid: 1001
-         # style: MMI_Style_Ok 0x11040
-         # description: The Secure ID is 398563. Press OK to continue.
-         # ZTestCase("GAP", "TC_BOND_BON_BV_03_C",
-         #           cmds=[TestFunc(btp.core_reg_svc_gap),
-         #                 TestFunc(btp.gap_set_io_cap, IOCap.keyboard_only),
-         #                 TestFunc(btp.gap_set_conn),
-         #                 TestFunc(btp.gap_adv_ind_on),
-         #                 TestFunc(btp.gap_connected_ev, pts_bd_addr,
-         #                          Addr.le_public, start_wid=91),
-         #                 TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
-         #                          Addr.le_public, start_wid=150)]),
          ZTestCase("GAP", "TC_BOND_BON_BV_04_C",
                    cmds=pre_conditions +
                         [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
@@ -678,17 +633,14 @@ def test_cases(pts):
                          TestFunc(btp.gap_connected_ev, pts_bd_addr,
                                   Addr.le_public, post_wid=91)]),
          # PTS issue #14452
-         # ZTestCase("GAP", "TC_SEC_AUT_BV_12_C",
-         #           edit1_wids={139: "0008"},
-         #           cmds=init_gatt_db + \
-         #                [TestFunc(btp.core_reg_svc_gap),
-         #                 TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-         #                 TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
-         #                          start_wid=40),
-         #                 TestFunc(btp.gap_connected_ev, pts_bd_addr,
-         #                          Addr.le_public, start_wid=40),
-         #                 TestFunc(btp.gattc_exchange_mtu, Addr.le_public,
-         #                          pts_bd_addr, start_wid=40)]),
+         ZTestCase("GAP", "TC_SEC_AUT_BV_12_C",
+                   edit1_wids={139: "0008"},
+                   cmds=pre_conditions + init_gatt_db +
+                        [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+                         TestFunc(btp.gap_conn, start_wid=40),
+                         TestFunc(btp.gap_connected_ev, start_wid=40),
+                         TestFunc(btp.gattc_exchange_mtu, Addr.le_public,
+                                  pts_bd_addr, start_wid=40)]),
          # PTS issue #14454
          ZTestCase("GAP", "TC_SEC_AUT_BV_13_C",
                    edit1_wids={139: "0008",
@@ -712,20 +664,22 @@ def test_cases(pts):
                          TestFunc(btp.gap_adv_ind_on, start_wid=91),
                          TestFunc(btp.gap_connected_ev, pts_bd_addr,
                                   Addr.le_public, post_wid=91)]),
-         # PTS issue #14474
-         # ZTestCase("GAP", "TC_SEC_AUT_BV_16_C",
-         #           edit1_wids={140: "000a"},
-         #           cmds=init_gatt_db + \
-         #                [TestFunc(btp.core_reg_svc_gap),
-         #                 TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
-         #                 TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
-         #                          start_wid=78),
-         #                 TestFunc(btp.gap_connected_ev, pts_bd_addr,
-         #                          Addr.le_public, start_wid=78),
-         #                 TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
-         #                          start_wid=44),
-         #                 TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
-         #                          Addr.le_public, start_wid=44)]),
+        ZTestCase("GAP", "TC_SEC_AUT_BV_17_C",
+                  cmds=pre_conditions +
+                       [TestFunc(btp.core_reg_svc_gatts),
+                        TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+                        TestFunc(btp.gap_conn, start_wid=78),
+                        TestFunc(btp.gap_connected_ev, start_wid=78),
+                        TestFunc(btp.gattc_read, Addr.le_public,
+                                 pts_bd_addr, "0001", start_wid=112),
+                        # Bonding shall start automatically, so ignore wid: 108
+                        # "Please start the Bonding Procedure..."
+
+                        # Await read response after bonding
+                        TestFunc(btp.gattc_read_rsp, store_val=False,
+                                 post_wid=108),
+                        TestFunc(btp.gap_disconn, start_wid=44),
+                        TestFunc(btp.gap_disconnected_ev, start_wid=44)]),
          ZTestCase("GAP", "TC_SEC_AUT_BV_18_C",
                    cmds=pre_conditions +
                         [TestFunc(btp.core_reg_svc_gatts),
@@ -740,6 +694,19 @@ def test_cases(pts):
                                   start_wid=112),
                          TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
                                   start_wid=108)]),
+        ZTestCase("GAP", "TC_SEC_AUT_BV_19_C",
+                  cmds=pre_conditions +
+                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+                        TestFunc(btp.gap_conn, start_wid=78),
+                        TestFunc(btp.gap_connected_ev, start_wid=78),
+                        TestFunc(btp.gap_pair, start_wid=108, skip_call=(2,)),
+                        TestFunc(btp.gap_disconnected_ev, post_wid=118),
+                        TestFunc(btp.gattc_read, Addr.le_public,
+                                 pts_bd_addr, "0001", start_wid=112),
+                        TestFunc(btp.gattc_read_rsp, store_val=False,
+                                 post_wid=112),
+                        TestFunc(btp.gap_disconn, start_wid=44),
+                        TestFunc(btp.gap_disconnected_ev, start_wid=44)]),
          ZTestCase("GAP", "TC_SEC_AUT_BV_20_C",
                    edit1_wids={1002: (btp.var_store_get_passkey, pts_bd_addr,
                                       Addr.le_public)},
@@ -761,6 +728,18 @@ def test_cases(pts):
                          TestFunc(btp.gattc_read_rsp, store_val=False,
                                   start_wid=112)]),
         # TODO: Inform about lost bond
+        ZTestCase("GAP", "TC_SEC_AUT_BV_21_C",
+                  edit1_wids={1002: btp.var_store_get_passkey},
+                  cmds=pre_conditions +
+                       [TestFunc(btp.core_reg_svc_gatts),
+                        TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+                        TestFunc(btp.gap_conn, start_wid=78),
+                        TestFunc(btp.gap_connected_ev, start_wid=78),
+                        TestFunc(btp.gap_disconnected_ev, post_wid=118),
+                        TestFunc(btp.gap_pair, start_wid=108),
+                        TestFunc(btp.gap_disconn, start_wid=44),
+                        TestFunc(btp.gap_disconnected_ev, start_wid=44)]),
+        # TODO: Inform about lost bond
         ZTestCase("GAP", "TC_SEC_AUT_BV_22_C",
                   edit1_wids={1002: (btp.var_store_get_passkey, pts_bd_addr,
                                      Addr.le_public)},
@@ -779,6 +758,24 @@ def test_cases(pts):
                                  start_wid=112),
                         TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
                                  start_wid=108)]),
+        ZTestCase("GAP", "TC_SEC_AUT_BV_23_C",
+                  edit1_wids={1002: btp.var_store_get_passkey,
+                              144: "0008"},
+                  cmds=pre_conditions + init_gatt_db +
+                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+                        TestFunc(btp.gap_set_conn),
+                        TestFunc(btp.gap_adv_ind_on),
+                        TestFunc(btp.gap_connected_ev, post_wid=91),
+                        TestFunc(btp.gap_disconnected_ev, post_wid=1002)]),
+        ZTestCase("GAP", "TC_SEC_AUT_BV_24_C",
+                  edit1_wids={1002: btp.var_store_get_passkey,
+                              144: "0008"},
+                  cmds=pre_conditions + init_gatt_db +
+                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+                        TestFunc(btp.gap_conn, start_wid=78),
+                        TestFunc(btp.gap_connected_ev, start_wid=78),
+                        TestFunc(btp.gap_disconn, start_wid=44),
+                        TestFunc(btp.gap_disconnected_ev, start_wid=44)]),
          ZTestCase("GAP", "TC_SEC_CSIGN_BV_01_C",
                    pre_conditions +
                    [TestFunc(btp.core_reg_svc_gatts),
@@ -797,18 +794,6 @@ def test_cases(pts):
                              start_wid=77),
                     TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                              Addr.le_public, start_wid=77)]),
-         # Missing functionality - We respond "None" instead of the passkey
-         # ZTestCase("GAP", "TC_SEC_CSIGN_BV_02_C",
-         #           edit1_wids={1002: btp.var_get_passkey},
-         #           cmds=init_gatt_db + \
-         #                [TestFunc(btp.core_reg_svc_gap),
-         #                 TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-         #                 TestFunc(btp.gap_set_conn),
-         #                 TestFunc(btp.gap_adv_ind_on),
-         #                 TestFunc(btp.gap_connected_ev, pts_bd_addr,
-         #                          Addr.le_public, start_wid=91),
-         #                 TestFunc(btp.gap_passkey_disp_ev, pts_bd_addr,
-         #                          Addr.le_public, True, start_wid=1002)]),
         ZTestCase("GAP", "TC_SEC_CSIGN_BV_02_C",
                   cmds=init_gatt_db + pre_conditions +
                        [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
@@ -842,22 +827,20 @@ def test_cases(pts):
                                  start_wid=77),
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=77)]),
-        # By now, we cannot remove bonding 
-        # wid: 135
-        # description: Please have Upper Tester remove the bonding information
-        #              of the PTS. Press OK to continue
-        # ZTestCase("GAP", "TC_SEC_CSIGN_BI_03_C",
-        #           cmds=init_gatt_db + \
-        #                [TestFunc(btp.core_reg_svc_gap),
-        #                 TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
-        #                 TestFunc(btp.gap_set_conn),
-        #                 TestFunc(btp.gap_adv_ind_on),
-        #                 TestFunc(btp.gap_connected_ev, pts_bd_addr,
-        #                          Addr.le_public, start_wid=91),
-        #                 TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
-        #                          start_wid=77),
-        #                 TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
-        #                          Addr.le_public, start_wid=77)]),
+        ZTestCase("GAP", "TC_SEC_CSIGN_BI_03_C",
+                  cmds=init_gatt_db + pre_conditions +
+                       [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
+                        TestFunc(btp.gap_set_gendiscov, start_wid=91),
+                        TestFunc(btp.gap_set_conn, start_wid=91),
+                        TestFunc(btp.gap_adv_ind_on, start_wid=91),
+                        TestFunc(btp.gap_connected_ev, post_wid=91),
+                        TestFunc(btp.gap_adv_off, post_wid=91),
+                        TestFunc(btp.gap_disconn, start_wid=77),
+                        TestFunc(btp.gap_disconnected_ev, post_wid=77),
+                        TestFunc(btp.gap_unpair, start_wid=135),
+                        TestFunc(btp.gap_disconnected_ev, post_wid=118)],
+                  # PTS is asking if 0x000C is the handle for signed write
+                  verify_wids={161: '0x000C'}),
         ZTestCase("GAP", "TC_SEC_CSIGN_BI_04_C",
                   cmds=pre_conditions +
                        [TestFunc(btp.core_reg_svc_gatts),
@@ -877,6 +860,79 @@ def test_cases(pts):
                                  start_wid=77),
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=77)]),
+        # ZTestCase("GAP", "TC_PRIV_CONN_BV_10_C",
+        #           edit1_wids={1002: (btp.var_store_get_passkey, pts_bd_addr,
+        #                              Addr.le_public)},
+        #           cmds=pre_conditions +
+        #                [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+        #                 TestFunc(pts.update_pixit_param, "GAP",
+        #                          "TSPX_iut_device_name_in_adv_packet_for_random_address",
+        #                          iut_device_name),
+        #
+        #                 # Set RPA update to 15 minutes (15*60*1000=900000 ms)
+        #                 TestFunc(pts.update_pixit_param, "GAP",
+        #                          "TSPX_iut_private_address_interval", '900000'),
+        #                 TestFunc(btp.gap_set_conn),
+        #                 TestFunc(btp.gap_set_gendiscov),
+        #                 TestFunc(btp.gap_adv_ind_on, sd=[AdData.ad_name_sh]),
+        #                 TestFunc(btp.gap_connected_ev, post_wid=91,
+        #                          skip_call=(2,)),
+        #                 # Don't disable advertising here
+        #                 TestFunc(btp.gap_disconn, start_wid=77),
+        #                 TestFunc(btp.gap_disconnected_ev, post_wid=77)]),
+            # Workaround BZ-197 and PTS issue #15170
+            ZTestCase("GAP", "TC_PRIV_CONN_BV_10_C",
+                      edit1_wids={1002: (btp.var_store_get_passkey, pts_bd_addr,
+                                         Addr.le_public)},
+                      cmds=pre_conditions +
+                           [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+                            TestFunc(pts.update_pixit_param, "GAP",
+                                     "TSPX_iut_device_name_in_adv_packet_for_random_address",
+                                     iut_device_name),
+
+                            # Simulate RPA update every 10 seconds (10*1000=10000 ms)
+                            TestFunc(pts.update_pixit_param, "GAP",
+                                     "TSPX_iut_private_address_interval",
+                                     '10000'),
+                            TestFunc(btp.gap_set_conn),
+                            TestFunc(btp.gap_set_gendiscov),
+                            # Sleep 10 seconds and change RPA
+                            TestFunc(sleep, 10, start_wid=91, skip_call=(1,)),
+                            TestFunc(btp.gap_read_ctrl_info, start_wid=91,
+                                     skip_call=(1,)),
+                            TestFunc(btp.gap_adv_ind_on,
+                                     sd=[AdData.ad_name_sh], start_wid=91),
+                            TestFunc(sleep, 2, start_wid=91),
+                            TestFunc(btp.gap_connected_ev, post_wid=91,
+                                     skip_call=(2,)),
+                            TestFunc(btp.gap_adv_off, post_wid=91),
+                            # Don't disable advertising here
+                            TestFunc(btp.gap_disconn, start_wid=77),
+                            TestFunc(btp.gap_disconnected_ev, post_wid=77)]),
+        ZTestCase("GAP", "TC_PRIV_CONN_BV_11_C",
+                  # In order to speed up test execution, we fake RPA change
+                  # interval to 1 minute
+                  edit1_wids={1002: btp.var_store_get_passkey},
+                  cmds=pre_conditions +
+                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+                        TestFunc(pts.update_pixit_param, "GAP",
+                                 "TSPX_iut_device_name_in_adv_packet_for_random_address",
+                                 iut_device_name),
+                        # Set RPA update to 1 minute (60*1000=60000 ms)
+                        TestFunc(pts.update_pixit_param, "GAP",
+                                 "TSPX_iut_private_address_interval", '60000'),
+                        TestFunc(btp.gap_conn, start_wid=78),
+                        TestFunc(btp.gap_connected_ev, post_wid=78),
+                        TestFunc(btp.gap_pair, start_wid=108),
+                        TestFunc(btp.gap_disconnected_ev, start_wid=2142),
+                        # Sleep 1 minute and change RPA
+                        TestFunc(sleep, 60, start_wid=2142),
+                        TestFunc(btp.gap_read_ctrl_info, start_wid=2142),
+                        TestFunc(btp.gap_conn, start_wid=2142)],
+                  # Please confirm IUT does not perform the Connection
+                  # Establishment procedure since the resolvable private
+                  # address is incorrect.
+                  verify_wids={148: btp.verify_not_connected}),
         ZTestCase("GAP", "TC_ADV_BV_01_C",
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_set_conn),
@@ -913,14 +969,6 @@ def test_cases(pts):
                   cmds=init_gatt_db + pre_conditions +
                        [TestFunc(btp.gap_set_conn, start_wid=9),
                         TestFunc(btp.gap_adv_ind_on, start_wid=9)]),
-        ZTestCase("GAP", "TC_GAT_BV_05_C",
-                  cmds=init_gatt_db + pre_conditions +
-                      [TestFunc(btp.gap_set_conn, start_wid=91),
-                       TestFunc(btp.gap_adv_ind_on, start_wid=91)]),
-        ZTestCase("GAP", "TC_GAT_BV_06_C",
-                  cmds=init_gatt_db + pre_conditions +
-                      [TestFunc(btp.gap_set_conn, start_wid=91),
-                       TestFunc(btp.gap_adv_ind_on, start_wid=91)]),
     ]
 
     return test_cases

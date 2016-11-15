@@ -4,6 +4,7 @@ import re
 import time
 import logging
 
+from threading import Thread
 from utils import exec_iut_cmd
 import ptstypes
 
@@ -347,6 +348,7 @@ class TestCase(PTSCallback):
         self.verify_wids = verify_wids
         self.ok_cancel_wids = ok_cancel_wids
         self.post_wid_queue = []
+        self.post_wid_thread = None
 
     def __str__(self):
         """Returns string representation"""
@@ -392,6 +394,7 @@ class TestCase(PTSCallback):
         yes_response = "Yes"
         no_response = "No"
         my_response = ""
+        bool2rsp = {True: yes_response, False: no_response}
 
         # answer No
         if self.no_wid and wid == self.no_wid:
@@ -401,10 +404,13 @@ class TestCase(PTSCallback):
         elif self.verify_wids and wid in self.verify_wids:
             log("Starting verification of: %r", self.verify_wids)
 
-            if callable(self.verify_wids[wid]):
-                resp = self.verify_wids[wid](description)
-                my_response = {True: yes_response, False: no_response}[resp]
-
+            data = self.verify_wids[wid]
+            if callable(data):
+                bool_rsp = data(description)
+                my_response = bool2rsp[bool_rsp]
+            elif isinstance(data, tuple) and callable(data[0]):
+                bool_rsp = data[0](description, *data[1:])
+                my_response = bool2rsp[bool_rsp]
             else:
                 for verify in self.verify_wids[wid]:
                     log("Verifying: %r", verify)
@@ -519,7 +525,7 @@ class TestCase(PTSCallback):
         for cmd in self.post_wid_queue:
             cmd.start()
 
-        self.post_wid_queue = []
+        del self.post_wid_queue[:]
 
     def on_implicit_send(self, project_name, wid, test_case_name, description, style,
                          response, response_size, response_is_present):
@@ -527,7 +533,10 @@ class TestCase(PTSCallback):
         PTSControl.IPTSImplicitSendCallbackEx.OnImplicitSend"""
         log("%s %s", self, self.on_implicit_send.__name__)
 
-        self.run_post_wid_cmds()
+        # Wait post_wid functions to finish
+        if self.post_wid_thread and self.post_wid_thread.is_alive():
+            log("Waiting post wid thread to finish...")
+            self.post_wid_thread.join()
 
         # this should never happen, pts does not run tests in parallel
         # TODO - This is a temporary solution for PTS bug #14711
@@ -553,6 +562,12 @@ class TestCase(PTSCallback):
 
         # start/stop command if triggered by wid
         self.start_stop_cmds_by_wid(wid, description)
+
+        # if there are post wid TestFunc waiting run those in separate thread
+        if len(self.post_wid_queue):
+            log("Running post_wid test functions")
+            self.post_wid_thread = Thread(None, self.run_post_wid_cmds)
+            self.post_wid_thread.start()
 
         log("Sending response %r", my_response)
         return my_response
