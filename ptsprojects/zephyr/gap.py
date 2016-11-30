@@ -896,19 +896,26 @@ def test_cases(pts):
                                      '10000'),
                             TestFunc(btp.gap_set_conn),
                             TestFunc(btp.gap_set_gendiscov),
-                            # Sleep 10 seconds and change RPA
+
+                            # This step is used to speed up test execution, so
+                            # that RPA is updated every 10 seconds. This shall
+                            # be skipped on first wid: 91 requesting to send
+                            # advertising report. Here, we are disabling
+                            # previously started advertising, to generate new
+                            # RPA to be used when advertising is started again.
+                            TestFunc(btp.gap_adv_off, start_wid=91,
+                                     skip_call=(1,)),
                             TestFunc(sleep, 10, start_wid=91, skip_call=(1,)),
                             TestFunc(btp.gap_read_ctrl_info, start_wid=91,
                                      skip_call=(1,)),
+
                             TestFunc(btp.gap_adv_ind_on,
                                      sd=[AdData.ad_name_sh], start_wid=91),
-                            TestFunc(sleep, 2, start_wid=91),
                             TestFunc(btp.gap_connected_ev, post_wid=91,
                                      skip_call=(2,)),
-                            TestFunc(btp.gap_adv_off, post_wid=91),
                             # Don't disable advertising here
                             TestFunc(btp.gap_disconn, start_wid=77),
-                            TestFunc(btp.gap_disconnected_ev, post_wid=77)]),
+                            TestFunc(btp.gap_disconnected_ev, start_wid=77)]),
         ZTestCase("GAP", "TC_PRIV_CONN_BV_11_C",
                   # In order to speed up test execution, we fake RPA change
                   # interval to 1 minute
