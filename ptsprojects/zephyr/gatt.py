@@ -1084,7 +1084,6 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.long_1),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        # PTS Issue 14646,14728
         ZTestCase("GATT", "GATT/SR/GAN/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -1093,19 +1092,12 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, '00'),
                    TestFunc(btp.gatts_add_desc, 0,
                             Perm.read | Perm.write, UUID.CCC),
-
-                   # FIXME Add another characteristic with notify property to
-                   # workaround PTS failure
-                   TestFunc(btp.gatts_add_char, 0,
-                            Prop.nofity | Prop.read, Perm.read, UUID.VND16_3),
-
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1),
                    TestFunc(btp.gap_connected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=92),
                    TestFunc(sleep, 1, start_wid=92),
                    TestFunc(btp.gatts_set_val, 3, '01', start_wid=92)]),
-        # PTS Issue 14646, 14728
         ZTestCase("GATT", "GATT/SR/GAI/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -1114,22 +1106,14 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, '00'),
                    TestFunc(btp.gatts_add_desc, 0,
                             Perm.read | Perm.write, UUID.CCC),
-
-                   # FIXME Add another characteristic with notify property to
-                   # workaround PTS failure
-                   TestFunc(btp.gatts_add_char, 0,
-                            Prop.indicate | Prop.read, Perm.read, UUID.VND16_3),
-
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1),
                    TestFunc(btp.gap_connected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=98),
                    TestFunc(sleep, 1, start_wid=98),
                    TestFunc(btp.gatts_set_val, 3, '01', start_wid=98)]),
-        # PTS Issue 14646, 14728
         # Service Changed is not supported
         # ZTestCase("GATT", "GATT/SR/GAS/BV-01-C",
-        # PTS Issue 14646, 14728
         ZTestCase("GATT", "GATT/SR/GAT/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -1138,12 +1122,6 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, '00'),
                    TestFunc(btp.gatts_add_desc, 0,
                             Perm.read | Perm.write, UUID.CCC),
-
-                   # FIXME Add another characteristic with notify property to
-                   # workaround PTS failure
-                   TestFunc(btp.gatts_add_char, 0,
-                            Prop.indicate | Prop.read, Perm.read, UUID.VND16_3),
-
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1),
                    TestFunc(btp.gap_connected_ev, pts_bd_addr,
