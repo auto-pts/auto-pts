@@ -178,7 +178,7 @@ def test_cases_server(pts):
                     TestFunc(btp.gap_set_gendiscov)]
 
     test_cases = [
-        #ZTestCase("GATT", "TC_GAC_SR_BV_01_C",
+        #ZTestCase("GATT", "GATT/SR/GAC/BV-01-C",
         #          pre_conditions +
         #          [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
         #           TestFunc(btp.gatts_add_char, 0,
@@ -189,7 +189,7 @@ def test_cases_server(pts):
         #           TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
 
         # FIXME This TC implementation workarounds PTS issue #14616
-        ZTestCase("GATT", "TC_GAC_SR_BV_01_C",
+        ZTestCase("GATT", "GATT/SR/GAC/BV-01-C",
                   pre_conditions +
                   [TestFunc(pts.update_pixit_param,
                             "GATT", "TSPX_iut_is_server_central", "TRUE"),
@@ -210,13 +210,13 @@ def test_cases_server(pts):
                    TestFuncCleanUp(pts.update_pixit_param,
                                    "GATT", "TSPX_iut_is_server_central",
                                    "FALSE")]),
-        ZTestCase("GATT", "TC_GAD_SR_BV_01_C",
+        ZTestCase("GATT", "GATT/SR/GAD/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)],
                   verify_wids={17: ("Service = " + UUID.VND16_1)}),
-        ZTestCase("GATT", "TC_GAD_SR_BV_02_C",
+        ZTestCase("GATT", "GATT/SR/GAD/BV-02-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_start_server),
@@ -224,7 +224,7 @@ def test_cases_server(pts):
                   verify_wids={23: ("UUID= '%s" % UUID.VND16_1,
                                     "start handle = '0001'",
                                     "end handle = '0001'")}),
-        ZTestCase("GATT", "TC_GAD_SR_BV_03_C",
+        ZTestCase("GATT", "GATT/SR/GAD/BV-03-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -238,7 +238,7 @@ def test_cases_server(pts):
                                     "Included Service Attribute handle = '0001'",
                                     "End Group Handle = '0003'",
                                     "Service UUID = '%s'" % UUID.VND16_1)}),
-        ZTestCase("GATT", "TC_GAD_SR_BV_04_C",
+        ZTestCase("GATT", "GATT/SR/GAD/BV-04-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -248,7 +248,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)],
                   verify_wids={25: ("UUID= '%s'" % UUID.VND16_1,
                                     "handle='0002'")}),
-        ZTestCase("GATT", "TC_GAD_SR_BV_05_C",
+        ZTestCase("GATT", "GATT/SR/GAD/BV-05-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -256,7 +256,7 @@ def test_cases_server(pts):
                             Perm.read | Perm.write, UUID.VND16_2),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAD_SR_BV_06_C",
+        ZTestCase("GATT", "GATT/SR/GAD/BV-06-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -266,7 +266,7 @@ def test_cases_server(pts):
                             UUID.VND16_3),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAR_SR_BV_01_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -275,14 +275,14 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.one_byte),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAR_SR_BI_01_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BI-01-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0, 0x00, 0x00, UUID.VND16_2),
                    TestFunc(btp.gatts_set_val, 0, Value.one_byte),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAR_SR_BI_02_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BI-02-C",
                   edit1_wids={118: "ffff"},
                   cmds=pre_conditions +
                      [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -291,7 +291,7 @@ def test_cases_server(pts):
                       TestFunc(btp.gatts_set_val, 0, Value.one_byte),
                       TestFunc(btp.gatts_start_server),
                       TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAR_SR_BI_03_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BI-03-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0, Prop.read, Perm.read_authz,
@@ -299,7 +299,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.one_byte),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAR_SR_BI_04_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BI-04-C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                    TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -308,7 +308,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.one_byte),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAR_SR_BI_05_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BI-05-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -317,7 +317,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_enc_key_size, 2, 0x0f),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAR_SR_BV_03_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BV-03-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -326,7 +326,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.one_byte),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAR_SR_BI_06_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BI-06-C",
                   edit1_wids={111: UUID.VND16_2, 110: "0003"},
                   cmds=pre_conditions +
                          [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -335,7 +335,7 @@ def test_cases_server(pts):
                           TestFunc(btp.gatts_set_val, 0, Value.one_byte),
                           TestFunc(btp.gatts_start_server),
                           TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAR_SR_BI_07_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BI-07-C",
                   edit1_wids={119: UUID.VND16_3},
                   cmds=pre_conditions +
                          [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -345,7 +345,7 @@ def test_cases_server(pts):
                           TestFunc(btp.gatts_set_val, 0, Value.one_byte),
                           TestFunc(btp.gatts_start_server),
                           TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAR_SR_BI_08_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BI-08-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -354,7 +354,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.one_byte),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAR_SR_BI_09_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BI-09-C",
                   edit1_wids={113: UUID.VND16_2, 112: "0003"},
                   cmds=pre_conditions +
                        [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -363,7 +363,7 @@ def test_cases_server(pts):
                         TestFunc(btp.gatts_set_val, 0, Value.one_byte),
                         TestFunc(btp.gatts_start_server),
                         TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAR_SR_BI_10_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BI-10-C",
                   edit1_wids={115: UUID.VND16_2, 114: "0003"},
                   cmds=pre_conditions +
                        [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -372,7 +372,7 @@ def test_cases_server(pts):
                         TestFunc(btp.gatts_set_val, 0, Value.one_byte),
                         TestFunc(btp.gatts_start_server),
                         TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAR_SR_BI_11_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BI-11-C",
                   edit1_wids={121: "0003", 122: UUID.VND16_2},
                   cmds=pre_conditions +
                          [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -382,7 +382,7 @@ def test_cases_server(pts):
                           TestFunc(btp.gatts_set_enc_key_size, 0, 0x0f),
                           TestFunc(btp.gatts_start_server),
                           TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAR_SR_BV_04_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BV-04-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -393,7 +393,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)],
                   verify_wids={52: ("Please confirm IUT Handle='3'",
                                     "value='" + Value.long_1 + "'")}),
-        ZTestCase("GATT", "TC_GAR_SR_BI_12_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BI-12-C",
                   edit1_wids={110: "0003"},
                   cmds=pre_conditions +
                          [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -402,7 +402,7 @@ def test_cases_server(pts):
                           TestFunc(btp.gatts_set_val, 0, Value.long_1),
                           TestFunc(btp.gatts_start_server),
                           TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAR_SR_BI_13_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BI-13-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -411,7 +411,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.long_1),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAR_SR_BI_14_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BI-14-C",
                   edit1_wids={118: "ffff"},
                   cmds=pre_conditions +
                      [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -421,7 +421,7 @@ def test_cases_server(pts):
                       TestFunc(btp.gatts_set_val, 0, Value.long_1),
                       TestFunc(btp.gatts_start_server),
                       TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAR_SR_BI_15_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BI-15-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0, Prop.read, Perm.read_authz,
@@ -429,7 +429,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.long_1),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAR_SR_BI_16_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BI-16-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0, Prop.read, Perm.read_authn,
@@ -437,7 +437,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.long_1),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAR_SR_BI_17_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BI-17-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -446,7 +446,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_enc_key_size, 0, 0x0f),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAR_SR_BV_05_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BV-05-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -461,7 +461,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)],
                   verify_wids={56: ("Please confirm IUT Handle pair",
                                     "0005", "0003", "value='012301'")}),
-        ZTestCase("GATT", "TC_GAR_SR_BI_18_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BI-18-C",
                   edit1_wids={110: "0003"},
                   cmds=pre_conditions +
                      [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -474,7 +474,7 @@ def test_cases_server(pts):
                       TestFunc(btp.gatts_set_val, 0, Value.two_bytes),
                       TestFunc(btp.gatts_start_server),
                       TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAR_SR_BI_19_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BI-19-C",
                   edit1_wids={118: "ffff"},
                   cmds=pre_conditions +
                      [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -494,7 +494,7 @@ def test_cases_server(pts):
                       TestFunc(btp.gatts_set_val, 0, Value.two_bytes),
                       TestFunc(btp.gatts_start_server),
                       TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAR_SR_BI_20_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BI-20-C",
                   edit1_wids={123: "0003", 124: "0005"},
                   cmds=pre_conditions +
                      [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -510,7 +510,7 @@ def test_cases_server(pts):
                       TestFunc(btp.gatts_set_val, 0, Value.one_byte),
                       TestFunc(btp.gatts_start_server),
                       TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAR_SR_BI_21_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BI-21-C",
                   edit1_wids={123: "0003", 124: "0005"},
                   cmds=pre_conditions +
                      [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -526,7 +526,7 @@ def test_cases_server(pts):
                       TestFunc(btp.gatts_set_val, 0, Value.one_byte),
                       TestFunc(btp.gatts_start_server),
                       TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAR_SR_BI_22_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BI-22-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -544,7 +544,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, '10'),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAR_SR_BV_06_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BV-06-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -556,7 +556,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)],
                   verify_wids={52: ("Please confirm IUT Handle='4'",
                                     "value='"+ Value.eight_bytes_2 +"'")}),
-        ZTestCase("GATT", "TC_GAR_SR_BI_23_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BI-23-C",
                   edit1_wids={110: "0004"},
                   cmds=pre_conditions +
                      [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -567,7 +567,7 @@ def test_cases_server(pts):
                       TestFunc(btp.gatts_set_val, 0, Value.two_bytes),
                       TestFunc(btp.gatts_start_server),
                       TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAR_SR_BI_24_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BI-24-C",
                   edit1_wids={118: "0005"},
                   cmds=pre_conditions +
                      [TestFunc(btp.gatts_add_svc, 0, UUID.VND128_1),
@@ -578,7 +578,7 @@ def test_cases_server(pts):
                       TestFunc(btp.gatts_set_val, 0, Value.two_bytes),
                       TestFunc(btp.gatts_start_server),
                       TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAR_SR_BI_25_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BI-25-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -589,7 +589,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.two_bytes),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAR_SR_BI_26_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BI-26-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND128_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -600,7 +600,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.two_bytes),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAR_SR_BI_27_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BI-27-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -611,7 +611,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_enc_key_size, 0, 0x0f),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAR_SR_BV_07_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BV-07-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -623,7 +623,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)],
                   verify_wids={52: ("Please confirm IUT Handle='4'",
                                     "value='" + Value.long_1 + "'")}),
-        ZTestCase("GATT", "TC_GAR_SR_BV_08_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BV-08-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -635,7 +635,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)],
                   verify_wids={52: ("Please confirm IUT Handle='4'",
                                     "value='" + Value.long_1 + "'")}),
-        ZTestCase("GATT", "TC_GAR_SR_BI_28_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BI-28-C",
                   edit1_wids={110: "0004"},
                   cmds=pre_conditions +
                      [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -646,7 +646,7 @@ def test_cases_server(pts):
                       TestFunc(btp.gatts_set_val, 0, Value.long_1),
                       TestFunc(btp.gatts_start_server),
                       TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAR_SR_BI_29_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BI-29-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -656,7 +656,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.long_1),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAR_SR_BI_30_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BI-30-C",
                   edit1_wids={118: "FFFF"},
                   cmds=pre_conditions +
                      [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -667,7 +667,7 @@ def test_cases_server(pts):
                       TestFunc(btp.gatts_set_val, 0, Value.long_1),
                       TestFunc(btp.gatts_start_server),
                       TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAR_SR_BI_31_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BI-31-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -678,7 +678,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.long_1),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAR_SR_BI_32_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BI-32-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND128_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -689,7 +689,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.long_1),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAR_SR_BI_33_C",
+        ZTestCase("GATT", "GATT/SR/GAR/BI-33-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -700,7 +700,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_enc_key_size, 0, 0x0f),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAW_SR_BV_01_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -710,7 +710,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)],
                   verify_wids={75: ("Please confirm IUT Write characteristic handle= '0003'O value= 'BE'O",)}),
-        ZTestCase("GATT", "TC_GAW_SR_BV_02_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BV-02-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -719,7 +719,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.eight_bytes_1),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAW_SR_BI_01_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BI-01-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -728,7 +728,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.eight_bytes_1),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAW_SR_BV_03_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BV-03-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0, Prop.read | Prop.write,
@@ -736,7 +736,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.two_bytes),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAW_SR_BI_02_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BI-02-C",
                   edit1_wids={118: "ffff"},
                   cmds=pre_conditions +
                      [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -746,7 +746,7 @@ def test_cases_server(pts):
                       TestFunc(btp.gatts_set_val, 0, Value.two_bytes),
                       TestFunc(btp.gatts_start_server),
                       TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAW_SR_BI_03_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BI-03-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -755,7 +755,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.two_bytes),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAW_SR_BI_04_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BI-04-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0, Prop.read | Prop.write,
@@ -763,7 +763,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.two_bytes),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on)]),
-        ZTestCase("GATT", "TC_GAW_SR_BI_05_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BI-05-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0, Prop.read | Prop.write,
@@ -771,7 +771,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.two_bytes),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on)]),
-        ZTestCase("GATT", "TC_GAW_SR_BI_06_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BI-06-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0, Prop.read | Prop.write,
@@ -780,7 +780,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_enc_key_size, 0, 0x0f),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAW_SR_BV_05_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BV-05-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -789,7 +789,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.long_1),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAW_SR_BI_07_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BI-07-C",
                   edit1_wids={118: "ffff"},
                   cmds=pre_conditions +
                      [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -799,7 +799,7 @@ def test_cases_server(pts):
                       TestFunc(btp.gatts_set_val, 0, Value.long_1),
                       TestFunc(btp.gatts_start_server),
                       TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAW_SR_BI_08_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BI-08-C",
                   edit1_wids={120: "0002"},
                   cmds=pre_conditions +
                      [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -809,7 +809,7 @@ def test_cases_server(pts):
                       TestFunc(btp.gatts_set_val, 0, Value.long_1),
                       TestFunc(btp.gatts_start_server),
                       TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAW_SR_BI_09_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BI-09-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0, Prop.read | Prop.write,
@@ -817,7 +817,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.long_1),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAW_SR_BI_11_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BI-11-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0, Prop.read | Prop.write,
@@ -825,7 +825,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.long_1),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on)]),
-        ZTestCase("GATT", "TC_GAW_SR_BI_12_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BI-12-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0, Prop.read | Prop.write,
@@ -833,7 +833,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.long_1),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on)]),
-        ZTestCase("GATT", "TC_GAW_SR_BI_13_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BI-13-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0, Prop.read | Prop.write,
@@ -842,7 +842,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_enc_key_size, 0, 0x0f),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAW_SR_BV_06_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BV-06-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -851,7 +851,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.long_1),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAW_SR_BV_10_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BV-10-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -864,7 +864,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.long_2),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAW_SR_BI_14_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BI-14-C",
                   edit1_wids={118: "ffff"},
                   cmds=pre_conditions +
                      [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -874,7 +874,7 @@ def test_cases_server(pts):
                       TestFunc(btp.gatts_set_val, 0, Value.long_1),
                       TestFunc(btp.gatts_start_server),
                       TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAW_SR_BI_15_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BI-15-C",
                   edit1_wids={120: "0002"},
                   cmds=pre_conditions +
                      [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -884,7 +884,7 @@ def test_cases_server(pts):
                       TestFunc(btp.gatts_set_val, 0, Value.long_1),
                       TestFunc(btp.gatts_start_server),
                       TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAW_SR_BI_17_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BI-17-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -895,7 +895,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, '0100'),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on)]),
-        ZTestCase("GATT", "TC_GAW_SR_BI_18_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BI-18-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -906,7 +906,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, '0100'),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on)]),
-        ZTestCase("GATT", "TC_GAW_SR_BI_19_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BI-19-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0, Prop.read | Prop.write,
@@ -915,7 +915,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_enc_key_size, 0, 0x0f),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAW_SR_BV_07_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BV-07-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -924,7 +924,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.long_1),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAW_SR_BV_08_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BV-08-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -935,7 +935,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.two_bytes),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAW_SR_BI_20_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BI-20-C",
                   edit1_wids={118: "FFFF"},
                   cmds=pre_conditions +
                      [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -946,7 +946,7 @@ def test_cases_server(pts):
                       TestFunc(btp.gatts_set_val, 0, Value.two_bytes),
                       TestFunc(btp.gatts_start_server),
                       TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAW_SR_BI_21_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BI-21-C",
                   edit1_wids={120: "0004"},
                   cmds=pre_conditions +
                      [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -957,7 +957,7 @@ def test_cases_server(pts):
                       TestFunc(btp.gatts_set_val, 0, Value.two_bytes),
                       TestFunc(btp.gatts_start_server),
                       TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAW_SR_BI_22_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BI-22-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -968,7 +968,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.two_bytes),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAW_SR_BI_23_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BI-23-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND128_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -979,7 +979,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.two_bytes),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAW_SR_BI_24_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BI-24-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -991,7 +991,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_enc_key_size, 0, 0x0f),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAW_SR_BV_09_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BV-09-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -1002,7 +1002,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.long_1),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAW_SR_BI_25_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BI-25-C",
                   edit1_wids={118: "ABCD"},
                   cmds=pre_conditions +
                      [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -1013,7 +1013,7 @@ def test_cases_server(pts):
                       TestFunc(btp.gatts_set_val, 0, Value.long_1),
                       TestFunc(btp.gatts_start_server),
                       TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAW_SR_BI_26_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BI-26-C",
                   edit1_wids={120: "0004"},
                   cmds=pre_conditions +
                      [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -1024,7 +1024,7 @@ def test_cases_server(pts):
                       TestFunc(btp.gatts_set_val, 0, Value.long_1),
                       TestFunc(btp.gatts_start_server),
                       TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAW_SR_BI_27_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BI-27-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -1035,7 +1035,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.long_1),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAW_SR_BI_29_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BI-29-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -1046,7 +1046,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.long_1),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAW_SR_BI_30_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BI-30-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -1057,7 +1057,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.long_1),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAW_SR_BI_31_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BI-31-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -1069,7 +1069,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_enc_key_size, 0, 0x0f),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAW_SR_BI_32_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BI-32-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0, Prop.read | Prop.write,
@@ -1077,7 +1077,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.one_byte),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAW_SR_BI_33_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BI-33-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0, Prop.read | Prop.write,
@@ -1085,7 +1085,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.long_1),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAW_SR_BI_34_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BI-34-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0, Prop.read,
@@ -1096,7 +1096,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.two_bytes),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GAW_SR_BI_35_C",
+        ZTestCase("GATT", "GATT/SR/GAW/BI-35-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -1108,7 +1108,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
         # PTS Issue 14646,14728
-        ZTestCase("GATT", "TC_GAN_SR_BV_01_C",
+        ZTestCase("GATT", "GATT/SR/GAN/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -1129,7 +1129,7 @@ def test_cases_server(pts):
                    TestFunc(sleep, 1, start_wid=92),
                    TestFunc(btp.gatts_set_val, 3, '01', start_wid=92)]),
         # PTS Issue 14646, 14728
-        ZTestCase("GATT", "TC_GAI_SR_BV_01_C",
+        ZTestCase("GATT", "GATT/SR/GAI/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -1151,9 +1151,9 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 3, '01', start_wid=98)]),
         # PTS Issue 14646, 14728
         # Service Changed is not supported
-        # ZTestCase("GATT", "TC_GAS_SR_BV_01_C",
+        # ZTestCase("GATT", "GATT/SR/GAS/BV-01-C",
         # PTS Issue 14646, 14728
-        ZTestCase("GATT", "TC_GAT_SR_BV_01_C",
+        ZTestCase("GATT", "GATT/SR/GAT/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -1173,7 +1173,7 @@ def test_cases_server(pts):
                             Addr.le_public, start_wid=98),
                    TestFunc(sleep, 1, start_wid=98),
                    TestFunc(btp.gatts_set_val, 3, '01', start_wid=98)]),
-        ZTestCase("GATT", "TC_GPA_SR_BV_01_C",
+        ZTestCase("GATT", "GATT/SR/GPA/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0, Prop.read,
@@ -1183,7 +1183,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)],
                   verify_wids={102: ("Attribute Handle = '0001'",
                                      "Primary Service = '%s'" % UUID.VND16_1)}),
-        ZTestCase("GATT", "TC_GPA_SR_BV_02_C",
+        ZTestCase("GATT", "GATT/SR/GPA/BV-02-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 1, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0, Prop.read,
@@ -1195,7 +1195,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)],
                   verify_wids={102: ("Attribute Handle = '0001'",
                                      "Secondary Service = '%s'" % UUID.VND16_1)}),
-        ZTestCase("GATT", "TC_GPA_SR_BV_03_C",
+        ZTestCase("GATT", "GATT/SR/GPA/BV-03-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0, Prop.read,
@@ -1209,7 +1209,7 @@ def test_cases_server(pts):
                                      "Included Service Attribute handle = '0001'",
                                      "End Group Handle = '0003'",
                                      "Service UUID = '%s'" % UUID.VND16_1)}),
-        ZTestCase("GATT", "TC_GPA_SR_BV_04_C",
+        ZTestCase("GATT", "GATT/SR/GPA/BV-04-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0, Prop.read,
@@ -1221,7 +1221,7 @@ def test_cases_server(pts):
                                      "Properties = '02'",
                                      "Handle = '0003'",
                                      "UUID = '%s'" % UUID.VND16_2)}),
-        ZTestCase("GATT", "TC_GPA_SR_BV_05_C",
+        ZTestCase("GATT", "GATT/SR/GPA/BV-05-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -1234,7 +1234,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)],
                   verify_wids={52: ("Handle='4'",
                                     "value='0100'")}),
-        ZTestCase("GATT", "TC_GPA_SR_BV_06_C",
+        ZTestCase("GATT", "GATT/SR/GPA/BV-06-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -1246,7 +1246,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)],
                   verify_wids={52: ("Handle='4'",
                                     "value='73616D706C652074657874'")}),
-        ZTestCase("GATT", "TC_GPA_SR_BV_07_C",
+        ZTestCase("GATT", "GATT/SR/GPA/BV-07-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -1260,7 +1260,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)],
                   verify_wids={52: ("Handle='4'",
                                     "value='0000'")}),
-        ZTestCase("GATT", "TC_GPA_SR_BV_08_C",
+        ZTestCase("GATT", "GATT/SR/GPA/BV-08-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0, Prop.broadcast | Prop.read,
@@ -1275,7 +1275,7 @@ def test_cases_server(pts):
                   verify_wids={52: ("Handle='4'",
                                     "value='0000'")}),
         # PTS issue #14437, #14275, TSE #7063
-        ZTestCase("GATT", "TC_GPA_SR_BV_11_C",
+        ZTestCase("GATT", "GATT/SR/GPA/BV-11-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0, Prop.read | Prop.write,
@@ -1300,7 +1300,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, '040007001000'),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-        ZTestCase("GATT", "TC_GPA_SR_BV_12_C",
+        ZTestCase("GATT", "GATT/SR/GPA/BV-12-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0, Prop.read, Perm.read,
@@ -1339,7 +1339,7 @@ def test_cases_client(pts):
                     TestFunc(btp.core_reg_svc_gatts)]
 
     test_cases = [
-        ZTestCase("GATT", "TC_GAC_CL_BV_01_C",
+        ZTestCase("GATT", "GATT/CL/GAC/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -1356,7 +1356,7 @@ def test_cases_client(pts):
                             Addr.le_public, start_wid=3),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)]),
-        ZTestCase("GATT", "TC_GAD_CL_BV_02_C",
+        ZTestCase("GATT", "GATT/CL/GAD/BV-02-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -1376,7 +1376,7 @@ def test_cases_client(pts):
                             Addr.le_public, start_wid=3)],
                   verify_wids={19: btp.verify_description,
                                21: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAD_CL_BV_03_C",
+        ZTestCase("GATT", "GATT/CL/GAD/BV-03-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -1393,7 +1393,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)],
                   verify_wids={24: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAD_CL_BV_04_C",
+        ZTestCase("GATT", "GATT/CL/GAD/BV-04-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -1408,7 +1408,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)],
                   verify_wids={28: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAD_CL_BV_05_C",
+        ZTestCase("GATT", "GATT/CL/GAD/BV-05-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -1423,7 +1423,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)],
                   verify_wids={30: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAD_CL_BV_06_C",
+        ZTestCase("GATT", "GATT/CL/GAD/BV-06-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -1438,7 +1438,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)],
                   verify_wids={32: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAR_CL_BV_01_C",
+        ZTestCase("GATT", "GATT/CL/GAR/BV-01-C",
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_conn, pts_bd_addr,
                                  Addr.le_public, start_wid=2),
@@ -1454,7 +1454,7 @@ def test_cases_client(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=3)],
                   verify_wids={50: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAR_CL_BI_01_C",
+        ZTestCase("GATT", "GATT/CL/GAR/BI-01-C",
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_conn, pts_bd_addr,
                                  Addr.le_public, start_wid=2),
@@ -1469,7 +1469,7 @@ def test_cases_client(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=3)],
                   verify_wids={40: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAR_CL_BI_02_C",
+        ZTestCase("GATT", "GATT/CL/GAR/BI-02-C",
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_conn, pts_bd_addr,
                                  Addr.le_public, start_wid=2),
@@ -1485,7 +1485,7 @@ def test_cases_client(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=3)],
                   verify_wids={41: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAR_CL_BI_03_C",
+        ZTestCase("GATT", "GATT/CL/GAR/BI-03-C",
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_conn, pts_bd_addr,
                                  Addr.le_public, start_wid=2),
@@ -1500,7 +1500,7 @@ def test_cases_client(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=3)],
                   verify_wids={42: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAR_CL_BI_04_C",
+        ZTestCase("GATT", "GATT/CL/GAR/BI-04-C",
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_conn, pts_bd_addr,
                                  Addr.le_public, start_wid=2),
@@ -1515,7 +1515,7 @@ def test_cases_client(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=3)],
                   verify_wids={43: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAR_CL_BI_05_C",
+        ZTestCase("GATT", "GATT/CL/GAR/BI-05-C",
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_conn, pts_bd_addr,
                                  Addr.le_public, start_wid=2),
@@ -1530,7 +1530,7 @@ def test_cases_client(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=3)],
                   verify_wids={44: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAR_CL_BV_04_C",
+        ZTestCase("GATT", "GATT/CL/GAR/BV-04-C",
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_conn, pts_bd_addr,
                                  Addr.le_public, start_wid=2),
@@ -1545,7 +1545,7 @@ def test_cases_client(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=3)],
                   verify_wids={52: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAR_CL_BI_12_C",
+        ZTestCase("GATT", "GATT/CL/GAR/BI-12-C",
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_conn, pts_bd_addr,
                                  Addr.le_public, start_wid=2),
@@ -1560,7 +1560,7 @@ def test_cases_client(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=3)],
                   verify_wids={41: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAR_CL_BI_13_C",
+        ZTestCase("GATT", "GATT/CL/GAR/BI-13-C",
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_conn, pts_bd_addr,
                                  Addr.le_public, start_wid=2),
@@ -1576,7 +1576,7 @@ def test_cases_client(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=3)],
                   verify_wids={46: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAR_CL_BI_14_C",
+        ZTestCase("GATT", "GATT/CL/GAR/BI-14-C",
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_conn, pts_bd_addr,
                                  Addr.le_public, start_wid=2),
@@ -1591,7 +1591,7 @@ def test_cases_client(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=3)],
                   verify_wids={40: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAR_CL_BI_15_C",
+        ZTestCase("GATT", "GATT/CL/GAR/BI-15-C",
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_conn, pts_bd_addr,
                                  Addr.le_public, start_wid=2),
@@ -1606,7 +1606,7 @@ def test_cases_client(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=3)],
                   verify_wids={42: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAR_CL_BI_16_C",
+        ZTestCase("GATT", "GATT/CL/GAR/BI-16-C",
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_conn, pts_bd_addr,
                                  Addr.le_public, start_wid=2),
@@ -1621,7 +1621,7 @@ def test_cases_client(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=3)],
                   verify_wids={43: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAR_CL_BI_17_C",
+        ZTestCase("GATT", "GATT/CL/GAR/BI-17-C",
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_conn, pts_bd_addr,
                                  Addr.le_public, start_wid=2),
@@ -1636,7 +1636,7 @@ def test_cases_client(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=3)],
                   verify_wids={44: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAR_CL_BV_05_C",
+        ZTestCase("GATT", "GATT/CL/GAR/BV-05-C",
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_conn, pts_bd_addr,
                                  Addr.le_public, start_wid=2),
@@ -1652,7 +1652,7 @@ def test_cases_client(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=3)],
                   verify_wids={55: btp.verify_multiple_read_description}),
-        ZTestCase("GATT", "TC_GAR_CL_BI_18_C",
+        ZTestCase("GATT", "GATT/CL/GAR/BI-18-C",
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_conn, pts_bd_addr,
                                  Addr.le_public, start_wid=2),
@@ -1668,7 +1668,7 @@ def test_cases_client(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=3)],
                   verify_wids={41: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAR_CL_BI_19_C",
+        ZTestCase("GATT", "GATT/CL/GAR/BI-19-C",
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_conn, pts_bd_addr,
                                  Addr.le_public, start_wid=2),
@@ -1684,7 +1684,7 @@ def test_cases_client(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=3)],
                   verify_wids={40: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAR_CL_BI_20_C",
+        ZTestCase("GATT", "GATT/CL/GAR/BI-20-C",
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_conn, pts_bd_addr,
                                  Addr.le_public, start_wid=2),
@@ -1700,7 +1700,7 @@ def test_cases_client(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=3)],
                   verify_wids={42: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAR_CL_BI_21_C",
+        ZTestCase("GATT", "GATT/CL/GAR/BI-21-C",
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_conn, pts_bd_addr,
                                  Addr.le_public, start_wid=2),
@@ -1716,7 +1716,7 @@ def test_cases_client(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=3)],
                   verify_wids={43: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAR_CL_BI_22_C",
+        ZTestCase("GATT", "GATT/CL/GAR/BI-22-C",
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_conn, pts_bd_addr,
                                  Addr.le_public, start_wid=2),
@@ -1732,7 +1732,7 @@ def test_cases_client(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=3)],
                   verify_wids={44: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAR_CL_BV_06_C",
+        ZTestCase("GATT", "GATT/CL/GAR/BV-06-C",
                   edit1_wids={104: btp.var_get_passkey},
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_conn, pts_bd_addr,
@@ -1748,7 +1748,7 @@ def test_cases_client(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=3)],
                   verify_wids={59: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAR_CL_BI_23_C",
+        ZTestCase("GATT", "GATT/CL/GAR/BI-23-C",
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_conn, pts_bd_addr,
                                  Addr.le_public, start_wid=2),
@@ -1763,7 +1763,7 @@ def test_cases_client(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=3)],
                   verify_wids={41: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAR_CL_BI_24_C",
+        ZTestCase("GATT", "GATT/CL/GAR/BI-24-C",
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_conn, pts_bd_addr,
                                  Addr.le_public, start_wid=2),
@@ -1778,7 +1778,7 @@ def test_cases_client(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=3)],
                   verify_wids={40: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAR_CL_BI_25_C",
+        ZTestCase("GATT", "GATT/CL/GAR/BI-25-C",
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_conn, pts_bd_addr,
                                  Addr.le_public, start_wid=2),
@@ -1793,7 +1793,7 @@ def test_cases_client(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=3)],
                   verify_wids={42: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAR_CL_BI_26_C",
+        ZTestCase("GATT", "GATT/CL/GAR/BI-26-C",
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_conn, pts_bd_addr,
                                  Addr.le_public, start_wid=2),
@@ -1808,7 +1808,7 @@ def test_cases_client(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=3)],
                   verify_wids={43: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAR_CL_BI_27_C",
+        ZTestCase("GATT", "GATT/CL/GAR/BI-27-C",
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_conn, pts_bd_addr,
                                  Addr.le_public, start_wid=2),
@@ -1823,7 +1823,7 @@ def test_cases_client(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=3)],
                   verify_wids={44: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAR_CL_BV_07_C",
+        ZTestCase("GATT", "GATT/CL/GAR/BV-07-C",
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_conn, pts_bd_addr,
                                  Addr.le_public, start_wid=2),
@@ -1838,7 +1838,7 @@ def test_cases_client(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=3)],
                   verify_wids={52: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAR_CL_BI_28_C",
+        ZTestCase("GATT", "GATT/CL/GAR/BI-28-C",
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_conn, pts_bd_addr,
                                  Addr.le_public, start_wid=2),
@@ -1853,7 +1853,7 @@ def test_cases_client(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=3)],
                   verify_wids={41: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAR_CL_BI_29_C",
+        ZTestCase("GATT", "GATT/CL/GAR/BI-29-C",
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_conn, pts_bd_addr,
                                  Addr.le_public, start_wid=2),
@@ -1869,7 +1869,7 @@ def test_cases_client(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=3)],
                   verify_wids={46: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAR_CL_BI_30_C",
+        ZTestCase("GATT", "GATT/CL/GAR/BI-30-C",
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_conn, pts_bd_addr,
                                  Addr.le_public, start_wid=2),
@@ -1884,7 +1884,7 @@ def test_cases_client(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=3)],
                   verify_wids={40: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAR_CL_BI_31_C",
+        ZTestCase("GATT", "GATT/CL/GAR/BI-31-C",
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_conn, pts_bd_addr,
                                  Addr.le_public, start_wid=2),
@@ -1899,7 +1899,7 @@ def test_cases_client(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=3)],
                   verify_wids={42: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAR_CL_BI_32_C",
+        ZTestCase("GATT", "GATT/CL/GAR/BI-32-C",
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_conn, pts_bd_addr,
                                  Addr.le_public, start_wid=2),
@@ -1914,7 +1914,7 @@ def test_cases_client(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=3)],
                   verify_wids={43: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAR_CL_BI_33_C",
+        ZTestCase("GATT", "GATT/CL/GAR/BI-33-C",
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_conn, pts_bd_addr,
                                  Addr.le_public, start_wid=2),
@@ -1929,7 +1929,7 @@ def test_cases_client(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=3)],
                   verify_wids={44: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAR_CL_BI_35_C",
+        ZTestCase("GATT", "GATT/CL/GAR/BI-35-C",
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_conn, pts_bd_addr,
                                  Addr.le_public, start_wid=2),
@@ -1944,7 +1944,7 @@ def test_cases_client(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=3)],
                   verify_wids={47: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAW_CL_BV_01_C",
+        ZTestCase("GATT", "GATT/CL/GAW/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -1957,7 +1957,7 @@ def test_cases_client(pts):
                             Addr.le_public, start_wid=3),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)]),
-        ZTestCase("GATT", "TC_GAW_CL_BV_02_C",
+        ZTestCase("GATT", "GATT/CL/GAW/BV-02-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -1970,7 +1970,7 @@ def test_cases_client(pts):
                             Addr.le_public, start_wid=3),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)]),
-        ZTestCase("GATT", "TC_GAW_CL_BV_03_C",
+        ZTestCase("GATT", "GATT/CL/GAW/BV-03-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -1984,7 +1984,7 @@ def test_cases_client(pts):
                             Addr.le_public, start_wid=3),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)]),
-        ZTestCase("GATT", "TC_GAW_CL_BI_02_C",
+        ZTestCase("GATT", "GATT/CL/GAW/BI-02-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -1999,7 +1999,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)],
                   verify_wids={61: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAW_CL_BI_03_C",
+        ZTestCase("GATT", "GATT/CL/GAW/BI-03-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -2014,7 +2014,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)],
                   verify_wids={62: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAW_CL_BI_04_C",
+        ZTestCase("GATT", "GATT/CL/GAW/BI-04-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -2029,7 +2029,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)],
                   verify_wids={63: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAW_CL_BI_05_C",
+        ZTestCase("GATT", "GATT/CL/GAW/BI-05-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -2044,7 +2044,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)],
                   verify_wids={64: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAW_CL_BI_06_C",
+        ZTestCase("GATT", "GATT/CL/GAW/BI-06-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -2059,7 +2059,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)],
                   verify_wids={65: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAW_CL_BV_05_C",
+        ZTestCase("GATT", "GATT/CL/GAW/BV-05-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -2073,7 +2073,7 @@ def test_cases_client(pts):
                             Addr.le_public, start_wid=3),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)]),
-        ZTestCase("GATT", "TC_GAW_CL_BI_07_C",
+        ZTestCase("GATT", "GATT/CL/GAW/BI-07-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -2088,7 +2088,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)],
                   verify_wids={61: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAW_CL_BI_08_C",
+        ZTestCase("GATT", "GATT/CL/GAW/BI-08-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -2103,7 +2103,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)],
                   verify_wids={62: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAW_CL_BI_09_C",
+        ZTestCase("GATT", "GATT/CL/GAW/BI-09-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -2118,7 +2118,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)],
                   verify_wids={66: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAW_CL_BI_11_C",
+        ZTestCase("GATT", "GATT/CL/GAW/BI-11-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -2133,7 +2133,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)],
                   verify_wids={63: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAW_CL_BI_12_C",
+        ZTestCase("GATT", "GATT/CL/GAW/BI-12-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -2148,7 +2148,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)],
                   verify_wids={64: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAW_CL_BI_13_C",
+        ZTestCase("GATT", "GATT/CL/GAW/BI-13-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -2163,7 +2163,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)],
                   verify_wids={65: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAW_CL_BV_08_C",
+        ZTestCase("GATT", "GATT/CL/GAW/BV-08-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -2177,7 +2177,7 @@ def test_cases_client(pts):
                             Addr.le_public, start_wid=3),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)]),
-        ZTestCase("GATT", "TC_GAW_CL_BI_20_C",
+        ZTestCase("GATT", "GATT/CL/GAW/BI-20-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -2192,7 +2192,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)],
                   verify_wids={61: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAW_CL_BI_21_C",
+        ZTestCase("GATT", "GATT/CL/GAW/BI-21-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -2207,7 +2207,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)],
                   verify_wids={62: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAW_CL_BI_22_C",
+        ZTestCase("GATT", "GATT/CL/GAW/BI-22-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -2222,7 +2222,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)],
                   verify_wids={63: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAW_CL_BI_23_C",
+        ZTestCase("GATT", "GATT/CL/GAW/BI-23-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -2237,7 +2237,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)],
                   verify_wids={64: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAW_CL_BI_24_C",
+        ZTestCase("GATT", "GATT/CL/GAW/BI-24-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -2252,7 +2252,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)],
                   verify_wids={65: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAW_CL_BV_09_C",
+        ZTestCase("GATT", "GATT/CL/GAW/BV-09-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -2266,7 +2266,7 @@ def test_cases_client(pts):
                             Addr.le_public, start_wid=3),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)]),
-        ZTestCase("GATT", "TC_GAW_CL_BI_25_C",
+        ZTestCase("GATT", "GATT/CL/GAW/BI-25-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -2281,7 +2281,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)],
                   verify_wids={61: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAW_CL_BI_26_C",
+        ZTestCase("GATT", "GATT/CL/GAW/BI-26-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -2296,7 +2296,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)],
                   verify_wids={62: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAW_CL_BI_27_C",
+        ZTestCase("GATT", "GATT/CL/GAW/BI-27-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -2311,7 +2311,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)],
                   verify_wids={66: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAW_CL_BI_29_C",
+        ZTestCase("GATT", "GATT/CL/GAW/BI-29-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -2326,7 +2326,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)],
                   verify_wids={63: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAW_CL_BI_30_C",
+        ZTestCase("GATT", "GATT/CL/GAW/BI-30-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -2341,7 +2341,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)],
                   verify_wids={64: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAW_CL_BI_31_C",
+        ZTestCase("GATT", "GATT/CL/GAW/BI-31-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -2356,7 +2356,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)],
                   verify_wids={65: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAW_CL_BI_33_C",
+        ZTestCase("GATT", "GATT/CL/GAW/BI-33-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -2371,7 +2371,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)],
                   verify_wids={67: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAW_CL_BI_34_C",
+        ZTestCase("GATT", "GATT/CL/GAW/BI-34-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -2386,7 +2386,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)],
                   verify_wids={67: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAW_CL_BI_35_C",
+        ZTestCase("GATT", "GATT/CL/GAW/BI-35-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -2401,7 +2401,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)],
                   verify_wids={67: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAW_CL_BI_36_C",
+        ZTestCase("GATT", "GATT/CL/GAW/BI-36-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -2416,7 +2416,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)],
                   verify_wids={67: btp.verify_description}),
-        ZTestCase("GATT", "TC_GAN_CL_BV_01_C",
+        ZTestCase("GATT", "GATT/CL/GAN/BV-01-C",
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_conn, pts_bd_addr,
                                  Addr.le_public, start_wid=2),
@@ -2430,7 +2430,7 @@ def test_cases_client(pts):
                                  Addr.le_public, start_wid=3),
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=3)]),
-        ZTestCase("GATT", "TC_GAI_CL_BV_01_C",
+        ZTestCase("GATT", "GATT/CL/GAI/BV-01-C",
                     cmds=pre_conditions +
                          [TestFunc(btp.gap_conn, pts_bd_addr,
                                    Addr.le_public, start_wid=2),
@@ -2444,7 +2444,7 @@ def test_cases_client(pts):
                                    Addr.le_public, start_wid=3),
                           TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                    Addr.le_public, start_wid=3)]),
-        ZTestCase("GATT", "TC_GAS_CL_BV_01_C",
+        ZTestCase("GATT", "GATT/CL/GAS/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -2454,7 +2454,7 @@ def test_cases_client(pts):
                             Addr.le_public, start_wid=3),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)]),
-        ZTestCase("GATT", "TC_GAT_CL_BV_01_C",
+        ZTestCase("GATT", "GATT/CL/GAT/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
@@ -2466,7 +2466,7 @@ def test_cases_client(pts):
                             Addr.le_public, start_wid=3),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)]),
-        ZTestCase("GATT", "TC_GAT_CL_BV_02_C",
+        ZTestCase("GATT", "GATT/CL/GAT/BV-02-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
                             Addr.le_public, start_wid=2),
