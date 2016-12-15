@@ -242,11 +242,17 @@ def test_cases(pts):
                   edit1_wids={104: btp.var_get_passkey},
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+                        TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
+                                 Addr.le_public, start_wid=115,
+                                 skip_call=(1,)),
                         TestFunc(btp.gap_adv_ind_on, start_wid=115),
                         TestFunc(btp.gap_connected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=115),
                         TestFunc(btp.gap_passkey_disp_ev, pts_bd_addr,
-                                 Addr.le_public, True, start_wid=115)]),
+                                 Addr.le_public, True, start_wid=115,
+                                 skip_call=(2,)),
+                        TestFunc(btp.gattc_signed_write, Addr.le_public,
+                                 pts_bd_addr, "0001", "01", start_wid=110)]),
         ZTestCase("SM", "SM/MAS/SIGN/BV-03-C",
                   edit1_wids={104: btp.var_get_passkey},
                   cmds=pre_conditions +
