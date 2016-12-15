@@ -178,38 +178,15 @@ def test_cases_server(pts):
                     TestFunc(btp.gap_set_gendiscov)]
 
     test_cases = [
-        #ZTestCase("GATT", "GATT/SR/GAC/BV-01-C",
-        #          pre_conditions +
-        #          [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
-        #           TestFunc(btp.gatts_add_char, 0,
-        #                    Prop.read | Prop.write | Prop.nofity,
-        #                    Perm.read | Perm.write, UUID.VND16_2),
-        #           TestFunc(btp.gatts_set_val, 0, '0123456789ABCDEF' * 10),
-        #           TestFunc(btp.gatts_start_server),
-        #           TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
-
-        # FIXME This TC implementation workarounds PTS issue #14616
         ZTestCase("GATT", "GATT/SR/GAC/BV-01-C",
                   pre_conditions +
-                  [TestFunc(pts.update_pixit_param,
-                            "GATT", "TSPX_iut_is_server_central", "TRUE"),
-                   TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
+                  [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
                             Prop.read | Prop.write | Prop.nofity,
                             Perm.read | Perm.write, UUID.VND16_2),
                    TestFunc(btp.gatts_set_val, 0, Value.eight_bytes_1 * 10),
                    TestFunc(btp.gatts_start_server),
-                   TestFunc(btp.gap_conn, pts_bd_addr,
-                            Addr.le_public, start_wid=2),
-                   TestFunc(btp.gap_connected_ev, pts_bd_addr,
-                            Addr.le_public, start_wid=2),
-                   TestFunc(btp.gap_disconn, pts_bd_addr,
-                            Addr.le_public, start_wid=3),
-                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
-                            Addr.le_public, start_wid=3),
-                   TestFuncCleanUp(pts.update_pixit_param,
-                                   "GATT", "TSPX_iut_is_server_central",
-                                   "FALSE")]),
+                   TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
         ZTestCase("GATT", "GATT/SR/GAD/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
