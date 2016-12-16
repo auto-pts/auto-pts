@@ -1098,7 +1098,8 @@ def test_cases_server(pts):
                             Addr.le_public, start_wid=92),
                    TestFunc(sleep, 1, start_wid=92),
                    TestFunc(btp.gatts_set_val, 3, '01', start_wid=92)]),
-        ZTestCase("GATT", "GATT/SR/GAI/BV-01-C",
+        # Workaround PTS issue #15321
+        ZTestCase("GATT", "GATT/CL/GAI/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -2385,7 +2386,8 @@ def test_cases_client(pts):
                                  Addr.le_public, start_wid=3),
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=3)]),
-        ZTestCase("GATT", "GATT/CL/GAI/BV-01-C",
+        # Workaround PTS issue #15321
+        ZTestCase("GATT", "GATT/SR/GAI/BV-01-C",
                     cmds=pre_conditions +
                          [TestFunc(btp.gap_conn, pts_bd_addr,
                                    Addr.le_public, start_wid=2),
