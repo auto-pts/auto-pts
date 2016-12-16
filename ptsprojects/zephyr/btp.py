@@ -774,7 +774,8 @@ def gap_start_discov(transport='le', type='active', mode='general', duration=10)
     __gap_stop_discov()
 
 
-def check_discov_results(addr_type=None, addr=None, discovered=True, eir=None):
+def check_discov_results(description, addr_type=None, addr=None,
+                         discovered=True, eir=None):
 
     addr = pts_addr_get(addr)
     addr_type = pts_addr_type_get(addr_type)
