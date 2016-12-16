@@ -146,6 +146,11 @@ L2CAP = {
 }
 
 
+class Addr:
+    le_public = 0
+    le_random = 1
+
+
 class BTPError(Exception):
     """Exception raised if BTP error occurs.
 
@@ -424,6 +429,33 @@ def gap_conn(bd_addr=None, bd_addr_type=None):
     zephyrctl.btp_socket.send(*GAP['conn'], data=data_ba)
 
     gap_command_rsp_succ()
+
+
+def gap_rpa_conn(description):
+    """
+    Initiate connection with PTS using RPA address provided in MMI description
+
+    :param description:
+    :return: bool (True by default)
+    """
+    logging.debug("%s %s", gap_conn.__name__, description)
+    zephyrctl = iutctl.get_zephyr()
+
+    # FIXME use regex
+    dsc_split = description.split(' ')
+    bd_addr = dsc_split[-1]
+    bd_addr_type = Addr.le_random
+
+    data_ba = bytearray()
+    bd_addr_ba = binascii.unhexlify(pts_addr_get(bd_addr))[::-1]
+
+    data_ba.extend(chr(pts_addr_type_get(bd_addr_type)))
+    data_ba.extend(bd_addr_ba)
+
+    zephyrctl.btp_socket.send(*GAP['conn'], data=data_ba)
+
+    gap_command_rsp_succ()
+    return True
 
 
 def gap_disconnected_ev(bd_addr=None, bd_addr_type=None):
@@ -774,7 +806,8 @@ def gap_start_discov(transport='le', type='active', mode='general', duration=10)
     __gap_stop_discov()
 
 
-def check_discov_results(addr_type=None, addr=None, discovered=True, eir=None):
+def check_discov_results(description, addr_type=None, addr=None,
+                         discovered=True, eir=None):
 
     addr = pts_addr_get(addr)
     addr_type = pts_addr_type_get(addr_type)

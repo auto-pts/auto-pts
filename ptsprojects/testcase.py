@@ -471,7 +471,7 @@ class TestCase(PTSCallback):
 
         return my_response
 
-    def handle_mmi_style_ok_cancel(self, wid):
+    def handle_mmi_style_ok_cancel(self, wid, description):
         """Implements implicit send handling for MMI_Style_Ok_Cancel1 and
         MMI_Style_Ok_Cancel2"""
         log("%s, %r ok_cancel_wids=%r",
@@ -482,10 +482,10 @@ class TestCase(PTSCallback):
         if self.ok_cancel_wids and wid in self.ok_cancel_wids.keys():
             response = self.ok_cancel_wids[wid]
             if callable(response):
-                my_response = response()
+                my_response = response(description)
             elif type(response) is tuple and callable(response[0]):
                 # Handle command before responding
-                my_response = response[0](*response[1:])
+                my_response = response[0](description, *response[1:])
             else:
                 my_response = response
 
@@ -558,7 +558,7 @@ class TestCase(PTSCallback):
 
         # actually style == MMI_Style_Ok_Cancel2
         else:
-            my_response = self.handle_mmi_style_ok_cancel(wid)
+            my_response = self.handle_mmi_style_ok_cancel(wid, description)
 
         # start/stop command if triggered by wid
         self.start_stop_cmds_by_wid(wid, description)
