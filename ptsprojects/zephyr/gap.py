@@ -463,51 +463,29 @@ def test_cases(pts):
                    TestFunc(btp.gap_disconnected_ev, start_wid=77)]),
         ZTestCase("GAP", "TC_CONN_GCEP_BV_02_C",
                   pre_conditions +
-
-                  # Workaround. PTS inverted privacy check
-                  [TestFunc(pts.update_pixit_param,
-                            "GAP", "TSPX_iut_privacy_enabled", "FALSE"),
-                   TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
+                  [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
                             start_wid=78),
                    TestFunc(btp.gap_connected_ev, pts_bd_addr, Addr.le_public,
                             start_wid=78),
                    TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
                             start_wid=77),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
-                            Addr.le_public, start_wid=77),
-
-                   TestFuncCleanUp(pts.update_pixit_param, "GAP",
-                                   "TSPX_iut_privacy_enabled", "TRUE")]),
+                            Addr.le_public, start_wid=77)]),
         ZTestCase("GAP", "TC_CONN_DCEP_BV_01_C",
                   pre_conditions +
-
-                  # Workaround. PTS inverted privacy check
-                  [TestFunc(pts.update_pixit_param,
-                            "GAP", "TSPX_iut_privacy_enabled", "FALSE"),
-                   TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
+                  [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
                             start_wid=78),
                    TestFunc(btp.gap_connected_ev, pts_bd_addr, Addr.le_public,
                             start_wid=77),
                    TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
                             start_wid=77),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
-                            Addr.le_public, start_wid=77),
-
-                   TestFuncCleanUp(pts.update_pixit_param, "GAP",
-                                   "TSPX_iut_privacy_enabled", "TRUE")]),
+                            Addr.le_public, start_wid=77)]),
         ZTestCase("GAP", "TC_CONN_DCEP_BV_03_C",
                   pre_conditions +
-
-                  # Workaround. PTS inverted privacy check
-                  [TestFunc(pts.update_pixit_param,
-                             "GAP", "TSPX_iut_privacy_enabled", "FALSE"),
-                   TestFunc(btp.gap_conn, start_wid=78),
+                  [TestFunc(btp.gap_conn, start_wid=78),
                    TestFunc(btp.gap_connected_ev, start_wid=77),
-                   TestFunc(btp.gap_disconn, start_wid=77),
-                   TestFunc(btp.gap_disconnected_ev, start_wid=77),
-
-                   TestFuncCleanUp(pts.update_pixit_param, "GAP",
-                                   "TSPX_iut_privacy_enabled", "TRUE")]),
+                   TestFunc(btp.gap_disconn, start_wid=77)]),
         ZTestCase("GAP", "TC_CONN_CPUP_BV_01_C",
                   pre_conditions +
                   [TestFunc(btp.gap_adv_ind_on, start_wid=21)]),
