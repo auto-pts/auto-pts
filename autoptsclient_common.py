@@ -310,10 +310,13 @@ def log2file(function):
     """
     def wrapper(*args):
         test_case = args[1]
+        normalized_name = test_case.name.replace('/', '_')
 
+        # TODO remove project_name prefix from log_filename when GAP project
+        # Test Cases will follow the same convention like other projects
         log_filename = os.path.join(
             LOG_DIR_NAME,
-            "%s_%s.log" % (test_case.project_name, test_case.name))
+            "%s_%s.log" % (test_case.project_name, normalized_name))
 
         # if log file exists, append date to its name to make it unique
         if os.path.exists(log_filename):
@@ -468,10 +471,10 @@ def get_test_cases_subset(test_cases, test_case_names):
     # subsets of profiles
     profiles_subset = {
         "GATTC" : [tc for tc in test_cases
-                   if tc.project_name == "GATT" and "_CL_" in tc.name],
+                   if tc.project_name == "GATT" and "/CL/" in tc.name],
 
         "GATTS" : [tc for tc in test_cases
-                   if tc.project_name == "GATT" and "_SR_" in tc.name]
+                   if tc.project_name == "GATT" and "/SR/" in tc.name]
     }
 
     test_cases_dict = {tc.name : tc for tc in test_cases}
