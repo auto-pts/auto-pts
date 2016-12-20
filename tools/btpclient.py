@@ -13,6 +13,7 @@ import argparse
 import threading
 import subprocess
 from distutils.spawn import find_executable
+from multiprocessing import Process
 
 # to be able to find ptsprojects module
 sys.path.insert(
@@ -22,8 +23,10 @@ from ptsprojects.zephyr import btpdef
 from ptsprojects.zephyr import btp
 from ptsprojects.zephyr.iutctl import get_qemu_cmd, BTP_ADDRESS, BTPSocket
 from ptsprojects.testcase import AbstractMethodException
+from ptsprojects.zephyr.btpparser import HDR_LEN, dec_hdr, dec_data
 
 BTP_SOCKET = None
+RCV_PROCESS = None
 QEMU_PROCESS = None
 
 # ANSI escape codes for Select Graphic Rendition (SGR) parameters
@@ -298,20 +301,6 @@ class SendCmd(Cmd):
 
         send(svc_id, op, ctrl_index, data)
 
-class ReceiveCmd(Cmd):
-    def __init__(self):
-        Cmd.__init__(self)
-        self.name = "receive"
-
-        self.help.build(
-            short_help = "Receive BTP command from tester",
-            synopsis = "%s" % self.name,
-            description = ("This command reads BTP commands from tester."
-                           "\nCan be interrupted with Ctrl-C."))
-
-    def run(self, *args, **kwds):
-        receive(*args, **kwds)
-
 class ListenCmd(Cmd):
     def __init__(self):
         Cmd.__init__(self)
@@ -436,6 +425,7 @@ class ExitCmd(Cmd):
         self.help.build(short_help = "Exit the shell")
 
     def run(self):
+        conn_clean()
         sys.exit(0)
 
 class HelpCmd(Cmd):
@@ -558,46 +548,57 @@ def send(svc_id, op, ctrl_index, data = ""):
             print "error: Connection error, please connect btp again"
             return
 
-    receive(int_svc_id, int_op)
-
     return
 
-def receive(exp_svc_id=None, exp_op=None):
-    """The parameters are the values used in the command, so response is expected
-    to have the same value"""
-    logging.debug("%s %r %r", receive.__name__, exp_svc_id, exp_op)
+def receive(conn):
+    while True:
+        toread_hdr_len = HDR_LEN
+        hdr = bytearray(toread_hdr_len)
+        hdr_memview = memoryview(hdr)
 
-    if conn_check() is False:
-        return
+        # Gather frame header
+        try:
+            while toread_hdr_len:
+                nbytes = conn.recv_into(hdr_memview, toread_hdr_len)
+                hdr_memview = hdr_memview[nbytes:]
+                toread_hdr_len -= nbytes
+        except KeyboardInterrupt:
+            return
 
-    try:
-        tuple_hdr, tuple_data = BTP_SOCKET.read()
-    except KeyboardInterrupt:
-        print "\nReceive interrupted!"
-        return
+        tuple_hdr = dec_hdr(hdr)
+        toread_data_len = tuple_hdr.data_len
 
-    # default __repr__ of namedtuple does not print hex
-    print ("Received header(svc_id=%d, op=0x%.2x, ctrl_index=%d, data_len=%d)" %
-           (tuple_hdr.svc_id, tuple_hdr.op, tuple_hdr.ctrl_index,
-            tuple_hdr.data_len))
+        data = bytearray(toread_data_len)
+        data_memview = memoryview(data)
 
-    hex_str = binascii.hexlify(tuple_data[0])
-    hex_str_byte = " ".join(hex_str[i:i+2] for i in range(0, len(hex_str), 2))
-    print "Received data (hex): %s" % hex_str_byte
-    print "Received data (ascii):", tuple_data
+        # Gather optional frame data
+        try:
+            while toread_data_len:
+                nbytes = conn.recv_into(data_memview, toread_data_len)
+                data_memview = data_memview[nbytes:]
+                toread_data_len -= nbytes
+        except KeyboardInterrupt:
+            return
 
-    try:
-        btp.btp_hdr_check(tuple_hdr, exp_svc_id, exp_op)
-    except btp.BTPError as err:
-        print red("%s\nExpected svc_id=%s, op=0x%.2x" %
-                  (err.message, exp_svc_id, exp_op))
-    else:
-        print green("OK")
+        tuple_data = dec_data(data)
 
-    if tuple_hdr.svc_id == btpdef.BTP_SERVICE_ID_GAP:
-        if tuple_hdr.op == btpdef.GAP_EV_PASSKEY_DISPLAY:
+        # default __repr__ of namedtuple does not print hex
+        print ("\nReceived header(svc_id=%d, op=0x%.2x, ctrl_index=%d, data_len=%d)" %
+               (tuple_hdr.svc_id, tuple_hdr.op, tuple_hdr.ctrl_index,
+                tuple_hdr.data_len))
+
+        hex_str = binascii.hexlify(tuple_data[0])
+        hex_str_byte = " ".join(hex_str[i:i+2] for i in range(0, len(hex_str), 2))
+        print "Received data (hex): %s" % hex_str_byte
+        print "Received data (ascii):", tuple_data
+
+        if tuple_hdr.svc_id == btpdef.BTP_SERVICE_ID_GAP \
+            and tuple_hdr.op == btpdef.GAP_EV_PASSKEY_DISPLAY:
             passkey = struct.unpack('I', tuple_data[0][7:11])[0]
             print "Passkey:", passkey
+
+        sys.stdout.write(blue("[btpclient]") + "$ ")
+        sys.stdout.flush()
 
 def listen():
     """Establish connection with the BTP tester
@@ -619,6 +620,9 @@ def listen():
     try:
         BTP_SOCKET.accept()
         BTP_SOCKET.conn.settimeout(None) # see [1]
+        global RCV_PROCESS
+        RCV_PROCESS = Process(target=receive, args=(BTP_SOCKET.conn,))
+        RCV_PROCESS.start()
         print "btp server connected successfully"
 
     except KeyboardInterrupt:
@@ -671,7 +675,10 @@ def conn_check():
     return True
 
 def conn_clean():
-    global BTP_SOCKET
+    global BTP_SOCKET, RCV_PROCESS
+    RCV_PROCESS.terminate()
+    RCV_PROCESS.join()
+    RCV_PROCESS = None
     BTP_SOCKET.close()
     BTP_SOCKET = None
 
@@ -761,7 +768,6 @@ def main():
     cmds = [
         ListenCmd(),
         SendCmd(),
-        ReceiveCmd(),
         ExitCmd(),
         DisconnectCmd(),
         StartZephyrCmd(),
@@ -784,7 +790,7 @@ def main():
     readline.set_completer(Completer(cmds_dict).complete)
     readline.parse_and_bind("tab: complete")
 
-    global BTP_SOCKET
+    global BTP_SOCKET, RCV_PROCESS
     BTP_SOCKET = BTPSocket()
 
     try:
@@ -812,6 +818,9 @@ def main():
         logging.debug("Exiting...")
         if QEMU_PROCESS:
             stop_zephyr_cmd.run()
+        if RCV_PROCESS:
+            RCV_PROCESS.terminate()
+            RCV_PROCESS = None
         logging.debug("Writing history file %s" % history_filename)
         readline.write_history_file(history_filename)
 
