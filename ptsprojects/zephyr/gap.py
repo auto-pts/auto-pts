@@ -442,6 +442,7 @@ def test_cases(pts):
                         # Apparently PTS don't take into account value of
                         # TSPX_iut_private_address_interval, so let's simulate
                         # change of RPA
+                        TestFunc(btp.gap_adv_off, start_wid=90),
                         TestFunc(btp.gap_read_ctrl_info, start_wid=90),
                         TestFunc(btp.gap_set_gendiscov, start_wid=90),
                         TestFunc(btp.gap_adv_ind_on, start_wid=90)]),
