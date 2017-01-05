@@ -180,6 +180,12 @@ def test_cases(pts):
 
     pts_bd_addr = pts.q_bd_addr
 
+    # Set GAP common PIXIT values
+    pts.update_pixit_param("GAP", "TSPX_delete_link_key", "TRUE")
+    pts.update_pixit_param("GAP", "TSPX_using_public_device_address", "FALSE")
+    pts.update_pixit_param("GAP", "TSPX_using_private_device_address", "TRUE")
+    pts.update_pixit_param("GAP", "TSPX_iut_privacy_enabled", "TRUE")
+
     pre_conditions=[TestFunc(btp.core_reg_svc_gap),
                     TestFunc(btp.gap_read_ctrl_info),
                     TestFunc(btp.wrap, pts.update_pixit_param,
