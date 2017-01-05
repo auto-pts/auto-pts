@@ -954,12 +954,19 @@ def test_cases(pts):
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_set_conn),
                         TestFunc(btp.gap_adv_ind_on, ad)]),
+        # TC_GAT_BV_01_C
+        # wid: 158 description: IUT support both Central and Peripheral roles.
+        # Click Yes if IUT act as Central role to execute this test otherwise
+        # click No to act as Peripheral role.
+        #
+        # Testing central role.
         ZTestCase("GAP", "TC_GAT_BV_01_C",
                   cmds=init_gatt_db + pre_conditions +
                        [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
                                  start_wid=78),
                         TestFunc(btp.gap_connected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=78)]),
+        # Testing peripheral role.
         ZTestCase("GAP", "TC_GAT_BV_01_C",
                   no_wid=158,
                   cmds=init_gatt_db + pre_conditions +
