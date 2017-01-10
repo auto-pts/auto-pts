@@ -180,6 +180,12 @@ def test_cases(pts):
 
     pts_bd_addr = pts.q_bd_addr
 
+    # Set GAP common PIXIT values
+    pts.update_pixit_param("GAP", "TSPX_delete_link_key", "TRUE")
+    pts.update_pixit_param("GAP", "TSPX_using_public_device_address", "FALSE")
+    pts.update_pixit_param("GAP", "TSPX_using_private_device_address", "TRUE")
+    pts.update_pixit_param("GAP", "TSPX_iut_privacy_enabled", "TRUE")
+
     pre_conditions=[TestFunc(btp.core_reg_svc_gap),
                     TestFunc(btp.gap_read_ctrl_info),
                     TestFunc(btp.wrap, pts.update_pixit_param,
@@ -442,6 +448,7 @@ def test_cases(pts):
                         # Apparently PTS don't take into account value of
                         # TSPX_iut_private_address_interval, so let's simulate
                         # change of RPA
+                        TestFunc(btp.gap_adv_off, start_wid=90),
                         TestFunc(btp.gap_read_ctrl_info, start_wid=90),
                         TestFunc(btp.gap_set_gendiscov, start_wid=90),
                         TestFunc(btp.gap_adv_ind_on, start_wid=90)]),
@@ -953,12 +960,19 @@ def test_cases(pts):
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_set_conn),
                         TestFunc(btp.gap_adv_ind_on, ad)]),
+        # TC_GAT_BV_01_C
+        # wid: 158 description: IUT support both Central and Peripheral roles.
+        # Click Yes if IUT act as Central role to execute this test otherwise
+        # click No to act as Peripheral role.
+        #
+        # Testing central role.
         ZTestCase("GAP", "TC_GAT_BV_01_C",
                   cmds=init_gatt_db + pre_conditions +
                        [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
                                  start_wid=78),
                         TestFunc(btp.gap_connected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=78)]),
+        # Testing peripheral role.
         ZTestCase("GAP", "TC_GAT_BV_01_C",
                   no_wid=158,
                   cmds=init_gatt_db + pre_conditions +
