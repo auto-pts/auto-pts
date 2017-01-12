@@ -501,6 +501,8 @@ def exec_cmd(choice, params, cmds_dict):
         print "Please enter correct arguments to command!\n"
         logging.debug(e)
         help_cmd.run(cmd_name)
+    except socket.timeout as e:
+        print "socket timeout: %s\n" % e
 
 def send(svc_id, op, ctrl_index, data = ""):
     # TODO: should data be None and later check be done to append or not
@@ -690,7 +692,6 @@ def cmd_loop(cmds_dict):
         choice = words[0]
         params = words[1:]
 
-        # TODO: exec_cmd catches TimeoutError
         exec_cmd(choice, params, cmds_dict)
 
 def exec_cmds_file(filename, cmds_dict):
