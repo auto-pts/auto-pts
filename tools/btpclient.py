@@ -503,6 +503,8 @@ def exec_cmd(choice, params, cmds_dict):
         help_cmd.run(cmd_name)
     except socket.timeout as e:
         print "socket timeout: %s\n" % e
+    except socket.error as e:
+        print "socket error: %s\n" % e
 
 def send(svc_id, op, ctrl_index, data = ""):
     # TODO: should data be None and later check be done to append or not
