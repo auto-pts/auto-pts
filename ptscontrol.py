@@ -562,7 +562,7 @@ class PyPTS:
                            bool_value)
 
         except System.Runtime.InteropServices.COMException as e:
-            log('Exception in UpdatePics "%s", is pics value aready set?' %
+            log('Exception in UpdatePics "%s", is pics value already set?' %
                 (e.Message,))
 
     def update_pixit_param(self, project_name, param_name, new_param_value):
@@ -587,7 +587,7 @@ class PyPTS:
                            new_param_value)
 
         except System.Runtime.InteropServices.COMException as e:
-            log(('Exception in UpdatePixitParam "%s", is pixit param aready '
+            log(('Exception in UpdatePixitParam "%s", is pixit param already '
                  'set?') % (e.Message,))
 
     def enable_maximum_logging(self, enable):
