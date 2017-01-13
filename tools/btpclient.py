@@ -566,6 +566,53 @@ def send(svc_id, op, ctrl_index, data = ""):
 
     return
 
+def print_controller_info(data):
+    """Print data of the BTP Read Controller Information response"""
+    settings2txt = {
+        btpdef.GAP_SETTINGS_POWERED : "Powered",
+        btpdef.GAP_SETTINGS_CONNECTABLE : "Connectable",
+        btpdef.GAP_SETTINGS_FAST_CONNECTABLE : "Fast Connectable",
+        btpdef.GAP_SETTINGS_DISCOVERABLE : "Discoverable",
+        btpdef.GAP_SETTINGS_BONDABLE : "Bondable",
+        btpdef.GAP_SETTINGS_LINK_SEC_3 : "Link Level Security (Sec. mode 3)",
+        btpdef.GAP_SETTINGS_SSP : "Secure Simple Pairing",
+        btpdef.GAP_SETTINGS_BREDR : "Basic Rate/Enhanced Data Rate",
+        btpdef.GAP_SETTINGS_HS : "High Speed",
+        btpdef.GAP_SETTINGS_LE : "Low Energy",
+        btpdef.GAP_SETTINGS_ADVERTISING : "Advertising",
+        btpdef.GAP_SETTINGS_SC : "Secure Connections",
+        btpdef.GAP_SETTINGS_DEBUG_KEYS : "Debug Keys",
+        btpdef.GAP_SETTINGS_PRIVACY : "Privacy",
+        btpdef.GAP_SETTINGS_CONTROLLER_CONFIG : "Controller Configuration",
+        btpdef.GAP_SETTINGS_STATIC_ADDRESS : "Static Address"
+    }
+
+    def get_settings_names(settings):
+        """Return settings in human-readable format"""
+        settings_names = []
+        for i in settings2txt.keys():
+            if settings & (1 << i):
+                settings_names.append(settings2txt[i])
+        return " ".join(settings_names)
+
+    fmt = '<6sII3s249s11s'
+    if len(data) < struct.calcsize(fmt):
+        print "Invalid data length"
+        return
+
+    (address, supported_settings, current_settings, class_of_device, name,
+     short_name) = struct.unpack_from(fmt, data)
+
+    address = binascii.hexlify(address[::-1]).upper()
+    print "IUT BD_ADDR: %r" %  address
+    print "Supported Settings: %r %s" % \
+        (supported_settings, get_settings_names(supported_settings))
+    print "Current Settings: %r %s" % \
+        (current_settings, get_settings_names(current_settings))
+    print "Class Of Device: %r" % class_of_device
+    print "Name: '%s'" % name
+    print "Short Name: '%s'" % short_name
+
 def receive(exp_svc_id=None, exp_op=None):
     """The parameters are the values used in the command, so response is expected
     to have the same value"""
@@ -602,6 +649,8 @@ def receive(exp_svc_id=None, exp_op=None):
         if tuple_hdr.op == btpdef.GAP_EV_PASSKEY_DISPLAY:
             passkey = struct.unpack('I', tuple_data[0][7:11])[0]
             print "Passkey:", passkey
+        if tuple_hdr.op == btpdef.GAP_READ_CONTROLLER_INFO:
+            print_controller_info(tuple_data[0])
 
 def listen():
     """Establish connection with the BTP tester
