@@ -642,8 +642,7 @@ def receive(exp_svc_id=None, exp_op=None):
     except btp.BTPError as err:
         print red("%s\nExpected svc_id=%s, op=0x%.2x" %
                   (err.message, exp_svc_id, exp_op))
-    else:
-        print green("OK")
+        return
 
     if tuple_hdr.svc_id == btpdef.BTP_SERVICE_ID_GAP:
         if tuple_hdr.op == btpdef.GAP_EV_PASSKEY_DISPLAY:
@@ -651,6 +650,7 @@ def receive(exp_svc_id=None, exp_op=None):
             print "Passkey:", passkey
         if tuple_hdr.op == btpdef.GAP_READ_CONTROLLER_INFO:
             print_controller_info(tuple_data[0])
+    print green("OK")
 
 def listen():
     """Establish connection with the BTP tester
