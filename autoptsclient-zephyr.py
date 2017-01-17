@@ -22,7 +22,11 @@ def parse_args():
                             "testing. It should have pqw6 extension. "
                             "The file should be located on the "
                             "Windows machine, where the PTS "
-                            "automation server is running")
+                            "automation server is running. It is also "
+                            "possible to use workspace provided with "
+                            "the auto-pts, in that case this arguments "
+                            "must be set to one of the  following: "
+                            "zephyr-hci, zephyr-nble")
 
     arg_parser.add_argument("kernel_image",
                             help="Zephyr OS kernel image to be used for "

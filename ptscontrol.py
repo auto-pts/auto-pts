@@ -364,10 +364,17 @@ class PyPTS:
 
         required_ext = ".pqw6" # valid PTS workspace file extension
 
-        if workspace_path == "nble":
+        # auto-pts own workspaces
+        autopts_workspaces = {
+            "zephyr-nble": "workspaces/autopts_qsd_zephyr_mv11_20160623/autopts_qsd_zephyr_mv11_20160623.pqw6",
+            "zephyr-hci": "workspaces/autopts_zephyr_hci_20170116/autopts_zephyr_hci_20170116.pqw6"
+        }
+        if workspace_path in autopts_workspaces.keys():
+            workspace_name = workspace_path
             script_path = os.path.split(os.path.realpath(__file__))[0]
-            workspace_path = os.path.join(script_path, "workspaces/autopts_qsd_zephyr_mv11_20160623/autopts_qsd_zephyr_mv11_20160623.pqw6")
-            log("Using nble workspace: %s", workspace_path)
+            workspace_path = os.path.join(
+                script_path, autopts_workspaces[workspace_name])
+            log("Using %s workspace: %s", workspace_name, workspace_path)
 
         if not os.path.isfile(workspace_path):
             raise Exception("Workspace file '%s' does not exist" %
