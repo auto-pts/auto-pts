@@ -605,19 +605,24 @@ def test_cases(pts):
                         [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
                          TestFunc(btp.gap_set_conn),
                          TestFunc(btp.gap_adv_ind_on)]),
-         ZTestCase("GAP", "TC_BOND_BON_BV_04_C",
-                   cmds=pre_conditions +
-                        [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
-                         TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
-                                  start_wid=78),
-                         TestFunc(btp.gap_connected_ev, pts_bd_addr,
-                                  Addr.le_public, start_wid=78),
-                         TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
-                                  start_wid=108),
-                         TestFunc(btp.gap_disconn, pts_bd_addr,
-                                  Addr.le_public, start_wid=77),
-                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
-                                  Addr.le_public, start_wid=77)]),
+         # This test case destabilizes PTS, it does pass when running, but all
+         # the following test cases fail. Reported issues:
+         # PTS issue: #14569
+         # auto-pts issue: #120
+         #
+         # ZTestCase("GAP", "TC_BOND_BON_BV_04_C",
+         #           cmds=pre_conditions +
+         #                [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
+         #                 TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
+         #                          start_wid=78),
+         #                 TestFunc(btp.gap_connected_ev, pts_bd_addr,
+         #                          Addr.le_public, start_wid=78),
+         #                 TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
+         #                          start_wid=108),
+         #                 TestFunc(btp.gap_disconn, pts_bd_addr,
+         #                          Addr.le_public, start_wid=77),
+         #                 TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
+         #                          Addr.le_public, start_wid=77)]),
          ZTestCase("GAP", "TC_SEC_AUT_BV_11_C",
                    edit1_wids={139: "0008",
                                1002: (btp.var_store_get_passkey, pts_bd_addr,
