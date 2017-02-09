@@ -20,6 +20,7 @@ import ptsprojects.ptstypes as ptstypes
 log = logging.debug
 
 SERVER_PORT = 65000
+CLIENT_PORT = 65001
 
 RUNNING_TEST_CASE = None
 
@@ -172,9 +173,9 @@ def start_callback():
 
     callback = ClientCallback()
 
-    print "Serving on port {} ...\n".format(SERVER_PORT)
+    print "Serving on port {} ...\n".format(CLIENT_PORT)
 
-    server = SimpleXMLRPCServer(("", SERVER_PORT),
+    server = SimpleXMLRPCServer(("", CLIENT_PORT),
                                 allow_none = True, logRequests = False)
     server.register_instance(callback)
     server.register_introspection_functions()
@@ -286,7 +287,7 @@ def init_core(server_address, workspace_path, bd_addr, enable_max_logs):
     proxy.q_bd_addr = proxy.bd_addr()
     log("PTS BD_ADDR: %s", proxy.q_bd_addr)
 
-    proxy.register_xmlrpc_ptscallback(get_my_ip_address(), SERVER_PORT)
+    proxy.register_xmlrpc_ptscallback(get_my_ip_address(), CLIENT_PORT)
 
     log("Opening workspace: %s", workspace_path)
     proxy.open_workspace(workspace_path)
