@@ -311,8 +311,8 @@ class Board:
         Dependency: Zephyr SDK
 
         """
-        openocd_bin = "/opt/zephyr-sdk/sysroots/i686-pokysdk-linux/usr/bin/openocd"
-        openocd_scripts = "/opt/zephyr-sdk/sysroots/i686-pokysdk-linux/usr/share/openocd/scripts"
+        openocd_bin = "/opt/zephyr-sdk/sysroots/x86_64-pokysdk-linux/usr/bin/openocd"
+        openocd_scripts = "/opt/zephyr-sdk/sysroots/x86_64-pokysdk-linux/usr/share/openocd/scripts"
         openocd_cfg = os.path.join(
             os.path.split(self.kernel_image)[0],
             "../../../../../boards/x86/arduino_101/support/openocd.cfg")
