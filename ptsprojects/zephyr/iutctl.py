@@ -240,12 +240,14 @@ class Board:
     arduino_101 = "arduino_101"
     mountatlas = "mountatlas"
     crb = "crb"
+    nrf52 = "nrf52"
 
     # for command line options
     names = [
         arduino_101,
         mountatlas,
-        crb
+        crb,
+        nrf52
     ]
 
     def __init__(self, board_name, kernel_image, tty_file):
@@ -296,7 +298,8 @@ class Board:
         reset_cmd_getters = {
             self.arduino_101 : self._get_reset_cmd_arduino_101,
             self.mountatlas : self._get_reset_cmd_mountatlas,
-            self.crb : self._get_reset_cmd_crb
+            self.crb : self._get_reset_cmd_crb,
+            self.nrf52 : self._get_reset_cmd_nrf52
         }
 
         reset_cmd_getter = reset_cmd_getters[self.name]
@@ -339,6 +342,14 @@ class Board:
         """
         return ('sh -c \'echo -n -e "\xAA\xBB\\x00\\x00\\x00" > %s\'' %
                 self.tty_file)
+
+    def _get_reset_cmd_nrf52(self):
+        """Return reset command for nRF52 DUT
+
+        Dependency: nRF5x command line tools
+
+        """
+        return 'nrfjprog -f nrf52 -r'
 
 def get_zephyr():
     return ZEPHYR
