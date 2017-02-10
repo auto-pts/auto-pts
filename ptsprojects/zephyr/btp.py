@@ -871,8 +871,9 @@ def __gap_stop_discov():
 def wrap(func, *args):
     """Call function with given arguments
 
-    If arguments list item is a callable it be invoked and replaced in the list
-    with its own return value.
+    If arguments list item is a callable it will be invoked and replaced in the
+    list with its own return value.
+
     """
     _args = []
     for x in args:
