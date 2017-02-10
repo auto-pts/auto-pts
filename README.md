@@ -43,7 +43,7 @@ For Zephyr projects running under QEMU:
 
 Start a proxy for bluetooth adapter by using btproxy from BlueZ:
 
-`sudo bluez/tools/btproxy -u`
+`sudo bluez/tools/btproxy -u -z`
 
 Then start the client:
 
