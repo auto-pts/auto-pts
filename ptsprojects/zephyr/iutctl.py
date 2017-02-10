@@ -150,8 +150,12 @@ class ZephyrCtl:
 
         self.kernel_image = kernel_image
         self.tty_file = tty_file
-        if self.tty_file: # board is not used with qemu
+
+        if self.tty_file and board_name: # DUT is a hardware board, not QEMU
             self.board = Board(board_name, kernel_image, tty_file)
+        else: # DUT is QEMU or a board that won't be reset
+            self.board = None
+
         self.qemu_process = None
         self.socat_process = None
         self.btp_socket = None
@@ -176,7 +180,8 @@ class ZephyrCtl:
                                                   stdout=IUT_LOG_FO,
                                                   stderr=IUT_LOG_FO)
 
-            self.board.reset()
+            if self.board:
+                self.board.reset()
 
         else:
             qemu_cmd = get_qemu_cmd(self.kernel_image)

@@ -48,15 +48,12 @@ def parse_args():
                             "'Run (Debug Logs)'")
 
     board_names = autoprojects.iutctl.Board.names
-    default_board = board_names[0]
     arg_parser.add_argument("-b", "--board",
                             help="Used DUT board. This option is used to "
                             "select DUT reset command that is run before "
-                            "each test case. Supported boards: %s. "
-                            "By default %s is used." %
-                            (", ".join(board_names,), default_board),
-                            choices=board_names,
-                            default=default_board)
+                            "each test case. If board is not specified DUT "
+                            "will not be reset. Supported boards: %s. " %
+                            (", ".join(board_names,),), choices=board_names)
 
     arg_parser.add_argument("-c", "--test-cases", nargs='+',
                             help="Names of test cases to run. Groups of test "
