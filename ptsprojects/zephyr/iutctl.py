@@ -169,7 +169,7 @@ class ZephyrCtl:
         self.btp_socket.open()
 
         if self.tty_file:
-            socat_cmd = ("socat -x -v %s,raw,b115200 UNIX-CONNECT:%s" %
+            socat_cmd = ("socat -x -v %s,rawer,b115200 UNIX-CONNECT:%s" %
                          (self.tty_file, BTP_ADDRESS))
 
             log("Starting socat process: %s", socat_cmd)
