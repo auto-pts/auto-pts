@@ -28,6 +28,8 @@ def parse_args():
                             "must be set to one of the  following: "
                             "zephyr-hci, zephyr-nble")
 
+    # If DUT is QEMU kernel_image is passed to QEMU. If DUT is Arduino101 board
+    # kernel_image helps locate openocd.cfg needed by the openocd reset command
     arg_parser.add_argument("kernel_image",
                             help="Zephyr OS kernel image to be used for "
                             "testing. Normally a zephyr.elf file.")
