@@ -496,7 +496,7 @@ def get_test_cases_subset(test_cases, test_case_names):
             if name in test_cases_dict:
                 tc = test_cases_dict[name]
                 if tc in test_cases_subset:
-                    test_cases_subset.append(copy.deepcopy(tc))
+                    test_cases_subset.append(tc.copy())
                 else:
                     test_cases_subset.append(tc)
 
