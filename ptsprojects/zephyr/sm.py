@@ -122,8 +122,6 @@ def test_cases(pts):
                    TestFunc(btp.gap_connected_ev, pts_bd_addr, Addr.le_public,
                             start_wid=100),
                    TestFunc(btp.gap_pair, pts_bd_addr,
-                            Addr.le_public, start_wid=100),
-                   TestFunc(btp.gap_passkey_disp_ev, pts_bd_addr,
                             Addr.le_public, start_wid=100)]),
         ZTestCase("SM", "SM/SLA/PKE/BV-05-C",
                   pre_conditions +
