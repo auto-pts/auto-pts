@@ -132,7 +132,7 @@ def test_cases(pts):
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                    TestFunc(btp.gap_adv_ind_on)]),
         ZTestCase("SM", "SM/MAS/PKE/BI-01-C",
-                  edit1_wids={106: btp.var_get_passkey},
+                  edit1_wids={106: btp.var_store_get_wrong_passkey},
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                         TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
@@ -140,9 +140,7 @@ def test_cases(pts):
                         TestFunc(btp.gap_connected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=100),
                         TestFunc(btp.gap_pair, pts_bd_addr,
-                                 Addr.le_public, start_wid=100),
-                        TestFunc(btp.gap_passkey_disp_ev, pts_bd_addr,
-                                 Addr.le_public, True, start_wid=100)]),
+                                 Addr.le_public, start_wid=100)]),
         ZTestCase("SM", "SM/MAS/PKE/BI-02-C",
                   edit1_wids={104: btp.var_store_get_passkey},
                   cmds=pre_conditions +
