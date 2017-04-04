@@ -13,7 +13,6 @@ except ImportError:  # running this module as script
         TestFuncCleanUp
     from ptsprojects.zephyr.ztestcase import ZTestCase
 
-from ptsprojects.zephyr.iutctl import get_zephyr
 from time import sleep
 import btp
 import binascii
@@ -991,7 +990,6 @@ def test_cases(pts):
 
 def main():
     """Main."""
-    import sys
     import ptsprojects.zephyr.iutctl as iutctl
 
     iutctl.init_stub()
