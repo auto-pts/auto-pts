@@ -334,9 +334,11 @@ class Board:
         Dependency: zflash
 
         """
-        openocd_bin = "/usr/local/zflash/openocd/bin/openocd"
-        openocd_scripts = "/usr/local/zflash/openocd/share/scripts"
-        openocd_cfg = "/usr/local/zflash/boards/mountatlas/openocd.cfg"
+        openocd_bin = "/opt/zephyr-sdk/sysroots/x86_64-pokysdk-linux/usr/bin/openocd"
+        openocd_scripts = "/opt/zephyr-sdk/sysroots/x86_64-pokysdk-linux/usr/share/openocd/scripts"
+        openocd_cfg = os.path.join(
+            os.path.split(self.kernel_image)[0],
+            "../../../../../boards/x86/quark_se_c1000_devboard/support/")
 
         return self.get_openocd_reset_cmd(openocd_bin, openocd_scripts,
                                           openocd_cfg)
