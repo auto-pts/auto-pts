@@ -395,7 +395,6 @@ class PyPTS:
 
         # auto-pts own workspaces
         autopts_workspaces = {
-            "zephyr-nble": "workspaces/autopts_qsd_zephyr_mv11_20160623/autopts_qsd_zephyr_mv11_20160623.pqw6",
             "zephyr-hci": "workspaces/autopts_zephyr_hci_20170116/autopts_zephyr_hci_20170116.pqw6"
         }
         if workspace_path in autopts_workspaces.keys():
