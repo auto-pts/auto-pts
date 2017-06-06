@@ -1,1 +1,0 @@
-autoptsclient-zephyr.py

@@ -18,12 +18,11 @@ add needed projects to the workspace and configure PICs and PIXITs.
 
 Alternatively, you can use auto-pts workspaces. Auto-pts provides ready PTS
 workspaces with readily configured PICS in the "workspaces"
-directory. Currently it provides workspaces for the Zephyr NBLE and Zephyr HCI
-stacks. To select ready made workspace pass to the auto-pts client as argument
+directory. Currently it provides workspaces for the Zephyr HCI
+stack. To select ready made workspace pass to the auto-pts client as argument
 one of these:
 
   * zephyr-hci
-  * zephyr-nble
 
 # Running in client/server mode
 
