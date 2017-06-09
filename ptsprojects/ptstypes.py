@@ -123,6 +123,8 @@ E_RPC_CALL_FAILED                                        = 0x800706BE
 E_BTP_ERROR                                              = "BTP ERROR"
 E_XML_RPC_ERROR                                          = "XML-RPC ERROR"
 E_BTP_TIMEOUT                                            = "BTP TIMEOUT"
+# unhandled exception
+E_FATAL_ERROR                                            = "FATAL ERROR"
 
 
 PTSCONTROL_E_STRING = {
@@ -161,4 +163,5 @@ PTSCONTROL_E_STRING = {
     E_BTP_ERROR                                              : E_BTP_ERROR,
     E_XML_RPC_ERROR                                          : E_XML_RPC_ERROR,
     E_BTP_TIMEOUT                                            : E_BTP_TIMEOUT,
+    E_FATAL_ERROR                                            : E_FATAL_ERROR,
 }

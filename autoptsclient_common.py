@@ -403,8 +403,15 @@ def run_test_case(pts, test_case):
         error_code = ptstypes.E_XML_RPC_ERROR
 
         logging.error(
-            "%s: %s\nPrevious test case status was %r",
-            error_code, str(error), test_case.status, exc_info = 1)
+            "%s\nPrevious test case status was %r",
+            error_code, test_case.status, exc_info = 1)
+
+    except:
+        error_code = ptstypes.E_FATAL_ERROR
+
+        logging.error(
+            "%s\nPrevious test case status was %r",
+            error_code, test_case.status, exc_info = 1)
 
     finally:
         test_case.post_run(error_code) # stop qemu and other commands
