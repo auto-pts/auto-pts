@@ -20,12 +20,15 @@
 import os
 import sys
 import argparse
+from distutils.spawn import find_executable
+
 import autoptsclient_common as autoptsclient
 import ptsprojects.zephyr as autoprojects
 
 def check_args(args):
     """Sanity check command line arguments"""
 
+    qemu_bin = autoprojects.iutctl.QEMU_BIN
     tty_file = args.tty_file
     kernel_image = args.kernel_image
 
@@ -35,6 +38,9 @@ def check_args(args):
             sys.exit("%s is not a TTY file!" % repr(tty_file))
         if not os.path.exists(tty_file):
             sys.exit("%s TTY file does not exist!" % repr(tty_file))
+    else: # no TTY - will run DUT in QEMU
+        if not find_executable(qemu_bin):
+            sys.exit("%s is needed but not found!" % (qemu_bin,))
 
     if not os.path.isfile(kernel_image):
         sys.exit("kernel_image %s is not a file!" % repr(kernel_image))
