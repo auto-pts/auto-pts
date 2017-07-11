@@ -23,6 +23,22 @@ import argparse
 import autoptsclient_common as autoptsclient
 import ptsprojects.zephyr as autoprojects
 
+def check_args(args):
+    """Sanity check command line arguments"""
+
+    tty_file = args.tty_file
+    kernel_image = args.kernel_image
+
+    if tty_file:
+        if (not tty_file.startswith("/dev/tty") and
+            not tty_file.startswith("/dev/pts")):
+            sys.exit("%s is not a TTY file!" % repr(tty_file))
+        if not os.path.exists(tty_file):
+            sys.exit("%s TTY file does not exist!" % repr(tty_file))
+
+    if not os.path.isfile(kernel_image):
+        sys.exit("kernel_image %s is not a file!" % repr(kernel_image))
+
 def parse_args():
     """Parses command line arguments and options"""
 
@@ -78,6 +94,8 @@ def parse_args():
                             "GATT, GATTS, GATTC, GAP, L2CAP, RFCOMM, SM")
 
     args = arg_parser.parse_args()
+
+    check_args(args)
 
     return args
 

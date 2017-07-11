@@ -19,6 +19,7 @@ import logging
 import socket
 import binascii
 import shlex
+
 import btpdef
 from btp import btp_hdr_check, BTPError
 from btpparser import enc_frame, dec_hdr, dec_data, HDR_LEN
@@ -152,16 +153,6 @@ class ZephyrCtl:
         log("%s.%s kernel_image=%s tty_file=%s board_name=%s",
             self.__class__, self.__init__.__name__, kernel_image, tty_file,
             board_name)
-
-        if tty_file:
-            if (not tty_file.startswith("/dev/tty") and
-                not tty_file.startswith("/dev/pts")):
-                raise Exception("%s is not a TTY file!" % repr(tty_file))
-            if not os.path.exists(tty_file):
-                raise Exception("%s TTY file does not exist!" % repr(tty_file))
-
-        if not os.path.isfile(kernel_image):
-            raise Exception("kernel_image %s is not a file!" % repr(kernel_image))
 
         self.kernel_image = kernel_image
         self.tty_file = tty_file
