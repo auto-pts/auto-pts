@@ -236,7 +236,7 @@ def test_cases_server(pts):
                             Perm.read | Perm.write, UUID.VND16_2),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)],
-                  verify_wids={25: ("UUID= '%s'" % UUID.VND16_1,
+                  verify_wids={25: ("UUID= '%s'" % UUID.gap_svc,
                                     "handle='0002'")}),
         ZTestCase("GATT", "GATT/SR/GAD/BV-05-C",
                   pre_conditions +
@@ -544,7 +544,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_set_val, 0, Value.eight_bytes_2),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)],
-                  verify_wids={52: ("Please confirm IUT Handle='4'",
+                  verify_wids={52: ("Please confirm IUT Handle='d'",
                                     "value='"+ Value.eight_bytes_2 +"'")}),
         ZTestCase("GATT", "GATT/SR/GAR/BI-23-C",
                   edit1_wids={110: "000D"},
@@ -1110,7 +1110,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gap_connected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=92),
                    TestFunc(sleep, 1, start_wid=92),
-                   TestFunc(btp.gatts_set_val, 3, '01', start_wid=92)]),
+                   TestFunc(btp.gatts_set_val, 0xC, '01', start_wid=92)]),
         # Workaround PTS issue #15321
         ZTestCase("GATT", "GATT/CL/GAI/BV-01-C",
                   pre_conditions +
@@ -1125,7 +1125,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gap_connected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=98),
                    TestFunc(sleep, 1, start_wid=98),
-                   TestFunc(btp.gatts_set_val, 3, '01', start_wid=98)]),
+                   TestFunc(btp.gatts_set_val, 0xC, '01', start_wid=98)]),
         # Service Changed is not supported
         # ZTestCase("GATT", "GATT/SR/GAS/BV-01-C",
         ZTestCase("GATT", "GATT/SR/GAT/BV-01-C",
