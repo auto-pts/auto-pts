@@ -1200,6 +1200,8 @@ def test_cases_server(pts):
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)],
                   verify_wids={102: ("Attribute Handle = '0001'",
                                      "Primary Service = '%s'" % UUID.VND16_1)}),
+        # tester crashes:
+        # https://jira.zephyrproject.org/browse/ZEP-2396
         ZTestCase("GATT", "GATT/SR/GPA/BV-02-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 1, UUID.VND16_1),
@@ -1284,6 +1286,9 @@ def test_cases_server(pts):
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)],
                   verify_wids={52: ("Handle='d'",
                                     "value='0000'")}),
+        # PTS crashes in GUI mode with message:
+        # "An internal error occurred. Please restart the PTS. Code: 0xE0434352"
+        # In auto mode PTS crashes, hence the status of test case is Started
         # PTS issue #14437, #14275, TSE #7063
         ZTestCase("GATT", "GATT/SR/GPA/BV-11-C",
                   pre_conditions +
