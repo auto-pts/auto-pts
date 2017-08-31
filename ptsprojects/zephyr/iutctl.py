@@ -43,8 +43,10 @@ def get_qemu_cmd(kernel_image):
     kernel_image -- Path to Zephyr kernel image"""
 
     qemu_cmd = ("%s -cpu cortex-m3 -machine lm3s6965evb -nographic "
-                "-serial mon:stdio -serial unix:/tmp/bt-server-bredr "
-                "-serial unix:%s -kernel %s" %
+                "-serial mon:stdio "
+                "-serial unix:%s "
+                "-serial unix:/tmp/bt-server-bredr "
+                "-kernel %s" %
                 (QEMU_BIN, BTP_ADDRESS, kernel_image))
 
     return qemu_cmd
