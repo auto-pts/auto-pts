@@ -70,27 +70,25 @@ class BTPSocket(object):
         # queue only one connection
         self.sock.listen(1)
 
-    def accept(self):
-        """Accept incomming Zephyr connection"""
+    def accept(self, timeout=10.0):
+        """Accept incomming Zephyr connection
+
+        timeout - accept timeout in seconds"""
         logging.debug("%s", self.accept.__name__)
 
-        # Set 10 second socket timeout on accept
-        self.sock.settimeout(10.0)
+        self.sock.settimeout(timeout)
         self.conn, self.addr = self.sock.accept()
+        self.sock.settimeout(None)
 
     def read(self, timeout=20.0):
         """Read BTP data from socket
 
-        timeout - BTP socket timeout in seconds (20 seconds by default)"""
+        timeout - read timeout in seconds"""
         logging.debug("%s", self.read.__name__)
         toread_hdr_len = HDR_LEN
         hdr = bytearray(toread_hdr_len)
         hdr_memview = memoryview(hdr)
-
-        # In case of BTP events, the timeout shall be adjustable,
-        # update socket timeout if needed.
-        if self.conn.gettimeout() is not timeout:
-            self.conn.settimeout(timeout)
+        self.conn.settimeout(timeout)
 
         # Gather frame header
         while toread_hdr_len:
@@ -113,8 +111,8 @@ class BTPSocket(object):
             toread_data_len -= nbytes
 
         tuple_data = dec_data(data)
-
         log("Received data: %r, %r", tuple_data, data)
+        self.conn.settimeout(None)
 
         return tuple_hdr, tuple_data
 
