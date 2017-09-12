@@ -520,51 +520,71 @@ def exec_cmd(choice, params, cmds_dict):
         print "socket timeout: %s\n" % e
     except socket.error as e:
         print "socket error: %s\n" % e
+    except SyntaxWarning as e:
+        print e
+
+def parse_service_id(svc_id):
+    """Parse service ID specified as string.
+
+    Return -- integer service ID"""
+    service_ids = {item : getattr(btpdef, item) for item in dir(btpdef)
+                   if item.startswith("BTP_SERVICE_ID")}
+    try:
+        int_svc_id = int(svc_id)
+    except ValueError:
+        raise SyntaxWarning("error: Wrong service ID format, possible "
+                            "values: ", service_ids)
+
+    if int_svc_id not in service_ids.values():
+        print ("error: Given service ID %c not supported, supported are %s!" %
+               (int_svc_id, repr(service_ids.values())))
+
+    return int_svc_id
+
+def parse_opcode(opcode):
+    """Parse opcode specified as string.
+
+    Return -- integer opcode"""
+    try:
+        int_opcode = int(opcode)
+    except ValueError:
+        raise SyntaxWarning('error: Wrong opcode format, should be an '
+                            'int: "0-255"')
+    return int_opcode
+
+def parse_ctrl_index(ctrl_index):
+    """Parse controller index specified as string.
+
+    Return -- integer controller index"""
+    try:
+        int_ctrl_index = int(ctrl_index)
+    except ValueError:
+        raise SyntaxWarning('error: Wrong Controler Index format, should be '
+                            'an int: "0-255"')
+    return int_ctrl_index
+
+def parse_data(data):
+    """Parse data specified as string.
+
+    Return -- data in binary format"""
+    try:
+        hex_data = binascii.unhexlify(data)
+    except TypeError:
+        raise SyntaxWarning('error: Wrong data type, should be e.g.: '
+                            '"0011223344ff"')
+    return hex_data
 
 def send(svc_id, op, ctrl_index, data = ""):
-    # TODO: should data be None and later check be done to append or not
-    # append data to the frame?
     logging.debug(
         "%s %r %r %r", send.__name__, svc_id, op, ctrl_index)
 
     if conn_check() is False:
         return
 
-    service_ids = {item : getattr(btpdef, item) for item in dir(btpdef)
-                   if item.startswith("BTP_SERVICE_ID")}
-
-    # Parse Service ID
-    try:
-        int_svc_id = int(svc_id)
-    except ValueError:
-        print "error: Wrong svc_id format, possible values: ", service_ids
-        return
-
-    if int_svc_id not in service_ids.values():
-        print ("error: Given service ID %c not supported, supported are %s!" %
-               (int_svc_id, repr(service_ids.values())))
-        return
-
-    # Parse Opcode
-    try:
-        int_op = int(op)
-    except ValueError:
-        print "error: Wrong op format, should be an int: \"0-255\""
-        return
-
-    # Parse Controler Index
-    try:
-        int_ctrl_index = int(ctrl_index)
-    except ValueError:
-        print "error: Wrong Controler Index format, shoulb be an int: \"0-255\""
-        return
-
-    # Parse Data
-    try:
-        hex_data = binascii.unhexlify(data)
-    except TypeError:
-        print "error: Wrong data type, should be e.g.: \"0011223344ff\""
-        return
+    int_svc_id = parse_service_id(svc_id)
+    int_op = parse_opcode(op)
+    int_ctrl_index = parse_ctrl_index(ctrl_index)
+    hex_data = parse_data(data)
 
     logging.debug("Sending: %d %d %d %r" %
                   (int_svc_id, int_op, int_ctrl_index, hex_data))
@@ -651,6 +671,9 @@ def receive(exp_svc_id=None, exp_op=None):
     hex_str_byte = " ".join(hex_str[i:i+2] for i in range(0, len(hex_str), 2))
     print "Received data (hex): %s" % hex_str_byte
     print "Received data (ascii):", tuple_data
+
+    if exp_svc_id is None and exp_op is None:
+        return
 
     try:
         btp.btp_hdr_check(tuple_hdr, exp_svc_id, exp_op)
