@@ -536,8 +536,9 @@ def parse_service_id(svc_id):
                             "values: ", service_ids)
 
     if int_svc_id not in service_ids.values():
-        print ("error: Given service ID %c not supported, supported are %s!" %
-               (int_svc_id, repr(service_ids.values())))
+        raise SyntaxWarning(
+            "error: Given service ID %c not supported, supported are %s!" %
+            (int_svc_id, repr(service_ids.values())))
 
     return int_svc_id
 
