@@ -18,9 +18,8 @@ add needed projects to the workspace and configure PICs and PIXITs.
 
 Alternatively, you can use auto-pts workspaces. Auto-pts provides ready PTS
 workspaces with readily configured PICS in the "workspaces"
-directory. Currently it provides workspaces for the Zephyr HCI
-stack. To select ready made workspace pass to the auto-pts client as argument
-one of these:
+directory. Currently it provides workspaces for the Zephyr HCI stack. To select
+ready made workspace pass to the auto-pts client as the workspace argument:
 
   * zephyr-hci
 
@@ -33,7 +32,7 @@ Windows you start the server:
 `ipy.exe autoptsserver.py`
 
 And on GNU/Linux you select either the Android or Zephyr client, then pass it
-the IP address of the server and the path to the PTS project file on the
+the IP address of the server and the path to the PTS workspace file on the
 Windows machine. So for AOSP BlueZ projects:
 
 `./autoptsclient-aospbluez.py IP_ADDRESS "C:\Users\USER_NAME\Documents\Profile Tuning Suite\PTS_PROJECT\PTS_PROJECT.pqw6"`
@@ -56,7 +55,7 @@ The command to run auto-pts client using auto-pts Zephyr HCI workspace is:
 
 `./autoptsclient-zephyr.py IP_ADDRESS zephyr-hci zephyr.elf -t /dev/ttyUSB0 -b arduino_101 -d`
 
-#Running test script on Windows
+# Running test script on Windows
 
 It is also possible to run tests on Windows, without using client/server mode
 of auto-pts. On Windows instead of starting the auto-pts server start test
