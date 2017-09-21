@@ -564,9 +564,9 @@ class TestCase(PTSCallback):
         #   "Unexpected project name %r should be %r" % \
         #    (project_name, self.project_name)
 
-        assert test_case_name == self.name, \
-            "Unexpected test case name %r should be %r" % \
-            (test_case_name, self.name)
+        # assert test_case_name == self.name, \
+        #     "Unexpected test case name %r should be %r" % \
+        #     (test_case_name, self.name)
 
         my_response = ""
 
