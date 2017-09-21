@@ -16,10 +16,11 @@
 """PTS test case python implementation"""
 
 import re
+import sys
 import time
 import logging
-
 from threading import Thread
+
 from utils import exec_iut_cmd
 import ptstypes
 
@@ -369,6 +370,7 @@ class TestCase(PTSCallback):
         self.ok_cancel_wids = ok_cancel_wids
         self.post_wid_queue = []
         self.post_wid_thread = None
+        self.thread_exc = None
 
     def __str__(self):
         """Returns string representation"""
@@ -542,10 +544,42 @@ class TestCase(PTSCallback):
                 cmd.stop()
 
     def run_post_wid_cmds(self):
+        """Run post wid commands in a thread"""
+        log("%s %s", self, self.run_post_wid_cmds.__name__)
+
+        for index, cmd in enumerate(self.post_wid_queue):
+            log("%d) %s", index, cmd)
+
         for cmd in self.post_wid_queue:
-            cmd.start()
+            try:
+                cmd.start()
+            except:
+                self.thread_exc = sys.exc_info()
+                log("Caught exception in thread %r", self.thread_exc)
+                break
 
         del self.post_wid_queue[:]
+
+    def join_post_wid_thread(self):
+        """Join post_wid_thread. Re-raise exceptions it discovered."""
+        log("%s %s", self, self.join_post_wid_thread.__name__)
+
+        log("self.post_wid_thread %r", self.post_wid_thread)
+        if self.post_wid_thread:
+            log("self.post_wid_thread.is_alive() %r",
+                self.post_wid_thread.is_alive())
+
+        # raise exception discovered by thread
+        if self.thread_exc:
+            log("Raising exception from thread %r", self.thread_exc)
+            exc = self.thread_exc
+            self.thread_exc = None
+            raise exc
+
+        # wait post_wid functions to finish
+        if self.post_wid_thread and self.post_wid_thread.is_alive():
+            log("Waiting post wid thread to finish...")
+            self.post_wid_thread.join()
 
     def on_implicit_send(self, project_name, wid, test_case_name, description, style,
                          response, response_size, response_is_present):
@@ -553,10 +587,7 @@ class TestCase(PTSCallback):
         PTSControl.IPTSImplicitSendCallbackEx.OnImplicitSend"""
         log("%s %s", self, self.on_implicit_send.__name__)
 
-        # Wait post_wid functions to finish
-        if self.post_wid_thread and self.post_wid_thread.is_alive():
-            log("Waiting post wid thread to finish...")
-            self.post_wid_thread.join()
+        self.join_post_wid_thread()
 
         # this should never happen, pts does not run tests in parallel
         # TODO - This is a temporary solution for PTS bug #14711
