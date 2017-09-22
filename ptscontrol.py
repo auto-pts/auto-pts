@@ -228,7 +228,7 @@ class PyPTS:
 
         self._init_attributes()
 
-        # list of tuples of methods and aruments to recover after PTS restart
+        # list of tuples of methods and arguments to recover after PTS restart
         self._recov = []
         self._recov_in_progress = False
 
