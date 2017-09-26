@@ -27,15 +27,14 @@ import xmlrpclib
 import Queue
 import threading
 from SimpleXMLRPCServer import SimpleXMLRPCServer
+
 from ptsprojects.testcase import get_max_test_case_desc
 from ptsprojects.testcase import PTSCallback
 from ptsprojects.zephyr.btp import BTPError
 import ptsprojects.ptstypes as ptstypes
+from config import SERVER_PORT, CLIENT_PORT
 
 log = logging.debug
-
-SERVER_PORT = 65000
-CLIENT_PORT = 65001
 
 RUNNING_TEST_CASE = None
 

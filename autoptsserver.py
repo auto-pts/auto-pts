@@ -36,11 +36,9 @@ import BaseHTTPServer
 
 import winutils
 import ptscontrol
+from config import SERVER_PORT
 
 log = logging.debug
-
-# TCP server port
-PORT = 65000
 
 class PyPTSWithXmlRpcCallback(ptscontrol.PyPTS):
     """A child class that adds support of xmlrpc PTS callbacks to PyPTS"""
@@ -115,11 +113,11 @@ def main():
     pts = PyPTSWithXmlRpcCallback()
     print "OK"
 
-    print "Serving on port {} ...".format(PORT)
+    print "Serving on port {} ...".format(SERVER_PORT)
 
     BaseHTTPServer.BaseHTTPRequestHandler.address_string = new_address_string
 
-    server = SimpleXMLRPCServer(("", PORT), allow_none = True)
+    server = SimpleXMLRPCServer(("", SERVER_PORT), allow_none = True)
     server.register_instance(pts)
     server.register_introspection_functions()
     server.serve_forever()
