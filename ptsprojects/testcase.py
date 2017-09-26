@@ -20,6 +20,7 @@ import sys
 import time
 import logging
 from threading import Thread
+import Queue
 
 from utils import exec_iut_cmd
 import ptstypes
@@ -370,7 +371,7 @@ class TestCase(PTSCallback):
         self.ok_cancel_wids = ok_cancel_wids
         self.post_wid_queue = []
         self.post_wid_thread = None
-        self.thread_exc = None
+        self.thread_exception = Queue.Queue()
 
     def __str__(self):
         """Returns string representation"""
@@ -553,9 +554,9 @@ class TestCase(PTSCallback):
         for cmd in self.post_wid_queue:
             try:
                 cmd.start()
-            except:
-                self.thread_exc = sys.exc_info()
-                log("Caught exception in thread %r", self.thread_exc)
+            except Exception as e:
+                self.thread_exception.put(sys.exc_info()[1])
+                log("Caught exception in post_wid_thread %r", e)
                 break
 
         del self.post_wid_queue[:]
@@ -570,10 +571,13 @@ class TestCase(PTSCallback):
                 self.post_wid_thread.is_alive())
 
         # raise exception discovered by thread
-        if self.thread_exc:
-            log("Raising exception from thread %r", self.thread_exc)
-            exc = self.thread_exc
-            self.thread_exc = None
+        try:
+            exc = self.thread_exception.get_nowait()
+        except Queue.Empty:
+            pass
+        else:
+            log("Re-raising exception sent from thread %r", exc)
+            self.thread_exception.task_done()
             raise exc
 
         # wait post_wid functions to finish
