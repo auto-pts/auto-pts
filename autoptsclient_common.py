@@ -24,6 +24,7 @@ import socket
 import logging
 import datetime
 import xmlrpclib
+import Queue
 import threading
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 from ptsprojects.testcase import get_max_test_case_desc
@@ -75,7 +76,28 @@ xmlrpclib._Method = _Method
 
 class ClientCallback(PTSCallback):
     def __init__(self):
-        pass
+        self.exception = Queue.Queue()
+
+    def error_code(self):
+        """Return error code or None if there are no errors
+
+        Used by the main thread to get the errors happened in the callback
+        thread
+
+        """
+
+        error_code = None
+
+        try:
+            exc = self.exception.get_nowait()
+        except Queue.Empty:
+            pass
+        else:
+            error_code = get_error_code(exc)
+            log("Error %r from the callback thread", error_code)
+            self.exception.task_done()
+
+        return error_code
 
     def log(self, log_type, logtype_string, log_time, log_message):
         """Implements:
@@ -101,8 +123,9 @@ class ClientCallback(PTSCallback):
                 RUNNING_TEST_CASE.log(log_type, logtype_string, log_time,
                                       log_message)
         except Exception as e:
-            log("Caught exception")
-            log(e)
+            logging.exception("Log caught exception")
+            self.exception.put(sys.exc_info()[1])
+
             # exit does not work, cause app is blocked in PTS.RunTestCase?
             sys.exit("Exception in Log")
 
@@ -158,8 +181,9 @@ class ClientCallback(PTSCallback):
                     testcase_response)
 
         except Exception as e:
-            log("Caught exception")
-            log(e)
+            logging.exception("OnImplicitSend caught exception")
+            self.exception.put(sys.exc_info()[1])
+
             # exit does not work, cause app is blocked in PTS.RunTestCase?
             sys.exit("Exception in OnImplicitSend")
 
@@ -167,6 +191,33 @@ class ClientCallback(PTSCallback):
         log("*" * 20)
 
         return testcase_response
+
+class CallbackThread(threading.Thread):
+    """Thread for XML-RPC callback server
+
+    To prevent SimpleXMLRPCServer blocking whole app it is started in a thread
+
+    """
+    def __init__(self):
+        log("%s.%s", self.__class__.__name__, self.__init__.__name__)
+        threading.Thread.__init__(self)
+        self.callback = ClientCallback()
+
+    def run(self):
+        """Starts the xmlrpc callback server"""
+        log("%s.%s", self.__class__.__name__, self.run.__name__)
+
+        print "Serving on port {} ...\n".format(CLIENT_PORT)
+
+        server = SimpleXMLRPCServer(("", CLIENT_PORT),
+                                    allow_none = True, logRequests = False)
+        server.register_instance(self.callback)
+        server.register_introspection_functions()
+        server.serve_forever()
+
+    def error_code(self):
+        log("%s.%s", self.__class__.__name__, self.error_code.__name__)
+        return self.callback.error_code()
 
 def get_my_ip_address():
     """Returns the IP address of the host"""
@@ -181,19 +232,6 @@ def get_my_ip_address():
     return my_ip_address
 
 get_my_ip_address.cached_address = None
-
-def start_callback():
-    """Starts the xmlrpc callback server"""
-
-    callback = ClientCallback()
-
-    print "Serving on port {} ...\n".format(CLIENT_PORT)
-
-    server = SimpleXMLRPCServer(("", CLIENT_PORT),
-                                allow_none = True, logRequests = False)
-    server.register_instance(callback)
-    server.register_introspection_functions()
-    server.serve_forever()
 
 def init_logging():
     """Initialize logging"""
@@ -288,9 +326,9 @@ def init_core(server_address, workspace_path, bd_addr, enable_max_logs):
     proxy.restart_pts()
     print "OK"
 
-    # to prevent SimpleXMLRPCServer blocking whole app start it in a thread
-    thread = threading.Thread(target = start_callback)
-    thread.start()
+    callback_thread = CallbackThread()
+    callback_thread.start()
+    proxy.callback_thread = callback_thread
 
     proxy.set_call_timeout(120000) # milliseconds
 
@@ -356,6 +394,27 @@ def log2file(function):
 
     return wrapper
 
+def get_error_code(exc):
+    """Return string error code for argument exception"""
+    error_code = None
+
+    if isinstance(exc, BTPError):
+        error_code = ptstypes.E_BTP_ERROR
+
+    elif isinstance(exc, socket.timeout):
+        error_code = ptstypes.E_BTP_TIMEOUT
+
+    elif isinstance(exc, xmlrpclib.Fault):
+        error_code = ptstypes.E_XML_RPC_ERROR
+
+    elif error_code is None:
+        error_code = ptstypes.E_FATAL_ERROR
+
+    log("%s returning error code %r for exception %r",
+        get_error_code.__name__, error_code, exc)
+
+    return error_code
+
 @log2file
 def run_test_case(pts, test_case):
     """Runs the test case specified by a TestCase instance.
@@ -381,37 +440,20 @@ def run_test_case(pts, test_case):
         test_case.pre_run()
         error_code = pts.run_test_case(test_case.project_name, test_case.name)
 
-    except BTPError as error:
-        error_code = ptstypes.E_BTP_ERROR
+        log("After run_test_case error_code=%r status=%r",
+            error_code, test_case.status)
 
-        logging.error(
-            "%s: %s\nPrevious test case status was %r",
-            error_code, str(error), test_case.status, exc_info = 1)
+        # raise exception discovered by thread
+        thread_error = pts.callback_thread.error_code()
 
-        pts.recover_pts()
+        if thread_error:
+            error_code = thread_error
 
-    except socket.timeout as error: # timeout in BTPSocket when doing recv
-        error_code = ptstypes.E_BTP_TIMEOUT
-
-        logging.error(
-            "%s: %s\nPrevious test case status was %r",
-            error_code, str(error), test_case.status, exc_info = 1)
-
-        pts.recover_pts()
-
-    except xmlrpclib.Fault as error: # see [1]
-        error_code = ptstypes.E_XML_RPC_ERROR
-
-        logging.error(
-            "%s\nPrevious test case status was %r",
-            error_code, test_case.status, exc_info = 1)
+    except Exception as error:
+        error_code = get_error_code(error)
 
     except:
-        error_code = ptstypes.E_FATAL_ERROR
-
-        logging.error(
-            "%s\nPrevious test case status was %r",
-            error_code, test_case.status, exc_info = 1)
+        error_code = get_error_code(None)
 
     finally:
         test_case.post_run(error_code) # stop qemu and other commands
