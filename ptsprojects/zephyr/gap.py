@@ -251,7 +251,7 @@ def test_cases(pts):
                   ok_cancel_wids={4: (btp.check_discov_results)},
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_start_discov, type='active',
-                                 mode='observe', post_wid=160)]),
+                                 mode='observe', post_wid=169)]),
         ZTestCase("GAP", "TC_BROB_OBSV_BV_05_C",
                   cmds=pre_conditions,
                   verify_wids={157: (btp.discover_and_verify, 'le', 'active',
