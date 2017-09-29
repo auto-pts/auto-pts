@@ -260,9 +260,10 @@ class StartZephyrCmd(Cmd):
         thread = threading.Thread(target = listen)
         thread.start()
 
-        # start qemu
+        # start qemu in a new session to prevent killing it on Ctrl-C
         logging.debug("Starting qemu: %r", xterm_qemu_cmd)
-        QEMU_PROCESS = subprocess.Popen(shlex.split(xterm_qemu_cmd))
+        QEMU_PROCESS = subprocess.Popen(shlex.split(xterm_qemu_cmd),
+                                        preexec_fn=os.setsid)
 
         thread.join()
 
