@@ -250,11 +250,7 @@ def test_cases(pts):
                             start_wid=15),
                    TestFunc(btp.l2cap_connected_ev, start_wid=15),
                    TestFunc(btp.l2cap_disconn, 0, start_wid=14),
-                   TestFunc(btp.l2cap_disconnected_ev, 0, start_wid=14),
-                   TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
-                            start_wid=14),
-                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
-                            Addr.le_public, start_wid=14)]),
+                   TestFunc(btp.l2cap_disconnected_ev, 0, start_wid=14)]),
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-09-C",
                   pre_conditions +
                   [TestFunc(btp.core_reg_svc_l2cap),
