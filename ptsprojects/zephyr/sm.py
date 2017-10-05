@@ -254,7 +254,8 @@ def test_cases(pts):
                        [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                         TestFunc(btp.gap_adv_ind_on, start_wid=115),
                         TestFunc(btp.gap_connected_ev, pts_bd_addr,
-                                 Addr.le_public, start_wid=115)]),
+                                 Addr.le_public, start_wid=115),
+                        TestFunc(btp.gap_disconnected_ev, post_wid=104)]),
         ZTestCase("SM", "SM/SLA/KDU/BV-01-C",
                   edit1_wids={104: btp.var_store_get_passkey},
                   cmds=pre_conditions +
