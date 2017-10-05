@@ -1106,6 +1106,78 @@ def gatts_set_enc_key_size(hdl, enc_key_size):
     gatt_command_rsp_succ()
 
 
+def gatts_dec_attr_value_changed_ev_data(frame):
+    """Decodes BTP Attribute Value Changed Event data
+
+    Event data frame format
+    0             16            32
+    +--------------+-------------+------+
+    | Attribute ID | Data Length | Data |
+    +--------------+-------------+------+
+
+    """
+    hdr = '<HH'
+    hdr_len = struct.calcsize(hdr)
+
+    (handle, data_len) = struct.unpack_from(hdr, frame)
+    data = struct.unpack_from('%ds' % data_len, frame, hdr_len)
+
+    return handle, data
+
+
+def gatts_attr_value_changed_ev():
+    logging.debug("%s", gatts_attr_value_changed_ev.__name__)
+
+    zephyrctl = iutctl.get_zephyr()
+
+    (tuple_hdr, tuple_data) = zephyrctl.btp_socket.read()
+
+    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
+                  btpdef.GATT_EV_ATTR_VALUE_CHANGED)
+
+    (handle, data) = gatts_dec_attr_value_changed_ev_data(tuple_data[0])
+    logging.debug("%s %r %r", gatts_attr_value_changed_ev.__name__, handle, data)
+
+    return handle, data
+
+
+def gatts_verify_write_success(description):
+    """
+    This verifies if PTS initiated write operation succeeded
+    """
+    logging.debug("%s", gatts_verify_write_success.__name__)
+
+    # If write is successful, Attribute Value Changed Event will be received
+    try:
+        (handle, value) = gatts_attr_value_changed_ev()
+        logging.debug("%s Handle %r. Value %r has been successfully written",
+                      gatts_verify_write_success.__name__, handle, value)
+        return True
+    except:
+        logging.debug("%s PTS failed to write attribute value",
+                      gatts_verify_write_success.__name__)
+        return False
+
+
+def gatts_verify_write_fail(description):
+    return not gatts_verify_write_success(description)
+
+
+# TODO Implement this function
+def gap_handle_wid_161(handle="0007"):
+    """
+    project_name: GAP
+    wid: 161
+    description: Please confirm the signed write characteristic handle 0x0007. And enter the length of this handle's characteristic value in integer.
+    style: MMI_Style_Edit1 0x12040
+    response: 17807656 <type 'int'> 94810264930128
+    response_size: 2048
+    response_is_present: 0 <type 'int'>
+
+    """
+    return 1
+
+
 def gattc_exchange_mtu(bd_addr_type, bd_addr):
     logging.debug("%s %r %r", gattc_exchange_mtu.__name__, bd_addr_type,
                   bd_addr)
