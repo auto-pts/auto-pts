@@ -1189,7 +1189,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gap_connected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=98),
                    TestFunc(sleep, 1, start_wid=98),
-                   TestFunc(btp.gatts_set_val, 3, '01', start_wid=98)]),
+                   TestFunc(btp.gatts_set_val, 0xC, '01', start_wid=98)]),
         ZTestCase("GATT", "GATT/SR/GPA/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
