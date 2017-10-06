@@ -26,7 +26,7 @@ class ZTestCase(TestCase):
     def __init__(self, *args, **kwargs):
         """Refer to TestCase.__init__ for parameters and their documentation"""
 
-        super(ZTestCase, self).__init__(*args, **kwargs)
+        super(ZTestCase, self).__init__(*args, ptsproject_name = "zephyr",**kwargs)
 
         self.zephyrctl = get_zephyr()
 
