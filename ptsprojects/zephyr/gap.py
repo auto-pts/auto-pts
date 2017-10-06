@@ -725,12 +725,12 @@ def test_cases(pts):
                    cmds=pre_conditions +
                         [TestFunc(btp.core_reg_svc_gatts),
                          TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                         TestFunc(btp.gap_set_conn),
-                         TestFunc(btp.gap_adv_ind_on),
+                         TestFunc(btp.gap_set_conn, start_wid=91),
+                         TestFunc(btp.gap_adv_ind_on, start_wid=91),
                          TestFunc(btp.gap_connected_ev, pts_bd_addr,
                                   Addr.le_public, post_wid=91),
                          TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
-                                  Addr.le_public, post_wid=118),
+                                  Addr.le_public, post_wid=1002),
                          # This sleep is workaround, because apparently PTS is
                          # asking for service request before it receives
                          # HCI encryption change event.
