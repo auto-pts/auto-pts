@@ -1245,7 +1245,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)],
                   verify_wids={52: ("Handle='d'",
-                                    "value='0100'")}),
+                                    "value='0001'")}),
         ZTestCase("GATT", "GATT/SR/GPA/BV-06-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
