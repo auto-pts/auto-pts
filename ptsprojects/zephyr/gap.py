@@ -943,9 +943,9 @@ def test_cases(pts):
                         TestFunc(btp.gap_conn, start_wid=78),
                         TestFunc(btp.gap_connected_ev, post_wid=78),
                         TestFunc(btp.gap_pair, start_wid=108),
-                        TestFunc(btp.gap_disconnected_ev, start_wid=2142),
-                        # Sleep 1 minute and change RPA
-                        TestFunc(sleep, 60, start_wid=2142),
+                        TestFunc(btp.gap_disconnected_ev, post_wid=118, skip_call=(2,)),
+                        # Sleep above 1 minute and change RPA
+                        TestFunc(sleep, 70, start_wid=2142),
                         TestFunc(btp.gap_read_ctrl_info, start_wid=2142),
                         TestFunc(btp.gap_conn, start_wid=2142)],
                   # Please confirm IUT does not perform the Connection
