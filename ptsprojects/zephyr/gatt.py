@@ -1995,6 +1995,7 @@ def test_cases_client(pts):
                             Addr.le_public, start_wid=3),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)]),
+        # PTS issue #15965
         ZTestCase("GATT", "GATT/CL/GAW/BV-02-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
