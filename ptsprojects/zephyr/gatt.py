@@ -2493,6 +2493,7 @@ def test_cases_client(pts):
                             Addr.le_public, start_wid=3),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)]),
+        # PTS issue #15970
         ZTestCase("GATT", "GATT/CL/GAT/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
@@ -2505,6 +2506,7 @@ def test_cases_client(pts):
                             Addr.le_public, start_wid=3),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)]),
+        # PTS issue #15970
         ZTestCase("GATT", "GATT/CL/GAT/BV-02-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
