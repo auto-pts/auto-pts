@@ -15,6 +15,9 @@
 
 """PTS test case python implementation"""
 
+import shlex
+import os
+import subprocess
 import re
 import sys
 import time
@@ -311,8 +314,9 @@ class TestCase(PTSCallback):
                         self.ptsproject_name, self.no_wid, self.edit1_wids,
                         self.verify_wids, self.ok_cancel_wids)
 
-    def __init__(self, project_name, test_case_name, cmds = [], no_wid = None,
-                 edit1_wids = None, verify_wids = None, ok_cancel_wids = None):
+    def __init__(self, project_name, test_case_name, cmds = [],
+                 ptsproject_name = None, no_wid = None, edit1_wids = None,
+                 verify_wids = None, ok_cancel_wids = None):
         """TestCase constructor
 
         cmds -- a list of TestCmd and TestFunc or single instance of them
@@ -373,6 +377,9 @@ class TestCase(PTSCallback):
         self.post_wid_queue = []
         self.post_wid_thread = None
         self.thread_exception = Queue.Queue()
+        self.ptsproject_name = ptsproject_name
+        self.tc_subproc = None
+        self.lf_subproc = None
 
     def __str__(self):
         """Returns string representation"""
@@ -637,6 +644,20 @@ class TestCase(PTSCallback):
         for index, cmd in enumerate(self.cmds):
             log("%d) %s", index, cmd)
 
+        subproc_dir = (os.path.dirname(os.path.realpath(__file__)) + "/" +
+                       self.ptsproject_name + "/")
+        subproc_path = subproc_dir + "pre_tc.py"
+
+        if os.path.exists(subproc_path):
+            log("%s, run pre test case script" % self.post_run.__name__)
+            self.lf_subproc = open(subproc_dir + "sp_pre_stdout.log", "w")
+            subproc_cmd = " ".join([subproc_path, self.project_name, self.name])
+            self.tc_subproc = subprocess.Popen(shlex.split(subproc_cmd),
+                                               shell=False,
+                                               stdin=subprocess.PIPE,
+                                               stdout=self.lf_subproc,
+                                               stderr=self.lf_subproc)
+
         # start commands that don't have start trigger (lack start_wid or
         # post_wid) and are not cleanup functions
         for cmd in self.cmds:
@@ -671,6 +692,30 @@ class TestCase(PTSCallback):
 
         for cmd in self.cmds:
             cmd.stop()
+
+        # Cleanup pre created subproc
+        if self.tc_subproc != None:
+            log("%s, cleanup running pre test case script" %
+                self.post_run.__name__)
+            self.tc_subproc.communicate(input='#close\n')
+            self.lf_subproc.close()
+
+        subproc_dir = (os.path.dirname(os.path.realpath(__file__)) + "/" +
+                       self.ptsproject_name + "/")
+        subproc_path = subproc_dir + "post_tc.py"
+
+        if os.path.exists(subproc_path):
+            log("%s, run post test case script" % self.post_run.__name__)
+            self.lf_subproc = open(subproc_dir + "sp_post_stdout.log", "w")
+            subproc_cmd = " ".join([subproc_path, self.project_name, self.name])
+            self.tc_subproc = subprocess.Popen(shlex.split(subproc_cmd),
+                                               shell=False,
+                                               stdin=subprocess.PIPE,
+                                               stdout=self.lf_subproc,
+                                               stderr=self.lf_subproc)
+
+            self.tc_subproc.communicate(input='#close\n')
+            self.lf_subproc.close()
 
 def get_max_test_case_desc(test_cases):
     """Takes a list of test cases and return a tuple of longest project name
