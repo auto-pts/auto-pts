@@ -1315,7 +1315,7 @@ def gatts_get_attrs(attr_type=0, start_handle=0, end_handle=0, uuid=None):
     return attributes
 
 
-def gap_handle_wid_161(description, handle="0007"):
+def gap_handle_wid_161(description):
     """
     project_name: GAP
     wid: 161
@@ -1326,7 +1326,10 @@ def gap_handle_wid_161(description, handle="0007"):
     response_is_present: 0 <type 'int'>
 
     """
-    return 1
+    logging.debug("%s", gap_handle_wid_161.__name__)
+
+    match = re.findall(r'(0[xX])?([0-9a-fA-F]{4})', description)
+    handle = int(match[0][1], 16)
 
 
 def gattc_exchange_mtu(bd_addr_type, bd_addr):
