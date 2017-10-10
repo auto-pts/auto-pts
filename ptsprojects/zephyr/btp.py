@@ -1409,7 +1409,8 @@ def gap_handle_wid_161(description):
     """
     project_name: GAP
     wid: 161
-    description: Please confirm the signed write characteristic handle 0x0007. And enter the length of this handle's characteristic value in integer.
+    description: Please confirm the signed write characteristic handle 0x0007.
+                 And enter the length of this handle's characteristic value in integer.
     style: MMI_Style_Edit1 0x12040
     response: 17807656 <type 'int'> 94810264930128
     response_size: 2048
@@ -1417,9 +1418,42 @@ def gap_handle_wid_161(description):
 
     """
     logging.debug("%s", gap_handle_wid_161.__name__)
-
+    
     (handle,) = re.findall(r'0x\d+', description)
     handle = int(handle, 16)
+
+    attr = gatts_get_attrs(btpdef.GATT_GET_CHRC_VALUE, handle, handle)
+    logging.debug("%r", attr[0])
+
+    if not attr:
+        return
+
+    attr = attr[0]
+
+    if attr[0] != btpdef.GATT_GET_CHRC_VALUE:
+        return
+
+    value_namedtuple = attr[1]
+
+    value_len = len(value_namedtuple.value)
+
+    attr = gatts_get_attrs(btpdef.GATT_GET_CHARACTERISTIC, handle - 1, handle - 1)
+    logging.debug("%r", attr[0])
+
+    if not attr:
+        return
+
+    attr = attr[0]
+
+    if attr[0] != btpdef.GATT_GET_CHARACTERISTIC:
+        return
+
+    chrc_namedtuple = attr[1]
+
+    if chrc_namedtuple.properties & Prop.auth_swrite == 0:
+        return
+
+    return value_len
 
 
 def gattc_exchange_mtu(bd_addr_type, bd_addr):
