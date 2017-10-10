@@ -475,7 +475,7 @@ class TestCase(PTSCallback):
 
         return my_response
 
-    def handle_mmi_style_edit1(self, wid):
+    def handle_mmi_style_edit1(self, wid, description):
         """Implements implicit send handling for MMI_Style_Edit1"""
         log("%s, %r edit1_wids=%r", self.handle_mmi_style_edit1.__name__, wid,
             self.edit1_wids)
@@ -485,10 +485,10 @@ class TestCase(PTSCallback):
         if self.edit1_wids and wid in self.edit1_wids.keys():
             response = self.edit1_wids[wid]
             if callable(response):
-                my_response = response()
+                my_response = response(description)
             elif type(response) is tuple and callable(response[0]):
                 # Handle command before responding
-                my_response = response[0](*response[1:])
+                my_response = response[0](description, *response[1:])
             else:
                 my_response = response
 
@@ -609,7 +609,7 @@ class TestCase(PTSCallback):
             my_response = self.handle_mmi_style_yes_no1(wid, description)
 
         elif style == ptstypes.MMI_Style_Edit1:
-            my_response = self.handle_mmi_style_edit1(wid)
+            my_response = self.handle_mmi_style_edit1(wid, description)
 
         # actually style == MMI_Style_Ok_Cancel2
         else:

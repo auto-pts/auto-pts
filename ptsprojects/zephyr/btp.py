@@ -567,17 +567,17 @@ def gap_unpair(bd_addr=None, bd_addr_type=None):
     gap_command_rsp_succ(btpdef.GAP_UNPAIR)
 
 
-def var_store_get_passkey(bd_addr=None, bd_addr_type=None):
+def var_store_get_passkey(description, bd_addr=None, bd_addr_type=None):
     gap_passkey_disp_ev(bd_addr, bd_addr_type, store=True)
-    return var_get_passkey()
+    return var_get_passkey(description)
 
 
-def var_store_get_wrong_passkey(bd_addr=None, bd_addr_type=None):
+def var_store_get_wrong_passkey(description, bd_addr=None, bd_addr_type=None):
     gap_passkey_disp_ev(bd_addr, bd_addr_type, store=True)
     return var_get_wrong_passkey()
 
 
-def var_get_passkey():
+def var_get_passkey(description):
     return str(PASSKEY)
 
 
@@ -1315,8 +1315,7 @@ def gatts_get_attrs(attr_type=0, start_handle=0, end_handle=0, uuid=None):
     return attributes
 
 
-# TODO Implement this function
-def gap_handle_wid_161(handle="0007"):
+def gap_handle_wid_161(description, handle="0007"):
     """
     project_name: GAP
     wid: 161
