@@ -788,7 +788,7 @@ def test_cases(pts):
                         TestFunc(btp.gap_connected_ev, start_wid=78),
                         TestFunc(btp.gap_disconn, start_wid=44),
                         TestFunc(btp.gap_disconnected_ev, start_wid=44)]),
-         ZTestCase("GAP", "TC_SEC_CSIGN_BV_01_C",
+         ZTestCase("GAP", "GAP/SEC/CSIGN/BV-01-C",
                    pre_conditions +
                    [TestFunc(btp.core_reg_svc_gatts),
                     TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
