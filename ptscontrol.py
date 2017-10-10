@@ -369,7 +369,13 @@ class PyPTS:
             log("About to kill PTS process: %s", pts_process)
             try:
                 pts_process.CloseMainWindow()
-                pts_process.WaitForExit()
+                # Give PTS process time to close otherwise do it brutally to not
+                # block testing. This happens occasionally when tester tries to
+                # close PTS while after test logs are processing.
+                res = pts_process.WaitForExit(5000)
+                if res == False:
+                    pts_process.Kill()
+                    log("Process didn't close within limited time - killed")
                 pts_process.Close()
             except Exception as error:
                 log("Exception when killing PTS process: %r", error)
