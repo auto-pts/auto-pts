@@ -1200,8 +1200,6 @@ def test_cases_server(pts):
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)],
                   verify_wids={102: ("Attribute Handle = '0001'",
                                      "Primary Service = '%s'" % UUID.VND16_1)}),
-        # tester crashes:
-        # https://jira.zephyrproject.org/browse/ZEP-2396
         ZTestCase("GATT", "GATT/SR/GPA/BV-02-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 1, UUID.VND16_1),
@@ -1212,7 +1210,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_add_inc_svc, 1),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)],
-                  verify_wids={102: ("Attribute Handle = '0001'",
+                  verify_wids={102: ("Attribute Handle = '000a'",
                                      "Secondary Service = '%s'" % UUID.VND16_1)}),
         ZTestCase("GATT", "GATT/SR/GPA/BV-03-C",
                   pre_conditions +
