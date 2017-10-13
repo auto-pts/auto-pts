@@ -97,7 +97,7 @@ def parse_args():
     arg_parser.add_argument("-c", "--test-cases", nargs='+',
                             help="Names of test cases to run. Groups of test "
                             "cases can be specified by profile names: "
-                            "GATT, GATTS, GATTC, GAP, L2CAP, RFCOMM, SM")
+                            "GATT, GATTS, GATTC, GAP, L2CAP, RFCOMM, SM, MESH")
 
     args = arg_parser.parse_args()
 
@@ -121,6 +121,7 @@ def main():
     test_cases += autoprojects.gatt.test_cases(pts)
     test_cases += autoprojects.sm.test_cases(pts)
     test_cases += autoprojects.l2cap.test_cases(pts)
+    test_cases += autoprojects.mesh.test_cases(pts)
 
     if args.test_cases:
         test_cases = autoptsclient.get_test_cases_subset(
