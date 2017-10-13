@@ -26,6 +26,7 @@ import iutctl
 import btpdef
 from random import randint
 from collections import namedtuple
+from uuid import UUID
 
 #  Global temporary objects
 PASSKEY = None
@@ -113,6 +114,8 @@ GATTS = {
                  CONTROLLER_INDEX),
     "set_enc_key_size": (btpdef.BTP_SERVICE_ID_GATT,
                          btpdef.GATT_SET_ENC_KEY_SIZE, CONTROLLER_INDEX),
+    "get_attr": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_GET_ATTRIBUTE,
+                 CONTROLLER_INDEX)
 }
 
 GATTC = {
@@ -1161,6 +1164,155 @@ def gatts_verify_write_success(description):
 
 def gatts_verify_write_fail(description):
     return not gatts_verify_write_success(description)
+
+
+def btp2uuid(uuid_len, uu):
+    if uuid_len == 2:
+        (uu,) = struct.unpack("H", uu)
+        return hex(uu)
+    else:
+        return UUID(bytes_le=uu).urn[9:]
+
+
+def dec_gatts_get_attrs_rp(data, data_len):
+    logging.debug("%s %r %r", dec_gatts_get_attrs_rp.__name__, data, data_len)
+
+    hdr = '<B'
+    hdr_len = struct.calcsize(hdr)
+
+    (attr_type, attr) = struct.unpack(hdr + '%ds' % (data_len - hdr_len), data)
+
+    logging.debug("Got attribute %r", attr_type)
+
+    obj = None
+
+    if (attr_type == btpdef.GATT_GET_SERVICE_PRIMARY or
+            attr_type == btpdef.GATT_GET_SERVICE_SECONDARY):
+        Service = namedtuple('Service', 'service_type start_handle end_handle '
+                                        'uuid')
+
+        hdr = '<BHHB'
+        hdr_len += struct.calcsize(hdr)
+
+        (svc_type, start_hdl, end_hdl, uuid_len, uu) = \
+            struct.unpack(hdr + '%ds' % (data_len - hdr_len), attr)
+
+        uu = btp2uuid(uuid_len, uu)
+
+        obj = Service(svc_type, start_hdl, end_hdl, uu)
+
+    elif attr_type == btpdef.GATT_GET_SERVICE_INCLUDE:
+        Include = namedtuple('Include', 'handle service_type start_handle '
+                                        'end_handle uuid')
+
+        hdr = '<HBHHB'
+        hdr_len += struct.calcsize(hdr)
+
+        (handle, service_type, start_handle, end_handle, uuid_len, uu) = \
+            struct.unpack(hdr + '%ds' % (data_len - hdr_len), attr)
+
+        uu = btp2uuid(uuid_len, uu)
+
+        obj = Include(handle, service_type, start_handle, end_handle, uu)
+
+    elif attr_type == btpdef.GATT_GET_CHARACTERISTIC:
+        Characteristic = namedtuple('Characteristic', 'handle value_handle '
+                                                      'properties uuid')
+
+        hdr = '<HHBB'
+        hdr_len += struct.calcsize(hdr)
+
+        (handle, value_handle, properties, uuid_len, uu) = \
+            struct.unpack(hdr + '%ds' % (data_len - hdr_len), attr)
+
+        uu = btp2uuid(uuid_len, uu)
+
+        obj = Characteristic(handle, value_handle, properties, uu)
+
+    elif attr_type == btpdef.GATT_GET_CHRC_VALUE:
+        ChrcVal = namedtuple('ChrcVal', 'handle permissions value')
+
+        hdr = '<HBH'
+        hdr_len += struct.calcsize(hdr)
+
+        (handle, permissions, value_len, value) = \
+            struct.unpack(hdr + '%ds' % (data_len - hdr_len), attr)
+
+        obj = ChrcVal(handle, permissions, value)
+
+    if attr_type == btpdef.GATT_GET_DESCRIPTOR:
+        Descriptor = namedtuple('Descriptor', 'handle permissions uuid value')
+
+        hdr = '<HBBH'
+        hdr_len += struct.calcsize(hdr)
+
+        (handle, permissions, uuid_len, val_len, tmp) = \
+            struct.unpack(hdr + '%ds' % (data_len - hdr_len), attr)
+
+        (uu, value) = struct.unpack('%ds%ds' % (uuid_len, val_len), tmp)
+
+        uu = btp2uuid(uuid_len, uu)
+
+        obj = Descriptor(handle, permissions, uu, value)
+
+    logging.debug("Decoded %r", obj)
+
+    return attr_type, obj
+
+
+def gatts_get_attrs(attr_type=0, start_handle=0, end_handle=0, uuid=None):
+    logging.debug("%s %r %r %r %r", gatts_get_attrs.__name__, attr_type,
+                  start_handle, end_handle, uuid)
+
+    zephyrctl = iutctl.get_zephyr()
+    done = False
+    attributes = []
+
+    data_ba = bytearray()
+
+    if type(start_handle) is str:
+        start_handle = int(start_handle, 16)
+
+    start_hdl_ba = struct.pack('H', start_handle)
+    data_ba.extend(start_hdl_ba)
+
+    if type(end_handle) is str:
+        end_handle = int(end_handle, 16)
+
+    end_hdl_ba = struct.pack('H', end_handle)
+    data_ba.extend(end_hdl_ba)
+
+    data_ba.extend(chr(attr_type))
+
+    if uuid:
+        uuid_ba = binascii.unhexlify(uuid.translate(None, "-"))[::-1]
+        data_ba.extend(chr(len(uuid_ba)))
+        data_ba.extend(uuid_ba)
+    else:
+        data_ba.extend(chr(0))
+
+    zephyrctl.btp_socket.send(*GATTS['get_attr'], data=data_ba)
+
+    # read until BTP_STATUS_SUCCESS received
+    while not done:
+        (tuple_hdr, tuple_data,) = zephyrctl.btp_socket.read()
+        logging.debug("%s received %r %r", gatts_get_attrs.__name__,
+                      tuple_hdr, tuple_data)
+
+        if (tuple_hdr.svc_id == btpdef.BTP_SERVICE_ID_GATT and
+                tuple_hdr.op == btpdef.GATT_GET_ATTRIBUTE and
+                tuple_hdr.data_len == btpdef.BTP_STATUS_SUCCESS):
+
+            done = True
+            continue
+
+        attr = dec_gatts_get_attrs_rp(tuple_data[0], tuple_hdr.data_len)
+
+        attributes.append(attr)
+
+    logging.debug("%r", attributes)
+
+    return attributes
 
 
 # TODO Implement this function
