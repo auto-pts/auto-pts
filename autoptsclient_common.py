@@ -529,7 +529,7 @@ def get_test_cases_subset(test_cases, test_case_names):
 
     """
     # protocols and profiles
-    profiles = ("GATT", "GAP", "L2CAP", "RFCOMM", "SM")
+    profiles = ("GATT", "GAP", "L2CAP", "RFCOMM", "SM", "MESH")
 
     # subsets of profiles
     profiles_subset = {
