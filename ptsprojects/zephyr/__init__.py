@@ -21,3 +21,4 @@ import ptsprojects.zephyr.gap
 import ptsprojects.zephyr.gatt
 import ptsprojects.zephyr.sm
 import ptsprojects.zephyr.l2cap
+import ptsprojects.zephyr.mesh
