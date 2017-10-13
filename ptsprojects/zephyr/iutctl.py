@@ -244,6 +244,10 @@ class ZephyrCtlStub:
         """Powers off the Zephyr OS"""
         log("%s.%s", self.__class__, self.stop.__name__)
 
+    def wait_iut_ready_event(self):
+        """Wait for IUT to be ready Zephyr OS"""
+        log("%s.%s", self.__class__, self.wait_iut_ready_event.__name__)
+
 
 class Board:
     """HW DUT board"""
