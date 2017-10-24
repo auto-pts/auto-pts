@@ -258,6 +258,7 @@ def test_cases_server(pts):
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_start_server),
+                   TestFunc(btp.gatts_get_attrs),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)],
                   verify_wids={17: ("Service = " + UUID.VND16_1)}),
         ZTestCase("GATT", "GATT/SR/GAD/BV-02-C",
@@ -1159,8 +1160,7 @@ def test_cases_server(pts):
                             Addr.le_public, start_wid=92),
                    TestFunc(sleep, 1, start_wid=92),
                    TestFunc(btp.gatts_set_val, 0xC, '01', start_wid=92)]),
-        # Workaround PTS issue #15321
-        ZTestCase("GATT", "GATT/CL/GAI/BV-01-C",
+        ZTestCase("GATT", "GATT/SR/GAI/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
@@ -1189,7 +1189,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gap_connected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=98),
                    TestFunc(sleep, 1, start_wid=98),
-                   TestFunc(btp.gatts_set_val, 3, '01', start_wid=98)]),
+                   TestFunc(btp.gatts_set_val, 0xC, '01', start_wid=98)]),
         ZTestCase("GATT", "GATT/SR/GPA/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -1200,8 +1200,6 @@ def test_cases_server(pts):
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)],
                   verify_wids={102: ("Attribute Handle = '0001'",
                                      "Primary Service = '%s'" % UUID.VND16_1)}),
-        # tester crashes:
-        # https://jira.zephyrproject.org/browse/ZEP-2396
         ZTestCase("GATT", "GATT/SR/GPA/BV-02-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 1, UUID.VND16_1),
@@ -1212,7 +1210,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_add_inc_svc, 1),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)],
-                  verify_wids={102: ("Attribute Handle = '0001'",
+                  verify_wids={102: ("Attribute Handle = '000a'",
                                      "Secondary Service = '%s'" % UUID.VND16_1)}),
         ZTestCase("GATT", "GATT/SR/GPA/BV-03-C",
                   pre_conditions +
@@ -1245,7 +1243,7 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)],
                   verify_wids={52: ("Handle='d'",
-                                    "value='0100'")}),
+                                    "value='0001'")}),
         ZTestCase("GATT", "GATT/SR/GPA/BV-06-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -1312,29 +1310,29 @@ def test_cases_server(pts):
                             Perm.read, UUID.VND16_5),
                    TestFunc(btp.gatts_set_val, 0, '65123401020304'),
                    TestFunc(btp.gatts_add_desc, 0, Perm.read, UUID.CAF),
-                   TestFunc(btp.gatts_set_val, 0, '040007000a00'),
+                   TestFunc(btp.gatts_set_val, 0, '0d0010001300'),
 
                    # Workaround: PTS requires 5 Aggregate Descriptors
                    TestFunc(btp.gatts_add_char, 0, Prop.read | Prop.write,
                             Perm.read, UUID.VND16_5),
                    TestFunc(btp.gatts_set_val, 0, '65123401020304'),
                    TestFunc(btp.gatts_add_desc, 0, Perm.read, UUID.CAF),
-                   TestFunc(btp.gatts_set_val, 0, '040007000a00'),
+                   TestFunc(btp.gatts_set_val, 0, '0d0010001300'),
                    TestFunc(btp.gatts_add_char, 0, Prop.read | Prop.write,
                             Perm.read, UUID.VND16_5),
                    TestFunc(btp.gatts_set_val, 0, '65123401020304'),
                    TestFunc(btp.gatts_add_desc, 0, Perm.read, UUID.CAF),
-                   TestFunc(btp.gatts_set_val, 0, '040007000a00'),
+                   TestFunc(btp.gatts_set_val, 0, '0d0010001300'),
                    TestFunc(btp.gatts_add_char, 0, Prop.read | Prop.write,
                             Perm.read, UUID.VND16_5),
                    TestFunc(btp.gatts_set_val, 0, '65123401020304'),
                    TestFunc(btp.gatts_add_desc, 0, Perm.read, UUID.CAF),
-                   TestFunc(btp.gatts_set_val, 0, '040007000a00'),
+                   TestFunc(btp.gatts_set_val, 0, '0d0010001300'),
                    TestFunc(btp.gatts_add_char, 0, Prop.read | Prop.write,
                             Perm.read, UUID.VND16_5),
                    TestFunc(btp.gatts_set_val, 0, '65123401020304'),
                    TestFunc(btp.gatts_add_desc, 0, Perm.read, UUID.CAF),
-                   TestFunc(btp.gatts_set_val, 0, '040007000a00'),
+                   TestFunc(btp.gatts_set_val, 0, '0d0010001300'),
 
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
@@ -1995,6 +1993,7 @@ def test_cases_client(pts):
                             Addr.le_public, start_wid=3),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)]),
+        # PTS issue #15965
         ZTestCase("GATT", "GATT/CL/GAW/BV-02-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
@@ -2468,8 +2467,7 @@ def test_cases_client(pts):
                                  Addr.le_public, start_wid=3),
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=3)]),
-        # Workaround PTS issue #15321
-        ZTestCase("GATT", "GATT/SR/GAI/BV-01-C",
+        ZTestCase("GATT", "GATT/CL/GAI/BV-01-C",
                     cmds=pre_conditions +
                          [TestFunc(btp.gap_conn, pts_bd_addr,
                                    Addr.le_public, start_wid=2),
@@ -2493,6 +2491,7 @@ def test_cases_client(pts):
                             Addr.le_public, start_wid=3),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)]),
+        # PTS issue #15970
         ZTestCase("GATT", "GATT/CL/GAT/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
@@ -2505,6 +2504,7 @@ def test_cases_client(pts):
                             Addr.le_public, start_wid=3),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)]),
+        # PTS issue #15970
         ZTestCase("GATT", "GATT/CL/GAT/BV-02-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,

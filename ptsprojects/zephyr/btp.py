@@ -26,6 +26,7 @@ import iutctl
 import btpdef
 from random import randint
 from collections import namedtuple
+from uuid import UUID
 
 #  Global temporary objects
 PASSKEY = None
@@ -113,6 +114,8 @@ GATTS = {
                  CONTROLLER_INDEX),
     "set_enc_key_size": (btpdef.BTP_SERVICE_ID_GATT,
                          btpdef.GATT_SET_ENC_KEY_SIZE, CONTROLLER_INDEX),
+    "get_attr": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_GET_ATTRIBUTE,
+                 CONTROLLER_INDEX)
 }
 
 GATTC = {
@@ -164,6 +167,91 @@ L2CAP = {
 class Addr:
     le_public = 0
     le_random = 1
+
+
+class Prop:
+    """Properties of characteresic
+
+    Specified in BTP spec:
+
+    Possible values for the Properties parameter are a bit-wise of the
+    following bits:
+
+    0       Broadcast
+    1       Read
+    2       Write Without Response
+    3       Write
+    4       Notify
+    5       Indicate
+    6       Authenticated Signed Writes
+    7       Extended Properties
+
+    """
+    broadcast     = 2 ** 0
+    read          = 2 ** 1
+    write_wo_resp = 2 ** 2
+    write         = 2 ** 3
+    nofity        = 2 ** 4
+    indicate      = 2 ** 5
+    auth_swrite   = 2 ** 6
+    ext_prop      = 2 ** 7
+
+    names = {
+        broadcast     : "Broadcast",
+        read          : "Read",
+        write_wo_resp : "Write Without Response",
+        write         : "Write",
+        nofity        : "Notify",
+        indicate      : "Indicate",
+        auth_swrite   : "Authenticated Signed Writes",
+        ext_prop      : "Extended Properties",
+    }
+
+    @staticmethod
+    def decode(prop):
+        return decode_flag_name(prop, Prop.names)
+
+
+class Perm:
+    """Permission of characteresic or descriptor
+
+    Specified in BTP spec:
+
+    Possible values for the Permissions parameter are a bit-wise of the
+    following bits:
+
+    0       Read
+    1       Write
+    2       Read with Encryption
+    3       Write with Encryption
+    4       Read with Authentication
+    5       Write with Authentication
+    6       Authorization
+
+    """
+    read        = 2 ** 0
+    write       = 2 ** 1
+    read_enc    = 2 ** 2
+    write_enc   = 2 ** 3
+    read_authn  = 2 ** 4
+    write_authn = 2 ** 5
+    read_authz  = 2 ** 6
+    write_authz = 2 ** 7
+
+    names = {
+        read        : "Read",
+        write       : "Write",
+        read_enc    : "Read with Encryption",
+        write_enc   : "Write with Encryption",
+        read_authn  : "Read with Authentication",
+        write_authn : "Write with Authentication",
+        read_authz  : "Read with Authorization",
+        write_authz : "Write with Authorization"
+    }
+
+    @staticmethod
+    def decode(perm):
+        return decode_flag_name(perm, Perm.names)
 
 
 class BTPError(Exception):
@@ -564,17 +652,17 @@ def gap_unpair(bd_addr=None, bd_addr_type=None):
     gap_command_rsp_succ(btpdef.GAP_UNPAIR)
 
 
-def var_store_get_passkey(bd_addr=None, bd_addr_type=None):
+def var_store_get_passkey(description, bd_addr=None, bd_addr_type=None):
     gap_passkey_disp_ev(bd_addr, bd_addr_type, store=True)
-    return var_get_passkey()
+    return var_get_passkey(description)
 
 
-def var_store_get_wrong_passkey(bd_addr=None, bd_addr_type=None):
+def var_store_get_wrong_passkey(description, bd_addr=None, bd_addr_type=None):
     gap_passkey_disp_ev(bd_addr, bd_addr_type, store=True)
     return var_get_wrong_passkey()
 
 
-def var_get_passkey():
+def var_get_passkey(description):
     return str(PASSKEY)
 
 
@@ -1104,6 +1192,263 @@ def gatts_set_enc_key_size(hdl, enc_key_size):
     zephyrctl.btp_socket.send(*GATTS['set_enc_key_size'], data=data_ba)
 
     gatt_command_rsp_succ()
+
+
+def gatts_dec_attr_value_changed_ev_data(frame):
+    """Decodes BTP Attribute Value Changed Event data
+
+    Event data frame format
+    0             16            32
+    +--------------+-------------+------+
+    | Attribute ID | Data Length | Data |
+    +--------------+-------------+------+
+
+    """
+    hdr = '<HH'
+    hdr_len = struct.calcsize(hdr)
+
+    (handle, data_len) = struct.unpack_from(hdr, frame)
+    data = struct.unpack_from('%ds' % data_len, frame, hdr_len)
+
+    return handle, data
+
+
+def gatts_attr_value_changed_ev():
+    logging.debug("%s", gatts_attr_value_changed_ev.__name__)
+
+    zephyrctl = iutctl.get_zephyr()
+
+    (tuple_hdr, tuple_data) = zephyrctl.btp_socket.read()
+
+    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
+                  btpdef.GATT_EV_ATTR_VALUE_CHANGED)
+
+    (handle, data) = gatts_dec_attr_value_changed_ev_data(tuple_data[0])
+    logging.debug("%s %r %r", gatts_attr_value_changed_ev.__name__, handle, data)
+
+    return handle, data
+
+
+def gatts_verify_write_success(description):
+    """
+    This verifies if PTS initiated write operation succeeded
+    """
+    logging.debug("%s", gatts_verify_write_success.__name__)
+
+    # If write is successful, Attribute Value Changed Event will be received
+    try:
+        (handle, value) = gatts_attr_value_changed_ev()
+        logging.debug("%s Handle %r. Value %r has been successfully written",
+                      gatts_verify_write_success.__name__, handle, value)
+        return True
+    except:
+        logging.debug("%s PTS failed to write attribute value",
+                      gatts_verify_write_success.__name__)
+        return False
+
+
+def gatts_verify_write_fail(description):
+    return not gatts_verify_write_success(description)
+
+
+def btp2uuid(uuid_len, uu):
+    if uuid_len == 2:
+        (uu,) = struct.unpack("H", uu)
+        return hex(uu)
+    else:
+        return UUID(bytes_le=uu).urn[9:]
+
+
+def dec_gatts_get_attrs_rp(data, data_len):
+    logging.debug("%s %r %r", dec_gatts_get_attrs_rp.__name__, data, data_len)
+
+    hdr = '<B'
+    hdr_len = struct.calcsize(hdr)
+
+    (attr_type, attr) = struct.unpack(hdr + '%ds' % (data_len - hdr_len), data)
+
+    logging.debug("Got attribute %r", attr_type)
+
+    obj = None
+
+    if (attr_type == btpdef.GATT_GET_SERVICE_PRIMARY or
+            attr_type == btpdef.GATT_GET_SERVICE_SECONDARY):
+        Service = namedtuple('Service', 'service_type start_handle end_handle '
+                                        'uuid')
+
+        hdr = '<BHHB'
+        hdr_len += struct.calcsize(hdr)
+
+        (svc_type, start_hdl, end_hdl, uuid_len, uu) = \
+            struct.unpack(hdr + '%ds' % (data_len - hdr_len), attr)
+
+        uu = btp2uuid(uuid_len, uu)
+
+        obj = Service(svc_type, start_hdl, end_hdl, uu)
+
+    elif attr_type == btpdef.GATT_GET_SERVICE_INCLUDE:
+        Include = namedtuple('Include', 'handle service_type start_handle '
+                                        'end_handle uuid')
+
+        hdr = '<HBHHB'
+        hdr_len += struct.calcsize(hdr)
+
+        (handle, service_type, start_handle, end_handle, uuid_len, uu) = \
+            struct.unpack(hdr + '%ds' % (data_len - hdr_len), attr)
+
+        uu = btp2uuid(uuid_len, uu)
+
+        obj = Include(handle, service_type, start_handle, end_handle, uu)
+
+    elif attr_type == btpdef.GATT_GET_CHARACTERISTIC:
+        Characteristic = namedtuple('Characteristic', 'handle value_handle '
+                                                      'properties uuid')
+
+        hdr = '<HHBB'
+        hdr_len += struct.calcsize(hdr)
+
+        (handle, value_handle, properties, uuid_len, uu) = \
+            struct.unpack(hdr + '%ds' % (data_len - hdr_len), attr)
+
+        uu = btp2uuid(uuid_len, uu)
+
+        obj = Characteristic(handle, value_handle, properties, uu)
+
+    elif attr_type == btpdef.GATT_GET_CHRC_VALUE:
+        ChrcVal = namedtuple('ChrcVal', 'handle permissions value')
+
+        hdr = '<HBH'
+        hdr_len += struct.calcsize(hdr)
+
+        (handle, permissions, value_len, value) = \
+            struct.unpack(hdr + '%ds' % (data_len - hdr_len), attr)
+
+        obj = ChrcVal(handle, permissions, value)
+
+    if attr_type == btpdef.GATT_GET_DESCRIPTOR:
+        Descriptor = namedtuple('Descriptor', 'handle permissions uuid value')
+
+        hdr = '<HBBH'
+        hdr_len += struct.calcsize(hdr)
+
+        (handle, permissions, uuid_len, val_len, tmp) = \
+            struct.unpack(hdr + '%ds' % (data_len - hdr_len), attr)
+
+        (uu, value) = struct.unpack('%ds%ds' % (uuid_len, val_len), tmp)
+
+        uu = btp2uuid(uuid_len, uu)
+
+        obj = Descriptor(handle, permissions, uu, value)
+
+    logging.debug("Decoded %r", obj)
+
+    return attr_type, obj
+
+
+def gatts_get_attrs(attr_type=0, start_handle=0, end_handle=0, uuid=None):
+    logging.debug("%s %r %r %r %r", gatts_get_attrs.__name__, attr_type,
+                  start_handle, end_handle, uuid)
+
+    zephyrctl = iutctl.get_zephyr()
+    done = False
+    attributes = []
+
+    data_ba = bytearray()
+
+    if type(start_handle) is str:
+        start_handle = int(start_handle, 16)
+
+    start_hdl_ba = struct.pack('H', start_handle)
+    data_ba.extend(start_hdl_ba)
+
+    if type(end_handle) is str:
+        end_handle = int(end_handle, 16)
+
+    end_hdl_ba = struct.pack('H', end_handle)
+    data_ba.extend(end_hdl_ba)
+
+    data_ba.extend(chr(attr_type))
+
+    if uuid:
+        uuid_ba = binascii.unhexlify(uuid.translate(None, "-"))[::-1]
+        data_ba.extend(chr(len(uuid_ba)))
+        data_ba.extend(uuid_ba)
+    else:
+        data_ba.extend(chr(0))
+
+    zephyrctl.btp_socket.send(*GATTS['get_attr'], data=data_ba)
+
+    # read until BTP_STATUS_SUCCESS received
+    while not done:
+        (tuple_hdr, tuple_data,) = zephyrctl.btp_socket.read()
+        logging.debug("%s received %r %r", gatts_get_attrs.__name__,
+                      tuple_hdr, tuple_data)
+
+        if (tuple_hdr.svc_id == btpdef.BTP_SERVICE_ID_GATT and
+                tuple_hdr.op == btpdef.GATT_GET_ATTRIBUTE and
+                tuple_hdr.data_len == btpdef.BTP_STATUS_SUCCESS):
+
+            done = True
+            continue
+
+        attr = dec_gatts_get_attrs_rp(tuple_data[0], tuple_hdr.data_len)
+
+        attributes.append(attr)
+
+    logging.debug("%r", attributes)
+
+    return attributes
+
+
+def gap_handle_wid_161(description):
+    """
+    project_name: GAP
+    wid: 161
+    description: Please confirm the signed write characteristic handle 0x0007.
+                 And enter the length of this handle's characteristic value in integer.
+    style: MMI_Style_Edit1 0x12040
+    response: 17807656 <type 'int'> 94810264930128
+    response_size: 2048
+    response_is_present: 0 <type 'int'>
+
+    """
+    logging.debug("%s", gap_handle_wid_161.__name__)
+    
+    match = re.findall(r'(0[xX])?([0-9a-fA-F]{4})', description)
+    handle = int(match[0][1], 16)
+
+    attr = gatts_get_attrs(btpdef.GATT_GET_CHRC_VALUE, handle, handle)
+    logging.debug("%r", attr[0])
+
+    if not attr:
+        return
+
+    attr = attr[0]
+
+    if attr[0] != btpdef.GATT_GET_CHRC_VALUE:
+        return
+
+    value_namedtuple = attr[1]
+
+    value_len = len(value_namedtuple.value)
+
+    attr = gatts_get_attrs(btpdef.GATT_GET_CHARACTERISTIC, handle - 1, handle - 1)
+    logging.debug("%r", attr[0])
+
+    if not attr:
+        return
+
+    attr = attr[0]
+
+    if attr[0] != btpdef.GATT_GET_CHARACTERISTIC:
+        return
+
+    chrc_namedtuple = attr[1]
+
+    if chrc_namedtuple.properties & Prop.auth_swrite == 0:
+        return
+
+    return value_len
 
 
 def gattc_exchange_mtu(bd_addr_type, bd_addr):
