@@ -2605,3 +2605,9 @@ def l2cap_data_rcv_ev(chan_id=None, store=False):
         global VERIFY_VALUES
         VERIFY_VALUES = []
         VERIFY_VALUES.append(data)
+
+def event_handler(hdr, data):
+    logging.debug("%s %r %r", event_handler.__name__, hdr, data)
+
+    # TODO: Raise BTP error instead of logging
+    logging.error("Unhandled event! svc_id %s op %s", hdr.svc_id, hdr.op)
