@@ -19,9 +19,11 @@ import logging
 import socket
 import binascii
 import shlex
+import threading
+import Queue
 
 import btpdef
-from btp import btp_hdr_check, BTPError
+from btp import btp_hdr_check, BTPError, event_handler
 from btpparser import enc_frame, dec_hdr, dec_data, HDR_LEN
 
 log = logging.debug
@@ -145,6 +147,108 @@ class BTPSocket(object):
         self.addr = None
 
 
+class BTPWorker(BTPSocket):
+    def __init__(self):
+        super(BTPWorker, self).__init__()
+
+        self.__rx_queue__ = Queue.Queue()
+        self.__running__ = threading.Event()
+
+        self.__rx_worker__ = threading.Thread(target=self.__rx_task__)
+
+    def __rx_task__(self):
+        while self.__running__.is_set():
+            try:
+                data = super(BTPWorker, self).read(timeout=1.0)
+
+                hdr = data[0]
+                if hdr.op >= 0x80:
+                    # Do not put handled events on RX queue
+                    ret = event_handler(*data)
+                    if ret is True:
+                        continue
+
+                self.__rx_queue__.put(data)
+            except socket.timeout:
+                pass
+
+    @staticmethod
+    def __read_timeout__(flag):
+        flag.clear()
+
+    def read(self, timeout=20.0):
+        logging.debug("%s", self.read.__name__)
+
+        flag = threading.Event()
+        flag.set()
+
+        t = threading.Timer(timeout, self.__read_timeout__, [flag])
+        t.start()
+
+        while flag.is_set():
+            if self.__rx_queue__.empty():
+                continue
+
+            t.cancel()
+
+            data = self.__rx_queue__.get()
+            self.__rx_queue__.task_done()
+
+            return data
+
+        raise socket.timeout
+
+    def send_wait_rsp(self, svc_id, op, ctrl_index, data, cb=None, user_data=None):
+        super(BTPWorker, self).send(svc_id, op, ctrl_index, data)
+        ret = True
+
+        while ret:
+            tuple_hdr, tuple_data = self.read()
+
+            if tuple_hdr.svc_id != svc_id:
+                raise BTPError("Incorrect service ID %s in the response, expected "
+                               "%s!" % (tuple_hdr.svc_id, svc_id))
+
+            if tuple_hdr.op == btpdef.BTP_STATUS:
+                raise BTPError("Error opcode in response!")
+
+            if op != tuple_hdr.op:
+                raise BTPError("Invalid opcode 0x%.2x in the response, expected "
+                               "0x%.2x!" % (tuple_hdr.op, op))
+
+            if cb and callable(cb):
+                ret = cb(tuple_data, user_data)
+            else:
+                return tuple_data
+
+    def __reset_rx_queue__(self):
+        while not self.__rx_queue__.empty():
+            try:
+                self.__rx_queue__.get_nowait()
+            except Queue.Empty:
+                continue
+
+            self.__rx_queue__.task_done()
+
+    def accept(self, timeout=10.0):
+        logging.debug("%s", self.accept.__name__)
+
+        super(BTPWorker, self).accept(timeout)
+
+        self.__running__.set()
+        self.__rx_worker__.start()
+
+    def close(self):
+        self.__running__.clear()
+
+        if self.__rx_worker__.is_alive():
+            self.__rx_worker__.join()
+
+        self.__reset_rx_queue__()
+
+        super(BTPWorker, self).close()
+
+
 class ZephyrCtl:
     '''Zephyr OS Control Class'''
 
@@ -171,7 +275,7 @@ class ZephyrCtl:
 
         log("%s.%s", self.__class__, self.start.__name__)
 
-        self.btp_socket = BTPSocket()
+        self.btp_socket = BTPWorker()
         self.btp_socket.open()
 
         if self.tty_file:
