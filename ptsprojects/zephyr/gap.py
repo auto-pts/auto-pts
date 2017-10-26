@@ -32,6 +32,7 @@ from time import sleep
 import btp
 import binascii
 import gatt
+from socket import timeout
 
 
 class Addr:
@@ -200,6 +201,27 @@ def gap_handle_wid_136_sec_csign_bi_04():
     btp.gatts_start_server()
 
     return True
+
+
+def gap_handle_wid_148_priv_conn_bv_11(description):
+    """
+    project_name: GAP
+    wid: 148
+    description: Please confirm IUT does not perform the Connection
+                 Establishment procedure since the resolveable private
+                 address is incorrect. Click Yes if the IUT does not perform
+                 the Connection Establishment procedure, otherwise click No.
+    style: MMI_Style_Yes_No1 0x11044
+    response: 13613328 <type 'int'> 94366017390056
+    response_size: 2048
+    response_is_present: 0 <type 'int'>
+    """
+    btp.gap_conn()
+    try:
+        btp.gap_connected_ev()
+        return False
+    except timeout:
+        return True
 
 
 def test_cases(pts):
@@ -954,29 +976,19 @@ def test_cases(pts):
                             TestFunc(btp.gap_disconn, start_wid=77),
                             TestFunc(btp.gap_disconnected_ev, start_wid=77)]),
         ZTestCase("GAP", "GAP/PRIV/CONN/BV-11-C",
-                  # In order to speed up test execution, we fake RPA change
-                  # interval to 1 minute
                   edit1_wids={1002: btp.var_store_get_passkey},
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                        TestFunc(pts.update_pixit_param, "GAP",
-                                 "TSPX_iut_device_name_in_adv_packet_for_random_address",
-                                 iut_device_name),
-                        # Set RPA update to 1 minute (60*1000=60000 ms)
-                        TestFunc(pts.update_pixit_param, "GAP",
-                                 "TSPX_iut_private_address_interval", '60000'),
-                        TestFunc(btp.gap_conn, start_wid=78),
+                        TestFunc(btp.gap_conn, post_wid=78),
                         TestFunc(btp.gap_connected_ev, post_wid=78),
                         TestFunc(btp.gap_pair, start_wid=108),
-                        TestFunc(btp.gap_disconnected_ev, post_wid=118, skip_call=(2,)),
-                        # Sleep above 1 minute and change RPA
-                        TestFunc(sleep, 70, start_wid=2142),
-                        TestFunc(btp.gap_read_ctrl_info, start_wid=2142),
-                        TestFunc(btp.gap_conn, start_wid=2142)],
+                        TestFunc(btp.gap_disconnected_ev, post_wid=118),
+                        TestFunc(btp.gap_conn, start_wid=2142),
+                        TestFunc(btp.gap_connected_ev, start_wid=2142)],
                   # Please confirm IUT does not perform the Connection
                   # Establishment procedure since the resolvable private
                   # address is incorrect.
-                  verify_wids={148: btp.verify_not_connected}),
+                  verify_wids={148: gap_handle_wid_148_priv_conn_bv_11}),
         ZTestCase("GAP", "GAP/ADV/BV-01-C",
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_set_conn),
