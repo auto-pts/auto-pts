@@ -954,25 +954,16 @@ def test_cases(pts):
                             TestFunc(btp.gap_disconn, start_wid=77),
                             TestFunc(btp.gap_disconnected_ev, start_wid=77)]),
         ZTestCase("GAP", "GAP/PRIV/CONN/BV-11-C",
-                  # In order to speed up test execution, we fake RPA change
-                  # interval to 1 minute
                   edit1_wids={1002: btp.var_store_get_passkey},
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                        TestFunc(pts.update_pixit_param, "GAP",
-                                 "TSPX_iut_device_name_in_adv_packet_for_random_address",
-                                 iut_device_name),
-                        # Set RPA update to 1 minute (60*1000=60000 ms)
-                        TestFunc(pts.update_pixit_param, "GAP",
-                                 "TSPX_iut_private_address_interval", '60000'),
-                        TestFunc(btp.gap_conn, start_wid=78),
+                        TestFunc(btp.gap_conn, post_wid=78),
                         TestFunc(btp.gap_connected_ev, post_wid=78),
                         TestFunc(btp.gap_pair, start_wid=108),
-                        TestFunc(btp.gap_disconnected_ev, post_wid=118, skip_call=(2,)),
-                        # Sleep above 1 minute and change RPA
-                        TestFunc(sleep, 70, start_wid=2142),
-                        TestFunc(btp.gap_read_ctrl_info, start_wid=2142),
-                        TestFunc(btp.gap_conn, start_wid=2142)],
+                        TestFunc(btp.gap_disconnected_ev, post_wid=118),
+                        TestFunc(btp.gap_conn, start_wid=2142),
+                        TestFunc(btp.gap_connected_ev, start_wid=2142),
+                        TestFunc(btp.gap_conn, start_wid=148)],
                   # Please confirm IUT does not perform the Connection
                   # Establishment procedure since the resolvable private
                   # address is incorrect.
