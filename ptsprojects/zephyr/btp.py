@@ -2672,3 +2672,48 @@ def mesh_input_string(string):
 
     zephyrctl.btp_socket.send_wait_rsp(*MESH['input_str'], data=data)
 
+
+def mesh_out_number_action_ev(data, data_len):
+    logging.debug("%s %r", mesh_out_number_action_ev.__name__, data)
+
+    action, number = struct.unpack('<HI', data)
+
+
+def mesh_out_string_action_ev(data, data_len):
+    logging.debug("%s %r", mesh_out_string_action_ev.__name__, data)
+
+    hdr_fmt = '<B'
+    hdr_len = struct.calcsize(hdr_fmt)
+
+    (str_len,) = struct.unpack_from(hdr_fmt, data)
+    (string,) = struct.unpack_from('<%ds' % str_len, data, hdr_len)
+
+
+def mesh_in_action_ev(data, data_len):
+    logging.debug("%s %r", mesh_in_action_ev.__name__, data)
+
+    action, size = struct.unpack('<HB', data)
+
+
+def mesh_provisioned_ev(data, data_len):
+    logging.debug("%s %r", mesh_provisioned_ev.__name__, data)
+
+
+MESH_EV = {
+    btpdef.MESH_EV_OUT_NUMBER_ACTION: mesh_out_number_action_ev,
+    btpdef.MESH_EV_OUT_STRING_ACTION: mesh_out_string_action_ev,
+    btpdef.MESH_EV_IN_ACTION: mesh_in_action_ev,
+    btpdef.MESH_EV_PROVISIONED: mesh_provisioned_ev,
+}
+
+
+def event_handler(hdr, data):
+    logging.debug("%s %r %r", event_handler.__name__, hdr, data)
+
+    if hdr.svc_id == btpdef.BTP_SERVICE_ID_MESH:
+        if hdr.op in MESH_EV:
+            cb = MESH_EV[hdr.op]
+            cb(data, hdr.data_len)
+
+    # TODO: Raise BTP error instead of logging
+    logging.error("Unhandled event! svc_id %s op %s", hdr.svc_id, hdr.op)

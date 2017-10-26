@@ -23,7 +23,7 @@ import threading
 import Queue
 
 import btpdef
-from btp import btp_hdr_check, BTPError
+from btp import btp_hdr_check, BTPError, event_handler
 from btpparser import enc_frame, dec_hdr, dec_data, HDR_LEN
 
 log = logging.debug
@@ -158,6 +158,11 @@ class BTPWorker(BTPSocket):
         while self.__running__.is_set():
             try:
                 data = super(BTPWorker, self).read(timeout=1.0)
+
+                hdr = data[0]
+                if hdr.op >= 0x80:
+                    event_handler(*data)
+
                 self.__rx_queue__.put(data)
             except socket.timeout:
                 pass
