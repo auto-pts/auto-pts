@@ -311,7 +311,8 @@ class TestCase(PTSCallback):
                         self.edit1_wids, self.verify_wids, self.ok_cancel_wids)
 
     def __init__(self, project_name, test_case_name, cmds = [], no_wid = None,
-                 edit1_wids = None, verify_wids = None, ok_cancel_wids = None):
+                 edit1_wids = None, verify_wids = None, ok_cancel_wids = None,
+                 generic_wid_hdl = None):
         """TestCase constructor
 
         cmds -- a list of TestCmd and TestFunc or single instance of them
@@ -339,6 +340,9 @@ class TestCase(PTSCallback):
                           callable value is converted to OK, Cancel and send to
                           PTS in response to MMI_Style_Ok_Cancel1 and
                           MMI_Style_Ok_Cancel2 style prompts with matching wid.
+
+        generic_wid_hdl -- A instance of general wid handler used for every wid
+                           that came to test case.
 
         """
         self.project_name = project_name
@@ -369,6 +373,7 @@ class TestCase(PTSCallback):
         self.edit1_wids = edit1_wids
         self.verify_wids = verify_wids
         self.ok_cancel_wids = ok_cancel_wids
+        self.generic_wid_hdl = generic_wid_hdl
         self.post_wid_queue = []
         self.post_wid_thread = None
         self.thread_exception = Queue.Queue()
@@ -605,24 +610,28 @@ class TestCase(PTSCallback):
 
         my_response = ""
 
-        if style == ptstypes.MMI_Style_Yes_No1:
-            my_response = self.handle_mmi_style_yes_no1(wid, description)
+        if self.generic_wid_hdl != None:
+            my_response = self.generic_wid_hdl(wid, description)
 
-        elif style == ptstypes.MMI_Style_Edit1:
-            my_response = self.handle_mmi_style_edit1(wid, description)
-
-        # actually style == MMI_Style_Ok_Cancel2
         else:
-            my_response = self.handle_mmi_style_ok_cancel(wid, description)
+            if style == ptstypes.MMI_Style_Yes_No1:
+                my_response = self.handle_mmi_style_yes_no1(wid, description)
 
-        # start/stop command if triggered by wid
-        self.start_stop_cmds_by_wid(wid, description)
+            elif style == ptstypes.MMI_Style_Edit1:
+                my_response = self.handle_mmi_style_edit1(wid, description)
 
-        # if there are post wid TestFunc waiting run those in separate thread
-        if len(self.post_wid_queue):
-            log("Running post_wid test functions")
-            self.post_wid_thread = Thread(None, self.run_post_wid_cmds)
-            self.post_wid_thread.start()
+            # actually style == MMI_Style_Ok_Cancel2
+            else:
+                my_response = self.handle_mmi_style_ok_cancel(wid, description)
+
+            # start/stop command if triggered by wid
+            self.start_stop_cmds_by_wid(wid, description)
+
+            # if there are post wid TestFunc waiting run those in separate thread
+            if len(self.post_wid_queue):
+                log("Running post_wid test functions")
+                self.post_wid_thread = Thread(None, self.run_post_wid_cmds)
+                self.post_wid_thread.start()
 
         log("Sending response %r", my_response)
         return my_response
