@@ -607,8 +607,8 @@ def verify_not_connected(description):
     try:
         gap_connected_ev()
         return False
-    except BTPError:
-        return  True
+    except socket.timeout:
+        return True
 
 
 def gap_set_io_cap(io_cap):
