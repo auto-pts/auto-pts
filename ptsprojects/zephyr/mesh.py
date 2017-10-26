@@ -31,7 +31,7 @@ except ImportError:  # running this module as script
     from ptsprojects.zephyr.ztestcase import ZTestCase
 
 import ptsprojects.zephyr.btp
-
+from ptsprojects.zephyr.mesh_wid import mesh_wid_hdl
 
 def test_cases(pts):
     """Returns a list of MESH test cases
