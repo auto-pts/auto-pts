@@ -1400,6 +1400,35 @@ def gatts_get_attrs(attr_type=0, start_handle=0, end_handle=0, uuid=None):
     return attributes
 
 
+def gap_handle_wid_136():
+    """
+    project_name: GAP
+    wid: 136
+    description: Please prepare a characteristic that is sign writable which
+                 requires also requires authentication.
+                 (Security mode 2 level 2) Press OK to continue.
+    style: MMI_Style_Ok_Cancel1 0x11041
+    response: 8238800 <type 'int'> 93825543207024
+    response_size: 2048
+    response_is_present: 0 <type 'int'>
+    """
+    logging.debug("%s", gap_handle_wid_136.__name__)
+
+    from gatt import Prop, UUID
+
+    core_reg_svc_gatts()
+    gatts_add_svc(0, UUID.VND16_1)
+    gatts_add_char(0, Prop.read | Prop.auth_swrite,
+                   Perm.read | Perm.write_authn, UUID.VND16_2)
+    gatts_set_val(0, '01')
+    gatts_start_server()
+
+    del Prop
+    del UUID
+
+    return True
+
+
 def gap_handle_wid_161(description):
     """
     project_name: GAP

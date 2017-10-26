@@ -862,10 +862,11 @@ def test_cases(pts):
         ZTestCase("GAP", "GAP/SEC/CSIGN/BI-04-C",
                   edit1_wids={161: btp.gap_handle_wid_161},
                   verify_wids={137: btp.gatts_verify_write_fail},
-                  cmds=init_gatt_db + pre_conditions +
+                  cmds=pre_conditions +
                        [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
                         TestFunc(btp.gap_set_conn),
                         TestFunc(btp.gap_adv_ind_on),
+                        TestFunc(btp.gap_handle_wid_136, start_wid=136),
                         TestFunc(btp.gap_connected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=91),
                         TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
