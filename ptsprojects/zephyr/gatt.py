@@ -1174,8 +1174,19 @@ def test_cases_server(pts):
                             Addr.le_public, start_wid=98),
                    TestFunc(sleep, 1, start_wid=98),
                    TestFunc(btp.gatts_set_val, 0xC, '01', start_wid=98)]),
-        # Service Changed is not supported
-        # ZTestCase("GATT", "GATT/SR/GAS/BV-01-C",
+        ZTestCase("GATT", "GATT/SR/GAS/BV-01-C",
+                  edit1_wids={2000: btp.var_store_get_passkey},
+                  cmds = pre_conditions +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+                   TestFunc(btp.gap_adv_ind_on, start_wid=1),
+                   TestFunc(btp.gap_connected_ev, start_wid=1),
+
+                   # Service Changed is triggered for bonded devices only
+                   TestFunc(btp.gap_pair, start_wid=1, skip_call=(2,)),
+
+                   TestFunc(btp.gap_disconnected_ev, post_wid=96),
+                   TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1, post_wid=96),
+                   TestFunc(btp.gatts_start_server, post_wid=96)]),
         ZTestCase("GATT", "GATT/SR/GAT/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
