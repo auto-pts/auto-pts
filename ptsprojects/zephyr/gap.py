@@ -180,6 +180,28 @@ ad = [(AdType.uuid16_some, '1111'),
       (AdType.uuid16_svc_data, '111111')]
 
 
+def gap_handle_wid_136_sec_csign_bi_04():
+    """
+    project_name: GAP
+    wid: 136
+    description: Please prepare a characteristic that is sign writable which
+                 requires also requires authentication.
+                 (Security mode 2 level 2) Press OK to continue.
+    style: MMI_Style_Ok_Cancel1 0x11041
+    response: 8238800 <type 'int'> 93825543207024
+    response_size: 2048
+    response_is_present: 0 <type 'int'>
+    """
+    btp.core_reg_svc_gatts()
+    btp.gatts_add_svc(0, UUID.VND16_1)
+    btp.gatts_add_char(0, Prop.read | Prop.auth_swrite,
+                   Perm.read | Perm.write_authn, UUID.VND16_2)
+    btp.gatts_set_val(0, '01')
+    btp.gatts_start_server()
+
+    return True
+
+
 def test_cases(pts):
     """Returns a list of GAP test cases
     pts -- Instance of PyPTS"""
@@ -862,10 +884,11 @@ def test_cases(pts):
         ZTestCase("GAP", "GAP/SEC/CSIGN/BI-04-C",
                   edit1_wids={161: btp.gap_handle_wid_161},
                   verify_wids={137: btp.gatts_verify_write_fail},
-                  cmds=init_gatt_db + pre_conditions +
+                  cmds=pre_conditions +
                        [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
                         TestFunc(btp.gap_set_conn),
                         TestFunc(btp.gap_adv_ind_on),
+                        TestFunc(gap_handle_wid_136_sec_csign_bi_04, start_wid=136),
                         TestFunc(btp.gap_connected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=91),
                         TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
