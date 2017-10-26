@@ -602,13 +602,26 @@ def gap_disconn(bd_addr=None, bd_addr_type=None):
     gap_command_rsp_succ()
 
 
-def verify_not_connected(description):
-    logging.debug("%s", verify_not_connected.__name__)
+def gap_handle_wid_148(description):
+    """
+    project_name: GAP
+    wid: 148
+    description: Please confirm IUT does not perform the Connection
+                 Establishment procedure since the resolveable private
+                 address is incorrect. Click Yes if the IUT does not perform
+                 the Connection Establishment procedure, otherwise click No.
+    style: MMI_Style_Yes_No1 0x11044
+    response: 13613328 <type 'int'> 94366017390056
+    response_size: 2048
+    response_is_present: 0 <type 'int'>
+    """
+    logging.debug("%s", gap_handle_wid_148.__name__)
+    gap_conn()
     try:
         gap_connected_ev()
         return False
-    except BTPError:
-        return  True
+    except socket.timeout:
+        return True
 
 
 def gap_set_io_cap(io_cap):
