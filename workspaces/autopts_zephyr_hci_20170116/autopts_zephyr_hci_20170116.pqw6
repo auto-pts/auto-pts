@@ -3018,7 +3018,7 @@ for the IUT in the IXIT. (Default: 0x00000000000000000000000000000000)</Descript
           <Row>
             <Name>TSPC_GATT_4_23</Name>
             <Description>Server: Service Changed Characteristic (C1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
