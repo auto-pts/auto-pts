@@ -30,14 +30,21 @@ except ImportError:  # running this module as script
         TestFuncCleanUp
     from ptsprojects.zephyr.ztestcase import ZTestCase
 
-import ptsprojects.zephyr.btp
+import btp
+from ptsprojects.stack import get_stack
 from ptsprojects.zephyr.mesh_wid import mesh_wid_hdl
+from uuid import uuid4
+from binascii import hexlify
 
 def test_cases(pts):
     """Returns a list of MESH test cases
     pts -- Instance of PyPTS"""
 
+    stack = get_stack()
     pts_bd_addr = pts.q_bd_addr
+    device_uuid = hexlify(uuid4().bytes)
+
+    stack.mesh_init(device_uuid)
 
     pre_conditions=[TestFunc(btp.core_reg_svc_gap),
                     TestFunc(btp.gap_read_ctrl_info),

@@ -14,6 +14,8 @@
 #
 
 import logging
+import btp
+from ptsprojects.stack import get_stack
 
 log = logging.debug
 
@@ -28,7 +30,11 @@ def mesh_wid_hdl(wid, description):
 
 # wid handlers section begin
 def hdl_wid_12(desc):
-    pass
+    stack = get_stack()
+    btp.mesh_config_prov(stack.mesh.dev_uuid, 16 * '1', 0, 0, 0, 0)
+    btp.mesh_init()
+
+    return 'OK'
 
 handler = {
     12 : hdl_wid_12,
