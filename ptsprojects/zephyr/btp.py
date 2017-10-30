@@ -602,13 +602,26 @@ def gap_disconn(bd_addr=None, bd_addr_type=None):
     gap_command_rsp_succ()
 
 
-def verify_not_connected(description):
-    logging.debug("%s", verify_not_connected.__name__)
+def gap_handle_wid_148(description):
+    """
+    project_name: GAP
+    wid: 148
+    description: Please confirm IUT does not perform the Connection
+                 Establishment procedure since the resolveable private
+                 address is incorrect. Click Yes if the IUT does not perform
+                 the Connection Establishment procedure, otherwise click No.
+    style: MMI_Style_Yes_No1 0x11044
+    response: 13613328 <type 'int'> 94366017390056
+    response_size: 2048
+    response_is_present: 0 <type 'int'>
+    """
+    logging.debug("%s", gap_handle_wid_148.__name__)
+    gap_conn()
     try:
         gap_connected_ev()
         return False
-    except BTPError:
-        return  True
+    except socket.timeout:
+        return True
 
 
 def gap_set_io_cap(io_cap):
@@ -1398,6 +1411,35 @@ def gatts_get_attrs(attr_type=0, start_handle=0, end_handle=0, uuid=None):
     logging.debug("%r", attributes)
 
     return attributes
+
+
+def gap_handle_wid_136():
+    """
+    project_name: GAP
+    wid: 136
+    description: Please prepare a characteristic that is sign writable which
+                 requires also requires authentication.
+                 (Security mode 2 level 2) Press OK to continue.
+    style: MMI_Style_Ok_Cancel1 0x11041
+    response: 8238800 <type 'int'> 93825543207024
+    response_size: 2048
+    response_is_present: 0 <type 'int'>
+    """
+    logging.debug("%s", gap_handle_wid_136.__name__)
+
+    from gatt import Prop, UUID
+
+    core_reg_svc_gatts()
+    gatts_add_svc(0, UUID.VND16_1)
+    gatts_add_char(0, Prop.read | Prop.auth_swrite,
+                   Perm.read | Perm.write_authn, UUID.VND16_2)
+    gatts_set_val(0, '01')
+    gatts_start_server()
+
+    del Prop
+    del UUID
+
+    return True
 
 
 def gap_handle_wid_161(description):
@@ -2303,10 +2345,10 @@ att_rsp_str = {0:   "No error",
                }
 
 
-def gattc_read_rsp(store_rsp=False, store_val=False):
+def gattc_read_rsp(store_rsp=False, store_val=False, timeout=None):
     zephyrctl = iutctl.get_zephyr()
 
-    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    tuple_hdr, tuple_data = zephyrctl.btp_socket.read(timeout)
     logging.debug("%s received %r %r", gattc_read_rsp.__name__, tuple_hdr,
                   tuple_data)
 
@@ -2373,10 +2415,10 @@ def gattc_read_multiple_rsp(store_val=False, store_rsp=False):
             VERIFY_VALUES.append((binascii.hexlify(values[0])).upper())
 
 
-def gattc_write_rsp(store_rsp=False):
+def gattc_write_rsp(store_rsp=False, timeout=None):
     zephyrctl = iutctl.get_zephyr()
 
-    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    tuple_hdr, tuple_data = zephyrctl.btp_socket.read(timeout)
     logging.debug("%s received %r %r", gattc_write_rsp.__name__, tuple_hdr,
                   tuple_data)
 
