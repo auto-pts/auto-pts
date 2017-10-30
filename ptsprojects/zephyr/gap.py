@@ -573,6 +573,11 @@ def test_cases(pts):
                             start_wid=77),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=77)]),
+        ZTestCase("GAP", "GAP/CONN/CPUP/BV-08-C",
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_conn, start_wid=21),
+                   TestFunc(btp.gap_adv_ind_on, start_wid=21),
+                   TestFunc(btp.gap_connected_ev, start_wid=21),]),
         ZTestCase("GAP", "GAP/CONN/TERM/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
