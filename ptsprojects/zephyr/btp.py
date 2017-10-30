@@ -2345,10 +2345,10 @@ att_rsp_str = {0:   "No error",
                }
 
 
-def gattc_read_rsp(store_rsp=False, store_val=False):
+def gattc_read_rsp(store_rsp=False, store_val=False, timeout=None):
     zephyrctl = iutctl.get_zephyr()
 
-    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    tuple_hdr, tuple_data = zephyrctl.btp_socket.read(timeout)
     logging.debug("%s received %r %r", gattc_read_rsp.__name__, tuple_hdr,
                   tuple_data)
 
@@ -2415,10 +2415,10 @@ def gattc_read_multiple_rsp(store_val=False, store_rsp=False):
             VERIFY_VALUES.append((binascii.hexlify(values[0])).upper())
 
 
-def gattc_write_rsp(store_rsp=False):
+def gattc_write_rsp(store_rsp=False, timeout=None):
     zephyrctl = iutctl.get_zephyr()
 
-    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    tuple_hdr, tuple_data = zephyrctl.btp_socket.read(timeout)
     logging.debug("%s received %r %r", gattc_write_rsp.__name__, tuple_hdr,
                   tuple_data)
 
