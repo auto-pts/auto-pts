@@ -2502,7 +2502,7 @@ def test_cases_client(pts):
                             Addr.le_public, start_wid=3),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)]),
-        # PTS issue #15970
+        # PTS CASE0036198
         ZTestCase("GATT", "GATT/CL/GAT/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
@@ -2511,11 +2511,13 @@ def test_cases_client(pts):
                             Addr.le_public, start_wid=2),
                    TestFunc(btp.gattc_read, Addr.le_public,
                             pts_bd_addr, MMI.arg_1, start_wid=48),
+                   TestFunc(btp.gattc_read_rsp, False, False, 40,
+                            start_wid=49),
                    TestFunc(btp.gap_disconn, pts_bd_addr,
                             Addr.le_public, start_wid=3),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)]),
-        # PTS issue #15970
+        # PTS CASE0036198
         ZTestCase("GATT", "GATT/CL/GAT/BV-02-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
@@ -2525,6 +2527,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gattc_write, Addr.le_public,
                             pts_bd_addr, MMI.arg_1, '12', MMI.arg_2,
                             start_wid=74),
+                   TestFunc(btp.gattc_write_rsp, False, 40, start_wid=71),
                    TestFunc(btp.gap_disconn, pts_bd_addr,
                             Addr.le_public, start_wid=3),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
