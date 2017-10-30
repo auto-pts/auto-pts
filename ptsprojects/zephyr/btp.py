@@ -163,6 +163,24 @@ L2CAP = {
                CONTROLLER_INDEX),
 }
 
+MESH = {
+    "read_supp_cmds": (btpdef.BTP_SERVICE_ID_MESH,
+                       btpdef.MESH_READ_SUPPORTED_COMMANDS,
+                       btpdef.BTP_INDEX_NONE, ""),
+    "init": (btpdef.BTP_SERVICE_ID_MESH,
+             btpdef.MESH_INIT,
+             CONTROLLER_INDEX),
+    "reset": (btpdef.BTP_SERVICE_ID_MESH,
+              btpdef.MESH_RESET,
+              CONTROLLER_INDEX, ""),
+    "input_num": (btpdef.BTP_SERVICE_ID_MESH,
+                  btpdef.MESH_INPUT_NUMBER,
+                  CONTROLLER_INDEX),
+    "input_str": (btpdef.BTP_SERVICE_ID_MESH,
+                  btpdef.MESH_INPUT_STRING,
+                  CONTROLLER_INDEX),
+}
+
 
 class Addr:
     le_public = 0
@@ -2605,3 +2623,97 @@ def l2cap_data_rcv_ev(chan_id=None, store=False):
         global VERIFY_VALUES
         VERIFY_VALUES = []
         VERIFY_VALUES.append(data)
+
+
+def mesh_init(uuid, static_auth, output_size, output_actions, input_size,
+              input_actions):
+    logging.debug("%s %r %r %r %r %r %r", mesh_init.__name__, uuid,
+                  static_auth, output_size, output_actions, input_size,
+                  input_actions)
+
+    zephyrctl = iutctl.get_zephyr()
+
+    uuid = binascii.unhexlify(uuid)
+    static_auth = binascii.unhexlify(static_auth)
+
+    data = bytearray(struct.pack("<16s16sBHBH", uuid, static_auth, output_size,
+                                 output_actions, input_size, input_actions))
+
+    zephyrctl.btp_socket.send_wait_rsp(*MESH['init'], data=data)
+
+
+def mesh_reset():
+    logging.debug("%s", mesh_reset.__name__)
+
+    zephyrctl = iutctl.get_zephyr()
+
+    zephyrctl.btp_socket.send_wait_rsp(*MESH['reset'])
+
+
+def mesh_input_number(number):
+    logging.debug("%s %r", mesh_input_number.__name__, number)
+
+    zephyrctl = iutctl.get_zephyr()
+
+    if type(number) is str:
+        number = int(number)
+
+    data = bytearray(struct.pack("<I", number))
+
+    zephyrctl.btp_socket.send_wait_rsp(*MESH['input_num'], data=data)
+
+
+def mesh_input_string(string):
+    logging.debug("%s %s", mesh_input_string.__name__, string)
+
+    zephyrctl = iutctl.get_zephyr()
+
+    data = bytearray(string)
+
+    zephyrctl.btp_socket.send_wait_rsp(*MESH['input_str'], data=data)
+
+
+def mesh_out_number_action_ev(data, data_len):
+    logging.debug("%s %r", mesh_out_number_action_ev.__name__, data)
+
+    action, number = struct.unpack('<HI', data)
+
+
+def mesh_out_string_action_ev(data, data_len):
+    logging.debug("%s %r", mesh_out_string_action_ev.__name__, data)
+
+    hdr_fmt = '<B'
+    hdr_len = struct.calcsize(hdr_fmt)
+
+    (str_len,) = struct.unpack_from(hdr_fmt, data)
+    (string,) = struct.unpack_from('<%ds' % str_len, data, hdr_len)
+
+
+def mesh_in_action_ev(data, data_len):
+    logging.debug("%s %r", mesh_in_action_ev.__name__, data)
+
+    action, size = struct.unpack('<HB', data)
+
+
+def mesh_provisioned_ev(data, data_len):
+    logging.debug("%s %r", mesh_provisioned_ev.__name__, data)
+
+
+MESH_EV = {
+    btpdef.MESH_EV_OUT_NUMBER_ACTION: mesh_out_number_action_ev,
+    btpdef.MESH_EV_OUT_STRING_ACTION: mesh_out_string_action_ev,
+    btpdef.MESH_EV_IN_ACTION: mesh_in_action_ev,
+    btpdef.MESH_EV_PROVISIONED: mesh_provisioned_ev,
+}
+
+
+def event_handler(hdr, data):
+    logging.debug("%s %r %r", event_handler.__name__, hdr, data)
+
+    if hdr.svc_id == btpdef.BTP_SERVICE_ID_MESH:
+        if hdr.op in MESH_EV:
+            cb = MESH_EV[hdr.op]
+            cb(data, hdr.data_len)
+
+    # TODO: Raise BTP error instead of logging
+    logging.error("Unhandled event! svc_id %s op %s", hdr.svc_id, hdr.op)
