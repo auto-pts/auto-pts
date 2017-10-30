@@ -307,8 +307,9 @@ class TestCase(PTSCallback):
 
     def copy(self):
         """Copy constructor"""
-        return TestCase(self.project_name, self.name, self.cmds, self.no_wid,
-                        self.edit1_wids, self.verify_wids, self.ok_cancel_wids)
+        return TestCase(self.project_name, self.name, self.cmds,
+                        self.ptsproject_name, self.no_wid, self.edit1_wids,
+                        self.verify_wids, self.ok_cancel_wids)
 
     def __init__(self, project_name, test_case_name, cmds = [], no_wid = None,
                  edit1_wids = None, verify_wids = None, ok_cancel_wids = None):
