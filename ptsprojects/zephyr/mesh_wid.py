@@ -36,6 +36,14 @@ def hdl_wid_12(desc):
 
     return 'OK'
 
+def hdl_wid_81(desc):
+    stack = get_stack()
+    btp.mesh_config_prov(stack.mesh.dev_uuid, 16 * '1', 0, 0, 0, 0)
+    btp.mesh_init()
+
+    return 'OK'
+
 handler = {
     12 : hdl_wid_12,
+    81 : hdl_wid_81,
 }
