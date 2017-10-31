@@ -314,23 +314,54 @@ def test_cases(pts):
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/NET/BV-14-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
-        ZTestCase("MESH", "MESH/NODE/PBADV/BI-01-C", cmds=pre_conditions,
+        ZTestCase("MESH", "MESH/NODE/PBADV/BI-01-C", cmds=pre_conditions +
+                  [TestFunc(btp.mesh_config_prov, stack.mesh.dev_uuid,
+                            16 * '0', 0, 0, 0, 0),
+                   TestFunc(btp.mesh_init)],
                   generic_wid_hdl=mesh_wid_hdl),
-        ZTestCase("MESH", "MESH/NODE/PBADV/BI-02-C", cmds=pre_conditions,
+        # TODO: CONFIRM_RFU_BEARER_OPCODE 26 to implement
+        ZTestCase("MESH", "MESH/NODE/PBADV/BI-02-C", cmds=pre_conditions +
+                  [TestFunc(btp.mesh_config_prov, stack.mesh.dev_uuid,
+                            16 * '0', 0, 0, 0, 0),
+                   TestFunc(btp.mesh_init)],
                   generic_wid_hdl=mesh_wid_hdl),
-        ZTestCase("MESH", "MESH/NODE/PBADV/BI-03-C", cmds=pre_conditions,
+        # TODO: CONFIRM_CLOSE_LINK 23 to implement
+        ZTestCase("MESH", "MESH/NODE/PBADV/BI-03-C", cmds=pre_conditions +
+                  [TestFunc(btp.mesh_config_prov, stack.mesh.dev_uuid,
+                            16 * '0', 0, 0, 0, 0),
+                   TestFunc(btp.mesh_init)],
                   generic_wid_hdl=mesh_wid_hdl),
-        ZTestCase("MESH", "MESH/NODE/PBADV/BI-04-C", cmds=pre_conditions,
+        ZTestCase("MESH", "MESH/NODE/PBADV/BI-04-C", cmds=pre_conditions +
+                  [TestFunc(btp.mesh_config_prov, stack.mesh.dev_uuid,
+                            16 * '0', 0, 0, 0, 0),
+                   TestFunc(btp.mesh_init)],
                   generic_wid_hdl=mesh_wid_hdl),
-        ZTestCase("MESH", "MESH/NODE/PBADV/BV-01-C", cmds=pre_conditions,
+        # TODO: Close link callback in stack (CONFIRM_CLOSE_LINK WID 24)
+        ZTestCase("MESH", "MESH/NODE/PBADV/BV-01-C", cmds=pre_conditions +
+                  [TestFunc(btp.mesh_config_prov, stack.mesh.dev_uuid,
+                            16 * '0', 0, 0, 0, 0),
+                   TestFunc(btp.mesh_init)],
                   generic_wid_hdl=mesh_wid_hdl),
-        ZTestCase("MESH", "MESH/NODE/PBADV/BV-02-C", cmds=pre_conditions,
+        ZTestCase("MESH", "MESH/NODE/PBADV/BV-02-C", cmds=pre_conditions +
+                  [TestFunc(btp.mesh_config_prov, stack.mesh.dev_uuid,
+                            16 * '0', 0, 0, 0, 0),
+                   TestFunc(btp.mesh_init)],
                   generic_wid_hdl=mesh_wid_hdl),
-        ZTestCase("MESH", "MESH/NODE/PBADV/BV-03-C", cmds=pre_conditions,
+        ZTestCase("MESH", "MESH/NODE/PBADV/BV-03-C", cmds=pre_conditions +
+                  [TestFunc(btp.mesh_config_prov, stack.mesh.dev_uuid,
+                            16 * '0', 0, 0, 0, 0),
+                   TestFunc(btp.mesh_init)],
                   generic_wid_hdl=mesh_wid_hdl),
-        ZTestCase("MESH", "MESH/NODE/PBADV/BV-04-C", cmds=pre_conditions,
+        ZTestCase("MESH", "MESH/NODE/PBADV/BV-04-C", cmds=pre_conditions +
+                  [TestFunc(btp.mesh_config_prov, stack.mesh.dev_uuid,
+                            16 * '0', 0, 0, 0, 0),
+                   TestFunc(btp.mesh_init)],
                   generic_wid_hdl=mesh_wid_hdl),
-        ZTestCase("MESH", "MESH/NODE/PROV/BI-01-C", cmds=pre_conditions,
+        # TODO: CONFIRM_TIMER_EXPIRED WID 31 to implement
+        ZTestCase("MESH", "MESH/NODE/PROV/BI-01-C", cmds=pre_conditions +
+                  [TestFunc(btp.mesh_config_prov, stack.mesh.dev_uuid,
+                            16 * '0', 0, 0, 0, 0),
+                   TestFunc(btp.mesh_init)],
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/PROV/BI-02-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
