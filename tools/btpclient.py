@@ -15,8 +15,12 @@
 # more details.
 #
 
-import os
 import sys
+sys.path.append("..")  # to be able to locate the following imports
+import pts_setup
+pts_setup.set_automation_type(pts_setup.AutomationType.AUTOMATION_ETSMAN)
+
+import os
 import socket
 import errno
 import shlex
