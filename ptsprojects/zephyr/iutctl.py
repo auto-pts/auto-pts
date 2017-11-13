@@ -329,7 +329,7 @@ class Board:
         openocd_scripts = "/opt/zephyr-sdk/sysroots/x86_64-pokysdk-linux/usr/share/openocd/scripts"
         openocd_cfg = os.path.join(
             os.path.split(self.kernel_image)[0],
-            "../../../../../boards/x86/arduino_101/support/openocd.cfg")
+            "../../../../../../boards/x86/arduino_101/support/openocd.cfg")
 
         return self.get_openocd_reset_cmd(openocd_bin, openocd_scripts,
                                           openocd_cfg)
@@ -344,7 +344,7 @@ class Board:
         openocd_scripts = "/opt/zephyr-sdk/sysroots/x86_64-pokysdk-linux/usr/share/openocd/scripts"
         openocd_cfg = os.path.join(
             os.path.split(self.kernel_image)[0],
-            "../../../../../boards/x86/quark_se_c1000_devboard/support/")
+            "../../../../../../boards/x86/quark_se_c1000_devboard/support/")
 
         return self.get_openocd_reset_cmd(openocd_bin, openocd_scripts,
                                           openocd_cfg)
