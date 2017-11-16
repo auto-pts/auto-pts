@@ -31,6 +31,7 @@ except ImportError:  # running this module as script
     from ptsprojects.zephyr.ztestcase import ZTestCase
 
 import btp
+import btpdef
 from ptsprojects.stack import get_stack
 from ptsprojects.zephyr.mesh_wid import mesh_wid_hdl
 from uuid import uuid4
@@ -395,16 +396,43 @@ def test_cases(pts):
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/PROV/BI-02-C", cmds=pre_conditions,
             generic_wid_hdl=mesh_wid_hdl),
-        ZTestCase("MESH", "MESH/NODE/PROV/UPD/BV-01-C", cmds=pre_conditions,
-            generic_wid_hdl=mesh_wid_hdl),
-        ZTestCase("MESH", "MESH/NODE/PROV/UPD/BV-07-C", cmds=pre_conditions,
-            generic_wid_hdl=mesh_wid_hdl),
-        ZTestCase("MESH", "MESH/NODE/PROV/UPD/BV-09-C", cmds=pre_conditions,
-            generic_wid_hdl=mesh_wid_hdl),
-        ZTestCase("MESH", "MESH/NODE/PROV/UPD/BV-10-C", cmds=pre_conditions,
-            generic_wid_hdl=mesh_wid_hdl),
-        ZTestCase("MESH", "MESH/NODE/PROV/UPD/BV-11-C", cmds=pre_conditions,
-            generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/NODE/PROV/UPD/BV-01-C", cmds=pre_conditions +
+                  [TestFunc(btp.mesh_config_prov, stack.mesh.dev_uuid, 16 * '0',
+                            2, btpdef.MESH_OUT_DISPLAY_STRING |
+                            btpdef.MESH_OUT_DISPLAY_NUMBER,
+                            2, btpdef.MESH_IN_ENTER_STRING |
+                            btpdef.MESH_IN_ENTER_NUMBER),
+                   TestFunc(btp.mesh_init),],
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/NODE/PROV/UPD/BV-07-C", cmds=pre_conditions +
+                  [TestFunc(btp.mesh_config_prov, stack.mesh.dev_uuid,
+                            16 * '0', 0, 0, 0, 0),
+                   TestFunc(btp.mesh_init)],
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/NODE/PROV/UPD/BV-09-C", cmds=pre_conditions +
+                  [TestFunc(btp.mesh_config_prov, stack.mesh.dev_uuid, 16 * '0',
+                            2, btpdef.MESH_OUT_DISPLAY_STRING |
+                            btpdef.MESH_OUT_DISPLAY_NUMBER,
+                            2, btpdef.MESH_IN_ENTER_STRING |
+                            btpdef.MESH_IN_ENTER_NUMBER),
+                   TestFunc(btp.mesh_init),],
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/NODE/PROV/UPD/BV-10-C", cmds=pre_conditions +
+                  [TestFunc(btp.mesh_config_prov, stack.mesh.dev_uuid, 16 * '0',
+                            2, btpdef.MESH_OUT_DISPLAY_STRING |
+                            btpdef.MESH_OUT_DISPLAY_NUMBER,
+                            2, btpdef.MESH_IN_ENTER_STRING |
+                            btpdef.MESH_IN_ENTER_NUMBER),
+                   TestFunc(btp.mesh_init),],
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/NODE/PROV/UPD/BV-11-C", cmds=pre_conditions +
+                  [TestFunc(btp.mesh_config_prov, stack.mesh.dev_uuid, 16 * '0',
+                            2, btpdef.MESH_OUT_DISPLAY_STRING |
+                            btpdef.MESH_OUT_DISPLAY_NUMBER,
+                            2, btpdef.MESH_IN_ENTER_STRING |
+                            btpdef.MESH_IN_ENTER_NUMBER),
+                   TestFunc(btp.mesh_init),],
+                  generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/RLY/BI-01-C", cmds=pre_conditions,
             generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/RLY/BI-02-C", cmds=pre_conditions,
