@@ -29,6 +29,17 @@ def mesh_wid_hdl(wid, description):
 
 
 # wid handlers section begin
+def hdl_wid_8(desc):
+    stack = get_stack()
+
+    ret = stack.mesh.oob_data.data
+
+    # cleanup
+    stack.mesh.oob_data.data = None
+    stack.mesh.oob_data.action = None
+
+    return str(ret)
+
 def hdl_wid_12(desc):
     stack = get_stack()
     btp.mesh_config_prov(stack.mesh.dev_uuid, 16 * '1', 0, 0, 0, 0)
@@ -44,6 +55,7 @@ def hdl_wid_81(desc):
     return 'OK'
 
 handler = {
+    8 : hdl_wid_8,
     12 : hdl_wid_12,
     81 : hdl_wid_81,
 }
