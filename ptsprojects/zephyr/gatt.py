@@ -1174,8 +1174,19 @@ def test_cases_server(pts):
                             Addr.le_public, start_wid=98),
                    TestFunc(sleep, 1, start_wid=98),
                    TestFunc(btp.gatts_set_val, 0xC, '01', start_wid=98)]),
-        # Service Changed is not supported
-        # ZTestCase("GATT", "GATT/SR/GAS/BV-01-C",
+        ZTestCase("GATT", "GATT/SR/GAS/BV-01-C",
+                  edit1_wids={2000: btp.var_store_get_passkey},
+                  cmds = pre_conditions +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+                   TestFunc(btp.gap_adv_ind_on, start_wid=1),
+                   TestFunc(btp.gap_connected_ev, start_wid=1),
+
+                   # Service Changed is triggered for bonded devices only
+                   TestFunc(btp.gap_pair, start_wid=1, skip_call=(2,)),
+
+                   TestFunc(btp.gap_disconnected_ev, post_wid=96),
+                   TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1, post_wid=96),
+                   TestFunc(btp.gatts_start_server, post_wid=96)]),
         ZTestCase("GATT", "GATT/SR/GAT/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -2491,7 +2502,7 @@ def test_cases_client(pts):
                             Addr.le_public, start_wid=3),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)]),
-        # PTS issue #15970
+        # PTS CASE0036198
         ZTestCase("GATT", "GATT/CL/GAT/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
@@ -2500,11 +2511,13 @@ def test_cases_client(pts):
                             Addr.le_public, start_wid=2),
                    TestFunc(btp.gattc_read, Addr.le_public,
                             pts_bd_addr, MMI.arg_1, start_wid=48),
+                   TestFunc(btp.gattc_read_rsp, False, False, 40,
+                            start_wid=49),
                    TestFunc(btp.gap_disconn, pts_bd_addr,
                             Addr.le_public, start_wid=3),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=3)]),
-        # PTS issue #15970
+        # PTS CASE0036198
         ZTestCase("GATT", "GATT/CL/GAT/BV-02-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
@@ -2514,6 +2527,7 @@ def test_cases_client(pts):
                    TestFunc(btp.gattc_write, Addr.le_public,
                             pts_bd_addr, MMI.arg_1, '12', MMI.arg_2,
                             start_wid=74),
+                   TestFunc(btp.gattc_write_rsp, False, 40, start_wid=71),
                    TestFunc(btp.gap_disconn, pts_bd_addr,
                             Addr.le_public, start_wid=3),
                    TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
