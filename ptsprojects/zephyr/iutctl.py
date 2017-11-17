@@ -88,7 +88,8 @@ class BTPSocket(object):
         toread_hdr_len = HDR_LEN
         hdr = bytearray(toread_hdr_len)
         hdr_memview = memoryview(hdr)
-        self.conn.settimeout(timeout)
+        if timeout:
+            self.conn.settimeout(timeout)
 
         # Gather frame header
         while toread_hdr_len:
