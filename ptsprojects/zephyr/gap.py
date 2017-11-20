@@ -32,6 +32,8 @@ from time import sleep
 import btp
 import binascii
 import gatt
+from re import findall
+import struct
 
 
 class Addr:
@@ -48,6 +50,9 @@ class IOCap:
 class UUID:
     gap_svc = '1800'
     device_name = '2a00'
+    VND16_1 = 'AA50'
+    VND16_2 = 'AA51'
+
 
 class SVC:
     gap = (None, None, UUID.gap_svc)
@@ -200,6 +205,55 @@ def handle_wid_136_sec_csign_bi_04():
     btp.gatts_start_server()
 
     return True
+
+
+def handle_wid_161(description):
+    """
+    project_name: GAP
+    wid: 161
+    description: Please confirm the signed write characteristic handle 0x0007.
+                 And enter the length of this handle's characteristic value in integer.
+    style: MMI_Style_Edit1 0x12040
+    response: 17807656 <type 'int'> 94810264930128
+    response_size: 2048
+    response_is_present: 0 <type 'int'>
+
+    """
+    match = findall(r'(0[xX])?([0-9a-fA-F]{4})', description)
+    handle = int(match[0][1], 16)
+
+    attr = btp.gatts_get_attrs(handle, handle)
+    if not attr:
+        return
+
+    (handle, permission, type_uuid) = attr.pop()
+
+    # Check if characteristic has signed write property
+    value = btp.gatts_get_attr_val(handle - 1)
+    if not value:
+        return
+
+    (att_rsp, val_len, val) = value
+
+    hdr = '<BH'
+    hdr_len = struct.calcsize(hdr)
+    uuid_len = val_len - hdr_len
+
+    (properties, value_handle, chrc_uuid) = struct.unpack("<BH%ds" % uuid_len,
+                                                          val)
+
+    if properties & Prop.auth_swrite == 0:
+        return
+
+    chrc_uuid = btp.btp2uuid(uuid_len, chrc_uuid)
+
+    value = btp.gatts_get_attr_val(handle)
+    if not value:
+        return
+
+    (att_rsp, val_len, val) = value
+
+    return val_len
 
 
 def test_cases(pts):
@@ -828,7 +882,7 @@ def test_cases(pts):
                     TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                              Addr.le_public, start_wid=77)]),
         ZTestCase("GAP", "GAP/SEC/CSIGN/BV-02-C",
-                  edit1_wids={161: btp.gap_handle_wid_161},
+                  edit1_wids={161: handle_wid_161},
                   verify_wids={141: btp.gatts_verify_write_success},
                   cmds=init_gatt_db + pre_conditions +
                        [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
@@ -841,7 +895,7 @@ def test_cases(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=77)]),
         ZTestCase("GAP", "GAP/SEC/CSIGN/BI-01-C",
-                  edit1_wids={161: btp.gap_handle_wid_161},
+                  edit1_wids={161: handle_wid_161},
                   verify_wids={130: btp.gatts_verify_write_fail},
                   cmds=init_gatt_db + pre_conditions +
                        [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
@@ -854,7 +908,7 @@ def test_cases(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=77)]),
         ZTestCase("GAP", "GAP/SEC/CSIGN/BI-02-C",
-                  edit1_wids={161: btp.gap_handle_wid_161},
+                  edit1_wids={161: handle_wid_161},
                   verify_wids={130: lambda x: (btp.gatts_verify_write_success(x) and
                                                btp.gatts_verify_write_success(x) and
                                                btp.gatts_verify_write_fail(x))},
@@ -869,7 +923,7 @@ def test_cases(pts):
                         TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                                  Addr.le_public, start_wid=77)]),
         ZTestCase("GAP", "GAP/SEC/CSIGN/BI-03-C",
-                  edit1_wids={161: btp.gap_handle_wid_161},
+                  edit1_wids={161: handle_wid_161},
                   verify_wids={130: btp.gatts_verify_write_fail},
                   cmds=init_gatt_db + pre_conditions +
                        [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
@@ -883,7 +937,7 @@ def test_cases(pts):
                         TestFunc(btp.gap_unpair, start_wid=135),
                         TestFunc(btp.gap_disconnected_ev, post_wid=118)]),
         ZTestCase("GAP", "GAP/SEC/CSIGN/BI-04-C",
-                  edit1_wids={161: btp.gap_handle_wid_161},
+                  edit1_wids={161: handle_wid_161},
                   verify_wids={137: btp.gatts_verify_write_fail},
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
