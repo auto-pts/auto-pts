@@ -553,13 +553,10 @@ def get_test_cases_subset(test_cases, test_case_names):
         elif name in profiles_subset.keys():
             test_cases_subset += profiles_subset[name]
 
-        # single test case name
+        # name pattern contain matching
         else:
-            if name in test_cases_dict:
-                tc = test_cases_dict[name]
-                if tc in test_cases_subset:
-                    test_cases_subset.append(tc.copy())
-                else:
-                    test_cases_subset.append(tc)
+            for tc in test_cases_dict:
+                if name in tc:
+                    test_cases_subset.append(test_cases_dict[tc])
 
     return test_cases_subset
