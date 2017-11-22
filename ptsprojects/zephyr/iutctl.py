@@ -238,7 +238,10 @@ class BTPWorker(BTPSocket):
 
     def close(self):
         self.__running__.clear()
-        self.__rx_worker__.join()
+
+        if self.__rx_worker__.is_alive():
+            self.__rx_worker__.join()
+
         self.__reset_rx_queue__()
 
         super(BTPWorker, self).close()
