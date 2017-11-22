@@ -161,7 +161,10 @@ class BTPWorker(BTPSocket):
 
                 hdr = data[0]
                 if hdr.op >= 0x80:
-                    event_handler(*data)
+                    # Do not put handled events on RX queue
+                    ret = event_handler(*data)
+                    if ret is True:
+                        continue
 
                 self.__rx_queue__.put(data)
             except socket.timeout:
