@@ -46,6 +46,7 @@ def test_cases(pts):
     device_uuid = hexlify(uuid4().bytes)
 
     stack.mesh_init(device_uuid)
+    stack.gap_init()
 
     pre_conditions=[TestFunc(btp.core_reg_svc_gap),
                     TestFunc(btp.gap_read_ctrl_info),
