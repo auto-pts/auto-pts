@@ -2637,6 +2637,33 @@ def l2cap_data_rcv_ev(chan_id=None, store=False):
         VERIFY_VALUES = []
         VERIFY_VALUES.append(data)
 
+
+def gap_connected_ev_(gap, data, data_len):
+    logging.debug("%s %r", gap_connected_ev_.__name__, data)
+
+    hdr_fmt = '<6sB'
+    hdr_len = struct.calcsize(hdr_fmt)
+
+    addr, addr_type = struct.unpack_from(hdr_fmt, data)
+    addr = binascii.hexlify(addr[::-1])
+
+    gap.connected.data = (addr, addr_type)
+
+    set_pts_addr(addr, addr_type)
+
+
+def gap_disconnected_ev_(gap, data, data_len):
+    logging.debug("%s %r", gap_disconnected_ev_.__name__, data)
+
+    gap.connected.data = None
+
+
+GAP_EV = {
+    btpdef.GAP_EV_DEVICE_CONNECTED: gap_connected_ev_,
+    btpdef.GAP_EV_DEVICE_DISCONNECTED: gap_disconnected_ev_,
+}
+
+
 def mesh_config_prov(uuid, static_auth, output_size, output_actions, input_size,
               input_actions):
     logging.debug("%s %r %r %r %r %r %r", mesh_config_prov.__name__, uuid,
@@ -2785,6 +2812,11 @@ def event_handler(hdr, data):
         if hdr.op in MESH_EV and stack.mesh:
             cb = MESH_EV[hdr.op]
             cb(stack.mesh, data[0], hdr.data_len)
+            return True
+    elif hdr.svc_id == btpdef.BTP_SERVICE_ID_GAP:
+        if hdr.op in GAP_EV and stack.gap:
+            cb = GAP_EV[hdr.op]
+            cb(stack.gap, data[0], hdr.data_len)
             return True
 
     # TODO: Raise BTP error instead of logging
