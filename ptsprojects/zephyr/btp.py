@@ -2624,18 +2624,16 @@ def mesh_input_string(string):
     zephyrctl.btp_socket.send_wait_rsp(*MESH['input_str'], data=data)
 
 
-def mesh_out_number_action_ev(data, data_len):
+def mesh_out_number_action_ev(mesh, data, data_len):
     logging.debug("%s %r", mesh_out_number_action_ev.__name__, data)
 
     action, number = struct.unpack_from('<HI', data)
 
-    stack = get_stack()
-
-    stack.mesh.oob_action.data = action
-    stack.mesh.oob_data.data = number
+    mesh.oob_action.data = action
+    mesh.oob_data.data = number
 
 
-def mesh_out_string_action_ev(data, data_len):
+def mesh_out_string_action_ev(mesh, data, data_len):
     logging.debug("%s %r", mesh_out_string_action_ev.__name__, data)
 
     hdr_fmt = '<B'
@@ -2644,23 +2642,19 @@ def mesh_out_string_action_ev(data, data_len):
     (str_len,) = struct.unpack_from(hdr_fmt, data)
     (string,) = struct.unpack_from('<%ds' % str_len, data, hdr_len)
 
-    stack = get_stack()
-
-    stack.mesh.oob_data.data = string
+    mesh.oob_data.data = string
 
 
-def mesh_in_action_ev(data, data_len):
+def mesh_in_action_ev(mesh, data, data_len):
     logging.debug("%s %r", mesh_in_action_ev.__name__, data)
 
     action, size = struct.unpack('<HB', data)
 
 
-def mesh_provisioned_ev(data, data_len):
+def mesh_provisioned_ev(mesh, data, data_len):
     logging.debug("%s %r", mesh_provisioned_ev.__name__, data)
 
-    stack = get_stack()
-
-    stack.mesh.is_provisioned.data = True
+    mesh.is_provisioned.data = True
 
 
 def mesh_prov_link_open_ev(mesh, data, data_len):
@@ -2692,10 +2686,15 @@ MESH_EV = {
 def event_handler(hdr, data):
     logging.debug("%s %r %r", event_handler.__name__, hdr, data)
 
+    stack = get_stack()
+    if not stack:
+        logging.info("Stack not initialized")
+        return False
+
     if hdr.svc_id == btpdef.BTP_SERVICE_ID_MESH:
-        if hdr.op in MESH_EV:
+        if hdr.op in MESH_EV and stack.mesh:
             cb = MESH_EV[hdr.op]
-            cb(data[0], hdr.data_len)
+            cb(stack.mesh, data[0], hdr.data_len)
             return True
 
     # TODO: Raise BTP error instead of logging
