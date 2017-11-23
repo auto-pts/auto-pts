@@ -76,7 +76,6 @@ class BTPSocket(object):
         """Accept incomming Zephyr connection
 
         timeout - accept timeout in seconds"""
-        logging.debug("%s", self.accept.__name__)
 
         self.sock.settimeout(timeout)
         self.conn, self.addr = self.sock.accept()
@@ -86,7 +85,6 @@ class BTPSocket(object):
         """Read BTP data from socket
 
         timeout - read timeout in seconds"""
-        logging.debug("%s", self.read.__name__)
         toread_hdr_len = HDR_LEN
         hdr = bytearray(toread_hdr_len)
         hdr_memview = memoryview(hdr)
