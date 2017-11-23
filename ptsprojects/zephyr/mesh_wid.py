@@ -15,6 +15,7 @@
 
 import logging
 import btp
+import time
 from ptsprojects.stack import get_stack
 
 log = logging.debug
@@ -61,9 +62,34 @@ def hdl_wid_81(desc):
 
     return 'OK'
 
+def hdl_wid_201(desc):
+    stack = get_stack()
+
+    if stack.mesh.is_provisioned.data == True:
+        return 'OK'
+    else:
+        return 'Cancel'
+
+def hdl_wid_204(desc):
+    stack = get_stack()
+
+    time.sleep(stack.mesh.iv_update_timeout.data)
+
+    return 'OK'
+
+def hdl_wid_221(desc):
+    stack = get_stack()
+
+    time.sleep(stack.mesh.iv_update_timeout.data)
+
+    return 'OK'
+
 handler = {
     8 : hdl_wid_8,
     12 : hdl_wid_12,
     13 : hdl_wid_13,
     81 : hdl_wid_81,
+    201 : hdl_wid_201,
+    204 : hdl_wid_204,
+    221 : hdl_wid_221,
 }
