@@ -2753,11 +2753,29 @@ def mesh_provisioned_ev(data, data_len):
     stack.mesh.is_provisioned.data = True
 
 
+def mesh_prov_link_open_ev(mesh, data, data_len):
+    logging.debug("%s %r", mesh_prov_link_open_ev.__name__, data)
+
+    (bearer,) = struct.unpack('<B', data)
+
+    mesh.last_seen_prov_link_state.data = ('open', bearer)
+
+
+def mesh_prov_link_closed_ev(mesh, data, data_len):
+    logging.debug("%s %r", mesh_prov_link_closed_ev.__name__, data)
+
+    (bearer,) = struct.unpack('<B', data)
+
+    mesh.last_seen_prov_link_state.data = ('closed', bearer)
+
+
 MESH_EV = {
     btpdef.MESH_EV_OUT_NUMBER_ACTION: mesh_out_number_action_ev,
     btpdef.MESH_EV_OUT_STRING_ACTION: mesh_out_string_action_ev,
     btpdef.MESH_EV_IN_ACTION: mesh_in_action_ev,
     btpdef.MESH_EV_PROVISIONED: mesh_provisioned_ev,
+    btpdef.MESH_EV_PROV_LINK_OPEN: mesh_prov_link_open_ev,
+    btpdef.MESH_EV_PROV_LINK_CLOSED: mesh_prov_link_closed_ev,
 }
 
 
