@@ -58,6 +58,19 @@ def hdl_wid_13(desc):
 
     return 'OK'
 
+def hdl_wid_24(desc):
+    stack = get_stack()
+
+    if stack.mesh.last_seen_prov_link_state.data is None:
+        logging.error("The link state is None")
+        return 'No'
+
+    (state, bearer) = stack.mesh.last_seen_prov_link_state.data
+
+    if state == 'closed':
+        return 'Yes'
+    return 'No'
+
 def hdl_wid_81(desc):
     stack = get_stack()
     btp.mesh_config_prov(stack.mesh.dev_uuid, 16 * '1', 0, 0, 0, 0)
