@@ -31,6 +31,14 @@ class Property(object):
         with self._lock:
             setattr(instance, self.data, value)
 
+
+class Gap():
+    def __init__(self):
+        # If disconnected - None
+        # If connected - remote address tuple (addr, addr_type)
+        self.connected = Property(None)
+
+
 class Mesh():
     def __init__(self, dev_uuid):
         self.dev_uuid = dev_uuid
@@ -58,9 +66,14 @@ class Mesh():
         self.vendor_model_id = '0002'
 
 
+
 class Stack():
     def __init__(self):
+        self.gap = None
         self.mesh = None
+
+    def gap_init(self):
+        self.gap = Gap()
 
     def mesh_init(self, dev_uuid):
         self.mesh = Mesh(dev_uuid)
