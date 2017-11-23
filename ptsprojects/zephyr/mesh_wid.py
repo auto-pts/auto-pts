@@ -63,3 +63,25 @@ def hdl_wid_81(desc):
     btp.mesh_init()
 
     return 'OK'
+
+def hdl_wid_201(desc):
+    stack = get_stack()
+
+    if stack.mesh.is_provisioned.data == True:
+        return 'OK'
+    else:
+        return 'Cancel'
+
+def hdl_wid_204(desc):
+    stack = get_stack()
+
+    time.sleep(stack.mesh.iv_update_timeout.data)
+
+    return 'OK'
+
+def hdl_wid_221(desc):
+    stack = get_stack()
+
+    time.sleep(stack.mesh.iv_update_timeout.data)
+
+    return 'OK'

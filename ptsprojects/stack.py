@@ -38,6 +38,7 @@ class Mesh():
         self.oob_action = Property(None)
         self.oob_data = Property(None)
         self.is_provisioned = Property(False)
+        self.iv_update_timeout = Property(40)
 
         # provision node data
         self.net_key = '0123456789abcdef0123456789abcdef'
