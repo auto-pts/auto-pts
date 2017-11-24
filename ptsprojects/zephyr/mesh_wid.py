@@ -78,6 +78,14 @@ def hdl_wid_81(desc):
 
     return 'OK'
 
+def hdl_wid_90(desc):
+    stack = get_stack()
+
+    if stack.mesh.is_provisioned.data == True:
+        return 'OK'
+    else:
+        return 'Cancel'
+
 def hdl_wid_201(desc):
     stack = get_stack()
 
