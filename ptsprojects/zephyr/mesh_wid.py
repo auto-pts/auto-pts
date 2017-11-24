@@ -140,6 +140,12 @@ def hdl_wid_274(desc):
 
     return 'OK'
 
+def hdl_wid_519(desc):
+    stack = get_stack()
+
+    btp.mesh_reset()
+    return 'OK'
+
 handler = {
     8 : hdl_wid_8,
     12 : hdl_wid_12,
@@ -155,4 +161,5 @@ handler = {
     221 : hdl_wid_221,
     268 : hdl_wid_268,
     274 : hdl_wid_274,
+    519 : hdl_wid_519,
 }
