@@ -75,6 +75,14 @@ def hdl_wid_81(desc):
 
     return 'OK'
 
+def hdl_wid_90(desc):
+    stack = get_stack()
+
+    if stack.mesh.is_provisioned.data == True:
+        return 'OK'
+    else:
+        return 'Cancel'
+
 def hdl_wid_201(desc):
     stack = get_stack()
 
@@ -138,6 +146,7 @@ handler = {
     13 : hdl_wid_13,
     24 : hdl_wid_24,
     81 : hdl_wid_81,
+    90 : hdl_wid_90,
     201 : hdl_wid_201,
     203 : hdl_wid_203,
     204 : hdl_wid_204,
