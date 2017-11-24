@@ -142,3 +142,9 @@ def hdl_wid_274(desc):
     stack = get_stack()
 
     return 'OK'
+
+def hdl_wid_519(desc):
+    stack = get_stack()
+
+    btp.mesh_reset()
+    return 'OK'
