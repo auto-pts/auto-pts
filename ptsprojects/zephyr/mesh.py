@@ -428,13 +428,7 @@ def test_cases(pts):
                             btpdef.MESH_IN_ENTER_NUMBER),
                    TestFunc(btp.mesh_init),],
                   generic_wid_hdl=mesh_wid_hdl),
-        ZTestCase("MESH", "MESH/NODE/PROV/UPD/BV-11-C", cmds=pre_conditions +
-                  [TestFunc(btp.mesh_config_prov, stack.mesh.dev_uuid, 16 * '0',
-                            2, btpdef.MESH_OUT_DISPLAY_STRING |
-                            btpdef.MESH_OUT_DISPLAY_NUMBER,
-                            2, btpdef.MESH_IN_ENTER_STRING |
-                            btpdef.MESH_IN_ENTER_NUMBER),
-                   TestFunc(btp.mesh_init),],
+        ZTestCase("MESH", "MESH/NODE/PROV/UPD/BV-11-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/RLY/BI-01-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
