@@ -522,10 +522,13 @@ def get_test_cases_subset(test_cases, test_case_names):
 
     test_cases -- list of all test cases, instances on TestCase
 
-    test_case_names -- list of names of test cases. Names in this list specify
-                       the subset from test_cases to return. It is assumed that
-                       PTS test case names are unique across profiles, hence
-                       this argument has only test case names, no profiles.
+    test_case_names -- list of names and matching patterns of test cases.
+                       Names in this list specify the subset from test_cases
+                       to return.
+                       Name may be:
+                       - Profile (all test cases from profile)
+                       - Matching name pattern (test cases which contains
+                            given string pattern)
 
     """
     # protocols and profiles
@@ -553,13 +556,12 @@ def get_test_cases_subset(test_cases, test_case_names):
         elif name in profiles_subset.keys():
             test_cases_subset += profiles_subset[name]
 
-        # single test case name
+        # name pattern contain matching
         else:
-            if name in test_cases_dict:
-                tc = test_cases_dict[name]
-                if tc in test_cases_subset:
-                    test_cases_subset.append(tc.copy())
-                else:
-                    test_cases_subset.append(tc)
+            for tc in test_cases_dict:
+                if name == tc:
+                    test_cases_subset.append(test_cases_dict[tc].copy())
+                elif name in tc:
+                    test_cases_subset.append(test_cases_dict[tc])
 
     return test_cases_subset
