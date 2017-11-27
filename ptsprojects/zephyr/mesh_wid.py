@@ -16,6 +16,7 @@
 import logging
 import btp
 import time
+import re
 from ptsprojects.stack import get_stack
 
 log = logging.debug
@@ -140,11 +141,34 @@ def hdl_wid_274(desc):
 
     return 'OK'
 
+def hdl_wid_285(desc):
+    stack = get_stack()
+
+    return 'Yes'
+
 def hdl_wid_519(desc):
     stack = get_stack()
 
     btp.mesh_reset()
     return 'OK'
+
+def hdl_wid_600(desc):
+    stack = get_stack()
+
+    return 'OK'
+
+def hdl_wid_604(desc):
+    stack = get_stack()
+
+    pattern = re.compile(r"(?:array\s*|ID\s*)(\w+)", re.IGNORECASE)
+    found = pattern.findall(desc)
+    if not found \
+            or int(stack.mesh.health_test_id) != int(found[0]) \
+            or str(stack.mesh.health_fault_array) != found[1].upper():
+        return 'Cancel'
+
+    return 'OK'
+
 
 handler = {
     8 : hdl_wid_8,
@@ -161,5 +185,8 @@ handler = {
     221 : hdl_wid_221,
     268 : hdl_wid_268,
     274 : hdl_wid_274,
+    285 : hdl_wid_285,
     519 : hdl_wid_519,
+    600 : hdl_wid_600,
+    604 : hdl_wid_604,
 }
