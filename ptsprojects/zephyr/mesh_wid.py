@@ -148,3 +148,20 @@ def hdl_wid_519(desc):
 
     btp.mesh_reset()
     return 'OK'
+
+def hdl_wid_600(desc):
+    stack = get_stack()
+
+    return 'OK'
+
+def hdl_wid_604(desc):
+    stack = get_stack()
+
+    pattern = re.compile(r"(?:array\s*|ID\s*)(\w+)", re.IGNORECASE)
+    found = pattern.findall(desc)
+    if not found \
+            or int(stack.mesh.health_test_id) != int(found[0]) \
+            or str(stack.mesh.health_fault_array) != found[1].upper():
+        return 'Cancel'
+
+    return 'OK'

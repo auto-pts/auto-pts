@@ -50,6 +50,14 @@ class Mesh():
         self.addr = 0x0b0c
         self.dev_key = '0123456789abcdef0123456789abcdef'
 
+        # health model data
+        self.health_test_id = '00'
+        self.health_fault_array = 24 * 'FF'
+
+        # vendor model data
+        self.vendor_model_id = '0002'
+
+
 class Stack():
     def __init__(self):
         self.mesh = None
