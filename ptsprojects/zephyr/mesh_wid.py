@@ -70,7 +70,32 @@ def hdl_wid_201(desc):
     else:
         return 'Cancel'
 
+def hdl_wid_203(desc):
+    stack = get_stack()
+
+    if stack.mesh.is_provisioned.data == True:
+        return 'OK'
+    else:
+        return 'Cancel'
+
 def hdl_wid_204(desc):
+    stack = get_stack()
+
+    time.sleep(stack.mesh.iv_update_timeout.data)
+
+    return 'OK'
+
+def hdl_wid_210(desc):
+    stack = get_stack()
+
+    if stack.mesh.is_provisioned.data == False:
+        btp.mesh_config_prov(stack.mesh.dev_uuid, 16 * '1', 0, 0, 0, 0)
+        btp.mesh_init()
+        return 'OK'
+    else:
+        return 'Cancel'
+
+def hdl_wid_218(desc):
     stack = get_stack()
 
     time.sleep(stack.mesh.iv_update_timeout.data)
@@ -84,12 +109,27 @@ def hdl_wid_221(desc):
 
     return 'OK'
 
+def hdl_wid_268(desc):
+    stack = get_stack()
+
+    return 'OK'
+
+def hdl_wid_274(desc):
+    stack = get_stack()
+
+    return 'OK'
+
 handler = {
     8 : hdl_wid_8,
     12 : hdl_wid_12,
     13 : hdl_wid_13,
     81 : hdl_wid_81,
     201 : hdl_wid_201,
+    203 : hdl_wid_203,
     204 : hdl_wid_204,
+    210 : hdl_wid_210,
+    218 : hdl_wid_218,
     221 : hdl_wid_221,
+    268 : hdl_wid_268,
+    274 : hdl_wid_274,
 }
