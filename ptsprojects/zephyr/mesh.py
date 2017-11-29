@@ -30,8 +30,9 @@ except ImportError:  # running this module as script
         TestFuncCleanUp
     from ptsprojects.zephyr.ztestcase import ZTestCase
 
-import btp
-import btpdef
+
+import btp.btpdef as btpdef
+import btp.btp as btp
 from ptsprojects.stack import get_stack
 from ptsprojects.zephyr.mesh_wid import mesh_wid_hdl
 from uuid import uuid4

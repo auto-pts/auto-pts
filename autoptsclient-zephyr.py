@@ -28,6 +28,7 @@ init_iut_cfg(IUT_NAMES.ZEPHYR)
 import autoptsclient_common as autoptsclient
 import ptsprojects.zephyr as autoprojects
 import ptsprojects.stack as stack
+import btp
 
 def check_args(args):
     """Sanity check command line arguments"""
@@ -119,6 +120,7 @@ def main():
     pts = autoptsclient.init_core(args.server_address, args.workspace,
                                   args.bd_addr, args.enable_max_logs)
 
+    btp.btp.init()
     autoprojects.iutctl.init(args.kernel_image, args.tty_file, args.board)
 
     stack.init_stack()
