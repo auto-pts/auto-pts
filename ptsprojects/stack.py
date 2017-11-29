@@ -46,7 +46,6 @@ class Mesh():
         self.oob_action = Property(None)
         self.oob_data = Property(None)
         self.is_provisioned = Property(False)
-        self.iv_update_timeout = Property(40)
         self.last_seen_prov_link_state = Property(None)
 
         # provision node data
@@ -65,6 +64,9 @@ class Mesh():
         # vendor model data
         self.vendor_model_id = '0002'
 
+        # IV update
+        self.iv_update_timeout = Property(120)
+        self.is_iv_test_mode_enabled = Property(False)
 
 
 class Stack():

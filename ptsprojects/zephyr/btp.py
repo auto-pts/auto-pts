@@ -188,6 +188,12 @@ MESH = {
     "input_str": (btpdef.BTP_SERVICE_ID_MESH,
                   btpdef.MESH_INPUT_STRING,
                   CONTROLLER_INDEX),
+    "iv_update_test_mode": (btpdef.BTP_SERVICE_ID_MESH,
+                            btpdef.MESH_IV_UPDATE_TEST_MODE,
+                            CONTROLLER_INDEX),
+    "iv_update_toggle": (btpdef.BTP_SERVICE_ID_MESH,
+                         btpdef.MESH_IV_UPDATE_TOGGLE,
+                         CONTROLLER_INDEX, ""),
 }
 
 
@@ -2649,6 +2655,30 @@ def mesh_input_string(string):
     data = bytearray(string)
 
     zephyrctl.btp_socket.send_wait_rsp(*MESH['input_str'], data=data)
+
+
+def mesh_iv_update_test_mode(enable):
+    logging.debug("%s", mesh_iv_update_test_mode.__name__)
+
+    zephyrctl = iutctl.get_zephyr()
+
+    if enable:
+        data = bytearray(struct.pack("<B", 0x01))
+    else:
+        data = bytearray(struct.pack("<B", 0x00))
+
+    zephyrctl.btp_socket.send_wait_rsp(*MESH['iv_update_test_mode'], data=data)
+
+    stack = get_stack()
+    stack.mesh.is_iv_test_mode_enabled.data = True
+
+
+def mesh_iv_update_toggle():
+    logging.debug("%s", mesh_iv_update_toggle.__name__)
+
+    zephyrctl = iutctl.get_zephyr()
+
+    zephyrctl.btp_socket.send_wait_rsp(*MESH['iv_update_toggle'])
 
 
 def mesh_out_number_action_ev(mesh, data, data_len):
