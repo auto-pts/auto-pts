@@ -22,6 +22,9 @@ import sys
 import argparse
 from distutils.spawn import find_executable
 
+from config import init_iut_cfg, IUT_NAMES
+init_iut_cfg(IUT_NAMES.ZEPHYR)
+
 import autoptsclient_common as autoptsclient
 import ptsprojects.zephyr as autoprojects
 import ptsprojects.stack as stack

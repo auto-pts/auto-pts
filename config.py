@@ -17,3 +17,17 @@
 
 SERVER_PORT = 65000
 CLIENT_PORT = 65001
+
+IUT_CFG = None
+
+class IUT_NAMES:
+    ZEPHYR = "zephyr"
+
+class IUT:
+    def __init__(self, iut_name):
+        self.iut_name = iut_name
+
+def init_iut_cfg(iut_name):
+    global IUT_CFG
+
+    IUT_CFG = IUT(iut_name)
