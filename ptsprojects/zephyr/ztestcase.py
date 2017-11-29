@@ -17,8 +17,8 @@
 
 from ptsprojects.testcase import TestCase, TestFunc, \
     TestFuncCleanUp
-from ptsprojects.zephyr.iutctl import get_zephyr
 from ptsprojects.stack import get_stack
+from ptsprojects.zephyr.iutctl import get_iut
 
 
 class ZTestCase(TestCase):
@@ -29,8 +29,8 @@ class ZTestCase(TestCase):
 
         super(ZTestCase, self).__init__(*args, ptsproject_name = "zephyr",**kwargs)
 
-        self.zephyrctl = get_zephyr()
         self.stack = get_stack()
+        self.zephyrctl = get_iut()
 
         # first command is to start QEMU or HW
         self.cmds.insert(0, TestFunc(self.zephyrctl.start))

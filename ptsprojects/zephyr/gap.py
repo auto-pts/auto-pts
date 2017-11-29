@@ -29,7 +29,7 @@ except ImportError:  # running this module as script
     from ptsprojects.zephyr.ztestcase import ZTestCase
 
 from time import sleep
-import btp
+import btp.btp as btp
 import binascii
 import gatt
 from re import findall

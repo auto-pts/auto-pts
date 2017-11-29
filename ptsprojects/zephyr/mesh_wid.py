@@ -15,7 +15,7 @@
 
 import logging
 import sys
-import btp
+import btp.btp as btp
 import time
 import re
 from ptsprojects.stack import get_stack

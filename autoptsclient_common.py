@@ -30,7 +30,7 @@ from SimpleXMLRPCServer import SimpleXMLRPCServer
 
 from ptsprojects.testcase import get_max_test_case_desc
 from ptsprojects.testcase import PTSCallback
-from ptsprojects.zephyr.btp import BTPError
+from btp.types import BTPError
 import ptsprojects.ptstypes as ptstypes
 from config import SERVER_PORT, CLIENT_PORT
 

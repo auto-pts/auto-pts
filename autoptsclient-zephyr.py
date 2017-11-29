@@ -25,6 +25,8 @@ from distutils.spawn import find_executable
 import autoptsclient_common as autoptsclient
 import ptsprojects.zephyr as autoprojects
 import ptsprojects.stack as stack
+import btp.btp as btp
+from ptsprojects.zephyr.iutctl import get_iut
 
 def check_args(args):
     """Sanity check command line arguments"""
@@ -116,6 +118,7 @@ def main():
     pts = autoptsclient.init_core(args.server_address, args.workspace,
                                   args.bd_addr, args.enable_max_logs)
 
+    btp.init(get_iut)
     autoprojects.iutctl.init(args.kernel_image, args.tty_file, args.board)
 
     stack.init_stack()
