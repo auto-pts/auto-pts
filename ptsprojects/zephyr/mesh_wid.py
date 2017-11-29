@@ -95,6 +95,14 @@ def hdl_wid_201(desc):
     else:
         return 'Cancel'
 
+def hdl_wid_202(desc):
+    stack = get_stack()
+
+    btp.mesh_iv_update_test_mode(True)
+    btp.mesh_iv_update_toggle()
+
+    return 'OK'
+
 def hdl_wid_203(desc):
     stack = get_stack()
 
@@ -120,6 +128,23 @@ def hdl_wid_210(desc):
     else:
         return 'Cancel'
 
+def hdl_wid_216(desc):
+    stack = get_stack()
+
+    if not stack.mesh.is_iv_test_mode_enabled.data:
+        return 'OK'
+    return 'Cancel'
+
+def hdl_wid_217(desc):
+    stack = get_stack()
+
+    if not stack.mesh.is_iv_test_mode_enabled.data:
+        btp.mesh_iv_update_test_mode(True)
+
+    time.sleep(stack.mesh.iv_update_timeout.data)
+
+    return 'OK'
+
 def hdl_wid_218(desc):
     stack = get_stack()
 
@@ -127,10 +152,34 @@ def hdl_wid_218(desc):
 
     return 'OK'
 
+def hdl_wid_219(desc):
+    stack = get_stack()
+
+    if stack.mesh.is_provisioned.data:
+        return 'OK'
+    return 'Cancel'
+
+def hdl_wid_220(desc):
+    stack = get_stack()
+
+    if stack.mesh.is_provisioned.data:
+        return 'OK'
+    return 'Cancel'
+
 def hdl_wid_221(desc):
     stack = get_stack()
 
+    if not stack.mesh.is_iv_test_mode_enabled.data:
+        btp.mesh_iv_update_test_mode(True)
+
     time.sleep(stack.mesh.iv_update_timeout.data)
+
+    return 'OK'
+
+def hdl_wid_222(desc):
+    stack = get_stack()
+
+    btp.mesh_iv_update_toggle()
 
     return 'OK'
 
