@@ -17,6 +17,7 @@ import logging
 import sys
 import btp
 import time
+import re
 from ptsprojects.stack import get_stack
 
 log = logging.debug
@@ -133,6 +134,9 @@ def hdl_wid_221(desc):
 
     return 'OK'
 
+def hdl_wid_262(desc):
+    return 'Yes'
+
 def hdl_wid_268(desc):
     stack = get_stack()
 
@@ -142,6 +146,11 @@ def hdl_wid_274(desc):
     stack = get_stack()
 
     return 'OK'
+
+def hdl_wid_285(desc):
+    stack = get_stack()
+
+    return 'Yes'
 
 def hdl_wid_519(desc):
     stack = get_stack()
