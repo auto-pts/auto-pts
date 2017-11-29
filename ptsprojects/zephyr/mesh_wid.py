@@ -131,6 +131,9 @@ def hdl_wid_221(desc):
 
     return 'OK'
 
+def hdl_wid_262(desc):
+    return 'Yes'
+
 def hdl_wid_268(desc):
     stack = get_stack()
 
@@ -183,6 +186,7 @@ handler = {
     210 : hdl_wid_210,
     218 : hdl_wid_218,
     221 : hdl_wid_221,
+    262 : hdl_wid_262,
     268 : hdl_wid_268,
     274 : hdl_wid_274,
     285 : hdl_wid_285,
