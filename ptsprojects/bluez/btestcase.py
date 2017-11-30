@@ -13,22 +13,22 @@
 # more details.
 #
 
-"""Configuration variables"""
+"""Test case that manages Zephyr IUT"""
 
-SERVER_PORT = 65000
-CLIENT_PORT = 65001
+from ptsprojects.testcase import TestCase, TestFunc, \
+    TestFuncCleanUp
+from ptsprojects.bluez.iutctl import get_iut
 
-IUT_CFG = None
 
-class IUT_NAMES:
-    ZEPHYR = "zephyr"
-    BLUEZ  = "bluez"
+class BTestCase(TestCase):
+    """A Bluez test case class"""
 
-class IUT:
-    def __init__(self, iut_name):
-        self.iut_name = iut_name
+    def __init__(self, *args, **kwargs):
+        """Refer to TestCase.__init__ for parameters and their documentation"""
 
-def init_iut_cfg(iut_name):
-    global IUT_CFG
+        super(BTestCase, self).__init__(*args, ptsproject_name = "bluez",
+              **kwargs)
 
-    IUT_CFG = IUT(iut_name)
+        self.iutctl = get_iut()
+
+        self.cmds.insert(1, TestFunc(self.iutctl.wait_iut_ready_event))

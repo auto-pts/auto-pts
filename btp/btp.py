@@ -33,6 +33,8 @@ from ptsprojects.stack import get_stack
 from config import IUT_CFG, IUT_NAMES
 if IUT_CFG.iut_name == IUT_NAMES.ZEPHYR:
     from ptsprojects.zephyr.iutctl import get_iut
+elif IUT_CFG.iut_name == IUT_NAMES.BLUEZ:
+    from ptsprojects.bluez.iutctl import get_iut
 
 #  Global temporary objects
 PASSKEY = None

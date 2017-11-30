@@ -13,22 +13,8 @@
 # more details.
 #
 
-"""Configuration variables"""
+"""Automated PTS projects (bluetooth profiles and protocols) for Bluez IUT"""
 
-SERVER_PORT = 65000
-CLIENT_PORT = 65001
+import ptsprojects.bluez.iutctl
 
-IUT_CFG = None
-
-class IUT_NAMES:
-    ZEPHYR = "zephyr"
-    BLUEZ  = "bluez"
-
-class IUT:
-    def __init__(self, iut_name):
-        self.iut_name = iut_name
-
-def init_iut_cfg(iut_name):
-    global IUT_CFG
-
-    IUT_CFG = IUT(iut_name)
+import ptsprojects.bluez.gap
