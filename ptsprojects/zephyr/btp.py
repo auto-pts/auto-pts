@@ -192,6 +192,9 @@ MESH = {
     "iv_update_toggle": (btpdef.BTP_SERVICE_ID_MESH,
                          btpdef.MESH_IV_UPDATE_TOGGLE,
                          CONTROLLER_INDEX, ""),
+    "net_send": (btpdef.BTP_SERVICE_ID_MESH,
+                 btpdef.MESH_NET_SEND,
+                 CONTROLLER_INDEX),
     "health_generate_faults": (btpdef.BTP_SERVICE_ID_MESH,
                            btpdef.MESH_HEALTH_ADD_FAULTS,
                            CONTROLLER_INDEX, ""),
@@ -2722,6 +2725,34 @@ def mesh_iv_update_toggle():
     zephyrctl = iutctl.get_zephyr()
 
     zephyrctl.btp_socket.send_wait_rsp(*MESH['iv_update_toggle'])
+
+
+def mesh_net_send(ttl, src, dst, payload):
+    logging.debug("%s %r %r %r %r", mesh_net_send.__name__, ttl, src, dst,
+                  payload)
+
+    if ttl is None:
+        ttl = 0xff  # Use default TTL
+    elif isinstance(ttl, str):
+        ttl = int(ttl, 16)
+
+    if isinstance(src, str):
+        src = int(src, 16)
+
+    if isinstance(dst, str):
+        dst = int(dst, 16)
+
+    payload = binascii.unhexlify(payload)
+    payload_len = len(payload)
+
+    if payload_len > 0xff:
+        raise BTPError("Payload exceeds PDU")
+
+    data = bytearray(struct.pack("<BHHB", ttl, src, dst, payload_len))
+    data.extend(payload)
+
+    zephyrctl = iutctl.get_zephyr()
+    zephyrctl.btp_socket.send_wait_rsp(*MESH['net_send'], data=data)
 
 
 def mesh_health_generate_faults():
