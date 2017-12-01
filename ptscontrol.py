@@ -110,7 +110,7 @@ class PTSLogger(PTSControl.IPTSControlClientLogger):
             if self._callback is not None:
                 log("Calling callback.log")
                 # log_type of type PTSControl._PTS_LOGTYPE is marshalled as
-                # int since xmlrcp has not marshalling rules for _PTS_LOGTYPE
+                # int since xmlrpc has not marshalling rules for _PTS_LOGTYPE
                 if self._maximum_logging or int(log_type) in logtype_whitelist:
                     self._callback.log(int(log_type), logtype_string, log_time,
                                       log_message)

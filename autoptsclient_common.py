@@ -258,7 +258,7 @@ def init_logging():
     log("Created logs directory %r", LOG_DIR_NAME)
 
 class FakeProxy(object):
-    """Fake PTS XML-RCP proxy client.
+    """Fake PTS XML-RPC proxy client.
 
     Usefull when testing code locally and auto-pts server is not needed"""
 
