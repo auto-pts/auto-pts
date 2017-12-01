@@ -59,6 +59,34 @@ def hdl_wid_13(desc):
 
     return 'OK'
 
+def hdl_wid_19(desc):
+    stack = get_stack()
+
+    # This pattern is matching Time to Live (TTL) value, Source (SRC) and
+    # Destination (DST) of the network packet to be sent
+    pattern = re.compile('(TTL|SRC|DST)\\:\s+\\[([0][xX][0-9a-fA-F]+)\\]')
+    params = pattern.findall(desc)
+    if not params:
+        logging.error("%s parsing error", hdl_wid_19.__name__)
+        return 'Cancel'
+
+    params = dict(params)
+
+    btp.mesh_net_send(params.get('TTL', None), params.get('SRC'),
+                      params.get('DST'), '01020304')
+
+    return 'Ok'
+
+def hdl_wid_20(desc):
+    stack = get_stack()
+
+    return 'C000'
+
+def hdl_wid_21(desc):
+    stack = get_stack()
+
+    return '8000'
+
 def hdl_wid_24(desc):
     stack = get_stack()
 
