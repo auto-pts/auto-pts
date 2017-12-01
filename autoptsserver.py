@@ -54,7 +54,7 @@ class PyPTSWithXmlRpcCallback(ptscontrol.PyPTS):
         # receive callback messages
         self.client_address = None
         self.client_port = None
-        self.client_xmlrcp_proxy = None
+        self.client_xmlrpc_proxy = None
 
     def register_xmlrpc_ptscallback(self, client_address, client_port):
         """Registers client callback. xmlrpc proxy/client calls this method
@@ -70,14 +70,14 @@ class PyPTSWithXmlRpcCallback(ptscontrol.PyPTS):
         self.client_address = client_address
         self.client_port = client_port
 
-        self.client_xmlrcp_proxy = xmlrpclib.ServerProxy(
+        self.client_xmlrpc_proxy = xmlrpclib.ServerProxy(
             "http://{}:{}/".format(self.client_address, self.client_port),
             allow_none = True)
 
-        log("Created XMR RCP auto-pts client proxy, provides methods: %s" %
-            self.client_xmlrcp_proxy.system.listMethods())
+        log("Created XMR RPC auto-pts client proxy, provides methods: %s" %
+            self.client_xmlrpc_proxy.system.listMethods())
 
-        self.register_ptscallback(self.client_xmlrcp_proxy)
+        self.register_ptscallback(self.client_xmlrpc_proxy)
 
     def unregister_xmlrpc_ptscallback(self):
         """Unregisters the client callback"""
@@ -88,7 +88,7 @@ class PyPTSWithXmlRpcCallback(ptscontrol.PyPTS):
 
         self.client_address = None
         self.client_port = None
-        self.client_xmlrcp_proxy = None
+        self.client_xmlrpc_proxy = None
 
 def new_address_string(self):
     host, port = self.client_address[:2]
