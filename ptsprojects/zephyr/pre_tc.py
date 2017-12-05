@@ -29,8 +29,7 @@ def run_btmon():
     TEST_CASE = TEST_CASE.replace("/", "-")
 
     BTMON_PROC = subprocess.Popen([BTMON_PATH, "-w", LOGS_DIR + PROFILE + "/" +
-                                  TEST_CASE], shell=False,
-                                  stdout=subprocess.DEVNULL)
+                                  TEST_CASE], shell=False)
 
 def main():
     global PROFILE, TEST_CASE
