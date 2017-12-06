@@ -2852,6 +2852,30 @@ def mesh_prov_link_closed_ev(mesh, data, data_len):
     mesh.last_seen_prov_link_state.data = ('closed', bearer)
 
 
+def mesh_store_net_data():
+    stack = get_stack()
+
+    stack.mesh.net_recv_ev_store.data = True
+
+
+def mesh_net_rcv_ev(mesh, data, data_len):
+    stack = get_stack()
+
+    if not stack.mesh.net_recv_ev_store.data:
+        return
+
+    logging.debug("%s %r %r", mesh_net_rcv_ev.__name__, data, data_len)
+
+    hdr_fmt = '<BBHHB'
+    hdr_len = struct.calcsize(hdr_fmt)
+
+    (ttl, ctl, src, dst, payload_len) = struct.unpack_from(hdr_fmt, data, 0)
+    (payload,) = struct.unpack_from('<%ds' % payload_len, data, hdr_len)
+    payload = binascii.hexlify(payload)
+
+    stack.mesh.net_recv_ev_data.data = (ttl, ctl, src, dst, payload)
+
+
 MESH_EV = {
     btpdef.MESH_EV_OUT_NUMBER_ACTION: mesh_out_number_action_ev,
     btpdef.MESH_EV_OUT_STRING_ACTION: mesh_out_string_action_ev,
@@ -2859,6 +2883,7 @@ MESH_EV = {
     btpdef.MESH_EV_PROVISIONED: mesh_provisioned_ev,
     btpdef.MESH_EV_PROV_LINK_OPEN: mesh_prov_link_open_ev,
     btpdef.MESH_EV_PROV_LINK_CLOSED: mesh_prov_link_closed_ev,
+    btpdef.MESH_EV_NET_RECV: mesh_net_rcv_ev,
 }
 
 
