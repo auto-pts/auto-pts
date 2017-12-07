@@ -140,6 +140,43 @@ def hdl_wid_24(desc):
         return 'Yes'
     return 'No'
 
+def hdl_wid_30(desc):
+    stack = get_stack()
+
+    stack.mesh.net_recv_ev_store.data = False
+
+    if stack.mesh.net_recv_ev_data.data is None:
+        return 'Yes'
+
+    # This pattern is matching Time to Live (TTL) value, Control (CTL),
+    # Source (SRC) Destination (DST) and Payload of the network packet
+    # to be received
+    pattern = re.compile('(TTL|CTL|SRC|DST|TransportPDU)\\:\s+\\[([0][xX][0-9a-fA-F]+)\\]')
+    params = pattern.findall(desc)
+    if not params:
+        logging.error("%s parsing error", hdl_wid_30.__name__)
+        return 'No'
+
+    params = dict(params)
+
+    # Normalize parameters for comparison
+    pdu = hex(int(params['TransportPDU'], 16))
+    ttl = int(params.get('TTL'), 16)
+    ctl = int(params.get('CTL'), 16)
+    src = int(params.get('SRC'), 16)
+    dst = int(params.get('DST'), 16)
+
+    (recv_ttl, recv_ctl, recv_src, recv_dst, recv_pdu) = \
+        stack.mesh.net_recv_ev_data.data
+    recv_pdu = hex(int(recv_pdu, 16))
+
+    if pdu == recv_pdu and ttl == recv_ttl and ctl == recv_ctl and \
+                    src == recv_src and dst == recv_dst:
+        logging.error("%s Network Packet received!", hdl_wid_30.__name__)
+        return 'No'
+
+    return 'Yes'
+
 def hdl_wid_81(desc):
     stack = get_stack()
     btp.mesh_config_prov(stack.mesh.dev_uuid, 16 * '1', 0, 0, 0, 0)
