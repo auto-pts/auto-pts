@@ -58,6 +58,8 @@ CORE = {
                   btpdef.BTP_INDEX_NONE, btpdef.BTP_SERVICE_ID_GATT),
     "l2cap_reg": (btpdef.BTP_SERVICE_ID_CORE, btpdef.CORE_REGISTER_SERVICE,
                   btpdef.BTP_INDEX_NONE, btpdef.BTP_SERVICE_ID_L2CAP),
+    "mesh_reg": (btpdef.BTP_SERVICE_ID_CORE, btpdef.CORE_REGISTER_SERVICE,
+                  btpdef.BTP_INDEX_NONE, btpdef.BTP_SERVICE_ID_MESH),
     "read_supp_cmds": (btpdef.BTP_SERVICE_ID_CORE,
                        btpdef.CORE_READ_SUPPORTED_COMMANDS,
                        btpdef.BTP_INDEX_NONE, ""),
@@ -430,6 +432,15 @@ def core_reg_svc_l2cap():
 
     zephyrctl = iutctl.get_zephyr()
     zephyrctl.btp_socket.send(*CORE['l2cap_reg'])
+
+    core_reg_svc_rsp_succ()
+
+
+def core_reg_svc_mesh():
+    logging.debug("%s", core_reg_svc_mesh.__name__)
+
+    zephyrctl = iutctl.get_zephyr()
+    zephyrctl.btp_socket.send(*CORE['mesh_reg'])
 
     core_reg_svc_rsp_succ()
 
