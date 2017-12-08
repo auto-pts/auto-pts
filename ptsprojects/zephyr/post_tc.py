@@ -8,7 +8,7 @@ import signal
 
 CONFIG_PROC = None
 # XXX: Fill me - nrfjprog path example: /home/user/tool/nrfjprog
-CONFIG_PATH = None
+CONFIG_PATH = '/home/gkolodziejczyk/progs/nRF5x-Command-Line-Tools_9_5_0_Linux-x86_64/nrfjprog/nrfjprog'
 
 def cleanup():
     pass

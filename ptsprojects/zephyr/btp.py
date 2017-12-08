@@ -27,6 +27,7 @@ import btpdef
 from random import randint
 from collections import namedtuple
 from uuid import UUID
+from ptsprojects.stack import get_stack
 
 #  Global temporary objects
 PASSKEY = None
@@ -163,6 +164,30 @@ L2CAP = {
                   CONTROLLER_INDEX),
     "listen": (btpdef.BTP_SERVICE_ID_L2CAP, btpdef.L2CAP_LISTEN,
                CONTROLLER_INDEX),
+}
+
+MESH = {
+    "read_supp_cmds": (btpdef.BTP_SERVICE_ID_MESH,
+                       btpdef.MESH_READ_SUPPORTED_COMMANDS,
+                       btpdef.BTP_INDEX_NONE, ""),
+    "config_prov": (btpdef.BTP_SERVICE_ID_MESH,
+                  btpdef.MESH_CONFIG_PROVISIONING,
+                  CONTROLLER_INDEX),
+    "prov_node": (btpdef.BTP_SERVICE_ID_MESH,
+                    btpdef.MESH_PROVISION_NODE,
+                    CONTROLLER_INDEX),
+    "init": (btpdef.BTP_SERVICE_ID_MESH,
+             btpdef.MESH_INIT,
+             CONTROLLER_INDEX, ""),
+    "reset": (btpdef.BTP_SERVICE_ID_MESH,
+              btpdef.MESH_RESET,
+              CONTROLLER_INDEX, ""),
+    "input_num": (btpdef.BTP_SERVICE_ID_MESH,
+                  btpdef.MESH_INPUT_NUMBER,
+                  CONTROLLER_INDEX),
+    "input_str": (btpdef.BTP_SERVICE_ID_MESH,
+                  btpdef.MESH_INPUT_STRING,
+                  CONTROLLER_INDEX),
 }
 
 
@@ -2522,8 +2547,187 @@ def l2cap_data_rcv_ev(chan_id=None, store=False):
         VERIFY_VALUES = []
         VERIFY_VALUES.append(data)
 
+
+def gap_connected_ev_(gap, data, data_len):
+    logging.debug("%s %r", gap_connected_ev_.__name__, data)
+
+    hdr_fmt = '<6sB'
+    hdr_len = struct.calcsize(hdr_fmt)
+
+    addr, addr_type = struct.unpack_from(hdr_fmt, data)
+    addr = binascii.hexlify(addr[::-1])
+
+    gap.connected.data = (addr, addr_type)
+
+    set_pts_addr(addr, addr_type)
+
+
+def gap_disconnected_ev_(gap, data, data_len):
+    logging.debug("%s %r", gap_disconnected_ev_.__name__, data)
+
+    gap.connected.data = None
+
+
+GAP_EV = {
+    btpdef.GAP_EV_DEVICE_CONNECTED: gap_connected_ev_,
+    btpdef.GAP_EV_DEVICE_DISCONNECTED: gap_disconnected_ev_,
+}
+
+
+def mesh_config_prov(uuid, static_auth, output_size, output_actions, input_size,
+              input_actions):
+    logging.debug("%s %r %r %r %r %r %r", mesh_config_prov.__name__, uuid,
+                  static_auth, output_size, output_actions, input_size,
+                  input_actions)
+
+    zephyrctl = iutctl.get_zephyr()
+
+    uuid = binascii.unhexlify(uuid)
+    static_auth = binascii.unhexlify(static_auth)
+
+    data = bytearray(struct.pack("<16s16sBHBH", uuid, static_auth, output_size,
+                                 output_actions, input_size, input_actions))
+
+    zephyrctl.btp_socket.send_wait_rsp(*MESH['config_prov'], data=data)
+
+
+def mesh_prov_node():
+    logging.debug("%s", mesh_config_prov.__name__)
+
+    stack = get_stack()
+
+    net_key = binascii.unhexlify(stack.mesh.net_key)
+    dev_key = binascii.unhexlify(stack.mesh.dev_key)
+
+    data = bytearray(struct.pack("<16sHBIIH16s", net_key, stack.mesh.net_key_idx,
+                                 stack.mesh.flags, stack.mesh.iv_idx,
+                                 stack.mesh.seq_num, stack.mesh.addr, dev_key))
+
+    zephyrctl = iutctl.get_zephyr()
+
+    zephyrctl.btp_socket.send_wait_rsp(*MESH['prov_node'], data=data)
+
+
+def mesh_init():
+    logging.debug("%s", mesh_init.__name__)
+
+    zephyrctl = iutctl.get_zephyr()
+
+    zephyrctl.btp_socket.send_wait_rsp(*MESH['init'])
+
+
+def mesh_reset():
+    logging.debug("%s", mesh_reset.__name__)
+
+    zephyrctl = iutctl.get_zephyr()
+
+    zephyrctl.btp_socket.send_wait_rsp(*MESH['reset'])
+
+    stack = get_stack()
+
+    stack.mesh.is_provisioned.data = False
+
+
+def mesh_input_number(number):
+    logging.debug("%s %r", mesh_input_number.__name__, number)
+
+    zephyrctl = iutctl.get_zephyr()
+
+    if type(number) is str:
+        number = int(number)
+
+    data = bytearray(struct.pack("<I", number))
+
+    zephyrctl.btp_socket.send_wait_rsp(*MESH['input_num'], data=data)
+
+
+def mesh_input_string(string):
+    logging.debug("%s %s", mesh_input_string.__name__, string)
+
+    zephyrctl = iutctl.get_zephyr()
+
+    data = bytearray(string)
+
+    zephyrctl.btp_socket.send_wait_rsp(*MESH['input_str'], data=data)
+
+
+def mesh_out_number_action_ev(mesh, data, data_len):
+    logging.debug("%s %r", mesh_out_number_action_ev.__name__, data)
+
+    action, number = struct.unpack_from('<HI', data)
+
+    mesh.oob_action.data = action
+    mesh.oob_data.data = number
+
+
+def mesh_out_string_action_ev(mesh, data, data_len):
+    logging.debug("%s %r", mesh_out_string_action_ev.__name__, data)
+
+    hdr_fmt = '<B'
+    hdr_len = struct.calcsize(hdr_fmt)
+
+    (str_len,) = struct.unpack_from(hdr_fmt, data)
+    (string,) = struct.unpack_from('<%ds' % str_len, data, hdr_len)
+
+    mesh.oob_data.data = string
+
+
+def mesh_in_action_ev(mesh, data, data_len):
+    logging.debug("%s %r", mesh_in_action_ev.__name__, data)
+
+    action, size = struct.unpack('<HB', data)
+
+
+def mesh_provisioned_ev(mesh, data, data_len):
+    logging.debug("%s %r", mesh_provisioned_ev.__name__, data)
+
+    mesh.is_provisioned.data = True
+
+
+def mesh_prov_link_open_ev(mesh, data, data_len):
+    logging.debug("%s %r", mesh_prov_link_open_ev.__name__, data)
+
+    (bearer,) = struct.unpack('<B', data)
+
+    mesh.last_seen_prov_link_state.data = ('open', bearer)
+
+
+def mesh_prov_link_closed_ev(mesh, data, data_len):
+    logging.debug("%s %r", mesh_prov_link_closed_ev.__name__, data)
+
+    (bearer,) = struct.unpack('<B', data)
+
+    mesh.last_seen_prov_link_state.data = ('closed', bearer)
+
+
+MESH_EV = {
+    btpdef.MESH_EV_OUT_NUMBER_ACTION: mesh_out_number_action_ev,
+    btpdef.MESH_EV_OUT_STRING_ACTION: mesh_out_string_action_ev,
+    btpdef.MESH_EV_IN_ACTION: mesh_in_action_ev,
+    btpdef.MESH_EV_PROVISIONED: mesh_provisioned_ev,
+    btpdef.MESH_EV_PROV_LINK_OPEN: mesh_prov_link_open_ev,
+    btpdef.MESH_EV_PROV_LINK_CLOSED: mesh_prov_link_closed_ev,
+}
+
+
 def event_handler(hdr, data):
     logging.debug("%s %r %r", event_handler.__name__, hdr, data)
+
+    stack = get_stack()
+    if not stack:
+        logging.info("Stack not initialized")
+        return False
+
+    if hdr.svc_id == btpdef.BTP_SERVICE_ID_MESH:
+        if hdr.op in MESH_EV and stack.mesh:
+            cb = MESH_EV[hdr.op]
+            cb(stack.mesh, data[0], hdr.data_len)
+            return True
+    elif hdr.svc_id == btpdef.BTP_SERVICE_ID_GAP:
+        if hdr.op in GAP_EV and stack.gap:
+            cb = GAP_EV[hdr.op]
+            cb(stack.gap, data[0], hdr.data_len)
+            return True
 
     # TODO: Raise BTP error instead of logging
     logging.error("Unhandled event! svc_id %s op %s", hdr.svc_id, hdr.op)
