@@ -196,6 +196,12 @@ MESH = {
     "iv_update_toggle": (btpdef.BTP_SERVICE_ID_MESH,
                          btpdef.MESH_IV_UPDATE_TOGGLE,
                          CONTROLLER_INDEX, ""),
+    "health_generate_faults": (btpdef.BTP_SERVICE_ID_MESH,
+                           btpdef.MESH_HEALTH_ADD_FAULTS,
+                           CONTROLLER_INDEX, ""),
+    "mesh_clear_faults": (btpdef.BTP_SERVICE_ID_MESH,
+                          btpdef.MESH_HEALTH_CLEAR_FAULTS,
+                          CONTROLLER_INDEX, ""),
 }
 
 
@@ -2690,6 +2696,33 @@ def mesh_iv_update_toggle():
     zephyrctl = iutctl.get_zephyr()
 
     zephyrctl.btp_socket.send_wait_rsp(*MESH['iv_update_toggle'])
+
+
+def mesh_health_generate_faults():
+    logging.debug("%s %r", mesh_health_generate_faults.__name__)
+
+    zephyrctl = iutctl.get_zephyr()
+    (rsp,) = zephyrctl.btp_socket.send_wait_rsp(*MESH['health_generate_faults'])
+
+    hdr_fmt = '<BBB'
+    hdr_len = struct.calcsize(hdr_fmt)
+
+    (test_id, cur_faults_cnt, reg_faults_cnt) = struct.unpack_from(hdr_fmt, rsp)
+    (cur_faults,) = struct.unpack_from('<%ds' % cur_faults_cnt, rsp, hdr_len)
+    (reg_faults,) = struct.unpack_from('<%ds' % reg_faults_cnt, rsp,
+                                       hdr_len + cur_faults_cnt)
+
+    cur_faults = binascii.hexlify(cur_faults)
+    reg_faults = binascii.hexlify(reg_faults)
+
+    return test_id, cur_faults, reg_faults
+
+
+def mesh_health_clear_faults():
+    logging.debug("%s %r", mesh_health_clear_faults.__name__)
+
+    zephyrctl = iutctl.get_zephyr()
+    zephyrctl.btp_socket.send_wait_rsp(*MESH['mesh_clear_faults'])
 
 
 def mesh_out_number_action_ev(mesh, data, data_len):
