@@ -78,6 +78,13 @@ class Stack():
     def mesh_init(self, dev_uuid):
         self.mesh = Mesh(dev_uuid)
 
+    def cleanup(self):
+        if self.gap:
+            self.gap_init()
+
+        if self.mesh:
+            self.mesh_init(self.mesh.dev_uuid)
+
 def init_stack():
     global STACK
 
