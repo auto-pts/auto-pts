@@ -210,6 +210,50 @@ def hdl_wid_519(desc):
 def hdl_wid_600(desc):
     stack = get_stack()
 
+    test_id, cur_faults, reg_faults = btp.mesh_health_generate_faults()
+
+    stack.mesh.health_test_id.data = test_id
+    stack.mesh.health_current_faults.data = cur_faults
+    stack.mesh.health_registered_faults.data = reg_faults
+
+    return 'OK'
+
+def hdl_wid_601(desc):
+    stack = get_stack()
+
+    # This pattern is matching fault array
+    pattern = re.compile('array\s=\s([0-9a-fA-F]+)')
+    params = pattern.findall(desc)
+    if not params:
+        logging.error("%s parsing error", hdl_wid_601.__name__)
+        return 'Cancel'
+
+    current_faults = stack.mesh.health_current_faults.data
+
+    if params[0].upper() != current_faults.upper():
+        logging.error("Fault array does not match %r vs %r", params[0],
+                      current_faults)
+        return 'Cancel'
+
+    return 'Ok'
+
+def hdl_wid_603(desc):
+    stack = get_stack()
+
+    # Pattern looking for test ID
+    pattern = re.compile(r"(ID)\s+([0-9a-fA-F]+)", re.IGNORECASE)
+    found = pattern.findall(desc)
+    if not found:
+        logging.error("%s Parsing error!", hdl_wid_603.__name__)
+        return 'Cancel'
+
+    found = dict(found)
+
+    # Fail if test ID does not match or IUT has faults
+    if int(stack.mesh.health_test_id.data) != int(found.get('ID')) or \
+            stack.mesh.health_registered_faults.data:
+        return 'Cancel'
+
     return 'OK'
 
 def hdl_wid_604(desc):
