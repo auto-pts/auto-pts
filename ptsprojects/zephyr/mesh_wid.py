@@ -215,11 +215,17 @@ def hdl_wid_600(desc):
 def hdl_wid_604(desc):
     stack = get_stack()
 
-    pattern = re.compile(r"(?:array\s*|ID\s*)(\w+)", re.IGNORECASE)
+    # Pattern looking for fault array and test ID
+    pattern = re.compile(r"(array|ID)\s+([0-9a-fA-F]+)", re.IGNORECASE)
     found = pattern.findall(desc)
-    if not found \
-            or int(stack.mesh.health_test_id) != int(found[0]) \
-            or str(stack.mesh.health_fault_array) != found[1].upper():
+    if not found:
+        logging.error("%s Parsing error!", hdl_wid_604.__name__)
+        return 'Cancel'
+
+    found = dict(found)
+
+    if int(stack.mesh.health_test_id.data) != int(found.get('ID')) or \
+            stack.mesh.health_registered_faults.data != found.get('array'):
         return 'Cancel'
 
     return 'OK'

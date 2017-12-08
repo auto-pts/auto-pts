@@ -58,8 +58,9 @@ class Mesh():
         self.dev_key = '0123456789abcdef0123456789abcdef'
 
         # health model data
-        self.health_test_id = '00'
-        self.health_fault_array = 24 * 'FF'
+        self.health_test_id = Property(0x00)
+        self.health_current_faults = Property(None)
+        self.health_registered_faults = Property(None)
 
         # vendor model data
         self.vendor_model_id = '0002'
