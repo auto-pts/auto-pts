@@ -24,6 +24,7 @@ from distutils.spawn import find_executable
 
 import autoptsclient_common as autoptsclient
 import ptsprojects.zephyr as autoprojects
+import ptsprojects.stack as stack
 
 def check_args(args):
     """Sanity check command line arguments"""
@@ -97,7 +98,7 @@ def parse_args():
     arg_parser.add_argument("-c", "--test-cases", nargs='+',
                             help="Names of test cases to run. Groups of test "
                             "cases can be specified by profile names: "
-                            "GATT, GATTS, GATTC, GAP, L2CAP, RFCOMM, SM")
+                            "GATT, GATTS, GATTC, GAP, L2CAP, RFCOMM, SM, MESH")
 
     args = arg_parser.parse_args()
 
@@ -117,10 +118,13 @@ def main():
 
     autoprojects.iutctl.init(args.kernel_image, args.tty_file, args.board)
 
+    stack.init_stack()
+
     test_cases = autoprojects.gap.test_cases(pts)
     test_cases += autoprojects.gatt.test_cases(pts)
     test_cases += autoprojects.sm.test_cases(pts)
     test_cases += autoprojects.l2cap.test_cases(pts)
+    test_cases += autoprojects.mesh.test_cases(pts)
 
     if args.test_cases:
         test_cases = autoptsclient.get_test_cases_subset(
