@@ -201,6 +201,46 @@ def hdl_wid_285(desc):
 
     return 'Yes'
 
+def hdl_wid_303(desc):
+    stack = get_stack()
+
+    return 'Ok'
+
+def hdl_wid_308(desc):
+    stack = get_stack()
+
+    btp.mesh_lpn_poll()
+    return 'Ok'
+
+def hdl_wid_312(desc):
+    stack = get_stack()
+
+    btp.mesh_lpn_poll()
+    return 'Ok'
+
+def hdl_wid_313(desc):
+    stack = get_stack()
+
+    btp.mesh_lpn_poll()
+    return 'Ok'
+
+def hdl_wid_314(desc):
+    stack = get_stack()
+
+    btp.mesh_lpn_poll()
+    return 'Ok'
+
+def hdl_wid_315(desc):
+    stack = get_stack()
+
+    return 'Ok'
+
+def hdl_wid_326(desc):
+    stack = get_stack()
+
+    btp.mesh_lpn(False)
+    return "Ok"
+
 def hdl_wid_519(desc):
     stack = get_stack()
 
