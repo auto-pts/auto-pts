@@ -202,6 +202,12 @@ MESH = {
     "mesh_clear_faults": (btpdef.BTP_SERVICE_ID_MESH,
                           btpdef.MESH_HEALTH_CLEAR_FAULTS,
                           CONTROLLER_INDEX, ""),
+    "lpn": (btpdef.BTP_SERVICE_ID_MESH,
+            btpdef.MESH_LPN_SET,
+            CONTROLLER_INDEX),
+    "lpn_poll": (btpdef.BTP_SERVICE_ID_MESH,
+                 btpdef.MESH_LPN_POLL,
+                 CONTROLLER_INDEX, ""),
 }
 
 
@@ -2723,6 +2729,27 @@ def mesh_health_clear_faults():
 
     zephyrctl = iutctl.get_zephyr()
     zephyrctl.btp_socket.send_wait_rsp(*MESH['mesh_clear_faults'])
+
+
+def mesh_lpn(enable):
+    logging.debug("%s %r", mesh_lpn.__name__, enable)
+
+    if enable:
+        enable = 0x01
+    else:
+        enable = 0x00
+
+    data = bytearray(struct.pack("<B", enable))
+
+    zephyrctl = iutctl.get_zephyr()
+    zephyrctl.btp_socket.send_wait_rsp(*MESH['lpn'], data=data)
+
+
+def mesh_lpn_poll():
+    logging.debug("%s", mesh_lpn_poll.__name__)
+
+    zephyrctl = iutctl.get_zephyr()
+    zephyrctl.btp_socket.send_wait_rsp(*MESH['lpn_poll'])
 
 
 def mesh_out_number_action_ev(mesh, data, data_len):
