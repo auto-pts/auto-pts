@@ -90,6 +90,10 @@ GAP = {
                       CONTROLLER_INDEX, defs.GAP_GENERAL_DISCOVERABLE),
     "set_limdiscov": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_DISCOVERABLE,
                       CONTROLLER_INDEX, defs.GAP_LIMITED_DISCOVERABLE),
+    "set_powered_on": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_POWERED,
+                       CONTROLLER_INDEX, 1),
+    "set_powered_off": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_POWERED,
+                        CONTROLLER_INDEX, 0),
     "start_discov": (defs.BTP_SERVICE_ID_GAP,
                      defs.GAP_START_DISCOVERY, CONTROLLER_INDEX),
     "stop_discov": (defs.BTP_SERVICE_ID_GAP, defs.GAP_STOP_DISCOVERY,
@@ -100,6 +104,7 @@ GAP = {
     "passkey_entry_rsp": (defs.BTP_SERVICE_ID_GAP,
                           defs.GAP_PASSKEY_ENTRY,
                           CONTROLLER_INDEX),
+    "reset": (defs.BTP_SERVICE_ID_GAP, defs.GAP_RESET, CONTROLLER_INDEX, "")
 }
 
 GATTS = {
@@ -749,6 +754,15 @@ def gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey):
     gap_command_rsp_succ()
 
 
+def gap_reset():
+    logging.debug("%s", gap_reset.__name__)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*GAP['reset'])
+
+    gap_command_rsp_succ()
+
+
 def gap_passkey_entry_req_ev(bd_addr=None, bd_addr_type=None):
     logging.debug("%s %r %r", gap_passkey_entry_req_ev.__name__, bd_addr,
                   bd_addr_type)
@@ -840,6 +854,28 @@ def gap_set_limdiscov():
     iutctl = get_iut()
 
     iutctl.btp_socket.send(*GAP['set_limdiscov'])
+
+    tuple_data = gap_command_rsp_succ()
+    __gap_current_settings_update(tuple_data)
+
+
+def gap_set_powered_on():
+    logging.debug("%s", gap_set_powered_on.__name__)
+
+    iutctl = get_iut()
+
+    iutctl.btp_socket.send(*GAP['set_powered_on'])
+
+    tuple_data = gap_command_rsp_succ()
+    __gap_current_settings_update(tuple_data)
+
+
+def gap_set_powered_off():
+    logging.debug("%s", gap_set_powered_off.__name__)
+
+    iutctl = get_iut()
+
+    iutctl.btp_socket.send(*GAP['set_powered_off'])
 
     tuple_data = gap_command_rsp_succ()
     __gap_current_settings_update(tuple_data)
