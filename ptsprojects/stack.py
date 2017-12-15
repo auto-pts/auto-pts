@@ -13,7 +13,7 @@
 # more details.
 #
 
-from threading import Lock
+from threading import Lock, Timer, Event
 
 STACK = None
 
@@ -32,6 +32,10 @@ class Property(object):
             setattr(instance, self.data, value)
 
 
+def timeout_cb(flag):
+    flag.clear()
+
+
 class Gap():
     def __init__(self):
         # If disconnected - None
@@ -41,6 +45,42 @@ class Gap():
         # IUT address tuple (addr, addr_type)
         self.iut_bd_addr = Property(None)
 
+    def wait_for_connection(self, timeout):
+        if self.is_connected():
+            return True
+
+        flag = Event()
+        flag.set()
+
+        t = Timer(timeout, timeout_cb, [flag])
+        t.start()
+
+        while flag.is_set():
+            if self.is_connected():
+                t.cancel()
+                return True
+
+        return False
+
+    def wait_for_disconnection(self, timeout):
+        if not self.is_connected():
+            return True
+
+        flag = Event()
+        flag.set()
+
+        t = Timer(timeout, timeout_cb, [flag])
+        t.start()
+
+        while flag.is_set():
+            if not self.is_connected():
+                t.cancel()
+                return True
+
+        return False
+
+    def is_connected(self):
+        return False if (self.connected.data is None) else True
 
 
 class Mesh():
