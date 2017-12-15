@@ -264,16 +264,24 @@ def test_cases(pts):
 
     # Set GAP common PIXIT values
     pts.update_pixit_param("GAP", "TSPX_delete_link_key", "TRUE")
-    pts.update_pixit_param("GAP", "TSPX_using_public_device_address", "FALSE")
-    pts.update_pixit_param("GAP", "TSPX_using_private_device_address", "TRUE")
-    pts.update_pixit_param("GAP", "TSPX_iut_privacy_enabled", "TRUE")
-    pts.update_pixit_param("GAP", "TSPX_using_random_device_address", "TRUE")
 
     pre_conditions=[TestFunc(btp.core_reg_svc_gap),
                     TestFunc(btp.gap_read_ctrl_info),
                     TestFunc(btp.wrap, pts.update_pixit_param,
                              "GAP", "TSPX_bd_addr_iut",
                              btp.get_stored_bd_addr),
+                    TestFunc(lambda: pts.update_pixit_param(
+                             "GAP", "TSPX_iut_privacy_enabled",
+                             "TRUE" if btp.has_iut_privacy() else "FALSE")),
+                    TestFunc(lambda: pts.update_pixit_param(
+                             "GAP", "TSPX_using_public_device_address",
+                             "FALSE" if btp.is_iut_addr_random() else "TRUE")),
+                    TestFunc(lambda: pts.update_pixit_param(
+                             "GAP", "TSPX_using_private_device_address",
+                             "TRUE" if btp.is_iut_addr_random() else "FALSE")),
+                    TestFunc(lambda: pts.update_pixit_param(
+                             "GAP", "TSPX_using_random_device_address",
+                             "TRUE" if btp.is_iut_addr_random() else "FALSE")),
 
                     # We do this on test case, because previous one could update
                     # this if RPA was used by PTS

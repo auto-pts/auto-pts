@@ -49,13 +49,14 @@ def test_cases(pts):
 
     pts_bd_addr = pts.q_bd_addr
 
-    pts.update_pixit_param("SM", "TSPX_peer_addr_type", "01")
-
     pre_conditions=[TestFunc(btp.core_reg_svc_gap),
                     TestFunc(btp.gap_read_ctrl_info),
                     TestFunc(btp.wrap, pts.update_pixit_param,
                              "SM", "TSPX_bd_addr_iut",
-                             btp.get_stored_bd_addr)]
+                             btp.get_stored_bd_addr),
+                    TestFunc(lambda: pts.update_pixit_param(
+                             "SM", "TSPX_peer_addr_type",
+                             "01" if btp.is_iut_addr_random() else "00"))]
 
     test_cases = [
         ZTestCase("SM", "SM/MAS/PROT/BV-01-C",

@@ -1025,6 +1025,18 @@ def get_stored_bd_addr():
     return str(bd_addr)
 
 
+def is_iut_addr_random():
+    stack = get_stack()
+
+    (bd_addr, bd_addr_type) = stack.gap.iut_bd_addr.data
+
+    return True if bd_addr_type == Addr.le_random else False
+
+
+def has_iut_privacy():
+    return __gap_current_settings_is_set(btpdef.GAP_SETTINGS_PRIVACY)
+
+
 def gap_read_ctrl_info():
     logging.debug("%s", gap_read_ctrl_info.__name__)
 
