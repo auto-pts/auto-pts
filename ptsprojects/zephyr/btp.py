@@ -43,9 +43,6 @@ PTS_BD_ADDR = LeAddress(addr_type=0, addr='000000000000')
 LeAdv = namedtuple('LeAdv', 'addr_type addr rssi flags eir')
 DISCOV_RESULTS = []
 
-# DUT's GAP current settings
-GAP_CURRENT_SETTINGS = None
-
 #  A sequence of values to verify in PTS MMI description
 VERIFY_VALUES = None
 
@@ -460,13 +457,16 @@ def __gap_current_settings_update(settings):
         settings = struct.unpack(fmt, settings[0])
         settings = settings[0] # Result of unpack is always a tuple
 
-    global GAP_CURRENT_SETTINGS
-    GAP_CURRENT_SETTINGS = settings
+    stack = get_stack()
+    stack.gap.current_settings = settings
 
 
 def __gap_current_settings_is_set(bit):
     # This should maintain conformance
-    if GAP_CURRENT_SETTINGS is None or not (GAP_CURRENT_SETTINGS & (1 << bit)):
+    stack = get_stack()
+
+    if stack.gap.current_settings is None or \
+            not (stack.gap.current_settings & (1 << bit)):
         return False
     return True
 
