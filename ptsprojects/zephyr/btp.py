@@ -32,7 +32,6 @@ from ptsprojects.stack import get_stack
 #  Global temporary objects
 PASSKEY = None
 GATT_SVCS = None
-IUT_BD_ADDR = None
 L2CAP_CHAN = []
 
 # Address
@@ -1019,7 +1018,11 @@ def wrap(func, *args):
 
 
 def get_stored_bd_addr():
-    return str(IUT_BD_ADDR)
+    stack = get_stack()
+
+    (bd_addr, bd_addr_type) = stack.gap.iut_bd_addr.data
+
+    return str(bd_addr)
 
 
 def gap_read_ctrl_info():
@@ -1043,9 +1046,15 @@ def gap_read_ctrl_info():
                                                                 tuple_data[0])
     _addr = binascii.hexlify(_addr[::-1]).lower()
 
-    global IUT_BD_ADDR
-    IUT_BD_ADDR = _addr
-    logging.debug("IUT address %r", IUT_BD_ADDR)
+    stack = get_stack()
+
+    addr_type = Addr.le_random if \
+        (_curr_set & (1 << btpdef.GAP_SETTINGS_PRIVACY)) or \
+        (_curr_set & (1 << btpdef.GAP_SETTINGS_STATIC_ADDRESS)) else \
+        Addr.le_public
+
+    stack.gap.iut_bd_addr.data = (_addr, addr_type)
+    logging.debug("IUT address %r", stack.gap.iut_bd_addr.data)
 
     __gap_current_settings_update(_curr_set)
 

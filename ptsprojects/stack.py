@@ -38,6 +38,9 @@ class Gap():
         # If connected - remote address tuple (addr, addr_type)
         self.connected = Property(None)
         self.current_settings = None
+        # IUT address tuple (addr, addr_type)
+        self.iut_bd_addr = Property(None)
+
 
 
 class Mesh():
