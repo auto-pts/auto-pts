@@ -54,6 +54,8 @@ CORE = {
                   btpdef.BTP_INDEX_NONE, btpdef.BTP_SERVICE_ID_GATT),
     "l2cap_reg": (btpdef.BTP_SERVICE_ID_CORE, btpdef.CORE_REGISTER_SERVICE,
                   btpdef.BTP_INDEX_NONE, btpdef.BTP_SERVICE_ID_L2CAP),
+    "mesh_reg": (btpdef.BTP_SERVICE_ID_CORE, btpdef.CORE_REGISTER_SERVICE,
+                  btpdef.BTP_INDEX_NONE, btpdef.BTP_SERVICE_ID_MESH),
     "read_supp_cmds": (btpdef.BTP_SERVICE_ID_CORE,
                        btpdef.CORE_READ_SUPPORTED_COMMANDS,
                        btpdef.BTP_INDEX_NONE, ""),
@@ -184,6 +186,24 @@ MESH = {
     "input_str": (btpdef.BTP_SERVICE_ID_MESH,
                   btpdef.MESH_INPUT_STRING,
                   CONTROLLER_INDEX),
+    "iv_update_test_mode": (btpdef.BTP_SERVICE_ID_MESH,
+                            btpdef.MESH_IV_UPDATE_TEST_MODE,
+                            CONTROLLER_INDEX),
+    "iv_update_toggle": (btpdef.BTP_SERVICE_ID_MESH,
+                         btpdef.MESH_IV_UPDATE_TOGGLE,
+                         CONTROLLER_INDEX, ""),
+    "health_generate_faults": (btpdef.BTP_SERVICE_ID_MESH,
+                           btpdef.MESH_HEALTH_ADD_FAULTS,
+                           CONTROLLER_INDEX, ""),
+    "mesh_clear_faults": (btpdef.BTP_SERVICE_ID_MESH,
+                          btpdef.MESH_HEALTH_CLEAR_FAULTS,
+                          CONTROLLER_INDEX, ""),
+    "lpn": (btpdef.BTP_SERVICE_ID_MESH,
+            btpdef.MESH_LPN_SET,
+            CONTROLLER_INDEX),
+    "lpn_poll": (btpdef.BTP_SERVICE_ID_MESH,
+                 btpdef.MESH_LPN_POLL,
+                 CONTROLLER_INDEX, ""),
 }
 
 
@@ -420,6 +440,15 @@ def core_reg_svc_l2cap():
 
     zephyrctl = iutctl.get_zephyr()
     zephyrctl.btp_socket.send(*CORE['l2cap_reg'])
+
+    core_reg_svc_rsp_succ()
+
+
+def core_reg_svc_mesh():
+    logging.debug("%s", core_reg_svc_mesh.__name__)
+
+    zephyrctl = iutctl.get_zephyr()
+    zephyrctl.btp_socket.send(*CORE['mesh_reg'])
 
     core_reg_svc_rsp_succ()
 
@@ -2669,6 +2698,78 @@ def mesh_input_string(string):
     data = bytearray(string)
 
     zephyrctl.btp_socket.send_wait_rsp(*MESH['input_str'], data=data)
+
+
+def mesh_iv_update_test_mode(enable):
+    logging.debug("%s", mesh_iv_update_test_mode.__name__)
+
+    zephyrctl = iutctl.get_zephyr()
+
+    if enable:
+        data = bytearray(struct.pack("<B", 0x01))
+    else:
+        data = bytearray(struct.pack("<B", 0x00))
+
+    zephyrctl.btp_socket.send_wait_rsp(*MESH['iv_update_test_mode'], data=data)
+
+    stack = get_stack()
+    stack.mesh.is_iv_test_mode_enabled.data = True
+
+
+def mesh_iv_update_toggle():
+    logging.debug("%s", mesh_iv_update_toggle.__name__)
+
+    zephyrctl = iutctl.get_zephyr()
+
+    zephyrctl.btp_socket.send_wait_rsp(*MESH['iv_update_toggle'])
+
+
+def mesh_health_generate_faults():
+    logging.debug("%s %r", mesh_health_generate_faults.__name__)
+
+    zephyrctl = iutctl.get_zephyr()
+    (rsp,) = zephyrctl.btp_socket.send_wait_rsp(*MESH['health_generate_faults'])
+
+    hdr_fmt = '<BBB'
+    hdr_len = struct.calcsize(hdr_fmt)
+
+    (test_id, cur_faults_cnt, reg_faults_cnt) = struct.unpack_from(hdr_fmt, rsp)
+    (cur_faults,) = struct.unpack_from('<%ds' % cur_faults_cnt, rsp, hdr_len)
+    (reg_faults,) = struct.unpack_from('<%ds' % reg_faults_cnt, rsp,
+                                       hdr_len + cur_faults_cnt)
+
+    cur_faults = binascii.hexlify(cur_faults)
+    reg_faults = binascii.hexlify(reg_faults)
+
+    return test_id, cur_faults, reg_faults
+
+
+def mesh_health_clear_faults():
+    logging.debug("%s %r", mesh_health_clear_faults.__name__)
+
+    zephyrctl = iutctl.get_zephyr()
+    zephyrctl.btp_socket.send_wait_rsp(*MESH['mesh_clear_faults'])
+
+
+def mesh_lpn(enable):
+    logging.debug("%s %r", mesh_lpn.__name__, enable)
+
+    if enable:
+        enable = 0x01
+    else:
+        enable = 0x00
+
+    data = bytearray(struct.pack("<B", enable))
+
+    zephyrctl = iutctl.get_zephyr()
+    zephyrctl.btp_socket.send_wait_rsp(*MESH['lpn'], data=data)
+
+
+def mesh_lpn_poll():
+    logging.debug("%s", mesh_lpn_poll.__name__)
+
+    zephyrctl = iutctl.get_zephyr()
+    zephyrctl.btp_socket.send_wait_rsp(*MESH['lpn_poll'])
 
 
 def mesh_out_number_action_ev(mesh, data, data_len):
