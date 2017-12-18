@@ -29,6 +29,7 @@ except ImportError:  # running this module as script
     from ptsprojects.zephyr.ztestcase import ZTestCase
 
 import btp
+from ptsprojects.stack import get_stack
 
 
 class Addr:
@@ -42,16 +43,22 @@ def test_cases(pts):
 
     le_psm = 128
 
-    pts.update_pixit_param("L2CAP", "TSPX_iut_address_type_random", "TRUE")
     pts.update_pixit_param("L2CAP", "TSPX_le_psm", format(le_psm, '04x'))
 
     pts_bd_addr = pts.q_bd_addr
+
+    stack = get_stack()
+
+    stack.gap_init()
 
     pre_conditions=[TestFunc(btp.core_reg_svc_gap),
                     TestFunc(btp.gap_read_ctrl_info),
                     TestFunc(btp.wrap, pts.update_pixit_param,
                              "L2CAP", "TSPX_bd_addr_iut",
-                             btp.get_stored_bd_addr)]
+                             btp.get_stored_bd_addr),
+                    TestFunc(lambda: pts.update_pixit_param(
+                             "L2CAP", "TSPX_iut_address_type_random",
+                             "TRUE" if btp.is_iut_addr_random() else "FALSE"))]
 
     test_cases = [
         # Connection Parameter Update
@@ -59,28 +66,18 @@ def test_cases(pts):
                   pre_conditions +
                   [TestFunc(btp.gap_set_conn),
                    TestFunc(btp.gap_set_gendiscov),
-                   TestFunc(btp.gap_adv_ind_on),
-                   TestFunc(btp.gap_connected_ev,
-                            pts_bd_addr, Addr.le_public, start_wid=15)]),
+                   TestFunc(btp.gap_adv_ind_on)]),
         ZTestCase("L2CAP", "L2CAP/LE/CPU/BV-02-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn,
                             pts_bd_addr, Addr.le_public, start_wid=51),
-                   TestFunc(btp.gap_connected_ev,
-                            pts_bd_addr, Addr.le_public, start_wid=51),
                    TestFunc(btp.gap_disconn, pts_bd_addr,
-                            Addr.le_public, start_wid=22),
-                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=22)]),
         ZTestCase("L2CAP", "L2CAP/LE/CPU/BI-01-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn,
                             pts_bd_addr, Addr.le_public, start_wid=51),
-                   TestFunc(btp.gap_connected_ev,
-                            pts_bd_addr, Addr.le_public, start_wid=51),
                    TestFunc(btp.gap_disconn, pts_bd_addr,
-                            Addr.le_public, start_wid=22),
-                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
                             Addr.le_public, start_wid=22)]),
         ZTestCase("L2CAP", "L2CAP/LE/CPU/BI-02-C",
                   pre_conditions +
@@ -106,8 +103,6 @@ def test_cases(pts):
                    TestFunc(btp.l2cap_le_listen, le_psm),
                    TestFunc(btp.gap_set_conn, start_wid=15),
                    TestFunc(btp.gap_adv_ind_on, start_wid=15),
-                   TestFunc(btp.gap_connected_ev, pts_bd_addr, Addr.le_public,
-                            start_wid=15),
                    TestFunc(btp.l2cap_connected_ev, start_wid=15),
                    TestFunc(btp.l2cap_send_data, 0, "FF", 40, start_wid=43)]),
         ZTestCase("L2CAP", "L2CAP/COS/CFC/BV-02-C",
@@ -116,8 +111,6 @@ def test_cases(pts):
                    TestFunc(btp.l2cap_le_listen, le_psm),
                    TestFunc(btp.gap_set_conn, start_wid=15),
                    TestFunc(btp.gap_adv_ind_on, start_wid=15),
-                   TestFunc(btp.gap_connected_ev, pts_bd_addr, Addr.le_public,
-                            start_wid=15),
                    TestFunc(btp.l2cap_connected_ev, start_wid=15),
                    TestFunc(btp.l2cap_send_data, 0, "FF", 40, start_wid=43)]),
         ZTestCase("L2CAP", "L2CAP/COS/CFC/BV-03-C",
@@ -126,11 +119,9 @@ def test_cases(pts):
                    TestFunc(btp.l2cap_le_listen, le_psm),
                    TestFunc(btp.gap_set_conn, start_wid=15),
                    TestFunc(btp.gap_adv_ind_on, start_wid=15),
-                   TestFunc(btp.gap_connected_ev, start_wid=15),
                    TestFunc(btp.l2cap_connected_ev, start_wid=15),
                    TestFunc(btp.l2cap_data_rcv_ev, 0, True, start_wid=15),
-                   TestFunc(btp.l2cap_disconnected_ev, 0, post_wid=40),
-                   TestFunc(btp.gap_disconnected_ev, post_wid=40)],
+                   TestFunc(btp.l2cap_disconnected_ev, 0, post_wid=40)],
                   verify_wids={40: btp.verify_description}),
         ZTestCase("L2CAP", "L2CAP/COS/CFC/BV-04-C",
                   pre_conditions +
@@ -144,8 +135,6 @@ def test_cases(pts):
                    TestFunc(btp.l2cap_le_listen, le_psm),
                    TestFunc(btp.gap_set_conn, start_wid=15),
                    TestFunc(btp.gap_adv_ind_on, start_wid=15),
-                   TestFunc(btp.gap_connected_ev, pts_bd_addr, Addr.le_public,
-                            start_wid=15),
                    TestFunc(btp.l2cap_conn, pts_bd_addr, Addr.le_public,
                             le_psm, start_wid=41),
                    TestFunc(btp.l2cap_conn_rsp, start_wid=41)]),
@@ -155,8 +144,6 @@ def test_cases(pts):
                    TestFunc(btp.l2cap_le_listen, le_psm),
                    TestFunc(btp.gap_set_conn, start_wid=15),
                    TestFunc(btp.gap_adv_ind_on, start_wid=15),
-                   TestFunc(btp.gap_connected_ev, pts_bd_addr,
-                            Addr.le_public, start_wid=15),
                    TestFunc(btp.l2cap_conn, pts_bd_addr, Addr.le_public,
                             le_psm, start_wid=41),
                    TestFunc(btp.l2cap_conn_rsp, start_wid=41),
@@ -169,8 +156,6 @@ def test_cases(pts):
                    TestFunc(btp.l2cap_le_listen, le_psm),
                    TestFunc(btp.gap_set_conn, start_wid=15),
                    TestFunc(btp.gap_adv_ind_on, start_wid=15),
-                   TestFunc(btp.gap_connected_ev, pts_bd_addr,
-                            Addr.le_public, start_wid=15),
                    TestFunc(btp.l2cap_conn, pts_bd_addr, Addr.le_public,
                             le_psm, start_wid=41),
                    TestFunc(btp.l2cap_conn_rsp, start_wid=41),
@@ -183,8 +168,6 @@ def test_cases(pts):
                    TestFunc(btp.l2cap_le_listen, le_psm),
                    TestFunc(btp.gap_set_conn, start_wid=15),
                    TestFunc(btp.gap_adv_ind_on, start_wid=15),
-                   TestFunc(btp.gap_connected_ev, pts_bd_addr,
-                            Addr.le_public, start_wid=15),
                    TestFunc(btp.l2cap_connected_ev, start_wid=15),
                    TestFunc(btp.l2cap_send_data, 0, "FF", 60,
                              start_wid=43)],
@@ -194,8 +177,6 @@ def test_cases(pts):
                   [TestFunc(btp.core_reg_svc_l2cap),
                    TestFunc(btp.gap_set_conn, start_wid=15),
                    TestFunc(btp.gap_adv_ind_on, start_wid=15),
-                   TestFunc(btp.gap_connected_ev, pts_bd_addr,
-                            Addr.le_public, start_wid=15),
                    TestFunc(btp.l2cap_conn, pts_bd_addr, Addr.le_public,
                             241, start_wid=41),
                    TestFunc(btp.l2cap_conn_rsp, start_wid=41),
@@ -217,8 +198,6 @@ def test_cases(pts):
                    TestFunc(btp.l2cap_le_listen, le_psm),
                    TestFunc(btp.gap_set_conn, start_wid=15),
                    TestFunc(btp.gap_adv_ind_on, start_wid=15),
-                   TestFunc(btp.gap_connected_ev, pts_bd_addr,
-                            Addr.le_public, start_wid=15),
                    TestFunc(btp.l2cap_connected_ev, start_wid=15),
                    TestFunc(btp.l2cap_send_data, 0, "FF", 10, start_wid=43)]),
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-07-C",
@@ -227,8 +206,6 @@ def test_cases(pts):
                    TestFunc(btp.l2cap_le_listen, le_psm),
                    TestFunc(btp.gap_set_conn, start_wid=15),
                    TestFunc(btp.gap_adv_ind_on, start_wid=15),
-                   TestFunc(btp.gap_connected_ev, pts_bd_addr,
-                            Addr.le_public, start_wid=15),
                    TestFunc(btp.l2cap_connected_ev, start_wid=15)]),
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BI-01-C",
                   pre_conditions +
@@ -236,8 +213,6 @@ def test_cases(pts):
                    TestFunc(btp.l2cap_le_listen, le_psm),
                    TestFunc(btp.gap_set_conn, start_wid=15),
                    TestFunc(btp.gap_adv_ind_on, start_wid=15),
-                   TestFunc(btp.gap_connected_ev, pts_bd_addr,
-                            Addr.le_public, start_wid=15),
                    TestFunc(btp.l2cap_connected_ev, start_wid=15),
                    TestFunc(btp.l2cap_send_data, 0, "FF", 40, start_wid=43)]),
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-08-C",
@@ -246,8 +221,6 @@ def test_cases(pts):
                    TestFunc(btp.l2cap_le_listen, le_psm),
                    TestFunc(btp.gap_set_conn, start_wid=15),
                    TestFunc(btp.gap_adv_ind_on, start_wid=15),
-                   TestFunc(btp.gap_connected_ev, pts_bd_addr, Addr.le_public,
-                            start_wid=15),
                    TestFunc(btp.l2cap_connected_ev, start_wid=15),
                    TestFunc(btp.l2cap_disconn, 0, start_wid=14),
                    TestFunc(btp.l2cap_disconnected_ev, 0, start_wid=14)]),
@@ -262,8 +235,6 @@ def test_cases(pts):
                   [TestFunc(btp.core_reg_svc_l2cap),
                    TestFunc(btp.gap_set_conn, start_wid=15),
                    TestFunc(btp.gap_adv_ind_on, start_wid=15),
-                   TestFunc(btp.gap_connected_ev, pts_bd_addr,
-                            Addr.le_public, start_wid=15),
                    TestFunc(btp.l2cap_conn, pts_bd_addr, Addr.le_public,
                             le_psm, start_wid=41),
                    TestFunc(btp.l2cap_conn_rsp, start_wid=41),
@@ -278,8 +249,6 @@ def test_cases(pts):
                   [TestFunc(btp.core_reg_svc_l2cap),
                    TestFunc(btp.gap_set_conn, start_wid=15),
                    TestFunc(btp.gap_adv_ind_on, start_wid=15),
-                   TestFunc(btp.gap_connected_ev, pts_bd_addr,
-                            Addr.le_public, start_wid=15),
                    TestFunc(btp.l2cap_conn, pts_bd_addr, Addr.le_public,
                             le_psm, start_wid=41),
                    TestFunc(btp.l2cap_conn_rsp, start_wid=41),
@@ -290,8 +259,6 @@ def test_cases(pts):
                   [TestFunc(btp.core_reg_svc_l2cap),
                    TestFunc(btp.gap_set_conn, start_wid=15),
                    TestFunc(btp.gap_adv_ind_on, start_wid=15),
-                   TestFunc(btp.gap_connected_ev, pts_bd_addr,
-                            Addr.le_public, start_wid=15),
                    TestFunc(btp.l2cap_conn, pts_bd_addr, Addr.le_public,
                             le_psm, start_wid=41),
                    TestFunc(btp.l2cap_conn_rsp, start_wid=41),
@@ -303,22 +270,16 @@ def test_cases(pts):
                    TestFunc(btp.l2cap_le_listen, le_psm),
                    TestFunc(btp.gap_set_conn, start_wid=15),
                    TestFunc(btp.gap_adv_ind_on, start_wid=15),
-                   TestFunc(btp.gap_connected_ev, pts_bd_addr,
-                            Addr.le_public, start_wid=15),
                    TestFunc(btp.l2cap_connected_ev, start_wid=15),
                    TestFunc(btp.gap_disconn, pts_bd_addr,
                             Addr.le_public, start_wid=22),
                    TestFunc(btp.l2cap_disconnected_ev, 0, False,
-                            start_wid=22),
-                   TestFunc(btp.gap_disconnected_ev, pts_bd_addr,
-                            Addr.le_public, start_wid=22)]),
+                            start_wid=22)]),
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-21-C",
                   pre_conditions +
                   [TestFunc(btp.core_reg_svc_l2cap),
                    TestFunc(btp.gap_set_conn, start_wid=15),
                    TestFunc(btp.gap_adv_ind_on, start_wid=15),
-                   TestFunc(btp.gap_connected_ev, pts_bd_addr,
-                            Addr.le_public, start_wid=15),
                    TestFunc(btp.l2cap_conn, pts_bd_addr, Addr.le_public,
                             le_psm, start_wid=41),
                    TestFunc(btp.l2cap_conn_rsp, start_wid=41),

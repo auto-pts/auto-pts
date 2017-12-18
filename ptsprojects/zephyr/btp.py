@@ -32,7 +32,6 @@ from ptsprojects.stack import get_stack
 #  Global temporary objects
 PASSKEY = None
 GATT_SVCS = None
-IUT_BD_ADDR = None
 L2CAP_CHAN = []
 
 # Address
@@ -42,9 +41,6 @@ PTS_BD_ADDR = LeAddress(addr_type=0, addr='000000000000')
 # Devices found
 LeAdv = namedtuple('LeAdv', 'addr_type addr rssi flags eir')
 DISCOV_RESULTS = []
-
-# DUT's GAP current settings
-GAP_CURRENT_SETTINGS = None
 
 #  A sequence of values to verify in PTS MMI description
 VERIFY_VALUES = None
@@ -460,15 +456,30 @@ def __gap_current_settings_update(settings):
         settings = struct.unpack(fmt, settings[0])
         settings = settings[0] # Result of unpack is always a tuple
 
-    global GAP_CURRENT_SETTINGS
-    GAP_CURRENT_SETTINGS = settings
+    stack = get_stack()
+    stack.gap.current_settings = settings
 
 
 def __gap_current_settings_is_set(bit):
     # This should maintain conformance
-    if GAP_CURRENT_SETTINGS is None or not (GAP_CURRENT_SETTINGS & (1 << bit)):
+    stack = get_stack()
+
+    if stack.gap.current_settings is None or \
+            not (stack.gap.current_settings & (1 << bit)):
         return False
     return True
+
+
+def gap_wait_for_connection(timeout=30):
+    stack = get_stack()
+
+    stack.gap.wait_for_connection(timeout)
+
+
+def gap_wait_for_disconnection(timeout=30):
+    stack = get_stack()
+
+    stack.gap.wait_for_disconnection(timeout)
 
 
 def gap_adv_ind_on(ad=None, sd=None):
@@ -522,30 +533,6 @@ def gap_adv_off():
     __gap_current_settings_update(tuple_data)
 
 
-def gap_connected_ev(bd_addr=None, bd_addr_type=None):
-    logging.debug("%s %r %r", gap_connected_ev.__name__, bd_addr, bd_addr_type)
-    zephyrctl = iutctl.get_zephyr()
-
-    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
-    logging.debug("received %r %r", tuple_hdr, tuple_data)
-
-    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GAP,
-                  btpdef.GAP_EV_DEVICE_CONNECTED)
-
-    fmt = '<6sB'
-    if len(tuple_data[0]) != struct.calcsize(fmt):
-        raise BTPError("Invalid data length")
-
-    # Unpack and swap address
-    _addr, _addr_type = struct.unpack(fmt, tuple_data[0])
-    _addr = binascii.hexlify(_addr[::-1])
-
-    # Do not compare addresses here, because if PTS uses Privacy, addresses will
-    # be different
-
-    set_pts_addr(_addr, _addr_type)
-
-
 def gap_conn(bd_addr=None, bd_addr_type=None):
     logging.debug("%s %r %r", gap_conn.__name__, bd_addr, bd_addr_type)
     zephyrctl = iutctl.get_zephyr()
@@ -588,35 +575,14 @@ def gap_rpa_conn(description):
     return True
 
 
-def gap_disconnected_ev(bd_addr=None, bd_addr_type=None):
-    logging.debug("%s %r %r", gap_disconnected_ev.__name__, bd_addr,
-                  bd_addr_type)
-    zephyrctl = iutctl.get_zephyr()
-
-    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
-    logging.debug("received %r %r", tuple_hdr, tuple_data)
-
-    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GAP,
-                  btpdef.GAP_EV_DEVICE_DISCONNECTED)
-
-    fmt = '<6sB'
-    if len(tuple_data[0]) != struct.calcsize(fmt):
-        raise BTPError("Invalid data length")
-
-    # Unpack and swap address
-    _addr, _addr_type = struct.unpack(fmt, tuple_data[0])
-    _addr = binascii.hexlify(_addr[::-1]).lower()
-
-    bd_addr = pts_addr_get(bd_addr)
-    bd_addr_type = pts_addr_type_get(bd_addr_type)
-
-    if _addr_type != bd_addr_type or _addr != bd_addr:
-        raise BTPError("Received data mismatch")
-
-
 def gap_disconn(bd_addr=None, bd_addr_type=None):
     logging.debug("%s %r %r", gap_disconn.__name__, bd_addr, bd_addr_type)
     zephyrctl = iutctl.get_zephyr()
+
+    stack = get_stack()
+
+    if not stack.gap.is_connected():
+        return
 
     data_ba = bytearray()
     bd_addr_ba = binascii.unhexlify(pts_addr_get(bd_addr))[::-1]
@@ -631,11 +597,13 @@ def gap_disconn(bd_addr=None, bd_addr_type=None):
 
 def verify_not_connected(description):
     logging.debug("%s", verify_not_connected.__name__)
-    try:
-        gap_connected_ev()
+    stack = get_stack()
+
+    gap_wait_for_connection(5)
+
+    if stack.gap.is_connected():
         return False
-    except socket.timeout:
-        return True
+    return True
 
 
 def gap_set_io_cap(io_cap):
@@ -650,6 +618,8 @@ def gap_set_io_cap(io_cap):
 def gap_pair(bd_addr=None, bd_addr_type=None):
     logging.debug("%s %r %r", gap_pair.__name__, bd_addr, bd_addr_type)
     zephyrctl = iutctl.get_zephyr()
+
+    gap_wait_for_connection()
 
     data_ba = bytearray()
     bd_addr_ba = binascii.unhexlify(pts_addr_get(bd_addr))[::-1]
@@ -1019,7 +989,23 @@ def wrap(func, *args):
 
 
 def get_stored_bd_addr():
-    return str(IUT_BD_ADDR)
+    stack = get_stack()
+
+    (bd_addr, bd_addr_type) = stack.gap.iut_bd_addr.data
+
+    return str(bd_addr)
+
+
+def is_iut_addr_random():
+    stack = get_stack()
+
+    (bd_addr, bd_addr_type) = stack.gap.iut_bd_addr.data
+
+    return True if bd_addr_type == Addr.le_random else False
+
+
+def has_iut_privacy():
+    return __gap_current_settings_is_set(btpdef.GAP_SETTINGS_PRIVACY)
 
 
 def gap_read_ctrl_info():
@@ -1043,9 +1029,15 @@ def gap_read_ctrl_info():
                                                                 tuple_data[0])
     _addr = binascii.hexlify(_addr[::-1]).lower()
 
-    global IUT_BD_ADDR
-    IUT_BD_ADDR = _addr
-    logging.debug("IUT address %r", IUT_BD_ADDR)
+    stack = get_stack()
+
+    addr_type = Addr.le_random if \
+        (_curr_set & (1 << btpdef.GAP_SETTINGS_PRIVACY)) or \
+        (_curr_set & (1 << btpdef.GAP_SETTINGS_STATIC_ADDRESS)) else \
+        Addr.le_public
+
+    stack.gap.iut_bd_addr.data = (_addr, addr_type)
+    logging.debug("IUT address %r", stack.gap.iut_bd_addr.data)
 
     __gap_current_settings_update(_curr_set)
 
@@ -1391,6 +1383,8 @@ def gattc_exchange_mtu(bd_addr_type, bd_addr):
                   bd_addr)
     zephyrctl = iutctl.get_zephyr()
 
+    gap_wait_for_connection()
+
     data_ba = bytearray()
     bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
 
@@ -1406,6 +1400,8 @@ def gattc_disc_prim_uuid(bd_addr_type, bd_addr, uuid):
     logging.debug("%s %r %r %r", gattc_disc_prim_uuid.__name__, bd_addr_type,
                   bd_addr, uuid)
     zephyrctl = iutctl.get_zephyr()
+
+    gap_wait_for_connection()
 
     data_ba = bytearray()
 
@@ -1424,6 +1420,8 @@ def gattc_find_included(bd_addr_type, bd_addr, start_hdl, stop_hdl):
     logging.debug("%s %r %r %r %r", gattc_find_included.__name__,
                   bd_addr_type, bd_addr, start_hdl, stop_hdl)
     zephyrctl = iutctl.get_zephyr()
+
+    gap_wait_for_connection()
 
     if type(stop_hdl) is str:
         stop_hdl = int(stop_hdl, 16)
@@ -1491,6 +1489,8 @@ def gattc_disc_all_chrc(bd_addr_type, bd_addr, start_hdl, stop_hdl, svc=None):
                   bd_addr_type, bd_addr, start_hdl, stop_hdl, svc)
     zephyrctl = iutctl.get_zephyr()
 
+    gap_wait_for_connection()
+
     if svc:
         svc_nb = svc[1]
         for s in GATT_SVCS:
@@ -1535,6 +1535,8 @@ def gattc_disc_chrc_uuid(bd_addr_type, bd_addr, start_hdl, stop_hdl, uuid):
                   bd_addr_type, bd_addr, start_hdl, stop_hdl, uuid)
     zephyrctl = iutctl.get_zephyr()
 
+    gap_wait_for_connection()
+
     if type(stop_hdl) is str:
         stop_hdl = int(stop_hdl, 16)
 
@@ -1567,6 +1569,8 @@ def gattc_disc_all_desc(bd_addr_type, bd_addr, start_hdl, stop_hdl):
     logging.debug("%s %r %r %r %r", gattc_disc_all_desc.__name__,
                   bd_addr_type, bd_addr, start_hdl, stop_hdl)
     zephyrctl = iutctl.get_zephyr()
+
+    gap_wait_for_connection()
 
     if type(start_hdl) is str:
         start_hdl = int(start_hdl, 16)
@@ -1616,6 +1620,8 @@ def gattc_read(bd_addr_type, bd_addr, hdl):
                   hdl)
     zephyrctl = iutctl.get_zephyr()
 
+    gap_wait_for_connection()
+
     data_ba = bytearray()
 
     bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
@@ -1634,6 +1640,8 @@ def gattc_read_long(bd_addr_type, bd_addr, hdl, off, modif_off=None):
     logging.debug("%s %r %r %r %r %r", gattc_read_long.__name__, bd_addr_type,
                   bd_addr, hdl, off, modif_off)
     zephyrctl = iutctl.get_zephyr()
+
+    gap_wait_for_connection()
 
     data_ba = bytearray()
 
@@ -1661,6 +1669,8 @@ def gattc_read_multiple(bd_addr_type, bd_addr, *hdls):
                   bd_addr, hdls)
     zephyrctl = iutctl.get_zephyr()
 
+    gap_wait_for_connection()
+
     data_ba = bytearray()
 
     bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
@@ -1682,6 +1692,8 @@ def gattc_write_without_rsp(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
     logging.debug("%s %r %r %r %r %r", gattc_write_without_rsp.__name__,
                   bd_addr_type, bd_addr, hdl, val, val_mtp)
     zephyrctl = iutctl.get_zephyr()
+
+    gap_wait_for_connection()
 
     if type(hdl) is str:
         hdl = int(hdl, 16)
@@ -1711,6 +1723,8 @@ def gattc_signed_write(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
     logging.debug("%s %r %r %r %r %r", gattc_signed_write.__name__,
                   bd_addr_type, bd_addr, hdl, val, val_mtp)
     zephyrctl = iutctl.get_zephyr()
+
+    gap_wait_for_connection()
 
     if type(hdl) is str:
         hdl = int(hdl, 16)
@@ -1742,6 +1756,8 @@ def gattc_write(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
                   bd_addr, hdl, val, val_mtp)
     zephyrctl = iutctl.get_zephyr()
 
+    gap_wait_for_connection()
+
     if type(hdl) is str:
         hdl = int(hdl, 16)
 
@@ -1767,6 +1783,7 @@ def gattc_write(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
 def gattc_write_long(bd_addr_type, bd_addr, hdl, off, val, length=None):
     logging.debug("%s %r %r %r %r %r", gattc_write_long.__name__,
                   bd_addr_type, hdl, off, val, length)
+    gap_wait_for_connection()
 
     if type(hdl) is str:
         hdl = int(hdl, 16)  # convert string in hex format to int
@@ -1799,6 +1816,7 @@ def gattc_write_long(bd_addr_type, bd_addr, hdl, off, val, length=None):
 def gattc_cfg_notify(bd_addr_type, bd_addr, enable, ccc_hdl):
     logging.debug("%s %r %r, %r, %r", gattc_cfg_notify.__name__, bd_addr_type,
                   bd_addr, enable, ccc_hdl)
+    gap_wait_for_connection()
 
     if type(ccc_hdl) is str:
         ccc_hdl = int(ccc_hdl, 16)
@@ -1827,6 +1845,7 @@ def gattc_cfg_notify(bd_addr_type, bd_addr, enable, ccc_hdl):
 def gattc_cfg_indicate(bd_addr_type, bd_addr, enable, ccc_hdl):
     logging.debug("%s %r %r, %r, %r", gattc_cfg_indicate.__name__,
                   bd_addr_type, bd_addr, enable, ccc_hdl)
+    gap_wait_for_connection()
 
     if type(ccc_hdl) is str:
         ccc_hdl = int(ccc_hdl, 16)
@@ -2365,8 +2384,9 @@ def l2cap_command_rsp_succ(op=None):
 def l2cap_conn(bd_addr, bd_addr_type, psm):
     logging.debug("%s %r %r %r", l2cap_conn.__name__, bd_addr, bd_addr_type,
                   psm)
-
     zephyrctl = iutctl.get_zephyr()
+
+    gap_wait_for_connection()
 
     if type(psm) is str:
         psm = int(psm, 16)
