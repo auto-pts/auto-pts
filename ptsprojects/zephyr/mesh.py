@@ -454,7 +454,9 @@ def test_cases(pts):
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/TNPT/BV-05-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
-        ZTestCase("MESH", "MESH/NODE/TNPT/BV-06-C", cmds=pre_conditions,
+        ZTestCase("MESH", "MESH/NODE/TNPT/BV-06-C",
+                  cmds=pre_conditions +
+                       [TestFunc(btp.mesh_store_net_data)],
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/TNPT/BV-07-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
