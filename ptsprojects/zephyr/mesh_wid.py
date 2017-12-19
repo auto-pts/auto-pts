@@ -41,7 +41,7 @@ def hdl_wid_8(desc):
 
     # cleanup
     stack.mesh.oob_data.data = None
-    stack.mesh.oob_data.action = None
+    stack.mesh.oob_action.data = None
 
     return str(ret)
 
