@@ -59,6 +59,74 @@ def hdl_wid_13(desc):
 
     return 'OK'
 
+def hdl_wid_17(desc):
+    btp.mesh_store_net_data()
+
+    return 'Ok'
+
+def hdl_wid_18(desc):
+    stack = get_stack()
+
+    stack.mesh.net_recv_ev_store.data = False
+
+    if stack.mesh.net_recv_ev_data.data is None:
+        logging.error("Network Packet not received!")
+        return 'No'
+
+    # This pattern is matching Time to Live (TTL) value, Control (CTL),
+    # Source (SRC) Destination (DST) and Payload of the network packet
+    # to be received
+    pattern = re.compile('(TTL|CTL|SRC|DST|TransportPDU)\\:\s+\\[([0][xX][0-9a-fA-F]+)\\]')
+    params = pattern.findall(desc)
+    if not params:
+        logging.error("%s parsing error", hdl_wid_18.__name__)
+        return 'No'
+
+    params = dict(params)
+    pdu = hex(int(params['TransportPDU'], 16))
+    ttl = int(params.get('TTL'), 16)
+    ctl = int(params.get('CTL'), 16)
+    src = int(params.get('SRC'), 16)
+    dst = int(params.get('DST'), 16)
+
+    (recv_ttl, recv_ctl, recv_src, recv_dst, recv_pdu) = \
+        stack.mesh.net_recv_ev_data.data
+    recv_pdu = hex(int(recv_pdu, 16))
+
+    if pdu == recv_pdu and ttl == recv_ttl and ctl == recv_ctl and \
+                    src == recv_src and dst == recv_dst:
+        return 'Yes'
+
+    return 'No'
+
+def hdl_wid_19(desc):
+    stack = get_stack()
+
+    # This pattern is matching Time to Live (TTL) value, Source (SRC) and
+    # Destination (DST) of the network packet to be sent
+    pattern = re.compile('(TTL|SRC|DST)\\:\s+\\[([0][xX][0-9a-fA-F]+)\\]')
+    params = pattern.findall(desc)
+    if not params:
+        logging.error("%s parsing error", hdl_wid_19.__name__)
+        return 'Cancel'
+
+    params = dict(params)
+
+    btp.mesh_net_send(params.get('TTL', None), params.get('SRC'),
+                      params.get('DST'), '01020304')
+
+    return 'Ok'
+
+def hdl_wid_20(desc):
+    stack = get_stack()
+
+    return 'C000'
+
+def hdl_wid_21(desc):
+    stack = get_stack()
+
+    return '8000'
+
 def hdl_wid_24(desc):
     stack = get_stack()
 
@@ -71,6 +139,79 @@ def hdl_wid_24(desc):
     if state == 'closed':
         return 'Yes'
     return 'No'
+
+def hdl_wid_30(desc):
+    stack = get_stack()
+
+    stack.mesh.net_recv_ev_store.data = False
+
+    if stack.mesh.net_recv_ev_data.data is None:
+        return 'Yes'
+
+    # This pattern is matching Time to Live (TTL) value, Control (CTL),
+    # Source (SRC) Destination (DST) and Payload of the network packet
+    # to be received
+    pattern = re.compile('(TTL|CTL|SRC|DST|TransportPDU)\\:\s+\\[([0][xX][0-9a-fA-F]+)\\]')
+    params = pattern.findall(desc)
+    if not params:
+        logging.error("%s parsing error", hdl_wid_30.__name__)
+        return 'No'
+
+    params = dict(params)
+
+    # Normalize parameters for comparison
+    pdu = hex(int(params['TransportPDU'], 16))
+    ttl = int(params.get('TTL'), 16)
+    ctl = int(params.get('CTL'), 16)
+    src = int(params.get('SRC'), 16)
+    dst = int(params.get('DST'), 16)
+
+    (recv_ttl, recv_ctl, recv_src, recv_dst, recv_pdu) = \
+        stack.mesh.net_recv_ev_data.data
+    recv_pdu = hex(int(recv_pdu, 16))
+
+    if pdu == recv_pdu and ttl == recv_ttl and ctl == recv_ctl and \
+                    src == recv_src and dst == recv_dst:
+        logging.error("%s Network Packet received!", hdl_wid_30.__name__)
+        return 'No'
+
+    return 'Yes'
+
+
+def hdl_wid_35(desc):
+    stack = get_stack()
+
+    # FIXME: stack.mesh.net_recv_ev_store.data = False
+
+    if stack.mesh.net_recv_ev_data.data is None:
+        return 'No'
+
+    # This pattern is matching Time to Live (TTL) value, Control (CTL),
+    # Source (SRC) and Destination (DST)
+    pattern = re.compile('(TTL|CTL|SRC|DST)\\:\s+\\[([0][xX][0-9a-fA-F]+)\\]')
+    params = pattern.findall(desc)
+    if not params:
+        logging.error("%s parsing error", hdl_wid_35.__name__)
+        return 'No'
+
+    params = dict(params)
+
+    # Normalize parameters for comparison
+    ttl = int(params.get('TTL'), 16)
+    ctl = int(params.get('CTL'), 16)
+    src = int(params.get('SRC'), 16)
+    dst = int(params.get('DST'), 16)
+
+    (recv_ttl, recv_ctl, recv_src, recv_dst, recv_pdu) = \
+        stack.mesh.net_recv_ev_data.data
+    recv_pdu = hex(int(recv_pdu, 16))
+
+    if ttl == recv_ttl and ctl == recv_ctl and src == recv_src and \
+                    dst == recv_dst:
+        return 'Yes'
+
+    return 'No'
+
 
 def hdl_wid_81(desc):
     stack = get_stack()

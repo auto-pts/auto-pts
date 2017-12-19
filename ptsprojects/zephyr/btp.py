@@ -192,6 +192,9 @@ MESH = {
     "iv_update_toggle": (btpdef.BTP_SERVICE_ID_MESH,
                          btpdef.MESH_IV_UPDATE_TOGGLE,
                          CONTROLLER_INDEX, ""),
+    "net_send": (btpdef.BTP_SERVICE_ID_MESH,
+                 btpdef.MESH_NET_SEND,
+                 CONTROLLER_INDEX),
     "health_generate_faults": (btpdef.BTP_SERVICE_ID_MESH,
                            btpdef.MESH_HEALTH_ADD_FAULTS,
                            CONTROLLER_INDEX, ""),
@@ -2724,6 +2727,34 @@ def mesh_iv_update_toggle():
     zephyrctl.btp_socket.send_wait_rsp(*MESH['iv_update_toggle'])
 
 
+def mesh_net_send(ttl, src, dst, payload):
+    logging.debug("%s %r %r %r %r", mesh_net_send.__name__, ttl, src, dst,
+                  payload)
+
+    if ttl is None:
+        ttl = 0xff  # Use default TTL
+    elif isinstance(ttl, str):
+        ttl = int(ttl, 16)
+
+    if isinstance(src, str):
+        src = int(src, 16)
+
+    if isinstance(dst, str):
+        dst = int(dst, 16)
+
+    payload = binascii.unhexlify(payload)
+    payload_len = len(payload)
+
+    if payload_len > 0xff:
+        raise BTPError("Payload exceeds PDU")
+
+    data = bytearray(struct.pack("<BHHB", ttl, src, dst, payload_len))
+    data.extend(payload)
+
+    zephyrctl = iutctl.get_zephyr()
+    zephyrctl.btp_socket.send_wait_rsp(*MESH['net_send'], data=data)
+
+
 def mesh_health_generate_faults():
     logging.debug("%s %r", mesh_health_generate_faults.__name__)
 
@@ -2821,6 +2852,30 @@ def mesh_prov_link_closed_ev(mesh, data, data_len):
     mesh.last_seen_prov_link_state.data = ('closed', bearer)
 
 
+def mesh_store_net_data():
+    stack = get_stack()
+
+    stack.mesh.net_recv_ev_store.data = True
+
+
+def mesh_net_rcv_ev(mesh, data, data_len):
+    stack = get_stack()
+
+    if not stack.mesh.net_recv_ev_store.data:
+        return
+
+    logging.debug("%s %r %r", mesh_net_rcv_ev.__name__, data, data_len)
+
+    hdr_fmt = '<BBHHB'
+    hdr_len = struct.calcsize(hdr_fmt)
+
+    (ttl, ctl, src, dst, payload_len) = struct.unpack_from(hdr_fmt, data, 0)
+    (payload,) = struct.unpack_from('<%ds' % payload_len, data, hdr_len)
+    payload = binascii.hexlify(payload)
+
+    stack.mesh.net_recv_ev_data.data = (ttl, ctl, src, dst, payload)
+
+
 MESH_EV = {
     btpdef.MESH_EV_OUT_NUMBER_ACTION: mesh_out_number_action_ev,
     btpdef.MESH_EV_OUT_STRING_ACTION: mesh_out_string_action_ev,
@@ -2828,6 +2883,7 @@ MESH_EV = {
     btpdef.MESH_EV_PROVISIONED: mesh_provisioned_ev,
     btpdef.MESH_EV_PROV_LINK_OPEN: mesh_prov_link_open_ev,
     btpdef.MESH_EV_PROV_LINK_CLOSED: mesh_prov_link_closed_ev,
+    btpdef.MESH_EV_NET_RECV: mesh_net_rcv_ev,
 }
 
 

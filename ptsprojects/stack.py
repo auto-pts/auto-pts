@@ -113,6 +113,10 @@ class Mesh():
         self.iv_update_timeout = Property(120)
         self.is_iv_test_mode_enabled = Property(False)
 
+        # Network
+        self.net_recv_ev_store = Property(False)  # store data for further verification
+        self.net_recv_ev_data = Property(None)  # event data tuple (ttl, ctl, src, dst, payload)
+
 
 class Stack():
     def __init__(self):
