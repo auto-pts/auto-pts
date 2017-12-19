@@ -328,8 +328,7 @@ def test_cases(pts):
                         TestFunc(btp.gap_set_nondiscov, start_wid=80),
                         TestFunc(btp.gap_adv_ind_on,
                                  sd=[AdData.ad_manuf, AdData.ad_name_sh],
-                                 start_wid=80),
-                        TestFuncCleanUp(btp.gap_adv_off)]),
+                                 start_wid=80)]),
         ZTestCase("GAP", "GAP/BROB/OBSV/BV-01-C",
                   ok_cancel_wids={4: (btp.check_discov_results)},
                   cmds=pre_conditions +
