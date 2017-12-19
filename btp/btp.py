@@ -58,10 +58,16 @@ CORE = {
                   defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GAP),
     "gatts_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
                   defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GATT),
+    "gatt_unreg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_UNREGISTER_SERVICE,
+                   defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GATT),
     "l2cap_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
                   defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_L2CAP),
+    "l2cap_unreg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_UNREGISTER_SERVICE,
+                    defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_L2CAP),
     "mesh_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
                  defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_MESH),
+    "mesh_unreg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_UNREGISTER_SERVICE,
+                   defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_MESH),
     "read_supp_cmds": (defs.BTP_SERVICE_ID_CORE,
                        defs.CORE_READ_SUPPORTED_COMMANDS,
                        defs.BTP_INDEX_NONE, ""),
@@ -448,6 +454,13 @@ def core_reg_svc_gatts():
     core_reg_svc_rsp_succ()
 
 
+def core_unreg_svc_gatt():
+    logging.debug("%s", core_unreg_svc_gatt.__name__)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*CORE['gatt_unreg'])
+
+
 def core_reg_svc_l2cap():
     logging.debug("%s", core_reg_svc_l2cap.__name__)
 
@@ -457,6 +470,13 @@ def core_reg_svc_l2cap():
     core_reg_svc_rsp_succ()
 
 
+def core_unreg_svc_l2cap():
+    logging.debug("%s", core_unreg_svc_l2cap.__name__)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*CORE['l2cap_unreg'])
+
+
 def core_reg_svc_mesh():
     logging.debug("%s", core_reg_svc_mesh.__name__)
 
@@ -464,6 +484,13 @@ def core_reg_svc_mesh():
     iutctl.btp_socket.send(*CORE['mesh_reg'])
 
     core_reg_svc_rsp_succ()
+
+
+def core_unreg_svc_mesh():
+    logging.debug("%s", core_unreg_svc_mesh.__name__)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*CORE['mesh_unreg'])
 
 
 def core_reg_svc_rsp_succ():
