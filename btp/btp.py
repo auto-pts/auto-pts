@@ -2713,16 +2713,19 @@ GAP_EV = {
 }
 
 
-def mesh_config_prov(uuid, static_auth, output_size, output_actions, input_size,
-              input_actions):
-    logging.debug("%s %r %r %r %r %r %r", mesh_config_prov.__name__, uuid,
-                  static_auth, output_size, output_actions, input_size,
-                  input_actions)
+def mesh_config_prov():
+    logging.debug("%s", mesh_config_prov.__name__)
 
     iutctl = iutctl.get_iut()
 
-    uuid = binascii.unhexlify(uuid)
-    static_auth = binascii.unhexlify(static_auth)
+    stack = get_stack()
+
+    uuid = binascii.unhexlify(stack.mesh.dev_uuid)
+    static_auth = binascii.unhexlify(stack.mesh.static_auth)
+    output_size = stack.mesh.output_size
+    output_actions = stack.mesh.output_actions
+    input_size = stack.mesh.input_size
+    input_actions = stack.mesh.input_actions
 
     data = bytearray(struct.pack("<16s16sBHBH", uuid, static_auth, output_size,
                                  output_actions, input_size, input_actions))

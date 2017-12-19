@@ -84,8 +84,15 @@ class Gap():
 
 
 class Mesh():
-    def __init__(self, dev_uuid):
-        self.dev_uuid = dev_uuid
+    def __init__(self, uuid, oob, output_size, output_actions, input_size, input_actions):
+
+        # init data
+        self.dev_uuid = uuid
+        self.static_auth = oob
+        self.output_size = output_size
+        self.output_actions = output_actions
+        self.input_size = input_size
+        self.input_actions = input_actions
 
         self.oob_action = Property(None)
         self.oob_data = Property(None)
@@ -126,15 +133,17 @@ class Stack():
     def gap_init(self):
         self.gap = Gap()
 
-    def mesh_init(self, dev_uuid):
-        self.mesh = Mesh(dev_uuid)
+    def mesh_init(self, uuid, oob, output_size, output_actions, input_size, input_actions):
+        self.mesh = Mesh(uuid, oob, output_size, output_actions, input_size, input_actions)
 
     def cleanup(self):
         if self.gap:
             self.gap_init()
 
         if self.mesh:
-            self.mesh_init(self.mesh.dev_uuid)
+            self.mesh_init(self.mesh.dev_uuid, self.mesh.static_auth,
+                           self.mesh.output_size, self.mesh.output_actions,
+                           self.mesh.input_size, self.mesh.input_actions)
 
 def init_stack():
     global STACK

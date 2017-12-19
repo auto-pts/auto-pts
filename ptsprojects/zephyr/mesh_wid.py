@@ -47,14 +47,14 @@ def hdl_wid_8(desc):
 
 def hdl_wid_12(desc):
     stack = get_stack()
-    btp.mesh_config_prov(stack.mesh.dev_uuid, 16 * '1', 0, 0, 0, 0)
+    btp.mesh_config_prov()
     btp.mesh_init()
 
     return 'OK'
 
 def hdl_wid_13(desc):
     stack = get_stack()
-    btp.mesh_config_prov(stack.mesh.dev_uuid, 16 * '1', 0, 0, 0, 0)
+    btp.mesh_config_prov()
     btp.mesh_init()
 
     return 'OK'
@@ -215,7 +215,7 @@ def hdl_wid_35(desc):
 
 def hdl_wid_81(desc):
     stack = get_stack()
-    btp.mesh_config_prov(stack.mesh.dev_uuid, 16 * '1', 0, 0, 0, 0)
+    btp.mesh_config_prov()
     btp.mesh_init()
 
     return 'OK'
@@ -263,7 +263,7 @@ def hdl_wid_210(desc):
     stack = get_stack()
 
     if stack.mesh.is_provisioned.data == False:
-        btp.mesh_config_prov(stack.mesh.dev_uuid, 16 * '1', 0, 0, 0, 0)
+        btp.mesh_config_prov()
         btp.mesh_init()
         return 'OK'
     else:
