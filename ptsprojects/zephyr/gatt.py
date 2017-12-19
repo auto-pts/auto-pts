@@ -244,7 +244,7 @@ def test_cases_server(pts):
                     TestFunc(lambda: pts.update_pixit_param(
                              "GATT", "TSPX_iut_use_dynamic_bd_addr",
                              "TRUE" if btp.is_iut_addr_random() else "FALSE")),
-                    TestFunc(btp.core_reg_svc_gatts),
+                    TestFunc(btp.core_reg_svc_gatt),
                     TestFunc(btp.gap_set_conn),
                     TestFunc(btp.gap_set_gendiscov)]
 
@@ -1380,7 +1380,7 @@ def test_cases_client(pts):
                     TestFunc(btp.wrap, pts.update_pixit_param,
                              "GATT", "TSPX_bd_addr_iut",
                              btp.get_stored_bd_addr),
-                    TestFunc(btp.core_reg_svc_gatts)]
+                    TestFunc(btp.core_reg_svc_gatt)]
 
     test_cases = [
         ZTestCase("GATT", "GATT/CL/GAC/BV-01-C",

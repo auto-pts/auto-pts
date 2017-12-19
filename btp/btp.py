@@ -56,7 +56,7 @@ CORE = {
                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GAP),
     "gap_unreg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_UNREGISTER_SERVICE,
                   defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GAP),
-    "gatts_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
+    "gatt_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
                   defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GATT),
     "gatt_unreg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_UNREGISTER_SERVICE,
                    defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GATT),
@@ -445,11 +445,11 @@ def core_unreg_svc_gap():
     core_unreg_svc_rsp_succ()
 
 
-def core_reg_svc_gatts():
-    logging.debug("%s", core_reg_svc_gatts.__name__)
+def core_reg_svc_gatt():
+    logging.debug("%s", core_reg_svc_gatt.__name__)
 
     iutctl = get_iut()
-    iutctl.btp_socket.send(*CORE['gatts_reg'])
+    iutctl.btp_socket.send(*CORE['gatt_reg'])
 
     core_reg_svc_rsp_succ()
 

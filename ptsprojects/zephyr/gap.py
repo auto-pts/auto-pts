@@ -146,7 +146,7 @@ class Perm:
         return decode_flag_name(perm, Perm.names)
 
 
-init_gatt_db=[TestFunc(btp.core_reg_svc_gatts),
+init_gatt_db=[TestFunc(btp.core_reg_svc_gatt),
               TestFunc(btp.gatts_add_svc, 0, gatt.UUID.VND16_1),
               TestFunc(btp.gatts_add_char, 0, gatt.Prop.read,
                        gatt.Perm.read | gatt.Perm.read_authn,
@@ -198,7 +198,7 @@ def handle_wid_136_sec_csign_bi_04():
     response_size: 2048
     response_is_present: 0 <type 'int'>
     """
-    btp.core_reg_svc_gatts()
+    btp.core_reg_svc_gatt()
     btp.gatts_add_svc(0, UUID.VND16_1)
     btp.gatts_add_char(0, Prop.read | Prop.auth_swrite,
                    Perm.read | Perm.write_authn, UUID.VND16_2)
@@ -465,7 +465,7 @@ def test_cases(pts):
                                      'general')}),
         ZTestCase("GAP", "GAP/IDLE/NAMP/BV-01-C",
                   pre_conditions +
-                  [TestFunc(btp.core_reg_svc_gatts),
+                  [TestFunc(btp.core_reg_svc_gatt),
                    TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
                             start_wid=78),
                    TestFunc(btp.gattc_disc_prim_uuid, Addr.le_public,
@@ -484,7 +484,7 @@ def test_cases(pts):
                             start_wid=77)]),
         ZTestCase("GAP", "GAP/IDLE/NAMP/BV-02-C",
                   pre_conditions +
-                  [TestFunc(btp.core_reg_svc_gatts),
+                  [TestFunc(btp.core_reg_svc_gatt),
                    TestFunc(btp.gatts_add_svc, 0, UUID.gap_svc),
                    TestFunc(btp.gatts_add_char, 0, Prop.read,
                             Perm.read | Perm.write, UUID.device_name),
@@ -689,7 +689,7 @@ def test_cases(pts):
                                   start_wid=139)]),
         ZTestCase("GAP", "GAP/SEC/AUT/BV-17-C",
                   cmds=pre_conditions +
-                       [TestFunc(btp.core_reg_svc_gatts),
+                       [TestFunc(btp.core_reg_svc_gatt),
                         TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                         TestFunc(btp.gap_conn, start_wid=78),
                         TestFunc(btp.gattc_read, Addr.le_public,
@@ -703,7 +703,7 @@ def test_cases(pts):
                         TestFunc(btp.gap_disconn, start_wid=44)]),
          ZTestCase("GAP", "GAP/SEC/AUT/BV-18-C",
                    cmds=pre_conditions +
-                        [TestFunc(btp.core_reg_svc_gatts),
+                        [TestFunc(btp.core_reg_svc_gatt),
                          TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
                          TestFunc(btp.gap_set_conn),
                          TestFunc(btp.gap_adv_ind_on),
@@ -727,7 +727,7 @@ def test_cases(pts):
                    edit1_wids={1002: (btp.var_store_get_passkey, pts_bd_addr,
                                       Addr.le_public)},
                    cmds=pre_conditions +
-                        [TestFunc(btp.core_reg_svc_gatts),
+                        [TestFunc(btp.core_reg_svc_gatt),
                          TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                          TestFunc(btp.gap_set_conn, start_wid=91),
                          TestFunc(btp.gap_adv_ind_on, start_wid=91),
@@ -743,7 +743,7 @@ def test_cases(pts):
         ZTestCase("GAP", "GAP/SEC/AUT/BV-21-C",
                   edit1_wids={1002: btp.var_store_get_passkey},
                   cmds=pre_conditions +
-                       [TestFunc(btp.core_reg_svc_gatts),
+                       [TestFunc(btp.core_reg_svc_gatt),
                         TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                         TestFunc(btp.gap_conn, start_wid=78),
                         TestFunc(btp.gap_pair, start_wid=108),
@@ -753,7 +753,7 @@ def test_cases(pts):
                   edit1_wids={1002: (btp.var_store_get_passkey, pts_bd_addr,
                                      Addr.le_public)},
                   cmds=pre_conditions +
-                       [TestFunc(btp.core_reg_svc_gatts),
+                       [TestFunc(btp.core_reg_svc_gatt),
                         TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                         TestFunc(btp.gap_set_conn, start_wid=91),
                         TestFunc(btp.gap_adv_ind_on, start_wid=91),
@@ -779,7 +779,7 @@ def test_cases(pts):
                         TestFunc(btp.gap_disconn, start_wid=44)]),
          ZTestCase("GAP", "GAP/SEC/CSIGN/BV-01-C",
                    pre_conditions +
-                   [TestFunc(btp.core_reg_svc_gatts),
+                   [TestFunc(btp.core_reg_svc_gatt),
                     TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
                     TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
                              start_wid=78),
