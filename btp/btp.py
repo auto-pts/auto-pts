@@ -54,6 +54,8 @@ CONTROLLER_INDEX = 0
 CORE = {
     "gap_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GAP),
+    "gap_unreg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_UNREGISTER_SERVICE,
+                  defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GAP),
     "gatts_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
                   defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GATT),
     "l2cap_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
@@ -428,6 +430,15 @@ def core_reg_svc_gap():
     core_reg_svc_rsp_succ()
 
 
+def core_unreg_svc_gap():
+    logging.debug("%s", core_unreg_svc_gap.__name__)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*CORE['gap_unreg'])
+
+    core_unreg_svc_rsp_succ()
+
+
 def core_reg_svc_gatts():
     logging.debug("%s", core_reg_svc_gatts.__name__)
 
@@ -461,6 +472,28 @@ def core_reg_svc_rsp_succ():
 
     expected_frame = ((defs.BTP_SERVICE_ID_CORE,
                        defs.CORE_REGISTER_SERVICE,
+                       defs.BTP_INDEX_NONE,
+                       0),
+                      ('',))
+
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
+
+    logging.debug("received %r %r", tuple_hdr, tuple_data)
+    logging.debug("expected %r", expected_frame)
+
+    if (tuple_hdr, tuple_data) != expected_frame:
+        logging.error("frames mismatch")
+        raise BTPError("Unexpected response received!")
+    else:
+        logging.debug("response is valid")
+
+
+def core_unreg_svc_rsp_succ():
+    logging.debug("%s", core_unreg_svc_rsp_succ.__name__)
+    iutctl = get_iut()
+
+    expected_frame = ((defs.BTP_SERVICE_ID_CORE,
+                       defs.CORE_UNREGISTER_SERVICE,
                        defs.BTP_INDEX_NONE,
                        0),
                       ('',))
