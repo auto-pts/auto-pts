@@ -32,6 +32,7 @@ import btp.btp as btp
 from time import sleep
 import logging
 from ptsprojects.stack import get_stack
+from ptsprojects.zephyr.gatt_wid import gatt_wid_hdl
 
 
 class UUID:
@@ -247,6 +248,16 @@ def test_cases_server(pts):
                     TestFunc(btp.core_reg_svc_gatt),
                     TestFunc(btp.gap_set_conn),
                     TestFunc(btp.gap_set_gendiscov)]
+
+    pre_conditions_1 = [TestFunc(btp.core_reg_svc_gap),
+                        TestFunc(btp.core_reg_svc_gatt),
+                        TestFunc(btp.gap_read_ctrl_info),
+                        TestFunc(btp.wrap, pts.update_pixit_param,
+                                 "GATT", "TSPX_bd_addr_iut",
+                                 btp.get_stored_bd_addr),
+                        TestFunc(lambda: pts.update_pixit_param(
+                                 "GATT", "TSPX_iut_use_dynamic_bd_addr",
+                                 "TRUE" if btp.is_iut_addr_random() else "FALSE"))]
 
     test_cases = [
         ZTestCase("GATT", "GATT/SR/GAC/BV-01-C",
@@ -588,17 +599,15 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
         ZTestCase("GATT", "GATT/SR/GAR/BV-06-C",
-                  pre_conditions +
+                  pre_conditions_1 +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
                             Prop.read, Perm.read, UUID.VND16_2),
                    TestFunc(btp.gatts_set_val, 0, Value.eight_bytes_1),
                    TestFunc(btp.gatts_add_desc, 0, Perm.read, UUID.VND16_3),
                    TestFunc(btp.gatts_set_val, 0, Value.eight_bytes_2),
-                   TestFunc(btp.gatts_start_server),
-                   TestFunc(btp.gap_adv_ind_on, start_wid=1)],
-                  verify_wids={52: ("Please confirm IUT Handle='d'",
-                                    "value='"+ Value.eight_bytes_2 +"'")}),
+                   TestFunc(btp.gatts_start_server)],
+                  generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAR/BV-07-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
