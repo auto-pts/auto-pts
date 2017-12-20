@@ -609,29 +609,25 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_start_server)],
                   generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAR/BV-07-C",
-                  pre_conditions +
+                  pre_conditions_1 +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
                             Prop.read, Perm.read, UUID.VND16_2),
                    TestFunc(btp.gatts_set_val, 0, Value.one_byte),
                    TestFunc(btp.gatts_add_desc, 0, Perm.read, UUID.VND16_3),
                    TestFunc(btp.gatts_set_val, 0, Value.long_1),
-                   TestFunc(btp.gatts_start_server),
-                   TestFunc(btp.gap_adv_ind_on, start_wid=1)],
-                  verify_wids={52: ("Please confirm IUT Handle='d'",
-                                    "value='" + Value.long_1 + "'")}),
+                   TestFunc(btp.gatts_start_server)],
+                  generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAR/BV-08-C",
-                  pre_conditions +
+                  pre_conditions_1 +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
                             Prop.read, Perm.read, UUID.VND16_2),
                    TestFunc(btp.gatts_set_val, 0, Value.one_byte),
                    TestFunc(btp.gatts_add_desc, 0, Perm.read, UUID.VND16_3),
                    TestFunc(btp.gatts_set_val, 0, Value.long_1),
-                   TestFunc(btp.gatts_start_server),
-                   TestFunc(btp.gap_adv_ind_on, start_wid=1)],
-                  verify_wids={52: ("Please confirm IUT Handle='d'",
-                                    "value='" + Value.long_1 + "'")}),
+                   TestFunc(btp.gatts_start_server)],
+                  generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAW/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -946,19 +942,17 @@ def test_cases_server(pts):
                   verify_wids={52: ("Handle='d'",
                                     "value='0001'")}),
         ZTestCase("GATT", "GATT/SR/GPA/BV-06-C",
-                  pre_conditions +
+                  pre_conditions_1 +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
                             Prop.read, Perm.read, UUID.VND16_2),
                    TestFunc(btp.gatts_set_val, 0, '1234'),
                    TestFunc(btp.gatts_add_desc, 0, Perm.read, UUID.CUD),
                    TestFunc(btp.gatts_set_val, 0, '73616d706c652074657874'),
-                   TestFunc(btp.gatts_start_server),
-                   TestFunc(btp.gap_adv_ind_on, start_wid=1)],
-                  verify_wids={52: ("Handle='d'",
-                                    "value='73616D706C652074657874'")}),
+                   TestFunc(btp.gatts_start_server)],
+                  generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GPA/BV-07-C",
-                  pre_conditions +
+                  pre_conditions_1 +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0,
                             Prop.read | Prop.write | Prop.nofity,
@@ -967,12 +961,10 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_add_desc, 0, Perm.read | Perm.write,
                             UUID.CCC),
                    TestFunc(btp.gatts_set_val, 0, '0000'),
-                   TestFunc(btp.gatts_start_server),
-                   TestFunc(btp.gap_adv_ind_on, start_wid=1)],
-                  verify_wids={52: ("Handle='9'",
-                                    "value='0000'")}),
+                   TestFunc(btp.gatts_start_server)],
+                  generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GPA/BV-08-C",
-                  pre_conditions +
+                  pre_conditions_1 +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                    TestFunc(btp.gatts_add_char, 0, Prop.broadcast | Prop.read,
                             Perm.read, UUID.VND16_2),
@@ -981,10 +973,8 @@ def test_cases_server(pts):
                             Perm.read | Perm.write_authz | Perm.write_authn,
                             UUID.SCC),
                    TestFunc(btp.gatts_set_val, 0, '0000'),
-                   TestFunc(btp.gatts_start_server),
-                   TestFunc(btp.gap_adv_ind_on, start_wid=1)],
-                  verify_wids={52: ("Handle='d'",
-                                    "value='0000'")}),
+                   TestFunc(btp.gatts_start_server)],
+                  generic_wid_hdl=gatt_wid_hdl),
         # PTS crashes in GUI mode with message:
         # "An internal error occurred. Please restart the PTS. Code: 0xE0434352"
         # In auto mode PTS crashes, hence the status of test case is Started
