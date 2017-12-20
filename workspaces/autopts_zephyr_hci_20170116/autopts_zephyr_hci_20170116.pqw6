@@ -4761,13 +4761,13 @@ for the IUT in the IXIT. (Default: 0x00000000000000000000000000000000)</Descript
             <Name>TSPX_scan_interval</Name>
             <Description>The scan interval value N*0.625ms. Default is set to fast scan interval.(Default: 30)</Description>
             <Type>INTEGER</Type>
-            <Value>30</Value>
+            <Value>10</Value>
           </Row>
           <Row>
             <Name>TSPX_scan_window</Name>
             <Description>The scan window value N*0.625ms. Default is set to fast scan window.(Default: 30)</Description>
             <Type>INTEGER</Type>
-            <Value>30</Value>
+            <Value>10</Value>
           </Row>
           <Row>
             <Name>TSPX_scan_filter</Name>
