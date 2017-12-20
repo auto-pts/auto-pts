@@ -4737,13 +4737,13 @@ for the IUT in the IXIT. (Default: 0x00000000000000000000000000000000)</Descript
             <Name>TSPX_delete_link_key</Name>
             <Description>Whether to delete link key or not. (Default: FALSE)</Description>
             <Type>BOOLEAN</Type>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
           </Row>
           <Row>
             <Name>TSPX_delete_ltk</Name>
             <Description>Whether to delete Long Term Key or not. (Default: FALSE)</Description>
             <Type>BOOLEAN</Type>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
           </Row>
           <Row>
             <Name>TSPX_security_enabled</Name>
