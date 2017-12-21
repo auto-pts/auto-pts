@@ -1044,6 +1044,12 @@ def test_cases_server(pts):
                                      "Uint = '27A3'",
                                      "Namespace = '01'",
                                      "Description = '0001'")}),
+        ZTestCase("GATT", "GATT/SR/UNS/BI-01-C",
+                  pre_conditions_1,
+                  generic_wid_hdl=gatt_wid_hdl),
+        ZTestCase("GATT", "GATT/SR/UNS/BI-02-C",
+                  pre_conditions_1,
+                  generic_wid_hdl=gatt_wid_hdl),
     ]
 
     return test_cases
