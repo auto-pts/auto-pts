@@ -22,6 +22,7 @@ from ptsprojects.stack import get_stack
 
 log = logging.debug
 
+
 def mesh_wid_hdl(wid, description):
     log("%s, %r, %r", mesh_wid_hdl.__name__, wid, description)
     module = sys.modules[__name__]
@@ -45,12 +46,14 @@ def hdl_wid_8(desc):
 
     return str(ret)
 
+
 def hdl_wid_12(desc):
     stack = get_stack()
     btp.mesh_config_prov()
     btp.mesh_init()
 
     return 'OK'
+
 
 def hdl_wid_13(desc):
     stack = get_stack()
@@ -59,10 +62,12 @@ def hdl_wid_13(desc):
 
     return 'OK'
 
+
 def hdl_wid_17(desc):
     btp.mesh_store_net_data()
 
     return 'Ok'
+
 
 def hdl_wid_18(desc):
     stack = get_stack()
@@ -76,7 +81,8 @@ def hdl_wid_18(desc):
     # This pattern is matching Time to Live (TTL) value, Control (CTL),
     # Source (SRC) Destination (DST) and Payload of the network packet
     # to be received
-    pattern = re.compile('(TTL|CTL|SRC|DST|TransportPDU)\\:\s+\\[([0][xX][0-9a-fA-F]+)\\]')
+    pattern = re.compile('(TTL|CTL|SRC|DST|TransportPDU)\\:'
+                         '\s+\\[([0][xX][0-9a-fA-F]+)\\]')
     params = pattern.findall(desc)
     if not params:
         logging.error("%s parsing error", hdl_wid_18.__name__)
@@ -93,18 +99,20 @@ def hdl_wid_18(desc):
         stack.mesh.net_recv_ev_data.data
     recv_pdu = hex(int(recv_pdu, 16))
 
-    if pdu == recv_pdu and ttl == recv_ttl and ctl == recv_ctl and \
-                    src == recv_src and dst == recv_dst:
+    if pdu == recv_pdu and ttl == recv_ttl and ctl == recv_ctl \
+            and src == recv_src and dst == recv_dst:
         return 'Yes'
 
     return 'No'
+
 
 def hdl_wid_19(desc):
     stack = get_stack()
 
     # This pattern is matching Time to Live (TTL) value, Source (SRC) and
     # Destination (DST) of the network packet to be sent
-    pattern = re.compile('(TTL|SRC|DST)\\:\s+\\[([0][xX][0-9a-fA-F]+)\\]')
+    pattern = re.compile('(TTL|SRC|DST)\\:'
+                         '\s+\\[([0][xX][0-9a-fA-F]+)\\]')
     params = pattern.findall(desc)
     if not params:
         logging.error("%s parsing error", hdl_wid_19.__name__)
@@ -117,15 +125,18 @@ def hdl_wid_19(desc):
 
     return 'Ok'
 
+
 def hdl_wid_20(desc):
     stack = get_stack()
 
     return 'C000'
 
+
 def hdl_wid_21(desc):
     stack = get_stack()
 
     return '8000'
+
 
 def hdl_wid_24(desc):
     stack = get_stack()
@@ -140,6 +151,7 @@ def hdl_wid_24(desc):
         return 'Yes'
     return 'No'
 
+
 def hdl_wid_30(desc):
     stack = get_stack()
 
@@ -151,7 +163,8 @@ def hdl_wid_30(desc):
     # This pattern is matching Time to Live (TTL) value, Control (CTL),
     # Source (SRC) Destination (DST) and Payload of the network packet
     # to be received
-    pattern = re.compile('(TTL|CTL|SRC|DST|TransportPDU)\\:\s+\\[([0][xX][0-9a-fA-F]+)\\]')
+    pattern = re.compile('(TTL|CTL|SRC|DST|TransportPDU)\\:'
+                         '\s+\\[([0][xX][0-9a-fA-F]+)\\]')
     params = pattern.findall(desc)
     if not params:
         logging.error("%s parsing error", hdl_wid_30.__name__)
@@ -170,8 +183,8 @@ def hdl_wid_30(desc):
         stack.mesh.net_recv_ev_data.data
     recv_pdu = hex(int(recv_pdu, 16))
 
-    if pdu == recv_pdu and ttl == recv_ttl and ctl == recv_ctl and \
-                    src == recv_src and dst == recv_dst:
+    if pdu == recv_pdu and ttl == recv_ttl and ctl == recv_ctl \
+            and src == recv_src and dst == recv_dst:
         logging.error("%s Network Packet received!", hdl_wid_30.__name__)
         return 'No'
 
@@ -206,11 +219,12 @@ def hdl_wid_35(desc):
         stack.mesh.net_recv_ev_data.data
     recv_pdu = hex(int(recv_pdu, 16))
 
-    if ttl == recv_ttl and ctl == recv_ctl and src == recv_src and \
-                    dst == recv_dst:
+    if ttl == recv_ttl and ctl == recv_ctl and src == recv_src \
+            and dst == recv_dst:
         return 'Yes'
 
     return 'No'
+
 
 def hdl_wid_46(desc):
     stack = get_stack()
@@ -224,6 +238,7 @@ def hdl_wid_46(desc):
 
     return 'OK'
 
+
 def hdl_wid_81(desc):
     stack = get_stack()
     btp.mesh_config_prov()
@@ -231,21 +246,24 @@ def hdl_wid_81(desc):
 
     return 'OK'
 
+
 def hdl_wid_90(desc):
     stack = get_stack()
 
-    if stack.mesh.is_provisioned.data == True:
+    if stack.mesh.is_provisioned.data is True:
         return 'OK'
     else:
         return 'Cancel'
+
 
 def hdl_wid_201(desc):
     stack = get_stack()
 
-    if stack.mesh.is_provisioned.data == True:
+    if stack.mesh.is_provisioned.data is True:
         return 'OK'
     else:
         return 'Cancel'
+
 
 def hdl_wid_202(desc):
     stack = get_stack()
@@ -255,13 +273,15 @@ def hdl_wid_202(desc):
 
     return 'OK'
 
+
 def hdl_wid_203(desc):
     stack = get_stack()
 
-    if stack.mesh.is_provisioned.data == True:
+    if stack.mesh.is_provisioned.data is True:
         return 'OK'
     else:
         return 'Cancel'
+
 
 def hdl_wid_204(desc):
     stack = get_stack()
@@ -270,15 +290,17 @@ def hdl_wid_204(desc):
 
     return 'OK'
 
+
 def hdl_wid_210(desc):
     stack = get_stack()
 
-    if stack.mesh.is_provisioned.data == False:
+    if stack.mesh.is_provisioned.data is False:
         btp.mesh_config_prov()
         btp.mesh_init()
         return 'OK'
     else:
         return 'Cancel'
+
 
 def hdl_wid_216(desc):
     stack = get_stack()
@@ -286,6 +308,7 @@ def hdl_wid_216(desc):
     if not stack.mesh.is_iv_test_mode_enabled.data:
         return 'OK'
     return 'Cancel'
+
 
 def hdl_wid_217(desc):
     stack = get_stack()
@@ -297,12 +320,14 @@ def hdl_wid_217(desc):
 
     return 'OK'
 
+
 def hdl_wid_218(desc):
     stack = get_stack()
 
     time.sleep(stack.mesh.iv_update_timeout.data)
 
     return 'OK'
+
 
 def hdl_wid_219(desc):
     stack = get_stack()
@@ -311,12 +336,14 @@ def hdl_wid_219(desc):
         return 'OK'
     return 'Cancel'
 
+
 def hdl_wid_220(desc):
     stack = get_stack()
 
     if stack.mesh.is_provisioned.data:
         return 'OK'
     return 'Cancel'
+
 
 def hdl_wid_221(desc):
     stack = get_stack()
@@ -328,6 +355,7 @@ def hdl_wid_221(desc):
 
     return 'OK'
 
+
 def hdl_wid_222(desc):
     stack = get_stack()
 
@@ -335,28 +363,34 @@ def hdl_wid_222(desc):
 
     return 'OK'
 
+
 def hdl_wid_262(desc):
     return 'Yes'
+
 
 def hdl_wid_268(desc):
     stack = get_stack()
 
     return 'OK'
 
+
 def hdl_wid_274(desc):
     stack = get_stack()
 
     return 'OK'
+
 
 def hdl_wid_285(desc):
     stack = get_stack()
 
     return 'Yes'
 
+
 def hdl_wid_303(desc):
     stack = get_stack()
 
     return 'Ok'
+
 
 def hdl_wid_308(desc):
     stack = get_stack()
@@ -364,11 +398,13 @@ def hdl_wid_308(desc):
     btp.mesh_lpn_poll()
     return 'Ok'
 
+
 def hdl_wid_312(desc):
     stack = get_stack()
 
     btp.mesh_lpn_poll()
     return 'Ok'
+
 
 def hdl_wid_313(desc):
     stack = get_stack()
@@ -376,16 +412,19 @@ def hdl_wid_313(desc):
     btp.mesh_lpn_poll()
     return 'Ok'
 
+
 def hdl_wid_314(desc):
     stack = get_stack()
 
     btp.mesh_lpn_poll()
     return 'Ok'
 
+
 def hdl_wid_315(desc):
     stack = get_stack()
 
     return 'Ok'
+
 
 def hdl_wid_326(desc):
     stack = get_stack()
@@ -393,11 +432,13 @@ def hdl_wid_326(desc):
     btp.mesh_lpn(False)
     return "Ok"
 
+
 def hdl_wid_519(desc):
     stack = get_stack()
 
     btp.mesh_reset()
     return 'OK'
+
 
 def hdl_wid_600(desc):
     stack = get_stack()
@@ -409,6 +450,7 @@ def hdl_wid_600(desc):
     stack.mesh.health_registered_faults.data = reg_faults
 
     return 'OK'
+
 
 def hdl_wid_601(desc):
     stack = get_stack()
@@ -429,6 +471,7 @@ def hdl_wid_601(desc):
 
     return 'Ok'
 
+
 def hdl_wid_603(desc):
     stack = get_stack()
 
@@ -447,6 +490,7 @@ def hdl_wid_603(desc):
         return 'Cancel'
 
     return 'OK'
+
 
 def hdl_wid_604(desc):
     stack = get_stack()

@@ -62,15 +62,16 @@ def test_cases(pts):
     in_actions = random.choice(in_actions) if in_size else 0
 
     stack.gap_init()
-    stack.mesh_init(device_uuid, oob, out_size, out_actions, in_size, in_actions)
+    stack.mesh_init(device_uuid, oob, out_size, out_actions, in_size,
+                    in_actions)
 
-    pre_conditions=[TestFunc(btp.core_reg_svc_gap),
-                    TestFunc(btp.core_reg_svc_mesh),
-                    TestFunc(btp.gap_read_ctrl_info),
-                    TestFunc(btp.wrap, pts.update_pixit_param, "MESH",
-                             "TSPX_bd_addr_iut", btp.get_stored_bd_addr),
-                    TestFunc(lambda: pts.update_pixit_param(
-                             "MESH", "TSPX_device_uuid", device_uuid))]
+    pre_conditions = [TestFunc(btp.core_reg_svc_gap),
+                      TestFunc(btp.core_reg_svc_mesh),
+                      TestFunc(btp.gap_read_ctrl_info),
+                      TestFunc(btp.wrap, pts.update_pixit_param, "MESH",
+                               "TSPX_bd_addr_iut", btp.get_stored_bd_addr),
+                      TestFunc(lambda: pts.update_pixit_param(
+                               "MESH", "TSPX_device_uuid", device_uuid))]
 
     test_cases = [
         ZTestCase("MESH", "MESH/NODE/BCN/SNB/BV-01-C", cmds=pre_conditions,
@@ -363,7 +364,7 @@ def test_cases(pts):
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/PROV/UPD/BV-01-C", cmds=pre_conditions +
                   [TestFunc(btp.mesh_config_prov),
-                   TestFunc(btp.mesh_init),],
+                   TestFunc(btp.mesh_init)],
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/PROV/UPD/BV-07-C", cmds=pre_conditions +
                   [TestFunc(btp.mesh_config_prov),
@@ -371,11 +372,11 @@ def test_cases(pts):
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/PROV/UPD/BV-09-C", cmds=pre_conditions +
                   [TestFunc(btp.mesh_config_prov),
-                   TestFunc(btp.mesh_init),],
+                   TestFunc(btp.mesh_init)],
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/PROV/UPD/BV-10-C", cmds=pre_conditions +
                   [TestFunc(btp.mesh_config_prov),
-                   TestFunc(btp.mesh_init),],
+                   TestFunc(btp.mesh_init)],
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/PROV/UPD/BV-11-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
@@ -401,9 +402,8 @@ def test_cases(pts):
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/TNPT/BV-05-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
-        ZTestCase("MESH", "MESH/NODE/TNPT/BV-06-C",
-                  cmds=pre_conditions +
-                       [TestFunc(btp.mesh_store_net_data)],
+        ZTestCase("MESH", "MESH/NODE/TNPT/BV-06-C", cmds=pre_conditions +
+                  [TestFunc(btp.mesh_store_net_data)],
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/TNPT/BV-07-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
@@ -493,7 +493,10 @@ def test_cases(pts):
 def main():
     """Main."""
     import ptsprojects.zephyr.iutctl as iutctl
-    class pts: pass
+
+    class pts:
+        pass
+
     pts.q_bd_addr = "AB:CD:EF:12:34:56"
 
     iutctl.init_stub()
@@ -512,6 +515,7 @@ def main():
 
         for index, cmd in enumerate(test_case.cmds):
             print "%d) %s" % (index, cmd)
+
 
 if __name__ == "__main__":
     main()

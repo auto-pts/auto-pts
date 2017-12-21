@@ -57,7 +57,7 @@ CORE = {
     "gap_unreg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_UNREGISTER_SERVICE,
                   defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GAP),
     "gatt_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
-                  defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GATT),
+                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GATT),
     "gatt_unreg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_UNREGISTER_SERVICE,
                    defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GATT),
     "l2cap_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
@@ -131,7 +131,7 @@ GATTS = {
     "set_enc_key_size": (defs.BTP_SERVICE_ID_GATT,
                          defs.GATT_SET_ENC_KEY_SIZE, CONTROLLER_INDEX),
     "get_attrs": (defs.BTP_SERVICE_ID_GATT, defs.GATT_GET_ATTRIBUTES,
-                 CONTROLLER_INDEX),
+                  CONTROLLER_INDEX),
     "get_attr_val": (defs.BTP_SERVICE_ID_GATT,
                      defs.GATT_GET_ATTRIBUTE_VALUE, CONTROLLER_INDEX)
 }
@@ -186,11 +186,11 @@ MESH = {
                        defs.MESH_READ_SUPPORTED_COMMANDS,
                        defs.BTP_INDEX_NONE, ""),
     "config_prov": (defs.BTP_SERVICE_ID_MESH,
-                  defs.MESH_CONFIG_PROVISIONING,
-                  CONTROLLER_INDEX),
-    "prov_node": (defs.BTP_SERVICE_ID_MESH,
-                    defs.MESH_PROVISION_NODE,
+                    defs.MESH_CONFIG_PROVISIONING,
                     CONTROLLER_INDEX),
+    "prov_node": (defs.BTP_SERVICE_ID_MESH,
+                  defs.MESH_PROVISION_NODE,
+                  CONTROLLER_INDEX),
     "init": (defs.BTP_SERVICE_ID_MESH,
              defs.MESH_INIT,
              CONTROLLER_INDEX, ""),
@@ -213,8 +213,8 @@ MESH = {
                  defs.MESH_NET_SEND,
                  CONTROLLER_INDEX),
     "health_generate_faults": (defs.BTP_SERVICE_ID_MESH,
-                           defs.MESH_HEALTH_ADD_FAULTS,
-                           CONTROLLER_INDEX, ""),
+                               defs.MESH_HEALTH_ADD_FAULTS,
+                               CONTROLLER_INDEX, ""),
     "mesh_clear_faults": (defs.BTP_SERVICE_ID_MESH,
                           defs.MESH_HEALTH_CLEAR_FAULTS,
                           CONTROLLER_INDEX, ""),
@@ -250,24 +250,24 @@ class Prop:
     7       Extended Properties
 
     """
-    broadcast     = 2 ** 0
-    read          = 2 ** 1
+    broadcast = 2 ** 0
+    read = 2 ** 1
     write_wo_resp = 2 ** 2
-    write         = 2 ** 3
-    nofity        = 2 ** 4
-    indicate      = 2 ** 5
-    auth_swrite   = 2 ** 6
-    ext_prop      = 2 ** 7
+    write = 2 ** 3
+    nofity = 2 ** 4
+    indicate = 2 ** 5
+    auth_swrite = 2 ** 6
+    ext_prop = 2 ** 7
 
     names = {
-        broadcast     : "Broadcast",
-        read          : "Read",
-        write_wo_resp : "Write Without Response",
-        write         : "Write",
-        nofity        : "Notify",
-        indicate      : "Indicate",
-        auth_swrite   : "Authenticated Signed Writes",
-        ext_prop      : "Extended Properties",
+        broadcast: "Broadcast",
+        read: "Read",
+        write_wo_resp: "Write Without Response",
+        write: "Write",
+        nofity: "Notify",
+        indicate: "Indicate",
+        auth_swrite: "Authenticated Signed Writes",
+        ext_prop: "Extended Properties",
     }
 
     @staticmethod
@@ -292,24 +292,24 @@ class Perm:
     6       Authorization
 
     """
-    read        = 2 ** 0
-    write       = 2 ** 1
-    read_enc    = 2 ** 2
-    write_enc   = 2 ** 3
-    read_authn  = 2 ** 4
+    read = 2 ** 0
+    write = 2 ** 1
+    read_enc = 2 ** 2
+    write_enc = 2 ** 3
+    read_authn = 2 ** 4
     write_authn = 2 ** 5
-    read_authz  = 2 ** 6
+    read_authz = 2 ** 6
     write_authz = 2 ** 7
 
     names = {
-        read        : "Read",
-        write       : "Write",
-        read_enc    : "Read with Encryption",
-        write_enc   : "Write with Encryption",
-        read_authn  : "Read with Authentication",
-        write_authn : "Write with Authentication",
-        read_authz  : "Read with Authorization",
-        write_authz : "Write with Authorization"
+        read: "Read",
+        write: "Write",
+        read_enc: "Read with Encryption",
+        write_enc: "Write with Encryption",
+        read_authn: "Read with Authentication",
+        write_authn: "Write with Authentication",
+        read_authz: "Read with Authorization",
+        write_authz: "Write with Authorization"
     }
 
     @staticmethod
@@ -416,7 +416,10 @@ def pts_addr_get(bd_addr=None):
 
 
 def pts_addr_type_get(bd_addr_type=None):
-    """" If address type provided, return it, otherwise, use stored address. """
+    """"
+    If address type provided, return it, otherwise,
+    use stored address.
+    """
     if bd_addr_type is None:
         return PTS_BD_ADDR.addr_type
     return bd_addr_type
@@ -545,7 +548,7 @@ def __gap_current_settings_update(settings):
             raise BTPError("Invalid data length")
 
         settings = struct.unpack(fmt, settings[0])
-        settings = settings[0] # Result of unpack is always a tuple
+        settings = settings[0]  # Result of unpack is always a tuple
 
     stack = get_stack()
     stack.gap.current_settings = settings
@@ -970,8 +973,8 @@ def __gap_device_found_ev(duration):
         if len(tuple_data[0]) < struct.calcsize(fmt):
             raise BTPError("Invalid data length")
 
-        _addr, _addr_type, _rssi, _flags, _len = struct.unpack_from(fmt,
-                                                                 tuple_data[0])
+        _addr, _addr_type, _rssi, _flags, _len = \
+            struct.unpack_from(fmt, tuple_data[0])
         _eir = tuple_data[0][struct.calcsize(fmt):]
 
         if len(_eir) != _len:
@@ -985,7 +988,8 @@ def __gap_device_found_ev(duration):
         DISCOV_RESULTS.append(LeAdv(_addr_type, _addr, _rssi, _flags, _eir))
 
 
-def gap_start_discov(transport='le', type='active', mode='general', duration=10):
+def gap_start_discov(transport='le', type='active', mode='general',
+                     duration=10):
     """GAP Start Discovery function.
 
     duration - Discovery duration in seconds (10 by default).
@@ -1067,7 +1071,8 @@ def check_discov_results(description, addr_type=None, addr=None,
 
 
 def discover_and_verify(description, transport='le', type='active',
-                        mode='general', duration=10, addr=None, addr_type=None):
+                        mode='general', duration=10, addr=None,
+                        addr_type=None):
     """Verify discovery results
 
     This function verifies if the advertisement has been received and
@@ -1145,8 +1150,8 @@ def gap_read_ctrl_info():
     if len(tuple_data[0]) < struct.calcsize(fmt):
         raise BTPError("Invalid data length")
 
-    _addr, _supp_set, _curr_set, _cod, _name, _name_sh = struct.unpack_from(fmt,
-                                                                tuple_data[0])
+    _addr, _supp_set, _curr_set, _cod, _name, _name_sh = \
+        struct.unpack_from(fmt, tuple_data[0])
     _addr = binascii.hexlify(_addr[::-1]).lower()
 
     stack = get_stack()
@@ -1363,7 +1368,8 @@ def gatts_attr_value_changed_ev():
                   defs.GATT_EV_ATTR_VALUE_CHANGED)
 
     (handle, data) = gatts_dec_attr_value_changed_ev_data(tuple_data[0])
-    logging.debug("%s %r %r", gatts_attr_value_changed_ev.__name__, handle, data)
+    logging.debug("%s %r %r", gatts_attr_value_changed_ev.__name__,
+                  handle, data)
 
     return handle, data
 
@@ -1466,7 +1472,8 @@ def gatts_get_attrs(start_handle=0x0001, end_handle=0xffff, type_uuid=None):
     tuple_hdr, tuple_data = iutctl.btp_socket.read()
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
-    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT, defs.GATT_GET_ATTRIBUTES)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
+                  defs.GATT_GET_ATTRIBUTES)
 
     return dec_gatts_get_attrs_rp(tuple_data[0], tuple_hdr.data_len)
 
@@ -1489,7 +1496,8 @@ def gatts_get_attr_val(handle):
     tuple_hdr, tuple_data = iutctl.btp_socket.read()
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
-    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT, defs.GATT_GET_ATTRIBUTE_VALUE)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
+                  defs.GATT_GET_ATTRIBUTE_VALUE)
 
     hdr = '<BH'
     hdr_len = struct.calcsize(hdr)
@@ -2606,6 +2614,7 @@ def l2cap_listen(psm, transport):
 
     l2cap_command_rsp_succ(defs.L2CAP_LISTEN)
 
+
 def l2cap_le_listen(psm):
     l2cap_listen(psm, defs.L2CAP_TRANSPORT_LE)
 
@@ -2644,8 +2653,8 @@ def l2cap_disconnected_ev(exp_chan_id, store=False):
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_L2CAP,
                   defs.L2CAP_EV_DISCONNECTED)
 
-    res, chan_id, psm, bd_addr_type, bd_addr = struct.unpack_from('<HBHB6s',
-                                                                  tuple_data[0])
+    res, chan_id, psm, bd_addr_type, bd_addr = \
+        struct.unpack_from('<HBHB6s', tuple_data[0])
 
     global L2CAP_CHAN
     L2CAP_CHAN.remove(chan_id)
@@ -2659,6 +2668,7 @@ def l2cap_disconnected_ev(exp_chan_id, store=False):
         global VERIFY_VALUES
         VERIFY_VALUES = []
         VERIFY_VALUES.append(l2cap_result_str[res])
+
 
 def l2cap_data_rcv_ev(chan_id=None, store=False):
     logging.debug("%s %r %r", l2cap_data_rcv_ev.__name__, chan_id, store)
@@ -2741,9 +2751,10 @@ def mesh_prov_node():
     net_key = binascii.unhexlify(stack.mesh.net_key)
     dev_key = binascii.unhexlify(stack.mesh.dev_key)
 
-    data = bytearray(struct.pack("<16sHBIIH16s", net_key, stack.mesh.net_key_idx,
-                                 stack.mesh.flags, stack.mesh.iv_idx,
-                                 stack.mesh.seq_num, stack.mesh.addr, dev_key))
+    data = bytearray(struct.pack("<16sHBIIH16s", net_key,
+                                 stack.mesh.net_key_idx, stack.mesh.flags,
+                                 stack.mesh.iv_idx, stack.mesh.seq_num,
+                                 stack.mesh.addr, dev_key))
 
     iutctl = iutctl.get_iut()
 
@@ -2859,7 +2870,8 @@ def mesh_health_generate_faults():
     hdr_fmt = '<BBB'
     hdr_len = struct.calcsize(hdr_fmt)
 
-    (test_id, cur_faults_cnt, reg_faults_cnt) = struct.unpack_from(hdr_fmt, rsp)
+    (test_id, cur_faults_cnt, reg_faults_cnt) = \
+        struct.unpack_from(hdr_fmt, rsp)
     (cur_faults,) = struct.unpack_from('<%ds' % cur_faults_cnt, rsp, hdr_len)
     (reg_faults,) = struct.unpack_from('<%ds' % reg_faults_cnt, rsp,
                                        hdr_len + cur_faults_cnt)

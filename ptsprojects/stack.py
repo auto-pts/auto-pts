@@ -36,7 +36,7 @@ def timeout_cb(flag):
     flag.clear()
 
 
-class Gap():
+class Gap:
     def __init__(self):
         # If disconnected - None
         # If connected - remote address tuple (addr, addr_type)
@@ -83,8 +83,9 @@ class Gap():
         return False if (self.connected.data is None) else True
 
 
-class Mesh():
-    def __init__(self, uuid, oob, output_size, output_actions, input_size, input_actions):
+class Mesh:
+    def __init__(self, uuid, oob, output_size, output_actions, input_size,
+                 input_actions):
 
         # init data
         self.dev_uuid = uuid
@@ -122,11 +123,13 @@ class Mesh():
         self.is_iv_test_mode_enabled = Property(False)
 
         # Network
-        self.net_recv_ev_store = Property(False)  # store data for further verification
-        self.net_recv_ev_data = Property(None)  # event data tuple (ttl, ctl, src, dst, payload)
+        # net_recv_ev_store - store data for further verification
+        self.net_recv_ev_store = Property(False)
+        # net_recv_ev_data (ttl, ctl, src, dst, payload)
+        self.net_recv_ev_data = Property(None)
 
 
-class Stack():
+class Stack:
     def __init__(self):
         self.gap = None
         self.mesh = None
@@ -134,8 +137,10 @@ class Stack():
     def gap_init(self):
         self.gap = Gap()
 
-    def mesh_init(self, uuid, oob, output_size, output_actions, input_size, input_actions):
-        self.mesh = Mesh(uuid, oob, output_size, output_actions, input_size, input_actions)
+    def mesh_init(self, uuid, oob, output_size, output_actions, input_size,
+                  input_actions):
+        self.mesh = Mesh(uuid, oob, output_size, output_actions, input_size,
+                         input_actions)
 
     def cleanup(self):
         if self.gap:
@@ -146,15 +151,18 @@ class Stack():
                            self.mesh.output_size, self.mesh.output_actions,
                            self.mesh.input_size, self.mesh.input_actions)
 
+
 def init_stack():
     global STACK
 
     STACK = Stack()
 
+
 def cleanup_stack():
     global STACK
 
     STACK = None
+
 
 def get_stack():
     return STACK
