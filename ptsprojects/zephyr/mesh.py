@@ -340,12 +340,10 @@ def test_cases(pts):
         # TODO: CONFIRM_RFU_BEARER_OPCODE 26 to implement
         ZTestCase("MESH", "MESH/NODE/PBADV/BI-02-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
-        # TODO: CONFIRM_CLOSE_LINK 23 to implement
         ZTestCase("MESH", "MESH/NODE/PBADV/BI-03-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/PBADV/BI-04-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
-        # TODO: Close link callback in stack (CONFIRM_CLOSE_LINK WID 24)
         ZTestCase("MESH", "MESH/NODE/PBADV/BV-01-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/PBADV/BV-02-C", cmds=pre_conditions,
