@@ -97,6 +97,7 @@ class Mesh():
         self.oob_action = Property(None)
         self.oob_data = Property(None)
         self.is_provisioned = Property(False)
+        self.is_initialized = False
         self.last_seen_prov_link_state = Property(None)
 
         # provision node data

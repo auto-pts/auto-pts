@@ -2757,6 +2757,10 @@ def mesh_init():
 
     iutctl.btp_socket.send_wait_rsp(*MESH['init'])
 
+    stack = get_stack()
+
+    stack.mesh.is_initialized = True
+
 
 def mesh_reset():
     logging.debug("%s", mesh_reset.__name__)
@@ -2768,6 +2772,7 @@ def mesh_reset():
     stack = get_stack()
 
     stack.mesh.is_provisioned.data = False
+    stack.mesh.is_initialized = False
 
 
 def mesh_input_number(number):

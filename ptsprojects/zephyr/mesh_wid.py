@@ -212,6 +212,17 @@ def hdl_wid_35(desc):
 
     return 'No'
 
+def hdl_wid_46(desc):
+    stack = get_stack()
+
+    if stack.mesh.is_provisioned.data:
+        btp.mesh_reset()
+
+    if not stack.mesh.is_initialized:
+        btp.mesh_config_prov()
+        btp.mesh_init()
+
+    return 'OK'
 
 def hdl_wid_81(desc):
     stack = get_stack()
