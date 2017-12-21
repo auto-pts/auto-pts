@@ -42,6 +42,47 @@ class UUID:
 
 
 # wid handlers section begin
+def hdl_wid_77(desc):
+    btp.gap_disconn()
+
+    return 'Ok'
+
+
+def hdl_wid_91(desc):
+    btp.gap_set_conn()
+    btp.gap_adv_ind_on()
+
+    return 'Ok'
+
+
+def hdl_wid_108(desc):
+    btp.gap_pair()
+
+    return 'Ok'
+
+
+def hdl_wid_118(desc):
+    return 'Ok'
+
+
+def hdl_wid_130(desc):
+    return btp.gatts_verify_write_fail(desc)
+
+
+def hdl_wid_137(desc):
+    return btp.gatts_verify_write_fail(desc)
+
+
+def hdl_wid_141(desc):
+    return btp.gatts_verify_write_success(desc)
+
+
+def hdl_wid_135(desc):
+    btp.gap_unpair()
+
+    return 'Ok'
+
+
 def hdl_wid_136(desc):
     btp.core_reg_svc_gatt()
     btp.gatts_add_svc(0, UUID.VND16_1)
@@ -51,6 +92,10 @@ def hdl_wid_136(desc):
     btp.gatts_start_server()
 
     return 'Ok'
+
+
+def hdl_wid_141(desc):
+    return btp.gatts_verify_write_success(desc)
 
 
 def hdl_wid_161(desc):
