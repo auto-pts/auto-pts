@@ -19,7 +19,7 @@ from ptsprojects.testcase import TestCase, TestFunc, \
     TestFuncCleanUp
 from ptsprojects.bluez.iutctl import get_iut
 
-import btp.btp as btp
+from pybtp import btp
 
 
 class BTestCase(TestCase):

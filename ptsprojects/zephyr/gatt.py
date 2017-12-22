@@ -28,7 +28,7 @@ except ImportError:  # running this module as script
         TestFuncCleanUp, MMI
     from ptsprojects.zephyr.ztestcase import ZTestCase
 
-import btp.btp as btp
+from pybtp import btp
 from time import sleep
 import logging
 from ptsprojects.stack import get_stack

@@ -31,8 +31,7 @@ except ImportError:  # running this module as script
     from ptsprojects.zephyr.ztestcase import ZTestCase
 
 
-import btp.defs as defs
-import btp.btp as btp
+from pybtp import defs, btp
 from ptsprojects.stack import get_stack
 from ptsprojects.zephyr.mesh_wid import mesh_wid_hdl
 from uuid import uuid4

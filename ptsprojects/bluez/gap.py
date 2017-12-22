@@ -29,7 +29,7 @@ except ImportError:  # running this module as script
     from ptsprojects.bluez.btestcase import BTestCase
 
 from time import sleep
-import btp.btp as btp
+from pybtp import btp
 import binascii
 from ptsprojects.stack import get_stack
 

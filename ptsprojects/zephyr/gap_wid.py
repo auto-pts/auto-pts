@@ -15,7 +15,7 @@
 
 import logging
 import sys
-import btp
+from pybtp import btp
 import re
 import struct
 from ptsprojects.stack import get_stack

@@ -33,9 +33,9 @@ from distutils.spawn import find_executable
 sys.path.insert(
     0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-import btp.defs as defs
-import btp.btp as btp
-from ptsprojects.zephyr.iutctl import get_qemu_cmd, BTP_ADDRESS, BTPSocket
+from pybtp import defs, btp
+from pybtp.iutctl_common import BTPSocket
+from ptsprojects.zephyr.iutctl import get_qemu_cmd, BTP_ADDRESS
 from ptsprojects.testcase import AbstractMethodException
 
 BTP_SOCKET = None

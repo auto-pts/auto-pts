@@ -15,7 +15,7 @@
 
 import logging
 import sys
-import btp
+from pybtp import btp
 import re
 from binascii import hexlify
 from ptsprojects.stack import get_stack
