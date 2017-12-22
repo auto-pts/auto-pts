@@ -1136,8 +1136,8 @@ def gap_read_ctrl_info():
         (_curr_set & (1 << defs.GAP_SETTINGS_STATIC_ADDRESS)) else \
         Addr.le_public
 
-    stack.gap.iut_bd_addr.data = (_addr, addr_type)
-    logging.debug("IUT address %r", stack.gap.iut_bd_addr.data)
+    stack.gap.iut_addr_set(_addr, addr_type)
+    logging.debug("IUT address %r", stack.gap.iut_addr_get_str())
 
     __gap_current_settings_update(_curr_set)
 

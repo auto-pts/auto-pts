@@ -60,8 +60,10 @@ class Gap:
             "Controller Configuration": False,
             "Static Address": False,
         })
-        # IUT address tuple (addr, addr_type)
-        self.iut_bd_addr = Property(None)
+        self.iut_bd_addr = Property({
+            "address": None,
+            "type": None,
+        })
 
     def wait_for_connection(self, timeout):
         if self.is_connected():
@@ -123,15 +125,15 @@ class Gap:
             return False
 
     def iut_addr_get_str(self):
-        (bd_addr, bd_addr_type) = self.iut_bd_addr.data
+        return str(self.iut_bd_addr.data["address"])
 
-        return str(bd_addr)
+    def iut_addr_set(self, addr, addr_type):
+        self.iut_bd_addr.data["address"] = addr
+        self.iut_bd_addr.data["type"] = addr_type
 
     def iut_addr_is_random(self):
-        (bd_addr, bd_addr_type) = self.iut_bd_addr.data
-
         # FIXME: Do not use hard-coded 0x01 <-> le_random
-        return True if bd_addr_type == 0x01 else False
+        return True if self.iut_bd_addr.data["type"] == 0x01 else False
 
     def iut_has_privacy(self):
         return self.current_settings_get("Privacy")
