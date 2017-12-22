@@ -202,19 +202,19 @@ def test_cases(pts):
                     TestFunc(btp.gap_read_ctrl_info),
                     TestFunc(btp.wrap, pts.update_pixit_param,
                              "GAP", "TSPX_bd_addr_iut",
-                             btp.get_stored_bd_addr),
+                             stack.gap.iut_addr_get_str),
                     TestFunc(lambda: pts.update_pixit_param(
                              "GAP", "TSPX_iut_privacy_enabled",
-                             "TRUE" if btp.has_iut_privacy() else "FALSE")),
+                             "TRUE" if stack.gap.iut_has_privacy() else "FALSE")),
                     TestFunc(lambda: pts.update_pixit_param(
                              "GAP", "TSPX_using_public_device_address",
-                             "FALSE" if btp.is_iut_addr_random() else "TRUE")),
+                             "FALSE" if stack.gap.iut_addr_is_random() else "TRUE")),
                     TestFunc(lambda: pts.update_pixit_param(
                              "GAP", "TSPX_using_private_device_address",
-                             "TRUE" if btp.is_iut_addr_random() else "FALSE")),
+                             "TRUE" if stack.gap.iut_addr_is_random() else "FALSE")),
                     TestFunc(lambda: pts.update_pixit_param(
                              "GAP", "TSPX_using_random_device_address",
-                             "TRUE" if btp.is_iut_addr_random() else "FALSE")),
+                             "TRUE" if stack.gap.iut_addr_is_random() else "FALSE")),
 
                     # We do this on test case, because previous one could update
                     # this if RPA was used by PTS

@@ -122,6 +122,20 @@ class Gap:
                           self.current_settings_get.__name__, key)
             return False
 
+    def iut_addr_get_str(self):
+        (bd_addr, bd_addr_type) = self.iut_bd_addr.data
+
+        return str(bd_addr)
+
+    def iut_addr_is_random(self):
+        (bd_addr, bd_addr_type) = self.iut_bd_addr.data
+
+        # FIXME: Do not use hard-coded 0x01 <-> le_random
+        return True if bd_addr_type == 0x01 else False
+
+    def iut_has_privacy(self):
+        return self.current_settings_get("Privacy")
+
 
 class Mesh:
     def __init__(self, uuid, oob, output_size, output_actions, input_size,

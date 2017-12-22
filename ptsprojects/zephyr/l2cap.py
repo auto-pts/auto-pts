@@ -56,10 +56,10 @@ def test_cases(pts):
                     TestFunc(btp.gap_read_ctrl_info),
                     TestFunc(btp.wrap, pts.update_pixit_param,
                              "L2CAP", "TSPX_bd_addr_iut",
-                             btp.get_stored_bd_addr),
+                             stack.gap.iut_addr_get_str),
                     TestFunc(lambda: pts.update_pixit_param(
                              "L2CAP", "TSPX_iut_address_type_random",
-                             "TRUE" if btp.is_iut_addr_random() else "FALSE"))]
+                             "TRUE" if stack.gap.iut_addr_is_random() else "FALSE"))]
 
     test_cases = [
         # Connection Parameter Update

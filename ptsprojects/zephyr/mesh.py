@@ -69,7 +69,7 @@ def test_cases(pts):
                       TestFunc(btp.core_reg_svc_mesh),
                       TestFunc(btp.gap_read_ctrl_info),
                       TestFunc(btp.wrap, pts.update_pixit_param, "MESH",
-                               "TSPX_bd_addr_iut", btp.get_stored_bd_addr),
+                               "TSPX_bd_addr_iut", stack.gap.iut_addr_get_str),
                       TestFunc(lambda: pts.update_pixit_param(
                                "MESH", "TSPX_device_uuid", device_uuid))]
 
