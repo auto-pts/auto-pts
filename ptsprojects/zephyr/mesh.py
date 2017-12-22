@@ -77,8 +77,6 @@ def test_cases(pts):
     test_cases = [
         ZTestCase("MESH", "MESH/NODE/BCN/SNB/BV-01-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
-        ZTestCase("MESH", "MESH/NODE/BCN/SNB/BV-02-C", cmds=pre_conditions,
-                  generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/CFG/AKL/BI-01-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/CFG/AKL/BI-02-C", cmds=pre_conditions,
