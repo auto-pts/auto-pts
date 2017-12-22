@@ -13,6 +13,7 @@
 # more details.
 #
 
+import logging
 from threading import Lock, Timer, Event
 
 STACK = None
@@ -41,7 +42,24 @@ class Gap:
         # If disconnected - None
         # If connected - remote address tuple (addr, addr_type)
         self.connected = Property(None)
-        self.current_settings = None
+        self.current_settings = Property({
+            "Powered": False,
+            "Connectable": False,
+            "Fast Connectable": False,
+            "Discoverable": False,
+            "Bondable": False,
+            "Link Level Security": False,  # Link Level Security (Sec. mode 3)
+            "SSP": False,  # Secure Simple Pairing
+            "BREDR": False,  # Basic Rate/Enhanced Data Rate
+            "HS": False,  # High Speed
+            "LE": False,  # Low Energy
+            "Advertising": False,
+            "SC": False,  # Secure Connections
+            "Debug Keys": False,
+            "Privacy": False,
+            "Controller Configuration": False,
+            "Static Address": False,
+        })
         # IUT address tuple (addr, addr_type)
         self.iut_bd_addr = Property(None)
 
@@ -81,6 +99,28 @@ class Gap:
 
     def is_connected(self):
         return False if (self.connected.data is None) else True
+
+    def current_settings_set(self, key):
+        if key in self.current_settings.data:
+            self.current_settings.data[key] = True
+        else:
+            logging.error("%s %s not in current_settings",
+                          self.current_settings_set.__name__, key)
+
+    def current_settings_clear(self, key):
+        if key in self.current_settings.data:
+            self.current_settings.data[key] = False
+        else:
+            logging.error("%s %s not in current_settings",
+                          self.current_settings_clear.__name__, key)
+
+    def current_settings_get(self, key):
+        if key in self.current_settings.data:
+            return self.current_settings.data[key]
+        else:
+            logging.error("%s %s not in current_settings",
+                          self.current_settings_get.__name__, key)
+            return False
 
 
 class Mesh:

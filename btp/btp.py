@@ -23,7 +23,7 @@ import socket
 from threading import Timer, Event
 
 import defs
-from types import BTPError
+from types import BTPError, gap_settings_btp2txt
 from iutctl_common import set_event_handler
 from random import randint
 from collections import namedtuple
@@ -551,17 +551,12 @@ def __gap_current_settings_update(settings):
         settings = settings[0]  # Result of unpack is always a tuple
 
     stack = get_stack()
-    stack.gap.current_settings = settings
 
-
-def __gap_current_settings_is_set(bit):
-    # This should maintain conformance
-    stack = get_stack()
-
-    if stack.gap.current_settings is None or \
-            not (stack.gap.current_settings & (1 << bit)):
-        return False
-    return True
+    for bit in gap_settings_btp2txt:
+        if settings & (1 << bit):
+            stack.gap.current_settings_set(gap_settings_btp2txt[bit])
+        else:
+            stack.gap.current_settings_clear(gap_settings_btp2txt[bit])
 
 
 def gap_wait_for_connection(timeout=30):
@@ -579,7 +574,10 @@ def gap_wait_for_disconnection(timeout=30):
 def gap_adv_ind_on(ad=None, sd=None):
     logging.debug("%s %r %r", gap_adv_ind_on.__name__, ad, sd)
 
-    if __gap_current_settings_is_set(defs.GAP_SETTINGS_ADVERTISING):
+    stack = get_stack()
+
+    if stack.gap.current_settings_get(
+            gap_settings_btp2txt[defs.GAP_SETTINGS_ADVERTISING]):
         return
 
     iutctl = get_iut()
@@ -616,7 +614,10 @@ def gap_adv_ind_on(ad=None, sd=None):
 def gap_adv_off():
     logging.debug("%s", gap_adv_off.__name__)
 
-    if not __gap_current_settings_is_set(defs.GAP_SETTINGS_ADVERTISING):
+    stack = get_stack()
+
+    if not stack.gap.current_settings_get(
+            gap_settings_btp2txt[defs.GAP_SETTINGS_ADVERTISING]):
         return
 
     iutctl = get_iut()
@@ -861,7 +862,10 @@ def gap_passkey_entry_req_ev(bd_addr=None, bd_addr_type=None):
 def gap_set_conn():
     logging.debug("%s", gap_set_conn.__name__)
 
-    if __gap_current_settings_is_set(defs.GAP_SETTINGS_CONNECTABLE):
+    stack = get_stack()
+
+    if stack.gap.current_settings_get(
+            gap_settings_btp2txt[defs.GAP_SETTINGS_CONNECTABLE]):
         return
 
     iutctl = get_iut()
@@ -875,7 +879,10 @@ def gap_set_conn():
 def gap_set_nonconn():
     logging.debug("%s", gap_set_nonconn.__name__)
 
-    if not __gap_current_settings_is_set(defs.GAP_SETTINGS_CONNECTABLE):
+    stack = get_stack()
+
+    if not stack.gap.current_settings_get(
+            gap_settings_btp2txt[defs.GAP_SETTINGS_CONNECTABLE]):
         return
 
     iutctl = get_iut()
@@ -889,7 +896,10 @@ def gap_set_nonconn():
 def gap_set_nondiscov():
     logging.debug("%s", gap_set_nondiscov.__name__)
 
-    if not __gap_current_settings_is_set(defs.GAP_SETTINGS_DISCOVERABLE):
+    stack = get_stack()
+
+    if not stack.gap.current_settings_get(
+            gap_settings_btp2txt[defs.GAP_SETTINGS_DISCOVERABLE]):
         return
 
     iutctl = get_iut()
@@ -1130,7 +1140,10 @@ def is_iut_addr_random():
 
 
 def has_iut_privacy():
-    return __gap_current_settings_is_set(defs.GAP_SETTINGS_PRIVACY)
+    stack = get_stack()
+
+    return stack.gap.current_settings_get(
+        gap_settings_btp2txt[defs.GAP_SETTINGS_PRIVACY])
 
 
 def gap_read_ctrl_info():

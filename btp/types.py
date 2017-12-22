@@ -13,6 +13,27 @@
 # more details.
 #
 
+import defs
+
+gap_settings_btp2txt = {
+    defs.GAP_SETTINGS_POWERED: "Powered",
+    defs.GAP_SETTINGS_CONNECTABLE: "Connectable",
+    defs.GAP_SETTINGS_FAST_CONNECTABLE: "Fast Connectable",
+    defs.GAP_SETTINGS_DISCOVERABLE: "Discoverable",
+    defs.GAP_SETTINGS_BONDABLE: "Bondable",
+    defs.GAP_SETTINGS_LINK_SEC_3: "Link Level Security",
+    defs.GAP_SETTINGS_SSP: "SSP",
+    defs.GAP_SETTINGS_BREDR: "BREDR",
+    defs.GAP_SETTINGS_HS: "HS",
+    defs.GAP_SETTINGS_LE: "LE",
+    defs.GAP_SETTINGS_ADVERTISING: "Advertising",
+    defs.GAP_SETTINGS_SC: "SC",
+    defs.GAP_SETTINGS_DEBUG_KEYS: "Debug Keys",
+    defs.GAP_SETTINGS_PRIVACY: "Privacy",
+    defs.GAP_SETTINGS_CONTROLLER_CONFIG: "Controller Configuration",
+    defs.GAP_SETTINGS_STATIC_ADDRESS: "Static Address",
+}
+
 
 class BTPError(Exception):
     """Exception raised if BTP error occurs.
