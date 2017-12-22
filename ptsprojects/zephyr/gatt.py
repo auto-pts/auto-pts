@@ -240,9 +240,9 @@ def test_cases_server(pts):
 
     pre_conditions=[TestFunc(btp.core_reg_svc_gap),
                     TestFunc(btp.gap_read_ctrl_info),
-                    TestFunc(btp.wrap, pts.update_pixit_param,
+                    TestFunc(lambda: pts.update_pixit_param(
                              "GATT", "TSPX_bd_addr_iut",
-                             stack.gap.iut_addr_get_str),
+                             stack.gap.iut_addr_get_str())),
                     TestFunc(lambda: pts.update_pixit_param(
                              "GATT", "TSPX_iut_use_dynamic_bd_addr",
                              "TRUE" if stack.gap.iut_addr_is_random() else "FALSE")),
@@ -253,9 +253,9 @@ def test_cases_server(pts):
     pre_conditions_1 = [TestFunc(btp.core_reg_svc_gap),
                         TestFunc(btp.core_reg_svc_gatt),
                         TestFunc(btp.gap_read_ctrl_info),
-                        TestFunc(btp.wrap, pts.update_pixit_param,
+                        TestFunc(lambda: pts.update_pixit_param(
                                  "GATT", "TSPX_bd_addr_iut",
-                                 stack.gap.iut_addr_get_str),
+                                 stack.gap.iut_addr_get_str())),
                         TestFunc(lambda: pts.update_pixit_param(
                                  "GATT", "TSPX_iut_use_dynamic_bd_addr",
                                  "TRUE" if stack.gap.iut_addr_is_random() else "FALSE"))]
@@ -1068,9 +1068,9 @@ def test_cases_client(pts):
 
     pre_conditions=[TestFunc(btp.core_reg_svc_gap),
                     TestFunc(btp.gap_read_ctrl_info),
-                    TestFunc(btp.wrap, pts.update_pixit_param,
+                    TestFunc(lambda: pts.update_pixit_param(
                              "GATT", "TSPX_bd_addr_iut",
-                             stack.gap.iut_addr_get_str),
+                             stack.gap.iut_addr_get_str())),
                     TestFunc(btp.core_reg_svc_gatt)]
 
     test_cases = [

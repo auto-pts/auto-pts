@@ -56,9 +56,9 @@ def test_cases(pts):
 
     pre_conditions=[TestFunc(btp.core_reg_svc_gap),
                     TestFunc(btp.gap_read_ctrl_info),
-                    TestFunc(btp.wrap, pts.update_pixit_param,
+                    TestFunc(lambda: pts.update_pixit_param(
                              "SM", "TSPX_bd_addr_iut",
-                             stack.gap.iut_addr_get_str),
+                             stack.gap.iut_addr_get_str())),
                     TestFunc(lambda: pts.update_pixit_param(
                              "SM", "TSPX_peer_addr_type",
                              "01" if stack.gap.iut_addr_is_random() else "00"))]

@@ -1108,21 +1108,6 @@ def __gap_stop_discov():
     gap_command_rsp_succ()
 
 
-def wrap(func, *args):
-    """Call function with given arguments
-
-    If arguments list item is a callable it will be invoked and replaced in the
-    list with its own return value.
-
-    """
-    _args = []
-    for x in args:
-        if callable(x):
-            x = x()
-        _args.append(x)
-    func(*_args)
-
-
 def gap_read_ctrl_info():
     logging.debug("%s", gap_read_ctrl_info.__name__)
 
