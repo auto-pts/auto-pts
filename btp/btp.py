@@ -483,7 +483,7 @@ def core_unreg_svc_l2cap():
 def core_reg_svc_mesh():
     logging.debug("%s", core_reg_svc_mesh.__name__)
 
-    iutctl = iutctl.get_iut()
+    iutctl = get_iut()
     iutctl.btp_socket.send(*CORE['mesh_reg'])
 
     core_reg_svc_rsp_succ()
@@ -1419,7 +1419,7 @@ def gatts_get_attrs(start_handle=0x0001, end_handle=0xffff, type_uuid=None):
     logging.debug("%s %r %r %r", gatts_get_attrs.__name__, start_handle,
                   end_handle, type_uuid)
 
-    iutctl = iutctl.get_iut()
+    iutctl = get_iut()
 
     data_ba = bytearray()
 
@@ -1456,7 +1456,7 @@ def gatts_get_attrs(start_handle=0x0001, end_handle=0xffff, type_uuid=None):
 def gatts_get_attr_val(handle):
     logging.debug("%s %r", gatts_get_attr_val.__name__, handle)
 
-    iutctl = iutctl.get_iut()
+    iutctl = get_iut()
 
     data_ba = bytearray()
 
@@ -2701,7 +2701,7 @@ GAP_EV = {
 def mesh_config_prov():
     logging.debug("%s", mesh_config_prov.__name__)
 
-    iutctl = iutctl.get_iut()
+    iutctl = get_iut()
 
     stack = get_stack()
 
@@ -2731,7 +2731,7 @@ def mesh_prov_node():
                                  stack.mesh.iv_idx, stack.mesh.seq_num,
                                  stack.mesh.addr, dev_key))
 
-    iutctl = iutctl.get_iut()
+    iutctl = get_iut()
 
     iutctl.btp_socket.send_wait_rsp(*MESH['prov_node'], data=data)
 
@@ -2739,7 +2739,7 @@ def mesh_prov_node():
 def mesh_init():
     logging.debug("%s", mesh_init.__name__)
 
-    iutctl = iutctl.get_iut()
+    iutctl = get_iut()
 
     iutctl.btp_socket.send_wait_rsp(*MESH['init'])
 
@@ -2751,7 +2751,7 @@ def mesh_init():
 def mesh_reset():
     logging.debug("%s", mesh_reset.__name__)
 
-    iutctl = iutctl.get_iut()
+    iutctl = get_iut()
 
     iutctl.btp_socket.send_wait_rsp(*MESH['reset'])
 
@@ -2764,7 +2764,7 @@ def mesh_reset():
 def mesh_input_number(number):
     logging.debug("%s %r", mesh_input_number.__name__, number)
 
-    iutctl = iutctl.get_iut()
+    iutctl = get_iut()
 
     if type(number) is str:
         number = int(number)
@@ -2777,7 +2777,7 @@ def mesh_input_number(number):
 def mesh_input_string(string):
     logging.debug("%s %s", mesh_input_string.__name__, string)
 
-    iutctl = iutctl.get_iut()
+    iutctl = get_iut()
 
     data = bytearray(string)
 
