@@ -22,12 +22,16 @@ import re
 import socket
 from threading import Timer, Event
 
-import iutctl
-import btpdef
+import defs
+from types import BTPError
+from iutctl_common import set_event_handler
 from random import randint
 from collections import namedtuple
 from uuid import UUID
 from ptsprojects.stack import get_stack
+
+#  get IUT global method from iutctl
+get_iut = None
 
 #  Global temporary objects
 PASSKEY = None
@@ -48,164 +52,171 @@ VERIFY_VALUES = None
 CONTROLLER_INDEX = 0
 
 CORE = {
-    "gap_reg": (btpdef.BTP_SERVICE_ID_CORE, btpdef.CORE_REGISTER_SERVICE,
-                btpdef.BTP_INDEX_NONE, btpdef.BTP_SERVICE_ID_GAP),
-    "gatts_reg": (btpdef.BTP_SERVICE_ID_CORE, btpdef.CORE_REGISTER_SERVICE,
-                  btpdef.BTP_INDEX_NONE, btpdef.BTP_SERVICE_ID_GATT),
-    "l2cap_reg": (btpdef.BTP_SERVICE_ID_CORE, btpdef.CORE_REGISTER_SERVICE,
-                  btpdef.BTP_INDEX_NONE, btpdef.BTP_SERVICE_ID_L2CAP),
-    "mesh_reg": (btpdef.BTP_SERVICE_ID_CORE, btpdef.CORE_REGISTER_SERVICE,
-                  btpdef.BTP_INDEX_NONE, btpdef.BTP_SERVICE_ID_MESH),
-    "read_supp_cmds": (btpdef.BTP_SERVICE_ID_CORE,
-                       btpdef.CORE_READ_SUPPORTED_COMMANDS,
-                       btpdef.BTP_INDEX_NONE, ""),
-    "read_supp_svcs": (btpdef.BTP_SERVICE_ID_CORE,
-                       btpdef.CORE_READ_SUPPORTED_SERVICES,
-                       btpdef.BTP_INDEX_NONE, ""),
+    "gap_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
+                defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GAP),
+    "gap_unreg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_UNREGISTER_SERVICE,
+                  defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GAP),
+    "gatts_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
+                  defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GATT),
+    "l2cap_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
+                  defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_L2CAP),
+    "mesh_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
+                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_MESH),
+    "read_supp_cmds": (defs.BTP_SERVICE_ID_CORE,
+                       defs.CORE_READ_SUPPORTED_COMMANDS,
+                       defs.BTP_INDEX_NONE, ""),
+    "read_supp_svcs": (defs.BTP_SERVICE_ID_CORE,
+                       defs.CORE_READ_SUPPORTED_SERVICES,
+                       defs.BTP_INDEX_NONE, ""),
 }
 
 GAP = {
-    "start_adv": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_START_ADVERTISING,
+    "start_adv": (defs.BTP_SERVICE_ID_GAP, defs.GAP_START_ADVERTISING,
                   CONTROLLER_INDEX),
-    "stop_adv": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_STOP_ADVERTISING,
+    "stop_adv": (defs.BTP_SERVICE_ID_GAP, defs.GAP_STOP_ADVERTISING,
                  CONTROLLER_INDEX, ""),
-    "conn": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_CONNECT, CONTROLLER_INDEX),
-    "pair": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_PAIR, CONTROLLER_INDEX),
-    "unpair": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_UNPAIR, CONTROLLER_INDEX),
-    "disconn": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_DISCONNECT,
+    "conn": (defs.BTP_SERVICE_ID_GAP, defs.GAP_CONNECT, CONTROLLER_INDEX),
+    "pair": (defs.BTP_SERVICE_ID_GAP, defs.GAP_PAIR, CONTROLLER_INDEX),
+    "unpair": (defs.BTP_SERVICE_ID_GAP, defs.GAP_UNPAIR, CONTROLLER_INDEX),
+    "disconn": (defs.BTP_SERVICE_ID_GAP, defs.GAP_DISCONNECT,
                 CONTROLLER_INDEX),
-    "set_io_cap": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_SET_IO_CAP,
+    "set_io_cap": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_IO_CAP,
                    CONTROLLER_INDEX),
-    "set_conn": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_SET_CONNECTABLE,
+    "set_conn": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_CONNECTABLE,
                  CONTROLLER_INDEX, 1),
-    "set_nonconn": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_SET_CONNECTABLE,
+    "set_nonconn": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_CONNECTABLE,
                     CONTROLLER_INDEX, 0),
-    "set_nondiscov": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_SET_DISCOVERABLE,
-                      CONTROLLER_INDEX, btpdef.GAP_NON_DISCOVERABLE),
-    "set_gendiscov": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_SET_DISCOVERABLE,
-                      CONTROLLER_INDEX, btpdef.GAP_GENERAL_DISCOVERABLE),
-    "set_limdiscov": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_SET_DISCOVERABLE,
-                      CONTROLLER_INDEX, btpdef.GAP_LIMITED_DISCOVERABLE),
-    "start_discov": (btpdef.BTP_SERVICE_ID_GAP,
-                     btpdef.GAP_START_DISCOVERY, CONTROLLER_INDEX),
-    "stop_discov": (btpdef.BTP_SERVICE_ID_GAP, btpdef.GAP_STOP_DISCOVERY,
+    "set_nondiscov": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_DISCOVERABLE,
+                      CONTROLLER_INDEX, defs.GAP_NON_DISCOVERABLE),
+    "set_gendiscov": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_DISCOVERABLE,
+                      CONTROLLER_INDEX, defs.GAP_GENERAL_DISCOVERABLE),
+    "set_limdiscov": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_DISCOVERABLE,
+                      CONTROLLER_INDEX, defs.GAP_LIMITED_DISCOVERABLE),
+    "set_powered_on": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_POWERED,
+                       CONTROLLER_INDEX, 1),
+    "set_powered_off": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_POWERED,
+                        CONTROLLER_INDEX, 0),
+    "start_discov": (defs.BTP_SERVICE_ID_GAP,
+                     defs.GAP_START_DISCOVERY, CONTROLLER_INDEX),
+    "stop_discov": (defs.BTP_SERVICE_ID_GAP, defs.GAP_STOP_DISCOVERY,
                     CONTROLLER_INDEX, ""),
-    "read_ctrl_info": (btpdef.BTP_SERVICE_ID_GAP,
-                       btpdef.GAP_READ_CONTROLLER_INFO,
+    "read_ctrl_info": (defs.BTP_SERVICE_ID_GAP,
+                       defs.GAP_READ_CONTROLLER_INFO,
                        CONTROLLER_INDEX, ""),
-    "passkey_entry_rsp": (btpdef.BTP_SERVICE_ID_GAP,
-                          btpdef.GAP_PASSKEY_ENTRY,
+    "passkey_entry_rsp": (defs.BTP_SERVICE_ID_GAP,
+                          defs.GAP_PASSKEY_ENTRY,
                           CONTROLLER_INDEX),
+    "reset": (defs.BTP_SERVICE_ID_GAP, defs.GAP_RESET, CONTROLLER_INDEX, "")
 }
 
 GATTS = {
-    "add_svc": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_ADD_SERVICE,
+    "add_svc": (defs.BTP_SERVICE_ID_GATT, defs.GATT_ADD_SERVICE,
                 CONTROLLER_INDEX),
-    "start_server": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_START_SERVER,
+    "start_server": (defs.BTP_SERVICE_ID_GATT, defs.GATT_START_SERVER,
                      CONTROLLER_INDEX, ""),
-    "add_inc_svc": (btpdef.BTP_SERVICE_ID_GATT,
-                    btpdef.GATT_ADD_INCLUDED_SERVICE, CONTROLLER_INDEX),
-    "add_char": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_ADD_CHARACTERISTIC,
+    "add_inc_svc": (defs.BTP_SERVICE_ID_GATT,
+                    defs.GATT_ADD_INCLUDED_SERVICE, CONTROLLER_INDEX),
+    "add_char": (defs.BTP_SERVICE_ID_GATT, defs.GATT_ADD_CHARACTERISTIC,
                  CONTROLLER_INDEX),
-    "set_val": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_SET_VALUE,
+    "set_val": (defs.BTP_SERVICE_ID_GATT, defs.GATT_SET_VALUE,
                 CONTROLLER_INDEX),
-    "add_desc": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_ADD_DESCRIPTOR,
+    "add_desc": (defs.BTP_SERVICE_ID_GATT, defs.GATT_ADD_DESCRIPTOR,
                  CONTROLLER_INDEX),
-    "set_enc_key_size": (btpdef.BTP_SERVICE_ID_GATT,
-                         btpdef.GATT_SET_ENC_KEY_SIZE, CONTROLLER_INDEX),
-    "get_attrs": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_GET_ATTRIBUTES,
+    "set_enc_key_size": (defs.BTP_SERVICE_ID_GATT,
+                         defs.GATT_SET_ENC_KEY_SIZE, CONTROLLER_INDEX),
+    "get_attrs": (defs.BTP_SERVICE_ID_GATT, defs.GATT_GET_ATTRIBUTES,
                  CONTROLLER_INDEX),
-    "get_attr_val": (btpdef.BTP_SERVICE_ID_GATT,
-                     btpdef.GATT_GET_ATTRIBUTE_VALUE, CONTROLLER_INDEX)
+    "get_attr_val": (defs.BTP_SERVICE_ID_GATT,
+                     defs.GATT_GET_ATTRIBUTE_VALUE, CONTROLLER_INDEX)
 }
 
 GATTC = {
-    "exchange_mtu": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_EXCHANGE_MTU,
+    "exchange_mtu": (defs.BTP_SERVICE_ID_GATT, defs.GATT_EXCHANGE_MTU,
                      CONTROLLER_INDEX),
-    "disc_prim_uuid": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_DISC_PRIM_UUID,
+    "disc_prim_uuid": (defs.BTP_SERVICE_ID_GATT, defs.GATT_DISC_PRIM_UUID,
                        CONTROLLER_INDEX),
-    "find_included": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_FIND_INCLUDED,
+    "find_included": (defs.BTP_SERVICE_ID_GATT, defs.GATT_FIND_INCLUDED,
                       CONTROLLER_INDEX),
-    "disc_all_chrc": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_DISC_ALL_CHRC,
+    "disc_all_chrc": (defs.BTP_SERVICE_ID_GATT, defs.GATT_DISC_ALL_CHRC,
                       CONTROLLER_INDEX),
-    "disc_chrc_uuid": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_DISC_CHRC_UUID,
+    "disc_chrc_uuid": (defs.BTP_SERVICE_ID_GATT, defs.GATT_DISC_CHRC_UUID,
                        CONTROLLER_INDEX),
-    "disc_all_desc": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_DISC_ALL_DESC,
+    "disc_all_desc": (defs.BTP_SERVICE_ID_GATT, defs.GATT_DISC_ALL_DESC,
                       CONTROLLER_INDEX),
-    "read": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_READ, CONTROLLER_INDEX),
-    "read_long": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_READ_LONG,
+    "read": (defs.BTP_SERVICE_ID_GATT, defs.GATT_READ, CONTROLLER_INDEX),
+    "read_long": (defs.BTP_SERVICE_ID_GATT, defs.GATT_READ_LONG,
                   CONTROLLER_INDEX),
-    "read_multiple": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_READ_MULTIPLE,
+    "read_multiple": (defs.BTP_SERVICE_ID_GATT, defs.GATT_READ_MULTIPLE,
                       CONTROLLER_INDEX),
-    "write_without_rsp": (btpdef.BTP_SERVICE_ID_GATT,
-                          btpdef.GATT_WRITE_WITHOUT_RSP, CONTROLLER_INDEX),
-    "signed_write": (btpdef.BTP_SERVICE_ID_GATT,
-                     btpdef.GATT_SIGNED_WRITE_WITHOUT_RSP, CONTROLLER_INDEX),
-    "write": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_WRITE, CONTROLLER_INDEX),
-    "write_long": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_WRITE_LONG,
+    "write_without_rsp": (defs.BTP_SERVICE_ID_GATT,
+                          defs.GATT_WRITE_WITHOUT_RSP, CONTROLLER_INDEX),
+    "signed_write": (defs.BTP_SERVICE_ID_GATT,
+                     defs.GATT_SIGNED_WRITE_WITHOUT_RSP, CONTROLLER_INDEX),
+    "write": (defs.BTP_SERVICE_ID_GATT, defs.GATT_WRITE, CONTROLLER_INDEX),
+    "write_long": (defs.BTP_SERVICE_ID_GATT, defs.GATT_WRITE_LONG,
                    CONTROLLER_INDEX),
-    "cfg_notify": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_CFG_NOTIFY,
+    "cfg_notify": (defs.BTP_SERVICE_ID_GATT, defs.GATT_CFG_NOTIFY,
                    CONTROLLER_INDEX),
-    "cfg_indicate": (btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_CFG_INDICATE,
+    "cfg_indicate": (defs.BTP_SERVICE_ID_GATT, defs.GATT_CFG_INDICATE,
                      CONTROLLER_INDEX),
 }
 
 L2CAP = {
-    "read_supp_cmds": (btpdef.BTP_SERVICE_ID_L2CAP,
-                       btpdef.L2CAP_READ_SUPPORTED_COMMANDS,
-                       btpdef.BTP_INDEX_NONE, ""),
-    "connect": (btpdef.BTP_SERVICE_ID_L2CAP, btpdef.L2CAP_CONNECT,
+    "read_supp_cmds": (defs.BTP_SERVICE_ID_L2CAP,
+                       defs.L2CAP_READ_SUPPORTED_COMMANDS,
+                       defs.BTP_INDEX_NONE, ""),
+    "connect": (defs.BTP_SERVICE_ID_L2CAP, defs.L2CAP_CONNECT,
                 CONTROLLER_INDEX),
-    "disconnect": (btpdef.BTP_SERVICE_ID_L2CAP, btpdef.L2CAP_DISCONNECT,
+    "disconnect": (defs.BTP_SERVICE_ID_L2CAP, defs.L2CAP_DISCONNECT,
                    CONTROLLER_INDEX),
-    "send_data": (btpdef.BTP_SERVICE_ID_L2CAP, btpdef.L2CAP_SEND_DATA,
+    "send_data": (defs.BTP_SERVICE_ID_L2CAP, defs.L2CAP_SEND_DATA,
                   CONTROLLER_INDEX),
-    "listen": (btpdef.BTP_SERVICE_ID_L2CAP, btpdef.L2CAP_LISTEN,
+    "listen": (defs.BTP_SERVICE_ID_L2CAP, defs.L2CAP_LISTEN,
                CONTROLLER_INDEX),
 }
 
 MESH = {
-    "read_supp_cmds": (btpdef.BTP_SERVICE_ID_MESH,
-                       btpdef.MESH_READ_SUPPORTED_COMMANDS,
-                       btpdef.BTP_INDEX_NONE, ""),
-    "config_prov": (btpdef.BTP_SERVICE_ID_MESH,
-                  btpdef.MESH_CONFIG_PROVISIONING,
+    "read_supp_cmds": (defs.BTP_SERVICE_ID_MESH,
+                       defs.MESH_READ_SUPPORTED_COMMANDS,
+                       defs.BTP_INDEX_NONE, ""),
+    "config_prov": (defs.BTP_SERVICE_ID_MESH,
+                  defs.MESH_CONFIG_PROVISIONING,
                   CONTROLLER_INDEX),
-    "prov_node": (btpdef.BTP_SERVICE_ID_MESH,
-                    btpdef.MESH_PROVISION_NODE,
+    "prov_node": (defs.BTP_SERVICE_ID_MESH,
+                    defs.MESH_PROVISION_NODE,
                     CONTROLLER_INDEX),
-    "init": (btpdef.BTP_SERVICE_ID_MESH,
-             btpdef.MESH_INIT,
+    "init": (defs.BTP_SERVICE_ID_MESH,
+             defs.MESH_INIT,
              CONTROLLER_INDEX, ""),
-    "reset": (btpdef.BTP_SERVICE_ID_MESH,
-              btpdef.MESH_RESET,
+    "reset": (defs.BTP_SERVICE_ID_MESH,
+              defs.MESH_RESET,
               CONTROLLER_INDEX, ""),
-    "input_num": (btpdef.BTP_SERVICE_ID_MESH,
-                  btpdef.MESH_INPUT_NUMBER,
+    "input_num": (defs.BTP_SERVICE_ID_MESH,
+                  defs.MESH_INPUT_NUMBER,
                   CONTROLLER_INDEX),
-    "input_str": (btpdef.BTP_SERVICE_ID_MESH,
-                  btpdef.MESH_INPUT_STRING,
+    "input_str": (defs.BTP_SERVICE_ID_MESH,
+                  defs.MESH_INPUT_STRING,
                   CONTROLLER_INDEX),
-    "iv_update_test_mode": (btpdef.BTP_SERVICE_ID_MESH,
-                            btpdef.MESH_IV_UPDATE_TEST_MODE,
+    "iv_update_test_mode": (defs.BTP_SERVICE_ID_MESH,
+                            defs.MESH_IV_UPDATE_TEST_MODE,
                             CONTROLLER_INDEX),
-    "iv_update_toggle": (btpdef.BTP_SERVICE_ID_MESH,
-                         btpdef.MESH_IV_UPDATE_TOGGLE,
+    "iv_update_toggle": (defs.BTP_SERVICE_ID_MESH,
+                         defs.MESH_IV_UPDATE_TOGGLE,
                          CONTROLLER_INDEX, ""),
-    "net_send": (btpdef.BTP_SERVICE_ID_MESH,
-                 btpdef.MESH_NET_SEND,
+    "net_send": (defs.BTP_SERVICE_ID_MESH,
+                 defs.MESH_NET_SEND,
                  CONTROLLER_INDEX),
-    "health_generate_faults": (btpdef.BTP_SERVICE_ID_MESH,
-                           btpdef.MESH_HEALTH_ADD_FAULTS,
+    "health_generate_faults": (defs.BTP_SERVICE_ID_MESH,
+                           defs.MESH_HEALTH_ADD_FAULTS,
                            CONTROLLER_INDEX, ""),
-    "mesh_clear_faults": (btpdef.BTP_SERVICE_ID_MESH,
-                          btpdef.MESH_HEALTH_CLEAR_FAULTS,
+    "mesh_clear_faults": (defs.BTP_SERVICE_ID_MESH,
+                          defs.MESH_HEALTH_CLEAR_FAULTS,
                           CONTROLLER_INDEX, ""),
-    "lpn": (btpdef.BTP_SERVICE_ID_MESH,
-            btpdef.MESH_LPN_SET,
+    "lpn": (defs.BTP_SERVICE_ID_MESH,
+            defs.MESH_LPN_SET,
             CONTROLLER_INDEX),
-    "lpn_poll": (btpdef.BTP_SERVICE_ID_MESH,
-                 btpdef.MESH_LPN_POLL,
+    "lpn_poll": (defs.BTP_SERVICE_ID_MESH,
+                 defs.MESH_LPN_POLL,
                  CONTROLLER_INDEX, ""),
 }
 
@@ -300,16 +311,6 @@ class Perm:
         return decode_flag_name(perm, Perm.names)
 
 
-class BTPError(Exception):
-    """Exception raised if BTP error occurs.
-
-    If this exception is raised the status of the running test case is updated
-    accordingly to show that BTP error has occurred.
-
-    """
-    pass
-
-
 def verify_description(description):
     """A function to verify that values are in PTS MMI description
 
@@ -387,7 +388,7 @@ def btp_hdr_check(rcv_hdr, exp_svc_id, exp_op=None):
         raise BTPError("Incorrect service ID %s in the response, expected %s!"
                        % (rcv_hdr.svc_id, exp_svc_id))
 
-    if rcv_hdr.op == btpdef.BTP_STATUS:
+    if rcv_hdr.op == defs.BTP_STATUS:
         raise BTPError("Error opcode in response!")
 
     if exp_op and exp_op != rcv_hdr.op:
@@ -423,17 +424,26 @@ def set_pts_addr(addr, addr_type):
 def core_reg_svc_gap():
     logging.debug("%s", core_reg_svc_gap.__name__)
 
-    zephyrctl = iutctl.get_zephyr()
-    zephyrctl.btp_socket.send(*CORE['gap_reg'])
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*CORE['gap_reg'])
 
     core_reg_svc_rsp_succ()
+
+
+def core_unreg_svc_gap():
+    logging.debug("%s", core_unreg_svc_gap.__name__)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*CORE['gap_unreg'])
+
+    core_unreg_svc_rsp_succ()
 
 
 def core_reg_svc_gatts():
     logging.debug("%s", core_reg_svc_gatts.__name__)
 
-    zephyrctl = iutctl.get_zephyr()
-    zephyrctl.btp_socket.send(*CORE['gatts_reg'])
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*CORE['gatts_reg'])
 
     core_reg_svc_rsp_succ()
 
@@ -441,8 +451,8 @@ def core_reg_svc_gatts():
 def core_reg_svc_l2cap():
     logging.debug("%s", core_reg_svc_l2cap.__name__)
 
-    zephyrctl = iutctl.get_zephyr()
-    zephyrctl.btp_socket.send(*CORE['l2cap_reg'])
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*CORE['l2cap_reg'])
 
     core_reg_svc_rsp_succ()
 
@@ -450,23 +460,45 @@ def core_reg_svc_l2cap():
 def core_reg_svc_mesh():
     logging.debug("%s", core_reg_svc_mesh.__name__)
 
-    zephyrctl = iutctl.get_zephyr()
-    zephyrctl.btp_socket.send(*CORE['mesh_reg'])
+    iutctl = iutctl.get_iut()
+    iutctl.btp_socket.send(*CORE['mesh_reg'])
 
     core_reg_svc_rsp_succ()
 
 
 def core_reg_svc_rsp_succ():
     logging.debug("%s", core_reg_svc_rsp_succ.__name__)
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
-    expected_frame = ((btpdef.BTP_SERVICE_ID_CORE,
-                       btpdef.CORE_REGISTER_SERVICE,
-                       btpdef.BTP_INDEX_NONE,
+    expected_frame = ((defs.BTP_SERVICE_ID_CORE,
+                       defs.CORE_REGISTER_SERVICE,
+                       defs.BTP_INDEX_NONE,
                        0),
                       ('',))
 
-    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
+
+    logging.debug("received %r %r", tuple_hdr, tuple_data)
+    logging.debug("expected %r", expected_frame)
+
+    if (tuple_hdr, tuple_data) != expected_frame:
+        logging.error("frames mismatch")
+        raise BTPError("Unexpected response received!")
+    else:
+        logging.debug("response is valid")
+
+
+def core_unreg_svc_rsp_succ():
+    logging.debug("%s", core_unreg_svc_rsp_succ.__name__)
+    iutctl = get_iut()
+
+    expected_frame = ((defs.BTP_SERVICE_ID_CORE,
+                       defs.CORE_UNREGISTER_SERVICE,
+                       defs.BTP_INDEX_NONE,
+                       0),
+                      ('',))
+
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
 
     logging.debug("received %r %r", tuple_hdr, tuple_data)
     logging.debug("expected %r", expected_frame)
@@ -517,10 +549,10 @@ def gap_wait_for_disconnection(timeout=30):
 def gap_adv_ind_on(ad=None, sd=None):
     logging.debug("%s %r %r", gap_adv_ind_on.__name__, ad, sd)
 
-    if __gap_current_settings_is_set(btpdef.GAP_SETTINGS_ADVERTISING):
+    if __gap_current_settings_is_set(defs.GAP_SETTINGS_ADVERTISING):
         return
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
     data_ba = bytearray()
     ad_ba = bytearray()
@@ -545,29 +577,29 @@ def gap_adv_ind_on(ad=None, sd=None):
     data_ba.extend(ad_ba)
     data_ba.extend(sd_ba)
 
-    zephyrctl.btp_socket.send(*GAP['start_adv'], data=data_ba)
+    iutctl.btp_socket.send(*GAP['start_adv'], data=data_ba)
 
-    tuple_data = gap_command_rsp_succ(btpdef.GAP_START_ADVERTISING)
+    tuple_data = gap_command_rsp_succ(defs.GAP_START_ADVERTISING)
     __gap_current_settings_update(tuple_data)
 
 
 def gap_adv_off():
     logging.debug("%s", gap_adv_off.__name__)
 
-    if not __gap_current_settings_is_set(btpdef.GAP_SETTINGS_ADVERTISING):
+    if not __gap_current_settings_is_set(defs.GAP_SETTINGS_ADVERTISING):
         return
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
-    zephyrctl.btp_socket.send(*GAP['stop_adv'])
+    iutctl.btp_socket.send(*GAP['stop_adv'])
 
-    tuple_data = gap_command_rsp_succ(btpdef.GAP_STOP_ADVERTISING)
+    tuple_data = gap_command_rsp_succ(defs.GAP_STOP_ADVERTISING)
     __gap_current_settings_update(tuple_data)
 
 
 def gap_conn(bd_addr=None, bd_addr_type=None):
     logging.debug("%s %r %r", gap_conn.__name__, bd_addr, bd_addr_type)
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
     data_ba = bytearray()
     bd_addr_ba = binascii.unhexlify(pts_addr_get(bd_addr))[::-1]
@@ -575,7 +607,7 @@ def gap_conn(bd_addr=None, bd_addr_type=None):
     data_ba.extend(chr(pts_addr_type_get(bd_addr_type)))
     data_ba.extend(bd_addr_ba)
 
-    zephyrctl.btp_socket.send(*GAP['conn'], data=data_ba)
+    iutctl.btp_socket.send(*GAP['conn'], data=data_ba)
 
     gap_command_rsp_succ()
 
@@ -588,7 +620,7 @@ def gap_rpa_conn(description):
     description -- description provided in PTS MMI.
     """
     logging.debug("%s %s", gap_conn.__name__, description)
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
     # FIXME use regex
     dsc_split = description.split(' ')
@@ -601,7 +633,7 @@ def gap_rpa_conn(description):
     data_ba.extend(chr(pts_addr_type_get(bd_addr_type)))
     data_ba.extend(bd_addr_ba)
 
-    zephyrctl.btp_socket.send(*GAP['conn'], data=data_ba)
+    iutctl.btp_socket.send(*GAP['conn'], data=data_ba)
 
     gap_command_rsp_succ()
     return True
@@ -609,7 +641,7 @@ def gap_rpa_conn(description):
 
 def gap_disconn(bd_addr=None, bd_addr_type=None):
     logging.debug("%s %r %r", gap_disconn.__name__, bd_addr, bd_addr_type)
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
     stack = get_stack()
 
@@ -622,7 +654,7 @@ def gap_disconn(bd_addr=None, bd_addr_type=None):
     data_ba.extend(chr(pts_addr_type_get(bd_addr_type)))
     data_ba.extend(bd_addr_ba)
 
-    zephyrctl.btp_socket.send(*GAP['disconn'], data=data_ba)
+    iutctl.btp_socket.send(*GAP['disconn'], data=data_ba)
 
     gap_command_rsp_succ()
 
@@ -640,18 +672,16 @@ def verify_not_connected(description):
 
 def gap_set_io_cap(io_cap):
     logging.debug("%s %r", gap_set_io_cap.__name__, io_cap)
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
-    zephyrctl.btp_socket.send(*GAP['set_io_cap'], data=chr(io_cap))
+    iutctl.btp_socket.send(*GAP['set_io_cap'], data=chr(io_cap))
 
     gap_command_rsp_succ()
 
 
 def gap_pair(bd_addr=None, bd_addr_type=None):
     logging.debug("%s %r %r", gap_pair.__name__, bd_addr, bd_addr_type)
-    zephyrctl = iutctl.get_zephyr()
-
-    gap_wait_for_connection()
+    iutctl = get_iut()
 
     data_ba = bytearray()
     bd_addr_ba = binascii.unhexlify(pts_addr_get(bd_addr))[::-1]
@@ -659,7 +689,7 @@ def gap_pair(bd_addr=None, bd_addr_type=None):
     data_ba.extend(chr(pts_addr_type_get(bd_addr_type)))
     data_ba.extend(bd_addr_ba)
 
-    zephyrctl.btp_socket.send(*GAP['pair'], data=data_ba)
+    iutctl.btp_socket.send(*GAP['pair'], data=data_ba)
 
     # Expected result
     gap_command_rsp_succ()
@@ -667,7 +697,7 @@ def gap_pair(bd_addr=None, bd_addr_type=None):
 
 def gap_unpair(bd_addr=None, bd_addr_type=None):
     logging.debug("%s %r %r", gap_unpair.__name__, bd_addr, bd_addr_type)
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
     data_ba = bytearray()
     bd_addr_ba = binascii.unhexlify(pts_addr_get(bd_addr))[::-1]
@@ -675,10 +705,10 @@ def gap_unpair(bd_addr=None, bd_addr_type=None):
     data_ba.extend(chr(pts_addr_type_get(bd_addr_type)))
     data_ba.extend(bd_addr_ba)
 
-    zephyrctl.btp_socket.send(*GAP['unpair'], data=data_ba)
+    iutctl.btp_socket.send(*GAP['unpair'], data=data_ba)
 
     # Expected result
-    gap_command_rsp_succ(btpdef.GAP_UNPAIR)
+    gap_command_rsp_succ(defs.GAP_UNPAIR)
 
 
 def var_store_get_passkey(description, bd_addr=None, bd_addr_type=None):
@@ -706,13 +736,13 @@ def var_get_wrong_passkey():
 def gap_passkey_disp_ev(bd_addr=None, bd_addr_type=None, store=False):
     logging.debug("%s %r %r", gap_passkey_disp_ev.__name__, bd_addr,
                   bd_addr_type)
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
-    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
-    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GAP,
-                  btpdef.GAP_EV_PASSKEY_DISPLAY)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GAP,
+                  defs.GAP_EV_PASSKEY_DISPLAY)
 
     fmt = '<B6sI'
     if len(tuple_data[0]) != struct.calcsize(fmt):
@@ -738,7 +768,7 @@ def gap_passkey_disp_ev(bd_addr=None, bd_addr_type=None, store=False):
 def gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey):
     logging.debug("%s %r %r", gap_passkey_entry_rsp.__name__, bd_addr,
                   bd_addr_type)
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
     data_ba = bytearray()
     bd_addr_ba = binascii.unhexlify(bd_addr)[::-1]
@@ -752,7 +782,16 @@ def gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey):
     passkey_ba = struct.pack('I', passkey)
     data_ba.extend(passkey_ba)
 
-    zephyrctl.btp_socket.send(*GAP['passkey_entry_rsp'], data=data_ba)
+    iutctl.btp_socket.send(*GAP['passkey_entry_rsp'], data=data_ba)
+
+    gap_command_rsp_succ()
+
+
+def gap_reset():
+    logging.debug("%s", gap_reset.__name__)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*GAP['reset'])
 
     gap_command_rsp_succ()
 
@@ -760,13 +799,13 @@ def gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey):
 def gap_passkey_entry_req_ev(bd_addr=None, bd_addr_type=None):
     logging.debug("%s %r %r", gap_passkey_entry_req_ev.__name__, bd_addr,
                   bd_addr_type)
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
-    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
-    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GAP,
-                  btpdef.GAP_EV_PASSKEY_ENTRY_REQ)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GAP,
+                  defs.GAP_EV_PASSKEY_ENTRY_REQ)
 
     fmt = '<B6s'
     if len(tuple_data[0]) != struct.calcsize(fmt):
@@ -792,12 +831,12 @@ def gap_passkey_entry_req_ev(bd_addr=None, bd_addr_type=None):
 def gap_set_conn():
     logging.debug("%s", gap_set_conn.__name__)
 
-    if __gap_current_settings_is_set(btpdef.GAP_SETTINGS_CONNECTABLE):
+    if __gap_current_settings_is_set(defs.GAP_SETTINGS_CONNECTABLE):
         return
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
-    zephyrctl.btp_socket.send(*GAP['set_conn'])
+    iutctl.btp_socket.send(*GAP['set_conn'])
 
     tuple_data = gap_command_rsp_succ()
     __gap_current_settings_update(tuple_data)
@@ -806,12 +845,12 @@ def gap_set_conn():
 def gap_set_nonconn():
     logging.debug("%s", gap_set_nonconn.__name__)
 
-    if not __gap_current_settings_is_set(btpdef.GAP_SETTINGS_CONNECTABLE):
+    if not __gap_current_settings_is_set(defs.GAP_SETTINGS_CONNECTABLE):
         return
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
-    zephyrctl.btp_socket.send(*GAP['set_nonconn'])
+    iutctl.btp_socket.send(*GAP['set_nonconn'])
 
     tuple_data = gap_command_rsp_succ()
     __gap_current_settings_update(tuple_data)
@@ -820,12 +859,12 @@ def gap_set_nonconn():
 def gap_set_nondiscov():
     logging.debug("%s", gap_set_nondiscov.__name__)
 
-    if not __gap_current_settings_is_set(btpdef.GAP_SETTINGS_DISCOVERABLE):
+    if not __gap_current_settings_is_set(defs.GAP_SETTINGS_DISCOVERABLE):
         return
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
-    zephyrctl.btp_socket.send(*GAP['set_nondiscov'])
+    iutctl.btp_socket.send(*GAP['set_nondiscov'])
 
     tuple_data = gap_command_rsp_succ()
     __gap_current_settings_update(tuple_data)
@@ -834,9 +873,9 @@ def gap_set_nondiscov():
 def gap_set_gendiscov():
     logging.debug("%s", gap_set_gendiscov.__name__)
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
-    zephyrctl.btp_socket.send(*GAP['set_gendiscov'])
+    iutctl.btp_socket.send(*GAP['set_gendiscov'])
 
     tuple_data = gap_command_rsp_succ()
     __gap_current_settings_update(tuple_data)
@@ -845,9 +884,31 @@ def gap_set_gendiscov():
 def gap_set_limdiscov():
     logging.debug("%s", gap_set_limdiscov.__name__)
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
-    zephyrctl.btp_socket.send(*GAP['set_limdiscov'])
+    iutctl.btp_socket.send(*GAP['set_limdiscov'])
+
+    tuple_data = gap_command_rsp_succ()
+    __gap_current_settings_update(tuple_data)
+
+
+def gap_set_powered_on():
+    logging.debug("%s", gap_set_powered_on.__name__)
+
+    iutctl = get_iut()
+
+    iutctl.btp_socket.send(*GAP['set_powered_on'])
+
+    tuple_data = gap_command_rsp_succ()
+    __gap_current_settings_update(tuple_data)
+
+
+def gap_set_powered_off():
+    logging.debug("%s", gap_set_powered_off.__name__)
+
+    iutctl = get_iut()
+
+    iutctl.btp_socket.send(*GAP['set_powered_off'])
 
     tuple_data = gap_command_rsp_succ()
     __gap_current_settings_update(tuple_data)
@@ -861,7 +922,7 @@ def __gap_device_found_timeout(continue_flag):
 def __gap_device_found_ev(duration):
     logging.debug("%s %r", __gap_device_found_ev.__name__, duration)
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
     continue_flag = Event()
     continue_flag.set()
@@ -871,12 +932,12 @@ def __gap_device_found_ev(duration):
     while continue_flag.is_set():
         try:
             # Use 1 second socket timeout to check continue_flag every second
-            tuple_hdr, tuple_data = zephyrctl.btp_socket.read(1)
+            tuple_hdr, tuple_data = iutctl.btp_socket.read(1)
         except socket.timeout:
             continue
 
-        btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GAP,
-                      btpdef.GAP_EV_DEVICE_FOUND)
+        btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GAP,
+                      defs.GAP_EV_DEVICE_FOUND)
 
         fmt = '<6sBBBH'
         if len(tuple_data[0]) < struct.calcsize(fmt):
@@ -912,24 +973,24 @@ def gap_start_discov(transport='le', type='active', mode='general', duration=10)
     """
     logging.debug("%s", gap_start_discov.__name__)
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
     flags = 0
 
     if transport == "le":
-        flags |= btpdef.GAP_DISCOVERY_FLAG_LE
+        flags |= defs.GAP_DISCOVERY_FLAG_LE
     else:
-        flags |= btpdef.GAP_DISCOVERY_FLAG_BREDR
+        flags |= defs.GAP_DISCOVERY_FLAG_BREDR
 
     if type == "active":
-        flags |= btpdef.GAP_DISCOVERY_FLAG_LE_ACTIVE_SCAN
+        flags |= defs.GAP_DISCOVERY_FLAG_LE_ACTIVE_SCAN
 
     if mode == "limited":
-        flags |= btpdef.GAP_DISCOVERY_FLAG_LIMITED
+        flags |= defs.GAP_DISCOVERY_FLAG_LIMITED
     elif mode == "observe":
-        flags |= btpdef.GAP_DISCOVERY_FLAG_LE_OBSERVE
+        flags |= defs.GAP_DISCOVERY_FLAG_LE_OBSERVE
 
-    zephyrctl.btp_socket.send(*GAP['start_discov'], data=chr(flags))
+    iutctl.btp_socket.send(*GAP['start_discov'], data=chr(flags))
 
     gap_command_rsp_succ()
 
@@ -998,9 +1059,9 @@ def discover_and_verify(description, transport='le', type='active',
 def __gap_stop_discov():
     logging.debug("%s", __gap_stop_discov.__name__)
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
-    zephyrctl.btp_socket.send(*GAP['stop_discov'])
+    iutctl.btp_socket.send(*GAP['stop_discov'])
 
     gap_command_rsp_succ()
 
@@ -1037,21 +1098,21 @@ def is_iut_addr_random():
 
 
 def has_iut_privacy():
-    return __gap_current_settings_is_set(btpdef.GAP_SETTINGS_PRIVACY)
+    return __gap_current_settings_is_set(defs.GAP_SETTINGS_PRIVACY)
 
 
 def gap_read_ctrl_info():
     logging.debug("%s", gap_read_ctrl_info.__name__)
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
-    zephyrctl.btp_socket.send(*GAP['read_ctrl_info'])
+    iutctl.btp_socket.send(*GAP['read_ctrl_info'])
 
-    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
-    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GAP,
-                  btpdef.GAP_READ_CONTROLLER_INFO)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GAP,
+                  defs.GAP_READ_CONTROLLER_INFO)
 
     fmt = '<6sII3s249s11s'
     if len(tuple_data[0]) < struct.calcsize(fmt):
@@ -1064,8 +1125,8 @@ def gap_read_ctrl_info():
     stack = get_stack()
 
     addr_type = Addr.le_random if \
-        (_curr_set & (1 << btpdef.GAP_SETTINGS_PRIVACY)) or \
-        (_curr_set & (1 << btpdef.GAP_SETTINGS_STATIC_ADDRESS)) else \
+        (_curr_set & (1 << defs.GAP_SETTINGS_PRIVACY)) or \
+        (_curr_set & (1 << defs.GAP_SETTINGS_STATIC_ADDRESS)) else \
         Addr.le_public
 
     stack.gap.iut_bd_addr.data = (_addr, addr_type)
@@ -1076,13 +1137,13 @@ def gap_read_ctrl_info():
 
 def gap_identity_resolved_ev():
     logging.debug("%s", gap_identity_resolved_ev.__name__)
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
-    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
-    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GAP,
-                  btpdef.GAP_EV_IDENTITY_RESOLVED)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GAP,
+                  defs.GAP_EV_IDENTITY_RESOLVED)
 
     fmt = '<B6sB6s'
     if len(tuple_data[0]) != struct.calcsize(fmt):
@@ -1104,12 +1165,12 @@ def gap_identity_resolved_ev():
 def gap_command_rsp_succ(op=None):
     logging.debug("%s", gap_command_rsp_succ.__name__)
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
-    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
-    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GAP, op)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GAP, op)
 
     return tuple_data
 
@@ -1117,7 +1178,7 @@ def gap_command_rsp_succ(op=None):
 def gatts_add_svc(svc_type, uuid):
     logging.debug("%s %r %r", gatts_add_svc.__name__, svc_type, uuid)
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
     data_ba = bytearray()
     uuid_ba = binascii.unhexlify(uuid.translate(None, "-"))[::-1]
@@ -1126,7 +1187,7 @@ def gatts_add_svc(svc_type, uuid):
     data_ba.extend(chr(len(uuid_ba)))
     data_ba.extend(uuid_ba)
 
-    zephyrctl.btp_socket.send(*GATTS['add_svc'], data=data_ba)
+    iutctl.btp_socket.send(*GATTS['add_svc'], data=data_ba)
 
     gatt_command_rsp_succ()
 
@@ -1134,7 +1195,7 @@ def gatts_add_svc(svc_type, uuid):
 def gatts_add_inc_svc(hdl):
     logging.debug("%s %r", gatts_add_inc_svc.__name__, hdl)
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
     if type(hdl) is str:
         hdl = int(hdl, 16)
@@ -1143,7 +1204,7 @@ def gatts_add_inc_svc(hdl):
     hdl_ba = struct.pack('H', hdl)
     data_ba.extend(hdl_ba)
 
-    zephyrctl.btp_socket.send(*GATTS['add_inc_svc'], data=data_ba)
+    iutctl.btp_socket.send(*GATTS['add_inc_svc'], data=data_ba)
 
     gatt_command_rsp_succ()
 
@@ -1152,7 +1213,7 @@ def gatts_add_char(hdl, prop, perm, uuid):
     logging.debug("%s %r %r %r %r", gatts_add_char.__name__, hdl, prop, perm,
                   uuid)
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
     if type(hdl) is str:
         hdl = int(hdl, 16)
@@ -1167,7 +1228,7 @@ def gatts_add_char(hdl, prop, perm, uuid):
     data_ba.extend(chr(len(uuid_ba)))
     data_ba.extend(uuid_ba)
 
-    zephyrctl.btp_socket.send(*GATTS['add_char'], data=data_ba)
+    iutctl.btp_socket.send(*GATTS['add_char'], data=data_ba)
 
     gatt_command_rsp_succ()
 
@@ -1175,7 +1236,7 @@ def gatts_add_char(hdl, prop, perm, uuid):
 def gatts_set_val(hdl, val):
     logging.debug("%s %r %r ", gatts_set_val.__name__, hdl, val)
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
     if type(hdl) is str:
         hdl = int(hdl, 16)
@@ -1189,7 +1250,7 @@ def gatts_set_val(hdl, val):
     data_ba.extend(val_len_ba)
     data_ba.extend(val_ba)
 
-    zephyrctl.btp_socket.send(*GATTS['set_val'], data=data_ba)
+    iutctl.btp_socket.send(*GATTS['set_val'], data=data_ba)
 
     gatt_command_rsp_succ()
 
@@ -1197,7 +1258,7 @@ def gatts_set_val(hdl, val):
 def gatts_add_desc(hdl, perm, uuid):
     logging.debug("%s %r %r %r", gatts_add_desc.__name__, hdl, perm, uuid)
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
     if type(hdl) is str:
         hdl = int(hdl, 16)
@@ -1211,7 +1272,7 @@ def gatts_add_desc(hdl, perm, uuid):
     data_ba.extend(chr(len(uuid_ba)))
     data_ba.extend(uuid_ba)
 
-    zephyrctl.btp_socket.send(*GATTS['add_desc'], data=data_ba)
+    iutctl.btp_socket.send(*GATTS['add_desc'], data=data_ba)
 
     gatt_command_rsp_succ()
 
@@ -1219,8 +1280,8 @@ def gatts_add_desc(hdl, perm, uuid):
 def gatts_start_server():
     logging.debug("%s", gatts_start_server.__name__)
 
-    zephyrctl = iutctl.get_zephyr()
-    zephyrctl.btp_socket.send(*GATTS['start_server'])
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*GATTS['start_server'])
 
     gatt_command_rsp_succ()
 
@@ -1229,7 +1290,7 @@ def gatts_set_enc_key_size(hdl, enc_key_size):
     logging.debug("%s %r %r", gatts_set_enc_key_size.__name__,
                   hdl, enc_key_size)
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
     if type(hdl) is str:
         hdl = int(hdl, 16)
@@ -1240,7 +1301,7 @@ def gatts_set_enc_key_size(hdl, enc_key_size):
     data_ba.extend(hdl_ba)
     data_ba.extend(chr(enc_key_size))
 
-    zephyrctl.btp_socket.send(*GATTS['set_enc_key_size'], data=data_ba)
+    iutctl.btp_socket.send(*GATTS['set_enc_key_size'], data=data_ba)
 
     gatt_command_rsp_succ()
 
@@ -1267,12 +1328,12 @@ def gatts_dec_attr_value_changed_ev_data(frame):
 def gatts_attr_value_changed_ev():
     logging.debug("%s", gatts_attr_value_changed_ev.__name__)
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
-    (tuple_hdr, tuple_data) = zephyrctl.btp_socket.read()
+    (tuple_hdr, tuple_data) = iutctl.btp_socket.read()
 
-    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
-                  btpdef.GATT_EV_ATTR_VALUE_CHANGED)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
+                  defs.GATT_EV_ATTR_VALUE_CHANGED)
 
     (handle, data) = gatts_dec_attr_value_changed_ev_data(tuple_data[0])
     logging.debug("%s %r %r", gatts_attr_value_changed_ev.__name__, handle, data)
@@ -1350,7 +1411,7 @@ def gatts_get_attrs(start_handle=0x0001, end_handle=0xffff, type_uuid=None):
     logging.debug("%s %r %r %r", gatts_get_attrs.__name__, start_handle,
                   end_handle, type_uuid)
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = iutctl.get_iut()
 
     data_ba = bytearray()
 
@@ -1373,12 +1434,12 @@ def gatts_get_attrs(start_handle=0x0001, end_handle=0xffff, type_uuid=None):
     else:
         data_ba.extend(chr(0))
 
-    zephyrctl.btp_socket.send(*GATTS['get_attrs'], data=data_ba)
+    iutctl.btp_socket.send(*GATTS['get_attrs'], data=data_ba)
 
-    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
-    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_GET_ATTRIBUTES)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT, defs.GATT_GET_ATTRIBUTES)
 
     return dec_gatts_get_attrs_rp(tuple_data[0], tuple_hdr.data_len)
 
@@ -1386,7 +1447,7 @@ def gatts_get_attrs(start_handle=0x0001, end_handle=0xffff, type_uuid=None):
 def gatts_get_attr_val(handle):
     logging.debug("%s %r", gatts_get_attr_val.__name__, handle)
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = iutctl.get_iut()
 
     data_ba = bytearray()
 
@@ -1396,12 +1457,12 @@ def gatts_get_attr_val(handle):
     hdl_ba = struct.pack('H', handle)
     data_ba.extend(hdl_ba)
 
-    zephyrctl.btp_socket.send(*GATTS['get_attr_val'], data=data_ba)
+    iutctl.btp_socket.send(*GATTS['get_attr_val'], data=data_ba)
 
-    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
-    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_GET_ATTRIBUTE_VALUE)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT, defs.GATT_GET_ATTRIBUTE_VALUE)
 
     hdr = '<BH'
     hdr_len = struct.calcsize(hdr)
@@ -1413,7 +1474,7 @@ def gatts_get_attr_val(handle):
 def gattc_exchange_mtu(bd_addr_type, bd_addr):
     logging.debug("%s %r %r", gattc_exchange_mtu.__name__, bd_addr_type,
                   bd_addr)
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
     gap_wait_for_connection()
 
@@ -1423,7 +1484,7 @@ def gattc_exchange_mtu(bd_addr_type, bd_addr):
     data_ba.extend(chr(bd_addr_type))
     data_ba.extend(bd_addr_ba)
 
-    zephyrctl.btp_socket.send(*GATTC['exchange_mtu'], data=data_ba)
+    iutctl.btp_socket.send(*GATTC['exchange_mtu'], data=data_ba)
 
     gatt_command_rsp_succ()
 
@@ -1431,7 +1492,7 @@ def gattc_exchange_mtu(bd_addr_type, bd_addr):
 def gattc_disc_prim_uuid(bd_addr_type, bd_addr, uuid):
     logging.debug("%s %r %r %r", gattc_disc_prim_uuid.__name__, bd_addr_type,
                   bd_addr, uuid)
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
     gap_wait_for_connection()
 
@@ -1445,13 +1506,13 @@ def gattc_disc_prim_uuid(bd_addr_type, bd_addr, uuid):
     data_ba.extend(chr(len(uuid_ba)))
     data_ba.extend(uuid_ba)
 
-    zephyrctl.btp_socket.send(*GATTC['disc_prim_uuid'], data=data_ba)
+    iutctl.btp_socket.send(*GATTC['disc_prim_uuid'], data=data_ba)
 
 
 def gattc_find_included(bd_addr_type, bd_addr, start_hdl, stop_hdl):
     logging.debug("%s %r %r %r %r", gattc_find_included.__name__,
                   bd_addr_type, bd_addr, start_hdl, stop_hdl)
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
     gap_wait_for_connection()
 
@@ -1472,7 +1533,7 @@ def gattc_find_included(bd_addr_type, bd_addr, start_hdl, stop_hdl):
     data_ba.extend(start_hdl_ba)
     data_ba.extend(stop_hdl_ba)
 
-    zephyrctl.btp_socket.send(*GATTC['find_included'], data=data_ba)
+    iutctl.btp_socket.send(*GATTC['find_included'], data=data_ba)
 
 
 def gattc_disc_all_chrc_find_attrs_rsp(exp_chars, store_attrs=False):
@@ -1481,14 +1542,14 @@ def gattc_disc_all_chrc_find_attrs_rsp(exp_chars, store_attrs=False):
     ATTRIBUTE FORMAT (CHARACTERISTIC) - (handle, val handle, props, uuid)
 
     """
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
-    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
     logging.debug("%s received %r %r",
                   gattc_disc_all_chrc_find_attrs_rsp.__name__, tuple_hdr,
                   tuple_data)
-    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
-                  btpdef.GATT_DISC_ALL_CHRC)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
+                  defs.GATT_DISC_ALL_CHRC)
 
     chars_tuple = gatt_dec_disc_rsp(tuple_data[0], "characteristic")
 
@@ -1519,7 +1580,7 @@ def gattc_disc_all_chrc_find_attrs_rsp(exp_chars, store_attrs=False):
 def gattc_disc_all_chrc(bd_addr_type, bd_addr, start_hdl, stop_hdl, svc=None):
     logging.debug("%s %r %r %r %r %r", gattc_disc_all_chrc.__name__,
                   bd_addr_type, bd_addr, start_hdl, stop_hdl, svc)
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
     gap_wait_for_connection()
 
@@ -1559,13 +1620,13 @@ def gattc_disc_all_chrc(bd_addr_type, bd_addr, start_hdl, stop_hdl, svc=None):
     data_ba.extend(start_hdl_ba)
     data_ba.extend(stop_hdl_ba)
 
-    zephyrctl.btp_socket.send(*GATTC['disc_all_chrc'], data=data_ba)
+    iutctl.btp_socket.send(*GATTC['disc_all_chrc'], data=data_ba)
 
 
 def gattc_disc_chrc_uuid(bd_addr_type, bd_addr, start_hdl, stop_hdl, uuid):
     logging.debug("%s %r %r %r %r %r", gattc_disc_chrc_uuid.__name__,
                   bd_addr_type, bd_addr, start_hdl, stop_hdl, uuid)
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
     gap_wait_for_connection()
 
@@ -1594,13 +1655,13 @@ def gattc_disc_chrc_uuid(bd_addr_type, bd_addr, start_hdl, stop_hdl, uuid):
     data_ba.extend(chr(len(uuid_ba)))
     data_ba.extend(uuid_ba)
 
-    zephyrctl.btp_socket.send(*GATTC['disc_chrc_uuid'], data=data_ba)
+    iutctl.btp_socket.send(*GATTC['disc_chrc_uuid'], data=data_ba)
 
 
 def gattc_disc_all_desc(bd_addr_type, bd_addr, start_hdl, stop_hdl):
     logging.debug("%s %r %r %r %r", gattc_disc_all_desc.__name__,
                   bd_addr_type, bd_addr, start_hdl, stop_hdl)
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
     gap_wait_for_connection()
 
@@ -1621,7 +1682,7 @@ def gattc_disc_all_desc(bd_addr_type, bd_addr, start_hdl, stop_hdl):
     data_ba.extend(start_hdl_ba)
     data_ba.extend(stop_hdl_ba)
 
-    zephyrctl.btp_socket.send(*GATTC['disc_all_desc'], data=data_ba)
+    iutctl.btp_socket.send(*GATTC['disc_all_desc'], data=data_ba)
 
 
 def gattc_read_char_val(bd_addr_type, bd_addr, char):
@@ -1650,7 +1711,7 @@ def gattc_read_char_val(bd_addr_type, bd_addr, char):
 def gattc_read(bd_addr_type, bd_addr, hdl):
     logging.debug("%s %r %r %r", gattc_read.__name__, bd_addr_type, bd_addr,
                   hdl)
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
     gap_wait_for_connection()
 
@@ -1665,13 +1726,13 @@ def gattc_read(bd_addr_type, bd_addr, hdl):
     data_ba.extend(bd_addr_ba)
     data_ba.extend(hdl_ba)
 
-    zephyrctl.btp_socket.send(*GATTC['read'], data=data_ba)
+    iutctl.btp_socket.send(*GATTC['read'], data=data_ba)
 
 
 def gattc_read_long(bd_addr_type, bd_addr, hdl, off, modif_off=None):
     logging.debug("%s %r %r %r %r %r", gattc_read_long.__name__, bd_addr_type,
                   bd_addr, hdl, off, modif_off)
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
     gap_wait_for_connection()
 
@@ -1693,13 +1754,13 @@ def gattc_read_long(bd_addr_type, bd_addr, hdl, off, modif_off=None):
     data_ba.extend(hdl_ba)
     data_ba.extend(off_ba)
 
-    zephyrctl.btp_socket.send(*GATTC['read_long'], data=data_ba)
+    iutctl.btp_socket.send(*GATTC['read_long'], data=data_ba)
 
 
 def gattc_read_multiple(bd_addr_type, bd_addr, *hdls):
     logging.debug("%s %r %r %r", gattc_read_multiple.__name__, bd_addr_type,
                   bd_addr, hdls)
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
     gap_wait_for_connection()
 
@@ -1717,13 +1778,13 @@ def gattc_read_multiple(bd_addr_type, bd_addr, *hdls):
     data_ba.extend(chr(len(hdls)))
     data_ba.extend(hdls_ba)
 
-    zephyrctl.btp_socket.send(*GATTC['read_multiple'], data=data_ba)
+    iutctl.btp_socket.send(*GATTC['read_multiple'], data=data_ba)
 
 
 def gattc_write_without_rsp(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
     logging.debug("%s %r %r %r %r %r", gattc_write_without_rsp.__name__,
                   bd_addr_type, bd_addr, hdl, val, val_mtp)
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
     gap_wait_for_connection()
 
@@ -1746,7 +1807,7 @@ def gattc_write_without_rsp(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
     data_ba.extend(val_len_ba)
     data_ba.extend(val_ba)
 
-    zephyrctl.btp_socket.send(*GATTC['write_without_rsp'], data=data_ba)
+    iutctl.btp_socket.send(*GATTC['write_without_rsp'], data=data_ba)
 
     gatt_command_rsp_succ()
 
@@ -1754,7 +1815,7 @@ def gattc_write_without_rsp(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
 def gattc_signed_write(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
     logging.debug("%s %r %r %r %r %r", gattc_signed_write.__name__,
                   bd_addr_type, bd_addr, hdl, val, val_mtp)
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
     gap_wait_for_connection()
 
@@ -1778,7 +1839,7 @@ def gattc_signed_write(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
     data_ba.extend(val_len_ba)
     data_ba.extend(val_ba)
 
-    zephyrctl.btp_socket.send(*GATTC['signed_write'], data=data_ba)
+    iutctl.btp_socket.send(*GATTC['signed_write'], data=data_ba)
 
     gatt_command_rsp_succ()
 
@@ -1786,7 +1847,7 @@ def gattc_signed_write(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
 def gattc_write(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
     logging.debug("%s %r %r %r %r %r", gattc_write.__name__, bd_addr_type,
                   bd_addr, hdl, val, val_mtp)
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
     gap_wait_for_connection()
 
@@ -1809,7 +1870,7 @@ def gattc_write(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
     data_ba.extend(val_len_ba)
     data_ba.extend(val_ba)
 
-    zephyrctl.btp_socket.send(*GATTC['write'], data=data_ba)
+    iutctl.btp_socket.send(*GATTC['write'], data=data_ba)
 
 
 def gattc_write_long(bd_addr_type, bd_addr, hdl, off, val, length=None):
@@ -1826,7 +1887,7 @@ def gattc_write_long(bd_addr_type, bd_addr, hdl, off, val, length=None):
     if length:
         val *= int(length)
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
     bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
     hdl_ba = struct.pack('H', hdl)
@@ -1842,7 +1903,7 @@ def gattc_write_long(bd_addr_type, bd_addr, hdl, off, val, length=None):
     data_ba.extend(val_len_ba)
     data_ba.extend(val_ba)
 
-    zephyrctl.btp_socket.send(*GATTC['write_long'], data=data_ba)
+    iutctl.btp_socket.send(*GATTC['write_long'], data=data_ba)
 
 
 def gattc_cfg_notify(bd_addr_type, bd_addr, enable, ccc_hdl):
@@ -1853,7 +1914,7 @@ def gattc_cfg_notify(bd_addr_type, bd_addr, enable, ccc_hdl):
     if type(ccc_hdl) is str:
         ccc_hdl = int(ccc_hdl, 16)
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
     bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
     ccc_hdl_ba = struct.pack('H', ccc_hdl)
@@ -1864,14 +1925,14 @@ def gattc_cfg_notify(bd_addr_type, bd_addr, enable, ccc_hdl):
     data_ba.extend(chr(enable))
     data_ba.extend(ccc_hdl_ba)
 
-    zephyrctl.btp_socket.send(*GATTC['cfg_notify'], data=data_ba)
+    iutctl.btp_socket.send(*GATTC['cfg_notify'], data=data_ba)
 
-    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
     logging.debug("%s received %r %r", gattc_cfg_notify.__name__,
                   tuple_hdr, tuple_data)
 
-    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
-                  btpdef.GATT_CFG_NOTIFY)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
+                  defs.GATT_CFG_NOTIFY)
 
 
 def gattc_cfg_indicate(bd_addr_type, bd_addr, enable, ccc_hdl):
@@ -1882,7 +1943,7 @@ def gattc_cfg_indicate(bd_addr_type, bd_addr, enable, ccc_hdl):
     if type(ccc_hdl) is str:
         ccc_hdl = int(ccc_hdl, 16)
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
     bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
     ccc_hdl_ba = struct.pack('H', ccc_hdl)
@@ -1893,26 +1954,26 @@ def gattc_cfg_indicate(bd_addr_type, bd_addr, enable, ccc_hdl):
     data_ba.extend(chr(enable))
     data_ba.extend(ccc_hdl_ba)
 
-    zephyrctl.btp_socket.send(*GATTC['cfg_indicate'], data=data_ba)
+    iutctl.btp_socket.send(*GATTC['cfg_indicate'], data=data_ba)
 
-    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
     logging.debug("%s received %r %r", gattc_cfg_indicate.__name__,
                   tuple_hdr, tuple_data)
 
-    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
-                  btpdef.GATT_CFG_INDICATE)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
+                  defs.GATT_CFG_INDICATE)
 
 
 def gattc_notification_ev(bd_addr, bd_addr_type, ev_type):
     logging.debug("%s %r %r %r", gattc_notification_ev.__name__, bd_addr,
                   bd_addr_type, ev_type)
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
-    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
-    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
-                  btpdef.GATT_EV_NOTIFICATION)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
+                  defs.GATT_EV_NOTIFICATION)
 
     data_ba = bytearray()
     bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
@@ -1928,12 +1989,12 @@ def gattc_notification_ev(bd_addr, bd_addr_type, ev_type):
 def gatt_command_rsp_succ():
     logging.debug("%s", gatt_command_rsp_succ.__name__)
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
-    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
-    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT)
 
 
 def gatt_dec_svc_attr(data):
@@ -2082,14 +2143,14 @@ def gattc_disc_prim_uuid_find_attrs_rsp(exp_svcs, store_attrs=False):
     ATTRIBUTE FORMAT (PRIMARY SERVICE) - (start handle, end handle, uuid)
 
     """
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
-    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
     logging.debug("%s received %r %r",
                   gattc_disc_prim_uuid_find_attrs_rsp.__name__, tuple_hdr,
                   tuple_data)
-    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
-                  btpdef.GATT_DISC_PRIM_UUID)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
+                  defs.GATT_DISC_PRIM_UUID)
 
     svcs_tuple = gatt_dec_disc_rsp(tuple_data[0], "service")
 
@@ -2116,14 +2177,14 @@ def gattc_disc_prim_uuid_find_attrs_rsp(exp_svcs, store_attrs=False):
 
 
 def gattc_disc_prim_uuid_rsp(store_rsp=False):
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
-    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
     logging.debug("%s received %r %r", gattc_disc_prim_uuid_rsp.__name__,
                   tuple_hdr, tuple_data)
 
-    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
-                  btpdef.GATT_DISC_PRIM_UUID)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
+                  defs.GATT_DISC_PRIM_UUID)
 
     svcs_tuple = gatt_dec_disc_rsp(tuple_data[0], "service")
     logging.debug("%s %r", gattc_disc_prim_uuid_rsp.__name__, svcs_tuple)
@@ -2159,14 +2220,14 @@ def gattc_disc_prim_uuid_rsp(store_rsp=False):
 
 
 def gattc_find_included_rsp(store_rsp=False):
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
-    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
     logging.debug("%s received %r %r", gattc_find_included_rsp.__name__,
                   tuple_hdr, tuple_data)
 
-    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
-                  btpdef.GATT_FIND_INCLUDED)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
+                  defs.GATT_FIND_INCLUDED)
 
     incls_tuple = gatt_dec_disc_rsp(tuple_data[0], "include")
     logging.debug("%s %r", gattc_find_included_rsp.__name__, incls_tuple)
@@ -2192,14 +2253,14 @@ def gattc_find_included_rsp(store_rsp=False):
 
 
 def gattc_disc_all_chrc_rsp(store_rsp=False):
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
-    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
     logging.debug("%s received %r %r", gattc_disc_all_chrc_rsp.__name__,
                   tuple_hdr, tuple_data)
 
-    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
-                  btpdef.GATT_DISC_ALL_CHRC)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
+                  defs.GATT_DISC_ALL_CHRC)
 
     chrcs_tuple = gatt_dec_disc_rsp(tuple_data[0], "characteristic")
     logging.debug("%s %r", gattc_disc_all_chrc_rsp.__name__, chrcs_tuple)
@@ -2217,14 +2278,14 @@ def gattc_disc_all_chrc_rsp(store_rsp=False):
 
 
 def gattc_disc_chrc_uuid_rsp(store_rsp=False):
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
-    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
     logging.debug("%s received %r %r", gattc_disc_chrc_uuid_rsp.__name__,
                   tuple_hdr, tuple_data)
 
-    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
-                  btpdef.GATT_DISC_CHRC_UUID)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
+                  defs.GATT_DISC_CHRC_UUID)
 
     chrcs_tuple = gatt_dec_disc_rsp(tuple_data[0], "characteristic")
     logging.debug("%s %r", gattc_disc_chrc_uuid_rsp.__name__, chrcs_tuple)
@@ -2250,14 +2311,14 @@ def gattc_disc_chrc_uuid_rsp(store_rsp=False):
 
 
 def gattc_disc_all_desc_rsp(store_rsp=False):
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
-    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
     logging.debug("%s received %r %r", gattc_disc_all_desc_rsp.__name__,
                   tuple_hdr, tuple_data)
 
-    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
-                  btpdef.GATT_DISC_ALL_DESC)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
+                  defs.GATT_DISC_ALL_DESC)
 
     descs_tuple = gatt_dec_disc_rsp(tuple_data[0], "descriptor")
     logging.debug("%s %r", gattc_disc_all_desc_rsp.__name__, descs_tuple)
@@ -2290,16 +2351,16 @@ att_rsp_str = {0:   "No error",
 
 
 def gattc_read_rsp(store_rsp=False, store_val=False, timeout=None):
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
     if timeout:
-        tuple_hdr, tuple_data = zephyrctl.btp_socket.read(timeout)
+        tuple_hdr, tuple_data = iutctl.btp_socket.read(timeout)
     else:
-        tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+        tuple_hdr, tuple_data = iutctl.btp_socket.read()
     logging.debug("%s received %r %r", gattc_read_rsp.__name__, tuple_hdr,
                   tuple_data)
 
-    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_READ)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT, defs.GATT_READ)
 
     rsp, value = gatt_dec_read_rsp(tuple_data[0])
     logging.debug("%s %r %r", gattc_read_rsp.__name__, rsp, value)
@@ -2316,13 +2377,13 @@ def gattc_read_rsp(store_rsp=False, store_val=False, timeout=None):
 
 
 def gattc_read_long_rsp(store_rsp=False, store_val=False):
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
-    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
     logging.debug("%s received %r %r", gattc_read_long_rsp.__name__, tuple_hdr,
                   tuple_data)
 
-    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_READ_LONG)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT, defs.GATT_READ_LONG)
 
     rsp, value = gatt_dec_read_rsp(tuple_data[0])
     logging.debug("%s %r %r", gattc_read_long_rsp.__name__, rsp, value)
@@ -2339,14 +2400,14 @@ def gattc_read_long_rsp(store_rsp=False, store_val=False):
 
 
 def gattc_read_multiple_rsp(store_val=False, store_rsp=False):
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
-    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
     logging.debug("%s received %r %r", gattc_read_multiple_rsp.__name__,
                   tuple_hdr, tuple_data)
 
-    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
-                  btpdef.GATT_READ_MULTIPLE)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
+                  defs.GATT_READ_MULTIPLE)
 
     rsp, values = gatt_dec_read_rsp(tuple_data[0])
     logging.debug("%s %r %r", gattc_read_multiple_rsp.__name__, rsp, values)
@@ -2363,16 +2424,16 @@ def gattc_read_multiple_rsp(store_val=False, store_rsp=False):
 
 
 def gattc_write_rsp(store_rsp=False, timeout=None):
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
     if timeout:
-        tuple_hdr, tuple_data = zephyrctl.btp_socket.read(timeout)
+        tuple_hdr, tuple_data = iutctl.btp_socket.read(timeout)
     else:
-        tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+        tuple_hdr, tuple_data = iutctl.btp_socket.read()
     logging.debug("%s received %r %r", gattc_write_rsp.__name__, tuple_hdr,
                   tuple_data)
 
-    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT, btpdef.GATT_WRITE)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT, defs.GATT_WRITE)
 
     rsp = gatt_dec_write_rsp(tuple_data[0])
     logging.debug("%s %r", gattc_write_rsp.__name__, rsp)
@@ -2384,14 +2445,14 @@ def gattc_write_rsp(store_rsp=False, timeout=None):
 
 
 def gattc_write_long_rsp(store_rsp=False):
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
-    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
     logging.debug("%s received %r %r", gattc_write_long_rsp.__name__,
                   tuple_hdr, tuple_data)
 
-    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_GATT,
-                  btpdef.GATT_WRITE_LONG)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
+                  defs.GATT_WRITE_LONG)
 
     rsp = gatt_dec_write_rsp(tuple_data[0])
     logging.debug("%s %r", gattc_write_long_rsp.__name__, rsp)
@@ -2405,19 +2466,18 @@ def gattc_write_long_rsp(store_rsp=False):
 def l2cap_command_rsp_succ(op=None):
     logging.debug("%s", l2cap_command_rsp_succ.__name__)
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
-    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
-    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_L2CAP, op)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_L2CAP, op)
 
 
 def l2cap_conn(bd_addr, bd_addr_type, psm):
     logging.debug("%s %r %r %r", l2cap_conn.__name__, bd_addr, bd_addr_type,
                   psm)
-    zephyrctl = iutctl.get_zephyr()
-
+    iutctl = get_iut()
     gap_wait_for_connection()
 
     if type(psm) is str:
@@ -2429,7 +2489,7 @@ def l2cap_conn(bd_addr, bd_addr_type, psm):
     data_ba.extend(bd_addr_ba)
     data_ba.extend(struct.pack('H', psm))
 
-    zephyrctl.btp_socket.send(*L2CAP['connect'], data=data_ba)
+    iutctl.btp_socket.send(*L2CAP['connect'], data=data_ba)
 
 
 l2cap_result_str = {0:  "Connection successful",
@@ -2447,12 +2507,12 @@ l2cap_result_str = {0:  "Connection successful",
 def l2cap_conn_rsp():
     logging.debug("%s", l2cap_conn_rsp.__name__)
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
-    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
-    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_L2CAP, btpdef.L2CAP_CONNECT)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_L2CAP, defs.L2CAP_CONNECT)
 
     chan_id = struct.unpack_from('<B', tuple_data[0])[0]
 
@@ -2465,7 +2525,7 @@ def l2cap_conn_rsp():
 def l2cap_disconn(chan_id):
     logging.debug("%s %r", l2cap_disconn.__name__, chan_id)
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
     global L2CAP_CHAN
     try:
@@ -2478,16 +2538,16 @@ def l2cap_disconn(chan_id):
 
     data_ba = bytearray(chr(chan_id))
 
-    zephyrctl.btp_socket.send(*L2CAP['disconnect'], data=data_ba)
+    iutctl.btp_socket.send(*L2CAP['disconnect'], data=data_ba)
 
-    l2cap_command_rsp_succ(btpdef.L2CAP_DISCONNECT)
+    l2cap_command_rsp_succ(defs.L2CAP_DISCONNECT)
 
 
 def l2cap_send_data(chan_id, val, val_mtp=None):
     logging.debug("%s %r %r %r", l2cap_send_data.__name__, chan_id, val,
                   val_mtp)
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
     if val_mtp:
         val *= int(val_mtp)
@@ -2499,15 +2559,15 @@ def l2cap_send_data(chan_id, val, val_mtp=None):
     data_ba.extend(val_len_ba)
     data_ba.extend(val_ba)
 
-    zephyrctl.btp_socket.send(*L2CAP['send_data'], data=data_ba)
+    iutctl.btp_socket.send(*L2CAP['send_data'], data=data_ba)
 
-    l2cap_command_rsp_succ(btpdef.L2CAP_SEND_DATA)
+    l2cap_command_rsp_succ(defs.L2CAP_SEND_DATA)
 
 
 def l2cap_listen(psm, transport):
     logging.debug("%s %r %r", l2cap_le_listen.__name__, psm, transport)
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
     if type(psm) is str:
         psm = int(psm, 16)
@@ -2515,24 +2575,24 @@ def l2cap_listen(psm, transport):
     data_ba = bytearray(struct.pack('H', psm))
     data_ba.extend(struct.pack('B', transport))
 
-    zephyrctl.btp_socket.send(*L2CAP['listen'], data=data_ba)
+    iutctl.btp_socket.send(*L2CAP['listen'], data=data_ba)
 
-    l2cap_command_rsp_succ(btpdef.L2CAP_LISTEN)
+    l2cap_command_rsp_succ(defs.L2CAP_LISTEN)
 
 def l2cap_le_listen(psm):
-    l2cap_listen(psm, btpdef.L2CAP_TRANSPORT_LE)
+    l2cap_listen(psm, defs.L2CAP_TRANSPORT_LE)
 
 
 def l2cap_connected_ev():
     logging.debug("%s", l2cap_connected_ev.__name__)
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
-    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
-    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_L2CAP,
-                  btpdef.L2CAP_EV_CONNECTED)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_L2CAP,
+                  defs.L2CAP_EV_CONNECTED)
 
     chan_id, psm, bd_addr_type, bd_addr = struct.unpack_from('<BHB6s',
                                                              tuple_data[0])
@@ -2549,13 +2609,13 @@ def l2cap_connected_ev():
 def l2cap_disconnected_ev(exp_chan_id, store=False):
     logging.debug("%s %r", l2cap_disconnected_ev.__name__, exp_chan_id)
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
-    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
-    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_L2CAP,
-                  btpdef.L2CAP_EV_DISCONNECTED)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_L2CAP,
+                  defs.L2CAP_EV_DISCONNECTED)
 
     res, chan_id, psm, bd_addr_type, bd_addr = struct.unpack_from('<HBHB6s',
                                                                   tuple_data[0])
@@ -2576,13 +2636,13 @@ def l2cap_disconnected_ev(exp_chan_id, store=False):
 def l2cap_data_rcv_ev(chan_id=None, store=False):
     logging.debug("%s %r %r", l2cap_data_rcv_ev.__name__, chan_id, store)
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
-    tuple_hdr, tuple_data = zephyrctl.btp_socket.read()
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
-    btp_hdr_check(tuple_hdr, btpdef.BTP_SERVICE_ID_L2CAP,
-                  btpdef.L2CAP_EV_DATA_RECEIVED)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_L2CAP,
+                  defs.L2CAP_EV_DATA_RECEIVED)
 
     data_hdr = '<BH'
     data_hdr_len = struct.calcsize(data_hdr)
@@ -2621,8 +2681,8 @@ def gap_disconnected_ev_(gap, data, data_len):
 
 
 GAP_EV = {
-    btpdef.GAP_EV_DEVICE_CONNECTED: gap_connected_ev_,
-    btpdef.GAP_EV_DEVICE_DISCONNECTED: gap_disconnected_ev_,
+    defs.GAP_EV_DEVICE_CONNECTED: gap_connected_ev_,
+    defs.GAP_EV_DEVICE_DISCONNECTED: gap_disconnected_ev_,
 }
 
 
@@ -2632,7 +2692,7 @@ def mesh_config_prov(uuid, static_auth, output_size, output_actions, input_size,
                   static_auth, output_size, output_actions, input_size,
                   input_actions)
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = iutctl.get_iut()
 
     uuid = binascii.unhexlify(uuid)
     static_auth = binascii.unhexlify(static_auth)
@@ -2640,7 +2700,7 @@ def mesh_config_prov(uuid, static_auth, output_size, output_actions, input_size,
     data = bytearray(struct.pack("<16s16sBHBH", uuid, static_auth, output_size,
                                  output_actions, input_size, input_actions))
 
-    zephyrctl.btp_socket.send_wait_rsp(*MESH['config_prov'], data=data)
+    iutctl.btp_socket.send_wait_rsp(*MESH['config_prov'], data=data)
 
 
 def mesh_prov_node():
@@ -2655,25 +2715,25 @@ def mesh_prov_node():
                                  stack.mesh.flags, stack.mesh.iv_idx,
                                  stack.mesh.seq_num, stack.mesh.addr, dev_key))
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = iutctl.get_iut()
 
-    zephyrctl.btp_socket.send_wait_rsp(*MESH['prov_node'], data=data)
+    iutctl.btp_socket.send_wait_rsp(*MESH['prov_node'], data=data)
 
 
 def mesh_init():
     logging.debug("%s", mesh_init.__name__)
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = iutctl.get_iut()
 
-    zephyrctl.btp_socket.send_wait_rsp(*MESH['init'])
+    iutctl.btp_socket.send_wait_rsp(*MESH['init'])
 
 
 def mesh_reset():
     logging.debug("%s", mesh_reset.__name__)
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = iutctl.get_iut()
 
-    zephyrctl.btp_socket.send_wait_rsp(*MESH['reset'])
+    iutctl.btp_socket.send_wait_rsp(*MESH['reset'])
 
     stack = get_stack()
 
@@ -2683,37 +2743,37 @@ def mesh_reset():
 def mesh_input_number(number):
     logging.debug("%s %r", mesh_input_number.__name__, number)
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = iutctl.get_iut()
 
     if type(number) is str:
         number = int(number)
 
     data = bytearray(struct.pack("<I", number))
 
-    zephyrctl.btp_socket.send_wait_rsp(*MESH['input_num'], data=data)
+    iutctl.btp_socket.send_wait_rsp(*MESH['input_num'], data=data)
 
 
 def mesh_input_string(string):
     logging.debug("%s %s", mesh_input_string.__name__, string)
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = iutctl.get_iut()
 
     data = bytearray(string)
 
-    zephyrctl.btp_socket.send_wait_rsp(*MESH['input_str'], data=data)
+    iutctl.btp_socket.send_wait_rsp(*MESH['input_str'], data=data)
 
 
 def mesh_iv_update_test_mode(enable):
     logging.debug("%s", mesh_iv_update_test_mode.__name__)
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
     if enable:
         data = bytearray(struct.pack("<B", 0x01))
     else:
         data = bytearray(struct.pack("<B", 0x00))
 
-    zephyrctl.btp_socket.send_wait_rsp(*MESH['iv_update_test_mode'], data=data)
+    iutctl.btp_socket.send_wait_rsp(*MESH['iv_update_test_mode'], data=data)
 
     stack = get_stack()
     stack.mesh.is_iv_test_mode_enabled.data = True
@@ -2722,9 +2782,9 @@ def mesh_iv_update_test_mode(enable):
 def mesh_iv_update_toggle():
     logging.debug("%s", mesh_iv_update_toggle.__name__)
 
-    zephyrctl = iutctl.get_zephyr()
+    iutctl = get_iut()
 
-    zephyrctl.btp_socket.send_wait_rsp(*MESH['iv_update_toggle'])
+    iutctl.btp_socket.send_wait_rsp(*MESH['iv_update_toggle'])
 
 
 def mesh_net_send(ttl, src, dst, payload):
@@ -2751,15 +2811,15 @@ def mesh_net_send(ttl, src, dst, payload):
     data = bytearray(struct.pack("<BHHB", ttl, src, dst, payload_len))
     data.extend(payload)
 
-    zephyrctl = iutctl.get_zephyr()
-    zephyrctl.btp_socket.send_wait_rsp(*MESH['net_send'], data=data)
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*MESH['net_send'], data=data)
 
 
 def mesh_health_generate_faults():
     logging.debug("%s %r", mesh_health_generate_faults.__name__)
 
-    zephyrctl = iutctl.get_zephyr()
-    (rsp,) = zephyrctl.btp_socket.send_wait_rsp(*MESH['health_generate_faults'])
+    iutctl = get_iut()
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MESH['health_generate_faults'])
 
     hdr_fmt = '<BBB'
     hdr_len = struct.calcsize(hdr_fmt)
@@ -2778,8 +2838,8 @@ def mesh_health_generate_faults():
 def mesh_health_clear_faults():
     logging.debug("%s %r", mesh_health_clear_faults.__name__)
 
-    zephyrctl = iutctl.get_zephyr()
-    zephyrctl.btp_socket.send_wait_rsp(*MESH['mesh_clear_faults'])
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*MESH['mesh_clear_faults'])
 
 
 def mesh_lpn(enable):
@@ -2792,15 +2852,15 @@ def mesh_lpn(enable):
 
     data = bytearray(struct.pack("<B", enable))
 
-    zephyrctl = iutctl.get_zephyr()
-    zephyrctl.btp_socket.send_wait_rsp(*MESH['lpn'], data=data)
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*MESH['lpn'], data=data)
 
 
 def mesh_lpn_poll():
     logging.debug("%s", mesh_lpn_poll.__name__)
 
-    zephyrctl = iutctl.get_zephyr()
-    zephyrctl.btp_socket.send_wait_rsp(*MESH['lpn_poll'])
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*MESH['lpn_poll'])
 
 
 def mesh_out_number_action_ev(mesh, data, data_len):
@@ -2877,13 +2937,13 @@ def mesh_net_rcv_ev(mesh, data, data_len):
 
 
 MESH_EV = {
-    btpdef.MESH_EV_OUT_NUMBER_ACTION: mesh_out_number_action_ev,
-    btpdef.MESH_EV_OUT_STRING_ACTION: mesh_out_string_action_ev,
-    btpdef.MESH_EV_IN_ACTION: mesh_in_action_ev,
-    btpdef.MESH_EV_PROVISIONED: mesh_provisioned_ev,
-    btpdef.MESH_EV_PROV_LINK_OPEN: mesh_prov_link_open_ev,
-    btpdef.MESH_EV_PROV_LINK_CLOSED: mesh_prov_link_closed_ev,
-    btpdef.MESH_EV_NET_RECV: mesh_net_rcv_ev,
+    defs.MESH_EV_OUT_NUMBER_ACTION: mesh_out_number_action_ev,
+    defs.MESH_EV_OUT_STRING_ACTION: mesh_out_string_action_ev,
+    defs.MESH_EV_IN_ACTION: mesh_in_action_ev,
+    defs.MESH_EV_PROVISIONED: mesh_provisioned_ev,
+    defs.MESH_EV_PROV_LINK_OPEN: mesh_prov_link_open_ev,
+    defs.MESH_EV_PROV_LINK_CLOSED: mesh_prov_link_closed_ev,
+    defs.MESH_EV_NET_RECV: mesh_net_rcv_ev,
 }
 
 
@@ -2895,12 +2955,12 @@ def event_handler(hdr, data):
         logging.info("Stack not initialized")
         return False
 
-    if hdr.svc_id == btpdef.BTP_SERVICE_ID_MESH:
+    if hdr.svc_id == defs.BTP_SERVICE_ID_MESH:
         if hdr.op in MESH_EV and stack.mesh:
             cb = MESH_EV[hdr.op]
             cb(stack.mesh, data[0], hdr.data_len)
             return True
-    elif hdr.svc_id == btpdef.BTP_SERVICE_ID_GAP:
+    elif hdr.svc_id == defs.BTP_SERVICE_ID_GAP:
         if hdr.op in GAP_EV and stack.gap:
             cb = GAP_EV[hdr.op]
             cb(stack.gap, data[0], hdr.data_len)
@@ -2909,3 +2969,10 @@ def event_handler(hdr, data):
     # TODO: Raise BTP error instead of logging
     logging.error("Unhandled event! svc_id %s op %s", hdr.svc_id, hdr.op)
     return False
+
+
+def init(get_iut_method):
+    global get_iut
+
+    get_iut = get_iut_method
+    set_event_handler(event_handler)

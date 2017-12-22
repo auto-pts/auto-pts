@@ -17,25 +17,23 @@
 
 from ptsprojects.testcase import TestCase, TestFunc, \
     TestFuncCleanUp
-from ptsprojects.stack import get_stack
-from ptsprojects.zephyr.iutctl import get_iut
+from ptsprojects.bluez.iutctl import get_iut
+
+import btp.btp as btp
 
 
-class ZTestCase(TestCase):
-    """A Zephyr test case that uses QEMU or HW as DUT"""
+class BTestCase(TestCase):
+    """A Bluez test case class"""
 
     def __init__(self, *args, **kwargs):
         """Refer to TestCase.__init__ for parameters and their documentation"""
 
-        super(ZTestCase, self).__init__(*args, ptsproject_name = "zephyr",**kwargs)
+        super(BTestCase, self).__init__(*args, ptsproject_name="bluez",
+                                        **kwargs)
 
-        self.stack = get_stack()
-        self.zephyrctl = get_iut()
+        self.cmds.insert(0, TestFunc(btp.core_reg_svc_gap))
+        self.cmds.insert(1, TestFunc(btp.gap_set_powered_on))
+        self.cmds.insert(2, TestFunc(btp.gap_reset))
 
-        # first command is to start QEMU or HW
-        self.cmds.insert(0, TestFunc(self.zephyrctl.start))
-        self.cmds.insert(1, TestFunc(self.zephyrctl.wait_iut_ready_event))
-
-        self.cmds.append(TestFuncCleanUp(self.stack.cleanup))
-        # last command is to stop QEMU or HW
-        self.cmds.append(TestFuncCleanUp(self.zephyrctl.stop))
+        self.cmds.append(TestFuncCleanUp(btp.gap_set_powered_off))
+        self.cmds.append(TestFuncCleanUp(btp.core_unreg_svc_gap))

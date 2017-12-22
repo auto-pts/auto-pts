@@ -14,7 +14,7 @@
 #
 
 import struct
-import btpdef
+import defs
 from collections import namedtuple
 import logging
 
@@ -33,9 +33,9 @@ def parse_svc_gap(op, data_len, data):
 
 
 def parse_frame_generic(hdr, data):
-    if hdr.svc_id == btpdef.BTP_SERVICE_ID_CORE:
+    if hdr.svc_id == defs.BTP_SERVICE_ID_CORE:
         parse_svc_core(hdr.op, hdr.data_len, data)
-    elif hdr.svc_id == btpdef.BTP_SERVICE_ID_GAP:
+    elif hdr.svc_id == defs.BTP_SERVICE_ID_GAP:
         parse_svc_gap(hdr.op, hdr.data_len, data)
     else:
         raise Exception("Wrong Service ID of received frame")

@@ -28,7 +28,7 @@ except ImportError:  # running this module as script
         TestFuncCleanUp
     from ptsprojects.zephyr.ztestcase import ZTestCase
 
-import btp
+import btp.btp as btp
 from ptsprojects.stack import get_stack
 
 
