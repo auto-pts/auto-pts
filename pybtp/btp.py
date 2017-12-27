@@ -2836,7 +2836,7 @@ def mesh_net_send(ttl, src, dst, payload):
 
 
 def mesh_health_generate_faults():
-    logging.debug("%s %r", mesh_health_generate_faults.__name__)
+    logging.debug("%s", mesh_health_generate_faults.__name__)
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MESH['health_generate_faults'])
@@ -2857,7 +2857,7 @@ def mesh_health_generate_faults():
 
 
 def mesh_health_clear_faults():
-    logging.debug("%s %r", mesh_health_clear_faults.__name__)
+    logging.debug("%s", mesh_health_clear_faults.__name__)
 
     iutctl = get_iut()
     iutctl.btp_socket.send_wait_rsp(*MESH['mesh_clear_faults'])
