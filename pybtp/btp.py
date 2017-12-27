@@ -23,7 +23,7 @@ import socket
 from threading import Timer, Event
 
 import defs
-from types import BTPError, gap_settings_btp2txt
+from types import BTPError, gap_settings_btp2txt, addr2btp_ba
 from iutctl_common import set_event_handler
 from random import randint
 from collections import namedtuple
@@ -633,7 +633,7 @@ def gap_conn(bd_addr=None, bd_addr_type=None):
     iutctl = get_iut()
 
     data_ba = bytearray()
-    bd_addr_ba = binascii.unhexlify(pts_addr_get(bd_addr))[::-1]
+    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
 
     data_ba.extend(chr(pts_addr_type_get(bd_addr_type)))
     data_ba.extend(bd_addr_ba)
@@ -659,7 +659,7 @@ def gap_rpa_conn(description):
     bd_addr_type = Addr.le_random
 
     data_ba = bytearray()
-    bd_addr_ba = binascii.unhexlify(pts_addr_get(bd_addr))[::-1]
+    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
 
     data_ba.extend(chr(pts_addr_type_get(bd_addr_type)))
     data_ba.extend(bd_addr_ba)
@@ -680,7 +680,7 @@ def gap_disconn(bd_addr=None, bd_addr_type=None):
         return
 
     data_ba = bytearray()
-    bd_addr_ba = binascii.unhexlify(pts_addr_get(bd_addr))[::-1]
+    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
 
     data_ba.extend(chr(pts_addr_type_get(bd_addr_type)))
     data_ba.extend(bd_addr_ba)
@@ -715,7 +715,7 @@ def gap_pair(bd_addr=None, bd_addr_type=None):
     iutctl = get_iut()
 
     data_ba = bytearray()
-    bd_addr_ba = binascii.unhexlify(pts_addr_get(bd_addr))[::-1]
+    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
 
     data_ba.extend(chr(pts_addr_type_get(bd_addr_type)))
     data_ba.extend(bd_addr_ba)
@@ -731,7 +731,7 @@ def gap_unpair(bd_addr=None, bd_addr_type=None):
     iutctl = get_iut()
 
     data_ba = bytearray()
-    bd_addr_ba = binascii.unhexlify(pts_addr_get(bd_addr))[::-1]
+    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
 
     data_ba.extend(chr(pts_addr_type_get(bd_addr_type)))
     data_ba.extend(bd_addr_ba)
@@ -802,7 +802,7 @@ def gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey):
     iutctl = get_iut()
 
     data_ba = bytearray()
-    bd_addr_ba = binascii.unhexlify(bd_addr)[::-1]
+    bd_addr_ba = addr2btp_ba(bd_addr)
 
     data_ba.extend(chr(bd_addr_type))
     data_ba.extend(bd_addr_ba)
@@ -1489,7 +1489,7 @@ def gattc_exchange_mtu(bd_addr_type, bd_addr):
     gap_wait_for_connection()
 
     data_ba = bytearray()
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    bd_addr_ba = addr2btp_ba(bd_addr)
 
     data_ba.extend(chr(bd_addr_type))
     data_ba.extend(bd_addr_ba)
@@ -1508,7 +1508,7 @@ def gattc_disc_prim_uuid(bd_addr_type, bd_addr, uuid):
 
     data_ba = bytearray()
 
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    bd_addr_ba = addr2btp_ba(bd_addr)
     uuid_ba = binascii.unhexlify(uuid.translate(None, "-"))[::-1]
 
     data_ba.extend(chr(bd_addr_type))
@@ -1534,7 +1534,7 @@ def gattc_find_included(bd_addr_type, bd_addr, start_hdl, stop_hdl):
 
     data_ba = bytearray()
 
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    bd_addr_ba = addr2btp_ba(bd_addr)
     start_hdl_ba = struct.pack('H', start_hdl)
     stop_hdl_ba = struct.pack('H', stop_hdl)
 
@@ -1621,7 +1621,7 @@ def gattc_disc_all_chrc(bd_addr_type, bd_addr, start_hdl, stop_hdl, svc=None):
 
     data_ba = bytearray()
 
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    bd_addr_ba = addr2btp_ba(bd_addr)
     start_hdl_ba = struct.pack('H', start_hdl)
     stop_hdl_ba = struct.pack('H', stop_hdl)
 
@@ -1648,7 +1648,7 @@ def gattc_disc_chrc_uuid(bd_addr_type, bd_addr, start_hdl, stop_hdl, uuid):
 
     data_ba = bytearray()
 
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    bd_addr_ba = addr2btp_ba(bd_addr)
     start_hdl_ba = struct.pack('H', start_hdl)
     stop_hdl_ba = struct.pack('H', stop_hdl)
 
@@ -1683,7 +1683,7 @@ def gattc_disc_all_desc(bd_addr_type, bd_addr, start_hdl, stop_hdl):
 
     data_ba = bytearray()
 
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    bd_addr_ba = addr2btp_ba(bd_addr)
     start_hdl_ba = struct.pack('H', start_hdl)
     stop_hdl_ba = struct.pack('H', stop_hdl)
 
@@ -1727,7 +1727,7 @@ def gattc_read(bd_addr_type, bd_addr, hdl):
 
     data_ba = bytearray()
 
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    bd_addr_ba = addr2btp_ba(bd_addr)
     if type(hdl) is str:
         hdl = int(hdl, 16)
     hdl_ba = struct.pack('H', hdl)
@@ -1755,7 +1755,7 @@ def gattc_read_long(bd_addr_type, bd_addr, hdl, off, modif_off=None):
     if type(hdl) is str:
         hdl = int(hdl, 16)
 
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    bd_addr_ba = addr2btp_ba(bd_addr)
     hdl_ba = struct.pack('H', hdl)
     off_ba = struct.pack('H', off)
 
@@ -1776,7 +1776,7 @@ def gattc_read_multiple(bd_addr_type, bd_addr, *hdls):
 
     data_ba = bytearray()
 
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    bd_addr_ba = addr2btp_ba(bd_addr)
     hdls_j = ''.join(hdl for hdl in hdls)
     hdls_byte_table = [hdls_j[i:i + 2] for i in range(0, len(hdls_j), 2)]
     hdls_swp = ''.join([c[1] + c[0] for c in zip(hdls_byte_table[::2],
@@ -1806,7 +1806,7 @@ def gattc_write_without_rsp(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
 
     data_ba = bytearray()
 
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    bd_addr_ba = addr2btp_ba(bd_addr)
     hdl_ba = struct.pack('H', hdl)
     val_ba = binascii.unhexlify(bytearray(val))
     val_len_ba = struct.pack('H', len(val_ba))
@@ -1837,8 +1837,7 @@ def gattc_signed_write(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
 
     data_ba = bytearray()
 
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')))[::-1]
-
+    bd_addr_ba = addr2btp_ba(bd_addr)
     hdl_ba = struct.pack('H', hdl)
     val_ba = binascii.unhexlify(bytearray(val))
     val_len_ba = struct.pack('H', len(val_ba))
@@ -1869,7 +1868,7 @@ def gattc_write(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
 
     data_ba = bytearray()
 
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    bd_addr_ba = addr2btp_ba(bd_addr)
     hdl_ba = struct.pack('H', hdl)
     val_ba = binascii.unhexlify(bytearray(val))
     val_len_ba = struct.pack('H', len(val_ba))
@@ -1899,7 +1898,7 @@ def gattc_write_long(bd_addr_type, bd_addr, hdl, off, val, length=None):
 
     iutctl = get_iut()
 
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    bd_addr_ba = addr2btp_ba(bd_addr)
     hdl_ba = struct.pack('H', hdl)
     off_ba = struct.pack('H', off)
     val_ba = binascii.unhexlify(bytearray(val))
@@ -1926,7 +1925,7 @@ def gattc_cfg_notify(bd_addr_type, bd_addr, enable, ccc_hdl):
 
     iutctl = get_iut()
 
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    bd_addr_ba = addr2btp_ba(bd_addr)
     ccc_hdl_ba = struct.pack('H', ccc_hdl)
 
     data_ba = bytearray()
@@ -1955,7 +1954,7 @@ def gattc_cfg_indicate(bd_addr_type, bd_addr, enable, ccc_hdl):
 
     iutctl = get_iut()
 
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    bd_addr_ba = addr2btp_ba(bd_addr)
     ccc_hdl_ba = struct.pack('H', ccc_hdl)
 
     data_ba = bytearray()
@@ -1986,7 +1985,7 @@ def gattc_notification_ev(bd_addr, bd_addr_type, ev_type):
                   defs.GATT_EV_NOTIFICATION)
 
     data_ba = bytearray()
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    bd_addr_ba = addr2btp_ba(bd_addr)
 
     data_ba.extend(chr(bd_addr_type))
     data_ba.extend(bd_addr_ba)
@@ -2493,7 +2492,7 @@ def l2cap_conn(bd_addr, bd_addr_type, psm):
     if type(psm) is str:
         psm = int(psm, 16)
 
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    bd_addr_ba = addr2btp_ba(bd_addr)
 
     data_ba = bytearray(chr(bd_addr_type))
     data_ba.extend(bd_addr_ba)

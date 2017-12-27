@@ -15,6 +15,8 @@
 
 import defs
 
+from binascii import unhexlify
+
 gap_settings_btp2txt = {
     defs.GAP_SETTINGS_POWERED: "Powered",
     defs.GAP_SETTINGS_CONNECTABLE: "Connectable",
@@ -33,6 +35,10 @@ gap_settings_btp2txt = {
     defs.GAP_SETTINGS_CONTROLLER_CONFIG: "Controller Configuration",
     defs.GAP_SETTINGS_STATIC_ADDRESS: "Static Address",
 }
+
+
+def addr2btp_ba(addr_str):
+    return unhexlify("".join(addr_str.split(':')))[::-1]
 
 
 class BTPError(Exception):
