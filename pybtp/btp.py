@@ -1837,7 +1837,7 @@ def gattc_signed_write(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
 
     data_ba = bytearray()
 
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')))[::-1]
 
     hdl_ba = struct.pack('H', hdl)
     val_ba = binascii.unhexlify(bytearray(val))
