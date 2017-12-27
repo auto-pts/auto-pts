@@ -29,7 +29,7 @@ except ImportError:  # running this module as script
     from ptsprojects.zephyr.ztestcase import ZTestCase
 
 from time import sleep
-from pybtp import btp
+from pybtp import btp, types
 import binascii
 import gatt
 from ptsprojects.stack import get_stack
@@ -161,28 +161,19 @@ init_gatt_db=[TestFunc(btp.core_reg_svc_gatt),
               TestFunc(btp.gatts_set_val, 0, '03'),
               TestFunc(btp.gatts_start_server)]
 
-
-class AdType:
-    flags = 1
-    uuid16_some = 2
-    name_short = 8
-    uuid16_svc_data = 22
-    gap_appearance = 25
-    manufacturer_data = 255
-
 iut_device_name = 'Tester'
 
 
 class AdData:
-    ad_manuf = (AdType.manufacturer_data, 'ABCD')
-    ad_name_sh = (AdType.name_short, binascii.hexlify(iut_device_name))
+    ad_manuf = (types.AdType.manufacturer_data, 'ABCD')
+    ad_name_sh = (types.AdType.name_short, binascii.hexlify(iut_device_name))
 
 # Advertising data
-ad = [(AdType.uuid16_some, '1111'),
-      (AdType.gap_appearance, '1111'),
-      (AdType.name_short, binascii.hexlify('Tester')),
-      (AdType.manufacturer_data, '11111111'),
-      (AdType.uuid16_svc_data, '111111')]
+ad = [(types.AdType.uuid16_some, '1111'),
+      (types.AdType.gap_appearance, '1111'),
+      (types.AdType.name_short, binascii.hexlify('Tester')),
+      (types.AdType.manufacturer_data, '11111111'),
+      (types.AdType.uuid16_svc_data, '111111')]
 
 
 def test_cases(pts):

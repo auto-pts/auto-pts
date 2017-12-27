@@ -43,3 +43,12 @@ class BTPError(Exception):
 
     """
     pass
+
+
+class AdType:
+    flags = 1
+    uuid16_some = 2
+    name_short = 8
+    uuid16_svc_data = 22
+    gap_appearance = 25
+    manufacturer_data = 255
