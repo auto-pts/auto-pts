@@ -224,6 +224,9 @@ MESH = {
     "lpn_poll": (defs.BTP_SERVICE_ID_MESH,
                  defs.MESH_LPN_POLL,
                  CONTROLLER_INDEX, ""),
+    "model_send": (defs.BTP_SERVICE_ID_MESH,
+                   defs.MESH_MODEL_SEND,
+                   CONTROLLER_INDEX),
 }
 
 
@@ -2882,6 +2885,28 @@ def mesh_lpn_poll():
 
     iutctl = get_iut()
     iutctl.btp_socket.send_wait_rsp(*MESH['lpn_poll'])
+
+
+def mesh_model_send(src, dst, payload):
+    logging.debug("%s %r %r %r", mesh_net_send.__name__, src, dst, payload)
+
+    if isinstance(src, str):
+        src = int(src, 16)
+
+    if isinstance(dst, str):
+        dst = int(dst, 16)
+
+    payload = binascii.unhexlify(payload)
+    payload_len = len(payload)
+
+    if payload_len > 0xff:
+        raise BTPError("Payload exceeds PDU")
+
+    data = bytearray(struct.pack("<HHB", src, dst, payload_len))
+    data.extend(payload)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*MESH['model_send'], data=data)
 
 
 def mesh_out_number_action_ev(mesh, data, data_len):
