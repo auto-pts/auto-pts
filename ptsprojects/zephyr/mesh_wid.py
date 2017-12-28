@@ -138,6 +138,24 @@ def hdl_wid_21(desc):
     return '8000'
 
 
+def hdl_wid_23(desc):
+    stack = get_stack()
+
+    # This pattern is matching source and destination addresses
+    pattern = re.compile('(source\saddress|destination\saddress)\s+([0][xX][0-9a-fA-F]+)')
+    params = pattern.findall(desc)
+    if not params:
+        logging.error("%s parsing error", hdl_wid_23.__name__)
+        return
+
+    params = dict(params)
+
+    btp.mesh_model_send(int(params.get('source address'), 16),
+                        int(params.get('destination address'), 16),
+                        '0123456789abcdef' * 2)
+    return 'Ok'
+
+
 def hdl_wid_24(desc):
     stack = get_stack()
 
@@ -150,6 +168,19 @@ def hdl_wid_24(desc):
     if state == 'closed':
         return 'Yes'
     return 'No'
+
+
+def hdl_wid_26(desc):
+    stack = get_stack()
+
+    if stack.mesh.prov_invalid_bearer_rcv.data:
+        rsp = 'Yes'
+    else:
+        rsp = 'No'
+
+    # Cleanup
+    stack.mesh.prov_invalid_bearer_rcv.data = False
+    return rsp
 
 
 def hdl_wid_30(desc):
@@ -226,6 +257,24 @@ def hdl_wid_35(desc):
     return 'No'
 
 
+def hdl_wid_36(desc):
+    stack = get_stack()
+
+    # This pattern is matching source and destination addresses
+    pattern = re.compile('(source\saddress|destination\saddress)\s+([0][xX][0-9a-fA-F]+)')
+    params = pattern.findall(desc)
+    if not params:
+        logging.error("%s parsing error", hdl_wid_36.__name__)
+        return 'Cancel'
+
+    params = dict(params)
+
+    btp.mesh_model_send(int(params.get('source address'), 16),
+                        int(params.get('destination address'), 16),
+                        '0123')
+    return 'Ok'
+
+
 def hdl_wid_37(desc):
     stack = get_stack()
 
@@ -245,6 +294,24 @@ def hdl_wid_40(desc):
 
 def hdl_wid_43(desc):
     stack = get_stack()
+    return 'Ok'
+
+
+def hdl_wid_44(desc):
+    stack = get_stack()
+
+    # This pattern is matching source and destination label addresses
+    pattern = re.compile('(source\saddress|\\(address)\s+([0][xX][0-9a-fA-F]+)')
+    params = pattern.findall(desc)
+    if not params:
+        logging.error("%s parsing error", hdl_wid_44.__name__)
+        return
+
+    params = dict(params)
+
+    btp.mesh_model_send(int(params.get('source address'), 16),
+                        int(params.get('(address'), 16),
+                        '01234567890abcdef' * 2)
     return 'Ok'
 
 
