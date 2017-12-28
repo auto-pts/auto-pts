@@ -256,6 +256,11 @@ def hdl_wid_90(desc):
         return 'Cancel'
 
 
+def hdl_wid_94(desc):
+    stack = get_stack()
+    return 'Ok'
+
+
 def hdl_wid_201(desc):
     stack = get_stack()
 
