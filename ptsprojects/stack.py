@@ -156,6 +156,7 @@ class Mesh:
         self.is_provisioned = Property(False)
         self.is_initialized = False
         self.last_seen_prov_link_state = Property(None)
+        self.prov_invalid_bearer_rcv = Property(False)
 
         # provision node data
         self.net_key = '0123456789abcdef0123456789abcdef'

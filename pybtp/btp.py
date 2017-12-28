@@ -2957,6 +2957,19 @@ def mesh_net_rcv_ev(mesh, data, data_len):
     stack.mesh.net_recv_ev_data.data = (ttl, ctl, src, dst, payload)
 
 
+def mesh_invalid_bearer_ev(mesh, data, data_len):
+    stack = get_stack()
+
+    logging.debug("%s %r %r", mesh_invalid_bearer_ev.__name__, data, data_len)
+
+    hdr_fmt = '<B'
+    hdr_len = struct.calcsize(hdr_fmt)
+
+    (opcode,) = struct.unpack_from(hdr_fmt, data, 0)
+
+    stack.mesh.prov_invalid_bearer_rcv.data = True
+
+
 MESH_EV = {
     defs.MESH_EV_OUT_NUMBER_ACTION: mesh_out_number_action_ev,
     defs.MESH_EV_OUT_STRING_ACTION: mesh_out_string_action_ev,
@@ -2965,6 +2978,7 @@ MESH_EV = {
     defs.MESH_EV_PROV_LINK_OPEN: mesh_prov_link_open_ev,
     defs.MESH_EV_PROV_LINK_CLOSED: mesh_prov_link_closed_ev,
     defs.MESH_EV_NET_RECV: mesh_net_rcv_ev,
+    defs.MESH_EV_INVALID_BEARER: mesh_invalid_bearer_ev,
 }
 
 
