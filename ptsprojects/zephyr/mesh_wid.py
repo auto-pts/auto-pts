@@ -316,6 +316,12 @@ def hdl_wid_44(desc):
     return 'Ok'
 
 
+def hdl_wid_45(desc):
+    stack = get_stack()
+    btp.mesh_rpl_clear()
+    return 'OK'
+
+
 def hdl_wid_46(desc):
     stack = get_stack()
 
