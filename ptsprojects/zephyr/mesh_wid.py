@@ -226,6 +226,16 @@ def hdl_wid_35(desc):
     return 'No'
 
 
+def hdl_wid_40(desc):
+    stack = get_stack()
+    return 'Yes'
+
+
+def hdl_wid_43(desc):
+    stack = get_stack()
+    return 'Ok'
+
+
 def hdl_wid_46(desc):
     stack = get_stack()
 
