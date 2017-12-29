@@ -233,6 +233,9 @@ MESH = {
     "lpn_unsubscribe": (defs.BTP_SERVICE_ID_MESH,
                         defs.MESH_LPN_UNSUBSCRIBE,
                         CONTROLLER_INDEX),
+    "rpl_clear": (defs.BTP_SERVICE_ID_MESH,
+                  defs.MESH_RPL_CLEAR,
+                  CONTROLLER_INDEX, ""),
 }
 
 
@@ -2937,6 +2940,13 @@ def mesh_lpn_unsubscribe(address):
 
     iutctl = get_iut()
     iutctl.btp_socket.send_wait_rsp(*MESH['lpn_unsubscribe'], data=data)
+
+
+def mesh_rpl_clear():
+    logging.debug("%s", mesh_rpl_clear.__name__)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*MESH['rpl_clear'])
 
 
 def mesh_out_number_action_ev(mesh, data, data_len):
