@@ -227,6 +227,12 @@ MESH = {
     "model_send": (defs.BTP_SERVICE_ID_MESH,
                    defs.MESH_MODEL_SEND,
                    CONTROLLER_INDEX),
+    "lpn_subscribe": (defs.BTP_SERVICE_ID_MESH,
+                      defs.MESH_LPN_SUBSCRIBE,
+                      CONTROLLER_INDEX),
+    "lpn_unsubscribe": (defs.BTP_SERVICE_ID_MESH,
+                        defs.MESH_LPN_UNSUBSCRIBE,
+                        CONTROLLER_INDEX),
 }
 
 
@@ -2907,6 +2913,30 @@ def mesh_model_send(src, dst, payload):
 
     iutctl = get_iut()
     iutctl.btp_socket.send_wait_rsp(*MESH['model_send'], data=data)
+
+
+def mesh_lpn_subscribe(address):
+    logging.debug("%s %r", mesh_lpn_subscribe.__name__, address)
+
+    if isinstance(address, str):
+        address = int(address, 16)
+
+    data = bytearray(struct.pack("<H", address))
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*MESH['lpn_subscribe'], data=data)
+
+
+def mesh_lpn_unsubscribe(address):
+    logging.debug("%s %r", mesh_lpn_unsubscribe.__name__, address)
+
+    if isinstance(address, str):
+        address = int(address, 16)
+
+    data = bytearray(struct.pack("<H", address))
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*MESH['lpn_unsubscribe'], data=data)
 
 
 def mesh_out_number_action_ev(mesh, data, data_len):
