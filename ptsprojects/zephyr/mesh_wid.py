@@ -18,6 +18,7 @@ import sys
 from pybtp import btp
 import time
 import re
+import time
 from ptsprojects.stack import get_stack
 
 log = logging.debug
@@ -444,6 +445,7 @@ def hdl_wid_221(desc):
 
     if not stack.mesh.is_iv_test_mode_enabled.data:
         btp.mesh_iv_update_test_mode(True)
+        btp.mesh_iv_update_toggle()
 
     time.sleep(stack.mesh.iv_update_timeout.data)
 
@@ -532,6 +534,30 @@ def hdl_wid_326(desc):
     stack = get_stack()
 
     btp.mesh_lpn(False)
+    return "Ok"
+
+
+def hdl_wid_346(desc):
+    stack = get_stack()
+    group_address = 'C000'
+
+    btp.mesh_lpn_subscribe(group_address)
+    stack.mesh.lpn_subscriptions.append(group_address)
+    return "Ok"
+
+
+def hdl_wid_347(desc):
+    stack = get_stack()
+    group_address = 'C000'
+
+    # Subscribe if not
+    if group_address not in stack.mesh.lpn_subscriptions:
+        btp.mesh_lpn_subscribe(group_address)
+        stack.mesh.lpn_subscriptions.append(group_address)
+        time.sleep(10)  # Give some time to subscribe
+
+    btp.mesh_lpn_unsubscribe(group_address)
+    stack.mesh.lpn_subscriptions.remove(group_address)
     return "Ok"
 
 

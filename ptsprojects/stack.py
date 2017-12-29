@@ -185,6 +185,9 @@ class Mesh:
         # net_recv_ev_data (ttl, ctl, src, dst, payload)
         self.net_recv_ev_data = Property(None)
 
+        #LPN
+        self.lpn_subscriptions = []
+
 
 class Stack:
     def __init__(self):
