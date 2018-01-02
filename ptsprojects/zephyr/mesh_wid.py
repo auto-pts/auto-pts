@@ -391,6 +391,14 @@ def hdl_wid_222(desc):
     return 'OK'
 
 
+def hdl_wid_223(desc):
+    stack = get_stack()
+
+    btp.mesh_iv_update_test_mode(False)
+
+    return 'OK'
+
+
 def hdl_wid_262(desc):
     return 'Yes'
 
