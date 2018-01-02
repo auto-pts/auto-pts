@@ -184,9 +184,27 @@ class Mesh:
         self.net_recv_ev_store = Property(False)
         # net_recv_ev_data (ttl, ctl, src, dst, payload)
         self.net_recv_ev_data = Property(None)
+        self.incomp_timer_exp = Property(False)
 
         #LPN
         self.lpn_subscriptions = []
+
+    def wait_for_incomp_timer_exp(self, timeout):
+        if self.incomp_timer_exp.data:
+            return True
+
+        flag = Event()
+        flag.set()
+
+        t = Timer(timeout, timeout_cb, [flag])
+        t.start()
+
+        while flag.is_set():
+            if self.incomp_timer_exp.data:
+                t.cancel()
+                return True
+
+        return False
 
 
 class Stack:

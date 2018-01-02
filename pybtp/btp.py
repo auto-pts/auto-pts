@@ -3035,6 +3035,14 @@ def mesh_invalid_bearer_ev(mesh, data, data_len):
     stack.mesh.prov_invalid_bearer_rcv.data = True
 
 
+def mesh_incomp_timer_exp_ev(mesh, data, data_len):
+    logging.debug("%s", mesh_incomp_timer_exp_ev.__name__)
+
+    stack = get_stack()
+
+    stack.mesh.incomp_timer_exp.data = True
+
+
 MESH_EV = {
     defs.MESH_EV_OUT_NUMBER_ACTION: mesh_out_number_action_ev,
     defs.MESH_EV_OUT_STRING_ACTION: mesh_out_string_action_ev,
@@ -3044,6 +3052,7 @@ MESH_EV = {
     defs.MESH_EV_PROV_LINK_CLOSED: mesh_prov_link_closed_ev,
     defs.MESH_EV_NET_RECV: mesh_net_rcv_ev,
     defs.MESH_EV_INVALID_BEARER: mesh_invalid_bearer_ev,
+    defs.MESH_EV_INCOMP_TIMER_EXP: mesh_incomp_timer_exp_ev,
 }
 
 
