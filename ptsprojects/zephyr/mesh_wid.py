@@ -226,6 +226,18 @@ def hdl_wid_35(desc):
     return 'No'
 
 
+def hdl_wid_37(desc):
+    stack = get_stack()
+
+    if not stack.mesh.last_seen_prov_link_state.data:
+        return 'No'
+
+    state, bearer = stack.mesh.last_seen_prov_link_state.data
+    if state is 'closed':
+        return 'Yes'
+    return 'No'
+
+
 def hdl_wid_40(desc):
     stack = get_stack()
     return 'Yes'
