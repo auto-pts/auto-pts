@@ -467,6 +467,11 @@ def hdl_wid_519(desc):
     return 'OK'
 
 
+def hdl_wid_520(desc):
+    stack = get_stack()
+    return 'OK'
+
+
 def hdl_wid_600(desc):
     stack = get_stack()
 
