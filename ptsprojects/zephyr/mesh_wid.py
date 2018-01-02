@@ -223,6 +223,14 @@ def hdl_wid_30(desc):
     return 'Yes'
 
 
+def hdl_wid_31(desc):
+    stack = get_stack()
+
+    if stack.mesh.wait_for_incomp_timer_exp(90):
+        return "Ok"
+    return "Cancel"
+
+
 def hdl_wid_35(desc):
     stack = get_stack()
 
@@ -355,6 +363,28 @@ def hdl_wid_90(desc):
 def hdl_wid_94(desc):
     stack = get_stack()
     return 'Ok'
+
+
+def hdl_wid_103(desc):
+    # Mesh Provisioning data in
+    attr = btp.gatts_get_attrs(type_uuid='2adb')
+    if not attr:
+        return
+
+    (handle, permission, type_uuid) = attr.pop()
+    if not permission & btp.Perm.write:
+        return 'No'
+
+    # Mesh Provisioning data out
+    attr = btp.gatts_get_attrs(type_uuid='2adc')
+    if not attr:
+        return
+
+    (handle, permission, type_uuid) = attr.pop()
+    if permission & btp.Perm.write:
+        return 'No'
+
+    return 'Yes'
 
 
 def hdl_wid_201(desc):
@@ -646,5 +676,13 @@ def hdl_wid_604(desc):
     if int(stack.mesh.health_test_id.data) != int(found.get('ID')) or \
             stack.mesh.health_registered_faults.data != found.get('array'):
         return 'Cancel'
+
+    return 'OK'
+
+
+def hdl_wid_652(desc):
+    stack = get_stack()
+
+    # TODO: Confirm composition data
 
     return 'OK'
