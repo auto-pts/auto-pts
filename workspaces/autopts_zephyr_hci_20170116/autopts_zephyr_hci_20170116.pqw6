@@ -5187,7 +5187,7 @@ for the IUT in the IXIT. (Default: 0x00000000000000000000000000000000)</Descript
             <Name>TSPX_maximum_network_message_cache_entries</Name>
             <Description>The Maximum number of entries supported by the network message cache. Is greater than or equal to 2.</Description>
             <Type>INTEGER</Type>
-            <Value>2</Value>
+            <Value>10</Value>
           </Row>
           <Row>
             <Name>TSPX_health_valid_test_ids</Name>
