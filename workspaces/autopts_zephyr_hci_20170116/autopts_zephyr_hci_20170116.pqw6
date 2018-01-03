@@ -5181,7 +5181,7 @@ for the IUT in the IXIT. (Default: 0x00000000000000000000000000000000)</Descript
             <Name>TSPX_vendor_model_id</Name>
             <Description>Specifies a vendor model ID for Subscription List procedure tests. If Company ID is 0x003F and Model ID is 0x0001, you would enter 003F0001. (Default: 00000000)</Description>
             <Type>OCTETSTRING</Type>
-            <Value>00000000</Value>
+            <Value>FFFF1234</Value>
           </Row>
           <Row>
             <Name>TSPX_maximum_network_message_cache_entries</Name>
