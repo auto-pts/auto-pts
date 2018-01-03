@@ -680,6 +680,14 @@ def hdl_wid_604(desc):
     return 'OK'
 
 
+def hdl_wid_625(desc):
+    stack = get_stack()
+
+    logging.debug("CONFIG_BT_MESH_SUBNET_COUNT=1")
+
+    return 'OK'
+
+
 def hdl_wid_652(desc):
     stack = get_stack()
 
