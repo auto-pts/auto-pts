@@ -5211,7 +5211,7 @@ for the IUT in the IXIT. (Default: 0x00000000000000000000000000000000)</Descript
             <Name>TSPX_iut_supports_relay</Name>
             <Description>Indicates if the IUT supports the relay feature (Default: false)</Description>
             <Type>BOOLEAN</Type>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
           </Row>
           <Row>
             <Name>TSPX_application_key</Name>
