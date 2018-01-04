@@ -529,6 +529,7 @@ def hdl_wid_285(desc):
 def hdl_wid_303(desc):
     stack = get_stack()
 
+    btp.mesh_lpn(True)
     return 'Ok'
 
 
