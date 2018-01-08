@@ -16,7 +16,6 @@
 import logging
 import sys
 from pybtp import btp
-import time
 import re
 import time
 from ptsprojects.stack import get_stack
@@ -446,8 +445,6 @@ def hdl_wid_203(desc):
 def hdl_wid_204(desc):
     stack = get_stack()
 
-    time.sleep(stack.mesh.iv_update_timeout.data)
-
     return 'OK'
 
 
@@ -475,8 +472,6 @@ def hdl_wid_217(desc):
 
     if not stack.mesh.is_iv_test_mode_enabled.data:
         btp.mesh_iv_update_test_mode(True)
-
-    time.sleep(stack.mesh.iv_update_timeout.data)
 
     return 'OK'
 
@@ -511,8 +506,6 @@ def hdl_wid_221(desc):
     if not stack.mesh.is_iv_test_mode_enabled.data:
         btp.mesh_iv_update_test_mode(True)
         btp.mesh_iv_update_toggle()
-
-    time.sleep(stack.mesh.iv_update_timeout.data)
 
     return 'OK'
 
