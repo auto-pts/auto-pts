@@ -2816,7 +2816,11 @@ def mesh_iv_update_toggle():
 
     iutctl = get_iut()
 
-    iutctl.btp_socket.send_wait_rsp(*MESH['iv_update_toggle'])
+    iutctl.btp_socket.send(*MESH['iv_update_toggle'])
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
+
+    if tuple_hdr.op == defs.BTP_STATUS:
+        logging.info("IV Update in progress")
 
 
 def mesh_net_send(ttl, src, dst, payload):
