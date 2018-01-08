@@ -296,6 +296,32 @@ def hdl_wid_37(desc):
     return 'No'
 
 
+def hdl_wid_39(desc):
+    stack = get_stack()
+
+    # This pattern is destination addresses
+    pattern = re.compile('(address)\s+\\:\s+([0][xX][0-9a-fA-F]+)')
+    params = pattern.findall(desc)
+    if not params:
+        logging.error("%s parsing error", hdl_wid_39.__name__)
+        return 'No'
+
+    params = dict(params)
+
+    if not stack.mesh.net_recv_ev_data.data:
+        logging.error("No data received")
+        return 'No'
+
+    (recv_ttl, recv_ctl, recv_src, recv_dst, recv_pdu) = \
+        stack.mesh.net_recv_ev_data.data
+
+    if int(params.get('address'), 16) != recv_dst:
+        logging.error("Destination address does not match")
+        return 'No'
+
+    return 'Yes'
+
+
 def hdl_wid_40(desc):
     stack = get_stack()
     return 'Yes'
