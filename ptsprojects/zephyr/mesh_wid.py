@@ -362,6 +362,9 @@ def hdl_wid_90(desc):
 
 def hdl_wid_94(desc):
     stack = get_stack()
+
+    btp.mesh_iv_update_toggle()
+
     return 'Ok'
 
 
