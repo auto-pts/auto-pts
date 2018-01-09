@@ -29,12 +29,11 @@ except ImportError:  # running this module as script
     from ptsprojects.zephyr.ztestcase import ZTestCase
 
 from time import sleep
-import btp.btp as btp
+from pybtp import btp, types
 import binascii
 import gatt
-from re import findall
-import struct
 from ptsprojects.stack import get_stack
+from gap_wid import gap_wid_hdl, hdl_wid_161
 
 
 class Addr:
@@ -146,7 +145,7 @@ class Perm:
         return decode_flag_name(perm, Perm.names)
 
 
-init_gatt_db=[TestFunc(btp.core_reg_svc_gatts),
+init_gatt_db=[TestFunc(btp.core_reg_svc_gatt),
               TestFunc(btp.gatts_add_svc, 0, gatt.UUID.VND16_1),
               TestFunc(btp.gatts_add_char, 0, gatt.Prop.read,
                        gatt.Perm.read | gatt.Perm.read_authn,
@@ -162,99 +161,19 @@ init_gatt_db=[TestFunc(btp.core_reg_svc_gatts),
               TestFunc(btp.gatts_set_val, 0, '03'),
               TestFunc(btp.gatts_start_server)]
 
-
-class AdType:
-    flags = 1
-    uuid16_some = 2
-    name_short = 8
-    uuid16_svc_data = 22
-    gap_appearance = 25
-    manufacturer_data = 255
-
 iut_device_name = 'Tester'
 
 
 class AdData:
-    ad_manuf = (AdType.manufacturer_data, 'ABCD')
-    ad_name_sh = (AdType.name_short, binascii.hexlify(iut_device_name))
+    ad_manuf = (types.AdType.manufacturer_data, 'ABCD')
+    ad_name_sh = (types.AdType.name_short, binascii.hexlify(iut_device_name))
 
 # Advertising data
-ad = [(AdType.uuid16_some, '1111'),
-      (AdType.gap_appearance, '1111'),
-      (AdType.name_short, binascii.hexlify('Tester')),
-      (AdType.manufacturer_data, '11111111'),
-      (AdType.uuid16_svc_data, '111111')]
-
-
-def handle_wid_136_sec_csign_bi_04():
-    """
-    project_name: GAP
-    wid: 136
-    description: Please prepare a characteristic that is sign writable which
-                 requires also requires authentication.
-                 (Security mode 2 level 2) Press OK to continue.
-    style: MMI_Style_Ok_Cancel1 0x11041
-    response: 8238800 <type 'int'> 93825543207024
-    response_size: 2048
-    response_is_present: 0 <type 'int'>
-    """
-    btp.core_reg_svc_gatts()
-    btp.gatts_add_svc(0, UUID.VND16_1)
-    btp.gatts_add_char(0, Prop.read | Prop.auth_swrite,
-                   Perm.read | Perm.write_authn, UUID.VND16_2)
-    btp.gatts_set_val(0, '01')
-    btp.gatts_start_server()
-
-    return True
-
-
-def handle_wid_161(description):
-    """
-    project_name: GAP
-    wid: 161
-    description: Please confirm the signed write characteristic handle 0x0007.
-                 And enter the length of this handle's characteristic value in integer.
-    style: MMI_Style_Edit1 0x12040
-    response: 17807656 <type 'int'> 94810264930128
-    response_size: 2048
-    response_is_present: 0 <type 'int'>
-
-    """
-    match = findall(r'(0[xX])?([0-9a-fA-F]{4})', description)
-    handle = int(match[0][1], 16)
-
-    attr = btp.gatts_get_attrs(handle, handle)
-    if not attr:
-        return
-
-    (handle, permission, type_uuid) = attr.pop()
-
-    # Check if characteristic has signed write property
-    value = btp.gatts_get_attr_val(handle - 1)
-    if not value:
-        return
-
-    (att_rsp, val_len, val) = value
-
-    hdr = '<BH'
-    hdr_len = struct.calcsize(hdr)
-    uuid_len = val_len - hdr_len
-
-    (properties, value_handle, chrc_uuid) = struct.unpack("<BH%ds" % uuid_len,
-                                                          val)
-
-    if properties & Prop.auth_swrite == 0:
-        return
-
-    chrc_uuid = btp.btp2uuid(uuid_len, chrc_uuid)
-
-    value = btp.gatts_get_attr_val(handle)
-    if not value:
-        return
-
-    (att_rsp, val_len, val) = value
-
-    return val_len
+ad = [(types.AdType.uuid16_some, '1111'),
+      (types.AdType.gap_appearance, '1111'),
+      (types.AdType.name_short, binascii.hexlify('Tester')),
+      (types.AdType.manufacturer_data, '11111111'),
+      (types.AdType.uuid16_svc_data, '111111')]
 
 
 def test_cases(pts):
@@ -272,21 +191,21 @@ def test_cases(pts):
 
     pre_conditions=[TestFunc(btp.core_reg_svc_gap),
                     TestFunc(btp.gap_read_ctrl_info),
-                    TestFunc(btp.wrap, pts.update_pixit_param,
+                    TestFunc(lambda: pts.update_pixit_param(
                              "GAP", "TSPX_bd_addr_iut",
-                             btp.get_stored_bd_addr),
+                             stack.gap.iut_addr_get_str())),
                     TestFunc(lambda: pts.update_pixit_param(
                              "GAP", "TSPX_iut_privacy_enabled",
-                             "TRUE" if btp.has_iut_privacy() else "FALSE")),
+                             "TRUE" if stack.gap.iut_has_privacy() else "FALSE")),
                     TestFunc(lambda: pts.update_pixit_param(
                              "GAP", "TSPX_using_public_device_address",
-                             "FALSE" if btp.is_iut_addr_random() else "TRUE")),
+                             "FALSE" if stack.gap.iut_addr_is_random() else "TRUE")),
                     TestFunc(lambda: pts.update_pixit_param(
                              "GAP", "TSPX_using_private_device_address",
-                             "TRUE" if btp.is_iut_addr_random() else "FALSE")),
+                             "TRUE" if stack.gap.iut_addr_is_random() else "FALSE")),
                     TestFunc(lambda: pts.update_pixit_param(
                              "GAP", "TSPX_using_random_device_address",
-                             "TRUE" if btp.is_iut_addr_random() else "FALSE")),
+                             "TRUE" if stack.gap.iut_addr_is_random() else "FALSE")),
 
                     # We do this on test case, because previous one could update
                     # this if RPA was used by PTS
@@ -328,8 +247,7 @@ def test_cases(pts):
                         TestFunc(btp.gap_set_nondiscov, start_wid=80),
                         TestFunc(btp.gap_adv_ind_on,
                                  sd=[AdData.ad_manuf, AdData.ad_name_sh],
-                                 start_wid=80),
-                        TestFuncCleanUp(btp.gap_adv_off)]),
+                                 start_wid=80)]),
         ZTestCase("GAP", "GAP/BROB/OBSV/BV-01-C",
                   ok_cancel_wids={4: (btp.check_discov_results)},
                   cmds=pre_conditions +
@@ -465,7 +383,7 @@ def test_cases(pts):
                                      'general')}),
         ZTestCase("GAP", "GAP/IDLE/NAMP/BV-01-C",
                   pre_conditions +
-                  [TestFunc(btp.core_reg_svc_gatts),
+                  [TestFunc(btp.core_reg_svc_gatt),
                    TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
                             start_wid=78),
                    TestFunc(btp.gattc_disc_prim_uuid, Addr.le_public,
@@ -484,7 +402,7 @@ def test_cases(pts):
                             start_wid=77)]),
         ZTestCase("GAP", "GAP/IDLE/NAMP/BV-02-C",
                   pre_conditions +
-                  [TestFunc(btp.core_reg_svc_gatts),
+                  [TestFunc(btp.core_reg_svc_gatt),
                    TestFunc(btp.gatts_add_svc, 0, UUID.gap_svc),
                    TestFunc(btp.gatts_add_char, 0, Prop.read,
                             Perm.read | Perm.write, UUID.device_name),
@@ -689,7 +607,7 @@ def test_cases(pts):
                                   start_wid=139)]),
         ZTestCase("GAP", "GAP/SEC/AUT/BV-17-C",
                   cmds=pre_conditions +
-                       [TestFunc(btp.core_reg_svc_gatts),
+                       [TestFunc(btp.core_reg_svc_gatt),
                         TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                         TestFunc(btp.gap_conn, start_wid=78),
                         TestFunc(btp.gattc_read, Addr.le_public,
@@ -703,7 +621,7 @@ def test_cases(pts):
                         TestFunc(btp.gap_disconn, start_wid=44)]),
          ZTestCase("GAP", "GAP/SEC/AUT/BV-18-C",
                    cmds=pre_conditions +
-                        [TestFunc(btp.core_reg_svc_gatts),
+                        [TestFunc(btp.core_reg_svc_gatt),
                          TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
                          TestFunc(btp.gap_set_conn),
                          TestFunc(btp.gap_adv_ind_on),
@@ -727,7 +645,7 @@ def test_cases(pts):
                    edit1_wids={1002: (btp.var_store_get_passkey, pts_bd_addr,
                                       Addr.le_public)},
                    cmds=pre_conditions +
-                        [TestFunc(btp.core_reg_svc_gatts),
+                        [TestFunc(btp.core_reg_svc_gatt),
                          TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                          TestFunc(btp.gap_set_conn, start_wid=91),
                          TestFunc(btp.gap_adv_ind_on, start_wid=91),
@@ -743,7 +661,7 @@ def test_cases(pts):
         ZTestCase("GAP", "GAP/SEC/AUT/BV-21-C",
                   edit1_wids={1002: btp.var_store_get_passkey},
                   cmds=pre_conditions +
-                       [TestFunc(btp.core_reg_svc_gatts),
+                       [TestFunc(btp.core_reg_svc_gatt),
                         TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                         TestFunc(btp.gap_conn, start_wid=78),
                         TestFunc(btp.gap_pair, start_wid=108),
@@ -753,7 +671,7 @@ def test_cases(pts):
                   edit1_wids={1002: (btp.var_store_get_passkey, pts_bd_addr,
                                      Addr.le_public)},
                   cmds=pre_conditions +
-                       [TestFunc(btp.core_reg_svc_gatts),
+                       [TestFunc(btp.core_reg_svc_gatt),
                         TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                         TestFunc(btp.gap_set_conn, start_wid=91),
                         TestFunc(btp.gap_adv_ind_on, start_wid=91),
@@ -779,7 +697,7 @@ def test_cases(pts):
                         TestFunc(btp.gap_disconn, start_wid=44)]),
          ZTestCase("GAP", "GAP/SEC/CSIGN/BV-01-C",
                    pre_conditions +
-                   [TestFunc(btp.core_reg_svc_gatts),
+                   [TestFunc(btp.core_reg_svc_gatt),
                     TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
                     TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
                              start_wid=78),
@@ -790,25 +708,15 @@ def test_cases(pts):
                     TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
                              start_wid=77)]),
         ZTestCase("GAP", "GAP/SEC/CSIGN/BV-02-C",
-                  edit1_wids={161: handle_wid_161},
-                  verify_wids={141: btp.gatts_verify_write_success},
                   cmds=init_gatt_db + pre_conditions +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
-                        TestFunc(btp.gap_set_conn),
-                        TestFunc(btp.gap_adv_ind_on),
-                        TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
-                                 start_wid=77)]),
+                       [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output)],
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/CSIGN/BI-01-C",
-                  edit1_wids={161: handle_wid_161},
-                  verify_wids={130: btp.gatts_verify_write_fail},
                   cmds=init_gatt_db + pre_conditions +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
-                        TestFunc(btp.gap_set_conn),
-                        TestFunc(btp.gap_adv_ind_on),
-                        TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
-                                 start_wid=77)]),
+                       [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output)],
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/CSIGN/BI-02-C",
-                  edit1_wids={161: handle_wid_161},
+                  edit1_wids={161: hdl_wid_161},
                   verify_wids={130: lambda x: (btp.gatts_verify_write_success(x) and
                                                btp.gatts_verify_write_success(x) and
                                                btp.gatts_verify_write_fail(x))},
@@ -819,7 +727,7 @@ def test_cases(pts):
                         TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
                                  start_wid=77)]),
         ZTestCase("GAP", "GAP/SEC/CSIGN/BI-03-C",
-                  edit1_wids={161: handle_wid_161},
+                  edit1_wids={161: hdl_wid_161},
                   verify_wids={130: btp.gatts_verify_write_fail},
                   cmds=init_gatt_db + pre_conditions +
                        [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
@@ -831,15 +739,9 @@ def test_cases(pts):
                         TestFunc(btp.gap_disconn, start_wid=77),
                         TestFunc(btp.gap_unpair, start_wid=135)]),
         ZTestCase("GAP", "GAP/SEC/CSIGN/BI-04-C",
-                  edit1_wids={161: handle_wid_161},
-                  verify_wids={137: btp.gatts_verify_write_fail},
                   cmds=pre_conditions +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
-                        TestFunc(btp.gap_set_conn),
-                        TestFunc(btp.gap_adv_ind_on),
-                        TestFunc(handle_wid_136_sec_csign_bi_04, start_wid=136),
-                        TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
-                                 start_wid=77)]),
+                       [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output)],
+                  generic_wid_hdl=gap_wid_hdl),
         # ZTestCase("GAP", "GAP/PRIV/CONN/BV-10-C",
         #           edit1_wids={1002: (btp.var_store_get_passkey, pts_bd_addr,
         #                              Addr.le_public)},

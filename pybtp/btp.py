@@ -23,7 +23,7 @@ import socket
 from threading import Timer, Event
 
 import defs
-from types import BTPError
+from types import BTPError, gap_settings_btp2txt, addr2btp_ba
 from iutctl_common import set_event_handler
 from random import randint
 from collections import namedtuple
@@ -56,12 +56,18 @@ CORE = {
                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GAP),
     "gap_unreg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_UNREGISTER_SERVICE,
                   defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GAP),
-    "gatts_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
-                  defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GATT),
+    "gatt_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
+                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GATT),
+    "gatt_unreg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_UNREGISTER_SERVICE,
+                   defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GATT),
     "l2cap_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
                   defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_L2CAP),
+    "l2cap_unreg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_UNREGISTER_SERVICE,
+                    defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_L2CAP),
     "mesh_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
                  defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_MESH),
+    "mesh_unreg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_UNREGISTER_SERVICE,
+                   defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_MESH),
     "read_supp_cmds": (defs.BTP_SERVICE_ID_CORE,
                        defs.CORE_READ_SUPPORTED_COMMANDS,
                        defs.BTP_INDEX_NONE, ""),
@@ -125,7 +131,7 @@ GATTS = {
     "set_enc_key_size": (defs.BTP_SERVICE_ID_GATT,
                          defs.GATT_SET_ENC_KEY_SIZE, CONTROLLER_INDEX),
     "get_attrs": (defs.BTP_SERVICE_ID_GATT, defs.GATT_GET_ATTRIBUTES,
-                 CONTROLLER_INDEX),
+                  CONTROLLER_INDEX),
     "get_attr_val": (defs.BTP_SERVICE_ID_GATT,
                      defs.GATT_GET_ATTRIBUTE_VALUE, CONTROLLER_INDEX)
 }
@@ -180,11 +186,11 @@ MESH = {
                        defs.MESH_READ_SUPPORTED_COMMANDS,
                        defs.BTP_INDEX_NONE, ""),
     "config_prov": (defs.BTP_SERVICE_ID_MESH,
-                  defs.MESH_CONFIG_PROVISIONING,
-                  CONTROLLER_INDEX),
-    "prov_node": (defs.BTP_SERVICE_ID_MESH,
-                    defs.MESH_PROVISION_NODE,
+                    defs.MESH_CONFIG_PROVISIONING,
                     CONTROLLER_INDEX),
+    "prov_node": (defs.BTP_SERVICE_ID_MESH,
+                  defs.MESH_PROVISION_NODE,
+                  CONTROLLER_INDEX),
     "init": (defs.BTP_SERVICE_ID_MESH,
              defs.MESH_INIT,
              CONTROLLER_INDEX, ""),
@@ -207,8 +213,8 @@ MESH = {
                  defs.MESH_NET_SEND,
                  CONTROLLER_INDEX),
     "health_generate_faults": (defs.BTP_SERVICE_ID_MESH,
-                           defs.MESH_HEALTH_ADD_FAULTS,
-                           CONTROLLER_INDEX, ""),
+                               defs.MESH_HEALTH_ADD_FAULTS,
+                               CONTROLLER_INDEX, ""),
     "mesh_clear_faults": (defs.BTP_SERVICE_ID_MESH,
                           defs.MESH_HEALTH_CLEAR_FAULTS,
                           CONTROLLER_INDEX, ""),
@@ -218,6 +224,18 @@ MESH = {
     "lpn_poll": (defs.BTP_SERVICE_ID_MESH,
                  defs.MESH_LPN_POLL,
                  CONTROLLER_INDEX, ""),
+    "model_send": (defs.BTP_SERVICE_ID_MESH,
+                   defs.MESH_MODEL_SEND,
+                   CONTROLLER_INDEX),
+    "lpn_subscribe": (defs.BTP_SERVICE_ID_MESH,
+                      defs.MESH_LPN_SUBSCRIBE,
+                      CONTROLLER_INDEX),
+    "lpn_unsubscribe": (defs.BTP_SERVICE_ID_MESH,
+                        defs.MESH_LPN_UNSUBSCRIBE,
+                        CONTROLLER_INDEX),
+    "rpl_clear": (defs.BTP_SERVICE_ID_MESH,
+                  defs.MESH_RPL_CLEAR,
+                  CONTROLLER_INDEX, ""),
 }
 
 
@@ -244,24 +262,24 @@ class Prop:
     7       Extended Properties
 
     """
-    broadcast     = 2 ** 0
-    read          = 2 ** 1
+    broadcast = 2 ** 0
+    read = 2 ** 1
     write_wo_resp = 2 ** 2
-    write         = 2 ** 3
-    nofity        = 2 ** 4
-    indicate      = 2 ** 5
-    auth_swrite   = 2 ** 6
-    ext_prop      = 2 ** 7
+    write = 2 ** 3
+    nofity = 2 ** 4
+    indicate = 2 ** 5
+    auth_swrite = 2 ** 6
+    ext_prop = 2 ** 7
 
     names = {
-        broadcast     : "Broadcast",
-        read          : "Read",
-        write_wo_resp : "Write Without Response",
-        write         : "Write",
-        nofity        : "Notify",
-        indicate      : "Indicate",
-        auth_swrite   : "Authenticated Signed Writes",
-        ext_prop      : "Extended Properties",
+        broadcast: "Broadcast",
+        read: "Read",
+        write_wo_resp: "Write Without Response",
+        write: "Write",
+        nofity: "Notify",
+        indicate: "Indicate",
+        auth_swrite: "Authenticated Signed Writes",
+        ext_prop: "Extended Properties",
     }
 
     @staticmethod
@@ -286,24 +304,24 @@ class Perm:
     6       Authorization
 
     """
-    read        = 2 ** 0
-    write       = 2 ** 1
-    read_enc    = 2 ** 2
-    write_enc   = 2 ** 3
-    read_authn  = 2 ** 4
+    read = 2 ** 0
+    write = 2 ** 1
+    read_enc = 2 ** 2
+    write_enc = 2 ** 3
+    read_authn = 2 ** 4
     write_authn = 2 ** 5
-    read_authz  = 2 ** 6
+    read_authz = 2 ** 6
     write_authz = 2 ** 7
 
     names = {
-        read        : "Read",
-        write       : "Write",
-        read_enc    : "Read with Encryption",
-        write_enc   : "Write with Encryption",
-        read_authn  : "Read with Authentication",
-        write_authn : "Write with Authentication",
-        read_authz  : "Read with Authorization",
-        write_authz : "Write with Authorization"
+        read: "Read",
+        write: "Write",
+        read_enc: "Read with Encryption",
+        write_enc: "Write with Encryption",
+        read_authn: "Read with Authentication",
+        write_authn: "Write with Authentication",
+        read_authz: "Read with Authorization",
+        write_authz: "Write with Authorization"
     }
 
     @staticmethod
@@ -410,7 +428,10 @@ def pts_addr_get(bd_addr=None):
 
 
 def pts_addr_type_get(bd_addr_type=None):
-    """" If address type provided, return it, otherwise, use stored address. """
+    """"
+    If address type provided, return it, otherwise,
+    use stored address.
+    """
     if bd_addr_type is None:
         return PTS_BD_ADDR.addr_type
     return bd_addr_type
@@ -439,13 +460,20 @@ def core_unreg_svc_gap():
     core_unreg_svc_rsp_succ()
 
 
-def core_reg_svc_gatts():
-    logging.debug("%s", core_reg_svc_gatts.__name__)
+def core_reg_svc_gatt():
+    logging.debug("%s", core_reg_svc_gatt.__name__)
 
     iutctl = get_iut()
-    iutctl.btp_socket.send(*CORE['gatts_reg'])
+    iutctl.btp_socket.send(*CORE['gatt_reg'])
 
     core_reg_svc_rsp_succ()
+
+
+def core_unreg_svc_gatt():
+    logging.debug("%s", core_unreg_svc_gatt.__name__)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*CORE['gatt_unreg'])
 
 
 def core_reg_svc_l2cap():
@@ -457,13 +485,27 @@ def core_reg_svc_l2cap():
     core_reg_svc_rsp_succ()
 
 
+def core_unreg_svc_l2cap():
+    logging.debug("%s", core_unreg_svc_l2cap.__name__)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*CORE['l2cap_unreg'])
+
+
 def core_reg_svc_mesh():
     logging.debug("%s", core_reg_svc_mesh.__name__)
 
-    iutctl = iutctl.get_iut()
+    iutctl = get_iut()
     iutctl.btp_socket.send(*CORE['mesh_reg'])
 
     core_reg_svc_rsp_succ()
+
+
+def core_unreg_svc_mesh():
+    logging.debug("%s", core_unreg_svc_mesh.__name__)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*CORE['mesh_unreg'])
 
 
 def core_reg_svc_rsp_succ():
@@ -518,20 +560,15 @@ def __gap_current_settings_update(settings):
             raise BTPError("Invalid data length")
 
         settings = struct.unpack(fmt, settings[0])
-        settings = settings[0] # Result of unpack is always a tuple
+        settings = settings[0]  # Result of unpack is always a tuple
 
     stack = get_stack()
-    stack.gap.current_settings = settings
 
-
-def __gap_current_settings_is_set(bit):
-    # This should maintain conformance
-    stack = get_stack()
-
-    if stack.gap.current_settings is None or \
-            not (stack.gap.current_settings & (1 << bit)):
-        return False
-    return True
+    for bit in gap_settings_btp2txt:
+        if settings & (1 << bit):
+            stack.gap.current_settings_set(gap_settings_btp2txt[bit])
+        else:
+            stack.gap.current_settings_clear(gap_settings_btp2txt[bit])
 
 
 def gap_wait_for_connection(timeout=30):
@@ -549,7 +586,10 @@ def gap_wait_for_disconnection(timeout=30):
 def gap_adv_ind_on(ad=None, sd=None):
     logging.debug("%s %r %r", gap_adv_ind_on.__name__, ad, sd)
 
-    if __gap_current_settings_is_set(defs.GAP_SETTINGS_ADVERTISING):
+    stack = get_stack()
+
+    if stack.gap.current_settings_get(
+            gap_settings_btp2txt[defs.GAP_SETTINGS_ADVERTISING]):
         return
 
     iutctl = get_iut()
@@ -586,7 +626,10 @@ def gap_adv_ind_on(ad=None, sd=None):
 def gap_adv_off():
     logging.debug("%s", gap_adv_off.__name__)
 
-    if not __gap_current_settings_is_set(defs.GAP_SETTINGS_ADVERTISING):
+    stack = get_stack()
+
+    if not stack.gap.current_settings_get(
+            gap_settings_btp2txt[defs.GAP_SETTINGS_ADVERTISING]):
         return
 
     iutctl = get_iut()
@@ -602,7 +645,7 @@ def gap_conn(bd_addr=None, bd_addr_type=None):
     iutctl = get_iut()
 
     data_ba = bytearray()
-    bd_addr_ba = binascii.unhexlify(pts_addr_get(bd_addr))[::-1]
+    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
 
     data_ba.extend(chr(pts_addr_type_get(bd_addr_type)))
     data_ba.extend(bd_addr_ba)
@@ -628,7 +671,7 @@ def gap_rpa_conn(description):
     bd_addr_type = Addr.le_random
 
     data_ba = bytearray()
-    bd_addr_ba = binascii.unhexlify(pts_addr_get(bd_addr))[::-1]
+    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
 
     data_ba.extend(chr(pts_addr_type_get(bd_addr_type)))
     data_ba.extend(bd_addr_ba)
@@ -649,7 +692,7 @@ def gap_disconn(bd_addr=None, bd_addr_type=None):
         return
 
     data_ba = bytearray()
-    bd_addr_ba = binascii.unhexlify(pts_addr_get(bd_addr))[::-1]
+    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
 
     data_ba.extend(chr(pts_addr_type_get(bd_addr_type)))
     data_ba.extend(bd_addr_ba)
@@ -684,7 +727,7 @@ def gap_pair(bd_addr=None, bd_addr_type=None):
     iutctl = get_iut()
 
     data_ba = bytearray()
-    bd_addr_ba = binascii.unhexlify(pts_addr_get(bd_addr))[::-1]
+    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
 
     data_ba.extend(chr(pts_addr_type_get(bd_addr_type)))
     data_ba.extend(bd_addr_ba)
@@ -700,7 +743,7 @@ def gap_unpair(bd_addr=None, bd_addr_type=None):
     iutctl = get_iut()
 
     data_ba = bytearray()
-    bd_addr_ba = binascii.unhexlify(pts_addr_get(bd_addr))[::-1]
+    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
 
     data_ba.extend(chr(pts_addr_type_get(bd_addr_type)))
     data_ba.extend(bd_addr_ba)
@@ -771,7 +814,7 @@ def gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey):
     iutctl = get_iut()
 
     data_ba = bytearray()
-    bd_addr_ba = binascii.unhexlify(bd_addr)[::-1]
+    bd_addr_ba = addr2btp_ba(bd_addr)
 
     data_ba.extend(chr(bd_addr_type))
     data_ba.extend(bd_addr_ba)
@@ -831,7 +874,10 @@ def gap_passkey_entry_req_ev(bd_addr=None, bd_addr_type=None):
 def gap_set_conn():
     logging.debug("%s", gap_set_conn.__name__)
 
-    if __gap_current_settings_is_set(defs.GAP_SETTINGS_CONNECTABLE):
+    stack = get_stack()
+
+    if stack.gap.current_settings_get(
+            gap_settings_btp2txt[defs.GAP_SETTINGS_CONNECTABLE]):
         return
 
     iutctl = get_iut()
@@ -845,7 +891,10 @@ def gap_set_conn():
 def gap_set_nonconn():
     logging.debug("%s", gap_set_nonconn.__name__)
 
-    if not __gap_current_settings_is_set(defs.GAP_SETTINGS_CONNECTABLE):
+    stack = get_stack()
+
+    if not stack.gap.current_settings_get(
+            gap_settings_btp2txt[defs.GAP_SETTINGS_CONNECTABLE]):
         return
 
     iutctl = get_iut()
@@ -859,7 +908,10 @@ def gap_set_nonconn():
 def gap_set_nondiscov():
     logging.debug("%s", gap_set_nondiscov.__name__)
 
-    if not __gap_current_settings_is_set(defs.GAP_SETTINGS_DISCOVERABLE):
+    stack = get_stack()
+
+    if not stack.gap.current_settings_get(
+            gap_settings_btp2txt[defs.GAP_SETTINGS_DISCOVERABLE]):
         return
 
     iutctl = get_iut()
@@ -943,8 +995,8 @@ def __gap_device_found_ev(duration):
         if len(tuple_data[0]) < struct.calcsize(fmt):
             raise BTPError("Invalid data length")
 
-        _addr, _addr_type, _rssi, _flags, _len = struct.unpack_from(fmt,
-                                                                 tuple_data[0])
+        _addr, _addr_type, _rssi, _flags, _len = \
+            struct.unpack_from(fmt, tuple_data[0])
         _eir = tuple_data[0][struct.calcsize(fmt):]
 
         if len(_eir) != _len:
@@ -958,7 +1010,8 @@ def __gap_device_found_ev(duration):
         DISCOV_RESULTS.append(LeAdv(_addr_type, _addr, _rssi, _flags, _eir))
 
 
-def gap_start_discov(transport='le', type='active', mode='general', duration=10):
+def gap_start_discov(transport='le', type='active', mode='general',
+                     duration=10):
     """GAP Start Discovery function.
 
     duration - Discovery duration in seconds (10 by default).
@@ -1040,7 +1093,8 @@ def check_discov_results(description, addr_type=None, addr=None,
 
 
 def discover_and_verify(description, transport='le', type='active',
-                        mode='general', duration=10, addr=None, addr_type=None):
+                        mode='general', duration=10, addr=None,
+                        addr_type=None):
     """Verify discovery results
 
     This function verifies if the advertisement has been received and
@@ -1066,41 +1120,6 @@ def __gap_stop_discov():
     gap_command_rsp_succ()
 
 
-def wrap(func, *args):
-    """Call function with given arguments
-
-    If arguments list item is a callable it will be invoked and replaced in the
-    list with its own return value.
-
-    """
-    _args = []
-    for x in args:
-        if callable(x):
-            x = x()
-        _args.append(x)
-    func(*_args)
-
-
-def get_stored_bd_addr():
-    stack = get_stack()
-
-    (bd_addr, bd_addr_type) = stack.gap.iut_bd_addr.data
-
-    return str(bd_addr)
-
-
-def is_iut_addr_random():
-    stack = get_stack()
-
-    (bd_addr, bd_addr_type) = stack.gap.iut_bd_addr.data
-
-    return True if bd_addr_type == Addr.le_random else False
-
-
-def has_iut_privacy():
-    return __gap_current_settings_is_set(defs.GAP_SETTINGS_PRIVACY)
-
-
 def gap_read_ctrl_info():
     logging.debug("%s", gap_read_ctrl_info.__name__)
 
@@ -1118,8 +1137,8 @@ def gap_read_ctrl_info():
     if len(tuple_data[0]) < struct.calcsize(fmt):
         raise BTPError("Invalid data length")
 
-    _addr, _supp_set, _curr_set, _cod, _name, _name_sh = struct.unpack_from(fmt,
-                                                                tuple_data[0])
+    _addr, _supp_set, _curr_set, _cod, _name, _name_sh = \
+        struct.unpack_from(fmt, tuple_data[0])
     _addr = binascii.hexlify(_addr[::-1]).lower()
 
     stack = get_stack()
@@ -1129,8 +1148,8 @@ def gap_read_ctrl_info():
         (_curr_set & (1 << defs.GAP_SETTINGS_STATIC_ADDRESS)) else \
         Addr.le_public
 
-    stack.gap.iut_bd_addr.data = (_addr, addr_type)
-    logging.debug("IUT address %r", stack.gap.iut_bd_addr.data)
+    stack.gap.iut_addr_set(_addr, addr_type)
+    logging.debug("IUT address %r", stack.gap.iut_addr_get_str())
 
     __gap_current_settings_update(_curr_set)
 
@@ -1336,7 +1355,8 @@ def gatts_attr_value_changed_ev():
                   defs.GATT_EV_ATTR_VALUE_CHANGED)
 
     (handle, data) = gatts_dec_attr_value_changed_ev_data(tuple_data[0])
-    logging.debug("%s %r %r", gatts_attr_value_changed_ev.__name__, handle, data)
+    logging.debug("%s %r %r", gatts_attr_value_changed_ev.__name__,
+                  handle, data)
 
     return handle, data
 
@@ -1411,7 +1431,7 @@ def gatts_get_attrs(start_handle=0x0001, end_handle=0xffff, type_uuid=None):
     logging.debug("%s %r %r %r", gatts_get_attrs.__name__, start_handle,
                   end_handle, type_uuid)
 
-    iutctl = iutctl.get_iut()
+    iutctl = get_iut()
 
     data_ba = bytearray()
 
@@ -1439,7 +1459,8 @@ def gatts_get_attrs(start_handle=0x0001, end_handle=0xffff, type_uuid=None):
     tuple_hdr, tuple_data = iutctl.btp_socket.read()
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
-    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT, defs.GATT_GET_ATTRIBUTES)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
+                  defs.GATT_GET_ATTRIBUTES)
 
     return dec_gatts_get_attrs_rp(tuple_data[0], tuple_hdr.data_len)
 
@@ -1447,7 +1468,7 @@ def gatts_get_attrs(start_handle=0x0001, end_handle=0xffff, type_uuid=None):
 def gatts_get_attr_val(handle):
     logging.debug("%s %r", gatts_get_attr_val.__name__, handle)
 
-    iutctl = iutctl.get_iut()
+    iutctl = get_iut()
 
     data_ba = bytearray()
 
@@ -1462,7 +1483,8 @@ def gatts_get_attr_val(handle):
     tuple_hdr, tuple_data = iutctl.btp_socket.read()
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
-    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT, defs.GATT_GET_ATTRIBUTE_VALUE)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
+                  defs.GATT_GET_ATTRIBUTE_VALUE)
 
     hdr = '<BH'
     hdr_len = struct.calcsize(hdr)
@@ -1479,7 +1501,7 @@ def gattc_exchange_mtu(bd_addr_type, bd_addr):
     gap_wait_for_connection()
 
     data_ba = bytearray()
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    bd_addr_ba = addr2btp_ba(bd_addr)
 
     data_ba.extend(chr(bd_addr_type))
     data_ba.extend(bd_addr_ba)
@@ -1498,7 +1520,7 @@ def gattc_disc_prim_uuid(bd_addr_type, bd_addr, uuid):
 
     data_ba = bytearray()
 
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    bd_addr_ba = addr2btp_ba(bd_addr)
     uuid_ba = binascii.unhexlify(uuid.translate(None, "-"))[::-1]
 
     data_ba.extend(chr(bd_addr_type))
@@ -1524,7 +1546,7 @@ def gattc_find_included(bd_addr_type, bd_addr, start_hdl, stop_hdl):
 
     data_ba = bytearray()
 
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    bd_addr_ba = addr2btp_ba(bd_addr)
     start_hdl_ba = struct.pack('H', start_hdl)
     stop_hdl_ba = struct.pack('H', stop_hdl)
 
@@ -1611,7 +1633,7 @@ def gattc_disc_all_chrc(bd_addr_type, bd_addr, start_hdl, stop_hdl, svc=None):
 
     data_ba = bytearray()
 
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    bd_addr_ba = addr2btp_ba(bd_addr)
     start_hdl_ba = struct.pack('H', start_hdl)
     stop_hdl_ba = struct.pack('H', stop_hdl)
 
@@ -1638,7 +1660,7 @@ def gattc_disc_chrc_uuid(bd_addr_type, bd_addr, start_hdl, stop_hdl, uuid):
 
     data_ba = bytearray()
 
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    bd_addr_ba = addr2btp_ba(bd_addr)
     start_hdl_ba = struct.pack('H', start_hdl)
     stop_hdl_ba = struct.pack('H', stop_hdl)
 
@@ -1673,7 +1695,7 @@ def gattc_disc_all_desc(bd_addr_type, bd_addr, start_hdl, stop_hdl):
 
     data_ba = bytearray()
 
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    bd_addr_ba = addr2btp_ba(bd_addr)
     start_hdl_ba = struct.pack('H', start_hdl)
     stop_hdl_ba = struct.pack('H', stop_hdl)
 
@@ -1717,7 +1739,7 @@ def gattc_read(bd_addr_type, bd_addr, hdl):
 
     data_ba = bytearray()
 
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    bd_addr_ba = addr2btp_ba(bd_addr)
     if type(hdl) is str:
         hdl = int(hdl, 16)
     hdl_ba = struct.pack('H', hdl)
@@ -1745,7 +1767,7 @@ def gattc_read_long(bd_addr_type, bd_addr, hdl, off, modif_off=None):
     if type(hdl) is str:
         hdl = int(hdl, 16)
 
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    bd_addr_ba = addr2btp_ba(bd_addr)
     hdl_ba = struct.pack('H', hdl)
     off_ba = struct.pack('H', off)
 
@@ -1766,7 +1788,7 @@ def gattc_read_multiple(bd_addr_type, bd_addr, *hdls):
 
     data_ba = bytearray()
 
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    bd_addr_ba = addr2btp_ba(bd_addr)
     hdls_j = ''.join(hdl for hdl in hdls)
     hdls_byte_table = [hdls_j[i:i + 2] for i in range(0, len(hdls_j), 2)]
     hdls_swp = ''.join([c[1] + c[0] for c in zip(hdls_byte_table[::2],
@@ -1796,7 +1818,7 @@ def gattc_write_without_rsp(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
 
     data_ba = bytearray()
 
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    bd_addr_ba = addr2btp_ba(bd_addr)
     hdl_ba = struct.pack('H', hdl)
     val_ba = binascii.unhexlify(bytearray(val))
     val_len_ba = struct.pack('H', len(val_ba))
@@ -1827,8 +1849,7 @@ def gattc_signed_write(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
 
     data_ba = bytearray()
 
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
-
+    bd_addr_ba = addr2btp_ba(bd_addr)
     hdl_ba = struct.pack('H', hdl)
     val_ba = binascii.unhexlify(bytearray(val))
     val_len_ba = struct.pack('H', len(val_ba))
@@ -1859,7 +1880,7 @@ def gattc_write(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
 
     data_ba = bytearray()
 
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    bd_addr_ba = addr2btp_ba(bd_addr)
     hdl_ba = struct.pack('H', hdl)
     val_ba = binascii.unhexlify(bytearray(val))
     val_len_ba = struct.pack('H', len(val_ba))
@@ -1889,7 +1910,7 @@ def gattc_write_long(bd_addr_type, bd_addr, hdl, off, val, length=None):
 
     iutctl = get_iut()
 
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    bd_addr_ba = addr2btp_ba(bd_addr)
     hdl_ba = struct.pack('H', hdl)
     off_ba = struct.pack('H', off)
     val_ba = binascii.unhexlify(bytearray(val))
@@ -1916,7 +1937,7 @@ def gattc_cfg_notify(bd_addr_type, bd_addr, enable, ccc_hdl):
 
     iutctl = get_iut()
 
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    bd_addr_ba = addr2btp_ba(bd_addr)
     ccc_hdl_ba = struct.pack('H', ccc_hdl)
 
     data_ba = bytearray()
@@ -1945,7 +1966,7 @@ def gattc_cfg_indicate(bd_addr_type, bd_addr, enable, ccc_hdl):
 
     iutctl = get_iut()
 
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    bd_addr_ba = addr2btp_ba(bd_addr)
     ccc_hdl_ba = struct.pack('H', ccc_hdl)
 
     data_ba = bytearray()
@@ -1976,7 +1997,7 @@ def gattc_notification_ev(bd_addr, bd_addr_type, ev_type):
                   defs.GATT_EV_NOTIFICATION)
 
     data_ba = bytearray()
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    bd_addr_ba = addr2btp_ba(bd_addr)
 
     data_ba.extend(chr(bd_addr_type))
     data_ba.extend(bd_addr_ba)
@@ -2483,7 +2504,7 @@ def l2cap_conn(bd_addr, bd_addr_type, psm):
     if type(psm) is str:
         psm = int(psm, 16)
 
-    bd_addr_ba = binascii.unhexlify("".join(bd_addr.split(':')[::-1]))
+    bd_addr_ba = addr2btp_ba(bd_addr)
 
     data_ba = bytearray(chr(bd_addr_type))
     data_ba.extend(bd_addr_ba)
@@ -2579,6 +2600,7 @@ def l2cap_listen(psm, transport):
 
     l2cap_command_rsp_succ(defs.L2CAP_LISTEN)
 
+
 def l2cap_le_listen(psm):
     l2cap_listen(psm, defs.L2CAP_TRANSPORT_LE)
 
@@ -2617,8 +2639,8 @@ def l2cap_disconnected_ev(exp_chan_id, store=False):
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_L2CAP,
                   defs.L2CAP_EV_DISCONNECTED)
 
-    res, chan_id, psm, bd_addr_type, bd_addr = struct.unpack_from('<HBHB6s',
-                                                                  tuple_data[0])
+    res, chan_id, psm, bd_addr_type, bd_addr = \
+        struct.unpack_from('<HBHB6s', tuple_data[0])
 
     global L2CAP_CHAN
     L2CAP_CHAN.remove(chan_id)
@@ -2632,6 +2654,7 @@ def l2cap_disconnected_ev(exp_chan_id, store=False):
         global VERIFY_VALUES
         VERIFY_VALUES = []
         VERIFY_VALUES.append(l2cap_result_str[res])
+
 
 def l2cap_data_rcv_ev(chan_id=None, store=False):
     logging.debug("%s %r %r", l2cap_data_rcv_ev.__name__, chan_id, store)
@@ -2686,16 +2709,19 @@ GAP_EV = {
 }
 
 
-def mesh_config_prov(uuid, static_auth, output_size, output_actions, input_size,
-              input_actions):
-    logging.debug("%s %r %r %r %r %r %r", mesh_config_prov.__name__, uuid,
-                  static_auth, output_size, output_actions, input_size,
-                  input_actions)
+def mesh_config_prov():
+    logging.debug("%s", mesh_config_prov.__name__)
 
-    iutctl = iutctl.get_iut()
+    iutctl = get_iut()
 
-    uuid = binascii.unhexlify(uuid)
-    static_auth = binascii.unhexlify(static_auth)
+    stack = get_stack()
+
+    uuid = binascii.unhexlify(stack.mesh.dev_uuid)
+    static_auth = binascii.unhexlify(stack.mesh.static_auth)
+    output_size = stack.mesh.output_size
+    output_actions = stack.mesh.output_actions
+    input_size = stack.mesh.input_size
+    input_actions = stack.mesh.input_actions
 
     data = bytearray(struct.pack("<16s16sBHBH", uuid, static_auth, output_size,
                                  output_actions, input_size, input_actions))
@@ -2711,11 +2737,12 @@ def mesh_prov_node():
     net_key = binascii.unhexlify(stack.mesh.net_key)
     dev_key = binascii.unhexlify(stack.mesh.dev_key)
 
-    data = bytearray(struct.pack("<16sHBIIH16s", net_key, stack.mesh.net_key_idx,
-                                 stack.mesh.flags, stack.mesh.iv_idx,
-                                 stack.mesh.seq_num, stack.mesh.addr, dev_key))
+    data = bytearray(struct.pack("<16sHBIIH16s", net_key,
+                                 stack.mesh.net_key_idx, stack.mesh.flags,
+                                 stack.mesh.iv_idx, stack.mesh.seq_num,
+                                 stack.mesh.addr, dev_key))
 
-    iutctl = iutctl.get_iut()
+    iutctl = get_iut()
 
     iutctl.btp_socket.send_wait_rsp(*MESH['prov_node'], data=data)
 
@@ -2723,27 +2750,32 @@ def mesh_prov_node():
 def mesh_init():
     logging.debug("%s", mesh_init.__name__)
 
-    iutctl = iutctl.get_iut()
+    iutctl = get_iut()
 
     iutctl.btp_socket.send_wait_rsp(*MESH['init'])
+
+    stack = get_stack()
+
+    stack.mesh.is_initialized = True
 
 
 def mesh_reset():
     logging.debug("%s", mesh_reset.__name__)
 
-    iutctl = iutctl.get_iut()
+    iutctl = get_iut()
 
     iutctl.btp_socket.send_wait_rsp(*MESH['reset'])
 
     stack = get_stack()
 
     stack.mesh.is_provisioned.data = False
+    stack.mesh.is_initialized = False
 
 
 def mesh_input_number(number):
     logging.debug("%s %r", mesh_input_number.__name__, number)
 
-    iutctl = iutctl.get_iut()
+    iutctl = get_iut()
 
     if type(number) is str:
         number = int(number)
@@ -2756,7 +2788,7 @@ def mesh_input_number(number):
 def mesh_input_string(string):
     logging.debug("%s %s", mesh_input_string.__name__, string)
 
-    iutctl = iutctl.get_iut()
+    iutctl = get_iut()
 
     data = bytearray(string)
 
@@ -2784,7 +2816,11 @@ def mesh_iv_update_toggle():
 
     iutctl = get_iut()
 
-    iutctl.btp_socket.send_wait_rsp(*MESH['iv_update_toggle'])
+    iutctl.btp_socket.send(*MESH['iv_update_toggle'])
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
+
+    if tuple_hdr.op == defs.BTP_STATUS:
+        logging.info("IV Update in progress")
 
 
 def mesh_net_send(ttl, src, dst, payload):
@@ -2816,7 +2852,7 @@ def mesh_net_send(ttl, src, dst, payload):
 
 
 def mesh_health_generate_faults():
-    logging.debug("%s %r", mesh_health_generate_faults.__name__)
+    logging.debug("%s", mesh_health_generate_faults.__name__)
 
     iutctl = get_iut()
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MESH['health_generate_faults'])
@@ -2824,7 +2860,8 @@ def mesh_health_generate_faults():
     hdr_fmt = '<BBB'
     hdr_len = struct.calcsize(hdr_fmt)
 
-    (test_id, cur_faults_cnt, reg_faults_cnt) = struct.unpack_from(hdr_fmt, rsp)
+    (test_id, cur_faults_cnt, reg_faults_cnt) = \
+        struct.unpack_from(hdr_fmt, rsp)
     (cur_faults,) = struct.unpack_from('<%ds' % cur_faults_cnt, rsp, hdr_len)
     (reg_faults,) = struct.unpack_from('<%ds' % reg_faults_cnt, rsp,
                                        hdr_len + cur_faults_cnt)
@@ -2836,7 +2873,7 @@ def mesh_health_generate_faults():
 
 
 def mesh_health_clear_faults():
-    logging.debug("%s %r", mesh_health_clear_faults.__name__)
+    logging.debug("%s", mesh_health_clear_faults.__name__)
 
     iutctl = get_iut()
     iutctl.btp_socket.send_wait_rsp(*MESH['mesh_clear_faults'])
@@ -2861,6 +2898,59 @@ def mesh_lpn_poll():
 
     iutctl = get_iut()
     iutctl.btp_socket.send_wait_rsp(*MESH['lpn_poll'])
+
+
+def mesh_model_send(src, dst, payload):
+    logging.debug("%s %r %r %r", mesh_net_send.__name__, src, dst, payload)
+
+    if isinstance(src, str):
+        src = int(src, 16)
+
+    if isinstance(dst, str):
+        dst = int(dst, 16)
+
+    payload = binascii.unhexlify(payload)
+    payload_len = len(payload)
+
+    if payload_len > 0xff:
+        raise BTPError("Payload exceeds PDU")
+
+    data = bytearray(struct.pack("<HHB", src, dst, payload_len))
+    data.extend(payload)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*MESH['model_send'], data=data)
+
+
+def mesh_lpn_subscribe(address):
+    logging.debug("%s %r", mesh_lpn_subscribe.__name__, address)
+
+    if isinstance(address, str):
+        address = int(address, 16)
+
+    data = bytearray(struct.pack("<H", address))
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*MESH['lpn_subscribe'], data=data)
+
+
+def mesh_lpn_unsubscribe(address):
+    logging.debug("%s %r", mesh_lpn_unsubscribe.__name__, address)
+
+    if isinstance(address, str):
+        address = int(address, 16)
+
+    data = bytearray(struct.pack("<H", address))
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*MESH['lpn_unsubscribe'], data=data)
+
+
+def mesh_rpl_clear():
+    logging.debug("%s", mesh_rpl_clear.__name__)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*MESH['rpl_clear'])
 
 
 def mesh_out_number_action_ev(mesh, data, data_len):
@@ -2936,6 +3026,27 @@ def mesh_net_rcv_ev(mesh, data, data_len):
     stack.mesh.net_recv_ev_data.data = (ttl, ctl, src, dst, payload)
 
 
+def mesh_invalid_bearer_ev(mesh, data, data_len):
+    stack = get_stack()
+
+    logging.debug("%s %r %r", mesh_invalid_bearer_ev.__name__, data, data_len)
+
+    hdr_fmt = '<B'
+    hdr_len = struct.calcsize(hdr_fmt)
+
+    (opcode,) = struct.unpack_from(hdr_fmt, data, 0)
+
+    stack.mesh.prov_invalid_bearer_rcv.data = True
+
+
+def mesh_incomp_timer_exp_ev(mesh, data, data_len):
+    logging.debug("%s", mesh_incomp_timer_exp_ev.__name__)
+
+    stack = get_stack()
+
+    stack.mesh.incomp_timer_exp.data = True
+
+
 MESH_EV = {
     defs.MESH_EV_OUT_NUMBER_ACTION: mesh_out_number_action_ev,
     defs.MESH_EV_OUT_STRING_ACTION: mesh_out_string_action_ev,
@@ -2944,6 +3055,8 @@ MESH_EV = {
     defs.MESH_EV_PROV_LINK_OPEN: mesh_prov_link_open_ev,
     defs.MESH_EV_PROV_LINK_CLOSED: mesh_prov_link_closed_ev,
     defs.MESH_EV_NET_RECV: mesh_net_rcv_ev,
+    defs.MESH_EV_INVALID_BEARER: mesh_invalid_bearer_ev,
+    defs.MESH_EV_INCOMP_TIMER_EXP: mesh_incomp_timer_exp_ev,
 }
 
 

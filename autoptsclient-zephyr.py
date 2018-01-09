@@ -25,7 +25,7 @@ from distutils.spawn import find_executable
 import autoptsclient_common as autoptsclient
 import ptsprojects.zephyr as autoprojects
 import ptsprojects.stack as stack
-import btp.btp as btp
+from pybtp import btp
 from ptsprojects.zephyr.iutctl import get_iut
 
 def check_args(args):

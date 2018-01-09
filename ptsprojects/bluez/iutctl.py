@@ -18,9 +18,9 @@ import logging
 import shlex
 import socket
 
-import btp.defs as defs
-from btp.types import BTPError
-from btp.iutctl_common import BTPWorker
+from pybtp import defs
+from pybtp.types import BTPError
+from pybtp.iutctl_common import BTPWorker
 
 log = logging.debug
 IUT = None

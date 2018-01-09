@@ -25,7 +25,7 @@ from distutils.spawn import find_executable
 import autoptsclient_common as autoptsclient
 import ptsprojects.bluez as autoprojects
 import ptsprojects.stack as stack
-import btp.btp as btp
+from pybtp import btp
 from ptsprojects.bluez.iutctl import get_iut
 
 def parse_args():

@@ -28,8 +28,9 @@ except ImportError:  # running this module as script
         TestFuncCleanUp
     from ptsprojects.zephyr.ztestcase import ZTestCase
 
-import btp.btp as btp
+from pybtp import btp
 from ptsprojects.stack import get_stack
+from sm_wid import sm_wid_hdl
 
 
 class Addr:
@@ -56,231 +57,156 @@ def test_cases(pts):
 
     pre_conditions=[TestFunc(btp.core_reg_svc_gap),
                     TestFunc(btp.gap_read_ctrl_info),
-                    TestFunc(btp.wrap, pts.update_pixit_param,
+                    TestFunc(lambda: pts.update_pixit_param(
                              "SM", "TSPX_bd_addr_iut",
-                             btp.get_stored_bd_addr),
+                             stack.gap.iut_addr_get_str())),
                     TestFunc(lambda: pts.update_pixit_param(
                              "SM", "TSPX_peer_addr_type",
-                             "01" if btp.is_iut_addr_random() else "00"))]
+                             "01" if stack.gap.iut_addr_is_random() else "00")),
+                    # FIXME Find better place to store PTS bdaddr
+                    TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public)]
 
     test_cases = [
         ZTestCase("SM", "SM/MAS/PROT/BV-01-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_conn, pts_bd_addr,
-                            Addr.le_public, start_wid=100),
-                   TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
-                            start_wid=100)]),
+                  pre_conditions,
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/SLA/PROT/BV-02-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_adv_ind_on),
-                   TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
-                            start_wid=109)]),
+                  pre_conditions,
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/SLA/JW/BV-02-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_adv_ind_on)]),
+                  pre_conditions,
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/MAS/JW/BV-05-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   TestFunc(btp.gap_conn, pts_bd_addr,
-                            Addr.le_public, start_wid=100),
-                   TestFunc(btp.gap_pair, pts_bd_addr,
-                            Addr.le_public, start_wid=100),
-                   TestFunc(btp.gap_disconn, pts_bd_addr,
-                            Addr.le_public, start_wid=102)]),
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/MAS/JW/BI-01-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   TestFunc(btp.gap_conn, pts_bd_addr,
-                            Addr.le_public, start_wid=100),
-                   TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
-                            start_wid=100)]),
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/SLA/JW/BI-02-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_adv_ind_on)]),
+                  pre_conditions,
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/SLA/JW/BI-03-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_adv_ind_on)]),
+                  pre_conditions,
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/MAS/JW/BI-04-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   TestFunc(btp.gap_conn, pts_bd_addr,
-                            Addr.le_public, start_wid=100),
-                   TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
-                            start_wid=100)]),
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/MAS/PKE/BV-01-C",
-                  edit1_wids={104: btp.var_store_get_passkey},
-                  cmds=pre_conditions +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                        TestFunc(btp.gap_conn, pts_bd_addr,
-                                 Addr.le_public, start_wid=100),
-                        TestFunc(btp.gap_pair, pts_bd_addr,
-                                 Addr.le_public, start_wid=100)]),
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/SLA/PKE/BV-02-C",
-                  edit1_wids={104: btp.var_store_get_passkey},
-                  cmds=pre_conditions +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                        TestFunc(btp.gap_adv_ind_on)]),
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/MAS/PKE/BV-04-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   TestFunc(btp.gap_conn, pts_bd_addr,
-                            Addr.le_public, start_wid=100),
-                   TestFunc(btp.gap_pair, pts_bd_addr,
-                            Addr.le_public, start_wid=100)]),
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/SLA/PKE/BV-05-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   TestFunc(btp.gap_adv_ind_on)]),
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/MAS/PKE/BI-01-C",
-                  edit1_wids={106: btp.var_store_get_wrong_passkey},
-                  cmds=pre_conditions +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                        TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
-                                 start_wid=100),
-                        TestFunc(btp.gap_pair, pts_bd_addr,
-                                 Addr.le_public, start_wid=100)]),
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/MAS/PKE/BI-02-C",
-                  edit1_wids={104: btp.var_store_get_passkey},
-                  cmds=pre_conditions +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                        TestFunc(btp.gap_conn, pts_bd_addr,
-                                 Addr.le_public, start_wid=100),
-                        TestFunc(btp.gap_pair, pts_bd_addr,
-                                 Addr.le_public, start_wid=100)]),
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/SLA/PKE/BI-03-C",
-                  edit1_wids={106: btp.var_store_get_wrong_passkey},
-                  cmds=pre_conditions +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                        TestFunc(btp.gap_adv_ind_on)]),
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/MAS/OOB/BV-05-C",
-                  edit1_wids={104: btp.var_store_get_passkey},
-                  cmds=pre_conditions +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                        TestFunc(btp.gap_conn, pts_bd_addr,
-                                 Addr.le_public, start_wid=100),
-                        TestFunc(btp.gap_pair, pts_bd_addr,
-                                 Addr.le_public, start_wid=100)]),
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/SLA/OOB/BV-06-C",
-                  edit1_wids={104: btp.var_store_get_passkey},
-                  cmds=pre_conditions +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                        TestFunc(btp.gap_adv_ind_on)]),
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/MAS/OOB/BV-07-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   TestFunc(btp.gap_conn, pts_bd_addr,
-                            Addr.le_public, start_wid=100),
-                   TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
-                            start_wid=100)]),
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/SLA/OOB/BV-08-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   TestFunc(btp.gap_adv_ind_on)]),
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/MAS/EKS/BV-01-C",
-                  edit1_wids={104: btp.var_store_get_passkey},
-                  cmds=pre_conditions +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                        TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
-                                 start_wid=100),
-                        TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
-                                 start_wid=100)]),
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/SLA/EKS/BV-02-C",
-                  edit1_wids={104: btp.var_store_get_passkey},
-                  cmds=pre_conditions +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                        TestFunc(btp.gap_adv_ind_on, start_wid=115)]),
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/MAS/EKS/BI-01-C",
-                  edit1_wids={104: "000000"},
-                  cmds=pre_conditions +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                        TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
-                                 start_wid=100),
-                        TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
-                                 start_wid=100)]),
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/SLA/EKS/BI-02-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   TestFunc(btp.gap_adv_ind_on, start_wid=115)]),
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/MAS/SIGN/BV-01-C",
-                  edit1_wids={104: btp.var_store_get_passkey},
-                  cmds=pre_conditions +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                        TestFunc(btp.gap_adv_ind_on, start_wid=115),
-                        TestFunc(btp.gattc_signed_write, Addr.le_public,
-                                 pts_bd_addr, "0001", "01", start_wid=110)]),
-        ZTestCase("SM", "SM/MAS/SIGN/BV-03-C",
-                  edit1_wids={104: btp.var_store_get_passkey},
-                  cmds=pre_conditions +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                        TestFunc(btp.gap_adv_ind_on, start_wid=115)]),
-        ZTestCase("SM", "SM/MAS/SIGN/BI-01-C",
-                  edit1_wids={104: btp.var_store_get_passkey},
-                  cmds=pre_conditions +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                        TestFunc(btp.gap_adv_ind_on, start_wid=115)]),
-        ZTestCase("SM", "SM/SLA/KDU/BV-01-C",
-                  edit1_wids={104: btp.var_store_get_passkey},
-                  cmds=pre_conditions +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                        TestFunc(btp.gap_adv_ind_on, start_wid=115)]),
-        ZTestCase("SM", "SM/SLA/KDU/BV-02-C",
-                  edit1_wids={104: btp.var_store_get_passkey},
-                  cmds=pre_conditions +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                        TestFunc(btp.gap_adv_ind_on, start_wid=115)]),
-        ZTestCase("SM", "SM/SLA/KDU/BV-03-C",
-                  edit1_wids={104: btp.var_store_get_passkey},
-                  cmds=pre_conditions +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                        TestFunc(btp.gap_adv_ind_on, start_wid=115)]),
-        ZTestCase("SM", "SM/MAS/KDU/BV-04-C",
-                  edit1_wids={104: btp.var_store_get_passkey},
-                  cmds=pre_conditions +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                        TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
-                                 start_wid=100),
-                        TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
-                                 start_wid=100)]),
-        ZTestCase("SM", "SM/MAS/KDU/BV-05-C",
-                  edit1_wids={104: btp.var_store_get_passkey},
-                  cmds=pre_conditions +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                        TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
-                                 start_wid=100),
-                        TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
-                                 start_wid=100)]),
-        ZTestCase("SM", "SM/MAS/KDU/BV-06-C",
-                  edit1_wids={104: btp.var_store_get_passkey},
-                  cmds=pre_conditions +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                        TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
-                                 start_wid=100),
-                        TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
-                                 start_wid=100)]),
-        ZTestCase("SM", "SM/SLA/KDU/BV-07-C",
-                  edit1_wids={104: btp.var_store_get_passkey},
-                  cmds=pre_conditions +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                        TestFunc(btp.gap_adv_ind_on, start_wid=115)]),
-        ZTestCase("SM", "SM/SLA/SIP/BV-01-C",
-                  edit1_wids={104: btp.var_store_get_passkey},
-                  cmds=pre_conditions +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                        TestFunc(btp.gap_adv_ind_on, start_wid=115),
-                        TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
-                                 start_wid=109)]),
-        ZTestCase("SM", "SM/MAS/SIP/BV-02-C",
-                  edit1_wids={104: btp.var_store_get_passkey},
-                  cmds=pre_conditions +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                        TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
-                                 start_wid=101)]),
-        ZTestCase("SM", "SM/SLA/SIE/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   TestFunc(btp.gap_adv_ind_on),
-                   TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
-                            start_wid=109)]),
+                   TestFunc(btp.core_reg_svc_gatt)],
+                  generic_wid_hdl=sm_wid_hdl),
+        ZTestCase("SM", "SM/MAS/SIGN/BV-03-C",
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=sm_wid_hdl),
+        ZTestCase("SM", "SM/MAS/SIGN/BI-01-C",
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=sm_wid_hdl),
+        ZTestCase("SM", "SM/SLA/KDU/BV-01-C",
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=sm_wid_hdl),
+        ZTestCase("SM", "SM/SLA/KDU/BV-02-C",
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=sm_wid_hdl),
+        ZTestCase("SM", "SM/SLA/KDU/BV-03-C",
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=sm_wid_hdl),
+        ZTestCase("SM", "SM/MAS/KDU/BV-04-C",
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=sm_wid_hdl),
+        ZTestCase("SM", "SM/MAS/KDU/BV-05-C",
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=sm_wid_hdl),
+        ZTestCase("SM", "SM/MAS/KDU/BV-06-C",
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=sm_wid_hdl),
+        ZTestCase("SM", "SM/SLA/KDU/BV-07-C",
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=sm_wid_hdl),
+        ZTestCase("SM", "SM/SLA/SIP/BV-01-C",
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=sm_wid_hdl),
+        ZTestCase("SM", "SM/MAS/SIP/BV-02-C",
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=sm_wid_hdl),
+        ZTestCase("SM", "SM/SLA/SIE/BV-01-C",
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=sm_wid_hdl),
     ]
 
     return test_cases
