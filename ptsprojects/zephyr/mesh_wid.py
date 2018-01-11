@@ -63,6 +63,13 @@ def hdl_wid_13(desc):
     return 'OK'
 
 
+def hdl_wid_205(desc):
+
+    btp.mesh_iv_update_test_mode(True)
+    btp.mesh_iv_update_toggle()
+    return 'OK'
+
+
 def hdl_wid_17(desc):
     btp.mesh_store_net_data()
 
