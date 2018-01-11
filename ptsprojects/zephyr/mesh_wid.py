@@ -395,8 +395,6 @@ def hdl_wid_90(desc):
 def hdl_wid_94(desc):
     stack = get_stack()
 
-    btp.mesh_iv_update_toggle()
-
     return 'Ok'
 
 
@@ -502,9 +500,7 @@ def hdl_wid_219(desc):
 def hdl_wid_220(desc):
     stack = get_stack()
 
-    if stack.mesh.is_provisioned.data:
-        return 'OK'
-    return 'Cancel'
+    return 'OK'
 
 
 def hdl_wid_221(desc):
