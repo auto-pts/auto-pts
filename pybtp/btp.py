@@ -2757,6 +2757,8 @@ def mesh_init():
     stack = get_stack()
 
     stack.mesh.is_initialized = True
+    if stack.mesh.iv_test_mode_autoinit:
+        mesh_iv_update_test_mode(True)
 
 
 def mesh_reset():
@@ -3006,6 +3008,12 @@ def mesh_store_net_data():
     stack = get_stack()
 
     stack.mesh.net_recv_ev_store.data = True
+
+
+def mesh_iv_test_mode_autoinit():
+    stack = get_stack()
+
+    stack.mesh.iv_test_mode_autoinit = True
 
 
 def mesh_net_rcv_ev(mesh, data, data_len):

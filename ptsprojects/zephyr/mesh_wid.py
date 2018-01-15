@@ -16,7 +16,6 @@
 import logging
 import sys
 from pybtp import btp
-import time
 import re
 import time
 from ptsprojects.stack import get_stack
@@ -61,6 +60,13 @@ def hdl_wid_13(desc):
     btp.mesh_config_prov()
     btp.mesh_init()
 
+    return 'OK'
+
+
+def hdl_wid_205(desc):
+
+    btp.mesh_iv_update_test_mode(True)
+    btp.mesh_iv_update_toggle()
     return 'OK'
 
 
@@ -296,6 +302,32 @@ def hdl_wid_37(desc):
     return 'No'
 
 
+def hdl_wid_39(desc):
+    stack = get_stack()
+
+    # This pattern is destination addresses
+    pattern = re.compile('(address)\s+\\:\s+([0][xX][0-9a-fA-F]+)')
+    params = pattern.findall(desc)
+    if not params:
+        logging.error("%s parsing error", hdl_wid_39.__name__)
+        return 'No'
+
+    params = dict(params)
+
+    if not stack.mesh.net_recv_ev_data.data:
+        logging.error("No data received")
+        return 'No'
+
+    (recv_ttl, recv_ctl, recv_src, recv_dst, recv_pdu) = \
+        stack.mesh.net_recv_ev_data.data
+
+    if int(params.get('address'), 16) != recv_dst:
+        logging.error("Destination address does not match")
+        return 'No'
+
+    return 'Yes'
+
+
 def hdl_wid_40(desc):
     stack = get_stack()
     return 'Yes'
@@ -363,8 +395,6 @@ def hdl_wid_90(desc):
 def hdl_wid_94(desc):
     stack = get_stack()
 
-    btp.mesh_iv_update_toggle()
-
     return 'Ok'
 
 
@@ -420,8 +450,6 @@ def hdl_wid_203(desc):
 def hdl_wid_204(desc):
     stack = get_stack()
 
-    time.sleep(stack.mesh.iv_update_timeout.data)
-
     return 'OK'
 
 
@@ -450,8 +478,6 @@ def hdl_wid_217(desc):
     if not stack.mesh.is_iv_test_mode_enabled.data:
         btp.mesh_iv_update_test_mode(True)
 
-    time.sleep(stack.mesh.iv_update_timeout.data)
-
     return 'OK'
 
 
@@ -474,9 +500,7 @@ def hdl_wid_219(desc):
 def hdl_wid_220(desc):
     stack = get_stack()
 
-    if stack.mesh.is_provisioned.data:
-        return 'OK'
-    return 'Cancel'
+    return 'OK'
 
 
 def hdl_wid_221(desc):
@@ -485,8 +509,6 @@ def hdl_wid_221(desc):
     if not stack.mesh.is_iv_test_mode_enabled.data:
         btp.mesh_iv_update_test_mode(True)
         btp.mesh_iv_update_toggle()
-
-    time.sleep(stack.mesh.iv_update_timeout.data)
 
     return 'OK'
 
@@ -566,6 +588,7 @@ def hdl_wid_314(desc):
 
 def hdl_wid_315(desc):
     stack = get_stack()
+    btp.mesh_lpn(True)
 
     return 'Ok'
 

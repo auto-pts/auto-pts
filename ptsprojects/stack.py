@@ -178,6 +178,7 @@ class Mesh:
         # IV update
         self.iv_update_timeout = Property(120)
         self.is_iv_test_mode_enabled = Property(False)
+        self.iv_test_mode_autoinit = False
 
         # Network
         # net_recv_ev_store - store data for further verification
