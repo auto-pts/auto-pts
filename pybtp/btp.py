@@ -991,11 +991,11 @@ def __gap_device_found_ev(duration):
         btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GAP,
                       defs.GAP_EV_DEVICE_FOUND)
 
-        fmt = '<6sBBBH'
+        fmt = '<B6sBBH'
         if len(tuple_data[0]) < struct.calcsize(fmt):
             raise BTPError("Invalid data length")
 
-        _addr, _addr_type, _rssi, _flags, _len = \
+        _addr_type, _addr, _rssi, _flags, _len = \
             struct.unpack_from(fmt, tuple_data[0])
         _eir = tuple_data[0][struct.calcsize(fmt):]
 
@@ -2686,10 +2686,10 @@ def l2cap_data_rcv_ev(chan_id=None, store=False):
 def gap_connected_ev_(gap, data, data_len):
     logging.debug("%s %r", gap_connected_ev_.__name__, data)
 
-    hdr_fmt = '<6sB'
+    hdr_fmt = '<B6s'
     hdr_len = struct.calcsize(hdr_fmt)
 
-    addr, addr_type = struct.unpack_from(hdr_fmt, data)
+    addr_type, addr = struct.unpack_from(hdr_fmt, data)
     addr = binascii.hexlify(addr[::-1])
 
     gap.connected.data = (addr, addr_type)
