@@ -1832,13 +1832,13 @@
           <Row>
             <Name>TSPC_SM_1_1</Name>
             <Description>Master Role (Initiator) (See Spec)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_SM_1_2</Name>
             <Description>Slave Role (Responder) (See Spec)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1989,7 +1989,7 @@
             <Name>TSPX_iut_private_address_interval</Name>
             <Description>Minimum time interval between private address change. (Default: 5000)</Description>
             <Type>INTEGER</Type>
-            <Value>5000</Value>
+            <Value>10000</Value>
           </Row>
           <Row>
             <Name>TSPX_iut_privacy_enabled</Name>
@@ -2157,13 +2157,507 @@ for the IUT in the IXIT. (Default: 0x00000000000000000000000000000000)</Descript
             <Name>TSPX_iut_device_name_in_adv_packet_for_random_address</Name>
             <Description>IUT advertising this local name for the PTS to make connection to. Default is not using it with empty string. (Default: "")</Description>
             <Type>IA5STRING</Type>
-            <Value />
+            <Value>Tester</Value>
           </Row>
           <Row>
             <Name>TSPX_Tgap_104</Name>
             <Description>The time in milliseconds, Maximum time span that a device is in limited discoverable mode. Default: 60 seconds. (Default: 60000)</Description>
             <Type>INTEGER</Type>
             <Value>60000</Value>
+          </Row>
+        </Rows>
+      </PIXIT>
+    </PROJECT_INFORMATION>
+    <PROJECT_INFORMATION NAME="SM" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
+      <PICS>
+        <Name>SM</Name>
+        <Version />
+        <Rows>
+          <Row>
+            <Name>TSPC_SM_1_1</Name>
+            <Description>Role : Master (C.1 : see test spec)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SM_1_2</Name>
+            <Description>Role : Slave (C.2 : see test spec)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SM_2_1</Name>
+            <Description>Authenticated MITM protection (C.1 : see test spec)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SM_2_2</Name>
+            <Description>Unauthenticated no MITM protection (C.2 : see test spec)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SM_2_3</Name>
+            <Description>No security requirements (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SM_2_4</Name>
+            <Description>OOB supported (O) </Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SM_2_5</Name>
+            <Description>LE Secure Connections (C.2)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SM_3_1</Name>
+            <Description>Encryption Key Size Negotiation (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SM_4_1</Name>
+            <Description>Just Works (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SM_4_2</Name>
+            <Description>Passkey Entry (C1  : see test spec)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SM_4_3</Name>
+            <Description>Out of Band (C1 : see test spec)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SM_5_1</Name>
+            <Description>Encryption Setup using STK (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SM_5_2</Name>
+            <Description>Encryption Setup using LTK (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SM_5_3</Name>
+            <Description>Slave Initiated Security (C1  : see test spec)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SM_5_4</Name>
+            <Description>Slave Initiated Security - Master response (C2 : see test spec)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SM_6_1</Name>
+            <Description>Signing Algorithm - Generation (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SM_6_2</Name>
+            <Description>Signing Algorithm - Resolving (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SM_7_1</Name>
+            <Description>Key Distribution - Encryption Key (C1  : see test spec)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SM_7_2</Name>
+            <Description>Key Distribution - Identity Key (C2  : see test spec)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SM_7_3</Name>
+            <Description>Key Distribution - Signing Key (C3  : see test spec)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_ALL</Name>
+            <Description>Turn on all test cases (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+        </Rows>
+      </PICS>
+      <PIXIT>
+        <Name>SM</Name>
+        <Version />
+        <Rows>
+          <Row>
+            <Name>TSPX_bd_addr_iut</Name>
+            <Description>The unique 48-bit Bluetooth device address (BD_ADDR) of the IUT. This was filled in during workspace creation.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>0028F82F9C6F</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_SMP_pin_code</Name>
+            <Description>The 6 digit PIN code that is used to authenticate connections between PTS and IUT. (Default: 111111)</Description>
+            <Type>INTEGER</Type>
+            <Value>111111</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_OOB_Data</Name>
+            <Description>128 bit OOB data used by PTS when out of bad flag is set to TRUE</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>0000000000000000FE12036E5A889F4D</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_peer_addr_type</Name>
+            <Description>Whether peer address is public(00) or random (01). This is used during creating connection.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>00</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_own_addr_type</Name>
+            <Description>Whether own address is public(00) or random (01). This is used during creating connection.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>00</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_conn_interval_min</Name>
+            <Description>Value of minimum allowed connection interval. This is used during creating connection.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>0190</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_conn_interval_max</Name>
+            <Description>Value of maximum allowed connection interval. This is used during creating connection.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>0190</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_conn_latency</Name>
+            <Description>Value of connection latency.This is used during creating connection.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>0000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_client_class_of_device</Name>
+            <Description>The indicated capabilities of PTS in client role</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>100104</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_server_class_of_device</Name>
+            <Description>The indicated capabilities of PTS in server role</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>100104</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_security_enabled</Name>
+            <Description>Whether security is required for establishing connections. (Default: TRUE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>TRUE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_delete_link_key</Name>
+            <Description>Whether to delete the stored link key in PTS at the beginning of each test case. (Default: TRUE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>TRUE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_pin_code</Name>
+            <Description>The PIN code that is used to authenticate connections between PTS and IUT. (Default: 1234)</Description>
+            <Type>IA5STRING</Type>
+            <Value>1234</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_ATTR_HANDLE</Name>
+            <Description>Attribue Handle to be used in "Signing of data" test cases, 2 octet</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>0000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_ATTR_VALUE</Name>
+            <Description>Attribue Value to be used in "Signing of data" test cases, 8 octet.Also set TSPX_ATTR_VALUE_LENGTH. </Description>
+            <Type>OCTETSTRING</Type>
+            <Value>0000000000000000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_delay_variation_in</Name>
+            <Description>Not referenced at this time</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>FFFFFFFF</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_delay_variation_out</Name>
+            <Description>Not referenced at this time</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>FFFFFFFF</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_flushto</Name>
+            <Description>User can set this value for basic mode. Default FFFF</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>FFFF</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_inmtu</Name>
+            <Description>User can set this value for basic mode. Default 02A0</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>02A0</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_inquiry_length</Name>
+            <Description>Not referenced at this time.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>17</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_latency_in</Name>
+            <Description>Not referenced at this time.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>FFFFFFFF</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_latency_out</Name>
+            <Description>Not referenced at this time.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>FFFFFFFF</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_linkto</Name>
+            <Description>Not referenced at this time</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>3000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_max_nbr_retransmissions</Name>
+            <Description>Not referenced at this time.</Description>
+            <Type>INTEGER</Type>
+            <Value>10</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_no_fail_verdicts</Name>
+            <Description>Used to disable FAIL verdict for Non-Qualification Testing only.</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_outmtu</Name>
+            <Description>User can set this value for basic mode. 02A0.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>02A0</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_tester_role_optional</Name>
+            <Description>This value determines which Role the Tester is, for test cases where Tester Role is optional. Valid values are L2CAP_ROLE_INITIATOR or L2CAP_ROLE_ACCEPTOR.</Description>
+            <Type>IA5STRING</Type>
+            <Value>L2CAP_ROLE_INITIATOR</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_page_scan_mode</Name>
+            <Description>Not referenced at this time.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>00</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_page_scan_repetition_mode</Name>
+            <Description>Not referenced at this time.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>00</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_peak_bandwidth_in</Name>
+            <Description>Not referenced at this time.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>00000000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_peak_bandwidth_out</Name>
+            <Description>Not referenced at this time.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>00000000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_psm</Name>
+            <Description>PSM to be used by IUT and TESTER.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>0011</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_service_type_in</Name>
+            <Description>Not referenced at this time.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>01</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_service_type_out</Name>
+            <Description>Not referenced at this time.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>01</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_support_retransmissions</Name>
+            <Description>Not referenced at this time.</Description>
+            <Type>BOOLEAN</Type>
+            <Value>TRUE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_time_guard</Name>
+            <Description>A timer to protect against deadlock in the test case. The value will be in ms. 300000.</Description>
+            <Type>INTEGER</Type>
+            <Value>180000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_timer_ertx</Name>
+            <Description>Not referenced at this time.</Description>
+            <Type>INTEGER</Type>
+            <Value>120000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_timer_ertx_max</Name>
+            <Description>Not referenced at this time.</Description>
+            <Type>INTEGER</Type>
+            <Value>300000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_timer_ertx_min</Name>
+            <Description>Not referenced at this time.</Description>
+            <Type>INTEGER</Type>
+            <Value>60000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_timer_rtx</Name>
+            <Description>Not referenced at this time.</Description>
+            <Type>INTEGER</Type>
+            <Value>10000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_timer_rtx_max</Name>
+            <Description>Not referenced at this time.</Description>
+            <Type>INTEGER</Type>
+            <Value>60000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_timer_rtx_min</Name>
+            <Description>Not referenced at this time.</Description>
+            <Type>INTEGER</Type>
+            <Value>1000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_token_bucket_size_in</Name>
+            <Description>Not referenced at this time.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>00000000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_token_bucket_size_out</Name>
+            <Description>Not referenced at this time.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>00000000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_token_rate_in</Name>
+            <Description>Not referenced at this time.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>00000000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_token_rate_out</Name>
+            <Description>Not referenced at this time.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>00000000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_rfc_mode_mode</Name>
+            <Description>Not referenced at this time.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>03</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_rfc_mode_tx_window_size</Name>
+            <Description>Not referenced at this time.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>08</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_rfc_mode_max_transmit</Name>
+            <Description>Not referenced at this time.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>03</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_rfc_mode_retransmission_timeout</Name>
+            <Description>Not referenced at this time.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>07D0</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_rfc_mode_monitor_timeout</Name>
+            <Description>Not referenced at this time.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>2EE0</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_rfc_mode_maximum_pdu_size</Name>
+            <Description>Not referenced at this time.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>02A0</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_extended_window_size</Name>
+            <Description>The size is used for extended control field. 0012.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>0012</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_use_implicit_send</Name>
+            <Description>Whether to receive a message via Implicit Send when an action or attention is needed by test operator. (Default: TRUE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>TRUE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_use_dynamic_pin</Name>
+            <Description>Determines whether or not a dynamic PIN MMI edit box will be used for Dynamic PTS Pin (Default value FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_iut_SDU_size_in_bytes</Name>
+            <Description>Not referenced at this time</Description>
+            <Type>INTEGER</Type>
+            <Value>144</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_secure_simple_pairing_pass_key_confirmation</Name>
+            <Description>Whether manual confirmation on generated key is required during secure simple pairing (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_Min_Encryption_Key_Length</Name>
+            <Description>Minimum Encrption Key Length (Default:07).</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>07</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_Bonding_Flags</Name>
+            <Description>Bonding Flags(Default:00).</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>00</Value>
           </Row>
         </Rows>
       </PIXIT>
