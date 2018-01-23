@@ -871,6 +871,8 @@ def test_cases_server(pts):
                    TestFunc(btp.gap_adv_ind_on, start_wid=1),
 
                    # Service Changed is triggered for bonded devices only
+                   TestFunc(btp.gap_wait_for_connection,
+                            start_wid=1, skip_call=(2,)),
                    TestFunc(btp.gap_pair, start_wid=1, skip_call=(2,)),
 
                    TestFunc(btp.gap_wait_for_disconnection, post_wid=96),
