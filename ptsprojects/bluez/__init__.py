@@ -18,3 +18,4 @@
 import ptsprojects.bluez.iutctl
 
 import ptsprojects.bluez.gap
+import ptsprojects.bluez.sm
