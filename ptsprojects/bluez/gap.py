@@ -144,7 +144,7 @@ class Perm:
         return decode_flag_name(perm, Perm.names)
 
 
-init_gatt_db=[TestFunc(btp.core_reg_svc_gatts),
+init_gatt_db=[TestFunc(btp.core_reg_svc_gatt),
               TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
               TestFunc(btp.gatts_add_char, 0, Prop.read,
                        Perm.read | Perm.read_authn,
@@ -196,7 +196,7 @@ def handle_wid_136_sec_csign_bi_04():
     response_size: 2048
     response_is_present: 0 <type 'int'>
     """
-    btp.core_reg_svc_gatts()
+    btp.core_reg_svc_gatt()
     btp.gatts_add_svc(0, UUID.VND16_1)
     btp.gatts_add_char(0, Prop.read | Prop.auth_swrite,
                    Perm.read | Perm.write_authn, UUID.VND16_2)
@@ -267,15 +267,27 @@ def test_cases(pts):
 
     # Set GAP common PIXIT values
     pts.update_pixit_param("GAP", "TSPX_delete_link_key", "TRUE")
-    pts.update_pixit_param("GAP", "TSPX_using_public_device_address", "FALSE")
-    pts.update_pixit_param("GAP", "TSPX_using_private_device_address", "TRUE")
-    pts.update_pixit_param("GAP", "TSPX_iut_privacy_enabled", "TRUE")
-    pts.update_pixit_param("GAP", "TSPX_using_random_device_address", "TRUE")
+    pts.update_pixit_param("GAP", "TSPX_using_public_device_address", "TRUE")
+    pts.update_pixit_param("GAP", "TSPX_using_private_device_address", "FALSE")
+    pts.update_pixit_param("GAP", "TSPX_iut_privacy_enabled", "FALSE")
+    pts.update_pixit_param("GAP", "TSPX_using_random_device_address", "FALSE")
 
     pre_conditions=[TestFunc(btp.gap_read_ctrl_info),
-                    TestFunc(btp.wrap, pts.update_pixit_param,
+                    TestFunc(lambda: pts.update_pixit_param(
                              "GAP", "TSPX_bd_addr_iut",
-                             btp.get_stored_bd_addr),
+                             stack.gap.iut_addr_get_str())),
+                    TestFunc(lambda: pts.update_pixit_param(
+                             "GAP", "TSPX_iut_privacy_enabled",
+                             "TRUE" if stack.gap.iut_has_privacy() else "FALSE")),
+                    TestFunc(lambda: pts.update_pixit_param(
+                             "GAP", "TSPX_using_public_device_address",
+                             "FALSE" if stack.gap.iut_addr_is_random() else "TRUE")),
+                    TestFunc(lambda: pts.update_pixit_param(
+                             "GAP", "TSPX_using_private_device_address",
+                             "TRUE" if stack.gap.iut_addr_is_random() else "FALSE")),
+                    TestFunc(lambda: pts.update_pixit_param(
+                             "GAP", "TSPX_using_random_device_address",
+                             "TRUE" if stack.gap.iut_addr_is_random() else "FALSE")),
 
                     # We do this on test case, because previous one could update
                     # this if RPA was used by PTS
@@ -308,6 +320,7 @@ def test_cases(pts):
                         TestFunc(pts.update_pixit_param, "GAP",
                                  "TSPX_iut_device_name_in_adv_packet_for_random_address",
                                  iut_device_name),
+                        TestFunc(btp.gap_wait_for_connection, post_wid=91),
                         TestFunc(btp.gap_adv_off, post_wid=91),
                         TestFunc(btp.gap_disconn, start_wid=77),
 
@@ -316,8 +329,7 @@ def test_cases(pts):
                         TestFunc(btp.gap_set_nondiscov, start_wid=80),
                         TestFunc(btp.gap_adv_ind_on,
                                  sd=[AdData.ad_manuf, AdData.ad_name_sh],
-                                 start_wid=80),
-                        TestFuncCleanUp(btp.gap_adv_off)]),
+                                 start_wid=80)]),
         BTestCase("GAP", "GAP/BROB/OBSV/BV-01-C",
                   ok_cancel_wids={4: (btp.check_discov_results)},
                   cmds=pre_conditions +
@@ -453,7 +465,7 @@ def test_cases(pts):
                                      'general')}),
         BTestCase("GAP", "GAP/IDLE/NAMP/BV-01-C",
                   pre_conditions +
-                  [TestFunc(btp.core_reg_svc_gatts),
+                  [TestFunc(btp.core_reg_svc_gatt),
                    TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
                             start_wid=78),
                    TestFunc(btp.gattc_disc_prim_uuid, Addr.le_public,
@@ -472,7 +484,7 @@ def test_cases(pts):
                             start_wid=77)]),
         BTestCase("GAP", "GAP/IDLE/NAMP/BV-02-C",
                   pre_conditions +
-                  [TestFunc(btp.core_reg_svc_gatts),
+                  [TestFunc(btp.core_reg_svc_gatt),
                    TestFunc(btp.gatts_add_svc, 0, UUID.gap_svc),
                    TestFunc(btp.gatts_add_char, 0, Prop.read,
                             Perm.read | Perm.write, UUID.device_name),
@@ -526,7 +538,7 @@ def test_cases(pts):
         BTestCase("GAP", "GAP/CONN/ACEP/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
-                            start_wid=78),
+                            post_wid=82),
                    TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
                             start_wid=77)]),
         BTestCase("GAP", "GAP/CONN/GCEP/BV-01-C",
@@ -678,7 +690,7 @@ def test_cases(pts):
                                   start_wid=139)]),
         BTestCase("GAP", "GAP/SEC/AUT/BV-17-C",
                   cmds=pre_conditions +
-                       [TestFunc(btp.core_reg_svc_gatts),
+                       [TestFunc(btp.core_reg_svc_gatt),
                         TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                         TestFunc(btp.gap_conn, start_wid=78),
                         TestFunc(btp.gattc_read, Addr.le_public,
@@ -692,7 +704,7 @@ def test_cases(pts):
                         TestFunc(btp.gap_disconn, start_wid=44)]),
          BTestCase("GAP", "GAP/SEC/AUT/BV-18-C",
                    cmds=pre_conditions +
-                        [TestFunc(btp.core_reg_svc_gatts),
+                        [TestFunc(btp.core_reg_svc_gatt),
                          TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
                          TestFunc(btp.gap_set_conn),
                          TestFunc(btp.gap_adv_ind_on),
@@ -716,7 +728,7 @@ def test_cases(pts):
                    edit1_wids={1002: (btp.var_store_get_passkey, pts_bd_addr,
                                       Addr.le_public)},
                    cmds=pre_conditions +
-                        [TestFunc(btp.core_reg_svc_gatts),
+                        [TestFunc(btp.core_reg_svc_gatt),
                          TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                          TestFunc(btp.gap_set_conn, start_wid=91),
                          TestFunc(btp.gap_adv_ind_on, start_wid=91),
@@ -732,7 +744,7 @@ def test_cases(pts):
         BTestCase("GAP", "GAP/SEC/AUT/BV-21-C",
                   edit1_wids={1002: btp.var_store_get_passkey},
                   cmds=pre_conditions +
-                       [TestFunc(btp.core_reg_svc_gatts),
+                       [TestFunc(btp.core_reg_svc_gatt),
                         TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                         TestFunc(btp.gap_conn, start_wid=78),
                         TestFunc(btp.gap_pair, start_wid=108),
@@ -742,7 +754,7 @@ def test_cases(pts):
                   edit1_wids={1002: (btp.var_store_get_passkey, pts_bd_addr,
                                      Addr.le_public)},
                   cmds=pre_conditions +
-                       [TestFunc(btp.core_reg_svc_gatts),
+                       [TestFunc(btp.core_reg_svc_gatt),
                         TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                         TestFunc(btp.gap_set_conn, start_wid=91),
                         TestFunc(btp.gap_adv_ind_on, start_wid=91),
@@ -768,7 +780,7 @@ def test_cases(pts):
                         TestFunc(btp.gap_disconn, start_wid=44)]),
          BTestCase("GAP", "GAP/SEC/CSIGN/BV-01-C",
                    pre_conditions +
-                   [TestFunc(btp.core_reg_svc_gatts),
+                   [TestFunc(btp.core_reg_svc_gatt),
                     TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
                     TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
                              start_wid=78),
