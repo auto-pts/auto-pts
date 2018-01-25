@@ -2903,7 +2903,7 @@ def mesh_lpn_poll():
 
 
 def mesh_model_send(src, dst, payload):
-    logging.debug("%s %r %r %r", mesh_net_send.__name__, src, dst, payload)
+    logging.debug("%s %r %r %r", mesh_model_send.__name__, src, dst, payload)
 
     if isinstance(src, str):
         src = int(src, 16)
