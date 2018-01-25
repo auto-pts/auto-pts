@@ -159,7 +159,7 @@ def hdl_wid_23(desc):
 
     btp.mesh_model_send(int(params.get('source address'), 16),
                         int(params.get('destination address'), 16),
-                        '0123456789abcdef' * 2)
+                        'ff' * 16)
     return 'Ok'
 
 
@@ -286,7 +286,7 @@ def hdl_wid_36(desc):
 
     btp.mesh_model_send(int(params.get('source address'), 16),
                         int(params.get('destination address'), 16),
-                        '0123')
+                        'ff' * 2)
     return 'Ok'
 
 
@@ -352,7 +352,7 @@ def hdl_wid_44(desc):
 
     btp.mesh_model_send(int(params.get('source address'), 16),
                         int(params.get('(address'), 16),
-                        '01234567890abcdef' * 2)
+                        'ff' * 16)
     return 'Ok'
 
 
