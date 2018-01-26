@@ -33,7 +33,7 @@ class BTestCase(TestCase):
 
         self.cmds.insert(0, TestFunc(btp.core_reg_svc_gap))
         self.cmds.insert(1, TestFunc(btp.gap_set_powered_on))
-        self.cmds.insert(2, TestFunc(btp.gap_reset))
 
+        self.cmds.append(TestFuncCleanUp(btp.gap_reset))
         self.cmds.append(TestFuncCleanUp(btp.gap_set_powered_off))
         self.cmds.append(TestFuncCleanUp(btp.core_unreg_svc_gap))
