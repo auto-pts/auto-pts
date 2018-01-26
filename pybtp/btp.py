@@ -2593,6 +2593,16 @@ def l2cap_data_rcv_ev(chan_id=None, store=False):
         VERIFY_VALUES.append(data)
 
 
+def gap_new_settings_ev_(gap, data, data_len):
+    logging.debug("%s %r", gap_new_settings_ev_.__name__, data)
+
+    data_fmt = '<I'
+
+    curr_set, = struct.unpack_from(data_fmt, data)
+
+    __gap_current_settings_update(curr_set)
+
+
 def gap_connected_ev_(gap, data, data_len):
     logging.debug("%s %r", gap_connected_ev_.__name__, data)
 
@@ -2614,6 +2624,7 @@ def gap_disconnected_ev_(gap, data, data_len):
 
 
 GAP_EV = {
+    defs.GAP_EV_NEW_SETTINGS:gap_new_settings_ev_,
     defs.GAP_EV_DEVICE_CONNECTED: gap_connected_ev_,
     defs.GAP_EV_DEVICE_DISCONNECTED: gap_disconnected_ev_,
 }
