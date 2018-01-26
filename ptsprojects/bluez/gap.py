@@ -30,27 +30,9 @@ except ImportError:  # running this module as script
 
 from time import sleep
 from pybtp import btp
+from pybtp.types import Addr, IOCap, UUID, Prop, Perm, AdType
 import binascii
 from ptsprojects.stack import get_stack
-
-
-class Addr:
-    le_public = 0
-    le_random = 1
-
-class IOCap:
-    display_only = 0
-    display_yesno = 1
-    keyboard_only = 2
-    no_input_output = 3
-
-
-class UUID:
-    gap_svc = '1800'
-    device_name = '2a00'
-    VND16_1 = 'AA50'
-    VND16_2 = 'AA51'
-    VND16_3 = 'AA52'
 
 
 class SVC:
@@ -59,89 +41,6 @@ class SVC:
 
 class CHAR:
     name = (None, None, None, UUID.device_name)
-
-
-class Prop:
-    """Properties of characteresic
-
-    Specified in BTP spec:
-
-    Possible values for the Properties parameter are a bit-wise of the
-    following bits:
-
-    0       Broadcast
-    1       Read
-    2       Write Without Response
-    3       Write
-    4       Notify
-    5       Indicate
-    6       Authenticated Signed Writes
-    7       Extended Properties
-
-    """
-    broadcast     = 2 ** 0
-    read          = 2 ** 1
-    write_wo_resp = 2 ** 2
-    write         = 2 ** 3
-    nofity        = 2 ** 4
-    indicate      = 2 ** 5
-    auth_swrite   = 2 ** 6
-    ext_prop      = 2 ** 7
-
-    names = {
-        broadcast     : "Broadcast",
-        read          : "Read",
-        write_wo_resp : "Write Without Response",
-        write         : "Write",
-        nofity        : "Notify",
-        indicate      : "Indicate",
-        auth_swrite   : "Authenticated Signed Writes",
-        ext_prop      : "Extended Properties",
-    }
-
-    @staticmethod
-    def decode(prop):
-        return decode_flag_name(prop, Prop.names)
-
-
-class Perm:
-    """Permission of characteresic or descriptor
-
-    Specified in BTP spec:
-
-    Possible values for the Permissions parameter are a bit-wise of the
-    following bits:
-
-    0       Read
-    1       Write
-    2       Read with Encryption
-    3       Write with Encryption
-    4       Read with Authentication
-    5       Write with Authentication
-    6       Authorization
-
-    """
-    read        = 2 ** 0
-    write       = 2 ** 1
-    read_enc    = 2 ** 2
-    write_enc   = 2 ** 3
-    read_authn  = 2 ** 4
-    write_authn = 2 ** 5
-    authz       = 2 ** 6
-
-    names = {
-        read        : "Read",
-        write       : "Write",
-        read_enc    : "Read with Encryption",
-        write_enc   : "Write with Encryption",
-        read_authn  : "Read with Authentication",
-        write_authn : "Write with Authentication",
-        authz       : "Authorization"
-    }
-
-    @staticmethod
-    def decode(perm):
-        return decode_flag_name(perm, Perm.names)
 
 
 init_gatt_db=[TestFunc(btp.core_reg_svc_gatt),
@@ -160,14 +59,6 @@ init_gatt_db=[TestFunc(btp.core_reg_svc_gatt),
               TestFunc(btp.gatts_set_val, 0, '03'),
               TestFunc(btp.gatts_start_server)]
 
-
-class AdType:
-    flags = 1
-    uuid16_some = 2
-    name_short = 8
-    uuid16_svc_data = 22
-    gap_appearance = 25
-    manufacturer_data = 255
 
 iut_device_name = 'Tester'
 

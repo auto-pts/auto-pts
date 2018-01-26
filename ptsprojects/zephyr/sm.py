@@ -29,20 +29,9 @@ except ImportError:  # running this module as script
     from ptsprojects.zephyr.ztestcase import ZTestCase
 
 from pybtp import btp
+from pybtp.types import Addr, IOCap
 from ptsprojects.stack import get_stack
 from sm_wid import sm_wid_hdl
-
-
-class Addr:
-    le_public = 0
-    le_random = 1
-
-
-class IOCap:
-    display_only = 0
-    display_yesno = 1
-    keyboard_only = 2
-    no_input_output = 3
 
 
 def test_cases(pts):
