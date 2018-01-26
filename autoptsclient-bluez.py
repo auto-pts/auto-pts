@@ -44,7 +44,7 @@ def parse_args():
                             "is running. It is also possible to use default "
                             "workspace provided with the auto-pts, in that "
                             "case this arguments must be set to one of the "
-                            "following: bluez-default")
+                            "following: bluez")
 
     arg_parser.add_argument("btpclient_path",
                             help="Path to Bluez tool btpclient")
