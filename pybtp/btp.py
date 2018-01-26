@@ -23,7 +23,7 @@ import socket
 from threading import Timer, Event
 
 import defs
-from types import BTPError, gap_settings_btp2txt, addr2btp_ba
+from types import BTPError, gap_settings_btp2txt, addr2btp_ba, Addr
 from iutctl_common import set_event_handler
 from random import randint
 from collections import namedtuple
@@ -237,96 +237,6 @@ MESH = {
                   defs.MESH_RPL_CLEAR,
                   CONTROLLER_INDEX, ""),
 }
-
-
-class Addr:
-    le_public = 0
-    le_random = 1
-
-
-class Prop:
-    """Properties of characteresic
-
-    Specified in BTP spec:
-
-    Possible values for the Properties parameter are a bit-wise of the
-    following bits:
-
-    0       Broadcast
-    1       Read
-    2       Write Without Response
-    3       Write
-    4       Notify
-    5       Indicate
-    6       Authenticated Signed Writes
-    7       Extended Properties
-
-    """
-    broadcast = 2 ** 0
-    read = 2 ** 1
-    write_wo_resp = 2 ** 2
-    write = 2 ** 3
-    nofity = 2 ** 4
-    indicate = 2 ** 5
-    auth_swrite = 2 ** 6
-    ext_prop = 2 ** 7
-
-    names = {
-        broadcast: "Broadcast",
-        read: "Read",
-        write_wo_resp: "Write Without Response",
-        write: "Write",
-        nofity: "Notify",
-        indicate: "Indicate",
-        auth_swrite: "Authenticated Signed Writes",
-        ext_prop: "Extended Properties",
-    }
-
-    @staticmethod
-    def decode(prop):
-        return decode_flag_name(prop, Prop.names)
-
-
-class Perm:
-    """Permission of characteresic or descriptor
-
-    Specified in BTP spec:
-
-    Possible values for the Permissions parameter are a bit-wise of the
-    following bits:
-
-    0       Read
-    1       Write
-    2       Read with Encryption
-    3       Write with Encryption
-    4       Read with Authentication
-    5       Write with Authentication
-    6       Authorization
-
-    """
-    read = 2 ** 0
-    write = 2 ** 1
-    read_enc = 2 ** 2
-    write_enc = 2 ** 3
-    read_authn = 2 ** 4
-    write_authn = 2 ** 5
-    read_authz = 2 ** 6
-    write_authz = 2 ** 7
-
-    names = {
-        read: "Read",
-        write: "Write",
-        read_enc: "Read with Encryption",
-        write_enc: "Write with Encryption",
-        read_authn: "Read with Authentication",
-        write_authn: "Write with Authentication",
-        read_authz: "Read with Authorization",
-        write_authz: "Write with Authorization"
-    }
-
-    @staticmethod
-    def decode(perm):
-        return decode_flag_name(perm, Perm.names)
 
 
 def verify_description(description):
@@ -991,11 +901,11 @@ def __gap_device_found_ev(duration):
         btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GAP,
                       defs.GAP_EV_DEVICE_FOUND)
 
-        fmt = '<6sBBBH'
+        fmt = '<B6sBBH'
         if len(tuple_data[0]) < struct.calcsize(fmt):
             raise BTPError("Invalid data length")
 
-        _addr, _addr_type, _rssi, _flags, _len = \
+        _addr_type, _addr, _rssi, _flags, _len = \
             struct.unpack_from(fmt, tuple_data[0])
         _eir = tuple_data[0][struct.calcsize(fmt):]
 
@@ -2683,13 +2593,23 @@ def l2cap_data_rcv_ev(chan_id=None, store=False):
         VERIFY_VALUES.append(data)
 
 
+def gap_new_settings_ev_(gap, data, data_len):
+    logging.debug("%s %r", gap_new_settings_ev_.__name__, data)
+
+    data_fmt = '<I'
+
+    curr_set, = struct.unpack_from(data_fmt, data)
+
+    __gap_current_settings_update(curr_set)
+
+
 def gap_connected_ev_(gap, data, data_len):
     logging.debug("%s %r", gap_connected_ev_.__name__, data)
 
-    hdr_fmt = '<6sB'
+    hdr_fmt = '<B6s'
     hdr_len = struct.calcsize(hdr_fmt)
 
-    addr, addr_type = struct.unpack_from(hdr_fmt, data)
+    addr_type, addr = struct.unpack_from(hdr_fmt, data)
     addr = binascii.hexlify(addr[::-1])
 
     gap.connected.data = (addr, addr_type)
@@ -2704,6 +2624,7 @@ def gap_disconnected_ev_(gap, data, data_len):
 
 
 GAP_EV = {
+    defs.GAP_EV_NEW_SETTINGS:gap_new_settings_ev_,
     defs.GAP_EV_DEVICE_CONNECTED: gap_connected_ev_,
     defs.GAP_EV_DEVICE_DISCONNECTED: gap_disconnected_ev_,
 }
@@ -2903,7 +2824,7 @@ def mesh_lpn_poll():
 
 
 def mesh_model_send(src, dst, payload):
-    logging.debug("%s %r %r %r", mesh_net_send.__name__, src, dst, payload)
+    logging.debug("%s %r %r %r", mesh_model_send.__name__, src, dst, payload)
 
     if isinstance(src, str):
         src = int(src, 16)

@@ -401,7 +401,8 @@ class PyPTS:
 
         # auto-pts own workspaces
         autopts_workspaces = {
-            "zephyr-hci": "workspaces/autopts_zephyr_hci_20170116/autopts_zephyr_hci_20170116.pqw6"
+            "zephyr-hci": "workspaces/autopts_zephyr_hci_20170116/autopts_zephyr_hci_20170116.pqw6",
+            "bluez": "workspaces/bluez/bluez.pqw6"
         }
         if workspace_path in autopts_workspaces.keys():
             workspace_name = workspace_path

@@ -29,7 +29,8 @@ except ImportError:  # running this module as script
     from ptsprojects.zephyr.ztestcase import ZTestCase
 
 from time import sleep
-from pybtp import btp, types
+from pybtp import btp
+from pybtp.types import Addr, IOCap, AdType
 import binascii
 import gatt
 from ptsprojects.stack import get_stack
@@ -165,15 +166,15 @@ iut_device_name = 'Tester'
 
 
 class AdData:
-    ad_manuf = (types.AdType.manufacturer_data, 'ABCD')
-    ad_name_sh = (types.AdType.name_short, binascii.hexlify(iut_device_name))
+    ad_manuf = (AdType.manufacturer_data, 'ABCD')
+    ad_name_sh = (AdType.name_short, binascii.hexlify(iut_device_name))
 
 # Advertising data
-ad = [(types.AdType.uuid16_some, '1111'),
-      (types.AdType.gap_appearance, '1111'),
-      (types.AdType.name_short, binascii.hexlify('Tester')),
-      (types.AdType.manufacturer_data, '11111111'),
-      (types.AdType.uuid16_svc_data, '111111')]
+ad = [(AdType.uuid16_some, '1111'),
+      (AdType.gap_appearance, '1111'),
+      (AdType.name_short, binascii.hexlify('Tester')),
+      (AdType.manufacturer_data, '11111111'),
+      (AdType.uuid16_svc_data, '111111')]
 
 
 def test_cases(pts):

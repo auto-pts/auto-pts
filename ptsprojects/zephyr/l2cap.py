@@ -29,12 +29,8 @@ except ImportError:  # running this module as script
     from ptsprojects.zephyr.ztestcase import ZTestCase
 
 from pybtp import btp
+from pybtp.types import Addr
 from ptsprojects.stack import get_stack
-
-
-class Addr:
-    le_public = 0
-    le_random = 1
 
 
 def test_cases(pts):

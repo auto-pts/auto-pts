@@ -29,40 +29,12 @@ except ImportError:  # running this module as script
     from ptsprojects.zephyr.ztestcase import ZTestCase
 
 from pybtp import btp
+from pybtp.types import UUID, Addr, IOCap, Prop, Perm
 from time import sleep
 import logging
 from ptsprojects.stack import get_stack
 from ptsprojects.zephyr.gatt_wid import gatt_wid_hdl
 
-
-class UUID:
-    gap_svc = '1800'
-    gatt_svc = '1801'
-    CEP = '2900'
-    CUD = '2901'
-    CCC = '2902'
-    SCC = '2903'
-    CPF = '2904'
-    CAF = '2905'
-    device_name = '2A00'
-    appearance = '2A01'
-    service_changed = '2A05'
-    battery_level = '2A19'
-    date_of_birth = '2A85'
-    gender = '2A8C'
-    VND16_1 = 'AA50'
-    VND16_2 = 'AA51'
-    VND16_3 = 'AA52'
-    VND16_4 = 'AA53'
-    VND16_5 = 'AA54'
-    VND128_1 = 'F000BB5004514000B123456789ABCDEF'
-    VND128_2 = 'F000BB5104514000B123456789ABCDEF'
-    VND128_3 = 'F000BB5204514000B123456789ABCDEF'
-
-
-class Addr:
-    le_public = 0
-    le_random = 1
 
 class Value:
     one_byte = '01'
@@ -71,13 +43,6 @@ class Value:
     eight_bytes_2 = 'FEDCBA9876543210'
     long_1 = eight_bytes_1 * 4
     long_2 = eight_bytes_2 * 4
-
-
-class IOCap:
-    display_only = 0
-    display_yesno = 1
-    keyboard_only = 2
-    no_input_output = 3
 
 
 def decode_flag_name(flag, names_dict):
@@ -95,90 +60,6 @@ def decode_flag_name(flag, names_dict):
 
     return decoded_str
 
-
-class Prop:
-    """Properties of characteresic
-
-    Specified in BTP spec:
-
-    Possible values for the Properties parameter are a bit-wise of the
-    following bits:
-
-    0       Broadcast
-    1       Read
-    2       Write Without Response
-    3       Write
-    4       Notify
-    5       Indicate
-    6       Authenticated Signed Writes
-    7       Extended Properties
-
-    """
-    broadcast     = 2 ** 0
-    read          = 2 ** 1
-    write_wo_resp = 2 ** 2
-    write         = 2 ** 3
-    nofity        = 2 ** 4
-    indicate      = 2 ** 5
-    auth_swrite   = 2 ** 6
-    ext_prop      = 2 ** 7
-
-    names = {
-        broadcast     : "Broadcast",
-        read          : "Read",
-        write_wo_resp : "Write Without Response",
-        write         : "Write",
-        nofity        : "Notify",
-        indicate      : "Indicate",
-        auth_swrite   : "Authenticated Signed Writes",
-        ext_prop      : "Extended Properties",
-    }
-
-    @staticmethod
-    def decode(prop):
-        return decode_flag_name(prop, Prop.names)
-
-
-class Perm:
-    """Permission of characteresic or descriptor
-
-    Specified in BTP spec:
-
-    Possible values for the Permissions parameter are a bit-wise of the
-    following bits:
-
-    0       Read
-    1       Write
-    2       Read with Encryption
-    3       Write with Encryption
-    4       Read with Authentication
-    5       Write with Authentication
-    6       Authorization
-
-    """
-    read        = 2 ** 0
-    write       = 2 ** 1
-    read_enc    = 2 ** 2
-    write_enc   = 2 ** 3
-    read_authn  = 2 ** 4
-    write_authn = 2 ** 5
-    read_authz  = 2 ** 6
-    write_authz = 2 ** 7
-
-    names = {
-        read        : "Read",
-        write       : "Write",
-        read_enc    : "Read with Encryption",
-        write_enc   : "Write with Encryption",
-        read_authn  : "Read with Authentication",
-        write_authn : "Write with Authentication",
-        read_authz  : "Read with Authorization",
-        write_authz : "Write with Authorization"
-    }
-
-    @staticmethod
-    def decode(perm):
-        return decode_flag_name(perm, Perm.names)
 
 def verify_gatt_sr_gpa_bv_04_c(description):
     """Verification function for GATT/SR/GPA/BV-04-C
@@ -871,6 +752,8 @@ def test_cases_server(pts):
                    TestFunc(btp.gap_adv_ind_on, start_wid=1),
 
                    # Service Changed is triggered for bonded devices only
+                   TestFunc(btp.gap_wait_for_connection,
+                            start_wid=1, skip_call=(2,)),
                    TestFunc(btp.gap_pair, start_wid=1, skip_call=(2,)),
 
                    TestFunc(btp.gap_wait_for_disconnection, post_wid=96),
