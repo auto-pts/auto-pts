@@ -97,6 +97,22 @@ class Addr:
     le_random = 1
 
 
+def decode_flag_name(flag, names_dict):
+    """Returns string description that corresponds to flag"""
+
+    decoded_str = ""
+    sep = ", "
+
+    for named_flag in sorted(names_dict.keys()):
+        if (flag & named_flag) == named_flag:
+            decoded_str += names_dict[named_flag] + sep
+
+    if decoded_str.endswith(sep):
+        decoded_str = decoded_str.rstrip(sep)
+
+    return decoded_str
+
+
 class Prop:
     """Properties of characteresic
 

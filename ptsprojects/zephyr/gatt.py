@@ -45,22 +45,6 @@ class Value:
     long_2 = eight_bytes_2 * 4
 
 
-def decode_flag_name(flag, names_dict):
-    """Returns string description that corresponds to flag"""
-
-    decoded_str = ""
-    sep = ", "
-
-    for named_flag in sorted(names_dict.keys()):
-        if (flag & named_flag) == named_flag:
-            decoded_str += names_dict[named_flag] + sep
-
-    if decoded_str.endswith(sep):
-        decoded_str = decoded_str.rstrip(sep)
-
-    return decoded_str
-
-
 def verify_gatt_sr_gpa_bv_04_c(description):
     """Verification function for GATT/SR/GPA/BV-04-C
 
