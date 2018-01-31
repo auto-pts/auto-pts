@@ -37,17 +37,6 @@ from ptsprojects.stack import get_stack
 from gap_wid import gap_wid_hdl, hdl_wid_161
 
 
-class Addr:
-    le_public = 0
-    le_random = 1
-
-class IOCap:
-    display_only = 0
-    display_yesno = 1
-    keyboard_only = 2
-    no_input_output = 3
-
-
 class UUID:
     gap_svc = '1800'
     device_name = '2a00'
