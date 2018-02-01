@@ -137,12 +137,8 @@ def test_cases_server(pts):
                   pre_conditions_1 + init_gatt_db,
                   generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAD/BV-01-C",
-                  pre_conditions +
-                  [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
-                   TestFunc(btp.gatts_start_server),
-                   TestFunc(btp.gatts_get_attrs),
-                   TestFunc(btp.gap_adv_ind_on, start_wid=1)],
-                  verify_wids={17: ("Service = " + UUID.VND16_1)}),
+                  pre_conditions_1 + init_gatt_db,
+                  generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAD/BV-02-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_start_server),
