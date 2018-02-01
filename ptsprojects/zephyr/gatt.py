@@ -125,16 +125,17 @@ def test_cases_server(pts):
                                  "GATT", "TSPX_iut_use_dynamic_bd_addr",
                                  "TRUE" if stack.gap.iut_addr_is_random() else "FALSE"))]
 
+    init_gatt_db = [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
+                    TestFunc(btp.gatts_add_char, 0,
+                             Prop.read | Prop.write | Prop.nofity,
+                             Perm.read | Perm.write, UUID.VND16_2),
+                    TestFunc(btp.gatts_set_val, 0, Value.eight_bytes_1 * 10),
+                    TestFunc(btp.gatts_start_server)]
+
     test_cases = [
         ZTestCase("GATT", "GATT/SR/GAC/BV-01-C",
-                  pre_conditions +
-                  [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
-                   TestFunc(btp.gatts_add_char, 0,
-                            Prop.read | Prop.write | Prop.nofity,
-                            Perm.read | Perm.write, UUID.VND16_2),
-                   TestFunc(btp.gatts_set_val, 0, Value.eight_bytes_1 * 10),
-                   TestFunc(btp.gatts_start_server),
-                   TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
+                  pre_conditions_1 + init_gatt_db,
+                  generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAD/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
