@@ -30,8 +30,8 @@ def gatt_wid_hdl(wid, description):
     try:
         handler = getattr(module, "hdl_wid_%d" % wid)
         return handler(description)
-    except AttributeError:
-        log("wid nb: %d, not implemented!", wid)
+    except AttributeError as e:
+        logging.exception(e.message)
 
 
 # wid handlers section begin
