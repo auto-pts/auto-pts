@@ -16,6 +16,7 @@
 import logging
 import sys
 from pybtp import btp
+from pybtp.types import Perm
 import re
 import time
 from ptsprojects.stack import get_stack
@@ -405,7 +406,7 @@ def hdl_wid_103(desc):
         return
 
     (handle, permission, type_uuid) = attr.pop()
-    if not permission & btp.Perm.write:
+    if not permission & Perm.write:
         return 'No'
 
     # Mesh Provisioning data out
@@ -414,7 +415,7 @@ def hdl_wid_103(desc):
         return
 
     (handle, permission, type_uuid) = attr.pop()
-    if permission & btp.Perm.write:
+    if permission & Perm.write:
         return 'No'
 
     return 'Yes'
