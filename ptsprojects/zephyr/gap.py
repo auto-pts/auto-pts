@@ -615,11 +615,11 @@ def test_cases(pts):
                     TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
                              start_wid=77)]),
         ZTestCase("GAP", "GAP/SEC/CSIGN/BV-02-C",
-                  cmds=init_gatt_db + pre_conditions +
+                  cmds=pre_conditions + init_gatt_db +
                        [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output)],
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/CSIGN/BI-01-C",
-                  cmds=init_gatt_db + pre_conditions +
+                  cmds=pre_conditions + init_gatt_db +
                        [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output)],
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/CSIGN/BI-02-C",
@@ -627,7 +627,7 @@ def test_cases(pts):
                   verify_wids={130: lambda x: (btp.gatts_verify_write_success(x) and
                                                btp.gatts_verify_write_success(x) and
                                                btp.gatts_verify_write_fail(x))},
-                  cmds=init_gatt_db + pre_conditions +
+                  cmds=pre_conditions + init_gatt_db +
                        [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
                         TestFunc(btp.gap_set_conn),
                         TestFunc(btp.gap_adv_ind_on),
@@ -636,7 +636,7 @@ def test_cases(pts):
         ZTestCase("GAP", "GAP/SEC/CSIGN/BI-03-C",
                   edit1_wids={161: hdl_wid_161},
                   verify_wids={130: btp.gatts_verify_write_fail},
-                  cmds=init_gatt_db + pre_conditions +
+                  cmds=pre_conditions + init_gatt_db +
                        [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
                         TestFunc(btp.gap_set_gendiscov, start_wid=91),
                         TestFunc(btp.gap_set_conn, start_wid=91),
@@ -716,7 +716,7 @@ def test_cases(pts):
                        [TestFunc(btp.gap_set_conn),
                         TestFunc(btp.gap_adv_ind_on, ad)]),
         ZTestCase("GAP", "GAP/ADV/BV-02-C",
-                  cmds=init_gatt_db + pre_conditions +
+                  cmds=pre_conditions + init_gatt_db +
                        [TestFunc(btp.gap_set_conn),
                         TestFunc(btp.gap_adv_ind_on, ad)]),
         ZTestCase("GAP", "GAP/ADV/BV-03-C",
@@ -743,13 +743,13 @@ def test_cases(pts):
         #
         # Testing central role.
         ZTestCase("GAP", "GAP/GAT/BV-01-C",
-                  cmds=init_gatt_db + pre_conditions +
+                  cmds=pre_conditions + init_gatt_db +
                        [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
                                  start_wid=78)]),
         # Testing peripheral role.
         ZTestCase("GAP", "GAP/GAT/BV-01-C",
                   no_wid=158,
-                  cmds=init_gatt_db + pre_conditions +
+                  cmds=pre_conditions + init_gatt_db +
                        [TestFunc(btp.gap_set_conn, start_wid=9),
                         TestFunc(btp.gap_adv_ind_on, start_wid=9)]),
     ]
