@@ -58,8 +58,12 @@ def hdl_wid_12(desc):
 
 def hdl_wid_13(desc):
     stack = get_stack()
-    btp.mesh_config_prov()
-    btp.mesh_init()
+
+    if stack.mesh.is_provisioned.data:
+        btp.mesh_reset()
+    else:
+        btp.mesh_config_prov()
+        btp.mesh_init()
 
     return 'OK'
 
