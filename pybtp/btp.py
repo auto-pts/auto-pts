@@ -2422,6 +2422,8 @@ def l2cap_conn(bd_addr, bd_addr_type, psm):
 
     iutctl.btp_socket.send(*L2CAP['connect'], data=data_ba)
 
+    l2cap_conn_rsp()
+
 
 l2cap_result_str = {0:  "Connection successful",
                     2:  "LE_PSM not supported",

@@ -16,6 +16,7 @@
 import logging
 import sys
 from pybtp import btp
+from pybtp.types import Prop, Perm, UUID
 import re
 import struct
 from ptsprojects.stack import get_stack
@@ -30,15 +31,8 @@ def gap_wid_hdl(wid, description):
     try:
         handler = getattr(module, "hdl_wid_%d" % wid)
         return handler(description)
-    except AttributeError:
-        log("wid nb: %d, not implemented!", wid)
-
-
-class UUID:
-    gap_svc = '1800'
-    device_name = '2a00'
-    VND16_1 = 'AA50'
-    VND16_2 = 'AA51'
+    except AttributeError as e:
+        logging.exception(e.message)
 
 
 # wid handlers section begin
@@ -86,8 +80,8 @@ def hdl_wid_135(desc):
 def hdl_wid_136(desc):
     btp.core_reg_svc_gatt()
     btp.gatts_add_svc(0, UUID.VND16_1)
-    btp.gatts_add_char(0, btp.Prop.read | btp.Prop.auth_swrite,
-                       btp.Perm.read | btp.Perm.write_authn, UUID.VND16_2)
+    btp.gatts_add_char(0, Prop.read | Prop.auth_swrite,
+                       Perm.read | Perm.write_authn, UUID.VND16_2)
     btp.gatts_set_val(0, '01')
     btp.gatts_start_server()
 
@@ -122,7 +116,7 @@ def hdl_wid_161(desc):
     (properties, value_handle, chrc_uuid) = struct.unpack("<BH%ds" % uuid_len,
                                                           val)
 
-    if properties & btp.Prop.auth_swrite == 0:
+    if properties & Prop.auth_swrite == 0:
         return
 
     chrc_uuid = btp.btp2uuid(uuid_len, chrc_uuid)

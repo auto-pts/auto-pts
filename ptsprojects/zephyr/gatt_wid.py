@@ -30,8 +30,8 @@ def gatt_wid_hdl(wid, description):
     try:
         handler = getattr(module, "hdl_wid_%d" % wid)
         return handler(description)
-    except AttributeError:
-        log("wid nb: %d, not implemented!", wid)
+    except AttributeError as e:
+        logging.exception(e.message)
 
 
 # wid handlers section begin
@@ -41,6 +41,40 @@ def hdl_wid_1(desc):
     btp.gap_adv_ind_on()
 
     return 'Ok'
+
+
+def hdl_wid_17(desc):
+    # This pattern is matching Primary Service
+    pattern = re.compile("Service\s=\s'([0-9a-fA-F]+)'")
+    pts_services = pattern.findall(desc)
+    if not pts_services:
+        logging.error("%s parsing error", hdl_wid_17.__name__)
+        return 'No'
+
+    # Normalize UUIDs
+    pts_services = [hex(int(service, 16)) for service in pts_services]
+
+    iut_services = []
+
+    # Get all primary services
+    attrs = btp.gatts_get_attrs(type_uuid='2800')
+    for attr in attrs:
+        handle, perm, type_uuid = attr
+        (_, uuid_len, uuid) = btp.gatts_get_attr_val(handle)
+        uuid = btp.btp2uuid(uuid_len, uuid)
+        iut_services.append(uuid)
+
+    # Verification
+    for service in pts_services:
+        if service in iut_services:
+            iut_services.remove(service)
+            logging.debug("Service %s found", service)
+            continue
+        else:
+            logging.error("Service %s not found", service)
+            return 'No'
+
+    return 'Yes'
 
 
 def hdl_wid_52(desc):

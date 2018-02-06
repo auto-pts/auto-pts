@@ -30,22 +30,11 @@ except ImportError:  # running this module as script
 
 from time import sleep
 from pybtp import btp
-from pybtp.types import Addr, IOCap, AdType
+from pybtp.types import Addr, IOCap, AdType, Prop, Perm
 import binascii
 import gatt
 from ptsprojects.stack import get_stack
 from gap_wid import gap_wid_hdl, hdl_wid_161
-
-
-class Addr:
-    le_public = 0
-    le_random = 1
-
-class IOCap:
-    display_only = 0
-    display_yesno = 1
-    keyboard_only = 2
-    no_input_output = 3
 
 
 class UUID:
@@ -61,89 +50,6 @@ class SVC:
 
 class CHAR:
     name = (None, None, None, UUID.device_name)
-
-
-class Prop:
-    """Properties of characteresic
-
-    Specified in BTP spec:
-
-    Possible values for the Properties parameter are a bit-wise of the
-    following bits:
-
-    0       Broadcast
-    1       Read
-    2       Write Without Response
-    3       Write
-    4       Notify
-    5       Indicate
-    6       Authenticated Signed Writes
-    7       Extended Properties
-
-    """
-    broadcast     = 2 ** 0
-    read          = 2 ** 1
-    write_wo_resp = 2 ** 2
-    write         = 2 ** 3
-    nofity        = 2 ** 4
-    indicate      = 2 ** 5
-    auth_swrite   = 2 ** 6
-    ext_prop      = 2 ** 7
-
-    names = {
-        broadcast     : "Broadcast",
-        read          : "Read",
-        write_wo_resp : "Write Without Response",
-        write         : "Write",
-        nofity        : "Notify",
-        indicate      : "Indicate",
-        auth_swrite   : "Authenticated Signed Writes",
-        ext_prop      : "Extended Properties",
-    }
-
-    @staticmethod
-    def decode(prop):
-        return decode_flag_name(prop, Prop.names)
-
-
-class Perm:
-    """Permission of characteresic or descriptor
-
-    Specified in BTP spec:
-
-    Possible values for the Permissions parameter are a bit-wise of the
-    following bits:
-
-    0       Read
-    1       Write
-    2       Read with Encryption
-    3       Write with Encryption
-    4       Read with Authentication
-    5       Write with Authentication
-    6       Authorization
-
-    """
-    read        = 2 ** 0
-    write       = 2 ** 1
-    read_enc    = 2 ** 2
-    write_enc   = 2 ** 3
-    read_authn  = 2 ** 4
-    write_authn = 2 ** 5
-    authz       = 2 ** 6
-
-    names = {
-        read        : "Read",
-        write       : "Write",
-        read_enc    : "Read with Encryption",
-        write_enc   : "Write with Encryption",
-        read_authn  : "Read with Authentication",
-        write_authn : "Write with Authentication",
-        authz       : "Authorization"
-    }
-
-    @staticmethod
-    def decode(perm):
-        return decode_flag_name(perm, Perm.names)
 
 
 init_gatt_db=[TestFunc(btp.core_reg_svc_gatt),
@@ -709,11 +615,11 @@ def test_cases(pts):
                     TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
                              start_wid=77)]),
         ZTestCase("GAP", "GAP/SEC/CSIGN/BV-02-C",
-                  cmds=init_gatt_db + pre_conditions +
+                  cmds=pre_conditions + init_gatt_db +
                        [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output)],
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/CSIGN/BI-01-C",
-                  cmds=init_gatt_db + pre_conditions +
+                  cmds=pre_conditions + init_gatt_db +
                        [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output)],
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/CSIGN/BI-02-C",
@@ -721,7 +627,7 @@ def test_cases(pts):
                   verify_wids={130: lambda x: (btp.gatts_verify_write_success(x) and
                                                btp.gatts_verify_write_success(x) and
                                                btp.gatts_verify_write_fail(x))},
-                  cmds=init_gatt_db + pre_conditions +
+                  cmds=pre_conditions + init_gatt_db +
                        [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
                         TestFunc(btp.gap_set_conn),
                         TestFunc(btp.gap_adv_ind_on),
@@ -730,7 +636,7 @@ def test_cases(pts):
         ZTestCase("GAP", "GAP/SEC/CSIGN/BI-03-C",
                   edit1_wids={161: hdl_wid_161},
                   verify_wids={130: btp.gatts_verify_write_fail},
-                  cmds=init_gatt_db + pre_conditions +
+                  cmds=pre_conditions + init_gatt_db +
                        [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
                         TestFunc(btp.gap_set_gendiscov, start_wid=91),
                         TestFunc(btp.gap_set_conn, start_wid=91),
@@ -810,7 +716,7 @@ def test_cases(pts):
                        [TestFunc(btp.gap_set_conn),
                         TestFunc(btp.gap_adv_ind_on, ad)]),
         ZTestCase("GAP", "GAP/ADV/BV-02-C",
-                  cmds=init_gatt_db + pre_conditions +
+                  cmds=pre_conditions + init_gatt_db +
                        [TestFunc(btp.gap_set_conn),
                         TestFunc(btp.gap_adv_ind_on, ad)]),
         ZTestCase("GAP", "GAP/ADV/BV-03-C",
@@ -837,13 +743,13 @@ def test_cases(pts):
         #
         # Testing central role.
         ZTestCase("GAP", "GAP/GAT/BV-01-C",
-                  cmds=init_gatt_db + pre_conditions +
+                  cmds=pre_conditions + init_gatt_db +
                        [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
                                  start_wid=78)]),
         # Testing peripheral role.
         ZTestCase("GAP", "GAP/GAT/BV-01-C",
                   no_wid=158,
-                  cmds=init_gatt_db + pre_conditions +
+                  cmds=pre_conditions + init_gatt_db +
                        [TestFunc(btp.gap_set_conn, start_wid=9),
                         TestFunc(btp.gap_adv_ind_on, start_wid=9)]),
     ]

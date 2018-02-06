@@ -45,22 +45,6 @@ class Value:
     long_2 = eight_bytes_2 * 4
 
 
-def decode_flag_name(flag, names_dict):
-    """Returns string description that corresponds to flag"""
-
-    decoded_str = ""
-    sep = ", "
-
-    for named_flag in sorted(names_dict.keys()):
-        if (flag & named_flag) == named_flag:
-            decoded_str += names_dict[named_flag] + sep
-
-    if decoded_str.endswith(sep):
-        decoded_str = decoded_str.rstrip(sep)
-
-    return decoded_str
-
-
 def verify_gatt_sr_gpa_bv_04_c(description):
     """Verification function for GATT/SR/GPA/BV-04-C
 
@@ -141,23 +125,20 @@ def test_cases_server(pts):
                                  "GATT", "TSPX_iut_use_dynamic_bd_addr",
                                  "TRUE" if stack.gap.iut_addr_is_random() else "FALSE"))]
 
+    init_gatt_db = [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
+                    TestFunc(btp.gatts_add_char, 0,
+                             Prop.read | Prop.write | Prop.nofity,
+                             Perm.read | Perm.write, UUID.VND16_2),
+                    TestFunc(btp.gatts_set_val, 0, Value.eight_bytes_1 * 10),
+                    TestFunc(btp.gatts_start_server)]
+
     test_cases = [
         ZTestCase("GATT", "GATT/SR/GAC/BV-01-C",
-                  pre_conditions +
-                  [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
-                   TestFunc(btp.gatts_add_char, 0,
-                            Prop.read | Prop.write | Prop.nofity,
-                            Perm.read | Perm.write, UUID.VND16_2),
-                   TestFunc(btp.gatts_set_val, 0, Value.eight_bytes_1 * 10),
-                   TestFunc(btp.gatts_start_server),
-                   TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
+                  pre_conditions_1 + init_gatt_db,
+                  generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAD/BV-01-C",
-                  pre_conditions +
-                  [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
-                   TestFunc(btp.gatts_start_server),
-                   TestFunc(btp.gatts_get_attrs),
-                   TestFunc(btp.gap_adv_ind_on, start_wid=1)],
-                  verify_wids={17: ("Service = " + UUID.VND16_1)}),
+                  pre_conditions_1 + init_gatt_db,
+                  generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAD/BV-02-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_start_server),
