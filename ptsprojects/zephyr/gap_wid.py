@@ -38,25 +38,22 @@ def gap_wid_hdl(wid, description):
 # wid handlers section begin
 def hdl_wid_77(desc):
     btp.gap_disconn()
-
-    return 'Ok'
+    return True
 
 
 def hdl_wid_91(desc):
     btp.gap_set_conn()
     btp.gap_adv_ind_on()
-
-    return 'Ok'
+    return True
 
 
 def hdl_wid_108(desc):
     btp.gap_pair()
-
-    return 'Ok'
+    return True
 
 
 def hdl_wid_118(desc):
-    return 'Ok'
+    return True
 
 
 def hdl_wid_130(desc):
@@ -73,8 +70,7 @@ def hdl_wid_141(desc):
 
 def hdl_wid_135(desc):
     btp.gap_unpair()
-
-    return 'Ok'
+    return True
 
 
 def hdl_wid_136(desc):
@@ -84,8 +80,7 @@ def hdl_wid_136(desc):
                        Perm.read | Perm.write_authn, UUID.VND16_2)
     btp.gatts_set_val(0, '01')
     btp.gatts_start_server()
-
-    return 'Ok'
+    return True
 
 
 def hdl_wid_141(desc):
@@ -126,5 +121,4 @@ def hdl_wid_161(desc):
         return
 
     (att_rsp, val_len, val) = value
-
     return val_len

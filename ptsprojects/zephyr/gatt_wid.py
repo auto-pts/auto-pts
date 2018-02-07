@@ -39,8 +39,7 @@ def hdl_wid_1(desc):
     btp.gap_set_conn()
     btp.gap_set_gendiscov()
     btp.gap_adv_ind_on()
-
-    return 'Ok'
+    return True
 
 
 def hdl_wid_17(desc):
@@ -49,7 +48,7 @@ def hdl_wid_17(desc):
     pts_services = pattern.findall(desc)
     if not pts_services:
         logging.error("%s parsing error", hdl_wid_17.__name__)
-        return 'No'
+        return False
 
     # Normalize UUIDs
     pts_services = [hex(int(service, 16)) for service in pts_services]
@@ -72,9 +71,8 @@ def hdl_wid_17(desc):
             continue
         else:
             logging.error("Service %s not found", service)
-            return 'No'
-
-    return 'Yes'
+            return False
+    return True
 
 
 def hdl_wid_52(desc):
@@ -83,7 +81,7 @@ def hdl_wid_52(desc):
     params = pattern.findall(desc)
     if not params:
         logging.error("%s parsing error", hdl_wid_52.__name__)
-        return 'No'
+        return False
 
     params = dict(params)
 
@@ -94,5 +92,5 @@ def hdl_wid_52(desc):
     value_read = int(hexlify(value_read), 16)
 
     if value_read != value:
-        return 'No'
-    return 'Yes'
+        return False
+    return True

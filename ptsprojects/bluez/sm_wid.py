@@ -36,17 +36,17 @@ def hdl_wid_100(desc):
     btp.gap_conn()
     btp.gap_wait_for_connection()
     btp.gap_pair()
-    return 'Ok'
+    return True
 
 
 def hdl_wid_101(desc):
     btp.gap_conn()
-    return 'Ok'
+    return True
 
 
 def hdl_wid_102(desc):
     btp.gap_disconn()
-    return 'Ok'
+    return True
 
 
 def hdl_wid_104(desc):
@@ -58,32 +58,32 @@ def hdl_wid_106(desc):
 
 
 def hdl_wid_108(desc):
-    return 'Ok'
+    return True
 
 
 def hdl_wid_109(desc):
     btp.gap_pair()
-    return 'Ok'
+    return True
 
 
 def hdl_wid_110(desc):
     pts_bd_addr = btp.pts_addr_get()
     pts_bd_addr_type = btp.pts_addr_type_get()
     btp.gattc_signed_write(pts_bd_addr_type, pts_bd_addr, "0001", "01")
-    return 'Ok'
+    return True
 
 
 def hdl_wid_111(desc):
     # TODO: Verify if the MAC and signed counter has been received correctly
-    return 'Yes'
+    return True
 
 
 def hdl_wid_115(desc):
     btp.gap_set_conn()
     btp.gap_adv_ind_on()
-    return 'Ok'
+    return True
 
 
 def hdl_wid_116(desc):
     # TODO: Click Yes if the failure of pairing process due to timeout has been notified on the IUT.
-    return 'Yes'
+    return True
