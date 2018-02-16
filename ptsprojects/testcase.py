@@ -599,6 +599,34 @@ class TestCase(PTSCallback):
             log("Waiting post wid thread to finish...")
             self.post_wid_thread.join()
 
+    def handle_mmi_generic(self, wid, description, style):
+        response = self.generic_wid_hdl(wid, description)
+
+        if style == ptstypes.MMI_Style_Edit1 \
+                or style == ptstypes.MMI_Style_Edit2:
+            return str(response)
+
+        if style == ptstypes.MMI_Style_Ok_Cancel1 \
+                or style == ptstypes.MMI_Style_Ok_Cancel2:
+            return "OK" if response else "Cancel"
+
+        if style == ptstypes.MMI_Style_Yes_No1:
+            return "Yes" if response else "No"
+
+        if style == ptstypes.MMI_Style_Yes_No_Cancel1:
+            if response is None:
+                return "Cancel"
+            elif response:
+                return "Yes"
+            else:
+                return "No"
+
+        if style == ptstypes.MMI_Style_Ok:
+            return "Ok"
+
+        if style == ptstypes.MMI_Style_Abort_Retry1:
+            return "Retry" if response else "Abort"
+
     def on_implicit_send(self, project_name, wid, test_case_name, description, style,
                          response, response_size, response_is_present):
         """Overrides PTSCallback method. Handles
@@ -619,9 +647,8 @@ class TestCase(PTSCallback):
 
         my_response = ""
 
-        if self.generic_wid_hdl != None:
-            my_response = self.generic_wid_hdl(wid, description)
-
+        if self.generic_wid_hdl is not None:
+            my_response = self.handle_mmi_generic(wid, description, style)
         else:
             if style == ptstypes.MMI_Style_Yes_No1:
                 my_response = self.handle_mmi_style_yes_no1(wid, description)

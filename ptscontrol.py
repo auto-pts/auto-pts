@@ -247,6 +247,7 @@ class PyPTS:
         log("%s", self._init_attributes.__name__)
 
         self._pts = None
+        self._pts_pid = None
 
         self._pts_logger = None
         self._pts_sender = None
@@ -326,7 +327,9 @@ class PyPTS:
 
         log("%s", self.restart_pts.__name__)
 
-        self.stop_pts()
+        # Startup of ptscontrol doesn't have PTS pid yet set - no pts running
+        if self._pts_pid:
+            self.stop_pts()
         time.sleep(3) # otherwise there are COM errors occasionally
         self.start_pts()
 
@@ -337,7 +340,22 @@ class PyPTS:
 
         log("%s", self.start_pts.__name__)
 
+        # Get PTS process list before running new PTS daemon
+        pts_ps_list = System.Diagnostics.Process.GetProcessesByName("PTS")
+        pts_pid_list_pre = [ps.Id for ps in pts_ps_list]
         self._pts = PTSControl.PTSControlClass()
+        # Get PTS process list after running new PTS daemon to get PID of
+        # new instance
+        pts_ps_list = System.Diagnostics.Process.GetProcessesByName("PTS")
+        pts_pid_list_post = [ps.Id for ps in pts_ps_list]
+
+        pid = list(set(pts_pid_list_post) - set(pts_pid_list_pre))
+        if len(pid) != 1:
+            log("Error during pts startup!")
+            return
+
+        self._pts_pid = pid[0]
+        log("Started new PTS daemon with pid: %d" % self._pts_pid)
 
         self._pts_logger = PTSLogger()
         self._pts_sender = PTSSender()
@@ -358,27 +376,21 @@ class PyPTS:
     def stop_pts(self):
         """Stops PTS"""
 
-        log("%s", self.stop_pts.__name__)
-
-        pts_process_list = System.Diagnostics.Process.GetProcessesByName("PTS")
-
-        log("Got PTS process list: %s", pts_process_list)
-
-        # in reality there should be only one pts process
-        for pts_process in pts_process_list:
-            log("About to kill PTS process: %s", pts_process)
-            try:
-                pts_process.CloseMainWindow()
-                # Give PTS process time to close otherwise do it brutally to not
-                # block testing. This happens occasionally when tester tries to
-                # close PTS while after test logs are processing.
-                res = pts_process.WaitForExit(5000)
-                if res == False:
-                    pts_process.Kill()
-                    log("Process didn't close within limited time - killed")
-                pts_process.Close()
-            except Exception as error:
-                log("Exception when killing PTS process: %r", error)
+        pts_process = System.Diagnostics.Process.GetProcessById(self._pts_pid)
+        log("About to stop PTS with pid: %d, process: %s", self._pts_pid,
+            pts_process)
+        try:
+            pts_process.CloseMainWindow()
+            # Give PTS process time to close otherwise do it brutally to not
+            # block testing. This happens occasionally when tester tries to
+            # close PTS while after test logs are processing.
+            res = pts_process.WaitForExit(5000)
+            if not res:
+                pts_process.Kill()
+                log("Process didn't close within limited time - killed")
+            pts_process.Close()
+        except Exception as error:
+            logging.exception(error.message)
 
         self._init_attributes()
 
