@@ -36,6 +36,17 @@ def mesh_wid_hdl(wid, description):
 
 
 # wid handlers section begin
+def hdl_wid_7(desc):
+    stack = get_stack()
+
+    ret = stack.mesh.oob_data.data
+
+    # cleanup
+    stack.mesh.oob_data.data = None
+    stack.mesh.oob_action.data = None
+    return ret
+
+
 def hdl_wid_8(desc):
     stack = get_stack()
 
