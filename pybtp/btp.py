@@ -236,6 +236,9 @@ MESH = {
     "rpl_clear": (defs.BTP_SERVICE_ID_MESH,
                   defs.MESH_RPL_CLEAR,
                   CONTROLLER_INDEX, ""),
+    "proxy_identity": (defs.BTP_SERVICE_ID_MESH,
+                       defs.MESH_PROXY_IDENTITY,
+                       CONTROLLER_INDEX, ""),
 }
 
 
@@ -2876,6 +2879,13 @@ def mesh_rpl_clear():
 
     iutctl = get_iut()
     iutctl.btp_socket.send_wait_rsp(*MESH['rpl_clear'])
+
+
+def mesh_proxy_identity():
+    logging.debug("%s", mesh_proxy_identity.__name__)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*MESH['proxy_identity'])
 
 
 def mesh_out_number_action_ev(mesh, data, data_len):

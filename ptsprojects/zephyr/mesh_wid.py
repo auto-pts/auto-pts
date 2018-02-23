@@ -622,6 +622,15 @@ def hdl_wid_519(desc):
 
 def hdl_wid_520(desc):
     stack = get_stack()
+
+    btp.mesh_proxy_identity()
+    return True
+
+
+def hdl_wid_521(desc):
+    stack = get_stack()
+
+    time.sleep(60)
     return True
 
 
