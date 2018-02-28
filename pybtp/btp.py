@@ -44,7 +44,6 @@ PTS_BD_ADDR = LeAddress(addr_type=0, addr='000000000000')
 
 # Devices found
 LeAdv = namedtuple('LeAdv', 'addr_type addr rssi flags eir')
-DISCOV_RESULTS = []
 
 #  A sequence of values to verify in PTS MMI description
 VERIFY_VALUES = None
@@ -879,56 +878,8 @@ def gap_set_powered_off():
     __gap_current_settings_update(tuple_data)
 
 
-def __gap_device_found_timeout(continue_flag):
-    logging.debug("%s", __gap_device_found_timeout.__name__)
-    continue_flag.clear()
-
-
-def __gap_device_found_ev(duration):
-    logging.debug("%s %r", __gap_device_found_ev.__name__, duration)
-
-    iutctl = get_iut()
-
-    continue_flag = Event()
-    continue_flag.set()
-    t = Timer(duration, __gap_device_found_timeout, [continue_flag])
-    t.start()
-
-    while continue_flag.is_set():
-        try:
-            # Use 1 second socket timeout to check continue_flag every second
-            tuple_hdr, tuple_data = iutctl.btp_socket.read(1)
-        except socket.timeout:
-            continue
-
-        btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GAP,
-                      defs.GAP_EV_DEVICE_FOUND)
-
-        fmt = '<B6sBBH'
-        if len(tuple_data[0]) < struct.calcsize(fmt):
-            raise BTPError("Invalid data length")
-
-        _addr_type, _addr, _rssi, _flags, _len = \
-            struct.unpack_from(fmt, tuple_data[0])
-        _eir = tuple_data[0][struct.calcsize(fmt):]
-
-        if len(_eir) != _len:
-            raise BTPError("Invalid data length")
-
-        _addr = binascii.hexlify(_addr[::-1]).lower()
-
-        logging.debug("found %r type %r", _addr, _addr_type)
-
-        global DISCOV_RESULTS
-        DISCOV_RESULTS.append(LeAdv(_addr_type, _addr, _rssi, _flags, _eir))
-
-
-def gap_start_discov(transport='le', type='active', mode='general',
-                     duration=10):
+def gap_start_discov(transport='le', type='active', mode='general'):
     """GAP Start Discovery function.
-
-    duration - Discovery duration in seconds (10 by default).
-               After this period of time discovery will be stopped.
 
     Possible options (key: <values>):
 
@@ -956,23 +907,15 @@ def gap_start_discov(transport='le', type='active', mode='general',
     elif mode == "observe":
         flags |= defs.GAP_DISCOVERY_FLAG_LE_OBSERVE
 
+    stack = get_stack()
+    stack.gap.reset_discovery()
+
     iutctl.btp_socket.send(*GAP['start_discov'], data=chr(flags))
 
     gap_command_rsp_succ()
 
-    # Make sure there are no previous results
-    global DISCOV_RESULTS
-    del DISCOV_RESULTS[:]
 
-    __gap_device_found_ev(duration)
-
-    # Stop discovery if expired
-    __gap_stop_discov()
-
-
-def check_discov_results(description, addr_type=None, addr=None,
-                         discovered=True, eir=None):
-
+def check_discov_results(addr_type=None, addr=None, discovered=True, eir=None):
     addr = pts_addr_get(addr)
     addr_type = pts_addr_type_get(addr_type)
 
@@ -981,23 +924,20 @@ def check_discov_results(description, addr_type=None, addr=None,
 
     found = False
 
-    global DISCOV_RESULTS
+    stack = get_stack()
+    devices = stack.gap.found_devices.data
 
-    while len(DISCOV_RESULTS):
-        result = DISCOV_RESULTS.pop()
-
-        if addr_type != result.addr_type:
+    for device in devices:
+        logging.debug("matching %r", device)
+        if addr_type != device.addr_type:
             continue
-        if addr != result.addr:
+        if addr != device.addr:
             continue
-        if eir and eir != result.eir:
+        if eir and eir != device.eir:
             continue
 
         found = True
         break
-
-    # Cleanup
-    del DISCOV_RESULTS[:]
 
     if discovered == found:
         return True
@@ -1005,32 +945,17 @@ def check_discov_results(description, addr_type=None, addr=None,
     return False
 
 
-def discover_and_verify(description, transport='le', type='active',
-                        mode='general', duration=10, addr=None,
-                        addr_type=None):
-    """Verify discovery results
-
-    This function verifies if the advertisement has been received and
-    optionally verifies the presence of specific eir data in received
-    advertisement
-
-    Returns True if verification is successful, False if not.
-
-    description -- MMI description
-    """
-    gap_start_discov(transport, type, mode, duration)
-
-    return check_discov_results(addr_type, addr)
-
-
-def __gap_stop_discov():
-    logging.debug("%s", __gap_stop_discov.__name__)
+def gap_stop_discov():
+    logging.debug("%s", gap_stop_discov.__name__)
 
     iutctl = get_iut()
 
     iutctl.btp_socket.send(*GAP['stop_discov'])
 
     gap_command_rsp_succ()
+
+    stack = get_stack()
+    stack.gap.discoverying.data = False
 
 
 def gap_read_ctrl_info():
@@ -2608,6 +2533,28 @@ def gap_new_settings_ev_(gap, data, data_len):
     __gap_current_settings_update(curr_set)
 
 
+def gap_device_found_ev_(gap, data, data_len):
+    logging.debug("%s %r", gap_device_found_ev_.__name__, data)
+
+    fmt = '<B6sBBH'
+    if len(data) < struct.calcsize(fmt):
+        raise BTPError("Invalid data length")
+
+    addr_type, addr, rssi, flags, eir_len = struct.unpack_from(fmt, data)
+    eir = data[struct.calcsize(fmt):]
+
+    if len(eir) != eir_len:
+        raise BTPError("Invalid data length")
+
+    addr = binascii.hexlify(addr[::-1]).lower()
+
+    logging.debug("found %r type %r eir %r", addr, addr_type, eir)
+
+    stack = get_stack()
+    stack.gap.found_devices.data.append(LeAdv(addr_type, addr, rssi, flags,
+                                              eir))
+
+
 def gap_connected_ev_(gap, data, data_len):
     logging.debug("%s %r", gap_connected_ev_.__name__, data)
 
@@ -2630,6 +2577,7 @@ def gap_disconnected_ev_(gap, data, data_len):
 
 GAP_EV = {
     defs.GAP_EV_NEW_SETTINGS:gap_new_settings_ev_,
+    defs.GAP_EV_DEVICE_FOUND: gap_device_found_ev_,
     defs.GAP_EV_DEVICE_CONNECTED: gap_connected_ev_,
     defs.GAP_EV_DEVICE_DISCONNECTED: gap_disconnected_ev_,
 }

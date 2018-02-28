@@ -64,6 +64,8 @@ class Gap:
             "address": None,
             "type": None,
         })
+        self.discoverying = Property(False)
+        self.found_devices = Property([])  # List of found devices
 
     def wait_for_connection(self, timeout):
         if self.is_connected():
@@ -138,6 +140,9 @@ class Gap:
     def iut_has_privacy(self):
         return self.current_settings_get("Privacy")
 
+    def reset_discovery(self):
+        self.discoverying.data = True
+        self.found_devices.data = []
 
 class Mesh:
     def __init__(self, uuid, oob, output_size, output_actions, input_size,
