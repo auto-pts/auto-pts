@@ -650,6 +650,9 @@ class TestCase(PTSCallback):
         if self.generic_wid_hdl is not None:
             my_response = self.handle_mmi_generic(wid, description, style)
         else:
+            # start/stop command if triggered by wid
+            self.start_stop_cmds_by_wid(wid, description)
+
             if style == ptstypes.MMI_Style_Yes_No1:
                 my_response = self.handle_mmi_style_yes_no1(wid, description)
 
@@ -659,9 +662,6 @@ class TestCase(PTSCallback):
             # actually style == MMI_Style_Ok_Cancel2
             else:
                 my_response = self.handle_mmi_style_ok_cancel(wid, description)
-
-            # start/stop command if triggered by wid
-            self.start_stop_cmds_by_wid(wid, description)
 
             # if there are post wid TestFunc waiting run those in separate thread
             if len(self.post_wid_queue):
