@@ -38,7 +38,10 @@ def timeout_cb(flag):
 
 
 class Gap:
-    def __init__(self):
+    def __init__(self, name, manufacturer_data):
+        self.name = name
+        self.manufacturer_data = manufacturer_data
+
         # If disconnected - None
         # If connected - remote address tuple (addr, addr_type)
         self.connected = Property(None)
@@ -66,6 +69,8 @@ class Gap:
         })
         self.discoverying = Property(False)
         self.found_devices = Property([])  # List of found devices
+
+        self.passkey = Property(None)
 
     def wait_for_connection(self, timeout):
         if self.is_connected():
@@ -219,8 +224,8 @@ class Stack:
         self.gap = None
         self.mesh = None
 
-    def gap_init(self):
-        self.gap = Gap()
+    def gap_init(self, name=None, manufacturer_data=None):
+        self.gap = Gap(name, manufacturer_data)
 
     def mesh_init(self, uuid, oob, output_size, output_actions, input_size,
                   input_actions, crpl_size):
@@ -229,7 +234,7 @@ class Stack:
 
     def cleanup(self):
         if self.gap:
-            self.gap_init()
+            self.gap_init(self.gap.name, self.gap.manufacturer_data)
 
         if self.mesh:
             self.mesh_init(self.mesh.dev_uuid, self.mesh.static_auth,

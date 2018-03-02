@@ -945,24 +945,6 @@ def check_discov_results(addr_type=None, addr=None, discovered=True, eir=None):
     return False
 
 
-def discover_and_verify(description, transport='le', type='active',
-                        mode='general', duration=10, addr=None,
-                        addr_type=None):
-    """Verify discovery results
-
-    This function verifies if the advertisement has been received and
-    optionally verifies the presence of specific eir data in received
-    advertisement
-
-    Returns True if verification is successful, False if not.
-
-    description -- MMI description
-    """
-    gap_start_discov(transport, type, mode, duration)
-
-    return check_discov_results(addr_type, addr)
-
-
 def gap_stop_discov():
     logging.debug("%s", gap_stop_discov.__name__)
 
@@ -2593,11 +2575,25 @@ def gap_disconnected_ev_(gap, data, data_len):
     gap.connected.data = None
 
 
+def gap_passkey_disp_ev_(gap, data, data_len):
+    logging.debug("%s %r", gap_passkey_disp_ev_.__name__, data)
+
+    fmt = '<B6sI'
+
+    addr_type, addr, passkey = struct.unpack(fmt, data)
+    addr = binascii.hexlify(addr[::-1])
+
+    logging.debug("passkey = %r", passkey)
+
+    gap.passkey.data = passkey
+
+
 GAP_EV = {
     defs.GAP_EV_NEW_SETTINGS:gap_new_settings_ev_,
     defs.GAP_EV_DEVICE_FOUND: gap_device_found_ev_,
     defs.GAP_EV_DEVICE_CONNECTED: gap_connected_ev_,
     defs.GAP_EV_DEVICE_DISCONNECTED: gap_disconnected_ev_,
+    defs.GAP_EV_PASSKEY_DISPLAY: gap_passkey_disp_ev_,
 }
 
 
