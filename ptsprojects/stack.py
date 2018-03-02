@@ -64,6 +64,8 @@ class Gap:
             "address": None,
             "type": None,
         })
+        self.discoverying = Property(False)
+        self.found_devices = Property([])  # List of found devices
 
     def wait_for_connection(self, timeout):
         if self.is_connected():
@@ -138,10 +140,13 @@ class Gap:
     def iut_has_privacy(self):
         return self.current_settings_get("Privacy")
 
+    def reset_discovery(self):
+        self.discoverying.data = True
+        self.found_devices.data = []
 
 class Mesh:
     def __init__(self, uuid, oob, output_size, output_actions, input_size,
-                 input_actions):
+                 input_actions, crpl_size):
 
         # init data
         self.dev_uuid = uuid
@@ -150,6 +155,7 @@ class Mesh:
         self.output_actions = output_actions
         self.input_size = input_size
         self.input_actions = input_actions
+        self.crpl_size = crpl_size
 
         self.oob_action = Property(None)
         self.oob_data = Property(None)
@@ -217,9 +223,9 @@ class Stack:
         self.gap = Gap()
 
     def mesh_init(self, uuid, oob, output_size, output_actions, input_size,
-                  input_actions):
+                  input_actions, crpl_size):
         self.mesh = Mesh(uuid, oob, output_size, output_actions, input_size,
-                         input_actions)
+                         input_actions, crpl_size)
 
     def cleanup(self):
         if self.gap:
@@ -228,7 +234,8 @@ class Stack:
         if self.mesh:
             self.mesh_init(self.mesh.dev_uuid, self.mesh.static_auth,
                            self.mesh.output_size, self.mesh.output_actions,
-                           self.mesh.input_size, self.mesh.input_actions)
+                           self.mesh.input_size, self.mesh.input_actions,
+                           self.mesh.crpl_size)
 
 
 def init_stack():

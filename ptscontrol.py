@@ -376,10 +376,12 @@ class PyPTS:
     def stop_pts(self):
         """Stops PTS"""
 
-        pts_process = System.Diagnostics.Process.GetProcessById(self._pts_pid)
-        log("About to stop PTS with pid: %d, process: %s", self._pts_pid,
-            pts_process)
         try:
+            pts_process = \
+                System.Diagnostics.Process.GetProcessById(self._pts_pid)
+            log("About to stop PTS with pid: %d, process: %s", self._pts_pid,
+                pts_process)
+
             pts_process.CloseMainWindow()
             # Give PTS process time to close otherwise do it brutally to not
             # block testing. This happens occasionally when tester tries to

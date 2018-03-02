@@ -55,6 +55,8 @@ class AdType:
     flags = 1
     uuid16_some = 2
     name_short = 8
+    tx_power = 10
+    uuid16_svc_solicit = 20
     uuid16_svc_data = 22
     gap_appearance = 25
     manufacturer_data = 255
@@ -90,6 +92,7 @@ class IOCap:
     display_yesno = 1
     keyboard_only = 2
     no_input_output = 3
+    keyboard_display = 4
 
 
 class Addr:

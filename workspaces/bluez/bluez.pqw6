@@ -1,4 +1,4 @@
-<WORKSPACE_INFORMATION NAME="bluez_default" PATH="C:\src\auto-pts\workspaces\bluez_default" CREATED_WITH="Profile Tuning Suite, 7.1.1, 8" BD_ADDR="001122334455" QDID="103931">
+<WORKSPACE_INFORMATION NAME="bluez" PATH="C:\src\auto-pts\workspaces\bluez" CREATED_WITH="Profile Tuning Suite, 7.2.0, 26" BD_ADDR="001122334455" QDID="107595">
   <PROJECTS_INFORMATION>
     <PROJECT_INFORMATION NAME="GAP" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
       <PICS>
@@ -7,32 +7,32 @@
         <Rows>
           <Row>
             <Name>TSPC_GAP_0_1</Name>
-            <Description>BR/EDR (See Spec)</Description>
+            <Description>BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_0_2</Name>
-            <Description>LE (See Spec)</Description>
+            <Description>LE (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_0_3</Name>
-            <Description>BR/EDR/LE (See Spec)</Description>
+            <Description>BR/EDR/LE (C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_0a_1</Name>
             <Description>Core Specification Addendum 3 (CSA3), GAP Connection Parameters Changes, Authentication and Lost Bond Changes, Private Addressing Changes, Dual Mode Addressing Changes, Adopted 24 July 2012 (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_0a_2</Name>
             <Description>Core Specification Addendum 4 (CSA4) (C.2)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -44,7 +44,7 @@
           <Row>
             <Name>TSPC_GAP_0a_4</Name>
             <Description>Core Spec version 4.2 (Core v4.2) (C.4)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -54,38 +54,8 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_0A_1</Name>
-            <Description>Core Specification Addendum 3 (CSA3), GAP Connection Parameters Changes, Authentication and Lost Bond Changes, Private Addressing Changes, Dual Mode Addressing Changes, Adopted 24 July 2012 (See Spec)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_0A_2</Name>
-            <Description>Core Specification Addendum 4 (CSA4)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_0A_3</Name>
-            <Description>Core Spec version 4.1 (Core v4.1) GAP Connection Parameters Changes, Authentication and Lost Bond Changes, Private Addressing Changes, Dual Mode Addressing Changes, Adopted 03 December 2013</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_0A_4</Name>
-            <Description>Core Spec version 4.2 (Core v4.2)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_0A_5</Name>
-            <Description>Core Spec version 5.0 (Core v5.0)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
             <Name>TSPC_GAP_1_1</Name>
-            <Description>Non-discoverable mode (See Spec)</Description>
+            <Description>Non-discoverable mode (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -121,25 +91,25 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_1_7</Name>
-            <Description>Bondable mode (See Spec) (O)</Description>
+            <Description>Bondable mode (C.2)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_1_8</Name>
-            <Description>Non-Synchronizable Mode (O)</Description>
+            <Description>Non-Synchronizable Mode (C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_1_9</Name>
-            <Description>Synchronizable Mode (O)</Description>
+            <Description>Synchronizable Mode (C.4)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_2_1</Name>
-            <Description>Authentication procedure (See Spec)</Description>
+            <Description>Authentication procedure (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -151,13 +121,13 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_2_3</Name>
-            <Description>Initiate LMP-Authentication (See Spec)</Description>
+            <Description>Initiate LMP-Authentication (C.5)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_2_4</Name>
-            <Description>Security mode 1 (See Spec)</Description>
+            <Description>Security mode 1 (C.2)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -169,55 +139,55 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_2_6</Name>
-            <Description>Security mode 3. (See Spec)</Description>
+            <Description>Security mode 3 (C.7)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_2_7</Name>
-            <Description>Security mode 4 (See Spec)</Description>
+            <Description>Security mode 4 (C.4)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_2_7a</Name>
             <Description>Security mode 4, level 4 (C.9)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_2_8</Name>
-            <Description>Support of Authenticated link key (See Spec)</Description>
+            <Description>Support of Authenticated link key (C.6)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_2_9</Name>
-            <Description>Support of Unauthenticated link key (See Spec)</Description>
+            <Description>Support of Unauthenticated link key (C.6)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_2_10</Name>
-            <Description>Security optional (See Spec)</Description>
+            <Description>Security Optional (C.6)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_2_11</Name>
-            <Description>Secure Connections Only Mode (O)</Description>
+            <Description>Secure Connections Only Mode (C.8)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_3_1</Name>
-            <Description>Initiation of general inquiry (See Spec)</Description>
+            <Description>Initiation of general inquiry (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_3_2</Name>
-            <Description>Initiation of limited inquiry (See Spec)</Description>
+            <Description>Initiation of limited inquiry (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -283,55 +253,55 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_4_7</Name>
-            <Description>Support synchronization establishment as receiver (O)</Description>
+            <Description>Support synchronization establishment as receiver (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_5_1</Name>
-            <Description>Broadcaster (See Spec)</Description>
+            <Description>Broadcaster (C.1)</Description>
             <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_5_2</Name>
-            <Description>Observer (See Spec)</Description>
+            <Description>Observer (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_5_3</Name>
-            <Description>Peripheral (See Spec)</Description>
+            <Description>Peripheral (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_5_4</Name>
-            <Description>Central (See Spec)</Description>
+            <Description>Central (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_6_1</Name>
-            <Description>Broadcaster: Transmitter (M)</Description>
+            <Description>Transmitter (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_6_2</Name>
-            <Description>Broadcaster: Receiver (O)</Description>
+            <Description>Receiver (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_7_1</Name>
-            <Description>Broadcaster: Standby (M)</Description>
+            <Description>Standby (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_7_2</Name>
-            <Description>Broadcaster: Advertising (M)</Description>
+            <Description>Advertising (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -404,7 +374,7 @@
           <Row>
             <Name>TSPC_GAP_8a_8</Name>
             <Description>AD Type-Slave Connection Interval Range (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -428,137 +398,35 @@
           <Row>
             <Name>TSPC_GAP_8a_12</Name>
             <Description>AD Type-Public Target Address (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_8a_13</Name>
             <Description>AD Type-Random Target Address (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_8a_14</Name>
             <Description>AD Type-Advertising Interval (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_8a_15</Name>
             <Description>AD Type-LE Bluetooth Device Address (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_8a_16</Name>
             <Description>AD Type-LE Role (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_8a_17</Name>
-            <Description>Ad Type - URI (C.3)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_8A_1</Name>
-            <Description>AD Type-Service UUID (O)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_8A_2</Name>
-            <Description>AD Type-Local Name (O)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_8A_3</Name>
-            <Description>AD Type-Flags (O)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_8A_4</Name>
-            <Description>AD Type-Manufacturer Specific Data (O)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_8A_5</Name>
-            <Description>AD Type-TX Power Level (O)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_8A_6</Name>
-            <Description>AD Type-Security Manager Out of Band (OOB) (O)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_8A_7</Name>
-            <Description>AD Type-Security manager TK Value (O)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_8A_8</Name>
-            <Description>AD Type-Slave Connection Interval Range (O)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_8A_9</Name>
-            <Description>AD Type-Service Solicitation (O)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_8A_10</Name>
-            <Description>AD Type-Service Data (O)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_8A_11</Name>
-            <Description>AD Type-Appearance (O)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_8A_12</Name>
-            <Description>AD Type-Public Target Address (O)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_8A_13</Name>
-            <Description>AD Type-Random Target Address (O)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_8A_14</Name>
-            <Description>AD Type-Advertising Interval (O)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_8A_15</Name>
-            <Description>AD Type-LE Bluetooth Device Address (O)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_8A_16</Name>
-            <Description>AD Type-LE Role (O)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_8A_17</Name>
             <Description>Ad Type - URI (C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
@@ -582,12 +450,6 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_11_1A</Name>
-            <Description>Broadcaster: Privacy Feature v1.1 (O)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
             <Name>TSPC_GAP_11_2</Name>
             <Description>Resolvable Private Address Generation Procedure (C.1)</Description>
             <Value>TRUE</Value>
@@ -607,12 +469,6 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_11a_2</Name>
-            <Description>Periodic Advertising mode (C.2)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_11A_2</Name>
             <Description>Periodic Advertising mode (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
@@ -667,14 +523,8 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_17_1</Name>
-            <Description>Privacy Feature v1.0 (O)</Description>
+            <Description>Privacy Feature (O)</Description>
             <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_17_1A</Name>
-            <Description>Privacy Feature v1.1 (O)</Description>
-            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -685,7 +535,7 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_17_3</Name>
-            <Description>Resolvable Private Address Resolution Procedure (C.3)</Description>
+            <Description>Resolvable Private Address Resolution Procedure (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -703,18 +553,6 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_17a_2</Name>
-            <Description>Periodic Advertising Synchronization Establishment procedure with listening for periodic advertising (C.1)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_17A_1</Name>
-            <Description>Periodic Advertising Synchronization Establishment procedure without listening for periodic advertising (C.1)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_17A_2</Name>
             <Description>Periodic Advertising Synchronization Establishment procedure with listening for periodic advertising (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
@@ -763,12 +601,6 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_20_2a</Name>
-            <Description>Item no longer used</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_20_2A</Name>
             <Description>Item no longer used</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
@@ -836,19 +668,19 @@
           <Row>
             <Name>TSPC_GAP_20a_6</Name>
             <Description>AD Type-Security Manager Out of Band (OOB) (C.3)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_20a_7</Name>
             <Description>AD Type-Security manager TK Value (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_20a_8</Name>
             <Description>AD Type-Slave Connection Interval Range (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -872,139 +704,37 @@
           <Row>
             <Name>TSPC_GAP_20a_12</Name>
             <Description>AD Type-Public Target Address (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_20a_13</Name>
             <Description>AD Type-Random Target Address (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_20a_14</Name>
             <Description>AD Type-Advertising Interval (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_20a_15</Name>
             <Description>AD Type-LE Bluetooth Device Address (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_20a_16</Name>
             <Description>AD Type-LE Role (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_20a_17</Name>
             <Description>AD Type- URI (C.4)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_20A_1</Name>
-            <Description>AD Type-Service UUID (C.1)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_20A_2</Name>
-            <Description>AD Type-Local Name (C.1)</Description>
             <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_20A_3</Name>
-            <Description>AD Type-Flags (C.2)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_20A_4</Name>
-            <Description>AD Type-Manufacturer Specific Data (C.1)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_20A_5</Name>
-            <Description>AD Type-TX Power Level (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_20A_6</Name>
-            <Description>AD Type-Security Manager Out of Band (OOB) (C.3)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_20A_7</Name>
-            <Description>AD Type-Security manager TK Value (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_20A_8</Name>
-            <Description>AD Type-Slave Connection Interval Range (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_20A_9</Name>
-            <Description>AD Type-Service Solicitation (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_20A_10</Name>
-            <Description>AD Type-Service Data (C.1)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_20A_11</Name>
-            <Description>AD Type-Appearance (C.1)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_20A_12</Name>
-            <Description>AD Type-Public Target Address (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_20A_13</Name>
-            <Description>AD Type-Random Target Address (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_20A_14</Name>
-            <Description>AD Type-Advertising Interval (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_20A_15</Name>
-            <Description>AD Type-LE Bluetooth Device Address (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_20A_16</Name>
-            <Description>AD Type-LE Role (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_20A_17</Name>
-            <Description>AD Type- URI (C.4)</Description>
-            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1029,37 +759,37 @@
             <Name>TSPC_GAP_21_4</Name>
             <Description>Master Initiated Feature Exchange Procedure (C.1)</Description>
             <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_21_5</Name>
             <Description>Version Exchange Procedure (C.1)</Description>
             <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_21_6</Name>
             <Description>Termination Procedure (C.1)</Description>
             <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_21_7</Name>
             <Description>LE Ping Procedure (C.3)</Description>
             <Value>FALSE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_21_8</Name>
             <Description>Slave Initiated Feature Exchange Procedure (C.4)</Description>
             <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_21_9</Name>
             <Description>Connection Parameter Request Procedure (C.5)</Description>
             <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_21_10</Name>
@@ -1219,14 +949,8 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_26_1</Name>
-            <Description>Privacy Feature v1.0 (O)</Description>
+            <Description>Privacy Feature (O)</Description>
             <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_26_1A</Name>
-            <Description>Peripheral: Privacy Feature v1.1 (O)</Description>
-            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1297,7 +1021,7 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_27_9</Name>
-            <Description>Central Address Resolution (c.5)</Description>
+            <Description>Central Address Resolution (C.5)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -1369,7 +1093,7 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_31_4</Name>
-            <Description>Feature Exchange Procedure (M)</Description>
+            <Description>Master Initiated Feature Exchange Procedure (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -1459,7 +1183,7 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_33_4</Name>
-            <Description>Direct Connectin Establishment Procedure (C.2)</Description>
+            <Description>Direct Connection Establishment Procedure (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -1555,14 +1279,8 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_36_1</Name>
-            <Description>Privacy Feature v1.0 (O)</Description>
+            <Description>Privacy Feature (O)</Description>
             <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_36_1A</Name>
-            <Description>Central: Privacy Feature v1.1 (See Spec)</Description>
-            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1645,7 +1363,7 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_39_3</Name>
-            <Description>-Connectable Mode (C.3)</Description>
+            <Description>Non-Connectable Mode (C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -1706,25 +1424,13 @@
           <Row>
             <Name>TSPC_GAP_41_2a</Name>
             <Description>Derivation of BR/EDR Link Key from LE LTK (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_41_2b</Name>
             <Description>Derivation of LE LTK from BR/EDR Link Key (C.1)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_41_2A</Name>
-            <Description>Derivation of BR/EDR Link Key from LE LTK (C.1)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_41_2B</Name>
-            <Description>Derivation of LE LTK from BR/EDR Link Key</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1784,67 +1490,55 @@
           <Row>
             <Name>TSPC_GAP_43_2a</Name>
             <Description>Derivation of BR/EDR Link Key from LE LTK (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_43_2b</Name>
             <Description>Derivation of LE LTK from BR/EDR Link Key (C.1)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_43_2A</Name>
-            <Description>Derivation of BR/EDR Link Key from LE LTK (C.1)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_43_2B</Name>
-            <Description>Derivation of LE LTK from BR/EDR Link Key (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_45_1</Name>
-            <Description>Simultaneous BR/EDR and LE Transports - BR/EDR Slave  to the same device (C.1)</Description>
+            <Description>Simultaneous BR/EDR and LE Transports - BR/EDR Slave to the same device (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_45_2</Name>
-            <Description>Simultaneous BR/EDR and LE Transports - BR/EDR Master  to the same device (C.2)</Description>
+            <Description>Simultaneous BR/EDR and LE Transports - BR/EDR Master to the same device (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_1_1</Name>
-            <Description>GATT Client Role (O)</Description>
+            <Description>Generic Attribute Profile Client (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_1_2</Name>
-            <Description>GATT Server Role (O)</Description>
+            <Description>Generic Attribute Profile Server (C.2)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_SM_1_1</Name>
-            <Description>Master Role (Initiator) (See Spec)</Description>
+            <Description>Master Role (Initiator)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_SM_1_2</Name>
-            <Description>Slave Role (Responder) (See Spec)</Description>
+            <Description>Slave Role (Responder)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_SM_2_4</Name>
             <Description>OOB supported (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1989,7 +1683,7 @@
             <Name>TSPX_iut_private_address_interval</Name>
             <Description>Minimum time interval between private address change. (Default: 5000)</Description>
             <Type>INTEGER</Type>
-            <Value>10000</Value>
+            <Value>5000</Value>
           </Row>
           <Row>
             <Name>TSPX_iut_privacy_enabled</Name>
@@ -2130,10 +1824,16 @@
             <Value>0000</Value>
           </Row>
           <Row>
+            <Name>TSPX_advertising_data</Name>
+            <Description>IUT advertising data during broadcasting for random address (Default: 0x0201060503180018010D095054532d4741502d3036423803190000)</Description>
+            <Value>0201060503180018010D095054532d4741502d3036423803190000</Value>
+            <Type>OCTETSTRING</Type>
+          </Row>
+          <Row>
             <Name>TSPX_iut_adverting_data_in_broadcasting_mode</Name>
             <Description>IUT advertising data during broadcasting for non-resolevable privacy (Default: 0x0201060503180018010D095054532d4741502d3036423803190000)</Description>
             <Type>OCTETSTRING</Type>
-            <Value>020106</Value>
+            <Value>0201060503180018010D095054532d4741502d3036423803190000</Value>
           </Row>
           <Row>
             <Name>TSPX_iut_device_IRK_for_resolvable_privacy_address_generation_procedure</Name>
@@ -2157,7 +1857,7 @@ for the IUT in the IXIT. (Default: 0x00000000000000000000000000000000)</Descript
             <Name>TSPX_iut_device_name_in_adv_packet_for_random_address</Name>
             <Description>IUT advertising this local name for the PTS to make connection to. Default is not using it with empty string. (Default: "")</Description>
             <Type>IA5STRING</Type>
-            <Value>Tester</Value>
+            <Value />
           </Row>
           <Row>
             <Name>TSPX_Tgap_104</Name>
@@ -2327,7 +2027,7 @@ for the IUT in the IXIT. (Default: 0x00000000000000000000000000000000)</Descript
             <Name>TSPX_peer_addr_type</Name>
             <Description>Whether peer address is public(00) or random (01). This is used during creating connection.</Description>
             <Type>OCTETSTRING</Type>
-            <Value>00</Value>
+            <Value>01</Value>
           </Row>
           <Row>
             <Name>TSPX_own_addr_type</Name>
