@@ -149,6 +149,22 @@ class Gap:
         self.discoverying.data = True
         self.found_devices.data = []
 
+    def get_passkey(self, timeout=5):
+        if self.passkey.data is None:
+            flag = Event()
+            flag.set()
+
+            t = Timer(timeout, timeout_cb, [flag])
+            t.start()
+
+            while flag.is_set():
+                if self.passkey.data:
+                    t.cancel()
+                    break
+
+        return self.passkey.data
+
+
 class Mesh:
     def __init__(self, uuid, oob, output_size, output_actions, input_size,
                  input_actions, crpl_size):
