@@ -191,6 +191,15 @@ class ClientCallback(PTSCallback):
 
         return testcase_response
 
+    def cleanup(self):
+        while not self.exception.empty():
+            try:
+                self.exception.get_nowait()
+            except Queue.Empty:
+                pass
+            self.exception.task_done()
+
+
 class CallbackThread(threading.Thread):
     """Thread for XML-RPC callback server
 
@@ -217,6 +226,11 @@ class CallbackThread(threading.Thread):
     def error_code(self):
         log("%s.%s", self.__class__.__name__, self.error_code.__name__)
         return self.callback.error_code()
+
+    def cleanup(self):
+        log("%s.%s", self.__class__.__name__, self.cleanup.__name__)
+        return self.callback.cleanup()
+
 
 def get_my_ip_address():
     """Returns the IP address of the host"""
@@ -444,6 +458,7 @@ def run_test_case(pts, test_case):
 
         # raise exception discovered by thread
         thread_error = pts.callback_thread.error_code()
+        pts.callback_thread.cleanup()
 
         if thread_error:
             error_code = thread_error

@@ -271,8 +271,7 @@ def test_cases(pts):
                    TestFunc(btp.gap_set_nondiscov),
                    TestFunc(btp.gap_adv_ind_on, ad=[AdData.ad_manuf])]),
         BTestCase("GAP", "GAP/BROB/BCST/BV-03-C",
-                  edit1_wids={1002: (btp.var_store_get_passkey, pts_bd_addr,
-                                     Addr.le_public)},
+                  edit1_wids={1002: btp.var_store_get_passkey},
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
 
@@ -315,8 +314,7 @@ def test_cases(pts):
                         TestFunc(sleep, 10, start_wid=157),
                         TestFunc(btp.gap_stop_discov, start_wid=157)]),
         BTestCase("GAP", "GAP/BROB/OBSV/BV-06-C",
-                  edit1_wids={1002: (btp.var_store_get_passkey, pts_bd_addr,
-                                     Addr.le_public)},
+                  edit1_wids={1002: btp.var_store_get_passkey},
                   verify_wids={138: (handle_wid_138)},
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
@@ -401,8 +399,7 @@ def test_cases(pts):
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_start_discov, post_wid=23)]),
         BTestCase("GAP", "GAP/DISC/RPA/BV-01-C",
-                  edit1_wids={1002: (btp.var_store_get_passkey, pts_bd_addr,
-                                     Addr.le_public)},
+                  edit1_wids={1002: btp.var_store_get_passkey},
                   verify_wids={138: (handle_wid_138)},
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
@@ -436,8 +433,7 @@ def test_cases(pts):
                   [TestFunc(btp.gap_set_gendiscov, start_wid=75),
                    TestFunc(btp.gap_adv_ind_on, start_wid=75)]),
         BTestCase("GAP", "GAP/CONN/UCON/BV-06-C",
-                  edit1_wids={1002: (btp.var_store_get_passkey, pts_bd_addr,
-                                     Addr.le_public)},
+                  edit1_wids={1002: btp.var_store_get_passkey},
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                         TestFunc(btp.gap_set_gendiscov, start_wid=91),
@@ -582,8 +578,7 @@ def test_cases(pts):
                                   Addr.le_public, start_wid=77)]),
          BTestCase("GAP", "GAP/SEC/AUT/BV-11-C",
                    edit1_wids={139: "000C",
-                               1002: (btp.var_store_get_passkey, pts_bd_addr,
-                                      Addr.le_public)},
+                               1002: btp.var_store_get_passkey},
                    cmds=pre_conditions + init_gatt_db +
                         [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                          TestFunc(btp.gap_set_conn, start_wid=91),
@@ -596,16 +591,14 @@ def test_cases(pts):
                          TestFunc(btp.gap_conn, start_wid=78)]),
          BTestCase("GAP", "GAP/SEC/AUT/BV-13-C",
                    edit1_wids={139: "000C",
-                               1002: (btp.var_store_get_passkey, pts_bd_addr,
-                                      Addr.le_public)},
+                               1002: btp.var_store_get_passkey},
                    cmds=pre_conditions + init_gatt_db +
                         [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                          TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
                                   start_wid=78)]),
          BTestCase("GAP", "GAP/SEC/AUT/BV-14-C",
                    edit1_wids={139: "000C",
-                               1002: (btp.var_store_get_passkey, pts_bd_addr,
-                                      Addr.le_public)},
+                               1002: btp.var_store_get_passkey},
                    cmds=pre_conditions + init_gatt_db +
                         [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
                          TestFunc(btp.gap_set_conn, start_wid=91),
@@ -647,8 +640,7 @@ def test_cases(pts):
                         TestFunc(btp.gap_disconn, start_wid=44)]),
         # TODO: Inform about lost bond
         BTestCase("GAP", "GAP/SEC/AUT/BV-22-C",
-                  edit1_wids={1002: (btp.var_store_get_passkey, pts_bd_addr,
-                                     Addr.le_public)},
+                  edit1_wids={1002: btp.var_store_get_passkey},
                   cmds=pre_conditions +
                        [TestFunc(btp.core_reg_svc_gatt),
                         TestFunc(btp.gap_set_io_cap, IOCap.display_only),
@@ -755,8 +747,7 @@ def test_cases(pts):
         #                 TestFunc(btp.gap_disconn, start_wid=77)]),
             # Workaround BZ-197 and PTS issue #15170
             BTestCase("GAP", "GAP/PRIV/CONN/BV-10-C",
-                      edit1_wids={1002: (btp.var_store_get_passkey, pts_bd_addr,
-                                         Addr.le_public)},
+                      edit1_wids={1002: btp.var_store_get_passkey},
                       cmds=pre_conditions +
                            [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                             TestFunc(pts.update_pixit_param, "GAP",

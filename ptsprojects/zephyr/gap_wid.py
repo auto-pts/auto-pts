@@ -16,10 +16,12 @@
 import logging
 import sys
 from pybtp import btp
-from pybtp.types import Prop, Perm, UUID
+from pybtp.types import Prop, Perm, UUID, AdType
 import re
 import struct
 from ptsprojects.stack import get_stack
+from binascii import hexlify
+from time import sleep
 
 log = logging.debug
 
@@ -36,14 +38,112 @@ def gap_wid_hdl(wid, description):
 
 
 # wid handlers section begin
+def hdl_wid_4(desc):
+    sleep(10)  # Give some time to discover devices
+    btp.gap_stop_discov()
+    return btp.check_discov_results()
+
+
+def hdl_wid_5(desc):
+    stack = get_stack()
+
+    ad = []
+    sd = []
+
+    btp.gap_set_nonconn()
+    btp.gap_set_nondiscov()
+
+    if stack.gap.name:
+        ad.append((AdType.name_short, hexlify(stack.gap.name)))
+
+    if stack.gap.manufacturer_data:
+        sd.append((AdType.manufacturer_data, stack.gap.manufacturer_data))
+
+    btp.gap_adv_ind_on(ad=ad, sd=sd)
+    return True
+
+
+def hdl_wid_10(desc):
+    btp.gap_stop_discov()
+    return btp.check_discov_results(discovered=True)
+
+
+def hdl_wid_11(desc):
+    btp.gap_stop_discov()
+    return btp.check_discov_results(discovered=False)
+
+
+def hdl_wid_12(desc):
+    btp.gap_start_discov(type='passive', mode='observe')
+    return True
+
+
+def hdl_wid_13(desc):
+    btp.gap_start_discov(mode='limited')
+    return True
+
+
+def hdl_wid_14(desc):
+    btp.gap_stop_discov()
+    return btp.check_discov_results(discovered=True)
+
+
+def hdl_wid_23(desc):
+    btp.gap_start_discov()
+    return True
+
+
+def hdl_wid_47(desc):
+    btp.gap_set_nonconn()
+    btp.gap_set_nondiscov()
+    btp.gap_adv_ind_on()
+    return True
+
+
 def hdl_wid_77(desc):
     btp.gap_disconn()
     return True
 
 
+def hdl_wid_78(desc):
+    btp.gap_conn()
+    return True
+
+
+def hdl_wid_80(desc):
+    stack = get_stack()
+
+    ad = []
+    sd = []
+
+    btp.gap_set_nonconn()
+    btp.gap_set_nondiscov()
+
+    if stack.gap.name:
+        ad.append((AdType.name_short, hexlify(stack.gap.name)))
+
+    if stack.gap.manufacturer_data:
+        sd.append((AdType.manufacturer_data, stack.gap.manufacturer_data))
+
+    btp.gap_adv_ind_on(ad=ad, sd=sd)
+    return True
+
+
 def hdl_wid_91(desc):
+    stack = get_stack()
+
+    ad = []
+    sd = []
+
     btp.gap_set_conn()
-    btp.gap_adv_ind_on()
+
+    if stack.gap.name:
+        ad.append((AdType.name_short, hexlify(stack.gap.name)))
+
+    if stack.gap.manufacturer_data:
+        sd.append((AdType.manufacturer_data, stack.gap.manufacturer_data))
+
+    btp.gap_adv_ind_on(ad=ad, sd=sd)
     return True
 
 
@@ -83,8 +183,22 @@ def hdl_wid_136(desc):
     return True
 
 
+def hdl_wid_138(desc):
+    btp.gap_start_discov(transport='le', type='active', mode='observe')
+    sleep(10)  # Give some time to discover devices
+    btp.gap_stop_discov()
+    return btp.check_discov_results()
+
+
 def hdl_wid_141(desc):
     return btp.gatts_verify_write_success(desc)
+
+
+def hdl_wid_157(desc):
+    btp.gap_start_discov(transport='le', type='active', mode='observe')
+    sleep(10)  # Give some time to discover devices
+    btp.gap_stop_discov()
+    return btp.check_discov_results()
 
 
 def hdl_wid_161(desc):
@@ -122,3 +236,15 @@ def hdl_wid_161(desc):
 
     (att_rsp, val_len, val) = value
     return val_len
+
+
+def hdl_wid_169(desc):
+    btp.gap_start_discov(type='active', mode='observe')
+    return True
+
+
+def hdl_wid_1002(desc):
+    stack = get_stack()
+    passkey = stack.gap.passkey.data
+    stack.gap.passkey.data = None
+    return passkey
