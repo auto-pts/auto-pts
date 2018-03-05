@@ -665,11 +665,11 @@ def gap_unpair(bd_addr=None, bd_addr_type=None):
     gap_command_rsp_succ(defs.GAP_UNPAIR)
 
 
-def var_store_get_passkey(description, bd_addr=None, bd_addr_type=None):
+def var_store_get_passkey(description):
     return str(get_stack().gap.get_passkey())
 
 
-def var_store_get_wrong_passkey(description, bd_addr=None, bd_addr_type=None):
+def var_store_get_wrong_passkey(description):
     passkey = get_stack().gap.get_passkey()
 
     # Passkey is in range 0-999999
