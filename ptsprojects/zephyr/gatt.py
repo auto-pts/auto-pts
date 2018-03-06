@@ -1230,7 +1230,7 @@ def test_cases_client(pts):
                                  Addr.le_public, start_wid=3)],
                   verify_wids={44: btp.verify_description}),
         ZTestCase("GATT", "GATT/CL/GAR/BV-06-C",
-                  edit1_wids={104: btp.var_get_passkey},
+                  edit1_wids={104: btp.var_store_get_passkey},
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_conn, pts_bd_addr,
                                  Addr.le_public, start_wid=2),

@@ -34,7 +34,6 @@ from ptsprojects.stack import get_stack
 get_iut = None
 
 #  Global temporary objects
-PASSKEY = None
 GATT_SVCS = None
 L2CAP_CHAN = []
 
@@ -666,58 +665,18 @@ def gap_unpair(bd_addr=None, bd_addr_type=None):
     gap_command_rsp_succ(defs.GAP_UNPAIR)
 
 
-def var_store_get_passkey(description, bd_addr=None, bd_addr_type=None):
-    gap_passkey_disp_ev(bd_addr, bd_addr_type, store=True)
-    return var_get_passkey(description)
+def var_store_get_passkey(description):
+    return str(get_stack().gap.get_passkey())
 
 
-def var_store_get_wrong_passkey(description, bd_addr=None, bd_addr_type=None):
-    gap_passkey_disp_ev(bd_addr, bd_addr_type, store=True)
-    return var_get_wrong_passkey()
+def var_store_get_wrong_passkey(description):
+    passkey = get_stack().gap.get_passkey()
 
-
-def var_get_passkey(description):
-    return str(PASSKEY)
-
-
-def var_get_wrong_passkey():
     # Passkey is in range 0-999999
-    if PASSKEY > 0:
-        return str(PASSKEY - 1)
+    if passkey > 0:
+        return str(passkey - 1)
     else:
-        return str(PASSKEY + 1)
-
-
-def gap_passkey_disp_ev(bd_addr=None, bd_addr_type=None, store=False):
-    logging.debug("%s %r %r", gap_passkey_disp_ev.__name__, bd_addr,
-                  bd_addr_type)
-    iutctl = get_iut()
-
-    tuple_hdr, tuple_data = iutctl.btp_socket.read()
-    logging.debug("received %r %r", tuple_hdr, tuple_data)
-
-    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GAP,
-                  defs.GAP_EV_PASSKEY_DISPLAY)
-
-    fmt = '<B6sI'
-    if len(tuple_data[0]) != struct.calcsize(fmt):
-        raise BTPError("Invalid data length")
-
-    # Unpack and swap address
-    _addr_type, _addr, _passkey = struct.unpack(fmt, tuple_data[0])
-    _addr = binascii.hexlify(_addr[::-1]).lower()
-
-    bd_addr = pts_addr_get(bd_addr)
-    bd_addr_type = pts_addr_type_get(bd_addr_type)
-
-    if _addr_type != bd_addr_type or _addr != bd_addr:
-        raise BTPError("Received data mismatch")
-
-    logging.debug("passkey = %r", _passkey)
-
-    if store:
-        global PASSKEY
-        PASSKEY = _passkey
+        return str(passkey + 1)
 
 
 def gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey):
@@ -777,10 +736,10 @@ def gap_passkey_entry_req_ev(bd_addr=None, bd_addr_type=None):
         raise BTPError("Received data mismatch")
 
     # Generate some passkey
-    global PASSKEY
-    PASSKEY = randint(0, 999999)
+    stack = get_stack()
+    stack.gap.passkey.data = randint(0, 999999)
 
-    gap_passkey_entry_rsp(bd_addr, bd_addr_type, PASSKEY)
+    gap_passkey_entry_rsp(bd_addr, bd_addr_type, stack.gap.passkey.data)
 
 
 def gap_set_conn():
@@ -943,24 +902,6 @@ def check_discov_results(addr_type=None, addr=None, discovered=True, eir=None):
         return True
 
     return False
-
-
-def discover_and_verify(description, transport='le', type='active',
-                        mode='general', duration=10, addr=None,
-                        addr_type=None):
-    """Verify discovery results
-
-    This function verifies if the advertisement has been received and
-    optionally verifies the presence of specific eir data in received
-    advertisement
-
-    Returns True if verification is successful, False if not.
-
-    description -- MMI description
-    """
-    gap_start_discov(transport, type, mode, duration)
-
-    return check_discov_results(addr_type, addr)
 
 
 def gap_stop_discov():
@@ -2593,11 +2534,25 @@ def gap_disconnected_ev_(gap, data, data_len):
     gap.connected.data = None
 
 
+def gap_passkey_disp_ev_(gap, data, data_len):
+    logging.debug("%s %r", gap_passkey_disp_ev_.__name__, data)
+
+    fmt = '<B6sI'
+
+    addr_type, addr, passkey = struct.unpack(fmt, data)
+    addr = binascii.hexlify(addr[::-1])
+
+    logging.debug("passkey = %r", passkey)
+
+    gap.passkey.data = passkey
+
+
 GAP_EV = {
     defs.GAP_EV_NEW_SETTINGS:gap_new_settings_ev_,
     defs.GAP_EV_DEVICE_FOUND: gap_device_found_ev_,
     defs.GAP_EV_DEVICE_CONNECTED: gap_connected_ev_,
     defs.GAP_EV_DEVICE_DISCONNECTED: gap_disconnected_ev_,
+    defs.GAP_EV_PASSKEY_DISPLAY: gap_passkey_disp_ev_,
 }
 
 
