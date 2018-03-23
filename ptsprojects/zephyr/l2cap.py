@@ -128,7 +128,8 @@ def test_cases(pts):
                    TestFunc(btp.gap_set_conn, start_wid=15),
                    TestFunc(btp.gap_adv_ind_on, start_wid=15),
                    TestFunc(btp.l2cap_conn, pts_bd_addr, Addr.le_public,
-                            le_psm, start_wid=41)]),
+                            le_psm, start_wid=41),
+                   TestFunc(btp.l2cap_connected_ev, start_wid=41)]),
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.l2cap_le_listen, le_psm),
