@@ -334,7 +334,6 @@ def test_cases(pts):
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/PBADV/BI-01-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
-        # TODO: CONFIRM_RFU_BEARER_OPCODE 26 to implement
         ZTestCase("MESH", "MESH/NODE/PBADV/BI-02-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/PBADV/BI-03-C", cmds=pre_conditions,
@@ -349,30 +348,17 @@ def test_cases(pts):
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/PBADV/BV-04-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
-        # TODO: CONFIRM_TIMER_EXPIRED WID 31 to implement
-        ZTestCase("MESH", "MESH/NODE/PROV/BI-01-C", cmds=pre_conditions +
-                  [TestFunc(btp.mesh_config_prov),
-                   TestFunc(btp.mesh_init)],
+        ZTestCase("MESH", "MESH/NODE/PROV/BI-01-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
-        ZTestCase("MESH", "MESH/NODE/PROV/BI-02-C", cmds=pre_conditions +
-                  [TestFunc(btp.mesh_config_prov),
-                   TestFunc(btp.mesh_init)],
+        ZTestCase("MESH", "MESH/NODE/PROV/BI-02-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
-        ZTestCase("MESH", "MESH/NODE/PROV/UPD/BV-01-C", cmds=pre_conditions +
-                  [TestFunc(btp.mesh_config_prov),
-                   TestFunc(btp.mesh_init)],
+        ZTestCase("MESH", "MESH/NODE/PROV/UPD/BV-01-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
-        ZTestCase("MESH", "MESH/NODE/PROV/UPD/BV-07-C", cmds=pre_conditions +
-                  [TestFunc(btp.mesh_config_prov),
-                   TestFunc(btp.mesh_init)],
+        ZTestCase("MESH", "MESH/NODE/PROV/UPD/BV-07-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
-        ZTestCase("MESH", "MESH/NODE/PROV/UPD/BV-09-C", cmds=pre_conditions +
-                  [TestFunc(btp.mesh_config_prov),
-                   TestFunc(btp.mesh_init)],
+        ZTestCase("MESH", "MESH/NODE/PROV/UPD/BV-09-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
-        ZTestCase("MESH", "MESH/NODE/PROV/UPD/BV-10-C", cmds=pre_conditions +
-                  [TestFunc(btp.mesh_config_prov),
-                   TestFunc(btp.mesh_init)],
+        ZTestCase("MESH", "MESH/NODE/PROV/UPD/BV-10-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/PROV/UPD/BV-11-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
