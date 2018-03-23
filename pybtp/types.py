@@ -62,6 +62,14 @@ class AdType:
     manufacturer_data = 255
 
 
+class AdFlags:
+    le_limit_discov_mode =  0x01
+    le_gen_discov_mode =    0x02
+    br_edr_not_supp =       0x04
+    sim_le_br_edr_contr =   0x08
+    sim_le_br_edr_host =    0x10
+
+
 class UUID:
     gap_svc = '1800'
     gatt_svc = '1801'
