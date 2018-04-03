@@ -529,7 +529,7 @@ def run_test_cases(pts, test_cases):
 
     print_summary(test_cases, margin)
 
-def get_test_cases_subset(test_cases, test_case_names):
+def get_test_cases_subset(test_cases, test_case_names, excluded_names=None):
     """Return subset of test cases
 
     test_cases -- list of all test cases, instances on TestCase
@@ -542,9 +542,17 @@ def get_test_cases_subset(test_cases, test_case_names):
                        - Matching name pattern (test cases which contains
                             given string pattern)
 
+    excluded_names -- list of names and matching patterns of test cases.
+                       Names in this list specify the subset from test_cases
+                       to be excluded from run return.
+                       Name may be:
+                       - Profile (all test cases from profile)
+                       - Matching name pattern (test cases which contains
+                            given string pattern)
+
     """
     # protocols and profiles
-    profiles = ("GATT", "GAP", "L2CAP", "RFCOMM", "SM", "MESH")
+    profiles = ["GATT", "GAP", "L2CAP", "RFCOMM", "SM", "MESH"]
 
     # subsets of profiles
     profiles_subset = {
@@ -558,22 +566,45 @@ def get_test_cases_subset(test_cases, test_case_names):
     test_cases_dict = {tc.name : tc for tc in test_cases}
     test_cases_subset = []
 
-    for name in test_case_names:
-        # whole profile/protocol
-        if name in profiles:
-            test_cases_subset += [tc for tc in test_cases
-                                  if tc.project_name == name]
+    if excluded_names:
+        profiles = [name for name in profiles if name not in excluded_names]
 
-        # subset of profile/protocol
-        elif name in profiles_subset.keys():
-            test_cases_subset += profiles_subset[name]
+        for subset_name, tcs in profiles_subset.items():
+            profiles_subset[subset_name] = \
+                [tc for tc in tcs if tc.name not in excluded_names
+                 and tc.project_name not in excluded_names]
+            if subset_name in excluded_names:
+                for tc in tcs:
+                    test_cases.remove(tc)
+                del profiles_subset[subset_name]
 
-        # name pattern contain matching
-        else:
-            for tc in test_cases_dict:
-                if name == tc:
-                    test_cases_subset.append(test_cases_dict[tc].copy())
-                elif name in tc:
-                    test_cases_subset.append(test_cases_dict[tc])
+        test_cases_dict = \
+            {tc_name: tc for tc_name, tc in test_cases_dict.items()
+             if tc_name not in excluded_names
+             and tc.project_name not in excluded_names}
+        test_cases = \
+            [tc for tc in test_cases if tc.name not in excluded_names
+             and tc.project_name not in excluded_names]
+
+    if test_case_names:
+        for name in test_case_names:
+            # whole profile/protocol
+            if name in profiles:
+                test_cases_subset += [tc for tc in test_cases
+                                      if tc.project_name == name]
+
+            # subset of profile/protocol
+            elif name in profiles_subset.keys():
+                test_cases_subset += profiles_subset[name]
+
+            # name pattern contain matching
+            else:
+                for tc in test_cases_dict:
+                    if name == tc:
+                        test_cases_subset.append(test_cases_dict[tc].copy())
+                    elif name in tc:
+                        test_cases_subset.append(test_cases_dict[tc])
+    else:
+        test_cases_subset = test_cases
 
     return test_cases_subset
