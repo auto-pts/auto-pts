@@ -94,9 +94,18 @@ def hdl_wid_23(desc):
 
 
 def hdl_wid_47(desc):
+    stack = get_stack()
+
+    ad = []
+
     btp.gap_set_nonconn()
     btp.gap_set_nondiscov()
-    btp.gap_adv_ind_on()
+
+    if stack.gap.name:
+        ad.append((AdType.name_short, hexlify(stack.gap.name)))
+
+    btp.gap_adv_ind_on(ad=ad)
+
     return True
 
 

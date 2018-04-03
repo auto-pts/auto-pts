@@ -222,14 +222,15 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
         ZTestCase("GATT", "GATT/SR/GAR/BI-04-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
-                   TestFunc(btp.gatts_add_char, 0, Prop.read, Perm.read_authn,
-                            UUID.VND16_2),
-                   TestFunc(btp.gatts_set_val, 0, Value.one_byte),
-                   TestFunc(btp.gatts_start_server),
-                   TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
+                  edit1_wids={2000: btp.var_store_get_passkey},
+                  cmds=pre_conditions +
+                       [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
+                        TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
+                        TestFunc(btp.gatts_add_char, 0, Prop.read,
+                                 Perm.read_authn, UUID.VND16_2),
+                        TestFunc(btp.gatts_set_val, 0, Value.one_byte),
+                        TestFunc(btp.gatts_start_server),
+                        TestFunc(btp.gap_adv_ind_on, start_wid=1)]),
         ZTestCase("GATT", "GATT/SR/GAR/BI-05-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
