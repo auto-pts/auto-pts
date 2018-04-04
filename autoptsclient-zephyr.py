@@ -102,6 +102,11 @@ def parse_args():
                             "cases can be specified by profile names: "
                             "GATT, GATTS, GATTC, GAP, L2CAP, RFCOMM, SM, MESH")
 
+    arg_parser.add_argument("-e", "--excluded", nargs='+',
+                            help="Names of test cases to exclude. Groups of "
+                            "test cases can be specified by profile names: "
+                            "GATT, GATTS, GATTC, GAP, L2CAP, SM, MESH")
+
     args = arg_parser.parse_args()
 
     check_args(args)
@@ -129,9 +134,9 @@ def main():
     test_cases += autoprojects.l2cap.test_cases(pts)
     test_cases += autoprojects.mesh.test_cases(pts)
 
-    if args.test_cases:
+    if args.test_cases or args.excluded:
         test_cases = autoptsclient.get_test_cases_subset(
-            test_cases, args.test_cases)
+            test_cases, args.test_cases, args.excluded)
 
     autoptsclient.run_test_cases(pts, test_cases)
 
