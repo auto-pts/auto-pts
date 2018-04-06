@@ -365,6 +365,26 @@ def init_core(server_address, workspace_path, bd_addr, enable_max_logs):
 
     return proxy
 
+def print_test_case_status(func):
+    def wrapper(*args):
+        test_case = args[1]
+        (index, num_test_cases, num_test_cases_width, max_project_name,
+         max_test_case_name, margin, retries_counter) = args[2]
+
+        print (str(index + 1).rjust(num_test_cases_width) +
+               "/" +
+               str(num_test_cases).ljust(num_test_cases_width + margin) +
+               test_case.project_name.ljust(max_project_name + margin) +
+               test_case.name.ljust(max_test_case_name + margin - 1)),
+        sys.stdout.flush()
+
+        func(*args)
+
+        print("{}".format(test_case.status).ljust(25) +
+              ("#{}".format(retries_counter) if retries_counter else ""))
+
+    return wrapper
+
 def log2file(function):
     """Decorator to log function call into separate log file.
 
@@ -425,8 +445,9 @@ def get_error_code(exc):
 
     return error_code
 
+@print_test_case_status
 @log2file
-def run_test_case(pts, test_case):
+def run_test_case(pts, test_case, *unused):
     """Runs the test case specified by a TestCase instance.
 
     [1] xmlrpclib.Fault normally happens due to unhandled exception in the
@@ -472,24 +493,17 @@ def run_test_case(pts, test_case):
 
     log("Done TestCase %s %s", run_test_case.__name__, test_case)
 
-def print_summary(test_cases, margin):
+def print_summary(status_count, num_test_cases_str, margin):
     """Prints test case list status summary"""
     print "\nSummary:\n"
 
-    status_count = {}
-
     status_str = "Status"
     max_status = len(status_str)
-    num_test_cases_str = str(len(test_cases))
     num_test_cases_width = len(num_test_cases_str)
 
-    for test_case in test_cases:
-        if not status_count.has_key(test_case.status):
-            status_count[test_case.status] = 1
-            if len(test_case.status) > max_status:
-                max_status = len(test_case.status)
-        else:
-            status_count[test_case.status] += 1
+    for status in status_count:
+        if status > max_status:
+            max_status = len(status)
 
     status_just = max_status + margin
     count_just = num_test_cases_width + margin
@@ -509,25 +523,40 @@ def print_summary(test_cases, margin):
     print border
     print "Total".ljust(status_just) + num_test_cases_str.rjust(count_just)
 
-def run_test_cases(pts, test_cases):
+def run_test_cases(pts, test_cases, retries_max=0):
     """Runs a list of test cases"""
+
+    run_count_max = retries_max + 1  # Run test at least once
+    run_count = run_count_max
 
     num_test_cases = len(test_cases)
     num_test_cases_width = len(str(num_test_cases))
     max_project_name, max_test_case_name = get_max_test_case_desc(test_cases)
     margin = 3
 
-    for index, test_case in enumerate(test_cases):
-        print (str(index + 1).rjust(num_test_cases_width) +
-               "/" +
-               str(num_test_cases).ljust(num_test_cases_width + margin) +
-               test_case.project_name.ljust(max_project_name + margin) +
-               test_case.name.ljust(max_test_case_name + margin - 1)),
-        sys.stdout.flush()
-        run_test_case(pts, test_case)
-        print test_case.status
+    # Summary related stuff
+    status_count = {}
 
-    print_summary(test_cases, margin)
+    for index, test_case in enumerate(test_cases):
+        while True:
+            run_test_case(pts, test_case,
+                          (index, num_test_cases, num_test_cases_width,
+                           max_project_name, max_test_case_name, margin,
+                           run_count_max - run_count))
+            run_count -= 1
+            if test_case.status != 'PASS' and run_count > 0:
+                test_case = test_case.copy()
+            else:
+                break
+
+        if test_case.status in status_count:
+            status_count[test_case.status] += 1
+        else:
+            status_count[test_case.status] = 1
+
+        run_count = run_count_max
+
+    print_summary(status_count, str(num_test_cases), margin)
 
 def get_test_cases_subset(test_cases, test_case_names, excluded_names=None):
     """Return subset of test cases
