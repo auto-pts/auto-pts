@@ -107,6 +107,10 @@ def parse_args():
                             "test cases can be specified by profile names: "
                             "GATT, GATTS, GATTC, GAP, L2CAP, SM, MESH")
 
+    arg_parser.add_argument("-r", "--retry", default=0,
+                            help="Repeat test if failed. Parameter specifies"
+                                 "maximum repeat count per test")
+
     args = arg_parser.parse_args()
 
     check_args(args)
@@ -138,7 +142,7 @@ def main():
         test_cases = autoptsclient.get_test_cases_subset(
             test_cases, args.test_cases, args.excluded)
 
-    autoptsclient.run_test_cases(pts, test_cases)
+    autoptsclient.run_test_cases(pts, test_cases, int(args.retry))
 
     autoprojects.iutctl.cleanup()
 
