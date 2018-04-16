@@ -90,10 +90,6 @@ class ZephyrCtl:
                                                   shell=False,
                                                   stdout=IUT_LOG_FO,
                                                   stderr=IUT_LOG_FO)
-
-            if self.board:
-                self.board.reset()
-
         else:
             qemu_cmd = get_qemu_cmd(self.kernel_image)
 
@@ -109,6 +105,9 @@ class ZephyrCtl:
 
     def wait_iut_ready_event(self):
         """Wait until IUT sends ready event after power up"""
+        if self.board:
+            self.board.reset()
+
         tuple_hdr, tuple_data = self.btp_socket.read()
 
         try:
