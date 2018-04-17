@@ -145,6 +145,10 @@ class ZephyrCtlStub:
         """Starts the Zephyr OS"""
         log("%s.%s", self.__class__, self.start.__name__)
 
+    def wait_iut_ready_event(self):
+        """Wait until IUT sends ready event after power up"""
+        log("%s.%s", self.__class__, self.wait_iut_ready_event.__name__)
+
     def stop(self):
         """Powers off the Zephyr OS"""
         log("%s.%s", self.__class__, self.stop.__name__)
