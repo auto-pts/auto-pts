@@ -536,6 +536,7 @@ def run_test_cases(pts, test_cases, retries_max=0):
 
     # Summary related stuff
     status_count = {}
+    results_dict = {}
 
     for index, test_case in enumerate(test_cases):
         while True:
@@ -547,6 +548,7 @@ def run_test_cases(pts, test_cases, retries_max=0):
             if test_case.status != 'PASS' and run_count > 0:
                 test_case = test_case.copy()
             else:
+                results_dict[test_case.name] = test_case.status
                 break
 
         if test_case.status in status_count:
@@ -557,6 +559,8 @@ def run_test_cases(pts, test_cases, retries_max=0):
         run_count = run_count_max
 
     print_summary(status_count, str(num_test_cases), margin)
+
+    return status_count, results_dict
 
 def get_test_cases_subset(test_cases, test_case_names, excluded_names=None):
     """Return subset of test cases
