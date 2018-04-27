@@ -53,7 +53,8 @@ class IUTCtl:
         self.btp_socket = None
         self.iut_process = None
 
-        self.start()
+        if not AUTO_PTS_LOCAL:
+            self.start()
 
     def start(self):
         """Starts the IUT"""

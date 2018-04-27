@@ -77,6 +77,8 @@ def main():
                                   args.enable_max_logs)
 
     btp.init(get_iut)
+
+    autoprojects.iutctl.AUTO_PTS_LOCAL = autoptsclient.AUTO_PTS_LOCAL
     autoprojects.iutctl.init(args.btpclient_path)
 
     stack.init_stack()
