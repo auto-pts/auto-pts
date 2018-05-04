@@ -2838,8 +2838,12 @@ def mesh_in_action_ev(mesh, data, data_len):
 
 def mesh_provisioned_ev(mesh, data, data_len):
     logging.debug("%s %r", mesh_provisioned_ev.__name__, data)
+    stack = get_stack()
 
     mesh.is_provisioned.data = True
+
+    if stack.mesh.proxy_identity:
+        mesh_proxy_identity()
 
 
 def mesh_prov_link_open_ev(mesh, data, data_len):

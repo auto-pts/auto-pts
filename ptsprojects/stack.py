@@ -217,6 +217,12 @@ class Mesh:
         #LPN
         self.lpn_subscriptions = []
 
+        # Node Identity
+        self.proxy_identity = False
+
+    def proxy_identity_enable(self):
+        self.proxy_identity = True
+
     def wait_for_incomp_timer_exp(self, timeout):
         if self.incomp_timer_exp.data:
             return True
