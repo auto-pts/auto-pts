@@ -2,3 +2,10 @@
 *.pyc
 *.log
 workspaces
+
+*.xlsx
+*.zip
+*/client_secret.json
+*/credentials.json
+bot/config.py
+results.db

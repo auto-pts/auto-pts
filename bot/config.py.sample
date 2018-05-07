@@ -1,0 +1,92 @@
+#
+# auto-pts - The Bluetooth PTS Automation Framework
+#
+# Copyright (c) 2018, Intel Corporation.
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms and conditions of the GNU General Public License,
+# version 2, as published by the Free Software Foundation.
+#
+# This program is distributed in the hope it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
+#
+
+# Sample user_config file
+# Apply your changes and rename it to config.py
+
+projects = []
+
+z = zephyr_nrf52 = {
+    'name': 'zephyr'
+}
+
+# ****************************************************************************
+# AutoPTS configuration
+# ****************************************************************************
+z['auto_pts'] = {
+    'server_ip': '192.168.0.2',
+    'client_port': 65001,
+    'project_path': '/path/to/project',
+    'workspace': 'zephyr-hci',
+    'board': 'nrf52',
+    'enable_max_logs': False,
+    'retry': '2',
+    'bd_addr': '',
+}
+
+# ****************************************************************************
+# Mailbox configuration
+#
+# To send an email report with test result summary
+# ****************************************************************************
+z['mail'] = {
+    "sender": "john.doe@example.com",
+    "smtp_host": 'smtp.example.com',
+    "smtp_port": 587,
+    "name": "John",
+    "passwd": "<PASSWD>",
+    "recipients": [
+        "1234@example.com",
+        "5678@example.com",
+    ],
+}
+
+# ****************************************************************************
+# Google Drive configuration
+#
+# To put the tests execution logs to Google Drive
+# ****************************************************************************
+z['gdrive'] = {
+    "root_directory_id": "<GoogleDriveDirID>",
+    "credentials_file": "/path/to/credentials.json",
+}
+
+# ****************************************************************************
+# IUT configuration
+#
+# To apply test case specific changes in IUT configuration
+# ****************************************************************************
+
+z['iut_config'] = {
+    "default.conf": {},  # Default config file name
+
+    "privacy.conf": {
+        "overlay": {'CONFIG_BT_PRIVACY': 'y'},
+        "test_cases": ['GAP/PRIV/CONN/BV-10-C', 'GAP/DISC/LIMM/BV-03-C',
+                       'GAP/DISC/GENM/BV-03-C', 'GAP/CONN/NCON/BV-02-C',
+                       'GAP/CONN/NCON/BV-03-C', 'GAP/CONN/UCON/BV-06-C',
+                       'SM/SLA/KDU/BV-02-C', 'SM/MAS/KDU/BV-05-C']},
+
+    "mesh_subnet_count.conf": {
+        "overlay": {'CONFIG_BT_MESH_SUBNET_COUNT': '1'},
+        "test_cases": ['MESH/NODE/CFG/NKL/BI-03-C']},
+
+    "l2cap_param_update.conf": {
+        "overlay": {'CONFIG_BT_CTLR_CONN_PARAM_REQ': 'n'},
+        "test_cases": ['GAP/CONN/CPUP/BV-01-C', 'GAP/CONN/CPUP/BV-02-C',
+                       'GAP/CONN/CPUP/BV-03-C', 'L2CAP/LE/CPU/BV-01-C']},
+}
+
+projects.append(zephyr_nrf52)
