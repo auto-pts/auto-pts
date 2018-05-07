@@ -89,4 +89,14 @@ z['iut_config'] = {
                        'GAP/CONN/CPUP/BV-03-C', 'L2CAP/LE/CPU/BV-01-C']},
 }
 
+# ****************************************************************************
+# Scheduler configuration
+#
+# To run the tests periodically
+# ****************************************************************************
+z['scheduler'] = {
+    'monday': '10:20',
+    'friday': '20:00',
+}
+
 projects.append(zephyr_nrf52)

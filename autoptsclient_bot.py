@@ -17,15 +17,41 @@
 
 import os
 import sys
+import schedule
+import time
 
 from bot.config import BotProjects
 from bot.zephyr import main as zephyr
 
+# TODO Find more sophisticated way
+weekdays2schedule = {
+    'monday': schedule.every().monday,
+    'tuesday': schedule.every().tuesday,
+    'wednesday': schedule.every().wednesday,
+    'thursday': schedule.every().thursday,
+    'friday': schedule.every().friday,
+    'saturday': schedule.every().saturday,
+    'sunday': schedule.every().sunday,
+}
+
+project2main = {
+    'zephyr': zephyr,
+}
+
 
 def main():
     for project in BotProjects:
-        if project['name'] == 'zephyr':
-            zephyr(project)
+        # TODO Solve the issue of overlapping jobs
+        if 'scheduler' in project:
+            for day, time_ in project['scheduler'].items():
+                weekdays2schedule[day].at(time_).do(
+                    project2main[project['name']], project)
+
+            while True:
+                schedule.run_pending()
+                time.sleep(60)
+        else:
+            project2main[project['name']](project)
 
 
 if __name__ == "__main__":
