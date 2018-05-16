@@ -306,7 +306,14 @@ def main(cfg):
     if 'mail' in cfg:
         summary_html = bot.common.status_dict2summary_html(summary)
         url_html = bot.common.url2html(url, "Results on Google Drive")
-        reg_html = bot.common.regressions2html(regressions)
+
+        # Provide test case description
+        _regressions = []
+        for name in regressions:
+            _regressions.append(
+                "{} - {}".format(name, descriptions.get(name, "no description")))
+
+        reg_html = bot.common.regressions2html(_regressions)
         bot.common.send_mail(cfg['mail'], None, zephyr_hash, args["board"],
                              [summary_html, reg_html, url_html])
 
