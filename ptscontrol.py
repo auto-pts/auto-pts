@@ -463,12 +463,14 @@ class PyPTS:
     def get_project_version(self, project_name):
         """Returns project version"""
 
-        project_version = self._pts.GetProjectVersion(project_name)
+        project_version = clr.StrongBox[System.UInt32]()
+        self._pts.GetProjectVersion(project_name)
+        project_version_int = int(project_version)
 
         log("%s %s out: %s", self.get_project_version.__name__, project_name,
-            project_version)
+            project_version_int)
 
-        return project_version
+        return project_version_int
 
     def get_test_case_count(self, project_name):
         """Returns the number of test cases that are available in the specified
