@@ -437,7 +437,8 @@ def test_cases(pts):
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/SR/MPXS/BV-08-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
-        ZTestCase("MESH", "MESH/SR/MPXS/BV-09-C", cmds=pre_conditions,
+        ZTestCase("MESH", "MESH/SR/MPXS/BV-09-C", cmds=pre_conditions +
+                  [TestFunc(lambda: get_stack().mesh.proxy_identity_enable())],
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/SR/PROX/BI-01-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),

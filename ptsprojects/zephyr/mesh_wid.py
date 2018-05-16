@@ -38,6 +38,17 @@ def mesh_wid_hdl(wid, description):
 
 
 # wid handlers section begin
+def hdl_wid_6(desc):
+    """
+    Implements: SEND_ADV_BEACON
+    :param desc: Advertising Mesh Beacon Packet. Wait for other side to be
+                 ready and click OK to broadcast Mesh beacon packet, otherwise
+                 click Cancel.
+    :return:
+    """
+    return True
+
+
 def hdl_wid_7(desc):
     """
     Implements: ENTER_NUMBER

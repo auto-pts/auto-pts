@@ -63,6 +63,7 @@ Initial bot implementation supports running Zephyr tests on nrf52 board.
 
 **Key features**
 
+- Scheduler to run the script periodically
 - Fetching recent project sources
 - Applying changes to project configuration files via "iut_config"
 with "overlay" that need to be applied for "test_cases"
@@ -108,10 +109,13 @@ specific changes in IUT configuration. It consists of dict of configuration
 names and related key: value pairs:
     - 'overlay' - changes in config to be applied
     - 'test_cases' - test cases to be ran with this config
+- 'scheduler' - Scheduler configuration (optional)
+    - "weekday": "time" dictionary.
 
 **Installation**
 
 Install required Python modules (
+schedule,
 gitpython,
 xlsxwriter,
 google-api-python-client
