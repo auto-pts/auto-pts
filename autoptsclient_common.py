@@ -27,6 +27,7 @@ import xmlrpclib
 import Queue
 import threading
 from SimpleXMLRPCServer import SimpleXMLRPCServer
+import xml.etree.ElementTree as ET
 
 from ptsprojects.testcase import get_max_test_case_desc
 from ptsprojects.testcase import PTSCallback
@@ -364,6 +365,68 @@ def init_core(server_address, workspace_path, bd_addr, enable_max_logs):
     proxy.enable_maximum_logging(enable_max_logs)
 
     return proxy
+
+
+def cache_workspace(pts):
+    import tempfile
+
+    root = ET.Element("workspace")
+
+    project_index = 0
+    project_count = pts.get_project_count()
+    while project_index < project_count:
+        project = ET.SubElement(root, 'project')
+        project_name = ET.SubElement(project, 'name')
+        project_name.text = pts.get_project_name(project_index)
+        ET.SubElement(project, 'version').text = \
+            pts.get_project_version(project_name.text)
+        test_cases = ET.SubElement(project, 'test_cases')
+
+        test_case_index = 0
+        test_case_count = pts.get_test_case_count(project_name.text)
+        while test_case_index < test_case_count:
+            test_case = ET.SubElement(test_cases, 'test_case')
+            test_case_name = ET.SubElement(test_case, 'name')
+            test_case_name.text = pts.get_test_case_name(project_name.text,
+                                                         test_case_index)
+            ET.SubElement(test_case, 'description').text = \
+                pts.get_test_case_description(project_name.text,
+                                              test_case_index)
+            # bool cannot be serialized
+            ET.SubElement(test_case, 'is_active').text = \
+                str(pts.is_active_test_case(project_name.text,
+                                            test_case_name.text))
+
+            test_case_index += 1
+        project_index += 1
+
+    tree = ET.ElementTree(root)
+
+    file = tempfile.NamedTemporaryFile(delete=False)
+    tree.write(file.name)
+    file.close()
+
+    return file.name
+
+
+def cache_cleanup(cache):
+    if os.path.exists(cache):
+        os.unlink(cache)
+
+
+def get_test_case_description(cache, test_case_name):
+    if not os.path.exists(cache):
+        logging.error("cache not exists")
+        return
+
+    tree = ET.parse(cache)
+    root = tree.getroot()
+
+    for test_case in root.iter('test_case'):
+        name = test_case.find('name').text
+        if name == test_case_name:
+            return test_case.find('description').text
+
 
 def print_test_case_status(func):
     def wrapper(*args):
