@@ -787,7 +787,8 @@ def hdl_wid_222(desc):
     """
     stack = get_stack()
 
-    # btp.mesh_iv_update_test_mode(False)
+    btp.mesh_iv_update_toggle()
+
     return True
 
 
