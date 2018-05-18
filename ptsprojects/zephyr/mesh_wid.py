@@ -697,9 +697,9 @@ def hdl_wid_216(desc):
     """
     stack = get_stack()
 
-    if not stack.mesh.is_iv_test_mode_enabled.data:
-        return True
-    return False
+    btp.mesh_iv_update_test_mode(False)
+
+    return True
 
 
 def hdl_wid_217(desc):
