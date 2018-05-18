@@ -26,6 +26,7 @@ import datetime
 import xmlrpclib
 import Queue
 import threading
+from traceback import format_exception
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 
 from ptsprojects.testcase import get_max_test_case_desc
@@ -482,9 +483,12 @@ def run_test_case(pts, test_case, *unused):
             error_code = thread_error
 
     except Exception as error:
+        logging.exception(error.message)
         error_code = get_error_code(error)
 
     except:
+        traceback_list = format_exception(sys.exc_info())
+        logging.exception("".join(traceback_list))
         error_code = get_error_code(None)
 
     finally:
