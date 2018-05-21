@@ -406,6 +406,22 @@ class PyPTS:
         self._pts.CreateWorkspace(bd_addr, pts_file_path, workspace_name,
                                   workspace_path)
 
+    @staticmethod
+    def _get_own_workspaces():
+        """Get auto-pts own workspaces"""
+        script_path = os.path.split(os.path.realpath(__file__))[0]
+        required_ext = ".pqw6"  # valid PTS workspace file extension
+        workspaces = {}
+
+        for root, dirs, files in os.walk("workspaces"):
+            for file in files:
+                if file.endswith(required_ext):
+                    name = os.path.splitext(file)[0]
+                    path = os.path.join(script_path, root, file)
+                    workspaces[name] = path
+
+        return workspaces
+
     def open_workspace(self, workspace_path):
         """Opens existing workspace"""
 
@@ -414,15 +430,11 @@ class PyPTS:
         required_ext = ".pqw6" # valid PTS workspace file extension
 
         # auto-pts own workspaces
-        autopts_workspaces = {
-            "zephyr-hci": "workspaces/autopts_zephyr_hci_20170116/autopts_zephyr_hci_20170116.pqw6",
-            "bluez": "workspaces/bluez/bluez.pqw6"
-        }
+        autopts_workspaces = self._get_own_workspaces()
+
         if workspace_path in autopts_workspaces.keys():
             workspace_name = workspace_path
-            script_path = os.path.split(os.path.realpath(__file__))[0]
-            workspace_path = os.path.join(
-                script_path, autopts_workspaces[workspace_name])
+            workspace_path = autopts_workspaces[workspace_path]
             log("Using %s workspace: %s", workspace_name, workspace_path)
 
         if not os.path.isfile(workspace_path):
