@@ -256,7 +256,8 @@ class Drive(GDrive):
 # .xlsx spreadsheet file
 # ****************************************************************************
 # FIXME don't use statuses from status_dict, count it from results dict instead
-def make_report_xlsx(results_dict, status_dict, regressions_list):
+def make_report_xlsx(results_dict, status_dict, regressions_list,
+                     descriptions):
     """Creates excel file containing test cases results and summary pie chart
     :param results_dict: dictionary with test cases results
     :param status_dict: status dictionary, where key is status and value is
@@ -284,12 +285,14 @@ def make_report_xlsx(results_dict, status_dict, regressions_list):
     for k, v in results_dict.items():
         worksheet.write(row, col, k)
         worksheet.write(row, col + 1, v)
+        if k in descriptions.keys():
+            worksheet.write(row, col + 2, descriptions[k])
         if k in regressions_list:
-            worksheet.write(row, col + 2, "REGRESSION")
+            worksheet.write(row, col + 3, "REGRESSION")
         row += 1
 
     summary_row = 2
-    summary_col = 4
+    summary_col = 5
 
     worksheet.write(summary_row, summary_col, 'Summary')
     end_row = summary_row

@@ -212,10 +212,13 @@ def run_tests(args, iut_config):
     """
     results = {}
     status = {}
+    descriptions = {}
 
     tty = get_tty_path("J-Link")
     pts = autoptsclient.init_core(args["server_ip"], args["workspace"],
                                   args["bd_addr"], args["enable_max_logs"])
+
+    cache = autoptsclient.cache_workspace(pts)
 
     btp.init(get_iut)
     stack.init_stack()
@@ -265,9 +268,15 @@ def run_tests(args, iut_config):
         results.update(results_dict)
         autoprojects.iutctl.cleanup()
 
+    for test_case_name in results.keys():
+        descriptions[test_case_name] = \
+            autoptsclient.get_test_case_description(cache, test_case_name)
+
+    autoptsclient.cache_cleanup(cache)
+
     pts.unregister_xmlrpc_ptscallback()
 
-    return status, results
+    return status, results, descriptions
 
 
 def main(cfg):
@@ -280,11 +289,12 @@ def main(cfg):
         bot.common.update_sources(os.path.abspath(args['project_path']),
                                   'upstream')
 
-    summary, results = run_tests(args, cfg.get('iut_config', {}))
+    summary, results, descriptions = run_tests(args, cfg.get('iut_config', {}))
     regressions = bot.common.lookup_regressions(args['board'], results)
     bot.common.db_test_case_store_results('zephyr', args['board'], results)
 
-    report_file = bot.common.make_report_xlsx(results, summary, regressions)
+    report_file = bot.common.make_report_xlsx(results, summary, regressions,
+                                              descriptions)
     logs_file = bot.common.archive_recursive("logs")
 
     if 'gdrive' in cfg:
@@ -296,7 +306,14 @@ def main(cfg):
     if 'mail' in cfg:
         summary_html = bot.common.status_dict2summary_html(summary)
         url_html = bot.common.url2html(url, "Results on Google Drive")
-        reg_html = bot.common.regressions2html(regressions)
+
+        # Provide test case description
+        _regressions = []
+        for name in regressions:
+            _regressions.append(
+                "{} - {}".format(name, descriptions.get(name, "no description")))
+
+        reg_html = bot.common.regressions2html(_regressions)
         bot.common.send_mail(cfg['mail'], None, zephyr_hash, args["board"],
                              [summary_html, reg_html, url_html])
 
