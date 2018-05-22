@@ -312,7 +312,7 @@ def main(cfg):
         _regressions = []
         for name in regressions:
             _regressions.append(
-                "{} - {}".format(name, descriptions.get(name, "no description")))
+                name + " - " + descriptions.get(name, "no description"))
 
         reg_html = bot.common.regressions2html(_regressions)
         bot.common.send_mail(cfg['mail'], None, zephyr_hash, args["board"],
