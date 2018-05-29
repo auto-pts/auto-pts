@@ -26,7 +26,7 @@ import autoptsclient_common as autoptsclient
 import ptsprojects.zephyr as autoprojects
 import ptsprojects.stack as stack
 from pybtp import btp
-from ptsprojects.zephyr.iutctl import get_iut
+from ptsprojects.zephyr.iutctl import get_iut, init_stub
 
 def check_args(args):
     """Sanity check command line arguments"""
@@ -111,11 +111,24 @@ def parse_args():
                             help="Repeat test if failed. Parameter specifies "
                                  "maximum repeat count per test")
 
+    arg_parser.add_argument("-l", "--list", action='store_true', default=False,
+                            help="List available test cases")
+
     args = arg_parser.parse_args()
 
     check_args(args)
 
     return args
+
+
+def get_test_cases(pts):
+    test_cases = autoprojects.gap.test_cases(pts)
+    test_cases += autoprojects.gatt.test_cases(pts)
+    test_cases += autoprojects.sm.test_cases(pts)
+    test_cases += autoprojects.l2cap.test_cases(pts)
+    test_cases += autoprojects.mesh.test_cases(pts)
+    return test_cases
+
 
 def main():
     """Main."""
@@ -123,6 +136,11 @@ def main():
         sys.exit("Please do not run this program as root.")
 
     args = parse_args()
+
+    if args.list:
+        init_stub()
+        autoptsclient.print_test_cases(get_test_cases)
+        sys.exit(0)
 
     pts = autoptsclient.init_core(args.server_address, args.workspace,
                                   args.bd_addr, args.enable_max_logs)
@@ -132,11 +150,7 @@ def main():
 
     stack.init_stack()
 
-    test_cases = autoprojects.gap.test_cases(pts)
-    test_cases += autoprojects.gatt.test_cases(pts)
-    test_cases += autoprojects.sm.test_cases(pts)
-    test_cases += autoprojects.l2cap.test_cases(pts)
-    test_cases += autoprojects.mesh.test_cases(pts)
+    test_cases = get_test_cases(pts)
 
     if args.test_cases or args.excluded:
         test_cases = autoptsclient.get_test_cases_subset(

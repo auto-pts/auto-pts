@@ -30,6 +30,7 @@ from traceback import format_exception
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 import xml.etree.ElementTree as ET
 
+import ptsprojects.stack as stack
 from ptsprojects.testcase import get_max_test_case_desc
 from ptsprojects.testcase import PTSCallback
 from pybtp.types import BTPError
@@ -708,3 +709,30 @@ def get_test_cases_subset(test_cases, test_case_names, excluded_names=None):
         test_cases_subset = test_cases
 
     return test_cases_subset
+
+
+def print_test_cases(func):
+    class Dummy(object):
+        def __call__(self, *args, **kwargs):
+            pass
+
+    class DummyPts(object):
+        def __getattr__(self, item):
+            return Dummy()
+
+    stack.init_stack()
+
+    pts = DummyPts()
+    test_cases = func(pts)
+
+    num_test_cases = len(test_cases)
+    num_test_cases_width = len(str(num_test_cases))
+    max_project_name, max_test_case_name = get_max_test_case_desc(test_cases)
+    margin = 3
+
+    for index, test_case in enumerate(test_cases):
+        print(str(index + 1).rjust(num_test_cases_width) +
+              "/" +
+              str(num_test_cases).ljust(num_test_cases_width + margin) +
+              test_case.project_name.ljust(max_project_name + margin) +
+              test_case.name.ljust(max_test_case_name + margin - 1))
