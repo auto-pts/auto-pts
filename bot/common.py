@@ -110,7 +110,7 @@ def send_mail(cfg, autopts_sha, zephyr_sha, iut, msg_list):
     msg_str = "".join(msg_list)
     body = '''
     <p>Hello,</p>
-    <p>Here's summary from weekly test session</p>
+    <p>Here's summary from Bluetooth weekly test session</p>
     <h4>1. Setup</h4>
     <p> Zephyr  HEAD is on {} </p>
     <p> IUT used {} </p>

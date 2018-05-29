@@ -37,6 +37,7 @@ import sys
 import time
 import logging
 import argparse
+import shutil
 
 import clr
 import System
@@ -231,6 +232,8 @@ class PyPTS:
         # list of tuples of methods and arguments to recover after PTS restart
         self._recov = []
         self._recov_in_progress = False
+
+        self._temp_workspace_path = None
 
         # This is done to have valid _pts in case client does not restart_pts
         # and uses other methods. Normally though, the client should
@@ -447,7 +450,22 @@ class PyPTS:
                 "Workspace file '%s' extension is wrong, should be %s" %
                 (workspace_path, required_ext))
 
-        self._pts.OpenWorkspace(workspace_path)
+        # Workaround CASE0044114 PTS issue
+        # Do not open original workspace file that can become broken by
+        # TestCase. Instead use a copy of this file
+        if self._temp_workspace_path and \
+                os.path.exists(self._temp_workspace_path):
+            os.unlink(self._temp_workspace_path)
+
+        workspace_dir = os.path.dirname(workspace_path)
+        workspace_name = os.path.basename(workspace_path)
+
+        self._temp_workspace_path = \
+            os.path.join(workspace_dir, "temp_" + workspace_name)
+        shutil.copy2(workspace_path, self._temp_workspace_path)
+        log("Using temporary workspace: %s", self._temp_workspace_path)
+
+        self._pts.OpenWorkspace(self._temp_workspace_path)
         self.add_recov(self.open_workspace, workspace_path)
 
     def get_project_count(self):

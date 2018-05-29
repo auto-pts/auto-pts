@@ -302,6 +302,7 @@ def main(cfg):
         url = drive.new_workdir(args['board'])
         drive.upload(report_file)
         drive.upload(logs_file)
+        drive.upload("results.db")
 
     if 'mail' in cfg:
         summary_html = bot.common.status_dict2summary_html(summary)
@@ -311,7 +312,7 @@ def main(cfg):
         _regressions = []
         for name in regressions:
             _regressions.append(
-                "{} - {}".format(name, descriptions.get(name, "no description")))
+                name + " - " + descriptions.get(name, "no description"))
 
         reg_html = bot.common.regressions2html(_regressions)
         bot.common.send_mail(cfg['mail'], None, zephyr_hash, args["board"],
