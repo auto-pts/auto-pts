@@ -125,7 +125,8 @@ def main():
     args = parse_args()
 
     pts = autoptsclient.init_core(args.server_address, args.workspace,
-                                  args.bd_addr, args.enable_max_logs)
+                                  args.bd_addr, args.enable_max_logs,
+                                  "zephyr_" + str(args.board))
 
     btp.init(get_iut)
     autoprojects.iutctl.init(args.kernel_image, args.tty_file, args.board)

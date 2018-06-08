@@ -29,9 +29,12 @@ import threading
 from traceback import format_exception
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 import xml.etree.ElementTree as ET
+import time
+import datetime
 
 from ptsprojects.testcase import get_max_test_case_desc
 from ptsprojects.testcase import PTSCallback
+from ptsprojects.testcase_db import TestCaseTable
 from pybtp.types import BTPError
 import ptsprojects.ptstypes as ptstypes
 from config import SERVER_PORT, CLIENT_PORT
@@ -39,7 +42,7 @@ from config import SERVER_PORT, CLIENT_PORT
 log = logging.debug
 
 RUNNING_TEST_CASE = None
-
+TEST_CASE_DB = None
 LOG_DIR_NAME = None
 
 # To test autopts client locally:
@@ -320,7 +323,8 @@ class FakeProxy(object):
         """Returns project name"""
         return "Project%d" % project_index
 
-def init_core(server_address, workspace_path, bd_addr, enable_max_logs):
+def init_core(server_address, workspace_path, bd_addr, enable_max_logs,
+              tc_db_table_name=None):
     "Initialization procedure"
     init_logging()
 
@@ -364,6 +368,10 @@ def init_core(server_address, workspace_path, bd_addr, enable_max_logs):
             proxy.update_pixit_param(project_name, "TSPX_bd_addr_iut", bd_addr)
 
     proxy.enable_maximum_logging(enable_max_logs)
+
+    if tc_db_table_name:
+        global TEST_CASE_DB
+        TEST_CASE_DB = TestCaseTable(tc_db_table_name)
 
     return proxy
 
@@ -427,6 +435,23 @@ def get_test_case_description(cache, test_case_name):
         name = test_case.find('name').text
         if name == test_case_name:
             return test_case.find('description').text
+
+
+def test_case_statistics(func):
+    def wrapper(*args):
+        test_case = args[1]
+
+        start_time = time.time()
+        func(*args)
+        end_time = time.time() - start_time
+
+        if TEST_CASE_DB:
+            TEST_CASE_DB.update_statistics(test_case.name, end_time)
+
+        end_time = str(datetime.timedelta(seconds=end_time))
+        logging.debug("Test duration: %s" % end_time)
+
+    return wrapper
 
 
 def print_test_case_status(func):
@@ -509,6 +534,8 @@ def get_error_code(exc):
 
     return error_code
 
+
+@test_case_statistics
 @print_test_case_status
 @log2file
 def run_test_case(pts, test_case, *unused):
@@ -604,6 +631,15 @@ def run_test_cases(pts, test_cases, retries_max=0):
     # Summary related stuff
     status_count = {}
     results_dict = {}
+
+    # estimate execution time
+    if TEST_CASE_DB:
+        est_duration = TEST_CASE_DB.estimate_session_duration(
+            [test_case.name for test_case in test_cases])
+        if est_duration:
+            print("Number of test cases to run: '%d' in approximately: '%s'\n" %
+                  (num_test_cases,
+                   str(datetime.timedelta(seconds=est_duration))))
 
     for index, test_case in enumerate(test_cases):
         while True:

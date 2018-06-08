@@ -216,7 +216,8 @@ def run_tests(args, iut_config):
 
     tty = get_tty_path("J-Link")
     pts = autoptsclient.init_core(args["server_ip"], args["workspace"],
-                                  args["bd_addr"], args["enable_max_logs"])
+                                  args["bd_addr"], args["enable_max_logs"],
+                                  "zephyr_" + str(args["board"]))
 
     cache = autoptsclient.cache_workspace(pts)
 
