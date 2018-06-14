@@ -592,18 +592,21 @@ def print_summary(status_count, num_test_cases_str, margin):
     print "\nSummary:\n"
 
     status_str = "Status"
-    max_status = len(status_str)
-    num_test_cases_width = len(num_test_cases_str)
+    status_str_len = len(status_str)
+    count_str_len = len("Count")
+    total_str_len = len("Total")
+    num_test_cases_str_len = len(num_test_cases_str)
 
-    for status in status_count:
-        if status > max_status:
-            max_status = len(status)
+    status_just = max(status_str_len, total_str_len)
+    count_just = max(count_str_len, num_test_cases_str_len)
 
-    status_just = max_status + margin
-    count_just = num_test_cases_width + margin
+    for status, count in status_count.items():
+        status_just = max(status_just, len(status))
+        count_just = max(count_just, len(str(count)))
 
+    status_just += margin
     title_str = status_str.ljust(status_just) + "Count".rjust(count_just)
-    border = "=" * len(title_str)
+    border = "=" * (status_just + count_just)
 
     print title_str
     print border
