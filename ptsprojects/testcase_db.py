@@ -27,6 +27,10 @@ class TestCaseTable(object):
             return
 
         (mean, count) = row[0]
+        if not count:
+            count = 0
+            mean = 0
+
         count += 1
         mean += (duration - mean) / count
 
