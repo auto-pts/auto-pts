@@ -257,7 +257,7 @@ def run_tests(args, iut_config):
             test_cases = autoptsclient.get_test_cases_subset(test_cases,
                                                              to_run, to_omit)
 
-        status_count, results_dict = \
+        status_count, results_dict, regressions = \
             autoptsclient.run_test_cases(pts, test_cases, int(args["retry"]))
 
         for k, v in status_count.items():
@@ -277,7 +277,7 @@ def run_tests(args, iut_config):
 
     pts.unregister_xmlrpc_ptscallback()
 
-    return status, results, descriptions
+    return status, results, descriptions, regressions
 
 
 def main(cfg):
@@ -290,9 +290,8 @@ def main(cfg):
         bot.common.update_sources(os.path.abspath(args['project_path']),
                                   'upstream')
 
-    summary, results, descriptions = run_tests(args, cfg.get('iut_config', {}))
-    regressions = bot.common.lookup_regressions(args['board'], results)
-    bot.common.db_test_case_store_results('zephyr', args['board'], results)
+    summary, results, descriptions, regressions = \
+        run_tests(args, cfg.get('iut_config', {}))
 
     report_file = bot.common.make_report_xlsx(results, summary, regressions,
                                               descriptions)
@@ -303,7 +302,7 @@ def main(cfg):
         url = drive.new_workdir(args['board'])
         drive.upload(report_file)
         drive.upload(logs_file)
-        drive.upload("results.db")
+        drive.upload("TestCase.db")
 
     if 'mail' in cfg:
         summary_html = bot.common.status_dict2summary_html(summary)

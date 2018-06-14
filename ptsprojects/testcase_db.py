@@ -11,18 +11,18 @@ class TestCaseTable(object):
 
         self.cursor.execute(
             "CREATE TABLE IF NOT EXISTS {} (name TEXT, duration REAL, "
-            "count INTEGER);".format(self.name))
+            "count INTEGER, result TEXT);".format(self.name))
         self.conn.commit()
 
-    def update_statistics(self, test_case_name, duration):
+    def update_statistics(self, test_case_name, duration, result):
         self.cursor.execute(
             "SELECT duration, count FROM {} "
             "WHERE name=:name;".format(self.name), {"name": test_case_name})
         row = self.cursor.fetchall()
         if len(row) == 0:
             self.cursor.execute(
-                "INSERT INTO {} VALUES(?, ?, ?);".format(self.name),
-                (test_case_name, duration, 1))
+                "INSERT INTO {} VALUES(?, ?, ?, ?);".format(self.name),
+                (test_case_name, duration, 1, result))
             self.conn.commit()
             return
 
@@ -31,16 +31,25 @@ class TestCaseTable(object):
         mean += (duration - mean) / count
 
         self.cursor.execute(
-            "UPDATE {} SET duration=:duration, count=:count "
+            "UPDATE {} SET duration=:duration, count=:count, result=:result "
             "WHERE name=:name".format(self.name), {"duration": mean,
                                                    "count": count,
-                                                   "name": test_case_name})
+                                                   "name": test_case_name,
+                                                   "result": result})
         self.conn.commit()
 
     def get_mean_duration(self, test_case_name):
         self.cursor.execute(
             "SELECT duration FROM {} "
             "WHERE name=:name;".format(self.name), {"name": test_case_name})
+        row = self.cursor.fetchone()
+        if row is not None:
+            return row[0]
+
+    def get_result(self, test_case_name):
+        self.cursor.execute(
+            "SELECT result FROM {} "
+            "WHERE name=:name".format(self.name), {"name": test_case_name})
         row = self.cursor.fetchone()
         if row is not None:
             return row[0]

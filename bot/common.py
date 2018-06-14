@@ -330,61 +330,6 @@ def make_report_xlsx(results_dict, status_dict, regressions_list,
 
 
 # ****************************************************************************
-# sqlite database
-# ****************************************************************************
-def db_test_case_lookup_result(project, board, name):
-    table_name = "{}_{}".format(project, board)
-
-    with sql.connect('results.db') as con:
-        cur = con.cursor()
-
-        try:
-            cur.execute("SELECT Result FROM {} WHERE Name=:Name"
-                        .format(table_name), {"Name": name})
-            con.commit()
-            row = cur.fetchone()
-            if row:
-                return row[0]
-        except sql.OperationalError:  # no such table
-            pass
-
-    return None
-
-
-def db_test_case_store_results(project, board, results):
-    table_name = "{}_{}".format(project, board)
-
-    if not results:
-        return
-
-    with sql.connect('results.db') as con:
-        cur = con.cursor()
-
-        cur.execute("DROP TABLE IF EXISTS {};".format(table_name))
-        cur.execute("CREATE TABLE {}(Name TEXT, Result TEXT);"
-                    .format(table_name))
-        for name, result in results.items():
-            cur.execute("INSERT INTO {} VALUES(?, ?);".format(table_name),
-                        (name, result))
-
-
-def lookup_regressions(board, results):
-    """Lookup for regressions compared to previous run
-    :param board: board name
-    :param results: current results
-    :return: regressions list
-    """
-    regressions = []
-
-    for name, result in results.items():
-        old_result = db_test_case_lookup_result('zephyr', board, name)
-        if result != old_result and old_result == "PASS":
-            regressions.append(name)
-
-    return regressions
-
-
-# ****************************************************************************
 # Miscellaneous
 # ****************************************************************************
 def archive_recursive(dir_path):
