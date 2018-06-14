@@ -111,6 +111,10 @@ def parse_args():
                             help="Repeat test if failed. Parameter specifies "
                                  "maximum repeat count per test")
 
+    # Hidden option to save test cases data in TestCase.db
+    arg_parser.add_argument("-s", "--store", action="store_true",
+                            default=False, help=argparse.SUPPRESS)
+
     args = arg_parser.parse_args()
 
     check_args(args)
@@ -124,9 +128,13 @@ def main():
 
     args = parse_args()
 
+    if args.store:
+        tc_db_table_name = "zephyr_" + str(args.board)
+    else:
+        tc_db_table_name = None
     pts = autoptsclient.init_core(args.server_address, args.workspace,
                                   args.bd_addr, args.enable_max_logs,
-                                  "zephyr_" + str(args.board))
+                                  tc_db_table_name)
 
     btp.init(get_iut)
     autoprojects.iutctl.init(args.kernel_image, args.tty_file, args.board)
