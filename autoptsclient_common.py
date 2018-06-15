@@ -677,7 +677,8 @@ def run_test_cases(pts, test_cases, retries_max=0):
     # estimate execution time
     if TEST_CASE_DB:
         est_duration = TEST_CASE_DB.estimate_session_duration(
-            [test_case.name for test_case in test_cases])
+            [test_case.name for test_case in test_cases],
+            run_count_max)
         if est_duration:
             print("Number of test cases to run: '%d' in approximately: '%s'\n" %
                   (num_test_cases,

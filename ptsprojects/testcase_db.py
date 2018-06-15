@@ -58,17 +58,24 @@ class TestCaseTable(object):
         if row is not None:
             return row[0]
 
-    def estimate_session_duration(self, test_cases_names):
+    def estimate_session_duration(self, test_cases_names, run_count_max):
         duration = 0
         count_unknown = 0
         num_test_cases = len(test_cases_names)
 
         for test_case_name in test_cases_names:
+            expected_run_count = 1
+
+            # Assume worst case scenario
+            last_result = self.get_result(test_case_name)
+            if last_result and last_result != 'PASS':
+                expected_run_count = run_count_max
+
             mean_time = self.get_mean_duration(test_case_name)
             if mean_time is None:
                 count_unknown += 1
             else:
-                duration += mean_time
+                duration += mean_time * expected_run_count
 
         duration += count_unknown * duration / (num_test_cases - count_unknown)
 
