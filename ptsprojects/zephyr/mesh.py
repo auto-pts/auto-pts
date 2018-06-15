@@ -51,7 +51,7 @@ def test_cases(pts):
                    defs.MESH_OUT_DISPLAY_NUMBER | defs.MESH_OUT_DISPLAY_STRING]
     in_actions = [defs.MESH_IN_ENTER_NUMBER,
                   defs.MESH_IN_ENTER_STRING,
-                  defs.MESH_IN_ENTER_NUMBER | defs.MESH_INPUT_STRING]
+                  defs.MESH_IN_ENTER_NUMBER | defs.MESH_IN_ENTER_STRING]
 
     device_uuid = hexlify(uuid4().bytes)
     oob = 16 * '0'
