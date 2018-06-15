@@ -437,25 +437,7 @@ def get_test_case_description(cache, test_case_name):
             return test_case.find('description').text
 
 
-def test_case_statistics(func):
-    def wrapper(*args):
-        test_case = args[1]
-
-        start_time = time.time()
-        func(*args)
-        end_time = time.time() - start_time
-
-        if TEST_CASE_DB:
-            TEST_CASE_DB.update_statistics(test_case.name, end_time,
-                                           test_case.status)
-
-        end_time = str(datetime.timedelta(seconds=end_time))
-        logging.debug("Test duration: %s" % end_time)
-
-    return wrapper
-
-
-def print_test_case_status(func):
+def run_test_case_wrapper(func):
     def wrapper(*args):
         test_case = args[1]
         (index, num_test_cases, num_test_cases_width, max_project_name,
@@ -470,10 +452,14 @@ def print_test_case_status(func):
                test_case.name.ljust(max_test_case_name + margin - 1)),
         sys.stdout.flush()
 
+        start_time = time.time()
+        func(*args)
+        end_time = time.time() - start_time
+
         if TEST_CASE_DB:
             status_prev = TEST_CASE_DB.get_result(test_case.name)
-
-        func(*args)
+            TEST_CASE_DB.update_statistics(test_case.name, end_time,
+                                           test_case.status)
 
         # Remove the test case from regressions list if passed now
         if test_case.status == "PASS" and test_case.name in regressions:
@@ -494,7 +480,11 @@ def print_test_case_status(func):
         else:
             regression_msg = ""
 
-        print("{}".format(test_case.status).ljust(25) +
+        end_time = str(round(datetime.timedelta(
+            seconds=end_time).total_seconds(), 3))
+
+        print("{}".format(test_case.status).ljust(16) +
+              end_time.rjust(len(end_time)) +
               retries_msg.rjust(len("#{}".format(retries_max)) + margin) +
               regression_msg.rjust(len("REGRESSION") + margin))
 
@@ -561,8 +551,7 @@ def get_error_code(exc):
     return error_code
 
 
-@test_case_statistics
-@print_test_case_status
+@run_test_case_wrapper
 @log2file
 def run_test_case(pts, test_case, *unused):
     """Runs the test case specified by a TestCase instance.
