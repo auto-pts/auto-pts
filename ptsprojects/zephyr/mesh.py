@@ -51,19 +51,19 @@ def test_cases(pts):
                    defs.MESH_OUT_DISPLAY_NUMBER | defs.MESH_OUT_DISPLAY_STRING]
     in_actions = [defs.MESH_IN_ENTER_NUMBER,
                   defs.MESH_IN_ENTER_STRING,
-                  defs.MESH_IN_ENTER_NUMBER | defs.MESH_INPUT_STRING]
+                  defs.MESH_IN_ENTER_NUMBER | defs.MESH_IN_ENTER_STRING]
 
     device_uuid = hexlify(uuid4().bytes)
     oob = 16 * '0'
     out_size = random.randint(0, 2)
-    out_actions = random.choice(out_actions) if out_size else 0
+    rand_out_actions = random.choice(out_actions) if out_size else 0
     in_size = random.randint(0, 2)
-    in_actions = random.choice(in_actions) if in_size else 0
+    rand_in_actions = random.choice(in_actions) if in_size else 0
     crpl_size = 10  # Maximum capacity of the replay protection list
 
     stack.gap_init()
-    stack.mesh_init(device_uuid, oob, out_size, out_actions, in_size,
-                    in_actions, crpl_size)
+    stack.mesh_init(device_uuid, oob, out_size, rand_out_actions, in_size,
+                    rand_in_actions, crpl_size)
 
     pre_conditions = [TestFunc(btp.core_reg_svc_gap),
                       TestFunc(btp.core_reg_svc_mesh),
@@ -352,7 +352,11 @@ def test_cases(pts):
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/PROV/BI-02-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
-        ZTestCase("MESH", "MESH/NODE/PROV/UPD/BV-01-C", cmds=pre_conditions,
+        ZTestCase("MESH", "MESH/NODE/PROV/UPD/BV-01-C",
+                  cmds=pre_conditions +
+                  [TestFunc(stack.mesh_init, device_uuid, oob,
+                            random.randint(1, 2), random.choice(out_actions),
+                            in_size, rand_in_actions, crpl_size)],
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/PROV/UPD/BV-07-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),

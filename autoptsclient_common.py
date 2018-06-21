@@ -29,9 +29,12 @@ import threading
 from traceback import format_exception
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 import xml.etree.ElementTree as ET
+import time
+import datetime
 
 from ptsprojects.testcase import get_max_test_case_desc
 from ptsprojects.testcase import PTSCallback
+from ptsprojects.testcase_db import TestCaseTable
 from pybtp.types import BTPError
 import ptsprojects.ptstypes as ptstypes
 from config import SERVER_PORT, CLIENT_PORT
@@ -39,7 +42,7 @@ from config import SERVER_PORT, CLIENT_PORT
 log = logging.debug
 
 RUNNING_TEST_CASE = None
-
+TEST_CASE_DB = None
 LOG_DIR_NAME = None
 
 # To test autopts client locally:
@@ -320,7 +323,8 @@ class FakeProxy(object):
         """Returns project name"""
         return "Project%d" % project_index
 
-def init_core(server_address, workspace_path, bd_addr, enable_max_logs):
+def init_core(server_address, workspace_path, bd_addr, enable_max_logs,
+              tc_db_table_name=None):
     "Initialization procedure"
     init_logging()
 
@@ -364,6 +368,10 @@ def init_core(server_address, workspace_path, bd_addr, enable_max_logs):
             proxy.update_pixit_param(project_name, "TSPX_bd_addr_iut", bd_addr)
 
     proxy.enable_maximum_logging(enable_max_logs)
+
+    if tc_db_table_name:
+        global TEST_CASE_DB
+        TEST_CASE_DB = TestCaseTable(tc_db_table_name)
 
     return proxy
 
@@ -429,11 +437,13 @@ def get_test_case_description(cache, test_case_name):
             return test_case.find('description').text
 
 
-def print_test_case_status(func):
+def run_test_case_wrapper(func):
     def wrapper(*args):
         test_case = args[1]
         (index, num_test_cases, num_test_cases_width, max_project_name,
-         max_test_case_name, margin, retries_counter) = args[2]
+         max_test_case_name, margin, run_count_max, run_count,
+         regressions) = args[2]
+        status_prev = None
 
         print (str(index + 1).rjust(num_test_cases_width) +
                "/" +
@@ -442,10 +452,41 @@ def print_test_case_status(func):
                test_case.name.ljust(max_test_case_name + margin - 1)),
         sys.stdout.flush()
 
+        start_time = time.time()
         func(*args)
+        end_time = time.time() - start_time
 
-        print("{}".format(test_case.status).ljust(25) +
-              ("#{}".format(retries_counter) if retries_counter else ""))
+        if TEST_CASE_DB:
+            status_prev = TEST_CASE_DB.get_result(test_case.name)
+            TEST_CASE_DB.update_statistics(test_case.name, end_time,
+                                           test_case.status)
+
+        # Remove the test case from regressions list if passed now
+        if test_case.status == "PASS" and test_case.name in regressions:
+            regressions.remove(test_case.name)
+        # Mark the test case regression
+        elif status_prev == "PASS" and test_case.status != status_prev:
+            regressions.append(test_case.name)
+
+        retries_counter = run_count_max - run_count
+        retries_max = run_count_max - 1
+        if retries_counter:
+            retries_msg = "#{}".format(retries_counter)
+        else:
+            retries_msg = ""
+
+        if test_case.name in regressions and retries_counter == retries_max:
+            regression_msg = "REGRESSION"
+        else:
+            regression_msg = ""
+
+        end_time = str(round(datetime.timedelta(
+            seconds=end_time).total_seconds(), 3))
+
+        print("{}".format(test_case.status).ljust(16) +
+              end_time.rjust(len(end_time)) +
+              retries_msg.rjust(len("#{}".format(retries_max)) + margin) +
+              regression_msg.rjust(len("REGRESSION") + margin))
 
     return wrapper
 
@@ -509,7 +550,8 @@ def get_error_code(exc):
 
     return error_code
 
-@print_test_case_status
+
+@run_test_case_wrapper
 @log2file
 def run_test_case(pts, test_case, *unused):
     """Runs the test case specified by a TestCase instance.
@@ -560,23 +602,34 @@ def run_test_case(pts, test_case, *unused):
 
     log("Done TestCase %s %s", run_test_case.__name__, test_case)
 
-def print_summary(status_count, num_test_cases_str, margin):
+def print_summary(status_count, num_test_cases_str, margin,
+                  regressions_count):
     """Prints test case list status summary"""
     print "\nSummary:\n"
 
     status_str = "Status"
-    max_status = len(status_str)
-    num_test_cases_width = len(num_test_cases_str)
+    status_str_len = len(status_str)
+    count_str_len = len("Count")
+    total_str_len = len("Total")
+    regressions_str = "Regressions"
+    regressions_str_len = len(regressions_str)
+    regressions_count_str_len = len(str(regressions_count))
+    num_test_cases_str_len = len(num_test_cases_str)
 
-    for status in status_count:
-        if status > max_status:
-            max_status = len(status)
+    status_just = max(status_str_len, total_str_len)
+    count_just = max(count_str_len, num_test_cases_str_len)
 
-    status_just = max_status + margin
-    count_just = num_test_cases_width + margin
+    if regressions_count != 0:
+        status_just = max(status_just, regressions_str_len)
+        count_just = max(count_just, regressions_count_str_len)
 
+    for status, count in status_count.items():
+        status_just = max(status_just, len(status))
+        count_just = max(count_just, len(str(count)))
+
+    status_just += margin
     title_str = status_str.ljust(status_just) + "Count".rjust(count_just)
-    border = "=" * len(title_str)
+    border = "=" * (status_just + count_just)
 
     print title_str
     print border
@@ -589,6 +642,10 @@ def print_summary(status_count, num_test_cases_str, margin):
     # print total
     print border
     print "Total".ljust(status_just) + num_test_cases_str.rjust(count_just)
+    if regressions_count != 0:
+        print border
+        print(regressions_str.ljust(status_just) +
+              str(regressions_count).rjust(count_just))
 
 def run_test_cases(pts, test_cases, retries_max=0):
     """Runs a list of test cases"""
@@ -604,13 +661,24 @@ def run_test_cases(pts, test_cases, retries_max=0):
     # Summary related stuff
     status_count = {}
     results_dict = {}
+    regressions = []
+
+    # estimate execution time
+    if TEST_CASE_DB:
+        est_duration = TEST_CASE_DB.estimate_session_duration(
+            [test_case.name for test_case in test_cases],
+            run_count_max)
+        if est_duration:
+            print("Number of test cases to run: '%d' in approximately: '%s'\n" %
+                  (num_test_cases,
+                   str(datetime.timedelta(seconds=est_duration))))
 
     for index, test_case in enumerate(test_cases):
         while True:
             run_test_case(pts, test_case,
                           (index, num_test_cases, num_test_cases_width,
                            max_project_name, max_test_case_name, margin,
-                           run_count_max - run_count))
+                           run_count_max, run_count, regressions))
             run_count -= 1
             if test_case.status != 'PASS' and run_count > 0:
                 test_case = test_case.copy()
@@ -625,9 +693,9 @@ def run_test_cases(pts, test_cases, retries_max=0):
 
         run_count = run_count_max
 
-    print_summary(status_count, str(num_test_cases), margin)
+    print_summary(status_count, str(num_test_cases), margin, len(regressions))
 
-    return status_count, results_dict
+    return status_count, results_dict, regressions
 
 def get_test_cases_subset(test_cases, test_case_names, excluded_names=None):
     """Return subset of test cases

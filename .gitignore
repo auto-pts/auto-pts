@@ -5,7 +5,7 @@ workspaces
 
 *.xlsx
 *.zip
+*.db
 */client_secret.json
 */credentials.json
 bot/config.py
-results.db
