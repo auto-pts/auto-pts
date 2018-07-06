@@ -77,7 +77,9 @@ class TestCaseTable(object):
             else:
                 duration += mean_time * expected_run_count
 
-        duration += count_unknown * duration / (num_test_cases - count_unknown)
+        known_count = num_test_cases - count_unknown
+        if known_count > 0:
+            duration += count_unknown * duration / known_count
 
         return duration
 
