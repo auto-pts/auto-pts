@@ -251,6 +251,7 @@ def run_tests(args, iut_config):
     results = {}
     status = {}
     descriptions = {}
+    total_regressions = []
 
     callback_thread = autoptsclient.init_core()
 
@@ -321,6 +322,7 @@ def run_tests(args, iut_config):
 
         status_count, results_dict, regressions = autoptsclient.run_test_cases(
             ptses, test_cases, additional_test_cases, int(args["retry"]))
+        total_regressions += regressions
 
         for k, v in status_count.items():
             if k in status.keys():
@@ -339,7 +341,7 @@ def run_tests(args, iut_config):
 
     pts.unregister_xmlrpc_ptscallback()
 
-    return status, results, descriptions, regressions
+    return status, results, descriptions, total_regressions
 
 
 def zephyr_hash_url(commit):
