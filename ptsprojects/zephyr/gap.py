@@ -384,7 +384,7 @@ def test_cases(pts):
                         TestFunc(btp.gap_disconn, start_wid=77)]),
         ZTestCase("GAP", "GAP/CONN/PRDA/BV-02-C",
                   edit1_wids={1002: (btp.var_store_get_passkey)},
-                  ok_cancel_wids={78: (btp.gap_rpa_conn)},
+                  ok_cancel_wids={174: (btp.gap_rpa_conn)},
                   cmds=pre_conditions +
                        [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                         TestFunc(btp.gap_pair, start_wid=108),
