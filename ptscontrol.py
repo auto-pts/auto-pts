@@ -75,6 +75,7 @@ class PTSLogger(PTSControl.IPTSControlClientLogger):
         # TestCase or xmlrpc SimpleXMLRPCServer running in auto pts client.
         self._callback = None
         self._maximum_logging = False
+        self._test_case_name = None
 
     def set_callback(self, callback):
         """Set the callback"""
@@ -87,6 +88,10 @@ class PTSLogger(PTSControl.IPTSControlClientLogger):
     def enable_maximum_logging(self, enable):
         """Enable/disable maximum logging"""
         self._maximum_logging = enable
+
+    def set_test_case_name(self, test_case_name):
+        """Required to identify multiple instances on client side"""
+        self._test_case_name = test_case_name
 
     def Log(self, log_type, logtype_string, log_time, log_message):
         """Implements:
@@ -114,7 +119,7 @@ class PTSLogger(PTSControl.IPTSControlClientLogger):
                 # int since xmlrpc has not marshalling rules for _PTS_LOGTYPE
                 if self._maximum_logging or int(log_type) in logtype_whitelist:
                     self._callback.log(int(log_type), logtype_string, log_time,
-                                      log_message)
+                                      log_message, self._test_case_name)
         except Exception as e:
             log("Caught exception")
             log(e)
@@ -574,6 +579,8 @@ class PyPTS:
 
         log("Starting %s %s %s", self.run_test_case.__name__, project_name,
             test_case_name)
+
+        self._pts_logger.set_test_case_name(test_case_name)
 
         error_code = ""
 
