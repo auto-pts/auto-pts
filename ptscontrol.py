@@ -38,6 +38,7 @@ import time
 import logging
 import argparse
 import shutil
+import xmlrpclib
 
 import clr
 import System
@@ -160,9 +161,9 @@ class PTSSender(PTSControl.IPTSImplicitSendCallbackEx):
                     [in, out] long* pbResponseIsPresent);
         };
         """
-
         logger = logging.getLogger(self.__class__.__name__)
         log = logger.info
+        timer = 0
 
         log("*" * 20)
         log("BEGIN OnImplicitSend:")
@@ -174,8 +175,6 @@ class PTSSender(PTSControl.IPTSImplicitSendCallbackEx):
         log("response:  %s %s %s" % (repr(response), type(response), id(response)))
         log("response_size: %d %s" % (response_size, type(response_size)))
         log("response_is_present:  %s %s" % (response_is_present, type(response_is_present)))
-
-        callback_response = ""
 
         try:
             # xmrpc proxy object in boolean test calls the method __nonzero__
@@ -192,6 +191,22 @@ class PTSSender(PTSControl.IPTSImplicitSendCallbackEx):
                     int(response_size),
                     int(response_is_present))
 
+                # Don't block xml-rpc
+                if callback_response == "WAIT":
+                    callback_response = self._callback.get_pending_response(test_case_name)
+                    while not callback_response:
+                        # XXX: Ask for response every second
+                        timer = timer + 1
+                        # XXX: Timeout 90 seconds
+                        if timer > 90:
+                            callback_response = "Cancel"
+                            break
+
+                        log("Rechecking response...")
+                        time.sleep(1)
+                        callback_response = self._callback.get_pending_response(test_case_name)
+                        pass
+
                 log("callback returned on_implicit_send, respose: %s",
                     callback_response)
 
@@ -199,6 +214,9 @@ class PTSSender(PTSControl.IPTSImplicitSendCallbackEx):
                     libc.wcscpy_s(response, response_size,
                                   unicode(callback_response))
                     response_is_present.Value = 1
+
+        except xmlrpclib.Fault as err:
+            log("A fault occurred, code = %d, string = %s" % (err.faultCode, err.faultString))
 
         except Exception as e:
             log("Caught exception")
@@ -814,6 +832,7 @@ class PyPTS:
         self._pts_sender.unset_callback()
 
         self.del_recov(self.register_ptscallback)
+
 
 def parse_args():
     """Parses command line arguments and options"""
