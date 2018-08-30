@@ -606,6 +606,26 @@ def get_error_code(exc):
     return error_code
 
 
+def synchronize_instances(state, break_state=None):
+    """Synchronize instances to be in one state before executing further"""
+    match = False
+
+    while True:
+        time.sleep(1)
+        match = True
+
+        for tc in RUNNING_TEST_CASE.itervalues():
+            if tc.state != state:
+                if break_state and tc.state in break_state:
+                    raise SynchError
+
+                match = False
+                continue
+
+        if match:
+            return
+
+
 @run_test_case_wrapper
 @log2file
 def run_test_case(pts, test_case, *unused):
@@ -623,13 +643,15 @@ def run_test_case(pts, test_case, *unused):
         test_case.status = random.choice(statuses)
         return
 
-    global RUNNING_TEST_CASE
-
     error_code = None
 
     try:
-        RUNNING_TEST_CASE = test_case
+        RUNNING_TEST_CASE[test_case.name] = test_case
+        test_case.state = "PRE_RUN"
         test_case.pre_run()
+        test_case.status = "RUNNING"
+        test_case.state = "RUNNING"
+        synchronize_instances(test_case.state)
         error_code = pts.run_test_case(test_case.project_name, test_case.name)
 
         log("After run_test_case error_code=%r status=%r",
@@ -652,10 +674,67 @@ def run_test_case(pts, test_case, *unused):
         error_code = get_error_code(None)
 
     finally:
+        test_case.state = "FINISHING"
+        synchronize_instances(test_case.state)
         test_case.post_run(error_code) # stop qemu and other commands
-        RUNNING_TEST_CASE = None
+        del RUNNING_TEST_CASE[test_case.name]
 
     log("Done TestCase %s %s", run_test_case.__name__, test_case)
+
+
+def run_slave_test_case(pts, test_case):
+    """Runs the slave test case specified by a TestCase instance.
+
+    [1] xmlrpclib.Fault normally happens due to unhandled exception in the
+        autoptsserver on Windows
+
+    """
+    log("Starting Slave TestCase %s %s", run_test_case.__name__, test_case)
+
+    if AUTO_PTS_LOCAL: # set fake status and return
+        statuses = ["PASS", "INCONC", "FAIL", "UNKNOWN VERDICT: NONE",
+                    "BTP ERROR", "XML-RPC ERROR", "BTP TIMEOUT"]
+        test_case.status = random.choice(statuses)
+        return
+
+    error_code = None
+
+    try:
+        RUNNING_TEST_CASE[test_case.name] = test_case
+        test_case.state = "PRE_RUN"
+        test_case.pre_run()
+        test_case.status = "RUNNING"
+        test_case.state = "RUNNING"
+        synchronize_instances(test_case.state, ("FINISHING",))
+        error_code = pts.run_test_case(test_case.project_name, test_case.name)
+
+        log("After run_test_case error_code=%r status=%r",
+            error_code, test_case.status)
+
+        # raise exception discovered by thread
+        thread_error = pts.callback_thread.error_code()
+        pts.callback_thread.cleanup()
+
+        if thread_error:
+            error_code = thread_error
+
+    except Exception as error:
+        logging.exception(error.message)
+        error_code = get_error_code(error)
+
+    except:
+        traceback_list = format_exception(sys.exc_info())
+        logging.exception("".join(traceback_list))
+        error_code = get_error_code(None)
+
+    finally:
+        test_case.state = "FINISHING"
+        synchronize_instances(test_case.state)
+        test_case.post_run(error_code) # stop qemu and other commands
+        del RUNNING_TEST_CASE[test_case.name]
+
+    log("Done Slave TestCase %s %s", run_test_case.__name__, test_case)
+
 
 def print_summary(status_count, num_test_cases_str, margin,
                   regressions_count):
@@ -702,7 +781,25 @@ def print_summary(status_count, num_test_cases_str, margin,
         print(regressions_str.ljust(status_just) +
               str(regressions_count).rjust(count_just))
 
-def run_test_cases(pts, test_cases, retries_max=0):
+
+def get_lt2_test(test_cases, first_tc):
+    """ Return lower tester matching test case if exist on list.
+
+    test_cases -- list of all test cases, instances of TestCase
+
+    first_tc -- first lower tester test case instance
+    """
+    # XXX: pay attention on PTS test case naming
+    second_tc_name = first_tc.name + "-LT2"
+
+    for second_tc in test_cases:
+        if second_tc.name == second_tc_name:
+            return second_tc
+
+    return None
+
+
+def run_test_cases(ptses, test_cases, additional_test_cases, retries_max=0):
     """Runs a list of test cases"""
 
     run_count_max = retries_max + 1  # Run test at least once
@@ -712,6 +809,9 @@ def run_test_cases(pts, test_cases, retries_max=0):
     num_test_cases_width = len(str(num_test_cases))
     max_project_name, max_test_case_name = get_max_test_case_desc(test_cases)
     margin = 3
+
+    # Multi-instance related stuff
+    pts_threads = []
 
     # Summary related stuff
     status_count = {}
@@ -730,12 +830,40 @@ def run_test_cases(pts, test_cases, retries_max=0):
 
     for index, test_case in enumerate(test_cases):
         while True:
-            run_test_case(pts, test_case,
-                          (index, num_test_cases, num_test_cases_width,
-                           max_project_name, max_test_case_name, margin,
-                           run_count_max, run_count, regressions))
+            # Multiple PTS instances test cases may fill status already
+            if test_case.status != 'init':
+                continue
+
+            # Search for second lower tester test case if exist
+            second_test_case = get_lt2_test(additional_test_cases, test_case)
+            if second_test_case and len(ptses) < 2:
+                test_case.status = 'FAIL'
+                second_test_case.status = 'FAIL'
+                results_dict[test_case.name] = test_case.status
+                break
+
+            pts_thread = threading.Thread(target=run_test_case, args=(ptses[0],
+                                          test_case, (index, num_test_cases,
+                                          num_test_cases_width,
+                                          max_project_name, max_test_case_name,
+                                          margin, run_count_max, run_count,
+                                          regressions)))
+            pts_threads.append(pts_thread)
+            pts_thread.start()
+
+            if second_test_case:
+                pts_thread = threading.Thread(target=run_slave_test_case,
+                                              args=(ptses[1], second_test_case))
+                pts_threads.append(pts_thread)
+                pts_thread.start()
+
+            # Wait till every PTS instance finish executing test case
+            for pts_thread in pts_threads:
+                pts_thread.join()
+
             run_count -= 1
-            if test_case.status != 'PASS' and run_count > 0:
+            if ((test_case.status != 'PASS' or (second_test_case and
+                second_test_case.status != 'PASS')) and run_count > 0):
                 test_case = test_case.copy()
             else:
                 results_dict[test_case.name] = test_case.status

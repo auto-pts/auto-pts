@@ -355,6 +355,7 @@ class TestCase(PTSCallback):
         self.name = test_case_name
         # a.k.a. final verdict
         self.status = "init"
+        self.state = None
 
         if isinstance(cmds, list):
             self.cmds = list(cmds)
