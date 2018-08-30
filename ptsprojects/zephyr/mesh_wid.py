@@ -26,13 +26,57 @@ from ptsprojects.stack import get_stack
 log = logging.debug
 
 
-def mesh_wid_hdl(wid, description):
-    log("%s, %r, %r", mesh_wid_hdl.__name__, wid, description)
+def hdl_pending_mesh_wids(wid, test_case_name, description):
+    stack = get_stack()
     module = sys.modules[__name__]
+
+    if stack.synch.is_required_synch(test_case_name, wid):
+        actions = stack.synch.perform_synch(wid, test_case_name, description)
+
+        if actions:
+            for action in actions:
+                action_wid = action[0]
+                action_description = action[1]
+                action_test_case_name = action[2]
+                action_response_cb = action[3]
+
+                handler = getattr(module, "hdl_wid_%d" % action_wid)
+                result = handler(action_description)
+
+                # Register pending response handler
+                stack.synch.prepare_pending_response(action_test_case_name,
+                                                     result)
+
+            return None
+
+        # wid is on synchronise list but has to wait for other
+        return "WAIT"
+
+    return None
+
+
+def mesh_wid_hdl(wid, description, test_case_name):
+    log("%s, %r, %r, %s", mesh_wid_hdl.__name__, wid, description,
+        test_case_name)
+    module = sys.modules[__name__]
+    pending_responses = None
 
     try:
         handler = getattr(module, "hdl_wid_%d" % wid)
-        return handler(description)
+        current_response = handler(description)
+
+        stack = get_stack()
+        if stack.synch:
+            response = hdl_pending_mesh_wids(wid, test_case_name, description)
+
+            if response == "WAIT":
+                return response
+
+        if stack.synch:
+            stack.synch.set_pending_responses_if_any()
+
+        return current_response
+
     except AttributeError as e:
         logging.exception(e.message)
 

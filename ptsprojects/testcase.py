@@ -600,8 +600,11 @@ class TestCase(PTSCallback):
             log("Waiting post wid thread to finish...")
             self.post_wid_thread.join()
 
-    def handle_mmi_generic(self, wid, description, style):
-        response = self.generic_wid_hdl(wid, description)
+    def handle_mmi_generic(self, wid, description, style, test_case_name):
+        response = self.generic_wid_hdl(wid, description, test_case_name)
+
+        if response == "WAIT":
+            return response
 
         if style == ptstypes.MMI_Style_Edit1 \
                 or style == ptstypes.MMI_Style_Edit2:
@@ -649,7 +652,8 @@ class TestCase(PTSCallback):
         my_response = ""
 
         if self.generic_wid_hdl is not None:
-            my_response = self.handle_mmi_generic(wid, description, style)
+            my_response = self.handle_mmi_generic(wid, description, style,
+                                                  test_case_name)
         else:
             # start/stop command if triggered by wid
             self.start_stop_cmds_by_wid(wid, description)
