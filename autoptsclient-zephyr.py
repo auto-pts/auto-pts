@@ -145,6 +145,9 @@ def main():
     autoprojects.iutctl.init(args.kernel_image, args.tty_file, args.board)
 
     stack.init_stack()
+    stack_inst = stack.get_stack()
+    stack_inst.synch_init(callback_thread.set_pending_response,
+                          callback_thread.clear_pending_responses)
 
     test_cases = autoprojects.gap.test_cases(ptses[0])
     test_cases += autoprojects.gatt.test_cases(ptses[0])
