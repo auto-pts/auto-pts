@@ -82,6 +82,7 @@ xmlrpclib._Method = _Method
 class ClientCallback(PTSCallback):
     def __init__(self):
         self.exception = Queue.Queue()
+        self._pending_responses = {}
 
     def error_code(self):
         """Return error code or None if there are no errors
@@ -176,20 +177,24 @@ class ClientCallback(PTSCallback):
                                             type(response_is_present)))
 
         try:
-            if RUNNING_TEST_CASE:
-                log("Calling test cases on_implicit_send")
-                testcase_response = RUNNING_TEST_CASE.on_implicit_send(
-                    project_name,
-                    wid,
-                    test_case_name,
-                    description,
-                    style,
-                    response,
-                    response_size,
-                    response_is_present)
+            # XXX: 361 WID MESH sends tc name with leading white spaces
+            test_case_name = test_case_name.lstrip()
 
-                log("test case returned on_implicit_send, response: %s",
-                    testcase_response)
+            log("Calling test cases on_implicit_send")
+            caller_pts_id = RUNNING_TEST_CASE.keys().index(test_case_name)
+
+            testcase_response = RUNNING_TEST_CASE[test_case_name].on_implicit_send(
+                project_name,
+                wid,
+                test_case_name,
+                description,
+                style,
+                response,
+                response_size,
+                response_is_present)
+
+            log("test case returned on_implicit_send, response: %s",
+                testcase_response)
 
         except Exception as e:
             logging.exception("OnImplicitSend caught exception")
@@ -203,7 +208,34 @@ class ClientCallback(PTSCallback):
 
         return testcase_response
 
+    def get_pending_response(self, test_case_name):
+        log("%s.%s, %s", self.__class__.__name__,
+            self.get_pending_response.__name__, test_case_name)
+        if not self._pending_responses:
+            return None
+
+        if test_case_name in self._pending_responses:
+            response = self._pending_responses[test_case_name]
+            log("return pending response = %s", response)
+
+            del self._pending_responses[test_case_name]
+
+            return response
+
+        return None
+
+    def set_pending_response(self, pending_response):
+        tc_name = pending_response[0]
+        response = pending_response[1]
+
+        self._pending_responses[tc_name] = response
+
+    def clear_pending_responses(self):
+        self._pending_responses = {}
+
     def cleanup(self):
+        self.clear_pending_responses()
+
         while not self.exception.empty():
             self.exception.get_nowait()
             self.exception.task_done()
@@ -235,6 +267,16 @@ class CallbackThread(threading.Thread):
     def error_code(self):
         log("%s.%s", self.__class__.__name__, self.error_code.__name__)
         return self.callback.error_code()
+
+    def set_pending_response(self, pending_response):
+        log("%s.%s, %r", self.__class__.__name__,
+            self.set_pending_response.__name__, pending_response)
+        return self.callback.set_pending_response(pending_response)
+
+    def clear_pending_responses(self):
+        log("%s.%s", self.__class__.__name__,
+            self.clear_pending_responses.__name__)
+        return self.callback.clear_pending_responses()
 
     def cleanup(self):
         log("%s.%s", self.__class__.__name__, self.cleanup.__name__)
