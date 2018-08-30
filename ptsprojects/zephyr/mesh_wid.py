@@ -169,6 +169,10 @@ def hdl_wid_13(desc):
     return True
 
 
+def hdl_wid_15(desc):
+    return True
+
+
 def hdl_wid_17(desc):
     """
     Implements: RECEIVED_NETWORK_DATA
@@ -1020,6 +1024,10 @@ def hdl_wid_347(desc):
 
     btp.mesh_lpn_unsubscribe(group_address)
     stack.mesh.lpn_subscriptions.remove(group_address)
+    return True
+
+
+def hdl_wid_361(desc):
     return True
 
 
