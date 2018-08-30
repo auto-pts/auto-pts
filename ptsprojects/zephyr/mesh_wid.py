@@ -134,8 +134,16 @@ def hdl_wid_12(desc):
     :return:
     """
     stack = get_stack()
-    btp.mesh_config_prov()
-    btp.mesh_init()
+
+    if not stack.mesh.is_initialized:
+        btp.mesh_config_prov()
+        btp.mesh_init()
+    else:
+        if stack.mesh.is_provisioned.data:
+            return True
+        else:
+            return True
+
     return True
 
 
@@ -149,11 +157,15 @@ def hdl_wid_13(desc):
     """
     stack = get_stack()
 
-    if stack.mesh.is_provisioned.data:
-        btp.mesh_reset()
+    if not stack.mesh.is_initialized:
+         btp.mesh_config_prov()
+         btp.mesh_init()
     else:
-        btp.mesh_config_prov()
-        btp.mesh_init()
+        if stack.mesh.is_provisioned.data:
+            return True
+        else:
+            return True
+
     return True
 
 
