@@ -217,7 +217,7 @@ class CallbackThread(threading.Thread):
         """Starts the xmlrpc callback server"""
         log("%s.%s", self.__class__.__name__, self.run.__name__)
 
-        print "Serving on port {} ...\n".format(CLIENT_PORT)
+        log("Serving on port %s ...", CLIENT_PORT)
 
         server = SimpleXMLRPCServer(("", CLIENT_PORT),
                                     allow_none = True, logRequests = False)
@@ -323,13 +323,21 @@ class FakeProxy(object):
         """Returns project name"""
         return "Project%d" % project_index
 
-def init_core(server_address, workspace_path, bd_addr, enable_max_logs,
-              tc_db_table_name=None):
-    "Initialization procedure"
+def init_core():
+    "Initialization procedure for core modules"
     init_logging()
 
     log("my IP address is: %s", get_my_ip_address())
 
+    callback_thread = CallbackThread()
+    callback_thread.start()
+
+    return callback_thread
+
+
+def init_pts(server_address, workspace_path, bd_addr, enable_max_logs,
+             callback_thread, tc_db_table_name=None):
+    "Initialization procedure for PTS instances"
     if AUTO_PTS_LOCAL:
         proxy = FakeProxy()
     else:
@@ -337,13 +345,11 @@ def init_core(server_address, workspace_path, bd_addr, enable_max_logs,
             "http://{}:{}/".format(server_address, SERVER_PORT),
             allow_none = True,)
 
-    print "Starting PTS ...",
+    print "Starting PTS %s ..." % server_address,
     sys.stdout.flush()
     proxy.restart_pts()
     print "OK"
 
-    callback_thread = CallbackThread()
-    callback_thread.start()
     proxy.callback_thread = callback_thread
 
     proxy.set_call_timeout(120000) # milliseconds
