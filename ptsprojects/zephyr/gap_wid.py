@@ -26,8 +26,9 @@ from time import sleep
 log = logging.debug
 
 
-def gap_wid_hdl(wid, description):
-    log("%s, %r, %r", gap_wid_hdl.__name__, wid, description)
+def gap_wid_hdl(wid, description, test_case_name):
+    log("%s, %r, %r, %s", gap_wid_hdl.__name__, wid, description,
+        test_case_name)
     module = sys.modules[__name__]
 
     try:
