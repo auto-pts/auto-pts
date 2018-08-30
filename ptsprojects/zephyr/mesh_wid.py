@@ -157,20 +157,6 @@ def hdl_wid_13(desc):
     return True
 
 
-def hdl_wid_205(desc):
-    """
-    Implements: IUT_SEND_SEGMENTATION_MESH_MESSAGE_IN_PROGRESS_STATE
-    :param desc: Order IUT to prepare large size of composition data that can
-                 be sent as fragmented packets to the PTS. During IV Update in
-                 Progress state PTS will hold acknowledgment response and
-                 beacon IV update in progress flag on. Click OK when it is ready.
-    :return:
-    """
-    btp.mesh_iv_update_test_mode(True)
-    btp.mesh_iv_update_toggle()
-    return True
-
-
 def hdl_wid_17(desc):
     """
     Implements: RECEIVED_NETWORK_DATA
@@ -708,6 +694,20 @@ def hdl_wid_204(desc):
     :return:
     """
     stack = get_stack()
+    return True
+
+
+def hdl_wid_205(desc):
+    """
+    Implements: IUT_SEND_SEGMENTATION_MESH_MESSAGE_IN_PROGRESS_STATE
+    :param desc: Order IUT to prepare large size of composition data that can
+                 be sent as fragmented packets to the PTS. During IV Update in
+                 Progress state PTS will hold acknowledgment response and
+                 beacon IV update in progress flag on. Click OK when it is ready.
+    :return:
+    """
+    btp.mesh_iv_update_test_mode(True)
+    btp.mesh_iv_update_toggle()
     return True
 
 
