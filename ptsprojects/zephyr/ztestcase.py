@@ -39,3 +39,13 @@ class ZTestCase(TestCase):
         self.cmds.append(TestFuncCleanUp(self.stack.cleanup))
         # last command is to stop QEMU or HW
         self.cmds.append(TestFuncCleanUp(self.zephyrctl.stop))
+
+
+class ZTestCaseSlave(TestCase):
+    """A Zephyr helper test case that uses QEMU or HW as DUT"""
+
+    def __init__(self, *args, **kwargs):
+        """Refer to TestCase.__init__ for parameters and their documentation"""
+
+        super(ZTestCaseSlave, self).__init__(*args, ptsproject_name = "zephyr",
+                                             **kwargs)
