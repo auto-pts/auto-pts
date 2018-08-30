@@ -23,8 +23,9 @@ from ptsprojects.stack import get_stack
 log = logging.debug
 
 
-def gatt_wid_hdl(wid, description):
-    log("%s, %r, %r", gatt_wid_hdl.__name__, wid, description)
+def gatt_wid_hdl(wid, description, test_case_name):
+    log("%s, %r, %r, %s", gatt_wid_hdl.__name__, wid, description,
+        test_case_name)
     module = sys.modules[__name__]
 
     try:
