@@ -28,6 +28,7 @@ import Queue
 import threading
 from traceback import format_exception
 from SimpleXMLRPCServer import SimpleXMLRPCServer
+from collections import OrderedDict
 import xml.etree.ElementTree as ET
 import time
 import datetime
@@ -35,13 +36,13 @@ import datetime
 from ptsprojects.testcase import get_max_test_case_desc
 from ptsprojects.testcase import PTSCallback
 from ptsprojects.testcase_db import TestCaseTable
-from pybtp.types import BTPError
+from pybtp.types import BTPError, SynchError
 import ptsprojects.ptstypes as ptstypes
 from config import SERVER_PORT, CLIENT_PORT
 
 log = logging.debug
 
-RUNNING_TEST_CASE = None
+RUNNING_TEST_CASE = {}
 TEST_CASE_DB = None
 LOG_DIR_NAME = None
 
@@ -103,7 +104,8 @@ class ClientCallback(PTSCallback):
 
         return error_code
 
-    def log(self, log_type, logtype_string, log_time, log_message):
+    def log(self, log_type, logtype_string, log_time, log_message,
+            test_case_name):
         """Implements:
 
         interface IPTSControlClientLogger : IUnknown {
@@ -113,19 +115,24 @@ class ClientCallback(PTSCallback):
                             [in] LPWSTR szTime,
                             [in] LPWSTR pszMessage);
         };
+
+        test_case_name - To be identified by client in case of multiple pts
+                         usage.
         """
 
         logger = logging.getLogger("{}.{}".format(self.__class__.__name__,
                                                   self.log.__name__))
         log = logger.info
 
-        log("%s %s %s %s" % (ptstypes.PTS_LOGTYPE_STRING[log_type],
-                             logtype_string, log_time, log_message))
+        log("%s %s %s %s %s" % (ptstypes.PTS_LOGTYPE_STRING[log_type],
+                             logtype_string, log_time, test_case_name,
+                             log_message))
 
         try:
-            if RUNNING_TEST_CASE is not None:
-                RUNNING_TEST_CASE.log(log_type, logtype_string, log_time,
-                                      log_message)
+            if test_case_name in RUNNING_TEST_CASE:
+                RUNNING_TEST_CASE[test_case_name].log(log_type, logtype_string,
+                                                      log_time, log_message)
+
         except Exception as e:
             logging.exception("Log caught exception")
             self.exception.put(sys.exc_info()[1])
