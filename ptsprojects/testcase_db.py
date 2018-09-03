@@ -14,7 +14,17 @@ class TestCaseTable(object):
             "count INTEGER, result TEXT);".format(self.name))
         self.conn.commit()
 
+    def _open(self):
+        self.conn = sqlite3.connect(DATABASE_FILE)
+        self.cursor = self.conn.cursor()
+
+    def _close(self):
+        self.cursor.close()
+        self.conn.close()
+
     def update_statistics(self, test_case_name, duration, result):
+        self._open()
+
         self.cursor.execute(
             "SELECT duration, count FROM {} "
             "WHERE name=:name;".format(self.name), {"name": test_case_name})
@@ -41,8 +51,11 @@ class TestCaseTable(object):
                                                    "name": test_case_name,
                                                    "result": result})
         self.conn.commit()
+        self._close()
 
     def get_mean_duration(self, test_case_name):
+        self._open()
+
         self.cursor.execute(
             "SELECT duration FROM {} "
             "WHERE name=:name;".format(self.name), {"name": test_case_name})
@@ -50,7 +63,11 @@ class TestCaseTable(object):
         if row is not None:
             return row[0]
 
+        self._close()
+
     def get_result(self, test_case_name):
+        self._open()
+
         self.cursor.execute(
             "SELECT result FROM {} "
             "WHERE name=:name".format(self.name), {"name": test_case_name})
@@ -58,7 +75,11 @@ class TestCaseTable(object):
         if row is not None:
             return row[0]
 
+        self._close()
+
     def estimate_session_duration(self, test_cases_names, run_count_max):
+        self._open()
+
         duration = 0
         count_unknown = 0
         num_test_cases = len(test_cases_names)
@@ -78,6 +99,8 @@ class TestCaseTable(object):
                 duration += mean_time * expected_run_count
 
         duration += count_unknown * duration / (num_test_cases - count_unknown)
+
+        self._close()
 
         return duration
 
