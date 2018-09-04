@@ -16,7 +16,7 @@
 import logging
 import sys
 from pybtp import btp
-from pybtp.types import Perm
+from pybtp.types import Perm, MeshVals
 import re
 import time
 from ptsprojects.stack import get_stack
@@ -939,7 +939,7 @@ def hdl_wid_346(desc):
     :return:
     """
     stack = get_stack()
-    group_address = 'C000'
+    group_address = MeshVals.subscription_addr_list1
 
     btp.mesh_lpn_subscribe(group_address)
     stack.mesh.lpn_subscriptions.append(group_address)
@@ -954,7 +954,7 @@ def hdl_wid_347(desc):
     :return:
     """
     stack = get_stack()
-    group_address = 'C000'
+    group_address = MeshVals.subscription_addr_list1
 
     # Subscribe if not
     if group_address not in stack.mesh.lpn_subscriptions:

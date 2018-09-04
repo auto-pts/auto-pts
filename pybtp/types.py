@@ -108,6 +108,10 @@ class Addr:
     le_random = 1
 
 
+class MeshVals:
+    subscription_addr_list1 = 'C302'
+
+
 def decode_flag_name(flag, names_dict):
     """Returns string description that corresponds to flag"""
 

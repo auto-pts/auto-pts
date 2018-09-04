@@ -576,9 +576,7 @@ def gap_rpa_conn(description):
     logging.debug("%s %s", gap_conn.__name__, description)
     iutctl = get_iut()
 
-    # FIXME use regex
-    dsc_split = description.split(' ')
-    bd_addr = dsc_split[-1]
+    bd_addr = re.search("[a-fA-F0-9]{12}", description).group(0)
     bd_addr_type = Addr.le_random
 
     data_ba = bytearray()

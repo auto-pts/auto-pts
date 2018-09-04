@@ -32,6 +32,7 @@ except ImportError:  # running this module as script
 
 
 from pybtp import defs, btp
+from pybtp.types import MeshVals
 from ptsprojects.stack import get_stack
 from ptsprojects.zephyr.mesh_wid import mesh_wid_hdl
 from uuid import uuid4
@@ -72,7 +73,10 @@ def test_cases(pts):
                                "MESH", "TSPX_bd_addr_iut",
                                stack.gap.iut_addr_get_str())),
                       TestFunc(lambda: pts.update_pixit_param(
-                               "MESH", "TSPX_device_uuid", device_uuid))]
+                               "MESH", "TSPX_device_uuid", device_uuid)),
+                      TestFunc(lambda: pts.update_pixit_param("MESH",
+                               "TSPX_subscription_address_list",
+                               MeshVals.subscription_addr_list1))]
 
     test_cases = [
         ZTestCase("MESH", "MESH/NODE/BCN/SNB/BV-01-C", cmds=pre_conditions,
