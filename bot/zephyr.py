@@ -190,18 +190,21 @@ def get_tty_path(name):
     return None
 
 
-def get_test_cases(pts):
+def get_test_cases(ptses):
     """Get all test cases
     :param pts: PTS proxy instance
     :return: ZTestCase list
     """
-    test_cases = autoprojects.gap.test_cases(pts)
-    test_cases += autoprojects.gatt.test_cases(pts)
-    test_cases += autoprojects.sm.test_cases(pts)
-    test_cases += autoprojects.l2cap.test_cases(pts)
-    test_cases += autoprojects.mesh.test_cases(pts)
+    test_cases = autoprojects.gap.test_cases(ptses[0])
+    test_cases += autoprojects.gatt.test_cases(ptses[0])
+    test_cases += autoprojects.sm.test_cases(ptses[0])
+    test_cases += autoprojects.l2cap.test_cases(ptses[0])
+    mesh_test_cases, additional_mesh_test_cases = \
+        autoprojects.mesh.test_cases(ptses)
+    test_cases += mesh_test_cases
+    additional_test_cases = additional_mesh_test_cases
 
-    return test_cases
+    return test_cases, additional_test_cases
 
 
 def run_tests(args, iut_config):
@@ -215,14 +218,23 @@ def run_tests(args, iut_config):
     descriptions = {}
 
     tty = get_tty_path("J-Link")
-    pts = autoptsclient.init_core(args["server_ip"], args["workspace"],
-                                  args["bd_addr"], args["enable_max_logs"],
-                                  "zephyr_" + str(args["board"]))
+    callback_thread = autoptsclient.init_core()
 
-    cache = autoptsclient.cache_workspace(pts)
+    ptses = []
+    for ip in args["server_ip"]:
+        ptses.append(autoptsclient.init_pts(ip, args["workspace"],
+                     args["bd_addr"], args["enable_max_logs"], callback_thread,
+                     "zephyr_" + str(args["board"])))
 
     btp.init(get_iut)
+    # Main instance of PTS
+    pts = ptses[0]
+
     stack.init_stack()
+    stack_inst = stack.get_stack()
+    stack_inst.synch_init(callback_thread.set_pending_response,
+                          callback_thread.clear_pending_responses)
+    cache = autoptsclient.cache_workspace(pts)
 
     default_conf = None
     default_to_omit = []
@@ -252,13 +264,14 @@ def run_tests(args, iut_config):
 
         autoprojects.iutctl.init(args["kernel_image"], tty, args["board"])
 
-        test_cases = get_test_cases(pts)
+        test_cases, additional_test_cases = get_test_cases(ptses)
         if to_run or to_omit:
             test_cases = autoptsclient.get_test_cases_subset(test_cases,
                                                              to_run, to_omit)
 
         status_count, results_dict, regressions = \
-            autoptsclient.run_test_cases(pts, test_cases, int(args["retry"]))
+            autoptsclient.run_test_cases(ptses, test_cases, additional_test_cases,
+                                         int(args["retry"]))
 
         for k, v in status_count.items():
             if k in status.keys():

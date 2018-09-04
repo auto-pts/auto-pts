@@ -26,13 +26,57 @@ from ptsprojects.stack import get_stack
 log = logging.debug
 
 
-def mesh_wid_hdl(wid, description):
-    log("%s, %r, %r", mesh_wid_hdl.__name__, wid, description)
+def hdl_pending_mesh_wids(wid, test_case_name, description):
+    stack = get_stack()
     module = sys.modules[__name__]
+
+    if stack.synch.is_required_synch(test_case_name, wid):
+        actions = stack.synch.perform_synch(wid, test_case_name, description)
+
+        if actions:
+            for action in actions:
+                action_wid = action[0]
+                action_description = action[1]
+                action_test_case_name = action[2]
+                action_response_cb = action[3]
+
+                handler = getattr(module, "hdl_wid_%d" % action_wid)
+                result = handler(action_description)
+
+                # Register pending response handler
+                stack.synch.prepare_pending_response(action_test_case_name,
+                                                     result)
+
+            return None
+
+        # wid is on synchronise list but has to wait for other
+        return "WAIT"
+
+    return None
+
+
+def mesh_wid_hdl(wid, description, test_case_name):
+    log("%s, %r, %r, %s", mesh_wid_hdl.__name__, wid, description,
+        test_case_name)
+    module = sys.modules[__name__]
+    pending_responses = None
 
     try:
         handler = getattr(module, "hdl_wid_%d" % wid)
-        return handler(description)
+        current_response = handler(description)
+
+        stack = get_stack()
+        if stack.synch:
+            response = hdl_pending_mesh_wids(wid, test_case_name, description)
+
+            if response == "WAIT":
+                return response
+
+        if stack.synch:
+            stack.synch.set_pending_responses_if_any()
+
+        return current_response
+
     except AttributeError as e:
         logging.exception(e.message)
 
@@ -90,8 +134,16 @@ def hdl_wid_12(desc):
     :return:
     """
     stack = get_stack()
-    btp.mesh_config_prov()
-    btp.mesh_init()
+
+    if not stack.mesh.is_initialized:
+        btp.mesh_config_prov()
+        btp.mesh_init()
+    else:
+        if stack.mesh.is_provisioned.data:
+            return True
+        else:
+            return True
+
     return True
 
 
@@ -105,25 +157,19 @@ def hdl_wid_13(desc):
     """
     stack = get_stack()
 
-    if stack.mesh.is_provisioned.data:
-        btp.mesh_reset()
+    if not stack.mesh.is_initialized:
+         btp.mesh_config_prov()
+         btp.mesh_init()
     else:
-        btp.mesh_config_prov()
-        btp.mesh_init()
+        if stack.mesh.is_provisioned.data:
+            return True
+        else:
+            return True
+
     return True
 
 
-def hdl_wid_205(desc):
-    """
-    Implements: IUT_SEND_SEGMENTATION_MESH_MESSAGE_IN_PROGRESS_STATE
-    :param desc: Order IUT to prepare large size of composition data that can
-                 be sent as fragmented packets to the PTS. During IV Update in
-                 Progress state PTS will hold acknowledgment response and
-                 beacon IV update in progress flag on. Click OK when it is ready.
-    :return:
-    """
-    btp.mesh_iv_update_test_mode(True)
-    btp.mesh_iv_update_toggle()
+def hdl_wid_15(desc):
     return True
 
 
@@ -667,6 +713,20 @@ def hdl_wid_204(desc):
     return True
 
 
+def hdl_wid_205(desc):
+    """
+    Implements: IUT_SEND_SEGMENTATION_MESH_MESSAGE_IN_PROGRESS_STATE
+    :param desc: Order IUT to prepare large size of composition data that can
+                 be sent as fragmented packets to the PTS. During IV Update in
+                 Progress state PTS will hold acknowledgment response and
+                 beacon IV update in progress flag on. Click OK when it is ready.
+    :return:
+    """
+    btp.mesh_iv_update_test_mode(True)
+    btp.mesh_iv_update_toggle()
+    return True
+
+
 def hdl_wid_210(desc):
     """
     Implements: IUT_REMOVE_SECURITY_INFO
@@ -964,6 +1024,10 @@ def hdl_wid_347(desc):
 
     btp.mesh_lpn_unsubscribe(group_address)
     stack.mesh.lpn_subscriptions.remove(group_address)
+    return True
+
+
+def hdl_wid_361(desc):
     return True
 
 

@@ -54,8 +54,8 @@ def parse_args():
     arg_parser = argparse.ArgumentParser(
         description = "PTS automation client")
 
-    arg_parser.add_argument("server_address",
-                            help="IP address of the PTS automation server")
+    arg_parser.add_argument("-i", "--ip_addr", nargs="+",
+                            help="IP address of the PTS automation servers")
 
     arg_parser.add_argument("workspace",
                             help="Path to PTS workspace file to use for "
@@ -132,33 +132,46 @@ def main():
         tc_db_table_name = "zephyr_" + str(args.board)
     else:
         tc_db_table_name = None
-    pts = autoptsclient.init_core(args.server_address, args.workspace,
-                                  args.bd_addr, args.enable_max_logs,
-                                  tc_db_table_name)
+
+    callback_thread = autoptsclient.init_core()
+
+    ptses = []
+    for ip in args.ip_addr:
+        ptses.append(autoptsclient.init_pts(ip, args.workspace, args.bd_addr,
+                                            args.enable_max_logs,
+                                            callback_thread, tc_db_table_name))
 
     btp.init(get_iut)
     autoprojects.iutctl.init(args.kernel_image, args.tty_file, args.board)
 
     stack.init_stack()
+    stack_inst = stack.get_stack()
+    stack_inst.synch_init(callback_thread.set_pending_response,
+                          callback_thread.clear_pending_responses)
 
-    test_cases = autoprojects.gap.test_cases(pts)
-    test_cases += autoprojects.gatt.test_cases(pts)
-    test_cases += autoprojects.sm.test_cases(pts)
-    test_cases += autoprojects.l2cap.test_cases(pts)
-    test_cases += autoprojects.mesh.test_cases(pts)
+    test_cases = autoprojects.gap.test_cases(ptses[0])
+    test_cases += autoprojects.gatt.test_cases(ptses[0])
+    test_cases += autoprojects.sm.test_cases(ptses[0])
+    test_cases += autoprojects.l2cap.test_cases(ptses[0])
+    mesh_test_cases, additional_mesh_test_cases = \
+        autoprojects.mesh.test_cases(ptses)
+    test_cases += mesh_test_cases
+    additional_test_cases = additional_mesh_test_cases
 
     if args.test_cases or args.excluded:
         test_cases = autoptsclient.get_test_cases_subset(
             test_cases, args.test_cases, args.excluded)
 
-    autoptsclient.run_test_cases(pts, test_cases, args.retry)
+    autoptsclient.run_test_cases(ptses, test_cases, additional_test_cases,
+                                 args.retry)
 
     autoprojects.iutctl.cleanup()
 
     print "\nBye!"
     sys.stdout.flush()
 
-    pts.unregister_xmlrpc_ptscallback()
+    for pts in ptses:
+        pts.unregister_xmlrpc_ptscallback()
 
     # not the cleanest but the easiest way to exit the server thread
     os._exit(0)

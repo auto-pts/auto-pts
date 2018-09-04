@@ -18,7 +18,7 @@
 try:
     from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
         TestFuncCleanUp
-    from ptsprojects.zephyr.ztestcase import ZTestCase
+    from ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
 
 except ImportError:  # running this module as script
     import sys
@@ -28,7 +28,7 @@ except ImportError:  # running this module as script
 
     from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
         TestFuncCleanUp
-    from ptsprojects.zephyr.ztestcase import ZTestCase
+    from ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
 
 
 from pybtp import defs, btp
@@ -40,9 +40,12 @@ from binascii import hexlify
 import random
 
 
-def test_cases(pts):
+def test_cases(ptses):
     """Returns a list of MESH test cases
     pts -- Instance of PyPTS"""
+
+    pts = ptses[0]
+    pts2 = ptses[1]
 
     stack = get_stack()
     pts_bd_addr = pts.q_bd_addr
@@ -55,6 +58,7 @@ def test_cases(pts):
                   defs.MESH_IN_ENTER_NUMBER | defs.MESH_IN_ENTER_STRING]
 
     device_uuid = hexlify(uuid4().bytes)
+    device_uuid2 = hexlify(uuid4().bytes)
     oob = 16 * '0'
     out_size = random.randint(0, 2)
     rand_out_actions = random.choice(out_actions) if out_size else 0
@@ -76,7 +80,14 @@ def test_cases(pts):
                                "MESH", "TSPX_device_uuid", device_uuid)),
                       TestFunc(lambda: pts.update_pixit_param("MESH",
                                "TSPX_subscription_address_list",
-                               MeshVals.subscription_addr_list1))]
+                               MeshVals.subscription_addr_list1)),
+                      TestFunc(lambda: pts.update_pixit_param(
+                               "MESH", "TSPX_device_uuid2", device_uuid2))]
+    pre_conditions_slave = [TestFunc(lambda: pts.update_pixit_param("MESH",
+                                     "TSPX_bd_addr_iut",
+                                     stack.gap.iut_addr_get_str())),
+                            TestFunc(lambda: pts2.update_pixit_param(
+                                     "MESH", "TSPX_device_uuid", device_uuid2))]
 
     test_cases = [
         ZTestCase("MESH", "MESH/NODE/BCN/SNB/BV-01-C", cmds=pre_conditions,
@@ -480,7 +491,38 @@ def test_cases(pts):
                   generic_wid_hdl=mesh_wid_hdl),
     ]
 
-    return test_cases
+    additional_test_cases = [
+        ZTestCaseSlave("MESH", "MESH/SR/PROX/BV-02-C-LT2",
+                       cmds=pre_conditions_slave +
+                       [TestFunc(get_stack().synch.add_synch_element,
+                        (("MESH/SR/PROX/BV-02-C", 361),
+                        ("MESH/SR/PROX/BV-02-C-LT2", 17)))],
+                       generic_wid_hdl=mesh_wid_hdl),
+        ZTestCaseSlave("MESH", "MESH/SR/PROX/BV-03-C-LT2",
+                       cmds=pre_conditions_slave, generic_wid_hdl=mesh_wid_hdl),
+        ZTestCaseSlave("MESH", "MESH/SR/PROX/BV-04-C-LT2",
+                       cmds=pre_conditions_slave, generic_wid_hdl=mesh_wid_hdl),
+        ZTestCaseSlave("MESH", "MESH/SR/PROX/BV-05-C-LT2",
+                       cmds=pre_conditions_slave, generic_wid_hdl=mesh_wid_hdl),
+        ZTestCaseSlave("MESH", "MESH/SR/PROX/BV-06-C-LT2",
+                       cmds=pre_conditions_slave, generic_wid_hdl=mesh_wid_hdl),
+        ZTestCaseSlave("MESH", "MESH/SR/PROX/BV-08-C-LT2",
+                       cmds=pre_conditions_slave, generic_wid_hdl=mesh_wid_hdl),
+        ZTestCaseSlave("MESH", "MESH/SR/PROX/BV-09-C-LT2",
+                       cmds=pre_conditions_slave, generic_wid_hdl=mesh_wid_hdl),
+        ZTestCaseSlave("MESH", "MESH/SR/PROX/BV-10-C-LT2",
+                       cmds=pre_conditions_slave, generic_wid_hdl=mesh_wid_hdl),
+        ZTestCaseSlave("MESH", "MESH/SR/PROX/BV-12-C-LT2",
+                       cmds=pre_conditions_slave, generic_wid_hdl=mesh_wid_hdl),
+        ZTestCaseSlave("MESH", "MESH/SR/PROX/BV-13-C-LT2",
+                       cmds=pre_conditions_slave, generic_wid_hdl=mesh_wid_hdl),
+        ZTestCaseSlave("MESH", "MESH/SR/PROX/BV-14-C-LT2",
+                       cmds=pre_conditions_slave, generic_wid_hdl=mesh_wid_hdl),
+        ZTestCaseSlave("MESH", "MESH/SR/PROX/BI-01-C-LT2",
+                       cmds=pre_conditions_slave, generic_wid_hdl=mesh_wid_hdl),
+    ]
+
+    return test_cases, additional_test_cases
 
 
 def main():

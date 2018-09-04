@@ -38,6 +38,7 @@ import time
 import logging
 import argparse
 import shutil
+import xmlrpclib
 
 import clr
 import System
@@ -75,6 +76,7 @@ class PTSLogger(PTSControl.IPTSControlClientLogger):
         # TestCase or xmlrpc SimpleXMLRPCServer running in auto pts client.
         self._callback = None
         self._maximum_logging = False
+        self._test_case_name = None
 
     def set_callback(self, callback):
         """Set the callback"""
@@ -87,6 +89,10 @@ class PTSLogger(PTSControl.IPTSControlClientLogger):
     def enable_maximum_logging(self, enable):
         """Enable/disable maximum logging"""
         self._maximum_logging = enable
+
+    def set_test_case_name(self, test_case_name):
+        """Required to identify multiple instances on client side"""
+        self._test_case_name = test_case_name
 
     def Log(self, log_type, logtype_string, log_time, log_message):
         """Implements:
@@ -114,7 +120,7 @@ class PTSLogger(PTSControl.IPTSControlClientLogger):
                 # int since xmlrpc has not marshalling rules for _PTS_LOGTYPE
                 if self._maximum_logging or int(log_type) in logtype_whitelist:
                     self._callback.log(int(log_type), logtype_string, log_time,
-                                      log_message)
+                                      log_message, self._test_case_name)
         except Exception as e:
             log("Caught exception")
             log(e)
@@ -155,9 +161,9 @@ class PTSSender(PTSControl.IPTSImplicitSendCallbackEx):
                     [in, out] long* pbResponseIsPresent);
         };
         """
-
         logger = logging.getLogger(self.__class__.__name__)
         log = logger.info
+        timer = 0
 
         log("*" * 20)
         log("BEGIN OnImplicitSend:")
@@ -169,8 +175,6 @@ class PTSSender(PTSControl.IPTSImplicitSendCallbackEx):
         log("response:  %s %s %s" % (repr(response), type(response), id(response)))
         log("response_size: %d %s" % (response_size, type(response_size)))
         log("response_is_present:  %s %s" % (response_is_present, type(response_is_present)))
-
-        callback_response = ""
 
         try:
             # xmrpc proxy object in boolean test calls the method __nonzero__
@@ -187,6 +191,22 @@ class PTSSender(PTSControl.IPTSImplicitSendCallbackEx):
                     int(response_size),
                     int(response_is_present))
 
+                # Don't block xml-rpc
+                if callback_response == "WAIT":
+                    callback_response = self._callback.get_pending_response(test_case_name)
+                    while not callback_response:
+                        # XXX: Ask for response every second
+                        timer = timer + 1
+                        # XXX: Timeout 90 seconds
+                        if timer > 90:
+                            callback_response = "Cancel"
+                            break
+
+                        log("Rechecking response...")
+                        time.sleep(1)
+                        callback_response = self._callback.get_pending_response(test_case_name)
+                        pass
+
                 log("callback returned on_implicit_send, respose: %s",
                     callback_response)
 
@@ -194,6 +214,9 @@ class PTSSender(PTSControl.IPTSImplicitSendCallbackEx):
                     libc.wcscpy_s(response, response_size,
                                   unicode(callback_response))
                     response_is_present.Value = 1
+
+        except xmlrpclib.Fault as err:
+            log("A fault occurred, code = %d, string = %s" % (err.faultCode, err.faultString))
 
         except Exception as e:
             log("Caught exception")
@@ -575,6 +598,8 @@ class PyPTS:
         log("Starting %s %s %s", self.run_test_case.__name__, project_name,
             test_case_name)
 
+        self._pts_logger.set_test_case_name(test_case_name)
+
         error_code = ""
 
         try:
@@ -807,6 +832,7 @@ class PyPTS:
         self._pts_sender.unset_callback()
 
         self.del_recov(self.register_ptscallback)
+
 
 def parse_args():
     """Parses command line arguments and options"""

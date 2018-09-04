@@ -241,10 +241,84 @@ class Mesh:
         return False
 
 
+class Synch:
+    def __init__(self, set_pending_response_func, clear_pending_responses_func):
+        self._synch_table = []
+        self._pending_responses = {}
+        self._set_pending_response_func = set_pending_response_func
+        self._clear_pending_responses_func = clear_pending_responses_func
+
+    def add_synch_element(self, elem):
+        wid_dict = {}
+
+        """Initialize element with empty description array, tester don't know
+        which wid happens earlier"""
+        for e in elem:
+            tc_name = e[0]
+            wid = e[1]
+
+            wid_dict[tc_name] = [wid, None]
+
+        self._synch_table.append(wid_dict)
+
+    def perform_synch(self, wid, tc_name, description):
+        action_wids = []
+
+        for elem in self._synch_table:
+            # i[value][description]
+            descs = [i[1][1] for i in elem.iteritems()]
+
+            e_wid = elem[tc_name][0]
+            if tc_name in elem and e_wid == wid:
+                # Not all pending wids are already waiting = schedule also me
+                if descs.count(None) > (len(descs) - 1):
+                    elem[tc_name][1] = description
+                    continue
+
+                # Pack all pending actions to be performed right out of synch
+                for inst in elem:
+                    if inst == tc_name:
+                        continue
+
+                    i_wid = elem[inst][0]
+                    i_desc = elem[inst][1]
+                    action_wids.append((i_wid, i_desc, inst,
+                                       self._set_pending_response_func))
+
+                self._synch_table.remove(elem)
+
+                return action_wids
+
+        return None
+
+    def is_required_synch(self, tc_name, wid):
+        for elem in self._synch_table:
+            e_wid = elem[tc_name][0]
+
+            if tc_name in elem and e_wid == wid:
+                return True
+
+        return False
+
+    def prepare_pending_response(self, test_case_name, response):
+        self._pending_responses[test_case_name] = response
+
+    def set_pending_responses_if_any(self):
+        for rsp in self._pending_responses.iteritems():
+            self._set_pending_response_func(rsp)
+
+        self._pending_responses = {}
+
+    def cancel_synch(self):
+        self._pending_responses = {}
+        self._clear_pending_responses_func()
+
+
 class Stack:
     def __init__(self):
         self.gap = None
         self.mesh = None
+        self.synch = None
 
     def gap_init(self, name=None, manufacturer_data=None):
         self.gap = Gap(name, manufacturer_data)
@@ -253,6 +327,11 @@ class Stack:
                   input_actions, crpl_size):
         self.mesh = Mesh(uuid, oob, output_size, output_actions, input_size,
                          input_actions, crpl_size)
+
+    def synch_init(self, set_pending_response_func,
+                   clear_pending_responses_func):
+        self.synch = Synch(set_pending_response_func,
+                           clear_pending_responses_func)
 
     def cleanup(self):
         if self.gap:
@@ -263,6 +342,9 @@ class Stack:
                            self.mesh.output_size, self.mesh.output_actions,
                            self.mesh.input_size, self.mesh.input_actions,
                            self.mesh.crpl_size)
+
+        if self.synch:
+            self.synch.cancel_synch()
 
 
 def init_stack():

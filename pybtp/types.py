@@ -51,6 +51,11 @@ class BTPError(Exception):
     pass
 
 
+class SynchError(Exception):
+    """Exception raised if cannot synchronize"""
+    pass
+
+
 class AdType:
     flags = 1
     uuid16_some = 2
