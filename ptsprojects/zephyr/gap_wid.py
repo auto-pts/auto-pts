@@ -94,6 +94,11 @@ def hdl_wid_23(desc):
     return True
 
 
+def hdl_wid_40(desc):
+    btp.gap_conn()
+    return True
+
+
 def hdl_wid_47(desc):
     stack = get_stack()
 
@@ -250,6 +255,18 @@ def hdl_wid_161(desc):
 
 def hdl_wid_169(desc):
     btp.gap_start_discov(type='active', mode='observe')
+    return True
+
+
+def hdl_wid_176(desc):
+    return True
+
+
+def hdl_wid_177(desc):
+    return True
+
+
+def hdl_wid_178(desc):
     return True
 
 
