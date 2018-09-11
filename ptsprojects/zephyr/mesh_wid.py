@@ -603,6 +603,13 @@ def hdl_wid_81(desc):
     return True
 
 
+def hdl_wid_85(desc):
+    stack = get_stack()
+    btp.gap_disconn()
+
+    return True
+
+
 def hdl_wid_90(desc):
     """
     Implements: IUT_SEND_SECURE_NETWORK_BEACON
@@ -1027,7 +1034,43 @@ def hdl_wid_347(desc):
     return True
 
 
+def hdl_wid_353(desc):
+    return True
+
+
+def hdl_wid_355(desc):
+    return True
+
+
+def hdl_wid_356(desc):
+    return True
+
+
+def hdl_wid_357(desc):
+    return True
+
+
+def hdl_wid_358(desc):
+    return True
+
+
 def hdl_wid_361(desc):
+    return True
+
+
+def hdl_wid_362(desc):
+    return True
+
+
+def hdl_wid_364(desc):
+    return True
+
+
+def hdl_wid_366(desc):
+    return True
+
+
+def hdl_wid_367(desc):
     return True
 
 
