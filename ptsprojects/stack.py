@@ -311,6 +311,7 @@ class Synch:
         self._pending_responses = {}
 
     def cancel_synch(self):
+        self._synch_table = []
         self._pending_responses = {}
         self._clear_pending_responses_func()
 
