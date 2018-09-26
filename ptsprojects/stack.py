@@ -293,10 +293,11 @@ class Synch:
 
     def is_required_synch(self, tc_name, wid):
         for elem in self._synch_table:
-            e_wid = elem[tc_name][0]
+            if tc_name in elem:
+                e_wid = elem[tc_name][0]
 
-            if tc_name in elem and e_wid == wid:
-                return True
+                if e_wid == wid:
+                    return True
 
         return False
 
