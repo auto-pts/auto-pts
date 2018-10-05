@@ -70,6 +70,7 @@ init_gatt_db=[TestFunc(btp.core_reg_svc_gatt),
 
 iut_device_name = 'Tester'
 iut_manufacturer_data = 'ABCD'
+iut_attr_db_off = 0x000b
 
 
 class AdData:
@@ -82,6 +83,10 @@ ad = [(AdType.uuid16_some, '1111'),
       (AdType.name_short, binascii.hexlify('Tester')),
       (AdType.manufacturer_data, '11111111'),
       (AdType.uuid16_svc_data, '111111')]
+
+
+def __get_attr_u16_hdl_str(offset):
+    return '{0:04x}'.format(iut_attr_db_off + offset, 'x')
 
 
 def test_cases(pts):
@@ -452,7 +457,7 @@ def test_cases(pts):
                          TestFunc(btp.gap_disconn, pts_bd_addr,
                                   Addr.le_public, start_wid=77)]),
          ZTestCase("GAP", "GAP/SEC/AUT/BV-11-C",
-                   edit1_wids={139: "000C",
+                   edit1_wids={139: __get_attr_u16_hdl_str(3),
                                1002: btp.var_store_get_passkey},
                    cmds=pre_conditions + init_gatt_db +
                         [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
@@ -460,20 +465,20 @@ def test_cases(pts):
                          TestFunc(btp.gap_adv_ind_on, sd=[AdData.ad_name_sh],
                                   start_wid=91)]),
          ZTestCase("GAP", "GAP/SEC/AUT/BV-12-C",
-                   edit1_wids={139: "000C",
+                   edit1_wids={139: __get_attr_u16_hdl_str(3),
                                1002: btp.var_store_get_passkey},
                    cmds=pre_conditions + init_gatt_db +
                         [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                          TestFunc(btp.gap_conn, start_wid=78)]),
          ZTestCase("GAP", "GAP/SEC/AUT/BV-13-C",
-                   edit1_wids={139: "000C",
+                   edit1_wids={139: __get_attr_u16_hdl_str(3),
                                1002: btp.var_store_get_passkey},
                    cmds=pre_conditions + init_gatt_db +
                         [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                          TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
                                   start_wid=78)]),
          ZTestCase("GAP", "GAP/SEC/AUT/BV-14-C",
-                   edit1_wids={139: "000C",
+                   edit1_wids={139: __get_attr_u16_hdl_str(3),
                                1002: btp.var_store_get_passkey},
                    cmds=pre_conditions + init_gatt_db +
                         [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
@@ -560,14 +565,14 @@ def test_cases(pts):
                                  start_wid=108)]),
         ZTestCase("GAP", "GAP/SEC/AUT/BV-23-C",
                   edit1_wids={1002: btp.var_store_get_passkey,
-                              144: "000C"},
+                              144: __get_attr_u16_hdl_str(3)},
                   cmds=pre_conditions + init_gatt_db +
                        [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                         TestFunc(btp.gap_set_conn),
                         TestFunc(btp.gap_adv_ind_on, sd=[AdData.ad_name_sh])]),
         ZTestCase("GAP", "GAP/SEC/AUT/BV-24-C",
                   edit1_wids={1002: btp.var_store_get_passkey,
-                              144: "000C"},
+                              144: __get_attr_u16_hdl_str(3)},
                   cmds=pre_conditions + init_gatt_db +
                        [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                         TestFunc(btp.gap_conn, start_wid=78),
