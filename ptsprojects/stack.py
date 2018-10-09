@@ -293,10 +293,11 @@ class Synch:
 
     def is_required_synch(self, tc_name, wid):
         for elem in self._synch_table:
-            e_wid = elem[tc_name][0]
+            if tc_name in elem:
+                e_wid = elem[tc_name][0]
 
-            if tc_name in elem and e_wid == wid:
-                return True
+                if e_wid == wid:
+                    return True
 
         return False
 
@@ -310,6 +311,7 @@ class Synch:
         self._pending_responses = {}
 
     def cancel_synch(self):
+        self._synch_table = []
         self._pending_responses = {}
         self._clear_pending_responses_func()
 
