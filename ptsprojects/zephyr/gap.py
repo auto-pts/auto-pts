@@ -331,6 +331,26 @@ def test_cases(pts):
                             start_wid=78),
                    TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
                             start_wid=77)]),
+        ZTestCase("GAP", "GAP/CONN/ACEP/BV-03-C",
+                  pre_conditions +
+                  [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
+                            start_wid=78),
+                   TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
+                            start_wid=108),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
+                            start_wid=77),
+                   TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
+                            start_wid=40)]),
+        ZTestCase("GAP", "GAP/CONN/ACEP/BV-04-C",
+                  pre_conditions +
+                  [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
+                            start_wid=78),
+                   TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
+                            start_wid=108),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
+                            start_wid=77),
+                   TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
+                            start_wid=40)]),
         ZTestCase("GAP", "GAP/CONN/GCEP/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, start_wid=78),
@@ -341,6 +361,18 @@ def test_cases(pts):
                             start_wid=78),
                    TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
                             start_wid=77)]),
+        ZTestCase("GAP", "GAP/CONN/GCEP/BV-05-C",
+                  pre_conditions +
+                  [TestFunc(btp.gap_conn, start_wid=78),
+                   TestFunc(btp.gap_pair, start_wid=108),
+                   TestFunc(btp.gap_disconn, start_wid=77),
+                   TestFunc(btp.gap_conn, start_wid=40)]),
+        ZTestCase("GAP", "GAP/CONN/GCEP/BV-06-C",
+                  pre_conditions +
+                  [TestFunc(btp.gap_conn, start_wid=78),
+                   TestFunc(btp.gap_pair, start_wid=108),
+                   TestFunc(btp.gap_disconn, start_wid=77),
+                   TestFunc(btp.gap_conn, start_wid=40)]),
         ZTestCase("GAP", "GAP/CONN/DCEP/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
@@ -351,6 +383,18 @@ def test_cases(pts):
                   pre_conditions +
                   [TestFunc(btp.gap_conn, start_wid=78),
                    TestFunc(btp.gap_disconn, start_wid=77)]),
+        ZTestCase("GAP", "GAP/CONN/DCEP/BV-05-C",
+                  pre_conditions +
+                  [TestFunc(btp.gap_conn, start_wid=78),
+                   TestFunc(btp.gap_pair, start_wid=108),
+                   TestFunc(btp.gap_disconn, start_wid=77),
+                   TestFunc(btp.gap_conn, start_wid=40)]),
+        ZTestCase("GAP", "GAP/CONN/DCEP/BV-06-C",
+                  pre_conditions +
+                  [TestFunc(btp.gap_conn, start_wid=78),
+                   TestFunc(btp.gap_pair, start_wid=108),
+                   TestFunc(btp.gap_disconn, start_wid=77),
+                   TestFunc(btp.gap_conn, start_wid=40)]),
         ZTestCase("GAP", "GAP/CONN/CPUP/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gap_adv_ind_on, sd=[AdData.ad_name_sh],
