@@ -153,10 +153,13 @@ def main():
     test_cases += autoprojects.gatt.test_cases(ptses[0])
     test_cases += autoprojects.sm.test_cases(ptses[0])
     test_cases += autoprojects.l2cap.test_cases(ptses[0])
-    mesh_test_cases, additional_mesh_test_cases = \
-        autoprojects.mesh.test_cases(ptses)
-    test_cases += mesh_test_cases
-    additional_test_cases = additional_mesh_test_cases
+    if len(ptses) >= 2:
+        mesh_test_cases, additional_mesh_test_cases \
+            = autoprojects.mesh.test_cases(ptses)
+        test_cases += mesh_test_cases
+        additional_test_cases = additional_mesh_test_cases
+    else:
+        additional_test_cases = []
 
     if args.test_cases or args.excluded:
         test_cases = autoptsclient.get_test_cases_subset(
