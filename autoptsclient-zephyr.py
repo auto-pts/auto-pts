@@ -57,6 +57,9 @@ def parse_args():
     arg_parser.add_argument("-i", "--ip_addr", nargs="+",
                             help="IP address of the PTS automation servers")
 
+    arg_parser.add_argument("-l", "--local_addr", default=None,
+                            help="Local IP address of PTS automation client")
+
     arg_parser.add_argument("workspace",
                             help="Path to PTS workspace file to use for "
                             "testing. It should have pqw6 extension. "
@@ -139,7 +142,8 @@ def main():
     for ip in args.ip_addr:
         ptses.append(autoptsclient.init_pts(ip, args.workspace, args.bd_addr,
                                             args.enable_max_logs,
-                                            callback_thread, tc_db_table_name))
+                                            callback_thread, tc_db_table_name,
+                                            args.local_addr))
 
     btp.init(get_iut)
     autoprojects.iutctl.init(args.kernel_image, args.tty_file, args.board)

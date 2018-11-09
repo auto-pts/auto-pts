@@ -376,8 +376,6 @@ def init_core():
     "Initialization procedure for core modules"
     init_logging()
 
-    log("my IP address is: %s", get_my_ip_address())
-
     callback_thread = CallbackThread()
     callback_thread.start()
 
@@ -385,7 +383,7 @@ def init_core():
 
 
 def init_pts(server_address, workspace_path, bd_addr, enable_max_logs,
-             callback_thread, tc_db_table_name=None):
+             callback_thread, tc_db_table_name=None, local_address=None):
     "Initialization procedure for PTS instances"
     if AUTO_PTS_LOCAL:
         proxy = FakeProxy()
@@ -410,7 +408,13 @@ def init_pts(server_address, workspace_path, bd_addr, enable_max_logs,
     proxy.q_bd_addr = proxy.bd_addr()
     log("PTS BD_ADDR: %s", proxy.q_bd_addr)
 
-    proxy.register_xmlrpc_ptscallback(get_my_ip_address(), CLIENT_PORT)
+    client_ip_address = local_address
+    if client_ip_address is None:
+        client_ip_address = get_my_ip_address()
+
+    log("Client IP Address: %s", client_ip_address)
+
+    proxy.register_xmlrpc_ptscallback(client_ip_address, CLIENT_PORT)
 
     log("Opening workspace: %s", workspace_path)
     proxy.open_workspace(workspace_path)
