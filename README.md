@@ -1,38 +1,55 @@
+# Introduction
+
+The Bluetooth Profile Tuning Suite (PTS) is a Bluetooth testing tool provided by Bluetooth SIG. The PTS is a Windows program that is normally used in manual mode via its GUI
+
+auto-pts is the Bluetooth PTS automation framework. auto-pts uses PTSControl COM API of PTS to automate testing.
+
+Over 460 test cases have been automated for Zephyr OS which reduced testing time from one man-month to 2 hours. auto-pts has been used to automate testing of two Bluetooth stacks thus far:
+
+* BlueZ
+* Zephyr BLE
+
+# Architecture
+
+![](images/autp-pts-architecture-diagram.png)
+
+auto-pts server: runs on Windows and provides over-the-network XML-RPC interface to PTS. It is implemented in Python and executed using IronPython
+
+auto-pts client: runs on GNU/Linux, communicates with the auto-pts server (to start/stop test cases, to send response to PTS inquiries) and communicates with the IUT (Implementation Under Test) to take appropriate actions. It is implemented in Python and executed using CPython.
+
+Implementation Under Test (IUT): It is the host running Zephyr Bluetooth stack to be tested, this could be an emulator or real hardware. The IUT is controlled by using Bluetooth Test Protocol.
+
+Bluetooth Test Protocol (BTP): Used to communicate with the IUT. Specified in Zephyr tester directory, btp_spec.txt
+
 # Windows Prerequisites
 
-Since this PTS automation framework uses IronPython it needs COM interop
-assembly Interop.PTSConrol.dll to be located in the same directory as the
-automation scripts.
+Since this PTS automation framework uses IronPython it needs COM interop assembly Interop.PTSConrol.dll to be located in the same directory as the auto-pts server.
 
-You need to use 32 bit IronPython to run these scripts because PTS is a 32 bit
-application.
+You need to use 32 bit IronPython to run these scripts because PTS is a 32 bit application.
 
-To be able to run PTS in automation mode, there should be no PTS instances
-running in the GUI mode. Hence, before running these scripts close the PTS GUI.
+To be able to run PTS in automation mode, there should be no PTS instances running in the GUI mode. Hence, before running these scripts close the PTS GUI.
+
+# Generating Interop Assembly
+
+On Windows, run this command:
+
+`TlbImp.exe PTSControl.dll /out:Interop.PTSControl.dll /verbose`
 
 # PTS workspace setup
 
-Before running any scripts you have to create a workspace in the PTS,
-add needed projects to the workspace and configure PICs and PIXITs.
+Before running any scripts you have to create a workspace in the PTS, add needed projects to the workspace and configure PICs and PIXITs.
 
-Alternatively, you can use auto-pts workspaces. Auto-pts provides ready PTS
-workspaces with readily configured PICS in the "workspaces"
-directory. Currently it provides workspaces for the Zephyr HCI stack. To select
-ready made workspace pass to the auto-pts client as the workspace argument:
+Alternatively, you can use auto-pts workspaces. Auto-pts provides ready PTS workspaces with readily configured PICS in the "workspaces" directory. Currently it provides workspaces for the Zephyr HCI stack. To select ready made workspace pass to the auto-pts client as the workspace argument:
 
   * zephyr-hci
 
 # Running in client/server mode
 
-The auto-pts framework uses a client server architecture. With this setup the
-PTS automation server runs on Windows and the client runs on GNU/Linux. So on
-Windows you start the server:
+The auto-pts framework uses a client server architecture. With this setup the PTS automation server runs on Windows and the client runs on GNU/Linux. So on Windows you start the server:
 
 `ipy.exe autoptsserver.py`
 
-And on GNU/Linux you select either the Android or Zephyr client, then pass it
-the IP address of the server and the path to the PTS workspace file on the
-Windows machine. So for AOSP BlueZ projects:
+And on GNU/Linux you select either the Android or Zephyr client, then pass it the IP address of the server and the path to the PTS workspace file on the Windows machine. So for AOSP BlueZ projects:
 
 `./autoptsclient-aospbluez.py IP_ADDRESS "C:\Users\USER_NAME\Documents\Profile Tuning Suite\PTS_PROJECT\PTS_PROJECT.pqw6"`
 
@@ -53,6 +70,14 @@ Zephyr running in Arduino:
 The command to run auto-pts client using auto-pts Zephyr HCI workspace is:
 
 `./autoptsclient-zephyr.py IP_ADDRESS zephyr-hci zephyr.elf -t /dev/ttyUSB0 -b arduino_101 -d`
+
+# Running test script on Windows
+
+It is also possible to run tests on Windows, without using client/server mode of auto-pts. On Windows instead of starting the auto-pts server start test script as:
+
+`ipy.exe autopts.py`
+
+autopts.py has been used to test AOSP BlueZ Bluetooth stack, and serves a good reference on how to create a tester for Windows.
 
 # Running AutoPTSClientBot
 
@@ -128,21 +153,3 @@ google-api-python-client
 
     cd ~/auto-pts  # or to your directory where AutoPTS is cloned
     ./autoptsclient_bot.py
-
-
-# Running test script on Windows
-
-It is also possible to run tests on Windows, without using client/server mode
-of auto-pts. On Windows instead of starting the auto-pts server start test
-script as:
-
-`ipy.exe autopts.py`
-
-autopts.py has been used to test AOSP BlueZ Bluetooth stack, and serves a good
-reference on how to create a tester for Windows.
-
-# Generating Interop Assembly
-
-On Windows, run this command:
-
-`TlbImp.exe PTSControl.dll /out:Interop.PTSControl.dll /verbose`
