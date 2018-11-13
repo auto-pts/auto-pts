@@ -2,8 +2,7 @@
 
 Since this PTS automation framework uses IronPython it needs COM interop
 assembly Interop.PTSConrol.dll to be located in the same directory as the
-automation scripts. Currently assembly is provided with auto-pts so you don't
-have to generate it yourself.
+automation scripts.
 
 You need to use 32 bit IronPython to run these scripts because PTS is a 32 bit
 application.
@@ -147,6 +146,3 @@ reference on how to create a tester for Windows.
 On Windows, run this command:
 
 `TlbImp.exe PTSControl.dll /out:Interop.PTSControl.dll /verbose`
-
-Currently assembly is provided with auto-pts so you don't have to generate it
-yourself.
