@@ -153,3 +153,7 @@ google-api-python-client
 
     cd ~/auto-pts  # or to your directory where AutoPTS is cloned
     ./autoptsclient_bot.py
+
+# IRC channel on freenode.net
+
+Our IRC channel on freenode.net is #autopts
