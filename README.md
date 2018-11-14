@@ -4,7 +4,7 @@ The Bluetooth Profile Tuning Suite (PTS) is a Bluetooth testing tool provided by
 
 auto-pts is the Bluetooth PTS automation framework. auto-pts uses PTSControl COM API of PTS to automate testing.
 
-Over 460 test cases have been automated for Zephyr OS which reduced testing time from one man-month to 2 hours. auto-pts has been used to automate testing of two Bluetooth stacks thus far:
+Over 460 test cases have been automated for Zephyr OS which reduced testing time from one man-month to 9 hours. auto-pts has been used to automate testing of two Bluetooth stacks thus far:
 
 * BlueZ
 * Zephyr BLE
@@ -17,7 +17,7 @@ auto-pts server: runs on Windows and provides over-the-network XML-RPC interface
 
 auto-pts client: runs on GNU/Linux, communicates with the auto-pts server (to start/stop test cases, to send response to PTS inquiries) and communicates with the IUT (Implementation Under Test) to take appropriate actions. It is implemented in Python and executed using CPython.
 
-Implementation Under Test (IUT): It is the host running Zephyr Bluetooth stack to be tested, this could be an emulator or real hardware. The IUT is controlled by using Bluetooth Test Protocol.
+Implementation Under Test (IUT): It is the host running Bluetooth stack to be tested, this could be an emulator or real hardware. The IUT is controlled by using Bluetooth Test Protocol.
 
 Bluetooth Test Protocol (BTP): Used to communicate with the IUT. Specified in Zephyr tester directory, btp_spec.txt
 
@@ -51,7 +51,7 @@ The auto-pts framework uses a client server architecture. With this setup the PT
 
 And on GNU/Linux you select either the Android or Zephyr client, then pass it the IP address of the server and the path to the PTS workspace file on the Windows machine. So for AOSP BlueZ projects:
 
-`./autoptsclient-aospbluez.py IP_ADDRESS "C:\Users\USER_NAME\Documents\Profile Tuning Suite\PTS_PROJECT\PTS_PROJECT.pqw6"`
+`./autoptsclient-aospbluez.py "C:\Users\USER_NAME\Documents\Profile Tuning Suite\PTS_PROJECT\PTS_PROJECT.pqw6" -i IP_ADDRESS`
 
 For Zephyr projects running under QEMU:
 
@@ -61,15 +61,15 @@ Start a proxy for bluetooth adapter by using btproxy from BlueZ:
 
 Then start the client:
 
-`./autoptsclient-zephyr.py IP_ADDRESS "C:\Users\USER_NAME\Documents\Profile Tuning Suite\PTS_PROJECT\PTS_PROJECT.pqw6" zephyr.elf`
+`./autoptsclient-zephyr.py "C:\Users\USER_NAME\Documents\Profile Tuning Suite\PTS_PROJECT\PTS_PROJECT.pqw6" zephyr.elf -i IP_ADDRESS`
 
 Zephyr running in Arduino:
 
-`./autoptsclient-zephyr.py IP_ADDRESS "C:\Users\USER_NAME\Documents\Profile Tuning Suite\PTS_PROJECT\PTS_PROJECT.pqw6" zephyr.elf -t /dev/ttyUSB0 -b arduino_101 -d`
+`./autoptsclient-zephyr.py "C:\Users\USER_NAME\Documents\Profile Tuning Suite\PTS_PROJECT\PTS_PROJECT.pqw6" -i IP_ADDRESS zephyr.elf -t /dev/ttyUSB0 -b arduino_101 -d`
 
 The command to run auto-pts client using auto-pts Zephyr HCI workspace is:
 
-`./autoptsclient-zephyr.py IP_ADDRESS zephyr-hci zephyr.elf -t /dev/ttyUSB0 -b arduino_101 -d`
+`./autoptsclient-zephyr.py zephyr-hci zephyr.elf -i IP_ADDRESS -t /dev/ttyUSB0 -b arduino_101 -d`
 
 # Running test script on Windows
 
