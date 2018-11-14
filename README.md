@@ -1,3 +1,15 @@
+# Table of Contents
+
+   * [Introduction](#introduction)
+   * [Architecture](#architecture)
+   * [Windows Prerequisites](#windows-prerequisites)
+   * [Generating Interop Assembly](#generating-interop-assembly)
+   * [PTS workspace setup](#pts-workspace-setup)
+   * [Running in client/server mode](#running-in-clientserver-mode)
+   * [Running test script on Windows](#running-test-script-on-windows)
+   * [Running AutoPTSClientBot](#running-autoptsclientbot)
+   * [IRC channel on freenode.net](#irc-channel-on-freenodenet)
+
 # Introduction
 
 The Bluetooth Profile Tuning Suite (PTS) is a Bluetooth testing tool provided by Bluetooth SIG. The PTS is a Windows program that is normally used in manual mode via its GUI
