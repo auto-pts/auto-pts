@@ -31,7 +31,7 @@ auto-pts client: runs on GNU/Linux, communicates with the auto-pts server (to st
 
 Implementation Under Test (IUT): It is the host running Bluetooth stack to be tested, this could be an emulator or real hardware. The IUT is controlled by using Bluetooth Test Protocol.
 
-Bluetooth Test Protocol (BTP): Used to communicate with the IUT. Specified in Zephyr tester directory, btp_spec.txt
+Bluetooth Test Protocol (BTP): Used to communicate with the IUT. Specified in Zephyr tester directory, [btp_spec.txt](https://raw.githubusercontent.com/zephyrproject-rtos/zephyr/master/tests/bluetooth/tester/btp_spec.txt)
 
 # Windows Prerequisites
 
