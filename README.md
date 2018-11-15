@@ -4,11 +4,11 @@
    * [Architecture](#architecture)
    * [Windows Prerequisites](#windows-prerequisites)
    * [Generating Interop Assembly](#generating-interop-assembly)
-   * [PTS workspace setup](#pts-workspace-setup)
-   * [Running in client/server mode](#running-in-clientserver-mode)
-   * [Running test script on Windows](#running-test-script-on-windows)
+   * [PTS Workspace Setup](#pts-workspace-setup)
+   * [Running in Client/Server Mode](#running-in-clientserver-mode)
+   * [Running Test Script on Windows](#running-test-script-on-windows)
    * [Running AutoPTSClientBot](#running-autoptsclientbot)
-   * [IRC channel on freenode.net](#irc-channel-on-freenodenet)
+   * [IRC Channel on freenode.net](#irc-channel-on-freenodenet)
 
 # Introduction
 
