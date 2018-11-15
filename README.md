@@ -47,7 +47,7 @@ On Windows, run this command:
 
 `TlbImp.exe PTSControl.dll /out:Interop.PTSControl.dll /verbose`
 
-# PTS workspace setup
+# PTS Workspace Setup
 
 Before running any scripts you have to create a workspace in the PTS, add needed projects to the workspace and configure PICs and PIXITs.
 
@@ -55,7 +55,7 @@ Alternatively, you can use auto-pts workspaces. Auto-pts provides ready PTS work
 
   * zephyr-hci
 
-# Running in client/server mode
+# Running in Client/Server Mode
 
 The auto-pts framework uses a client server architecture. With this setup the PTS automation server runs on Windows and the client runs on GNU/Linux. So on Windows you start the server:
 
@@ -83,7 +83,7 @@ The command to run auto-pts client using auto-pts Zephyr HCI workspace is:
 
 `./autoptsclient-zephyr.py zephyr-hci zephyr.elf -i IP_ADDRESS -t /dev/ttyUSB0 -b arduino_101 -d`
 
-# Running test script on Windows
+# Running Test Script on Windows
 
 It is also possible to run tests on Windows, without using client/server mode of auto-pts. On Windows instead of starting the auto-pts server start test script as:
 
@@ -166,6 +166,6 @@ google-api-python-client
     cd ~/auto-pts  # or to your directory where AutoPTS is cloned
     ./autoptsclient_bot.py
 
-# IRC channel on freenode.net
+# IRC Channel on freenode.net
 
 Our IRC channel on freenode.net is #autopts
