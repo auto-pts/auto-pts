@@ -34,6 +34,10 @@ def check_args(args):
     qemu_bin = autoprojects.iutctl.QEMU_BIN
     tty_file = args.tty_file
     kernel_image = args.kernel_image
+    ip_addr = args.ip_addr
+
+    if not ip_addr:
+        sys.exit("Server IP address not specified!")
 
     if tty_file:
         if (not tty_file.startswith("/dev/tty") and
