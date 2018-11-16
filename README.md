@@ -25,13 +25,13 @@ Over 460 test cases have been automated for Zephyr OS which reduced testing time
 
 ![](images/autp-pts-architecture-diagram.png)
 
-auto-pts server: runs on Windows and provides over-the-network XML-RPC interface to PTS. It is implemented in Python and executed using IronPython
+**auto-pts server**: runs on Windows and provides over-the-network XML-RPC interface to PTS. It is implemented in Python and executed using IronPython
 
-auto-pts client: runs on GNU/Linux, communicates with the auto-pts server (to start/stop test cases, to send response to PTS inquiries) and communicates with the IUT (Implementation Under Test) to take appropriate actions. It is implemented in Python and executed using CPython.
+**auto-pts client**: runs on GNU/Linux, communicates with the auto-pts server (to start/stop test cases, to send response to PTS inquiries) and communicates with the Implementation Under Test to take appropriate actions. It is implemented in Python and executed using CPython.
 
-Implementation Under Test (IUT): It is the host running Bluetooth stack to be tested, this could be an emulator or real hardware. The IUT is controlled by using Bluetooth Test Protocol.
+**Implementation Under Test (IUT)**: It is the host running Bluetooth stack to be tested, this could be an emulator or real hardware. The IUT is controlled by using Bluetooth Test Protocol.
 
-Bluetooth Test Protocol (BTP): Used to communicate with the IUT. Specified in Zephyr tester directory, [btp_spec.txt](https://raw.githubusercontent.com/zephyrproject-rtos/zephyr/master/tests/bluetooth/tester/btp_spec.txt)
+**Bluetooth Test Protocol (BTP)**: Used to communicate with the IUT. Specified in Zephyr tester directory, [btp_spec.txt](https://raw.githubusercontent.com/zephyrproject-rtos/zephyr/master/tests/bluetooth/tester/btp_spec.txt)
 
 # Windows Prerequisites
 
@@ -61,13 +61,13 @@ The auto-pts framework uses a client server architecture. With this setup the PT
 
 `ipy.exe autoptsserver.py`
 
-And on GNU/Linux you select either the Android or Zephyr client, then pass it the IP address of the server and the path to the PTS workspace file on the Windows machine. So for AOSP BlueZ projects:
+And on GNU/Linux you select either the AOSP BlueZ, Zephyr or BlueZ client, then pass it the IP address of the server and the path to the PTS workspace file on the Windows machine. So for AOSP BlueZ projects:
 
 `./autoptsclient-aospbluez.py "C:\Users\USER_NAME\Documents\Profile Tuning Suite\PTS_PROJECT\PTS_PROJECT.pqw6" -i IP_ADDRESS`
 
 For Zephyr projects running under QEMU:
 
-Start a proxy for bluetooth adapter by using btproxy from BlueZ:
+Start a proxy for Bluetooth adapter by using btproxy from BlueZ:
 
 `sudo bluez/tools/btproxy -u -z`
 
