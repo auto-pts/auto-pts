@@ -154,15 +154,13 @@ class Board:
     """HW DUT board"""
 
     arduino_101 = "arduino_101"
-    mountatlas = "mountatlas"
-    crb = "crb"
+    c1000 = "c1000"
     nrf52 = "nrf52"
 
     # for command line options
     names = [
         arduino_101,
-        mountatlas,
-        crb,
+        c1000,
         nrf52
     ]
 
@@ -213,8 +211,7 @@ class Board:
         """Return reset command for a board"""
         reset_cmd_getters = {
             self.arduino_101 : self._get_reset_cmd_arduino_101,
-            self.mountatlas : self._get_reset_cmd_mountatlas,
-            self.crb : self._get_reset_cmd_crb,
+            self.c1000 : self._get_reset_cmd_c1000,
             self.nrf52 : self._get_reset_cmd_nrf52
         }
 
@@ -239,8 +236,8 @@ class Board:
         return self.get_openocd_reset_cmd(openocd_bin, openocd_scripts,
                                           openocd_cfg)
 
-    def _get_reset_cmd_mountatlas(self):
-        """Return reset command for MountAtlas DUT
+    def _get_reset_cmd_c1000(self):
+        """Return reset command for C1000 DUT
 
         Dependency: zflash
 
@@ -253,13 +250,6 @@ class Board:
 
         return self.get_openocd_reset_cmd(openocd_bin, openocd_scripts,
                                           openocd_cfg)
-
-    def _get_reset_cmd_crb(self):
-        """Return magic string for resetting CRB DUT
-
-        """
-        return ('sh -c \'echo -n -e "\xAA\xBB\\x00\\x00\\x00" > %s\'' %
-                self.tty_file)
 
     def _get_reset_cmd_nrf52(self):
         """Return reset command for nRF52 DUT
