@@ -17,14 +17,15 @@
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
-# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
 #
 
 import os
@@ -39,6 +40,7 @@ import ptscontrol
 from config import SERVER_PORT
 
 log = logging.debug
+
 
 class PyPTSWithXmlRpcCallback(ptscontrol.PyPTS):
     """A child class that adds support of xmlrpc PTS callbacks to PyPTS"""
@@ -72,7 +74,7 @@ class PyPTSWithXmlRpcCallback(ptscontrol.PyPTS):
 
         self.client_xmlrpc_proxy = xmlrpclib.ServerProxy(
             "http://{}:{}/".format(self.client_address, self.client_port),
-            allow_none = True)
+            allow_none=True)
 
         log("Created XMR RPC auto-pts client proxy, provides methods: %s" %
             self.client_xmlrpc_proxy.system.listMethods())
@@ -90,24 +92,26 @@ class PyPTSWithXmlRpcCallback(ptscontrol.PyPTS):
         self.client_port = None
         self.client_xmlrpc_proxy = None
 
+
 def new_address_string(self):
     host, port = self.client_address[:2]
-    return '%s (no getfqdn)' % host #used to call: socket.getfqdn(host)
+    return '%s (no getfqdn)' % host  # used to call: socket.getfqdn(host)
+
 
 def main():
     """Main."""
     winutils.exit_if_admin()
 
-    script_name = os.path.basename(sys.argv[0]) # in case it is full path
+    script_name = os.path.basename(sys.argv[0])  # in case it is full path
     script_name_no_ext = os.path.splitext(script_name)[0]
 
     log_filename = "%s.log" % (script_name_no_ext,)
     format = ("%(asctime)s %(name)s %(levelname)s : %(message)s")
 
-    logging.basicConfig(format = format,
-                        filename = log_filename,
-                        filemode = 'w',
-                        level = logging.DEBUG)
+    logging.basicConfig(format=format,
+                        filename=log_filename,
+                        filemode='w',
+                        level=logging.DEBUG)
 
     print "Starting PTS ...",
     pts = PyPTSWithXmlRpcCallback()
@@ -117,10 +121,11 @@ def main():
 
     BaseHTTPServer.BaseHTTPRequestHandler.address_string = new_address_string
 
-    server = SimpleXMLRPCServer(("", SERVER_PORT), allow_none = True)
+    server = SimpleXMLRPCServer(("", SERVER_PORT), allow_none=True)
     server.register_instance(pts)
     server.register_introspection_functions()
     server.serve_forever()
+
 
 if __name__ == "__main__":
     main()
