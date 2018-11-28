@@ -28,6 +28,7 @@ import ptsprojects.stack as stack
 from pybtp import btp
 from ptsprojects.zephyr.iutctl import get_iut
 
+
 def check_args(args):
     """Sanity check command line arguments"""
 
@@ -41,22 +42,23 @@ def check_args(args):
 
     if tty_file:
         if (not tty_file.startswith("/dev/tty") and
-            not tty_file.startswith("/dev/pts")):
+                not tty_file.startswith("/dev/pts")):
             sys.exit("%s is not a TTY file!" % repr(tty_file))
         if not os.path.exists(tty_file):
             sys.exit("%s TTY file does not exist!" % repr(tty_file))
-    else: # no TTY - will run DUT in QEMU
+    else:  # no TTY - will run DUT in QEMU
         if not find_executable(qemu_bin):
             sys.exit("%s is needed but not found!" % (qemu_bin,))
 
     if not os.path.isfile(kernel_image):
         sys.exit("kernel_image %s is not a file!" % repr(kernel_image))
 
+
 def parse_args():
     """Parses command line arguments and options"""
 
     arg_parser = argparse.ArgumentParser(
-        description = "PTS automation client")
+        description="PTS automation client")
 
     arg_parser.add_argument("-i", "--ip_addr", nargs="+",
                             help="IP address of the PTS automation servers")
@@ -128,9 +130,10 @@ def parse_args():
 
     return args
 
+
 def main():
     """Main."""
-    if os.geteuid() == 0: # root privileges are not needed
+    if os.geteuid() == 0:  # root privileges are not needed
         sys.exit("Please do not run this program as root.")
 
     args = parse_args()
@@ -187,20 +190,21 @@ def main():
     # not the cleanest but the easiest way to exit the server thread
     os._exit(0)
 
+
 if __name__ == "__main__":
 
     # os._exit: not the cleanest but the easiest way to exit the server thread
     try:
         main()
 
-    except KeyboardInterrupt: # Ctrl-C
+    except KeyboardInterrupt:  # Ctrl-C
         os._exit(14)
 
     # SystemExit is thrown in arg_parser.parse_args and in sys.exit
     except SystemExit:
-        raise # let the default handlers do the work
+        raise  # let the default handlers do the work
 
-    except:
+    except BaseException:
         import traceback
         traceback.print_exc()
         os._exit(16)
