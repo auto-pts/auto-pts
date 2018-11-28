@@ -17,14 +17,15 @@
 #
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 # AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
-# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
-# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
-# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+# LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+# CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+# SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+# INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+# CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+# ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+# POSSIBILITY OF SUCH DAMAGE.
 #
 
 """Python bindings for PTSControl introp objects
@@ -44,7 +45,7 @@ import clr
 import System
 
 import ctypes
-libc = ctypes.cdll.msvcrt # for wcscpy_s
+libc = ctypes.cdll.msvcrt  # for wcscpy_s
 
 # workaround to a bug in IronPython: cwd in missing from sys.path under pdb
 # https://github.com/IronLanguages/main/issues/1225
@@ -120,12 +121,13 @@ class PTSLogger(PTSControl.IPTSControlClientLogger):
                 # int since xmlrpc has not marshalling rules for _PTS_LOGTYPE
                 if self._maximum_logging or int(log_type) in logtype_whitelist:
                     self._callback.log(int(log_type), logtype_string, log_time,
-                                      log_message, self._test_case_name)
+                                       log_message, self._test_case_name)
         except Exception as e:
             log("Caught exception")
             log(e)
             # exit does not work, cause app is blocked in PTS.RunTestCase?
             sys.exit("Exception in Log")
+
 
 class PTSSender(PTSControl.IPTSImplicitSendCallbackEx):
     """Implicit send callback implementation"""
@@ -172,9 +174,11 @@ class PTSSender(PTSControl.IPTSImplicitSendCallbackEx):
         log("test_case_name: %s %s" % (test_case_name, type(test_case_name)))
         log("description: %s %s" % (description, type(description)))
         log("style: %s 0x%x", ptstypes.MMI_STYLE_STRING[style], style)
-        log("response:  %s %s %s" % (repr(response), type(response), id(response)))
+        log("response:  %s %s %s" %
+            (repr(response), type(response), id(response)))
         log("response_size: %d %s" % (response_size, type(response_size)))
-        log("response_is_present:  %s %s" % (response_is_present, type(response_is_present)))
+        log("response_is_present:  %s %s" %
+            (response_is_present, type(response_is_present)))
 
         try:
             # xmrpc proxy object in boolean test calls the method __nonzero__
@@ -183,7 +187,7 @@ class PTSSender(PTSControl.IPTSImplicitSendCallbackEx):
                 log("Calling callback.on_implicit_send")
                 callback_response = self._callback.on_implicit_send(
                     project_name,
-                    int(wid), # UInt16 cannot be marshalled
+                    int(wid),  # UInt16 cannot be marshalled
                     test_case_name,
                     description,
                     int(style),
@@ -193,7 +197,8 @@ class PTSSender(PTSControl.IPTSImplicitSendCallbackEx):
 
                 # Don't block xml-rpc
                 if callback_response == "WAIT":
-                    callback_response = self._callback.get_pending_response(test_case_name)
+                    callback_response = self._callback.get_pending_response(
+                        test_case_name)
                     while not callback_response:
                         # XXX: Ask for response every second
                         timer = timer + 1
@@ -204,7 +209,9 @@ class PTSSender(PTSControl.IPTSImplicitSendCallbackEx):
 
                         log("Rechecking response...")
                         time.sleep(1)
-                        callback_response = self._callback.get_pending_response(test_case_name)
+                        callback_response \
+                            = self._callback.get_pending_response(
+                                test_case_name)
                         pass
 
                 log("callback returned on_implicit_send, respose: %s",
@@ -216,7 +223,8 @@ class PTSSender(PTSControl.IPTSImplicitSendCallbackEx):
                     response_is_present.Value = 1
 
         except xmlrpclib.Fault as err:
-            log("A fault occurred, code = %d, string = %s" % (err.faultCode, err.faultString))
+            log("A fault occurred, code = %d, string = %s" %
+                (err.faultCode, err.faultString))
 
         except Exception as e:
             log("Caught exception")
@@ -234,6 +242,7 @@ class PTSSender(PTSControl.IPTSImplicitSendCallbackEx):
 
         log("END OnImplicitSend:")
         log("*" * 20)
+
 
 class PyPTS:
     """PTS control interface.
@@ -356,7 +365,7 @@ class PyPTS:
         # Startup of ptscontrol doesn't have PTS pid yet set - no pts running
         if self._pts_pid:
             self.stop_pts()
-        time.sleep(3) # otherwise there are COM errors occasionally
+        time.sleep(3)  # otherwise there are COM errors occasionally
         self.start_pts()
 
     def start_pts(self):
@@ -453,7 +462,7 @@ class PyPTS:
 
         log("%s %s", self.open_workspace.__name__, workspace_path)
 
-        required_ext = ".pqw6" # valid PTS workspace file extension
+        required_ext = ".pqw6"  # valid PTS workspace file extension
 
         # auto-pts own workspaces
         autopts_workspaces = self._get_own_workspaces()
@@ -531,7 +540,7 @@ class PyPTS:
 
         test_case_count = clr.StrongBox[System.UInt32]()
         self._pts.GetTestCaseCount(project_name, test_case_count)
-        test_case_count_int  = int(test_case_count)
+        test_case_count_int = int(test_case_count)
 
         log("%s %s out: %s", self.get_test_case_count.__name__, project_name,
             test_case_count_int)
@@ -610,7 +619,7 @@ class PyPTS:
             log(exc)
 
             hresult = int(System.UInt32(exc.HResult))
-            error_code = ptstypes.PTSCONTROL_E_STRING[hresult] # see [1]
+            error_code = ptstypes.PTSCONTROL_E_STRING[hresult]  # see [1]
 
             self.recover_pts()
 
@@ -646,7 +655,7 @@ class PyPTS:
 
         test_cases_unused = []
         test_cases = self._pts.GetTestCasesFromTSSFile(project_name,
-                                                        test_cases_unused)
+                                                       test_cases_unused)
 
         log("%s %s out: %s", self.get_test_cases_from_tss_file.__name__,
             project_name, repr(test_cases))
@@ -684,8 +693,8 @@ class PyPTS:
         This wrapper handles exceptions that PTS throws if PIXIT param is
         already set to the same value.
 
-        PTS throws exception if the value passed to UpdatePixitParam is the same as
-        the value when PTS was started.
+        PTS throws exception if the value passed to UpdatePixitParam is the
+        same as the value when PTS was started.
 
         In C++ HRESULT error with this value is returned:
         PTSCONTROL_E_PIXIT_PARAM_NOT_CHANGED (0x849C0021)
@@ -695,7 +704,8 @@ class PyPTS:
             param_name, new_param_value)
 
         try:
-            self._pts.UpdatePixitParam(project_name, param_name, new_param_value)
+            self._pts.UpdatePixitParam(
+                project_name, param_name, new_param_value)
             self.add_recov(self.update_pixit_param, project_name, param_name,
                            new_param_value)
 
@@ -719,7 +729,7 @@ class PyPTS:
 
         if timeout:
             self.add_recov(self.set_call_timeout, timeout)
-        else: # timeout 0 = no timeout
+        else:  # timeout 0 = no timeout
             self.del_recov(self.set_call_timeout)
 
     def save_test_history_log(self, save):
@@ -836,33 +846,34 @@ class PyPTS:
 
 def parse_args():
     """Parses command line arguments and options"""
-    required_ext = ".pqw6" # valid PTS workspace file extension
+    required_ext = ".pqw6"  # valid PTS workspace file extension
 
     arg_parser = argparse.ArgumentParser(
-        description = "PTS Control")
+        description="PTS Control")
 
     arg_parser.add_argument(
         "workspace",
-        help = "Path to PTS workspace to use for testing. It should have %s "
+        help="Path to PTS workspace to use for testing. It should have %s "
         "extension" % (required_ext,))
 
     args = arg_parser.parse_args()
 
     return args
 
+
 def main():
     """Rudimentary testing."""
 
     args = parse_args()
 
-    script_name = os.path.basename(sys.argv[0]) # in case it is full path
+    script_name = os.path.basename(sys.argv[0])  # in case it is full path
     script_name_no_ext = os.path.splitext(script_name)[0]
 
     log_filename = "%s.log" % (script_name_no_ext,)
-    logging.basicConfig(format = '%(name)s [%(asctime)s] %(message)s',
-                        filename = log_filename,
-                        filemode = 'w',
-                        level = logging.DEBUG)
+    logging.basicConfig(format='%(name)s [%(asctime)s] %(message)s',
+                        filename=log_filename,
+                        filemode='w',
+                        level=logging.DEBUG)
 
     pts = PyPTS()
 
@@ -882,11 +893,14 @@ def main():
         print "Test case count:", test_case_count
 
         for test_case_index in range(test_case_count):
-            test_case_name = pts.get_test_case_name(project_name, test_case_index)
+            test_case_name = pts.get_test_case_name(
+                project_name, test_case_index)
             print "\nTest case project:", project_name
             print "Test case name:", test_case_name
-            print "Test case description:", pts.get_test_case_description(project_name, test_case_index)
-            print "Is active test case:", pts.is_active_test_case(project_name, test_case_name)
+            print "Test case description:", pts.get_test_case_description(
+                project_name, test_case_index)
+            print "Is active test case:", pts.is_active_test_case(
+                project_name, test_case_name)
 
     print "\n\n\n\nTSS file info:"
 
@@ -898,13 +912,11 @@ def main():
         test_case_count = pts.get_test_case_count_from_tss_file(project_name)
         print "Test case count:", test_case_count
 
-
         test_cases = pts.get_test_cases_from_tss_file(project_name)
         print test_cases
 
         for test_case in test_cases:
             print test_case
-
 
     pts.update_pixit_param("L2CAP", "TSPX_iut_role_initiator", "FALSE")
     pts.update_pixit_param("L2CAP", "TSPX_iut_role_initiator", "TRUE")
@@ -926,6 +938,7 @@ def main():
     print "PTS BD_ADDR:", pts.bd_addr()
     print "PTS BD_ADDR:", pts.bd_addr()
     print "PTS Version: %x" % pts.get_version()
+
 
 if __name__ == "__main__":
     main()
