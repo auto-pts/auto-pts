@@ -48,6 +48,7 @@ import Interop.PTSControl as PTSControl
 
 log = logging.debug
 
+
 class PyPTSControl:
     """PTS control interface.
 
@@ -83,7 +84,7 @@ class PyPTSControl:
         log("%s", self.restart_pts.__name__)
 
         self.stop_pts()
-        time.sleep(3) # otherwise there are COM errors occasionally
+        time.sleep(3)  # otherwise there are COM errors occasionally
         self.start_pts()
 
     def start_pts(self):
@@ -114,6 +115,7 @@ class PyPTSControl:
             except Exception as error:
                 log("Exception when killing PTS process: %r", error)
 
+
 def parse_args():
     """Parse command line arguments and options"""
 
@@ -141,12 +143,14 @@ def parse_args():
 
     return args
 
+
 def file_line_count(file_name):
     """Return line count of a file"""
     with open(file_name) as f:
         for i, l in enumerate(f):
             pass
     return i + 1
+
 
 def patch_workspace_file(workspace_file):
     """Patch workspace file to remove invalid information
@@ -176,6 +180,7 @@ def patch_workspace_file(workspace_file):
         else:
             print line
 
+
 def init_logging():
     """Initialize logging"""
     logger = logging.getLogger()
@@ -188,6 +193,7 @@ def init_logging():
     formatter = logging.Formatter(format)
     stream_handler.setFormatter(formatter)
     logger.addHandler(stream_handler)
+
 
 def main():
     """Main."""
@@ -239,6 +245,7 @@ def main():
         log("Error code: %s", error_code)
 
     pts_control.stop_pts()
+
 
 if __name__ == "__main__":
     main()
