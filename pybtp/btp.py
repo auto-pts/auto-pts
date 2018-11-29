@@ -1168,7 +1168,7 @@ def gatts_verify_write_success(description):
         logging.debug("%s Handle %r. Value %r has been successfully written",
                       gatts_verify_write_success.__name__, handle, value)
         return True
-    except:
+    except BaseException:
         logging.debug("%s PTS failed to write attribute value",
                       gatts_verify_write_success.__name__)
         return False
@@ -2546,7 +2546,7 @@ def gap_passkey_disp_ev_(gap, data, data_len):
 
 
 GAP_EV = {
-    defs.GAP_EV_NEW_SETTINGS:gap_new_settings_ev_,
+    defs.GAP_EV_NEW_SETTINGS: gap_new_settings_ev_,
     defs.GAP_EV_DEVICE_FOUND: gap_device_found_ev_,
     defs.GAP_EV_DEVICE_CONNECTED: gap_connected_ev_,
     defs.GAP_EV_DEVICE_DISCONNECTED: gap_disconnected_ev_,
