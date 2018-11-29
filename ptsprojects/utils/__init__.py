@@ -22,7 +22,8 @@ USE_ADB = True
 
 log = logging.debug
 
-def exec_iut_cmd(iut_cmd, wait = False, use_adb_shell = USE_ADB):
+
+def exec_iut_cmd(iut_cmd, wait=False, use_adb_shell=USE_ADB):
     """Runs command in the IUT
 
     [1] Command is split to make this function platform independent, this is
@@ -37,9 +38,9 @@ def exec_iut_cmd(iut_cmd, wait = False, use_adb_shell = USE_ADB):
 
     log("starting child process %s", iut_cmd)
 
-    process = subprocess.Popen(cmd.split(), # see [1]
-                               stdout = subprocess.PIPE,
-                               stderr = subprocess.STDOUT)
+    process = subprocess.Popen(cmd.split(),  # see [1]
+                               stdout=subprocess.PIPE,
+                               stderr=subprocess.STDOUT)
 
     process_desc = "%s pid %s" % (repr(cmd), process.pid)
 
@@ -57,9 +58,13 @@ def exec_iut_cmd(iut_cmd, wait = False, use_adb_shell = USE_ADB):
 
     return process
 
+
 def exec_adb_root():
-    """Runs 'adb root' in Android IUT. This is needed cause IUT commands require
-    root permissions"""
+    """Runs 'adb root' in Android IUT.
+
+    This is needed cause IUT commands require root permissions
+
+    """
     if not USE_ADB:
         return
 
