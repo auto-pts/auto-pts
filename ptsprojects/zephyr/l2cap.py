@@ -47,15 +47,16 @@ def test_cases(pts):
 
     stack.gap_init()
 
-    pre_conditions=[TestFunc(btp.core_reg_svc_gap),
-                    TestFunc(btp.core_reg_svc_l2cap),
-                    TestFunc(btp.gap_read_ctrl_info),
-                    TestFunc(lambda: pts.update_pixit_param(
-                             "L2CAP", "TSPX_bd_addr_iut",
-                             stack.gap.iut_addr_get_str())),
-                    TestFunc(lambda: pts.update_pixit_param(
-                             "L2CAP", "TSPX_iut_address_type_random",
-                             "TRUE" if stack.gap.iut_addr_is_random() else "FALSE"))]
+    pre_conditions = [TestFunc(btp.core_reg_svc_gap),
+                      TestFunc(btp.core_reg_svc_l2cap),
+                      TestFunc(btp.gap_read_ctrl_info),
+                      TestFunc(lambda: pts.update_pixit_param(
+                          "L2CAP", "TSPX_bd_addr_iut",
+                          stack.gap.iut_addr_get_str())),
+                      TestFunc(lambda: pts.update_pixit_param(
+                          "L2CAP", "TSPX_iut_address_type_random",
+                          "TRUE" if stack.gap.iut_addr_is_random()
+                          else "FALSE"))]
 
     test_cases = [
         # Connection Parameter Update
@@ -156,7 +157,7 @@ def test_cases(pts):
                    TestFunc(btp.gap_adv_ind_on, start_wid=15),
                    TestFunc(btp.l2cap_connected_ev, start_wid=15),
                    TestFunc(btp.l2cap_send_data, 0, "FF", 60,
-                             start_wid=43)],
+                            start_wid=43)],
                   verify_wids={37: "FF" * 60}),
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-04-C",
                   pre_conditions +
@@ -166,10 +167,10 @@ def test_cases(pts):
                             241, start_wid=41),
                    TestFunc(btp.l2cap_disconnected_ev, 0, False,
                             start_wid=41)]),
-                  # "LE_PSM not supported" Result expected.
-                  # Verification is not needed, because if we received
-                  # disconnected event, that means connection was rejected.
-                  # verify_wids={42: btp.verify_description}),
+        # "LE_PSM not supported" Result expected.
+        # Verification is not needed, because if we received
+        # disconnected event, that means connection was rejected.
+        # verify_wids={42: btp.verify_description}),
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-05-C",
                   pre_conditions +
                   [TestFunc(btp.l2cap_le_listen, le_psm),
@@ -216,10 +217,10 @@ def test_cases(pts):
                             le_psm, start_wid=41),
                    TestFunc(btp.l2cap_disconnected_ev, 0, False,
                             start_wid=41)]),
-                  # "LE_PSM not supported" Result expected.
-                  # Verification is not needed, because if we received
-                  # disconnected event, that means connection was rejected.
-                  # verify_wids={48: btp.verify_description}),
+        # "LE_PSM not supported" Result expected.
+        # Verification is not needed, because if we received
+        # disconnected event, that means connection was rejected.
+        # verify_wids={48: btp.verify_description}),
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-18-C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_conn, start_wid=15),
@@ -254,7 +255,7 @@ def test_cases(pts):
                             le_psm, start_wid=41),
                    TestFunc(btp.l2cap_disconnected_ev, 0, False,
                             start_wid=41)]),
-        ]
+    ]
 
     return test_cases
 
@@ -279,6 +280,7 @@ def main():
 
         for index, cmd in enumerate(test_case.cmds):
             print "%d) %s" % (index, cmd)
+
 
 if __name__ == "__main__":
     main()
