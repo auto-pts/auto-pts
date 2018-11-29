@@ -30,6 +30,7 @@ import ptstypes
 
 log = logging.debug
 
+
 class MmiParser(object):
     """"Interface to parsing arguments from description of MMI
 
@@ -62,8 +63,10 @@ class MmiParser(object):
             setattr(self, mmi_arg_name, mmi_arg_value)
 
     def parse_description(self, description):
-        """Parses PTS MMI description text for argument values. It is necessary to do
-        it for now, but in future PTS will provide API to get the values
+        """Parse PTS MMI description text for argument values.
+
+        It is necessary to do it for now, but in future PTS will provide API to
+        get the values
 
         An example of MMI that requires parsing is listed below. For that MMI
         00D3 should be converted to hexadecimal 0xD3 and size to int 45
@@ -72,9 +75,11 @@ class MmiParser(object):
         wid: 69
         test_case_name: TC_GAC_CL_BV_01_C
 
-        Please send prepare write request with handle = '00D3'O and size = '45' to the PTS.
+        Please send prepare write request with handle = '00D3'O and size = '45'
+        to the PTS.
 
-        Description: Verify that the Implementation Under Test (IUT) can send data according to negotiate MTU size."
+        Description: Verify that the Implementation Under Test (IUT) can send
+        data according to negotiate MTU size."
 
         """
         log("%s %r", self.parse_description.__name__, description)
@@ -92,8 +97,8 @@ class MmiParser(object):
         self.args = []
 
     def process_args(self, args):
-        """Replaces the MMI keywords arguments (e.g. MMI.arg_1) with the respective
-        argument values from MMI description
+        """Replaces the MMI keywords arguments (e.g. MMI.arg_1) with the
+        respective argument values from MMI description
 
         """
         log("%s: %s", self.process_args.__name__, args)
@@ -102,7 +107,7 @@ class MmiParser(object):
         args_list = list(args)
 
         for arg_index, arg in enumerate(args):
-            if not isinstance(arg, basestring): # omit not strings
+            if not isinstance(arg, basestring):  # omit not strings
                 continue
 
             if arg.startswith(MMI.arg_value_prefix):
@@ -114,15 +119,20 @@ class MmiParser(object):
         log("returning %r", out_args)
         return out_args
 
+
 MMI = MmiParser()
+
 
 class TestCmd:
     """A command ran in IUT during test case execution"""
 
-    def __init__(self, command, start_wid = None, stop_wid = None):
-        """stop_wid -- some test cases require the child process (this test command) to
-                       be termintated (Ctrl-C on terminal) in response to dialog
-                       with this wid
+    def __init__(self, command, start_wid=None, stop_wid=None):
+        """Constructor
+
+        stop_wid -- some test cases require the child process (this test
+                    command) to be termintated (Ctrl-C on terminal) in response
+                    to dialog with this wid
+
         """
         self.command = command
         self.start_wid = start_wid
@@ -151,6 +161,7 @@ class TestCmd:
     def __str__(self):
         """Returns string representation"""
         return "%s %s %s" % (self.command, self.start_wid, self.stop_wid)
+
 
 class TestFunc:
     """A wrapper around test functions"""
@@ -186,7 +197,7 @@ class TestFunc:
         self.args = args
         self.kwds = kwds
 
-        self.call_count = 0 # number of times func is run
+        self.call_count = 0  # number of times func is run
 
         # true if parsing of MMI description text is needed by this test func
         self.desc_parsing_needed = False
@@ -228,7 +239,7 @@ class TestFunc:
         self.call_count += 1
         log("Starting test function: %s" % str(self))
 
-        if isinstance(self.skip_call, tuple): # is None if not set
+        if isinstance(self.skip_call, tuple):  # is None if not set
             if self.call_count in self.skip_call:
                 log("Skipping starting test function")
                 return
@@ -254,17 +265,21 @@ class TestFunc:
                  self.post_wid, self.skip_call, self.call_count, self.args,
                  self.kwds))
 
+
 class TestFuncCleanUp(TestFunc):
     """Clean-up function that is invoked after running test case in PTS."""
     pass
+
 
 def is_cleanup_func(func):
     """'Retruns True if func is an in an instance of TestFuncCleanUp"""
     return isinstance(func, TestFuncCleanUp)
 
+
 class AbstractMethodException(Exception):
     """Exception raised if an abstract method is called."""
     pass
+
 
 class PTSCallback(object):
     """Base class for PTS callback implementors"""
@@ -305,6 +320,7 @@ class PTSCallback(object):
         """
         raise AbstractMethodException()
 
+
 class TestCase(PTSCallback):
     """A PTS test case"""
 
@@ -315,10 +331,10 @@ class TestCase(PTSCallback):
                         self.verify_wids, self.ok_cancel_wids,
                         self.generic_wid_hdl)
 
-    def __init__(self, project_name, test_case_name, cmds = [],
-                 ptsproject_name = None, no_wid = None, edit1_wids = None,
-                 verify_wids = None, ok_cancel_wids = None,
-                 generic_wid_hdl = None):
+    def __init__(self, project_name, test_case_name, cmds=[],
+                 ptsproject_name=None, no_wid=None, edit1_wids=None,
+                 verify_wids=None, ok_cancel_wids=None,
+                 generic_wid_hdl=None):
         """TestCase constructor
 
         cmds -- a list of TestCmd and TestFunc or single instance of them
@@ -406,7 +422,7 @@ class TestCase(PTSCallback):
         # check for "final verdict" to avoid "Encrypted Verdict"
         # it could be 'Final verdict' or 'Final Verdict'
         elif log_type == ptstypes.PTS_LOGTYPE_FINAL_VERDICT and \
-             logtype_string.lower() == "final verdict":
+                logtype_string.lower() == "final verdict":
 
             if "PASS" in log_message:
                 new_status = "PASS"
@@ -420,7 +436,6 @@ class TestCase(PTSCallback):
         if new_status:
             self.status = new_status
             log("New status %s - %s", str(self), new_status)
-
 
     def handle_mmi_style_yes_no1(self, wid, description):
         """Implements implicit send handling for MMI_Style_Yes_No1"""
@@ -457,14 +472,14 @@ class TestCase(PTSCallback):
                             if x.upper() not in description.upper():
                                 my_response = no_response
                                 log("%r not found, skipping...", x)
-                                break # for x in verify:
+                                break  # for x in verify:
                             else:
                                 my_response = yes_response
 
                         # If all elements in the list have been successfully
                         # verified, break here
                         if my_response is yes_response:
-                            break # for verify in self.verify_wids[wid]:
+                            break  # for verify in self.verify_wids[wid]:
                     else:
                         if verify.upper() not in description.upper():
                             my_response = no_response
@@ -501,7 +516,7 @@ class TestCase(PTSCallback):
             response = self.edit1_wids[wid]
             if callable(response):
                 my_response = response(description)
-            elif type(response) is tuple and callable(response[0]):
+            elif isinstance(response, tuple) and callable(response[0]):
                 # Handle command before responding
                 my_response = response[0](description, *response[1:])
             else:
@@ -521,13 +536,13 @@ class TestCase(PTSCallback):
             response = self.ok_cancel_wids[wid]
             if callable(response):
                 my_response = response(description)
-            elif type(response) is tuple and callable(response[0]):
+            elif isinstance(response, tuple) and callable(response[0]):
                 # Handle command before responding
                 my_response = response[0](description, *response[1:])
             else:
                 my_response = response
 
-        else: # by default respond OK
+        else:  # by default respond OK
             my_response = True
 
         response = {True: "OK", False: "Cancel"}[my_response]
@@ -552,7 +567,7 @@ class TestCase(PTSCallback):
 
                 cmd.start()
 
-                if cmd.desc_parsing_needed: # clear parsed description
+                if cmd.desc_parsing_needed:  # clear parsed description
                     MMI.reset()
 
             # stop command
@@ -631,8 +646,8 @@ class TestCase(PTSCallback):
         if style == ptstypes.MMI_Style_Abort_Retry1:
             return "Retry" if response else "Abort"
 
-    def on_implicit_send(self, project_name, wid, test_case_name, description, style,
-                         response, response_size, response_is_present):
+    def on_implicit_send(self, project_name, wid, test_case_name, description,
+                         style, response, response_size, response_is_present):
         """Overrides PTSCallback method. Handles
         PTSControl.IPTSImplicitSendCallbackEx.OnImplicitSend"""
         log("%s %s", self, self.on_implicit_send.__name__)
@@ -668,7 +683,8 @@ class TestCase(PTSCallback):
             else:
                 my_response = self.handle_mmi_style_ok_cancel(wid, description)
 
-            # if there are post wid TestFunc waiting run those in separate thread
+            # if there are post wid TestFunc waiting run those in separate
+            # thread
             if len(self.post_wid_queue):
                 log("Running post_wid test functions")
                 self.post_wid_thread = Thread(None, self.run_post_wid_cmds)
@@ -693,7 +709,8 @@ class TestCase(PTSCallback):
         if os.path.exists(subproc_path):
             log("%s, run pre test case script" % self.post_run.__name__)
             self.lf_subproc = open(subproc_dir + "sp_pre_stdout.log", "w")
-            subproc_cmd = " ".join([subproc_path, self.project_name, self.name])
+            subproc_cmd = " ".join(
+                [subproc_path, self.project_name, self.name])
             self.tc_subproc = subprocess.Popen(shlex.split(subproc_cmd),
                                                shell=False,
                                                stdin=subprocess.PIPE,
@@ -736,7 +753,7 @@ class TestCase(PTSCallback):
             cmd.stop()
 
         # Cleanup pre created subproc
-        if self.tc_subproc != None:
+        if self.tc_subproc is not None:
             log("%s, cleanup running pre test case script" %
                 self.post_run.__name__)
             self.tc_subproc.communicate(input='#close\n')
@@ -749,7 +766,8 @@ class TestCase(PTSCallback):
         if os.path.exists(subproc_path):
             log("%s, run post test case script" % self.post_run.__name__)
             self.lf_subproc = open(subproc_dir + "sp_post_stdout.log", "w")
-            subproc_cmd = " ".join([subproc_path, self.project_name, self.name])
+            subproc_cmd = " ".join(
+                [subproc_path, self.project_name, self.name])
             self.tc_subproc = subprocess.Popen(shlex.split(subproc_cmd),
                                                shell=False,
                                                stdin=subprocess.PIPE,
@@ -758,6 +776,7 @@ class TestCase(PTSCallback):
 
             self.tc_subproc.communicate(input='#close\n')
             self.lf_subproc.close()
+
 
 def get_max_test_case_desc(test_cases):
     """Takes a list of test cases and return a tuple of longest project name
