@@ -28,6 +28,7 @@ import ptsprojects.stack as stack
 from pybtp import btp
 from ptsprojects.bluez.iutctl import get_iut
 
+
 def parse_args():
     """Parses command line arguments and options"""
 
@@ -48,7 +49,6 @@ def parse_args():
 
     arg_parser.add_argument("btpclient_path",
                             help="Path to Bluez tool btpclient")
-
 
     arg_parser.add_argument("-d", "--debug-logs", dest="enable_max_logs",
                             action='store_true', default=False,
