@@ -214,7 +214,7 @@ class Mesh:
         self.net_recv_ev_data = Property(None)
         self.incomp_timer_exp = Property(False)
 
-        #LPN
+        # LPN
         self.lpn_subscriptions = []
 
         # Node Identity
@@ -242,7 +242,8 @@ class Mesh:
 
 
 class Synch:
-    def __init__(self, set_pending_response_func, clear_pending_responses_func):
+    def __init__(self, set_pending_response_func,
+                 clear_pending_responses_func):
         self._synch_table = []
         self._pending_responses = {}
         self._set_pending_response_func = set_pending_response_func
@@ -283,7 +284,7 @@ class Synch:
                     i_wid = elem[inst][0]
                     i_desc = elem[inst][1]
                     action_wids.append((i_wid, i_desc, inst,
-                                       self._set_pending_response_func))
+                                        self._set_pending_response_func))
 
                 self._synch_table.remove(elem)
 
