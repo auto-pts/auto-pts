@@ -48,7 +48,7 @@ def _validate_pair(ob):
     try:
         if not (len(ob) == 2):
             raise ValueError
-    except:
+    except BaseException:
         return False
 
     return True
@@ -142,11 +142,14 @@ def apply_overlay(zephyr_wd, base_conf, cfg_name, overlay):
     with open(base_conf, 'r') as base:
         with open(cfg_name, 'w') as config:
             for line in base.readlines():
-                re_config = re.compile('(?P<config_key>\w+)=(?P<config_value>\w+)*')
+                re_config = re.compile(
+                    r'(?P<config_key>\w+)=(?P<config_value>\w+)*')
                 match = re_config.match(line)
                 if match and match.group('config_key') in overlay:
                     v = overlay.pop(match.group('config_key'))
-                    config.write("{}={}\n".format(match.group('config_key'), v))
+                    config.write(
+                        "{}={}\n".format(
+                            match.group('config_key'), v))
                 else:
                     config.write(line)
 
@@ -222,9 +225,12 @@ def run_tests(args, iut_config):
 
     ptses = []
     for ip in args["server_ip"]:
-        ptses.append(autoptsclient.init_pts(ip, args["workspace"],
-                     args["bd_addr"], args["enable_max_logs"], callback_thread,
-                     "zephyr_" + str(args["board"])))
+        ptses.append(autoptsclient.init_pts(ip,
+                                            args["workspace"],
+                                            args["bd_addr"],
+                                            args["enable_max_logs"],
+                                            callback_thread,
+                                            "zephyr_" + str(args["board"])))
 
     btp.init(get_iut)
     # Main instance of PTS
@@ -269,9 +275,8 @@ def run_tests(args, iut_config):
             test_cases = autoptsclient.get_test_cases_subset(test_cases,
                                                              to_run, to_omit)
 
-        status_count, results_dict, regressions = \
-            autoptsclient.run_test_cases(ptses, test_cases, additional_test_cases,
-                                         int(args["retry"]))
+        status_count, results_dict, regressions = autoptsclient.run_test_cases(
+            ptses, test_cases, additional_test_cases, int(args["retry"]))
 
         for k, v in status_count.items():
             if k in status.keys():
