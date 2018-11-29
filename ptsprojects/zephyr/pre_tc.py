@@ -32,11 +32,13 @@ BTMON_PATH = None
 # XXX: Fill me - logs dir example: /home/user/btmon_logs/
 LOGS_DIR = None
 
+
 def cleanup():
-    if BTMON_PROC != None:
+    if BTMON_PROC:
         BTMON_PROC.terminate()
 
         BTMON_PROC.wait()
+
 
 def run_btmon():
     global BTMON_PROC, TEST_CASE
@@ -44,7 +46,8 @@ def run_btmon():
     TEST_CASE = TEST_CASE.replace("/", "-")
 
     BTMON_PROC = subprocess.Popen([BTMON_PATH, "-w", LOGS_DIR + PROFILE + "/" +
-                                  TEST_CASE], shell=False)
+                                   TEST_CASE], shell=False)
+
 
 def main():
     global PROFILE, TEST_CASE
@@ -54,7 +57,7 @@ def main():
     PROFILE = sys.argv[1]
     TEST_CASE = sys.argv[2]
 
-    if os.path.exists(LOGS_DIR + PROFILE) == False:
+    if not os.path.exists(LOGS_DIR + PROFILE):
         os.makedirs(LOGS_DIR + PROFILE)
 
     run_btmon()
@@ -67,6 +70,7 @@ def main():
             BTMON_PROC.wait()
 
             break
+
 
 if __name__ == "__main__":
     main()
