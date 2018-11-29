@@ -62,9 +62,9 @@ class ZephyrCtl:
         self.kernel_image = kernel_image
         self.tty_file = tty_file
 
-        if self.tty_file and board_name: # DUT is a hardware board, not QEMU
+        if self.tty_file and board_name:  # DUT is a hardware board, not QEMU
             self.board = Board(board_name, kernel_image, tty_file)
-        else: # DUT is QEMU or a board that won't be reset
+        else:  # DUT is QEMU or a board that won't be reset
             self.board = None
 
         self.qemu_process = None
@@ -112,7 +112,7 @@ class ZephyrCtl:
 
         try:
             if (tuple_hdr.svc_id != defs.BTP_SERVICE_ID_CORE or
-                tuple_hdr.op != defs.CORE_EV_IUT_READY):
+                    tuple_hdr.op != defs.CORE_EV_IUT_READY):
                 raise BTPError("Failed to get ready event")
         except BTPError as err:
             log("Unexpected event received (%s), expected IUT ready!", err)
@@ -210,9 +210,9 @@ class Board:
     def get_reset_cmd(self):
         """Return reset command for a board"""
         reset_cmd_getters = {
-            self.arduino_101 : self._get_reset_cmd_arduino_101,
-            self.c1000 : self._get_reset_cmd_c1000,
-            self.nrf52 : self._get_reset_cmd_nrf52
+            self.arduino_101: self._get_reset_cmd_arduino_101,
+            self.c1000: self._get_reset_cmd_c1000,
+            self.nrf52: self._get_reset_cmd_nrf52
         }
 
         reset_cmd_getter = reset_cmd_getters[self.name]
@@ -259,6 +259,7 @@ class Board:
         """
         return 'nrfjprog -f nrf52 -r'
 
+
 def get_iut():
     return ZEPHYR
 
@@ -267,6 +268,7 @@ def init_stub():
     """IUT init routine for testings"""
     global ZEPHYR
     ZEPHYR = ZephyrCtlStub()
+
 
 def init(kernel_image, tty_file, board=None):
     """IUT init routine
