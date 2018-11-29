@@ -85,5 +85,6 @@ def hdl_wid_115(desc):
 
 
 def hdl_wid_116(desc):
-    # TODO: Click Yes if the failure of pairing process due to timeout has been notified on the IUT.
+    # TODO: Click Yes if the failure of pairing process due to timeout has
+    # been notified on the IUT.
     return True
