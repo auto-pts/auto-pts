@@ -31,11 +31,13 @@ BTP_ADDRESS = "/tmp/bt-stack-tester"
 
 EVENT_HANDLER = None
 
+
 def set_event_handler(event_handler):
     """This is required by BTPWorker to drive stack"""
     global EVENT_HANDLER
 
     EVENT_HANDLER = event_handler
+
 
 class BTPSocket(object):
 
@@ -181,7 +183,8 @@ class BTPWorker(BTPSocket):
 
         raise socket.timeout
 
-    def send_wait_rsp(self, svc_id, op, ctrl_index, data, cb=None, user_data=None):
+    def send_wait_rsp(self, svc_id, op, ctrl_index, data, cb=None,
+                      user_data=None):
         super(BTPWorker, self).send(svc_id, op, ctrl_index, data)
         ret = True
 
@@ -189,15 +192,17 @@ class BTPWorker(BTPSocket):
             tuple_hdr, tuple_data = self.read()
 
             if tuple_hdr.svc_id != svc_id:
-                raise BTPError("Incorrect service ID %s in the response, expected "
-                               "%s!" % (tuple_hdr.svc_id, svc_id))
+                raise BTPError(
+                    "Incorrect service ID %s in the response, expected %s!" %
+                    (tuple_hdr.svc_id, svc_id))
 
             if tuple_hdr.op == defs.BTP_STATUS:
                 raise BTPError("Error opcode in response!")
 
             if op != tuple_hdr.op:
-                raise BTPError("Invalid opcode 0x%.2x in the response, expected "
-                               "0x%.2x!" % (tuple_hdr.op, op))
+                raise BTPError(
+                    "Invalid opcode 0x%.2x in the response, expected 0x%.2x!" %
+                    (tuple_hdr.op, op))
 
             if cb and callable(cb):
                 ret = cb(tuple_data, user_data)
