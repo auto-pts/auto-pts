@@ -25,8 +25,10 @@ CONFIG_PROC = None
 # XXX: Fill me - nrfjprog path example: /home/user/tool/nrfjprog
 CONFIG_PATH = None
 
+
 def cleanup():
     pass
+
 
 def reset_controler():
     global CONFIG_PROC
@@ -36,6 +38,7 @@ def reset_controler():
     (stdoutdata, stderrdata) = CONFIG_PROC.communicate()
 
     print(stdoutdata, stderrdata)
+
 
 def main():
     atexit.register(cleanup)
@@ -50,6 +53,7 @@ def main():
             CONFIG_PROC.wait()
 
             break
+
 
 if __name__ == "__main__":
     main()
