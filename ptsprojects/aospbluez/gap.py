@@ -20,9 +20,9 @@ try:
         TestFuncCleanUp
     from ptsprojects.utils import btmgmt
 
-except ImportError: # running this module as script
+except ImportError:  # running this module as script
     import sys
-    sys.path.append("../..") # to be able to locate the following imports
+    sys.path.append("../..")  # to be able to locate the following imports
 
     from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
         TestFuncCleanUp
@@ -63,11 +63,11 @@ def test_cases(pts):
                   TestFunc(btmgmt.discoverable_off)]),
 
         TestCase("GAP", "TC_DISC_LIMM_BV_01_C",
-                 TestFunc(btmgmt.discoverable_limited, 30), no_wid = 120),
+                 TestFunc(btmgmt.discoverable_limited, 30), no_wid=120),
         TestCase("GAP", "TC_DISC_LIMM_BV_02_C",
                  TestFunc(btmgmt.discoverable_limited, 30)),
         TestCase("GAP", "TC_DISC_LIMM_BV_03_C",
-                 TestFunc(btmgmt.discoverable_limited, 30), no_wid = 120),
+                 TestFunc(btmgmt.discoverable_limited, 30), no_wid=120),
 
         TestCase("GAP", "TC_DISC_LIMM_BV_04_C",
                  [TestFunc(btmgmt.discoverable_off),
@@ -77,10 +77,10 @@ def test_cases(pts):
                   TestFunc(btmgmt.discoverable_limited, 30)]),
 
         TestCase("GAP", "TC_DISC_GENM_BV_01_C",
-                 TestFunc(btmgmt.discoverable_on), no_wid = 120),
+                 TestFunc(btmgmt.discoverable_on), no_wid=120),
         TestCase("GAP", "TC_DISC_GENM_BV_02_C",
                  TestFunc(btmgmt.bredr_on)),
-        TestCase("GAP", "TC_DISC_GENM_BV_03_C", no_wid = 120),
+        TestCase("GAP", "TC_DISC_GENM_BV_03_C", no_wid=120),
 
         TestCase("GAP", "TC_DISC_GENM_BV_04_C",
                  [TestFunc(btmgmt.power_off),
@@ -89,8 +89,8 @@ def test_cases(pts):
                   TestFunc(btmgmt.discoverable_on),
                   TestFuncCleanUp(btmgmt.bredr_on)]),
 
-        # TODO grep for pts in output of "find -l" to find the answer to the last
-        # pts dialog
+        # TODO grep for pts in output of "find -l" to find the answer to the
+        # last pts dialog
         TestCase("GAP", "TC_DISC_LIMP_BV_01_C", TestCmd("btmgmt find -l")),
         TestCase("GAP", "TC_DISC_LIMP_BV_02_C", TestCmd("btmgmt find -l")),
         TestCase("GAP", "TC_DISC_LIMP_BV_03_C", TestCmd("btmgmt find -l")),
@@ -104,9 +104,9 @@ def test_cases(pts):
         TestCase("GAP", "TC_DISC_GENP_BV_05_C", TestCmd("btmgmt find -l")),
 
         TestCase("GAP", "TC_IDLE_GIN_BV_01_C",
-                 TestCmd("btmgmt find", start_wid = 146)),
+                 TestCmd("btmgmt find", start_wid=146)),
         TestCase("GAP", "TC_IDLE_LIN_BV_01_C",
-                 TestCmd("hcitool scan --iac=liac", start_wid = 146)),
+                 TestCmd("hcitool scan --iac=liac", start_wid=146)),
 
         # TODO: must script/automate haltest
         # TestCase("GAP", "TC_IDLE_NAMP_BV_01_C"),
@@ -115,12 +115,12 @@ def test_cases(pts):
                  TestFunc(btmgmt.advertising_on)),
 
         TestCase("GAP", "TC_CONN_NCON_BV_01_C",
-                 TestFunc(btmgmt.connectable_off), no_wid = 120),
-        TestCase("GAP", "TC_CONN_NCON_BV_02_C", no_wid = 120),
-        TestCase("GAP", "TC_CONN_NCON_BV_03_C", no_wid = 120),
+                 TestFunc(btmgmt.connectable_off), no_wid=120),
+        TestCase("GAP", "TC_CONN_NCON_BV_02_C", no_wid=120),
+        TestCase("GAP", "TC_CONN_NCON_BV_03_C", no_wid=120),
 
         TestCase("GAP", "TC_CONN_DCON_BV_01_C",
-                 TestFunc(btmgmt.connectable_on), no_wid = 120),
+                 TestFunc(btmgmt.connectable_on), no_wid=120),
 
         TestCase("GAP", "TC_CONN_UCON_BV_01_C"),
         TestCase("GAP", "TC_CONN_UCON_BV_02_C"),
@@ -224,6 +224,7 @@ def test_cases(pts):
 
     return test_cases
 
+
 def main():
     """Main."""
 
@@ -237,6 +238,7 @@ def main():
         print test_case
         for cmd in test_case.cmds:
             print cmd
+
 
 if __name__ == "__main__":
     main()

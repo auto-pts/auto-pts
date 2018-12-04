@@ -51,28 +51,34 @@ sgr_fg_red = "\x1B[31m"
 rl_prompt_start_ignore = '\001'
 rl_prompt_end_ignore = '\002'
 
+
 def rl_prompt_ignore(text):
     """Return text surrounded by prompt ignore markers of readline"""
     return rl_prompt_start_ignore + text + rl_prompt_end_ignore
+
 
 def red(text):
     """Return red text"""
     return sgr_fg_red + text + sgr_reset
 
+
 def green(text):
     """Return green text"""
     return sgr_fg_green + text + sgr_reset
+
 
 def blue(text):
     """Return blue text"""
     return sgr_fg_blue + text + sgr_reset
 
+
 def get_my_name():
     """Returns name of the script without extension"""
-    script_name = os.path.basename(sys.argv[0]) # in case it is full path
+    script_name = os.path.basename(sys.argv[0])  # in case it is full path
     script_name_no_ext = os.path.splitext(script_name)[0]
 
     return script_name_no_ext
+
 
 class Completer:
     def __init__(self, options):
@@ -133,7 +139,7 @@ class Completer:
             try:
                 self.find_matches(text)
             except Exception:
-                logging.error("Match search exception!", exc_info = 1)
+                logging.error("Match search exception!", exc_info=1)
                 self.matches = []
 
         try:
@@ -141,9 +147,14 @@ class Completer:
         except IndexError:
             response = None
 
-        self.log.debug("%s text=%r state=%r matches=%r", self.complete.__name__,
-                      text, state, self.matches)
+        self.log.debug(
+            "%s text=%r state=%r matches=%r",
+            self.complete.__name__,
+            text,
+            state,
+            self.matches)
         return response
+
 
 class Help(object):
     """Help text manager for Cmd classes"""
@@ -160,19 +171,19 @@ class Help(object):
         if isinstance(sub_cmds, list):
             for cmd_name in sorted(sub_cmds):
                 help_text += margin + "%s\n" % (cmd_name,)
-        else: # dict
+        else:  # dict
             for cmd_name in sorted(sub_cmds.keys()):
                 cmd_help = sub_cmds[cmd_name]
                 help_text += margin + "%-15s %s\n" % (cmd_name, cmd_help)
 
-        help_text = help_text[:-1] # remove last newline
+        help_text = help_text[:-1]  # remove last newline
 
         self.available_sub_cmds = help_text
 
         return help_text
 
-    def build(self, short_help, synopsis = None, description = None,
-              example = None, sub_cmds = None):
+    def build(self, short_help, synopsis=None, description=None,
+              example=None, sub_cmds=None):
         """
         sub_cmds -- List of sub-command names, or dictionary with sub-command
                     names as keys and command help as values
@@ -200,6 +211,7 @@ class Help(object):
 
         self.long = help_text
 
+
 class Cmd(object):
     def __init__(self):
         # string name of the command used to invoke it in shell
@@ -219,18 +231,19 @@ class Cmd(object):
     def run(self):
         raise AbstractMethodException()
 
+
 class StartZephyrCmd(Cmd):
     def __init__(self):
         Cmd.__init__(self)
         self.name = "start-zephyr"
 
         self.help.build(
-            short_help = "Start Zephyr OS under QEMU",
-            synopsis = "%s kernel_image" % self.name,
-            description = ("Start QEMU with Zephyr OS image"
-                           "\nNote: xterm must be installed for "
-                           "this command to work."),
-            example = "%s ./microkernel.elf" % self.name)
+            short_help="Start Zephyr OS under QEMU",
+            synopsis="%s kernel_image" % self.name,
+            description=("Start QEMU with Zephyr OS image"
+                         "\nNote: xterm must be installed for "
+                         "this command to work."),
+            example="%s ./microkernel.elf" % self.name)
 
     def run(self, kernel_image):
         global QEMU_PROCESS
@@ -250,14 +263,14 @@ class StartZephyrCmd(Cmd):
         qemu_cmd = get_qemu_cmd(kernel_image)
 
         # why running under xterm? cause of -serial mon:stdio: running qemu as
-        # subprocess make terminal input impossible in the parent application, also
-        # it is impossible to daemonize qemu
+        # subprocess make terminal input impossible in the parent application,
+        # also it is impossible to daemonize qemu
         xterm_qemu_cmd = ('xterm -e sh -c "%s 2>&1|tee qemu-%s.log"' %
                           (qemu_cmd, get_my_name()))
 
         # start listening
         logging.debug("Starting listen thread")
-        thread = threading.Thread(target = listen)
+        thread = threading.Thread(target=listen)
         thread.start()
 
         # start qemu in a new session to prevent killing it on Ctrl-C
@@ -267,15 +280,16 @@ class StartZephyrCmd(Cmd):
 
         thread.join()
 
+
 class StopZephyrCmd(Cmd):
     def __init__(self):
         Cmd.__init__(self)
         self.name = "stop-zephyr"
 
         self.help.build(
-            short_help = "Terminate Zephyr QEMU process",
-            synopsis = "%s" % self.name,
-            description = "Stop Zephyr QEMU process")
+            short_help="Terminate Zephyr QEMU process",
+            synopsis="%s" % self.name,
+            description="Stop Zephyr QEMU process")
 
     def run(self):
 
@@ -289,9 +303,10 @@ class StopZephyrCmd(Cmd):
             if QEMU_PROCESS.poll() is None:
                 logging.debug("qemu process is running, will terminate it")
                 QEMU_PROCESS.terminate()
-                QEMU_PROCESS.wait() # do not let zombies take over
+                QEMU_PROCESS.wait()  # do not let zombies take over
                 logging.debug("Completed termination of qemu process")
                 QEMU_PROCESS = None
+
 
 class SendCmd(Cmd):
     def __init__(self):
@@ -299,14 +314,17 @@ class SendCmd(Cmd):
         self.name = "send"
 
         self.help.build(
-            short_help = "Send BTP command to tester",
-            synopsis = "%s <service_id> <opcode> <index> [<data>]" % self.name,
-            description = ("send <int> <int> <int> <hex>\n"
-            "(send SERVICE_ID_CORE = 0x00, OP_CORE_REGISTER_SERVICE = 0x03,"
-            "Controller Index = 0, SERVICE_ID_GAP = 0x01...)"),
-            example = "%s 0 1 0 01" % self.name)
+            short_help="Send BTP command to tester",
+            synopsis="%s <service_id> <opcode> <index> [<data>]" %
+            self.name,
+            description=(
+                "send <int> <int> <int> <hex>\n"
+                "(send SERVICE_ID_CORE = 0x00, OP_CORE_REGISTER_SERVICE = 0x03"
+                ",Controller Index = 0, SERVICE_ID_GAP = 0x01...)"),
+            example="%s 0 1 0 01" %
+            self.name)
 
-    def run(self, svc_id, op, ctrl_index, data = ""):
+    def run(self, svc_id, op, ctrl_index, data=""):
         # TODO: should data be None and later check be done to append or not
         # append data to the frame?
         logging.debug("%s.%s %r %r %r", self.__class__.__name__,
@@ -314,19 +332,21 @@ class SendCmd(Cmd):
 
         send(svc_id, op, ctrl_index, data)
 
+
 class ReceiveCmd(Cmd):
     def __init__(self):
         Cmd.__init__(self)
         self.name = "receive"
 
         self.help.build(
-            short_help = "Receive BTP command from tester",
-            synopsis = "%s" % self.name,
-            description = ("This command reads BTP commands from tester."
-                           "\nCan be interrupted with Ctrl-C."))
+            short_help="Receive BTP command from tester",
+            synopsis="%s" % self.name,
+            description=("This command reads BTP commands from tester."
+                         "\nCan be interrupted with Ctrl-C."))
 
     def run(self, *args, **kwds):
         receive(*args, **kwds)
+
 
 class ListenCmd(Cmd):
     def __init__(self):
@@ -334,13 +354,14 @@ class ListenCmd(Cmd):
         self.name = "listen"
 
         self.help.build(
-            short_help = "Listen to BTP messages from tester",
-            synopsis = "%s" % self.name,
-            description = ("This command starts listening for BTP server "
-                           "connection.\nCan be interrupted with Ctrl-C"))
+            short_help="Listen to BTP messages from tester",
+            synopsis="%s" % self.name,
+            description=("This command starts listening for BTP server "
+                         "connection.\nCan be interrupted with Ctrl-C"))
 
     def run(self):
         listen()
+
 
 class DisconnectCmd(Cmd):
     def __init__(self):
@@ -348,9 +369,9 @@ class DisconnectCmd(Cmd):
         self.name = "disconnect"
 
         self.help.build(
-            short_help = "Disconnect from BTP tester",
-            synopsis = "%s" % self.name,
-            description = "Clear btp socket connection data")
+            short_help="Disconnect from BTP tester",
+            synopsis="%s" % self.name,
+            description="Clear btp socket connection data")
 
     def run(self):
         if not conn_check():
@@ -359,6 +380,7 @@ class DisconnectCmd(Cmd):
         conn_clean()
         print "Connection cleared"
 
+
 class CoreCmd(Cmd):
     def __init__(self):
         Cmd.__init__(self)
@@ -366,15 +388,16 @@ class CoreCmd(Cmd):
         self.sub_cmds = btp.CORE
 
         self.help.build(
-            short_help = "Send core command to BTP tester",
-            synopsis = "%s [command]" % self.name,
-            sub_cmds = self.sub_cmds.keys())
+            short_help="Send core command to BTP tester",
+            synopsis="%s [command]" % self.name,
+            sub_cmds=self.sub_cmds.keys())
 
     def run(self, *cmd):
         if not cmd:
             raise TypeError("Command arguments are missing")
 
         generic_srvc_cmd_handler(btp.CORE, cmd)
+
 
 class GapCmd(Cmd):
     def __init__(self):
@@ -383,15 +406,16 @@ class GapCmd(Cmd):
         self.sub_cmds = btp.GAP
 
         self.help.build(
-            short_help = "Send GAP command to BTP tester",
-            synopsis = "%s [command]" % self.name,
-            sub_cmds = self.sub_cmds.keys())
+            short_help="Send GAP command to BTP tester",
+            synopsis="%s [command]" % self.name,
+            sub_cmds=self.sub_cmds.keys())
 
     def run(self, *cmd):
         if not cmd:
             raise TypeError("Command arguments are missing")
 
         generic_srvc_cmd_handler(btp.GAP, cmd)
+
 
 class GattsCmd(Cmd):
     def __init__(self):
@@ -400,15 +424,16 @@ class GattsCmd(Cmd):
         self.sub_cmds = btp.GATTS
 
         self.help.build(
-            short_help = "Send GATT server command to BTP tester",
-            synopsis = "%s [command]" % self.name,
-            sub_cmds = self.sub_cmds.keys())
+            short_help="Send GATT server command to BTP tester",
+            synopsis="%s [command]" % self.name,
+            sub_cmds=self.sub_cmds.keys())
 
     def run(self, *cmd):
         if not cmd:
             raise TypeError("Command arguments are missing")
 
         generic_srvc_cmd_handler(btp.GATTS, cmd)
+
 
 class GattcCmd(Cmd):
     def __init__(self):
@@ -417,15 +442,16 @@ class GattcCmd(Cmd):
         self.sub_cmds = btp.GATTC
 
         self.help.build(
-            short_help = "Send GATT client command to BTP tester",
-            synopsis = "%s [command]" % self.name,
-            sub_cmds = self.sub_cmds.keys())
+            short_help="Send GATT client command to BTP tester",
+            synopsis="%s [command]" % self.name,
+            sub_cmds=self.sub_cmds.keys())
 
     def run(self, *cmd):
         if not cmd:
             raise TypeError("Command arguments are missing")
 
         generic_srvc_cmd_handler(btp.GATTC, cmd)
+
 
 class L2capCmd(Cmd):
     def __init__(self):
@@ -434,9 +460,9 @@ class L2capCmd(Cmd):
         self.sub_cmds = btp.L2CAP
 
         self.help.build(
-            short_help = "Send L2CAP command to BTP tester",
-            synopsis = "%s [command]" % self.name,
-            sub_cmds = self.sub_cmds.keys())
+            short_help="Send L2CAP command to BTP tester",
+            synopsis="%s [command]" % self.name,
+            sub_cmds=self.sub_cmds.keys())
 
     def run(self, *cmd):
         if not cmd:
@@ -444,15 +470,17 @@ class L2capCmd(Cmd):
 
         generic_srvc_cmd_handler(btp.L2CAP, cmd)
 
+
 class ExitCmd(Cmd):
     def __init__(self):
         Cmd.__init__(self)
         self.name = "exit"
 
-        self.help.build(short_help = "Exit the shell")
+        self.help.build(short_help="Exit the shell")
 
     def run(self):
         sys.exit(0)
+
 
 class HelpCmd(Cmd):
 
@@ -462,9 +490,11 @@ class HelpCmd(Cmd):
         self.sub_cmds = cmds_dict
 
     def __build_help(self):
-        """Builds help. This is not done in constructor as with the other commands
-        cause then this class is not created, hence it is not in the cmds_dict,
-        from which commands and their help text are obtained.
+        """Builds help.
+
+        This is not done in constructor as with the other commands cause then
+        this class is not created, hence it is not in the cmds_dict, from which
+        commands and their help text are obtained.
 
         So, by building help after the constructor of this class we also get
         the help for this class in the list of available commands when running:
@@ -477,17 +507,17 @@ class HelpCmd(Cmd):
         # needed by the following dictionary comprehension
         self.help.short = short_help
 
-        cmds = { cmd.name : cmd.help.short
-                 for cmd_name, cmd in self.sub_cmds.iteritems() }
+        cmds = {cmd.name: cmd.help.short
+                for cmd_name, cmd in self.sub_cmds.iteritems()}
 
         self.help.build(
-            short_help = short_help,
-            synopsis = "%s [command]" % self.name,
-            description = "Run '%s command' to see detailed help about "
+            short_help=short_help,
+            synopsis="%s [command]" % self.name,
+            description="Run '%s command' to see detailed help about "
             "specific command" % self.name,
-            sub_cmds = cmds)
+            sub_cmds=cmds)
 
-    def run(self, cmd_name = None):
+    def run(self, cmd_name=None):
         if not self.help.short:
             self.__build_help()
 
@@ -501,6 +531,7 @@ class HelpCmd(Cmd):
             print "%r is not a valid command!" % cmd_name
             print self.help.available_sub_cmds
 
+
 def exec_cmd(choice, params, cmds_dict):
     logging.debug("%s choice=%r params=%r cmds_dict=%r",
                   exec_cmd.__name__, choice, params, cmds_dict)
@@ -512,7 +543,7 @@ def exec_cmd(choice, params, cmds_dict):
     try:
         cmds_dict[cmd_name].run(*params)
     except KeyError:
-        help_cmd.run(cmd_name) # invalid command
+        help_cmd.run(cmd_name)  # invalid command
     except TypeError as e:
         print "Please enter correct arguments to command!\n"
         logging.debug(e)
@@ -524,11 +555,12 @@ def exec_cmd(choice, params, cmds_dict):
     except SyntaxWarning as e:
         print e
 
+
 def parse_service_id(svc_id):
     """Parse service ID specified as string.
 
     Return -- integer service ID"""
-    service_ids = {item : getattr(defs, item) for item in dir(defs)
+    service_ids = {item: getattr(defs, item) for item in dir(defs)
                    if item.startswith("BTP_SERVICE_ID")}
     try:
         int_svc_id = int(svc_id)
@@ -543,6 +575,7 @@ def parse_service_id(svc_id):
 
     return int_svc_id
 
+
 def parse_opcode(opcode):
     """Parse opcode specified as string.
 
@@ -552,6 +585,7 @@ def parse_opcode(opcode):
     except ValueError:
         raise SyntaxWarning('Wrong opcode format, should be an int: "0-255"')
     return int_opcode
+
 
 def parse_ctrl_index(ctrl_index):
     """Parse controller index specified as string.
@@ -564,6 +598,7 @@ def parse_ctrl_index(ctrl_index):
                             '"0-255"')
     return int_ctrl_index
 
+
 def parse_data(data):
     """Parse data specified as string.
 
@@ -574,7 +609,8 @@ def parse_data(data):
         raise SyntaxWarning('Wrong data type, should be e.g.: "0011223344ff"')
     return hex_data
 
-def send(svc_id, op, ctrl_index, data = ""):
+
+def send(svc_id, op, ctrl_index, data=""):
     logging.debug(
         "%s %r %r %r", send.__name__, svc_id, op, ctrl_index)
 
@@ -601,25 +637,26 @@ def send(svc_id, op, ctrl_index, data = ""):
 
     return
 
+
 def print_controller_info(data):
     """Print data of the BTP Read Controller Information response"""
     settings2txt = {
-        defs.GAP_SETTINGS_POWERED : "Powered",
-        defs.GAP_SETTINGS_CONNECTABLE : "Connectable",
-        defs.GAP_SETTINGS_FAST_CONNECTABLE : "Fast Connectable",
-        defs.GAP_SETTINGS_DISCOVERABLE : "Discoverable",
-        defs.GAP_SETTINGS_BONDABLE : "Bondable",
-        defs.GAP_SETTINGS_LINK_SEC_3 : "Link Level Security (Sec. mode 3)",
-        defs.GAP_SETTINGS_SSP : "Secure Simple Pairing",
-        defs.GAP_SETTINGS_BREDR : "Basic Rate/Enhanced Data Rate",
-        defs.GAP_SETTINGS_HS : "High Speed",
-        defs.GAP_SETTINGS_LE : "Low Energy",
-        defs.GAP_SETTINGS_ADVERTISING : "Advertising",
-        defs.GAP_SETTINGS_SC : "Secure Connections",
-        defs.GAP_SETTINGS_DEBUG_KEYS : "Debug Keys",
-        defs.GAP_SETTINGS_PRIVACY : "Privacy",
-        defs.GAP_SETTINGS_CONTROLLER_CONFIG : "Controller Configuration",
-        defs.GAP_SETTINGS_STATIC_ADDRESS : "Static Address"
+        defs.GAP_SETTINGS_POWERED: "Powered",
+        defs.GAP_SETTINGS_CONNECTABLE: "Connectable",
+        defs.GAP_SETTINGS_FAST_CONNECTABLE: "Fast Connectable",
+        defs.GAP_SETTINGS_DISCOVERABLE: "Discoverable",
+        defs.GAP_SETTINGS_BONDABLE: "Bondable",
+        defs.GAP_SETTINGS_LINK_SEC_3: "Link Level Security (Sec. mode 3)",
+        defs.GAP_SETTINGS_SSP: "Secure Simple Pairing",
+        defs.GAP_SETTINGS_BREDR: "Basic Rate/Enhanced Data Rate",
+        defs.GAP_SETTINGS_HS: "High Speed",
+        defs.GAP_SETTINGS_LE: "Low Energy",
+        defs.GAP_SETTINGS_ADVERTISING: "Advertising",
+        defs.GAP_SETTINGS_SC: "Secure Connections",
+        defs.GAP_SETTINGS_DEBUG_KEYS: "Debug Keys",
+        defs.GAP_SETTINGS_PRIVACY: "Privacy",
+        defs.GAP_SETTINGS_CONTROLLER_CONFIG: "Controller Configuration",
+        defs.GAP_SETTINGS_STATIC_ADDRESS: "Static Address"
     }
 
     def get_settings_names(settings):
@@ -639,7 +676,7 @@ def print_controller_info(data):
      short_name) = struct.unpack_from(fmt, data)
 
     address = binascii.hexlify(address[::-1]).upper()
-    print "IUT BD_ADDR: %r" %  address
+    print "IUT BD_ADDR: %r" % address
     print "Supported Settings: %r %s" % \
         (supported_settings, get_settings_names(supported_settings))
     print "Current Settings: %r %s" % \
@@ -648,9 +685,12 @@ def print_controller_info(data):
     print "Name: '%s'" % name
     print "Short Name: '%s'" % short_name
 
+
 def receive(exp_svc_id=None, exp_op=None):
-    """The parameters are the values used in the command, so response is expected
-    to have the same value"""
+    """The parameters are the values used in the command, so response is
+    expected to have the same value
+
+    """
     logging.debug("%s %r %r", receive.__name__, exp_svc_id, exp_op)
 
     if conn_check() is False:
@@ -663,12 +703,14 @@ def receive(exp_svc_id=None, exp_op=None):
         return
 
     # default __repr__ of namedtuple does not print hex
-    print ("Received header(svc_id=%d, op=0x%.2x, ctrl_index=%d, data_len=%d)" %
-           (tuple_hdr.svc_id, tuple_hdr.op, tuple_hdr.ctrl_index,
-            tuple_hdr.data_len))
+    print (
+        "Received header(svc_id=%d, op=0x%.2x, ctrl_index=%d, data_len=%d)" %
+        (tuple_hdr.svc_id, tuple_hdr.op, tuple_hdr.ctrl_index,
+         tuple_hdr.data_len))
 
     hex_str = binascii.hexlify(tuple_data[0])
-    hex_str_byte = " ".join(hex_str[i:i+2] for i in range(0, len(hex_str), 2))
+    hex_str_byte = " ".join(hex_str[i:i + 2]
+                            for i in range(0, len(hex_str), 2))
     print "Received data (hex): %s" % hex_str_byte
     print "Received data (ascii):", tuple_data
 
@@ -690,6 +732,7 @@ def receive(exp_svc_id=None, exp_op=None):
             print_controller_info(tuple_data[0])
     print green("OK")
 
+
 def listen():
     """Establish connection with the BTP tester"""
     logging.debug("%s", listen.__name__)
@@ -707,6 +750,7 @@ def listen():
 
     except KeyboardInterrupt:
         print "\nListen interrupted!"
+
 
 def generic_srvc_cmd_handler(svc, cmd):
     logging.debug("%s svc=%r cmd=%r",
@@ -732,17 +776,18 @@ def generic_srvc_cmd_handler(svc, cmd):
         data = str(btp_cmd[3])
 
         if len(data) == 1:
-            frame.append("0%s" %  data)
+            frame.append("0%s" % data)
         else:
             frame.append(binascii.hexlify(''.join(data)))
 
-    elif len(cmd) > 1: # some commands pass data from command line
+    elif len(cmd) > 1:  # some commands pass data from command line
         data = cmd[1]
         frame.append(data)
 
     logging.debug("frame %r", frame)
 
     send(*frame)
+
 
 def conn_check():
     if BTP_SOCKET is None:
@@ -754,10 +799,12 @@ def conn_check():
 
     return True
 
+
 def conn_clean():
     global BTP_SOCKET
     BTP_SOCKET.close()
     BTP_SOCKET = None
+
 
 def cmd_loop(cmds_dict):
     prompt = "%s[%s]%s$ " % (rl_prompt_ignore(sgr_fg_blue),
@@ -776,6 +823,7 @@ def cmd_loop(cmds_dict):
 
         exec_cmd(choice, params, cmds_dict)
 
+
 def exec_cmds_file(filename, cmds_dict):
     """Runs commands from a text file
 
@@ -791,7 +839,7 @@ def exec_cmds_file(filename, cmds_dict):
     for line in open(filename):
         line = line.strip()
 
-        if line.startswith("#"): # comment
+        if line.startswith("#"):  # comment
             continue
 
         words = line.split()
@@ -804,16 +852,17 @@ def exec_cmds_file(filename, cmds_dict):
 
     print "\nDone running commands from file"
 
+
 def parse_args():
     """Parses command line arguments and options"""
 
     arg_parser = argparse.ArgumentParser(
-        description = "Bluetooth Test Protocol command line client")
+        description="Bluetooth Test Protocol command line client")
 
     arg_parser.add_argument("--cmds-file",
                             "-c",
-                            metavar = "FILE",
-                            help = "File with initial commands to run. Each "
+                            metavar="FILE",
+                            help="File with initial commands to run. Each "
                             "command should be on a separate line in the "
                             "file.  Comment lines start with the hash "
                             "character.")
@@ -821,6 +870,7 @@ def parse_args():
     args = arg_parser.parse_args()
 
     return args
+
 
 def main():
     args = parse_args()
@@ -830,10 +880,10 @@ def main():
     format = ("%(asctime)s %(name)s %(levelname)s %(filename)-25s "
               "%(lineno)-5s %(funcName)-25s : %(message)s")
 
-    logging.basicConfig(format = format,
-                        filename = log_filename,
-                        filemode = 'w',
-                        level = logging.DEBUG)
+    logging.basicConfig(format=format,
+                        filename=log_filename,
+                        filemode='w',
+                        level=logging.DEBUG)
 
     history_filename = os.path.expanduser("~/.%s_history" % my_name)
 
@@ -855,7 +905,7 @@ def main():
         L2capCmd()
     ]
 
-    cmds_dict = { cmd.name : cmd for cmd in cmds }
+    cmds_dict = {cmd.name: cmd for cmd in cmds}
 
     stop_zephyr_cmd = StopZephyrCmd()
     cmds_dict[stop_zephyr_cmd.name] = stop_zephyr_cmd
@@ -876,17 +926,17 @@ def main():
 
         cmd_loop(cmds_dict)
 
-    except KeyboardInterrupt: # Ctrl-C
+    except KeyboardInterrupt:  # Ctrl-C
         sys.exit("")
 
-    except EOFError: # Ctrl-D
+    except EOFError:  # Ctrl-D
         sys.exit("")
 
     # SystemExit is thrown in arg_parser.parse_args and in sys.exit
     except SystemExit:
-        raise # let the default handlers do the work
+        raise  # let the default handlers do the work
 
-    except:
+    except BaseException:
         import traceback
         traceback.print_exc()
         sys.exit(16)
@@ -897,6 +947,7 @@ def main():
             stop_zephyr_cmd.run()
         logging.debug("Writing history file %s" % history_filename)
         readline.write_history_file(history_filename)
+
 
 if __name__ == "__main__":
     main()

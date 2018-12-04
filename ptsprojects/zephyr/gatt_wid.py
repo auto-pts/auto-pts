@@ -45,7 +45,7 @@ def hdl_wid_1(desc):
 
 def hdl_wid_17(desc):
     # This pattern is matching Primary Service
-    pattern = re.compile("Service\s=\s'([0-9a-fA-F]+)'")
+    pattern = re.compile(r"Service\s=\s'([0-9a-fA-F]+)'")
     pts_services = pattern.findall(desc)
     if not pts_services:
         logging.error("%s parsing error", hdl_wid_17.__name__)

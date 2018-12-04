@@ -337,14 +337,14 @@ def archive_recursive(dir_path):
     :return: newly created zip file path
     """
     zip_file_path = os.path.join(os.path.dirname(dir_path),
-                                 os.path.basename(dir_path)+'.zip')
+                                 os.path.basename(dir_path) + '.zip')
     with zipfile.ZipFile(zip_file_path, 'w') as zf:
         for root, dirs, files in os.walk(dir_path):
             for file_or_dir in files + dirs:
                 zf.write(
                     os.path.join(root, file_or_dir),
-                os.path.relpath(os.path.join(root, file_or_dir),
-                                os.path.join(dir_path, os.path.pardir)))
+                    os.path.relpath(os.path.join(root, file_or_dir),
+                                    os.path.join(dir_path, os.path.pardir)))
 
     return zip_file_path
 

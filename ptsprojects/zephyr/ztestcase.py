@@ -27,7 +27,8 @@ class ZTestCase(TestCase):
     def __init__(self, *args, **kwargs):
         """Refer to TestCase.__init__ for parameters and their documentation"""
 
-        super(ZTestCase, self).__init__(*args, ptsproject_name = "zephyr",**kwargs)
+        super(ZTestCase, self).__init__(*args, ptsproject_name="zephyr",
+                                        **kwargs)
 
         self.stack = get_stack()
         self.zephyrctl = get_iut()
@@ -47,5 +48,5 @@ class ZTestCaseSlave(TestCase):
     def __init__(self, *args, **kwargs):
         """Refer to TestCase.__init__ for parameters and their documentation"""
 
-        super(ZTestCaseSlave, self).__init__(*args, ptsproject_name = "zephyr",
+        super(ZTestCaseSlave, self).__init__(*args, ptsproject_name="zephyr",
                                              **kwargs)

@@ -21,7 +21,8 @@ log = logging.debug
 
 
 def sm_wid_hdl(wid, description, test_case_name):
-    log("%s, %r, %r, %s", sm_wid_hdl.__name__, wid, description, test_case_name)
+    log("%s, %r, %r, %s", sm_wid_hdl.__name__, wid, description,
+        test_case_name)
     module = sys.modules[__name__]
 
     try:
@@ -85,5 +86,6 @@ def hdl_wid_115(desc):
 
 
 def hdl_wid_116(desc):
-    # TODO: Click Yes if the failure of pairing process due to timeout has been notified on the IUT.
+    # TODO: Click Yes if the failure of pairing process due to timeout has
+    # been notified on the IUT.
     return True

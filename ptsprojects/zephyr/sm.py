@@ -44,16 +44,16 @@ def test_cases(pts):
 
     stack.gap_init()
 
-    pre_conditions=[TestFunc(btp.core_reg_svc_gap),
-                    TestFunc(btp.gap_read_ctrl_info),
-                    TestFunc(lambda: pts.update_pixit_param(
-                             "SM", "TSPX_bd_addr_iut",
-                             stack.gap.iut_addr_get_str())),
-                    TestFunc(lambda: pts.update_pixit_param(
-                             "SM", "TSPX_peer_addr_type",
-                             "01" if stack.gap.iut_addr_is_random() else "00")),
-                    # FIXME Find better place to store PTS bdaddr
-                    TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public)]
+    pre_conditions = [TestFunc(btp.core_reg_svc_gap),
+                      TestFunc(btp.gap_read_ctrl_info),
+                      TestFunc(lambda: pts.update_pixit_param(
+                          "SM", "TSPX_bd_addr_iut",
+                          stack.gap.iut_addr_get_str())),
+                      TestFunc(lambda: pts.update_pixit_param(
+                          "SM", "TSPX_peer_addr_type",
+                          "01" if stack.gap.iut_addr_is_random() else "00")),
+                      # FIXME Find better place to store PTS bdaddr
+                      TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public)]
 
     test_cases = [
         ZTestCase("SM", "SM/MAS/PROT/BV-01-C",
@@ -221,6 +221,7 @@ def main():
 
         for index, cmd in enumerate(test_case.cmds):
             print "%d) %s" % (index, cmd)
+
 
 if __name__ == "__main__":
     main()

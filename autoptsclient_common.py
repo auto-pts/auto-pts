@@ -50,7 +50,7 @@ LOG_DIR_NAME = None
 # Envrinment variable AUTO_PTS_LOCAL must be set for FakeProxy to
 # be used. When FakeProxy is used autoptsserver on Windows will
 # not be contacted.
-AUTO_PTS_LOCAL = os.environ.has_key("AUTO_PTS_LOCAL")
+AUTO_PTS_LOCAL = "AUTO_PTS_LOCAL" in os.environ
 
 # xmlrpclib._Method patched to get __repr__ and __str__
 #
@@ -58,26 +58,35 @@ AUTO_PTS_LOCAL = os.environ.has_key("AUTO_PTS_LOCAL")
 # patch TestCase with xmlrpc TestFunc, e.g. pts.update_pixit_param, will cause
 # traceback:
 #
-# Fault: <Fault 1: '<type \'exceptions.Exception\'>:method "update_pixit_param.__str__" is not supported'>
+# Fault: <Fault 1: '<type \'exceptions.Exception\'>:method
+# "update_pixit_param.__str__" is not supported'>
 #
 # To be used till this fix is backported to python 2.7
 # https://bugs.python.org/issue1690840
+
+
 class _Method:
     # some magic to bind an XML-RPC method to an RPC server.
     # supports "nested" methods (e.g. examples.getStateName)
     def __init__(self, send, name):
         self.__send = send
         self.__name = name
+
     def __getattr__(self, name):
         return _Method(self.__send, "%s.%s" % (self.__name, name))
+
     def __call__(self, *args):
         return self.__send(self.__name, args)
+
     def __repr__(self):
         return "<%s.%s %s %s>" % (self.__class__.__module__,
                                   self.__class__.__name__,
                                   self.__name, self.__send)
     __str__ = __repr__
+
+
 xmlrpclib._Method = _Method
+
 
 class ClientCallback(PTSCallback):
     def __init__(self):
@@ -126,8 +135,8 @@ class ClientCallback(PTSCallback):
         log = logger.info
 
         log("%s %s %s %s %s" % (ptstypes.PTS_LOGTYPE_STRING[log_type],
-                             logtype_string, log_time, test_case_name,
-                             log_message))
+                                logtype_string, log_time, test_case_name,
+                                log_message))
 
         try:
             if test_case_name in RUNNING_TEST_CASE:
@@ -142,7 +151,7 @@ class ClientCallback(PTSCallback):
             sys.exit("Exception in Log")
 
     def on_implicit_send(self, project_name, wid, test_case_name, description,
-                       style, response, response_size, response_is_present):
+                         style, response, response_size, response_is_present):
         """Implements:
 
         interface IPTSImplicitSendCallbackEx : IUnknown {
@@ -183,15 +192,16 @@ class ClientCallback(PTSCallback):
             log("Calling test cases on_implicit_send")
             caller_pts_id = RUNNING_TEST_CASE.keys().index(test_case_name)
 
-            testcase_response = RUNNING_TEST_CASE[test_case_name].on_implicit_send(
-                project_name,
-                wid,
-                test_case_name,
-                description,
-                style,
-                response,
-                response_size,
-                response_is_present)
+            testcase_response \
+                = RUNNING_TEST_CASE[test_case_name].on_implicit_send(
+                    project_name,
+                    wid,
+                    test_case_name,
+                    description,
+                    style,
+                    response,
+                    response_size,
+                    response_is_present)
 
             log("test case returned on_implicit_send, response: %s",
                 testcase_response)
@@ -247,6 +257,7 @@ class CallbackThread(threading.Thread):
     To prevent SimpleXMLRPCServer blocking whole app it is started in a thread
 
     """
+
     def __init__(self):
         log("%s.%s", self.__class__.__name__, self.__init__.__name__)
         threading.Thread.__init__(self)
@@ -259,7 +270,7 @@ class CallbackThread(threading.Thread):
         log("Serving on port %s ...", CLIENT_PORT)
 
         server = SimpleXMLRPCServer(("", CLIENT_PORT),
-                                    allow_none = True, logRequests = False)
+                                    allow_none=True, logRequests=False)
         server.register_instance(self.callback)
         server.register_introspection_functions()
         server.serve_forever()
@@ -289,13 +300,15 @@ def get_my_ip_address():
         return get_my_ip_address.cached_address
 
     my_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    my_socket.connect(('8.8.8.8', 0)) # udp connection to google public dns
+    my_socket.connect(('8.8.8.8', 0))  # udp connection to google public dns
     my_ip_address = my_socket.getsockname()[0]
 
     get_my_ip_address.cached_address = my_ip_address
     return my_ip_address
 
+
 get_my_ip_address.cached_address = None
+
 
 def init_logging():
     """Initialize logging"""
@@ -303,24 +316,25 @@ def init_logging():
     now = datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S-%f")
     LOG_DIR_NAME = os.path.join("logs", now)
 
-    while os.path.exists(LOG_DIR_NAME): # make sure it does not exit
+    while os.path.exists(LOG_DIR_NAME):  # make sure it does not exit
         LOG_DIR_NAME += "_"
 
     os.makedirs(LOG_DIR_NAME)
 
-    script_name = os.path.basename(sys.argv[0]) # in case it is full path
+    script_name = os.path.basename(sys.argv[0])  # in case it is full path
     script_name_no_ext = os.path.splitext(script_name)[0]
 
     log_filename = "%s.log" % (script_name_no_ext,)
     format = ("%(asctime)s %(name)s %(levelname)s %(filename)-25s "
               "%(lineno)-5s %(funcName)-25s : %(message)s")
 
-    logging.basicConfig(format = format,
-                        filename = log_filename,
-                        filemode = 'w',
-                        level = logging.DEBUG)
+    logging.basicConfig(format=format,
+                        filename=log_filename,
+                        filemode='w',
+                        level=logging.DEBUG)
 
     log("Created logs directory %r", LOG_DIR_NAME)
+
 
 class FakeProxy(object):
     """Fake PTS XML-RPC proxy client.
@@ -372,6 +386,7 @@ class FakeProxy(object):
         """Returns project name"""
         return "Project%d" % project_index
 
+
 def init_core():
     "Initialization procedure for core modules"
     init_logging()
@@ -390,7 +405,7 @@ def init_pts(server_address, workspace_path, bd_addr, enable_max_logs,
     else:
         proxy = xmlrpclib.ServerProxy(
             "http://{}:{}/".format(server_address, SERVER_PORT),
-            allow_none = True,)
+            allow_none=True,)
 
     print "Starting PTS %s ..." % server_address,
     sys.stdout.flush()
@@ -399,7 +414,7 @@ def init_pts(server_address, workspace_path, bd_addr, enable_max_logs,
 
     proxy.callback_thread = callback_thread
 
-    proxy.set_call_timeout(120000) # milliseconds
+    proxy.set_call_timeout(120000)  # milliseconds
 
     log("Server methods: %s", proxy.system.listMethods())
     log("PTS Version: %x", proxy.get_version())
@@ -549,6 +564,7 @@ def run_test_case_wrapper(func):
 
     return wrapper
 
+
 def log2file(function):
     """Decorator to log function call into separate log file.
 
@@ -587,6 +603,7 @@ def log2file(function):
         logger.removeHandler(file_handler)
 
     return wrapper
+
 
 def get_error_code(exc):
     """Return string error code for argument exception"""
@@ -641,7 +658,7 @@ def run_test_case(pts, test_case, *unused):
     """
     log("Starting TestCase %s %s", run_test_case.__name__, test_case)
 
-    if AUTO_PTS_LOCAL: # set fake status and return
+    if AUTO_PTS_LOCAL:  # set fake status and return
         statuses = ["PASS", "INCONC", "FAIL", "UNKNOWN VERDICT: NONE",
                     "BTP ERROR", "XML-RPC ERROR", "BTP TIMEOUT"]
         test_case.status = random.choice(statuses)
@@ -672,7 +689,7 @@ def run_test_case(pts, test_case, *unused):
         logging.exception(error.message)
         error_code = get_error_code(error)
 
-    except:
+    except BaseException:
         traceback_list = format_exception(sys.exc_info())
         logging.exception("".join(traceback_list))
         error_code = get_error_code(None)
@@ -680,7 +697,7 @@ def run_test_case(pts, test_case, *unused):
     finally:
         test_case.state = "FINISHING"
         synchronize_instances(test_case.state)
-        test_case.post_run(error_code) # stop qemu and other commands
+        test_case.post_run(error_code)  # stop qemu and other commands
         del RUNNING_TEST_CASE[test_case.name]
 
     log("Done TestCase %s %s", run_test_case.__name__, test_case)
@@ -695,7 +712,7 @@ def run_slave_test_case(pts, test_case):
     """
     log("Starting Slave TestCase %s %s", run_test_case.__name__, test_case)
 
-    if AUTO_PTS_LOCAL: # set fake status and return
+    if AUTO_PTS_LOCAL:  # set fake status and return
         statuses = ["PASS", "INCONC", "FAIL", "UNKNOWN VERDICT: NONE",
                     "BTP ERROR", "XML-RPC ERROR", "BTP TIMEOUT"]
         test_case.status = random.choice(statuses)
@@ -726,7 +743,7 @@ def run_slave_test_case(pts, test_case):
         logging.exception(error.message)
         error_code = get_error_code(error)
 
-    except:
+    except BaseException:
         traceback_list = format_exception(sys.exc_info())
         logging.exception("".join(traceback_list))
         error_code = get_error_code(None)
@@ -734,7 +751,7 @@ def run_slave_test_case(pts, test_case):
     finally:
         test_case.state = "FINISHING"
         synchronize_instances(test_case.state)
-        test_case.post_run(error_code) # stop qemu and other commands
+        test_case.post_run(error_code)  # stop qemu and other commands
         del RUNNING_TEST_CASE[test_case.name]
 
     log("Done Slave TestCase %s %s", run_test_case.__name__, test_case)
@@ -828,9 +845,10 @@ def run_test_cases(ptses, test_cases, additional_test_cases, retries_max=0):
             [test_case.name for test_case in test_cases],
             run_count_max)
         if est_duration:
-            print("Number of test cases to run: '%d' in approximately: '%s'\n" %
-                  (num_test_cases,
-                   str(datetime.timedelta(seconds=est_duration))))
+            print(
+                "Number of test cases to run: '%d' in approximately: '%s'\n" %
+                (num_test_cases,
+                 str(datetime.timedelta(seconds=est_duration))))
 
     for index, test_case in enumerate(test_cases):
         while True:
@@ -846,18 +864,27 @@ def run_test_cases(ptses, test_cases, additional_test_cases, retries_max=0):
                 results_dict[test_case.name] = test_case.status
                 break
 
-            pts_thread = threading.Thread(target=run_test_case, args=(ptses[0],
-                                          test_case, (index, num_test_cases,
-                                          num_test_cases_width,
-                                          max_project_name, max_test_case_name,
-                                          margin, run_count_max, run_count,
-                                          regressions)))
+            pts_thread = threading.Thread(
+                target=run_test_case,
+                args=(
+                    ptses[0],
+                    test_case,
+                    (index,
+                     num_test_cases,
+                     num_test_cases_width,
+                     max_project_name,
+                     max_test_case_name,
+                     margin,
+                     run_count_max,
+                     run_count,
+                     regressions)))
             pts_threads.append(pts_thread)
             pts_thread.start()
 
             if second_test_case:
-                pts_thread = threading.Thread(target=run_slave_test_case,
-                                              args=(ptses[1], second_test_case))
+                pts_thread = threading.Thread(
+                    target=run_slave_test_case, args=(
+                        ptses[1], second_test_case))
                 pts_threads.append(pts_thread)
                 pts_thread.start()
 
@@ -866,8 +893,9 @@ def run_test_cases(ptses, test_cases, additional_test_cases, retries_max=0):
                 pts_thread.join()
 
             run_count -= 1
-            if ((test_case.status != 'PASS' or (second_test_case and
-                second_test_case.status != 'PASS')) and run_count > 0):
+            if ((test_case.status != 'PASS' or
+                 (second_test_case and second_test_case.status != 'PASS')) and
+                    run_count > 0):
                 test_case = test_case.copy()
             else:
                 results_dict[test_case.name] = test_case.status
@@ -883,6 +911,7 @@ def run_test_cases(ptses, test_cases, additional_test_cases, retries_max=0):
     print_summary(status_count, str(num_test_cases), margin, len(regressions))
 
     return status_count, results_dict, regressions
+
 
 def get_test_cases_subset(test_cases, test_case_names, excluded_names=None):
     """Return subset of test cases
@@ -911,14 +940,14 @@ def get_test_cases_subset(test_cases, test_case_names, excluded_names=None):
 
     # subsets of profiles
     profiles_subset = {
-        "GATTC" : [tc for tc in test_cases
-                   if tc.project_name == "GATT" and "/CL/" in tc.name],
+        "GATTC": [tc for tc in test_cases
+                  if tc.project_name == "GATT" and "/CL/" in tc.name],
 
-        "GATTS" : [tc for tc in test_cases
-                   if tc.project_name == "GATT" and "/SR/" in tc.name]
+        "GATTS": [tc for tc in test_cases
+                  if tc.project_name == "GATT" and "/SR/" in tc.name]
     }
 
-    test_cases_dict = {tc.name : tc for tc in test_cases}
+    test_cases_dict = {tc.name: tc for tc in test_cases}
     test_cases_subset = []
 
     if excluded_names:

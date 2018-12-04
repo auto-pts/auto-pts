@@ -66,7 +66,7 @@ if __name__ == "__main__":
         os._exit(14)
     except SystemExit:
         raise
-    except:
+    except BaseException:
         import traceback
 
         traceback.print_exc()

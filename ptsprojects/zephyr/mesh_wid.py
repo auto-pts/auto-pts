@@ -158,8 +158,8 @@ def hdl_wid_13(desc):
     stack = get_stack()
 
     if not stack.mesh.is_initialized:
-         btp.mesh_config_prov()
-         btp.mesh_init()
+        btp.mesh_config_prov()
+        btp.mesh_init()
     else:
         if stack.mesh.is_provisioned.data:
             return True
@@ -201,8 +201,8 @@ def hdl_wid_18(desc):
     # This pattern is matching Time to Live (TTL) value, Control (CTL),
     # Source (SRC) Destination (DST) and Payload of the network packet
     # to be received
-    pattern = re.compile('(TTL|CTL|SRC|DST|TransportPDU)\\:'
-                         '\s+\\[([0][xX][0-9a-fA-F]+)\\]')
+    pattern = re.compile(r'(TTL|CTL|SRC|DST|TransportPDU)\\:'
+                         r'\s+\\[([0][xX][0-9a-fA-F]+)\\]')
     params = pattern.findall(desc)
     if not params:
         logging.error("%s parsing error", hdl_wid_18.__name__)
@@ -236,8 +236,8 @@ def hdl_wid_19(desc):
 
     # This pattern is matching Time to Live (TTL) value, Source (SRC) and
     # Destination (DST) of the network packet to be sent
-    pattern = re.compile('(TTL|SRC|DST)\\:'
-                         '\s+\\[([0][xX][0-9a-fA-F]+)\\]')
+    pattern = re.compile(r'(TTL|SRC|DST)\\:'
+                         r'\s+\\[([0][xX][0-9a-fA-F]+)\\]')
     params = pattern.findall(desc)
     if not params:
         logging.error("%s parsing error", hdl_wid_19.__name__)
@@ -280,7 +280,8 @@ def hdl_wid_23(desc):
     stack = get_stack()
 
     # This pattern is matching source and destination addresses
-    pattern = re.compile('(source\saddress|destination\saddress)\s+([0][xX][0-9a-fA-F]+)')
+    pattern = re.compile(
+        r'(source\saddress|destination\saddress)\s+([0][xX][0-9a-fA-F]+)')
     params = pattern.findall(desc)
     if not params:
         logging.error("%s parsing error", hdl_wid_23.__name__)
@@ -348,8 +349,8 @@ def hdl_wid_30(desc):
     # This pattern is matching Time to Live (TTL) value, Control (CTL),
     # Source (SRC) Destination (DST) and Payload of the network packet
     # to be received
-    pattern = re.compile('(TTL|CTL|SRC|DST|TransportPDU)\\:'
-                         '\s+\\[([0][xX][0-9a-fA-F]+)\\]')
+    pattern = re.compile(r'(TTL|CTL|SRC|DST|TransportPDU)\\:'
+                         r'\s+\\[([0][xX][0-9a-fA-F]+)\\]')
     params = pattern.findall(desc)
     if not params:
         logging.error("%s parsing error", hdl_wid_30.__name__)
@@ -404,7 +405,7 @@ def hdl_wid_35(desc):
 
     # This pattern is matching Time to Live (TTL) value, Control (CTL),
     # Source (SRC) and Destination (DST)
-    pattern = re.compile('(TTL|CTL|SRC|DST)\\:\s+\\[([0][xX][0-9a-fA-F]+)\\]')
+    pattern = re.compile(r'(TTL|CTL|SRC|DST)\\:\s+\\[([0][xX][0-9a-fA-F]+)\\]')
     params = pattern.findall(desc)
     if not params:
         logging.error("%s parsing error", hdl_wid_35.__name__)
@@ -438,7 +439,8 @@ def hdl_wid_36(desc):
     stack = get_stack()
 
     # This pattern is matching source and destination addresses
-    pattern = re.compile('(source\saddress|destination\saddress)\s+([0][xX][0-9a-fA-F]+)')
+    pattern = re.compile(
+        r'(source\saddress|destination\saddress)\s+([0][xX][0-9a-fA-F]+)')
     params = pattern.findall(desc)
     if not params:
         logging.error("%s parsing error", hdl_wid_36.__name__)
@@ -493,7 +495,7 @@ def hdl_wid_39(desc):
     stack = get_stack()
 
     # This pattern is destination addresses
-    pattern = re.compile('(address)\s+\\:\s+([0][xX][0-9a-fA-F]+)')
+    pattern = re.compile(r'(address)\s+\\:\s+([0][xX][0-9a-fA-F]+)')
     params = pattern.findall(desc)
     if not params:
         logging.error("%s parsing error", hdl_wid_39.__name__)
@@ -547,7 +549,8 @@ def hdl_wid_44(desc):
     stack = get_stack()
 
     # This pattern is matching source and destination label addresses
-    pattern = re.compile('(source\saddress|\\(address)\s+([0][xX][0-9a-fA-F]+)')
+    pattern = re.compile(
+        r'(source\saddress|\\(address)\s+([0][xX][0-9a-fA-F]+)')
     params = pattern.findall(desc)
     if not params:
         logging.error("%s parsing error", hdl_wid_44.__name__)
@@ -726,7 +729,8 @@ def hdl_wid_205(desc):
     :param desc: Order IUT to prepare large size of composition data that can
                  be sent as fragmented packets to the PTS. During IV Update in
                  Progress state PTS will hold acknowledgment response and
-                 beacon IV update in progress flag on. Click OK when it is ready.
+                 beacon IV update in progress flag on. Click OK when it is
+                 ready.
     :return:
     """
     btp.mesh_iv_update_test_mode(True)
@@ -1135,7 +1139,7 @@ def hdl_wid_601(desc):
     stack = get_stack()
 
     # This pattern is matching fault array
-    pattern = re.compile('array\s=\s([0-9a-fA-F]+)')
+    pattern = re.compile(r'array\s=\s([0-9a-fA-F]+)')
     params = pattern.findall(desc)
     if not params:
         logging.error("%s parsing error", hdl_wid_601.__name__)
