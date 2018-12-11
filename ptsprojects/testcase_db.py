@@ -5,14 +5,15 @@ DATABASE_FILE = 'TestCase.db'
 
 class TestCaseTable(object):
     def __init__(self, name):
-        self.conn = sqlite3.connect(DATABASE_FILE)
-        self.cursor = self.conn.cursor()
+        self._open()
         self.name = name
 
         self.cursor.execute(
             "CREATE TABLE IF NOT EXISTS {} (name TEXT, duration REAL, "
             "count INTEGER, result TEXT);".format(self.name))
         self.conn.commit()
+
+        self._close()
 
     def _open(self):
         self.conn = sqlite3.connect(DATABASE_FILE)
@@ -78,8 +79,6 @@ class TestCaseTable(object):
         self._close()
 
     def estimate_session_duration(self, test_cases_names, run_count_max):
-        self._open()
-
         duration = 0
         count_unknown = 0
         num_test_cases = len(test_cases_names)
@@ -101,10 +100,5 @@ class TestCaseTable(object):
         if (num_test_cases - count_unknown) != 0:
             duration += count_unknown * duration / (num_test_cases - count_unknown)
 
-        self._close()
-
         return duration
 
-    def __del__(self):
-        self.cursor.close()
-        self.conn.close()
