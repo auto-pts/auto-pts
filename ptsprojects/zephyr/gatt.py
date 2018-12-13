@@ -67,11 +67,8 @@ def verify_gatt_sr_gpa_bv_04_c(description):
     verify different things between different test case executions. PTS can
     ask:
 
-    1) Please confirm IUT contain: Attribute Handle = '0004'O
-       Properties = '02'O,Handle = '0005'O,UUID = '2A01'O
-
-    2) Please confirm IUT contain: Attribute Handle = '0002'O
-       Properties = '02'O,Handle = '0003'O,UUID = '2A00'O
+    1) Please confirm IUT contain: Attribute Handle = '0006'O
+       Properties = '02'O,Handle = '0007'O,UUID = '2A00'O
 
     Ideally, handle properties and UUID would be read by auto-pts from the
     IUT. For now support for multiple tuple of strings to verify is
@@ -84,15 +81,10 @@ def verify_gatt_sr_gpa_bv_04_c(description):
     verification_pass = False
 
     verify = (
-        ("Attribute Handle = '0004'",
+        ("Attribute Handle = '0006'",
          "Properties = '02'",
-         "Handle = '0005'",
-         "UUID = '%s'" % UUID.appearance),
-
-        ("Attribute Handle = '0002'",
-         "Properties = '02'",
-         "Handle = '0003'",
-         "UUID = '%s'" % UUID.device_name))
+         "Handle = '0007'",
+         "UUID = '%s'" % UUID.device_name),)
 
     for verify_tuple in verify:
         logging.debug("tuple to verify %r", verify_tuple)
@@ -161,9 +153,9 @@ def test_cases_server(pts):
                   pre_conditions +
                   [TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)],
-                  verify_wids={23: ("UUID= '%s" % UUID.gap_svc,
+                  verify_wids={23: ("UUID= '%s" % UUID.gatt_svc,
                                     "start handle = '0001'",
-                                    "end handle = '0007'")}),
+                                    "end handle = '0004'")}),
         ZTestCase("GATT", "GATT/SR/GAD/BV-03-C",
                   pre_conditions +
                   [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
@@ -189,7 +181,7 @@ def test_cases_server(pts):
                             Perm.read | Perm.write, UUID.VND16_2),
                    TestFunc(btp.gatts_start_server),
                    TestFunc(btp.gap_adv_ind_on, start_wid=1)],
-                  verify_wids={25: ("UUID= '%s'" % UUID.gap_svc,
+                  verify_wids={25: ("UUID= '%s'" % UUID.gatt_svc,
                                     "handle='0002'")}),
         ZTestCase("GATT", "GATT/SR/GAD/BV-05-C",
                   pre_conditions +
