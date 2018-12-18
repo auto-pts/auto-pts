@@ -201,8 +201,8 @@ def hdl_wid_18(desc):
     # This pattern is matching Time to Live (TTL) value, Control (CTL),
     # Source (SRC) Destination (DST) and Payload of the network packet
     # to be received
-    pattern = re.compile(r'(TTL|CTL|SRC|DST|TransportPDU)\\:'
-                         r'\s+\\[([0][xX][0-9a-fA-F]+)\\]')
+    pattern = re.compile(r'(TTL|CTL|SRC|DST|TransportPDU)\:'
+                         r'\s+\[([0][xX][0-9a-fA-F]+)\]')
     params = pattern.findall(desc)
     if not params:
         logging.error("%s parsing error", hdl_wid_18.__name__)
@@ -236,8 +236,7 @@ def hdl_wid_19(desc):
 
     # This pattern is matching Time to Live (TTL) value, Source (SRC) and
     # Destination (DST) of the network packet to be sent
-    pattern = re.compile(r'(TTL|SRC|DST)\\:'
-                         r'\s+\\[([0][xX][0-9a-fA-F]+)\\]')
+    pattern = re.compile(r'(TTL|SRC|DST)\:\s+\[([0][xX][0-9a-fA-F]+)\]')
     params = pattern.findall(desc)
     if not params:
         logging.error("%s parsing error", hdl_wid_19.__name__)
@@ -405,7 +404,7 @@ def hdl_wid_35(desc):
 
     # This pattern is matching Time to Live (TTL) value, Control (CTL),
     # Source (SRC) and Destination (DST)
-    pattern = re.compile(r'(TTL|CTL|SRC|DST)\\:\s+\\[([0][xX][0-9a-fA-F]+)\\]')
+    pattern = re.compile(r'(TTL|CTL|SRC|DST)\:\s+\[([0][xX][0-9a-fA-F]+)\]')
     params = pattern.findall(desc)
     if not params:
         logging.error("%s parsing error", hdl_wid_35.__name__)
@@ -495,7 +494,7 @@ def hdl_wid_39(desc):
     stack = get_stack()
 
     # This pattern is destination addresses
-    pattern = re.compile(r'(address)\s+\\:\s+([0][xX][0-9a-fA-F]+)')
+    pattern = re.compile(r'(address)\s+\:\s+([0][xX][0-9a-fA-F]+)')
     params = pattern.findall(desc)
     if not params:
         logging.error("%s parsing error", hdl_wid_39.__name__)
@@ -550,7 +549,7 @@ def hdl_wid_44(desc):
 
     # This pattern is matching source and destination label addresses
     pattern = re.compile(
-        r'(source\saddress|\\(address)\s+([0][xX][0-9a-fA-F]+)')
+        r'(source\saddress|\(address)\s+([0][xX][0-9a-fA-F]+)')
     params = pattern.findall(desc)
     if not params:
         logging.error("%s parsing error", hdl_wid_44.__name__)
