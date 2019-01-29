@@ -390,9 +390,8 @@ def main(cfg):
                                         'bluetooth', 'tester', 'outdir',
                                         'zephyr', 'zephyr.elf')
 
-    zephyr_hash = \
-        bot.common.update_sources(os.path.abspath(args['project_path']),
-                                  args['git_branch'])
+    zephyr_hash = bot.common.update_repos(args['project_path'],
+                                          cfg["git"])['zephyr']
 
     summary, results, descriptions, regressions = \
         run_tests(args, cfg.get('iut_config', {}))
