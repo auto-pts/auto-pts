@@ -98,7 +98,8 @@ class TestCaseTable(object):
             else:
                 duration += mean_time * expected_run_count
 
-        duration += count_unknown * duration / (num_test_cases - count_unknown)
+        if (num_test_cases - count_unknown) != 0:
+            duration += count_unknown * duration / (num_test_cases - count_unknown)
 
         self._close()
 
