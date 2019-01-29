@@ -30,12 +30,23 @@ z['auto_pts'] = {
     'client_port': 65001,
     'local_ip' : ['192.168.0.100'],
     'project_path': '/path/to/project',
-    'git_branch': 'origin',
     'workspace': 'zephyr-hci',
     'board': 'nrf52',
     'enable_max_logs': False,
     'retry': '2',
     'bd_addr': '',
+}
+
+# ****************************************************************************
+# Git repositories configuration
+# ****************************************************************************
+m['git'] = {
+    'repo1': {
+        'path': 'path/to/repo',
+        'remote': 'origin',
+        'branch': 'master',
+        'stash_changes': False,
+    },
 }
 
 # ****************************************************************************

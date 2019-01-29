@@ -346,19 +346,54 @@ def archive_recursive(dir_path):
     return zip_file_path
 
 
-def update_sources(repo, remote):
+def update_sources(repo, remote, branch, stash_changes=False):
     """GIT Update sources
-    :param repo: project git repository path
-    :param remote: remote name
-    :return:
+    :param repo: git repository path
+    :param remote: git repository remote name
+    :param branch: git repository branch name
+    :param stash_changes: stash non-committed changes
+    :return: Commit SHA at HEAD
     """
+    print('Updating ' + repo)
+
     repo = git.Repo(repo)
+    dirty = repo.is_dirty(untracked_files=True)
+
+    if dirty and (not stash_changes):
+        print('Repo is dirty. Not updating')
+        return repo.git.show('-s', '--format=%H') + '-dirty'
+
+    if dirty and stash_changes:
+        print('Repo is dirty. Stashing changes')
+        repo.git.stash('--include-untracked')
+
     repo.git.fetch(remote)
-    repo.git.checkout('master')
-    repo.git.reset('--hard', '{}/master'.format(remote))
-    repo.git.clean('-fd')
+    repo.git.checkout('{}/{}'.format(remote, branch))
 
     return repo.git.show('-s', '--format=%H')
+
+
+def update_repos(project_path, git_config):
+    """GIT Update sources
+    :param project_path: path to project root
+    :param git_config: dictionary with configuration of repositories
+    :return: status_dict with {key=repo name, value=status}
+    """
+    project_path = os.path.abspath(project_path)
+    status_dict = {}
+
+    for repo, conf in git_config.iteritems():
+        if not os.path.isabs(conf["path"]):
+            repo_path = os.path.join(project_path, conf["path"])
+        else:
+            repo_path = os.path.abspath(conf["path"])
+
+        project_path.join(repo_path)
+        status = update_sources(repo_path, conf["remote"], conf["branch"],
+                                conf["stash_changes"])
+        status_dict[repo] = status
+
+    return status_dict
 
 
 def cleanup():
