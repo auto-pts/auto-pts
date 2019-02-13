@@ -16,7 +16,7 @@
 # Sample user_config file
 # Apply your changes and rename it to config.py
 
-projects = []
+BotProjects = []
 
 z = zephyr_nrf52 = {
     'name': 'zephyr'
@@ -101,4 +101,4 @@ z['scheduler'] = {
     'friday': '20:00',
 }
 
-projects.append(zephyr_nrf52)
+BotProjects.append(zephyr_nrf52)
