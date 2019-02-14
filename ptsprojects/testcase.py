@@ -189,7 +189,7 @@ class TestFunc:
         start_wid and stop_wid must be passed in as keyword arguments. This is
         because all other arguments will be passed to the func. For example:
 
-        TestFunc(my_function, arg1, arg2, kwd1 = 5, start_wid = 117)
+        TestFunc(my_function, arg1, arg2, kwd1=5, start_wid=117)
 
         """
         self.func = func
