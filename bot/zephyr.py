@@ -68,14 +68,14 @@ def source_zephyr_env(zephyr_wd):
                          stdout=subprocess.PIPE)
 
     lines = p.stdout.readlines()
-    pairs = map(lambda l: l.decode('UTF-8').rstrip().split('=', 1), lines)
+    # XXX: Doesn't parse functions for now
+    filtered_lines = filter(lambda x: (not x.startswith(('BASH_FUNC',
+                                                         ' ', '}'))), lines)
+    pairs = map(lambda l: l.decode('UTF-8').rstrip().split('=', 1),
+                filtered_lines)
     valid_pairs = filter(_validate_pair, pairs)
     env = dict(valid_pairs)
     p.communicate()
-
-    # Those are not properly parsed, remove them, we don't need them
-    env.pop('BASH_FUNC_module%%', None)
-    env.pop('BASH_FUNC_scl%%', None)
 
     return env
 
