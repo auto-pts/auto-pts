@@ -29,6 +29,7 @@ z['auto_pts'] = {
     'server_ip': '192.168.0.2',
     'client_port': 65001,
     'project_path': '/path/to/project',
+    'git_branch': 'origin',
     'workspace': 'zephyr-hci',
     'board': 'nrf52',
     'enable_max_logs': False,

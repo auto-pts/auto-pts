@@ -306,7 +306,7 @@ def main(cfg):
 
     zephyr_hash = \
         bot.common.update_sources(os.path.abspath(args['project_path']),
-                                  'upstream')
+                                  args['git_branch'])
 
     summary, results, descriptions, regressions = \
         run_tests(args, cfg.get('iut_config', {}))
