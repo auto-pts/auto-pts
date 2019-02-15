@@ -1183,7 +1183,7 @@ def btp2uuid(uuid_len, uu):
         (uu,) = struct.unpack("H", uu)
         return hex(uu)
     else:
-        return UUID(bytes_le=uu).urn[9:]
+        return UUID(bytes=uu[::-1]).urn[9:]
 
 
 def dec_gatts_get_attrs_rp(data, data_len):
