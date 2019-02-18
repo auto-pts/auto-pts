@@ -810,6 +810,9 @@ def get_lt2_test(test_cases, first_tc):
 
     first_tc -- first lower tester test case instance
     """
+    if test_cases is None:
+        return None
+
     # XXX: pay attention on PTS test case naming
     second_tc_name = first_tc.name + "-LT2"
 
