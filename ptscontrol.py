@@ -669,8 +669,10 @@ class PyPTS:
 
         return test_cases
 
-    def update_pics(self, project_name, entry_name, bool_value):
-        """Updates PICS
+    def set_pics(self, project_name, entry_name, bool_value):
+        """Set PICS
+
+        Method used to setup workspace default PICS
 
         This wrapper handles exceptions that PTS throws if PICS entry is
         already set to the same value.
@@ -693,6 +695,33 @@ class PyPTS:
         except System.Runtime.InteropServices.COMException as e:
             log('Exception in UpdatePics "%s", is pics value already set?' %
                 (e.Message,))
+
+    def set_pixit(self, project_name, param_name, param_value):
+        """Set PIXIT
+
+        Method used to setup workspace default PIXIT
+
+        This wrapper handles exceptions that PTS throws if PIXIT param is
+        already set to the same value.
+
+        PTS throws exception if the value passed to UpdatePixitParam is the
+        same as the value when PTS was started.
+
+        In C++ HRESULT error with this value is returned:
+        PTSCONTROL_E_PIXIT_PARAM_NOT_CHANGED (0x849C0021)
+
+        """
+        log("%s %s %s %s", self.set_pixit.__name__, project_name,
+            param_name, param_value)
+
+        try:
+            self._pts.UpdatePixitParam(project_name, param_name, param_value)
+            self.add_recov(self.set_pixit, project_name, param_name,
+                           param_value)
+
+        except System.Runtime.InteropServices.COMException as e:
+            log(('Exception in UpdatePixitParam "%s", is pixit param already '
+                 'set?') % (e.Message,))
 
     def update_pixit_param(self, project_name, param_name, new_param_value):
         """Updates PIXIT
