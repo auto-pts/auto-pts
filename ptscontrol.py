@@ -316,6 +316,17 @@ class PyPTS:
             if item in self._recov:
                 self._recov.remove(item)
 
+    def _recover_item(self, item):
+        """Recovery item wraper"""
+
+        func = item[0]
+        args = item[1]
+        kwds = item[2]
+        log("%s, Recovering: %s, %r %r", self._recover_item.__name__,
+            func, args, kwds)
+
+        func(*args, **kwds)
+
     def recover_pts(self):
         """Recovers PTS from errors occured during RunTestCase call.
 
@@ -340,11 +351,7 @@ class PyPTS:
         self.restart_pts()
 
         for item in self._recov:
-            func = item[0]
-            args = item[1]
-            kwds = item[2]
-            log("Recovering: %s, %r %r", func, args, kwds)
-            func(*args, **kwds)
+            self._recover_item(item)
 
         self._recov_in_progress = False
 
