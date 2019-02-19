@@ -40,6 +40,100 @@ from binascii import hexlify
 import random
 
 
+device_uuid = hexlify(uuid4().bytes)
+device_uuid2 = hexlify(uuid4().bytes)
+
+
+def set_pixits(ptses):
+    """Setup MESH profile PIXITS for workspace. Those values are used for test
+    case if not updated within test case.
+
+    PIXITS always should be updated accordingly to project and newest version of
+    PTS.
+
+    pts -- Instance of PyPTS"""
+
+    pts = ptses[0]
+    pts2 = ptses[1]
+
+    pts.set_pixit("MESH", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
+    pts.set_pixit("MESH", "TSPX_bd_addr_additional_whitelist", "")
+    pts.set_pixit("MESH", "TSPX_time_guard", "300000")
+    pts.set_pixit("MESH", "TSPX_use_implicit_send", "TRUE")
+    pts.set_pixit("MESH", "TSPX_tester_database_file",
+                  "C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_SMPP_db.xml")
+    pts.set_pixit("MESH", "TSPX_mtu_size", "23")
+    pts.set_pixit("MESH", "TSPX_delete_link_key", "FALSE")
+    pts.set_pixit("MESH", "TSPX_delete_ltk", "FALSE")
+    pts.set_pixit("MESH", "TSPX_security_enabled", "FALSE")
+    pts.set_pixit("MESH", "TSPX_iut_setup_att_over_br_edr", "FALSE")
+    pts.set_pixit("MESH", "TSPX_scan_interval", "30")
+    pts.set_pixit("MESH", "TSPX_scan_window", "30")
+    pts.set_pixit("MESH", "TSPX_scan_filter", "00")
+    pts.set_pixit("MESH", "TSPX_advertising_interval_min", "160")
+    pts.set_pixit("MESH", "TSPX_advertising_interval_max", "160")
+    pts.set_pixit("MESH", "TSPX_tester_OOB_information", "F87F")
+    pts.set_pixit("MESH", "TSPX_device_uuid", device_uuid)
+    pts.set_pixit("MESH", "TSPX_device_uuid2", device_uuid2)
+    pts.set_pixit("MESH", "TSPX_device_public_key",
+                  "F465E43FF23D3F1B9DC7DFC04DA8758184DBC966204796ECCF0D6CF5E16500CC0201D048BCBBD899EEEFC424164E33C201C2B010CA6B4D43A8A155CAD8ECB279")
+    pts.set_pixit("MESH", "TSPX_device_private_key",
+                  "529AA0670D72CD6497502ED473502B037E8803B5C60829A5A3CAA219505530BA")
+    pts.set_pixit("MESH", "TSPX_use_pb_gatt_bearer", "FALSE")
+    pts.set_pixit("MESH", "TSPX_iut_model_id_used", "0002")
+    pts.set_pixit("MESH", "TSPX_OOB_code", "00000000000000000102030405060708")
+    pts.set_pixit("MESH", "TSPX_subscription_address_list", "C302")
+    pts.set_pixit("MESH", "TSPX_vendor_model_id", "00000000")
+    pts.set_pixit("MESH", "TSPX_maximum_network_message_cache_entries", "2")
+    pts.set_pixit("MESH", "TSPX_health_valid_test_ids", "00")
+    pts.set_pixit("MESH", "TSPX_iut_comp_data_page", "0")
+    pts.set_pixit("MESH", "TSPX_netkeyindex_value", "0")
+    pts.set_pixit("MESH", "TSPX_iut_supports_relay", "FALSE")
+    pts.set_pixit("MESH", "TSPX_application_key",
+                  "3216D1509884B533248541792B877F98")
+    pts.set_pixit("MESH", "TSPX_device_key",
+                  "00000000000000000000000000000000")
+
+    # PTS2
+    pts2.set_pixit("MESH", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
+    pts2.set_pixit("MESH", "TSPX_bd_addr_additional_whitelist", "")
+    pts2.set_pixit("MESH", "TSPX_time_guard", "300000")
+    pts2.set_pixit("MESH", "TSPX_use_implicit_send", "TRUE")
+    pts2.set_pixit("MESH", "TSPX_tester_database_file",
+                   "C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_SMPP_db.xml")
+    pts2.set_pixit("MESH", "TSPX_mtu_size", "23")
+    pts2.set_pixit("MESH", "TSPX_delete_link_key", "FALSE")
+    pts2.set_pixit("MESH", "TSPX_delete_ltk", "FALSE")
+    pts2.set_pixit("MESH", "TSPX_security_enabled", "FALSE")
+    pts2.set_pixit("MESH", "TSPX_iut_setup_att_over_br_edr", "FALSE")
+    pts2.set_pixit("MESH", "TSPX_scan_interval", "30")
+    pts2.set_pixit("MESH", "TSPX_scan_window", "30")
+    pts2.set_pixit("MESH", "TSPX_scan_filter", "00")
+    pts2.set_pixit("MESH", "TSPX_advertising_interval_min", "160")
+    pts2.set_pixit("MESH", "TSPX_advertising_interval_max", "160")
+    pts2.set_pixit("MESH", "TSPX_tester_OOB_information", "F87F")
+    pts2.set_pixit("MESH", "TSPX_device_uuid", device_uuid2)
+    pts2.set_pixit("MESH", "TSPX_device_uuid2", device_uuid)
+    pts2.set_pixit("MESH", "TSPX_device_public_key",
+                   "F465E43FF23D3F1B9DC7DFC04DA8758184DBC966204796ECCF0D6CF5E16500CC0201D048BCBBD899EEEFC424164E33C201C2B010CA6B4D43A8A155CAD8ECB279")
+    pts2.set_pixit("MESH", "TSPX_device_private_key",
+                   "529AA0670D72CD6497502ED473502B037E8803B5C60829A5A3CAA219505530BA")
+    pts2.set_pixit("MESH", "TSPX_use_pb_gatt_bearer", "FALSE")
+    pts2.set_pixit("MESH", "TSPX_iut_model_id_used", "0002")
+    pts2.set_pixit("MESH", "TSPX_OOB_code", "00000000000000000102030405060708")
+    pts2.set_pixit("MESH", "TSPX_subscription_address_list", "C302")
+    pts2.set_pixit("MESH", "TSPX_vendor_model_id", "00000000")
+    pts2.set_pixit("MESH", "TSPX_maximum_network_message_cache_entries", "2")
+    pts2.set_pixit("MESH", "TSPX_health_valid_test_ids", "00")
+    pts2.set_pixit("MESH", "TSPX_iut_comp_data_page", "0")
+    pts2.set_pixit("MESH", "TSPX_netkeyindex_value", "0")
+    pts2.set_pixit("MESH", "TSPX_iut_supports_relay", "FALSE")
+    pts2.set_pixit("MESH", "TSPX_application_key",
+                   "3216D1509884B533248541792B877F98")
+    pts2.set_pixit("MESH", "TSPX_device_key",
+                   "00000000000000000000000000000000")
+
+
 def test_cases(ptses):
     """Returns a list of MESH test cases
     pts -- Instance of PyPTS"""
@@ -57,8 +151,6 @@ def test_cases(ptses):
                   defs.MESH_IN_ENTER_STRING,
                   defs.MESH_IN_ENTER_NUMBER | defs.MESH_IN_ENTER_STRING]
 
-    device_uuid = hexlify(uuid4().bytes)
-    device_uuid2 = hexlify(uuid4().bytes)
     oob = 16 * '0'
     out_size = random.randint(0, 2)
     rand_out_actions = random.choice(out_actions) if out_size else 0
@@ -78,18 +170,12 @@ def test_cases(ptses):
             "MESH", "TSPX_bd_addr_iut",
             stack.gap.iut_addr_get_str())),
         TestFunc(lambda: pts.update_pixit_param(
-            "MESH", "TSPX_device_uuid", device_uuid)),
-        TestFunc(lambda: pts.update_pixit_param(
             "MESH", "TSPX_subscription_address_list",
-            MeshVals.subscription_addr_list1)),
-        TestFunc(lambda: pts.update_pixit_param(
-            "MESH", "TSPX_device_uuid2", device_uuid2))]
+            MeshVals.subscription_addr_list1))]
 
     pre_conditions_slave = [
         TestFunc(lambda: pts.update_pixit_param(
-            "MESH", "TSPX_bd_addr_iut", stack.gap.iut_addr_get_str())),
-        TestFunc(lambda: pts2.update_pixit_param(
-            "MESH", "TSPX_device_uuid", device_uuid2))]
+            "MESH", "TSPX_bd_addr_iut", stack.gap.iut_addr_get_str()))]
 
     test_cases = [
         ZTestCase("MESH", "MESH/NODE/BCN/SNB/BV-01-C", cmds=pre_conditions,

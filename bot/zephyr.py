@@ -303,6 +303,13 @@ def run_tests(args, iut_config):
 
         autoprojects.iutctl.init(args["kernel_image"], tty, args["board"])
 
+        # Setup project PIXITS
+        autoprojects.gap.set_pixits(ptses[0])
+        autoprojects.gatt.set_pixits(ptses[0])
+        autoprojects.sm.set_pixits(ptses[0])
+        autoprojects.l2cap.set_pixits(ptses[0])
+        autoprojects.mesh.set_pixits(ptses)
+
         test_cases, additional_test_cases = get_test_cases(ptses)
         if to_run or to_omit:
             test_cases = autoptsclient.get_test_cases_subset(test_cases,
