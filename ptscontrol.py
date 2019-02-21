@@ -435,7 +435,9 @@ class PyPTS:
             # Give PTS process time to close otherwise do it brutally to not
             # block testing. This happens occasionally when tester tries to
             # close PTS while after test logs are processing.
-            res = pts_process.WaitForExit(5000)
+            # Gently stopping is better than killing process. Normal stop
+            # procedure should take less than minute
+            res = pts_process.WaitForExit(60000)
             if not res:
                 pts_process.Kill()
                 log("Process didn't close within limited time - killed")
