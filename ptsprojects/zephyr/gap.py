@@ -196,9 +196,6 @@ def test_cases(pts):
             "GAP", "TSPX_using_public_device_address",
             "FALSE" if stack.gap.iut_addr_is_random() else "TRUE")),
         TestFunc(lambda: pts.update_pixit_param(
-            "GAP", "TSPX_using_private_device_address",
-            "TRUE" if stack.gap.iut_addr_is_random() else "FALSE")),
-        TestFunc(lambda: pts.update_pixit_param(
             "GAP", "TSPX_using_random_device_address",
             "TRUE" if stack.gap.iut_addr_is_random() else "FALSE")),
 
