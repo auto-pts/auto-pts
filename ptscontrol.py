@@ -379,7 +379,7 @@ class PyPTS:
         # Startup of ptscontrol doesn't have PTS pid yet set - no pts running
         if self._pts_pid:
             self.stop_pts()
-        time.sleep(3)  # otherwise there are COM errors occasionally
+        time.sleep(1)  # otherwise there are COM errors occasionally
         self.start_pts()
 
     def start_pts(self):
