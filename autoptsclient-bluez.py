@@ -34,8 +34,14 @@ def parse_args():
 
     arg_parser = argparse.ArgumentParser(description="PTS automation client")
 
-    arg_parser.add_argument("server_address",
-                            help="IP address of the PTS automation server")
+    arg_parser.add_argument("-i", "--ip_addr", nargs="+",
+                            help="IP address of the PTS automation servers")
+
+    arg_parser.add_argument("-l", "--local_addr", default=None,
+                            help="Local IP address of PTS automation client")
+
+    arg_parser.add_argument("-a", "--bd-addr",
+                            help="Bluetooth device address of the IUT")
 
     arg_parser.add_argument("workspace",
                             help="Path to PTS workspace file to use for "
@@ -73,8 +79,14 @@ def main():
 
     args = parse_args()
 
-    pts = autoptsclient.init_core(args.server_address, args.workspace, None,
-                                  args.enable_max_logs)
+    callback_thread = autoptsclient.init_core()
+
+    ptses = []
+    for ip in args.ip_addr:
+        ptses.append(autoptsclient.init_pts(ip, args.workspace, args.bd_addr,
+                                            args.enable_max_logs,
+                                            callback_thread, None,
+                                            args.local_addr))
 
     btp.init(get_iut)
 
@@ -82,22 +94,28 @@ def main():
     autoprojects.iutctl.init(args.btpclient_path)
 
     stack.init_stack()
+    stack_inst = stack.get_stack()
+    stack_inst.synch_init(callback_thread.set_pending_response,
+                          callback_thread.clear_pending_responses)
 
-    test_cases = autoprojects.gap.test_cases(pts)
-    test_cases += autoprojects.sm.test_cases(pts)
+    test_cases = autoprojects.gap.test_cases(ptses[0])
+    test_cases += autoprojects.sm.test_cases(ptses[0])
+
+    additional_test_cases = []
 
     if args.test_cases:
         test_cases = autoptsclient.get_test_cases_subset(test_cases,
                                                          args.test_cases)
 
-    autoptsclient.run_test_cases(pts, test_cases)
+    autoptsclient.run_test_cases(ptses, test_cases, additional_test_cases, 0)
 
     autoprojects.iutctl.cleanup()
 
     print "\nBye!"
     sys.stdout.flush()
 
-    pts.unregister_xmlrpc_ptscallback()
+    for pts in ptses:
+        pts.unregister_xmlrpc_ptscallback()
 
     # not the cleanest but the easiest way to exit the server thread
     os._exit(0)
