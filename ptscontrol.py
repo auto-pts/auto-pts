@@ -191,7 +191,7 @@ class PTSSender(PTSControl.IPTSImplicitSendCallbackEx):
                     test_case_name,
                     description,
                     int(style),
-                    int(response),
+                    response,
                     int(response_size),
                     int(response_is_present))
 
