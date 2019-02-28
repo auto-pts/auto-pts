@@ -63,7 +63,7 @@ def parse_args():
     arg_parser.add_argument("-i", "--ip_addr", nargs="+",
                             help="IP address of the PTS automation servers")
 
-    arg_parser.add_argument("-l", "--local_addr", default=None,
+    arg_parser.add_argument("-l", "--local_addr", nargs="+", default=None,
                             help="Local IP address of PTS automation client")
 
     arg_parser.add_argument("workspace",
@@ -146,11 +146,11 @@ def main():
     callback_thread = autoptsclient.init_core()
 
     ptses = []
-    for ip in args.ip_addr:
+    for ip, local in zip(args.ip_addr, args.local_addr):
         ptses.append(autoptsclient.init_pts(ip, args.workspace, args.bd_addr,
                                             args.enable_max_logs,
                                             callback_thread, tc_db_table_name,
-                                            args.local_addr))
+                                            local))
 
     btp.init(get_iut)
     autoprojects.iutctl.init(args.kernel_image, args.tty_file, args.board)
