@@ -156,12 +156,14 @@ class Board:
     arduino_101 = "arduino_101"
     c1000 = "c1000"
     nrf52 = "nrf52"
+    reel  = "reel_board"
 
     # for command line options
     names = [
         arduino_101,
         c1000,
-        nrf52
+        nrf52,
+        reel
     ]
 
     def __init__(self, board_name, kernel_image, tty_file):
@@ -212,7 +214,8 @@ class Board:
         reset_cmd_getters = {
             self.arduino_101: self._get_reset_cmd_arduino_101,
             self.c1000: self._get_reset_cmd_c1000,
-            self.nrf52: self._get_reset_cmd_nrf52
+            self.nrf52: self._get_reset_cmd_nrf52,
+            self.reel: self._get_reset_cmd_reel
         }
 
         reset_cmd_getter = reset_cmd_getters[self.name]
@@ -259,6 +262,13 @@ class Board:
         """
         return 'nrfjprog -f nrf52 -r'
 
+    def _get_reset_cmd_reel(self):
+        """Return reset command for Reel_Board DUT
+
+        Dependency: pyocd command line tools
+
+        """
+        return 'pyocd cmd -c reset'
 
 def get_iut():
     return ZEPHYR
