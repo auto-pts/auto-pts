@@ -80,12 +80,37 @@ def source_zephyr_env(zephyr_wd):
     return env
 
 
+def flash_nrf52(tester_outdir):
+    """ Flash Zephyr binary for nrf52 board
+    :param cwd: Zephyr build directory
+    :return: TTY path
+    """
+    check_call(['nrfjprog', '--eraseall', '-f', 'nrf52'])
+    check_call(['nrfjprog', '--program', 'zephyr/zephyr.hex', '-f', 'nrf52'],
+               cwd=tester_outdir)
+    check_call(['nrfjprog', '-p'])
+
+    return get_tty_path("J-Link")
+
+
+
+def flash_reel(tester_outdir):
+    """ Flash Zephyr binary for reel board
+    :param cwd: Zephyr build directory
+    :return: TTY path
+    """
+    check_call(['pyocd', 'flash', '-t', 'nrf52', 'zephyr/zephyr.hex'],
+               cwd=tester_outdir)
+
+    return get_tty_path("DAPLink")
+
+
 def build_and_flash(zephyr_wd, board, conf_file=None):
     """Build and flash Zephyr binary
     :param zephyr_wd: Zephyr source path
     :param board: IUT
     :param conf_file: configuration file to be used
-    :return: None
+    :return: TTY path
     """
     logging.debug("{}: {} {} {}". format(build_and_flash.__name__, zephyr_wd,
                                          board, conf_file))
@@ -107,11 +132,16 @@ def build_and_flash(zephyr_wd, board, conf_file=None):
 
     check_call(cmd, env=env, cwd=tester_outdir)
     check_call(['ninja'], env=env, cwd=tester_outdir)
-    check_call(['nrfjprog', '--eraseall', '-f', 'nrf52'])
-    check_call(['nrfjprog', '--program', 'zephyr/zephyr.hex', '-f', 'nrf52'],
-               cwd=tester_outdir)
-    check_call(['nrfjprog', '-p'])
 
+    if board == 'nrf52840_pca10056':
+        tty = flash_nrf52(tester_outdir)
+    elif board == 'reel_board':
+        tty = flash_reel(tester_outdir)
+    else:
+        # Unsupported board and stop here
+        tty = None
+
+    return tty
 
 def flush_serial(tty):
     """Clear the serial port buffer
@@ -162,7 +192,8 @@ def apply_overlay(zephyr_wd, base_conf, cfg_name, overlay):
 
 autopts2board = {
     None: None,
-    'nrf52': 'nrf52840_pca10056'
+    'nrf52': 'nrf52840_pca10056',
+    'reel_board' : 'reel_board'
 }
 
 
@@ -220,7 +251,6 @@ def run_tests(args, iut_config):
     status = {}
     descriptions = {}
 
-    tty = get_tty_path("J-Link")
     callback_thread = autoptsclient.init_core()
 
     ptses = []
@@ -264,8 +294,10 @@ def run_tests(args, iut_config):
         else:
             continue
 
-        build_and_flash(args["project_path"], autopts2board[args["board"]],
+        tty = build_and_flash(args["project_path"], autopts2board[args["board"]],
                         config)
+        logging.debug("TTY path: %s" % tty)
+
         flush_serial(tty)
         time.sleep(10)
 
