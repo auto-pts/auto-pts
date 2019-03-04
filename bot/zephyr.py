@@ -224,13 +224,14 @@ def run_tests(args, iut_config):
     callback_thread = autoptsclient.init_core()
 
     ptses = []
-    for ip in args["server_ip"]:
+    for ip, local in zip(args['server_ip'], args['local_ip']):
         ptses.append(autoptsclient.init_pts(ip,
                                             args["workspace"],
                                             args["bd_addr"],
                                             args["enable_max_logs"],
                                             callback_thread,
-                                            "zephyr_" + str(args["board"])))
+                                            "zephyr_" + str(args["board"]),
+                                            local))
 
     btp.init(get_iut)
     # Main instance of PTS
