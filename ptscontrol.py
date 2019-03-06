@@ -296,9 +296,30 @@ class PyPTS:
 
     def add_recov(self, func, *args, **kwds):
         """Add function to recovery list"""
-        if not self._recov_in_progress:
-            log("%s %r %r %r", self.add_recov.__name__, func, args, kwds)
-            self._recov.append((func, args, kwds))
+        if self._recov_in_progress:
+            return
+
+        log("%s %r %r %r", self.add_recov.__name__, func, args, kwds)
+
+        # Re-set recovery element to avoid duplications
+        if func == self.set_pixit:
+            profile = args[0]
+            pixit = args[1]
+            # Look for possible re-setable PIXIT
+            try:
+                '''Search for matching recover function, PIXIT and recover
+                if value was changed. '''
+                item = next(x for x in self._recov if ((x[0] ==
+                            self.set_pixit) and (x[1][0] == profile) and
+                            (x[1][1] == pixit)))
+
+                self._recov.remove(item)
+                log("%s, re-set pixit: %s", self.add_recov.__name__, pixit)
+
+            except StopIteration:
+                pass
+
+        self._recov.append((func, args, kwds))
 
     def _add_temp_change(self, func, *args, **kwds):
         """Add function to set temporary value"""
