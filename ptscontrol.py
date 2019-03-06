@@ -110,6 +110,8 @@ class PTSLogger(PTSControl.IPTSControlClientLogger):
         logger = logging.getLogger(self.__class__.__name__)
         log = logger.info
 
+        log_message = log_message.encode("ascii", "xmlcharrefreplace")
+
         log("%s %s %s %s" % (log_type, logtype_string, log_time, log_message))
 
         try:
