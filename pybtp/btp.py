@@ -2051,6 +2051,7 @@ def gattc_disc_prim_uuid_find_attrs_rsp(exp_svcs, store_attrs=False):
 
 
 def gattc_disc_all_prim_rsp(store_rsp=False):
+    logging.debug("%s", gattc_disc_all_prim_rsp.__name__)
     iutctl = get_iut()
 
     tuple_hdr, tuple_data = iutctl.btp_socket.read()
@@ -2077,6 +2078,8 @@ def gattc_disc_all_prim_rsp(store_rsp=False):
                 VERIFY_VALUES.append(uuid)
 
         logging.debug("Set verify values to: %r", VERIFY_VALUES)
+
+    return svcs_tuple
 
 
 def gattc_disc_prim_uuid_rsp(store_rsp=False):
