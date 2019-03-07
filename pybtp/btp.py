@@ -1348,15 +1348,13 @@ def gattc_disc_prim_uuid(bd_addr_type, bd_addr, uuid):
     iutctl.btp_socket.send(*GATTC['disc_prim_uuid'], data=data_ba)
 
 
-def gattc_find_included(bd_addr_type, bd_addr, start_hdl, stop_hdl):
-    logging.debug("%s %r %r %r %r", gattc_find_included.__name__,
-                  bd_addr_type, bd_addr, start_hdl, stop_hdl)
+def _gattc_find_included_req(bd_addr_type, bd_addr, start_hdl, end_hdl):
+    logging.debug("%s %r %r %r %r", _gattc_find_included_req.__name__,
+                  bd_addr_type, bd_addr, start_hdl, end_hdl)
     iutctl = get_iut()
 
-    gap_wait_for_connection()
-
-    if type(stop_hdl) is str:
-        stop_hdl = int(stop_hdl, 16)
+    if type(end_hdl) is str:
+        end_hdl = int(end_hdl, 16)
 
     if type(start_hdl) is str:
         start_hdl = int(start_hdl, 16)
@@ -1365,14 +1363,61 @@ def gattc_find_included(bd_addr_type, bd_addr, start_hdl, stop_hdl):
 
     bd_addr_ba = addr2btp_ba(bd_addr)
     start_hdl_ba = struct.pack('H', start_hdl)
-    stop_hdl_ba = struct.pack('H', stop_hdl)
+    end_hdl_ba = struct.pack('H', end_hdl)
 
     data_ba.extend(chr(bd_addr_type))
     data_ba.extend(bd_addr_ba)
     data_ba.extend(start_hdl_ba)
-    data_ba.extend(stop_hdl_ba)
+    data_ba.extend(end_hdl_ba)
 
     iutctl.btp_socket.send(*GATTC['find_included'], data=data_ba)
+
+
+def _gattc_find_included_rsp():
+    iutctl = get_iut()
+
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
+    logging.debug("%s received %r %r", gattc_find_included_rsp.__name__,
+                  tuple_hdr, tuple_data)
+
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
+                  defs.GATT_FIND_INCLUDED)
+
+    incls_tuple = gatt_dec_disc_rsp(tuple_data[0], "include")
+    logging.debug("%s %r", gattc_find_included_rsp.__name__, incls_tuple)
+
+    for incl in incls_tuple:
+        att_handle = "%04X" % (incl[0][0],)
+        inc_svc_handle = "%04X" % (incl[1][0],)
+        end_grp_handle = "%04X" % (incl[1][1],)
+        uuid = incl[1][2]
+
+        VERIFY_VALUES.append(att_handle)
+        VERIFY_VALUES.append(inc_svc_handle)
+        VERIFY_VALUES.append(end_grp_handle)
+        VERIFY_VALUES.append(uuid)
+
+    logging.debug("Set verify values to: %r", VERIFY_VALUES)
+
+
+def gattc_find_included(bd_addr_type, bd_addr, start_hdl=None, end_hdl=None):
+    logging.debug("%s %r %r %r %r", gattc_find_included.__name__,
+                  bd_addr_type, bd_addr, start_hdl, end_hdl)
+    gap_wait_for_connection()
+
+    if start_hdl and end_hdl:
+        _gattc_find_included_req(bd_addr_type, bd_addr, start_hdl, end_hdl)
+        return
+
+    gattc_disc_all_prim(bd_addr_type, bd_addr)
+    svcs_tuple = gattc_disc_all_prim_rsp()
+
+    global VERIFY_VALUES
+    VERIFY_VALUES = []
+
+    for start, end, _ in svcs_tuple:
+        _gattc_find_included_req(bd_addr_type, bd_addr, start, end)
+        _gattc_find_included_rsp()
 
 
 def gattc_disc_all_chrc_find_attrs_rsp(exp_chars, store_attrs=False):
