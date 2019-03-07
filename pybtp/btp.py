@@ -138,6 +138,8 @@ GATTS = {
 GATTC = {
     "exchange_mtu": (defs.BTP_SERVICE_ID_GATT, defs.GATT_EXCHANGE_MTU,
                      CONTROLLER_INDEX),
+    "disc_prim_svcs": (defs.BTP_SERVICE_ID_GATT, defs.GATT_DISC_PRIM_SVCS,
+                       CONTROLLER_INDEX),
     "disc_prim_uuid": (defs.BTP_SERVICE_ID_GATT, defs.GATT_DISC_PRIM_UUID,
                        CONTROLLER_INDEX),
     "find_included": (defs.BTP_SERVICE_ID_GATT, defs.GATT_FIND_INCLUDED,
@@ -1305,6 +1307,46 @@ def gattc_exchange_mtu(bd_addr_type, bd_addr):
     iutctl.btp_socket.send(*GATTC['exchange_mtu'], data=data_ba)
 
     gatt_command_rsp_succ()
+
+
+def gattc_disc_prim_svcs(bd_addr_type, bd_addr):
+    logging.debug("%s %r %r", gattc_disc_prim_svcs.__name__, bd_addr_type,
+                  bd_addr)
+    iutctl = get_iut()
+
+    gap_wait_for_connection(iutctl)
+
+    data_ba = bytearray()
+
+    bd_addr_ba = addr2btp_ba(bd_addr)
+
+    data_ba.extend([bd_addr_type])
+    data_ba.extend(bd_addr_ba)
+
+    iutctl.btp_socket.send(*GATTC['disc_prim_svcs'], data=data_ba)
+
+
+def gattc_disc_prim_svcs_rsp():
+    logging.debug("%s", gattc_disc_prim_svcs_rsp.__name__)
+    iutctl = get_iut()
+
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
+    logging.debug("%s received %r %r", gattc_disc_prim_svcs_rsp.__name__,
+                  tuple_hdr, tuple_data)
+
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
+                  defs.GATT_DISC_PRIM_SVCS)
+
+    svcs_tuple = gatt_dec_disc_rsp(tuple_data[0], "service")
+    logging.debug("%s %r", gattc_disc_prim_svcs_rsp.__name__, svcs_tuple)
+
+    global VERIFY_VALUES
+    VERIFY_VALUES = []
+
+    for svc in svcs_tuple:
+        start_handle = svc[0]
+        end_handle = svc[1]
+        VERIFY_VALUES.append((start_handle, end_handle))
 
 
 def gattc_disc_prim_uuid(bd_addr_type, bd_addr, uuid):
