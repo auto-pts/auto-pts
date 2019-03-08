@@ -241,6 +241,165 @@ class Mesh:
         return False
 
 
+class L2capChan:
+    def __init__(self, chan_id, psm, bd_addr_type, bd_addr):
+        self.id = chan_id
+        self.psm = psm
+        self.peer_bd_addr_type = bd_addr_type
+        self.peer_bd_addr = bd_addr
+        self.disconn_reason = None
+        self.data_tx = []
+        self.data_rx = []
+        self.state = "init"  # "connected" / "disconnected"
+
+    def _get_state(self, timeout):
+        if self.state and self.state != "init":
+            return self.state
+
+        #  In case of self initiated connection, wait a while
+        #  for connected/disconnected event
+        flag = Event()
+        flag.set()
+
+        t = Timer(timeout, timeout_cb, [flag])
+        t.start()
+
+        while flag.is_set():
+            if self.state and self.state != "init":
+                t.cancel()
+                break
+
+        return self.state
+
+    def is_connected(self, timeout):
+        state = self._get_state(timeout)
+        if state is "connected":
+            return True
+        return False
+
+    def connected(self, psm, bd_addr_type, bd_addr):
+        self.psm = psm
+        self.peer_bd_addr_type = bd_addr_type
+        self.peer_bd_addr = bd_addr
+        self.state = "connected"
+
+    def disconnected(self, psm, bd_addr_type, bd_addr, reason):
+        self.psm = None
+        self.peer_bd_addr_type = None
+        self.peer_bd_addr = None
+        self.disconn_reason = reason
+        self.state = "disconnected"
+
+    def rx(self, data):
+        self.data_rx.append(data)
+
+    def tx(self, data):
+        self.data_tx.append(data)
+
+    def rx_data_get(self, timeout):
+        if len(self.data_rx) != 0:
+            return "".join(self.data_rx).upper()
+
+        flag = Event()
+        flag.set()
+
+        t = Timer(timeout, timeout_cb, [flag])
+        t.start()
+
+        while flag.is_set():
+            if len(self.data_rx) != 0:
+                t.cancel()
+                return "".join(self.data_rx).upper()
+
+        return None
+
+    def tx_data_get(self):
+        return "".join(self.data_tx)
+
+
+class L2cap:
+    def __init__(self, psm):
+        # PSM used for testing for Client role
+        self.psm = psm
+        self.channels = []
+
+    def _chan_lookup_id(self, chan_id):
+        for chan in self.channels:
+            if chan.id == chan_id:
+                return chan
+        return None
+
+    def psm_set(self, psm):
+        self.psm = psm
+
+    def connect(self, chan_id, psm, bd_addr_type, bd_addr):
+        self.channels.append(L2capChan(chan_id, psm, bd_addr_type, bd_addr))
+
+    def connected(self, chan_id, psm, bd_addr_type, bd_addr):
+        chan = self._chan_lookup_id(chan_id)
+        if chan is None:
+            chan = L2capChan(chan_id, psm, bd_addr_type, bd_addr)
+            self.channels.append(chan)
+
+        chan.connected(psm, bd_addr_type, bd_addr)
+
+    def disconnected(self, chan_id, psm, bd_addr_type, bd_addr, reason):
+        chan = self._chan_lookup_id(chan_id)
+        if chan is None:
+            logging.error("unknown channel")
+            return
+
+        chan.disconnected(psm, bd_addr_type, bd_addr, reason)
+
+    def is_connected(self, chan_id):
+        chan = self._chan_lookup_id(chan_id)
+        if chan is None:
+            logging.error("unknown channel")
+            return False
+
+        return chan.is_connected(10)
+
+    def rx(self, chan_id, data):
+        chan = self._chan_lookup_id(chan_id)
+        if chan is None:
+            logging.error("unknown channel")
+            return
+
+        chan.rx(data)
+
+    def tx(self, chan_id, data):
+        chan = self._chan_lookup_id(chan_id)
+        if chan is None:
+            logging.error("unknown channel")
+            return
+
+        chan.tx(data)
+
+    def rx_data_get_all(self, timeout):
+        data = []
+
+        for chan in self.channels:
+            data.append(chan.rx_data_get(timeout))
+
+        return data
+
+    def tx_data_get(self, chan_id):
+        chan = self._chan_lookup_id(chan_id)
+        if chan is None:
+            logging.error("unknown channel")
+            return None
+
+        return chan.tx_data_get()
+
+    def tx_data_get_all(self):
+        data = []
+
+        for chan in self.channels:
+            data.append(chan.tx_data_get())
+
+        return data
+
+
 class Synch:
     def __init__(self, set_pending_response_func,
                  clear_pending_responses_func):
@@ -321,6 +480,7 @@ class Stack:
     def __init__(self):
         self.gap = None
         self.mesh = None
+        self.l2cap = None
         self.synch = None
 
     def gap_init(self, name=None, manufacturer_data=None):
@@ -330,6 +490,9 @@ class Stack:
                   input_actions, crpl_size):
         self.mesh = Mesh(uuid, oob, output_size, output_actions, input_size,
                          input_actions, crpl_size)
+
+    def l2cap_init(self, psm):
+        self.l2cap = L2cap(psm)
 
     def synch_init(self, set_pending_response_func,
                    clear_pending_responses_func):

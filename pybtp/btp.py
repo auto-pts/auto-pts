@@ -35,7 +35,6 @@ get_iut = None
 
 #  Global temporary objects
 GATT_SVCS = None
-L2CAP_CHAN = []
 
 # Address
 LeAddress = namedtuple('LeAddress', 'addr_type addr')
@@ -2299,18 +2298,25 @@ def l2cap_conn(bd_addr, bd_addr_type, psm):
     if type(psm) is str:
         psm = int(psm, 16)
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr = pts_addr_get(bd_addr)
+    bd_addr_type = pts_addr_type_get(bd_addr_type)
 
+    bd_addr_ba = addr2btp_ba(bd_addr)
     data_ba = bytearray(chr(bd_addr_type))
     data_ba.extend(bd_addr_ba)
     data_ba.extend(struct.pack('H', psm))
 
     iutctl.btp_socket.send(*L2CAP['connect'], data=data_ba)
 
-    l2cap_conn_rsp()
+    chan_id = l2cap_conn_rsp()
+
+    stack = get_stack()
+    stack.l2cap.connect(chan_id, psm, bd_addr_type, bd_addr)
+
+    logging.debug("id %r", chan_id)
 
 
-l2cap_result_str = {0:  "Connection successful",
+l2cap_result_str = {0:  "Success",
                     2:  "LE_PSM not supported",
                     4:  "Insufficient Resources",
                     5:  "insufficient authentication",
@@ -2332,27 +2338,13 @@ def l2cap_conn_rsp():
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_L2CAP, defs.L2CAP_CONNECT)
 
-    chan_id = struct.unpack_from('<B', tuple_data[0])[0]
-
-    global L2CAP_CHAN
-    L2CAP_CHAN.append(chan_id)
-
-    logging.debug("new L2CAP channel: id %r", chan_id)
+    return struct.unpack_from('<B', tuple_data[0])[0]
 
 
 def l2cap_disconn(chan_id):
     logging.debug("%s %r", l2cap_disconn.__name__, chan_id)
 
     iutctl = get_iut()
-
-    global L2CAP_CHAN
-    try:
-        idx = L2CAP_CHAN.index(chan_id)
-    except ValueError:
-        raise BTPError("Channel with given chan_id: %r does not exists" %
-                       (chan_id))
-
-    chan_id = L2CAP_CHAN[idx]
 
     data_ba = bytearray(chr(chan_id))
 
@@ -2377,9 +2369,10 @@ def l2cap_send_data(chan_id, val, val_mtp=None):
     data_ba.extend(val_len_ba)
     data_ba.extend(val_ba)
 
-    iutctl.btp_socket.send(*L2CAP['send_data'], data=data_ba)
+    iutctl.btp_socket.send_wait_rsp(*L2CAP['send_data'], data=data_ba)
 
-    l2cap_command_rsp_succ(defs.L2CAP_SEND_DATA)
+    stack = get_stack()
+    stack.l2cap.tx(chan_id, val * val_mtp)
 
 
 def l2cap_listen(psm, transport):
@@ -2402,82 +2395,51 @@ def l2cap_le_listen(psm):
     l2cap_listen(psm, defs.L2CAP_TRANSPORT_LE)
 
 
-def l2cap_connected_ev():
-    logging.debug("%s", l2cap_connected_ev.__name__)
+def l2cap_connected_ev(l2cap, data, data_len):
+    logging.debug("%s %r %r", l2cap_connected_ev.__name__, data, data_len)
 
-    iutctl = get_iut()
+    hdr_fmt = '<BHB6s'
+    hdr_len = struct.calcsize(hdr_fmt)
 
-    tuple_hdr, tuple_data = iutctl.btp_socket.read()
-    logging.debug("received %r %r", tuple_hdr, tuple_data)
+    chan_id, psm, bd_addr_type, bd_addr = struct.unpack_from('<BHB6s', data, 0)
+    l2cap.connected(chan_id, psm, bd_addr_type, bd_addr)
 
-    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_L2CAP,
-                  defs.L2CAP_EV_CONNECTED)
-
-    chan_id, psm, bd_addr_type, bd_addr = struct.unpack_from('<BHB6s',
-                                                             tuple_data[0])
-    logging.debug("New L2CAP connection ID:%r on PSM:%r, Addr %r Type %r",
+    logging.debug("id:%r on psm:%r, addr %r type %r",
                   chan_id, psm, bd_addr, bd_addr_type)
 
-    global L2CAP_CHAN
 
-    # Append incoming connection only
-    if chan_id not in L2CAP_CHAN:
-        L2CAP_CHAN.append(chan_id)
+def l2cap_disconnected_ev(l2cap, data, data_len):
+    logging.debug("%s %r %r", l2cap_disconnected_ev.__name__, data, data_len)
 
+    hdr_fmt = '<HBHB6s'
+    hdr_len = struct.calcsize(hdr_fmt)
 
-def l2cap_disconnected_ev(exp_chan_id, store=False):
-    logging.debug("%s %r", l2cap_disconnected_ev.__name__, exp_chan_id)
+    res, chan_id, psm, bd_addr_type, bd_addr = struct.unpack_from(hdr_fmt, data)
+    result_str = l2cap_result_str[res]
+    l2cap.disconnected(chan_id, psm, bd_addr_type, bd_addr, result_str)
 
-    iutctl = get_iut()
-
-    tuple_hdr, tuple_data = iutctl.btp_socket.read()
-    logging.debug("received %r %r", tuple_hdr, tuple_data)
-
-    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_L2CAP,
-                  defs.L2CAP_EV_DISCONNECTED)
-
-    res, chan_id, psm, bd_addr_type, bd_addr = \
-        struct.unpack_from('<HBHB6s', tuple_data[0])
-
-    global L2CAP_CHAN
-    L2CAP_CHAN.remove(chan_id)
-
-    logging.debug("L2CAP channel disconnected: id %r", chan_id)
-
-    if chan_id != exp_chan_id:
-        raise BTPError("Error in L2CAP disconnected event data")
-
-    if store:
-        global VERIFY_VALUES
-        VERIFY_VALUES = []
-        VERIFY_VALUES.append(l2cap_result_str[res])
+    logging.debug("id:%r on psm:%r, addr %r type %r, res %r",
+                  chan_id, psm, bd_addr, bd_addr_type, result_str)
 
 
-def l2cap_data_rcv_ev(chan_id=None, store=False):
-    logging.debug("%s %r %r", l2cap_data_rcv_ev.__name__, chan_id, store)
+def l2cap_data_rcv_ev(l2cap, data, data_len):
+    logging.debug("%s %r %r", l2cap_data_rcv_ev.__name__, data, data_len)
 
-    iutctl = get_iut()
+    hdr_fmt = '<BH'
+    hdr_len = struct.calcsize(hdr_fmt)
 
-    tuple_hdr, tuple_data = iutctl.btp_socket.read()
-    logging.debug("received %r %r", tuple_hdr, tuple_data)
+    chan_id, data_len = struct.unpack_from(hdr_fmt, data)
+    data_rx = binascii.hexlify(struct.unpack_from('%ds' % data_len, data, hdr_len)[0])
+    l2cap.rx(chan_id, data_rx)
 
-    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_L2CAP,
-                  defs.L2CAP_EV_DATA_RECEIVED)
+    logging.debug("id:%r, data:%s", chan_id, data_rx)
 
-    data_hdr = '<BH'
-    data_hdr_len = struct.calcsize(data_hdr)
 
-    rcv_chan_id, data_len = struct.unpack_from(data_hdr, tuple_data[0])
-    data = binascii.hexlify(struct.unpack_from('%ds' % data_len, tuple_data[0],
-                                               data_hdr_len)[0])
-
-    if chan_id and chan_id != rcv_chan_id:
-        raise BTPError("Error in L2CAP data received event data")
-
-    if store:
-        global VERIFY_VALUES
-        VERIFY_VALUES = []
-        VERIFY_VALUES.append(data)
+L2CAP_EV = {
+    defs.L2CAP_EV_CONNECTED: l2cap_connected_ev,
+    defs.L2CAP_EV_DISCONNECTED: l2cap_disconnected_ev,
+    defs.L2CAP_EV_DATA_RECEIVED: l2cap_data_rcv_ev,
+}
 
 
 def gap_new_settings_ev_(gap, data, data_len):
@@ -2936,6 +2898,11 @@ def event_handler(hdr, data):
         if hdr.op in MESH_EV and stack.mesh:
             cb = MESH_EV[hdr.op]
             cb(stack.mesh, data[0], hdr.data_len)
+            return True
+    if hdr.svc_id == defs.BTP_SERVICE_ID_L2CAP:
+        if hdr.op in L2CAP_EV and stack.l2cap:
+            cb = L2CAP_EV[hdr.op]
+            cb(stack.l2cap, data[0], hdr.data_len)
             return True
     elif hdr.svc_id == defs.BTP_SERVICE_ID_GAP:
         if hdr.op in GAP_EV and stack.gap:
