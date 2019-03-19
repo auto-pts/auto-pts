@@ -168,7 +168,7 @@ def set_pixits(pts):
     pts.set_pixit("GAP", "TSPX_tester_device_IRK_for_resolvable_privacy_address_generation_procedure",
                   "0123456789ABCDEF0123456789ABCDEF")
     pts.set_pixit("GAP",
-                  "TSPX_iut_device_name_in_adv_packet_for_random_address", "")
+                  "TSPX_iut_device_name_in_adv_packet_for_random_address", iut_device_name)
     pts.set_pixit("GAP", "TSPX_Tgap_104", "60000")
     pts.set_pixit("GAP", "TSPX_URI", "162F2F7777772E626C7565746F6F74682E636F6D")
 
