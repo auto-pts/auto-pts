@@ -43,6 +43,8 @@ def hdl_wid_14(desc):
     """
     btp.l2cap_disconn(0)
 
+    return True
+
 
 def hdl_wid_15(desc):
     """

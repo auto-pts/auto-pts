@@ -99,6 +99,11 @@ def hdl_wid_40(desc):
     return True
 
 
+def hdl_wid_44(desc):
+    btp.gap_disconn()
+    return True
+
+
 def hdl_wid_47(desc):
     stack = get_stack()
 
@@ -162,12 +167,31 @@ def hdl_wid_91(desc):
     return True
 
 
+def hdl_wid_106(desc):
+    return True
+
+
 def hdl_wid_108(desc):
     btp.gap_pair()
     return True
 
 
 def hdl_wid_118(desc):
+    return True
+
+
+def hdl_wid_124(desc):
+    return True
+
+
+def hdl_wid_125(desc):
+    match = re.findall(r'(0[xX])?([0-9a-fA-F]{4})', desc)
+    handle = match[0][1]
+
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+    btp.gattc_signed_write(bd_addr_type, bd_addr, handle, "01")
+
     return True
 
 
@@ -205,8 +229,68 @@ def hdl_wid_138(desc):
     return btp.check_discov_results()
 
 
+def hdl_wid_139(desc):
+    attrs = btp.gatts_get_attrs(type_uuid='2803')
+    for attr in attrs:
+        if not attr:
+            continue
+
+        (handle, permission, type_uuid) = attr
+        data = btp.gatts_get_attr_val(handle)
+        if not data:
+            continue
+
+        (att_rsp, val_len, val) = data
+
+        hdr = '<BH'
+        hdr_len = struct.calcsize(hdr)
+        uuid_len = val_len - hdr_len
+
+        (props, handle, chrc_uuid) = struct.unpack("<BH%ds" % uuid_len, val)
+        chrc_value_attr = btp.gatts_get_attrs(start_handle=handle,
+                                              end_handle=handle)
+        if not chrc_value_attr:
+            continue
+
+        (handle, permission, type_uuid) = chrc_value_attr[0]
+        if permission & Perm.read_authn:
+            return format(handle, 'x').zfill(4)
+
+    return False
+
+
 def hdl_wid_141(desc):
     return btp.gatts_verify_write_success(desc)
+
+
+def hdl_wid_144(desc):
+    attrs = btp.gatts_get_attrs(type_uuid='2803')
+    for attr in attrs:
+        if not attr:
+            continue
+
+        (handle, permission, type_uuid) = attr
+        data = btp.gatts_get_attr_val(handle)
+        if not data:
+            continue
+
+        (att_rsp, val_len, val) = data
+
+        hdr = '<BH'
+        hdr_len = struct.calcsize(hdr)
+        uuid_len = val_len - hdr_len
+
+        (props, handle, chrc_uuid) = struct.unpack("<BH%ds" % uuid_len, val)
+        chrc_value_attr = btp.gatts_get_attrs(start_handle=handle,
+                                              end_handle=handle)
+        if not chrc_value_attr:
+            continue
+
+        (handle, permission, type_uuid) = chrc_value_attr[0]
+        if permission & Perm.read_enc:
+            return format(handle, 'x').zfill(4)
+
+    return False
 
 
 def hdl_wid_157(desc):
@@ -214,6 +298,10 @@ def hdl_wid_157(desc):
     sleep(10)  # Give some time to discover devices
     btp.gap_stop_discov()
     return btp.check_discov_results()
+
+
+def hdl_wid_158(desc):
+    return True
 
 
 def hdl_wid_161(desc):
