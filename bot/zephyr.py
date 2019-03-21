@@ -273,7 +273,7 @@ def run_tests(args, iut_config):
                           callback_thread.clear_pending_responses)
     cache = autoptsclient.cache_workspace(pts)
 
-    default_conf = None
+    default_conf = "default.conf"
     default_to_omit = []
 
     for config, value in iut_config.items():
