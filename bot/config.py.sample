@@ -49,6 +49,7 @@ z['mail'] = {
     "smtp_port": 587,
     "name": "John",
     "passwd": "<PASSWD>",
+    "start_tls": False,
     "recipients": [
         "1234@example.com",
         "5678@example.com",

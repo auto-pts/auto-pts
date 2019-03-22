@@ -127,8 +127,10 @@ def send_mail(cfg, autopts_sha, zephyr_sha, iut, msg_list):
     msg.attach(MIMEText(body, 'html'))
 
     server = smtplib.SMTP(cfg['smtp_host'], cfg['smtp_port'])
-    server.starttls()
-    server.login(cfg['sender'], cfg['passwd'])
+    if 'start_tls' in cfg and cfg['start_tls']:
+        server.starttls()
+    if 'passwd' in cfg:
+        server.login(cfg['sender'], cfg['passwd'])
     server.sendmail(cfg['sender'], cfg['recipients'], msg.as_string())
     server.quit()
 
