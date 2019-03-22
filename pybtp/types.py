@@ -64,6 +64,7 @@ class AdType:
     uuid16_svc_solicit = 20
     uuid16_svc_data = 22
     gap_appearance = 25
+    uri = 36
     manufacturer_data = 255
 
 
