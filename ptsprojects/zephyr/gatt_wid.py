@@ -19,7 +19,8 @@ from pybtp import btp
 import re
 import struct
 from binascii import hexlify
-from pybtp.types import Prop, Perm
+from pybtp.types import Prop, Perm, IOCap
+from ptsprojects.stack import get_stack
 
 log = logging.debug
 
@@ -41,6 +42,11 @@ def hdl_wid_1(desc):
     btp.gap_set_conn()
     btp.gap_set_gendiscov()
     btp.gap_adv_ind_on()
+    return True
+
+
+def hdl_wid_4(desc):
+    btp.gap_set_io_cap(IOCap.no_input_output)
     return True
 
 
@@ -245,6 +251,56 @@ def hdl_wid_52(desc):
     return True
 
 
+def hdl_wid_56(desc):
+    # This pattern is matching multiple IUT handle and characteristic value
+    pattern = re.compile("'([0-9a-fA-F]+)'")
+    params = pattern.findall(desc)
+    if not params or len(params) != 3:
+        logging.error("parsing error")
+        return False
+
+    handle1 = params[0]
+    handle2 = params[1]
+    values = params[2]
+
+    values_read = ""
+
+    att_rsp, value_len, value = btp.gatts_get_attr_val(handle1)
+    values_read += hexlify(value)
+
+    att_rsp, value_len, value = btp.gatts_get_attr_val(handle2)
+    values_read += hexlify(value)
+
+    if values_read.upper() != values.upper():
+        return False
+
+    return True
+
+
+def hdl_wid_75(desc):
+    # This pattern is matching IUT handle and characteristic value
+    pattern = re.compile("(handle|value)\s?=\s?'([0-9a-fA-F]+)'")
+    params = pattern.findall(desc)
+    if not params:
+        logging.error("parsing error")
+        return False
+
+    params = dict(params)
+
+    handle = int(params.get('handle'), 16)
+    value = int(params.get('value'), 16)
+
+    stack = get_stack()
+
+    val = stack.gatt.wait_attr_value_changed(handle, 10)
+    if val is None:
+        return False
+
+    val = int(val, 16)
+
+    return val == value
+
+
 def hdl_wid_110(desc):
     # Lookup characteristic handle that does not permit reading
     chrcs = btp.gatts_get_attrs(type_uuid='2803')
@@ -444,6 +500,87 @@ def hdl_wid_115(desc):
                 return format(int(uuid_str, 16), 'x').zfill(4)
             else:
                 return uuid_str
+
+    return '0000'
+
+
+def hdl_wid_118(desc):
+    # Lookup invalid attribute handle
+    handle = None
+
+    attrs = btp.gatts_get_attrs()
+    for attr in attrs:
+        handle, perm, type_uuid = attr
+
+    if handle is None:
+        logging.error("No attribute found!")
+        return "0000"
+
+    return '{0:04x}'.format(handle + 1, 'x')
+
+
+def hdl_wid_119(desc):
+    # Lookup UUID that is not present on IUT GATT Server
+    uuid_list = []
+
+    chrcs = btp.gatts_get_attrs(type_uuid='2803')
+    for chrc in chrcs:
+        handle, perm, type_uuid = chrc
+
+        chrc_val = btp.gatts_get_attr_val(handle)
+        if not chrc_val:
+            continue
+
+        att_rsp, val_len, val = chrc_val
+
+        hdr = '<BH'
+        hdr_len = struct.calcsize(hdr)
+        uuid_len = val_len - hdr_len
+
+        prop, handle, uuid = struct.unpack("<BH%ds" % uuid_len, val)
+        uuid_list.append(btp.btp2uuid(uuid_len, uuid))
+
+    if len(uuid_list) == 0:
+        logging.error("No attribute found!")
+        return "0000"
+
+    uuid_invalid = 1
+
+    while True:
+        if format(uuid_invalid, 'x') in uuid_list:
+            uuid_invalid += 1
+        else:
+            uuid_invalid = format(uuid_invalid, 'x').zfill(4)
+            break
+
+    return uuid_invalid
+
+
+def hdl_wid_120(desc):
+    # Lookup characteristic handle that does not permit write
+    chrcs = btp.gatts_get_attrs(type_uuid='2803')
+    for chrc in chrcs:
+        handle, perm, type_uuid = chrc
+
+        chrc_val = btp.gatts_get_attr_val(handle)
+        if not chrc_val:
+            continue
+
+        att_rsp, val_len, val = chrc_val
+
+        hdr = '<BH'
+        hdr_len = struct.calcsize(hdr)
+        uuid_len = val_len - hdr_len
+
+        prop, handle, chrc_uuid = struct.unpack("<BH%ds" % uuid_len, val)
+        chrc_value_attr = btp.gatts_get_attrs(start_handle=handle,
+                                              end_handle=handle)
+        if not chrc_value_attr:
+            continue
+
+        handle, perm, type_uuid = chrc_value_attr[0]
+        if not (perm & Perm.write) or not (prop & Prop.write):
+            return '{0:04x}'.format(handle, 'x')
 
     return '0000'
 
