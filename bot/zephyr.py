@@ -362,9 +362,12 @@ def main(cfg):
         drive.upload(logs_file)
         drive.upload("TestCase.db")
 
+    url_html = "Not Available"
+
     if 'mail' in cfg:
         summary_html = bot.common.status_dict2summary_html(summary)
-        url_html = bot.common.url2html(url, "Results on Google Drive")
+        if 'gdrive' in cfg:
+            url_html = bot.common.url2html(url, "Results on Google Drive")
 
         # Provide test case description
         _regressions = []
