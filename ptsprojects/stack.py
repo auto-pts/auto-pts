@@ -476,12 +476,59 @@ class Synch:
         self._clear_pending_responses_func()
 
 
+class Attribute:
+    def __init__(self, uuid):
+        self.uuid = uuid
+        self.value = None
+        self.changed_ev = Event()
+
+
+class Gatt:
+    def __init__(self):
+        self.server_attrs = dict()
+
+    def attr_value_set(self, handle, value):
+        logging.debug("%r %r", handle, value)
+        if handle in self.server_attrs:
+            self.server_attrs[handle].value = value
+        else:
+            self.server_attrs[handle] = Attribute(None)
+            self.server_attrs[handle].value = value
+
+    def attr_value_get(self, handle):
+        logging.debug("%r", handle)
+        if handle in self.server_attrs:
+            return self.server_attrs[handle].value
+
+        return None
+
+    def attr_value_set_changed(self, handle):
+        logging.debug("%r", handle)
+        self.server_attrs[handle].changed_ev.set()
+
+    def attr_value_clr_changed(self, handle):
+        logging.debug("%r", handle)
+        self.server_attrs[handle].changed_ev.clear()
+
+    def wait_attr_value_changed(self, handle, timeout=None):
+        if handle not in self.server_attrs:
+            self.server_attrs[handle] = Attribute(None)
+
+        if self.server_attrs[handle].changed_ev.wait(timeout=timeout):
+            return self.server_attrs[handle].value
+
+        else:
+            logging.debug("timed out")
+            return None
+
+
 class Stack:
     def __init__(self):
         self.gap = None
         self.mesh = None
         self.l2cap = None
         self.synch = None
+        self.gatt = None
 
     def gap_init(self, name=None, manufacturer_data=None):
         self.gap = Gap(name, manufacturer_data)
@@ -493,6 +540,9 @@ class Stack:
 
     def l2cap_init(self, psm):
         self.l2cap = L2cap(psm)
+
+    def gatt_init(self):
+        self.gatt = Gatt()
 
     def synch_init(self, set_pending_response_func,
                    clear_pending_responses_func):
@@ -508,6 +558,8 @@ class Stack:
                            self.mesh.output_size, self.mesh.output_actions,
                            self.mesh.input_size, self.mesh.input_actions,
                            self.mesh.crpl_size)
+        if self.gatt:
+            self.gatt_init()
 
         if self.synch:
             self.synch.cancel_synch()

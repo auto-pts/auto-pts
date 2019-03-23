@@ -2516,6 +2516,22 @@ GAP_EV = {
 }
 
 
+def gatt_attr_value_changed_ev_(gatt, data, data_len):
+    logging.debug("%s", gatt_attr_value_changed_ev_.__name__)
+
+    (handle, value) = gatts_dec_attr_value_changed_ev_data(data)
+    logging.debug("%s %r %r", gatt_attr_value_changed_ev_.__name__,
+                  handle, value)
+
+    gatt.attr_value_set(handle, binascii.hexlify(value[0]))
+    gatt.attr_value_set_changed(handle)
+
+
+GATT_EV = {
+    defs.GATT_EV_ATTR_VALUE_CHANGED: gatt_attr_value_changed_ev_,
+}
+
+
 def mesh_config_prov():
     logging.debug("%s", mesh_config_prov.__name__)
 
@@ -2894,20 +2910,30 @@ def event_handler(hdr, data):
         logging.info("Stack not initialized")
         return False
 
+    cb = None
+
     if hdr.svc_id == defs.BTP_SERVICE_ID_MESH:
         if hdr.op in MESH_EV and stack.mesh:
             cb = MESH_EV[hdr.op]
             cb(stack.mesh, data[0], hdr.data_len)
             return True
-    if hdr.svc_id == defs.BTP_SERVICE_ID_L2CAP:
+
+    elif hdr.svc_id == defs.BTP_SERVICE_ID_L2CAP:
         if hdr.op in L2CAP_EV and stack.l2cap:
             cb = L2CAP_EV[hdr.op]
             cb(stack.l2cap, data[0], hdr.data_len)
             return True
+
     elif hdr.svc_id == defs.BTP_SERVICE_ID_GAP:
         if hdr.op in GAP_EV and stack.gap:
             cb = GAP_EV[hdr.op]
             cb(stack.gap, data[0], hdr.data_len)
+            return True
+
+    elif hdr.svc_id == defs.BTP_SERVICE_ID_GATT:
+        if hdr.op in GATT_EV and stack.gatt:
+            cb = GATT_EV[hdr.op]
+            cb(stack.gatt, data[0], hdr.data_len)
             return True
 
     # TODO: Raise BTP error instead of logging
