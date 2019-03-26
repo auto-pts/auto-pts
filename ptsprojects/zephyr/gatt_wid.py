@@ -19,8 +19,9 @@ from pybtp import btp
 import re
 import struct
 from binascii import hexlify
-from pybtp.types import Prop, Perm, IOCap
+from pybtp.types import Prop, Perm, IOCap, UUID
 from ptsprojects.stack import get_stack
+from time import sleep
 
 log = logging.debug
 
@@ -35,6 +36,107 @@ def gatt_wid_hdl(wid, description, test_case_name):
         return handler(description)
     except AttributeError as e:
         logging.exception(e.message)
+
+
+class Attribute:
+    def __init__(self, handle, perm, uuid, att_rsp):
+        self.handle = handle
+        self.perm = perm
+        self.uuid = uuid
+        self.att_read_rsp = att_rsp
+
+
+class Service(Attribute):
+    pass
+
+
+class Primary(Service):
+    pass
+
+
+class Secondary(Service):
+    pass
+
+
+class ServiceIncluded(Attribute):
+    def __init__(self, handle, perm, uuid, att_rsp, incl_svc_hdl, end_grp_hdl):
+        Attribute.__init__(self, handle, perm, uuid, att_rsp)
+        self.incl_svc_hdl = incl_svc_hdl
+        self.end_grp_hdl = end_grp_hdl
+
+
+class Characteristic(Attribute):
+    def __init__(self, handle, perm, uuid, att_rsp, prop, value_handle):
+        Attribute.__init__(self, handle, perm, uuid, att_rsp)
+        self.prop = prop
+        self.value_handle = value_handle
+
+
+class CharacteristicDescriptor(Attribute):
+    def __init__(self, handle, perm, uuid, att_rsp, value):
+        Attribute.__init__(self, handle, perm, uuid, att_rsp)
+        self.value = value
+
+
+class GattDB:
+    def __init__(self):
+        self.db = dict()
+
+    def attr_add(self, handle, attr):
+        self.db[handle] = attr
+
+    def attr_lookup_handle(self, handle):
+        if handle in self.db:
+            return self.db[handle]
+        else:
+            return None
+
+
+def gatt_server_fetch_db():
+    db = GattDB()
+
+    attrs = btp.gatts_get_attrs()
+    for attr in attrs:
+        handle, perm, type_uuid = attr
+
+        attr_val = btp.gatts_get_attr_val(handle)
+        if not attr_val:
+            logging.debug("cannot read value %r", handle)
+            continue
+
+        att_rsp, val_len, val = attr_val
+
+        if type_uuid == '0x2800' or type_uuid == '0x2801':
+            uuid = btp.btp2uuid(val_len, val).replace("0x", "").replace("-", "").upper()
+
+            if type_uuid == '0x2800':
+                db.attr_add(handle, Primary(handle, perm, uuid, att_rsp))
+            else:
+                db.attr_add(handle, Secondary(handle, perm, uuid, att_rsp))
+        elif type_uuid == '0x2803':
+
+            hdr = '<BH'
+            hdr_len = struct.calcsize(hdr)
+            uuid_len = val_len - hdr_len
+
+            prop, value_handle, uuid = struct.unpack("<BH%ds" % uuid_len, val)
+            uuid = btp.btp2uuid(uuid_len, uuid).replace("0x", "").replace("-", "").upper()
+
+            db.attr_add(handle, Characteristic(handle, perm, uuid, att_rsp, prop, value_handle))
+        elif type_uuid == '0x2802':
+            hdr = "<HH"
+            hdr_len = struct.calcsize(hdr)
+            uuid_len = val_len - hdr_len
+            incl_svc_hdl, end_grp_hdl, uuid = struct.unpack(hdr + "%ds" % uuid_len, val)
+            uuid = btp.btp2uuid(uuid_len, uuid).replace("0x", "").replace("-", "").upper()
+
+            db.attr_add(handle, ServiceIncluded(handle, perm, uuid, att_rsp, incl_svc_hdl, end_grp_hdl))
+        else:
+            uuid = type_uuid.replace("0x", "").replace("-", "").upper()
+
+            db.attr_add(handle, CharacteristicDescriptor(handle, perm, uuid, att_rsp, val))
+
+    return db
 
 
 # wid handlers section begin
@@ -230,12 +332,16 @@ def hdl_wid_25(desc):
     return True
 
 
+def hdl_wid_34(desc):
+    return True
+
+
 def hdl_wid_52(desc):
     # This pattern is matching IUT handle and characteristic value
     pattern = re.compile("(Handle|value)='([0-9a-fA-F]+)'")
     params = pattern.findall(desc)
     if not params:
-        logging.error("%s parsing error", hdl_wid_52.__name__)
+        logging.error("parsing error")
         return False
 
     params = dict(params)
@@ -243,11 +349,22 @@ def hdl_wid_52(desc):
     handle = int(params.get('Handle'), 16)
     value = int(params.get('value'), 16)
 
-    (att_rsp, value_len, value_read) = btp.gatts_get_attr_val(handle)
-    value_read = int(hexlify(value_read), 16)
+    db = gatt_server_fetch_db()
+    attr = db.attr_lookup_handle(handle)
+    if attr is None:
+        return False
+
+    if not isinstance(attr, CharacteristicDescriptor):
+        return False
+
+    if attr.uuid == UUID.CEP:
+        (value_read,) = struct.unpack("<H", attr.value)
+    else:
+        value_read = int(hexlify(attr.value), 16)
 
     if value_read != value:
         return False
+
     return True
 
 
@@ -299,6 +416,170 @@ def hdl_wid_75(desc):
     val = int(val, 16)
 
     return val == value
+
+
+def hdl_wid_92(desc):
+    # This pattern is matching Notification handle
+    pattern = re.compile("(handle)\s?=\s?'([0-9a-fA-F]+)'")
+    params = pattern.findall(desc)
+    if not params:
+        logging.error("parsing error")
+        return False
+
+    params = dict(params)
+    handle = int(params.get('handle'), 16)
+    att_rsp, value_len, value = btp.gatts_get_attr_val(handle)
+
+    if att_rsp:
+        logging.debug("cannot read chrc value")
+        return False
+
+    # delay to let the PTS subscribe for notifications
+    sleep(2)
+
+    btp.gatts_set_val(handle, hexlify(value)),
+
+    return True
+
+
+def hdl_wid_96(desc):
+    return True
+
+
+def hdl_wid_97(desc):
+    return True
+
+
+def hdl_wid_98(desc):
+    # This pattern is matching Indication handle
+    pattern = re.compile("(handle)\s?=\s?'([0-9a-fA-F]+)'")
+    params = pattern.findall(desc)
+    if not params:
+        logging.error("parsing error")
+        return False
+
+    params = dict(params)
+    handle = int(params.get('handle'), 16)
+    att_rsp, value_len, value = btp.gatts_get_attr_val(handle)
+
+    if att_rsp:
+        logging.debug("cannot read chrc value")
+        return False
+
+    # delay to let the PTS subscribe for notifications
+    sleep(2)
+
+    btp.gatts_set_val(handle, hexlify(value)),
+
+    return True
+
+
+def hdl_wid_102(desc):
+    pattern = re.compile("(ATTRIBUTE\sHANDLE|"
+                         "INCLUDED\sSERVICE\sATTRIBUTE\sHANDLE|"
+                         "END\sGROUP\sHANDLE|"
+                         "UUID|"
+                         "PROPERTIES|"
+                         "HANDLE|"
+                         "SECONDARY\sSERVICE)\s?=\s?'([0-9a-fA-F]+)'", re.IGNORECASE)
+    params = pattern.findall(desc)
+    if not params:
+        logging.error("parsing error")
+        return False
+
+    params = dict([(k.upper(), v) for k, v in params])
+    db = gatt_server_fetch_db()
+
+    if "INCLUDED SERVICE ATTRIBUTE HANDLE" in params:
+        incl_handle = int(params.get('INCLUDED SERVICE ATTRIBUTE HANDLE'), 16)
+        attr = db.attr_lookup_handle(incl_handle)
+        if attr is None or not isinstance(attr, Service):
+            logging.error("service not found")
+            return False
+
+        incl_uuid = attr.uuid
+        attr = db.attr_lookup_handle(int(params.get('ATTRIBUTE HANDLE'), 16))
+        if attr is None or not isinstance(attr, ServiceIncluded):
+            logging.error("included not found")
+            return False
+
+        if attr.end_grp_hdl != int(params.get('END GROUP HANDLE'), 16) \
+                or incl_uuid != params.get('UUID').upper():
+            return False
+
+        return True
+
+    if "PROPERTIES" in params:
+        attr_handle = int(params.get('ATTRIBUTE HANDLE'), 16)
+        attr = db.attr_lookup_handle(attr_handle)
+        if attr is None or not isinstance(attr, Characteristic):
+            logging.error("characteristic not found")
+            return False
+
+        if attr.prop != int(params.get('PROPERTIES'), 16) \
+                or attr.value_handle != int(params.get('HANDLE'), 16) \
+                or attr.uuid != params.get('UUID').upper():
+            return False
+
+        return True
+
+    if "SECONDARY SERVICE" in params:
+        attr_handle = int(params.get('ATTRIBUTE HANDLE'), 16)
+        attr = db.attr_lookup_handle(attr_handle)
+        if attr is None:
+            logging.error("characteristic not found")
+            return False
+
+        if not isinstance(attr, Secondary) or \
+                        attr.uuid != params.get('SECONDARY SERVICE').upper():
+            return False
+
+        return True
+
+    return False
+
+
+def hdl_wid_104(desc):
+    pattern = re.compile("(ATTRIBUTE\sHANDLE|"
+                         "VALUE|"
+                         "FORMAT|"
+                         "EXPONENT|"
+                         "UINT|"
+                         "NAMESPACE|"
+                         "DESCRIPTION)\s?=\s?'?([0-9a-fA-F]+)'?", re.IGNORECASE)
+    params = pattern.findall(desc)
+    if not params:
+        logging.error("parsing error")
+        return False
+
+    params = dict([(k.upper(), v) for k, v in params])
+    db = gatt_server_fetch_db()
+
+    attr = db.attr_lookup_handle(int(params.get('ATTRIBUTE HANDLE'), 16))
+    if attr is None or not isinstance(attr, CharacteristicDescriptor):
+        logging.error("included not found")
+        return False
+
+    p_format = int(params.get('FORMAT'), 16)
+    p_exponent = int(params.get('EXPONENT'), 16)
+    p_uint = int(params.get('UINT'), 16)
+    p_namespace = int(params.get('NAMESPACE'), 16)
+    p_description = int(params.get('DESCRIPTION'), 16)
+
+    i_format, i_exponent, i_uint, i_namespace, i_description = struct.unpack("<BBHBH", attr.value)
+
+    if p_format != i_format \
+            or p_exponent != i_exponent \
+            or p_uint != i_uint \
+            or p_namespace != i_namespace \
+            or p_description != i_description:
+        return False
+
+    return True
+
+
+def hdl_wid_107(desc):
+    return True
 
 
 def hdl_wid_110(desc):
@@ -662,3 +943,12 @@ def hdl_wid_122(desc):
             return uuid_str
 
     return '0000'
+
+
+def hdl_wid_2000(desc):
+    stack = get_stack()
+
+    passkey = stack.gap.passkey.data
+    stack.gap.passkey.data = None
+
+    return passkey
