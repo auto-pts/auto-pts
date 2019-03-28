@@ -347,7 +347,7 @@ def hdl_wid_52(desc):
     params = dict(params)
 
     handle = int(params.get('Handle'), 16)
-    value = int(params.get('value'), 16)
+    value = params.get('value').upper()
 
     db = gatt_server_fetch_db()
     attr = db.attr_lookup_handle(handle)
@@ -359,8 +359,9 @@ def hdl_wid_52(desc):
 
     if attr.uuid == UUID.CEP:
         (value_read,) = struct.unpack("<H", attr.value)
+        value_read = '{0:04x}'.format(value_read, 'x')
     else:
-        value_read = int(hexlify(attr.value), 16)
+        value_read = hexlify(attr.value).upper()
 
     if value_read != value:
         return False
