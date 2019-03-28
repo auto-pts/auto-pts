@@ -267,6 +267,9 @@ def run_tests(args, iut_config):
     # Main instance of PTS
     pts = ptses[0]
 
+    # Read PTS Version and keep it for later use
+    args['pts_ver'] = "%x" % pts.get_version()
+
     stack.init_stack()
     stack_inst = stack.get_stack()
     stack_inst.synch_init(callback_thread.set_pending_response,
@@ -388,8 +391,9 @@ def main(cfg):
                 name + " - " + descriptions.get(name, "no description"))
 
         reg_html = bot.common.regressions2html(_regressions)
+
         bot.common.send_mail(cfg['mail'], None, zephyr_hash_html, args["board"],
-                             [summary_html, reg_html, url_html])
+                             args['pts_ver'], [summary_html, reg_html, url_html])
 
     bot.common.cleanup()
 
