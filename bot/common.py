@@ -98,7 +98,7 @@ def regressions2html(regressions_list=[]):
     return msg
 
 
-def send_mail(cfg, autopts_sha, zephyr_sha, iut, msg_list):
+def send_mail(cfg, autopts_sha, zephyr_sha, iut, pts_ver, msg_list):
     """
     :param cfg: Mailbox configuration
     :param autopts_sha: AutoPTS Git SHA
@@ -114,10 +114,11 @@ def send_mail(cfg, autopts_sha, zephyr_sha, iut, msg_list):
     <h4>1. Setup</h4>
     <p> Zephyr  HEAD is on {} </p>
     <p> IUT used {} </p>
+    <p> PTS Version is {} </p>
     {}
     <p>Sincerely,</p>
     <p> {}</p>
-    '''.format(zephyr_sha, iut, msg_str, cfg['name'])
+    '''.format(zephyr_sha, iut, pts_ver, msg_str, cfg['name'])
 
     msg = MIMEMultipart()
     msg['From'] = cfg['sender']
