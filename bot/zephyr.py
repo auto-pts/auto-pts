@@ -338,6 +338,15 @@ def run_tests(args, iut_config):
     return status, results, descriptions, regressions
 
 
+def zephyr_hash_url(commit):
+    """ Create URL for commit in Zephyr
+    :param commit: Commit ID to append
+    :return: URL of commit
+    """
+    return "{}/commit/{}".format(autoprojects.ZEPHYR_PROJECT_URL,
+                                 commit)
+
+
 def main(cfg):
     args = cfg['auto_pts']
     args['kernel_image'] = os.path.join(args['project_path'], 'tests',
@@ -347,6 +356,9 @@ def main(cfg):
     zephyr_hash = \
         bot.common.update_sources(os.path.abspath(args['project_path']),
                                   args['git_branch'])
+
+    zephyr_hash_html = bot.common.url2html(zephyr_hash_url(zephyr_hash),
+                                           zephyr_hash)
 
     summary, results, descriptions, regressions = \
         run_tests(args, cfg.get('iut_config', {}))
@@ -376,7 +388,7 @@ def main(cfg):
                 name + " - " + descriptions.get(name, "no description"))
 
         reg_html = bot.common.regressions2html(_regressions)
-        bot.common.send_mail(cfg['mail'], None, zephyr_hash, args["board"],
+        bot.common.send_mail(cfg['mail'], None, zephyr_hash_html, args["board"],
                              [summary_html, reg_html, url_html])
 
     bot.common.cleanup()
