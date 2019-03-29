@@ -21,6 +21,7 @@ import re
 import subprocess
 import sys
 import time
+import datetime
 
 import autoptsclient_common as autoptsclient
 import ptsprojects.zephyr as autoprojects
@@ -350,6 +351,39 @@ def zephyr_hash_url(commit):
                                  commit)
 
 
+def compose_mail(args, zephyr_hash_html, summary_html,
+                 reg_html, log_url_html, name):
+    """ Create a email body
+    """
+
+    iso_cal = datetime.date.today().isocalendar()
+    ww_dd_str = "WW%s.%s" % (iso_cal[1], iso_cal[2])
+
+    body = '''
+    <p>This is automated email and do not reply.</p>
+    <h1>Bluetooth test session - {} </h1>
+    <h2>1. IUT Setup</h2>
+    <p><b> Type:</b> Zephyr <br>
+    <b> Board:</b> {} <br>
+    <b> Source:</b> {} </p>
+    <h2>2. PTS Setup</h2>
+    <p><b> OS:</b> Windows 10 <br>
+    <b> Platform:</b> VirtualBox <br>
+    <b> Version:</b> {} </p>
+    <h2>3. Test Results</h2>
+    {}
+    {}
+    <h3>Logs</h3>
+    {}
+    <p>Sincerely,</p>
+    <p> {}</p>
+    '''.format(ww_dd_str, args["board"], zephyr_hash_html, args['pts_ver'],
+               summary_html, reg_html, log_url_html, name)
+
+    subject = "AutoPTS test session results - %s" % ww_dd_str
+
+    return subject, body
+
 def main(cfg):
     args = cfg['auto_pts']
     args['kernel_image'] = os.path.join(args['project_path'], 'tests',
@@ -359,9 +393,6 @@ def main(cfg):
     zephyr_hash = \
         bot.common.update_sources(os.path.abspath(args['project_path']),
                                   args['git_branch'])
-
-    zephyr_hash_html = bot.common.url2html(zephyr_hash_url(zephyr_hash),
-                                           zephyr_hash)
 
     summary, results, descriptions, regressions = \
         run_tests(args, cfg.get('iut_config', {}))
@@ -377,12 +408,11 @@ def main(cfg):
         drive.upload(logs_file)
         drive.upload("TestCase.db")
 
-    url_html = "Not Available"
-
     if 'mail' in cfg:
+        print("Sending email ...")
+
+        # Summary
         summary_html = bot.common.status_dict2summary_html(summary)
-        if 'gdrive' in cfg:
-            url_html = bot.common.url2html(url, "Results on Google Drive")
 
         # Provide test case description
         _regressions = []
@@ -392,8 +422,23 @@ def main(cfg):
 
         reg_html = bot.common.regressions2html(_regressions)
 
-        bot.common.send_mail(cfg['mail'], None, zephyr_hash_html, args["board"],
-                             args['pts_ver'], [summary_html, reg_html, url_html])
+        # Zephyr commit id link in HTML format
+        zephyr_hash_html = bot.common.url2html(zephyr_hash_url(zephyr_hash),
+                                               zephyr_hash)
+
+        # Log in Google drive in HTML format
+        if 'gdrive' in cfg:
+            log_url_html = bot.common.url2html(url, "Results on Google Drive")
+        else:
+            log_url_html = "Not Available"
+
+        subject, body = compose_mail(args, zephyr_hash_html, summary_html,
+                                     reg_html, log_url_html,
+                                     cfg['mail']['name'])
+
+        bot.common.send_mail(cfg['mail'], subject, body)
+
+        print("Done")
 
     bot.common.cleanup()
 
