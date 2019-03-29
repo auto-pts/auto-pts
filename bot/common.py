@@ -48,19 +48,27 @@ def status_dict2summary_html(status_dict):
     status count
     :return: HTML formatted summary
     """
-    summary = ""
+    summary = """<h3>Summary</h3>
+                 <table>"""
     total_count = 0
 
-    summary += "<h4>2. Test results summary</h4>"
-    summary += "<table>"
-    summary += "<tr><th>Status</th><th>Count</th></tr>"
+    summary += """<tr>
+                  <td style=\"width: 150px;\"><b>Status</b></td>
+                  <td style=\"text-align: center;\"><b>Count</b></td>
+                  </tr>"""
 
     for status in sorted(status_dict.keys()):
         count = status_dict[status]
-        summary += "<tr><td>{}</td><td>{}</td></tr>".format(status, count)
+        summary += """<tr>
+                      <td style=\"width: 150px;\">{}</td>
+                      <td style=\"text-align: center;\">{}</td>
+                      </tr>""".format(status, count)
         total_count += count
-    summary += \
-        "<tr><td><i>Total</i></td><td><i>{}</i></td></tr>".format(total_count)
+
+    summary += """<tr>
+                  <td style=\"width: 150px;\"><i>Total</i></td>
+                  <td style=\"text-align: center;\"><i>{}</i></td>
+                  </tr>""".format(total_count)
     summary += "</table>"
 
     if "PASS" in status_dict:
@@ -87,7 +95,7 @@ def regressions2html(regressions_list=[]):
     :param regressions_list: list of regressions found
     :return: HTML formatted message
     """
-    msg = "<h4>Regressions</h4>"
+    msg = "<h3>Regressions</h3>"
 
     if regressions_list:
         for name in regressions_list:
@@ -98,36 +106,18 @@ def regressions2html(regressions_list=[]):
     return msg
 
 
-def send_mail(cfg, autopts_sha, zephyr_sha, iut, pts_ver, msg_list):
+def send_mail(cfg, subject, body):
     """
     :param cfg: Mailbox configuration
-    :param autopts_sha: AutoPTS Git SHA
-    :param zephyr_sha: Zephyr Git SHA
-    :param iut: IUT
-    :param msg_list: HTML formatted messages to enclose
+    :param subject: Mail subject
+    :param body: Mail boyd
     :return: None
     """
-    msg_str = "".join(msg_list)
-
-    iso_cal = datetime.date.today().isocalendar()
-    ww_dd_str = "WW%s.%s" % (iso_cal[1], iso_cal[2])
-
-    body = '''
-    <p>Hello,</p>
-    <p>Here's summary from Bluetooth test session - {} </p>
-    <h4>1. Setup</h4>
-    <p> Zephyr  HEAD is on {} </p>
-    <p> IUT used {} </p>
-    <p> PTS Version is {} </p>
-    {}
-    <p>Sincerely,</p>
-    <p> {}</p>
-    '''.format(ww_dd_str, zephyr_sha, iut, pts_ver, msg_str, cfg['name'])
 
     msg = MIMEMultipart()
     msg['From'] = cfg['sender']
     msg['To'] = COMMASPACE.join(cfg['recipients'])
-    msg['Subject'] = "AutoPTS test session results - %s" % ww_dd_str
+    msg['Subject'] = subject
 
     msg.attach(MIMEText(body, 'html'))
 
