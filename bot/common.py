@@ -108,9 +108,13 @@ def send_mail(cfg, autopts_sha, zephyr_sha, iut, pts_ver, msg_list):
     :return: None
     """
     msg_str = "".join(msg_list)
+
+    iso_cal = datetime.date.today().isocalendar()
+    ww_dd_str = "WW%s.%s" % (iso_cal[1], iso_cal[2])
+
     body = '''
     <p>Hello,</p>
-    <p>Here's summary from Bluetooth weekly test session</p>
+    <p>Here's summary from Bluetooth test session - {} </p>
     <h4>1. Setup</h4>
     <p> Zephyr  HEAD is on {} </p>
     <p> IUT used {} </p>
@@ -118,12 +122,12 @@ def send_mail(cfg, autopts_sha, zephyr_sha, iut, pts_ver, msg_list):
     {}
     <p>Sincerely,</p>
     <p> {}</p>
-    '''.format(zephyr_sha, iut, pts_ver, msg_str, cfg['name'])
+    '''.format(ww_dd_str, zephyr_sha, iut, pts_ver, msg_str, cfg['name'])
 
     msg = MIMEMultipart()
     msg['From'] = cfg['sender']
     msg['To'] = COMMASPACE.join(cfg['recipients'])
-    msg['Subject'] = "AutoPTS test session results"
+    msg['Subject'] = "AutoPTS test session results - %s" % ww_dd_str
 
     msg.attach(MIMEText(body, 'html'))
 
