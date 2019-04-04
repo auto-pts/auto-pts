@@ -19,6 +19,61 @@ from threading import Lock, Timer, Event
 STACK = None
 
 
+class GattAttribute:
+    def __init__(self, handle, perm, uuid, att_rsp):
+        self.handle = handle
+        self.perm = perm
+        self.uuid = uuid
+        self.att_read_rsp = att_rsp
+
+
+class GattService(GattAttribute):
+    pass
+
+
+class GattPrimary(GattService):
+    pass
+
+
+class GattSecondary(GattService):
+    pass
+
+
+class GattServiceIncluded(GattAttribute):
+    def __init__(self, handle, perm, uuid, att_rsp, incl_svc_hdl, end_grp_hdl):
+        GattAttribute.__init__(self, handle, perm, uuid, att_rsp)
+        self.incl_svc_hdl = incl_svc_hdl
+        self.end_grp_hdl = end_grp_hdl
+
+
+class GattCharacteristic(GattAttribute):
+    def __init__(self, handle, perm, uuid, att_rsp, prop, value_handle):
+        GattAttribute.__init__(self, handle, perm, uuid, att_rsp)
+        self.prop = prop
+        self.value_handle = value_handle
+
+
+class GattCharacteristicDescriptor(GattAttribute):
+    def __init__(self, handle, perm, uuid, att_rsp, value):
+        GattAttribute.__init__(self, handle, perm, uuid, att_rsp)
+        self.value = value
+        self.has_changed = Event()
+
+
+class GattDB:
+    def __init__(self):
+        self.db = dict()
+
+    def attr_add(self, handle, attr):
+        self.db[handle] = attr
+
+    def attr_lookup_handle(self, handle):
+        if handle in self.db:
+            return self.db[handle]
+        else:
+            return None
+
+
 class Property(object):
     def __init__(self, data):
         self._lock = Lock()
@@ -476,50 +531,53 @@ class Synch:
         self._clear_pending_responses_func()
 
 
-class Attribute:
-    def __init__(self, uuid):
-        self.uuid = uuid
-        self.value = None
-        self.changed_ev = Event()
-
-
 class Gatt:
     def __init__(self):
-        self.server_attrs = dict()
+        self.server_db = GattDB()
 
     def attr_value_set(self, handle, value):
-        logging.debug("%r %r", handle, value)
-        if handle in self.server_attrs:
-            self.server_attrs[handle].value = value
-        else:
-            self.server_attrs[handle] = Attribute(None)
-            self.server_attrs[handle].value = value
+        attr = self.server_db.attr_lookup_handle(handle)
+        if attr:
+            attr.value = value
+            return
+
+        attr = GattCharacteristicDescriptor(handle, None, None, None, value)
+        self.server_db.attr_add(handle, attr)
 
     def attr_value_get(self, handle):
-        logging.debug("%r", handle)
-        if handle in self.server_attrs:
-            return self.server_attrs[handle].value
+        attr = self.server_db.attr_lookup_handle(handle)
+        if attr:
+            return attr.value
 
         return None
 
     def attr_value_set_changed(self, handle):
-        logging.debug("%r", handle)
-        self.server_attrs[handle].changed_ev.set()
+        attr = self.server_db.attr_lookup_handle(handle)
+        if attr is None:
+            logging.error("No attribute with %r handle", handle)
+            return
+
+        attr.has_changed.set()
 
     def attr_value_clr_changed(self, handle):
-        logging.debug("%r", handle)
-        self.server_attrs[handle].changed_ev.clear()
+        attr = self.server_db.attr_lookup_handle(handle)
+        if attr is None:
+            logging.error("No attribute with %r handle", handle)
+            return
+
+        attr.has_changed.clear()
 
     def wait_attr_value_changed(self, handle, timeout=None):
-        if handle not in self.server_attrs:
-            self.server_attrs[handle] = Attribute(None)
+        attr = self.server_db.attr_lookup_handle(handle)
+        if attr is None:
+            attr = GattCharacteristicDescriptor(handle, None, None, None, None)
+            self.server_db.attr_add(handle, attr)
 
-        if self.server_attrs[handle].changed_ev.wait(timeout=timeout):
-            return self.server_attrs[handle].value
+        if attr.has_changed.wait(timeout=timeout):
+            return attr.value
 
-        else:
-            logging.debug("timed out")
-            return None
+        logging.debug("timed out")
+        return None
 
 
 class Stack:

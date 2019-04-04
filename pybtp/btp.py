@@ -2517,8 +2517,6 @@ GAP_EV = {
 
 
 def gatt_attr_value_changed_ev_(gatt, data, data_len):
-    logging.debug("%s", gatt_attr_value_changed_ev_.__name__)
-
     (handle, value) = gatts_dec_attr_value_changed_ev_data(data)
     logging.debug("%s %r %r", gatt_attr_value_changed_ev_.__name__,
                   handle, value)
