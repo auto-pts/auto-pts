@@ -20,7 +20,8 @@ import re
 import struct
 from binascii import hexlify
 from pybtp.types import Prop, Perm, IOCap, UUID
-from ptsprojects.stack import get_stack
+from ptsprojects.stack import get_stack, GattPrimary, GattService, GattSecondary, GattServiceIncluded, \
+    GattCharacteristic, GattCharacteristicDescriptor, GattDB
 from time import sleep
 
 log = logging.debug
@@ -36,60 +37,6 @@ def gatt_wid_hdl(wid, description, test_case_name):
         return handler(description)
     except AttributeError as e:
         logging.exception(e.message)
-
-
-class Attribute:
-    def __init__(self, handle, perm, uuid, att_rsp):
-        self.handle = handle
-        self.perm = perm
-        self.uuid = uuid
-        self.att_read_rsp = att_rsp
-
-
-class Service(Attribute):
-    pass
-
-
-class Primary(Service):
-    pass
-
-
-class Secondary(Service):
-    pass
-
-
-class ServiceIncluded(Attribute):
-    def __init__(self, handle, perm, uuid, att_rsp, incl_svc_hdl, end_grp_hdl):
-        Attribute.__init__(self, handle, perm, uuid, att_rsp)
-        self.incl_svc_hdl = incl_svc_hdl
-        self.end_grp_hdl = end_grp_hdl
-
-
-class Characteristic(Attribute):
-    def __init__(self, handle, perm, uuid, att_rsp, prop, value_handle):
-        Attribute.__init__(self, handle, perm, uuid, att_rsp)
-        self.prop = prop
-        self.value_handle = value_handle
-
-
-class CharacteristicDescriptor(Attribute):
-    def __init__(self, handle, perm, uuid, att_rsp, value):
-        Attribute.__init__(self, handle, perm, uuid, att_rsp)
-        self.value = value
-
-
-class GattDB:
-    def __init__(self):
-        self.db = dict()
-
-    def attr_add(self, handle, attr):
-        self.db[handle] = attr
-
-    def attr_lookup_handle(self, handle):
-        if handle in self.db:
-            return self.db[handle]
-        else:
-            return None
 
 
 def gatt_server_fetch_db():
@@ -110,9 +57,9 @@ def gatt_server_fetch_db():
             uuid = btp.btp2uuid(val_len, val).replace("0x", "").replace("-", "").upper()
 
             if type_uuid == '0x2800':
-                db.attr_add(handle, Primary(handle, perm, uuid, att_rsp))
+                db.attr_add(handle, GattPrimary(handle, perm, uuid, att_rsp))
             else:
-                db.attr_add(handle, Secondary(handle, perm, uuid, att_rsp))
+                db.attr_add(handle, GattSecondary(handle, perm, uuid, att_rsp))
         elif type_uuid == '0x2803':
 
             hdr = '<BH'
@@ -122,7 +69,7 @@ def gatt_server_fetch_db():
             prop, value_handle, uuid = struct.unpack("<BH%ds" % uuid_len, val)
             uuid = btp.btp2uuid(uuid_len, uuid).replace("0x", "").replace("-", "").upper()
 
-            db.attr_add(handle, Characteristic(handle, perm, uuid, att_rsp, prop, value_handle))
+            db.attr_add(handle, GattCharacteristic(handle, perm, uuid, att_rsp, prop, value_handle))
         elif type_uuid == '0x2802':
             hdr = "<HH"
             hdr_len = struct.calcsize(hdr)
@@ -130,11 +77,11 @@ def gatt_server_fetch_db():
             incl_svc_hdl, end_grp_hdl, uuid = struct.unpack(hdr + "%ds" % uuid_len, val)
             uuid = btp.btp2uuid(uuid_len, uuid).replace("0x", "").replace("-", "").upper()
 
-            db.attr_add(handle, ServiceIncluded(handle, perm, uuid, att_rsp, incl_svc_hdl, end_grp_hdl))
+            db.attr_add(handle, GattServiceIncluded(handle, perm, uuid, att_rsp, incl_svc_hdl, end_grp_hdl))
         else:
             uuid = type_uuid.replace("0x", "").replace("-", "").upper()
 
-            db.attr_add(handle, CharacteristicDescriptor(handle, perm, uuid, att_rsp, val))
+            db.attr_add(handle, GattCharacteristicDescriptor(handle, perm, uuid, att_rsp, val))
 
     return db
 
@@ -366,7 +313,7 @@ def hdl_wid_52(desc):
     if attr is None:
         return False
 
-    if not isinstance(attr, CharacteristicDescriptor):
+    if not isinstance(attr, GattCharacteristicDescriptor):
         return False
 
     if attr.uuid == UUID.CEP:
@@ -523,13 +470,13 @@ def hdl_wid_102(desc):
     if "INCLUDED SERVICE ATTRIBUTE HANDLE" in params:
         incl_handle = int(params.get('INCLUDED SERVICE ATTRIBUTE HANDLE'), 16)
         attr = db.attr_lookup_handle(incl_handle)
-        if attr is None or not isinstance(attr, Service):
+        if attr is None or not isinstance(attr, GattService):
             logging.error("service not found")
             return False
 
         incl_uuid = attr.uuid
         attr = db.attr_lookup_handle(int(params.get('ATTRIBUTE HANDLE'), 16))
-        if attr is None or not isinstance(attr, ServiceIncluded):
+        if attr is None or not isinstance(attr, GattServiceIncluded):
             logging.error("included not found")
             return False
 
@@ -542,7 +489,7 @@ def hdl_wid_102(desc):
     if "PROPERTIES" in params:
         attr_handle = int(params.get('ATTRIBUTE HANDLE'), 16)
         attr = db.attr_lookup_handle(attr_handle)
-        if attr is None or not isinstance(attr, Characteristic):
+        if attr is None or not isinstance(attr, GattCharacteristic):
             logging.error("characteristic not found")
             return False
 
@@ -560,7 +507,7 @@ def hdl_wid_102(desc):
             logging.error("characteristic not found")
             return False
 
-        if not isinstance(attr, Secondary) or \
+        if not isinstance(attr, GattSecondary) or \
                         attr.uuid != params.get('SECONDARY SERVICE').upper():
             return False
 
@@ -586,7 +533,7 @@ def hdl_wid_104(desc):
     db = gatt_server_fetch_db()
 
     attr = db.attr_lookup_handle(int(params.get('ATTRIBUTE HANDLE'), 16))
-    if attr is None or not isinstance(attr, CharacteristicDescriptor):
+    if attr is None or not isinstance(attr, GattCharacteristicDescriptor):
         logging.error("included not found")
         return False
 
