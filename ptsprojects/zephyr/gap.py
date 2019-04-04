@@ -519,14 +519,9 @@ def test_cases(pts):
                          TestFunc(btp.gap_adv_ind_on, sd=[AdData.ad_name_sh],
                                   start_wid=91)]),
         ZTestCase("GAP", "GAP/BOND/BON/BV-04-C",
-                  cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
-                         TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
-                                  start_wid=78),
-                         TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
-                                  start_wid=108),
-                         TestFunc(btp.gap_disconn, pts_bd_addr,
-                                  Addr.le_public, start_wid=77)]),
+                  cmds=pre_conditions + init_gatt_db +
+                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/AUT/BV-11-C",
                   cmds=pre_conditions + init_gatt_db +
                        [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
