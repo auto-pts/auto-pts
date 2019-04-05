@@ -27,6 +27,8 @@ import zipfile
 import smtplib
 from email.MIMEMultipart import MIMEMultipart
 from email.MIMEText import MIMEText
+from email.MIMEBase import MIMEBase
+from email import encoders
 
 from apiclient import discovery, errors
 from apiclient.http import MediaFileUpload
@@ -107,7 +109,7 @@ def regressions2html(regressions_list=[]):
     return msg
 
 
-def send_mail(cfg, subject, body):
+def send_mail(cfg, subject, body, attachments=None):
     """
     :param cfg: Mailbox configuration
     :param subject: Mail subject
@@ -121,6 +123,17 @@ def send_mail(cfg, subject, body):
     msg['Subject'] = subject
 
     msg.attach(MIMEText(body, 'html'))
+
+    # Attach the files if there is any
+    if attachments:
+        for filename in attachments:
+            mimetype = mimetypes.guess_type(filename)[0].split('/', 1)
+            attachment = MIMEBase(mimetype[0], mimetype[1])
+            attachment.set_payload(open(filename, 'rb').read())
+            encoders.encode_base64(attachment)
+            attachment.add_header('Content-Disposition', 'attachment',
+                                  filename=os.path.basename(filename))
+            msg.attach(attachment)
 
     server = smtplib.SMTP(cfg['smtp_host'], cfg['smtp_port'])
     if 'start_tls' in cfg and cfg['start_tls']:
