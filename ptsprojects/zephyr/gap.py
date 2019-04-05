@@ -553,17 +553,9 @@ def test_cases(pts):
                             post_wid=108),
                    TestFunc(btp.gap_disconn, start_wid=44)]),
         ZTestCase("GAP", "GAP/SEC/AUT/BV-18-C",
-                  cmds=pre_conditions +
-                  [TestFunc(btp.core_reg_svc_gatt),
-                         TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
-                         TestFunc(btp.gap_set_conn),
-                         TestFunc(btp.gap_adv_ind_on, sd=[AdData.ad_name_sh]),
-                         TestFunc(btp.gattc_read, Addr.le_public,
-                                  pts_bd_addr, "0001", start_wid=112),
-                         TestFunc(btp.gattc_read_rsp, store_val=False,
-                                  start_wid=112),
-                         TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
-                                  start_wid=108)]),
+                  cmds=pre_conditions + init_gatt_db +
+                       [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output)],
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/AUT/BV-19-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
@@ -575,21 +567,9 @@ def test_cases(pts):
                             post_wid=112),
                    TestFunc(btp.gap_disconn, start_wid=44)]),
         ZTestCase("GAP", "GAP/SEC/AUT/BV-20-C",
-                  edit1_wids={1002: btp.var_store_get_passkey},
-                  cmds=pre_conditions +
-                  [TestFunc(btp.core_reg_svc_gatt),
-                         TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                         TestFunc(btp.gap_set_conn, start_wid=91),
-                         TestFunc(btp.gap_adv_ind_on, sd=[AdData.ad_name_sh],
-                                  start_wid=91),
-                         # This sleep is workaround, because apparently PTS is
-                         # asking for service request before it receives
-                         # HCI encryption change event.
-                         TestFunc(sleep, 2, start_wid=112),
-                         TestFunc(btp.gattc_read, Addr.le_public,
-                                  pts_bd_addr, "0001", start_wid=112),
-                         TestFunc(btp.gattc_read_rsp, store_val=False,
-                                  start_wid=112)]),
+                  cmds=pre_conditions + init_gatt_db +
+                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=gap_wid_hdl),
         # TODO: Inform about lost bond
         ZTestCase("GAP", "GAP/SEC/AUT/BV-21-C",
                   edit1_wids={1002: btp.var_store_get_passkey},
