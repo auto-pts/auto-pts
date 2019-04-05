@@ -424,8 +424,11 @@ def main(cfg):
         reg_html = bot.common.regressions2html(_regressions)
 
         # Zephyr commit id link in HTML format
-        zephyr_hash_html = bot.common.url2html(zephyr_hash_url(zephyr_hash),
-                                               zephyr_hash)
+
+        # Commit id may have "-dirty" if the source is dirty.
+        commit_id = zephyr_hash["commit"].split('-')[0]
+        zephyr_hash_html = \
+            bot.common.url2html(zephyr_hash_url(commit_id), zephyr_hash["desc"])
 
         # Log in Google drive in HTML format
         if 'gdrive' in cfg:
