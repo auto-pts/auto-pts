@@ -442,7 +442,8 @@ def main(cfg):
                                      reg_html, log_url_html,
                                      cfg['mail']['name'])
 
-        bot.common.send_mail(cfg['mail'], subject, body)
+        bot.common.send_mail(cfg['mail'], subject, body,
+                             [report_file, report_txt])
 
         print("Done")
 
