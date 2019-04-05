@@ -24,11 +24,13 @@ from threading import Timer, Event
 
 import defs
 from types import BTPError, gap_settings_btp2txt, addr2btp_ba, Addr
+from pybtp.types import Perm
 from iutctl_common import set_event_handler
 from random import randint
 from collections import namedtuple
 from uuid import UUID
-from ptsprojects.stack import get_stack
+from ptsprojects.stack import get_stack, GattCharacteristic
+
 
 #  get IUT global method from iutctl
 get_iut = None
@@ -1180,9 +1182,9 @@ def gatts_verify_write_fail(description):
 def btp2uuid(uuid_len, uu):
     if uuid_len == 2:
         (uu,) = struct.unpack("H", uu)
-        return hex(uu)
+        return format(uu, 'x').upper()
     else:
-        return UUID(bytes=uu[::-1]).urn[9:]
+        return UUID(bytes=uu[::-1]).urn[9:].replace('-', '').upper()
 
 
 def dec_gatts_get_attrs_rp(data, data_len):
@@ -1826,7 +1828,8 @@ def gatt_dec_svc_attr(data):
     hdr_len = struct.calcsize(hdr)
 
     start_hdl, end_hdl, uuid_len = struct.unpack_from(hdr, data)
-    uuid = struct.unpack_from('%ds' % uuid_len, data, hdr_len)
+    (uuid,) = struct.unpack_from('%ds' % uuid_len, data, hdr_len)
+    uuid = btp2uuid(uuid_len, uuid)
 
     return (start_hdl, end_hdl, uuid), hdr_len + uuid_len
 
@@ -1864,7 +1867,8 @@ def gatt_dec_chrc_attr(data):
     hdr_len = struct.calcsize(hdr)
 
     chrc_hdl, val_hdl, props, uuid_len = struct.unpack_from(hdr, data)
-    uuid = struct.unpack_from('%ds' % uuid_len, data, hdr_len)
+    (uuid,) = struct.unpack_from('%ds' % uuid_len, data, hdr_len)
+    uuid = btp2uuid(uuid_len, uuid)
 
     return (chrc_hdl, val_hdl, props, uuid), hdr_len + uuid_len
 
@@ -1883,7 +1887,8 @@ def gatt_dec_desc_attr(data):
     hdr_len = struct.calcsize(hdr)
 
     hdl, uuid_len = struct.unpack_from(hdr, data)
-    uuid = struct.unpack_from('%ds' % uuid_len, data, hdr_len)
+    (uuid,) = struct.unpack_from('%ds' % uuid_len, data, hdr_len)
+    uuid = btp2uuid(uuid_len, uuid)
 
     return (hdl, uuid), hdr_len + uuid_len
 
@@ -2013,8 +2018,7 @@ def gattc_disc_prim_uuid_rsp(store_rsp=False):
             start_handle = "%04X" % (svc[0],)
             end_handle = "%04X" % (svc[1],)
 
-            uuid_ba = svc[2][0]
-            uuid = binascii.hexlify(uuid_ba[::-1]).upper()
+            uuid = svc[2]
 
             # add hyphens to long uuid: 0000-1157-0000-0000-0123-4567-89AB-CDEF
             if len(uuid) > 4:
@@ -2055,9 +2059,7 @@ def gattc_find_included_rsp(store_rsp=False):
             att_handle = "%04X" % (incl[0][0],)
             inc_svc_handle = "%04X" % (incl[1][0],)
             end_grp_handle = "%04X" % (incl[1][1],)
-
-            uuid_ba = incl[1][2][0]
-            uuid = binascii.hexlify(uuid_ba[::-1]).upper()
+            uuid = incl[1][2]
 
             VERIFY_VALUES.append(att_handle)
             VERIFY_VALUES.append(inc_svc_handle)
@@ -2069,6 +2071,7 @@ def gattc_find_included_rsp(store_rsp=False):
 
 def gattc_disc_all_chrc_rsp(store_rsp=False):
     iutctl = get_iut()
+    attrs = []
 
     tuple_hdr, tuple_data = iutctl.btp_socket.read()
     logging.debug("%s received %r %r", gattc_disc_all_chrc_rsp.__name__,
@@ -2080,16 +2083,25 @@ def gattc_disc_all_chrc_rsp(store_rsp=False):
     chrcs_tuple = gatt_dec_disc_rsp(tuple_data[0], "characteristic")
     logging.debug("%s %r", gattc_disc_all_chrc_rsp.__name__, chrcs_tuple)
 
+    for chrc in chrcs_tuple:
+        (handle, value_handle, prop, uuid) = chrc
+        attrs.append(GattCharacteristic(handle=handle,
+                                        perm=Perm.read,
+                                        uuid=uuid,
+                                        att_rsp=0,
+                                        prop=prop,
+                                        value_handle=value_handle))
+
     if store_rsp:
         global VERIFY_VALUES
         VERIFY_VALUES = []
 
-        for chrc in chrcs_tuple:
-
-            handle = "%04X" % (chrc[0],)
-            VERIFY_VALUES.append(handle)
+        for attr in attrs:
+            VERIFY_VALUES.append("%04X" % attr.handle)
 
         logging.debug("Set verify values to: %r", VERIFY_VALUES)
+
+    return attrs
 
 
 def gattc_disc_chrc_uuid_rsp(store_rsp=False):
@@ -2111,9 +2123,7 @@ def gattc_disc_chrc_uuid_rsp(store_rsp=False):
 
         for chrc in chrcs_tuple:
             handle = "%04X" % (chrc[1],)
-
-            uuid_ba = chrc[3][0]
-            uuid = binascii.hexlify(uuid_ba[::-1]).upper()
+            uuid = chrc[3]
 
             # add hyphens to long uuid: 0000-1157-0000-0000-0123-4567-89AB-CDEF
             if len(uuid) > 4:
@@ -2144,8 +2154,7 @@ def gattc_disc_all_desc_rsp(store_rsp=False):
 
         for desc in descs_tuple:
             handle = "%04X" % (desc[0],)
-            uuid_ba = desc[1][0]
-            uuid = binascii.hexlify(uuid_ba[::-1]).upper()
+            uuid = desc[1]
             VERIFY_VALUES.append(handle)
             VERIFY_VALUES.append(uuid)
 
