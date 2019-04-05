@@ -53,29 +53,29 @@ def gatt_server_fetch_db():
 
         att_rsp, val_len, val = attr_val
 
-        if type_uuid == '0x2800' or type_uuid == '0x2801':
-            uuid = btp.btp2uuid(val_len, val).replace("0x", "").replace("-", "").upper()
+        if type_uuid == '2800' or type_uuid == '2801':
+            uuid = btp.btp2uuid(val_len, val)
 
-            if type_uuid == '0x2800':
+            if type_uuid == '2800':
                 db.attr_add(handle, GattPrimary(handle, perm, uuid, att_rsp))
             else:
                 db.attr_add(handle, GattSecondary(handle, perm, uuid, att_rsp))
-        elif type_uuid == '0x2803':
+        elif type_uuid == '2803':
 
             hdr = '<BH'
             hdr_len = struct.calcsize(hdr)
             uuid_len = val_len - hdr_len
 
             prop, value_handle, uuid = struct.unpack("<BH%ds" % uuid_len, val)
-            uuid = btp.btp2uuid(uuid_len, uuid).replace("0x", "").replace("-", "").upper()
+            uuid = btp.btp2uuid(uuid_len, uuid)
 
             db.attr_add(handle, GattCharacteristic(handle, perm, uuid, att_rsp, prop, value_handle))
-        elif type_uuid == '0x2802':
+        elif type_uuid == '2802':
             hdr = "<HH"
             hdr_len = struct.calcsize(hdr)
             uuid_len = val_len - hdr_len
             incl_svc_hdl, end_grp_hdl, uuid = struct.unpack(hdr + "%ds" % uuid_len, val)
-            uuid = btp.btp2uuid(uuid_len, uuid).replace("0x", "").replace("-", "").upper()
+            uuid = btp.btp2uuid(uuid_len, uuid)
 
             db.attr_add(handle, GattServiceIncluded(handle, perm, uuid, att_rsp, incl_svc_hdl, end_grp_hdl))
         else:
@@ -122,9 +122,6 @@ def hdl_wid_17(desc):
         logging.error("%s parsing error", hdl_wid_17.__name__)
         return False
 
-    # Normalize UUIDs
-    pts_services = [hex(int(service, 16)) for service in pts_services]
-
     iut_services = []
 
     # Get all primary services
@@ -158,7 +155,6 @@ def hdl_wid_23(desc):
     end_hdls = end_hdl_pattern.findall(desc)
 
     # Normalize
-    uuids = [hex(int(uuid, 16)) for uuid in uuids]
     start_hdls = [int(hdl, 16) for hdl in start_hdls]
     end_hdls = [int(hdl, 16) for hdl in end_hdls]
     pts_services = [list(a) for a in zip(start_hdls, end_hdls, uuids)]
@@ -247,7 +243,7 @@ def hdl_wid_25(desc):
 
     for d in pts_data:
         if d[0] == 'UUID':
-            pts_chrc_uuid = hex(int(d[1], 16))
+            pts_chrc_uuid = d[1]
         else:
             pts_chrc_handles.append(int(d[1], 16))
 
@@ -612,11 +608,7 @@ def hdl_wid_111(desc):
 
         handle, perm, type_uuid = chrc_value_attr[0]
         if not (perm & Perm.read) or not (prop & Prop.read):
-            uuid_str = btp.btp2uuid(uuid_len, chrc_uuid)
-            if uuid_len == 2:
-                return format(int(uuid_str, 16), 'x').zfill(4)
-            else:
-                return uuid_str
+            return btp.btp2uuid(uuid_len, chrc_uuid)
 
     return '0000'
 
@@ -691,11 +683,7 @@ def hdl_wid_113(desc):
         if att_rsp != 8:
             continue
 
-        uuid_str = btp.btp2uuid(uuid_len, chrc_uuid)
-        if uuid_len == 2:
-            return format(int(uuid_str, 16), 'x').zfill(4)
-        else:
-            return uuid_str
+        return btp.btp2uuid(uuid_len, chrc_uuid)
 
     return '0000'
 
@@ -753,11 +741,7 @@ def hdl_wid_115(desc):
 
         handle, perm, type_uuid = chrc_value_attr[0]
         if perm & Perm.read_authn:
-            uuid_str = btp.btp2uuid(uuid_len, chrc_uuid)
-            if uuid_len == 2:
-                return format(int(uuid_str, 16), 'x').zfill(4)
-            else:
-                return uuid_str
+            return btp.btp2uuid(uuid_len, chrc_uuid)
 
     return '0000'
 
@@ -805,7 +789,7 @@ def hdl_wid_119(desc):
     uuid_invalid = 1
 
     while True:
-        if format(uuid_invalid, 'x') in uuid_list:
+        if format(uuid_invalid, 'x').zfill(4) in uuid_list:
             uuid_invalid += 1
         else:
             uuid_invalid = format(uuid_invalid, 'x').zfill(4)
@@ -913,11 +897,7 @@ def hdl_wid_122(desc):
         if att_rsp != 0x0c:
             continue
 
-        uuid_str = btp.btp2uuid(uuid_len, chrc_uuid)
-        if uuid_len == 2:
-            return format(int(uuid_str, 16), 'x').zfill(4)
-        else:
-            return uuid_str
+        return btp.btp2uuid(uuid_len, chrc_uuid)
 
     return '0000'
 
