@@ -361,7 +361,7 @@ def update_sources(repo, remote, branch, stash_changes=False):
 
     if dirty and (not stash_changes):
         print('Repo is dirty. Not updating')
-        return repo.git.show('-s', '--format=%H') + '-dirty'
+        return repo.git.describe(), repo.git.show('-s', '--format=%H') + '-dirty'
 
     if dirty and stash_changes:
         print('Repo is dirty. Stashing changes')
@@ -370,30 +370,33 @@ def update_sources(repo, remote, branch, stash_changes=False):
     repo.git.fetch(remote)
     repo.git.checkout('{}/{}'.format(remote, branch))
 
-    return repo.git.show('-s', '--format=%H')
+    return repo.git.describe(), repo.git.show('-s', '--format=%H')
 
 
 def update_repos(project_path, git_config):
     """GIT Update sources
     :param project_path: path to project root
     :param git_config: dictionary with configuration of repositories
-    :return: status_dict with {key=repo name, value=status}
+    :return: repos_dict with {key=repo name, {commit, desc}}
     """
     project_path = os.path.abspath(project_path)
-    status_dict = {}
+    repos_dict = {}
 
     for repo, conf in git_config.iteritems():
+        repo_dict = {}
         if not os.path.isabs(conf["path"]):
             repo_path = os.path.join(project_path, conf["path"])
         else:
             repo_path = os.path.abspath(conf["path"])
 
         project_path.join(repo_path)
-        status = update_sources(repo_path, conf["remote"], conf["branch"],
-                                conf["stash_changes"])
-        status_dict[repo] = status
+        desc, commit = update_sources(repo_path, conf["remote"],
+                                      conf["branch"], conf["stash_changes"])
+        repo_dict["commit"] = commit
+        repo_dict["desc"] = desc
+        repos_dict[repo] = repo_dict
 
-    return status_dict
+    return repos_dict
 
 
 def cleanup():
