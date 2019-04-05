@@ -36,6 +36,7 @@ from oauth2client import file, client, tools
 SCOPES = 'https://www.googleapis.com/auth/drive'
 CLIENT_SECRET_FILE = 'client_secret.json'
 REPORT_XLSX = "report.xlsx"
+REPORT_TXT = "report.txt"
 COMMASPACE = ', '
 
 
@@ -324,6 +325,29 @@ def make_report_xlsx(results_dict, status_dict, regressions_list,
     workbook.close()
 
     return os.path.join(os.getcwd(), REPORT_XLSX)
+
+
+# ****************************************************************************
+# .txt result file
+# ****************************************************************************
+def make_report_txt(results_dict, zephyr_hash):
+    """Creates txt file containing test cases results
+    :param results_dict: dictionary with test cases results
+    :return: txt file path
+    """
+
+    filename = os.path.join(os.getcwd(), REPORT_TXT)
+    f = open(filename, "w")
+
+    f.write("%s\n" % zephyr_hash)
+    for tc, result in results_dict.items():
+        # The frist id in the test case is test group
+        tg = tc.split('/')[0]
+        f.write("%s\t%s\t%s\n" % (tg, tc, result))
+
+    f.close()
+
+    return filename
 
 
 # ****************************************************************************

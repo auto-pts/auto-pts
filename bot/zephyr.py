@@ -400,12 +400,14 @@ def main(cfg):
 
     report_file = bot.common.make_report_xlsx(results, summary, regressions,
                                               descriptions)
+    report_txt = bot.common.make_report_txt(results, zephyr_hash["desc"])
     logs_file = bot.common.archive_recursive("logs")
 
     if 'gdrive' in cfg:
         drive = bot.common.Drive(cfg['gdrive'])
         url = drive.new_workdir(args['board'])
         drive.upload(report_file)
+        drive.upload(report_txt)
         drive.upload(logs_file)
         drive.upload("TestCase.db")
 
@@ -427,8 +429,8 @@ def main(cfg):
 
         # Commit id may have "-dirty" if the source is dirty.
         commit_id = zephyr_hash["commit"].split('-')[0]
-        zephyr_hash_html = \
-            bot.common.url2html(zephyr_hash_url(commit_id), zephyr_hash["desc"])
+        zephyr_hash_html = bot.common.url2html(zephyr_hash_url(commit_id),
+                                               zephyr_hash["desc"])
 
         # Log in Google drive in HTML format
         if 'gdrive' in cfg:
