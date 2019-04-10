@@ -82,7 +82,7 @@ z['iut_config'] = {
                        'GAP/CONN/NCON/BV-03-C', 'GAP/CONN/UCON/BV-06-C',
                        'SM/SLA/KDU/BV-02-C', 'SM/MAS/KDU/BV-05-C',
                        'GAP/CONN/ACEP/BV-03-C', 'GAP/CONN/DCEP/BV-05-C',
-                       'GAP/CONN/GCEP/BV-05-C']},
+                       'GAP/CONN/GCEP/BV-05-C', 'GAP/BROB/BCST/BV-03-C']},
 
     "mesh_subnet_count.conf": {
         "overlay": {'CONFIG_BT_MESH_SUBNET_COUNT': '1'},

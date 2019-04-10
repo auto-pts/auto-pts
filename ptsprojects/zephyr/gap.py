@@ -213,11 +213,7 @@ def test_cases(pts):
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/BROB/BCST/BV-03-C",
                   cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   TestFunc(
-                       pts.update_pixit_param, "GAP",
-                       "TSPX_iut_device_name_in_adv_packet_for_random_address",
-                       iut_device_name)],
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/BROB/OBSV/BV-01-C",
                   cmds=pre_conditions,
