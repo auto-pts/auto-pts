@@ -134,18 +134,15 @@ def hdl_wid_80(desc):
     stack = get_stack()
 
     ad = []
-    sd = []
 
+    btp.gap_adv_off()
     btp.gap_set_nonconn()
     btp.gap_set_nondiscov()
 
     if stack.gap.name:
         ad.append((AdType.name_short, hexlify(stack.gap.name)))
 
-    if stack.gap.manufacturer_data:
-        sd.append((AdType.manufacturer_data, stack.gap.manufacturer_data))
-
-    btp.gap_adv_ind_on(ad=ad, sd=sd)
+    btp.gap_adv_ind_on(ad=ad)
     return True
 
 
