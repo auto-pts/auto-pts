@@ -149,6 +149,8 @@ GATTC = {
     "disc_all_desc": (defs.BTP_SERVICE_ID_GATT, defs.GATT_DISC_ALL_DESC,
                       CONTROLLER_INDEX),
     "read": (defs.BTP_SERVICE_ID_GATT, defs.GATT_READ, CONTROLLER_INDEX),
+    "read_uuid": (defs.BTP_SERVICE_ID_GATT, defs.GATT_READ_UUID,
+                  CONTROLLER_INDEX),
     "read_long": (defs.BTP_SERVICE_ID_GATT, defs.GATT_READ_LONG,
                   CONTROLLER_INDEX),
     "read_multiple": (defs.BTP_SERVICE_ID_GATT, defs.GATT_READ_MULTIPLE,
@@ -1547,6 +1549,41 @@ def gattc_read(bd_addr_type, bd_addr, hdl):
     iutctl.btp_socket.send(*GATTC['read'], data=data_ba)
 
 
+def gattc_read_uuid(bd_addr_type, bd_addr, start_hdl, end_hdl, uuid):
+    logging.debug("%s %r %r %r %r %r", gattc_read_uuid.__name__, bd_addr_type,
+                  bd_addr, start_hdl, end_hdl, uuid)
+    iutctl = get_iut()
+
+    gap_wait_for_connection()
+
+    if type(start_hdl) is str:
+        start_hdl = int(start_hdl, 16)
+
+    if type(end_hdl) is str:
+        end_hdl = int(end_hdl, 16)
+
+    data_ba = bytearray()
+
+    bd_addr_ba = addr2btp_ba(bd_addr)
+    start_hdl_ba = struct.pack('H', start_hdl)
+    end_hdl_ba = struct.pack('H', end_hdl)
+
+    if "-" in uuid:
+        uuid = uuid.replace("-", "")
+    if uuid.startswith("0x"):
+        uuid = uuid.replace("0x", "")
+    uuid_ba = binascii.unhexlify(uuid)[::-1]
+
+    data_ba.extend(chr(bd_addr_type))
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(start_hdl_ba)
+    data_ba.extend(end_hdl_ba)
+    data_ba.extend(chr(len(uuid_ba)))
+    data_ba.extend(uuid_ba)
+
+    iutctl.btp_socket.send(*GATTC['read_uuid'], data=data_ba)
+
+
 def gattc_read_long(bd_addr_type, bd_addr, hdl, off, modif_off=None):
     logging.debug("%s %r %r %r %r %r", gattc_read_long.__name__, bd_addr_type,
                   bd_addr, hdl, off, modif_off)
@@ -2188,6 +2225,29 @@ def gattc_read_rsp(store_rsp=False, store_val=False, timeout=None):
 
     rsp, value = gatt_dec_read_rsp(tuple_data[0])
     logging.debug("%s %r %r", gattc_read_rsp.__name__, rsp, value)
+
+    if store_rsp or store_val:
+        global VERIFY_VALUES
+        VERIFY_VALUES = []
+
+        if store_rsp:
+            VERIFY_VALUES.append(att_rsp_str[rsp])
+
+        if store_val:
+            VERIFY_VALUES.append((binascii.hexlify(value[0])).upper())
+
+
+def gattc_read_uuid_rsp(store_rsp=False, store_val=False):
+    iutctl = get_iut()
+
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
+    logging.debug("%s received %r %r", gattc_read_uuid_rsp.__name__, tuple_hdr,
+                  tuple_data)
+
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT, defs.GATT_READ_UUID)
+
+    rsp, value = gatt_dec_read_rsp(tuple_data[0])
+    logging.debug("%s %r %r", gattc_read_uuid_rsp.__name__, rsp, value)
 
     if store_rsp or store_val:
         global VERIFY_VALUES
