@@ -151,7 +151,7 @@ class ClientCallback(PTSCallback):
             sys.exit("Exception in Log")
 
     def on_implicit_send(self, project_name, wid, test_case_name, description,
-                         style, response, response_size, response_is_present):
+                         style):
         """Implements:
 
         interface IPTSImplicitSendCallbackEx : IUnknown {
@@ -179,11 +179,6 @@ class ClientCallback(PTSCallback):
         log("test_case_name: %s" % test_case_name)
         log("description: %s" % description)
         log("style: %s 0x%x", ptstypes.MMI_STYLE_STRING[style], style)
-        log("response: %s %s %s" % (repr(response), type(response),
-                                    id(response)))
-        log("response_size: %s" % response_size)
-        log("response_is_present: %s %s" % (response_is_present,
-                                            type(response_is_present)))
 
         try:
             # XXX: 361 WID MESH sends tc name with leading white spaces
@@ -198,10 +193,7 @@ class ClientCallback(PTSCallback):
                     wid,
                     test_case_name,
                     description,
-                    style,
-                    response,
-                    response_size,
-                    response_is_present)
+                    style)
 
             log("test case returned on_implicit_send, response: %s",
                 testcase_response)
