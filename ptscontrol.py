@@ -192,10 +192,7 @@ class PTSSender(PTSControl.IPTSImplicitSendCallbackEx):
                     int(wid),  # UInt16 cannot be marshalled
                     test_case_name,
                     description,
-                    int(style),
-                    response,
-                    int(response_size),
-                    int(response_is_present))
+                    int(style))
 
                 # Don't block xml-rpc
                 if callback_response == "WAIT":

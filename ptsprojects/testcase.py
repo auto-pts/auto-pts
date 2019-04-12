@@ -301,7 +301,7 @@ class PTSCallback(object):
         raise AbstractMethodException()
 
     def on_implicit_send(self, project_name, wid, test_case_name, description,
-                         style, response, response_size, response_is_present):
+                         style):
         """Implements:
 
         interface IPTSImplicitSendCallbackEx : IUnknown {
@@ -647,7 +647,7 @@ class TestCase(PTSCallback):
             return "Retry" if response else "Abort"
 
     def on_implicit_send(self, project_name, wid, test_case_name, description,
-                         style, response, response_size, response_is_present):
+                         style):
         """Overrides PTSCallback method. Handles
         PTSControl.IPTSImplicitSendCallbackEx.OnImplicitSend"""
         log("%s %s", self, self.on_implicit_send.__name__)
