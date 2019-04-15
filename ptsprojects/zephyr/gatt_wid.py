@@ -253,40 +253,37 @@ def hdl_wid_23(desc):
 
 
 def hdl_wid_24(desc):
-    # This pattern is matching Attribute Handle, Included Service Attribute handle, End Group Handle, Service UUID
-    data_pattern = re.compile(r"'([0-9a-fA-F]+)'")
-    pts_data = data_pattern.findall(desc)
+    pattern = re.compile("(ATTRIBUTE\sHANDLE|"
+                         "INCLUDED\sSERVICE\sATTRIBUTE\sHANDLE|"
+                         "END\sGROUP\sHANDLE\s|"
+                         "UUID\s)\s?=\s?'[0-9a-fA-F]+)']", re.IGNORECASE)
 
-    # Normalize
-    pts_data = [hex(int(d, 16)) for d in pts_data]
-    iut_data = []
+    params = pattern.findall(desc)
+    if not params:
+        return False
 
-    # Get all primary services
-    attrs = btp.gatts_get_attrs(type_uuid='2802')
-    for attr in attrs:
-        handle, perm, type_uuid = attr
+    params = dict([(k.upper(), v) for k, v in params])
+    db = gatt_server_fetch_db()
 
-        val = btp.gatts_get_attr_val(handle)
-        if not val:
-            continue
-
-        (att_rsp, value_len, value) = val
-
-        if value_len == 6:
-            (incl_svc_hdl, end_grp_hdl, uuid) = struct.unpack("<HHH", value)
-            iut_data.append([hex(handle), hex(incl_svc_hdl), hex(end_grp_hdl), hex(uuid)])
-        else:
-            # TODO
+    if "INCLUDED SERVICE ATTRIBUTE HANDLE" in params:
+        incl_handle = int(params.get('INCLUDED SERVICE ATTRIBUTE HANDLE'), 16)
+        attr = db.attr_lookup_handle(incl_handle)
+        if attr is None or not isinstance(attr, Service):
+            logging.error("service not found")
             return False
 
-    logging.debug("%r %r", pts_data, iut_data)
+        incl_uuid = attr.uuid
+        attr = db.attr_lookup_handle(int(params.get('ATTRIBUTE HANDLE'), 16))
+        if attr is None or not isinstance(attr, ServiceIncluded):
+            logging.error("included not found")
+            return False
 
-    if pts_data in iut_data:
-        logging.debug("Service %r found", pts_data)
+        if attr.end_grp_hdl != int(params.get('END GROUP HANDLE'), 16) \
+                or incl_uuid != params.get('UUID'):
+            logging.error("end group handle not found")
+            return False
+
         return True
-    else:
-        logging.error("Service %r not found", pts_data)
-        return False
 
 
 def hdl_wid_25(desc):
