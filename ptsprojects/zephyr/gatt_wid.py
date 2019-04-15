@@ -147,8 +147,23 @@ def hdl_wid_1(desc):
     return True
 
 
+def hdl_wid_2(desc):
+    btp.gap_conn()
+    return True
+
+
+def hdl_wid_3(desc):
+    btp.gap_disconn(btp.pts_addr_get(None), btp.pts_addr_type_get(None))
+    return True
+
+
 def hdl_wid_4(desc):
     btp.gap_set_io_cap(IOCap.no_input_output)
+    return True
+
+
+def hdl_wid_12(desc):
+    btp.gattc_exchange_mtu(btp.pts_addr_type_get(None),btp.pts_addr_get(None))
     return True
 
 
@@ -391,6 +406,23 @@ def hdl_wid_56(desc):
 
     if values_read.upper() != values.upper():
         return False
+
+    return True
+
+
+def hdl_wid_69(desc):
+    pattern = re.compile("(handle|size)\s?=\s?'([0-9a-fA-F]+)'")
+    params = pattern.findall(desc)
+    if not params:
+        logging.error("parsing error")
+        return False
+
+    params = dict(params)
+
+    handle = int(params.get('handle'), 16)
+    size = int(params.get('size'), 16)
+    btp.gattc_write_long(btp.pts_addr_type_get(None), btp.pts_addr_get(None), handle, 0, '12', size)
+    btp.gattc_write_long_rsp()
 
     return True
 
