@@ -858,14 +858,8 @@ def test_cases_client(pts):
                             Addr.le_public, start_wid=3)],
                   verify_wids={47: btp.verify_description}),
         ZTestCase("GATT", "GATT/CL/GAW/BV-01-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_conn, pts_bd_addr,
-                            Addr.le_public, start_wid=2),
-                   TestFunc(btp.gattc_write_without_rsp,
-                            Addr.le_public, pts_bd_addr,
-                            MMI.arg_1, '12', MMI.arg_2, start_wid=70),
-                   TestFunc(btp.gap_disconn, pts_bd_addr,
-                            Addr.le_public, start_wid=3)]),
+                  pre_conditions,
+                  generic_wid_hdl=gatt_wid_hdl),
         # PTS issue #15965
         ZTestCase("GATT", "GATT/CL/GAW/BV-02-C",
                   pre_conditions +
@@ -877,15 +871,8 @@ def test_cases_client(pts):
                    TestFunc(btp.gap_disconn, pts_bd_addr,
                             Addr.le_public, start_wid=3)]),
         ZTestCase("GATT", "GATT/CL/GAW/BV-03-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_conn, pts_bd_addr,
-                            Addr.le_public, start_wid=2),
-                   TestFunc(btp.gattc_write, Addr.le_public,
-                            pts_bd_addr, MMI.arg_1, '12', MMI.arg_2,
-                            start_wid=74),
-                   TestFunc(btp.gattc_write_rsp, start_wid=74),
-                   TestFunc(btp.gap_disconn, pts_bd_addr,
-                            Addr.le_public, start_wid=3)]),
+                  pre_conditions,
+                  generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/CL/GAW/BI-02-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
@@ -1018,25 +1005,11 @@ def test_cases_client(pts):
                             Addr.le_public, start_wid=3)],
                   verify_wids={65: btp.verify_description}),
         ZTestCase("GATT", "GATT/CL/GAW/BV-08-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_conn, pts_bd_addr,
-                            Addr.le_public, start_wid=2),
-                   TestFunc(btp.gattc_write, Addr.le_public,
-                            pts_bd_addr, MMI.arg_1, '12', MMI.arg_2,
-                            start_wid=74),
-                   TestFunc(btp.gattc_write_rsp, start_wid=74),
-                   TestFunc(btp.gap_disconn, pts_bd_addr,
-                            Addr.le_public, start_wid=3)]),
+                  pre_conditions,
+                  generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/CL/GAW/BV-09-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_conn, pts_bd_addr,
-                            Addr.le_public, start_wid=2),
-                   TestFunc(btp.gattc_write_long, Addr.le_public,
-                            pts_bd_addr, MMI.arg_1, 0, '12', MMI.arg_2,
-                            start_wid=76),
-                   TestFunc(btp.gattc_write_long_rsp, start_wid=76),
-                   TestFunc(btp.gap_disconn, pts_bd_addr,
-                            Addr.le_public, start_wid=3)]),
+                  pre_conditions,
+                  generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/CL/GAW/BI-33-C",
                   pre_conditions +
                   [TestFunc(btp.gap_conn, pts_bd_addr,
@@ -1080,11 +1053,8 @@ def test_cases_client(pts):
                           TestFunc(btp.gap_disconn, pts_bd_addr,
                                    Addr.le_public, start_wid=3)]),
         ZTestCase("GATT", "GATT/CL/GAS/BV-01-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_conn, pts_bd_addr,
-                            Addr.le_public, start_wid=2),
-                   TestFunc(btp.gap_disconn, pts_bd_addr,
-                            Addr.le_public, start_wid=3)]),
+                  pre_conditions,
+                  generic_wid_hdl=gatt_wid_hdl),
         # PTS CASE0036198
         ZTestCase("GATT", "GATT/CL/GAT/BV-01-C",
                   pre_conditions +

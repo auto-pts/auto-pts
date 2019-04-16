@@ -367,6 +367,39 @@ def hdl_wid_69(desc):
     return True
 
 
+def hdl_wid_70(desc):
+    pattern = re.compile("'([0-9a-fA-F]+)'")
+    params = pattern.findall(desc)
+    if not params:
+        logging.error("parsing error")
+        return False
+
+    handle = params[0]
+    size = int(params[1])
+
+    btp.gattc_write_without_rsp(btp.pts_addr_type_get(None),
+                                btp.pts_addr_get(None), handle, '12', size)
+
+    return True
+
+
+def hdl_wid_74(desc):
+    pattern = re.compile("'([0-9a-fA-F]+)'")
+    params = pattern.findall(desc)
+    if not params:
+        logging.error("parsing error")
+        return False
+
+    handle = params[0]
+    size = int(params[1])
+
+    btp.gattc_write(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
+                    handle, '12', size)
+    btp.gattc_write_rsp()
+
+    return True
+
+
 def hdl_wid_75(desc):
     # This pattern is matching IUT handle and characteristic value
     pattern = re.compile("(handle|value)\s?=\s?'([0-9a-fA-F]+)'")
@@ -389,6 +422,31 @@ def hdl_wid_75(desc):
     val = int(val, 16)
 
     return val == value
+
+
+def hdl_wid_76(desc):
+    pattern = re.compile("'([0-9a-fA-F]+)'")
+    params = pattern.findall(desc)
+    if not params:
+        logging.error("parsing error")
+        return False
+
+    handle = params[0]
+    size = int(params[1])
+
+    btp.gattc_write_long(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
+                         handle, 0, '12', size)
+    btp.gattc_write_long_rsp()
+
+    return True
+
+
+def hdl_wid_82(desc):
+    btp.gattc_write(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
+                    '0100', '12', 1)
+    btp.gattc_write_rsp()
+
+    return True
 
 
 def hdl_wid_92(desc):
