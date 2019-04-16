@@ -357,7 +357,7 @@ def update_sources(repo, remote, branch, stash_changes=False):
     print('Updating ' + repo)
 
     repo = git.Repo(repo)
-    dirty = repo.is_dirty(untracked_files=True)
+    dirty = repo.is_dirty()
 
     if dirty and (not stash_changes):
         print('Repo is dirty. Not updating')
