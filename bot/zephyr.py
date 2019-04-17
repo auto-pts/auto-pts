@@ -428,7 +428,9 @@ def main(cfg):
         # Zephyr commit id link in HTML format
 
         # Commit id may have "-dirty" if the source is dirty.
-        commit_id = zephyr_hash["commit"].split('-')[0]
+        commit_id = zephyr_hash["commit"]
+        if commit_id.endswith('-dirty'):
+            commit_id = commit_id[:-6]
         zephyr_hash_html = bot.common.url2html(zephyr_hash_url(commit_id),
                                                zephyr_hash["desc"])
 
