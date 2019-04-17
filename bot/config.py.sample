@@ -115,4 +115,12 @@ z['scheduler'] = {
     'friday': '20:00',
 }
 
+# ****************************************************************************
+# Post run configuration
+#
+# To do any post run tasks.
+# ****************************************************************************
+z['postrun'] = ['/path/to/script params1 params2',
+		'/path/to/script2 params1 params2 param3']
+
 BotProjects.append(zephyr_nrf52)

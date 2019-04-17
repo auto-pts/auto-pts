@@ -23,6 +23,8 @@ import sqlite3 as sql
 import git
 import shutil
 import zipfile
+import shlex
+import subprocess
 
 import smtplib
 from email.MIMEMultipart import MIMEMultipart
@@ -444,3 +446,19 @@ def cleanup():
         shutil.rmtree("logs")
     except OSError:
         pass
+
+
+def postrun(cmd_list):
+    """
+    Execute the postrun script
+    :return: None
+    """
+
+    for cmd in cmd_list:
+
+        proc = subprocess.Popen(shlex.split(cmd), shell=False,
+                                cwd=os.getcwd(), env=os.environ)
+
+        if proc.wait():
+            print("Error: failed to execute the postrun script")
+            break

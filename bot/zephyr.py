@@ -449,6 +449,13 @@ def main(cfg):
 
         print("Done")
 
+    if 'postrun' in cfg:
+        print("Running postrun scripts ...")
+
+        bot.common.postrun(cfg['postrun'])
+
+        print("Done")
+
     bot.common.cleanup()
 
     print("\nBye!")
