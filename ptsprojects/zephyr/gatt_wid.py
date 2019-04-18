@@ -23,6 +23,8 @@ from pybtp.types import Prop, Perm, IOCap, UUID
 from ptsprojects.stack import get_stack, GattPrimary, GattService, GattSecondary, GattServiceIncluded, \
     GattCharacteristic, GattCharacteristicDescriptor, GattDB
 from time import sleep
+from ptsprojects.testcase import MMI
+import socket
 
 log = logging.debug
 
@@ -109,15 +111,31 @@ def hdl_wid_4(desc):
     return True
 
 
+def hdl_wid_11(desc):
+    return True
+
+
 def hdl_wid_12(desc):
     btp.gattc_exchange_mtu(btp.pts_addr_type_get(None),btp.pts_addr_get(None))
     return True
 
 
+def hdl_wid_15(desc):
+    btp.gattc_find_included(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
+                            '0001', 'FFFF')
+    
+    btp.gattc_find_included_rsp(True)
+    return True
+
+
+def hdl_wid_16(desc):
+    return True
+
+
 def hdl_wid_17(desc):
-    # This pattern is matching Primary Service
-    pattern = re.compile(r"Service\s=\s'([0-9a-fA-F]+)'")
-    pts_services = pattern.findall(desc)
+    MMI.reset()
+    MMI.parse_description(desc)
+    pts_services = MMI.args
     if not pts_services:
         logging.error("%s parsing error", hdl_wid_17.__name__)
         return False
@@ -144,20 +162,60 @@ def hdl_wid_17(desc):
     return True
 
 
+def hdl_wid_18(desc):
+    MMI.reset()
+    MMI.parse_description(desc)    
+
+    uuid = MMI.args[0]
+
+    if not uuid:
+        logging.error("%s parsing error", hdl_wid_18.__name__)
+        return False
+    
+    btp.gattc_disc_prim_uuid(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
+                             uuid)
+
+    btp.gattc_disc_prim_uuid_rsp(True)
+
+    return True
+
+
+def hdl_wid_19(desc):
+    return btp.verify_description(desc)
+
+
+def hdl_wid_21(desc):
+    return btp.verify_description(desc)
+
+
+def hdl_wid_20(desc):
+    MMI.reset()
+    MMI.parse_description(desc)
+    
+    uuid = MMI.args[0]
+
+    if not uuid:
+        logging.error("%s parsing error", hdl_wid_20.__name__)
+        return False
+
+    btp.gattc_disc_prim_uuid(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
+                             uuid)
+    
+    btp.gattc_disc_prim_uuid_rsp(True)
+
+    return True
+
+
 def hdl_wid_23(desc):
-    # This pattern is matching Primary Service
-    uuid_pattern = re.compile(r"UUID\s?=\s'([0-9a-fA-F]+)'")
-    start_hdl_pattern = re.compile(r"start\shandle\s=\s'([0-9a-fA-F]+)'")
-    end_hdl_pattern = re.compile(r"end\shandle\s=\s'([0-9a-fA-F]+)'")
+    MMI.reset()
+    MMI.parse_description(desc)
 
-    uuids = uuid_pattern.findall(desc)
-    start_hdls = start_hdl_pattern.findall(desc)
-    end_hdls = end_hdl_pattern.findall(desc)
+    pts_services = [[int(MMI.args[1], 16), int(MMI.args[2], 16), MMI.args[0]]]
 
-    # Normalize
-    start_hdls = [int(hdl, 16) for hdl in start_hdls]
-    end_hdls = [int(hdl, 16) for hdl in end_hdls]
-    pts_services = [list(a) for a in zip(start_hdls, end_hdls, uuids)]
+    if not pts_services:
+        logging.debug("parsing error")
+        return False
+
     iut_services = []
 
     # [start_hdl, end_hdl, uuid]
@@ -196,58 +254,39 @@ def hdl_wid_23(desc):
 
 
 def hdl_wid_24(desc):
-    pattern = re.compile("(ATTRIBUTE\sHANDLE|"
-                         "INCLUDED\sSERVICE\sATTRIBUTE\sHANDLE|"
-                         "END\sGROUP\sHANDLE|"
-                         "UUID)\s?=\s?'([0-9a-fA-F]+)'", re.IGNORECASE)
+    MMI.reset()
+    MMI.parse_description(desc)
 
-    params = pattern.findall(desc)
-    if not params:
-        return False
-
-    params = dict([(k.upper(), v) for k, v in params])
     db = gatt_server_fetch_db()
 
-    if "INCLUDED SERVICE ATTRIBUTE HANDLE" in params:
-        incl_handle = int(params.get('INCLUDED SERVICE ATTRIBUTE HANDLE'), 16)
+    if MMI.args:
+        incl_handle = int(MMI.args[1], 16)
         attr = db.attr_lookup_handle(incl_handle)
         if attr is None or not isinstance(attr, GattService):
             logging.error("service not found")
             return False
 
         incl_uuid = attr.uuid
-        attr = db.attr_lookup_handle(int(params.get('ATTRIBUTE HANDLE'), 16))
+        attr = db.attr_lookup_handle(int(MMI.args[0], 16))
         if attr is None or not isinstance(attr, GattServiceIncluded):
             logging.error("included not found")
             return False
 
-        if attr.end_grp_hdl != int(params.get('END GROUP HANDLE'), 16) \
-                or incl_uuid != params.get('UUID').upper():
-            logging.error("attribute does not match")
+        if attr.end_grp_hdl != int(MMI.args[2], 16) \
+                or incl_uuid != MMI.args[3]:
+            logging.error("end group handle not found")
             return False
 
         return True
 
-    return False
-
 
 def hdl_wid_25(desc):
-    # Please confirm IUT have following characteristics in services UUID= '1801'O handle='0002'O handle='0005'O
-    # handle='0007'O
-    pattern = re.compile(r"(UUID|handle)\s?=\s?'([0-9a-fA-F]+)'")
-    pts_data = pattern.findall(desc)
-    if not pts_data:
-        logging.error("parsing error")
-        return False
+    MMI.reset()
+    MMI.parse_description(desc)
 
-    pts_chrc_uuid = None
-    pts_chrc_handles = []
-
-    for d in pts_data:
-        if d[0] == 'UUID':
-            pts_chrc_uuid = d[1]
-        else:
-            pts_chrc_handles.append(int(d[1], 16))
+    pts_chrc_uuid = MMI.args[0]
+    pts_chrc_handles = [int(MMI.args[1], 16), int(MMI.args[2], 16),
+                        int(MMI.args[3], 16)]
 
     iut_start_handle = None
     iut_end_handle = None
@@ -289,22 +328,146 @@ def hdl_wid_25(desc):
     return True
 
 
+def hdl_wid_26(desc):
+    return btp.verify_description(desc)
+
+
+def hdl_wid_27(desc):
+    MMI.reset()
+    MMI.parse_description(desc)
+
+    start_hdl = MMI.args[1]
+    end_hdl = MMI.args[2]
+
+    if not start_hdl or not end_hdl:
+        logging.error("parsing error")
+        return False
+    
+    btp.gattc_disc_all_chrc(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
+                            start_hdl, end_hdl)
+
+    btp.gattc_disc_all_chrc_rsp(True)
+
+    return True
+
+
+def hdl_wid_28(desc):
+    return btp.verify_description(desc)
+
+
+def hdl_wid_29(desc):
+    MMI.reset()
+    MMI.parse_description(desc)
+
+    start_hdl = MMI.args[0]
+    end_hdl = MMI.args[1]
+    uuid = MMI.args[2]
+
+    if not start_hdl or not end_hdl or not uuid:
+        logging.error("parsing error")
+        return False
+
+    btp.gattc_disc_chrc_uuid(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
+                             start_hdl, end_hdl, uuid)
+
+    btp.gattc_disc_chrc_uuid_rsp(True)
+
+    return True
+
+
+def hdl_wid_30(desc):
+    return btp.verify_description(desc)
+
+
+def hdl_wid_31(desc):
+    MMI.reset()
+    MMI.parse_description(desc)
+
+    start_hdl = MMI.args[0]
+    end_hdl = MMI.args[1]
+
+    if not start_hdl or not end_hdl:
+        logging.error("parsing error")
+        return False
+
+    btp.gattc_disc_all_desc(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
+                         start_hdl, end_hdl)
+
+    btp.gattc_disc_all_desc_rsp(True)
+
+    return True
+
+
+def hdl_wid_32(desc):
+    return btp.verify_description(desc)
+
+
 def hdl_wid_34(desc):
     return True
 
 
-def hdl_wid_52(desc):
-    # This pattern is matching IUT handle and characteristic value
-    pattern = re.compile("(Handle|value)='([0-9a-fA-F]+)'")
-    params = pattern.findall(desc)
-    if not params:
-        logging.error("parsing error")
+def hdl_wid_40(desc):
+    return btp.verify_description(desc)
+
+
+def hdl_wid_41(desc):
+    return btp.verify_description(desc)
+
+
+def hdl_wid_42(desc):
+    return btp.verify_description(desc)
+
+def hdl_wid_43(desc):
+    return btp.verify_description(desc)
+
+
+def hdl_wid_44(desc):
+    return btp.verify_description(desc)
+
+
+def hdl_wid_46(desc):
+    return btp.verify_description(desc)
+
+
+def hdl_wid_47(desc):
+    return btp.verify_description(desc)
+
+
+def hdl_wid_48(desc):
+    MMI.reset()
+    MMI.parse_description(desc)
+
+    hdl = MMI.args[0]
+
+    if not hdl:
+        logging.debug("parsing error")
         return False
 
-    params = dict(params)
+    btp.gattc_read(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
+                   hdl)
 
-    handle = int(params.get('Handle'), 16)
-    value = params.get('value').upper()
+    try:
+        btp.gattc_read_rsp(True, True, 40)
+    except socket.timeout:
+        pass
+
+    return True
+
+
+def hdl_wid_49(desc):
+    return True
+
+
+def hdl_wid_50(desc):
+    return btp.verify_description(desc)
+
+
+def hdl_wid_52(desc):
+    MMI.reset()
+    MMI.parse_description(desc)
+
+    handle = int(MMI.args[0], 16)
+    value = MMI.args[1]
 
     db = gatt_server_fetch_db()
     attr = db.attr_lookup_handle(handle)
@@ -326,17 +489,39 @@ def hdl_wid_52(desc):
     return True
 
 
-def hdl_wid_56(desc):
-    # This pattern is matching multiple IUT handle and characteristic value
-    pattern = re.compile("'([0-9a-fA-F]+)'")
-    params = pattern.findall(desc)
-    if not params or len(params) != 3:
-        logging.error("parsing error")
-        return False
+def hdl_wid_53(desc):
+    MMI.reset()
+    MMI.parse_description(desc)
 
-    handle1 = params[0]
-    handle2 = params[1]
-    values = params[2]
+    read_hdl = MMI.args[0]
+    offset = MMI.args[1]
+
+    if not read_hdl or not offset:
+        logging.debug("parsing error")
+        return False
+    
+    btp.gattc_read_long(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
+                         read_hdl, offset, 1)
+    
+    btp.gattc_read_long_rsp(True, False)
+
+    return True
+
+
+def hdl_wid_55(desc):
+    return btp.verify_multiple_read_description(desc)
+
+
+def hdl_wid_56(desc):
+    MMI.reset()
+    MMI.parse_description(desc)
+
+    if not MMI.args or len(MMI.args) != 3:
+        logging.error("parsing error")
+    
+    handle1 = MMI.args[0]
+    handle2 = MMI.args[1]
+    values = MMI.args[2]
 
     values_read = ""
 
@@ -352,18 +537,87 @@ def hdl_wid_56(desc):
     return True
 
 
-def hdl_wid_69(desc):
-    pattern = re.compile("(handle|size)\s?=\s?'([0-9a-fA-F]+)'")
-    params = pattern.findall(desc)
-    if not params:
+def hdl_wid_57(desc):
+    MMI.reset()
+    MMI.parse_description(desc)
+
+    hdl1 = MMI.args[0]
+    hdl2 = MMI.args[1]
+
+    if not hdl1 or not hdl2:
         logging.error("parsing error")
         return False
 
-    params = dict(params)
+    btp.gattc_read_multiple(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
+                            hdl1, hdl2)
+    
+    btp.gattc_read_multiple_rsp(True, True)
 
-    handle = int(params.get('handle'), 16)
-    size = int(params.get('size'), 16)
-    btp.gattc_write_long(btp.pts_addr_type_get(None), btp.pts_addr_get(None), handle, 0, '12', size)
+    return True
+
+
+def hdl_wid_58(desc):
+    MMI.reset()
+    MMI.parse_description(desc)
+
+    hdl = MMI.args[0]
+    
+    if not hdl:
+        logging.error("parsing error")
+        return False
+
+    btp.gattc_read(btp.pts_addr_type_get(None), btp.pts_addr_get(None), hdl)
+
+    btp.gattc_read_rsp(True, True)
+
+    return True
+
+
+def hdl_wid_59(desc):
+    return btp.verify_description(desc)
+
+
+def hdl_wid_61(desc):
+    return btp.verify_description(desc)
+
+
+def hdl_wid_62(desc):
+    return btp.verify_description(desc)
+
+
+def hdl_wid_63(desc):
+    return btp.verify_description(desc)
+
+
+def hdl_wid_64(desc):
+    return btp.verify_description(desc)
+
+
+def hdl_wid_65(desc):
+    return btp.verify_description(desc)
+
+
+def hdl_wid_66(desc):
+    return btp.verify_description(desc)
+
+
+def hdl_wid_67(desc):
+    return btp.verify_description(desc)
+
+
+def hdl_wid_69(desc):
+    MMI.reset()
+    MMI.parse_description(desc)
+
+    if not MMI.args:
+        logging.error("parsing error")
+        return False
+
+    handle = int(MMI.args[0], 16)
+    size = int(MMI.args[1], 16)
+
+    btp.gattc_write_long(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
+                         handle, 0, '12', size)
     btp.gattc_write_long_rsp()
 
     return True
@@ -385,35 +639,56 @@ def hdl_wid_70(desc):
     return True
 
 
-def hdl_wid_74(desc):
-    pattern = re.compile("'([0-9a-fA-F]+)'")
-    params = pattern.findall(desc)
-    if not params:
+def hdl_wid_71(desc):
+    return True
+
+
+def hdl_wid_72(desc):
+    MMI.reset()
+    MMI.parse_description(desc)
+    
+    hdl = MMI.args[0]
+
+    if not hdl:
         logging.error("parsing error")
         return False
 
-    handle = params[0]
-    size = int(params[1])
+    btp.gattc_signed_write(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
+                           hdl, '12', None)
+
+    return True
+
+
+def hdl_wid_74(desc):
+    MMI.reset()
+    MMI.parse_description(desc)
+
+    hdl = MMI.args[0]
+    size = int(MMI.args[1])
+
+    if not hdl or size == 0:
+        logging.error("parsing error")
+        return False
 
     btp.gattc_write(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
-                    handle, '12', size)
-    btp.gattc_write_rsp()
+                    hdl, '12', size)
+
+    try:
+        btp.gattc_write_rsp(True, 40)
+    except socket.timeout:
+        pass
 
     return True
 
 
 def hdl_wid_75(desc):
-    # This pattern is matching IUT handle and characteristic value
-    pattern = re.compile("(handle|value)\s?=\s?'([0-9a-fA-F]+)'")
-    params = pattern.findall(desc)
-    if not params:
-        logging.error("parsing error")
-        return False
+    MMI.reset()
+    MMI.parse_description(desc)
+    if not MMI.args:
+        logging.debug("parsing error")
 
-    params = dict(params)
-
-    handle = int(params.get('handle'), 16)
-    value = int(params.get('value'), 16)
+    handle = int(MMI.args[0], 16)
+    value = int(MMI.args[1], 16)
 
     stack = get_stack()
 
@@ -438,15 +713,87 @@ def hdl_wid_76(desc):
 
     btp.gattc_write_long(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
                          handle, 0, '12', size)
-    btp.gattc_write_long_rsp()
+    btp.gattc_write_long_rsp(True)
 
     return True
 
 
-def hdl_wid_82(desc):
+def hdl_wid_77(desc):
+    MMI.reset()
+    MMI.parse_description(desc)
+
+    hdl = MMI.args[0]
+    offset = int(MMI.args[1])
+
+    if not hdl or not offset:
+        logging.error("parsing error")
+        return False
+
+    btp.gattc_write_long(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
+                         hdl, offset, '12', None)
+
+    btp.gattc_write_long_rsp(True)
+
+    return True
+
+
+def hdl_wid_80(desc):
+    MMI.reset()
+    MMI.parse_description(desc)
+
+
+    hdl = MMI.args[0]
+    val_mtp = MMI.args[1]
+
+    if not hdl or not val_mtp:
+        logging.error("parsing error")
+        return False
+
     btp.gattc_write(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
-                    '0100', '12', 1)
-    btp.gattc_write_rsp()
+                         hdl, '1234', val_mtp)
+
+    btp.gattc_write_rsp(True)
+
+    return True
+
+
+def hdl_wid_81(desc):
+    MMI.reset()
+    MMI.parse_description(desc)
+
+    hdl = MMI.args[0]
+    val_mtp = MMI.args[1]
+
+    if not hdl or not val_mtp:
+        logging.error("parsing error")
+        return False
+
+    btp.gattc_write_long(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
+                         hdl, 0, '1234', val_mtp)
+
+    btp.gattc_write_long_rsp(True)
+
+    return True
+
+def hdl_wid_82(desc):
+    return True
+
+
+def hdl_wid_90(desc):
+    return True
+
+
+def hdl_wid_91(desc):
+    pattern = re.compile("'([0-9a-fA-F]+)'")
+    params = pattern.findall(desc)
+    if not params:
+        logging.error("parsing error")
+        return False
+
+    handle = params[0]
+
+    btp.gattc_cfg_notify(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
+                         1, handle)
 
     return True
 
@@ -475,24 +822,28 @@ def hdl_wid_92(desc):
     return True
 
 
+def hdl_wid_95(desc):
+    return True
+
+
 def hdl_wid_96(desc):
     return True
 
 
 def hdl_wid_97(desc):
+    sleep(30)
     return True
 
 
 def hdl_wid_98(desc):
-    # This pattern is matching Indication handle
-    pattern = re.compile("(handle)\s?=\s?'([0-9a-fA-F]+)'")
-    params = pattern.findall(desc)
-    if not params:
+    MMI.reset()
+    MMI.parse_description(desc)
+    if not MMI.args:
         logging.error("parsing error")
         return False
 
-    params = dict(params)
-    handle = int(params.get('handle'), 16)
+    handle = int(MMI.args[0], 16)
+
     att_rsp, value_len, value = btp.gatts_get_attr_val(handle)
 
     if att_rsp:
@@ -503,6 +854,24 @@ def hdl_wid_98(desc):
     sleep(2)
 
     btp.gatts_set_val(handle, hexlify(value)),
+
+    return True
+
+
+def hdl_wid_99(desc):
+    pattern = re.compile("'([0-9a-fA-F]+)'")
+    params = pattern.findall(desc)
+    if not params:
+        logging.error("parsing error")
+        return False
+
+    handle = params[0]
+
+    btp.gattc_cfg_indicate(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
+                         1, handle)
+
+    btp.gattc_notification_ev(btp.pts_addr_get(None),
+                              btp.pts_addr_type_get(None), 2)
 
     return True
 

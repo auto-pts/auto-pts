@@ -93,9 +93,14 @@ def timeout_cb(flag):
 
 
 class Gap:
-    def __init__(self, name, manufacturer_data):
+    def __init__(self, name, manufacturer_data, appearance, svc_data, flags,
+                 svcs):
         self.name = name
         self.manufacturer_data = manufacturer_data
+        self.appearance = appearance
+        self.svc_data = svc_data
+        self.flags = flags
+        self.svcs = svcs
 
         # If disconnected - None
         # If connected - remote address tuple (addr, addr_type)
@@ -588,8 +593,10 @@ class Stack:
         self.synch = None
         self.gatt = None
 
-    def gap_init(self, name=None, manufacturer_data=None):
-        self.gap = Gap(name, manufacturer_data)
+    def gap_init(self, name=None, manufacturer_data=None, appearance=None,
+                 svc_data=None, flags=None, svcs=None):
+        self.gap = Gap(name, manufacturer_data, appearance, svc_data, flags,
+                       svcs)
 
     def mesh_init(self, uuid, oob, output_size, output_actions, input_size,
                   input_actions, crpl_size):
