@@ -1376,11 +1376,10 @@ def gattc_disc_all_chrc_find_attrs_rsp(exp_chars, store_attrs=False):
     for char in chars_tuple:
         for exp_char in exp_chars:
             # Check if option expected attribute parameters match
-            char_uuid = binascii.hexlify(char[3][0][::-1])
             if ((exp_char[0] and exp_char[0] != char[0]) or
                     (exp_char[1] and exp_char[1] != char[1]) or
                     (exp_char[2] and exp_char[2] != char[2]) or
-                    (exp_char[3] and exp_char[3] != char_uuid)):
+                    (exp_char[3] and exp_char[3] != char[3])):
 
                 logging.debug("gatt char not matched = %r != %r", char,
                               exp_char)
@@ -2014,10 +2013,9 @@ def gattc_disc_prim_uuid_find_attrs_rsp(exp_svcs, store_attrs=False):
     for svc in svcs_tuple:
         for exp_svc in exp_svcs:
             # Check if option expected attribute parameters match
-            svc_uuid = binascii.hexlify(svc[2][0][::-1])
             if ((exp_svc[0] and exp_svc[0] != svc[0]) or
                     (exp_svc[1] and exp_svc[1] != svc[1]) or
-                    (exp_svc[2] and exp_svc[2] != svc_uuid)):
+                    (exp_svc[2] and exp_svc[2] != svc[2])):
 
                 logging.debug("gatt svc not matched = %r != %r", svc, exp_svc)
 
