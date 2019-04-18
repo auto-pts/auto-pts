@@ -39,7 +39,7 @@ from gap_wid import gap_wid_hdl, hdl_wid_161
 
 class UUID:
     gap_svc = '1800'
-    device_name = '2a00'
+    device_name = '2A00'
     VND16_1 = 'AA50'
     VND16_2 = 'AA51'
 
