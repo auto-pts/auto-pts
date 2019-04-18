@@ -952,33 +952,6 @@ def gap_read_ctrl_info():
     __gap_current_settings_update(_curr_set)
 
 
-def gap_identity_resolved_ev():
-    logging.debug("%s", gap_identity_resolved_ev.__name__)
-    iutctl = get_iut()
-
-    tuple_hdr, tuple_data = iutctl.btp_socket.read()
-    logging.debug("received %r %r", tuple_hdr, tuple_data)
-
-    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GAP,
-                  defs.GAP_EV_IDENTITY_RESOLVED)
-
-    fmt = '<B6sB6s'
-    if len(tuple_data[0]) != struct.calcsize(fmt):
-        raise BTPError("Invalid data length")
-
-    _addr_t, _addr, _id_addr_t, _id_addr = struct.unpack_from('<B6sB6s',
-                                                              tuple_data[0])
-    # Convert addresses to lower case
-    _addr = binascii.hexlify(_addr[::-1]).lower()
-    _id_addr = binascii.hexlify(_id_addr[::-1]).lower()
-
-    if _addr_t != pts_addr_type_get() or _addr != pts_addr_get():
-        raise BTPError("Received data mismatch")
-
-    # Update RPA with Identity Address
-    set_pts_addr(_id_addr, _id_addr_t)
-
-
 def gap_command_rsp_succ(op=None):
     logging.debug("%s", gap_command_rsp_succ.__name__)
 
@@ -2196,7 +2169,7 @@ def gattc_disc_all_desc_rsp(store_rsp=False):
         logging.debug("Set verify values to: %r", VERIFY_VALUES)
 
 
-att_rsp_str = {0:   "No error",
+att_rsp_str = {0:   "",
                1:   "Invalid handle error",
                2:   "read is not permitted error",
                3:   "write is not permitted error",
@@ -2205,6 +2178,7 @@ att_rsp_str = {0:   "No error",
                8:   "authorization error",
                12:  "encryption key size error",
                13:  "Invalid attribute value length error",
+               14:  "unlikely error",
                128: "Application error",
                }
 
@@ -2574,12 +2548,34 @@ def gap_passkey_disp_ev_(gap, data, data_len):
     gap.passkey.data = passkey
 
 
+def gap_identity_resolved_ev_(gap, data, data_len):
+    logging.debug("%s", gap_identity_resolved_ev_.__name__)
+
+    logging.debug("received %r", data)
+
+    fmt = '<B6sB6s'
+    if len(data) != struct.calcsize(fmt):
+        raise BTPError("Invalid data length")
+
+    _addr_t, _addr, _id_addr_t, _id_addr = struct.unpack_from(fmt, data)
+    # Convert addresses to lower case
+    _addr = binascii.hexlify(_addr[::-1]).lower()
+    _id_addr = binascii.hexlify(_id_addr[::-1]).lower()
+
+    if _addr_t != pts_addr_type_get() or _addr != pts_addr_get():
+        raise BTPError("Received data mismatch")
+
+    # Update RPA with Identity Address
+    set_pts_addr(_id_addr, _id_addr_t)
+
+
 GAP_EV = {
     defs.GAP_EV_NEW_SETTINGS: gap_new_settings_ev_,
     defs.GAP_EV_DEVICE_FOUND: gap_device_found_ev_,
     defs.GAP_EV_DEVICE_CONNECTED: gap_connected_ev_,
     defs.GAP_EV_DEVICE_DISCONNECTED: gap_disconnected_ev_,
     defs.GAP_EV_PASSKEY_DISPLAY: gap_passkey_disp_ev_,
+    defs.GAP_EV_IDENTITY_RESOLVED: gap_identity_resolved_ev_,
 }
 
 
