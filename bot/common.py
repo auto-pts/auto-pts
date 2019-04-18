@@ -398,7 +398,8 @@ def update_sources(repo, remote, branch, stash_changes=False):
 
     if dirty and (not stash_changes):
         print('Repo is dirty. Not updating')
-        return repo.git.describe(), repo.git.show('-s', '--format=%H') + '-dirty'
+        return repo.git.describe('--always'), \
+               repo.git.show('-s', '--format=%H') + '-dirty'
 
     if dirty and stash_changes:
         print('Repo is dirty. Stashing changes')
@@ -407,7 +408,8 @@ def update_sources(repo, remote, branch, stash_changes=False):
     repo.git.fetch(remote)
     repo.git.checkout('{}/{}'.format(remote, branch))
 
-    return repo.git.describe(), repo.git.show('-s', '--format=%H')
+    return repo.git.describe('--always'), \
+           repo.git.show('-s', '--format=%H')
 
 
 def update_repos(project_path, git_config):
