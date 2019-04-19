@@ -248,20 +248,16 @@ def test_cases(pts):
                    TestFunc(btp.gap_set_nondiscov, start_wid=5),
                    TestFunc(btp.gap_adv_ind_on, start_wid=5)]),
         ZTestCase("GAP", "GAP/DISC/NONM/BV-02-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_nondiscov, start_wid=72),
-                   TestFunc(btp.gap_adv_ind_on, sd=[AdData.ad_name_sh],
-                            start_wid=72)]),
+                  pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/DISC/LIMM/BV-03-C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_nonconn),
                    TestFunc(btp.gap_set_limdiscov),
                    TestFunc(btp.gap_adv_ind_on, start_wid=59)]),
         ZTestCase("GAP", "GAP/DISC/LIMM/BV-04-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_conn),
-                   TestFunc(btp.gap_set_limdiscov),
-                   TestFunc(btp.gap_adv_ind_on, start_wid=50)]),
+                  pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/DISC/GENM/BV-03-C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_nonconn),
