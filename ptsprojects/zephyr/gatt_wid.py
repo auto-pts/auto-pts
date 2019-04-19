@@ -82,7 +82,10 @@ def gatt_server_fetch_db():
             hdr_len = struct.calcsize(hdr)
             uuid_len = val_len - hdr_len
             incl_svc_hdl, end_grp_hdl, uuid = struct.unpack(hdr + "%ds" % uuid_len, val)
-            uuid = btp.btp2uuid(uuid_len, uuid)
+            if uuid_len > 0:
+                uuid = btp.btp2uuid(uuid_len, uuid)
+            else:
+                uuid = None
 
             db.attr_add(handle, GattServiceIncluded(handle, perm, uuid, att_rsp, incl_svc_hdl, end_grp_hdl))
         else:
