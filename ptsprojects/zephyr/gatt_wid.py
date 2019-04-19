@@ -41,10 +41,15 @@ def gatt_wid_hdl(wid, description, test_case_name):
 
 def gatt_server_fetch_db():
     db = GattDB()
+    char_val_set = set()
 
     attrs = btp.gatts_get_attrs()
     for attr in attrs:
         handle, perm, type_uuid = attr
+
+        if handle in char_val_set:
+            char_val_set.remove(handle)
+            continue
 
         attr_val = btp.gatts_get_attr_val(handle)
         if not attr_val:
@@ -68,6 +73,8 @@ def gatt_server_fetch_db():
 
             prop, value_handle, uuid = struct.unpack("<BH%ds" % uuid_len, val)
             uuid = btp.btp2uuid(uuid_len, uuid)
+
+            char_val_set.add(value_handle)
 
             db.attr_add(handle, GattCharacteristic(handle, perm, uuid, att_rsp, prop, value_handle))
         elif type_uuid == '2802':
