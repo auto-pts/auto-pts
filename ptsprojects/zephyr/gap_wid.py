@@ -120,6 +120,52 @@ def hdl_wid_47(desc):
     return True
 
 
+def hdl_wid_50(desc):
+    stack = get_stack()
+
+    ad = []
+
+    btp.gap_set_limdiscov()
+
+    if stack.gap.name:
+        ad.append((AdType.name_short, hexlify(stack.gap.name)))
+
+    btp.gap_adv_ind_on(ad=ad)
+
+    return True
+
+
+def hdl_wid_59(desc):
+    stack = get_stack()
+
+    ad = []
+
+    btp.gap_set_nonconn()
+    btp.gap_set_limdiscov()
+
+    if stack.gap.name:
+        ad.append((AdType.name_short, hexlify(stack.gap.name)))
+
+    btp.gap_adv_ind_on(ad=ad)
+
+    return True
+
+
+def hdl_wid_72(desc):
+    stack = get_stack()
+
+    ad = []
+
+    btp.gap_set_nondiscov()
+
+    if stack.gap.name:
+        ad.append((AdType.name_short, hexlify(stack.gap.name)))
+
+    btp.gap_adv_ind_on(ad=ad)
+
+    return True
+
+
 def hdl_wid_77(desc):
     btp.gap_disconn()
     return True
