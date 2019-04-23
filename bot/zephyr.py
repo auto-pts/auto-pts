@@ -270,7 +270,7 @@ def run_tests(args, iut_config):
     pts = ptses[0]
 
     # Read PTS Version and keep it for later use
-    args['pts_ver'] = "%x" % pts.get_version()
+    args['pts_ver'] = "%s" % pts.get_version()
 
     stack.init_stack()
     stack_inst = stack.get_stack()

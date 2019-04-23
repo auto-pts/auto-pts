@@ -30,16 +30,26 @@
 
 """Windows utilities"""
 
+import os
 import sys
-import System.Security.Principal as Principal
+import ctypes
+
+
+class AdminStateUnknownError(Exception):
+    pass
 
 
 def have_admin_rights():
     """"Check if the process has Administrator rights"""
-    identity = Principal.WindowsIdentity.GetCurrent()
-    principal = Principal.WindowsPrincipal(identity)
-    is_admin = principal.IsInRole(Principal.WindowsBuiltInRole.Administrator)
-    return is_admin
+    try:
+        return os.getuid() == 0
+    except AttributeError:
+        pass
+
+    try:
+        return ctypes.windll.shell32.IsUserAnAdmin() == 1
+    except AttributeError:
+        raise AdminStateUnknownError
 
 
 def exit_if_admin():
@@ -54,9 +64,9 @@ def main():
     is_admin = have_admin_rights()
 
     if is_admin:
-        print "Running as administrator"
+        print("Running as administrator")
     else:
-        print "Not running as administrator"
+        print("Not running as administrator")
 
     exit_if_admin()
 

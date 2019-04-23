@@ -34,30 +34,19 @@ Cause of tight coupling with PTS, this module is Windows specific
 """
 
 import os
+import wmi
 import sys
 import time
 import logging
 import argparse
 import shutil
-import xmlrpclib
-
-import clr
-import System
-
-import ctypes
-libc = ctypes.cdll.msvcrt  # for wcscpy_s
-
-# workaround to a bug in IronPython: cwd in missing from sys.path under pdb
-# https://github.com/IronLanguages/main/issues/1225
-if "pdb" in sys.modules:
-    sys.path.insert(0, os.getcwd())
-
+import win32com.client
+import win32com.server.connect
+import win32com.server.util
+import xmlrpc.client
+import pythoncom
 import ptsprojects.ptstypes as ptstypes
-
-# load the PTS interop assembly
-clr.AddReferenceToFile("Interop.PTSControl.dll")
-
-import Interop.PTSControl as PTSControl
+import ctypes
 
 log = logging.debug
 
@@ -67,14 +56,17 @@ logtype_whitelist = [ptstypes.PTS_LOGTYPE_START_TEST,
                      ptstypes.PTS_LOGTYPE_FINAL_VERDICT]
 
 
-class PTSLogger(PTSControl.IPTSControlClientLogger):
-    """PTS control client logger implementation"""
+class PTSLogger(win32com.server.connect.ConnectableServer):
+    """PTS control client logger callback implementation"""
+    _reg_desc_ = "AutoPTS Logger"
+    _reg_clsid_ = "{50B17199-917A-427F-8567-4842CAD241A1}"
+    _reg_progid_ = "autopts.PTSLogger"
+    _public_methods_ = ['Log'] + win32com.server.connect.ConnectableServer._public_methods_
 
     def __init__(self):
         """"Constructor"""
+        super(PTSLogger, self).__init__()
 
-        # an object that implements testcase.PTSCallback, it can either be
-        # TestCase or xmlrpc SimpleXMLRPCServer running in auto pts client.
         self._callback = None
         self._maximum_logging = False
         self._test_case_name = None
@@ -98,47 +90,40 @@ class PTSLogger(PTSControl.IPTSControlClientLogger):
     def Log(self, log_type, logtype_string, log_time, log_message):
         """Implements:
 
-        interface IPTSControlClientLogger : IUnknown {
-            HRESULT _stdcall Log(
-                            [in] _PTS_LOGTYPE logType,
-                            [in] LPWSTR szLogType,
-                            [in] LPWSTR szTime,
-                            [in] LPWSTR pszMessage);
+        void Log(
+                        [in] unsigned int logType,
+                        [in] BSTR szLogType,
+                        [in] BSTR szTime,
+                        [in] BSTR pszMessage);
         };
         """
 
         logger = logging.getLogger(self.__class__.__name__)
         log = logger.info
 
-        log_message = log_message.encode("ascii", "xmlcharrefreplace")
-
-        log("%s %s %s %s" % (log_type, logtype_string, log_time, log_message))
+        log("%d %s %s %s" % (log_type, logtype_string, log_time, log_message))
 
         try:
-            # xmrpc proxy object in boolean test calls the method __nonzero__
-            # of the xmlrpc server, so "is" test is a better choice here
             if self._callback is not None:
-                log("Calling callback.log")
-                # log_type of type PTSControl._PTS_LOGTYPE is marshalled as
-                # int since xmlrpc has not marshalling rules for _PTS_LOGTYPE
-                if self._maximum_logging or int(log_type) in logtype_whitelist:
-                    self._callback.log(int(log_type), logtype_string, log_time,
+                if self._maximum_logging or log_type in logtype_whitelist:
+                    self._callback.log(log_type, logtype_string, log_time,
                                        log_message, self._test_case_name)
         except Exception as e:
-            log("Caught exception")
-            log(e)
-            # exit does not work, cause app is blocked in PTS.RunTestCase?
+            logging.exception(repr(e))
             sys.exit("Exception in Log")
 
 
-class PTSSender(PTSControl.IPTSImplicitSendCallbackEx):
-    """Implicit send callback implementation"""
+class PTSSender(win32com.server.connect.ConnectableServer):
+    """PTS control client implicit send callback implementation"""
+    _reg_desc_ = "AutoPTS Sender"
+    _reg_clsid_ = "{9F4517C9-559D-4655-9032-076A1E9B7654}"
+    _reg_progid_ = "autopts.PTSSender"
+    _public_methods_ = ['OnImplicitSend'] + win32com.server.connect.ConnectableServer._public_methods_
 
     def __init__(self):
         """"Constructor"""
+        super(PTSSender, self).__init__()
 
-        # an object that implements testcase.PTSCallback, it can either be
-        # TestCase or xmlrpc SimpleXMLRPCServer running in auto pts client.
         self._callback = None
 
     def set_callback(self, callback):
@@ -149,20 +134,15 @@ class PTSSender(PTSControl.IPTSImplicitSendCallbackEx):
         """Unsets the callback"""
         self._callback = None
 
-    def OnImplicitSend(self, project_name, wid, test_case_name, description,
-                       style, response, response_size, response_is_present):
+    def OnImplicitSend(self, project_name, wid, test_case, description, style):
         """Implements:
 
-        interface IPTSImplicitSendCallbackEx : IUnknown {
-        HRESULT _stdcall OnImplicitSend(
-                    [in] LPWSTR pszProjectName,
-                    [in] unsigned short wID,
-                    [in] LPWSTR pszTestCase,
-                    [in] LPWSTR pszDescription,
-                    [in] unsigned long style,
-                    [in, out] LPWSTR pszResponse,
-                    [in] unsigned long responseSize,
-                    [in, out] long* pbResponseIsPresent);
+        VARIANT OnImplicitSend(
+                        [in] BSTR pszProjectName,
+                        [in] unsigned short wID,
+                        [in] BSTR szTestCase,
+                        [in] BSTR szDescription,
+                        [in] unsigned long style);
         };
         """
         logger = logging.getLogger(self.__class__.__name__)
@@ -173,55 +153,38 @@ class PTSSender(PTSControl.IPTSImplicitSendCallbackEx):
         log("BEGIN OnImplicitSend:")
         log("project_name: %s %s" % (project_name, type(project_name)))
         log("wid: %d %s" % (wid, type(wid)))
-        log("test_case_name: %s %s" % (test_case_name, type(test_case_name)))
+        log("test_case_name: %s %s" % (test_case, type(test_case)))
         log("description: %s %s" % (description, type(description)))
         log("style: %s 0x%x", ptstypes.MMI_STYLE_STRING[style], style)
-        log("response:  %s %s %s" %
-            (repr(response), type(response), id(response)))
-        log("response_size: %d %s" % (response_size, type(response_size)))
-        log("response_is_present:  %s %s" %
-            (response_is_present, type(response_is_present)))
+
+        rsp = ""
 
         try:
-            # xmrpc proxy object in boolean test calls the method __nonzero__
-            # of the xmlrpc server, so "is" test is a better choice here
             if self._callback is not None:
                 log("Calling callback.on_implicit_send")
-                callback_response = self._callback.on_implicit_send(
-                    project_name,
-                    int(wid),  # UInt16 cannot be marshalled
-                    test_case_name,
-                    description,
-                    int(style))
+                rsp = self._callback.on_implicit_send(project_name, wid,
+                                                      test_case, description,
+                                                      style)
 
                 # Don't block xml-rpc
-                if callback_response == "WAIT":
-                    callback_response = self._callback.get_pending_response(
-                        test_case_name)
-                    while not callback_response:
+                if rsp == "WAIT":
+                    rsp = self._callback.get_pending_response(
+                        test_case)
+                    while not rsp:
                         # XXX: Ask for response every second
                         timer = timer + 1
                         # XXX: Timeout 90 seconds
                         if timer > 90:
-                            callback_response = "Cancel"
+                            rsp = "Cancel"
                             break
 
                         log("Rechecking response...")
                         time.sleep(1)
-                        callback_response \
-                            = self._callback.get_pending_response(
-                                test_case_name)
-                        pass
+                        rsp = self._callback.get_pending_response(test_case)
 
-                log("callback returned on_implicit_send, respose: %s",
-                    callback_response)
+                log("callback returned on_implicit_send, respose: %r", rsp)
 
-                if callback_response:
-                    libc.wcscpy_s(response, response_size,
-                                  unicode(callback_response))
-                    response_is_present.Value = 1
-
-        except xmlrpclib.Fault as err:
+        except xmlrpc.client.Fault as err:
             log("A fault occurred, code = %d, string = %s" %
                 (err.faultCode, err.faultString))
 
@@ -231,16 +194,36 @@ class PTSSender(PTSControl.IPTSImplicitSendCallbackEx):
             # exit does not work, cause app is blocked in PTS.RunTestCase?
             sys.exit("Exception in OnImplicitSend")
 
-        # not easy to to redirect libc stdout to the log file, can print it by:
-        # libc._putws(response)
-        # libc.fflush(None);
-        log("final response: %s %s %s" % (response, type(response),
-                                          id(response)))
-        log("final response_is_present: %s %s" %
-            (response_is_present, type(response_is_present)))
+        if rsp:
+            is_present = 1
+        else:
+            is_present = 0
+
+        # Stringify response
+        rsp = str(rsp)
+        rsp_len = str(len(rsp))
+        is_present = str(is_present)
 
         log("END OnImplicitSend:")
         log("*" * 20)
+
+        return win32com.client.VARIANT(pythoncom.VT_ARRAY | pythoncom.VT_BSTR,
+                                       [rsp, rsp_len, is_present])
+
+
+def parse_ptscontrol_error(err):
+    try:
+        _, source, description, _, _, hresult = err.excepinfo
+
+        ptscontrol_e = ctypes.c_uint32(hresult).value
+        ptscontrol_e_string = ptstypes.PTSCONTROL_E_STRING[ptscontrol_e]
+
+        logging.exception(ptscontrol_e_string)
+
+        return ptscontrol_e_string
+
+    except Exception:
+        raise Exception(err)
 
 
 class PyPTS:
@@ -282,10 +265,12 @@ class PyPTS:
         log("%s", self._init_attributes.__name__)
 
         self._pts = None
-        self._pts_pid = None
+        self._pts_proc = None
 
         self._pts_logger = None
         self._pts_sender = None
+        self._com_logger = None
+        self._com_sender = None
 
         # Cached frequently used PTS attributes: for optimisation reasons it is
         # avoided to contact PTS. These attributes should not change anyway.
@@ -385,11 +370,6 @@ class PyPTS:
     def restart_pts(self):
         """Restarts PTS
 
-        Timeouts break some PTS functionality, hence it is good idea to start a
-        new instance of PTS every time. For details see:
-
-        https://www.bluetooth.org/pts/issues/view_issue.cfm?id=13794
-
         This function will block for couple of seconds while PTS starts
 
         """
@@ -397,7 +377,7 @@ class PyPTS:
         log("%s", self.restart_pts.__name__)
 
         # Startup of ptscontrol doesn't have PTS pid yet set - no pts running
-        if self._pts_pid:
+        if self._pts_proc:
             self.stop_pts()
         time.sleep(1)  # otherwise there are COM errors occasionally
         self.start_pts()
@@ -410,21 +390,28 @@ class PyPTS:
         log("%s", self.start_pts.__name__)
 
         # Get PTS process list before running new PTS daemon
-        pts_ps_list = System.Diagnostics.Process.GetProcessesByName("PTS")
-        pts_pid_list_pre = [ps.Id for ps in pts_ps_list]
-        self._pts = PTSControl.PTSControlClass()
+        c = wmi.WMI()
+        pts_ps_list_pre = []
+        pts_ps_list_post = []
+
+        for ps in c.Win32_Process(name="PTS.exe"):
+            pts_ps_list_pre.append(ps)
+
+        self._pts = win32com.client.Dispatch('ProfileTuningSuite_6.PTSControlServer')
+
         # Get PTS process list after running new PTS daemon to get PID of
         # new instance
-        pts_ps_list = System.Diagnostics.Process.GetProcessesByName("PTS")
-        pts_pid_list_post = [ps.Id for ps in pts_ps_list]
+        for ps in c.Win32_Process(name="PTS.exe"):
+            pts_ps_list_post.append(ps)
 
-        pid = list(set(pts_pid_list_post) - set(pts_pid_list_pre))
-        if len(pid) != 1:
+        pts_ps_list = list(set(pts_ps_list_post) - set(pts_ps_list_pre))
+        if not pts_ps_list:
             log("Error during pts startup!")
             return
 
-        self._pts_pid = pid[0]
-        log("Started new PTS daemon with pid: %d" % self._pts_pid)
+        self._pts_proc = pts_ps_list[0]
+
+        log("Started new PTS daemon with pid: %d" % self._pts_proc.ProcessId)
 
         self._pts_logger = PTSLogger()
         self._pts_sender = PTSSender()
@@ -433,37 +420,28 @@ class PyPTS:
         # is avoided to contact PTS. These attributes should not change anyway.
         self.__bd_addr = None
 
-        # mandatory to set at least to None if logger is not used
-        self.set_control_client_logger_callback(self._pts_logger)
+        self._com_logger = win32com.client.dynamic.Dispatch(
+            win32com.server.util.wrap(self._pts_logger))
+        self._com_sender = win32com.client.dynamic.Dispatch(
+            win32com.server.util.wrap(self._pts_sender))
 
-        self.register_implicit_send_callback_ex(self._pts_sender)
+        self._pts.SetControlClientLoggerCallback(self._com_logger)
+        self._pts.RegisterImplicitSendCallbackEx(self._com_sender)
 
-        log("PTS Version: %x", self.get_version())
-        log("PTS Bluetooth Address: %x", self.get_bluetooth_address())
+        log("PTS Version: %s", self.get_version())
+        log("PTS Bluetooth Address: %s", self.get_bluetooth_address())
         log("PTS BD_ADDR: %s" % self.bd_addr())
 
     def stop_pts(self):
         """Stops PTS"""
 
         try:
-            pts_process = \
-                System.Diagnostics.Process.GetProcessById(self._pts_pid)
-            log("About to stop PTS with pid: %d, process: %s", self._pts_pid,
-                pts_process)
+            log("About to stop PTS with pid: %d", self._pts_proc.ProcessId)
+            self._pts_proc.Terminate()
+            self._pts_proc = None
 
-            pts_process.CloseMainWindow()
-            # Give PTS process time to close otherwise do it brutally to not
-            # block testing. This happens occasionally when tester tries to
-            # close PTS while after test logs are processing.
-            # Gently stopping is better than killing process. Normal stop
-            # procedure should take less than minute
-            res = pts_process.WaitForExit(60000)
-            if not res:
-                pts_process.Kill()
-                log("Process didn't close within limited time - killed")
-            pts_process.Close()
         except Exception as error:
-            logging.exception(error.message)
+            logging.exception(repr(error))
 
         self._init_attributes()
 
@@ -539,75 +517,33 @@ class PyPTS:
     def get_project_count(self):
         """Returns number of projects available in the current workspace"""
 
-        project_count = clr.StrongBox[System.UInt32]()
-        self._pts.GetProjectCount(project_count)
-        project_count_int = int(project_count)
-
-        log("%s out: %s", self.get_project_count.__name__, project_count_int)
-
-        return project_count_int
+        return self._pts.GetProjectCount()
 
     def get_project_name(self, project_index):
         """Returns project name"""
 
-        project_name = ""
-        project_name = self._pts.GetProjectName(project_index, project_name)
-
-        log("%s %s out: %s", self.get_project_name.__name__, project_index,
-            project_name)
-
-        return project_name
+        return self._pts.GetProjectName(project_index)
 
     def get_project_version(self, project_name):
         """Returns project version"""
 
-        project_version = clr.StrongBox[System.UInt32]()
-        self._pts.GetProjectVersion(project_name)
-        project_version_int = int(project_version)
-
-        log("%s %s out: %s", self.get_project_version.__name__, project_name,
-            project_version_int)
-
-        return project_version_int
+        return self._pts.GetProjectVersion(project_name)
 
     def get_test_case_count(self, project_name):
         """Returns the number of test cases that are available in the specified
         project."""
 
-        test_case_count = clr.StrongBox[System.UInt32]()
-        self._pts.GetTestCaseCount(project_name, test_case_count)
-        test_case_count_int = int(test_case_count)
-
-        log("%s %s out: %s", self.get_test_case_count.__name__, project_name,
-            test_case_count_int)
-
-        return test_case_count_int
+        return self._pts.GetTestCaseCount(project_name)
 
     def get_test_case_name(self, project_name, test_case_index):
         """Returns name of the specified test case"""
 
-        test_case_name = ""
-        test_case_name = self._pts.GetTestCaseName(project_name,
-                                                   test_case_index,
-                                                   test_case_name)
-
-        log("%s %s %s out: %s", self.get_test_case_name.__name__, project_name,
-            test_case_index, test_case_name)
-
-        return test_case_name
+        return self._pts.GetTestCaseName(project_name, test_case_index)
 
     def get_test_case_description(self, project_name, test_case_index):
         """Returns description of the specified test case"""
 
-        test_case_description = ""
-        test_case_description = self._pts.GetTestCaseDescription(
-            project_name, test_case_index, test_case_description)
-
-        log("%s %s %s out: %s", self.get_test_case_description.__name__,
-            project_name, test_case_index,
-            test_case_description.encode("ascii", "ignore"))
-
-        return test_case_description
+        return self._pts.GetTestCaseDescription(project_name, test_case_index)
 
     def is_active_test_case(self, project_name, test_case_name):
         """Returns True if the specified test case is active (enabled) in the
@@ -615,14 +551,7 @@ class PyPTS:
         (disabled).
         """
 
-        is_active = clr.StrongBox[System.Int32]()
-        self._pts.IsActiveTestCase(project_name, test_case_name, is_active)
-        is_active_bool = bool(int(is_active))
-
-        log("%s %s %s out: %s", self.is_active_test_case.__name__,
-            project_name, test_case_name, is_active_bool)
-
-        return is_active_bool
+        return self._pts.IsActiveTestCase(project_name, test_case_name)
 
     def _revert_temp_changes(self):
         """Recovery default state for test case"""
@@ -659,15 +588,6 @@ class PyPTS:
 
         If an error occurs when running test case returns code of an error as a
         string, otherwise returns an empty string
-
-        [1] 32 bit IronPython converts error codes to long integer, which is
-            not supported by xmlrpc:
-
-            Fault: <Fault 1: "<type 'exceptions.OverflowError'>:long int
-            exceeds XML-RPC limits">
-
-            Hence, error codes are passed over xmlrpc as strings
-
         """
 
         log("Starting %s %s %s", self.run_test_case.__name__, project_name,
@@ -682,12 +602,8 @@ class PyPTS:
 
             self._revert_temp_changes()
 
-        except System.Runtime.InteropServices.COMException as exc:
-            log("Exception in %s", self.run_test_case.__name__)
-            log(exc)
-
-            hresult = int(System.UInt32(exc.HResult))
-            error_code = ptstypes.PTSCONTROL_E_STRING[hresult]  # see [1]
+        except pythoncom.com_error as e:
+            error_code = parse_ptscontrol_error(e)
 
             self.recover_pts()
 
@@ -709,26 +625,12 @@ class PyPTS:
         """Returns the number of test cases that are available in the specified
         project according to TSS file."""
 
-        test_case_count = clr.StrongBox[System.UInt32]()
-        self._pts.GetTestCaseCountFromTSSFile(project_name, test_case_count)
-        test_case_count_int = int(test_case_count)
-
-        log("%s %s out: %s", self.get_test_case_count_from_tss_file.__name__,
-            project_name, test_case_count_int)
-
-        return test_case_count_int
+        return self._pts.GetTestCaseCountFromTSSFile(project_name)
 
     def get_test_cases_from_tss_file(self, project_name):
         """Returns array of test case names according to TSS file."""
 
-        test_cases_unused = []
-        test_cases = self._pts.GetTestCasesFromTSSFile(project_name,
-                                                       test_cases_unused)
-
-        log("%s %s out: %s", self.get_test_cases_from_tss_file.__name__,
-            project_name, repr(test_cases))
-
-        return test_cases
+        return self._pts.GetTestCasesFromTSSFile(project_name)
 
     def set_pics(self, project_name, entry_name, bool_value):
         """Set PICS
@@ -753,9 +655,8 @@ class PyPTS:
             self.add_recov(self.update_pics, project_name, entry_name,
                            bool_value)
 
-        except System.Runtime.InteropServices.COMException as e:
-            log('Exception in UpdatePics "%s", is pics value already set?' %
-                (e.Message,))
+        except pythoncom.com_error as e:
+            parse_ptscontrol_error(e)
 
     def set_pixit(self, project_name, param_name, param_value):
         """Set PIXIT
@@ -780,9 +681,8 @@ class PyPTS:
             self.add_recov(self.set_pixit, project_name, param_name,
                            param_value)
 
-        except System.Runtime.InteropServices.COMException as e:
-            log(('Exception in UpdatePixitParam "%s", is pixit param already '
-                 'set?') % (e.Message,))
+        except pythoncom.com_error as e:
+            parse_ptscontrol_error(e)
 
     def update_pixit_param(self, project_name, param_name, new_param_value):
         """Updates PIXIT
@@ -806,9 +706,8 @@ class PyPTS:
             self._add_temp_change(self.update_pixit_param, project_name,
                                   param_name)
 
-        except System.Runtime.InteropServices.COMException as e:
-            log(('Exception in UpdatePixitParam "%s", is pixit param already '
-                 'set?') % (e.Message,))
+        except pythoncom.com_error as e:
+            parse_ptscontrol_error(e)
 
     def enable_maximum_logging(self, enable):
         """Enables/disables the maximum logging."""
@@ -821,7 +720,6 @@ class PyPTS:
         """Sets a timeout period in milliseconds for the RunTestCase() calls
         to PTS."""
 
-        log("%s %s", self.set_call_timeout.__name__, timeout)
         self._pts.SetPTSCallTimeout(timeout)
 
         if timeout:
@@ -841,83 +739,23 @@ class PyPTS:
         self._pts.SaveTestHistoryLog(save)
 
     def get_bluetooth_address(self):
-        """Returns PTS bluetooth address as a 64 bit integer"""
+        """Returns PTS bluetooth address string"""
 
-        pts_bt_address = clr.StrongBox[System.UInt64]()
-        self._pts.GetPTSBluetoothAddress(pts_bt_address)
-        pts_bt_address_int = int(pts_bt_address)
-
-        log("%s out: %x", self.get_bluetooth_address.__name__,
-            pts_bt_address_int)
-
-        return pts_bt_address_int
+        return self._pts.GetPTSBluetoothAddress()
 
     def bd_addr(self):
-        '''Returns PTS BD_ADDR as a string'''
+        """Returns PTS Bluetooth address as a colon separated string"""
         # use cached address if available
-        if self.__bd_addr:
-            log("%s out cached: %s", self.bd_addr.__name__, self.__bd_addr)
-            return self.__bd_addr
+        if not self.__bd_addr:
+            a = self.get_bluetooth_address().upper()
+            self.__bd_addr = ":".join(a[i:i + 2] for i in range(0, len(a), 2))
 
-        bt_address_int = self.get_bluetooth_address()
-        bt_address_upper = ("%x" % bt_address_int).upper()
-
-        bd_addr = "00"
-        for i in range(0, len(bt_address_upper), 2):
-            bd_addr += ":" + bt_address_upper[i:i + 2]
-
-        self.__bd_addr = bd_addr
-
-        log("%s out: %s", self.bd_addr.__name__, self.__bd_addr)
-
-        return bd_addr
+        return self.__bd_addr
 
     def get_version(self):
         """Returns PTS version"""
 
-        pts_version = clr.StrongBox[System.UInt32]()
-        self._pts.GetPTSVersion(pts_version)
-        pts_version_int = int(pts_version)
-
-        log("%s out: %x", self.get_version.__name__, pts_version_int)
-
-        return pts_version_int
-
-    def set_control_client_logger_callback(self, logger):
-        """Sets PTSControl logger
-
-        Note: if this function is not called upon initialization of PTSControl
-        COM object, the COM object won't work. Calling with logger set to
-        None also get the COM object working.
-
-        logger -- a COM object derived from IPTSControlClientLogger, set it to
-                  None to disable logging
-
-        """
-
-        log("%s %s", self.set_control_client_logger_callback.__name__, logger)
-
-        self._pts.SetControlClientLoggerCallback(logger)
-
-    def register_implicit_send_callback_ex(self, callback):
-        """Connects the implicit send handler to the PTS.
-
-        callback -- a COM object derived from IPTSImplicitSendCallbackEx
-
-        """
-
-        log("%s %s", self.register_implicit_send_callback_ex.__name__,
-            callback)
-
-        self._pts.RegisterImplicitSendCallbackEx(callback)
-
-    def unregister_implicit_send_callback_ex(self, callback):
-        """Disconnects the implicit send handler from the PTS."""
-
-        log("%s %s", self.unregister_implicit_send_callback_ex.__name__,
-            callback)
-
-        self._pts.UnregisterImplicitSendCallbackEx(callback)
+        return self._pts.GetPTSVersion()
 
     def register_ptscallback(self, callback):
         """Registers testcase.PTSCallback instance to be used as PTS log and
@@ -979,41 +817,41 @@ def main():
     # pts.run_test_case("RFCOMM", "TC_RFC_BV_19_C")
 
     project_count = pts.get_project_count()
-    print "Project count:", project_count
+    print("Project count:", project_count)
 
     # print all projects and their test cases
     for project_index in range(project_count):
         project_name = pts.get_project_name(project_index)
-        print "\nProject name:", project_name
-        print "Project version:", pts.get_project_version(project_name)
+        print("\nProject name:", project_name)
+        print("Project version:", pts.get_project_version(project_name))
         test_case_count = pts.get_test_case_count(project_name)
-        print "Test case count:", test_case_count
+        print("Test case count:", test_case_count)
 
         for test_case_index in range(test_case_count):
             test_case_name = pts.get_test_case_name(
                 project_name, test_case_index)
-            print "\nTest case project:", project_name
-            print "Test case name:", test_case_name
-            print "Test case description:", pts.get_test_case_description(
-                project_name, test_case_index)
-            print "Is active test case:", pts.is_active_test_case(
-                project_name, test_case_name)
+            print("\nTest case project:", project_name)
+            print("Test case name:", test_case_name)
+            print("Test case description:", pts.get_test_case_description(
+                project_name, test_case_index))
+            print("Is active test case:", pts.is_active_test_case(
+                project_name, test_case_name))
 
-    print "\n\n\n\nTSS file info:"
+    print("\n\n\n\nTSS file info:")
 
     # print all projects and their test cases
     for project_index in range(project_count):
         project_name = pts.get_project_name(project_index)
-        print "\nProject name:", project_name
-        print "Project version:", pts.get_project_version(project_name)
+        print("\nProject name:", project_name)
+        print("Project version:", pts.get_project_version(project_name))
         test_case_count = pts.get_test_case_count_from_tss_file(project_name)
-        print "Test case count:", test_case_count
+        print("Test case count:", test_case_count)
 
         test_cases = pts.get_test_cases_from_tss_file(project_name)
-        print test_cases
+        print(test_cases)
 
         for test_case in test_cases:
-            print test_case
+            print(test_case)
 
     pts.update_pixit_param("L2CAP", "TSPX_iut_role_initiator", "FALSE")
     pts.update_pixit_param("L2CAP", "TSPX_iut_role_initiator", "TRUE")
@@ -1030,11 +868,9 @@ def main():
     pts.save_test_history_log(True)
     pts.save_test_history_log(False)
 
-    print
-    print "PTS Bluetooth Address: %x" % pts.get_bluetooth_address()
-    print "PTS BD_ADDR:", pts.bd_addr()
-    print "PTS BD_ADDR:", pts.bd_addr()
-    print "PTS Version: %x" % pts.get_version()
+    print("PTS Bluetooth Address: %x" % pts.get_bluetooth_address())
+    print("PTS BD_ADDR:", pts.bd_addr())
+    print("PTS Version:" % pts.get_version())
 
 
 if __name__ == "__main__":

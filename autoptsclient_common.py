@@ -409,7 +409,7 @@ def init_pts(server_address, workspace_path, bd_addr, enable_max_logs,
     proxy.set_call_timeout(120000)  # milliseconds
 
     log("Server methods: %s", proxy.system.listMethods())
-    log("PTS Version: %x", proxy.get_version())
+    log("PTS Version: %s", proxy.get_version())
 
     # cache locally for quick access (avoid contacting server)
     proxy.q_bd_addr = proxy.bd_addr()
