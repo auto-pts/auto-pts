@@ -25,27 +25,21 @@ Over 460 test cases have been automated for Zephyr OS which reduced testing time
 
 ![](images/autp-pts-architecture-diagram.png)
 
-**auto-pts server**: runs on Windows and provides over-the-network XML-RPC interface to PTS. It is implemented in Python and executed using IronPython
+**auto-pts server**: runs on Windows and provides over-the-network XML-RPC interface to PTS. It is implemented in Python and executed using Python 3.6
 
 **auto-pts client**: runs on GNU/Linux, communicates with the auto-pts server (to start/stop test cases, to send response to PTS inquiries) and communicates with the Implementation Under Test to take appropriate actions. It is implemented in Python and executed using CPython.
 
 **Implementation Under Test (IUT)**: It is the host running Bluetooth stack to be tested, this could be an emulator or real hardware. The IUT is controlled by using Bluetooth Test Protocol.
 
-**Bluetooth Test Protocol (BTP)**: Used to communicate with the IUT. Specified in Zephyr tester directory, [btp_spec.txt](https://raw.githubusercontent.com/zephyrproject-rtos/zephyr/master/tests/bluetooth/tester/btp_spec.txt)
+**Bluetooth Test Protocol (BTP)**: Used to communicate with the IUT. See `doc/btp_spec.txt`
 
 # Windows Prerequisites
 
-Since this PTS automation framework uses IronPython it needs COM interop assembly Interop.PTSConrol.dll to be located in the same directory as the auto-pts server.
-
-You need to use 32 bit IronPython to run these scripts because PTS is a 32 bit application.
-
 To be able to run PTS in automation mode, there should be no PTS instances running in the GUI mode. Hence, before running these scripts close the PTS GUI.
 
-# Generating Interop Assembly
+Install required modules with:
 
-On Windows, run this command:
-
-`TlbImp.exe PTSControl.dll /out:Interop.PTSControl.dll /verbose`
+`python.exe -m pip install --user -r autoptsserver_requirements.txt`
 
 # PTS Workspace Setup
 
@@ -59,7 +53,7 @@ Alternatively, you can use auto-pts workspaces. Auto-pts provides ready PTS work
 
 The auto-pts framework uses a client server architecture. With this setup the PTS automation server runs on Windows and the client runs on GNU/Linux. So on Windows you start the server:
 
-`ipy.exe autoptsserver.py`
+`python.exe autoptsserver.py`
 
 And on GNU/Linux you select either the AOSP BlueZ, Zephyr or BlueZ client, then pass it the IP address of the server and the path to the PTS workspace file on the Windows machine. So for AOSP BlueZ projects:
 
