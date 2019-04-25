@@ -1,0 +1,2 @@
+wmi
+pywin32
