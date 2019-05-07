@@ -198,8 +198,8 @@ def hdl_wid_23(desc):
 def hdl_wid_24(desc):
     pattern = re.compile("(ATTRIBUTE\sHANDLE|"
                          "INCLUDED\sSERVICE\sATTRIBUTE\sHANDLE|"
-                         "END\sGROUP\sHANDLE\s|"
-                         "UUID\s)\s?=\s?'[0-9a-fA-F]+)']", re.IGNORECASE)
+                         "END\sGROUP\sHANDLE|"
+                         "UUID)\s?=\s?'([0-9a-fA-F]+)'", re.IGNORECASE)
 
     params = pattern.findall(desc)
     if not params:
@@ -211,22 +211,24 @@ def hdl_wid_24(desc):
     if "INCLUDED SERVICE ATTRIBUTE HANDLE" in params:
         incl_handle = int(params.get('INCLUDED SERVICE ATTRIBUTE HANDLE'), 16)
         attr = db.attr_lookup_handle(incl_handle)
-        if attr is None or not isinstance(attr, Service):
+        if attr is None or not isinstance(attr, GattService):
             logging.error("service not found")
             return False
 
         incl_uuid = attr.uuid
         attr = db.attr_lookup_handle(int(params.get('ATTRIBUTE HANDLE'), 16))
-        if attr is None or not isinstance(attr, ServiceIncluded):
+        if attr is None or not isinstance(attr, GattServiceIncluded):
             logging.error("included not found")
             return False
 
         if attr.end_grp_hdl != int(params.get('END GROUP HANDLE'), 16) \
-                or incl_uuid != params.get('UUID'):
-            logging.error("end group handle not found")
+                or incl_uuid != params.get('UUID').upper():
+            logging.error("attribute does not match")
             return False
 
         return True
+
+    return False
 
 
 def hdl_wid_25(desc):
