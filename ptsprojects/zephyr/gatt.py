@@ -34,6 +34,7 @@ from time import sleep
 import logging
 from ptsprojects.stack import get_stack
 from ptsprojects.zephyr.gatt_wid import gatt_wid_hdl
+from ptsprojects.zephyr.gattc_wid import gattc_wid_hdl
 
 
 class Value:
@@ -550,7 +551,7 @@ def test_cases_client(pts):
                   generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/CL/GAD/BV-03-C",
                   pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
+                  generic_wid_hdl=gattc_wid_hdl),
         ZTestCase("GATT", "GATT/CL/GAD/BV-04-C",
                   pre_conditions,
                   generic_wid_hdl=gatt_wid_hdl),
