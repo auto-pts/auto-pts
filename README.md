@@ -33,6 +33,12 @@ Over 460 test cases have been automated for Zephyr OS which reduced testing time
 
 **Bluetooth Test Protocol (BTP)**: Used to communicate with the IUT. See `doc/btp_spec.txt`
 
+# Linux Prerequisites
+
+Install required modules with:
+
+`python2 -m pip install --user -r autoptsclient_requirements.txt`
+
 # Windows Prerequisites
 
 To be able to run PTS in automation mode, there should be no PTS instances running in the GUI mode. Hence, before running these scripts close the PTS GUI.
