@@ -32,6 +32,7 @@ from collections import OrderedDict
 import xml.etree.ElementTree as ET
 import time
 import datetime
+from termcolor import colored
 
 from ptsprojects.testcase import get_max_test_case_desc
 from ptsprojects.testcase import PTSCallback
@@ -495,6 +496,17 @@ def get_test_case_description(cache, test_case_name):
             return test_case.find('description').text
 
 
+def get_result_color(status):
+    if status == "PASS":
+        return "green"
+    elif status == "FAIL":
+       return "red"
+    elif status == "INCONC":
+        return "yellow"
+    else:
+        return "white"
+
+
 def run_test_case_wrapper(func):
     def wrapper(*args):
         test_case = args[1]
@@ -541,10 +553,16 @@ def run_test_case_wrapper(func):
         end_time = str(round(datetime.timedelta(
             seconds=end_time).total_seconds(), 3))
 
-        print("{}".format(test_case.status).ljust(16) +
-              end_time.rjust(len(end_time)) +
-              retries_msg.rjust(len("#{}".format(retries_max)) + margin) +
-              regression_msg.rjust(len("REGRESSION") + margin))
+        result = ("{}".format(test_case.status).ljust(16) +
+                end_time.rjust(len(end_time)) +
+                retries_msg.rjust(len("#{}".format(retries_max)) + margin) +
+                regression_msg.rjust(len("REGRESSION") + margin))
+
+        if sys.stdout.isatty():
+            output_color = get_result_color(test_case.status)
+            print(colored((result), output_color))
+        else:
+            print(result)
 
     return wrapper
 
