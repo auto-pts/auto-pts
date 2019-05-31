@@ -2643,7 +2643,7 @@ def l2cap_send_data(chan_id, val, val_mtp=None):
     iutctl.btp_socket.send_wait_rsp(*L2CAP['send_data'], data=data_ba)
 
     stack = get_stack()
-    stack.l2cap.tx(chan_id, val * val_mtp)
+    stack.l2cap.tx(chan_id, val)
 
 
 def l2cap_listen(psm, transport):
