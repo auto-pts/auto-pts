@@ -405,6 +405,7 @@ class L2cap:
     def __init__(self, psm):
         # PSM used for testing for Client role
         self.psm = psm
+        self.send_data = "FF" * 40
         self.channels = []
 
     def _chan_lookup_id(self, chan_id):
@@ -482,6 +483,13 @@ class L2cap:
             data.append(chan.tx_data_get())
 
         return data
+
+    def set_send_data(self, val):
+        logging.info("set_send_data {}".format(val))
+        self.send_data = val
+
+    def get_send_data(self):
+        return self.send_data
 
 
 class Synch:
