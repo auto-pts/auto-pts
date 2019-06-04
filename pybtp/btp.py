@@ -166,6 +166,8 @@ GATTC = {
     "write": (defs.BTP_SERVICE_ID_GATT, defs.GATT_WRITE, CONTROLLER_INDEX),
     "write_long": (defs.BTP_SERVICE_ID_GATT, defs.GATT_WRITE_LONG,
                    CONTROLLER_INDEX),
+    "write_reliable": (defs.BTP_SERVICE_ID_GATT, defs.GATT_WRITE_RELIABLE,
+                       CONTROLLER_INDEX),
     "cfg_notify": (defs.BTP_SERVICE_ID_GATT, defs.GATT_CFG_NOTIFY,
                    CONTROLLER_INDEX),
     "cfg_indicate": (defs.BTP_SERVICE_ID_GATT, defs.GATT_CFG_INDICATE,
@@ -1823,6 +1825,37 @@ def gattc_write_long(bd_addr_type, bd_addr, hdl, off, val, length=None):
     iutctl.btp_socket.send(*GATTC['write_long'], data=data_ba)
 
 
+def gattc_write_reliable(bd_addr_type, bd_addr, hdl, off, val, val_mtp=None):
+    logging.debug("%s %r %r %r %r %r", gattc_write_reliable.__name__,
+                  bd_addr_type, bd_addr, hdl, val, val_mtp)
+    iutctl = get_iut()
+
+    gap_wait_for_connection()
+
+    if type(hdl) is str:
+        hdl = int(hdl, 16)
+
+    if val_mtp:
+        val *= int(val_mtp)
+
+    data_ba = bytearray()
+
+    bd_addr_ba = addr2btp_ba(bd_addr)
+    hdl_ba = struct.pack('H', hdl)
+    off_ba = struct.pack('H', off)
+    val_ba = binascii.unhexlify(bytearray(val))
+    val_len_ba = struct.pack('H', len(val_ba))
+
+    data_ba.extend(chr(bd_addr_type))
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(hdl_ba)
+    data_ba.extend(off_ba)
+    data_ba.extend(val_len_ba)
+    data_ba.extend(val_ba)
+
+    iutctl.btp_socket.send(*GATTC['write_reliable'], data=data_ba)
+
+
 def gattc_cfg_notify(bd_addr_type, bd_addr, enable, ccc_hdl):
     logging.debug("%s %r %r, %r, %r", gattc_cfg_notify.__name__, bd_addr_type,
                   bd_addr, enable, ccc_hdl)
@@ -2433,6 +2466,25 @@ def gattc_write_long_rsp(store_rsp=False):
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
                   defs.GATT_WRITE_LONG)
+
+    rsp = gatt_dec_write_rsp(tuple_data[0])
+    logging.debug("%s %r", gattc_write_long_rsp.__name__, rsp)
+
+    if store_rsp:
+        global VERIFY_VALUES
+        VERIFY_VALUES = []
+        VERIFY_VALUES.append(att_rsp_str[rsp])
+
+
+def gattc_write_reliable_rsp(store_rsp=False):
+    iutctl = get_iut()
+
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
+    logging.debug("%s received %r %r", gattc_write_reliable_rsp.__name__,
+                  tuple_hdr, tuple_data)
+
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
+                  defs.GATT_WRITE_RELIABLE)
 
     rsp = gatt_dec_write_rsp(tuple_data[0])
     logging.debug("%s %r", gattc_write_long_rsp.__name__, rsp)
