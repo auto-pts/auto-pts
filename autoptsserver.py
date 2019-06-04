@@ -29,6 +29,7 @@
 #
 
 import os
+import wmi
 import sys
 import logging
 import xmlrpc.client
@@ -105,6 +106,10 @@ def main():
                         filename=log_filename,
                         filemode='w',
                         level=logging.DEBUG)
+
+    c = wmi.WMI()
+    for iface in c.Win32_NetworkAdapterConfiguration(IPEnabled=True):
+        print("Local IP address: %s DNS %r" % (iface.IPAddress, iface.DNSDomain))
 
     print("Starting PTS ...")
     pts = PyPTSWithXmlRpcCallback()
