@@ -149,6 +149,10 @@ class PTSSender(win32com.server.connect.ConnectableServer):
         log = logger.info
         timer = 0
 
+        # Remove whitespaces from project and test case name
+        project_name = project_name.replace(" ", "")
+        test_case = test_case.replace(" ", "")
+
         log("*" * 20)
         log("BEGIN OnImplicitSend:")
         log("project_name: %s %s" % (project_name, type(project_name)))
