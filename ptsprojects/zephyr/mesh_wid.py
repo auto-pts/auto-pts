@@ -1038,6 +1038,10 @@ def hdl_wid_353(desc):
     return True
 
 
+def hdl_wid_354(desc):
+    return True
+
+
 def hdl_wid_355(desc):
     return True
 
