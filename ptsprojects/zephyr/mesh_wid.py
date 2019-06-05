@@ -606,9 +606,6 @@ def hdl_wid_81(desc):
 
 
 def hdl_wid_85(desc):
-    stack = get_stack()
-    btp.gap_disconn()
-
     return True
 
 
