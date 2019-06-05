@@ -502,6 +502,12 @@ class Synch:
 
                 self._synch_table.remove(elem)
 
+                # Clean the remaining element descriptions with the same e_wid
+                for e in self._synch_table:
+                    for tc_name, i in e.iteritems():
+                        if i[0] == e_wid or i[0] == i_wid:
+                            i[1] = None
+
                 return action_wids
 
         return None

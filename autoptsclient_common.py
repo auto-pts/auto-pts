@@ -216,15 +216,7 @@ class ClientCallback(PTSCallback):
         if not self._pending_responses:
             return None
 
-        if test_case_name in self._pending_responses:
-            response = self._pending_responses[test_case_name]
-            log("return pending response = %s", response)
-
-            del self._pending_responses[test_case_name]
-
-            return response
-
-        return None
+        return self._pending_responses.pop(test_case_name, None)
 
     def set_pending_response(self, pending_response):
         tc_name = pending_response[0]

@@ -614,8 +614,11 @@ def test_cases(ptses):
         ZTestCaseSlave("MESH", "MESH/SR/PROX/BV-08-C-LT2",
                        cmds=pre_conditions_slave +
                        [TestFunc(get_stack().synch.add_synch_element,
-                                 (("MESH/SR/PROX/BV-08-C", 353),
-                                  ("MESH/SR/PROX/BV-08-C-LT2", 17)))],
+                                 (("MESH/SR/PROX/BV-08-C-LT2", 17),
+                                  ("MESH/SR/PROX/BV-08-C", 353))),
+                        TestFunc(get_stack().synch.add_synch_element,
+                                 (("MESH/SR/PROX/BV-08-C-LT2", 17),
+                                  ("MESH/SR/PROX/BV-08-C", 354)))],
                        generic_wid_hdl=mesh_wid_hdl),
         ZTestCaseSlave("MESH", "MESH/SR/PROX/BV-09-C-LT2",
                        cmds=pre_conditions_slave +
