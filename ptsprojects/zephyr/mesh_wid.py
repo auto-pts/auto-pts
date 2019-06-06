@@ -661,6 +661,16 @@ def hdl_wid_103(desc):
     return True
 
 
+def hdl_wid_104(desc):
+    stack = get_stack()
+
+    ret = stack.gap.wait_for_connection(30)
+    if ret:
+        time.sleep(5)
+
+    return ret
+
+
 def hdl_wid_201(desc):
     """
     Implements: IUT_GENERATE_SECURE_NETWORK_BEACON
