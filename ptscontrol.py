@@ -439,18 +439,13 @@ class PyPTS:
     def stop_pts(self):
         """Stops PTS"""
 
-        c = wmi.WMI()
-
-        if self._pts_proc:
-            for ps in c.Win32_Process(ProcessId=self._pts_proc.ProcessId):
-                log("About to stop PTS with pid: %d", self._pts_proc.ProcessId)
-                ps.Terminate()
-
+        try:
+            log("About to stop PTS with pid: %d", self._pts_proc.ProcessId)
+            self._pts_proc.Terminate()
             self._pts_proc = None
 
-        for ps in c.Win32_Process(name="Fts.exe"):
-            log("About to stop Protocol Viewer with pid: %d", ps.ProcessId)
-            ps.Terminate()
+        except Exception as error:
+            logging.exception(repr(error))
 
         self._init_attributes()
 
