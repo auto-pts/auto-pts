@@ -354,7 +354,7 @@ def zephyr_hash_url(commit):
 
 
 def compose_mail(args, zephyr_hash_html, summary_html,
-                 reg_html, log_url_html, name):
+                 reg_html, log_url_html, mail_cfg):
     """ Create a email body
     """
 
@@ -380,9 +380,14 @@ def compose_mail(args, zephyr_hash_html, summary_html,
     <p>Sincerely,</p>
     <p> {}</p>
     '''.format(ww_dd_str, args["board"], zephyr_hash_html, args['pts_ver'],
-               summary_html, reg_html, log_url_html, name)
+               summary_html, reg_html, log_url_html, mail_cfg['name'])
 
-    subject = "AutoPTS test session results - %s" % ww_dd_str
+    if 'subject' in mail_cfg:
+        subject = mail_cfg['subject']
+    else:
+        subject = "AutoPTS test session results"
+
+    subject = "%s - %s" % (subject, ww_dd_str)
 
     return subject, body
 
@@ -442,7 +447,7 @@ def main(cfg):
 
         subject, body = compose_mail(args, zephyr_hash_html, summary_html,
                                      reg_html, log_url_html,
-                                     cfg['mail']['name'])
+                                     cfg['mail'])
 
         bot.common.send_mail(cfg['mail'], subject, body,
                              [report_file, report_txt])
