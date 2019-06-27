@@ -372,6 +372,7 @@ def compose_mail(args, mail_cfg, mail_ctx):
     <b> Platform:</b> VirtualBox <br>
     <b> Version:</b> {} </p>
     <h2>3. Test Results</h2>
+    <p><b>Execution Time</b>: {}</p>
     {}
     {}
     <h3>Logs</h3>
@@ -379,8 +380,8 @@ def compose_mail(args, mail_cfg, mail_ctx):
     <p>Sincerely,</p>
     <p> {}</p>
     '''.format(ww_dd_str, args["board"], mail_ctx["zephyr_hash"],
-               args['pts_ver'], mail_ctx["summary"], mail_ctx["regression"],
-               mail_ctx["log_url"], mail_cfg['name'])
+               args['pts_ver'], mail_ctx["elapsed_time"], mail_ctx["summary"],
+               mail_ctx["regression"], mail_ctx["log_url"], mail_cfg['name'])
 
     if 'subject' in mail_cfg:
         subject = mail_cfg['subject']
@@ -392,6 +393,9 @@ def compose_mail(args, mail_cfg, mail_ctx):
     return subject, body
 
 def main(cfg):
+
+    start_time = time.time()
+
     args = cfg['auto_pts']
     args['kernel_image'] = os.path.join(args['project_path'], 'tests',
                                         'bluetooth', 'tester', 'outdir',
@@ -407,6 +411,8 @@ def main(cfg):
                                               descriptions)
     report_txt = bot.common.make_report_txt(results, zephyr_hash["desc"])
     logs_file = bot.common.archive_recursive("logs")
+
+    end_time = time.time()
 
     if 'gdrive' in cfg:
         drive = bot.common.Drive(cfg['gdrive'])
@@ -443,6 +449,10 @@ def main(cfg):
             mail_ctx["log_url"] = bot.common.url2html(url, "Results on Google Drive")
         else:
             mail_ctx["log_url"] = "Not Available"
+
+        # Elapsed Time
+        mail_ctx["elapsed_time"] = str(datetime.timedelta(
+                                       seconds = (end_time - start_time)))
 
         subject, body = compose_mail(args, cfg['mail'], mail_ctx)
 
