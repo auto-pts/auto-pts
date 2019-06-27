@@ -22,6 +22,7 @@ import subprocess
 import sys
 import time
 import datetime
+import collections
 
 import autoptsclient_common as autoptsclient
 import ptsprojects.zephyr as autoprojects
@@ -406,6 +407,8 @@ def main(cfg):
 
     summary, results, descriptions, regressions = \
         run_tests(args, cfg.get('iut_config', {}))
+
+    results = collections.OrderedDict(sorted(results.items()))
 
     report_file = bot.common.make_report_xlsx(results, summary, regressions,
                                               descriptions)
