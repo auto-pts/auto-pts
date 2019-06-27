@@ -93,12 +93,17 @@ def url2html(url, msg):
     return "<a href={}>{}</a>".format(url, msg)
 
 
-def regressions2html(regressions_list=[]):
+def regressions2html(regressions, descriptions):
     """Creates HTML formatted message with regressions
     :param regressions_list: list of regressions found
     :return: HTML formatted message
     """
     msg = "<h3>Regressions</h3>"
+
+    regressions_list = []
+    for name in regressions:
+        regressions_list.append(
+            name + " - " + descriptions.get(name, "no description"))
 
     if regressions_list:
         for name in regressions_list:

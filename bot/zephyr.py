@@ -353,8 +353,7 @@ def zephyr_hash_url(commit):
                                  commit)
 
 
-def compose_mail(args, zephyr_hash_html, summary_html,
-                 reg_html, log_url_html, mail_cfg):
+def compose_mail(args, mail_cfg, mail_ctx):
     """ Create a email body
     """
 
@@ -379,8 +378,9 @@ def compose_mail(args, zephyr_hash_html, summary_html,
     {}
     <p>Sincerely,</p>
     <p> {}</p>
-    '''.format(ww_dd_str, args["board"], zephyr_hash_html, args['pts_ver'],
-               summary_html, reg_html, log_url_html, mail_cfg['name'])
+    '''.format(ww_dd_str, args["board"], mail_ctx["zephyr_hash"],
+               args['pts_ver'], mail_ctx["summary"], mail_ctx["regression"],
+               mail_ctx["log_url"], mail_cfg['name'])
 
     if 'subject' in mail_cfg:
         subject = mail_cfg['subject']
@@ -419,16 +419,15 @@ def main(cfg):
     if 'mail' in cfg:
         print("Sending email ...")
 
+        # keep mail related context to simplify the code
+        mail_ctx = {}
+
         # Summary
-        summary_html = bot.common.status_dict2summary_html(summary)
+        mail_ctx["summary"] = bot.common.status_dict2summary_html(summary)
 
-        # Provide test case description
-        _regressions = []
-        for name in regressions:
-            _regressions.append(
-                name + " - " + descriptions.get(name, "no description"))
-
-        reg_html = bot.common.regressions2html(_regressions)
+        # Regression and test case description
+        mail_ctx["regression"] = bot.common.regressions2html(regressions,
+                                                             descriptions)
 
         # Zephyr commit id link in HTML format
 
@@ -436,18 +435,16 @@ def main(cfg):
         commit_id = zephyr_hash["commit"]
         if commit_id.endswith('-dirty'):
             commit_id = commit_id[:-6]
-        zephyr_hash_html = bot.common.url2html(zephyr_hash_url(commit_id),
-                                               zephyr_hash["desc"])
+        mail_ctx["zephyr_hash"] = bot.common.url2html(zephyr_hash_url(commit_id),
+                                                      zephyr_hash["desc"])
 
         # Log in Google drive in HTML format
         if 'gdrive' in cfg:
-            log_url_html = bot.common.url2html(url, "Results on Google Drive")
+            mail_ctx["log_url"] = bot.common.url2html(url, "Results on Google Drive")
         else:
-            log_url_html = "Not Available"
+            mail_ctx["log_url"] = "Not Available"
 
-        subject, body = compose_mail(args, zephyr_hash_html, summary_html,
-                                     reg_html, log_url_html,
-                                     cfg['mail'])
+        subject, body = compose_mail(args, cfg['mail'], mail_ctx)
 
         bot.common.send_mail(cfg['mail'], subject, body,
                              [report_file, report_txt])
