@@ -491,6 +491,9 @@ def hdl_wid_125(desc):
 
     return True
 
+def hdl_wid_127(desc):
+    return True
+
 
 def hdl_wid_130(desc):
     return btp.gatts_verify_write_fail(desc)
