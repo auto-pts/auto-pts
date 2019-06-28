@@ -388,30 +388,32 @@ def archive_recursive(dir_path):
     return zip_file_path
 
 
-def update_sources(repo, remote, branch, stash_changes=False):
+def update_sources(repo_path, remote, branch, stash_changes=False, update_repo=True):
     """GIT Update sources
     :param repo: git repository path
     :param remote: git repository remote name
     :param branch: git repository branch name
     :param stash_changes: stash non-committed changes
+    :param update_repo: update repo
     :return: Commit SHA at HEAD
     """
-    print('Updating ' + repo)
+    repo = git.Repo(repo_path)
 
-    repo = git.Repo(repo)
-    dirty = repo.is_dirty()
+    if update_repo:
+        print('Updating ' + repo_path)
 
-    if dirty and (not stash_changes):
-        print('Repo is dirty. Not updating')
-        return repo.git.describe('--always'), \
-               repo.git.show('-s', '--format=%H') + '-dirty'
+        dirty = repo.is_dirty()
+        if dirty and (not stash_changes):
+            print('Repo is dirty. Not updating')
+            return repo.git.describe('--always'), \
+                   repo.git.show('-s', '--format=%H') + '-dirty'
 
-    if dirty and stash_changes:
-        print('Repo is dirty. Stashing changes')
-        repo.git.stash('--include-untracked')
+        if dirty and stash_changes:
+            print('Repo is dirty. Stashing changes')
+            repo.git.stash('--include-untracked')
 
-    repo.git.fetch(remote)
-    repo.git.checkout('{}/{}'.format(remote, branch))
+        repo.git.fetch(remote)
+        repo.git.checkout('{}/{}'.format(remote, branch))
 
     return repo.git.describe('--always'), \
            repo.git.show('-s', '--format=%H')
@@ -434,8 +436,15 @@ def update_repos(project_path, git_config):
             repo_path = os.path.abspath(conf["path"])
 
         project_path.join(repo_path)
+
+        if 'update_repo' in conf:
+            update_repo = conf["update_repo"]
+        else:
+            update_repo = True
+
         desc, commit = update_sources(repo_path, conf["remote"],
-                                      conf["branch"], conf["stash_changes"])
+                                      conf["branch"], conf["stash_changes"],
+                                      update_repo)
         repo_dict["commit"] = commit
         repo_dict["desc"] = desc
         repos_dict[repo] = repo_dict
