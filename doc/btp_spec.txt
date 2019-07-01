@@ -295,9 +295,13 @@ Commands and responses:
 					Scan_Rsp_len (1 octet)
 					Adv_Data (0-255 octets)
 					Scan_Rsp (0-255 octets)
+					Duration (4 octets)
 		Return Parameters:	Current_Settings (4 Octets)
 
 		This command is used to start advertising.
+
+		When Duration parameter value equals UINT32_MAX then the
+		advertising duration is disabled.
 
 		In case of an error, the error response will be returned.
 
