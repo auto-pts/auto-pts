@@ -296,6 +296,7 @@ Commands and responses:
 					Adv_Data (0-255 octets)
 					Scan_Rsp (0-255 octets)
 					Duration (4 octets)
+					Use own ID address (1 octet)
 		Return Parameters:	Current_Settings (4 Octets)
 
 		This command is used to start advertising.
@@ -328,6 +329,7 @@ Commands and responses:
 					2 = Use limited discovery procedure
 					3 = Use active scan type
 					4 = Use observation procedure
+					5 = Use own ID address
 
 		This command is used to start discovery.
 
@@ -355,6 +357,7 @@ Commands and responses:
 		Controller Index:	<controller id>
 		Command parameters:	Address_Type (1 octet)
 					Address (6 octets)
+					Use own ID address (1 octet)
 		Return Parameters:	<none>
 
 		Valid Address_Type parameter values:
@@ -454,6 +457,7 @@ Commands and responses:
 		Command parameters:	Directed_address_Type (1 octet)
 					Directed_address (6 octets)
 					High duty (1 octet)
+					Use own ID Address (1 octet)
 		Return Parameters:	Current_Settings (4 Octets)
 
 		This command is used to start directed advertising.
