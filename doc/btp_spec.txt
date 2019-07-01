@@ -560,6 +560,22 @@ Events:
 
 		This event can be sent when the connection parameters have changed.
 
+	Opcode 0x89 - Security Level Changed event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Security Level (1 octet)
+
+		Possible values for the Security Level parameter map to those
+		defined in Core Specification in LE security mode 1:
+					1 = Unauthenticated pairing with encryption
+					2 = Authenticated pairing with encryption
+					3 = Authenticated LE Secure Connections pairing
+					with encryption using a 128-bit strength encryption key
+
+		This event can be sent when the Security Level has changed.
+
 GATT Service (ID 2)
 ===================
 
