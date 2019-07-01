@@ -497,6 +497,9 @@ Events:
 		Controller Index:	<controller id>
 		Event parameters:	Address_Type (1 octet)
 					Address (6 octets)
+					Connection Interval (2 octets)
+					Connection Latency (2 octets)
+					Supervision Timeout (2 octets)
 
 		This event indicates that a device was connected.
 
@@ -545,6 +548,17 @@ Events:
 
 		This event indicates that the remote Identity Address has been
 		resolved.
+
+	Opcode 0x88 - Connection Parameters Update event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Connection Interval (2 octets)
+					Connection Latency (2 octets)
+					Supervision Timeout (2 octets)
+
+		This event can be sent when the connection parameters have changed.
 
 GATT Service (ID 2)
 ===================
