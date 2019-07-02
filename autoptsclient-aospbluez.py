@@ -19,7 +19,6 @@
 
 import os
 import sys
-import argparse
 import autoptsclient_common as autoptsclient
 import ptsprojects.aospbluez as autoprojects
 
@@ -27,18 +26,9 @@ import ptsprojects.aospbluez as autoprojects
 def parse_args():
     """Parses command line arguments and options"""
 
-    arg_parser = argparse.ArgumentParser(
-        description="PTS automation client")
+    arg_parser = autoptsclient.CliParser(description="PTS automation client")
 
-    arg_parser.add_argument("server_address",
-                            help="IP address of the PTS automation server")
-
-    arg_parser.add_argument("workspace",
-                            help=("Path to PTS workspace file to use for "
-                                  "testing. It should have pqw6 extension. "
-                                  "The file should be located on the "
-                                  "Windows machine, where the PTS "
-                                  "automation server is running"))
+    # IUT specific arguments below
 
     args = arg_parser.parse_args()
 

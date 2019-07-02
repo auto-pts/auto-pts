@@ -29,6 +29,7 @@ from traceback import format_exception
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 import time
 import datetime
+import argparse
 from termcolor import colored
 
 from ptsprojects.testcase import get_max_test_case_desc
@@ -926,3 +927,41 @@ def get_test_cases_subset(test_cases, test_case_names, excluded_names=None):
         test_cases_subset = test_cases
 
     return test_cases_subset
+
+
+class CliParser(argparse.ArgumentParser):
+    def __init__(self, description):
+        argparse.ArgumentParser.__init__(self, description=description)
+
+        self.add_argument("-i", "--ip_addr", nargs="+",
+                          help="IP address of the PTS automation servers")
+
+        self.add_argument("-l", "--local_addr", nargs="+", default=None,
+                          help="Local IP address of PTS automation client")
+
+        self.add_argument("workspace",
+                          help="Path to PTS workspace file to use for "
+                               "testing. It should have pqw6 extension. "
+                               "The file should be located on the "
+                               "machine, where automation server is running.")
+
+        self.add_argument("-a", "--bd-addr",
+                          help="Bluetooth device address of the IUT")
+
+        self.add_argument("-d", "--debug-logs", dest="enable_max_logs",
+                          action='store_true', default=False,
+                          help="Enable the PTS maximum logging. Equivalent "
+                               "to running test case in PTS GUI using "
+                               "'Run (Debug Logs)'")
+
+        self.add_argument("-c", "--test-cases", nargs='+',
+                          help="Names of test cases to run. Groups of "
+                               "test cases can be specified by profile names")
+
+        self.add_argument("-e", "--excluded", nargs='+',
+                          help="Names of test cases to exclude. Groups of "
+                               "test cases can be specified by profile names")
+
+        self.add_argument("-r", "--retry", type=int, default=0,
+                          help="Repeat test if failed. Parameter specifies "
+                               "maximum repeat count per test")
