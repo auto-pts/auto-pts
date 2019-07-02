@@ -57,28 +57,9 @@ def check_args(args):
 def parse_args():
     """Parses command line arguments and options"""
 
-    arg_parser = argparse.ArgumentParser(
-        description="PTS automation client")
+    arg_parser = autoptsclient.CliParser("PTS automation client")
 
-    arg_parser.add_argument("-i", "--ip_addr", nargs="+",
-                            help="IP address of the PTS automation servers")
-
-    arg_parser.add_argument("-l", "--local_addr", nargs="+", default=None,
-                            help="Local IP address of PTS automation client")
-
-    arg_parser.add_argument("workspace",
-                            help="Path to PTS workspace file to use for "
-                            "testing. It should have pqw6 extension. "
-                            "The file should be located on the "
-                            "Windows machine, where the PTS "
-                            "automation server is running. It is also "
-                            "possible to use workspace provided with "
-                            "the auto-pts, in that case this arguments "
-                            "must be set to one of the  following: "
-                            "zephyr-hci")
-
-    # If DUT is QEMU kernel_image is passed to QEMU. If DUT is Arduino101 board
-    # kernel_image helps locate openocd.cfg needed by the openocd reset command
+    # IUT specific arguments below
     arg_parser.add_argument("kernel_image",
                             help="Zephyr OS kernel image to be used for "
                             "testing. Normally a zephyr.elf file.")
@@ -89,15 +70,6 @@ def parse_args():
                             "be done over this TTY. Hence, QEMU will "
                             "not be used.")
 
-    arg_parser.add_argument("-a", "--bd-addr",
-                            help="Bluetooth device address of the IUT")
-
-    arg_parser.add_argument("-d", "--debug-logs", dest="enable_max_logs",
-                            action='store_true', default=False,
-                            help="Enable the PTS maximum logging. Equivalent "
-                            "to running test case in PTS GUI using "
-                            "'Run (Debug Logs)'")
-
     board_names = autoprojects.iutctl.Board.names
     arg_parser.add_argument("-b", "--board",
                             help="Used DUT board. This option is used to "
@@ -105,20 +77,6 @@ def parse_args():
                             "each test case. If board is not specified DUT "
                             "will not be reset. Supported boards: %s. " %
                             (", ".join(board_names,),), choices=board_names)
-
-    arg_parser.add_argument("-c", "--test-cases", nargs='+',
-                            help="Names of test cases to run. Groups of test "
-                            "cases can be specified by profile names: "
-                            "GATT, GATTS, GATTC, GAP, L2CAP, RFCOMM, SM, MESH")
-
-    arg_parser.add_argument("-e", "--excluded", nargs='+',
-                            help="Names of test cases to exclude. Groups of "
-                            "test cases can be specified by profile names: "
-                            "GATT, GATTS, GATTC, GAP, L2CAP, SM, MESH")
-
-    arg_parser.add_argument("-r", "--retry", type=int, default=0,
-                            help="Repeat test if failed. Parameter specifies "
-                                 "maximum repeat count per test")
 
     # Hidden option to save test cases data in TestCase.db
     arg_parser.add_argument("-s", "--store", action="store_true",

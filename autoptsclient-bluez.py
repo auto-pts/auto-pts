@@ -19,7 +19,6 @@
 
 import os
 import sys
-import argparse
 from distutils.spawn import find_executable
 
 import autoptsclient_common as autoptsclient
@@ -32,40 +31,12 @@ from ptsprojects.bluez.iutctl import get_iut
 def parse_args():
     """Parses command line arguments and options"""
 
-    arg_parser = argparse.ArgumentParser(description="PTS automation client")
-
-    arg_parser.add_argument("-i", "--ip_addr", nargs="+",
-                            help="IP address of the PTS automation servers")
-
-    arg_parser.add_argument("-l", "--local_addr", default=None,
-                            help="Local IP address of PTS automation client")
-
-    arg_parser.add_argument("-a", "--bd-addr",
-                            help="Bluetooth device address of the IUT")
-
-    arg_parser.add_argument("workspace",
-                            help="Path to PTS workspace file to use for "
-                            "testing. It should have pqw6 extension. "
-                            "The file should be located on the "
-                            "Windows machine, where the PTS automation server "
-                            "is running. It is also possible to use default "
-                            "workspace provided with the auto-pts, in that "
-                            "case this arguments must be set to one of the "
-                            "following: bluez")
+    arg_parser = autoptsclient.CliParser(description="PTS automation client")
 
     arg_parser.add_argument("btpclient_path",
                             help="Path to Bluez tool btpclient")
 
-    arg_parser.add_argument("-d", "--debug-logs", dest="enable_max_logs",
-                            action='store_true', default=False,
-                            help="Enable the PTS maximum logging. Equivalent "
-                            "to running test case in PTS GUI using "
-                            "'Run (Debug Logs)'")
-
-    arg_parser.add_argument("-c", "--test-cases", nargs='+',
-                            help="Names of test cases to run. Groups of test "
-                            "cases can be specified by profile names: "
-                            "GAP")
+    # IUT specific arguments below
 
     args = arg_parser.parse_args()
 
