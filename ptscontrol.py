@@ -280,6 +280,8 @@ class PyPTS:
         # avoided to contact PTS. These attributes should not change anyway.
         self.__bd_addr = None
 
+        self._pts_projects = {}
+
     def add_recov(self, func, *args, **kwds):
         """Add function to recovery list"""
         if self._recov_in_progress:
@@ -517,45 +519,48 @@ class PyPTS:
 
         self._pts.OpenWorkspace(self._temp_workspace_path)
         self.add_recov(self.open_workspace, workspace_path)
+        self._cache_test_cases()
 
-    def get_project_count(self):
-        """Returns number of projects available in the current workspace"""
+    def _cache_test_cases(self):
+        """Cache test cases"""
+        self._pts_projects.clear()
 
-        return self._pts.GetProjectCount()
+        for i in range(0, self._pts.GetProjectCount()):
+            project_name = self._pts.GetProjectName(i)
+            self._pts_projects[project_name] = {}
 
-    def get_project_name(self, project_index):
-        """Returns project name"""
+            for j in range(0, self._pts.GetTestCaseCount(project_name)):
+                test_case_name = self._pts.GetTestCaseName(project_name,
+                                                           j)
+                self._pts_projects[project_name][test_case_name] = j
 
-        return self._pts.GetProjectName(project_index)
+    def get_project_list(self):
+        """Returns list of projects available in the current workspace"""
+
+        return tuple(self._pts_projects.keys())
 
     def get_project_version(self, project_name):
         """Returns project version"""
 
         return self._pts.GetProjectVersion(project_name)
 
-    def get_test_case_count(self, project_name):
-        """Returns the number of test cases that are available in the specified
-        project."""
+    def get_test_case_list(self, project_name):
+        """Returns list of active test cases of the specified project"""
 
-        return self._pts.GetTestCaseCount(project_name)
+        test_case_list = []
 
-    def get_test_case_name(self, project_name, test_case_index):
-        """Returns name of the specified test case"""
+        for test_case_name in self._pts_projects[project_name].keys():
+            if self._pts.IsActiveTestCase(project_name, test_case_name):
+                test_case_list.append(test_case_name)
 
-        return self._pts.GetTestCaseName(project_name, test_case_index)
+        return tuple(test_case_list)
 
-    def get_test_case_description(self, project_name, test_case_index):
+    def get_test_case_description(self, project_name, test_case_name):
         """Returns description of the specified test case"""
 
+        test_case_index = self._pts_projects[project_name][test_case_name]
+
         return self._pts.GetTestCaseDescription(project_name, test_case_index)
-
-    def is_active_test_case(self, project_name, test_case_name):
-        """Returns True if the specified test case is active (enabled) in the
-        specified project. Returns False is if the test case is not active
-        (disabled).
-        """
-
-        return self._pts.IsActiveTestCase(project_name, test_case_name)
 
     def _revert_temp_changes(self):
         """Recovery default state for test case"""

@@ -22,14 +22,11 @@ import sys
 import random
 import socket
 import logging
-import datetime
 import xmlrpclib
 import Queue
 import threading
 from traceback import format_exception
 from SimpleXMLRPCServer import SimpleXMLRPCServer
-from collections import OrderedDict
-import xml.etree.ElementTree as ET
 import time
 import datetime
 from termcolor import colored
@@ -363,14 +360,6 @@ class FakeProxy(object):
     def run_test_case(self, project_name, test_case_name):
         pass
 
-    def get_project_count(self):
-        """Returns number of projects available in the current workspace"""
-        return 1
-
-    def get_project_name(self, project_index):
-        """Returns project name"""
-        return "Project%d" % project_index
-
 
 def init_core():
     "Initialization procedure for core modules"
@@ -420,9 +409,8 @@ def init_pts(server_address, workspace_path, bd_addr, enable_max_logs,
     proxy.open_workspace(workspace_path)
 
     if bd_addr:
-        project_count = proxy.get_project_count()
-        for index in range(project_count):
-            project_name = proxy.get_project_name(index)
+        projects = proxy.get_project_list()
+        for project_name in projects:
             log("Set bd_addr PIXIT: %s for project: %s", bd_addr, project_name)
             proxy.update_pixit_param(project_name, "TSPX_bd_addr_iut", bd_addr)
 
@@ -433,67 +421,6 @@ def init_pts(server_address, workspace_path, bd_addr, enable_max_logs,
         TEST_CASE_DB = TestCaseTable(tc_db_table_name)
 
     return proxy
-
-
-def cache_workspace(pts):
-    import tempfile
-
-    root = ET.Element("workspace")
-
-    project_index = 0
-    project_count = pts.get_project_count()
-    while project_index < project_count:
-        project = ET.SubElement(root, 'project')
-        project_name = ET.SubElement(project, 'name')
-        project_name.text = pts.get_project_name(project_index)
-        ET.SubElement(project, 'version').text = \
-            pts.get_project_version(project_name.text)
-        test_cases = ET.SubElement(project, 'test_cases')
-
-        test_case_index = 0
-        test_case_count = pts.get_test_case_count(project_name.text)
-        while test_case_index < test_case_count:
-            test_case = ET.SubElement(test_cases, 'test_case')
-            test_case_name = ET.SubElement(test_case, 'name')
-            test_case_name.text = pts.get_test_case_name(project_name.text,
-                                                         test_case_index)
-            ET.SubElement(test_case, 'description').text = \
-                pts.get_test_case_description(project_name.text,
-                                              test_case_index)
-            # bool cannot be serialized
-            ET.SubElement(test_case, 'is_active').text = \
-                str(pts.is_active_test_case(project_name.text,
-                                            test_case_name.text))
-
-            test_case_index += 1
-        project_index += 1
-
-    tree = ET.ElementTree(root)
-
-    file = tempfile.NamedTemporaryFile(delete=False)
-    tree.write(file.name)
-    file.close()
-
-    return file.name
-
-
-def cache_cleanup(cache):
-    if os.path.exists(cache):
-        os.unlink(cache)
-
-
-def get_test_case_description(cache, test_case_name):
-    if not os.path.exists(cache):
-        logging.error("cache not exists")
-        return
-
-    tree = ET.parse(cache)
-    root = tree.getroot()
-
-    for test_case in root.iter('test_case'):
-        name = test_case.find('name').text
-        if name == test_case_name:
-            return test_case.find('description').text
 
 
 def get_result_color(status):
@@ -866,7 +793,8 @@ def run_test_cases(ptses, test_cases, additional_test_cases, retries_max=0):
             if second_test_case and len(ptses) < 2:
                 test_case.status = 'FAIL'
                 second_test_case.status = 'FAIL'
-                results_dict[test_case.name] = test_case.status
+                results_dict[(test_case.project_name,
+                              test_case.name)] = test_case.status
                 break
 
             pts_thread = threading.Thread(
@@ -903,7 +831,8 @@ def run_test_cases(ptses, test_cases, additional_test_cases, retries_max=0):
                     run_count > 0):
                 test_case = test_case.copy()
             else:
-                results_dict[test_case.name] = test_case.status
+                results_dict[(test_case.project_name,
+                              test_case.name)] = test_case.status
                 break
 
         if test_case.status in status_count:
