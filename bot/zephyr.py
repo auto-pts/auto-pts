@@ -277,7 +277,6 @@ def run_tests(args, iut_config):
     stack_inst = stack.get_stack()
     stack_inst.synch_init(callback_thread.set_pending_response,
                           callback_thread.clear_pending_responses)
-    cache = autoptsclient.cache_workspace(pts)
 
     default_conf = "default.conf"
     default_to_omit = []
@@ -334,13 +333,12 @@ def run_tests(args, iut_config):
         results.update(results_dict)
         autoprojects.iutctl.cleanup()
 
-    for test_case_name in results.keys():
+    for project_name, test_case_name in results.keys():
         descriptions[test_case_name] = \
-            autoptsclient.get_test_case_description(cache, test_case_name)
+            pts.get_test_case_description(pts, project_name, test_case_name)
 
-    autoptsclient.cache_cleanup(cache)
-
-    pts.unregister_xmlrpc_ptscallback()
+    for pts in ptses:
+        pts.unregister_xmlrpc_ptscallback()
 
     return status, results, descriptions, total_regressions
 
