@@ -651,12 +651,12 @@ class PyPTS:
         PTSCONTROL_E_PICS_ENTRY_NOT_CHANGED (0x849C0032)
 
         """
-        log("%s %s %s %s", self.update_pics.__name__, project_name,
+        log("%s %s %s %s", self.set_pics.__name__, project_name,
             entry_name, bool_value)
 
         try:
             self._pts.UpdatePics(project_name, entry_name, bool_value)
-            self.add_recov(self.update_pics, project_name, entry_name,
+            self.add_recov(self.set_pics, project_name, entry_name,
                            bool_value)
 
         except pythoncom.com_error as e:
@@ -860,8 +860,8 @@ def main():
     pts.update_pixit_param("L2CAP", "TSPX_iut_role_initiator", "FALSE")
     pts.update_pixit_param("L2CAP", "TSPX_iut_role_initiator", "TRUE")
 
-    pts.update_pics("L2CAP", "TSPC_L2CAP_3_13", True)
-    pts.update_pics("L2CAP", "TSPC_L2CAP_3_13", False)
+    pts.set_pics("L2CAP", "TSPC_L2CAP_3_13", True)
+    pts.set_pics("L2CAP", "TSPC_L2CAP_3_13", False)
 
     pts.enable_maximum_logging(True)
     pts.enable_maximum_logging(False)
