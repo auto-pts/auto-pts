@@ -52,12 +52,7 @@ def main():
 
     callback_thread = autoptsclient.init_core()
 
-    ptses = []
-    for ip in args.ip_addr:
-        ptses.append(autoptsclient.init_pts(ip, args.workspace, args.bd_addr,
-                                            args.enable_max_logs,
-                                            callback_thread, None,
-                                            args.local_addr))
+    ptses = autoptsclient.init_pts(args, callback_thread)
 
     btp.init(get_iut)
 

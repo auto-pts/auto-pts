@@ -243,6 +243,20 @@ def get_test_cases(ptses):
     return test_cases, additional_test_cases
 
 
+class PtsInitArgs(object):
+    """
+    Translates arguments provided in 'config.py' file to be used by
+    'autoptsclient.init_pts' function
+    """
+    def __init__(self, args):
+        self.ip_addr = args['server_ip']
+        self.local_addr = args['local_ip']
+        self.workspace = args["workspace"]
+        self.bd_addr = args["bd_addr"]
+        self.enable_max_logs = args["enable_max_logs"]
+        self.retry = args["retry"]
+
+
 def run_tests(args, iut_config):
     """Run test cases
     :param args: AutoPTS arguments
@@ -256,15 +270,8 @@ def run_tests(args, iut_config):
 
     callback_thread = autoptsclient.init_core()
 
-    ptses = []
-    for ip, local in zip(args['server_ip'], args['local_ip']):
-        ptses.append(autoptsclient.init_pts(ip,
-                                            args["workspace"],
-                                            args["bd_addr"],
-                                            args["enable_max_logs"],
-                                            callback_thread,
-                                            "zephyr_" + str(args["board"]),
-                                            local))
+    ptses = autoptsclient.init_pts(PtsInitArgs(args), callback_thread,
+                                   "zephyr_" + str(args["board"]))
 
     btp.init(get_iut)
     # Main instance of PTS

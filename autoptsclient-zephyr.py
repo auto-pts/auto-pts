@@ -103,12 +103,7 @@ def main():
 
     callback_thread = autoptsclient.init_core()
 
-    ptses = []
-    for ip, local in zip(args.ip_addr, args.local_addr):
-        ptses.append(autoptsclient.init_pts(ip, args.workspace, args.bd_addr,
-                                            args.enable_max_logs,
-                                            callback_thread, tc_db_table_name,
-                                            local))
+    ptses = autoptsclient.init_pts(args, callback_thread, tc_db_table_name)
 
     btp.init(get_iut)
     autoprojects.iutctl.init(args.kernel_image, args.tty_file, args.board)

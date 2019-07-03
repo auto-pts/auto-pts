@@ -372,20 +372,13 @@ def init_core():
     return callback_thread
 
 
-def init_pts(server_address, workspace_path, bd_addr, enable_max_logs,
-             callback_thread, tc_db_table_name=None, local_address=None):
-    "Initialization procedure for PTS instances"
-    if AUTO_PTS_LOCAL:
-        proxy = FakeProxy()
-    else:
-        proxy = xmlrpclib.ServerProxy(
-            "http://{}:{}/".format(server_address, SERVER_PORT),
-            allow_none=True,)
+def init_pts_thread_entry(proxy, local_address, workspace_path, bd_addr,
+                          enable_max_logs, callback_thread):
+    """PTS instance initialization thread function entry"""
 
-    print "Starting PTS %s ..." % server_address,
     sys.stdout.flush()
     proxy.restart_pts()
-    print "OK"
+    print "(%r) OK" % (id(proxy),)
 
     proxy.callback_thread = callback_thread
 
@@ -417,11 +410,44 @@ def init_pts(server_address, workspace_path, bd_addr, enable_max_logs,
 
     proxy.enable_maximum_logging(enable_max_logs)
 
+
+def init_pts(args, callback_thread, tc_db_table_name=None):
+    """Initialization procedure for PTS instances"""
+
+    proxy_list = []
+    thread_list = []
+
+    for server_addr, local_addr in zip(args.ip_addr, args.local_addr):
+        if AUTO_PTS_LOCAL:
+            proxy = FakeProxy()
+        else:
+            proxy = xmlrpclib.ServerProxy(
+                "http://{}:{}/".format(server_addr, SERVER_PORT),
+                allow_none=True,)
+
+        print "(%r) Starting PTS %s ..." % (id(proxy), server_addr)
+
+        thread = threading.Thread(target=init_pts_thread_entry,
+                                  args=(proxy, local_addr, args.workspace,
+                                        args.bd_addr, args.enable_max_logs,
+                                        callback_thread))
+        thread.start()
+
+        proxy_list.append(proxy)
+        thread_list.append(thread)
+
     if tc_db_table_name:
         global TEST_CASE_DB
         TEST_CASE_DB = TestCaseTable(tc_db_table_name)
 
-    return proxy
+    for index, thread in enumerate(thread_list):
+        thread.join(timeout=60.0)
+
+        # check init completed
+        if thread.isAlive():
+            raise Exception("(%r) init failed" % (id(proxy_list[index]),))
+
+    return proxy_list
 
 
 def get_result_color(status):
