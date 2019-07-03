@@ -778,6 +778,25 @@ class TestCase(PTSCallback):
             self.lf_subproc.close()
 
 
+class TestCaseLT1(TestCase):
+    def copy(self):
+        """Copy constructor"""
+
+        test_case = super(TestCaseLT1, self).copy()
+        test_case.name_lt2 = self.name_lt2
+
+        return test_case
+
+    def __init__(self, *args, **kwargs):
+        name_lt2 = kwargs.pop('lt2', None)
+        super(TestCaseLT1, self).__init__(*args, **kwargs)
+        self.name_lt2 = name_lt2
+
+
+class TestCaseLT2(TestCase):
+    pass
+
+
 def get_max_test_case_desc(test_cases):
     """Takes a list of test cases and return a tuple of longest project name
     and test case name."""

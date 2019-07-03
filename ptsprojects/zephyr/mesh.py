@@ -553,44 +553,55 @@ def test_cases(ptses):
                             "MESH", "TSPX_device_uuid", device_uuid2)),
                    TestFunc(lambda: pts.update_pixit_param(
                             "MESH", "TSPX_device_uuid2", device_uuid))],
-                  generic_wid_hdl=mesh_wid_hdl),
+                  generic_wid_hdl=mesh_wid_hdl,
+                  lt2="MESH/SR/MPXS/BV-08-C-LT2"),
         ZTestCase("MESH", "MESH/SR/MPXS/BV-09-C", cmds=pre_conditions +
                   [TestFunc(lambda: get_stack().mesh.proxy_identity_enable())],
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/SR/PROX/BI-01-C", cmds=pre_conditions,
-                  generic_wid_hdl=mesh_wid_hdl),
+                  generic_wid_hdl=mesh_wid_hdl,
+                  lt2="MESH/SR/PROX/BI-01-C-LT2"),
         ZTestCase("MESH", "MESH/SR/PROX/BV-01-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/SR/PROX/BV-02-C", cmds=pre_conditions,
-                  generic_wid_hdl=mesh_wid_hdl),
+                  generic_wid_hdl=mesh_wid_hdl,
+                  lt2="MESH/SR/PROX/BV-02-C-LT2"),
         ZTestCase("MESH", "MESH/SR/PROX/BV-03-C", cmds=pre_conditions,
-                  generic_wid_hdl=mesh_wid_hdl),
+                  generic_wid_hdl=mesh_wid_hdl,
+                  lt2="MESH/SR/PROX/BV-03-C-LT2"),
         ZTestCase("MESH", "MESH/SR/PROX/BV-04-C", cmds=pre_conditions,
-                  generic_wid_hdl=mesh_wid_hdl),
+                  generic_wid_hdl=mesh_wid_hdl,
+                  lt2="MESH/SR/PROX/BV-04-C-LT2"),
         ZTestCase("MESH", "MESH/SR/PROX/BV-05-C", cmds=pre_conditions,
-                  generic_wid_hdl=mesh_wid_hdl),
+                  generic_wid_hdl=mesh_wid_hdl,
+                  lt2="MESH/SR/PROX/BV-05-C-LT2"),
         ZTestCase("MESH", "MESH/SR/PROX/BV-06-C", cmds=pre_conditions,
-                  generic_wid_hdl=mesh_wid_hdl),
+                  generic_wid_hdl=mesh_wid_hdl,
+                  lt2="MESH/SR/PROX/BV-06-C-LT2"),
         ZTestCase("MESH", "MESH/SR/PROX/BV-07-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/SR/PROX/BV-08-C", cmds=pre_conditions,
-                  generic_wid_hdl=mesh_wid_hdl),
+                  generic_wid_hdl=mesh_wid_hdl,
+                  lt2="MESH/SR/PROX/BV-08-C-LT2"),
         ZTestCase("MESH", "MESH/SR/PROX/BV-09-C", cmds=pre_conditions,
-                  generic_wid_hdl=mesh_wid_hdl),
+                  generic_wid_hdl=mesh_wid_hdl,
+                  lt2="MESH/SR/PROX/BV-09-C-LT2"),
         ZTestCase("MESH", "MESH/SR/PROX/BV-10-C", cmds=pre_conditions,
-                  generic_wid_hdl=mesh_wid_hdl),
+                  generic_wid_hdl=mesh_wid_hdl,
+                  lt2="MESH/SR/PROX/BV-10-C-LT2"),
         ZTestCase("MESH", "MESH/SR/PROX/BV-11-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/SR/PROX/BV-12-C", cmds=pre_conditions,
-                  generic_wid_hdl=mesh_wid_hdl),
+                  generic_wid_hdl=mesh_wid_hdl,
+                  lt2="MESH/SR/PROX/BV-12-C-LT2"),
         ZTestCase("MESH", "MESH/SR/PROX/BV-13-C", cmds=pre_conditions,
-                  generic_wid_hdl=mesh_wid_hdl),
+                  generic_wid_hdl=mesh_wid_hdl,
+                  lt2="MESH/SR/PROX/BV-13-C-LT2"),
         ZTestCase("MESH", "MESH/SR/PROX/BV-14-C", cmds=pre_conditions +
                   [TestFunc(btp.mesh_iv_test_mode_autoinit)],
-                  generic_wid_hdl=mesh_wid_hdl),
-    ]
+                  generic_wid_hdl=mesh_wid_hdl,
+                  lt2="MESH/SR/PROX/BV-14-C-LT2"),
 
-    additional_test_cases = [
         ZTestCaseSlave("MESH", "MESH/SR/MPXS/BV-08-C-LT2",
                        cmds=pre_conditions_slave +
                        [TestFunc(lambda: pts2.update_pixit_param(
@@ -668,15 +679,14 @@ def test_cases(ptses):
                                   ("MESH/SR/PROX/BV-14-C-LT2", 356))),
                         TestFunc(get_stack().synch.add_synch_element,
                                  (("MESH/SR/PROX/BV-14-C", 357),
-                                  ("MESH/SR/PROX/BV-14-C-LT2", 358))),
-                       ],
+                                  ("MESH/SR/PROX/BV-14-C-LT2", 358)))],
                        generic_wid_hdl=mesh_wid_hdl),
         ZTestCaseSlave("MESH", "MESH/SR/PROX/BI-01-C-LT2",
                        cmds=pre_conditions_slave,
                        generic_wid_hdl=mesh_wid_hdl),
     ]
 
-    return test_cases, additional_test_cases
+    return test_cases
 
 
 def main():
