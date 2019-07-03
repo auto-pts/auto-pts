@@ -33,7 +33,7 @@ import argparse
 from termcolor import colored
 
 from ptsprojects.testcase import get_max_test_case_desc
-from ptsprojects.testcase import PTSCallback
+from ptsprojects.testcase import PTSCallback, TestCaseLT2
 from ptsprojects.testcase_db import TestCaseTable
 from pybtp.types import BTPError, SynchError
 import ptsprojects.ptstypes as ptstypes
@@ -759,27 +759,24 @@ def print_summary(status_count, num_test_cases_str, margin,
               str(regressions_count).rjust(count_just))
 
 
-def get_lt2_test(test_cases, first_tc):
+def get_lt2_test(test_cases, test_case_name):
     """ Return lower tester matching test case if exist on list.
 
     test_cases -- list of all test cases, instances of TestCase
 
-    first_tc -- first lower tester test case instance
+    test_case_name -- second lower tester test case name
     """
     if test_cases is None:
         return None
 
-    # XXX: pay attention on PTS test case naming
-    second_tc_name = first_tc.name + "-LT2"
-
     for second_tc in test_cases:
-        if second_tc.name == second_tc_name:
+        if second_tc.name == test_case_name:
             return second_tc
 
     return None
 
 
-def run_test_cases(ptses, test_cases, additional_test_cases, retries_max=0):
+def run_test_cases(ptses, test_cases, retries_max=0):
     """Runs a list of test cases"""
 
     run_count_max = retries_max + 1  # Run test at least once
@@ -810,19 +807,27 @@ def run_test_cases(ptses, test_cases, additional_test_cases, retries_max=0):
                  str(datetime.timedelta(seconds=est_duration))))
 
     for index, test_case in enumerate(test_cases):
+
+        # Skip Lower Tester 2 test case instances
+        if isinstance(test_case, TestCaseLT2):
+            continue
+
         while True:
+            second_test_case = None
+
             # Multiple PTS instances test cases may fill status already
             if test_case.status != 'init':
                 continue
 
             # Search for second lower tester test case if exist
-            second_test_case = get_lt2_test(additional_test_cases, test_case)
-            if second_test_case and len(ptses) < 2:
-                test_case.status = 'FAIL'
-                second_test_case.status = 'FAIL'
-                results_dict[(test_case.project_name,
-                              test_case.name)] = test_case.status
-                break
+            if test_case.name_lt2:
+                second_test_case = get_lt2_test(test_cases, test_case.name_lt2)
+                if second_test_case and len(ptses) < 2:
+                    test_case.status = 'FAIL'
+                    second_test_case.status = 'FAIL'
+                    results_dict[(test_case.project_name,
+                                  test_case.name)] = test_case.status
+                    break
 
             pts_thread = threading.Thread(
                 target=run_test_case,

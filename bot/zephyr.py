@@ -235,12 +235,9 @@ def get_test_cases(ptses):
     test_cases += autoprojects.gatt.test_cases(ptses[0])
     test_cases += autoprojects.sm.test_cases(ptses[0])
     test_cases += autoprojects.l2cap.test_cases(ptses[0])
-    mesh_test_cases, additional_mesh_test_cases = \
-        autoprojects.mesh.test_cases(ptses)
-    test_cases += mesh_test_cases
-    additional_test_cases = additional_mesh_test_cases
+    test_cases += autoprojects.mesh.test_cases(ptses)
 
-    return test_cases, additional_test_cases
+    return test_cases
 
 
 class PtsInitArgs(object):
@@ -322,13 +319,13 @@ def run_tests(args, iut_config):
         autoprojects.l2cap.set_pixits(ptses[0])
         autoprojects.mesh.set_pixits(ptses)
 
-        test_cases, additional_test_cases = get_test_cases(ptses)
+        test_cases = get_test_cases(ptses)
         if to_run or to_omit:
             test_cases = autoptsclient.get_test_cases_subset(test_cases,
                                                              to_run, to_omit)
 
         status_count, results_dict, regressions = autoptsclient.run_test_cases(
-            ptses, test_cases, additional_test_cases, int(args["retry"]))
+            ptses, test_cases, int(args["retry"]))
         total_regressions += regressions
 
         for k, v in status_count.items():

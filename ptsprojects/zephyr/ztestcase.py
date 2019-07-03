@@ -15,13 +15,13 @@
 
 """Test case that manages Zephyr IUT"""
 
-from ptsprojects.testcase import TestCase, TestFunc, \
+from ptsprojects.testcase import TestCaseLT1, TestCaseLT2, TestFunc, \
     TestFuncCleanUp
 from ptsprojects.stack import get_stack
 from ptsprojects.zephyr.iutctl import get_iut
 
 
-class ZTestCase(TestCase):
+class ZTestCase(TestCaseLT1):
     """A Zephyr test case that uses QEMU or HW as DUT"""
 
     def __init__(self, *args, **kwargs):
@@ -42,7 +42,7 @@ class ZTestCase(TestCase):
         self.cmds.append(TestFuncCleanUp(self.zephyrctl.stop))
 
 
-class ZTestCaseSlave(TestCase):
+class ZTestCaseSlave(TestCaseLT2):
     """A Zephyr helper test case that uses QEMU or HW as DUT"""
 
     def __init__(self, *args, **kwargs):
