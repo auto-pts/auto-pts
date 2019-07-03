@@ -32,8 +32,7 @@ import datetime
 import argparse
 from termcolor import colored
 
-from ptsprojects.testcase import get_max_test_case_desc
-from ptsprojects.testcase import PTSCallback, TestCaseLT2
+from ptsprojects.testcase import PTSCallback, TestCaseLT1, TestCaseLT2
 from ptsprojects.testcase_db import TestCaseTable
 from pybtp.types import BTPError, SynchError
 import ptsprojects.ptstypes as ptstypes
@@ -441,7 +440,7 @@ def init_pts(args, callback_thread, tc_db_table_name=None):
         TEST_CASE_DB = TestCaseTable(tc_db_table_name)
 
     for index, thread in enumerate(thread_list):
-        thread.join(timeout=60.0)
+        thread.join(timeout=180.0)
 
         # check init completed
         if thread.isAlive():
@@ -461,45 +460,97 @@ def get_result_color(status):
         return "white"
 
 
+class TestCaseRunStats(object):
+    def __init__(self, projects, test_cases, retry_count, db=None):
+
+        self.run_count_max = retry_count + 1  # Run test at least once
+        self.run_count = 0  # Run count of current test case
+        self.num_test_cases = len(test_cases)
+        self.num_test_cases_width = len(str(self.num_test_cases))
+        self.max_project_name = len(max(projects, key=len)) if projects else 0
+        self.max_test_case_name = len(max(test_cases, key=len)) if test_cases else 0
+        self.margin = 3
+        self.index = 0
+
+        self.status_count = {}
+        self.results_dict = {}
+        self.regressions = []
+        self.db = db
+
+        if self.db:
+            self.est_duration = db.estimate_session_duration(test_cases,
+                                                             self.run_count_max)
+            if self.est_duration:
+                approx = str(datetime.timedelta(seconds=self.est_duration))
+
+                print("Number of test cases to run: '%d' in approximately: "
+                      "'%s'\n" % (self.num_test_cases, approx))
+        else:
+            self.est_duration = 0
+
+    def test_case_stats_update(self, test_case_name, duration, status):
+        status_prev = self.test_case_db_status_get(test_case_name)
+
+        # Remove the test case from regressions list if passed now
+        if status == "PASS" and test_case_name in self.regressions:
+            self.regressions.remove(test_case_name)
+        # Mark the test case regression
+        elif status_prev == "PASS" and status != status_prev:
+            self.regressions.append(test_case_name)
+
+        self.results_dict[(test_case_name.split('/')[0], test_case_name)] = status
+
+        if status not in self.status_count:
+            self.status_count[status] = 0
+
+        self.status_count[status] += 1
+
+        if not self.db:
+            return
+
+        self.db.update_statistics(test_case_name, duration, status)
+
+    def test_case_db_status_get(self, test_case_name):
+        if not self.db:
+            return None
+
+        return self.db.get_result(test_case_name)
+
+
 def run_test_case_wrapper(func):
     def wrapper(*args):
-        test_case = args[1]
-        (index, num_test_cases, num_test_cases_width, max_project_name,
-         max_test_case_name, margin, run_count_max, run_count,
-         regressions) = args[2]
-        status_prev = None
+        test_case_name = args[2]
+        stats = args[3]
+
+        run_count_max = stats.run_count_max
+        run_count = stats.run_count
+        num_test_cases = stats.num_test_cases
+        num_test_cases_width = stats.num_test_cases_width
+        max_project_name = stats.max_project_name
+        max_test_case_name = stats.max_test_case_name
+        margin = stats.margin
+        index = stats.index
 
         print (str(index + 1).rjust(num_test_cases_width) +
                "/" +
                str(num_test_cases).ljust(num_test_cases_width + margin) +
-               test_case.project_name.ljust(max_project_name + margin) +
-               test_case.name.ljust(max_test_case_name + margin - 1)),
+               test_case_name.split('/')[0].ljust(max_project_name + margin) +
+               test_case_name.ljust(max_test_case_name + margin - 1)),
         sys.stdout.flush()
 
         start_time = time.time()
-        func(*args)
+        status = func(*args)
         end_time = time.time() - start_time
 
-        if TEST_CASE_DB:
-            status_prev = TEST_CASE_DB.get_result(test_case.name)
-            TEST_CASE_DB.update_statistics(test_case.name, end_time,
-                                           test_case.status)
+        stats.test_case_stats_update(test_case_name, end_time, status)
 
-        # Remove the test case from regressions list if passed now
-        if test_case.status == "PASS" and test_case.name in regressions:
-            regressions.remove(test_case.name)
-        # Mark the test case regression
-        elif status_prev == "PASS" and test_case.status != status_prev:
-            regressions.append(test_case.name)
-
-        retries_counter = run_count_max - run_count
         retries_max = run_count_max - 1
-        if retries_counter:
-            retries_msg = "#{}".format(retries_counter)
+        if run_count:
+            retries_msg = "#{}".format(run_count)
         else:
             retries_msg = ""
 
-        if test_case.name in regressions and retries_counter == retries_max:
+        if test_case_name in stats.regressions and run_count == retries_max:
             regression_msg = "REGRESSION"
         else:
             regression_msg = ""
@@ -507,16 +558,18 @@ def run_test_case_wrapper(func):
         end_time = str(round(datetime.timedelta(
             seconds=end_time).total_seconds(), 3))
 
-        result = ("{}".format(test_case.status).ljust(16) +
+        result = ("{}".format(status).ljust(16) +
                 end_time.rjust(len(end_time)) +
                 retries_msg.rjust(len("#{}".format(retries_max)) + margin) +
                 regression_msg.rjust(len("REGRESSION") + margin))
 
         if sys.stdout.isatty():
-            output_color = get_result_color(test_case.status)
+            output_color = get_result_color(status)
             print(colored((result), output_color))
         else:
             print(result)
+
+        return status
 
     return wrapper
 
@@ -603,16 +656,16 @@ def synchronize_instances(state, break_state=None):
             return
 
 
-@run_test_case_wrapper
 @log2file
-def run_test_case(pts, test_case, *unused):
+def run_test_case_thread_entry(pts, test_case):
     """Runs the test case specified by a TestCase instance.
 
     [1] xmlrpclib.Fault normally happens due to unhandled exception in the
         autoptsserver on Windows
 
     """
-    log("Starting TestCase %s %s", run_test_case.__name__, test_case)
+    log("Starting TestCase %s %s", run_test_case_thread_entry.__name__,
+        test_case)
 
     if AUTO_PTS_LOCAL:  # set fake status and return
         statuses = ["PASS", "INCONC", "FAIL", "UNKNOWN VERDICT: NONE",
@@ -656,61 +709,8 @@ def run_test_case(pts, test_case, *unused):
         test_case.post_run(error_code)  # stop qemu and other commands
         del RUNNING_TEST_CASE[test_case.name]
 
-    log("Done TestCase %s %s", run_test_case.__name__, test_case)
-
-
-def run_slave_test_case(pts, test_case):
-    """Runs the slave test case specified by a TestCase instance.
-
-    [1] xmlrpclib.Fault normally happens due to unhandled exception in the
-        autoptsserver on Windows
-
-    """
-    log("Starting Slave TestCase %s %s", run_test_case.__name__, test_case)
-
-    if AUTO_PTS_LOCAL:  # set fake status and return
-        statuses = ["PASS", "INCONC", "FAIL", "UNKNOWN VERDICT: NONE",
-                    "BTP ERROR", "XML-RPC ERROR", "BTP TIMEOUT"]
-        test_case.status = random.choice(statuses)
-        return
-
-    error_code = None
-
-    try:
-        RUNNING_TEST_CASE[test_case.name] = test_case
-        test_case.state = "PRE_RUN"
-        test_case.pre_run()
-        test_case.status = "RUNNING"
-        test_case.state = "RUNNING"
-        synchronize_instances(test_case.state, ("FINISHING",))
-        error_code = pts.run_test_case(test_case.project_name, test_case.name)
-
-        log("After run_test_case error_code=%r status=%r",
-            error_code, test_case.status)
-
-        # raise exception discovered by thread
-        thread_error = pts.callback_thread.error_code()
-        pts.callback_thread.cleanup()
-
-        if thread_error:
-            error_code = thread_error
-
-    except Exception as error:
-        logging.exception(error.message)
-        error_code = get_error_code(error)
-
-    except BaseException:
-        traceback_list = format_exception(sys.exc_info())
-        logging.exception("".join(traceback_list))
-        error_code = get_error_code(None)
-
-    finally:
-        test_case.state = "FINISHING"
-        synchronize_instances(test_case.state)
-        test_case.post_run(error_code)  # stop qemu and other commands
-        del RUNNING_TEST_CASE[test_case.name]
-
-    log("Done Slave TestCase %s %s", run_test_case.__name__, test_case)
+    log("Done TestCase %s %s", run_test_case_thread_entry.__name__,
+        test_case)
 
 
 def print_summary(status_count, num_test_cases_str, margin,
@@ -759,205 +759,126 @@ def print_summary(status_count, num_test_cases_str, margin,
               str(regressions_count).rjust(count_just))
 
 
-def get_lt2_test(test_cases, test_case_name):
-    """ Return lower tester matching test case if exist on list.
+@run_test_case_wrapper
+def run_test_case(ptses, test_case_instances, test_case_name, stats):
+    def test_case_lookup_name(name, test_case_class):
+        """Return 'test_case_class' instance if found or None otherwise"""
+        if test_case_instances is None:
+            return None
 
-    test_cases -- list of all test cases, instances of TestCase
+        for tc in test_case_instances:
+            if tc.name == name and isinstance(tc, test_case_class):
+                return tc.copy()
 
-    test_case_name -- second lower tester test case name
-    """
-    if test_cases is None:
         return None
 
-    for second_tc in test_cases:
-        if second_tc.name == test_case_name:
-            return second_tc
+    # Lookup TestCase class instance
+    test_case_lt1 = test_case_lookup_name(test_case_name, TestCaseLT1)
+    if test_case_lt1 is None:
+        # FIXME
+        return 'NOT_IMPLEMENTED'
 
-    return None
+    if test_case_lt1.name_lt2:
+        if len(ptses) < 2:
+            return 'LT2_NOT_AVAILABLE'
 
+        test_case_lt2 = test_case_lookup_name(test_case_lt1.name_lt2,
+                                              TestCaseLT2)
+        if test_case_lt2 is None:
+            # FIXME
+            return 'NOT_IMPLEMENTED'
+    else:
+        test_case_lt2 = None
 
-def run_test_cases(ptses, test_cases, retries_max=0):
-    """Runs a list of test cases"""
-
-    run_count_max = retries_max + 1  # Run test at least once
-    run_count = run_count_max
-
-    num_test_cases = len(test_cases)
-    num_test_cases_width = len(str(num_test_cases))
-    max_project_name, max_test_case_name = get_max_test_case_desc(test_cases)
-    margin = 3
-
-    # Multi-instance related stuff
-    pts_threads = []
-
-    # Summary related stuff
-    status_count = {}
-    results_dict = {}
-    regressions = []
-
-    # estimate execution time
-    if TEST_CASE_DB:
-        est_duration = TEST_CASE_DB.estimate_session_duration(
-            [test_case.name for test_case in test_cases],
-            run_count_max)
-        if est_duration:
-            print(
-                "Number of test cases to run: '%d' in approximately: '%s'\n" %
-                (num_test_cases,
-                 str(datetime.timedelta(seconds=est_duration))))
-
-    for index, test_case in enumerate(test_cases):
-
-        # Skip Lower Tester 2 test case instances
-        if isinstance(test_case, TestCaseLT2):
+    while True:
+        # Multiple PTS instances test cases may fill status already
+        if test_case_lt1.status != 'init':
             continue
 
-        while True:
-            second_test_case = None
+        # Multi-instance related stuff
+        pts_threads = []
 
-            # Multiple PTS instances test cases may fill status already
-            if test_case.status != 'init':
-                continue
+        pts_thread = threading.Thread(
+            target=run_test_case_thread_entry,
+            args=(ptses[0], test_case_lt1))
+        pts_threads.append(pts_thread)
+        pts_thread.start()
 
-            # Search for second lower tester test case if exist
-            if test_case.name_lt2:
-                second_test_case = get_lt2_test(test_cases, test_case.name_lt2)
-                if second_test_case and len(ptses) < 2:
-                    test_case.status = 'FAIL'
-                    second_test_case.status = 'FAIL'
-                    results_dict[(test_case.project_name,
-                                  test_case.name)] = test_case.status
-                    break
-
+        if test_case_lt2:
             pts_thread = threading.Thread(
-                target=run_test_case,
-                args=(
-                    ptses[0],
-                    test_case,
-                    (index,
-                     num_test_cases,
-                     num_test_cases_width,
-                     max_project_name,
-                     max_test_case_name,
-                     margin,
-                     run_count_max,
-                     run_count,
-                     regressions)))
+                target=run_test_case_thread_entry,
+                args=(ptses[1], test_case_lt2))
             pts_threads.append(pts_thread)
             pts_thread.start()
 
-            if second_test_case:
-                pts_thread = threading.Thread(
-                    target=run_slave_test_case, args=(
-                        ptses[1], second_test_case))
-                pts_threads.append(pts_thread)
-                pts_thread.start()
+        # Wait till every PTS instance finish executing test case
+        for pts_thread in pts_threads:
+            pts_thread.join()
 
-            # Wait till every PTS instance finish executing test case
-            for pts_thread in pts_threads:
-                pts_thread.join()
+        if test_case_lt2 and test_case_lt2.status != "PASS" \
+                and test_case_lt1.status == "PASS":
+            return test_case_lt2.status
 
-            run_count -= 1
-            if ((test_case.status != 'PASS' or
-                 (second_test_case and second_test_case.status != 'PASS')) and
-                    run_count > 0):
-                test_case = test_case.copy()
-            else:
-                results_dict[(test_case.project_name,
-                              test_case.name)] = test_case.status
+        return test_case_lt1.status
+
+
+test_case_blacklist = [
+    "_HELPER",
+    "-LT2",
+]
+
+
+def run_test_cases(ptses, test_case_instances, args):
+    """Runs a list of test cases"""
+
+    def run_or_not(test_case_name):
+        for entry in test_case_blacklist:
+            if entry in test_case_name:
+                return False
+
+        if args.excluded:
+            for n in args.excluded:
+                if test_case_name.startswith(n):
+                    return False
+
+        if args.test_cases:
+            for n in args.test_cases:
+                if test_case_name.startswith(n):
+                    return True
+
+            return False
+
+        return True
+
+    test_cases = []
+
+    projects = ptses[0].get_project_list()
+
+    for project in projects:
+        _test_case_list = ptses[0].get_test_case_list(project)
+        test_cases += [tc for tc in _test_case_list if run_or_not(tc)]
+
+    # Statistics
+    stats = TestCaseRunStats(projects, test_cases, args.retry, TEST_CASE_DB)
+
+    for test_case in test_cases:
+        stats.run_count = 0
+
+        while True:
+            status = run_test_case(ptses, test_case_instances, test_case,
+                                   stats)
+
+            if status == 'PASS' or stats.run_count == args.retry:
                 break
 
-        if test_case.status in status_count:
-            status_count[test_case.status] += 1
-        else:
-            status_count[test_case.status] = 1
+            stats.run_count += 1
 
-        run_count = run_count_max
+        stats.index += 1
 
-    print_summary(status_count, str(num_test_cases), margin, len(regressions))
+    print_summary(stats.status_count, str(stats.num_test_cases),
+                  stats.margin, len(stats.regressions))
 
-    return status_count, results_dict, regressions
-
-
-def get_test_cases_subset(test_cases, test_case_names, excluded_names=None):
-    """Return subset of test cases
-
-    test_cases -- list of all test cases, instances on TestCase
-
-    test_case_names -- list of names and matching patterns of test cases.
-                       Names in this list specify the subset from test_cases
-                       to return.
-                       Name may be:
-                       - Profile (all test cases from profile)
-                       - Matching name pattern (test cases which contains
-                            given string pattern)
-
-    excluded_names -- list of names and matching patterns of test cases.
-                       Names in this list specify the subset from test_cases
-                       to be excluded from run return.
-                       Name may be:
-                       - Profile (all test cases from profile)
-                       - Matching name pattern (test cases which contains
-                            given string pattern)
-
-    """
-    # protocols and profiles
-    profiles = ["GATT", "GAP", "L2CAP", "RFCOMM", "SM", "MESH"]
-
-    # subsets of profiles
-    profiles_subset = {
-        "GATTC": [tc for tc in test_cases
-                  if tc.project_name == "GATT" and "/CL/" in tc.name],
-
-        "GATTS": [tc for tc in test_cases
-                  if tc.project_name == "GATT" and "/SR/" in tc.name]
-    }
-
-    test_cases_dict = {tc.name: tc for tc in test_cases}
-    test_cases_subset = []
-
-    if excluded_names:
-        profiles = [name for name in profiles if name not in excluded_names]
-
-        for subset_name, tcs in profiles_subset.items():
-            profiles_subset[subset_name] = \
-                [tc for tc in tcs if tc.name not in excluded_names
-                 and tc.project_name not in excluded_names]
-            if subset_name in excluded_names:
-                for tc in tcs:
-                    test_cases.remove(tc)
-                del profiles_subset[subset_name]
-
-        test_cases_dict = \
-            {tc_name: tc for tc_name, tc in test_cases_dict.items()
-             if tc_name not in excluded_names
-             and tc.project_name not in excluded_names}
-        test_cases = \
-            [tc for tc in test_cases if tc.name not in excluded_names
-             and tc.project_name not in excluded_names]
-
-    if test_case_names:
-        for name in test_case_names:
-            # whole profile/protocol
-            if name in profiles:
-                test_cases_subset += [tc for tc in test_cases
-                                      if tc.project_name == name]
-
-            # subset of profile/protocol
-            elif name in profiles_subset.keys():
-                test_cases_subset += profiles_subset[name]
-
-            # name pattern contain matching
-            else:
-                for tc in test_cases_dict:
-                    if name == tc:
-                        test_cases_subset.append(test_cases_dict[tc].copy())
-                    elif name in tc:
-                        test_cases_subset.append(test_cases_dict[tc])
-    else:
-        test_cases_subset = test_cases
-
-    return test_cases_subset
+    return stats.status_count, stats.results_dict, stats.regressions
 
 
 class CliParser(argparse.ArgumentParser):
@@ -985,11 +906,11 @@ class CliParser(argparse.ArgumentParser):
                                "to running test case in PTS GUI using "
                                "'Run (Debug Logs)'")
 
-        self.add_argument("-c", "--test-cases", nargs='+',
+        self.add_argument("-c", "--test-cases", nargs='+', default=[],
                           help="Names of test cases to run. Groups of "
                                "test cases can be specified by profile names")
 
-        self.add_argument("-e", "--excluded", nargs='+',
+        self.add_argument("-e", "--excluded", nargs='+', default=[],
                           help="Names of test cases to exclude. Groups of "
                                "test cases can be specified by profile names")
 

@@ -252,6 +252,8 @@ class PtsInitArgs(object):
         self.bd_addr = args["bd_addr"]
         self.enable_max_logs = args["enable_max_logs"]
         self.retry = args["retry"]
+        self.test_cases = []
+        self.excluded = []
 
 
 def run_tests(args, iut_config):
@@ -267,7 +269,9 @@ def run_tests(args, iut_config):
 
     callback_thread = autoptsclient.init_core()
 
-    ptses = autoptsclient.init_pts(PtsInitArgs(args), callback_thread,
+    _args = PtsInitArgs(args)
+
+    ptses = autoptsclient.init_pts(_args, callback_thread,
                                    "zephyr_" + str(args["board"]))
 
     btp.init(get_iut)
@@ -295,11 +299,9 @@ def run_tests(args, iut_config):
         if 'overlay' in value:
             apply_overlay(args["project_path"], default_conf, config,
                           value['overlay'])
-            to_run = value['test_cases']
-            to_omit = None
+            _args.test_cases = value['test_cases']
         elif 'test_cases' not in value:  # DEFAULT CASE
-            to_run = None
-            to_omit = default_to_omit
+            _args.excluded = default_to_omit
         else:
             continue
 
@@ -320,12 +322,9 @@ def run_tests(args, iut_config):
         autoprojects.mesh.set_pixits(ptses)
 
         test_cases = get_test_cases(ptses)
-        if to_run or to_omit:
-            test_cases = autoptsclient.get_test_cases_subset(test_cases,
-                                                             to_run, to_omit)
 
         status_count, results_dict, regressions = autoptsclient.run_test_cases(
-            ptses, test_cases, int(args["retry"]))
+            ptses, test_cases, _args)
         total_regressions += regressions
 
         for k, v in status_count.items():

@@ -49,7 +49,7 @@ def main():
     # test_cases = autoprojects.gap.test_cases(proxy)
 
     autoprojects.iutctl.init()
-    autoptsclient.run_test_cases(proxy, test_cases)
+    autoptsclient.run_test_cases(proxy, test_cases, args)
     autoprojects.iutctl.cleanup()
 
     print "\nBye!"
