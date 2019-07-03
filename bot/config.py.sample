@@ -33,7 +33,7 @@ z['auto_pts'] = {
     'workspace': 'zephyr-hci',
     'board': 'nrf52',
     'enable_max_logs': False,
-    'retry': '2',
+    'retry': 2,
     'bd_addr': '',
 }
 
