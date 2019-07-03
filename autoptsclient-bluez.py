@@ -67,11 +67,7 @@ def main():
     test_cases = autoprojects.gap.test_cases(ptses[0])
     test_cases += autoprojects.sm.test_cases(ptses[0])
 
-    if args.test_cases:
-        test_cases = autoptsclient.get_test_cases_subset(test_cases,
-                                                         args.test_cases)
-
-    autoptsclient.run_test_cases(ptses, test_cases, 0)
+    autoptsclient.run_test_cases(ptses, test_cases, args)
 
     autoprojects.iutctl.cleanup()
 

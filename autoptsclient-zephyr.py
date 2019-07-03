@@ -127,11 +127,7 @@ def main():
     test_cases += autoprojects.l2cap.test_cases(ptses[0])
     test_cases += autoprojects.mesh.test_cases(ptses)
 
-    if args.test_cases or args.excluded:
-        test_cases = autoptsclient.get_test_cases_subset(
-            test_cases, args.test_cases, args.excluded)
-
-    autoptsclient.run_test_cases(ptses, test_cases, args.retry)
+    autoptsclient.run_test_cases(ptses, test_cases, args)
 
     autoprojects.iutctl.cleanup()
 

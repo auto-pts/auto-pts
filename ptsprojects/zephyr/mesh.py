@@ -53,6 +53,9 @@ def set_pixits(ptses):
 
     pts -- Instance of PyPTS"""
 
+    if len(ptses) < 2:
+        return
+
     pts = ptses[0]
     pts2 = ptses[1]
 
@@ -137,6 +140,9 @@ def set_pixits(ptses):
 def test_cases(ptses):
     """Returns a list of MESH test cases
     pts -- Instance of PyPTS"""
+
+    if len(ptses) < 2:
+        return []
 
     pts = ptses[0]
     pts2 = ptses[1]
