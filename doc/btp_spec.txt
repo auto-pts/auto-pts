@@ -468,6 +468,24 @@ Commands and responses:
 
 		In case of an error, the error response will be returned.
 
+	Opcode 0x16 - Connection Parameters Update
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Connection Interval Min (2 octets)
+					Connection Interval Max (2 octets)
+					Connection Latency (2 octets)
+					Supervision Timeout (2 octets)
+		Return Parameters:	<none>
+
+		This command is used to change connection parameters. If current
+		connection parameters do not match with the ones requested then
+		the IUT should send a Connection Parameter Update Request
+		to a peer device.
+
+		In case of an error, the error response will be returned.
+
 Events:
 	Opcode 0x80 - New Settings event
 
