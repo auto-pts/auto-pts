@@ -16,6 +16,7 @@
 import logging
 import sys
 from pybtp import btp
+from iutctl import get_iut
 
 log = logging.debug
 
@@ -88,4 +89,42 @@ def hdl_wid_115(desc):
 def hdl_wid_116(desc):
     # TODO: Click Yes if the failure of pairing process due to timeout has
     # been notified on the IUT.
+    return True
+
+
+def hdl_wid_141(desc):
+    return btp.var_store_get_passkey(desc)
+
+
+def hdl_wid_143(desc):
+    zephyrctl = get_iut()
+
+    zephyrctl.wait_iut_ready_event()
+    btp.core_reg_svc_gap()
+    btp.gap_read_ctrl_info()
+
+    return True
+
+
+def hdl_wid_1009(desc):
+    return btp.var_store_get_passkey(desc)
+
+
+def hdl_wid_20001(desc):
+    btp.gap_set_conn()
+    btp.gap_adv_ind_on()
+    return True
+
+
+def hdl_wid_20100(desc):
+    btp.gap_conn()
+    return True
+
+
+def hdl_wid_20011(desc):
+    return btp.var_store_get_passkey(desc)
+
+
+def hdl_wid_20115(desc):
+    btp.gap_disconn()
     return True
