@@ -29,8 +29,7 @@ from iutctl_common import set_event_handler
 from random import randint
 from collections import namedtuple
 from uuid import UUID
-from ptsprojects.stack import get_stack, GattCharacteristic
-
+from ptsprojects.stack import get_stack, GattCharacteristic, ConnParams
 
 #  get IUT global method from iutctl
 get_iut = None
@@ -110,6 +109,9 @@ GAP = {
                        CONTROLLER_INDEX, ""),
     "passkey_entry_rsp": (defs.BTP_SERVICE_ID_GAP,
                           defs.GAP_PASSKEY_ENTRY,
+                          CONTROLLER_INDEX),
+    "conn_param_update": (defs.BTP_SERVICE_ID_GAP,
+                          defs.GAP_CONN_PARAM_UPDATE,
                           CONTROLLER_INDEX),
     "reset": (defs.BTP_SERVICE_ID_GAP, defs.GAP_RESET, CONTROLLER_INDEX, "")
 }
@@ -963,6 +965,33 @@ def gap_command_rsp_succ(op=None):
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GAP, op)
 
     return tuple_data
+
+
+def gap_conn_param_update(bd_addr, bd_addr_type, conn_itvl_min,
+                          conn_itvl_max, conn_latency, supervision_timeout):
+    logging.debug("%s %r %r", gap_conn_param_update.__name__, bd_addr, bd_addr_type)
+    iutctl = get_iut()
+
+    data_ba = bytearray()
+    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
+
+    data_ba.extend(chr(pts_addr_type_get(bd_addr_type)))
+    data_ba.extend(bd_addr_ba)
+
+    conn_itvl_min_ba = struct.pack('H', conn_itvl_min)
+    conn_itvl_max_ba = struct.pack('H', conn_itvl_max)
+    conn_latency_ba = struct.pack('H', conn_latency)
+    supervision_timeout_ba = struct.pack('H', supervision_timeout)
+
+    data_ba.extend(conn_itvl_min_ba)
+    data_ba.extend(conn_itvl_max_ba)
+    data_ba.extend(conn_latency_ba)
+    data_ba.extend(supervision_timeout_ba)
+
+    iutctl.btp_socket.send(*GAP['conn_param_update'], data=data_ba)
+
+    # Expected result
+    gap_command_rsp_succ()
 
 
 def gatts_add_svc(svc_type, uuid):
@@ -2518,13 +2547,14 @@ def gap_device_found_ev_(gap, data, data_len):
 def gap_connected_ev_(gap, data, data_len):
     logging.debug("%s %r", gap_connected_ev_.__name__, data)
 
-    hdr_fmt = '<B6s'
+    hdr_fmt = '<B6sHHH'
     hdr_len = struct.calcsize(hdr_fmt)
 
-    addr_type, addr = struct.unpack_from(hdr_fmt, data)
+    addr_type, addr, itvl, latency, timeout = struct.unpack_from(hdr_fmt, data)
     addr = binascii.hexlify(addr[::-1])
 
     gap.connected.data = (addr, addr_type)
+    gap.set_conn_params(ConnParams(itvl, latency, timeout))
 
     set_pts_addr(addr, addr_type)
 
@@ -2569,6 +2599,27 @@ def gap_identity_resolved_ev_(gap, data, data_len):
     set_pts_addr(_id_addr, _id_addr_t)
 
 
+def gap_conn_param_update_ev_(gap, data, data_len):
+    logging.debug("%s", gap_conn_param_update_ev_.__name__)
+
+    logging.debug("received %r", data)
+
+    fmt = '<B6sHHH'
+    if len(data) != struct.calcsize(fmt):
+        raise BTPError("Invalid data length")
+
+    _addr_t, _addr, _itvl, _latency, _timeout = struct.unpack_from(fmt, data)
+    # Convert addresses to lower case
+    _addr = binascii.hexlify(_addr[::-1]).lower()
+
+    if _addr_t != pts_addr_type_get() or _addr != pts_addr_get():
+        raise BTPError("Received data mismatch")
+
+    logging.debug("received %r", (_addr_t, _addr, _itvl, _latency, _timeout))
+
+    gap.set_conn_params(ConnParams(_itvl, _latency, _timeout))
+
+
 GAP_EV = {
     defs.GAP_EV_NEW_SETTINGS: gap_new_settings_ev_,
     defs.GAP_EV_DEVICE_FOUND: gap_device_found_ev_,
@@ -2576,6 +2627,7 @@ GAP_EV = {
     defs.GAP_EV_DEVICE_DISCONNECTED: gap_disconnected_ev_,
     defs.GAP_EV_PASSKEY_DISPLAY: gap_passkey_disp_ev_,
     defs.GAP_EV_IDENTITY_RESOLVED: gap_identity_resolved_ev_,
+    defs.GAP_EV_CONN_PARAM_UPDATE: gap_conn_param_update_ev_,
 }
 
 

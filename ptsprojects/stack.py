@@ -92,6 +92,13 @@ def timeout_cb(flag):
     flag.clear()
 
 
+class ConnParams:
+    def __init__(self, conn_itvl, conn_latency, supervision_timeout):
+        self.conn_itvl = conn_itvl
+        self.conn_latency = conn_latency
+        self.supervision_timeout = supervision_timeout
+
+
 class Gap:
     def __init__(self, name, manufacturer_data, appearance, svc_data, flags,
                  svcs):
@@ -131,6 +138,7 @@ class Gap:
         self.found_devices = Property([])  # List of found devices
 
         self.passkey = Property(None)
+        self.conn_params = Property(None)
 
     def wait_for_connection(self, timeout):
         if self.is_connected():
@@ -204,6 +212,9 @@ class Gap:
 
     def iut_has_privacy(self):
         return self.current_settings_get("Privacy")
+
+    def set_conn_params(self, params):
+        self.conn_params.data = params
 
     def reset_discovery(self):
         self.discoverying.data = True
