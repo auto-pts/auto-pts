@@ -825,6 +825,7 @@ def run_test_case(ptses, test_case_instances, test_case_name, stats):
 test_case_blacklist = [
     "_HELPER",
     "-LT2",
+    "TWO_NODES_PROVISIONER",
 ]
 
 
