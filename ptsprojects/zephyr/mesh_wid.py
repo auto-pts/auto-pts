@@ -20,6 +20,7 @@ from pybtp.types import Perm, MeshVals
 import re
 import time
 from ptsprojects.stack import get_stack
+from time import sleep
 
 # Mesh ATS ver. 1.0
 
@@ -883,11 +884,34 @@ def hdl_wid_223(desc):
     return True
 
 
+def hdl_wid_255(desc):
+    """
+    Implements:
+    :param desc: Press OK to send a Secure Network Beacon with the Key Refresh
+                 Flag (Flags bit 0) set to 0, the IV Update Flag (Flags bit 1)
+                 set to 0, the Network ID set to the current Network ID, the
+                 IV Index set to the current IV Index, and the Authentication
+                 Value calculated with the new NetKey
+    :return:
+    """
+    return True
+
+
 def hdl_wid_262(desc):
     """
     Implements: KEY_REFRESH_READY_FOR_ROUND2
     :param desc: Press OK when tester and IUT is ready to go to the second
                  round of key refresh
+    :return:
+    """
+    return True
+
+
+def hdl_wid_267(desc):
+    """
+    Implements:
+    :param desc: Please click OK after friendship is established between Low
+                 Power Node (Lower Tester 1) and Friend Node (IUT).
     :return:
     """
     return True
@@ -914,6 +938,53 @@ def hdl_wid_274(desc):
     return True
 
 
+def hdl_wid_280(desc):
+    """
+    Implements:
+    :param desc: Waiting 5 seconds to initiate phase 1 to Friend Node.
+    :return:
+    """
+    return True
+
+
+def hdl_wid_281(desc):
+    """
+    Implements:
+    :param desc: Waiting 15 seconds to initiate phase 2.
+    :return:
+    """
+    return True
+
+
+def hdl_wid_282(desc):
+    """
+    Implements:
+    :param desc: Please order Lower Tester 1 to initiate friend poll.
+                 Waiting 15 seconds to initiate phase 3.
+    :return:
+    """
+    return True
+
+
+def hdl_wid_283(desc):
+    """
+    Implements:
+    :param desc: Waiting LPN's response from NetKey Update Message.
+                 Please order Lower Tester 1 to initiate friend poll.
+    :return:
+    """
+    return True
+
+
+def hdl_wid_284(desc):
+    """
+    Implements:
+    :param desc: Waiting 5 seconds to initiate phase 1 to Low Power Node.
+    :return:
+    """
+    return True
+
+
 def hdl_wid_285(desc):
     """
     Implements: KEY_REFRESH_READY_SKIP_PAHSE_2
@@ -922,6 +993,17 @@ def hdl_wid_285(desc):
     :return:
     """
     stack = get_stack()
+    return True
+
+
+def hdl_wid_302(desc):
+    """
+    Implements:
+    :param desc: Please click OK to send Friend Poll to receive the messages
+                 Lower Tester 2 sent.
+    :return:
+    """
+    sleep(5)
     return True
 
 
@@ -937,6 +1019,27 @@ def hdl_wid_303(desc):
     return True
 
 
+def hdl_wid_306(desc):
+    """
+    Implements:
+    :param desc: Waiting for Lower Tester 1 to establish Friendship with IUT
+                 so Lower Tester 2 will know the Friend Cache size.
+    :return:
+    """
+    return True
+
+
+def hdl_wid_305(desc):
+    """
+    Implements:
+    :param desc: Please click OK to send Friend Poll after Lower Tester 2
+                 sends Secure Network Beacons with a different Key Refresh
+                 flag.
+    :return:
+    """
+    return True
+
+
 def hdl_wid_308(desc):
     """
     Implements:
@@ -946,6 +1049,29 @@ def hdl_wid_308(desc):
     stack = get_stack()
 
     btp.mesh_lpn_poll()
+    return True
+
+
+def hdl_wid_310(desc):
+    """
+    Implements:
+    :param desc: Send Mesh message to Friend Node from Lower Tester 2.
+                 Lower Tester 1 will not send the Friend Poll Message to the
+                 IUT for twice the PollTimeout time. IUT should remove the
+                 Lower Tester 1 as a Friend
+    :return:
+    """
+    return True
+
+
+def hdl_wid_311(desc):
+    """
+    Implements:
+    :param desc: Press OK to send a Secure Network Beacon with the Key Refresh
+                 Flag (Flags bit 0) set to 0, the IV Update Flag (Flags bit 1)
+                 set to 1.
+    :return:
+    """
     return True
 
 
@@ -996,6 +1122,46 @@ def hdl_wid_315(desc):
     return True
 
 
+def hdl_wid_317(desc):
+    """
+    Implements:
+    :param desc: Please click OK to send a message with TTL field set to
+                 value = 3.
+    :return:
+    """
+    return True
+
+
+def hdl_wid_318(desc):
+    """
+    Implements:
+    :param desc: Please click OK to send partial segments of segmented
+                 messages to IUT.
+    :return:
+    """
+    return True
+
+
+def hdl_wid_319(desc):
+    """
+    Implements:
+    :param desc: Click OK to send Mesh messages to IUT(Friend Node).
+    :return:
+    """
+    sleep(10)
+    return True
+
+
+def hdl_wid_324(desc):
+    """
+    Implements:
+    :param desc: Lower Tester 2 is waiting for IUT to send Friend Clear
+                 message.
+    :return:
+    """
+    return True
+
+
 def hdl_wid_326(desc):
     """
     Implements:
@@ -1005,6 +1171,120 @@ def hdl_wid_326(desc):
     stack = get_stack()
 
     btp.mesh_lpn(False)
+    return True
+
+
+def hdl_wid_329(desc):
+    """
+    Implements:
+    :param desc: Click OK to send Friend Timeout Get Message after Lower
+                 Tester 1 and IUT established friendship.
+    :return:
+    """
+    return True
+
+
+def hdl_wid_330(desc):
+    """
+    Implements:
+    :param desc: Click OK to send Friend Clear Message.
+    :return:
+    """
+    return True
+
+
+def hdl_wid_335(desc):
+    """
+    Implements:
+    :param desc: Please click OK to send Friend Poll message after Lower
+                 Tester 2 sends out Friend Clear message.
+    :return:
+    """
+    return True
+
+
+def hdl_wid_336(desc):
+    """
+    Implements:
+    :param desc: If Lower Tester 1 and IUT are not previously provisioned,
+                 please use a second instance of PTS to perform provisioning
+                 first by executing MESH/NODE/FRND/TWO_NODES_PROVISIONER test
+                 case.
+    :return:
+    """
+    return True
+
+
+def hdl_wid_337(desc):
+    """
+    Implements:
+    :param desc: Please start Lower Tester 2 first before establishing
+                 friendship between Lower Tester 1 and IUT.
+    :return:
+    """
+    return True
+
+
+def hdl_wid_339(desc):
+    """
+    Implements:
+    :param desc: Friendship is established successfully.
+    :return:
+    """
+    return True
+
+
+def hdl_wid_340(desc):
+    """
+    Implements:
+    :param desc: Lower Tester 1 is a Low Power Node, and IUT is Friend Node.
+                 If Lower Tester 1 and IUT are not previously provisioned,
+                 please use a second instance of PTS to perform provisioning
+                 first by executing MESH/NODE/FRND/TWO_NODES_PROVISIONER test
+                 case.
+    :return:
+    """
+    return hdl_wid_336(desc)
+
+
+def hdl_wid_341(desc):
+    """
+    Implements:
+    :param desc: Please click OK to send Friend Poll message after Lower
+                 Tester 2 sends Mesh message(s) and config friend set message.
+    :return:
+    """
+    return True
+
+
+def hdl_wid_342(desc):
+    """
+    Implements:
+    :param desc: Please wait for IUT and Lower Tester 1 to establish
+                 friendship. Click OK to send Mesh messages to IUT
+                 (Friend Node).
+    :return:
+    """
+    return True
+
+
+def hdl_wid_344(desc):
+    """
+    Implements:
+    :param desc: Please click OK to send Mesh packet(s) after Lower Tester 1
+                 adds subscription address to IUT.
+    :return:
+    """
+    return True
+
+
+def hdl_wid_345(desc):
+    """
+    Implements:
+    :param desc: Please click OK to send Friend Poll message after IUT receives
+                 beacon from Lower Tester 1
+    :return:
+    """
     return True
 
 
@@ -1041,6 +1321,16 @@ def hdl_wid_347(desc):
 
     btp.mesh_lpn_unsubscribe(group_address)
     stack.mesh.lpn_subscriptions.remove(group_address)
+    return True
+
+
+def hdl_wid_348(desc):
+    """
+    Implements:
+    :param desc: Please click OK to send Friend Poll message after IUT caches
+                 netkey update message.
+    :return:
+    """
     return True
 
 
@@ -1085,6 +1375,15 @@ def hdl_wid_366(desc):
 
 
 def hdl_wid_367(desc):
+    return True
+
+
+def hdl_wid_500(desc):
+    """
+    Implements:
+    :param desc: Waiting for Composition Data Get Request.
+    :return:
+    """
     return True
 
 
