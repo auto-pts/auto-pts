@@ -1174,6 +1174,17 @@ def hdl_wid_326(desc):
     return True
 
 
+def hdl_wid_327(desc):
+    """
+    Implements:
+    :param desc: Click OK button after friendship is established between
+                 Lower Tester 1 and IUT
+    :return:
+    """
+    time.sleep(5)
+    return True
+
+
 def hdl_wid_329(desc):
     """
     Implements:
@@ -1420,6 +1431,29 @@ def hdl_wid_521(desc):
     stack = get_stack()
 
     time.sleep(60)
+    return True
+
+
+def hdl_wid_552(desc):
+    """
+    Implements:
+    :param desc: This test require two instances of PTS running. This is Lower
+                 Tester 1. Please start another PTS instance and run
+                 TESTCASE_LT2 test case. Prepare the IUT for provisioning by
+                 Lower Tester 2. Click OK when Lower Tester 1 is ready.
+                 Lower Tester 2 will provision, establish friendship and add
+                 subscription list to the IUT.
+    :return:
+    """
+    return True
+
+
+def hdl_wid_557(desc):
+    """
+    Implements:
+    :param desc: Please send Heartbeat message to Low Power Node address
+    :return:
+    """
     return True
 
 
