@@ -391,7 +391,6 @@ def hdl_wid_90(desc):
         sd.append((AdType.manufacturer_data, stack.gap.manufacturer_data))
 
     btp.gap_adv_off()
-    btp.gap_read_ctrl_info()
     btp.gap_set_conn()
     btp.gap_set_gendiscov()
     btp.gap_adv_ind_on(ad=ad, sd=sd)
