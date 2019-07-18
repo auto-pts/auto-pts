@@ -545,6 +545,12 @@ def test_cases(pts):
                 #   no_wid=158,
                   cmds=pre_conditions + init_gatt_db,
                   generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/GAT/BV-04-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/GAT/BV-05-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
     ]
 
     return test_cases
