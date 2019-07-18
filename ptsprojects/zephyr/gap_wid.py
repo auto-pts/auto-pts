@@ -312,6 +312,10 @@ def hdl_wid_78(desc):
     return True
 
 
+def hdl_wid_79(desc):
+    return hdl_wid_80(desc)
+
+
 def hdl_wid_80(desc):
     stack = get_stack()
 
@@ -433,7 +437,10 @@ def hdl_wid_125(desc):
 
     return True
 
+
 def hdl_wid_127(desc):
+    btp.gap_conn_param_update(btp.pts_addr_get(), btp.pts_addr_type_get(),
+                              720, 864, 0, 400)
     return True
 
 
