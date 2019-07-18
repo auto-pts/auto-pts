@@ -15,6 +15,9 @@
 
 import logging
 from threading import Lock, Timer, Event
+from pybtp.types import AdType
+from binascii import hexlify
+
 
 STACK = None
 
@@ -102,6 +105,16 @@ class ConnParams:
 class Gap:
     def __init__(self, name, manufacturer_data, appearance, svc_data, flags,
                  svcs):
+
+        self.ad = {}
+        self.sd = {}
+
+        if name:
+            self.ad[AdType.name_short] = hexlify(name)
+
+        if manufacturer_data:
+            self.sd[AdType.manufacturer_data] = manufacturer_data
+
         self.name = name
         self.manufacturer_data = manufacturer_data
         self.appearance = appearance

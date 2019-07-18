@@ -499,7 +499,7 @@ def gap_wait_for_disconnection(timeout=30):
     stack.gap.wait_for_disconnection(timeout)
 
 
-def gap_adv_ind_on(ad=None, sd=None):
+def gap_adv_ind_on(ad={}, sd={}):
     logging.debug("%s %r %r", gap_adv_ind_on.__name__, ad, sd)
 
     stack = get_stack()
@@ -514,19 +514,17 @@ def gap_adv_ind_on(ad=None, sd=None):
     ad_ba = bytearray()
     sd_ba = bytearray()
 
-    if ad:
-        for entry in ad:
-            data = binascii.unhexlify(bytearray(entry[1]))
-            ad_ba.extend(chr(entry[0]))
-            ad_ba.extend(chr(len(data)))
-            ad_ba.extend(data)
+    for ad_type, ad_data in ad.iteritems():
+        data = binascii.unhexlify(bytearray(ad_data))
+        ad_ba.extend(chr(ad_type))
+        ad_ba.extend(chr(len(data)))
+        ad_ba.extend(data)
 
-    if sd:
-        for entry in sd:
-            data = binascii.unhexlify(bytearray(entry[1]))
-            sd_ba.extend(chr(entry[0]))
-            sd_ba.extend(chr(len(data)))
-            sd_ba.extend(data)
+    for sd_type, sd_data in sd.iteritems():
+        data = binascii.unhexlify(bytearray(sd_data))
+        sd_ba.extend(chr(sd_type))
+        sd_ba.extend(chr(len(data)))
+        sd_ba.extend(data)
 
     data_ba.extend(chr(len(ad_ba)))
     data_ba.extend(chr(len(sd_ba)))

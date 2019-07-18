@@ -41,6 +41,10 @@ def addr2btp_ba(addr_str):
     return unhexlify("".join(addr_str.split(':')))[::-1]
 
 
+def bdaddr_reverse(addr):
+    return ''.join([addr[i:i+2] for i in range(0, len(addr), 2)][::-1])
+
+
 class BTPError(Exception):
     """Exception raised if BTP error occurs.
 
@@ -65,6 +69,13 @@ class AdType:
     uuid16_svc_data = 22
     gap_appearance = 25
     manufacturer_data = 255
+    slave_conn_interval_range = 0x12
+    public_target_addr = 0x17
+    random_target_addr = 0x18
+    advertising_interval = 0x1a
+    le_bt_device_addr = 0x1b
+    le_role = 0x1c
+    uri = 0x24
 
 
 class AdFlags:
@@ -73,6 +84,10 @@ class AdFlags:
     br_edr_not_supp = 0x04
     sim_le_br_edr_contr = 0x08
     sim_le_br_edr_host = 0x10
+
+
+class UriScheme:
+    https = '17'
 
 
 class UUID:
