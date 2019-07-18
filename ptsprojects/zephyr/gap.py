@@ -138,7 +138,7 @@ def set_pixits(pts):
     pts.set_pixit("GAP", "TSPX_gen_disc_scan_min", "10240")
     pts.set_pixit("GAP", "TSPX_database_file", "Database-GAP.sig")
     pts.set_pixit("GAP", "TSPX_iut_rx_mtu", "23")
-    pts.set_pixit("GAP", "TSPX_iut_private_address_interval", "5000")
+    pts.set_pixit("GAP", "TSPX_iut_private_address_interval", "60000")
     pts.set_pixit("GAP", "TSPX_iut_privacy_enabled", "FALSE")
     pts.set_pixit("GAP", "TSPX_psm", "1001")
     pts.set_pixit("GAP", "TSPX_iut_valid_connection_interval_min", "00C8")
@@ -231,10 +231,7 @@ def test_cases(pts):
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/BROB/OBSV/BV-06-C",
                   cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   # Set RPA update to 1 minute (60*1000=60000 ms)
-                   TestFunc(pts.update_pixit_param, "GAP",
-                            "TSPX_iut_private_address_interval", '60000')],
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/DISC/NONM/BV-01-C",
                   pre_conditions,
@@ -505,60 +502,16 @@ def test_cases(pts):
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output)],
                   generic_wid_hdl=gap_wid_hdl),
-        # ZTestCase("GAP", "GAP/PRIV/CONN/BV-10-C",
-        #           edit1_wids={1002: (btp.var_store_get_passkey, pts_bd_addr,
-        #                              Addr.le_public)},
-        #           cmds=pre_conditions +
-        #                [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-        #                 TestFunc(
-        #                     pts.update_pixit_param, "GAP",
-        #                     "TSPX_iut_device_name_in_adv_packet_for_random_address",
-        #                     iut_device_name),
-        #
-        #                 # Set RPA update to 15 minutes (15*60*1000=900000 ms)
-        #                 TestFunc(pts.update_pixit_param, "GAP",
-        #                          "TSPX_iut_private_address_interval",
-        #                          '900000'),
-        #                 TestFunc(btp.gap_set_conn),
-        #                 TestFunc(btp.gap_set_gendiscov),
-        #                 TestFunc(btp.gap_adv_ind_on, sd=[AdData.ad_name_sh]),
-        #                 # Don't disable advertising here
-        #                 TestFunc(btp.gap_disconn, start_wid=77)]),
-        # Workaround BZ-197 and PTS issue #15170
         ZTestCase("GAP", "GAP/PRIV/CONN/BV-10-C",
-                  edit1_wids={1002: btp.var_store_get_passkey},
                   cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   TestFunc(
-                       pts.update_pixit_param, "GAP",
-                       "TSPX_iut_device_name_in_adv_packet_for_random_address",
-                       iut_device_name),
-
-                   # Simulate RPA update every 10 seconds (10*1000=10000 ms)
-                   TestFunc(pts.update_pixit_param, "GAP",
-                            "TSPX_iut_private_address_interval",
-                            '10000'),
-                   TestFunc(btp.gap_set_conn),
-                   TestFunc(btp.gap_set_gendiscov),
-
-                   # This step is used to speed up test execution, so
-                   # that RPA is updated every 10 seconds. This shall
-                   # be skipped on first wid: 91 requesting to send
-                   # advertising report. Here, we are disabling
-                   # previously started advertising, to generate new
-                   # RPA to be used when advertising is started again.
-                   TestFunc(btp.gap_adv_off, start_wid=91,
-                            skip_call=(1,)),
-                   TestFunc(sleep, 10, start_wid=91, skip_call=(1,)),
-                   TestFunc(btp.gap_read_ctrl_info, start_wid=91,
-                            skip_call=(1,)),
-
-                   TestFunc(btp.gap_adv_ind_on,
-                            sd=[AdData.ad_name_sh], start_wid=91),
-                   # Don't disable advertising here
-                   TestFunc(btp.gap_disconn, start_wid=77)]),
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/PRIV/CONN/BV-11-C",
                   cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/PRIV/CONN/BI-01-C",
+                  cmds=pre_conditions +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/ADV/BV-01-C",
                   cmds=pre_conditions,
