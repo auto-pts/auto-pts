@@ -38,6 +38,9 @@ from pybtp.types import BTPError, SynchError
 import ptsprojects.ptstypes as ptstypes
 from config import SERVER_PORT, CLIENT_PORT
 
+import tempfile
+import xml.etree.ElementTree as ET
+
 log = logging.debug
 
 RUNNING_TEST_CASE = {}
@@ -472,9 +475,11 @@ class TestCaseRunStats(object):
         self.margin = 3
         self.index = 0
 
-        self.status_count = {}
-        self.results_dict = {}
-        self.regressions = []
+        self.xml_results = tempfile.NamedTemporaryFile(delete=False).name
+        root = ET.Element("results")
+        tree = ET.ElementTree(root)
+        tree.write(self.xml_results)
+
         self.db = db
 
         if self.db:
@@ -488,33 +493,124 @@ class TestCaseRunStats(object):
         else:
             self.est_duration = 0
 
-    def test_case_stats_update(self, test_case_name, duration, status):
-        status_prev = self.test_case_db_status_get(test_case_name)
+    def update(self, test_case_name, duration, status):
+        tree = ET.parse(self.xml_results)
+        root = tree.getroot()
 
-        # Remove the test case from regressions list if passed now
-        if status == "PASS" and test_case_name in self.regressions:
-            self.regressions.remove(test_case_name)
-        # Mark the test case regression
-        elif status_prev == "PASS" and status != status_prev:
-            self.regressions.append(test_case_name)
+        elem = root.find("./test_case[@name='%s']" % test_case_name)
+        if elem is None:
+            elem = ET.SubElement(root, 'test_case')
 
-        self.results_dict[(test_case_name.split('/')[0], test_case_name)] = status
+            status_previous = None
+            if self.db:
+                status_previous = self.db.get_result(test_case_name)
 
-        if status not in self.status_count:
-            self.status_count[status] = 0
+            elem.attrib["project"] = test_case_name.split('/')[0]
+            elem.attrib["name"] = test_case_name
+            elem.attrib["duration"] = str(duration)
+            elem.attrib["status"] = ""
+            elem.attrib["status_previous"] = str(status_previous)
 
-        self.status_count[status] += 1
+            run_count = 0
+        else:
+            run_count = int(elem.attrib["run_count"])
 
-        if not self.db:
-            return
+        elem.attrib["status"] = status
 
-        self.db.update_statistics(test_case_name, duration, status)
+        if elem.attrib["status"] != "PASS" and \
+                        elem.attrib["status_previous"] == "PASS":
+            regression = True
+        else:
+            regression = False
 
-    def test_case_db_status_get(self, test_case_name):
-        if not self.db:
-            return None
+        elem.attrib["regression"] = str(regression)
+        elem.attrib["run_count"] = str(run_count + 1)
 
-        return self.db.get_result(test_case_name)
+        tree.write(self.xml_results)
+
+        return regression
+
+    def get_results(self):
+        tree = ET.parse(self.xml_results)
+        root = tree.getroot()
+
+        results = {}
+
+        for tc_xml in root.findall("./test_case"):
+            results[tc_xml.attrib["name"]] = \
+                tc_xml.attrib["status"]
+
+        return results
+
+    def get_regressions(self):
+        tree = ET.parse(self.xml_results)
+        root = tree.getroot()
+        tcs_xml = root.findall("./test_case[@regression='True']")
+
+        return [tc_xml.attrib["name"] for tc_xml in tcs_xml]
+
+    def get_status_count(self):
+        tree = ET.parse(self.xml_results)
+        root = tree.getroot()
+
+        status_dict = {}
+
+        for test_case_xml in root.findall("./test_case"):
+            if test_case_xml.attrib["status"] not in status_dict:
+                status_dict[test_case_xml.attrib["status"]] = 0
+
+            status_dict[test_case_xml.attrib["status"]] += 1
+
+        return status_dict
+
+    def print_summary(self):
+        """Prints test case list status summary"""
+        print "\nSummary:\n"
+
+        status_str = "Status"
+        status_str_len = len(status_str)
+        count_str_len = len("Count")
+        total_str_len = len("Total")
+        regressions_str = "Regressions"
+        regressions_str_len = len(regressions_str)
+        regressions_count = len(self.get_regressions())
+        regressions_count_str_len = len(str(regressions_count))
+        num_test_cases_str = str(self.num_test_cases)
+        num_test_cases_str_len = len(num_test_cases_str)
+        status_count = self.get_status_count()
+
+        status_just = max(status_str_len, total_str_len)
+        count_just = max(count_str_len, num_test_cases_str_len)
+
+        if regressions_count != 0:
+            status_just = max(status_just, regressions_str_len)
+            count_just = max(count_just, regressions_count_str_len)
+
+        for status, count in status_count.items():
+            status_just = max(status_just, len(status))
+            count_just = max(count_just, len(str(count)))
+
+            status_just += self.margin
+            title_str = status_str.ljust(status_just) + "Count".rjust(count_just)
+            border = "=" * (status_just + count_just)
+
+        print title_str
+        print border
+
+        # print each status and count
+        for status in sorted(status_count.keys()):
+            count = status_count[status]
+            print status.ljust(status_just) + str(count).rjust(count_just)
+
+        # print total
+        print border
+        print "Total".ljust(status_just) + num_test_cases_str.rjust(count_just)
+
+        if regressions_count != 0:
+            print border
+
+        print(regressions_str.ljust(status_just) +
+              str(regressions_count).rjust(count_just))
 
 
 def run_test_case_wrapper(func):
@@ -542,7 +638,7 @@ def run_test_case_wrapper(func):
         status = func(*args)
         end_time = time.time() - start_time
 
-        stats.test_case_stats_update(test_case_name, end_time, status)
+        regression = stats.update(test_case_name, end_time, status)
 
         retries_max = run_count_max - 1
         if run_count:
@@ -550,16 +646,16 @@ def run_test_case_wrapper(func):
         else:
             retries_msg = ""
 
-        if test_case_name in stats.regressions and run_count == retries_max:
+        if regression and run_count == retries_max:
             regression_msg = "REGRESSION"
         else:
             regression_msg = ""
 
-        end_time = str(round(datetime.timedelta(
+        end_time_str = str(round(datetime.timedelta(
             seconds=end_time).total_seconds(), 3))
 
         result = ("{}".format(status).ljust(16) +
-                end_time.rjust(len(end_time)) +
+                  end_time_str.rjust(len(end_time_str)) +
                 retries_msg.rjust(len("#{}".format(retries_max)) + margin) +
                 regression_msg.rjust(len("REGRESSION") + margin))
 
@@ -569,7 +665,7 @@ def run_test_case_wrapper(func):
         else:
             print(result)
 
-        return status
+        return status, end_time
 
     return wrapper
 
@@ -713,52 +809,6 @@ def run_test_case_thread_entry(pts, test_case):
         test_case)
 
 
-def print_summary(status_count, num_test_cases_str, margin,
-                  regressions_count):
-    """Prints test case list status summary"""
-    print "\nSummary:\n"
-
-    status_str = "Status"
-    status_str_len = len(status_str)
-    count_str_len = len("Count")
-    total_str_len = len("Total")
-    regressions_str = "Regressions"
-    regressions_str_len = len(regressions_str)
-    regressions_count_str_len = len(str(regressions_count))
-    num_test_cases_str_len = len(num_test_cases_str)
-
-    status_just = max(status_str_len, total_str_len)
-    count_just = max(count_str_len, num_test_cases_str_len)
-
-    if regressions_count != 0:
-        status_just = max(status_just, regressions_str_len)
-        count_just = max(count_just, regressions_count_str_len)
-
-    for status, count in status_count.items():
-        status_just = max(status_just, len(status))
-        count_just = max(count_just, len(str(count)))
-
-    status_just += margin
-    title_str = status_str.ljust(status_just) + "Count".rjust(count_just)
-    border = "=" * (status_just + count_just)
-
-    print title_str
-    print border
-
-    # print each status and count
-    for status in sorted(status_count.keys()):
-        count = status_count[status]
-        print status.ljust(status_just) + str(count).rjust(count_just)
-
-    # print total
-    print border
-    print "Total".ljust(status_just) + num_test_cases_str.rjust(count_just)
-    if regressions_count != 0:
-        print border
-        print(regressions_str.ljust(status_just) +
-              str(regressions_count).rjust(count_just))
-
-
 @run_test_case_wrapper
 def run_test_case(ptses, test_case_instances, test_case_name, stats):
     def test_case_lookup_name(name, test_case_class):
@@ -866,20 +916,22 @@ def run_test_cases(ptses, test_case_instances, args):
         stats.run_count = 0
 
         while True:
-            status = run_test_case(ptses, test_case_instances, test_case,
-                                   stats)
+            status, duration = run_test_case(ptses, test_case_instances,
+                                             test_case, stats)
 
             if status == 'PASS' or stats.run_count == args.retry:
+                if TEST_CASE_DB:
+                    TEST_CASE_DB.update_statistics(test_case, duration, status)
+
                 break
 
             stats.run_count += 1
 
         stats.index += 1
 
-    print_summary(stats.status_count, str(stats.num_test_cases),
-                  stats.margin, len(stats.regressions))
+    stats.print_summary()
 
-    return stats.status_count, stats.results_dict, stats.regressions
+    return stats.get_status_count(), stats.get_results(), stats.get_regressions()
 
 
 class CliParser(argparse.ArgumentParser):
