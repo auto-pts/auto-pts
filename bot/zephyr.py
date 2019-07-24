@@ -266,12 +266,25 @@ def run_tests(args, iut_config):
     status = {}
     descriptions = {}
     total_regressions = []
+    _args = {}
 
     callback_thread = autoptsclient.init_core()
 
-    _args = PtsInitArgs(args)
+    config_default = "default.conf"
+    _args[config_default] = PtsInitArgs(args)
 
-    ptses = autoptsclient.init_pts(_args, callback_thread,
+    for config, value in iut_config.items():
+        if 'test_cases' not in value:
+            # Rename default config
+            _args[config] = _args.pop(config_default)
+            config_default = config
+            continue
+
+        _args[config] = PtsInitArgs(args)
+        _args[config].test_cases = value.get('test_cases', [])
+        _args[config_default].excluded += _args[config].test_cases
+
+    ptses = autoptsclient.init_pts(_args[config_default], callback_thread,
                                    "zephyr_" + str(args["board"]))
 
     btp.init(get_iut)
@@ -286,27 +299,14 @@ def run_tests(args, iut_config):
     stack_inst.synch_init(callback_thread.set_pending_response,
                           callback_thread.clear_pending_responses)
 
-    default_conf = "default.conf"
-    default_to_omit = []
-
-    for config, value in iut_config.items():
-        for test_case in value.get('test_cases', []):
-            default_to_omit.append(test_case)
-        if 'test_cases' not in value:
-            default_conf = config
-
     for config, value in iut_config.items():
         if 'overlay' in value:
-            apply_overlay(args["project_path"], default_conf, config,
+            apply_overlay(args["project_path"], config_default, config,
                           value['overlay'])
-            _args.test_cases = value['test_cases']
-        elif 'test_cases' not in value:  # DEFAULT CASE
-            _args.excluded = default_to_omit
-        else:
-            continue
 
-        tty = build_and_flash(args["project_path"], autopts2board[args["board"]],
-                        config)
+        tty = build_and_flash(args["project_path"],
+                              autopts2board[args["board"]],
+                              config)
         logging.debug("TTY path: %s" % tty)
 
         flush_serial(tty)
@@ -324,7 +324,7 @@ def run_tests(args, iut_config):
         test_cases = get_test_cases(ptses)
 
         status_count, results_dict, regressions = autoptsclient.run_test_cases(
-            ptses, test_cases, _args)
+            ptses, test_cases, _args[config])
         total_regressions += regressions
 
         for k, v in status_count.items():
