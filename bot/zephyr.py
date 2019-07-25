@@ -336,9 +336,10 @@ def run_tests(args, iut_config):
         results.update(results_dict)
         autoprojects.iutctl.cleanup()
 
-    for project_name, test_case_name in results.keys():
+    for test_case_name in results.keys():
+        project_name = test_case_name.split('/')[0]
         descriptions[test_case_name] = \
-            pts.get_test_case_description(pts, project_name, test_case_name)
+            pts.get_test_case_description(project_name, test_case_name)
 
     for pts in ptses:
         pts.unregister_xmlrpc_ptscallback()
