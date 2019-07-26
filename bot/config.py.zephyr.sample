@@ -105,6 +105,11 @@ z['iut_config'] = {
         "overlay": {'CONFIG_BT_CTLR_CONN_PARAM_REQ': 'n'},
         "test_cases": ['GAP/CONN/CPUP/BV-01-C', 'GAP/CONN/CPUP/BV-02-C',
                        'GAP/CONN/CPUP/BV-03-C', 'L2CAP/LE/CPU/BV-01-C']},
+
+    "gap_writable_device_name.conf": {
+        "overlay": {'CONFIG_BT_DEVICE_NAME_DYNAMIC': 'y',
+                    'CONFIG_BT_DEVICE_NAME_GATT_WRITABLE': 'y'},
+        'test_cases': ['GAP/GAT/BV-05-C']},
 }
 
 # ****************************************************************************
