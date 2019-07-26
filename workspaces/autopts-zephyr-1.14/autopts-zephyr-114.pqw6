@@ -56,7 +56,7 @@
           <Row>
             <Name>TSPC_GAP_0a_5</Name>
             <Description>Core Spec version 5.0 (Core v5.0) (C.5)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
