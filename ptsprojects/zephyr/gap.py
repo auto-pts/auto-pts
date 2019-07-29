@@ -500,7 +500,8 @@ def test_cases(pts):
                   cmds=pre_conditions + init_gatt_db +
                   [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
                    TestFunc(btp.gap_set_conn),
-                   TestFunc(lambda: btp.gap_adv_ind_on(sd=get_stack().gap.sd)),
+                   TestFunc(lambda: btp.gap_adv_ind_on(ad=get_stack().gap.ad,
+                                                       sd=get_stack().gap.sd)),
                    TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
                             start_wid=77)]),
         ZTestCase("GAP", "GAP/SEC/CSIGN/BI-03-C",
