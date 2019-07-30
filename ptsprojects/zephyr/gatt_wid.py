@@ -111,6 +111,15 @@ def hdl_wid_4(desc):
     return True
 
 
+def hdl_wid_10(dec):
+    # Send Discover All Primary Services Request
+    btp.gattc_disc_all_prim(btp.pts_addr_type_get(None), btp.pts_addr_get(None))
+
+    # Read Discover All Primary Services Response and store it for later use.
+    btp.gattc_disc_all_prim_rsp(True)
+    return True
+
+
 def hdl_wid_11(desc):
     return True
 

@@ -140,6 +140,8 @@ GATTS = {
 GATTC = {
     "exchange_mtu": (defs.BTP_SERVICE_ID_GATT, defs.GATT_EXCHANGE_MTU,
                      CONTROLLER_INDEX),
+    "disc_all_prim": (defs.BTP_SERVICE_ID_GATT, defs.GATT_DISC_ALL_PRIM,
+                      CONTROLLER_INDEX),
     "disc_prim_uuid": (defs.BTP_SERVICE_ID_GATT, defs.GATT_DISC_PRIM_UUID,
                        CONTROLLER_INDEX),
     "find_included": (defs.BTP_SERVICE_ID_GATT, defs.GATT_FIND_INCLUDED,
@@ -1309,6 +1311,23 @@ def gattc_exchange_mtu(bd_addr_type, bd_addr):
     gatt_command_rsp_succ()
 
 
+def gattc_disc_all_prim(bd_addr_type, bd_addr):
+    logging.debug("%s %r %r", gattc_disc_all_prim.__name__, bd_addr_type,
+                   bd_addr)
+    iutctl = get_iut()
+
+    gap_wait_for_connection()
+
+    data_ba = bytearray()
+
+    bd_addr_ba = addr2btp_ba(bd_addr)
+
+    data_ba.extend(chr(bd_addr_type))
+    data_ba.extend(bd_addr_ba)
+
+    iutctl.btp_socket.send(*GATTC['disc_all_prim'], data=data_ba)
+
+
 def gattc_disc_prim_uuid(bd_addr_type, bd_addr, uuid):
     logging.debug("%s %r %r %r", gattc_disc_prim_uuid.__name__, bd_addr_type,
                   bd_addr, uuid)
@@ -2029,6 +2048,35 @@ def gattc_disc_prim_uuid_find_attrs_rsp(exp_svcs, store_attrs=False):
                 GATT_SVCS = []
 
                 GATT_SVCS.append(svc)
+
+
+def gattc_disc_all_prim_rsp(store_rsp=False):
+    iutctl = get_iut()
+
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
+    logging.debug("%s received %r %r", gattc_disc_all_prim_rsp.__name__,
+                  tuple_hdr, tuple_data)
+
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
+                  defs.GATT_DISC_ALL_PRIM)
+
+    svcs_tuple = gatt_dec_disc_rsp(tuple_data[0], "service")
+    logging.debug("%s %r", gattc_disc_all_prim_rsp.__name__, svcs_tuple)
+
+    if store_rsp:
+        global VERIFY_VALUES
+
+        VERIFY_VALUES = []
+
+        for svc in svcs_tuple:
+            # Keep just UUID since PTS checks only UUID.
+            uuid = svc[2].upper()
+
+            # avoid repeated service uuid, it should be verified only once
+            if uuid not in VERIFY_VALUES:
+                VERIFY_VALUES.append(uuid)
+
+        logging.debug("Set verify values to: %r", VERIFY_VALUES)
 
 
 def gattc_disc_prim_uuid_rsp(store_rsp=False):

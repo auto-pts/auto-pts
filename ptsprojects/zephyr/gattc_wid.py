@@ -38,3 +38,6 @@ def gattc_wid_hdl(wid, description, test_case_name):
 def hdl_wid_24(desc):
     return btp.verify_description(desc)
 
+
+def hdl_wid_17(desc):
+    return btp.verify_description(desc)
