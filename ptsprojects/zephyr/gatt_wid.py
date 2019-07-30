@@ -434,6 +434,10 @@ def hdl_wid_44(desc):
     return btp.verify_description(desc)
 
 
+def hdl_wid_45(desc):
+    return btp.verify_description(desc)
+
+
 def hdl_wid_46(desc):
     return btp.verify_description(desc)
 
@@ -469,6 +473,29 @@ def hdl_wid_49(desc):
 
 def hdl_wid_50(desc):
     return btp.verify_description(desc)
+
+
+def hdl_wid_51(desc):
+    MMI.reset()
+    MMI.parse_description(desc)
+
+    uuid = MMI.args[0]
+    start_hdl = MMI.args[1]
+    end_hdl = MMI.args[2]
+
+    if not uuid or not start_hdl or not end_hdl:
+        logging.debug("parsing error")
+        return False
+
+    btp.gattc_read_uuid(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
+                        start_hdl, end_hdl, uuid)
+
+    try:
+        btp.gattc_read_uuid_rsp(True, True)
+    except socket.timeout:
+        pass
+
+    return True
 
 
 def hdl_wid_52(desc):
