@@ -382,6 +382,8 @@ def hdl_wid_108(desc):
 
 
 def hdl_wid_112(desc):
+    stack = get_stack()
+
     bd_addr = btp.pts_addr_get()
     bd_addr_type = btp.pts_addr_type_get()
 

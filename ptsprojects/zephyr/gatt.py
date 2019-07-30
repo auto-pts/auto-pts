@@ -18,7 +18,7 @@
 try:
     from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
         TestFuncCleanUp, MMI
-    from ptsprojects.zephyr.ztestcase import ZTestCase
+    from ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
 
 except ImportError:  # running this module as script
     import sys
@@ -106,7 +106,7 @@ def verify_gatt_sr_gpa_bv_04_c(description):
     return verification_pass
 
 
-def set_pixits(pts):
+def set_pixits(ptses):
     """Setup GATT profile PIXITS for workspace. Those values are used for test
     case if not updated within test case.
 
@@ -114,6 +114,12 @@ def set_pixits(pts):
     PTS.
 
     pts -- Instance of PyPTS"""
+
+    if len(ptses) < 2:
+        return
+
+    pts = ptses[0]
+    pts2 = ptses[1]
 
     pts.set_pixit("GATT", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
     pts.set_pixit("GATT", "TSPX_iut_device_name_in_adv_packet_for_random_address", "")
@@ -136,8 +142,35 @@ def set_pixits(pts):
     pts.set_pixit("GATT", "TSPX_tester_appearance", "0000")
 
 
-def test_cases_server(pts):
+    pts2.set_pixit("GATT", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
+    pts2.set_pixit("GATT", "TSPX_iut_device_name_in_adv_packet_for_random_address", "")
+    pts2.set_pixit("GATT", "TSPX_security_enabled", "FALSE")
+    pts2.set_pixit("GATT", "TSPX_delete_link_key", "TRUE")
+    pts2.set_pixit("GATT", "TSPX_time_guard", "180000")
+    pts2.set_pixit("GATT", "TSPX_selected_handle", "0012")
+    pts2.set_pixit("GATT", "TSPX_use_implicit_send", "TRUE")
+    pts2.set_pixit("GATT", "TSPX_secure_simple_pairing_pass_key_confirmation", "FALSE")
+    pts2.set_pixit("GATT", "TSPX_iut_use_dynamic_bd_addr", "FALSE")
+    pts2.set_pixit("GATT", "TSPX_iut_setup_att_over_br_edr", "FALSE")
+    pts2.set_pixit("GATT", "TSPX_tester_database_file",
+                  "C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\GATT_Qualification_Test_Databases.xml")
+    pts2.set_pixit("GATT", "TSPX_iut_is_client_periphral", "FALSE")
+    pts2.set_pixit("GATT", "TSPX_iut_is_server_central", "FALSE")
+    pts2.set_pixit("GATT", "TSPX_mtu_size", "23")
+    pts2.set_pixit("GATT", "TSPX_pin_code", "0000")
+    pts2.set_pixit("GATT", "TSPX_use_dynamic_pin", "FALSE")
+    pts2.set_pixit("GATT", "TSPX_delete_ltk", "TRUE")
+    pts2.set_pixit("GATT", "TSPX_tester_appearance", "0000")
+
+
+def test_cases_server(ptses):
     """Returns a list of GATT Server test cases"""
+
+    if len(ptses) < 2:
+        return
+
+    pts = ptses[0]
+    pts2 = ptses[1]
 
     pts_bd_addr = pts.q_bd_addr
     stack = get_stack()
@@ -166,6 +199,14 @@ def test_cases_server(pts):
                             "TRUE" if stack.gap.iut_addr_is_random()
                             else "FALSE")),
                         TestFunc(stack.gatt_init)]
+
+    pre_conditions_lt2 = [TestFunc(lambda: pts2.update_pixit_param(
+                                   "GATT", "TSPX_bd_addr_iut",
+                                   stack.gap.iut_addr_get_str())),
+                          TestFunc(lambda: pts2.update_pixit_param(
+                                   "GATT", "TSPX_iut_use_dynamic_bd_addr",
+                                   "TRUE" if stack.gap.iut_addr_is_random()
+                                   else "FALSE"))]
 
     init_server_1 = [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                      TestFunc(btp.gatts_add_char, 0,
@@ -465,6 +506,34 @@ def test_cases_server(pts):
                    TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1, post_wid=96),
                    TestFunc(btp.gatts_start_server, post_wid=96)],
                   generic_wid_hdl=gatt_wid_hdl),
+        ZTestCase("GATT", "GATT/SR/GAS/BV-02-C",
+                  cmds=pre_conditions_1 +
+                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=gatt_wid_hdl),
+        ZTestCase("GATT", "GATT/SR/GAS/BV-03-C",
+                  cmds=pre_conditions_1 +
+                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=gatt_wid_hdl,
+                  lt2="GATT/SR/GAS/BV-03-C-LT2"),
+        ZTestCaseSlave("GATT", "GATT/SR/GAS/BV-03-C-LT2",
+                       cmds=pre_conditions_lt2,
+                       generic_wid_hdl=gatt_wid_hdl),
+        ZTestCase("GATT", "GATT/SR/GAS/BV-04-C",
+                  cmds=pre_conditions_1 +
+                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=gatt_wid_hdl),
+        ZTestCase("GATT", "GATT/SR/GAS/BV-05-C",
+                  cmds=pre_conditions_1 +
+                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=gatt_wid_hdl),
+        ZTestCase("GATT", "GATT/SR/GAS/BV-06-C",
+                  cmds=pre_conditions_1 +
+                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=gatt_wid_hdl),
+        ZTestCase("GATT", "GATT/SR/GAS/BV-07-C",
+                  cmds=pre_conditions_1 +
+                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAT/BV-01-C",
                   pre_conditions_1 + init_server_2,
                   generic_wid_hdl=gatt_wid_hdl),
@@ -490,7 +559,7 @@ def test_cases_server(pts):
                   pre_conditions_1 + init_server_1,
                   generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GPA/BV-08-C",
-                  pre_conditions_1 + init_server_3,
+                  pre_conditions_1,
                   generic_wid_hdl=gatt_wid_hdl),
         # TODO rewrite GATT/SR/GPA/BV-11-C
         ZTestCase("GATT", "GATT/SR/GPA/BV-11-C",
@@ -726,15 +795,15 @@ def test_cases_client(pts):
     return test_cases
 
 
-def test_cases(pts):
+def test_cases(ptses):
     """Returns a list of GATT test cases"""
 
     stack = get_stack()
 
     stack.gap_init()
 
-    test_cases = test_cases_client(pts)
-    test_cases += test_cases_server(pts)
+    test_cases = test_cases_client(ptses[0])
+    test_cases += test_cases_server(ptses)
 
     return test_cases
 

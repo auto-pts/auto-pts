@@ -1331,6 +1331,24 @@ def hdl_wid_122(desc):
     return '0000'
 
 
+def hdl_wid_130(desc):
+    return True
+
+
+def hdl_wid_132(desc):
+    btp.gatts_add_svc(0, UUID.VND16_1)
+    btp.gatts_start_server()
+    return True
+
+
+def hdl_wid_133(desc):
+    return True
+
+
+def hdl_wid_134(desc):
+    return True
+
+
 def hdl_wid_2000(desc):
     stack = get_stack()
 
