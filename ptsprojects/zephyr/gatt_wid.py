@@ -1020,6 +1020,48 @@ def hdl_wid_107(desc):
     return True
 
 
+def hdl_wid_108(desc):
+    MMI.reset()
+    MMI.parse_description(desc)
+
+    uuid = MMI.args[0]
+
+    if not uuid:
+        logging.debug("parsing error")
+        return False
+
+    btp.gattc_read_uuid(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
+                        "0001", "FFFF", uuid)
+
+    try:
+        btp.gattc_read_uuid_rsp(False, True)
+    except socket.timeout:
+        return False
+
+    return True
+
+
+def hdl_wid_109(desc):
+    MMI.reset()
+    MMI.parse_description(desc)
+
+    uuid = MMI.args[0]
+
+    if not uuid:
+        logging.debug("parsing error")
+        return False
+
+    btp.gattc_read_uuid(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
+                        "0001", "FFFF", uuid)
+
+    try:
+        btp.gattc_read_uuid_rsp(False, True)
+    except socket.timeout:
+        return False
+
+    return True
+
+
 def hdl_wid_110(desc):
     # Lookup characteristic handle that does not permit reading
     chrcs = btp.gatts_get_attrs(type_uuid='2803')
