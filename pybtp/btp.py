@@ -2618,6 +2618,21 @@ def gap_conn_param_update_ev_(gap, data, data_len):
     gap.set_conn_params(ConnParams(_itvl, _latency, _timeout))
 
 
+def gap_sec_level_changed_ev_(gap, data, data_len):
+    logging.debug("%s", gap_sec_level_changed_ev_.__name__)
+
+    logging.debug("received %r", data)
+
+    fmt = '<B6sB'
+    if len(data) != struct.calcsize(fmt):
+        raise BTPError("Invalid data length")
+
+    _addr_t, _addr, _level = struct.unpack_from(fmt, data)
+    _addr = binascii.hexlify(_addr[::-1]).decode()
+
+    logging.debug("received %r", (_addr_t, _addr, _level))
+
+
 GAP_EV = {
     defs.GAP_EV_NEW_SETTINGS: gap_new_settings_ev_,
     defs.GAP_EV_DEVICE_FOUND: gap_device_found_ev_,
@@ -2626,6 +2641,7 @@ GAP_EV = {
     defs.GAP_EV_PASSKEY_DISPLAY: gap_passkey_disp_ev_,
     defs.GAP_EV_IDENTITY_RESOLVED: gap_identity_resolved_ev_,
     defs.GAP_EV_CONN_PARAM_UPDATE: gap_conn_param_update_ev_,
+    defs.GAP_EV_SEC_LEVEL_CHANGED: gap_sec_level_changed_ev_,
 }
 
 
