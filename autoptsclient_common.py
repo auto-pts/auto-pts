@@ -582,6 +582,9 @@ class TestCaseRunStats(object):
         status_just = max(status_str_len, total_str_len)
         count_just = max(count_str_len, num_test_cases_str_len)
 
+        title_str = ''
+        border = ''
+
         if regressions_count != 0:
             status_just = max(status_just, regressions_str_len)
             count_just = max(count_just, regressions_count_str_len)
