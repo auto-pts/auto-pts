@@ -110,6 +110,8 @@ GAP = {
     "passkey_entry_rsp": (defs.BTP_SERVICE_ID_GAP,
                           defs.GAP_PASSKEY_ENTRY,
                           CONTROLLER_INDEX),
+    "start_direct_adv": (defs.BTP_SERVICE_ID_GAP, defs.GAP_START_DIRECT_ADV,
+                         CONTROLLER_INDEX),
     "conn_param_update": (defs.BTP_SERVICE_ID_GAP,
                           defs.GAP_CONN_PARAM_UPDATE,
                           CONTROLLER_INDEX),
@@ -555,6 +557,29 @@ def gap_adv_off():
     iutctl.btp_socket.send(*GAP['stop_adv'])
 
     tuple_data = gap_command_rsp_succ(defs.GAP_STOP_ADVERTISING)
+    __gap_current_settings_update(tuple_data)
+
+
+def gap_direct_adv_on(addr, addr_type, high_duty=0):
+    logging.debug("%s %r %r", gap_direct_adv_on.__name__, addr, high_duty)
+
+    stack = get_stack()
+
+    if stack.gap.current_settings_get(
+            gap_settings_btp2txt[defs.GAP_SETTINGS_ADVERTISING]):
+        return
+
+    iutctl = get_iut()
+
+    data_ba = bytearray()
+    bd_addr_ba = addr2btp_ba(addr)
+    data_ba.extend(chr(addr_type))
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(chr(high_duty))
+
+    iutctl.btp_socket.send(*GAP['start_direct_adv'], data=data_ba)
+
+    tuple_data = gap_command_rsp_succ(defs.GAP_START_DIRECT_ADV)
     __gap_current_settings_update(tuple_data)
 
 
