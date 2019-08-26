@@ -384,7 +384,7 @@ def init_pts_thread_entry(proxy, local_address, workspace_path, bd_addr,
 
     proxy.callback_thread = callback_thread
 
-    proxy.set_call_timeout(120000)  # milliseconds
+    proxy.set_call_timeout(300000)  # milliseconds
 
     log("Server methods: %s", proxy.system.listMethods())
     log("PTS Version: %s", proxy.get_version())
