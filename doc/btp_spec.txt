@@ -1226,6 +1226,20 @@ Commands and responses:
 
 		In case of an error, the error response will be returned.
 
+	Opcode 0x1e - Change Database
+
+		Controller Index:	<controller id>
+		Command parameters:	Start Handle (2 octets)
+		            End Handle (2 octets)
+		            Visibility (1 octet)
+		Response parameters:	<none>
+
+		This procedure is used to change the visibility of a portion
+		of a GATT database. BTP_STATUS_SUCCESS response indicates
+		the procedure is finished.
+
+		In case of an error, the error response will be returned.
+
 Events:
 	Opcode 0x80 - Notification/Indication Received
 
