@@ -1292,17 +1292,21 @@ def gatts_get_attrs(start_handle=0x0001, end_handle=0xffff, type_uuid=None):
     return dec_gatts_get_attrs_rp(tuple_data[0], tuple_hdr.data_len)
 
 
-def gatts_get_attr_val(handle):
+def gatts_get_attr_val(bd_addr_type, bd_addr, handle):
     logging.debug("%s %r", gatts_get_attr_val.__name__, handle)
 
     iutctl = get_iut()
 
     data_ba = bytearray()
 
+    bd_addr_ba = addr2btp_ba(bd_addr)
     if type(handle) is str:
         handle = int(handle, 16)
 
     hdl_ba = struct.pack('H', handle)
+
+    data_ba.extend(chr(bd_addr_type))
+    data_ba.extend(bd_addr_ba)
     data_ba.extend(hdl_ba)
 
     iutctl.btp_socket.send(*GATTS['get_attr_val'], data=data_ba)
