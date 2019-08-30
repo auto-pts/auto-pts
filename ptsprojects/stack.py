@@ -104,7 +104,7 @@ class ConnParams:
 
 class Gap:
     def __init__(self, name, manufacturer_data, appearance, svc_data, flags,
-                 svcs):
+                 svcs, uri=None):
 
         self.ad = {}
         self.sd = {}
@@ -121,6 +121,7 @@ class Gap:
         self.svc_data = svc_data
         self.flags = flags
         self.svcs = svcs
+        self.uri = uri
 
         # If disconnected - None
         # If connected - remote address tuple (addr, addr_type)
@@ -632,9 +633,9 @@ class Stack:
         self.gatt = None
 
     def gap_init(self, name=None, manufacturer_data=None, appearance=None,
-                 svc_data=None, flags=None, svcs=None):
+                 svc_data=None, flags=None, svcs=None, uri=None):
         self.gap = Gap(name, manufacturer_data, appearance, svc_data, flags,
-                       svcs)
+                       svcs, uri)
 
     def mesh_init(self, uuid, oob, output_size, output_actions, input_size,
                   input_actions, crpl_size):
