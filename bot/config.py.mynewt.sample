@@ -1,0 +1,155 @@
+#
+# auto-pts - The Bluetooth PTS Automation Framework
+#
+# Copyright (c) 2018, Intel Corporation.
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms and conditions of the GNU General Public License,
+# version 2, as published by the Free Software Foundation.
+#
+# This program is distributed in the hope it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
+#
+
+# Sample user_config file
+# Apply your changes and rename it to config.py
+
+BotProjects = []
+
+m = mynewt_nrf52 = {
+    'name': 'mynewt'
+}
+
+# ****************************************************************************
+# AutoPTS configuration
+# ****************************************************************************
+z['auto_pts'] = {
+    'server_ip': ['192.168.0.2'],
+    'client_port': 6001,
+    'local_ip' : ['192.168.0.100'],
+    'project_path': '/path/to/project',
+    'workspace': 'Mynewt Nimble Host',
+    'board': 'nordic_pca10056',
+    'enable_max_logs': False,
+    'retry': 2,
+    'bd_addr': '',
+}
+
+# ****************************************************************************
+# Git repositories configuration
+# ****************************************************************************
+m['git'] = {
+    'apache-mynewt-core': {
+        'path': 'repos/apache-mynewt-core',
+        'remote': 'origin',
+        'branch': 'master',
+        'stash_changes': False,
+    },
+    'apache-mynewt-nimble': {
+        'path': 'repos/apache-mynewt-nimble',
+        'remote': 'origin',
+        'branch': 'master',
+        'stash_changes': False,
+    },
+    'mcuboot': {
+        'path': 'repos/mcuboot',
+        'remote': 'origin',
+        'branch': 'master',
+        'stash_changes': False,
+    },
+}
+
+# ****************************************************************************
+# Mailbox configuration
+#
+# To send an email report with test result summary
+# ****************************************************************************
+z['mail'] = {
+    "sender": "john.doe@example.com",
+    "smtp_host": 'smtp.example.com',
+    "smtp_port": 587,
+    "name": "John",
+    "passwd": "<PASSWD>",
+    "start_tls": False,
+    "recipients": [
+        "1234@example.com",
+        "5678@example.com",
+    ],
+}
+
+# ****************************************************************************
+# Google Drive configuration
+#
+# To put the tests execution logs to Google Drive
+# ****************************************************************************
+z['gdrive'] = {
+    "root_directory_id": "<GoogleDriveDirID>",
+    "credentials_file": "/path/to/credentials.json",
+}
+
+# ****************************************************************************
+# IUT configuration
+#
+# To apply test case specific changes in IUT configuration
+# ****************************************************************************
+
+m['iut_config'] = {
+    "default.conf": {
+        "test_cases": [
+            'GAP', 'GATT', 'L2CAP', 'SM', 'MESH',
+        ],
+    },
+
+      "privacy.conf": {
+          "overlay": {'BTTESTER_PRIVACY_MODE': '1'},
+          "test_cases": [
+              'GAP/CONN/ACEP/BV-03-C',
+              'GAP/CONN/ACEP/BV-04-C',
+              'GAP/CONN/DCEP/BV-05-C',
+              'GAP/CONN/DCEP/BV-06-C',
+              'GAP/CONN/GCEP/BV-05-C',
+              'GAP/CONN/GCEP/BV-06-C',
+              'GAP/CONN/UCON/BV-06-C',
+              'GAP/DISC/GENM/BV-03-C',
+              'GAP/PRIV/CONN/BV-10-C',
+              'GAP/PRIV/CONN/BV-11-C',
+              'GAP/PRIV/CONN/BI-01-C',
+              'GAP/PRIV/CONN/BI-10-C',
+          ]},
+
+      "nrpa.conf": {
+          "overlay": {
+              'BTTESTER_PRIVACY_MODE': '1',
+              'BTTESTER_USE_NRPA': '1',
+          },
+          "test_cases": ['GAP/BROB/BCST/BV-04-C']},
+
+      "mesh_subnet_count.conf": {
+          "overlay": {'BLE_MESH_SUBNET_COUNT': '1'},
+          "test_cases": ['MESH/NODE/CFG/NKL/BI-03-C']},
+
+      "l2cap_param_update.conf": {
+
+          "overlay": {'BTTESTER_CONN_PARAM_UPDATE': '1'},
+          "test_cases": [
+              'GAP/CONN/CPUP/BV-01-C',
+              'GAP/CONN/CPUP/BV-02-C',
+              'GAP/CONN/CPUP/BV-03-C',
+              'GAP/CONN/CPUP/BV-06-C',
+              'L2CAP/LE/CPU/BV-01-C',
+          ]},
+}
+
+# ****************************************************************************
+# Scheduler configuration
+#
+# To run the tests periodically
+# ****************************************************************************
+# m['scheduler'] = {
+#     'monday': '10:20',
+#     'friday': '20:00',
+# }
+
+BotProjects.append(mynewt_nrf52)

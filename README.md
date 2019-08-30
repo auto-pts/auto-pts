@@ -16,10 +16,11 @@ The Bluetooth Profile Tuning Suite (PTS) is a Bluetooth testing tool provided by
 
 auto-pts is the Bluetooth PTS automation framework. auto-pts uses PTSControl COM API of PTS to automate testing.
 
-Over 460 test cases have been automated for Zephyr OS which reduced testing time from one man-month to 9 hours. auto-pts has been used to automate testing of two Bluetooth stacks thus far:
+Over 460 test cases have been automated for Zephyr OS and Mynewt OS which reduced testing time from one man-month to 9 hours. auto-pts has been used to automate testing of three Bluetooth stacks thus far:
 
 * BlueZ
 * Zephyr BLE
+* Mynewt NimBLE
 
 # Architecture
 
@@ -95,15 +96,13 @@ autopts.py has been used to test AOSP BlueZ Bluetooth stack, and serves a good r
 
 AutoPTSClientBot has been added to automate running test cases on various
 configurations and reporting the results.
-Initial bot implementation supports running Zephyr tests on nrf52 board.
 
 **Key features**
 
-- Scheduler to run the script periodically
 - Fetching recent project sources
 - Applying changes to project configuration files via "iut_config"
 with "overlay" that need to be applied for "test_cases"
-- Building ZephyrOS image
+- Building ZephyrOS/MynewtOS image
 - Flashing board
 - Running all the test cases
 - Archiving test execution logs
@@ -115,8 +114,8 @@ with "overlay" that need to be applied for "test_cases"
 
 **Configuration**
 
-Bot is configured via "bot/config.py" file. Sample `bot/config.py.sample` file
-is provided. The configuration file is composed of project configurations.
+Bot is configured via "bot/config.py" file. Sample files `bot/config.py.zephyr.sample` 
+and `bot/config.py.mynewt.sample` are provided. The configuration file is composed of project configurations.
 This may contain few sections:
 - 'name' - AutoPTS project name
 - 'auto_pts' - AutoPTS configuration
