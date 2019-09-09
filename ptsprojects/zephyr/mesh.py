@@ -207,7 +207,9 @@ def test_cases(ptses):
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/CFG/CFGR/BI-01-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
-        ZTestCase("MESH", "MESH/NODE/CFG/CFGR/BV-01-C", cmds=pre_conditions,
+        ZTestCase("MESH", "MESH/NODE/CFG/CFGR/BV-01-C", cmds=pre_conditions +
+                  [TestFunc(lambda: pts.update_pixit_param(
+                   "MESH", "TSPX_iut_supports_relay", "TRUE"))],
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/CFG/COMP/BV-01-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
