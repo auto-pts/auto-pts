@@ -43,12 +43,14 @@ def gatt_wid_hdl(wid, description, test_case_name):
 
 def gatt_server_fetch_db():
     db = GattDB()
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
 
     attrs = btp.gatts_get_attrs()
     for attr in attrs:
         handle, perm, type_uuid = attr
 
-        attr_val = btp.gatts_get_attr_val(handle)
+        attr_val = btp.gatts_get_attr_val(bd_addr_type, bd_addr, handle)
         if not attr_val:
             logging.debug("cannot read value %r", handle)
             continue
@@ -149,13 +151,15 @@ def hdl_wid_17(desc):
         logging.error("%s parsing error", hdl_wid_17.__name__)
         return False
 
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
     iut_services = []
 
     # Get all primary services
     attrs = btp.gatts_get_attrs(type_uuid='2800')
     for attr in attrs:
         handle, perm, type_uuid = attr
-        (_, uuid_len, uuid) = btp.gatts_get_attr_val(handle)
+        (_, uuid_len, uuid) = btp.gatts_get_attr_val(bd_addr_type, bd_addr, handle)
         uuid = btp.btp2uuid(uuid_len, uuid)
         iut_services.append(uuid)
 
@@ -225,6 +229,9 @@ def hdl_wid_23(desc):
         logging.debug("parsing error")
         return False
 
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
     iut_services = []
 
     # [start_hdl, end_hdl, uuid]
@@ -240,7 +247,7 @@ def hdl_wid_23(desc):
             iut_services.append(iut_service)
             iut_service = None
 
-        val = btp.gatts_get_attr_val(start_handle)
+        val = btp.gatts_get_attr_val(bd_addr_type, bd_addr, start_handle)
         if not val:
             continue
 
@@ -300,6 +307,9 @@ def hdl_wid_25(desc):
     iut_start_handle = None
     iut_end_handle = None
 
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
     # Find pts_chrc_uuid service and it's handle range
     svcs = btp.gatts_get_attrs(type_uuid='2800')
     for svc in svcs:
@@ -309,7 +319,7 @@ def hdl_wid_25(desc):
             iut_end_handle = handle - 1
             break
 
-        svc_val = btp.gatts_get_attr_val(handle)
+        svc_val = btp.gatts_get_attr_val(bd_addr_type, bd_addr, handle)
         if not svc_val:
             continue
 
@@ -561,10 +571,13 @@ def hdl_wid_56(desc):
 
     values_read = ""
 
-    att_rsp, value_len, value = btp.gatts_get_attr_val(handle1)
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
+    att_rsp, value_len, value = btp.gatts_get_attr_val(bd_addr_type, bd_addr, handle1)
     values_read += hexlify(value)
 
-    att_rsp, value_len, value = btp.gatts_get_attr_val(handle2)
+    att_rsp, value_len, value = btp.gatts_get_attr_val(bd_addr_type, bd_addr, handle2)
     values_read += hexlify(value)
 
     if values_read.upper() != values.upper():
@@ -835,6 +848,9 @@ def hdl_wid_91(desc):
 
 
 def hdl_wid_92(desc):
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
     # This pattern is matching Notification handle
     pattern = re.compile("(handle)\s?=\s?'([0-9a-fA-F]+)'")
     params = pattern.findall(desc)
@@ -844,7 +860,7 @@ def hdl_wid_92(desc):
 
     params = dict(params)
     handle = int(params.get('handle'), 16)
-    att_rsp, value_len, value = btp.gatts_get_attr_val(handle)
+    att_rsp, value_len, value = btp.gatts_get_attr_val(bd_addr_type, bd_addr, handle)
 
     if att_rsp:
         logging.debug("cannot read chrc value")
@@ -879,8 +895,10 @@ def hdl_wid_98(desc):
         return False
 
     handle = int(MMI.args[0], 16)
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
 
-    att_rsp, value_len, value = btp.gatts_get_attr_val(handle)
+    att_rsp, value_len, value = btp.gatts_get_attr_val(bd_addr_type, bd_addr, handle)
 
     if att_rsp:
         logging.debug("cannot read chrc value")
@@ -1063,12 +1081,15 @@ def hdl_wid_109(desc):
 
 
 def hdl_wid_110(desc):
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
     # Lookup characteristic handle that does not permit reading
     chrcs = btp.gatts_get_attrs(type_uuid='2803')
     for chrc in chrcs:
         handle, perm, type_uuid = chrc
 
-        chrc_val = btp.gatts_get_attr_val(handle)
+        chrc_val = btp.gatts_get_attr_val(bd_addr_type, bd_addr, handle)
         if not chrc_val:
             continue
 
@@ -1092,12 +1113,15 @@ def hdl_wid_110(desc):
 
 
 def hdl_wid_111(desc):
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
     # Lookup characteristic UUID that does not permit reading
     chrcs = btp.gatts_get_attrs(type_uuid='2803')
     for chrc in chrcs:
         handle, perm, type_uuid = chrc
 
-        chrc_val = btp.gatts_get_attr_val(handle)
+        chrc_val = btp.gatts_get_attr_val(bd_addr_type, bd_addr, handle)
         if not chrc_val:
             continue
 
@@ -1121,12 +1145,15 @@ def hdl_wid_111(desc):
 
 
 def hdl_wid_112(desc):
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
     # Lookup characteristic handle that requires read authorization
     chrcs = btp.gatts_get_attrs(type_uuid='2803')
     for chrc in chrcs:
         handle, perm, type_uuid = chrc
 
-        chrc_val = btp.gatts_get_attr_val(handle)
+        chrc_val = btp.gatts_get_attr_val(bd_addr_type, bd_addr, handle)
         if not chrc_val:
             continue
 
@@ -1143,7 +1170,7 @@ def hdl_wid_112(desc):
             continue
 
         handle, perm, type_uuid = chrc_value_attr[0]
-        chrc_value_data = btp.gatts_get_attr_val(handle)
+        chrc_value_data = btp.gatts_get_attr_val(bd_addr_type, bd_addr, handle)
         if not chrc_value_data:
             continue
 
@@ -1158,12 +1185,15 @@ def hdl_wid_112(desc):
 
 
 def hdl_wid_113(desc):
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
     # Lookup characteristic UUID that requires read authorization
     chrcs = btp.gatts_get_attrs(type_uuid='2803')
     for chrc in chrcs:
         handle, perm, type_uuid = chrc
 
-        chrc_data = btp.gatts_get_attr_val(handle)
+        chrc_data = btp.gatts_get_attr_val(bd_addr_type, bd_addr, handle)
         if not chrc_data:
             continue
 
@@ -1180,7 +1210,7 @@ def hdl_wid_113(desc):
             continue
 
         handle, perm, type_uuid = chrc_value_attr[0]
-        chrc_value_data = btp.gatts_get_attr_val(handle)
+        chrc_value_data = btp.gatts_get_attr_val(bd_addr_type, bd_addr, handle)
         if not chrc_value_data:
             continue
 
@@ -1196,12 +1226,15 @@ def hdl_wid_113(desc):
 
 
 def hdl_wid_114(desc):
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
     # Lookup characteristic UUID that requires read authentication
     chrcs = btp.gatts_get_attrs(type_uuid='2803')
     for chrc in chrcs:
         handle, perm, type_uuid = chrc
 
-        chrc_val = btp.gatts_get_attr_val(handle)
+        chrc_val = btp.gatts_get_attr_val(bd_addr_type, bd_addr, handle)
         if not chrc_val:
             continue
 
@@ -1225,12 +1258,15 @@ def hdl_wid_114(desc):
 
 
 def hdl_wid_115(desc):
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
     # Lookup characteristic UUID that requires read authentication
     chrcs = btp.gatts_get_attrs(type_uuid='2803')
     for chrc in chrcs:
         handle, perm, type_uuid = chrc
 
-        chrc_val = btp.gatts_get_attr_val(handle)
+        chrc_val = btp.gatts_get_attr_val(bd_addr_type, bd_addr, handle)
         if not chrc_val:
             continue
 
@@ -1269,6 +1305,9 @@ def hdl_wid_118(desc):
 
 
 def hdl_wid_119(desc):
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
     # Lookup UUID that is not present on IUT GATT Server
     uuid_list = []
 
@@ -1276,7 +1315,7 @@ def hdl_wid_119(desc):
     for chrc in chrcs:
         handle, perm, type_uuid = chrc
 
-        chrc_val = btp.gatts_get_attr_val(handle)
+        chrc_val = btp.gatts_get_attr_val(bd_addr_type, bd_addr, handle)
         if not chrc_val:
             continue
 
@@ -1306,12 +1345,15 @@ def hdl_wid_119(desc):
 
 
 def hdl_wid_120(desc):
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
     # Lookup characteristic handle that does not permit write
     chrcs = btp.gatts_get_attrs(type_uuid='2803')
     for chrc in chrcs:
         handle, perm, type_uuid = chrc
 
-        chrc_val = btp.gatts_get_attr_val(handle)
+        chrc_val = btp.gatts_get_attr_val(bd_addr_type, bd_addr, handle)
         if not chrc_val:
             continue
 
@@ -1335,12 +1377,15 @@ def hdl_wid_120(desc):
 
 
 def hdl_wid_121(desc):
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
     # Lookup characteristic UUID that returns Insufficient Encryption Key Size
     chrcs = btp.gatts_get_attrs(type_uuid='2803')
     for chrc in chrcs:
         handle, perm, type_uuid = chrc
 
-        chrc_val = btp.gatts_get_attr_val(handle)
+        chrc_val = btp.gatts_get_attr_val(bd_addr_type, bd_addr, handle)
         if not chrc_val:
             continue
 
@@ -1357,7 +1402,7 @@ def hdl_wid_121(desc):
             continue
 
         handle, perm, type_uuid = chrc_value_attr[0]
-        chrc_value_data = btp.gatts_get_attr_val(handle)
+        chrc_value_data = btp.gatts_get_attr_val(bd_addr_type, bd_addr, handle)
         if not chrc_value_data:
             continue
 
@@ -1372,12 +1417,15 @@ def hdl_wid_121(desc):
 
 
 def hdl_wid_122(desc):
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
     # Lookup characteristic UUID that returns Insufficient Encryption Key Size
     chrcs = btp.gatts_get_attrs(type_uuid='2803')
     for chrc in chrcs:
         handle, perm, type_uuid = chrc
 
-        chrc_data = btp.gatts_get_attr_val(handle)
+        chrc_data = btp.gatts_get_attr_val(bd_addr_type, bd_addr, handle)
         if not chrc_data:
             continue
 
@@ -1394,7 +1442,7 @@ def hdl_wid_122(desc):
             continue
 
         handle, perm, type_uuid = chrc_value_attr[0]
-        chrc_value_data = btp.gatts_get_attr_val(handle)
+        chrc_value_data = btp.gatts_get_attr_val(bd_addr_type, bd_addr, handle)
         if not chrc_value_data:
             continue
 
