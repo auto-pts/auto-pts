@@ -31,7 +31,7 @@ except ImportError:  # running this module as script
 from pybtp import btp
 from pybtp.types import Addr
 from ptsprojects.stack import get_stack
-from ptsprojects.zephyr.l2cap_wid import l2cap_wid_hdl
+from wid import l2cap_wid_hdl
 
 
 le_psm = 128
