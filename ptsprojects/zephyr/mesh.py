@@ -34,7 +34,7 @@ except ImportError:  # running this module as script
 from pybtp import defs, btp
 from pybtp.types import MeshVals
 from ptsprojects.stack import get_stack
-from ptsprojects.zephyr.mesh_wid import mesh_wid_hdl
+from wid import mesh_wid_hdl
 from uuid import uuid4
 from binascii import hexlify
 import random
