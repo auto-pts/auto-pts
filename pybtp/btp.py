@@ -738,7 +738,11 @@ def gap_unpair(bd_addr=None, bd_addr_type=None):
 
 
 def var_store_get_passkey(description):
-    return str(get_stack().gap.get_passkey())
+    pk = get_stack().gap.get_passkey()
+    if pk:
+        return str(pk).zfill(6)
+    else:
+        return '000000'
 
 
 def var_store_get_wrong_passkey(description):
