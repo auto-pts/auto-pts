@@ -811,9 +811,10 @@ def gap_passkey_entry_req_ev(bd_addr=None, bd_addr_type=None):
     if _addr_type != bd_addr_type or _addr != bd_addr:
         raise BTPError("Received data mismatch")
 
-    # Generate some passkey
     stack = get_stack()
-    stack.gap.passkey.data = randint(0, 999999)
+    if not stack.gap.passkey.data:
+        # Generate some passkey
+        stack.gap.passkey.data = randint(0, 999999)
 
     gap_passkey_entry_rsp(bd_addr, bd_addr_type, stack.gap.passkey.data)
 
