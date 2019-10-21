@@ -377,7 +377,7 @@ def archive_recursive(dir_path):
     """
     zip_file_path = os.path.join(os.path.dirname(dir_path),
                                  os.path.basename(dir_path) + '.zip')
-    with zipfile.ZipFile(zip_file_path, 'w') as zf:
+    with zipfile.ZipFile(zip_file_path, 'w', allowZip64=True) as zf:
         for root, dirs, files in os.walk(dir_path):
             for file_or_dir in files + dirs:
                 zf.write(
