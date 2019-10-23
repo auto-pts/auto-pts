@@ -332,6 +332,17 @@ def hdl_wid_72(desc):
     return True
 
 
+def hdl_wid_73(desc):
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
+    btp.gattc_read_uuid(bd_addr_type, bd_addr,
+                        '0001', 'FFFF', UUID.device_name)
+    btp.gattc_read_uuid_rsp()
+
+    return True
+
+
 def hdl_wid_74(desc):
     hdl_wid_72(desc)
     return True
@@ -458,6 +469,7 @@ def hdl_wid_112(desc):
         return False
 
     btp.gattc_read(bd_addr_type, bd_addr, handle)
+    btp.gattc_read_rsp()
     return True
 
 
