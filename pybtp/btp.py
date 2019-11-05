@@ -524,14 +524,14 @@ def gap_adv_ind_on(ad={}, sd={}):
 
     for ad_type, ad_data in ad.iteritems():
         data = binascii.unhexlify(bytearray(ad_data))
+        ad_ba.extend(chr(len(data)+1))
         ad_ba.extend(chr(ad_type))
-        ad_ba.extend(chr(len(data)))
         ad_ba.extend(data)
 
     for sd_type, sd_data in sd.iteritems():
         data = binascii.unhexlify(bytearray(sd_data))
+        sd_ba.extend(chr(len(data)+1))
         sd_ba.extend(chr(sd_type))
-        sd_ba.extend(chr(len(data)))
         sd_ba.extend(data)
 
     data_ba.extend(chr(len(ad_ba)))
