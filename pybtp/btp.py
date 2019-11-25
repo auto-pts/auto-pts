@@ -23,7 +23,7 @@ import socket
 from threading import Timer, Event
 
 import defs
-from types import BTPError, gap_settings_btp2txt, addr2btp_ba, Addr
+from types import BTPError, gap_settings_btp2txt, addr2btp_ba, Addr, OwnAddrType, AdDuration
 from pybtp.types import Perm
 from iutctl_common import set_event_handler
 from random import randint
@@ -589,7 +589,7 @@ def gap_wait_for_disconnection(timeout=30):
     stack.gap.wait_for_disconnection(timeout)
 
 
-def gap_adv_ind_on(ad={}, sd={}):
+def gap_adv_ind_on(ad={}, sd={}, duration=AdDuration.forever, own_addr_type=OwnAddrType.le_identity_address):
     logging.debug("%s %r %r", gap_adv_ind_on.__name__, ad, sd)
 
     stack = get_stack()
@@ -620,6 +620,8 @@ def gap_adv_ind_on(ad={}, sd={}):
     data_ba.extend(chr(len(sd_ba)))
     data_ba.extend(ad_ba)
     data_ba.extend(sd_ba)
+    data_ba.extend(struct.pack("<I", duration))
+    data_ba.extend(chr(own_addr_type))
 
     iutctl.btp_socket.send(*GAP['start_adv'], data=data_ba)
 

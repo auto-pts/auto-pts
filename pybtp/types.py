@@ -86,6 +86,8 @@ class AdFlags:
     sim_le_br_edr_contr = 0x08
     sim_le_br_edr_host = 0x10
 
+class AdDuration:
+    forever = 0xFFFFFFFF
 
 class UriScheme:
     https = '17'
@@ -128,6 +130,10 @@ class Addr:
     le_public = 0
     le_random = 1
 
+class OwnAddrType:
+    le_identity_address = 0
+    le_resolvable_private_address = 1
+    le_non_resolvable_private_address = 2
 
 class MeshVals:
     subscription_addr_list1 = 'C302'
