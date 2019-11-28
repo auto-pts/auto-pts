@@ -122,13 +122,14 @@ class BTPSocket(object):
         self.conn.send(bin)
 
     def close(self):
-        self.sock.shutdown(socket.SHUT_RDWR)
-        self.sock.close()
-
+        try:
+            self.sock.shutdown(socket.SHUT_RDWR)
+            self.sock.close()
+        except:
+            pass
         self.sock = None
         self.conn = None
         self.addr = None
-
 
 class BTPWorker(BTPSocket):
     def __init__(self):
