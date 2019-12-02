@@ -498,6 +498,38 @@ Commands and responses:
 
 		In case of an error, the error response will be returned.
 
+	Opcode 0x18 - OOB Legacy Set Data command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	OOB_data (16 octets)
+		Return Parameters:	<none>
+
+		This command is used to set legacy OOB data.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x19 - OOB SC Get Local Data command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	<none>
+		Return Parameters:	Rand (16 octets)
+		                    Conf (16 octets)
+
+		This command is used to get local OOB Secure Connections data.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x1a - OOB SC Set Remote Data command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	 Rand (16 octets)
+		                     Conf (16 octets)
+		Return Parameters:	<none>
+
+		This command is used to set remote OOB Secure Connections data.
+
+		In case of an error, the error response will be returned.
+
 Events:
 	Opcode 0x80 - New Settings event
 

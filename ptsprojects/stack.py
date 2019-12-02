@@ -122,6 +122,7 @@ class Gap:
         self.flags = flags
         self.svcs = svcs
         self.uri = uri
+        self.oob_legacy = "0000000000000000FE12036E5A889F4D"
 
         # If disconnected - None
         # If connected - remote address tuple (addr, addr_type)
