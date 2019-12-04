@@ -72,6 +72,8 @@ CORE = {
     "read_supp_svcs": (defs.BTP_SERVICE_ID_CORE,
                        defs.CORE_READ_SUPPORTED_SERVICES,
                        defs.BTP_INDEX_NONE, ""),
+    "log_message":    (defs.BTP_SERVICE_ID_CORE, defs.CORE_LOG_MESSAGE,
+                       defs.BTP_INDEX_NONE),
 }
 
 GAP = {
@@ -474,6 +476,22 @@ def core_unreg_svc_rsp_succ():
         raise BTPError("Unexpected response received!")
     else:
         logging.debug("response is valid")
+
+
+def core_log_message(message):
+    logging.debug("%s", core_log_message.__name__)
+
+    message_data = bytearray(message)
+    data = struct.pack('H', len(message_data))
+    data.extend(message_data)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*CORE['log_message'], data=data)
+
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
+    logging.debug("received %r %r", tuple_hdr, tuple_data)
+
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_CORE, defs.CORE_LOG_MESSAGE)
 
 
 def __gap_current_settings_update(settings):
