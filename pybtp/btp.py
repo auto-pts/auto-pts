@@ -100,6 +100,10 @@ GAP = {
                        CONTROLLER_INDEX, 1),
     "set_powered_off": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_POWERED,
                         CONTROLLER_INDEX, 0),
+    "set_bondable_on": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_BONDABLE,
+                        CONTROLLER_INDEX, 1),
+    "set_bondable_off": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_BONDABLE,
+                         CONTROLLER_INDEX, 0),
     "start_discov": (defs.BTP_SERVICE_ID_GAP,
                      defs.GAP_START_DISCOVERY, CONTROLLER_INDEX),
     "stop_discov": (defs.BTP_SERVICE_ID_GAP, defs.GAP_STOP_DISCOVERY,
@@ -923,6 +927,40 @@ def gap_set_powered_off():
     iutctl = get_iut()
 
     iutctl.btp_socket.send(*GAP['set_powered_off'])
+
+    tuple_data = gap_command_rsp_succ()
+    __gap_current_settings_update(tuple_data)
+
+
+def gap_set_bondable_on():
+    logging.debug("%s", gap_set_bondable_on.__name__)
+
+    stack = get_stack()
+
+    if stack.gap.current_settings_get(
+            gap_settings_btp2txt[defs.GAP_SETTINGS_BONDABLE]):
+        return
+
+    iutctl = get_iut()
+
+    iutctl.btp_socket.send(*GAP['set_bondable_on'])
+
+    tuple_data = gap_command_rsp_succ()
+    __gap_current_settings_update(tuple_data)
+
+
+def gap_set_bondable_off():
+    logging.debug("%s", gap_set_bondable_off.__name__)
+
+    stack = get_stack()
+
+    if not stack.gap.current_settings_get(
+            gap_settings_btp2txt[defs.GAP_SETTINGS_BONDABLE]):
+        return
+
+    iutctl = get_iut()
+
+    iutctl.btp_socket.send(*GAP['set_bondable_off'])
 
     tuple_data = gap_command_rsp_succ()
     __gap_current_settings_update(tuple_data)
