@@ -130,6 +130,15 @@ Commands and responses:
 
 		In case of an error, the error response will be returned.
 
+	Opcode 0x05 - Log message at IUT
+
+		Controller Index:	<non-controller>
+		Command parameters:	Log_Message_Length (2 Octets)
+					Log_Message (variable)
+		Response parameters:	<none>
+
+		In case of an error, the error response will be returned.
+
 Events:
 	Opcode 0x80 - IUT ready event
 
