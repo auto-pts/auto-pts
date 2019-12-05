@@ -131,6 +131,10 @@ GAP = {
     "oob_sc_set_remote_data": (defs.BTP_SERVICE_ID_GAP,
                                defs.GAP_OOB_SC_SET_REMOTE_DATA,
                                CONTROLLER_INDEX),
+    "set_mitm_on": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_MITM,
+                    CONTROLLER_INDEX, 1),
+    "set_mitm_off": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_MITM,
+                     CONTROLLER_INDEX, 0),
     "reset": (defs.BTP_SERVICE_ID_GAP, defs.GAP_RESET, CONTROLLER_INDEX, "")
 }
 
@@ -1169,6 +1173,26 @@ def gap_oob_sc_set_remote_data(r, c):
     iutctl.btp_socket.send(*GAP['oob_sc_set_remote_data'], data=data_ba)
 
     # Expected result
+    gap_command_rsp_succ()
+
+
+def gap_set_mitm_on():
+    logging.debug("%s", gap_set_mitm_on.__name__)
+
+    iutctl = get_iut()
+
+    iutctl.btp_socket.send(*GAP['set_mitm_on'])
+
+    gap_command_rsp_succ()
+
+
+def gap_set_mitm_off():
+    logging.debug("%s", gap_set_mitm_off.__name__)
+
+    iutctl = get_iut()
+
+    iutctl.btp_socket.send(*GAP['set_mitm_off'])
+
     gap_command_rsp_succ()
 
 

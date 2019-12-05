@@ -530,6 +530,16 @@ Commands and responses:
 
 		In case of an error, the error response will be returned.
 
+	Opcode 0x1b - Set MITM
+
+		Controller Index:	<controller id>
+		Command parameters:	 mitm (1 octet)
+		Return Parameters:	<none>
+
+		This command is used to set MITM setting.
+
+		In case of an error, the error response will be returned.
+
 Events:
 	Opcode 0x80 - New Settings event
 
