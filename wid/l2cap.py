@@ -14,10 +14,11 @@
 #
 
 import logging
-import sys
-from pybtp import btp
 import re
+import sys
+
 from ptsprojects.stack import get_stack
+from pybtp import btp
 
 log = logging.debug
 
@@ -65,6 +66,7 @@ def hdl_wid_22(desc):
     :param desc: Initiate an ACL disconnection from the IUT to the PTS.
     :return:
     """
+    btp.gap_wait_for_connection()
     btp.gap_disconn()
 
     return True
@@ -179,7 +181,7 @@ def hdl_wid_43(desc):
     """
     stack = get_stack()
 
-    btp.l2cap_send_data(0, stack.l2cap.get_send_data())
+    btp.l2cap_send_data(0, "FF", 40)
 
     return True
 
@@ -246,3 +248,31 @@ def hdl_wid_54(desc):
 
     # If IUT received Unacceptable Parameters on LE based connection request it means that the channel is not connected.
     return not stack.l2cap.is_connected(0)
+
+
+def hdl_wid_56(desc):
+    """
+    Implements: TSC_MMI_tester_enable_connection
+    :param desc: Action: Place the IUT in connectable mode.
+    :return:
+    """
+    btp.gap_set_conn()
+    btp.gap_set_gendiscov()
+    btp.gap_adv_ind_on()
+
+    return True
+
+
+def hdl_wid_57(desc):
+    btp.l2cap_send_data(0, "FF", 80)
+    return True
+
+
+def hdl_wid_58(desc):
+    return True
+
+
+def hdl_wid_59(desc):
+    btp.gap_conn_param_update(btp.pts_addr_get(), btp.pts_addr_type_get(),
+                              720, 864, 0, 400)
+    return True
