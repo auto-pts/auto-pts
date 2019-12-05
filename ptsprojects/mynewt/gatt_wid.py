@@ -267,7 +267,51 @@ def hdl_wid_23(desc):
 
 
 def hdl_wid_24(desc):
-    return btp.verify_description(desc)
+    MMI.reset()
+    MMI.parse_description(desc)
+
+    # Include service in description should have 3 parameters:
+    # Attribute Handle, Included Service Attribute Handle and End Group Handle
+    num_includes = len(MMI.args) / 3
+
+    pts_services = []
+
+    for i in range(num_includes):
+        pts_services.append([int(MMI.args[i+0], 16),
+                             int(MMI.args[i+1], 16),
+                             int(MMI.args[i+2], 16)])
+
+    iut_services = []
+
+    # Get all Included services
+    attrs = btp.gatts_get_attrs(type_uuid='2802')
+    for attr in attrs:
+        handle, perm, type_uuid = attr
+
+        val = btp.gatts_get_attr_val(btp.pts_addr_type_get(),
+                                     btp.pts_addr_get(), handle)
+        if not val:
+            continue
+
+        (_, val_len, attr_value) = val
+
+        hdr = '<HH'
+        hdr_len = struct.calcsize(hdr)
+        data_len = val_len - hdr_len
+        incl_hdl, end_hdl, _ = struct.unpack(hdr + '%ds' % data_len, attr_value)
+        iut_services.append([handle, incl_hdl, end_hdl])
+
+    # Verification
+    for service in pts_services:
+        if service in iut_services:
+            iut_services.remove(service)
+            logging.debug("Service %r found", service)
+            continue
+        else:
+            logging.error("Service %r not found", service)
+            return False
+
+    return True
 
 
 def hdl_wid_25(desc):

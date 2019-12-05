@@ -17,6 +17,8 @@ import subprocess
 import logging
 import shlex
 
+import serial
+
 from pybtp import defs
 from pybtp.types import BTPError
 from pybtp.iutctl_common import BTPWorker
@@ -32,6 +34,8 @@ BTP_ADDRESS = "/tmp/bt-stack-tester"
 
 # qemu log file object
 IUT_LOG_FO = None
+
+SERIAL_BAUDRATE = 115200
 
 
 class MynewtCtl:
@@ -76,10 +80,30 @@ class MynewtCtl:
 
         self.btp_socket.accept()
 
+    def flush_serial(self):
+        log("%s.%s", self.__class__, self.flush_serial.__name__)
+        # Try to read data or timeout
+        ser = serial.Serial(port=self.tty_file,
+                            baudrate=SERIAL_BAUDRATE, timeout=1)
+        ser.read(99999)
+        ser.close()
+
+    def reset(self):
+        """Restart IUT related processes and reset the IUT"""
+        log("%s.%s", self.__class__, self.reset.__name__)
+
+        self.stop()
+        self.start()
+        self.flush_serial()
+
+        if not self.board:
+            return
+
+        self.board.reset()
+
     def wait_iut_ready_event(self):
         """Wait until IUT sends ready event after power up"""
-        if self.board:
-            self.board.reset()
+        self.reset()
 
         tuple_hdr, tuple_data = self.btp_socket.read()
 
@@ -101,10 +125,9 @@ class MynewtCtl:
             self.btp_socket.close()
             self.btp_socket = None
 
-        if self.qemu_process and self.qemu_process.poll() is None:
-            self.qemu_process.terminate()
-            self.qemu_process.wait()  # do not let zombies take over
-            self.qemu_process = None
+        if self.socat_process and self.socat_process.poll() is None:
+            self.socat_process.terminate()
+            self.socat_process.wait()
 
 
 class MynewtCtlStub:

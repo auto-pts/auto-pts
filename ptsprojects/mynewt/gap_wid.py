@@ -177,6 +177,8 @@ def hdl_wid_46(desc):
     :param desc: Please send an L2CAP Connection Parameter Update request using valid parameters.
     :return:
     """
+    btp.gap_wait_for_connection()
+
     stack = get_stack()
     bd_addr = btp.pts_addr_get()
     bd_addr_type = btp.pts_addr_type_get()
@@ -236,7 +238,15 @@ def hdl_wid_51(desc):
 
 
 def hdl_wid_52(desc):
-    hdl_wid_51(desc)
+    btp.gap_adv_off()
+
+    stack = get_stack()
+
+    btp.gap_set_gendiscov()
+    btp.gap_set_conn()
+
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
+
     return True
 
 
@@ -246,7 +256,13 @@ def hdl_wid_53(desc):
 
 
 def hdl_wid_54(desc):
-    hdl_wid_51(desc)
+    stack = get_stack()
+
+    btp.gap_set_nonconn()
+    btp.gap_set_gendiscov()
+
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
+
     return True
 
 
@@ -333,7 +349,13 @@ def hdl_wid_75(desc):
 
 
 def hdl_wid_76(desc):
-    hdl_wid_55(desc)
+    stack = get_stack()
+
+    btp.gap_set_conn()
+    btp.gap_set_limdiscov()
+
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
+
     return True
 
 
@@ -349,7 +371,9 @@ def hdl_wid_78(desc):
 
 
 def hdl_wid_79(desc):
-    return hdl_wid_80(desc)
+    stack = get_stack()
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    return True
 
 
 def hdl_wid_80(desc):
@@ -429,16 +453,12 @@ def hdl_wid_112(desc):
     bd_addr = btp.pts_addr_get()
     bd_addr_type = btp.pts_addr_type_get()
 
-    btp.gattc_disc_all_chrc(bd_addr_type, bd_addr, 0x0001, 0xffff)
-    attrs = btp.gattc_disc_all_chrc_rsp()
+    handle = btp.parse_handle_description(desc)
+    if not handle:
+        return False
 
-    for attr in attrs:
-        if attr.prop & Prop.read:
-            btp.gattc_read(bd_addr_type, bd_addr, attr.value_handle)
-            btp.gattc_read_rsp()
-            return True
-
-    return False
+    btp.gattc_read(bd_addr_type, bd_addr, handle)
+    return True
 
 
 def hdl_wid_114(desc):
@@ -626,6 +646,10 @@ def hdl_wid_158(desc):
     return True
 
 
+def hdl_wid_159(desc):
+    return True
+
+
 def hdl_wid_161(desc):
     match = re.findall(r'(0[xX])?([0-9a-fA-F]{4})', desc)
     handle = int(match[0][1], 16)
@@ -715,9 +739,19 @@ def hdl_wid_204(desc):
     return btp.check_discov_results(addr_type=0x02)
 
 
+def hdl_wid_206(desc):
+    stack = get_stack()
+
+    passkey = btp.parse_passkey_description(desc)
+    stack.gap.passkey.data = passkey
+
+    btp.gap_passkey_entry_req_ev()
+    return True
+
+
 def hdl_wid_1002(desc):
     stack = get_stack()
-    passkey = stack.gap.passkey.data
+    passkey = stack.gap.get_passkey()
     stack.gap.passkey.data = None
     return passkey
 
