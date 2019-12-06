@@ -373,12 +373,13 @@ Commands and responses:
 		Controller Index:	<controller id>
 		Command parameters:	Address_Type (1 octet)
 					Address (6 octets)
-					Use own ID address (1 octet)
+					Own_Addr_Type (1 octet)
 		Return Parameters:	<none>
 
-		Valid Address_Type parameter values:
-					0x00 = Public
-					0x01 = Random
+		Valid Own_Addr_Type parameter values:
+					0x00 = Identity Address
+					0x01 = Resolvable Private Address
+					0x02 = Non-resolvabe Private Address
 
 		This command is used to create a Link Layer connection with
 		remote device.
