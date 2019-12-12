@@ -96,6 +96,10 @@ GAP = {
                       CONTROLLER_INDEX, defs.GAP_GENERAL_DISCOVERABLE),
     "set_limdiscov": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_DISCOVERABLE,
                       CONTROLLER_INDEX, defs.GAP_LIMITED_DISCOVERABLE),
+    "set_bond": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_BONDABLE,
+                      CONTROLLER_INDEX, 1),
+    "set_nonbond": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_BONDABLE,
+                      CONTROLLER_INDEX, 0),
     "set_powered_on": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_POWERED,
                        CONTROLLER_INDEX, 1),
     "set_powered_off": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_POWERED,
@@ -842,6 +846,40 @@ def gap_set_limdiscov():
     iutctl = get_iut()
 
     iutctl.btp_socket.send(*GAP['set_limdiscov'])
+
+    tuple_data = gap_command_rsp_succ()
+    __gap_current_settings_update(tuple_data)
+
+
+def gap_set_bond():
+    logging.debug("%s", gap_set_bond.__name__)
+
+    stack = get_stack()
+
+    if stack.gap.current_settings_get(
+            gap_settings_btp2txt[defs.GAP_SETTINGS_BONDABLE]):
+        return
+
+    iutctl = get_iut()
+
+    iutctl.btp_socket.send(*GAP['set_bond'])
+
+    tuple_data = gap_command_rsp_succ()
+    __gap_current_settings_update(tuple_data)
+
+
+def gap_set_nonbond():
+    logging.debug("%s", gap_set_nonbond.__name__)
+
+    stack = get_stack()
+
+    if not stack.gap.current_settings_get(
+            gap_settings_btp2txt[defs.GAP_SETTINGS_BONDABLE]):
+        return
+
+    iutctl = get_iut()
+
+    iutctl.btp_socket.send(*GAP['set_nonbond'])
 
     tuple_data = gap_command_rsp_succ()
     __gap_current_settings_update(tuple_data)
