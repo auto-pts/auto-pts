@@ -301,6 +301,8 @@ Commands and responses:
 
 		This command is used to start advertising.
 
+                Adv_Data and Scan_Rsp are a list of { AD_Type, AD_Len, AD_DATA } structures.
+
 		When Duration parameter value equals UINT32_MAX then the
 		advertising duration is disabled.
 
