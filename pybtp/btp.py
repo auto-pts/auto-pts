@@ -115,6 +115,9 @@ GAP = {
     "conn_param_update": (defs.BTP_SERVICE_ID_GAP,
                           defs.GAP_CONN_PARAM_UPDATE,
                           CONTROLLER_INDEX),
+    "pairing_consent_rsp": (defs.BTP_SERVICE_ID_GAP,
+                            defs.GAP_PAIRING_CONSENT_RSP,
+                            CONTROLLER_INDEX),
     "reset": (defs.BTP_SERVICE_ID_GAP, defs.GAP_RESET, CONTROLLER_INDEX, "")
 }
 
@@ -2885,6 +2888,21 @@ def gap_sec_level_changed_ev_(gap, data, data_len):
     logging.debug("received %r", (_addr_t, _addr, _level))
 
 
+def gap_pairing_consent_ev_(gap, data, data_len):
+    logging.debug("%s", gap_pairing_consent_ev_.__name__)
+
+    logging.debug("received %r", data)
+
+    fmt = '<B6s'
+    if len(data) != struct.calcsize(fmt):
+        raise BTPError("Invalid data length")
+
+    _addr_t, _addr, = struct.unpack_from(fmt, data)
+    _addr = binascii.hexlify(_addr[::-1]).decode()
+
+    logging.debug("received %r", (_addr_t, _addr))
+
+
 GAP_EV = {
     defs.GAP_EV_NEW_SETTINGS: gap_new_settings_ev_,
     defs.GAP_EV_DEVICE_FOUND: gap_device_found_ev_,
@@ -2894,6 +2912,7 @@ GAP_EV = {
     defs.GAP_EV_IDENTITY_RESOLVED: gap_identity_resolved_ev_,
     defs.GAP_EV_CONN_PARAM_UPDATE: gap_conn_param_update_ev_,
     defs.GAP_EV_SEC_LEVEL_CHANGED: gap_sec_level_changed_ev_,
+    defs.GAP_EV_PAIRING_CONSENT_REQ: gap_pairing_consent_ev_,
 }
 
 
