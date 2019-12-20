@@ -709,6 +709,8 @@ def gap_pair(bd_addr=None, bd_addr_type=None):
     logging.debug("%s %r %r", gap_pair.__name__, bd_addr, bd_addr_type)
     iutctl = get_iut()
 
+    gap_wait_for_connection()
+
     data_ba = bytearray()
     bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
 
@@ -1045,6 +1047,8 @@ def gap_conn_param_update(bd_addr, bd_addr_type, conn_itvl_min,
                           conn_itvl_max, conn_latency, supervision_timeout):
     logging.debug("%s %r %r", gap_conn_param_update.__name__, bd_addr, bd_addr_type)
     iutctl = get_iut()
+
+    gap_wait_for_connection()
 
     data_ba = bytearray()
     bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
