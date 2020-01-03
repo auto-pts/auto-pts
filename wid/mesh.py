@@ -631,8 +631,12 @@ def hdl_wid_81(desc):
     :return:
     """
     stack = get_stack()
-    btp.mesh_config_prov()
-    btp.mesh_init()
+    if stack.mesh.is_provisioned.data:
+        btp.mesh_reset()
+
+    if not stack.mesh.is_initialized:
+        btp.mesh_config_prov()
+        btp.mesh_init()
     return True
 
 
