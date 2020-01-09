@@ -432,7 +432,7 @@ def test_cases_client(pts):
                   generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/CL/GAD/BV-03-C",
                   pre_conditions_cl,
-                  generic_wid_hdl=gatt_wid_hdl),
+                  generic_wid_hdl=gattc_wid_hdl),
         ZTestCase("GATT", "GATT/CL/GAD/BV-04-C",
                   pre_conditions_cl,
                   generic_wid_hdl=gatt_wid_hdl),

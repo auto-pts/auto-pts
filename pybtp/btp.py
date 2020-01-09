@@ -100,6 +100,10 @@ GAP = {
                        CONTROLLER_INDEX, 1),
     "set_powered_off": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_POWERED,
                         CONTROLLER_INDEX, 0),
+    "set_bondable_on": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_BONDABLE,
+                        CONTROLLER_INDEX, 1),
+    "set_bondable_off": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_BONDABLE,
+                         CONTROLLER_INDEX, 0),
     "start_discov": (defs.BTP_SERVICE_ID_GAP,
                      defs.GAP_START_DISCOVERY, CONTROLLER_INDEX),
     "stop_discov": (defs.BTP_SERVICE_ID_GAP, defs.GAP_STOP_DISCOVERY,
@@ -115,6 +119,22 @@ GAP = {
     "conn_param_update": (defs.BTP_SERVICE_ID_GAP,
                           defs.GAP_CONN_PARAM_UPDATE,
                           CONTROLLER_INDEX),
+    "pairing_consent_rsp": (defs.BTP_SERVICE_ID_GAP,
+                            defs.GAP_PAIRING_CONSENT_RSP,
+                            CONTROLLER_INDEX),
+    "oob_legacy_set_data": (defs.BTP_SERVICE_ID_GAP,
+                            defs.GAP_OOB_LEGACY_SET_DATA,
+                            CONTROLLER_INDEX),
+    "oob_sc_get_local_data": (defs.BTP_SERVICE_ID_GAP,
+                              defs.GAP_OOB_SC_GET_LOCAL_DATA,
+                              CONTROLLER_INDEX),
+    "oob_sc_set_remote_data": (defs.BTP_SERVICE_ID_GAP,
+                               defs.GAP_OOB_SC_SET_REMOTE_DATA,
+                               CONTROLLER_INDEX),
+    "set_mitm_on": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_MITM,
+                    CONTROLLER_INDEX, 1),
+    "set_mitm_off": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_MITM,
+                     CONTROLLER_INDEX, 0),
     "reset": (defs.BTP_SERVICE_ID_GAP, defs.GAP_RESET, CONTROLLER_INDEX, "")
 }
 
@@ -323,6 +343,46 @@ def verify_multiple_read_description(description):
     VERIFY_VALUES = None
 
     return True
+
+
+def parse_passkey_description(description):
+    """A function to parse passkey from description
+
+    PTS MMI description.
+
+    Returns passkey if successful, None if not.
+
+    description -- MMI description
+    """
+    logging.debug("description=%r", description)
+
+    match = re.search(r"\b[0-9]+\b", description)
+    if match:
+        pk = match.group(0)
+        logging.debug("passkey=%r", pk)
+        return int(pk)
+
+    return None
+
+
+def parse_handle_description(description):
+    """A function to parse handle from description
+
+    PTS MMI description.
+
+    Returns passkey if successful, None if not.
+
+    description -- MMI description
+    """
+    logging.debug("description=%r", description)
+
+    match = re.search(r"\bhandle \b([0-9A-Fa-f]+)\b", description)
+    if match:
+        handle = match.group(1)
+        logging.debug("handle=%r", handle)
+        return int(handle)
+
+    return None
 
 
 def btp_hdr_check(rcv_hdr, exp_svc_id, exp_op=None):
@@ -669,6 +729,8 @@ def gap_pair(bd_addr=None, bd_addr_type=None):
     logging.debug("%s %r %r", gap_pair.__name__, bd_addr, bd_addr_type)
     iutctl = get_iut()
 
+    gap_wait_for_connection()
+
     data_ba = bytearray()
     bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
 
@@ -698,7 +760,11 @@ def gap_unpair(bd_addr=None, bd_addr_type=None):
 
 
 def var_store_get_passkey(description):
-    return str(get_stack().gap.get_passkey())
+    pk = get_stack().gap.get_passkey()
+    if pk:
+        return str(pk).zfill(6)
+    else:
+        return '000000'
 
 
 def var_store_get_wrong_passkey(description):
@@ -767,9 +833,10 @@ def gap_passkey_entry_req_ev(bd_addr=None, bd_addr_type=None):
     if _addr_type != bd_addr_type or _addr != bd_addr:
         raise BTPError("Received data mismatch")
 
-    # Generate some passkey
     stack = get_stack()
-    stack.gap.passkey.data = randint(0, 999999)
+    if not stack.gap.passkey.data:
+        # Generate some passkey
+        stack.gap.passkey.data = randint(0, 999999)
 
     gap_passkey_entry_rsp(bd_addr, bd_addr_type, stack.gap.passkey.data)
 
@@ -864,6 +931,40 @@ def gap_set_powered_off():
     iutctl = get_iut()
 
     iutctl.btp_socket.send(*GAP['set_powered_off'])
+
+    tuple_data = gap_command_rsp_succ()
+    __gap_current_settings_update(tuple_data)
+
+
+def gap_set_bondable_on():
+    logging.debug("%s", gap_set_bondable_on.__name__)
+
+    stack = get_stack()
+
+    if stack.gap.current_settings_get(
+            gap_settings_btp2txt[defs.GAP_SETTINGS_BONDABLE]):
+        return
+
+    iutctl = get_iut()
+
+    iutctl.btp_socket.send(*GAP['set_bondable_on'])
+
+    tuple_data = gap_command_rsp_succ()
+    __gap_current_settings_update(tuple_data)
+
+
+def gap_set_bondable_off():
+    logging.debug("%s", gap_set_bondable_off.__name__)
+
+    stack = get_stack()
+
+    if not stack.gap.current_settings_get(
+            gap_settings_btp2txt[defs.GAP_SETTINGS_BONDABLE]):
+        return
+
+    iutctl = get_iut()
+
+    iutctl.btp_socket.send(*GAP['set_bondable_off'])
 
     tuple_data = gap_command_rsp_succ()
     __gap_current_settings_update(tuple_data)
@@ -1001,6 +1102,8 @@ def gap_conn_param_update(bd_addr, bd_addr_type, conn_itvl_min,
     logging.debug("%s %r %r", gap_conn_param_update.__name__, bd_addr, bd_addr_type)
     iutctl = get_iut()
 
+    gap_wait_for_connection()
+
     data_ba = bytearray()
     bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
 
@@ -1020,6 +1123,76 @@ def gap_conn_param_update(bd_addr, bd_addr_type, conn_itvl_min,
     iutctl.btp_socket.send(*GAP['conn_param_update'], data=data_ba)
 
     # Expected result
+    gap_command_rsp_succ()
+
+
+def gap_oob_legacy_set_data(oob_data):
+    logging.debug("%s %r", gap_oob_legacy_set_data.__name__, oob_data)
+    iutctl = get_iut()
+
+    data_ba = binascii.unhexlify(oob_data)[::-1]
+
+    iutctl.btp_socket.send(*GAP['oob_legacy_set_data'], data=data_ba)
+
+    # Expected result
+    gap_command_rsp_succ()
+
+
+def gap_oob_sc_get_local_data():
+    logging.debug("%s", gap_oob_sc_get_local_data.__name__)
+    iutctl = get_iut()
+
+    iutctl.btp_socket.send(*GAP['oob_sc_get_local_data'], data=bytearray())
+
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
+    logging.debug("%s received %r %r", gap_oob_sc_get_local_data.__name__,
+                  tuple_hdr, tuple_data)
+
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GAP,
+                  defs.GAP_OOB_SC_GET_LOCAL_DATA)
+
+    hdr = '<16s16s'
+    r, c = struct.unpack_from(hdr, tuple_data[0])
+    r, c = binascii.hexlify(r[::-1]), binascii.hexlify(c[::-1])
+
+    logging.debug("r=%s c=%s", r, c)
+    return r, c
+
+
+def gap_oob_sc_set_remote_data(r, c):
+    logging.debug("%s %r %r", gap_oob_sc_set_remote_data.__name__, r, c)
+    iutctl = get_iut()
+
+    data_ba = bytearray()
+    r_ba = binascii.unhexlify(r)[::-1]
+    c_ba = binascii.unhexlify(c)[::-1]
+
+    data_ba.extend(r_ba)
+    data_ba.extend(c_ba)
+
+    iutctl.btp_socket.send(*GAP['oob_sc_set_remote_data'], data=data_ba)
+
+    # Expected result
+    gap_command_rsp_succ()
+
+
+def gap_set_mitm_on():
+    logging.debug("%s", gap_set_mitm_on.__name__)
+
+    iutctl = get_iut()
+
+    iutctl.btp_socket.send(*GAP['set_mitm_on'])
+
+    gap_command_rsp_succ()
+
+
+def gap_set_mitm_off():
+    logging.debug("%s", gap_set_mitm_off.__name__)
+
+    iutctl = get_iut()
+
+    iutctl.btp_socket.send(*GAP['set_mitm_off'])
+
     gap_command_rsp_succ()
 
 
@@ -2836,6 +3009,21 @@ def gap_sec_level_changed_ev_(gap, data, data_len):
     logging.debug("received %r", (_addr_t, _addr, _level))
 
 
+def gap_pairing_consent_ev_(gap, data, data_len):
+    logging.debug("%s", gap_pairing_consent_ev_.__name__)
+
+    logging.debug("received %r", data)
+
+    fmt = '<B6s'
+    if len(data) != struct.calcsize(fmt):
+        raise BTPError("Invalid data length")
+
+    _addr_t, _addr, = struct.unpack_from(fmt, data)
+    _addr = binascii.hexlify(_addr[::-1]).decode()
+
+    logging.debug("received %r", (_addr_t, _addr))
+
+
 GAP_EV = {
     defs.GAP_EV_NEW_SETTINGS: gap_new_settings_ev_,
     defs.GAP_EV_DEVICE_FOUND: gap_device_found_ev_,
@@ -2845,6 +3033,7 @@ GAP_EV = {
     defs.GAP_EV_IDENTITY_RESOLVED: gap_identity_resolved_ev_,
     defs.GAP_EV_CONN_PARAM_UPDATE: gap_conn_param_update_ev_,
     defs.GAP_EV_SEC_LEVEL_CHANGED: gap_sec_level_changed_ev_,
+    defs.GAP_EV_PAIRING_CONSENT_REQ: gap_pairing_consent_ev_,
 }
 
 

@@ -229,7 +229,9 @@ def test_cases(pts):
         ZTestCase("GAP", "GAP/BROB/BCST/BV-04-C",
                   cmds=pre_conditions,
                   generic_wid_hdl=gap_wid_hdl),
-        # TODO: GAP/BROB/BCST/BV-05-C
+        ZTestCase("GAP", "GAP/BROB/BCST/BV-05-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/BROB/OBSV/BV-01-C",
                   cmds=pre_conditions,
                   generic_wid_hdl=gap_wid_hdl),
@@ -416,14 +418,14 @@ def test_cases(pts):
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/BOND/BON/BV-01-C",
                   cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output)],
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/BOND/BON/BV-02-C",
                   cmds=pre_conditions,
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/BOND/BON/BV-03-C",
                   cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output)],
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/BOND/BON/BV-04-C",
                   cmds=pre_conditions +
@@ -443,7 +445,7 @@ def test_cases(pts):
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/AUT/BV-14-C",
                   cmds=pre_conditions +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output)],
+                       [TestFunc(btp.gap_set_io_cap, IOCap.keyboard_display)],
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/AUT/BV-17-C",
                   cmds=pre_conditions +

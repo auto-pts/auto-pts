@@ -47,6 +47,10 @@ def hdl_wid_17(desc):
     return btp.verify_description(desc)
 
 
+def hdl_wid_24(desc):
+    return btp.verify_description(desc)
+
+
 def hdl_wid_48(desc):
     MMI.reset()
     MMI.parse_description(desc)

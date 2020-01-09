@@ -593,6 +593,36 @@ def hdl_wid_46(desc):
     return True
 
 
+def hdl_wid_51(desc):
+    """
+    :param desc: Please confirm you can decode the control transport packet with
+                 destination address : 0x%04X
+    :return:
+    """
+    stack = get_stack()
+
+    # This pattern is destination addresses
+    pattern = re.compile(r'(address)\s+\:\s+([0][xX][0-9a-fA-F]+)')
+    params = pattern.findall(desc)
+    if not params:
+        logging.error("%s parsing error", hdl_wid_39.__name__)
+        return False
+
+    params = dict(params)
+
+    if not stack.mesh.net_recv_ev_data.data:
+        logging.error("No data received")
+        return False
+
+    (recv_ttl, recv_ctl, recv_src, recv_dst, recv_pdu) = \
+        stack.mesh.net_recv_ev_data.data
+
+    if int(params.get('address'), 16) != recv_dst:
+        logging.error("Destination address does not match")
+        return False
+    return True
+
+
 def hdl_wid_81(desc):
     """
     Implements: IUT_ADVERTISE_UNPROVISIONED_STATE
@@ -601,8 +631,12 @@ def hdl_wid_81(desc):
     :return:
     """
     stack = get_stack()
-    btp.mesh_config_prov()
-    btp.mesh_init()
+    if stack.mesh.is_provisioned.data:
+        btp.mesh_reset()
+
+    if not stack.mesh.is_initialized:
+        btp.mesh_config_prov()
+        btp.mesh_init()
     return True
 
 
