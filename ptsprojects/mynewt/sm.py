@@ -72,9 +72,6 @@ def test_cases(pts):
                           "SM", "TSPX_bd_addr_iut",
                           stack.gap.iut_addr_get_str())),
                       TestFunc(lambda: pts.update_pixit_param(
-                          "SM", "TSPX_peer_addr_type",
-                          "01" if stack.gap.iut_addr_is_random() else "00")),
-                      TestFunc(lambda: pts.update_pixit_param(
                           "SM", "TSPX_OOB_Data", stack.gap.oob_legacy)),
                       TestFunc(lambda: pts.update_pixit_param(
                           "SM", "TSPX_Bonding_Flags", "01"
