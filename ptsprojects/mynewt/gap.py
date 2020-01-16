@@ -127,6 +127,7 @@ def set_pixits(pts):
     pts.set_pixit("GAP", "TSPX_pin_code", "0000")
     pts.set_pixit("GAP", "TSPX_time_guard", "300000")
     pts.set_pixit("GAP", "TSPX_use_implicit_send", "TRUE")
+    pts.set_pixit("GAP", "TSPX_use_dynamic_pin", "FALSE")
     pts.set_pixit("GAP", "TSPX_secure_simple_pairing_pass_key_confirmation",
                   "FALSE")
     pts.set_pixit("GAP", "TSPX_using_public_device_address", "TRUE")
