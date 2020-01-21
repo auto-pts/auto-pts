@@ -772,9 +772,9 @@ def var_store_get_wrong_passkey(description):
 
     # Passkey is in range 0-999999
     if passkey > 0:
-        return str(passkey - 1)
+        return str(passkey - 1).zfill(6)
     else:
-        return str(passkey + 1)
+        return str(passkey + 1).zfill(6)
 
 
 def gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey):
