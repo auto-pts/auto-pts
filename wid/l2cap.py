@@ -250,6 +250,17 @@ def hdl_wid_54(desc):
     return not stack.l2cap.is_connected(0)
 
 
+def hdl_wid_55(desc):
+    """
+    :param desc: Upper Tester command IUT to send LE data packet to the PTS with
+    larger or equal to the TSPX_tester_mps and smaller or equal to the TSPX_tester_mtu values.
+    :return:
+
+    """
+    btp.l2cap_send_data(0, "FF", 80)
+    return True
+
+
 def hdl_wid_56(desc):
     """
     Implements: TSC_MMI_tester_enable_connection

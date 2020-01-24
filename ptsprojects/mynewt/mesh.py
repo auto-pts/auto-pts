@@ -96,6 +96,8 @@ def set_pixits(ptses):
                   "3216D1509884B533248541792B877F98")
     pts.set_pixit("MESH", "TSPX_device_key",
                   "00000000000000000000000000000000")
+    pts.set_pixit("MESH", "TSPX_enable_IUT_provisioner", "FALSE")
+    pts.set_pixit("MESH", "TSPX_maximum_number_of_supported_subnets", "1")
 
     # PTS2
     pts2.set_pixit("MESH", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
@@ -135,6 +137,8 @@ def set_pixits(ptses):
                    "3216D1509884B533248541792B877F98")
     pts2.set_pixit("MESH", "TSPX_device_key",
                    "00000000000000000000000000000000")
+    pts2.set_pixit("MESH", "TSPX_enable_IUT_provisioner", "FALSE")
+    pts2.set_pixit("MESH", "TSPX_maximum_number_of_supported_subnets", "1")
 
 
 def test_cases(ptses):
@@ -486,6 +490,8 @@ def test_cases(ptses):
         ZTestCase("MESH", "MESH/NODE/PROV/BI-03-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/PROV/BI-13-C", cmds=pre_conditions,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/NODE/PROV/BI-15-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/PROV/BV-01-C",
                   cmds=pre_conditions +

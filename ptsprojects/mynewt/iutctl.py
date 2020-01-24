@@ -64,6 +64,8 @@ class MynewtCtl:
 
         log("%s.%s", self.__class__, self.start.__name__)
 
+        self.flush_serial()
+
         self.btp_socket = BTPWorker()
         self.btp_socket.open()
 
