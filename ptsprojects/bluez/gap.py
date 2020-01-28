@@ -30,10 +30,11 @@ except ImportError:  # running this module as script
 
 from time import sleep
 from pybtp import btp
-from pybtp.types import Addr, IOCap, UUID, Prop, Perm, AdType
+from pybtp.types import Addr, IOCap, UUID, Prop, Perm, AdType, AdFlags
 import binascii
 import re
 from ptsprojects.stack import get_stack
+from gap_wid import gap_wid_hdl, hdl_wid_161
 
 
 class SVC:
@@ -62,6 +63,12 @@ init_gatt_db = [TestFunc(btp.core_reg_svc_gatt),
 
 
 iut_device_name = 'Tester'
+iut_manufacturer_data = 'ABCD'
+iut_appearance = '1111'
+iut_svc_data = '1111'
+iut_flags = '11'
+iut_svcs = '1111'
+iut_attr_db_off = 0x000b
 
 
 class AdData:
@@ -79,148 +86,86 @@ ad = [(AdType.uuid16_some, '1111'),
       (AdType.uuid16_svc_data, '111111')]
 
 
-def handle_wid_4(description):
-    """
-    project_name: GAP
-    wid: 4
-    style: MMI_Style_Ok_Cancel1 0x11041
-    response: 19904912 <type 'int'> 94923915180128
-    response_size: 2048
-    response_is_present: 0 <type 'int'>
-    """
-    return btp.check_discov_results()
+def set_pixits(pts):
+    """Setup GAP profile PIXITS for workspace. Those values are used for test
+    case if not updated within test case.
 
+    PIXITS always should be updated accordingly to project and newest version of
+    PTS.
 
-def handle_wid_11(description):
-    """
-    project_name: GAP
-    wid: 11
-    style: MMI_Style_Ok_Cancel1 0x11041
-    response: 14660912 <type 'int'> 93846430818344
-    response_size: 2048
-    response_is_present: 0 <type 'int'>
-    """
-    return btp.check_discov_results(discovered=False)
+    pts -- Instance of PyPTS"""
 
+    ad_str_flags = str(AdType.flags).zfill(2) + \
+                   str(AdFlags.br_edr_not_supp).zfill(2)
+    ad_str_flags_len = str(len(ad_str_flags) / 2).zfill(2)
+    ad_str_name_short = str(AdType.name_short).zfill(2) + \
+                        binascii.hexlify(iut_device_name)
+    ad_str_name_short_len = str(len(ad_str_name_short) / 2).zfill(2)
+    ad_pixit = ad_str_flags_len + ad_str_flags + ad_str_name_short_len + \
+               ad_str_name_short
 
-def handle_wid_14(description):
-    """
-    project_name: GAP
-    wid: 14
-    style: MMI_Style_Ok_Cancel1 0x11041
-    response: 14660912 <type 'int'> 94227700930624
-    response_size: 2048
-    response_is_present: 0 <type 'int'>
-    """
-    return btp.check_discov_results()
-
-
-def handle_wid_136_sec_csign_bi_04():
-    """
-    project_name: GAP
-    wid: 136
-    description: Please prepare a characteristic that is sign writable which
-                 requires also requires authentication.
-                 (Security mode 2 level 2) Press OK to continue.
-    style: MMI_Style_Ok_Cancel1 0x11041
-    response: 8238800 <type 'int'> 93825543207024
-    response_size: 2048
-    response_is_present: 0 <type 'int'>
-    """
-    btp.core_reg_svc_gatt()
-    btp.gatts_add_svc(0, UUID.VND16_1)
-    btp.gatts_add_char(0, Prop.read | Prop.auth_swrite,
-                       Perm.read | Perm.write_authn, UUID.VND16_2)
-    btp.gatts_set_val(0, '01')
-    btp.gatts_start_server()
-
-    return True
-
-
-def handle_wid_138(description):
-    """
-    project_name: GAP
-    wid: 138
-    description: Please confirm that IUT has received an Advertising Event and
-                 the address was resolved successfully.
-    style: MMI_Style_Yes_No1 0x11044
-    response: 19904912 <type 'int'> 94824255738144
-    response_size: 2048
-    response_is_present: 0 <type 'int'>
-    """
-
-    return btp.check_discov_results()
-
-
-def handle_wid_157(description):
-    """
-    project_name: GAP
-    wid: 157
-    description: Please confirm that IUT has received an Advertising data of
-                 "XYZW" And scan response data of "ABCD" Click Yes if IUT
-                 receive advertising data and scan response data accordingly,
-                 otherwise click No.
-    style: MMI_Style_Yes_No1 0x11044
-    response: 19904912 <type 'int'> 94535594534032
-    response_size: 2048
-    response_is_present: 0 <type 'int'>
-    """
-    match = re.findall(r'\"([A-F0-9]+)\"', description)
-
-    ad = match[0]
-    sd = match[1]
-
-    return btp.check_discov_results(eir=ad + sd)
-
-
-def handle_wid_161(description):
-    """
-    project_name: GAP
-    wid: 161
-    description: Please confirm the signed write characteristic handle 0x0007.
-                 And enter the length of this handle's characteristic value in
-                 integer.
-    style: MMI_Style_Edit1 0x12040
-    response: 17807656 <type 'int'> 94810264930128
-    response_size: 2048
-    response_is_present: 0 <type 'int'>
-
-    """
-    match = findall(r'(0[xX])?([0-9a-fA-F]{4})', description)
-    handle = int(match[0][1], 16)
-
-    attr = btp.gatts_get_attrs(handle, handle)
-    if not attr:
-        return
-
-    (handle, permission, type_uuid) = attr.pop()
-
-    # Check if characteristic has signed write property
-    value = btp.gatts_get_attr_val(handle - 1)
-    if not value:
-        return
-
-    (att_rsp, val_len, val) = value
-
-    hdr = '<BH'
-    hdr_len = struct.calcsize(hdr)
-    uuid_len = val_len - hdr_len
-
-    (properties, value_handle, chrc_uuid) = struct.unpack("<BH%ds" % uuid_len,
-                                                          val)
-
-    if properties & Prop.auth_swrite == 0:
-        return
-
-    chrc_uuid = btp.btp2uuid(uuid_len, chrc_uuid)
-
-    value = btp.gatts_get_attr_val(handle)
-    if not value:
-        return
-
-    (att_rsp, val_len, val) = value
-
-    return val_len
+    # Set GAP common PIXIT values
+    pts.set_pixit("GAP", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
+    pts.set_pixit("GAP", "TSPX_bd_addr_PTS", "C000DEADBEEF")
+    pts.set_pixit("GAP", "TSPX_broadcaster_class_of_device", "100104")
+    pts.set_pixit("GAP", "TSPX_observer_class_of_device", "100104")
+    pts.set_pixit("GAP", "TSPX_peripheral_class_of_device", "100104")
+    pts.set_pixit("GAP", "TSPX_central_class_of_device", "100104")
+    pts.set_pixit("GAP", "TSPX_security_enabled", "FALSE")
+    pts.set_pixit("GAP", "TSPX_delete_link_key", "FALSE")
+    pts.set_pixit("GAP", "TSPX_iut_setup_att_over_br_edr", "FALSE")
+    pts.set_pixit("GAP", "TSPX_mtu_size", "23")
+    pts.set_pixit("GAP", "TSPX_delete_ltk", "FALSE")
+    pts.set_pixit("GAP", "TSPX_pin_code", "0000")
+    pts.set_pixit("GAP", "TSPX_time_guard", "300000")
+    pts.set_pixit("GAP", "TSPX_use_implicit_send", "TRUE")
+    pts.set_pixit("GAP", "TSPX_secure_simple_pairing_pass_key_confirmation",
+                  "FALSE")
+    pts.set_pixit("GAP", "TSPX_using_public_device_address", "TRUE")
+    pts.set_pixit("GAP", "TSPX_using_random_device_address", "FALSE")
+    pts.set_pixit("GAP", "TSPX_lim_adv_timeout", "30720")
+    pts.set_pixit("GAP", "TSPX_gen_disc_adv_min", "30720")
+    pts.set_pixit("GAP", "TSPX_lim_disc_scan_min", "10240")
+    pts.set_pixit("GAP", "TSPX_gen_disc_scan_min", "10240")
+    pts.set_pixit("GAP", "TSPX_database_file", "Database-GAP.sig")
+    pts.set_pixit("GAP", "TSPX_iut_rx_mtu", "23")
+    pts.set_pixit("GAP", "TSPX_iut_private_address_interval", "5000")
+    pts.set_pixit("GAP", "TSPX_iut_privacy_enabled", "FALSE")
+    pts.set_pixit("GAP", "TSPX_psm", "1001")
+    pts.set_pixit("GAP", "TSPX_iut_valid_connection_interval_min", "00C8")
+    pts.set_pixit("GAP", "TSPX_iut_valid_connection_interval_max", "03C0")
+    pts.set_pixit("GAP", "TSPX_iut_valid_connection_latency", "0006")
+    pts.set_pixit("GAP", "TSPX_iut_valid_timeout_multiplier", "0962")
+    pts.set_pixit("GAP", "TSPX_iut_connection_parameter_timeout", "30000")
+    pts.set_pixit("GAP", "TSPX_iut_invalid_connection_interval_min", "0000")
+    pts.set_pixit("GAP", "TSPX_iut_invalid_connection_interval_max", "0000")
+    pts.set_pixit("GAP", "TSPX_iut_invalid_connection_latency", "0000")
+    pts.set_pixit("GAP", "TSPX_iut_invalid_conn_update_supervision_timeout", "0800")
+    pts.set_pixit("GAP", "TSPX_LE_scan_interval", "0010")
+    pts.set_pixit("GAP", "TSPX_LE_scan_window", "0010")
+    pts.set_pixit("GAP", "TSPX_con_interval_min", "0032")
+    pts.set_pixit("GAP", "TSPX_con_interval_max", "0046")
+    pts.set_pixit("GAP", "TSPX_con_latency", "0001")
+    pts.set_pixit("GAP", "TSPX_supervision_timeout", "07D0")
+    pts.set_pixit("GAP", "TSPX_minimum_ce_length", "0000")
+    pts.set_pixit("GAP", "TSPX_maximum_ce_length", "0000")
+    pts.set_pixit("GAP", "TSPX_conn_update_int_min", "0032")
+    pts.set_pixit("GAP", "TSPX_conn_update_int_max", "0046")
+    pts.set_pixit("GAP", "TSPX_conn_update_slave_latency", "0001")
+    pts.set_pixit("GAP", "TSPX_conn_update_supervision_timeout", "01F4")
+    pts.set_pixit("GAP", "TSPX_pairing_before_service_request", "FALSE")
+    pts.set_pixit("GAP", "TSPX_iut_mandates_mitm", "FALSE")
+    pts.set_pixit("GAP", "TSPX_encryption_before_service_request", "FALSE")
+    pts.set_pixit("GAP", "TSPX_tester_appearance", "0000")
+    pts.set_pixit("GAP", "TSPX_advertising_data", ad_pixit)
+    pts.set_pixit("GAP", "TSPX_iut_device_IRK_for_resolvable_privacy_address_generation_procedure",
+                  "00000000000000000000000000000000")
+    pts.set_pixit("GAP", "TSPX_tester_device_IRK_for_resolvable_privacy_address_generation_procedure",
+                  "0123456789ABCDEF0123456789ABCDEF")
+    pts.set_pixit("GAP",
+                  "TSPX_iut_device_name_in_adv_packet_for_random_address", iut_device_name)
+    pts.set_pixit("GAP", "TSPX_Tgap_104", "60000")
+    pts.set_pixit("GAP", "TSPX_URI", "162F2F7777772E626C7565746F6F74682E636F6D")
 
 
 def test_cases(pts):
@@ -231,389 +176,257 @@ def test_cases(pts):
 
     stack = get_stack()
 
-    stack.gap_init()
+    pre_conditions = [
+        TestFunc(btp.core_reg_svc_gap),
+        TestFunc(stack.gap_init, iut_device_name,
+                 iut_manufacturer_data, iut_appearance, iut_svc_data, iut_flags,
+                 iut_svcs),
+        TestFunc(btp.gap_read_ctrl_info),
+        TestFunc(lambda: pts.update_pixit_param(
+                 "GAP", "TSPX_bd_addr_iut",
+                 stack.gap.iut_addr_get_str())),
+        TestFunc(lambda: pts.update_pixit_param(
+                 "GAP", "TSPX_iut_privacy_enabled",
+                 "TRUE" if stack.gap.iut_has_privacy() else "FALSE")),
+        TestFunc(lambda: pts.update_pixit_param(
+                 "GAP", "TSPX_using_public_device_address",
+                 "FALSE" if stack.gap.iut_addr_is_random() else "TRUE")),
+        TestFunc(lambda: pts.update_pixit_param(
+                 "GAP", "TSPX_using_private_device_address",
+                 "TRUE" if stack.gap.iut_addr_is_random() else "FALSE")),
+        TestFunc(lambda: pts.update_pixit_param(
+                 "GAP", "TSPX_using_random_device_address",
+                 "TRUE" if stack.gap.iut_addr_is_random()
+                 else "FALSE")),
 
-    # Set GAP common PIXIT values
-    pts.update_pixit_param("GAP", "TSPX_delete_link_key", "TRUE")
-    pts.update_pixit_param("GAP", "TSPX_using_public_device_address", "TRUE")
-    pts.update_pixit_param("GAP", "TSPX_using_private_device_address", "FALSE")
-    pts.update_pixit_param("GAP", "TSPX_iut_privacy_enabled", "FALSE")
-    pts.update_pixit_param("GAP", "TSPX_using_random_device_address", "FALSE")
-
-    pre_conditions = [TestFunc(btp.gap_read_ctrl_info),
-                      TestFunc(lambda: pts.update_pixit_param(
-                          "GAP", "TSPX_bd_addr_iut",
-                          stack.gap.iut_addr_get_str())),
-                      TestFunc(lambda: pts.update_pixit_param(
-                          "GAP", "TSPX_iut_privacy_enabled",
-                          "TRUE" if stack.gap.iut_has_privacy() else "FALSE")),
-                      TestFunc(lambda: pts.update_pixit_param(
-                          "GAP", "TSPX_using_public_device_address",
-                          "FALSE" if stack.gap.iut_addr_is_random()
-                          else "TRUE")),
-                      TestFunc(lambda: pts.update_pixit_param(
-                          "GAP", "TSPX_using_private_device_address",
-                          "TRUE" if stack.gap.iut_addr_is_random()
-                          else "FALSE")),
-                      TestFunc(lambda: pts.update_pixit_param(
-                          "GAP", "TSPX_using_random_device_address",
-                          "TRUE" if stack.gap.iut_addr_is_random()
-                          else "FALSE")),
-
-                      # We do this on test case, because previous one could
-                      # update this if RPA was used by PTS
-                      # TODO: Get PTS address type
-                      TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public)]
+        # We do this on test case, because previous one could
+        # update this if RPA was used by PTS
+        # TODO: Get PTS address type
+        TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public)]
 
     test_cases = [
         BTestCase("GAP", "GAP/BROB/BCST/BV-01-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_nonconn, start_wid=47),
-                   TestFunc(btp.gap_adv_ind_on, start_wid=47,
-                            ad=[AdData.ad_manuf])]),
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/BROB/BCST/BV-02-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_nonconn),
-                   TestFunc(btp.gap_set_nondiscov),
-                   TestFunc(btp.gap_adv_ind_on, ad=[AdData.ad_manuf])]),
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/BROB/BCST/BV-03-C",
-                  edit1_wids={1002: btp.var_store_get_passkey},
                   cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-
-                   # Enter general discoverable mode and send connectable
-                   # event so that PTS could connect and get IRK
-                   TestFunc(btp.gap_set_nonconn),
-                   TestFunc(btp.gap_adv_ind_on, ad=[AdData.ad_manuf]),
-                   TestFunc(
-                       pts.update_pixit_param, "GAP",
-                       "TSPX_iut_device_name_in_adv_packet_for_random_address",
-                       iut_device_name),
-                   TestFunc(btp.gap_wait_for_connection, post_wid=91),
-                   TestFunc(btp.gap_adv_off, post_wid=91),
-                   TestFunc(btp.gap_disconn, start_wid=77),
-
-                   # Enter broadcast mode
-                   TestFunc(btp.gap_set_nonconn, start_wid=80),
-                   TestFunc(btp.gap_set_nondiscov, start_wid=80),
-                   TestFunc(btp.gap_adv_ind_on,
-                            sd=[AdData.ad_manuf, AdData.ad_name_sh],
-                            start_wid=80)]),
-        # sleep to discover requested device
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=gap_wid_hdl),
+        BTestCase("GAP", "GAP/BROB/BCST/BV-04-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/BROB/OBSV/BV-01-C",
-                  ok_cancel_wids={4: (handle_wid_4)},
-                  cmds=pre_conditions +
-                  [TestFunc(sleep, 10, start_wid=4),
-                   TestFunc(btp.gap_stop_discov, start_wid=4),
-                   TestFunc(btp.gap_start_discov, type='active',
-                            mode='observe', start_wid=12)]),
-        # sleep to discover requested device
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/BROB/OBSV/BV-02-C",
-                  ok_cancel_wids={4: (handle_wid_4)},
-                  cmds=pre_conditions +
-                  [TestFunc(sleep, 10, start_wid=4),
-                   TestFunc(btp.gap_stop_discov, start_wid=4),
-                   TestFunc(btp.gap_start_discov, type='active',
-                            mode='observe', post_wid=169)]),
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
+        BTestCase("GAP", "GAP/BROB/OBSV/BV-03-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
+        BTestCase("GAP", "GAP/BROB/OBSV/BV-04-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/BROB/OBSV/BV-05-C",
-                  verify_wids={157: (handle_wid_157)},
-                  cmds=pre_conditions +
-                  [TestFunc(btp.gap_start_discov, 'le', 'active',
-                            'observe', start_wid=157),
-                   TestFunc(sleep, 10, start_wid=157),
-                   TestFunc(btp.gap_stop_discov, start_wid=157)]),
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/BROB/OBSV/BV-06-C",
-                  edit1_wids={1002: btp.var_store_get_passkey},
-                  verify_wids={138: (handle_wid_138)},
                   cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-
-                   # Set RPA update to 1 minute (60*1000=60000 ms)
-                   TestFunc(pts.update_pixit_param, "GAP",
-                            "TSPX_iut_private_address_interval", '60000'),
-
-                   # Connect and pair to get IRK
-                   TestFunc(btp.gap_conn, start_wid=78),
-                   TestFunc(btp.gap_pair, start_wid=108),
-                   TestFunc(btp.gap_start_discov, 'le', 'active',
-                            'observe', start_wid=138),
-                   TestFunc(sleep, 10, start_wid=138),
-                   TestFunc(btp.gap_stop_discov, start_wid=138)]),
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/DISC/NONM/BV-01-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_nonconn, start_wid=5),
-                   TestFunc(btp.gap_set_nondiscov, start_wid=5),
-                   TestFunc(btp.gap_adv_ind_on, start_wid=5)]),
+                  pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/DISC/NONM/BV-02-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_nondiscov, start_wid=72),
-                   TestFunc(btp.gap_adv_ind_on, start_wid=72)]),
+                  pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
+        BTestCase("GAP", "GAP/DISC/LIMM/BV-03-C",
+                  pre_conditions,
+                generic_wid_hdl=gap_wid_hdl),
+        BTestCase("GAP", "GAP/DISC/LIMM/BV-04-C",
+                  pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/DISC/GENM/BV-03-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_gendiscov),
-                   TestFunc(btp.gap_set_nonconn),
-                   TestFunc(btp.gap_adv_ind_on, start_wid=51)]),
+                  pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/DISC/GENM/BV-04-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_conn),
-                   TestFunc(btp.gap_set_gendiscov),
-                   TestFunc(btp.gap_adv_ind_on, start_wid=52)]),
+                  pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/DISC/LIMP/BV-01-C",
-                  ok_cancel_wids={10: (btp.check_discov_results)},
-                  cmds=pre_conditions +
-                  [TestFunc(btp.gap_start_discov, mode='limited',
-                            post_wid=13)]),
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/DISC/LIMP/BV-02-C",
-                  ok_cancel_wids={11: (btp.check_discov_results, None, None,
-                                       False)},
-                  cmds=pre_conditions +
-                  [TestFunc(btp.gap_start_discov, mode='limited',
-                            post_wid=13)]),
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/DISC/LIMP/BV-03-C",
-                  ok_cancel_wids={11: (btp.check_discov_results, None, None,
-                                       False)},
-                  cmds=pre_conditions +
-                  [TestFunc(btp.gap_start_discov, mode='limited',
-                            post_wid=13)]),
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/DISC/LIMP/BV-04-C",
-                  ok_cancel_wids={11: (btp.check_discov_results, None, None,
-                                       False)},
-                  cmds=pre_conditions +
-                  [TestFunc(btp.gap_start_discov, mode='limited',
-                            post_wid=13)]),
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/DISC/LIMP/BV-05-C",
-                  ok_cancel_wids={11: (btp.check_discov_results, None, None,
-                                       False)},
-                  cmds=pre_conditions +
-                  [TestFunc(btp.gap_start_discov, mode='limited',
-                            post_wid=13)]),
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/DISC/GENP/BV-01-C",
-                  ok_cancel_wids={14: (handle_wid_14)},
-                  cmds=pre_conditions +
-                  [TestFunc(btp.gap_start_discov, post_wid=23)]),
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/DISC/GENP/BV-02-C",
-                  ok_cancel_wids={14: (handle_wid_14)},
-                  cmds=pre_conditions +
-                  [TestFunc(btp.gap_start_discov, post_wid=23)]),
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/DISC/GENP/BV-03-C",
-                  ok_cancel_wids={11: (handle_wid_11)},
-                  cmds=pre_conditions +
-                  [TestFunc(btp.gap_start_discov, post_wid=23)]),
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/DISC/GENP/BV-04-C",
-                  ok_cancel_wids={11: (handle_wid_11)},
-                  cmds=pre_conditions +
-                  [TestFunc(btp.gap_start_discov, post_wid=23)]),
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/DISC/GENP/BV-05-C",
-                  ok_cancel_wids={11: (handle_wid_11)},
-                  cmds=pre_conditions +
-                  [TestFunc(btp.gap_start_discov, post_wid=23)]),
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/DISC/RPA/BV-01-C",
-                  edit1_wids={1002: btp.var_store_get_passkey},
-                  verify_wids={138: (handle_wid_138)},
-                  cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-
-                   # Set RPA update to 1 minute (60*1000=60000 ms)
-                   TestFunc(pts.update_pixit_param, "GAP",
-                            "TSPX_iut_private_address_interval", '60000'),
-
-                   # Connect and pair to get IRK
-                   TestFunc(btp.gap_conn, start_wid=78),
-                   TestFunc(btp.gap_pair, start_wid=108),
-                   TestFunc(btp.gap_start_discov, 'le', 'active',
-                            'general', start_wid=138),
-                   TestFunc(sleep, 10, start_wid=138),
-                   TestFunc(btp.gap_stop_discov, start_wid=138)]),
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
+        BTestCase("GAP", "GAP/IDLE/NAMP/BV-01-C",
+                  pre_conditions +
+                  [TestFunc(btp.core_reg_svc_gatt),
+                   TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
+                            start_wid=78),
+                   TestFunc(btp.gattc_read_uuid, Addr.le_public,
+                            pts_bd_addr, '0001', 'FFFF', UUID.device_name,
+                            start_wid=73),
+                   TestFunc(btp.gattc_read_uuid_rsp, post_wid=73),
+                   TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
+                            start_wid=77)]),
+        BTestCase("GAP", "GAP/IDLE/NAMP/BV-02-C",
+                  pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/CONN/NCON/BV-01-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_nonconn),
-                   TestFunc(btp.gap_adv_ind_on)]),
+                  pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/CONN/NCON/BV-02-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_nonconn, start_wid=122),
-                   TestFunc(btp.gap_adv_ind_on, ad=[AdData.ad_name_sh],
-                            start_wid=54)]),
+                  pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
+        BTestCase("GAP", "GAP/CONN/NCON/BV-03-C",
+                  pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/CONN/UCON/BV-01-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_nondiscov, start_wid=74),
-                   TestFunc(btp.gap_adv_ind_on, start_wid=74)]),
+                  pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/CONN/UCON/BV-02-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_gendiscov, start_wid=75),
-                   TestFunc(btp.gap_adv_ind_on, start_wid=75)]),
+                  pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
+        BTestCase("GAP", "GAP/CONN/UCON/BV-03-C",
+                  pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/CONN/UCON/BV-06-C",
-                  edit1_wids={1002: btp.var_store_get_passkey},
                   cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   TestFunc(btp.gap_set_gendiscov, start_wid=91),
-                   TestFunc(btp.gap_adv_ind_on, start_wid=91),
-                   TestFunc(btp.gap_adv_off, start_wid=77),
-                   TestFunc(btp.gap_disconn, start_wid=77),
-
-                   # Apparently PTS don't take into account value of
-                   # TSPX_iut_private_address_interval, so let's simulate
-                   # change of RPA
-                   TestFunc(btp.gap_adv_off, start_wid=90),
-                   TestFunc(btp.gap_read_ctrl_info, start_wid=90),
-                   TestFunc(btp.gap_set_gendiscov, start_wid=90),
-                   TestFunc(btp.gap_adv_ind_on, start_wid=90)]),
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/CONN/ACEP/BV-01-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
-                            post_wid=82),
-                   TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
-                            start_wid=77)]),
+                  pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
+        BTestCase("GAP", "GAP/CONN/ACEP/BV-03-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
+        BTestCase("GAP", "GAP/CONN/ACEP/BV-04-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/CONN/GCEP/BV-01-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_conn, start_wid=78),
-                   TestFunc(btp.gap_disconn, start_wid=77)]),
+                  pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/CONN/GCEP/BV-02-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
-                            start_wid=78),
-                   TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
-                            start_wid=77)]),
+                  pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
+        BTestCase("GAP", "GAP/CONN/GCEP/BV-05-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
+        BTestCase("GAP", "GAP/CONN/GCEP/BV-06-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/CONN/DCEP/BV-01-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
-                            start_wid=78),
-                   TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
-                            start_wid=77)]),
+                  pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/CONN/DCEP/BV-03-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_conn, start_wid=78),
-                   TestFunc(btp.gap_disconn, start_wid=77)]),
+                  pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
+        BTestCase("GAP", "GAP/CONN/DCEP/BV-05-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
+        BTestCase("GAP", "GAP/CONN/DCEP/BV-06-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/CONN/CPUP/BV-01-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_adv_ind_on, start_wid=21)]),
+                  pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/CONN/CPUP/BV-02-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_adv_ind_on)]),
+                  pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/CONN/CPUP/BV-03-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_adv_ind_on)]),
+                  pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/CONN/CPUP/BV-04-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
-                            start_wid=40),
-                   TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
-                            start_wid=77)]),
+                  pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/CONN/CPUP/BV-05-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
-                            start_wid=40),
-                   TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
-                            start_wid=77)]),
+                  pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/CONN/CPUP/BV-06-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
-                            start_wid=40),
-                   TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
-                            start_wid=77)]),
+                  pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/CONN/CPUP/BV-08-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_conn, start_wid=21),
-                   TestFunc(btp.gap_adv_ind_on, start_wid=21)]),
+                  pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/CONN/TERM/BV-01-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
-                            start_wid=78),
-                   TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
-                            start_wid=77)]),
+                  pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/CONN/PRDA/BV-01-C",
-                  edit1_wids={1002: (btp.var_store_get_passkey)},
-                  cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   TestFunc(btp.gap_set_gendiscov, start_wid=91),
-                   TestFunc(btp.gap_adv_ind_on, ad=[AdData.ad_name_sh],
-                            start_wid=91),
-                   TestFunc(btp.gap_identity_resolved_ev, post_wid=1002),
-                   TestFunc(btp.gap_adv_off, start_wid=77),
-                   TestFunc(btp.gap_disconn, start_wid=77)]),
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/CONN/PRDA/BV-02-C",
-                  edit1_wids={1002: (btp.var_store_get_passkey)},
-                  ok_cancel_wids={78: (btp.gap_rpa_conn)},
-                  cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   TestFunc(btp.gap_pair, start_wid=108),
-                   TestFunc(btp.gap_identity_resolved_ev, post_wid=1002),
-                   TestFunc(btp.gap_conn, start_wid=142)]),
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/BOND/NBON/BV-01-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
-                   TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
-                            start_wid=78)]),
+                  pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/BOND/NBON/BV-02-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
-                   TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
-                            start_wid=78),
-                   TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
-                            start_wid=100)]),
+                  pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/BOND/NBON/BV-03-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
-                   TestFunc(btp.gap_set_conn, start_wid=91),
-                   TestFunc(btp.gap_adv_ind_on, start_wid=91)]),
+                  pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/BOND/BON/BV-01-C",
-                  edit1_wids={1002: btp.var_store_get_passkey},
-                  cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                         TestFunc(btp.gap_set_conn),
-                         TestFunc(btp.gap_adv_ind_on, start_wid=91),
-                         TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
-                                  start_wid=108)]),
+                  cmds=pre_conditions + init_gatt_db +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/BOND/BON/BV-02-C",
-                  cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
-                         TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
-                                  start_wid=78),
-                         TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
-                                  start_wid=108)]),
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/BOND/BON/BV-03-C",
-                  edit1_wids={1002: btp.var_store_get_passkey},
-                  cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                         TestFunc(btp.gap_set_conn),
-                         TestFunc(btp.gap_adv_ind_on, start_wid=91)]),
+                  cmds=pre_conditions + init_gatt_db +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/BOND/BON/BV-04-C",
-                  cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
-                         TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
-                                  start_wid=78),
-                         TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
-                                  start_wid=108),
-                         TestFunc(btp.gap_disconn, pts_bd_addr,
-                                  Addr.le_public, start_wid=77)]),
+                  cmds=pre_conditions + init_gatt_db +
+                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/SEC/AUT/BV-11-C",
-                  edit1_wids={139: "000C",
-                              1002: btp.var_store_get_passkey},
                   cmds=pre_conditions + init_gatt_db +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                         TestFunc(btp.gap_set_conn, start_wid=91),
-                         TestFunc(btp.gap_adv_ind_on, start_wid=91)]),
+                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/SEC/AUT/BV-12-C",
-                  edit1_wids={139: "000C",
-                              1002: btp.var_store_get_passkey},
                   cmds=pre_conditions + init_gatt_db +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                         TestFunc(btp.gap_conn, start_wid=78)]),
+                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/SEC/AUT/BV-13-C",
-                  edit1_wids={139: "000C",
-                              1002: btp.var_store_get_passkey},
                   cmds=pre_conditions + init_gatt_db +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                         TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
-                                  start_wid=78)]),
+                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/SEC/AUT/BV-14-C",
-                  edit1_wids={139: "000C",
-                              1002: btp.var_store_get_passkey},
                   cmds=pre_conditions + init_gatt_db +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
-                         TestFunc(btp.gap_set_conn, start_wid=91),
-                         TestFunc(btp.gap_adv_ind_on, start_wid=91),
-                         TestFunc(btp.gap_set_io_cap, IOCap.display_only,
-                                  start_wid=139)]),
+                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/SEC/AUT/BV-17-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.core_reg_svc_gatt),
@@ -628,6 +441,10 @@ def test_cases(pts):
                    TestFunc(btp.gattc_read_rsp, store_val=False,
                             post_wid=108),
                    TestFunc(btp.gap_disconn, start_wid=44)]),
+        BTestCase("GAP", "GAP/SEC/AUT/BV-18-C",
+                  cmds=pre_conditions + init_gatt_db +
+                       [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output)],
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/SEC/AUT/BV-19-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
@@ -638,199 +455,114 @@ def test_cases(pts):
                    TestFunc(btp.gattc_read_rsp, store_val=False,
                             post_wid=112),
                    TestFunc(btp.gap_disconn, start_wid=44)]),
-        # TODO: Inform about lost bond
+        BTestCase("GAP", "GAP/SEC/AUT/BV-20-C",
+                  cmds=pre_conditions + init_gatt_db +
+                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/SEC/AUT/BV-21-C",
-                  edit1_wids={1002: btp.var_store_get_passkey},
-                  cmds=pre_conditions +
-                  [TestFunc(btp.core_reg_svc_gatt),
-                   TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   TestFunc(btp.gap_conn, start_wid=78),
-                   TestFunc(btp.gap_pair, start_wid=108),
-                   TestFunc(btp.gap_disconn, start_wid=44)]),
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         # TODO: Inform about lost bond
         BTestCase("GAP", "GAP/SEC/AUT/BV-22-C",
-                  edit1_wids={1002: btp.var_store_get_passkey},
-                  cmds=pre_conditions +
-                  [TestFunc(btp.core_reg_svc_gatt),
-                   TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   TestFunc(btp.gap_set_conn, start_wid=91),
-                   TestFunc(btp.gap_adv_ind_on, start_wid=91),
-                   TestFunc(btp.gattc_read, Addr.le_public,
-                            pts_bd_addr, "0001", start_wid=112),
-                   TestFunc(btp.gattc_read_rsp, store_val=False,
-                            start_wid=112),
-                   TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
-                            start_wid=108)]),
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/SEC/AUT/BV-23-C",
-                  edit1_wids={1002: btp.var_store_get_passkey,
-                              144: "000C"},
                   cmds=pre_conditions + init_gatt_db +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   TestFunc(btp.gap_set_conn),
-                   TestFunc(btp.gap_adv_ind_on)]),
+                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/SEC/AUT/BV-24-C",
-                  edit1_wids={1002: btp.var_store_get_passkey,
-                              144: "000C"},
                   cmds=pre_conditions + init_gatt_db +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   TestFunc(btp.gap_conn, start_wid=78),
-                   TestFunc(btp.gap_disconn, start_wid=44)]),
+                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/SEC/CSIGN/BV-01-C",
-                  pre_conditions +
-                  [TestFunc(btp.core_reg_svc_gatt),
-                   TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
-                   TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
-                            start_wid=78),
-                   TestFunc(btp.gap_pair, pts_bd_addr, Addr.le_public,
-                            start_wid=108),
-                   TestFunc(btp.gattc_signed_write, Addr.le_public,
-                            pts_bd_addr, "0001", "01", start_wid=125),
-                   TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
-                            start_wid=77)]),
+                  cmds=pre_conditions + init_gatt_db +
+                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/SEC/CSIGN/BV-02-C",
-                  edit1_wids={161: handle_wid_161},
-                  verify_wids={141: btp.gatts_verify_write_success},
-                  cmds=init_gatt_db + pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
-                   TestFunc(btp.gap_set_conn),
-                   TestFunc(btp.gap_adv_ind_on),
-                   TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
-                            start_wid=77)]),
+                  cmds=pre_conditions + init_gatt_db +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output)],
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/SEC/CSIGN/BI-01-C",
-                  edit1_wids={161: handle_wid_161},
-                  verify_wids={130: btp.gatts_verify_write_fail},
-                  cmds=init_gatt_db + pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
-                   TestFunc(btp.gap_set_conn),
-                   TestFunc(btp.gap_adv_ind_on),
-                   TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
-                            start_wid=77)]),
+                  cmds=pre_conditions + init_gatt_db +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output)],
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/SEC/CSIGN/BI-02-C",
-                  edit1_wids={161: handle_wid_161},
+                  edit1_wids={161: hdl_wid_161},
                   verify_wids={130: lambda x: (
                       btp.gatts_verify_write_success(x) and
                       btp.gatts_verify_write_success(x) and
                       btp.gatts_verify_write_fail(x))},
-                  cmds=init_gatt_db + pre_conditions +
+                  cmds=pre_conditions + init_gatt_db +
                   [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
                    TestFunc(btp.gap_set_conn),
-                   TestFunc(btp.gap_adv_ind_on),
+                   TestFunc(lambda: btp.gap_adv_ind_on(ad=get_stack().gap.ad,
+                                                       sd=get_stack().gap.sd)),
                    TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
                             start_wid=77)]),
         BTestCase("GAP", "GAP/SEC/CSIGN/BI-03-C",
-                  edit1_wids={161: handle_wid_161},
-                  verify_wids={130: btp.gatts_verify_write_fail},
-                  cmds=init_gatt_db + pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
-                   TestFunc(btp.gap_set_gendiscov, start_wid=91),
-                   TestFunc(btp.gap_set_conn, start_wid=91),
-                   TestFunc(btp.gap_adv_ind_on, start_wid=91),
-                   TestFunc(btp.gap_adv_off, post_wid=91),
-                   TestFunc(btp.gap_disconn, start_wid=77),
-                   TestFunc(btp.gap_unpair, start_wid=135)]),
+                  cmds=pre_conditions + init_gatt_db +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output)],
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/SEC/CSIGN/BI-04-C",
-                  edit1_wids={161: handle_wid_161},
-                  verify_wids={137: btp.gatts_verify_write_fail},
                   cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
-                   TestFunc(btp.gap_set_conn),
-                   TestFunc(btp.gap_adv_ind_on),
-                   TestFunc(handle_wid_136_sec_csign_bi_04, start_wid=136),
-                   TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
-                            start_wid=77)]),
-        # BTestCase("GAP", "GAP/PRIV/CONN/BV-10-C",
-        #           edit1_wids={1002: (btp.var_store_get_passkey, pts_bd_addr,
-        #                              Addr.le_public)},
-        #           cmds=pre_conditions +
-        #                [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-        #                 TestFunc(
-        #                     pts.update_pixit_param, "GAP",
-        #                     "TSPX_iut_device_name_in_adv_packet_for_random_address",
-        #                     iut_device_name),
-        #
-        #                 # Set RPA update to 15 minutes (15*60*1000=900000 ms)
-        #                 TestFunc(pts.update_pixit_param, "GAP",
-        #                          "TSPX_iut_private_address_interval",
-        #                          '900000'),
-        #                 TestFunc(btp.gap_set_conn),
-        #                 TestFunc(btp.gap_set_gendiscov),
-        #                 TestFunc(btp.gap_adv_ind_on, sd=[AdData.ad_name_sh]),
-        #                 # Don't disable advertising here
-        #                 TestFunc(btp.gap_disconn, start_wid=77)]),
-        # Workaround BZ-197 and PTS issue #15170
+                  [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output)],
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/PRIV/CONN/BV-10-C",
-                  edit1_wids={1002: btp.var_store_get_passkey},
                   cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   TestFunc(
-                       pts.update_pixit_param, "GAP",
-                       "TSPX_iut_device_name_in_adv_packet_for_random_address",
-                       iut_device_name),
-
-                   # Simulate RPA update every 10 seconds (10*1000=10000 ms)
-                   TestFunc(pts.update_pixit_param, "GAP",
-                            "TSPX_iut_private_address_interval",
-                            '10000'),
-                   TestFunc(btp.gap_set_conn),
-                   TestFunc(btp.gap_set_gendiscov),
-
-                   # This step is used to speed up test execution, so
-                   # that RPA is updated every 10 seconds. This shall
-                   # be skipped on first wid: 91 requesting to send
-                   # advertising report. Here, we are disabling
-                   # previously started advertising, to generate new
-                   # RPA to be used when advertising is started again.
-                   TestFunc(btp.gap_adv_off, start_wid=91,
-                            skip_call=(1,)),
-                   TestFunc(sleep, 10, start_wid=91, skip_call=(1,)),
-                   TestFunc(btp.gap_read_ctrl_info, start_wid=91,
-                            skip_call=(1,)),
-
-                   TestFunc(btp.gap_adv_ind_on,
-                            ad=[AdData.ad_name_sh], start_wid=91),
-                   # Don't disable advertising here
-                   TestFunc(btp.gap_disconn, start_wid=77)]),
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/PRIV/CONN/BV-11-C",
-                  edit1_wids={1002: btp.var_store_get_passkey},
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
+        BTestCase("GAP", "GAP/PRIV/CONN/BI-01-C",
                   cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
-                   TestFunc(btp.gap_conn, post_wid=78),
-                   TestFunc(btp.gap_pair, start_wid=108),
-                   TestFunc(btp.gap_conn, start_wid=2142),
-                   TestFunc(btp.gap_conn, start_wid=148)],
-                  # Please confirm IUT does not perform the Connection
-                  # Establishment procedure since the resolvable private
-                  # address is incorrect.
-                  verify_wids={148: btp.verify_not_connected}),
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/ADV/BV-01-C",
-                  cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_conn),
-                   TestFunc(btp.gap_adv_ind_on, ad)]),
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
+        BTestCase("GAP", "GAP/ADV/BV-02-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/ADV/BV-03-C",
-                  cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_conn),
-                   TestFunc(btp.gap_set_gendiscov),
-                   TestFunc(btp.gap_adv_ind_on)]),
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/ADV/BV-04-C",
-                  cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_conn),
-                   TestFunc(btp.gap_adv_ind_on, ad)]),
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/ADV/BV-05-C",
-                  cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_conn),
-                   TestFunc(btp.gap_adv_ind_on, ad)]),
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
+        BTestCase("GAP", "GAP/ADV/BV-08-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/ADV/BV-09-C",
-                  cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_conn),
-                   TestFunc(btp.gap_adv_ind_on, ad)]),
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/ADV/BV-10-C",
-                  cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_conn),
-                   TestFunc(btp.gap_adv_ind_on, ad)]),
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/ADV/BV-11-C",
-                  cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_conn),
-                   TestFunc(btp.gap_adv_ind_on, ad)]),
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
+        BTestCase("GAP", "GAP/ADV/BV-12-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
+        BTestCase("GAP", "GAP/ADV/BV-13-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
+        BTestCase("GAP", "GAP/ADV/BV-14-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
+        BTestCase("GAP", "GAP/ADV/BV-15-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
+        BTestCase("GAP", "GAP/ADV/BV-16-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
+        BTestCase("GAP", "GAP/ADV/BV-17-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         # GAP/GAT/BV-01-C
         # wid: 158 description: IUT support both Central and Peripheral roles.
         # Click Yes if IUT act as Central role to execute this test otherwise
@@ -838,15 +570,19 @@ def test_cases(pts):
         #
         # Testing central role.
         BTestCase("GAP", "GAP/GAT/BV-01-C",
-                  cmds=init_gatt_db + pre_conditions +
-                  [TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
-                            start_wid=78)]),
+                  cmds=pre_conditions + init_gatt_db,
+                        generic_wid_hdl=gap_wid_hdl),
         # Testing peripheral role.
         BTestCase("GAP", "GAP/GAT/BV-01-C",
-                  no_wid=158,
-                  cmds=init_gatt_db + pre_conditions +
-                  [TestFunc(btp.gap_set_conn, start_wid=9),
-                   TestFunc(btp.gap_adv_ind_on, start_wid=9)]),
+                #   no_wid=158,
+                  cmds=pre_conditions + init_gatt_db,
+                  generic_wid_hdl=gap_wid_hdl),
+        BTestCase("GAP", "GAP/GAT/BV-04-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
+        BTestCase("GAP", "GAP/GAT/BV-05-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
     ]
 
     return test_cases

@@ -53,14 +53,11 @@ class IUTCtl:
         self.btp_socket = None
         self.iut_process = None
 
-        if not AUTO_PTS_LOCAL:
-            self.start()
 
     def start(self):
         """Starts the IUT"""
 
         log("%s.%s", self.__class__, self.start.__name__)
-
         self.btp_socket = BTPWorker()
         self.btp_socket.open()
 
@@ -79,7 +76,7 @@ class IUTCtl:
             log("IUT didn't connect!")
             self.stop()
 
-        self.wait_iut_ready_event()
+#        self.wait_iut_ready_event()
 
     def wait_iut_ready_event(self):
         """Wait until IUT sends ready event after power up"""
@@ -91,6 +88,10 @@ class IUTCtl:
             self.stop()
         else:
             log("IUT ready event received OK")
+
+    def reset(self):
+        """Reset IUT like removing all paired devices"""
+
 
     def stop(self):
         """Powers off the IUT"""

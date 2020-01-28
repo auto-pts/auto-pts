@@ -20,8 +20,9 @@ from pybtp import btp
 log = logging.debug
 
 
-def sm_wid_hdl(wid, description):
-    log("%s, %r, %r", sm_wid_hdl.__name__, wid, description)
+def sm_wid_hdl(wid, description, test_case_name):
+    log("%s, %r, %r, %s", sm_wid_hdl.__name__, wid, description,
+        test_case_name)
     module = sys.modules[__name__]
 
     try:
