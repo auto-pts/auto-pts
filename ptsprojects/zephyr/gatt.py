@@ -167,7 +167,7 @@ def test_cases_server(ptses):
     """Returns a list of GATT Server test cases"""
 
     if len(ptses) < 2:
-        return
+        return []
 
     pts = ptses[0]
     pts2 = ptses[1]
