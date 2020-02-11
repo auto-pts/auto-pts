@@ -195,6 +195,8 @@ def test_cases(pts):
             "GAP", "TSPX_bd_addr_iut",
             stack.gap.iut_addr_get_str())),
         TestFunc(lambda: pts.update_pixit_param(
+            "GAP", "TSPX_delete_link_key", "TRUE")),
+        TestFunc(lambda: pts.update_pixit_param(
             "GAP", "TSPX_iut_privacy_enabled",
             "TRUE" if stack.gap.iut_has_privacy() else "FALSE")),
         TestFunc(lambda: pts.update_pixit_param(
@@ -455,14 +457,18 @@ def test_cases(pts):
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                    TestFunc(btp.gap_conn, start_wid=78),
                    TestFunc(btp.gap_pair, start_wid=108, skip_call=(2,)),
-                   TestFunc(btp.gattc_read, Addr.le_public,
-                            pts_bd_addr, "0001", start_wid=112),
                    TestFunc(btp.gattc_read_rsp, store_val=False,
-                            post_wid=112),
+                            post_wid=108, skip_call=(1,)),
+                   TestFunc(btp.gattc_read, Addr.le_public,
+                            pts_bd_addr, "0009", start_wid=112),
+                   TestFunc(btp.gattc_read_rsp, store_val=False,
+                            post_wid=112, skip_call=(1,)),
                    TestFunc(btp.gap_disconn, start_wid=44)]),
         ZTestCase("GAP", "GAP/SEC/AUT/BV-20-C",
-                  cmds=pre_conditions + init_gatt_db +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  cmds=pre_conditions +
+                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+                        TestFunc(btp.gattc_read_rsp, store_val=False,
+                                 post_wid=108, skip_call=(1,))],
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/AUT/BV-21-C",
                   cmds=pre_conditions,
