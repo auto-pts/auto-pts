@@ -115,17 +115,24 @@ def test_cases(pts):
     pts_bd_addr = pts.q_bd_addr
 
     stack = get_stack()
-
-    stack.gap_init()
+    iut_device_name = 'Tester'
 
     pre_conditions = [TestFunc(btp.core_reg_svc_gap),
+                      TestFunc(stack.gap_init, iut_device_name),
                       TestFunc(btp.gap_read_ctrl_info),
                       TestFunc(lambda: pts.update_pixit_param(
                           "SM", "TSPX_bd_addr_iut",
                           stack.gap.iut_addr_get_str())),
                       TestFunc(lambda: pts.update_pixit_param(
+                          "SM", "TSPX_iut_device_name_in_adv_packet_for_random_address",
+                          iut_device_name)),
+                      TestFunc(lambda: pts.update_pixit_param(
                           "SM", "TSPX_peer_addr_type",
                           "01" if stack.gap.iut_addr_is_random() else "00")),
+                      TestFunc(lambda: pts.update_pixit_param(
+                          "SM", "TSPX_Bonding_Flags", "01"
+                          if stack.gap.current_settings_get('Bondable')
+                          else "00")),
                       # FIXME Find better place to store PTS bdaddr
                       TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public)]
 
@@ -268,15 +275,16 @@ def test_cases(pts):
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/SLA/SIP/BV-01-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  [TestFunc(btp.gap_set_io_cap, IOCap.keyboard_display)],
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/MAS/SIP/BV-02-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  [TestFunc(btp.gap_set_io_cap, IOCap.keyboard_display)],
                   generic_wid_hdl=sm_wid_hdl),
+
         ZTestCase("SM", "SM/SLA/SIE/BV-01-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),],
                   generic_wid_hdl=sm_wid_hdl),
     ]
 

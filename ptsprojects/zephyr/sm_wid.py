@@ -15,6 +15,8 @@
 
 import logging
 import sys
+
+from ptsprojects.stack import get_stack
 from pybtp import btp
 from iutctl import get_iut
 
@@ -60,6 +62,7 @@ def hdl_wid_106(desc):
 
 
 def hdl_wid_108(desc):
+    btp.gap_pair()
     return True
 
 
@@ -81,8 +84,11 @@ def hdl_wid_111(desc):
 
 
 def hdl_wid_115(desc):
+    stack = get_stack()
+
     btp.gap_set_conn()
-    btp.gap_adv_ind_on()
+    btp.gap_set_gendiscov()
+    btp.gap_adv_ind_on(ad=stack.gap.ad, sd=stack.gap.sd)
     return True
 
 
@@ -105,6 +111,11 @@ def hdl_wid_143(desc):
 
     return True
 
+def hdl_wid_154(desc):
+    return True
+
+def hdl_wid_155(desc):
+    return True
 
 def hdl_wid_1009(desc):
     return btp.var_store_get_passkey(desc)
