@@ -280,9 +280,13 @@ def run_tests(args, iut_config):
             config_default = config
             continue
 
-        _args[config] = PtsInitArgs(args)
+        if config != config_default:
+            _args[config] = PtsInitArgs(args)
+
         _args[config].test_cases = value.get('test_cases', [])
-        _args[config_default].excluded += _args[config].test_cases
+
+        if 'overlay' in value:
+            _args[config_default].excluded += _args[config].test_cases
 
     ptses = autoptsclient.init_pts(_args[config_default], callback_thread,
                                    "zephyr_" + str(args["board"]))
