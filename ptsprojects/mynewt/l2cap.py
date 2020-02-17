@@ -30,12 +30,15 @@ except ImportError:  # running this module as script
 
 from pybtp import btp
 from pybtp.types import Addr
-from ptsprojects.stack import get_stack
+from ptsprojects.stack import get_stack, L2cap
 from wid import l2cap_wid_hdl
 
 
 le_psm = 128
+le_psm_eatt = 0x27
 psm_unsupported = 241
+le_initial_mtu = 120
+le_mps = 100
 
 
 def set_pixits(pts):
@@ -64,7 +67,7 @@ def set_pixits(pts):
     pts.set_pixit("L2CAP", "TSPX_tester_mps", "0017")
     pts.set_pixit("L2CAP", "TSPX_tester_mtu", "02A0")
     pts.set_pixit("L2CAP", "TSPX_iut_role_initiator", "FALSE")
-    pts.set_pixit("L2CAP", "TSPX_le_psm", format(le_psm, '04x'))
+    pts.set_pixit("L2CAP", "TSPX_spsm", format(le_psm, '04x'))
     pts.set_pixit("L2CAP", "TSPX_psm", "0001")
     pts.set_pixit("L2CAP", "TSPX_psm_unsupported", format(psm_unsupported, '04x'))
     pts.set_pixit("L2CAP", "TSPX_psm_authentication_required", "00F2")
@@ -111,7 +114,7 @@ def test_cases(pts):
 
     stack.gap_init()
 
-    pre_conditions = [TestFunc(btp.core_reg_svc_gap),
+    common = [TestFunc(btp.core_reg_svc_gap),
                       TestFunc(btp.core_reg_svc_l2cap),
                       TestFunc(btp.gap_read_ctrl_info),
                       TestFunc(lambda: pts.update_pixit_param(
@@ -121,12 +124,28 @@ def test_cases(pts):
                           "L2CAP", "TSPX_bd_addr_iut_le",
                           stack.gap.iut_addr_get_str())),
                       TestFunc(lambda: pts.update_pixit_param(
+                          "L2CAP", "TSPX_iut_supported_max_channels", "2")),
+                      TestFunc(lambda: pts.update_pixit_param(
+                          "L2CAP", "TSPX_IUT_mps", format(le_mps, '04x'))),
+                      TestFunc(lambda: pts.update_pixit_param(
                           "L2CAP", "TSPX_iut_address_type_random",
                           "TRUE" if stack.gap.iut_addr_is_random()
                           else "FALSE")),
-                      TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public),
-                      TestFunc(stack.l2cap_init, le_psm),
-                      TestFunc(btp.l2cap_le_listen, le_psm)]
+                      TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public)]
+
+    pre_conditions = common + [
+        TestFunc(stack.l2cap_init, le_psm, le_initial_mtu),
+        TestFunc(btp.l2cap_le_listen, le_psm)
+    ]
+
+    pre_conditions_1 = common + [
+        TestFunc(stack.l2cap_init, le_psm_eatt, le_initial_mtu),
+        TestFunc(btp.l2cap_le_listen, le_psm_eatt, mtu=le_initial_mtu)
+    ]
+
+    pre_conditions_2 = common + [
+        TestFunc(stack.l2cap_init, le_psm_eatt, le_initial_mtu),
+    ]
 
     test_cases = [
         # Connection Parameter Update
@@ -212,6 +231,115 @@ def test_cases(pts):
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-21-C",
                   pre_conditions,
+                  generic_wid_hdl=l2cap_wid_hdl),
+
+        # Enhanced Credit Based Flow Control Channel
+        ZTestCase("L2CAP", "L2CAP/ECFC/BV-01-C",
+                  pre_conditions_1,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BV-02-C",
+                  pre_conditions_1,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BV-04-C",
+                  pre_conditions_1,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BV-10-C",
+                  pre_conditions_1,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BV-12-C",
+                  pre_conditions_1,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BV-14-C",
+                  pre_conditions_1,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BV-16-C",
+                  pre_conditions_1,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BV-18-C",
+                  pre_conditions_1,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BV-21-C",
+                  pre_conditions_1,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BV-22-C",
+                  pre_conditions_1,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BV-24-C",
+                  pre_conditions_1,
+                  generic_wid_hdl=l2cap_wid_hdl),
+
+        ZTestCase("L2CAP", "L2CAP/ECFC/BV-03-C",
+                  pre_conditions_1,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BV-11-C",
+                  pre_conditions_2,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BV-13-C",
+                  pre_conditions_2,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BV-15-C",
+                  pre_conditions_2,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BV-17-C",
+                  pre_conditions_1,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BV-20-C",
+                  pre_conditions_1,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BV-23-C",
+                  pre_conditions_1,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BI-03-C",
+                  pre_conditions_1,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BV-25-C",
+                  pre_conditions_1,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BI-04-C",
+                  pre_conditions_1,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BV-26-C",
+                  pre_conditions_1,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BV-27-C",
+                  pre_conditions_1 +
+                  [TestFunc(btp.l2cap_le_listen, le_psm_eatt, le_initial_mtu,
+                            L2cap.unacceptable_parameters)],
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BI-05-C",
+                  pre_conditions_1,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BI-06-C",
+                  pre_conditions_1,
+                  generic_wid_hdl=l2cap_wid_hdl),
+
+        ZTestCase("L2CAP", "L2CAP/ECFC/BV-06-C",
+                  pre_conditions_1,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BV-07-C",
+                  pre_conditions_1,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BI-01-C",
+                  pre_conditions_1,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BI-02-C",
+                  pre_conditions_1,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BV-09-C",
+                  pre_conditions_1,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BV-08-C",
+                  pre_conditions_1,
+                  generic_wid_hdl=l2cap_wid_hdl),
+
+        ZTestCase("L2CAP", "L2CAP/COS/ECFC/BV-01-C",
+                  pre_conditions_1,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/COS/ECFC/BV-02-C",
+                  pre_conditions_1,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/COS/ECFC/BV-03-C",
+                  pre_conditions_1,
                   generic_wid_hdl=l2cap_wid_hdl),
     ]
 

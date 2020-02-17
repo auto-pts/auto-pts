@@ -212,6 +212,8 @@ L2CAP = {
                   CONTROLLER_INDEX),
     "listen": (defs.BTP_SERVICE_ID_L2CAP, defs.L2CAP_LISTEN,
                CONTROLLER_INDEX),
+    "reconfigure": (defs.BTP_SERVICE_ID_L2CAP, defs.L2CAP_RECONFIGURE,
+                    CONTROLLER_INDEX),
 }
 
 MESH = {
@@ -2751,7 +2753,7 @@ def l2cap_command_rsp_succ(op=None):
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_L2CAP, op)
 
 
-def l2cap_conn(bd_addr, bd_addr_type, psm):
+def l2cap_conn(bd_addr, bd_addr_type, psm, mtu=0, num=1):
     logging.debug("%s %r %r %r", l2cap_conn.__name__, bd_addr, bd_addr_type,
                   psm)
     iutctl = get_iut()
@@ -2767,15 +2769,13 @@ def l2cap_conn(bd_addr, bd_addr_type, psm):
     data_ba = bytearray(chr(bd_addr_type))
     data_ba.extend(bd_addr_ba)
     data_ba.extend(struct.pack('H', psm))
+    data_ba.extend(struct.pack('H', mtu))
+    data_ba.extend(struct.pack('B', num))
 
     iutctl.btp_socket.send(*L2CAP['connect'], data=data_ba)
 
-    chan_id = l2cap_conn_rsp()
-
-    stack = get_stack()
-    stack.l2cap.connect(chan_id, psm, bd_addr_type, bd_addr)
-
-    logging.debug("id %r", chan_id)
+    chan_ids = l2cap_conn_rsp()
+    logging.debug("id %r", chan_ids)
 
 
 l2cap_result_str = {0:  "Success",
@@ -2799,8 +2799,9 @@ def l2cap_conn_rsp():
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_L2CAP, defs.L2CAP_CONNECT)
-
-    return struct.unpack_from('<B', tuple_data[0])[0]
+    num = struct.unpack_from('<B', tuple_data[0])[0]
+    channels = struct.unpack_from('%ds' % num, tuple_data[0], 1)[0]
+    return list(channels)
 
 
 def l2cap_disconn(chan_id):
@@ -2837,7 +2838,7 @@ def l2cap_send_data(chan_id, val, val_mtp=None):
     stack.l2cap.tx(chan_id, val)
 
 
-def l2cap_listen(psm, transport):
+def l2cap_listen(psm, transport, mtu=0, response=0):
     logging.debug("%s %r %r", l2cap_le_listen.__name__, psm, transport)
 
     iutctl = get_iut()
@@ -2847,35 +2848,59 @@ def l2cap_listen(psm, transport):
 
     data_ba = bytearray(struct.pack('H', psm))
     data_ba.extend(struct.pack('B', transport))
+    data_ba.extend(struct.pack('H', mtu))
+    data_ba.extend(struct.pack('H', response))
 
     iutctl.btp_socket.send(*L2CAP['listen'], data=data_ba)
 
     l2cap_command_rsp_succ(defs.L2CAP_LISTEN)
 
 
-def l2cap_le_listen(psm):
-    l2cap_listen(psm, defs.L2CAP_TRANSPORT_LE)
+def l2cap_le_listen(psm, mtu=0, response=0):
+    l2cap_listen(psm, defs.L2CAP_TRANSPORT_LE, mtu, response)
+
+
+def l2cap_reconfigure(bd_addr, bd_addr_type, mtu, channels):
+    logging.debug("%s %r %r %r %r", l2cap_reconfigure.__name__,
+                  bd_addr, bd_addr_type, mtu, channels)
+
+    iutctl = get_iut()
+
+    bd_addr = pts_addr_get(bd_addr)
+    bd_addr_type = pts_addr_type_get(bd_addr_type)
+
+    bd_addr_ba = addr2btp_ba(bd_addr)
+    data_ba = bytearray(chr(bd_addr_type))
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(struct.pack('H', mtu))
+    data_ba.extend(struct.pack('B', len(channels)))
+    for chan in channels:
+        data_ba.extend(struct.pack('B', chan))
+
+    iutctl.btp_socket.send(*L2CAP['reconfigure'], data=data_ba)
+
+    l2cap_command_rsp_succ(defs.L2CAP_RECONFIGURE)
 
 
 def l2cap_connected_ev(l2cap, data, data_len):
     logging.debug("%s %r %r", l2cap_connected_ev.__name__, data, data_len)
 
-    hdr_fmt = '<BHB6s'
-    hdr_len = struct.calcsize(hdr_fmt)
+    hdr_fmt = '<BHHHHHB6s'
+    chan_id, psm, peer_mtu, peer_mps, our_mtu, our_mps, \
+        bd_addr_type, bd_addr = struct.unpack_from(hdr_fmt, data)
+    l2cap.connected(chan_id, psm, peer_mtu, peer_mps, our_mtu, our_mps,
+                    bd_addr_type, bd_addr)
 
-    chan_id, psm, bd_addr_type, bd_addr = struct.unpack_from('<BHB6s', data, 0)
-    l2cap.connected(chan_id, psm, bd_addr_type, bd_addr)
-
-    logging.debug("id:%r on psm:%r, addr %r type %r",
-                  chan_id, psm, bd_addr, bd_addr_type)
+    logging.debug("id:%r on psm:%r, peer_mtu:%r, peer_mps:%r, our_mtu:%r, "
+                  "our_mps:%r, addr %r type %r",
+                  chan_id, psm, peer_mtu, peer_mps, our_mtu, our_mps,
+                  bd_addr, bd_addr_type)
 
 
 def l2cap_disconnected_ev(l2cap, data, data_len):
     logging.debug("%s %r %r", l2cap_disconnected_ev.__name__, data, data_len)
 
     hdr_fmt = '<HBHB6s'
-    hdr_len = struct.calcsize(hdr_fmt)
-
     res, chan_id, psm, bd_addr_type, bd_addr = struct.unpack_from(hdr_fmt, data)
     result_str = l2cap_result_str[res]
     l2cap.disconnected(chan_id, psm, bd_addr_type, bd_addr, result_str)
@@ -2891,16 +2916,28 @@ def l2cap_data_rcv_ev(l2cap, data, data_len):
     hdr_len = struct.calcsize(hdr_fmt)
 
     chan_id, data_len = struct.unpack_from(hdr_fmt, data)
-    data_rx = binascii.hexlify(struct.unpack_from('%ds' % data_len, data, hdr_len)[0])
+    data_rx = struct.unpack_from('%ds' % data_len, data, hdr_len)[0]
     l2cap.rx(chan_id, data_rx)
 
-    logging.debug("id:%r, data:%s", chan_id, data_rx)
+    logging.debug("id:%r, data:%s", chan_id, binascii.hexlify(data_rx))
+
+
+def l2cap_reconfigured_ev(l2cap, data, data_len):
+    logging.debug("%s %r %r", l2cap_reconfigured_ev.__name__, data, data_len)
+
+    hdr_fmt = '<BHHHH'
+    chan_id, peer_mtu, peer_mps, our_mtu, our_mps = \
+        struct.unpack_from(hdr_fmt, data)
+    l2cap.reconfigured(chan_id, peer_mtu, peer_mps, our_mtu, our_mps)
+    logging.debug("id:%r, peer_mtu:%r, peer_mps:%r our_mtu:%r our_mps:%r",
+                  chan_id, peer_mtu, peer_mps, our_mtu, our_mps)
 
 
 L2CAP_EV = {
     defs.L2CAP_EV_CONNECTED: l2cap_connected_ev,
     defs.L2CAP_EV_DISCONNECTED: l2cap_disconnected_ev,
     defs.L2CAP_EV_DATA_RECEIVED: l2cap_data_rcv_ev,
+    defs.L2CAP_EV_RECONFIGURED: l2cap_reconfigured_ev,
 }
 
 
