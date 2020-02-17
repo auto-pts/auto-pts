@@ -166,11 +166,7 @@ def set_pixits(ptses):
 def test_cases_server(ptses):
     """Returns a list of GATT Server test cases"""
 
-    if len(ptses) < 2:
-        return []
-
     pts = ptses[0]
-    pts2 = ptses[1]
 
     pts_bd_addr = pts.q_bd_addr
     stack = get_stack()
@@ -199,14 +195,6 @@ def test_cases_server(ptses):
                             "TRUE" if stack.gap.iut_addr_is_random()
                             else "FALSE")),
                         TestFunc(stack.gatt_init)]
-
-    pre_conditions_lt2 = [TestFunc(lambda: pts2.update_pixit_param(
-                                   "GATT", "TSPX_bd_addr_iut",
-                                   stack.gap.iut_addr_get_str())),
-                          TestFunc(lambda: pts2.update_pixit_param(
-                                   "GATT", "TSPX_iut_use_dynamic_bd_addr",
-                                   "TRUE" if stack.gap.iut_addr_is_random()
-                                   else "FALSE"))]
 
     init_server_1 = [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                      TestFunc(btp.gatts_add_char, 0,
@@ -510,14 +498,6 @@ def test_cases_server(ptses):
                   cmds=pre_conditions_1 +
                        [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/SR/GAS/BV-03-C",
-                  cmds=pre_conditions_1 +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=gatt_wid_hdl,
-                  lt2="GATT/SR/GAS/BV-03-C-LT2"),
-        ZTestCaseSlave("GATT", "GATT/SR/GAS/BV-03-C-LT2",
-                       cmds=pre_conditions_lt2,
-                       generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAS/BV-04-C",
                   cmds=pre_conditions_1 +
                        [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
@@ -593,7 +573,38 @@ def test_cases_server(ptses):
                   generic_wid_hdl=gatt_wid_hdl),
     ]
 
-    return test_cases
+    if len(ptses) < 2:
+        return test_cases
+
+    pts2 = ptses[1]
+    pre_conditions_lt2 = [TestFunc(lambda: pts2.update_pixit_param(
+        "GATT", "TSPX_bd_addr_iut",
+        stack.gap.iut_addr_get_str())),
+                          TestFunc(lambda: pts2.update_pixit_param(
+                              "GATT", "TSPX_iut_use_dynamic_bd_addr",
+                              "TRUE" if stack.gap.iut_addr_is_random()
+                              else "FALSE"))]
+
+    test_cases_lt2 = [
+        ZTestCase("GATT", "GATT/SR/GAS/BV-03-C",
+                  ZTestCase("GATT", "GATT/SR/GAS/BV-03-C",
+                            cmds=pre_conditions_1 +
+                                 [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                            generic_wid_hdl=gatt_wid_hdl,
+                            lt2="GATT/SR/GAS/BV-03-C-LT2"),
+                  ZTestCaseSlave("GATT", "GATT/SR/GAS/BV-03-C-LT2",
+                                 cmds=pre_conditions_lt2,
+                                 generic_wid_hdl=gatt_wid_hdl),
+                  cmds=pre_conditions_1 +
+                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=gatt_wid_hdl,
+                  lt2="GATT/SR/GAS/BV-03-C-LT2"),
+        ZTestCaseSlave("GATT", "GATT/SR/GAS/BV-03-C-LT2",
+                       cmds=pre_conditions_lt2,
+                       generic_wid_hdl=gatt_wid_hdl),
+    ]
+
+    return test_cases + test_cases_lt2
 
 
 def test_cases_client(pts):
