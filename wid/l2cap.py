@@ -12,13 +12,18 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
-
+import array
+import binascii
 import logging
 import re
+import socket
+import struct
 import sys
+import time
 
 from ptsprojects.stack import get_stack
 from pybtp import btp
+from pybtp.types import BTPError
 
 log = logging.debug
 
@@ -99,14 +104,10 @@ def hdl_wid_37(desc):
 
     stack = get_stack()
     tx_data = stack.l2cap.tx_data_get(0)
-    if tx_data is None:
+    if tx_data is None or len(tx_data) < 1:
         return False
 
-    for i in range(len(data[0])):
-        if data[0][i].upper() != tx_data[i].upper():
-            return False
-
-    return True
+    return data[0] == tx_data[0]
 
 
 def hdl_wid_39(desc):
@@ -125,26 +126,12 @@ def hdl_wid_39(desc):
 def hdl_wid_40(desc):
     """
     Implements: TSC_MMI_upper_tester_confirm_data_receive
-    :param desc: Please confirm the Upper Tester receive data = xxxx. Click Yes if it matched, otherwise click No.
+    :param desc: Please confirm the Upper Tester receive data
     :return:
     """
-    # This pattern is matching data received
-    pattern = re.compile(r"data\s=\s([0-9a-fA-F]+)")
-    data = pattern.findall(desc)
-    if not data:
-        logging.error("%s parsing error", hdl_wid_40.__name__)
-        return False
-
     stack = get_stack()
     rx_data = stack.l2cap.rx_data_get_all(10)
-
-    for value in data:
-        if value.upper() in rx_data:
-            rx_data.remove(value)
-        else:
-            return False
-
-    return True
+    return rx_data is not None
 
 
 def hdl_wid_41(desc):
@@ -257,7 +244,13 @@ def hdl_wid_55(desc):
     :return:
 
     """
-    btp.l2cap_send_data(0, "FF", 80)
+    stack = get_stack()
+    l2cap = stack.l2cap
+    channel = l2cap._chan_lookup_id(0)
+    if not channel:
+        return False
+
+    btp.l2cap_send_data(0, '00' * channel.peer_mps)
     return True
 
 
@@ -275,7 +268,13 @@ def hdl_wid_56(desc):
 
 
 def hdl_wid_57(desc):
-    btp.l2cap_send_data(0, "FF", 80)
+    stack = get_stack()
+    l2cap = stack.l2cap
+    channel = l2cap._chan_lookup_id(0)
+    if not channel:
+        return False
+
+    btp.l2cap_send_data(0, '00' * (channel.peer_mps * 4))
     return True
 
 
@@ -286,4 +285,215 @@ def hdl_wid_58(desc):
 def hdl_wid_59(desc):
     btp.gap_conn_param_update(btp.pts_addr_get(), btp.pts_addr_type_get(),
                               720, 864, 0, 400)
+    return True
+
+
+def hdl_wid_100(desc):
+    l2cap = get_stack().l2cap
+    for channel in l2cap.channels:
+        try:
+            while True:
+                btp.l2cap_send_data(channel.id, '00')
+        except BTPError:
+            pass
+        except socket.timeout:
+            pass
+    return True
+
+
+def hdl_wid_101(desc):
+    btp.l2cap_disconn(0)
+    return True
+
+
+def hdl_wid_102(desc):
+    return True
+
+
+def hdl_wid_103(desc):
+    stack = get_stack()
+    btp.l2cap_reconfigure(None, None, 0,
+                          [chan.id for chan in stack.l2cap.channels])
+    return True
+
+
+def hdl_wid_104(desc):
+    stack = get_stack()
+    stack.l2cap.clear_data()
+    return True
+
+
+def hdl_wid_105(desc):
+    logging.error("Updating MPS size is not supported.")
+    return False
+
+
+def hdl_wid_106(desc):
+    stack = get_stack()
+    l2cap = stack.l2cap
+
+    btp.l2cap_le_listen(l2cap.psm, l2cap.initial_mtu,
+                        l2cap.insufficient_authen)
+    return True
+
+
+def hdl_wid_107(desc):
+    stack = get_stack()
+    l2cap = stack.l2cap
+
+    btp.l2cap_le_listen(l2cap.psm, l2cap.initial_mtu,
+                        l2cap.insufficient_author)
+    return True
+
+
+def hdl_wid_108(desc):
+    stack = get_stack()
+    l2cap = stack.l2cap
+
+    btp.l2cap_le_listen(l2cap.psm, l2cap.initial_mtu,
+                        l2cap.insufficient_key_sz)
+    return True
+
+
+def hdl_wid_111(desc):
+    pattern = re.compile(r"\s([0-9]+)\s")
+    data = pattern.findall(desc)
+    if not data:
+        logging.error("%s parsing error", hdl_wid_111.__name__)
+        return False
+
+    stack = get_stack()
+    l2cap = stack.l2cap
+
+    channels = l2cap.rx_data_get_all(10)
+    if not (len(channels) == 1):
+        return False
+
+    rx_data = channels[0]
+    if not (len(rx_data) == 1):
+        return False
+
+    data_packet = rx_data[0]
+    if not (len(data_packet) == int(data[0])):
+        return False
+
+    comp_data = bytearray(range(len(data_packet)))
+    if not (data_packet == comp_data):
+        return False
+
+    return True
+
+
+def hdl_wid_112(desc):
+    stack = get_stack()
+    l2cap = stack.l2cap
+
+    channels = l2cap.rx_data_get_all(10)
+    if not (len(channels) == 2):
+        return False
+
+    data_0 = channels[0]
+    if not(len(data_0) == 1):
+        return False
+
+    data_0 = data_0[0]
+    data_1 = channels[1]
+    if not (len(data_1) == 1):
+        return False
+
+    data_1 = data_1[0]
+
+    expected = binascii.unhexlify(bytearray('aa' * len(data_0)))
+    if not (data_0 == expected):
+        return False
+
+    expected = binascii.unhexlify(bytearray('55' * len(data_1)))
+    if not (data_1 == expected):
+        return False
+
+    return True
+
+
+def hdl_wid_255(desc):
+    stack = get_stack()
+    l2cap = stack.l2cap
+
+    btp.l2cap_conn(None, None, l2cap.psm, num=2)
+    return True
+
+
+def hdl_wid_256(desc):
+    btp.gap_wait_for_connection()
+    return True
+
+
+def hdl_wid_257(desc):
+    stack = get_stack()
+    l2cap = stack.l2cap
+    channel = l2cap._chan_lookup_id(0)
+    if not channel:
+        return False
+
+    for _ in range(2):
+        btp.l2cap_send_data(0, '00' * channel.peer_mtu)
+    return True
+
+
+def hdl_wid_258(desc):
+    stack = get_stack()
+    l2cap = stack.l2cap
+    channel = l2cap._chan_lookup_id(0)
+    if not channel:
+        return False
+
+    for _ in range(2):
+        btp.l2cap_send_data(0, '00' * channel.peer_mtu)
+    return True
+
+
+def hdl_wid_259(desc):
+    return True
+
+
+def hdl_wid_260(desc):
+    stack = get_stack()
+    # TODO: Fix to actually verify result
+    return not stack.l2cap.is_connected(0)
+
+
+def hdl_wid_261(desc):
+    time.sleep(2)
+    stack = get_stack()
+    channels = stack.l2cap.rx_data_get_all(10)
+    chan = stack.l2cap._chan_lookup_id(0)
+    if not (len(channels) == 1):
+        return False
+
+    rx_data = channels[0]
+    size = [len(d) for d in rx_data]
+    return size == 2 * [chan.our_mtu]
+
+
+def hdl_wid_262(desc):
+    stack = get_stack()
+    l2cap = stack.l2cap
+    channel = l2cap._chan_lookup_id(0)
+    if not channel:
+        return False
+
+    for _ in range(5):
+        btp.l2cap_send_data(0, '00' * channel.peer_mtu)
+        time.sleep(2)
+    return True
+
+
+def hdl_wid_20001(desc):
+    btp.gap_set_conn()
+    btp.gap_set_gendiscov()
+    btp.gap_adv_ind_on()
+    return True
+
+
+def hdl_wid_20100(desc):
+    btp.gap_conn()
     return True

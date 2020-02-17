@@ -328,9 +328,14 @@ class Mesh:
 
 
 class L2capChan:
-    def __init__(self, chan_id, psm, bd_addr_type, bd_addr):
+    def __init__(self, chan_id, psm, peer_mtu, peer_mps, our_mtu, our_mps,
+                 bd_addr_type, bd_addr):
         self.id = chan_id
         self.psm = psm
+        self.peer_mtu = peer_mtu
+        self.peer_mps = peer_mps
+        self.our_mtu = our_mtu
+        self.our_mps = our_mps
         self.peer_bd_addr_type = bd_addr_type
         self.peer_bd_addr = bd_addr
         self.disconn_reason = None
@@ -363,8 +368,13 @@ class L2capChan:
             return True
         return False
 
-    def connected(self, psm, bd_addr_type, bd_addr):
+    def connected(self, psm, peer_mtu, peer_mps, our_mtu, our_mps,
+                  bd_addr_type, bd_addr):
         self.psm = psm
+        self.peer_mtu = peer_mtu
+        self.peer_mps = peer_mps
+        self.our_mtu = our_mtu
+        self.our_mps = our_mps
         self.peer_bd_addr_type = bd_addr_type
         self.peer_bd_addr = bd_addr
         self.state = "connected"
@@ -384,7 +394,7 @@ class L2capChan:
 
     def rx_data_get(self, timeout):
         if len(self.data_rx) != 0:
-            return "".join(self.data_rx).upper()
+            return self.data_rx
 
         flag = Event()
         flag.set()
@@ -395,18 +405,31 @@ class L2capChan:
         while flag.is_set():
             if len(self.data_rx) != 0:
                 t.cancel()
-                return "".join(self.data_rx).upper()
+                return self.data_rx
 
         return None
 
     def tx_data_get(self):
-        return "".join(self.data_tx)
+        return self.data_tx
 
 
 class L2cap:
-    def __init__(self, psm):
+    connection_success = 0x0000
+    unknown_le_psm = 0x0002
+    no_resources = 0x0004
+    insufficient_authen = 0x0005
+    insufficient_author = 0x0006
+    insufficient_key_sz = 0x0007
+    insufficient_enc = 0x0008
+    invalid_source_cid = 0x0009
+    source_cid_already_used = 0x000a
+    unacceptable_parameters = 0x000b
+    invalid_parameters = 0x000c
+
+    def __init__(self, psm, initial_mtu):
         # PSM used for testing for Client role
         self.psm = psm
+        self.initial_mtu = initial_mtu
         self.channels = []
 
     def _chan_lookup_id(self, chan_id):
@@ -415,19 +438,31 @@ class L2cap:
                 return chan
         return None
 
+    def clear_data(self):
+        for chan in self.channels:
+            chan.data_tx = []
+            chan.data_rx = []
+
+    def reconfigured(self, chan_id, peer_mtu, peer_mps, our_mtu, our_mps):
+        channel = self._chan_lookup_id(chan_id)
+        channel.peer_mtu = peer_mtu
+        channel.peer_mps = peer_mps
+        channel.our_mtu = our_mtu
+        channel.our_mps = our_mps
+
     def psm_set(self, psm):
         self.psm = psm
 
-    def connect(self, chan_id, psm, bd_addr_type, bd_addr):
-        self.channels.append(L2capChan(chan_id, psm, bd_addr_type, bd_addr))
-
-    def connected(self, chan_id, psm, bd_addr_type, bd_addr):
+    def connected(self, chan_id, psm, peer_mtu, peer_mps, our_mtu, our_mps,
+                  bd_addr_type, bd_addr):
         chan = self._chan_lookup_id(chan_id)
         if chan is None:
-            chan = L2capChan(chan_id, psm, bd_addr_type, bd_addr)
+            chan = L2capChan(chan_id, psm, peer_mtu, peer_mps, our_mtu, our_mps,
+                             bd_addr_type, bd_addr)
             self.channels.append(chan)
 
-        chan.connected(psm, bd_addr_type, bd_addr)
+        chan.connected(psm, peer_mtu, peer_mps, our_mtu, our_mps,
+                       bd_addr_type, bd_addr)
 
     def disconnected(self, chan_id, psm, bd_addr_type, bd_addr, reason):
         chan = self._chan_lookup_id(chan_id)
@@ -635,8 +670,8 @@ class Stack:
         self.mesh = Mesh(uuid, oob, output_size, output_actions, input_size,
                          input_actions, crpl_size)
 
-    def l2cap_init(self, psm):
-        self.l2cap = L2cap(psm)
+    def l2cap_init(self, psm, initial_mtu):
+        self.l2cap = L2cap(psm, initial_mtu)
 
     def gatt_init(self):
         self.gatt = Gatt()
