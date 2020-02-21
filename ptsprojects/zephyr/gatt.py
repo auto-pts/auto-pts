@@ -253,6 +253,10 @@ def test_cases_server(ptses):
                      TestFunc(btp.gatts_set_val, 0, Value.long_1),
                      TestFunc(btp.gatts_add_char, 0,
                               Prop.read | Prop.write,
+                              Perm.read | Perm.write, UUID.VND16_4),
+                     TestFunc(btp.gatts_set_val, 0, Value.long_1),
+                     TestFunc(btp.gatts_add_char, 0,
+                              Prop.read | Prop.write,
                               Perm.read | Perm.write_authz, UUID.VND16_3),
                      TestFunc(btp.gatts_set_val, 0, Value.long_1),
                      TestFunc(btp.gatts_add_char, 0, Prop.read | Prop.write,
@@ -469,7 +473,7 @@ def test_cases_server(ptses):
                   pre_conditions_1 + init_server_1,
                   generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAW/BI-32-C",
-                  pre_conditions_1 + init_server_1,
+                  pre_conditions_1 + init_server_2,
                   generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAW/BI-33-C",
                   pre_conditions_1 + init_server_2,
@@ -503,7 +507,7 @@ def test_cases_server(ptses):
                        [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAS/BV-05-C",
-                  cmds=pre_conditions_1 +
+                  cmds=pre_conditions_1 + init_server_2 +
                        [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAS/BV-06-C",
