@@ -36,7 +36,9 @@ Over 460 test cases have been automated for Zephyr OS and Mynewt OS which reduce
 
 # Linux Prerequisites
 
-Install required modules with:
+`sudo apt-get install python-setuptools socat`
+
+Additionally, install required Python modules with:
 
 `python2 -m pip install --user -r autoptsclient_requirements.txt`
 
