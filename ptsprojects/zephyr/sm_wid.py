@@ -67,6 +67,7 @@ def hdl_wid_108(desc):
 
 
 def hdl_wid_109(desc):
+    btp.gap_set_mitm_off()
     btp.gap_pair()
     return True
 
@@ -116,6 +117,13 @@ def hdl_wid_154(desc):
 
 def hdl_wid_155(desc):
     return True
+
+def hdl_wid_156(desc):
+    stack = get_stack()
+    if stack.gap.is_connected():
+        return False
+    else:
+        return True
 
 def hdl_wid_1009(desc):
     return btp.var_store_get_passkey(desc)
