@@ -17,6 +17,7 @@ import subprocess
 import os
 import logging
 import shlex
+import serial
 
 from pybtp import defs
 from pybtp.types import BTPError
@@ -33,6 +34,8 @@ BTP_ADDRESS = "/tmp/bt-stack-tester"
 
 # qemu log file object
 IUT_LOG_FO = None
+
+SERIAL_BAUDRATE = 115200
 
 
 def get_qemu_cmd(kernel_image):
@@ -76,6 +79,8 @@ class ZephyrCtl:
 
         log("%s.%s", self.__class__, self.start.__name__)
 
+        self.flush_serial()
+
         self.btp_socket = BTPWorker()
         self.btp_socket.open()
 
@@ -103,10 +108,30 @@ class ZephyrCtl:
 
         self.btp_socket.accept()
 
+    def flush_serial(self):
+        log("%s.%s", self.__class__, self.flush_serial.__name__)
+        # Try to read data or timeout
+        ser = serial.Serial(port=self.tty_file,
+                            baudrate=SERIAL_BAUDRATE, timeout=1)
+        ser.read(99999)
+        ser.close()
+
+    def reset(self):
+        """Restart IUT related processes and reset the IUT"""
+        log("%s.%s", self.__class__, self.reset.__name__)
+
+        self.stop()
+        self.start()
+        self.flush_serial()
+
+        if not self.board:
+            return
+
+        self.board.reset()
+
     def wait_iut_ready_event(self):
         """Wait until IUT sends ready event after power up"""
-        if self.board:
-            self.board.reset()
+        self.reset()
 
         tuple_hdr, tuple_data = self.btp_socket.read()
 
