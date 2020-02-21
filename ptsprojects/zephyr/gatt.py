@@ -115,11 +115,7 @@ def set_pixits(ptses):
 
     pts -- Instance of PyPTS"""
 
-    if len(ptses) < 2:
-        return
-
     pts = ptses[0]
-    pts2 = ptses[1]
 
     pts.set_pixit("GATT", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
     pts.set_pixit("GATT", "TSPX_iut_device_name_in_adv_packet_for_random_address", "")
@@ -141,6 +137,10 @@ def set_pixits(ptses):
     pts.set_pixit("GATT", "TSPX_delete_ltk", "TRUE")
     pts.set_pixit("GATT", "TSPX_tester_appearance", "0000")
 
+    if len(ptses) < 2:
+        return
+
+    pts2 = ptses[1]
 
     pts2.set_pixit("GATT", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
     pts2.set_pixit("GATT", "TSPX_iut_device_name_in_adv_packet_for_random_address", "")
