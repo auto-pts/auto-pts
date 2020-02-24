@@ -1,4 +1,4 @@
-<WORKSPACE_INFORMATION NAME="autopts-zephyr-210" PATH="C:\msys64\home\michaln\auto-pts\workspaces\autopts-zephyr-210" CREATED_WITH="Profile Tuning Suite, 7.6.0, 15" BD_ADDR="000000000000" QDID="145446">
+<WORKSPACE_INFORMATION NAME="autopts-zephyr-22" PATH="C:\msys64\home\michaln\auto-pts\workspaces\autopts-zephyr-22" CREATED_WITH="Profile Tuning Suite, 7.6.0, 15" BD_ADDR="000000000000" QDID="145446">
   <PROJECTS_INFORMATION>
     <PROJECT_INFORMATION NAME="GAP" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
       <PICS>
