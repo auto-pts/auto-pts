@@ -1,4 +1,4 @@
-<WORKSPACE_INFORMATION NAME="autopts-zephyr-22" PATH="C:\msys64\home\michaln\auto-pts\workspaces\autopts-zephyr-22" CREATED_WITH="Profile Tuning Suite, 7.6.0, 15" BD_ADDR="000000000000" QDID="145446">
+<WORKSPACE_INFORMATION NAME="autopts-zephyr-22" CREATED_WITH="Profile Tuning Suite, 7.6.0, 15" BD_ADDR="000000000000" QDID="146022">
   <PROJECTS_INFORMATION>
     <PROJECT_INFORMATION NAME="GAP" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
       <PICS>
@@ -302,13 +302,13 @@
           <Row>
             <Name>TSPC_GAP_8_3</Name>
             <Description>Non-Connectable and Non-Scannable Directed Event (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_8_4</Name>
             <Description>Scannable Directed Event (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -656,19 +656,19 @@
           <Row>
             <Name>TSPC_GAP_20_5</Name>
             <Description>Connectable Undirected Event (C.3)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_20_6</Name>
             <Description>Non-Connectable and Non-Scannable Directed Event (C.3)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_20_7</Name>
             <Description>Scannable Directed Event (C.3)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -812,7 +812,7 @@
           <Row>
             <Name>TSPC_GAP_21_7</Name>
             <Description>LE Ping Procedure (C.3)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -878,7 +878,7 @@
           <Row>
             <Name>TSPC_GAP_23_2</Name>
             <Description>Directed Connectable Mode (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -956,7 +956,7 @@
           <Row>
             <Name>TSPC_GAP_25_4</Name>
             <Description>Authorization Procedure (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1160,7 +1160,7 @@
           <Row>
             <Name>TSPC_GAP_31_7</Name>
             <Description>LE Ping Procedure (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1226,7 +1226,7 @@
           <Row>
             <Name>TSPC_GAP_33_3</Name>
             <Description>Selective Connection Establishment Procedure (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1298,7 +1298,7 @@
           <Row>
             <Name>TSPC_GAP_35_4</Name>
             <Description>Authorization Procedure (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1514,7 +1514,7 @@
           <Row>
             <Name>TSPC_SM_2_4</Name>
             <Description>OOB supported (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -2050,7 +2050,7 @@
           <Row>
             <Name>TSPC_GATT_3_16</Name>
             <Description>Characteristic Value Reliable Writes (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -2278,13 +2278,13 @@
           <Row>
             <Name>TSPC_GATT_4_24</Name>
             <Description>Configured Broadcast (C.5)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_4_25</Name>
             <Description>Execute Write Request with empty queue (C.7)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4160,7 +4160,7 @@
           <Row>
             <Name>TSPC_SM_2_4</Name>
             <Description>OOB supported (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4190,7 +4190,7 @@
           <Row>
             <Name>TSPC_SM_4_3</Name>
             <Description>Out of Band (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
