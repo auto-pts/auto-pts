@@ -43,7 +43,7 @@ def check_call(cmd, env=None, cwd=None, shell=True):
     """
     cmd = subprocess.list2cmdline(cmd)
 
-    return subprocess.check_call(cmd, env=env, cwd=cwd, shell=shell)
+    return subprocess.check_call(cmd, env=env, cwd=cwd, shell=shell, executable='/bin/bash')
 
 
 def _validate_pair(ob):
@@ -67,7 +67,7 @@ def source_zephyr_env(zephyr_wd):
     cmd = subprocess.list2cmdline(cmd)
 
     p = subprocess.Popen(cmd, cwd=zephyr_wd, shell=True,
-                         stdout=subprocess.PIPE)
+                         stdout=subprocess.PIPE, executable='/bin/bash')
 
     lines = p.stdout.readlines()
     # XXX: Doesn't parse functions for now
