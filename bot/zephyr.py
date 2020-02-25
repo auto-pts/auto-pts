@@ -270,7 +270,7 @@ def run_tests(args, iut_config):
 
     callback_thread = autoptsclient.init_core()
 
-    config_default = "default.conf"
+    config_default = "prj.conf"
     _args[config_default] = PtsInitArgs(args)
 
     for config, value in iut_config.items():
