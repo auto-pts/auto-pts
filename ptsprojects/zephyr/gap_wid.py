@@ -559,7 +559,8 @@ def hdl_wid_144(desc):
 
 
 def hdl_wid_148(desc):
-    return btp.verify_not_connected(desc)
+    btp.gap_conn()
+    return not btp.gap_wait_for_connection(10)
 
 
 def hdl_wid_149(desc):
