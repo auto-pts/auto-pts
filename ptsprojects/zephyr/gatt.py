@@ -591,14 +591,6 @@ def test_cases_server(ptses):
 
     test_cases_lt2 = [
         ZTestCase("GATT", "GATT/SR/GAS/BV-03-C",
-                  ZTestCase("GATT", "GATT/SR/GAS/BV-03-C",
-                            cmds=pre_conditions_1 +
-                                 [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                            generic_wid_hdl=gatt_wid_hdl,
-                            lt2="GATT/SR/GAS/BV-03-C-LT2"),
-                  ZTestCaseSlave("GATT", "GATT/SR/GAS/BV-03-C-LT2",
-                                 cmds=pre_conditions_lt2,
-                                 generic_wid_hdl=gatt_wid_hdl),
                   cmds=pre_conditions_1 +
                        [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gatt_wid_hdl,
