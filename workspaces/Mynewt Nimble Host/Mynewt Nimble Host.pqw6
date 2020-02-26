@@ -1,4 +1,4 @@
-<WORKSPACE_INFORMATION NAME="Mynewt Nimble Host" PATH="C:\msys64\home\michaln\auto-pts\workspaces\Mynewt Nimble Host" CREATED_WITH="Profile Tuning Suite, 7.6.0, 15" BD_ADDR="000000000000" QDID="127651">
+<WORKSPACE_INFORMATION NAME="Mynewt Nimble Host" CREATED_WITH="Profile Tuning Suite, 7.6.0, 15" BD_ADDR="000000000000" QDID="127651">
   <PROJECTS_INFORMATION>
     <PROJECT_INFORMATION NAME="GAP" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
       <PICS>
@@ -2886,7 +2886,7 @@
           <Row>
             <Name>TSPC_L2CAP_2_48</Name>
             <Description>Support Enhanced Credit Based Flow Control Mode (C.23)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
