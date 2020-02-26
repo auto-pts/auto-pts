@@ -1372,7 +1372,10 @@ Commands and responses:
 		Command parameters:	Address_Type (1 octet)
 					Address (6 octets)
 					PSM (2 octets)
-		Response parameters:	Chan_ID (1 octet)
+					MTU (2 octets)
+					Num (1 octet)
+		Response parameters:	Num (1 octet)
+					Chan_IDs (1 octet x num of channels created)
 
 		This command is used to create an L2CAP channel.
 		Chan_ID is returned in the response to this command to allow
@@ -1380,6 +1383,10 @@ Commands and responses:
 		command.
 		Connected Event (or Disconnected Event in case of an error)
 		shall be expected after issuing this command.
+
+		if Num > 1 then Enhanced Credit Based L2CAP channel shall be created.
+		Return value will contain a list of Chan_IDs that were created by
+		this command.
 
 		In case of an error, the error response will be returned.
 
@@ -1415,6 +1422,8 @@ Commands and responses:
 		Controller Index:	<controller id>
 		Command parameters:	PSM (2 octets)
 					Transport (1 octet)
+					MTU (2 octets)
+					Response (2 octets)
 		Response parameters:	<none>
 
 		Valid Transport parameter values:
@@ -1423,6 +1432,12 @@ Commands and responses:
 
 		This command is used to register L2CAP PSM and listen for
 		incoming data.
+
+		The MTU parameter is used to specify initial MTU for channels.
+
+		Response parameter can be used to specify a response value used in
+		L2CAP Connection Response to send non-success responses like
+		Insufficient Authentication.
 
 		In case of an error, the error response will be returned.
 
@@ -1437,6 +1452,20 @@ Commands and responses:
 		request. Connection can be rejected with non-zero Result value
 		(refer to the L2CAP <LE Credit Based> Connection Result values).
 		Connected Event shall be expected after issuing this command.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x07 - Reconfigure Request
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					MTU (2 octets)
+					Num (1 octet)
+					Channels (1 octet x number of channels)
+		Return Parameters:	<none>
+
+		This command is used to reconfigure Enhanced L2CAP Channels.
 
 		In case of an error, the error response will be returned.
 
@@ -1458,6 +1487,10 @@ Events:
 		Controller Index:	<controller id>
 		Event parameters:	Chan_ID (1 octet)
 					PSM (2 octets)
+					Peer MTU (2 octets)
+					Peer MPS (2 octets)
+					Our MTU (2 octets)
+					Our MPS (2 octets)
 					Address_Type (1 octet)
 					Address (6 octets)
 
@@ -1490,6 +1523,19 @@ Events:
 					Data (Data_Length octets)
 
 		This event forwards data received over L2CAP channel.
+		Chan_ID is the internal application number that identifies
+		L2CAP channel.
+
+	Opcode 0x84 - Reconfigured Event
+
+		Controller Index:	<controller id>
+		Event parameters:	Chan_ID (1 octet)
+					Peer MTU (2 octets)
+					Peer MPS (2 octets)
+					Our MTU (2 octets)
+					Our MPS (2 octets)
+
+		This event indicates new that an L2CAP Channel has been reconfigured.
 		Chan_ID is the internal application number that identifies
 		L2CAP channel.
 
