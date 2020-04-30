@@ -36,6 +36,7 @@ from wid import l2cap_wid_hdl
 
 le_psm = 128
 psm_unsupported = 241
+le_initial_mtu = 120
 
 
 def set_pixits(pts):
@@ -61,6 +62,7 @@ def set_pixits(pts):
     pts.set_pixit("L2CAP", "TSPX_tester_mps", "0017")
     pts.set_pixit("L2CAP", "TSPX_tester_mtu", "02A0")
     pts.set_pixit("L2CAP", "TSPX_iut_role_initiator", "FALSE")
+    pts.set_pixit("L2CAP", "TSPX_spsm", format(le_psm, '04x'))
     pts.set_pixit("L2CAP", "TSPX_le_psm", format(le_psm, '04x'))
     pts.set_pixit("L2CAP", "TSPX_psm", "0001")
     pts.set_pixit("L2CAP", "TSPX_psm_unsupported", format(psm_unsupported, '04x'))
@@ -122,7 +124,7 @@ def test_cases(pts):
                           "TRUE" if stack.gap.iut_addr_is_random()
                           else "FALSE")),
                       TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public),
-                      TestFunc(stack.l2cap_init, le_psm),
+                      TestFunc(stack.l2cap_init, le_psm, le_initial_mtu),
                       TestFunc(btp.l2cap_le_listen, le_psm)]
 
     test_cases = [
