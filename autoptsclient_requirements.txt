@@ -2,3 +2,8 @@ termcolor
 pyserial
 wheel
 coloredlogs
+schedule
+xlsxwriter
+gcg
+google-api-python-client
+oauth2client
