@@ -21,16 +21,13 @@ import serial
 
 from pybtp import defs
 from pybtp.types import BTPError
-from pybtp.iutctl_common import BTPWorker
+from pybtp.iutctl_common import BTPWorker, BTP_ADDRESS
 
 log = logging.debug
 ZEPHYR = None
 
 # qemu binary should be installed in shell PATH
 QEMU_BIN = "qemu-system-arm"
-
-# BTP communication transport: unix domain socket file name
-BTP_ADDRESS = "/tmp/bt-stack-tester"
 
 # qemu log file object
 IUT_LOG_FO = None

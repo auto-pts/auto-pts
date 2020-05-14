@@ -20,16 +20,13 @@ import socket
 
 from pybtp import defs
 from pybtp.types import BTPError
-from pybtp.iutctl_common import BTPWorker
+from pybtp.iutctl_common import BTPWorker, BTP_ADDRESS
 
 log = logging.debug
 IUT = None
 
 # IUT log file object
 IUT_LOG_FO = None
-
-# BTP communication transport: unix domain socket file name
-BTP_ADDRESS = "/tmp/bt-stack-tester"
 
 
 def get_iut_cmd(btpclient_path):
