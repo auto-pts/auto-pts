@@ -25,7 +25,7 @@ m = mynewt_nrf52 = {
 # ****************************************************************************
 # AutoPTS configuration
 # ****************************************************************************
-z['auto_pts'] = {
+m['auto_pts'] = {
     'server_ip': ['192.168.0.2'],
     'client_port': 6001,
     'local_ip' : ['192.168.0.100'],
@@ -66,7 +66,7 @@ m['git'] = {
 #
 # To send an email report with test result summary
 # ****************************************************************************
-z['mail'] = {
+m['mail'] = {
     "sender": "john.doe@example.com",
     "smtp_host": 'smtp.example.com',
     "smtp_port": 587,
@@ -84,7 +84,7 @@ z['mail'] = {
 #
 # To put the tests execution logs to Google Drive
 # ****************************************************************************
-z['gdrive'] = {
+m['gdrive'] = {
     "root_directory_id": "<GoogleDriveDirID>",
     "credentials_file": "/path/to/credentials.json",
 }

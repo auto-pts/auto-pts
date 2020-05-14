@@ -86,14 +86,6 @@ The command to run auto-pts client using auto-pts Zephyr HCI workspace is:
 
 `./autoptsclient-zephyr.py zephyr-hci zephyr.elf -i IP_ADDRESS -t /dev/ttyUSB0 -b arduino_101 -d`
 
-# Running Test Script on Windows
-
-It is also possible to run tests on Windows, without using client/server mode of auto-pts. On Windows instead of starting the auto-pts server start test script as:
-
-`ipy.exe autopts.py`
-
-autopts.py has been used to test AOSP BlueZ Bluetooth stack, and serves a good reference on how to create a tester for Windows.
-
 # Running AutoPTSClientBot
 
 AutoPTSClientBot has been added to automate running test cases on various
