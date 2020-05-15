@@ -63,27 +63,12 @@ init_gatt_db = [TestFunc(btp.core_reg_svc_gatt),
 
 
 iut_device_name = 'Tester'
-iut_manufacturer_data = 'ABCD'
+iut_manufacturer_data = 'FFFFABCD'
 iut_appearance = '1111'
 iut_svc_data = '1111'
 iut_flags = '11'
 iut_svcs = '1111'
 iut_attr_db_off = 0x000b
-
-
-class AdData:
-    ad_manuf = (AdType.manufacturer_data, '11111111')
-    ad_name_sh = (AdType.name_short, binascii.hexlify(iut_device_name))
-
-
-# Advertising data
-ad = [(AdType.uuid16_some, '1111'),
-      (AdType.tx_power, '00'),  # TX power value should be get from controller
-      (AdType.gap_appearance, '1111'),
-      (AdType.name_short, binascii.hexlify('Tester')),
-      (AdType.manufacturer_data, '11111111'),
-      (AdType.uuid16_svc_solicit, '1111'),
-      (AdType.uuid16_svc_data, '111111')]
 
 
 def set_pixits(pts):
@@ -101,8 +86,11 @@ def set_pixits(pts):
     ad_str_name_short = str(AdType.name_short).zfill(2) + \
                         binascii.hexlify(iut_device_name)
     ad_str_name_short_len = str(len(ad_str_name_short) / 2).zfill(2)
-    ad_pixit = ad_str_flags_len + ad_str_flags + ad_str_name_short_len + \
-               ad_str_name_short
+    ad_str_manufacturer_data = str(format(AdType.manufacturer_data, 'x')).zfill(2) + \
+                               iut_manufacturer_data
+    ad_str_manufacturer_data_len = str(len(ad_str_manufacturer_data) / 2).zfill(2)
+
+    ad_pixit = ad_str_manufacturer_data_len + ad_str_manufacturer_data
 
     # Set GAP common PIXIT values
     pts.set_pixit("GAP", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
@@ -216,6 +204,9 @@ def test_cases(pts):
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/BROB/BCST/BV-04-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
+        BTestCase("GAP", "GAP/BROB/BCST/BV-05-C",
                   cmds=pre_conditions,
                   generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/BROB/OBSV/BV-01-C",

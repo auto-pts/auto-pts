@@ -198,7 +198,11 @@ def hdl_wid_47(desc):
     stack = get_stack()
 
     btp.gap_set_nonconn()
-    btp.gap_set_nondiscov()
+
+    # Name cannot be used for AD Data in BlueZ because BlueZ alwasy use Name
+    # for SD Data. So, override the AD data here.
+    stack.gap.ad = {}
+    stack.gap.ad[AdType.manufacturer_data] = 'FFFFABCD'
 
     btp.gap_adv_ind_on(ad=stack.gap.ad)
 
@@ -358,6 +362,11 @@ def hdl_wid_80(desc):
     btp.gap_adv_off()
     btp.gap_set_nonconn()
     btp.gap_set_nondiscov()
+
+    # Name cannot be used for AD Data in BlueZ because BlueZ alwasy use Name
+    # for SD Data. So, override the AD data here.
+    stack.gap.ad = {}
+    stack.gap.ad[AdType.manufacturer_data] = 'FFFFABCD'
 
     btp.gap_adv_ind_on(ad=stack.gap.ad)
 
@@ -623,6 +632,10 @@ def hdl_wid_157(desc):
 
 
 def hdl_wid_158(desc):
+    return True
+
+
+def hdl_wid_159(desc):
     return True
 
 
