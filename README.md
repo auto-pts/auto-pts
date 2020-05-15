@@ -88,6 +88,11 @@ Then start the AutoPTS Client using e.g. own workspace file:
 
     ./autoptsclient-zephyr.py zephyr-master <path>/zephyr.elf -i SERVER_IP -l LOCAL_IP -t /dev/ttyACM0 -b nrf52
 
+
+**Testing Mynewt build on nRF52**:
+
+    ./autoptsclient-mynewt.py Mynewt\ Nimble\ Host -i SERVER_IP -l LOCAL_IP -t /dev/ttyACM0 -b nordic_pca10056
+
 # Running AutoPTSClientBot
 
 AutoPTSClientBot has been added to automate running test cases on various
