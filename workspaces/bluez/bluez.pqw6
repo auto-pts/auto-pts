@@ -1,4 +1,4 @@
-<WORKSPACE_INFORMATION NAME="bluez" PATH="C:\src\auto-pts\workspaces\bluez" CREATED_WITH="Profile Tuning Suite, 7.2.0, 26" BD_ADDR="001122334455" QDID="107595">
+<WORKSPACE_INFORMATION NAME="bluez" PATH="C:\Users\tester\Documents\Profile Tuning Suite\bluez" CREATED_WITH="Profile Tuning Suite, 7.6.0, 15" BD_ADDR="112233445566" QDID="107595">
   <PROJECTS_INFORMATION>
     <PROJECT_INFORMATION NAME="GAP" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
       <PICS>
@@ -21,36 +21,6 @@
             <Name>TSPC_GAP_0_3</Name>
             <Description>BR/EDR/LE (C.3)</Description>
             <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_0a_1</Name>
-            <Description>Core Specification Addendum 3 (CSA3), GAP Connection Parameters Changes, Authentication and Lost Bond Changes, Private Addressing Changes, Dual Mode Addressing Changes, Adopted 24 July 2012 (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_0a_2</Name>
-            <Description>Core Specification Addendum 4 (CSA4) (C.2)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_0a_3</Name>
-            <Description>Core Spec version 4.1 (Core v4.1) GAP Connection Parameters Changes, Authentication and Lost Bond Changes, Private Addressing Changes, Dual Mode Addressing Changes, Adopted 03 December 2013 (C.3)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_0a_4</Name>
-            <Description>Core Spec version 4.2 (Core v4.2) (C.4)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_0a_5</Name>
-            <Description>Core Spec version 5.0 (Core v5.0) (C.5)</Description>
-            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -180,6 +150,12 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_GAP_2_12</Name>
+            <Description>56-bit minimum encryption key size (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_GAP_3_1</Name>
             <Description>Initiation of general inquiry (C.1)</Description>
             <Value>FALSE</Value>
@@ -304,6 +280,12 @@
             <Description>Advertising (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_7_3</Name>
+            <Description>Isochronous Broadcasting State (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_8_1</Name>
@@ -444,6 +426,30 @@
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_GAP_10_2</Name>
+            <Description>Broadcast Isochronous Synchronizability mode (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_10_3</Name>
+            <Description>Broadcast Isochronous Broadcasting mode (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_10_4</Name>
+            <Description>Broadcast Isochronous Terminate procedure (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_10_5</Name>
+            <Description>Broadcast Isochronous Channel Map Update Procedure (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_GAP_11_1</Name>
             <Description>Privacy Feature (O)</Description>
             <Value>TRUE</Value>
@@ -471,6 +477,12 @@
             <Name>TSPC_GAP_11a_2</Name>
             <Description>Periodic Advertising mode (C.2)</Description>
             <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_11b_1</Name>
+            <Description>LE Security Mode 3 (C.1)</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -522,6 +534,24 @@
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_GAP_16_2</Name>
+            <Description>Broadcast Isochronous Synchronization Establishment procedure (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_16_3</Name>
+            <Description>Broadcast Isochronous Termination procedure (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_16_4</Name>
+            <Description>Broadcast Isochronous Channel Map Update Procedure (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_GAP_17_1</Name>
             <Description>Privacy Feature (O)</Description>
             <Value>TRUE</Value>
@@ -555,6 +585,12 @@
             <Name>TSPC_GAP_17a_2</Name>
             <Description>Periodic Advertising Synchronization Establishment procedure with listening for periodic advertising (C.1)</Description>
             <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_17b_1</Name>
+            <Description>LE Security Mode 3 (C.1)</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -787,25 +823,25 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_21_9</Name>
-            <Description>Connection Parameter Request Procedure (C.5)</Description>
+            <Description>Connection Parameter Request Procedure (C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_21_10</Name>
-            <Description>Data Length Update Procedure (C.5)</Description>
+            <Description>Data Length Update Procedure (C.6)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_21_11</Name>
-            <Description>PHY Update Procedure (C.6)</Description>
+            <Description>PHY Update Procedure (C.7)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_21_12</Name>
-            <Description>Minimum Number Of Used Channels Procedure (C.6)</Description>
+            <Description>Minimum Number Of Used Channels Procedure (C.7)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -841,26 +877,38 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_23_2</Name>
-            <Description>Directed Connectable Mode (C.1)</Description>
+            <Description>Directed Connectable Mode (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_23_3</Name>
-            <Description>Undirected Connectable Mode (C.2)</Description>
+            <Description>Undirected Connectable Mode (M)</Description>
             <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
+            <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_23_4</Name>
-            <Description>Connection Parameter Update Procedure (C.1)</Description>
+            <Description>Connection Parameter Update Procedure (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_23_5</Name>
-            <Description>Terminate Connection Procedure (C.2)</Description>
+            <Description>Terminate Connection Procedure (M)</Description>
             <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_23_6</Name>
+            <Description>Connected Isochronous Stream Request procedure (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_23_7</Name>
+            <Description>Connected Isochronous Stream Termination procedure (C.1)</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -871,55 +919,55 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_24_2</Name>
-            <Description>Bondable Mode (C.1)</Description>
+            <Description>Bondable Mode (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_24_3</Name>
-            <Description>Bonding Procedure (C.1)</Description>
+            <Description>Bonding Procedure (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_24_4</Name>
-            <Description>Multiple Bonds (C.2)</Description>
+            <Description>Multiple Bonds (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_25_1</Name>
-            <Description>Security Mode 1 (C.2)</Description>
+            <Description>Security Mode 1 (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_25_2</Name>
-            <Description>Security Mode 2 (C.2)</Description>
+            <Description>Security Mode 2 (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_25_3</Name>
-            <Description>Authentication Procedure (C.2)</Description>
+            <Description>Authentication Procedure (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_25_4</Name>
-            <Description>Authorization Procedure (C.2)</Description>
+            <Description>Authorization Procedure (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_25_5</Name>
-            <Description>Connection Data Signing Procedure (C.2)</Description>
+            <Description>Connection Data Signing Procedure (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_25_6</Name>
-            <Description>Authenticate Signed Data Procedure (C.2)</Description>
+            <Description>Authenticate Signed Data Procedure (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -955,19 +1003,19 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_26_2</Name>
-            <Description>Non-Resolvable Private Address Generation Procedure (C.1)</Description>
+            <Description>Non-Resolvable Private Address Generation Procedure (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_26_3</Name>
-            <Description>Resolvable Private Address Generation Procedure (C.2)</Description>
+            <Description>Resolvable Private Address Generation Procedure (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_26_4</Name>
-            <Description>Resolvable Private Address Resolution Procedure (C.3)</Description>
+            <Description>Resolvable Private Address Resolution Procedure (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -984,38 +1032,20 @@
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_27_3</Name>
-            <Description>Peripheral Privacy Flag (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_27_4</Name>
-            <Description>Reconnection Address (C.2)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
             <Name>TSPC_GAP_27_5</Name>
-            <Description>Peripheral Preferred Connection Parameters (C.3)</Description>
+            <Description>Peripheral Preferred Connection Parameters (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_27_6</Name>
-            <Description>Writeable Device Name (C.3)</Description>
+            <Description>Writeable Device Name (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_27_7</Name>
-            <Description>Writeable Appearance (C.3)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_27_8</Name>
-            <Description>Writeable Peripheral Privacy Flag (C.4)</Description>
+            <Description>Writeable Appearance (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -1023,6 +1053,24 @@
             <Name>TSPC_GAP_27_9</Name>
             <Description>Central Address Resolution (C.5)</Description>
             <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_27a_1</Name>
+            <Description>Periodic Advertising Synchronization Transfer procedure (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_27a_2</Name>
+            <Description>Periodic Advertising Synchronization Establishment procedure over an LE connection without listening for periodic advertising (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_27a_3</Name>
+            <Description>Periodic Advertising Synchronization Establishment procedure over an LE connection with listening for periodic advertising (C.3)</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1111,109 +1159,121 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_31_7</Name>
-            <Description>LE Ping Procedure (C.1)</Description>
+            <Description>LE Ping Procedure (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_31_8</Name>
-            <Description>Slave Initiated Feature Exchange Procedure (C.2)</Description>
+            <Description>Slave Initiated Feature Exchange Procedure (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_31_9</Name>
-            <Description>Connection Parameter Request Procedure (C.3)</Description>
+            <Description>Connection Parameter Request Procedure (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_31_10</Name>
-            <Description>Data Length Update Procedure (C.4)</Description>
+            <Description>Data Length Update Procedure (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_31_11</Name>
-            <Description>PHY Update Procedure (C.5)</Description>
+            <Description>PHY Update Procedure (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_31_12</Name>
-            <Description>Minimum Number Of Used Channels Procedure (C.5)</Description>
+            <Description>Minimum Number Of Used Channels Procedure (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_32_1</Name>
-            <Description>Limited Discovery Procedure (C.2)</Description>
+            <Description>Limited Discovery Procedure (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_32_2</Name>
-            <Description>General Discovery Procedure (C.1)</Description>
+            <Description>General Discovery Procedure (M)</Description>
             <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
+            <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_32_3</Name>
-            <Description>Name Discovery Procedure (C.3)</Description>
+            <Description>Name Discovery Procedure (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_33_1</Name>
-            <Description>Auto Connection Establishment Procedure (C.3)</Description>
+            <Description>Auto Connection Establishment Procedure (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_33_2</Name>
-            <Description>General Connection Establishment Procedure (C.1)</Description>
+            <Description>General Connection Establishment Procedure (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_33_3</Name>
-            <Description>Selective Connection Establishment Procedure (C.3)</Description>
+            <Description>Selective Connection Establishment Procedure (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_33_4</Name>
-            <Description>Direct Connection Establishment Procedure (C.2)</Description>
+            <Description>Direct Connection Establishment Procedure (M)</Description>
             <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
+            <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_33_5</Name>
-            <Description>Connection Parameter Update Procedure (C.2)</Description>
+            <Description>Connection Parameter Update Procedure (M)</Description>
             <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
+            <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_33_6</Name>
-            <Description>Terminate Connection Procedure (C.2)</Description>
+            <Description>Terminate Connection Procedure (M)</Description>
             <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_33_7</Name>
+            <Description>Connected Isochronous Stream Creation procedure (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_33_8</Name>
+            <Description>Connected Isochronous Stream Termination procedure (C.1)</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_34_1</Name>
-            <Description>Non-Bondable Mode (C.1)</Description>
+            <Description>Non-Bondable Mode (M)</Description>
             <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
+            <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_34_2</Name>
-            <Description>Bondable Mode (C.2)</Description>
+            <Description>Bondable Mode (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_34_3</Name>
-            <Description>Bonding Procedure (C.2)</Description>
+            <Description>Bonding Procedure (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -1285,13 +1345,13 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_36_2</Name>
-            <Description>Non-Resolvable Private Address Generation Procedure (C.1)</Description>
+            <Description>Non-Resolvable Private Address Generation Procedure (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_36_3</Name>
-            <Description>Resolvable Private Address Resolution Procedure (C.2)</Description>
+            <Description>Resolvable Private Address Resolution Procedure (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -1326,6 +1386,24 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_GAP_37a_1</Name>
+            <Description>Periodic Advertising Synchronization Transfer procedure (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_37a_2</Name>
+            <Description>Periodic Advertising Synchronization Establishment procedure over an LE connection without listening for periodic advertising (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_37a_3</Name>
+            <Description>Periodic Advertising Synchronization Establishment procedure over an LE connection with listening for periodic advertising (C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_GAP_38_1</Name>
             <Description>Broadcaster (C.1)</Description>
             <Value>FALSE</Value>
@@ -1350,72 +1428,6 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_39_1</Name>
-            <Description>Non-Discoverable Mode (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_39_2</Name>
-            <Description>Discoverable Mode (C.2)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_39_3</Name>
-            <Description>Non-Connectable Mode (C.3)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_39_4</Name>
-            <Description>Connectable Mode (M)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_39_5</Name>
-            <Description>Non-Bondable Mode (C.4)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_39_6</Name>
-            <Description>Bondable Mode (C.5)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_40_1</Name>
-            <Description>General Discovery (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_40_2</Name>
-            <Description>Limited Discovery (C.2)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_40_3</Name>
-            <Description>Device Type Discovery (C.3)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_40_4</Name>
-            <Description>Name Discovery (C.4)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_40_5</Name>
-            <Description>Link Establishment (C.5)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
             <Name>TSPC_GAP_41_1</Name>
             <Description>Security Aspects (M)</Description>
             <Value>FALSE</Value>
@@ -1423,61 +1435,13 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_41_2a</Name>
-            <Description>Derivation of BR/EDR Link Key from LE LTK (C.1)</Description>
+            <Description>Derivation of BR/EDR Link Key from LE LTK (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_41_2b</Name>
-            <Description>Derivation of LE LTK from BR/EDR Link Key (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_44_1</Name>
-            <Description>Simultaneous BR/EDR and LE Transports - BR/EDR Slave to the same device (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_44_2</Name>
-            <Description>Simultaneous BR/EDR and LE Transports - BR/EDR Master to the same device (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_42_1</Name>
-            <Description>Non-Discoverable Mode (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_42_2</Name>
-            <Description>Discoverable Mode (C.2)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_42_3</Name>
-            <Description>Non-Connectable Mode (C.3)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_42_4</Name>
-            <Description>Connectable Mode (M)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_42_5</Name>
-            <Description>Non-Bondable Mode (C.4)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_42_6</Name>
-            <Description>Bondable Mode (C.5)</Description>
+            <Description>Derivation of LE LTK from BR/EDR Link Key (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -1489,25 +1453,37 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_43_2a</Name>
-            <Description>Derivation of BR/EDR Link Key from LE LTK (C.1)</Description>
+            <Description>Derivation of BR/EDR Link Key from LE LTK (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_43_2b</Name>
-            <Description>Derivation of LE LTK from BR/EDR Link Key (C.1)</Description>
+            <Description>Derivation of LE LTK from BR/EDR Link Key (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_44_1</Name>
+            <Description>Simultaneous BR/EDR and LE Transports - BR/EDR Slave to the same device (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_44_2</Name>
+            <Description>Simultaneous BR/EDR and LE Transports - BR/EDR Master to the same device (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_45_1</Name>
-            <Description>Simultaneous BR/EDR and LE Transports - BR/EDR Slave to the same device (C.1)</Description>
+            <Description>Simultaneous BR/EDR and LE Transports - BR/EDR Slave to the same device (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_45_2</Name>
-            <Description>Simultaneous BR/EDR and LE Transports - BR/EDR Master to the same device (C.1)</Description>
+            <Description>Simultaneous BR/EDR and LE Transports - BR/EDR Master to the same device (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -1542,6 +1518,24 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_LL_2_5</Name>
+            <Description>Resolution of private addresses (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SUMICS_31_10</Name>
+            <Description>Core Specification Version 4.0, Adopted 30 June 2010 (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SUMICS_31_10a</Name>
+            <Description>Core Specification Version 4.0 + HS, Adopted 30 June 2010 (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_ALL</Name>
             <Description>Turns on all the test cases</Description>
             <Value>FALSE</Value>
@@ -1557,7 +1551,7 @@
             <Name>TSPX_bd_addr_iut</Name>
             <Description>The unique 48-bit Bluetooth device address (BD_ADDR) of the IUT. This was filled in during workspace creation.</Description>
             <Type>OCTETSTRING</Type>
-            <Value>0028F82F9C6F</Value>
+            <Value>112233445566</Value>
           </Row>
           <Row>
             <Name>TSPX_bd_addr_PTS</Name>
@@ -1599,7 +1593,25 @@
             <Name>TSPX_delete_link_key</Name>
             <Description>Whether to delete the stored link key in PTS at the beginning of each test case. (Default: FALSE)</Description>
             <Type>BOOLEAN</Type>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_iut_setup_att_over_br_edr</Name>
+            <Description>Device uses ATT over BR EDR radio. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_mtu_size</Name>
+            <Description>MTU size. (Default: 23)</Description>
+            <Type>INTEGER</Type>
+            <Value>23</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_delete_ltk</Name>
+            <Description>Whether to delete Long Term Key or not. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
           </Row>
           <Row>
             <Name>TSPX_pin_code</Name>
@@ -1704,7 +1716,7 @@
             <Value>00C8</Value>
           </Row>
           <Row>
-            <Name>TSPX_iut_valid_conneciton_interval_max</Name>
+            <Name>TSPX_iut_valid_connection_interval_max</Name>
             <Description>Valid connection interval max for IUT. (Default: 03C0)</Description>
             <Type>OCTETSTRING</Type>
             <Value>03C0</Value>
@@ -1723,7 +1735,7 @@
           </Row>
           <Row>
             <Name>TSPX_iut_connection_parameter_timeout</Name>
-            <Description>Conneciton parameter timeout value for IUT. (Default: 30000)</Description>
+            <Description>Connection parameter timeout value for IUT. (Default: 30000)</Description>
             <Type>INTEGER</Type>
             <Value>30000</Value>
           </Row>
@@ -1734,7 +1746,7 @@
             <Value>0000</Value>
           </Row>
           <Row>
-            <Name>TSPX_iut_invalid_conneciton_interval_max</Name>
+            <Name>TSPX_iut_invalid_connection_interval_max</Name>
             <Description>Invalid connection interval max for IUT. (Default: 0000)</Description>
             <Type>OCTETSTRING</Type>
             <Value>0000</Value>
@@ -1746,10 +1758,10 @@
             <Value>0000</Value>
           </Row>
           <Row>
-            <Name>TSPX_iut_invalid_timeout_multiplier</Name>
-            <Description>Invalid timeout multiplier for IUT. (Default: 0000)</Description>
+            <Name>TSPX_iut_invalid_conn_update_supervision_timeout</Name>
+            <Description>Invalid connection update supervision timeout for IUT. (Default: 0800)</Description>
             <Type>OCTETSTRING</Type>
-            <Value>0000</Value>
+            <Value>0800</Value>
           </Row>
           <Row>
             <Name>TSPX_LE_scan_interval</Name>
@@ -1777,9 +1789,9 @@
           </Row>
           <Row>
             <Name>TSPX_con_latency</Name>
-            <Description>Connection Latency to be used. (Default: 0000)</Description>
+            <Description>Connection Latency to be used. (Default: 0001)</Description>
             <Type>OCTETSTRING</Type>
-            <Value>0000</Value>
+            <Value>0001</Value>
           </Row>
           <Row>
             <Name>TSPX_supervision_timeout</Name>
@@ -1798,6 +1810,30 @@
             <Description>Maximum CE Length to be used. (Default: 0000)</Description>
             <Type>OCTETSTRING</Type>
             <Value>0000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_conn_update_int_min</Name>
+            <Description>Connection Update Interval Minimum to be used. (Default: 0032)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>0032</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_conn_update_int_max</Name>
+            <Description>Connection Update Interval Maximum to be used. (Default: 0046)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>0046</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_conn_update_slave_latency</Name>
+            <Description>Connection Update Slave Latency to be used. (Default: 0001)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>0001</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_conn_update_supervision_timeout</Name>
+            <Description>Connection Update Supervision Timeout to be used. (Default: 01F4)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>01F4</Value>
           </Row>
           <Row>
             <Name>TSPX_pairing_before_service_request</Name>
@@ -1825,31 +1861,19 @@
           </Row>
           <Row>
             <Name>TSPX_advertising_data</Name>
-            <Description>IUT advertising data during broadcasting for random address (Default: 0x0201060503180018010D095054532d4741502d3036423803190000)</Description>
-            <Value>0201060503180018010D095054532d4741502d3036423803190000</Value>
+            <Description>IUT advertising data during broadcasting for random address (Default: 0x0503001801180D095054532d4741502d3036423803190000)</Description>
             <Type>OCTETSTRING</Type>
-          </Row>
-          <Row>
-            <Name>TSPX_iut_adverting_data_in_broadcasting_mode</Name>
-            <Description>IUT advertising data during broadcasting for non-resolevable privacy (Default: 0x0201060503180018010D095054532d4741502d3036423803190000)</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>0201060503180018010D095054532d4741502d3036423803190000</Value>
+            <Value>0503001801180D095054532d4741502d3036423803190000</Value>
           </Row>
           <Row>
             <Name>TSPX_iut_device_IRK_for_resolvable_privacy_address_generation_procedure</Name>
-            <Description>The Device Identity (IRK and Identity Address) used in the Resolvable Private Address
-Generation Procedure and Resolvable Private Address Resolution Procedure is specified
-for the IUT in the IXIT. (Default: 0x00000000000000000000000000000000)</Description>
+            <Description>The Device Identity (IRK and Identity Address) used in the Resolvable Private Address Generation Procedure and Resolvable Private Address Resolution Procedure is specified for the IUT in the IXIT. (Default: 0x00000000000000000000000000000000)</Description>
             <Type>OCTETSTRING</Type>
             <Value>00000000000000000000000000000000</Value>
           </Row>
           <Row>
             <Name>TSPX_tester_device_IRK_for_resolvable_privacy_address_generation_procedure</Name>
-            <Description>
-        The Device Identity (IRK and Identity Address) used in the Resolvable Private Address
-        Generation Procedure and Resolvable Private Address Resolution Procedure is specified
-        for the Lower Tester in the IXIT. (Default: 0x0123456789ABCDEF0123456789ABCDEF)
-      </Description>
+            <Description>The Device Identity (IRK and Identity Address) used in the Resolvable Private Address Generation Procedure and Resolvable Private Address Resolution Procedure is specified for the Lower Tester in the IXIT. (Default: 0x0123456789ABCDEF0123456789ABCDEF)</Description>
             <Type>OCTETSTRING</Type>
             <Value>0123456789ABCDEF0123456789ABCDEF</Value>
           </Row>
@@ -1865,6 +1889,12 @@ for the IUT in the IXIT. (Default: 0x00000000000000000000000000000000)</Descript
             <Type>INTEGER</Type>
             <Value>60000</Value>
           </Row>
+          <Row>
+            <Name>TSPX_URI</Name>
+            <Description>If no URI scheme is in use, or if the URI scheme in use is not defined as either a provisional or permanent scheme, TSPX_URI_scheme shall contain Unicode code point U+0001, represented in UTF-8 as 1 (hexadecimal 0x01) in the first octet. See Core Spec Supplement (CSS) v6, Section 1.1.18 (Default: 162F2F7777772E626C7565746F6F74682E636F6D - http://www.bluetooth.com)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>162F2F7777772E626C7565746F6F74682E636F6D</Value>
+          </Row>
         </Rows>
       </PIXIT>
     </PROJECT_INFORMATION>
@@ -1875,25 +1905,25 @@ for the IUT in the IXIT. (Default: 0x00000000000000000000000000000000)</Descript
         <Rows>
           <Row>
             <Name>TSPC_SM_1_1</Name>
-            <Description>Role : Master (C.1 : see test spec)</Description>
+            <Description>Role : Master (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_SM_1_2</Name>
-            <Description>Role : Slave (C.2 : see test spec)</Description>
+            <Description>Role : Slave (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_SM_2_1</Name>
-            <Description>Authenticated MITM protection (C.1 : see test spec)</Description>
+            <Description>Authenticated MITM protection (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_SM_2_2</Name>
-            <Description>Unauthenticated no MITM protection (C.2 : see test spec)</Description>
+            <Description>Unauthenticated no MITM protection (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -1901,11 +1931,11 @@ for the IUT in the IXIT. (Default: 0x00000000000000000000000000000000)</Descript
             <Name>TSPC_SM_2_3</Name>
             <Description>No security requirements (M)</Description>
             <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
+            <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_SM_2_4</Name>
-            <Description>OOB supported (O) </Description>
+            <Description>OOB supported (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -1919,7 +1949,7 @@ for the IUT in the IXIT. (Default: 0x00000000000000000000000000000000)</Descript
             <Name>TSPC_SM_3_1</Name>
             <Description>Encryption Key Size Negotiation (M)</Description>
             <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
+            <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_SM_4_1</Name>
@@ -1929,19 +1959,19 @@ for the IUT in the IXIT. (Default: 0x00000000000000000000000000000000)</Descript
           </Row>
           <Row>
             <Name>TSPC_SM_4_2</Name>
-            <Description>Passkey Entry (C1  : see test spec)</Description>
+            <Description>Passkey Entry (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_SM_4_3</Name>
-            <Description>Out of Band (C1 : see test spec)</Description>
+            <Description>Out of Band (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_SM_5_1</Name>
-            <Description>Encryption Setup using STK (M)</Description>
+            <Description>Encryption Setup using STK (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -1953,14 +1983,20 @@ for the IUT in the IXIT. (Default: 0x00000000000000000000000000000000)</Descript
           </Row>
           <Row>
             <Name>TSPC_SM_5_3</Name>
-            <Description>Slave Initiated Security (C1  : see test spec)</Description>
+            <Description>Slave Initiated Security (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_SM_5_4</Name>
-            <Description>Slave Initiated Security - Master response (C2 : see test spec)</Description>
+            <Description>Slave Initiated Security - Master response (C.2)</Description>
             <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SM_5_5</Name>
+            <Description>Link Key Conversion Function h7 (C.4)</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1977,20 +2013,50 @@ for the IUT in the IXIT. (Default: 0x00000000000000000000000000000000)</Descript
           </Row>
           <Row>
             <Name>TSPC_SM_7_1</Name>
-            <Description>Key Distribution - Encryption Key (C1  : see test spec)</Description>
+            <Description>Key Distribution - Encryption Key (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_SM_7_2</Name>
-            <Description>Key Distribution - Identity Key (C2  : see test spec)</Description>
+            <Description>Key Distribution - Identity Key (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_SM_7_3</Name>
-            <Description>Key Distribution - Signing Key (C3  : see test spec)</Description>
+            <Description>Key Distribution - Signing Key (C.3)</Description>
             <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_35_9</Name>
+            <Description>LE Security Mode 1 Level 4 (C.2)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_41_2a</Name>
+            <Description>Derivation of BR/EDR Link Key from LE LTK (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_41_2b</Name>
+            <Description>Derivation of LE LTK from BR/EDR Link Key (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_43_2a</Name>
+            <Description>Derivation of BR/EDR Link Key from LE LTK (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_43_2b</Name>
+            <Description>Derivation of LE LTK from BR/EDR Link Key (O)</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -2009,319 +2075,19 @@ for the IUT in the IXIT. (Default: 0x00000000000000000000000000000000)</Descript
             <Name>TSPX_bd_addr_iut</Name>
             <Description>The unique 48-bit Bluetooth device address (BD_ADDR) of the IUT. This was filled in during workspace creation.</Description>
             <Type>OCTETSTRING</Type>
-            <Value>0028F82F9C6F</Value>
+            <Value>112233445566</Value>
           </Row>
           <Row>
-            <Name>TSPX_SMP_pin_code</Name>
-            <Description>The 6 digit PIN code that is used to authenticate connections between PTS and IUT. (Default: 111111)</Description>
-            <Type>INTEGER</Type>
-            <Value>111111</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_OOB_Data</Name>
-            <Description>128 bit OOB data used by PTS when out of bad flag is set to TRUE</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>0000000000000000FE12036E5A889F4D</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_peer_addr_type</Name>
-            <Description>Whether peer address is public(00) or random (01). This is used during creating connection.</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>01</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_own_addr_type</Name>
-            <Description>Whether own address is public(00) or random (01). This is used during creating connection.</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>00</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_conn_interval_min</Name>
-            <Description>Value of minimum allowed connection interval. This is used during creating connection.</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>0190</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_conn_interval_max</Name>
-            <Description>Value of maximum allowed connection interval. This is used during creating connection.</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>0190</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_conn_latency</Name>
-            <Description>Value of connection latency.This is used during creating connection.</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>0000</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_client_class_of_device</Name>
-            <Description>The indicated capabilities of PTS in client role</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>100104</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_server_class_of_device</Name>
-            <Description>The indicated capabilities of PTS in server role</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>100104</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_security_enabled</Name>
-            <Description>Whether security is required for establishing connections. (Default: TRUE)</Description>
-            <Type>BOOLEAN</Type>
-            <Value>TRUE</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_delete_link_key</Name>
-            <Description>Whether to delete the stored link key in PTS at the beginning of each test case. (Default: TRUE)</Description>
-            <Type>BOOLEAN</Type>
-            <Value>TRUE</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_pin_code</Name>
-            <Description>The PIN code that is used to authenticate connections between PTS and IUT. (Default: 1234)</Description>
+            <Name>TSPX_iut_device_name_in_adv_packet_for_random_address</Name>
+            <Description>IUT advertising this local name for the PTS to make connection to. Default is not using it with empty string. (Default: "")</Description>
             <Type>IA5STRING</Type>
-            <Value>1234</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_ATTR_HANDLE</Name>
-            <Description>Attribue Handle to be used in "Signing of data" test cases, 2 octet</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>0000</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_ATTR_VALUE</Name>
-            <Description>Attribue Value to be used in "Signing of data" test cases, 8 octet.Also set TSPX_ATTR_VALUE_LENGTH. </Description>
-            <Type>OCTETSTRING</Type>
-            <Value>0000000000000000</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_delay_variation_in</Name>
-            <Description>Not referenced at this time</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>FFFFFFFF</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_delay_variation_out</Name>
-            <Description>Not referenced at this time</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>FFFFFFFF</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_flushto</Name>
-            <Description>User can set this value for basic mode. Default FFFF</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>FFFF</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_inmtu</Name>
-            <Description>User can set this value for basic mode. Default 02A0</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>02A0</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_inquiry_length</Name>
-            <Description>Not referenced at this time.</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>17</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_latency_in</Name>
-            <Description>Not referenced at this time.</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>FFFFFFFF</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_latency_out</Name>
-            <Description>Not referenced at this time.</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>FFFFFFFF</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_linkto</Name>
-            <Description>Not referenced at this time</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>3000</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_max_nbr_retransmissions</Name>
-            <Description>Not referenced at this time.</Description>
-            <Type>INTEGER</Type>
-            <Value>10</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_no_fail_verdicts</Name>
-            <Description>Used to disable FAIL verdict for Non-Qualification Testing only.</Description>
-            <Type>BOOLEAN</Type>
-            <Value>FALSE</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_outmtu</Name>
-            <Description>User can set this value for basic mode. 02A0.</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>02A0</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_tester_role_optional</Name>
-            <Description>This value determines which Role the Tester is, for test cases where Tester Role is optional. Valid values are L2CAP_ROLE_INITIATOR or L2CAP_ROLE_ACCEPTOR.</Description>
-            <Type>IA5STRING</Type>
-            <Value>L2CAP_ROLE_INITIATOR</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_page_scan_mode</Name>
-            <Description>Not referenced at this time.</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>00</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_page_scan_repetition_mode</Name>
-            <Description>Not referenced at this time.</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>00</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_peak_bandwidth_in</Name>
-            <Description>Not referenced at this time.</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>00000000</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_peak_bandwidth_out</Name>
-            <Description>Not referenced at this time.</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>00000000</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_psm</Name>
-            <Description>PSM to be used by IUT and TESTER.</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>0011</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_service_type_in</Name>
-            <Description>Not referenced at this time.</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>01</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_service_type_out</Name>
-            <Description>Not referenced at this time.</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>01</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_support_retransmissions</Name>
-            <Description>Not referenced at this time.</Description>
-            <Type>BOOLEAN</Type>
-            <Value>TRUE</Value>
+            <Value />
           </Row>
           <Row>
             <Name>TSPX_time_guard</Name>
-            <Description>A timer to protect against deadlock in the test case. The value will be in ms. 300000.</Description>
+            <Description>The time in milliseconds, to break PTS from waiting for a required event, if time guard is used by the test case. (Default: 180000)</Description>
             <Type>INTEGER</Type>
             <Value>180000</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_timer_ertx</Name>
-            <Description>Not referenced at this time.</Description>
-            <Type>INTEGER</Type>
-            <Value>120000</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_timer_ertx_max</Name>
-            <Description>Not referenced at this time.</Description>
-            <Type>INTEGER</Type>
-            <Value>300000</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_timer_ertx_min</Name>
-            <Description>Not referenced at this time.</Description>
-            <Type>INTEGER</Type>
-            <Value>60000</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_timer_rtx</Name>
-            <Description>Not referenced at this time.</Description>
-            <Type>INTEGER</Type>
-            <Value>10000</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_timer_rtx_max</Name>
-            <Description>Not referenced at this time.</Description>
-            <Type>INTEGER</Type>
-            <Value>60000</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_timer_rtx_min</Name>
-            <Description>Not referenced at this time.</Description>
-            <Type>INTEGER</Type>
-            <Value>1000</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_token_bucket_size_in</Name>
-            <Description>Not referenced at this time.</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>00000000</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_token_bucket_size_out</Name>
-            <Description>Not referenced at this time.</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>00000000</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_token_rate_in</Name>
-            <Description>Not referenced at this time.</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>00000000</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_token_rate_out</Name>
-            <Description>Not referenced at this time.</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>00000000</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_rfc_mode_mode</Name>
-            <Description>Not referenced at this time.</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>03</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_rfc_mode_tx_window_size</Name>
-            <Description>Not referenced at this time.</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>08</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_rfc_mode_max_transmit</Name>
-            <Description>Not referenced at this time.</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>03</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_rfc_mode_retransmission_timeout</Name>
-            <Description>Not referenced at this time.</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>07D0</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_rfc_mode_monitor_timeout</Name>
-            <Description>Not referenced at this time.</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>2EE0</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_rfc_mode_maximum_pdu_size</Name>
-            <Description>Not referenced at this time.</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>02A0</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_extended_window_size</Name>
-            <Description>The size is used for extended control field. 0012.</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>0012</Value>
           </Row>
           <Row>
             <Name>TSPX_use_implicit_send</Name>
@@ -2330,34 +2096,46 @@ for the IUT in the IXIT. (Default: 0x00000000000000000000000000000000)</Descript
             <Value>TRUE</Value>
           </Row>
           <Row>
-            <Name>TSPX_use_dynamic_pin</Name>
-            <Description>Determines whether or not a dynamic PIN MMI edit box will be used for Dynamic PTS Pin (Default value FALSE)</Description>
-            <Type>BOOLEAN</Type>
-            <Value>FALSE</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_iut_SDU_size_in_bytes</Name>
-            <Description>Not referenced at this time</Description>
+            <Name>TSPX_new_key_failed_count</Name>
+            <Description>The number of failed pairing attempts before a new key pair is generated.  If the key is never changed then the value is 0. (Default: 0)</Description>
             <Type>INTEGER</Type>
-            <Value>144</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_secure_simple_pairing_pass_key_confirmation</Name>
-            <Description>Whether manual confirmation on generated key is required during secure simple pairing (Default: FALSE)</Description>
-            <Type>BOOLEAN</Type>
-            <Value>FALSE</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_Min_Encryption_Key_Length</Name>
-            <Description>Minimum Encrption Key Length (Default:07).</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>07</Value>
+            <Value>0</Value>
           </Row>
           <Row>
             <Name>TSPX_Bonding_Flags</Name>
             <Description>Bonding Flags(Default:00).</Description>
             <Type>OCTETSTRING</Type>
             <Value>00</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_ATTR_HANDLE</Name>
+            <Description>Attribue Handle to be used in "Signing of data" test cases, 2 octet (Big endian)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>0001</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_ATTR_VALUE</Name>
+            <Description>Attribue Value to be used in "Signing of data" test cases, 16 octets are maximum length supported.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>0002</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_Min_Encryption_Key_Length</Name>
+            <Description>Minimum Encrption Key Length (Default:07).</Description>
+            <Type>INTEGER</Type>
+            <Value>07</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_OOB_Data</Name>
+            <Description>128 bit OOB data used by PTS when out of band flag is set to TRUE</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>0000000000000000FE12036E5A889F4D</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_tester_role_optional</Name>
+            <Description>This value determines which Role the Tester is, for test cases where Tester Role is optional (SM/MAS/SIGN). Valid values are L2CAP_ROLE_INITIATOR or L2CAP_ROLE_ACCEPTOR.</Description>
+            <Type>IA5STRING</Type>
+            <Value>L2CAP_ROLE_ACCEPTOR</Value>
           </Row>
         </Rows>
       </PIXIT>
