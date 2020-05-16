@@ -15,7 +15,7 @@
 # more details.
 #
 
-"""Mynewt auto PTS client"""
+"""Zephyr auto PTS client"""
 
 import os
 import sys
@@ -55,9 +55,14 @@ def parse_args():
 
     arg_parser = autoptsclient.CliParser("PTS automation client")
 
+    # IUT specific arguments below
+    arg_parser.add_argument("kernel_image",
+                            help="Zephyr OS kernel image to be used for "
+                            "testing. Normally a mynewt.elf file.")
+
     arg_parser.add_argument("-t", "--tty-file",
                             help="If TTY is specified, BTP communication "
-                            "with Mynewt OS running on hardware will "
+                            "with Zephyr OS running on hardware will "
                             "be done over this TTY. Hence, QEMU will "
                             "not be used.")
 
