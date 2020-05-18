@@ -15,7 +15,7 @@
 # more details.
 #
 
-"""Zephyr auto PTS client"""
+"""Mynewt auto PTS client"""
 
 import os
 import sys
@@ -31,9 +31,7 @@ from ptsprojects.mynewt.iutctl import get_iut
 def check_args(args):
     """Sanity check command line arguments"""
 
-    qemu_bin = autoprojects.iutctl.QEMU_BIN
     tty_file = args.tty_file
-    kernel_image = args.kernel_image
     ip_addr = args.ip_addr
 
     if not ip_addr:
@@ -46,23 +44,15 @@ def check_args(args):
         if not os.path.exists(tty_file):
             sys.exit("%s TTY file does not exist!" % repr(tty_file))
 
-    if not os.path.isfile(kernel_image):
-        sys.exit("kernel_image %s is not a file!" % repr(kernel_image))
-
 
 def parse_args():
     """Parses command line arguments and options"""
 
     arg_parser = autoptsclient.CliParser("PTS automation client")
 
-    # IUT specific arguments below
-    arg_parser.add_argument("kernel_image",
-                            help="Zephyr OS kernel image to be used for "
-                            "testing. Normally a mynewt.elf file.")
-
     arg_parser.add_argument("-t", "--tty-file",
                             help="If TTY is specified, BTP communication "
-                            "with Zephyr OS running on hardware will "
+                            "with Mynewt OS running on hardware will "
                             "be done over this TTY. Hence, QEMU will "
                             "not be used.")
 
@@ -102,7 +92,7 @@ def main():
     ptses = autoptsclient.init_pts(args, callback_thread, tc_db_table_name)
 
     btp.init(get_iut)
-    autoprojects.iutctl.init(args.kernel_image, args.tty_file, args.board)
+    autoprojects.iutctl.init(args.tty_file, args.board)
 
     stack.init_stack()
     stack_inst = stack.get_stack()
