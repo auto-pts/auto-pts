@@ -662,7 +662,7 @@ def hdl_wid_69(desc):
         return False
 
     handle = int(MMI.args[0], 16)
-    size = int(MMI.args[1], 16)
+    size = int(MMI.args[1], 10)
 
     btp.gattc_write_long(btp.pts_addr_type_get(), btp.pts_addr_get(),
                          handle, 0, '12', size)
@@ -809,15 +809,15 @@ def hdl_wid_81(desc):
     MMI.reset()
     MMI.parse_description(desc)
 
-    hdl = MMI.args[0]
-    val_mtp = int(MMI.args[1], 16)
+    hdl = int(MMI.args[0], 16)
+    val_mtp = int(MMI.args[1], 10)+1
 
     if not hdl or not val_mtp:
         logging.error("parsing error")
         return False
 
     btp.gattc_write_long(btp.pts_addr_type_get(), btp.pts_addr_get(),
-                         hdl, 0, '1234', val_mtp)
+                         hdl, 0, '1', val_mtp)
 
     btp.gattc_write_long_rsp(True)
 
