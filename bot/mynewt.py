@@ -264,7 +264,7 @@ def run_tests(args, iut_config):
 
         time.sleep(10)
 
-        autoprojects.iutctl.init(args["kernel_image"], tty, args["board"])
+        autoprojects.iutctl.init(tty, args["board"])
 
         # Setup project PIXITS
         autoprojects.gap.set_pixits(ptses[0])
@@ -336,7 +336,6 @@ def main(cfg):
     start_time = time.time()
 
     args = cfg['auto_pts']
-    args['kernel_image'] = None
 
     repos_info = bot.common.update_repos(args['project_path'], cfg["git"])
     repo_status = make_repo_status(repos_info)
