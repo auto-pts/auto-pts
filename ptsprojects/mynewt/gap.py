@@ -73,7 +73,7 @@ init_gatt_db = [TestFunc(btp.core_reg_svc_gatt),
 
 iut_device_name = 'Tester'
 iut_manufacturer_data = 'ABCD'
-iut_ad_uri = '162F'
+iut_ad_uri = '000168747470733A2F2F7777772E626C7565746F'
 iut_appearance = '1111'
 iut_svc_data = '1111'
 iut_flags = '11'
@@ -174,7 +174,7 @@ def set_pixits(pts):
     pts.set_pixit("GAP",
                   "TSPX_iut_device_name_in_adv_packet_for_random_address", iut_device_name)
     pts.set_pixit("GAP", "TSPX_Tgap_104", "60000")
-    pts.set_pixit("GAP", "TSPX_URI", "162F2F7777772E626C7565746F6F74682E636F6D")
+    pts.set_pixit("GAP", "TSPX_URI", "000168747470733A2F2F7777772E626C7565746F")
 
 
 def test_cases(pts):
