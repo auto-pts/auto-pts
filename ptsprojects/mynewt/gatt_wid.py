@@ -817,7 +817,7 @@ def hdl_wid_81(desc):
         return False
 
     btp.gattc_write_long(btp.pts_addr_type_get(), btp.pts_addr_get(),
-                         hdl, 0, '1', val_mtp)
+                         hdl, 0, '11', val_mtp)
 
     btp.gattc_write_long_rsp(True)
 
