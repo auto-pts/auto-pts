@@ -177,6 +177,10 @@ def hdl_wid_46(desc):
     :param desc: Please send an L2CAP Connection Parameter Update request using valid parameters.
     :return:
     """
+
+    # Wait for connection
+    btp.gap_wait_for_connection()
+
     stack = get_stack()
     bd_addr = btp.pts_addr_get()
     bd_addr_type = btp.pts_addr_type_get()
