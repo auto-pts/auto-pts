@@ -188,7 +188,6 @@ def hdl_wid_46(desc):
     new_params = copy.deepcopy(stack.gap.conn_params.data)
 
     new_params.conn_latency += 1
-
     btp.gap_conn_param_update(bd_addr, bd_addr_type,
                               new_params.conn_itvl,
                               new_params.conn_itvl,
@@ -353,6 +352,7 @@ def hdl_wid_77(desc):
 
 def hdl_wid_78(desc):
     btp.gap_conn()
+    btp.gap_wait_for_connection()
     return True
 
 
@@ -425,6 +425,7 @@ def hdl_wid_100(desc):
 
 
 def hdl_wid_104(desc):
+    btp.gap_set_bondable_off()
     return True
 
 
@@ -434,6 +435,7 @@ def hdl_wid_106(desc):
 
 
 def hdl_wid_108(desc):
+    btp.gap_wait_for_connection()
     btp.gap_pair()
     return True
 

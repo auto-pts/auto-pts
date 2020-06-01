@@ -171,6 +171,7 @@ def test_cases(pts):
                  iut_manufacturer_data, iut_appearance, iut_svc_data, iut_flags,
                  iut_svcs),
         TestFunc(btp.gap_read_ctrl_info),
+        TestFunc(btp.gap_set_bondable_on),
         TestFunc(lambda: pts.update_pixit_param(
                  "GAP", "TSPX_bd_addr_iut",
                  stack.gap.iut_addr_get_str())),
@@ -380,28 +381,32 @@ def test_cases(pts):
                   cmds=pre_conditions,
                   generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/BOND/NBON/BV-01-C",
-                  pre_conditions,
+                  cmds=pre_conditions +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/BOND/NBON/BV-02-C",
-                  pre_conditions,
+                  cmds=pre_conditions +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/BOND/NBON/BV-03-C",
-                  pre_conditions,
+                  cmds=pre_conditions +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/BOND/BON/BV-01-C",
-                  cmds=pre_conditions + init_gatt_db +
+                  cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/BOND/BON/BV-02-C",
-                  cmds=pre_conditions,
+                  cmds=pre_conditions +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/BOND/BON/BV-03-C",
-                  cmds=pre_conditions + init_gatt_db +
+                  cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/BOND/BON/BV-04-C",
-                  cmds=pre_conditions + init_gatt_db +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  cmds=pre_conditions +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/SEC/AUT/BV-11-C",
                   cmds=pre_conditions + init_gatt_db +
