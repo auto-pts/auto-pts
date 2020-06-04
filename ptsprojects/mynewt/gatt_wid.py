@@ -760,7 +760,7 @@ def hdl_wid_76(desc):
 
     btp.gattc_write_reliable(btp.pts_addr_type_get(),
                              btp.pts_addr_get(),
-                             MMI.args[0], 0, '12', MMI.args[1])
+                             MMI.args[0], 0, '12', 1)
 
     btp.gattc_write_reliable_rsp(True)
 
