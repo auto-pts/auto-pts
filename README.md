@@ -93,6 +93,10 @@ Then start the AutoPTS Client using e.g. own workspace file:
 
     ./autoptsclient-mynewt.py "Mynewt Nimble Host" -i SERVER_IP -l LOCAL_IP -t /dev/ttyACM0 -b nordic_pca10056
 
+**Testing BlueZ on Linux
+
+See [ptsprojects/bluez/README.md](./ptsprojects/bluez/README.md)
+
 # Running AutoPTSClientBot
 
 AutoPTSClientBot has been added to automate running test cases on various
