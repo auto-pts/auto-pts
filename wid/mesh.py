@@ -884,7 +884,6 @@ def hdl_wid_221(desc):
 
     if not stack.mesh.is_iv_test_mode_enabled.data:
         btp.mesh_iv_update_test_mode(True)
-        btp.mesh_iv_update_toggle()
     return True
 
 
