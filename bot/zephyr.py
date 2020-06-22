@@ -82,31 +82,6 @@ def source_zephyr_env(zephyr_wd):
     return env
 
 
-def flash_nrf52(tester_outdir):
-    """ Flash Zephyr binary for nrf52 board
-    :param cwd: Zephyr build directory
-    :return: TTY path
-    """
-    check_call(['nrfjprog', '--eraseall', '-f', 'nrf52'])
-    check_call(['nrfjprog', '--program', 'zephyr/zephyr.hex', '-f', 'nrf52'],
-               cwd=tester_outdir)
-    check_call(['nrfjprog', '-p'])
-
-    return get_tty_path("J-Link")
-
-
-
-def flash_reel(tester_outdir):
-    """ Flash Zephyr binary for reel board
-    :param cwd: Zephyr build directory
-    :return: TTY path
-    """
-    check_call(['pyocd', 'flash', '-t', 'nrf52', 'zephyr/zephyr.hex'],
-               cwd=tester_outdir)
-
-    return get_tty_path("DAPLink")
-
-
 def build_and_flash(zephyr_wd, board, conf_file=None):
     """Build and flash Zephyr binary
     :param zephyr_wd: Zephyr source path
@@ -116,34 +91,20 @@ def build_and_flash(zephyr_wd, board, conf_file=None):
     """
     logging.debug("{}: {} {} {}". format(build_and_flash.__name__, zephyr_wd,
                                          board, conf_file))
-    tester_outdir = os.path.join(zephyr_wd, "tests", "bluetooth", "tester",
-                                 "outdir")
-
-    if os.path.isdir(tester_outdir):
-        check_call(['rm', '-rf', tester_outdir], cwd=zephyr_wd)
-
-    os.makedirs(tester_outdir)
+    tester_dir = os.path.join(zephyr_wd, "tests", "bluetooth", "tester")
 
     # Set Zephyr project env variables
     env = source_zephyr_env(zephyr_wd)
 
-    cmd = ['cmake', '-GNinja', '-DBOARD={}'.format(board)]
+    cmd = ['west',  'build', '-p', 'auto', '-b', board]
     if conf_file:
-        cmd.append('-DCONF_FILE={}'.format(conf_file))
-    cmd.append('..')
+        cmd.extend(('--', '-DCONF_FILE={}'.format(conf_file)))
 
-    check_call(cmd, env=env, cwd=tester_outdir)
-    check_call(['ninja'], env=env, cwd=tester_outdir)
+    check_call(cmd, env=env, cwd=tester_dir)
+    check_call(['west', 'flash'], env=env, cwd=tester_dir)
 
-    if board == 'nrf52840_pca10056':
-        tty = flash_nrf52(tester_outdir)
-    elif board == 'reel_board':
-        tty = flash_reel(tester_outdir)
-    else:
-        # Unsupported board and stop here
-        tty = None
+    return get_tty_path("J-Link")
 
-    return tty
 
 def flush_serial(tty):
     """Clear the serial port buffer
