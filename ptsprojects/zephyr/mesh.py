@@ -178,6 +178,8 @@ def test_cases(ptses):
             "MESH", "TSPX_bd_addr_iut",
             stack.gap.iut_addr_get_str())),
         TestFunc(lambda: pts.update_pixit_param(
+            "MESH", "TSPX_maximum_network_message_cache_entries", "10")),
+        TestFunc(lambda: pts.update_pixit_param(
             "MESH", "TSPX_subscription_address_list",
             MeshVals.subscription_addr_list1))]
 
