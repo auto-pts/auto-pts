@@ -29,30 +29,6 @@ cd bluez
 sudo ./src/bluetoothd -d -E -n
 ```
 
-### Change the capability
-
-Some tests require to use BT_MGMT API due to the limitation of BlueZ D-BUS API. However BT_MGMT API requiers `net_admin` capability and normally root has this capability.
-
-As a workaround, it needs to add `net_admin` capability to user account and binary.
-
-```bash
-# Open /etc/security/capability.conf
-sudo vi /etc/security/capability.conf
-
-# Add the following line and save
-cap_net_admin          han1
-
-# Save and logout or restart to apply the change.
-```
-
-Add `net_admin` capability to `btpclient`
-
-```bash
-sudo /sbin/setcap cap_net_admin+ep bluez/tools/btpclient
-```
-
-Repeat the last step every time btpclient binary is changed.
-
 ## Run
 
 ### Running AutoPTS Server (Windows)
