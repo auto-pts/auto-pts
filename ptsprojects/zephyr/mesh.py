@@ -180,6 +180,8 @@ def test_cases(ptses):
         TestFunc(lambda: pts.update_pixit_param(
             "MESH", "TSPX_maximum_network_message_cache_entries", "10")),
         TestFunc(lambda: pts.update_pixit_param(
+            "MESH", "TSPX_maximum_number_of_supported_subnets", "2")),
+        TestFunc(lambda: pts.update_pixit_param(
             "MESH", "TSPX_subscription_address_list",
             MeshVals.subscription_addr_list1))]
 
