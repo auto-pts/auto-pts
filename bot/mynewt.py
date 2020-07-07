@@ -218,8 +218,6 @@ def run_tests(args, iut_config):
     total_regressions = []
     _args = {}
 
-    callback_thread = autoptsclient.init_core()
-
     config_default = "default.conf"
     _args[config_default] = PtsInitArgs(args)
 
@@ -238,7 +236,7 @@ def run_tests(args, iut_config):
         if 'overlay' in value:
             _args[config_default].excluded += _args[config].test_cases
 
-    ptses = autoptsclient.init_pts(_args[config_default], callback_thread,
+    ptses = autoptsclient.init_pts(_args[config_default],
                                    "mynewt_" + str(args["board"]))
 
     btp.init(get_iut)
@@ -250,8 +248,7 @@ def run_tests(args, iut_config):
 
     stack.init_stack()
     stack_inst = stack.get_stack()
-    stack_inst.synch_init(callback_thread.set_pending_response,
-                          callback_thread.clear_pending_responses)
+    stack_inst.synch_init([pts.callback_thread for pts in ptses])
 
     for config, value in iut_config.items():
         overlay = None

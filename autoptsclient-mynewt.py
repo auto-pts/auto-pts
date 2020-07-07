@@ -87,17 +87,14 @@ def main():
     else:
         tc_db_table_name = None
 
-    callback_thread = autoptsclient.init_core()
-
-    ptses = autoptsclient.init_pts(args, callback_thread, tc_db_table_name)
+    ptses = autoptsclient.init_pts(args, tc_db_table_name)
 
     btp.init(get_iut)
     autoprojects.iutctl.init(args.tty_file, args.board)
 
     stack.init_stack()
     stack_inst = stack.get_stack()
-    stack_inst.synch_init(callback_thread.set_pending_response,
-                          callback_thread.clear_pending_responses)
+    stack_inst.synch_init([pts.callback_thread for pts in ptses])
 
     # Setup project PIXITS
     autoprojects.gap.set_pixits(ptses[0])
