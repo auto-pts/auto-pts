@@ -28,30 +28,20 @@ log = logging.debug
 
 
 def hdl_pending_mesh_wids(wid, test_case_name, description):
+    log("%s, %r, %r, %s", hdl_pending_mesh_wids.__name__, wid, description,
+        test_case_name)
     stack = get_stack()
     module = sys.modules[__name__]
 
-    if stack.synch.is_required_synch(test_case_name, wid):
-        actions = stack.synch.perform_synch(wid, test_case_name, description)
-
-        if actions:
-            for action in actions:
-                action_wid = action[0]
-                action_description = action[1]
-                action_test_case_name = action[2]
-                action_response_cb = action[3]
-
-                handler = getattr(module, "hdl_wid_%d" % action_wid)
-                result = handler(action_description)
-
-                # Register pending response handler
-                stack.synch.prepare_pending_response(action_test_case_name,
-                                                     result)
-
-            return None
-
-        # wid is on synchronise list but has to wait for other
+    actions = stack.synch.perform_synch(wid, test_case_name, description)
+    if not actions:
         return "WAIT"
+
+    for action in actions:
+        handler = getattr(module, "hdl_wid_%d" % action.wid)
+        result = handler(action.description)
+        stack.synch.prepare_pending_response(action.test_case,
+                                             result, action.delay)
 
     return None
 
@@ -60,23 +50,21 @@ def mesh_wid_hdl(wid, description, test_case_name):
     log("%s, %r, %r, %s", mesh_wid_hdl.__name__, wid, description,
         test_case_name)
     module = sys.modules[__name__]
-    pending_responses = None
 
     try:
         handler = getattr(module, "hdl_wid_%d" % wid)
-        current_response = handler(description)
 
         stack = get_stack()
-        if stack.synch:
-            response = hdl_pending_mesh_wids(wid, test_case_name, description)
+        if not stack.synch or not stack.synch.is_required_synch(test_case_name, wid):
+            return handler(description)
 
-            if response == "WAIT":
-                return response
+        response = hdl_pending_mesh_wids(wid, test_case_name, description)
 
-        if stack.synch:
-            stack.synch.set_pending_responses_if_any()
+        if response == "WAIT":
+            return response
 
-        return current_response
+        stack.synch.set_pending_responses_if_any()
+        return "WAIT"
 
     except AttributeError as e:
         logging.exception(e.message)

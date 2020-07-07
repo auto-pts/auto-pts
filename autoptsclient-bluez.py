@@ -50,9 +50,7 @@ def main():
 
     args = parse_args()
 
-    callback_thread = autoptsclient.init_core()
-
-    ptses = autoptsclient.init_pts(args, callback_thread)
+    ptses = autoptsclient.init_pts(args)
 
     btp.init(get_iut)
 
@@ -61,8 +59,7 @@ def main():
 
     stack.init_stack()
     stack_inst = stack.get_stack()
-    stack_inst.synch_init(callback_thread.set_pending_response,
-                          callback_thread.clear_pending_responses)
+    stack_inst.synch_init([pts.callback_thread for pts in ptses])
 
     autoprojects.gap.set_pixits(ptses[0])
     autoprojects.sm.set_pixits(ptses[0])

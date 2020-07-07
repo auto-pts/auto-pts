@@ -217,13 +217,20 @@ class ClientCallback(PTSCallback):
         if not self._pending_responses:
             return None
 
-        return self._pending_responses.pop(test_case_name, None)
+        rsp = self._pending_responses.pop(test_case_name, None)
+        if not rsp:
+            return rsp
+
+        if rsp["delay"]:
+            time.sleep(rsp["delay"])
+        return rsp["value"]
 
     def set_pending_response(self, pending_response):
         tc_name = pending_response[0]
         response = pending_response[1]
+        delay = pending_response[2]
 
-        self._pending_responses[tc_name] = response
+        self._pending_responses[tc_name] = {"value": response, "delay": delay}
 
     def clear_pending_responses(self):
         self._pending_responses = {}
@@ -243,22 +250,32 @@ class CallbackThread(threading.Thread):
 
     """
 
-    def __init__(self):
-        log("%s.%s", self.__class__.__name__, self.__init__.__name__)
+    def __init__(self, port):
+        log("%s.%s port=%r", self.__class__.__name__, self.__init__.__name__, port)
         threading.Thread.__init__(self)
         self.callback = ClientCallback()
+        self.port = port
+        self.current_test_case = None
 
     def run(self):
         """Starts the xmlrpc callback server"""
         log("%s.%s", self.__class__.__name__, self.run.__name__)
 
-        log("Serving on port %s ...", CLIENT_PORT)
+        log("Serving on port %s ...", self.port)
 
-        server = SimpleXMLRPCServer(("", CLIENT_PORT),
+        server = SimpleXMLRPCServer(("", self.port),
                                     allow_none=True, logRequests=False)
         server.register_instance(self.callback)
         server.register_introspection_functions()
         server.serve_forever()
+
+    def set_current_test_case(self, name):
+        log("%s.%s %s", self.__class__.__name__, self.set_current_test_case.__name__, name)
+        self.current_test_case = name
+
+    def get_current_test_case(self):
+        log("%s.%s %s", self.__class__.__name__, self.get_current_test_case.__name__, self.current_test_case)
+        return self.current_test_case
 
     def error_code(self):
         log("%s.%s", self.__class__.__name__, self.error_code.__name__)
@@ -364,25 +381,16 @@ class FakeProxy(object):
         pass
 
 
-def init_core():
-    "Initialization procedure for core modules"
-    init_logging()
-
-    callback_thread = CallbackThread()
-    callback_thread.start()
-
-    return callback_thread
-
-
-def init_pts_thread_entry(proxy, local_address, workspace_path, bd_addr,
-                          enable_max_logs, callback_thread):
+def init_pts_thread_entry(proxy, local_address, local_port, workspace_path, 
+                          bd_addr, enable_max_logs):
     """PTS instance initialization thread function entry"""
 
     sys.stdout.flush()
     proxy.restart_pts()
     print "(%r) OK" % (id(proxy),)
 
-    proxy.callback_thread = callback_thread
+    proxy.callback_thread = CallbackThread(local_port)
+    proxy.callback_thread.start()
 
     proxy.set_call_timeout(300000)  # milliseconds
 
@@ -399,7 +407,7 @@ def init_pts_thread_entry(proxy, local_address, workspace_path, bd_addr,
 
     log("Client IP Address: %s", client_ip_address)
 
-    proxy.register_xmlrpc_ptscallback(client_ip_address, CLIENT_PORT)
+    proxy.register_xmlrpc_ptscallback(client_ip_address, local_port)
 
     log("Opening workspace: %s", workspace_path)
     proxy.open_workspace(workspace_path)
@@ -413,11 +421,15 @@ def init_pts_thread_entry(proxy, local_address, workspace_path, bd_addr,
     proxy.enable_maximum_logging(enable_max_logs)
 
 
-def init_pts(args, callback_thread, tc_db_table_name=None):
+def init_pts(args, tc_db_table_name=None):
     """Initialization procedure for PTS instances"""
 
     proxy_list = []
     thread_list = []
+
+    init_logging()
+
+    local_port = CLIENT_PORT
 
     for server_addr, local_addr in zip(args.ip_addr, args.local_addr):
         if AUTO_PTS_LOCAL:
@@ -430,10 +442,11 @@ def init_pts(args, callback_thread, tc_db_table_name=None):
         print "(%r) Starting PTS %s ..." % (id(proxy), server_addr)
 
         thread = threading.Thread(target=init_pts_thread_entry,
-                                  args=(proxy, local_addr, args.workspace,
-                                        args.bd_addr, args.enable_max_logs,
-                                        callback_thread))
+                                  args=(proxy, local_addr, local_port, args.workspace,
+                                        args.bd_addr, args.enable_max_logs))
         thread.start()
+
+        local_port += 1
 
         proxy_list.append(proxy)
         thread_list.append(thread)
@@ -780,6 +793,7 @@ def run_test_case_thread_entry(pts, test_case):
         test_case.pre_run()
         test_case.status = "RUNNING"
         test_case.state = "RUNNING"
+        pts.callback_thread.set_current_test_case(test_case.name)
         synchronize_instances(test_case.state)
         error_code = pts.run_test_case(test_case.project_name, test_case.name)
 
