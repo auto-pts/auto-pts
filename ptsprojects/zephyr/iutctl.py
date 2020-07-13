@@ -108,10 +108,13 @@ class ZephyrCtl:
     def flush_serial(self):
         log("%s.%s", self.__class__, self.flush_serial.__name__)
         # Try to read data or timeout
-        ser = serial.Serial(port=self.tty_file,
-                            baudrate=SERIAL_BAUDRATE, timeout=1)
-        ser.read(99999)
-        ser.close()
+        try:
+            ser = serial.Serial(port=self.tty_file,
+                                baudrate=SERIAL_BAUDRATE, timeout=1)
+            ser.read(99999)
+            ser.close()
+        except serial.SerialException:
+            pass
 
     def reset(self):
         """Restart IUT related processes and reset the IUT"""
