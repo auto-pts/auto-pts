@@ -817,6 +817,8 @@ def run_test_case_thread_entry(pts, test_case):
         error_code = get_error_code(None)
 
     finally:
+        if error_code == ptstypes.E_XML_RPC_ERROR:
+            pts.recover_pts()
         test_case.state = "FINISHING"
         synchronize_instances(test_case.state)
         test_case.post_run(error_code)  # stop qemu and other commands
