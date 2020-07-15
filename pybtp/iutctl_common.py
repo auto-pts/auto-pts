@@ -78,6 +78,8 @@ class BTPSocket(object):
         # Gather frame header
         while toread_hdr_len:
             nbytes = self.conn.recv_into(hdr_memview, toread_hdr_len)
+            if nbytes == 0 and toread_hdr_len != 0:
+                raise socket.error
             hdr_memview = hdr_memview[nbytes:]
             toread_hdr_len -= nbytes
 
@@ -155,6 +157,8 @@ class BTPWorker(BTPSocket):
 
                 self._rx_queue.put(data)
             except socket.timeout:
+                pass
+            except socket.error:
                 pass
 
     @staticmethod
