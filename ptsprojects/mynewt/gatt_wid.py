@@ -758,10 +758,12 @@ def hdl_wid_76(desc):
     MMI.reset()
     MMI.parse_description(desc)
 
+    hdl = MMI.args[0]
+    offset = MMI.args[1]
+
     btp.gattc_write_reliable(btp.pts_addr_type_get(),
                              btp.pts_addr_get(),
                              MMI.args[0], 0, '12', 1)
-
     btp.gattc_write_reliable_rsp(True)
 
     return True
@@ -1253,6 +1255,65 @@ def hdl_wid_122(desc):
         if perm & Perm.read and perm & Perm.read_enc:
             return btp.btp2uuid(uuid_len, chrc_uuid)
 
+    return '0000'
+
+
+def hdl_wid_140(desc):
+    MMI.reset()
+    MMI.parse_description(desc)
+
+    hdl1 = MMI.args[0]
+    hdl2 = MMI.args[1]
+    btp.gattc_read_multiple_var(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl1, hdl2)
+    return '0000'
+
+def hdl_wid_141(desc):
+    MMI.reset()
+    MMI.parse_description(desc)
+
+    hdl1 = MMI.args[0]
+    hdl2 = MMI.args[1]
+    btp.gattc_read_multiple(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl1, hdl2)
+    return '0000'
+
+
+def hdl_wid_142(desc):
+    log("Mynewt sends EATT supported bit")
+    return True
+
+
+def hdl_wid_147(desc):
+    MMI.reset()
+    MMI.parse_description(desc)
+
+    hdl1 = MMI.args[0]
+    hdl2 = MMI.args[1]
+    btp.gattc_read_multiple_var(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl1, hdl2)
+    btp.gattc_read_multiple_var(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl1, hdl2)
+    return True
+
+
+def hdl_wid_304(desc):
+    MMI.reset()
+    MMI.parse_description(desc)
+
+    hdl = MMI.args[0]
+    val = MMI.args[1]
+    _, _, data = btp.gatts_get_attr_val(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl)
+    data = hexlify(data).decode().upper()
+    if data in val:
+        return True
+    else:
+        return False
+
+
+def hdl_wid_400(desc):
+    log("Mynewt sends EATT supported bit")
+    return '0000'
+
+
+def hdl_wid_402(desc):
+    log("Mynewt sends EATT supported bit")
     return '0000'
 
 
