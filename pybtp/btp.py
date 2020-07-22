@@ -185,6 +185,8 @@ GATTC = {
                   CONTROLLER_INDEX),
     "read_multiple": (defs.BTP_SERVICE_ID_GATT, defs.GATT_READ_MULTIPLE,
                       CONTROLLER_INDEX),
+    "read_multiple_var": (defs.BTP_SERVICE_ID_GATT, defs.GATT_READ_MULTIPLE_VAR,
+                          CONTROLLER_INDEX),
     "write_without_rsp": (defs.BTP_SERVICE_ID_GATT,
                           defs.GATT_WRITE_WITHOUT_RSP, CONTROLLER_INDEX),
     "signed_write": (defs.BTP_SERVICE_ID_GATT,
@@ -1948,6 +1950,30 @@ def gattc_read_multiple(bd_addr_type, bd_addr, *hdls):
     iutctl.btp_socket.send(*GATTC['read_multiple'], data=data_ba)
 
 
+def gattc_read_multiple_var(bd_addr_type, bd_addr, *hdls):
+    logging.debug("%s %r %r %r", gattc_read_multiple_var.__name__, bd_addr_type,
+                  bd_addr, hdls)
+    iutctl = get_iut()
+
+    gap_wait_for_connection()
+
+    data_ba = bytearray()
+
+    bd_addr_ba = addr2btp_ba(bd_addr)
+    hdls_j = ''.join(hdl for hdl in hdls)
+    hdls_byte_table = [hdls_j[i:i + 2] for i in range(0, len(hdls_j), 2)]
+    hdls_swp = ''.join([c[1] + c[0] for c in zip(hdls_byte_table[::2],
+                                                 hdls_byte_table[1::2])])
+    hdls_ba = binascii.unhexlify(bytearray(hdls_swp))
+
+    data_ba.extend(chr(bd_addr_type))
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(chr(len(hdls)))
+    data_ba.extend(hdls_ba)
+
+    iutctl.btp_socket.send(*GATTC['read_multiple_var'], data=data_ba)
+
+
 def gattc_write_without_rsp(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
     logging.debug("%s %r %r %r %r %r", gattc_write_without_rsp.__name__,
                   bd_addr_type, bd_addr, hdl, val, val_mtp)
@@ -2089,7 +2115,7 @@ def gattc_write_reliable(bd_addr_type, bd_addr, hdl, off, val, val_mtp=None):
 
     bd_addr_ba = addr2btp_ba(bd_addr)
     hdl_ba = struct.pack('H', hdl)
-    off_ba = struct.pack('H', off)
+    off_ba = struct.pack('H', int(off))
     val_ba = binascii.unhexlify(bytearray(val))
     val_len_ba = struct.pack('H', len(val_ba))
 
@@ -2661,6 +2687,30 @@ def gattc_read_long_rsp(store_rsp=False, store_val=False):
 
         if store_val:
             VERIFY_VALUES.append((binascii.hexlify(value[0])).upper())
+
+
+def gattc_read_multiple_rsp(store_val=False, store_rsp=False):
+    iutctl = get_iut()
+
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
+    logging.debug("%s received %r %r", gattc_read_multiple_rsp.__name__,
+                  tuple_hdr, tuple_data)
+
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
+                  defs.GATT_READ_MULTIPLE)
+
+    rsp, values = gatt_dec_read_rsp(tuple_data[0])
+    logging.debug("%s %r %r", gattc_read_multiple_rsp.__name__, rsp, values)
+
+    if store_rsp or store_val:
+        global VERIFY_VALUES
+        VERIFY_VALUES = []
+
+        if store_rsp:
+            VERIFY_VALUES.append(att_rsp_str[rsp])
+
+        if store_val:
+            VERIFY_VALUES.append((binascii.hexlify(values[0])).upper())
 
 
 def gattc_read_multiple_rsp(store_val=False, store_rsp=False):
