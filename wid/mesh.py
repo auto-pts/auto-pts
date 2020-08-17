@@ -1033,7 +1033,6 @@ def hdl_wid_302(desc):
                  Lower Tester 2 sent.
     :return:
     """
-    sleep(5)
     return True
 
 
@@ -1178,7 +1177,6 @@ def hdl_wid_319(desc):
     :param desc: Click OK to send Mesh messages to IUT(Friend Node).
     :return:
     """
-    sleep(10)
     return True
 
 
@@ -1211,7 +1209,6 @@ def hdl_wid_327(desc):
                  Lower Tester 1 and IUT
     :return:
     """
-    time.sleep(5)
     return True
 
 
