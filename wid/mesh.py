@@ -258,6 +258,15 @@ def hdl_wid_21(desc):
     return '8000'
 
 
+def hdl_wid_22(desc):
+    """
+    Implements:
+    :param desc: Please bind an AppKey to a Model Id = 2 for the testing.
+    :return:
+    """
+    return True
+
+
 def hdl_wid_23(desc):
     """
     Implements: SEND_SEGMENTED_DATA
@@ -1225,6 +1234,26 @@ def hdl_wid_330(desc):
     return True
 
 
+def hdl_wid_332(desc):
+    """
+    Implements:
+    :param desc: Please send Heartbeat Publication Set message from Lower
+                 Tester 2 to IUT, and then send Friend Poll from IUT to Lower Tester 1.
+    :return:
+    """
+    return True
+
+
+def hdl_wid_333(desc):
+    """
+    Implements:
+    :param desc: Lower Tester 1 will now stop responding to Friend Poll from IUT.
+                 Please click OK when friendship is terminated.
+    :return:
+    """
+    return True
+
+
 def hdl_wid_335(desc):
     """
     Implements:
@@ -1410,10 +1439,28 @@ def hdl_wid_367(desc):
     return True
 
 
+def hdl_wid_368(desc):
+    """
+    Implements:
+    :param desc: Please confirm that IUT received the mesh packet to LT1.
+    :return:
+    """
+    return True
+
+
 def hdl_wid_500(desc):
     """
     Implements:
     :param desc: Waiting for Composition Data Get Request.
+    :return:
+    """
+    return True
+
+
+def hdl_wid_518(desc):
+    """
+    Implements:
+    :param desc: Please send AppKey Add.
     :return:
     """
     return True
@@ -1473,6 +1520,54 @@ def hdl_wid_557(desc):
     """
     Implements:
     :param desc: Please send Heartbeat message to Low Power Node address
+    :return:
+    """
+    return True
+
+
+def hdl_wid_560(desc):
+    """
+    Implements:
+    :param desc: Lower Tester 2 is waiting for IUT's heartbeat triggered by friendship termination.
+    :return:
+    """
+    btp.mesh_lpn(False)
+    return True
+
+
+def hdl_wid_561(desc):
+    """
+    Implements:
+    :param desc: Lower Tester 2 is waiting for IUT's heartbeat triggered by friendship establishment.
+    :return:
+    """
+    return True
+
+
+def hdl_wid_562(desc):
+    """
+    Implements:
+    :param desc: Friendship will be terminated between Lower Tester 1 and IUT. Verifying no heartbeat is triggered by the termination...
+    :return:
+    """
+    return True
+
+
+def hdl_wid_564(desc):
+    """
+    Implements:
+    :param desc: Please wait until Friendship is reestablished between Lower Tester 1 and IUT. Click OK to send Heartbeat Subscription Set message to IUT (Low Power Node).
+    :return:
+    """
+    return True
+
+
+def hdl_wid_563(desc):
+    """
+    Implements:
+    :param desc: Please wait until Friendship is established between Lower Tester
+                 1 and IUT. Click OK to send Heartbeat Subscription Set message
+                 to IUT (Low Power Node).
     :return:
     """
     return True
