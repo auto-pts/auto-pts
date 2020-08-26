@@ -305,12 +305,17 @@ Commands and responses:
 					Adv_Data (0-255 octets)
 					Scan_Rsp (0-255 octets)
 					Duration (4 octets)
-					Use own ID address (1 octet)
+					Own_Addr_Type (1 octet)
 		Return Parameters:	Current_Settings (4 Octets)
+
+		Valid Own_Addr_Type parameter values:
+					0x00 = Identity Address
+					0x01 = Resolvable Private Address
+					0x02 = Non-resolvabe Private Address
 
 		This command is used to start advertising.
 
-                Adv_Data and Scan_Rsp are a list of { AD_Type, AD_Len, AD_DATA } structures.
+		Adv_Data and Scan_Rsp are a list of { AD_Type, AD_Len, AD_DATA } structures.
 
 		When Duration parameter value equals UINT32_MAX then the
 		advertising duration is disabled.
@@ -368,12 +373,13 @@ Commands and responses:
 		Controller Index:	<controller id>
 		Command parameters:	Address_Type (1 octet)
 					Address (6 octets)
-					Use own ID address (1 octet)
+					Own_Addr_Type (1 octet)
 		Return Parameters:	<none>
 
-		Valid Address_Type parameter values:
-					0x00 = Public
-					0x01 = Random
+		Valid Own_Addr_Type parameter values:
+					0x00 = Identity Address
+					0x01 = Resolvable Private Address
+					0x02 = Non-resolvabe Private Address
 
 		This command is used to create a Link Layer connection with
 		remote device.
