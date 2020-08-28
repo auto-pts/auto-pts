@@ -545,9 +545,7 @@ def core_unreg_svc_rsp_succ():
 def core_log_message(message):
     logging.debug("%s", core_log_message.__name__)
 
-    message_data = bytearray(message)
-    data = struct.pack('H', len(message_data))
-    data.extend(message_data)
+    data = bytearray( struct.pack('H', len(message)) + message)
 
     iutctl = get_iut()
     iutctl.btp_socket.send(*CORE['log_message'], data=data)
