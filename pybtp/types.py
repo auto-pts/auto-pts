@@ -13,7 +13,7 @@
 # more details.
 #
 
-import defs
+from . import defs
 
 from binascii import unhexlify
 

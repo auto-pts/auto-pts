@@ -167,7 +167,7 @@ def hdl_wid_22(desc):
     parsed_args = []
 
     for arg in MMI.args:
-        parsed_args.append(filter(lambda char: char != "-", arg))
+        parsed_args.append([char for char in arg if char != "-"])
 
     handles = []
     uuids = []

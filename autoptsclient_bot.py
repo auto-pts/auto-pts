@@ -45,7 +45,7 @@ def main():
     for project in BotProjects:
         # TODO Solve the issue of overlapping jobs
         if 'scheduler' in project:
-            for day, time_ in project['scheduler'].items():
+            for day, time_ in list(project['scheduler'].items()):
                 weekdays2schedule[day].at(time_).do(
                     project2main[project['name']], project)
 

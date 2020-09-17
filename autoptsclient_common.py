@@ -23,11 +23,11 @@ import sys
 import random
 import socket
 import logging
-import xmlrpclib
-import Queue
+import xmlrpc.client
+import queue
 import threading
 from traceback import format_exception
-from SimpleXMLRPCServer import SimpleXMLRPCServer
+from xmlrpc.server import SimpleXMLRPCServer
 import time
 import datetime
 import argparse
@@ -86,12 +86,12 @@ class _Method:
     __str__ = __repr__
 
 
-xmlrpclib._Method = _Method
+xmlrpc.client._Method = _Method
 
 
 class ClientCallback(PTSCallback):
     def __init__(self):
-        self.exception = Queue.Queue()
+        self.exception = queue.Queue()
         self._pending_responses = {}
 
     def error_code(self):
@@ -106,7 +106,7 @@ class ClientCallback(PTSCallback):
 
         try:
             exc = self.exception.get_nowait()
-        except Queue.Empty:
+        except queue.Empty:
             pass
         else:
             error_code = get_error_code(exc)
@@ -186,7 +186,7 @@ class ClientCallback(PTSCallback):
             test_case_name = test_case_name.lstrip()
 
             log("Calling test cases on_implicit_send")
-            caller_pts_id = RUNNING_TEST_CASE.keys().index(test_case_name)
+            caller_pts_id = list(RUNNING_TEST_CASE.keys()).index(test_case_name)
 
             testcase_response \
                 = RUNNING_TEST_CASE[test_case_name].on_implicit_send(
@@ -375,7 +375,7 @@ def init_pts_thread_entry(proxy, local_address, local_port, workspace_path,
 
     sys.stdout.flush()
     proxy.restart_pts()
-    print "(%r) OK" % (id(proxy),)
+    print("(%r) OK" % (id(proxy),))
 
     proxy.callback_thread = CallbackThread(local_port)
     proxy.callback_thread.start()
@@ -423,11 +423,11 @@ def init_pts(args, tc_db_table_name=None):
         if AUTO_PTS_LOCAL:
             proxy = FakeProxy()
         else:
-            proxy = xmlrpclib.ServerProxy(
+            proxy = xmlrpc.client.ServerProxy(
                 "http://{}:{}/".format(server_addr, SERVER_PORT),
                 allow_none=True,)
 
-        print "(%r) Starting PTS %s ..." % (id(proxy), server_addr)
+        print("(%r) Starting PTS %s ..." % (id(proxy), server_addr))
 
         thread = threading.Thread(target=init_pts_thread_entry,
                                   args=(proxy, local_addr, local_port, args.workspace,
@@ -489,8 +489,8 @@ class TestCaseRunStats(object):
             if self.est_duration:
                 approx = str(datetime.timedelta(seconds=self.est_duration))
 
-                print("Number of test cases to run: '%d' in approximately: "
-                      "'%s'\n" % (self.num_test_cases, approx))
+                print(("Number of test cases to run: '%d' in approximately: "
+                      "'%s'\n" % (self.num_test_cases, approx)))
         else:
             self.est_duration = 0
 
@@ -566,7 +566,7 @@ class TestCaseRunStats(object):
 
     def print_summary(self):
         """Prints test case list status summary"""
-        print "\nSummary:\n"
+        print("\nSummary:\n")
 
         status_str = "Status"
         status_str_len = len(status_str)
@@ -590,7 +590,7 @@ class TestCaseRunStats(object):
             status_just = max(status_just, regressions_str_len)
             count_just = max(count_just, regressions_count_str_len)
 
-        for status, count in status_count.items():
+        for status, count in list(status_count.items()):
             status_just = max(status_just, len(status))
             count_just = max(count_just, len(str(count)))
 
@@ -598,23 +598,23 @@ class TestCaseRunStats(object):
             title_str = status_str.ljust(status_just) + "Count".rjust(count_just)
             border = "=" * (status_just + count_just)
 
-        print title_str
-        print border
+        print(title_str)
+        print(border)
 
         # print each status and count
         for status in sorted(status_count.keys()):
             count = status_count[status]
-            print status.ljust(status_just) + str(count).rjust(count_just)
+            print(status.ljust(status_just) + str(count).rjust(count_just))
 
         # print total
-        print border
-        print "Total".ljust(status_just) + num_test_cases_str.rjust(count_just)
+        print(border)
+        print("Total".ljust(status_just) + num_test_cases_str.rjust(count_just))
 
         if regressions_count != 0:
-            print border
+            print(border)
 
-        print(regressions_str.ljust(status_just) +
-              str(regressions_count).rjust(count_just))
+        print((regressions_str.ljust(status_just) +
+              str(regressions_count).rjust(count_just)))
 
 
 def run_test_case_wrapper(func):
@@ -631,11 +631,11 @@ def run_test_case_wrapper(func):
         margin = stats.margin
         index = stats.index
 
-        print (str(index + 1).rjust(num_test_cases_width) +
+        print((str(index + 1).rjust(num_test_cases_width) +
                "/" +
                str(num_test_cases).ljust(num_test_cases_width + margin) +
                test_case_name.split('/')[0].ljust(max_project_name + margin) +
-               test_case_name.ljust(max_test_case_name + margin - 1)),
+               test_case_name.ljust(max_test_case_name + margin - 1)), end=' ')
         sys.stdout.flush()
 
         start_time = time.time()
@@ -665,7 +665,7 @@ def run_test_case_wrapper(func):
 
         if sys.stdout.isatty():
             output_color = get_result_color(status)
-            print(colored((result), output_color))
+            print((colored((result), output_color)))
         else:
             print(result)
 
@@ -684,7 +684,7 @@ def get_error_code(exc):
     elif isinstance(exc, socket.timeout):
         error_code = ptstypes.E_BTP_TIMEOUT
 
-    elif isinstance(exc, xmlrpclib.Fault):
+    elif isinstance(exc, xmlrpc.client.Fault):
         error_code = ptstypes.E_XML_RPC_ERROR
 
     elif error_code is None:
@@ -704,7 +704,7 @@ def synchronize_instances(state, break_state=None):
         time.sleep(1)
         match = True
 
-        for tc in RUNNING_TEST_CASE.itervalues():
+        for tc in RUNNING_TEST_CASE.values():
             if tc.state != state:
                 if break_state and tc.state in break_state:
                     raise SynchError

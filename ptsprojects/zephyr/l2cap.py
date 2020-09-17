@@ -252,17 +252,17 @@ def main():
     test_cases_ = test_cases("AB:CD:EF:12:34:56")
 
     for test_case in test_cases_:
-        print
-        print test_case
+        print()
+        print(test_case)
 
         if test_case.edit1_wids:
-            print "edit1_wids: %r" % test_case.edit1_wids
+            print("edit1_wids: %r" % test_case.edit1_wids)
 
         if test_case.verify_wids:
-            print "verify_wids: %r" % test_case.verify_wids
+            print("verify_wids: %r" % test_case.verify_wids)
 
         for index, cmd in enumerate(test_case.cmds):
-            print "%d) %s" % (index, cmd)
+            print("%d) %s" % (index, cmd))
 
 
 if __name__ == "__main__":

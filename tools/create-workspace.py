@@ -176,9 +176,9 @@ def patch_workspace_file(workspace_file):
 
         # pristine workspace file does not have newline at end of file
         if fileinput.filelineno() == line_count:
-            print line,
+            print(line, end=' ')
         else:
-            print line
+            print(line)
 
 
 def init_logging():
@@ -206,7 +206,7 @@ def main():
     workspace_path = os.path.abspath(args.workspace_path)
 
     if args.iut_bd_addr:
-        iut_bd_addr = long(args.iut_bd_addr, base=16)
+        iut_bd_addr = int(args.iut_bd_addr, base=16)
     else:
         iut_bd_addr = 0xABCDEF1234
 

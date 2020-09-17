@@ -113,12 +113,12 @@ class Completer:
         else:
             # first word
             if begin == 0:
-                candidates = [word + " " for word in self.options.keys()]
+                candidates = [word + " " for word in list(self.options.keys())]
 
             # later word
             else:
                 first = words[0]
-                candidates = self.options[first].sub_cmds.keys()
+                candidates = list(self.options[first].sub_cmds.keys())
 
             # match options with portion of input being completed
             if being_completed:
@@ -249,15 +249,15 @@ class StartZephyrCmd(Cmd):
         global QEMU_PROCESS
 
         if QEMU_PROCESS:
-            print "Zephyr is already up and running"
+            print("Zephyr is already up and running")
             return
 
         if not os.path.isfile(kernel_image):
-            print "QEMU kernel image %s not found!" % repr(kernel_image)
+            print("QEMU kernel image %s not found!" % repr(kernel_image))
             return
 
         if not find_executable('xterm'):
-            print "xterm is needed but not found!"
+            print("xterm is needed but not found!")
             return
 
         qemu_cmd = get_qemu_cmd(kernel_image)
@@ -296,7 +296,7 @@ class StopZephyrCmd(Cmd):
         global QEMU_PROCESS
 
         if not QEMU_PROCESS:
-            print "Zephyr is not running"
+            print("Zephyr is not running")
             return
 
         if QEMU_PROCESS:
@@ -378,7 +378,7 @@ class DisconnectCmd(Cmd):
             return
 
         conn_clean()
-        print "Connection cleared"
+        print("Connection cleared")
 
 
 class CoreCmd(Cmd):
@@ -390,7 +390,7 @@ class CoreCmd(Cmd):
         self.help.build(
             short_help="Send core command to BTP tester",
             synopsis="%s [command]" % self.name,
-            sub_cmds=self.sub_cmds.keys())
+            sub_cmds=list(self.sub_cmds.keys()))
 
     def run(self, *cmd):
         if not cmd:
@@ -408,7 +408,7 @@ class GapCmd(Cmd):
         self.help.build(
             short_help="Send GAP command to BTP tester",
             synopsis="%s [command]" % self.name,
-            sub_cmds=self.sub_cmds.keys())
+            sub_cmds=list(self.sub_cmds.keys()))
 
     def run(self, *cmd):
         if not cmd:
@@ -426,7 +426,7 @@ class GattsCmd(Cmd):
         self.help.build(
             short_help="Send GATT server command to BTP tester",
             synopsis="%s [command]" % self.name,
-            sub_cmds=self.sub_cmds.keys())
+            sub_cmds=list(self.sub_cmds.keys()))
 
     def run(self, *cmd):
         if not cmd:
@@ -444,7 +444,7 @@ class GattcCmd(Cmd):
         self.help.build(
             short_help="Send GATT client command to BTP tester",
             synopsis="%s [command]" % self.name,
-            sub_cmds=self.sub_cmds.keys())
+            sub_cmds=list(self.sub_cmds.keys()))
 
     def run(self, *cmd):
         if not cmd:
@@ -462,7 +462,7 @@ class L2capCmd(Cmd):
         self.help.build(
             short_help="Send L2CAP command to BTP tester",
             synopsis="%s [command]" % self.name,
-            sub_cmds=self.sub_cmds.keys())
+            sub_cmds=list(self.sub_cmds.keys()))
 
     def run(self, *cmd):
         if not cmd:
@@ -508,7 +508,7 @@ class HelpCmd(Cmd):
         self.help.short = short_help
 
         cmds = {cmd.name: cmd.help.short
-                for cmd_name, cmd in self.sub_cmds.iteritems()}
+                for cmd_name, cmd in self.sub_cmds.items()}
 
         self.help.build(
             short_help=short_help,
@@ -522,14 +522,14 @@ class HelpCmd(Cmd):
             self.__build_help()
 
         if not cmd_name:
-            print self.help_long()
+            print(self.help_long())
             return
 
         try:
-            print self.sub_cmds[cmd_name].help_long()
+            print(self.sub_cmds[cmd_name].help_long())
         except KeyError:
-            print "%r is not a valid command!" % cmd_name
-            print self.help.available_sub_cmds
+            print("%r is not a valid command!" % cmd_name)
+            print(self.help.available_sub_cmds)
 
 
 def exec_cmd(choice, params, cmds_dict):
@@ -545,15 +545,15 @@ def exec_cmd(choice, params, cmds_dict):
     except KeyError:
         help_cmd.run(cmd_name)  # invalid command
     except TypeError as e:
-        print "Please enter correct arguments to command!\n"
+        print("Please enter correct arguments to command!\n")
         logging.debug(e)
         help_cmd.run(cmd_name)
     except socket.timeout as e:
-        print "socket timeout: %s\n" % e
+        print("socket timeout: %s\n" % e)
     except socket.error as e:
-        print "socket error: %s\n" % e
+        print("socket error: %s\n" % e)
     except SyntaxWarning as e:
-        print e
+        print(e)
 
 
 def parse_service_id(svc_id):
@@ -568,10 +568,10 @@ def parse_service_id(svc_id):
         raise SyntaxWarning("Wrong service ID format, possible values: ",
                             service_ids)
 
-    if int_svc_id not in service_ids.values():
+    if int_svc_id not in list(service_ids.values()):
         raise SyntaxWarning(
             "Given service ID %c not supported, supported are %s!" %
-            (int_svc_id, repr(service_ids.values())))
+            (int_svc_id, repr(list(service_ids.values()))))
 
     return int_svc_id
 
@@ -630,7 +630,7 @@ def send(svc_id, op, ctrl_index, data=""):
     except socket.error as serr:
         if serr.errno == errno.EPIPE:
             conn_clean()
-            print "error: Connection error, please connect btp again"
+            print("error: Connection error, please connect btp again")
             return
 
     receive(int_svc_id, int_op)
@@ -662,28 +662,28 @@ def print_controller_info(data):
     def get_settings_names(settings):
         """Return settings in human-readable format"""
         settings_names = []
-        for i in settings2txt.keys():
+        for i in list(settings2txt.keys()):
             if settings & (1 << i):
                 settings_names.append(settings2txt[i])
         return " ".join(settings_names)
 
     fmt = '<6sII3s249s11s'
     if len(data) < struct.calcsize(fmt):
-        print "Invalid data length"
+        print("Invalid data length")
         return
 
     (address, supported_settings, current_settings, class_of_device, name,
      short_name) = struct.unpack_from(fmt, data)
 
     address = binascii.hexlify(address[::-1]).upper()
-    print "IUT BD_ADDR: %r" % address
-    print "Supported Settings: %r %s" % \
-        (supported_settings, get_settings_names(supported_settings))
-    print "Current Settings: %r %s" % \
-        (current_settings, get_settings_names(current_settings))
-    print "Class Of Device: %r" % class_of_device
-    print "Name: '%s'" % name
-    print "Short Name: '%s'" % short_name
+    print("IUT BD_ADDR: %r" % address)
+    print("Supported Settings: %r %s" % \
+        (supported_settings, get_settings_names(supported_settings)))
+    print("Current Settings: %r %s" % \
+        (current_settings, get_settings_names(current_settings)))
+    print("Class Of Device: %r" % class_of_device)
+    print("Name: '%s'" % name)
+    print("Short Name: '%s'" % short_name)
 
 
 def receive(exp_svc_id=None, exp_op=None):
@@ -699,20 +699,20 @@ def receive(exp_svc_id=None, exp_op=None):
     try:
         tuple_hdr, tuple_data = BTP_SOCKET.read()
     except KeyboardInterrupt:
-        print "\nReceive interrupted!"
+        print("\nReceive interrupted!")
         return
 
     # default __repr__ of namedtuple does not print hex
-    print (
+    print((
         "Received header(svc_id=%d, op=0x%.2x, ctrl_index=%d, data_len=%d)" %
         (tuple_hdr.svc_id, tuple_hdr.op, tuple_hdr.ctrl_index,
-         tuple_hdr.data_len))
+         tuple_hdr.data_len)))
 
     hex_str = binascii.hexlify(tuple_data[0])
     hex_str_byte = " ".join(hex_str[i:i + 2]
                             for i in range(0, len(hex_str), 2))
-    print "Received data (hex): %s" % hex_str_byte
-    print "Received data (ascii):", tuple_data
+    print("Received data (hex): %s" % hex_str_byte)
+    print("Received data (ascii):", tuple_data)
 
     if exp_svc_id is None and exp_op is None:
         return
@@ -720,17 +720,17 @@ def receive(exp_svc_id=None, exp_op=None):
     try:
         btp.btp_hdr_check(tuple_hdr, exp_svc_id, exp_op)
     except btp.BTPError as err:
-        print red("%s\nExpected svc_id=%s, op=0x%.2x" %
-                  (err.message, exp_svc_id, exp_op))
+        print(red("%s\nExpected svc_id=%s, op=0x%.2x" %
+                  (err.message, exp_svc_id, exp_op)))
         return
 
     if tuple_hdr.svc_id == defs.BTP_SERVICE_ID_GAP:
         if tuple_hdr.op == defs.GAP_EV_PASSKEY_DISPLAY:
             passkey = struct.unpack('I', tuple_data[0][7:11])[0]
-            print "Passkey:", passkey
+            print("Passkey:", passkey)
         if tuple_hdr.op == defs.GAP_READ_CONTROLLER_INFO:
             print_controller_info(tuple_data[0])
-    print green("OK")
+    print(green("OK"))
 
 
 def listen():
@@ -738,18 +738,18 @@ def listen():
     logging.debug("%s", listen.__name__)
 
     if BTP_SOCKET.conn is not None:
-        print "btpclient is already connected to btp server"
+        print("btpclient is already connected to btp server")
         return
 
     BTP_SOCKET.open()
-    print "created fd %s, listening..." % BTP_ADDRESS
+    print("created fd %s, listening..." % BTP_ADDRESS)
 
     try:
         BTP_SOCKET.accept(None)
-        print "btp server connected successfully"
+        print("btp server connected successfully")
 
     except KeyboardInterrupt:
-        print "\nListen interrupted!"
+        print("\nListen interrupted!")
 
 
 def generic_srvc_cmd_handler(svc, cmd):
@@ -760,7 +760,7 @@ def generic_srvc_cmd_handler(svc, cmd):
     btp_cmd = svc[cmd[0]]
 
     if len(btp_cmd) == 0:
-        print "Command not yet defined"
+        print("Command not yet defined")
         return
 
     frame = []
@@ -794,7 +794,7 @@ def conn_check():
         return False
 
     if BTP_SOCKET.conn is None:
-        print "error: btp client is not connected"
+        print("error: btp client is not connected")
         return False
 
     return True
@@ -812,7 +812,7 @@ def cmd_loop(cmds_dict):
                              rl_prompt_ignore(sgr_reset))
 
     while True:
-        input = raw_input(prompt)
+        input = input(prompt)
 
         if input == '':
             continue
@@ -831,7 +831,7 @@ def exec_cmds_file(filename, cmds_dict):
     with the hash character.
 
     """
-    print "Running commands from file"
+    print("Running commands from file")
 
     if not os.path.isfile(filename):
         sys.exit("Commands file %r does not exits!" % filename)
@@ -846,11 +846,11 @@ def exec_cmds_file(filename, cmds_dict):
         choice = words[0]
         params = words[1:]
 
-        print "\n" + line
+        print("\n" + line)
 
         exec_cmd(choice, params, cmds_dict)
 
-    print "\nDone running commands from file"
+    print("\nDone running commands from file")
 
 
 def parse_args():

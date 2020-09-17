@@ -569,7 +569,6 @@ class SynchElem:
                             item.test_case == test_case and item.wid == wid]
         if matching_items:
             return matching_items[0]
-
         return None
 
     def is_ready(self):
@@ -594,6 +593,7 @@ class Synch:
 
     def perform_synch(self, wid, tc_name, description):
         found_element = None
+        # Clean the remaining element descriptions with the same e_wid
 
         for i, elem in enumerate(self._synch_table):
             tc_item = elem.find_matching(tc_name, wid)

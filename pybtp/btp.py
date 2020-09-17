@@ -22,10 +22,10 @@ import re
 import socket
 from threading import Timer, Event
 
-import defs
-from types import BTPError, gap_settings_btp2txt, addr2btp_ba, Addr, OwnAddrType, AdDuration
+from . import defs
+from .types import BTPError, gap_settings_btp2txt, addr2btp_ba, Addr, OwnAddrType, AdDuration
 from pybtp.types import Perm
-from iutctl_common import set_event_handler
+from .iutctl_common import set_event_handler
 from random import randint
 from collections import namedtuple
 from uuid import UUID
@@ -604,13 +604,13 @@ def gap_adv_ind_on(ad={}, sd={}, duration=AdDuration.forever, own_addr_type=OwnA
     ad_ba = bytearray()
     sd_ba = bytearray()
 
-    for ad_type, ad_data in ad.iteritems():
+    for ad_type, ad_data in ad.items():
         data = binascii.unhexlify(bytearray(ad_data))
         ad_ba.extend(chr(ad_type))
         ad_ba.extend(chr(len(data)))
         ad_ba.extend(data)
 
-    for sd_type, sd_data in sd.iteritems():
+    for sd_type, sd_data in sd.items():
         data = binascii.unhexlify(bytearray(sd_data))
         sd_ba.extend(chr(sd_type))
         sd_ba.extend(chr(len(data)))

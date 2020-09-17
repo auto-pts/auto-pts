@@ -17,7 +17,7 @@ import logging
 import socket
 import sys
 
-from gatt_wid import gatt_wid_hdl
+from .gatt_wid import gatt_wid_hdl
 from ptsprojects.testcase import MMI
 from pybtp import btp
 
