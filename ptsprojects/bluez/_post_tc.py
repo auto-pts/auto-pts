@@ -33,14 +33,14 @@ def remove_paired_devices():
         print("No device paired")
         return
 
-    print(("stdout: %s" % stdout))
-    print(("stderr: %s" % stderr))
+    print("stdout: %s" % stdout)
+    print("stderr: %s" % stderr)
 
     dev_list = stdout.splitlines()
     for dev in dev_list:
         info = dev.split()
-        print(("info: %s" % info))
-        print(("info[1]: %s" % info[1]))
+        print("info: %s" % info)
+        print("info[1]: %s" % info[1])
 
         subprocess.Popen(['bluetoothctl', 'remove', info[1]],
                          shell=False,

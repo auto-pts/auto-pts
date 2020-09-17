@@ -37,7 +37,7 @@ def reset_controler():
 
     (stdoutdata, stderrdata) = CONFIG_PROC.communicate()
 
-    print((stdoutdata, stderrdata))
+    print(stdoutdata, stderrdata)
 
 
 def main():

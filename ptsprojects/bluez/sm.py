@@ -288,13 +288,13 @@ def main():
         print(test_case)
 
         if test_case.edit1_wids:
-            print("edit1_wids: %r" % test_case.edit1_wids)
+            print("edit1_wids: ", test_case.edit1_wids)
 
         if test_case.verify_wids:
-            print("verify_wids: %r" % test_case.verify_wids)
+            print("verify_wids: ", test_case.verify_wids)
 
         for index, cmd in enumerate(test_case.cmds):
-            print("%d) %s" % (index, cmd))
+            print(index, cmd)
 
 
 if __name__ == "__main__":
