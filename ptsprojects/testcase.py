@@ -780,7 +780,7 @@ class TestCase(PTSCallback):
         if self.tc_subproc is not None:
             log("%s, cleanup running pre test case script" %
                 self.post_run.__name__)
-            self.tc_subproc.communicate(input='#close\n')
+            self.tc_subproc.communicate(input=b'#close\n')
             self.lf_subproc.close()
 
         subproc_dir = (os.path.dirname(os.path.realpath(__file__)) + "/" +
@@ -798,7 +798,7 @@ class TestCase(PTSCallback):
                                                stdout=self.lf_subproc,
                                                stderr=self.lf_subproc)
 
-            self.tc_subproc.communicate(input='#close\n')
+            self.tc_subproc.communicate(input=b'#close\n')
             self.lf_subproc.close()
 
 

@@ -111,7 +111,10 @@ class Gap:
         self.sd = {}
 
         if name:
-            self.ad[AdType.name_short] = hexlify(name)
+            if isinstance(name, bytes):
+                self.ad[AdType.name_short] = name
+            else:
+                self.ad[AdType.name_short] = name.encode('utf-8')
 
         if manufacturer_data:
             self.sd[AdType.manufacturer_data] = manufacturer_data
@@ -216,9 +219,9 @@ class Gap:
             return False
 
     def iut_addr_get_str(self):
-        addr = self.iut_bd_addr.data["address"]
+        addr = self.iut_bd_addr.data["address"].decode("utf-8")
         if addr:
-            return str(addr)
+            return addr
         else:
             return ""
 
@@ -369,7 +372,7 @@ class L2capChan:
 
     def is_connected(self, timeout):
         state = self._get_state(timeout)
-        if state is "connected":
+        if state == "connected":
             return True
         return False
 

@@ -43,7 +43,7 @@ class TestCaseTable(object):
             mean = 0
 
         count += 1
-        mean += (duration - mean) / count
+        mean += (duration - mean) // count
 
         self.cursor.execute(
             "UPDATE {} SET duration=:duration, count=:count, result=:result "
@@ -98,7 +98,7 @@ class TestCaseTable(object):
                 duration += mean_time * expected_run_count
 
         if (num_test_cases - count_unknown) != 0:
-            duration += count_unknown * duration / (num_test_cases - count_unknown)
+            duration += count_unknown * duration // (num_test_cases - count_unknown)
 
         return duration
 

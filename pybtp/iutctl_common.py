@@ -103,26 +103,19 @@ class BTPSocket(object):
             data_memview = data_memview[nbytes:]
             toread_data_len -= nbytes
 
-        tuple_data = dec_data(data)
+        tuple_data = bytes(str(dec_data(data)), 'utf-8').decode("unicode_escape").replace("b'", "'")
+
         log("Received data: %r, %r", tuple_data, data)
         self.conn.settimeout(None)
-
-        return tuple_hdr, tuple_data
+        return tuple_hdr, dec_data(data)
 
     def send(self, svc_id, op, ctrl_index, data):
         """Send BTP formated data over socket"""
         logging.debug("%s, %r %r %r %r",
-                      self.send.__name__, svc_id, op, ctrl_index, data)
+                      self.send.__name__, svc_id, op, ctrl_index, str(data))
 
-        if isinstance(data, int):
-            data = str(data)
-            if len(data) == 1:
-                data = "0%s" % data
-                data = binascii.unhexlify(data)
-
-        hex_data = binascii.hexlify(data)
-        logging.debug("btpclient command: send %d %d %d %s",
-                      svc_id, op, ctrl_index, hex_data)
+        logging.debug("btpclient command: send %d %d %d %r",
+                      svc_id, op, ctrl_index, str(data))
 
         bin = enc_frame(svc_id, op, ctrl_index, data)
 
