@@ -109,13 +109,13 @@ def main():
 
     c = wmi.WMI()
     for iface in c.Win32_NetworkAdapterConfiguration(IPEnabled=True):
-        print(("Local IP address: %s DNS %r" % (iface.IPAddress, iface.DNSDomain)))
+        print("Local IP address: %s DNS %r" % (iface.IPAddress, iface.DNSDomain))
 
     print("Starting PTS ...")
     pts = PyPTSWithXmlRpcCallback()
     print("OK")
 
-    print(("Serving on port {} ...".format(SERVER_PORT)))
+    print("Serving on port {} ...".format(SERVER_PORT))
 
     server = xmlrpc.server.SimpleXMLRPCServer(("", SERVER_PORT), allow_none=True)
     server.register_instance(pts)

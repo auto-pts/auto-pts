@@ -621,7 +621,7 @@ def main():
             print("verify_wids: %r" % test_case.verify_wids)
 
         for index, cmd in enumerate(test_case.cmds):
-            print("%d) %s" % (index, cmd))
+            print("(%d) %s" % (index, cmd))
 
 
 if __name__ == "__main__":

@@ -853,10 +853,10 @@ def main():
         print(test_case)
 
         if test_case.edit1_wids:
-            print("edit1_wids: %r" % test_case.edit1_wids)
+            print(("edit1_wids: %r" % test_case.edit1_wids))
 
         if test_case.verify_wids:
-            print("verify_wids: %r" % test_case.verify_wids)
+            print(("verify_wids: %r" % test_case.verify_wids))
 
         for index, cmd in enumerate(test_case.cmds):
             str_cmd = str(cmd)
@@ -868,7 +868,7 @@ def main():
                 elif cmd.func == btp.gatts_add_desc:
                     str_cmd += ", Permissions: %s" % Perm.decode(cmd.args[1])
 
-            print("%d) %s" % (index, str_cmd))
+            print(("%d) %s" % (index, str_cmd)))
 
 
 if __name__ == "__main__":

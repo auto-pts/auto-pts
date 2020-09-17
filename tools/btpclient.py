@@ -703,10 +703,10 @@ def receive(exp_svc_id=None, exp_op=None):
         return
 
     # default __repr__ of namedtuple does not print hex
-    print((
+    print(
         "Received header(svc_id=%d, op=0x%.2x, ctrl_index=%d, data_len=%d)" %
         (tuple_hdr.svc_id, tuple_hdr.op, tuple_hdr.ctrl_index,
-         tuple_hdr.data_len)))
+         tuple_hdr.data_len))
 
     hex_str = binascii.hexlify(tuple_data[0])
     hex_str_byte = " ".join(hex_str[i:i + 2]

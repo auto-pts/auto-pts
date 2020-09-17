@@ -489,8 +489,7 @@ class TestCaseRunStats(object):
             if self.est_duration:
                 approx = str(datetime.timedelta(seconds=self.est_duration))
 
-                print(("Number of test cases to run: '%d' in approximately: "
-                      "'%s'\n" % (self.num_test_cases, approx)))
+                print("Number of test cases to run: ", self.num_test_cases, " in approximately: ", approx)
         else:
             self.est_duration = 0
 
@@ -613,8 +612,8 @@ class TestCaseRunStats(object):
         if regressions_count != 0:
             print(border)
 
-        print((regressions_str.ljust(status_just) +
-              str(regressions_count).rjust(count_just)))
+        print(regressions_str.ljust(status_just) +
+              str(regressions_count).rjust(count_just))
 
 
 def run_test_case_wrapper(func):
@@ -665,7 +664,7 @@ def run_test_case_wrapper(func):
 
         if sys.stdout.isatty():
             output_color = get_result_color(status)
-            print((colored((result), output_color)))
+            print(colored(result, output_color))
         else:
             print(result)
 
