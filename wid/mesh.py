@@ -67,7 +67,7 @@ def mesh_wid_hdl(wid, description, test_case_name):
         return "WAIT"
 
     except AttributeError as e:
-        logging.exception(e.message)
+        logging.exception(e)
 
 
 # wid handlers section begin

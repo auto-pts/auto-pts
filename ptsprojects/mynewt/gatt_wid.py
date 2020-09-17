@@ -39,7 +39,7 @@ def gatt_wid_hdl(wid, description, test_case_name):
         handler = getattr(module, "hdl_wid_%d" % wid)
         return handler(description)
     except AttributeError as e:
-        logging.exception(e.message)
+        logging.exception(e)
 
 
 # wid handlers section begin

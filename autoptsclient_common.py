@@ -754,7 +754,7 @@ def run_test_case_thread_entry(pts, test_case):
             error_code = thread_error
 
     except Exception as error:
-        logging.exception(error.message)
+        logging.exception(error)
         error_code = get_error_code(error)
 
     except BaseException:
