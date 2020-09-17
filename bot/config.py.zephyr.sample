@@ -30,7 +30,7 @@ z['auto_pts'] = {
     'client_port': 65001,
     'local_ip' : ['192.168.0.100'],
     'project_path': '/path/to/project',
-    'workspace': 'zephyr-hci',
+    'workspace': 'zephyr-master',
     'board': 'nrf52',
     'enable_max_logs': False,
     'retry': 2,
@@ -41,7 +41,7 @@ z['auto_pts'] = {
 # Git repositories configuration
 # ****************************************************************************
 z['git'] = {
-    'repo1': {
+    'zephyr': {
         'path': 'path/to/repo',
         'remote': 'origin',
         'branch': 'master',
