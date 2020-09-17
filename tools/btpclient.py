@@ -721,7 +721,7 @@ def receive(exp_svc_id=None, exp_op=None):
         btp.btp_hdr_check(tuple_hdr, exp_svc_id, exp_op)
     except btp.BTPError as err:
         print(red("%s\nExpected svc_id=%s, op=0x%.2x" %
-                  (err.message, exp_svc_id, exp_op)))
+                  (err, exp_svc_id, exp_op)))
         return
 
     if tuple_hdr.svc_id == defs.BTP_SERVICE_ID_GAP:
