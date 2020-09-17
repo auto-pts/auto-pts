@@ -127,19 +127,19 @@ Description: Verify that the Implementation Under Test (IUT) can send Discover a
 ]
 
 
-print "Descriptions:"
+print("Descriptions:")
 for item in descriptions:
-    print item, "\n"
+    print(item, "\n")
 
-print "\nInitiating parsing"
+print("\nInitiating parsing")
 
 MMI = MmiParser()
 
 for item in descriptions:
     description, args = item
-    print "\nParsing: %r\nExpecting: %r" % (description, args)
+    print("\nParsing: %r\nExpecting: %r" % (description, args))
     MMI.parse_description(description)
-    print "Got:", 5 * " ", MMI.args
+    print("Got:", 5 * " ", MMI.args)
     assert args == MMI.args, \
         "Error parsing description found=%r, expected=%r" % (MMI.args, args)
-    print "OK"
+    print("OK")

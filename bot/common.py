@@ -13,7 +13,7 @@
 # more details.
 #
 
-from __future__ import print_function
+
 import os
 import sys
 import mimetypes
@@ -253,7 +253,7 @@ class Drive(GDrive):
 
     def new_workdir(self, iut):
         files = self.ls()
-        if iut in files.keys():
+        if iut in list(files.keys()):
             dir_ = files[iut]
         else:
             dir_ = self.mkdir(iut)
@@ -298,10 +298,10 @@ def make_report_xlsx(results_dict, status_dict, regressions_list,
     row = 3
     col = 0
 
-    for k, v in results_dict.items():
+    for k, v in list(results_dict.items()):
         worksheet.write(row, col, k)
         worksheet.write(row, col + 1, v)
-        if k in descriptions.keys():
+        if k in list(descriptions.keys()):
             worksheet.write(row, col + 2, descriptions[k])
         if k in regressions_list:
             worksheet.write(row, col + 3, "REGRESSION")
@@ -358,7 +358,7 @@ def make_report_txt(results_dict, zephyr_hash):
     f = open(filename, "w")
 
     f.write("%s\n" % zephyr_hash)
-    for tc, result in results_dict.items():
+    for tc, result in list(results_dict.items()):
         # The frist id in the test case is test group
         tg = tc.split('/')[0]
         f.write("%s\t%s\t%s\n" % (tg, tc, result))
@@ -428,7 +428,7 @@ def update_repos(project_path, git_config):
     project_path = os.path.abspath(project_path)
     repos_dict = {}
 
-    for repo, conf in git_config.iteritems():
+    for repo, conf in git_config.items():
         repo_dict = {}
         if not os.path.isabs(conf["path"]):
             repo_path = os.path.join(project_path, conf["path"])

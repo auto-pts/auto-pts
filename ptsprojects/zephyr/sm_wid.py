@@ -19,7 +19,7 @@ import re
 
 from ptsprojects.stack import get_stack
 from pybtp import btp
-from iutctl import get_iut
+from .iutctl import get_iut
 
 log = logging.debug
 

@@ -88,10 +88,10 @@ def main():
     test_cases_ = test_cases(pts)
 
     for test_case in test_cases_:
-        print
-        print test_case
+        print()
+        print(test_case)
         for cmd in test_case.cmds:
-            print cmd
+            print(cmd)
 
 
 if __name__ == "__main__":

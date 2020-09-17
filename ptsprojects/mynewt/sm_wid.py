@@ -18,7 +18,7 @@ import re
 import sys
 from time import sleep
 
-from iutctl import get_iut
+from .iutctl import get_iut
 from ptsprojects.stack import get_stack
 from pybtp import btp
 

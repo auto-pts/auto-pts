@@ -71,11 +71,10 @@ def source_zephyr_env(zephyr_wd):
 
     lines = p.stdout.readlines()
     # XXX: Doesn't parse functions for now
-    filtered_lines = filter(lambda x: (not x.startswith(('BASH_FUNC',
-                                                         ' ', '}'))), lines)
-    pairs = map(lambda l: l.decode('UTF-8').rstrip().split('=', 1),
-                filtered_lines)
-    valid_pairs = filter(_validate_pair, pairs)
+    filtered_lines = [x for x in lines if (not x.startswith(('BASH_FUNC',
+                                                         ' ', '}')))]
+    pairs = [l.decode('UTF-8').rstrip().split('=', 1) for l in filtered_lines]
+    valid_pairs = list(filter(_validate_pair, pairs))
     env = dict(valid_pairs)
     p.communicate()
 
@@ -147,7 +146,7 @@ def apply_overlay(zephyr_wd, base_conf, cfg_name, overlay):
                     config.write(line)
 
             # apply what's left
-            for k, v in overlay.items():
+            for k, v in list(overlay.items()):
                 config.write("{}={}\n".format(k, v))
 
     os.chdir(cwd)
@@ -179,7 +178,7 @@ def get_tty_path(name):
         device, serial = line.decode().rstrip().split(" ")
         serial_devices[device] = serial
 
-    for device, serial in serial_devices.items():
+    for device, serial in list(serial_devices.items()):
         if name in device:
             tty = os.path.basename(serial)
             return "/dev/{}".format(tty)
@@ -232,7 +231,7 @@ def run_tests(args, iut_config):
     config_default = "prj.conf"
     _args[config_default] = PtsInitArgs(args)
 
-    for config, value in iut_config.items():
+    for config, value in list(iut_config.items()):
         if 'test_cases' not in value:
             # Rename default config
             _args[config] = _args.pop(config_default)
@@ -261,7 +260,7 @@ def run_tests(args, iut_config):
     stack_inst = stack.get_stack()
     stack_inst.synch_init([pts.callback_thread for pts in ptses])
 
-    for config, value in iut_config.items():
+    for config, value in list(iut_config.items()):
         if 'overlay' in value:
             apply_overlay(args["project_path"], config_default, config,
                           value['overlay'])
@@ -289,8 +288,8 @@ def run_tests(args, iut_config):
             ptses, test_cases, _args[config])
         total_regressions += regressions
 
-        for k, v in status_count.items():
-            if k in status.keys():
+        for k, v in list(status_count.items()):
+            if k in list(status.keys()):
                 status[k] += v
             else:
                 status[k] = v
@@ -298,7 +297,7 @@ def run_tests(args, iut_config):
         results.update(results_dict)
         autoprojects.iutctl.cleanup()
 
-    for test_case_name in results.keys():
+    for test_case_name in list(results.keys()):
         project_name = test_case_name.split('/')[0]
         descriptions[test_case_name] = \
             pts.get_test_case_description(project_name, test_case_name)

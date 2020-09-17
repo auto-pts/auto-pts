@@ -377,7 +377,7 @@ def hdl_wid_111(desc):
     if not (len(data_packet) == int(data[0])):
         return False
 
-    comp_data = bytearray(range(len(data_packet)))
+    comp_data = bytearray(list(range(len(data_packet))))
     if not (data_packet == comp_data):
         return False
 

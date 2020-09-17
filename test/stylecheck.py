@@ -33,7 +33,7 @@ def run_checks(py_files):
 
     total_files = len(py_files)
     total_files_width = len(str(total_files))
-    print "Will run check for %d files" % total_files
+    print("Will run check for %d files" % total_files)
 
     for count, fl in enumerate(py_files):
         cmd = "pycodestyle"
@@ -41,13 +41,13 @@ def run_checks(py_files):
             cmd += " --ignore " + ignore_dict[fl]
         cmd += " " + fl
 
-        print "{:>{}}/{} Running check {}".format(
-            count + 1, total_files_width, total_files, cmd)
+        print("{:>{}}/{} Running check {}".format(
+            count + 1, total_files_width, total_files, cmd))
 
         try:
             subprocess.check_output(shlex.split(cmd), stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as exc:
-            print "\nCheck failed:\n", exc.output
+            print("\nCheck failed:\n", exc.output)
             sys.exit(1)
 
 

@@ -18,17 +18,17 @@ import logging
 import socket
 import binascii
 import threading
-import Queue
 import signal
 import subprocess
 import serial
 import time
 from fcntl import fcntl, F_GETFL, F_SETFL
 from os import O_NONBLOCK, read
+import queue
 
-import defs
-from types import BTPError
-from parser import enc_frame, dec_hdr, dec_data, HDR_LEN
+from . import defs
+from .types import BTPError
+from .parser import enc_frame, dec_hdr, dec_data, HDR_LEN
 
 log = logging.debug
 
@@ -143,7 +143,7 @@ class BTPWorker(BTPSocket):
     def __init__(self):
         super(BTPWorker, self).__init__()
 
-        self._rx_queue = Queue.Queue()
+        self._rx_queue = queue.Queue()
         self._running = threading.Event()
 
         self._rx_worker = threading.Thread(target=self._rx_task)
@@ -224,7 +224,7 @@ class BTPWorker(BTPSocket):
         while not self._rx_queue.empty():
             try:
                 self._rx_queue.get_nowait()
-            except Queue.Empty:
+            except queue.Empty:
                 continue
 
             self._rx_queue.task_done()

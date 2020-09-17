@@ -49,10 +49,10 @@ def popen_and_call(cmd, **popen_args):
 
     def print_output(out, err):
         for line in iter(out.readline, b''):
-            print(line.strip())
+            print((line.strip()))
 
         for line in iter(err.readline, b''):
-            print(line.strip())
+            print((line.strip()))
 
     def run_in_thread(proc):
         proc.wait()
@@ -90,7 +90,7 @@ def run_btmon():
     log_file = LOGS_DIR + PROFILE + "/" + TEST_CASE + "_btmon.log"
 
     cmd = [BTMON_PATH, "-J", "NRF52", "-w", log_file]
-    print("Executing command: {}".format(' '.join(cmd)))
+    print(("Executing command: {}".format(' '.join(cmd))))
 
     BTMON_PROC = popen_and_call(cmd, stdout=subprocess.PIPE,
                                 stderr=subprocess.PIPE, shell=False)
@@ -102,7 +102,7 @@ def run_rtt2pty():
     subprocess.check_call('rm -rf ./auto-pts-tester', shell=True)
 
     cmd = [RTT2PTY_PATH, "-2", "-b", "bttester", "-l", "auto-pts-tester"]
-    print("Executing command: {}".format(' '.join(cmd)))
+    print(("Executing command: {}".format(' '.join(cmd))))
 
     RTT2PTY_PROC = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                                     stderr=subprocess.PIPE, shell=False)
@@ -117,7 +117,7 @@ def run_rtt2pty_console():
     subprocess.check_call('rm -rf ./iut_console', shell=True)
 
     cmd = [RTT2PTY_PATH, "-2", "-l", "iut_console"]
-    print("Executing command: {}".format(' '.join(cmd)))
+    print(("Executing command: {}".format(' '.join(cmd))))
 
     RTT2PTY_CONSOLE_PROC = popen_and_call(
         cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=False)
@@ -133,7 +133,7 @@ def run_cat():
     log_file = LOGS_DIR + PROFILE + "/" + TEST_CASE + "_iut.log"
 
     cmd = 'cat {} | tee {}'.format('./iut_console', log_file)
-    print("Executing command: {}".format(cmd))
+    print(("Executing command: {}".format(cmd)))
 
     CAT_PROC = popen_and_call(
         cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
@@ -150,7 +150,7 @@ def main():
     if not os.path.exists(LOGS_DIR + PROFILE):
         os.makedirs(LOGS_DIR + PROFILE)
 
-    print("#DBG# " + TEST_CASE)
+    print(("#DBG# " + TEST_CASE))
 
     # run_rtt2pty()
     # run_btmon()

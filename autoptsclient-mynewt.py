@@ -113,7 +113,7 @@ def main():
 
     autoprojects.iutctl.cleanup()
 
-    print "\nBye!"
+    print("\nBye!")
     sys.stdout.flush()
 
     for pts in ptses:

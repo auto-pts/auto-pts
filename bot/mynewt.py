@@ -62,7 +62,7 @@ def get_tty_path(name):
         device, serial = line.decode().rstrip().split(" ")
         serial_devices[device] = serial
 
-    for device, serial in serial_devices.items():
+    for device, serial in list(serial_devices.items()):
         if name in device:
             tty = os.path.basename(serial)
             return "/dev/{}".format(tty)
@@ -104,7 +104,7 @@ def build_and_flash(project_path, board, overlay=None):
         cwd=project_path)
 
     if overlay is not None:
-        config = ':'.join(['{}={}'.format(k, v) for k, v in overlay.items()])
+        config = ':'.join(['{}={}'.format(k, v) for k, v in list(overlay.items())])
         check_call('newt target set bttester syscfg={}'.format(config).split(),
                    cwd=project_path)
 
@@ -170,7 +170,7 @@ def get_build_info_file(project_path):
 def make_repo_status(repos_info):
     status_list = []
 
-    for name, info in repos_info.items():
+    for name, info in list(repos_info.items()):
         status_list.append('{}={}'.format(name, info['commit']))
 
     return ', '.join(status_list)
@@ -221,7 +221,7 @@ def run_tests(args, iut_config):
     config_default = "default.conf"
     _args[config_default] = PtsInitArgs(args)
 
-    for config, value in iut_config.items():
+    for config, value in list(iut_config.items()):
         if 'test_cases' not in value:
             # Rename default config
             _args[config] = _args.pop(config_default)
@@ -250,7 +250,7 @@ def run_tests(args, iut_config):
     stack_inst = stack.get_stack()
     stack_inst.synch_init([pts.callback_thread for pts in ptses])
 
-    for config, value in iut_config.items():
+    for config, value in list(iut_config.items()):
         overlay = None
 
         if 'overlay' in value:
@@ -276,8 +276,8 @@ def run_tests(args, iut_config):
             ptses, test_cases, _args[config])
         total_regressions += regressions
 
-        for k, v in status_count.items():
-            if k in status.keys():
+        for k, v in list(status_count.items()):
+            if k in list(status.keys()):
                 status[k] += v
             else:
                 status[k] = v
@@ -285,7 +285,7 @@ def run_tests(args, iut_config):
         results.update(results_dict)
         autoprojects.iutctl.cleanup()
 
-    for test_case_name in results.keys():
+    for test_case_name in list(results.keys()):
         project_name = test_case_name.split('/')[0]
         descriptions[test_case_name] = \
             pts.get_test_case_description(project_name, test_case_name)
