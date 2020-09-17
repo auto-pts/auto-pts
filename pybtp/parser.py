@@ -13,6 +13,7 @@
 # more details.
 #
 
+import binascii
 import struct
 from collections import namedtuple
 
@@ -41,9 +42,10 @@ def dec_data(bin):
 
 
 def enc_frame(svc_id, op, ctrl_index, data):
-    str_data = str(bytearray(data))
-    int_len = len(str_data)
-    hex_len = struct.pack('h', int_len)
+    if isinstance(data, str):
+        data = bytes(data, 'utf-8')
+    elif isinstance(data, int):
+        data = data.to_bytes(1, "little")
+    int_len = len(data)
 
-    return struct.pack('<BBB2s%ds' % int_len, svc_id, op, ctrl_index, hex_len,
-                       str_data)
+    return struct.pack('<3Bh%ds' % int_len, svc_id, op, ctrl_index, int_len, data)

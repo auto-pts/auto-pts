@@ -508,7 +508,7 @@ class HelpCmd(Cmd):
         self.help.short = short_help
 
         cmds = {cmd.name: cmd.help.short
-                for cmd_name, cmd in self.sub_cmds.items()}
+                for cmd_name, cmd in list(self.sub_cmds.items())}
 
         self.help.build(
             short_help=short_help,
@@ -812,7 +812,7 @@ def cmd_loop(cmds_dict):
                              rl_prompt_ignore(sgr_reset))
 
     while True:
-        input = input(prompt)
+        input = eval(input(prompt))
 
         if input == '':
             continue

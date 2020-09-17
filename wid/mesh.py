@@ -464,7 +464,7 @@ def hdl_wid_37(desc):
         return False
 
     state, bearer = stack.mesh.last_seen_prov_link_state.data
-    if state is 'closed':
+    if state == 'closed':
         return True
     return False
 

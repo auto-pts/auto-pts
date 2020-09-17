@@ -533,6 +533,7 @@ def hdl_wid_52(desc):
     else:
         value_read = hexlify(attr.value).upper()
 
+    value_read = value_read.decode('utf-8')
     if value_read != value:
         return False
 
@@ -579,10 +580,10 @@ def hdl_wid_56(desc):
     bd_addr_type = btp.pts_addr_type_get()
 
     att_rsp, value_len, value = btp.gatts_get_attr_val(bd_addr_type, bd_addr, handle1)
-    values_read += hexlify(value)
+    values_read += value.hex()
 
     att_rsp, value_len, value = btp.gatts_get_attr_val(bd_addr_type, bd_addr, handle2)
-    values_read += hexlify(value)
+    values_read += value.hex()
 
     if values_read.upper() != values.upper():
         return False

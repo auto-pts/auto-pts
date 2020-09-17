@@ -180,7 +180,7 @@ def hdl_wid_22(desc):
     parsed_handles = parsed_args
 
     # Convert remaining arguments to integers
-    parsed_handles = [int(arg, 16) for arg in parsed_handles]
+    parsed_handles = [int("".join(arg), 16) for arg in parsed_handles]
 
     # Increment every 2th handle
     parsed_handles[1::2] = [arg + 1 for arg in parsed_handles[1::2]]
@@ -272,7 +272,7 @@ def hdl_wid_24(desc):
 
     # Include service in description should have 3 parameters:
     # Attribute Handle, Included Service Attribute Handle and End Group Handle
-    num_includes = len(MMI.args) / 3
+    num_includes = len(MMI.args) // 3
 
     pts_services = []
 
@@ -525,7 +525,7 @@ def hdl_wid_52(desc):
     _, _, value = btp.gatts_get_attr_val(btp.pts_addr_type_get(),
                                          btp.pts_addr_get(), handle)
 
-    value_read = hexlify(value)
+    value_read = hexlify(value).decode('utf-8')
 
     if value_read == MMI.args[1]:
         return True
@@ -572,12 +572,12 @@ def hdl_wid_56(desc):
     att_rsp, value_len, value = btp.gatts_get_attr_val(
         btp.pts_addr_type_get(),
         btp.pts_addr_get(), handle1)
-    values_read += hexlify(value)
+    values_read += hexlify(value).decode('utf-8')
 
     att_rsp, value_len, value = btp.gatts_get_attr_val(
         btp.pts_addr_type_get(),
         btp.pts_addr_get(), handle2)
-    values_read += hexlify(value)
+    values_read += hexlify(value).decode('utf-8')
 
     if values_read.upper() != values.upper():
         return False
@@ -746,7 +746,7 @@ def hdl_wid_75(desc):
 
     _, _, val = attr
 
-    parsed_val = hexlify(val).upper()
+    parsed_val = hexlify(val).decode('utf-8').upper()
 
     if value == parsed_val:
         return True

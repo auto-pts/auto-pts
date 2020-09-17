@@ -428,7 +428,7 @@ def update_repos(project_path, git_config):
     project_path = os.path.abspath(project_path)
     repos_dict = {}
 
-    for repo, conf in git_config.items():
+    for repo, conf in list(git_config.items()):
         repo_dict = {}
         if not os.path.isabs(conf["path"]):
             repo_path = os.path.join(project_path, conf["path"])

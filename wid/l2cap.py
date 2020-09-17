@@ -403,11 +403,11 @@ def hdl_wid_112(desc):
 
     data_1 = data_1[0]
 
-    expected = binascii.unhexlify(bytearray('aa' * len(data_0)))
+    expected = bytes.fromhex('aa' * len(data_0))
     if not (data_0 == expected):
         return False
 
-    expected = binascii.unhexlify(bytearray('55' * len(data_1)))
+    expected = bytes.fromhex('55' * len(data_1))
     if not (data_1 == expected):
         return False
 
