@@ -1903,3 +1903,1025 @@ Events:
 		Retry parameter is a binary value indicaing that a poll was a retry.
 
 		This event indicates that the IUT as an LPN has polled a Friend.
+
+Mesh Model Service (ID 5)
+==================
+
+Commands and responses:
+
+	Opcode 0x00 - Error response
+
+	Opcode 0x01 - Read Supported Commands command/response
+
+		Controller Index:		<controller id>
+		Command parameters:		<none>
+		Response parameters:		<supported commands> (variable)
+
+		Each bit in response is a flag indicating if command with
+		opcode matching bit number is supported. Bit set to 1 means
+		that command is supported. Bit 0 is reserved and shall always
+		be set to 0. If specific bit is not present in response (less
+		than required bytes received) it shall be assumed that command
+		is not supported.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x02 - Generic OnOff State Get/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		<none>
+		Response parameters:		Present OnOff (1 octet)
+			 			Target OnOff (1 octet)
+						Remaining Time (4 octets)
+
+		Valid OnOff values:
+					0x00 = Off
+					0x01 = On
+
+		This command is used to get the OnOff state.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x03 - Generic OnOff State Set/Status
+
+		Controller Index:		<controller id>
+		Command parameters:		Acknowledgement (1 octet)
+						OnOff (1 octet)
+						Transition Time (1 octet)
+						Delay (1 octet)
+		Response Status parameters:	Present OnOff (1 octet)
+			 			Target OnOff (1 octet)
+						Remaining Time (4 octets)
+
+		Valid OnOff values:
+				0x00 = Off
+				0x01 = On
+
+		Acknowledgment values:
+				True = with requesting a status response
+				False = without requesting a status response
+
+		This command is used to set the OnOff state.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x04 - Generic Level State Get/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		<none>
+		Response Status parameters:	Present Level (2 octets)
+			 			Target Level (2 octets)
+						Remaining Time (4 octets)
+
+		This command is used to get the Level state.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x05 - Generic Level State Set/Status
+
+		Controller Index:		<controller id>
+		Command parameters:		Acknowledgement (1 octet)
+						Level (2 octets)
+						Transition Time (1 octet)
+						Delay (1 octet)
+		Response Status parameters:	Present Level (2 octets)
+			 			Target Level (2 octets)
+						Remaining Time (4 octets)
+
+		Acknowledgment values:
+					True = with requesting a status response
+					False = without requesting a status response
+
+		This command is used to set the Level state.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x06 - Generic Level Delta Set/Status
+
+		Controller Index:		<controller id>
+		Command parameters:		Acknowledgement (1 octet)
+						Delta (2 octets)
+						Transition Time (1 octet)
+						Delay (1 octet)
+		Response Status parameters:	Present Level (2 octets)
+			 			Target Level (2 octets)
+						Remaining Time (4 octets)
+
+		Acknowledgment values:
+					True = with requesting a status response
+					False = without requesting a status response
+
+		This command is used to change the Level state.
+		Makes the server move its level state by some delta value.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x07 - Generic Level Move Set/Status
+
+		Controller Index:		<controller id>
+		Command parameters:		Acknowledgement (1 octet)
+						Move (2 octets)
+						Transition Time (1 octet)
+						Delay (1 octet)
+		Response Status parameters:	Present Level (2 octets)
+			 			Target Level (2 octets)
+						Remaining Time (4 octets)
+
+		Acknowledgment values:
+					True = with requesting a status response
+					False = without requesting a status response
+
+		This command is used to set the Move Level state.
+		It makes the server continuously move its level state.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x08 - Generic Default Transition Time Get/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		<none>
+		Response Status parameters: 	Transition Time (4 octets)
+
+		This command is used to get the Default Transition Time.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x09 - Generic Default Transition Time Set/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		Acknowledgement (1 octet)
+						Transition Time (1 octet)
+		Response Status parameters: 	Transition Time (4 octets)
+
+		This command is used to set the Default Transition Time.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0a - Generic On Power Up Get/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		<none>
+		Response Status parameters: 	On Power Up (1 octet)
+
+		This command is used to get the OnPowerUp state.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0b - Generic On Power Up Set/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		Acknowledgement (1 octet)
+						On Power Up (1 octet)
+		Response Status parameters: 	On Power Up (1 octet)
+
+		Acknowledgment values:
+					True = with requesting a status response
+					False = without requesting a status response
+
+		This command is used to set the OnPowerUp state.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0c - Generic Power Level Get/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		<none>
+		Response Status parameters: 	Power Level  (2 octets)
+
+		This command is used to get the Power Level.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0d - Generic Power Level Set/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		Acknowledgement (1 octet)
+		                    		Power Level (2 octets)
+		                    		Transition Time (1 octet)
+		                    		Delay (1 octet)
+		Response Status parameters: 	Power Level (1 octet)
+
+		This command is used to set the Power Level.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0e - Generic Power Level Last Get/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		<none>
+		Response Status parameters: 	Power Level Last (2 octets)
+
+		This command is used to get last non-zero Power Level.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0f - Generic Power Level Default Get/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		<none>
+		Response Status parameters: 	Power Default (2 octets)
+
+		This command is used to get the Default Power Level.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x10 - Generic Power Level Default Set/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		Acknowledgement (1 octet)
+						Power Default (2 octets)
+		Response Status parameters: 	Power Default (2 octets)
+
+		Acknowledgment values:
+					True = with requesting a status response
+					False = without requesting a status response
+
+		This command is used to set the Default Power Level.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x11 - Generic Power Lever Range Get/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		<none>
+		Response Status parameters: 	Status  (1 octet)
+			 			Min (2 octets)
+						Max (2 octets)
+
+		This command is used to get the Power Range state.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x12 - Generic Power Level Range Set/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		Acknowledgement (1 octet)
+						Min (2 octets)
+						Max (2 octets)
+		Response Status parameters: 	Status  (1 octet)
+			 			Min (2 octets)
+						Max (2 octets)
+
+		Acknowledgment values:
+					True = with requesting a status response
+					False = without requesting a status response
+
+		This command is used to set the Power Range state.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x13 - Generic Battery Get/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		<none>
+		Response Status parameters: 	Battery Level (1 octet)
+			 			Time to Discharge (3 octets)
+						Time to Charge (3 octets)
+
+		This command is used to get the Battery state.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x14 - Generic Location Global Get/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		<none>
+		Response Status parameters: 	Global Latitude (4 octets)
+			 			Global Longitude (4 octets)
+						Global Altitude (2 octets)
+
+		This command is used to get the Global Location state.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x15 - Generic Location Local Get/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		<none>
+		Response Status parameters: 	Local North (2 octets)
+						Local East (2 octets)
+						Local Altitude (2 octets)
+						Floor Number (1 octet)
+						Uncertainty (2 octets)
+
+		This command is used to get the Local Location state.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x16 - Generic Location Global Set/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		Acknowledgement (1 octet)
+						Global Latitude (4 octets)
+						Global Longitude (4 octets)
+						Global Altitude (2 octets)
+		Response Status parameters: 	Global Latitude (4 octets)
+			 			Global Longitude (4 octets)
+						Global Altitude (2 octets)
+
+		Acknowledgment values:
+					True = with requesting a status response
+					False = without requesting a status response
+
+		This command is used to set the Global Location state.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x17 - Generic Location Local Set/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		Acknowledgement (1 octet)
+						Local North (2 octets)
+						Local East (2 octets)
+						Local Altitude (2 octets)
+						Floor Number (1 octet)
+						Uncertainty (2 octets)
+		Response Status parameters: 	Local North (2 octets)
+			 			Local East (2 octets)
+						Local Altitude (2 octets)
+						Floor Number (1 octet)
+						Uncertainty (2 octets)
+
+		Acknowledgment values:
+					True = with requesting a status response
+					False = without requesting a status response
+
+		This command is used to set the Local Location state.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x18 - Generic User Properties Get/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		Kind of Property Server (1 octet)
+						Property ID (2 octets)
+		Response Status parameters: 	[array] Property IDs (variable)
+
+		This command is used to get the list of Properties.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x19 - Generic User Property Get/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		Kind of Property Server (1 octet)
+		                    		Property ID (2 octets)
+		Response Status parameters: 	Property ID (2 octets)
+			 			Acces (1 octet)
+						Property Value Size (1 octet)
+						Property Value (variable)
+
+		This command is used to get the value of a Property.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x1a - Generic User Property Set/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		Acknowledgement (1 octet)
+						Kind of Property Server (1 octet)
+						Property ID (2 octets)
+						Access (1 octet)
+						Property Value (variable)
+		Response Status parameters: 	Property ID (2 octets)
+			 			Access (1 octet)
+						Property Value Size (1 octet)
+						Property Value (variable)
+
+		Acknowledgment values:
+					True = with requesting a status response
+					False = without requesting a status response
+
+		This command is used to set the user access of a property.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x1b - Sensor Descriptor Get/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		Sensor ID (2 octets)
+		Response Status parameters: 	[array] Descriptor (variable)
+
+		This command is used to get the descriptor for the given sensor.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x1c - Sensor Get/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		Sensor ID (2 octets)
+		Response Status parameters: 	[array] Marshalled Sensor Data (variable)
+
+		This command is used to get the sensor data from a sensor instance.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x1d - Sensor Column Get/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		Sensor ID (2 octets)
+						Raw Value (variable)
+		Response Status parameters: 	Property ID (2 octets)
+			 			Column Data (variable)
+
+		This command is used to get a single sensor series data entry.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x1e - Sensor Series Get/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		Sensor ID (2 octets)
+						Raw Values (variable)
+		Response Status parameters: 	Property ID (2 octets)
+			 			Column Data (variable)
+
+		This command is used to get a single sensor series data entry.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x1f - Sensor Cadence Get/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		Sensor ID (2 octets)
+		Response Status parameters: 	Sensor ID (2 octets)
+			 			Cadence Data (variable)
+
+		This command is used to get the Cadence state for given sensor.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x20 - Sensor Cadence Set/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		Acknowledgement (1 octet)
+						Sensor ID (2 octets)
+						Cadence Data (variable)
+		Response Status parameters: 	Cadence Data (variable)
+
+		Acknowledgment values:
+					True = with requesting a status response
+					False = without requesting a status response
+
+		This command is used to set the Cadence state for given sensor.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x21 - Sensor Settings Get/Status
+
+		Controller Index		<controller id>
+		Command parameters:		Sensor ID (2 octets)
+		Response Status parameters:	Sensor ID (2 octets)
+			 			Property ID (2 octets)
+
+		This command is used to get the list of settings for given sensor.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x22 - Sensor Setting Get/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		Sensor ID (2 octets)
+						Setting ID (2 octets)
+		Response Status parameters:
+
+	Opcode 0x23 - Sensor Setting Set
+
+		Controller Index:		<controller id>
+		Command parameters: 		Acknowledgement (1 octet)
+						Sensor ID (2 octets)
+						Setting ID (2 octets)
+						Sensor Setting Raw (variable)
+		Response Status parameters:
+
+	Opcode 0x24 - Time Get/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		<none>
+		Response Status parameters: 	TAI Seconds (5 octets)
+			 			Subsecond (1 octet)
+						Uncertainy (1 octet)
+						TAI-UTC Delta (2 octets)
+						Time Zone Offset (1 octet)
+
+		This command is used to get current Time Status.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x25 - Time Set/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		TAI Seconds (6 octets)
+						Subsecond (1 octet)
+						Uncertainy (1 octet)
+						TAI-UTC Delta (2 octets)
+						Time Zone Offset (1 octet)
+		Response Status parameters: 	TAI Seconds (5 octets)
+			 			Subsecond (1 octet)
+						Uncertainy (1 octet)
+						TAI-UTC Delta (2 octets)
+						Time Zone Offset (1 octet)
+
+		This command is used to get the Time Role state.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x26 - Time Role Get/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		<none>
+		Response Status parameters: 	Time Role (1 octet)
+
+		This command is used to get the Time Role state.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x27 - Time Role Set/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		Time Role (1 octet)
+		Response Status parameters: 	Time Role (1 octet)
+
+		This command is used to set the Time Role state.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x28 - Time Zone Get
+
+		Controller Index:		<controller id>
+		Command parameters: 		<none>
+		Response Status parameters: 	Time Zone Offset Current (2 octets)
+			 			Time Zone Offset New (2 octets)
+						TAI of Zone Change (8 octets)
+
+		This command is used to get the Time Zone status.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x29 - Time Zone Set
+
+		Controller Index:		<controller id>
+		Command parameters: 		Time Zone Offset New (2 octets)
+						TAI of Zone Change (8 octets)
+		Response Status parameters: 	Time Zone Offset New (2 octets)
+			 			TAI of Zone Change (8 octets)
+
+		This command is used to set the Time Zone status.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x2a - Time TAI-UTC Delta Get/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		<none>
+		Response Status parameters: 	TAI-UTC Delta Current (2 octets)
+			 			TAI-UTC Delta New (2 octets)
+						TAI of Delta Change (8 octets)
+
+		This command is used to get the UTC Delta change.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x2b - Time TAI-UTC Delta Set/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		TAI-UTC Delta New (2 octets)
+						TAI of Delta Change (8 octets)
+		Response Status parameters: 	TAI-UTC Delta New (2 octets)
+			 			TAI of Delta Change (8 octets)
+
+		This command is used to set the UTC Delta change.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x2c - Light Lightness Get/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		<none>
+		Response Status parameters: 	Present Lightness (2 octets)
+			 			Target Lightness (2 octets)
+						Remaining Time (4 octets)
+
+		This command is used to get the Light Level.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x2d - Light Lightness Set/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		Acknowledgement (1 octet)
+						Lightness (2 octets)
+						Transition Time (1 octet)
+						Delay (1octet)
+		Response Status parameters: 	Present Lightness (2 octets)
+						Target Lightness (2 octets)
+						Remaining Time (4 octets)
+
+		Acknowledgment values:
+				True = with requesting a status response
+				False = without requesting a status response
+
+		This command is used to set the Light Level.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x2e - Light Lightness Linear Get/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		<none>
+		Response Status parameters: 	Present Lightness (2 octets)
+			 			Target Lightness (2 octets)
+
+		This command is used to get the Linear Light Level.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x2f - Light Lightness Linear Set/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		Acknowledgement (1 octet)
+						Lightness Linear(2 octets)
+						Transition Time (1 octet)
+						Delay (1octet)
+		Response Status parameters: 	Present Lightness (2 octets)
+			 			Target Lightness (2 octets)
+						Remaining Time (4 octets)
+
+		Acknowledgment values:
+				True = with requesting a status response
+				False = without requesting a status response
+
+		This command is used to set the Linear Light Level.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x30 - Light Lightness Last Get/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		<none>
+		Response Status parameters: 	Lightness (2 octets)
+
+		This command is used to get the last non-zero Light Level.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x31 - Light Lightness Default Get/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		<none>
+		Response Status parameters: 	Lightness (2 octets)
+
+		This command is used to get the Default Light state.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x32 - Light Lightness Default Set/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		Acknowledgement (1 octet)
+						Lightness (2 octets)
+		Response Status parameters: 	Lightness (2 octets)
+
+		This command is used to set the Default Light state.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x33 - Light Lightness Range Get/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		<none>
+		Response Status parameters: 	Status Code (2 octets)
+			 			Range Min (2 octets)
+						Range Max (2 octets)
+
+		This command is used to get the Light Range state.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x34 - Light Lightness Range Set/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		Acknowledgement (1 octet)
+						Range Min (2 octets)
+						Range Max (2 octets)
+		Response Status parameters: 	Status Code (2 octets)
+			 			Range Min (2 octets)
+						Range Max (2 octets)
+
+		Acknowledgment values:
+				True = with requesting a status response
+				False = without requesting a status response
+
+		This command is used to set the Light Range state.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x35 - Light LC Mode Get/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		<none>
+		Response Status parameters: 	Mode (1 octet)
+
+		This command is used to get the Light Lightness Control Server’s current Mode.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x36 - Light LC Mode Set/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		Acknowledgement (1 octet)
+						Mode (1 octet)
+		Response Status parameters: 	Mode (1 octet)
+
+		Acknowledgment values:
+				True = with requesting a status response
+				False = without requesting a status response
+
+		This command is used to set the Light Lightness Control Server’s current Mode.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x37 - Light LC Occupancy Mode Get/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		<none>
+		Response Status parameters: 	Occupancy Mode (1 octet)
+
+		This command is used to get the Light Lightness Control Server’s Occupancy Mode.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x38 - Light LC Occupancy Mode Set/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		Acknowledgement (1 octet)
+						Occupancy Mode (1 octet)
+		Response Status parameters: 	Mode (1 octet)
+
+		Acknowledgment values:
+				True = with requesting a status response
+				False = without requesting a status response
+
+		This command is used to set the Light Lightness Control Server’s Occupancy Mode.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x39 - Light LC Light OnOff Mode Get/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		<none>
+		Response Status parameters: 	Light OnOff (1 octet)
+
+		This command is used to get the Light Lightness Control Server’s current OnOff state.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x3a - Light LC Light OnOff Mode Set/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		Acknowledgement (1 octet)
+						Light OnOff (1 octet)
+						Transition Time (1 octet)
+						Delay (1octet)
+		Response Status parameters: 	Present Light OnOff (1 octet)
+			 			Target Light OnOff (1 octet)
+						Remaining Time (4 octets)
+
+		Acknowledgment values:
+				True = with requesting a status response
+				False = without requesting a status response
+
+		This command is used to set the Light Lightness Control Server’s current OnOff state.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x3b - Light LC Property Get/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		<none>
+		Response Status parameters: 	Light OnOff (1 octet)
+
+		This command is used to get the Light Lightness Control Server property value.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x3c - Light LC Property Set/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		Acknowledgement (1 octet)
+						Light OnOff (1 octet)
+						Transition Time (1 octet)
+						Delay (1octet)
+		Response Status parameters: 	Present Light OnOff (1 octet)
+						Target Light OnOff (1 octet)
+						Remaining Time (4 octets)
+
+		Acknowledgment values:
+				True = with requesting a status response
+				False = without requesting a status response
+
+		This command is used to set the Light Lightness Control Server property value.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x3d - Sensor Data Set
+
+		Controller Index:		<controller id>
+		Command parameters: 		Sensor ID (2 octets)
+						Raw Values (variable)
+
+		This command is used to set Sensor Data.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x3e - Light CTL States Get/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		<none>
+		Response Status parameters: 	Present CTL Lightness (2 octets)
+			 			Present CTL Temperature (2 octets)
+						Target CTL Lightness (2 octets)
+						Target CTL Temperature (2 octets)
+						Remaining Time (4 octets)
+
+		This command is used to get the CTL state.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x3f - Light CTL States Set/status
+
+		Controller Index:		<controller id>
+		Command parameters: 		Acknowledgement (1 octet)
+						CTL Lightness (2 octets)
+						CTL Temperature (2 octets)
+						CTL Delta UV
+						Transition Time (1 octet)
+						Delay (1 octet)
+		Response Status parameters: 	Present CTL Lightness (2 octets)
+			 			Present CTL Temperature (2 octets)
+						Target CTL Lightness (2 octets)
+						Target CTL Temperature (2 octets)
+						Remaining Time (4 octets)
+
+		Acknowledgment values:
+				True = with requesting a status response
+				False = without requesting a status response
+
+		This command is used to set the CTL state.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x40 - Light CTL Temperature Get/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		<none>
+		Response Status parameters: 	Present CTL Temperature (2 octets)
+			 			Present CTL Delta UV (2 octets)
+						Target CTL Temperature (2 octets)
+						Target CTL Delta UV (2 octets)
+						Remaining Time (4 octets)
+
+		This command is used to get the Light CTL Temperature state.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x41 - Light CTL Temperature Set/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		Acknowledgement (1 octet)
+						CTL Temperature (2 octets)
+						CTL Delta UV (2 octets)
+						Transition Time (1 octet)
+						Delay (1 octet)
+		Response Status parameters: 	Present CTL Temperature (2 octets)
+			 			Present CTL Delta UV (2 octets)
+						Target CTL Temperature (2 octets)
+						Target CTL Delta UV (2 octets)
+						Remaining Time (4 octets)
+
+		Acknowledgment values:
+				True = with requesting a status response
+				False = without requesting a status response
+
+		This command is used to set the Light CTL Temperature state.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x42 - Light CTL Default Get/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		<none>
+		Response Status parameters: 	CTL Lightness (2 octet)
+			 			CTL Temperature (2 octet)
+						CTL Delta UV (2 octets)
+
+		This command is used to get the Default Light CTL state.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x43 - Light CTL Default Set/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		Acknowledgement (1 octet)
+						CTL Lightness (2 octets)
+						CTL Temperature (2 octets)
+						CTL Delta UV (2 octets)
+		Response Status parameters: 	CTL Lightness (2 octets)
+			 			CTL Temperature (2 octets)
+						CTL Delta UV (2 octets_
+
+		Acknowledgment values:
+				True = with requesting a status response
+				False = without requesting a status response
+
+		This command is used to set the Default Light CTL state.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x44 - Light CTL Temperature Range Get/Ststus
+
+		Controller Index:		<controller id>
+		Command parameters: 		<none>
+		Response Status parameters:	Status Code (1 octet)
+			 			Range Min (2 octets)
+						Range Max(2 octets)
+
+		This command is used to get the Light CTL Temperature Range.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x45 - Light CTL Temperature Range Set/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		Acknowledgement (1 octet)
+						Range Min (2 octets)
+						Range Max(2 octets)
+		Response Status parameters: 	Status Code (1 octet)
+			 			Range Min (2 octets)
+						Range Max(2 octets)
+
+		Acknowledgment values:
+				True = with requesting a status response
+				False = without requesting a status response
+
+		This command is used to set the Light CTL Temperature Range.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x46 - Scene State Get/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		<none>
+		Response Status parameters: 	Status Code (1 octet)
+			 			Current Scene (2 octets)
+						Target Scene (2 octets)
+
+		This command is used to get the the current state of a Scene.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x47 - Scene Register Get/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		Acknowledgement (1 octet)
+						Scene Number (2 octets)
+		Response Status parameters: 	Status Code (1 octet)
+			 			Current Scene (2 octets)
+
+		Acknowledgment values:
+				True = with requesting a status response
+				False = without requesting a status response
+
+		This command is used to get the the full scene register of a Scene.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x48 - Scene Store Procedure
+
+		Controller Index:		<controller id>
+		Command parameters:		<none>
+		Response Status parameters: 	Status Code (1 octet)
+			 			Range Min (2 octets)
+						Range Max(2 octets)
+
+		This command is used to store the current state.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x49 - Scene Recall/Status
+
+		Controller Index:		<controller id>
+		Command parameters: 		Acknowledgement (1 octet)
+						Range Min (2 octets)
+						Range Max(2 octets)
+		Response Status parameters: 	Status Code (1 octet)
+			 			Range Min (2 octets)
+						Range Max(2 octets)
+
+		Acknowledgment values:
+				True = with requesting a status response
+				False = without requesting a status response
+
+		This command is used to recall the scene.
+
+		In case of an error, the error response will be returned.
