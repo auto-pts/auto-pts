@@ -28,7 +28,7 @@ Over 460 test cases have been automated for Zephyr OS and Mynewt OS which reduce
 
 **auto-pts server**: Implemented in Python 3. Runs on Windows and provides over-the-network XML-RPC interface to PTS.
 
-**auto-pts client**: Implemented in Python 2.7. Runs on GNU/Linux, communicates with the auto-pts server (to start/stop test cases, to send response to PTS inquiries) and communicates with the Implementation Under Test to take appropriate actions.
+**auto-pts client**: Implemented in Python 3. Runs on GNU/Linux, communicates with the auto-pts server (to start/stop test cases, to send response to PTS inquiries) and communicates with the Implementation Under Test to take appropriate actions.
 
 **Implementation Under Test (IUT)**: It is the host running Bluetooth stack to be tested, this could be an emulator or real hardware. The IUT is controlled by using Bluetooth Test Protocol.
 
@@ -42,7 +42,7 @@ Over 460 test cases have been automated for Zephyr OS and Mynewt OS which reduce
 
 2. Additionally, install required Python modules with:
 
-        python2 -m pip install --user -r autoptsclient_requirements.txt
+        python3 -m pip install --user -r autoptsclient_requirements.txt
 
 # Windows Prerequisites
 
@@ -157,7 +157,7 @@ names and related key: value pairs:
 
 Install required Python modules with:
 
-    pip2 install --user -r bot/requirements.txt
+    pip3 install --user -r bot/requirements.txt
 
 **Usage**
 
