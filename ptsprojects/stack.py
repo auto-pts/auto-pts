@@ -317,6 +317,48 @@ class Mesh:
         # Node Identity
         self.proxy_identity = False
 
+        # MMDL expected status data
+        self.expect_status_data = Property({
+            "Ack": True,
+            'Status': [],
+        })
+
+        # MMDL received status data
+        self.recv_status_data = Property({
+            "Ack": True,
+            'Status': [],
+        })
+
+    def recv_status_data_set(self, key, data):
+        if key in self.recv_status_data.data:
+            self.recv_status_data.data[key] = data
+        else:
+            logging.error("%s %s not in store data",
+                          self.recv_status_data.__name__, key)
+
+    def recv_status_data_get(self, key):
+        if key in self.recv_status_data.data:
+            return self.recv_status_data.data[key]
+        else:
+            logging.error("%s %s not in store data",
+                          self.recv_status_data.__name__, key)
+            return False
+
+    def expect_status_data_set(self, key, data):
+        if key in self.expect_status_data.data:
+            self.expect_status_data.data[key] = data
+        else:
+            logging.error("%s %s not in store data",
+                          self.expect_status_data.__name__, key)
+
+    def expect_status_data_get(self, key):
+        if key in self.expect_status_data.data:
+            return self.expect_status_data.data[key]
+        else:
+            logging.error("%s %s not in store data",
+                          self.expect_status_data.__name__, key)
+            return False
+
     def proxy_identity_enable(self):
         self.proxy_identity = True
 
