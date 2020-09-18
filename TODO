@@ -1,5 +1,4 @@
 These are TODO items that we would appreciate to get help with:
 
-- Move auto-pts to python 3, before EOL of python 2 in 2020-01-01
 - Migrate to latest PTS automation method from Bluetooth SIG. When this project
   was started PTSControl COM API was the latest
