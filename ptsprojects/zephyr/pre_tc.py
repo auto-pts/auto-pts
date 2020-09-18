@@ -27,10 +27,10 @@ TEST_CASE = None
 BTMON_PROC = None
 BTMON_LOG = None
 # XXX: Fill me - btmon path example: /home/user/bluez/monitor/btmon
-BTMON_PATH = None
+BTMON_PATH = 'btmon'
 
 # XXX: Fill me - logs dir example: /home/user/btmon_logs/
-LOGS_DIR = None
+LOGS_DIR = 'iut_logs/'
 
 
 def cleanup():
