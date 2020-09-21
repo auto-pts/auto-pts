@@ -219,11 +219,12 @@ class Gap:
             return False
 
     def iut_addr_get_str(self):
-        addr = self.iut_bd_addr.data["address"].decode("utf-8")
+        addr = self.iut_bd_addr.data["address"]
         if addr:
-            return addr
+            return addr.decode("utf-8")
         else:
             return ""
+
 
     def iut_addr_set(self, addr, addr_type):
         self.iut_bd_addr.data["address"] = addr
