@@ -1954,7 +1954,7 @@
           <Row>
             <Name>TSPC_GATT_2_3</Name>
             <Description>Attribute Protocol Supported (L2CAP fixed EATT PSM supported) (C.3)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -2104,7 +2104,7 @@
           <Row>
             <Name>TSPC_GATT_3_25</Name>
             <Description>Client Supported Features Characteristic (C.4)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -2128,13 +2128,13 @@
           <Row>
             <Name>TSPC_GATT_3_29</Name>
             <Description>Read Multiple Variable Length Characteristic Values (C.9)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_3_30</Name>
             <Description>Multiple Variable Length Notifications (C.10)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -2314,13 +2314,13 @@
           <Row>
             <Name>TSPC_GATT_4_30</Name>
             <Description>Read Multiple Variable Length Characteristic Values (C.13)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_4_31</Name>
             <Description>Multiple Variable Length Notifications (C.13)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -2380,7 +2380,7 @@
           <Row>
             <Name>TSPC_GATT_8_1</Name>
             <Description>Support for Multiple ATT bearers from same device. (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
