@@ -34,7 +34,7 @@ class ZTestCase(TestCaseLT1):
         self.zephyrctl = get_iut()
 
         # first command is to start QEMU or HW
-        self.cmds.insert(0, TestFunc(self.zephyrctl.start))
+        self.cmds.insert(0, TestFunc(self.zephyrctl.start, self))
         self.cmds.insert(1, TestFunc(self.zephyrctl.wait_iut_ready_event))
 
         self.cmds.append(TestFuncCleanUp(self.stack.cleanup))
