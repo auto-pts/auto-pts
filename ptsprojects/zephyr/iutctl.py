@@ -21,16 +21,13 @@ import serial
 
 from pybtp import defs
 from pybtp.types import BTPError
-from pybtp.iutctl_common import BTPWorker, BTP_ADDRESS
+from pybtp.iutctl_common import BTPWorker, BTP_ADDRESS, RTT2PTY
 
 log = logging.debug
 ZEPHYR = None
 
 # qemu binary should be installed in shell PATH
 QEMU_BIN = "qemu-system-arm"
-
-# qemu log file object
-IUT_LOG_FO = None
 
 SERIAL_BAUDRATE = 115200
 
@@ -53,7 +50,7 @@ def get_qemu_cmd(kernel_image):
 class ZephyrCtl:
     '''Zephyr OS Control Class'''
 
-    def __init__(self, kernel_image, tty_file, board_name=None):
+    def __init__(self, kernel_image, tty_file, board_name=None, use_rtt2pty=None):
         """Constructor."""
         log("%s.%s kernel_image=%s tty_file=%s board_name=%s",
             self.__class__, self.__init__.__name__, kernel_image, tty_file,
@@ -63,18 +60,29 @@ class ZephyrCtl:
         self.tty_file = tty_file
 
         if self.tty_file and board_name:  # DUT is a hardware board, not QEMU
-            self.board = Board(board_name, kernel_image, tty_file)
+            self.board = Board(board_name, kernel_image, self)
         else:  # DUT is QEMU or a board that won't be reset
             self.board = None
 
         self.qemu_process = None
         self.socat_process = None
         self.btp_socket = None
+        self.test_case = None
+        self.rtt2pty_process = None
+        self.iut_log_file = None
 
-    def start(self):
+        if use_rtt2pty:
+            self.rtt2pty = RTT2PTY()
+        else:
+            self.rtt2pty = None
+
+    def start(self, test_case):
         """Starts the Zephyr OS"""
 
         log("%s.%s", self.__class__, self.start.__name__)
+
+        self.test_case = test_case
+        self.iut_log_file = open(os.path.join(test_case.log_dir, "autopts-iutctl-zephyr.log"), "a")
 
         self.flush_serial()
 
@@ -90,8 +98,8 @@ class ZephyrCtl:
             # socat dies after socket is closed, so no need to kill it
             self.socat_process = subprocess.Popen(shlex.split(socat_cmd),
                                                   shell=False,
-                                                  stdout=IUT_LOG_FO,
-                                                  stderr=IUT_LOG_FO)
+                                                  stdout=self.iut_log_file,
+                                                  stderr=self.iut_log_file)
         else:
             qemu_cmd = get_qemu_cmd(self.kernel_image)
 
@@ -100,8 +108,8 @@ class ZephyrCtl:
             # TODO check if zephyr process has started correctly
             self.qemu_process = subprocess.Popen(shlex.split(qemu_cmd),
                                                  shell=False,
-                                                 stdout=IUT_LOG_FO,
-                                                 stderr=IUT_LOG_FO)
+                                                 stdout=self.iut_log_file,
+                                                 stderr=self.iut_log_file)
 
         self.btp_socket.accept()
 
@@ -116,16 +124,26 @@ class ZephyrCtl:
         except serial.SerialException:
             pass
 
+    def rtt2pty_start(self):
+        if self.rtt2pty:
+            self.rtt2pty.start(os.path.join(self.test_case.log_dir, 'iut-zephyr.log'))
+
+    def rtt2pty_stop(self):
+        if self.rtt2pty:
+            self.rtt2pty.stop()
+
     def reset(self):
         """Restart IUT related processes and reset the IUT"""
         log("%s.%s", self.__class__, self.reset.__name__)
 
         self.stop()
-        self.start()
+        self.start(self.test_case)
         self.flush_serial()
 
         if not self.board:
             return
+
+        self.rtt2pty_stop()
 
         self.board.reset()
 
@@ -145,6 +163,8 @@ class ZephyrCtl:
         else:
             log("IUT ready event received OK")
 
+        self.rtt2pty_start()
+
     def stop(self):
         """Powers off the Zephyr OS"""
         log("%s.%s", self.__class__, self.stop.__name__)
@@ -157,6 +177,13 @@ class ZephyrCtl:
             self.qemu_process.terminate()
             self.qemu_process.wait()  # do not let zombies take over
             self.qemu_process = None
+
+        if self.iut_log_file:
+            self.iut_log_file.close()
+            self.iut_log_file = None
+
+        if self.rtt2pty:
+            self.rtt2pty.stop()
 
 
 class ZephyrCtlStub:
@@ -191,15 +218,15 @@ class Board:
         reel
     ]
 
-    def __init__(self, board_name, kernel_image, tty_file):
+    def __init__(self, board_name, kernel_image, iutctl):
         """Constructor of board"""
         if board_name not in self.names:
             raise Exception("Board name %s is not supported!" % board_name)
 
         self.name = board_name
         self.kernel_image = kernel_image
-        self.tty_file = tty_file
         self.reset_cmd = self.get_reset_cmd()
+        self.iutctl = iutctl
 
     def reset(self):
         """Reset HW DUT board with openocd
@@ -212,8 +239,8 @@ class Board:
 
         reset_process = subprocess.Popen(shlex.split(self.reset_cmd),
                                          shell=False,
-                                         stdout=IUT_LOG_FO,
-                                         stderr=IUT_LOG_FO)
+                                         stdout=self.iutctl.iut_log_file,
+                                         stderr=self.iutctl.iut_log_file)
         if reset_process.wait():
             logging.error("openocd reset failed")
 
@@ -305,7 +332,7 @@ def init_stub():
     ZEPHYR = ZephyrCtlStub()
 
 
-def init(kernel_image, tty_file, board=None):
+def init(kernel_image, tty_file, board=None, use_rtt2pty=False):
     """IUT init routine
 
     kernel_image -- Path to Zephyr kernel image
@@ -314,20 +341,14 @@ def init(kernel_image, tty_file, board=None):
     board -- HW DUT board to use for testing. This parameter is used only
              if tty_file is specified
     """
-    global IUT_LOG_FO
     global ZEPHYR
 
-    IUT_LOG_FO = open("iut-zephyr.log", "w")
-
-    ZEPHYR = ZephyrCtl(kernel_image, tty_file, board)
+    ZEPHYR = ZephyrCtl(kernel_image, tty_file, board, use_rtt2pty)
 
 
 def cleanup():
     """IUT cleanup routine"""
-    global IUT_LOG_FO, ZEPHYR
-    IUT_LOG_FO.close()
-    IUT_LOG_FO = None
-
+    global ZEPHYR
     if ZEPHYR:
         ZEPHYR.stop()
         ZEPHYR = None
