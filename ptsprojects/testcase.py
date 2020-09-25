@@ -24,6 +24,8 @@ import time
 import logging
 from threading import Thread
 import Queue
+import datetime
+import errno
 
 from utils import exec_iut_cmd
 import ptstypes
@@ -329,12 +331,12 @@ class TestCase(PTSCallback):
         return TestCase(self.project_name, self.name, self.cmds,
                         self.ptsproject_name, self.no_wid, self.edit1_wids,
                         self.verify_wids, self.ok_cancel_wids,
-                        self.generic_wid_hdl)
+                        self.generic_wid_hdl, self.log_filename, self.log_dir)
 
     def __init__(self, project_name, test_case_name, cmds=[],
                  ptsproject_name=None, no_wid=None, edit1_wids=None,
                  verify_wids=None, ok_cancel_wids=None,
-                 generic_wid_hdl=None):
+                 generic_wid_hdl=None, log_filename=None, log_dir=None):
         """TestCase constructor
 
         cmds -- a list of TestCmd and TestFunc or single instance of them
@@ -403,10 +405,28 @@ class TestCase(PTSCallback):
         self.ptsproject_name = ptsproject_name
         self.tc_subproc = None
         self.lf_subproc = None
+        self.log_filename = log_filename
+        self.log_dir = log_dir
 
     def __str__(self):
         """Returns string representation"""
         return "%s %s" % (self.project_name, self.name)
+
+    def initialize_logging(self, session_logging_dir):
+        now = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+        normalized_name = self.name.replace('/', '_')
+        timestamp_name = "%s_%s" % (normalized_name, now)
+        test_log_dir = os.path.join(session_logging_dir, timestamp_name)
+        try:
+            os.makedirs(test_log_dir)
+        except OSError as e:
+            if e.errno != errno.EEXIST:
+                raise
+
+        log("Created logs directory %r", test_log_dir)
+
+        self.log_dir = test_log_dir
+        self.log_filename = os.path.join(test_log_dir, timestamp_name + ".log")
 
     def log(self, log_type, logtype_string, log_time, log_message):
         """Overrides PTSCallback method. Handles
