@@ -19,6 +19,12 @@ import socket
 import binascii
 import threading
 import Queue
+import signal
+import subprocess
+import serial
+import time
+from fcntl import fcntl, F_GETFL, F_SETFL
+from os import O_NONBLOCK, read
 
 import defs
 from types import BTPError
@@ -243,3 +249,70 @@ class BTPWorker(BTPSocket):
 
     def register_event_handler(self, event_handler):
         self.event_handler_cb = event_handler
+
+
+class RTT2PTY:
+    def __init__(self):
+        self.rtt2pty_process = None
+        self.pty_name = None
+        self.serial_thread = None
+        self.stop_thread = threading.Event()
+        self.log_filename = None
+        self.log_file = None
+
+    def _start_rtt2pty_proc(self):
+        self.rtt2pty_process = subprocess.Popen('rtt2pty',
+                                                shell=False,
+                                                stdout=subprocess.PIPE,
+                                                stderr=subprocess.PIPE)
+        flags = fcntl(self.rtt2pty_process.stdout, F_GETFL) # get current p.stdout flags
+        fcntl(self.rtt2pty_process.stdout, F_SETFL, flags | O_NONBLOCK)
+
+        time.sleep(3)
+        pty = None
+        try:
+            for line in iter(self.rtt2pty_process.stdout.readline, b''):
+                if line.startswith('PTY name is '):
+                    pty = line[len('PTY name is '):].strip()
+        except IOError:
+            pass
+
+        return pty
+
+    def _read_from_port(self, serial, stop_thread, file):
+        while not stop_thread.is_set():
+            line = serial.readline()
+            try:
+                decoded = line.decode()
+            except UnicodeDecodeError:
+                continue
+            file.write(decoded)
+            file.flush()
+
+
+    def start(self, log_filename):
+        self.log_filename = log_filename
+        self.pty_name = self._start_rtt2pty_proc()
+
+        self.serial = serial.Serial(self.pty_name, 115200, timeout=0)
+        self.stop_thread.clear()
+        self.log_file = open(self.log_filename, 'a')
+        self.serial_thread = threading.Thread(
+            target=self._read_from_port, args=(self.serial, self.stop_thread, self.log_file))
+        self.serial_thread.start()
+
+    def stop(self):
+        self.stop_thread.set()
+
+        if self.serial_thread:
+            self.serial_thread.join()
+            self.serial_thread = None
+
+        if self.log_file:
+            self.log_file.close()
+            self.log_file = None
+
+        if self.rtt2pty_process and self.rtt2pty_process.poll() is None:
+            self.rtt2pty_process.send_signal(signal.SIGINT)
+            self.rtt2pty_process.wait()
+            self.rtt2pty_process = None
