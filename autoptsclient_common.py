@@ -18,6 +18,7 @@
 """Common code for the auto PTS clients"""
 
 import os
+import errno
 import sys
 import random
 import socket
@@ -45,7 +46,6 @@ log = logging.debug
 
 RUNNING_TEST_CASE = {}
 TEST_CASE_DB = None
-LOG_DIR_NAME = None
 
 # To test autopts client locally:
 # Envrinment variable AUTO_PTS_LOCAL must be set for FakeProxy to
@@ -314,15 +314,6 @@ get_my_ip_address.cached_address = None
 
 def init_logging():
     """Initialize logging"""
-    global LOG_DIR_NAME
-    now = datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S-%f")
-    LOG_DIR_NAME = os.path.join("logs", now)
-
-    while os.path.exists(LOG_DIR_NAME):  # make sure it does not exit
-        LOG_DIR_NAME += "_"
-
-    os.makedirs(LOG_DIR_NAME)
-
     script_name = os.path.basename(sys.argv[0])  # in case it is full path
     script_name_no_ext = os.path.splitext(script_name)[0]
 
@@ -334,9 +325,6 @@ def init_logging():
                         filename=log_filename,
                         filemode='w',
                         level=logging.DEBUG)
-
-    log("Created logs directory %r", LOG_DIR_NAME)
-
 
 class FakeProxy(object):
     """Fake PTS XML-RPC proxy client.
@@ -686,46 +674,6 @@ def run_test_case_wrapper(func):
     return wrapper
 
 
-def log2file(function):
-    """Decorator to log function call into separate log file.
-
-    Currently only used with run_test_case
-
-    """
-    def wrapper(*args):
-        test_case = args[1]
-        normalized_name = test_case.name.replace('/', '_')
-
-        # TODO remove project_name prefix from log_filename when GAP project
-        # Test Cases will follow the same convention like other projects
-        log_filename = os.path.join(
-            LOG_DIR_NAME,
-            "%s_%s.log" % (test_case.project_name, normalized_name))
-
-        # if log file exists, append date to its name to make it unique
-        if os.path.exists(log_filename):
-            (root, ext) = os.path.splitext(log_filename)
-            now = datetime.datetime.now().strftime("%Y-%m-%dT%H-%M-%S-%f")
-            log_filename = "%s_%s%s" % (root, now, ext)
-
-        logger = logging.getLogger()
-        file_handler = logging.FileHandler(log_filename)
-
-        format = ("%(asctime)s %(name)s %(levelname)s %(filename)-25s "
-                  "%(lineno)-5s %(funcName)-25s : %(message)s")
-        formatter = logging.Formatter(format)
-
-        file_handler.setFormatter(formatter)
-        # file_handler.setLevel(logging.ERROR)
-        logger.addHandler(file_handler)
-
-        function(*args)
-
-        logger.removeHandler(file_handler)
-
-    return wrapper
-
-
 def get_error_code(exc):
     """Return string error code for argument exception"""
     error_code = None
@@ -768,7 +716,6 @@ def synchronize_instances(state, break_state=None):
             return
 
 
-@log2file
 def run_test_case_thread_entry(pts, test_case):
     """Runs the test case specified by a TestCase instance.
 
@@ -829,7 +776,7 @@ def run_test_case_thread_entry(pts, test_case):
 
 
 @run_test_case_wrapper
-def run_test_case(ptses, test_case_instances, test_case_name, stats):
+def run_test_case(ptses, test_case_instances, test_case_name, stats, session_log_dir):
     def test_case_lookup_name(name, test_case_class):
         """Return 'test_case_class' instance if found or None otherwise"""
         if test_case_instances is None:
@@ -837,15 +784,26 @@ def run_test_case(ptses, test_case_instances, test_case_name, stats):
 
         for tc in test_case_instances:
             if tc.name == name and isinstance(tc, test_case_class):
-                return tc.copy()
+                return tc
 
         return None
+
+    logger = logging.getLogger()
+
+    format = ("%(asctime)s %(name)s %(levelname)s %(filename)-25s "
+                "%(lineno)-5s %(funcName)-25s : %(message)s")
+    formatter = logging.Formatter(format)
 
     # Lookup TestCase class instance
     test_case_lt1 = test_case_lookup_name(test_case_name, TestCaseLT1)
     if test_case_lt1 is None:
         # FIXME
         return 'NOT_IMPLEMENTED'
+
+    test_case_lt1.initialize_logging(session_log_dir)
+    file_handler = logging.FileHandler(test_case_lt1.log_filename)
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
 
     if test_case_lt1.name_lt2:
         if len(ptses) < 2:
@@ -884,6 +842,8 @@ def run_test_case(ptses, test_case_instances, test_case_name, stats):
         for pts_thread in pts_threads:
             pts_thread.join()
 
+        logger.removeHandler(file_handler)
+
         if test_case_lt2 and test_case_lt2.status != "PASS" \
                 and test_case_lt1.status == "PASS":
             return test_case_lt2.status
@@ -920,6 +880,14 @@ def run_test_cases(ptses, test_case_instances, args):
 
         return True
 
+    now = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+    session_log_dir = 'logs/' + now
+    try:
+        os.makedirs(session_log_dir)
+    except OSError as e:
+        if e.errno != errno.EEXIST:
+            raise
+
     test_cases = []
 
     projects = ptses[0].get_project_list()
@@ -936,7 +904,7 @@ def run_test_cases(ptses, test_case_instances, args):
 
         while True:
             status, duration = run_test_case(ptses, test_case_instances,
-                                             test_case, stats)
+                                             test_case, stats, session_log_dir)
 
             if status == 'PASS' or stats.run_count == args.retry:
                 if TEST_CASE_DB:
