@@ -1474,6 +1474,13 @@ def hdl_wid_133(desc):
 def hdl_wid_134(desc):
     return True
 
+
+def hdl_wid_136(desc):
+    btp.gatts_add_svc(0, UUID.VND16_2)
+    btp.gatts_start_server()
+    return True
+
+
 def hdl_wid_137(desc):
     return True
 
