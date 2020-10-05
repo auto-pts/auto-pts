@@ -1474,6 +1474,8 @@ def hdl_wid_133(desc):
 def hdl_wid_134(desc):
     return True
 
+def hdl_wid_137(desc):
+    return True
 
 def hdl_wid_2000(desc):
     stack = get_stack()
