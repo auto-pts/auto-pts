@@ -1906,13 +1906,13 @@
           <Row>
             <Name>TSPC_GATT_1_1</Name>
             <Description>Generic Attribute Profile (GATT) Client (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_1_2</Name>
             <Description>Generic Attribute Profile (GATT) Server (C.2)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1953,7 +1953,19 @@
           </Row>
           <Row>
             <Name>TSPC_GATT_2_3</Name>
-            <Description>Attribute Protocol Supported (L2CAP fixed EATT PSM supported) (C.3)</Description>
+            <Description>Enhanced ATT bearer Attribute Protocol Supported (L2CAP fixed EATT PSM supported) (C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_2_3a</Name>
+            <Description>Enhanced ATT bearer supported over LE (C.4)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_2_3b</Name>
+            <Description>Enhanced ATT bearer supported over BR/EDR (C.5)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -2379,38 +2391,80 @@
           </Row>
           <Row>
             <Name>TSPC_GATT_8_1</Name>
-            <Description>Support for Multiple ATT bearers from same device. (C.1)</Description>
+            <Description>Support for multiple simultaneous active ATT bearers from same device – ATT over LE and ATT over BR/EDR (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_8_2</Name>
+            <Description>Support for multiple simultaneous active ATT bearers from same device – ATT over LE and EATT over LE (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_8_3</Name>
+            <Description>Support for multiple simultaneous active ATT bearers from same device – ATT over BR/EDR and EATT over BR/EDR (C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_8_4</Name>
+            <Description>Support for multiple simultaneous active ATT bearers from same device – ATT over LE and EATT over BR/EDR (C.4)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_8_5</Name>
+            <Description>Support for multiple simultaneous active ATT bearers from same device – ATT over BR/EDR and EATT over LE (C.5)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_8_6</Name>
+            <Description>Support for multiple simultaneous active EATT bearers from same device – EATT over BR/EDR and EATT over LE (C.6)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_8_7</Name>
+            <Description>Support for multiple simultaneous active EATT bearers from same device – EATT over BR/EDR (C.7)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_8_8</Name>
+            <Description>Support for multiple simultaneous active EATT bearers from same device – EATT over LE (C.7)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_0_2</Name>
             <Description>LE (C.2)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_24_2</Name>
             <Description>Bondable Mode (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_24_3</Name>
             <Description>Bonding Procedure (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_34_2</Name>
             <Description>Bondable Mode (C.2)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_34_3</Name>
             <Description>Bonding Procedure (C.2)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -3124,6 +3178,12 @@
             <Value>FALSE</Value>
           </Row>
           <Row>
+            <Name>TSPX_spsm</Name>
+            <Description>LE PSM to be used by IUT and TESTER. (Default: 0025)</Description>
+            <Value>0025</Value>
+            <Type>OCTETSTRING</Type>
+          </Row>
+          <Row>
             <Name>TSPX_le_psm</Name>
             <Description>LE PSM to be used by IUT and TESTER. (Default: 0025)</Description>
             <Type>OCTETSTRING</Type>
@@ -3332,6 +3392,24 @@
             <Description>IUT be able to generate local busy manually or have lower tester send I-frames until local busy is reached. (Default: TRUE)</Description>
             <Type>BOOLEAN</Type>
             <Value>TRUE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_l2ca_cbmps_min</Name>
+            <Description>Minimum Credit Based MPS size. (Default: 0040)</Description>
+            <Value>0040</Value>
+            <Type>OCTETSTRING</Type>
+          </Row>
+          <Row>
+            <Name>TSPX_l2ca_cbmps_max</Name>
+            <Description>Maximum Credit Based MPS size. (Default: 0100)</Description>
+            <Value>0100</Value>
+            <Type>OCTETSTRING</Type>
+          </Row>
+          <Row>
+            <Name>TSPX_eatt_over_br_edr</Name>
+            <Description>Enhanced ATT bearer supported over BR/EDR. (Default: FALSE)</Description>
+            <Value>FALSE</Value>
+            <Type>BOOLEAN</Type>
           </Row>
         </Rows>
       </PIXIT>
