@@ -60,6 +60,7 @@ class ZephyrClient(autoptsclient.Client):
         autoprojects.l2cap.set_pixits(ptses[0])
         autoprojects.gatt.set_pixits(ptses)
         autoprojects.mesh.set_pixits(ptses)
+        autoprojects.mmdl.set_pixits(ptses)
 
     def setup_test_cases(self, ptses):
         self.test_cases = autoprojects.gap.test_cases(ptses[0])
@@ -68,6 +69,7 @@ class ZephyrClient(autoptsclient.Client):
         self.test_cases += autoprojects.sm.test_cases(ptses[0])
         self.test_cases += autoprojects.l2cap.test_cases(ptses[0])
         self.test_cases += autoprojects.mesh.test_cases(ptses)
+        self.test_cases += autoprojects.mmdl.test_cases(ptses)
 
     def cleanup(self):
         autoprojects.iutctl.cleanup()
