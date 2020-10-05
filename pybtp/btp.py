@@ -502,7 +502,69 @@ MMDL = {
     "scene_recall": (defs.BTP_SERVICE_ID_MMDL,
                      defs.MMDL_SCENE_RECALL,
                      CONTROLLER_INDEX),
-
+    "light_xyl_get": (defs.BTP_SERVICE_ID_MMDL,
+                      defs.MMDL_LIGHT_XYL_GET,
+                      CONTROLLER_INDEX, ""),
+    "light_xyl_set": (defs.BTP_SERVICE_ID_MMDL,
+                      defs.MMDL_LIGHT_XYL_SET,
+                      CONTROLLER_INDEX),
+    "light_xyl_target_get": (defs.BTP_SERVICE_ID_MMDL,
+                             defs.MMDL_LIGHT_XYL_TARGET_GET,
+                             CONTROLLER_INDEX, ""),
+    "light_xyl_default_get": (defs.BTP_SERVICE_ID_MMDL,
+                              defs.MMDL_LIGHT_XYL_DEFAULT_GET,
+                              CONTROLLER_INDEX, ""),
+    "light_xyl_default_set": (defs.BTP_SERVICE_ID_MMDL,
+                              defs.MMDL_LIGHT_XYL_DEFAULT_SET,
+                              CONTROLLER_INDEX),
+    "light_xyl_range_get": (defs.BTP_SERVICE_ID_MMDL,
+                            defs.MMDL_LIGHT_XYL_RANGE_GET,
+                            CONTROLLER_INDEX, ""),
+    "light_xyl_range_set": (defs.BTP_SERVICE_ID_MMDL,
+                            defs.MMDL_LIGHT_XYL_RANGE_SET,
+                            CONTROLLER_INDEX),
+    "light_hsl_get": (defs.BTP_SERVICE_ID_MMDL,
+                      defs.MMDL_LIGHT_HSL_GET,
+                      CONTROLLER_INDEX, ""),
+    "light_hsl_set": (defs.BTP_SERVICE_ID_MMDL,
+                      defs.MMDL_LIGHT_HSL_SET,
+                      CONTROLLER_INDEX),
+    "light_hsl_target_get": (defs.BTP_SERVICE_ID_MMDL,
+                             defs.MMDL_LIGHT_HSL_TARGET_GET,
+                             CONTROLLER_INDEX, ""),
+    "light_hsl_default_get": (defs.BTP_SERVICE_ID_MMDL,
+                              defs.MMDL_LIGHT_HSL_DEFAULT_GET,
+                              CONTROLLER_INDEX, ""),
+    "light_hsl_default_set": (defs.BTP_SERVICE_ID_MMDL,
+                              defs.MMDL_LIGHT_HSL_DEFAULT_SET,
+                              CONTROLLER_INDEX),
+    "light_hsl_range_get": (defs.BTP_SERVICE_ID_MMDL,
+                            defs.MMDL_LIGHT_HSL_RANGE_GET,
+                            CONTROLLER_INDEX, ""),
+    "light_hsl_range_set": (defs.BTP_SERVICE_ID_MMDL,
+                            defs.MMDL_LIGHT_HSL_RANGE_SET,
+                            CONTROLLER_INDEX),
+    "light_hsl_hue_get": (defs.BTP_SERVICE_ID_MMDL,
+                          defs.MMDL_LIGHT_HSL_HUE_GET,
+                          CONTROLLER_INDEX, ""),
+    "light_hsl_hue_set": (defs.BTP_SERVICE_ID_MMDL,
+                          defs.MMDL_LIGHT_HSL_HUE_SET,
+                          CONTROLLER_INDEX),
+    "light_hsl_saturation_get": (defs.BTP_SERVICE_ID_MMDL,
+                                 defs.MMDL_LIGHT_HSL_SATURATION_GET,
+                                 CONTROLLER_INDEX, ""),
+    "light_hsl_saturation_set": (defs.BTP_SERVICE_ID_MMDL,
+                                 defs.MMDL_LIGHT_HSL_SATURATION_SET,
+                                 CONTROLLER_INDEX),
+    "scheduler_get": (defs.BTP_SERVICE_ID_MMDL,
+                      defs.MMDL_SCHEDULER_GET,
+                      CONTROLLER_INDEX, ""),
+    "scheduler_action_get": (defs.BTP_SERVICE_ID_MMDL,
+                             defs.MMDL_SCHEDULER_ACTION_GET,
+                             CONTROLLER_INDEX),
+    "scheduler_action_set": (defs.BTP_SERVICE_ID_MMDL,
+                             defs.MMDL_SCHEDULER_ACTION_SET,
+                             CONTROLLER_INDEX),
 }
 
 
@@ -5232,6 +5294,331 @@ def mmdl_scene_recall(scene_num, tt=None, delay=None, ack=True):
                       stack.mesh.recv_status_data_get("Status"))
 
 
+def mmdl_light_xyl_get():
+    logging.debug("%s", mmdl_light_xyl_get.__name__)
+
+    iutctl = get_iut()
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['light_xyl_get'])
+
+    hdr_fmt = '<HHHi'
+    lightness, x_value, y_value, remaining_time = struct.unpack_from(hdr_fmt, rsp)
+    stack = get_stack()
+    stack.mesh.recv_status_data_set('Status', [lightness, x_value, y_value])
+    logging.debug('Status: %r', stack.mesh.recv_status_data_get("Status"))
+
+
+def mmdl_light_xyl_set(lightness, x_value, y_value, tt, delay, ack=True):
+    logging.debug("%s", mmdl_light_xyl_set.__name__)
+
+    iutctl = get_iut()
+    data = bytearray(struct.pack("<BHHH", ack, lightness, x_value, y_value))
+    if tt is not None:
+        data.extend(struct.pack("<B", tt))
+    if delay is not None:
+        data.extend(struct.pack("<B", delay))
+
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['light_xyl_set'], data=data)
+
+    if ack:
+        hdr_fmt = '<HHHI'
+        lightness, x_value, y_value, remaining_time = struct.unpack_from(hdr_fmt, rsp)
+        stack = get_stack()
+        stack.mesh.recv_status_data_set('Status', [lightness, x_value, y_value])
+        logging.debug('Status: %r', stack.mesh.recv_status_data_get("Status"))
+
+
+def mmdl_light_xyl_target_get():
+    logging.debug("%s", mmdl_light_xyl_target_get.__name__)
+
+    iutctl = get_iut()
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['light_xyl_target_get'])
+
+    hdr_fmt = '<HHHi'
+    lightness, x_value, y_value, remaining_time = struct.unpack_from(hdr_fmt, rsp)
+    stack = get_stack()
+    stack.mesh.recv_status_data_set('Status', [lightness, x_value, y_value])
+    logging.debug('Status: %r', stack.mesh.recv_status_data_get("Status"))
+
+
+def mmdl_light_xyl_default_get():
+    logging.debug("%s", mmdl_light_xyl_default_get.__name__)
+
+    iutctl = get_iut()
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['light_xyl_default_get'])
+
+    hdr_fmt = '<HHH'
+    lightness, x_value, y_value = struct.unpack_from(hdr_fmt, rsp)
+    stack = get_stack()
+    stack.mesh.recv_status_data_set('Status', [lightness, x_value, y_value])
+    logging.debug('Status: %r', stack.mesh.recv_status_data_get("Status"))
+
+
+def mmdl_light_xyl_default_set(lightness, x_value, y_value, ack=True):
+    logging.debug("%s", mmdl_light_xyl_default_set.__name__)
+
+    iutctl = get_iut()
+    data = bytearray(struct.pack("<BHHH", ack, lightness, x_value, y_value))
+
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['light_xyl_default_set'], data=data)
+
+    if ack:
+        hdr_fmt = '<HHH'
+        lightness, x_value, y_value = struct.unpack_from(hdr_fmt, rsp)
+        stack = get_stack()
+        stack.mesh.recv_status_data_set('Status', [lightness, x_value, y_value])
+        logging.debug('Status: %r', stack.mesh.recv_status_data_get("Status"))
+
+
+def mmdl_light_xyl_range_get():
+    logging.debug("%s", mmdl_light_xyl_range_get.__name__)
+
+    iutctl = get_iut()
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['light_xyl_range_get'])
+
+    hdr_fmt = '<BHHHH'
+    status, min_x, min_y, max_x, max_y = struct.unpack_from(hdr_fmt, rsp)
+    stack = get_stack()
+    stack.mesh.recv_status_data_set('Status', [status, min_x, min_y, max_x, max_y])
+    logging.debug('Status: %r', stack.mesh.recv_status_data_get("Status"))
+
+
+def mmdl_light_xyl_range_set(lmin_x, min_y, max_x, max_y, ack=True):
+    logging.debug("%s", mmdl_light_xyl_range_set.__name__)
+
+    iutctl = get_iut()
+    data = bytearray(struct.pack("<BHHHH", ack, lmin_x, min_y, max_x, max_y))
+
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['light_xyl_range_set'], data=data)
+
+    if ack:
+        hdr_fmt = '<BHHHH'
+        status, min_x, min_y, max_x, max_y = struct.unpack_from(hdr_fmt, rsp)
+        stack = get_stack()
+        stack.mesh.recv_status_data_set('Status', [min_x, min_y, max_x, max_y])
+        logging.debug('Status: %r', stack.mesh.recv_status_data_get("Status"))
+
+
+def mmdl_light_hsl_get():
+    logging.debug("%s", mmdl_light_hsl_get.__name__)
+
+    iutctl = get_iut()
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['light_hsl_get'])
+
+    hdr_fmt = '<HHHi'
+    lightness, hue, saturation, remaining_time = struct.unpack_from(hdr_fmt, rsp)
+    stack = get_stack()
+    stack.mesh.recv_status_data_set('Status', [lightness, hue, saturation])
+    logging.debug('Status: %r', stack.mesh.recv_status_data_get("Status"))
+
+
+def mmdl_light_hsl_set(lightness, hue, saturation, tt, delay, ack=True):
+    logging.debug("%s", mmdl_light_hsl_set.__name__)
+
+    iutctl = get_iut()
+    data = bytearray(struct.pack("<BHHH", ack, lightness, hue, saturation))
+    if tt is not None:
+        data.extend(struct.pack("<B", tt))
+    if delay is not None:
+        data.extend(struct.pack("<B", delay))
+
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['light_hsl_set'], data=data)
+
+    if ack:
+        hdr_fmt = '<HHHi'
+        lightness, hue, saturation, remaining_time = struct.unpack_from(hdr_fmt, rsp)
+        stack = get_stack()
+        stack.mesh.recv_status_data_set('Status', [lightness, hue, saturation])
+        logging.debug('Status: %r', stack.mesh.recv_status_data_get("Status"))
+
+def mmdl_light_hsl_target_get():
+    logging.debug("%s", mmdl_light_hsl_target_get.__name__)
+
+    iutctl = get_iut()
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['light_hsl_target_get'])
+
+    hdr_fmt = '<HHHi'
+    lightness, hue, saturation, remaining_time = struct.unpack_from(hdr_fmt, rsp)
+    stack = get_stack()
+    stack.mesh.recv_status_data_set('Status', [lightness, hue, saturation])
+    logging.debug('Status: %r', stack.mesh.recv_status_data_get("Status"))
+
+
+def mmdl_light_hsl_default_get():
+    logging.debug("%s", mmdl_light_hsl_default_get.__name__)
+
+    iutctl = get_iut()
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['light_hsl_default_get'])
+
+    hdr_fmt = '<HHH'
+    lightness,hue, saturation = struct.unpack_from(hdr_fmt, rsp)
+    stack = get_stack()
+    stack.mesh.recv_status_data_set('Status', [lightness, hue, saturation])
+    logging.debug('Status: %r', stack.mesh.recv_status_data_get("Status"))
+
+
+
+def mmdl_light_hsl_default_set(lightness, hue, saturation, ack=True):
+    logging.debug("%s", mmdl_light_hsl_default_set.__name__)
+
+    iutctl = get_iut()
+    data = bytearray(struct.pack("<BHHH", ack, lightness, hue, saturation))
+
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['light_hsl_default_set'], data=data)
+
+    if ack:
+        hdr_fmt = '<HHH'
+        lightness, hue, saturation = struct.unpack_from(hdr_fmt, rsp)
+        stack = get_stack()
+        stack.mesh.recv_status_data_set('Status', [lightness, hue, saturation])
+        logging.debug('Status: %r', stack.mesh.recv_status_data_get("Status"))
+
+
+def mmdl_light_hsl_range_get():
+    logging.debug("%s", mmdl_light_hsl_range_get.__name__)
+
+    iutctl = get_iut()
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['light_hsl_range_get'])
+
+    hdr_fmt = '<BHHHH'
+    status_code, hue_min, saturation_min, hue_max, saturation_max = struct.unpack_from(hdr_fmt, rsp)
+    stack = get_stack()
+    stack.mesh.recv_status_data_set('Status', [status_code, hue_min, saturation_min, hue_max, saturation_max])
+    logging.debug('Status: %r', stack.mesh.recv_status_data_get("Status"))
+
+
+def mmdl_light_hsl_range_set(hue_min, saturation_min, hue_max, saturation_max, ack=True):
+    logging.debug("%s", mmdl_light_hsl_range_set.__name__)
+
+    iutctl = get_iut()
+    data = bytearray(struct.pack("<BHHHH", ack, hue_min, saturation_min, hue_max, saturation_max))
+
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['light_hsl_range_set'], data=data)
+
+    if ack:
+        hdr_fmt = '<BHHHH'
+        status_code, hue_min, saturation_min, hue_max, saturation_max = struct.unpack_from(hdr_fmt, rsp)
+        stack = get_stack()
+        stack.mesh.recv_status_data_set('Status', [hue_min, saturation_min, hue_max, saturation_max])
+        logging.debug('Status: %r', stack.mesh.recv_status_data_get("Status"))
+
+def mmdl_light_hsl_hue_get():
+    logging.debug("%s", mmdl_light_hsl_hue_get.__name__)
+
+    iutctl = get_iut()
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['light_hsl_hue_get'])
+
+    hdr_fmt = '<HHi'
+    hue_current, hue_target, remaining_time = struct.unpack_from(hdr_fmt, rsp)
+    stack = get_stack()
+    stack.mesh.recv_status_data_set('Status', [hue_current])
+    logging.debug('Status: %r', stack.mesh.recv_status_data_get("Status"))
+
+def mmdl_light_hsl_hue_set(hue, tt, delay, ack=True):
+    logging.debug("%s", mmdl_light_hsl_hue_set.__name__)
+
+    iutctl = get_iut()
+    data = bytearray(struct.pack("<BH", ack, hue))
+    if tt is not None:
+        data.extend(struct.pack("<B", tt))
+    if delay is not None:
+        data.extend(struct.pack("<B", delay))
+
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['light_hsl_hue_set'], data=data)
+
+    if ack:
+        hdr_fmt = '<HHi'
+        hue_current, hue_target, remaining_time = struct.unpack_from(hdr_fmt, rsp)
+        stack = get_stack()
+        if delay:
+            stack.mesh.recv_status_data_set('Status', [hue_target])
+        else:
+            stack.mesh.recv_status_data_set('Status', [hue_current])
+        logging.debug('Status: %r', stack.mesh.recv_status_data_get("Status"))
+
+def mmdl_light_hsl_saturation_get():
+    logging.debug("%s", mmdl_light_hsl_saturation_get.__name__)
+
+    iutctl = get_iut()
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['light_hsl_saturation_get'])
+
+    hdr_fmt = '<HHi'
+    saturation_current, saturation_target, remaining_time = struct.unpack_from(hdr_fmt, rsp)
+    stack = get_stack()
+    stack.mesh.recv_status_data_set('Status', [saturation_current])
+    logging.debug('Status: %r', stack.mesh.recv_status_data_get("Status"))
+
+def mmdl_light_hsl_saturation_set(hue, tt, delay, ack=True):
+    logging.debug("%s", mmdl_light_hsl_saturation_set.__name__)
+
+    iutctl = get_iut()
+    data = bytearray(struct.pack("<BH", ack, hue))
+    if tt is not None:
+        data.extend(struct.pack("<B", tt))
+    if delay is not None:
+        data.extend(struct.pack("<B", delay))
+
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['light_hsl_saturation_set'], data=data)
+
+    if ack:
+        hdr_fmt = '<HHi'
+        saturation_current, saturation_target, remaining_time = struct.unpack_from(hdr_fmt, rsp)
+        stack = get_stack()
+        if delay:
+            stack.mesh.recv_status_data_set('Status', [saturation_target])
+        else:
+            stack.mesh.recv_status_data_set('Status', [saturation_current])
+        logging.debug('Status: %r', stack.mesh.recv_status_data_get("Status"))
+
+def mmdl_scheduler_get():
+    logging.debug("%s", mmdl_scheduler_get.__name__)
+
+    iutctl = get_iut()
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['scheduler_get'])
+
+    hdr_fmt = '<H'
+    (schedules,) = struct.unpack_from(hdr_fmt, rsp)
+    stack = get_stack()
+    stack.mesh.recv_status_data_set('Status', [schedules])
+    logging.debug('Status: %r', stack.mesh.recv_status_data_get("Status"))
+
+
+def mmdl_scheduler_action_get(index):
+    logging.debug("%s", mmdl_scheduler_action_get.__name__)
+
+    iutctl = get_iut()
+    data = bytearray(struct.pack("<B", index))
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['scheduler_action_get'], data)
+
+    hdr_fmt = '<BBBBBBBBBH'
+    year, month, day, hour, minute, second, day_of_week, action, transition_time, scene_num = struct.unpack_from(
+        hdr_fmt, rsp)
+    stack = get_stack()
+    stack.mesh.recv_status_data_set('Status',
+                                    [year, month, day, hour, minute, second, day_of_week, action, transition_time,
+                                     scene_num])
+    logging.debug('Status: %r', stack.mesh.recv_status_data_get("Status"))
+
+
+def mmdl_scheduler_action_set(index, year, month, day, hour, minute, second, day_of_week, action, transition_time,
+                              scene_num, ack=True):
+    logging.debug("%s", mmdl_scheduler_action_set.__name__)
+
+    iutctl = get_iut()
+    data = bytearray(
+        struct.pack("<BBBBBBBBBBBH", ack, index, year, month, day, hour, minute, second, day_of_week, action,
+                    transition_time, scene_num))
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['scheduler_action_set'], data)
+    if ack:
+        hdr_fmt = '<BBBBBBBBBH'
+        year, month, day, hour, minute, second, day_of_week, action, transition_time, scene_num = struct.unpack_from(
+            hdr_fmt, rsp)
+        stack = get_stack()
+        stack.mesh.recv_status_data_set('Status',
+                                        [index, year, month, day, hour, minute, second, day_of_week, action,
+                                         transition_time, scene_num])
+        logging.debug('Status: %r', stack.mesh.recv_status_data_get("Status"))
+
+
 def event_handler(hdr, data):
     logging.debug("%s %r %r", event_handler.__name__, hdr, data)
 
@@ -5269,6 +5656,7 @@ def event_handler(hdr, data):
     # TODO: Raise BTP error instead of logging
     logging.error("Unhandled event! svc_id %s op %s", hdr.svc_id, hdr.op)
     return False
+
 
 def get_iut_method():
     return get_iut()
