@@ -18,7 +18,7 @@ import sys
 import time
 
 from pybtp import btp
-from pybtp.types import Prop, Perm, UUID, AdType
+from pybtp.types import Prop, Perm, UUID, AdType, bdaddr_reverse
 import re
 import struct
 from ptsprojects.stack import get_stack
@@ -640,6 +640,26 @@ def hdl_wid_149(desc):
 
     if stack.gap.appearance:
         stack.gap.ad[AdType.gap_appearance] = stack.gap.appearance
+
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
+
+    return True
+
+
+def hdl_wid_152(desc):
+    stack = get_stack()
+
+    stack.gap.ad[AdType.public_target_addr] = bdaddr_reverse(btp.pts_addr_get())
+
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
+
+    return True
+
+
+def hdl_wid_154(desc):
+    stack = get_stack()
+
+    stack.gap.ad[AdType.advertising_interval] = "0030"
 
     btp.gap_adv_ind_on(ad=stack.gap.ad)
 
