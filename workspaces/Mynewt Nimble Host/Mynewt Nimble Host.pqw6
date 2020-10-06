@@ -1520,7 +1520,7 @@
           <Row>
             <Name>TSPC_LL_2_5</Name>
             <Description>Resolution of private addresses (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
