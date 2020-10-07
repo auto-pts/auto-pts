@@ -530,6 +530,12 @@ def test_cases(pts):
         ZTestCase("GAP", "GAP/GAT/BV-04-C",
                   cmds=pre_conditions,
                   generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/GAT/BV-05-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/GAT/BV-06-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
     ]
 
     return test_cases
