@@ -1514,7 +1514,7 @@
           <Row>
             <Name>TSPC_SM_2_4</Name>
             <Description>OOB supported (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4268,7 +4268,7 @@
           <Row>
             <Name>TSPC_SM_4_3</Name>
             <Description>Out of Band (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
