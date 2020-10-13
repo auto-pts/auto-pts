@@ -86,30 +86,53 @@ z['gdrive'] = {
 z['iut_config'] = {
     "prj.conf": {},  # Default config file name
 
+    "enforce_mitm.conf": {
+        "overlay": {'CONFIG_BT_SMP_ENFORCE_MITM': 'y'},
+        "test_cases": ['SM/SLA/PKE/BV-05-C',
+                       'SM/SLA/SCPK/BI-04-C',
+                       'SM/MAS/OOB/BI-01-C',
+                       'SM/SLA/OOB/BV-04-C',
+                       'SM/SLA/OOB/BI-02-C',
+                       'GAP/SEC/AUT/BV-12-C',
+                       'GAP/SEC/AUT/BV-13-C'
+                       ]
+    },
+
     "privacy.conf": {
         "overlay": {'CONFIG_BT_PRIVACY': 'y'},
-        "test_cases": ['GAP/PRIV/CONN/BV-10-C', 'GAP/DISC/LIMM/BV-03-C',
-                       'GAP/DISC/GENM/BV-03-C', 'GAP/CONN/NCON/BV-02-C',
-                       'GAP/CONN/NCON/BV-03-C', 'GAP/CONN/UCON/BV-06-C',
-                       'SM/SLA/KDU/BV-02-C', 'SM/MAS/KDU/BV-05-C',
-                       'GAP/CONN/ACEP/BV-03-C', 'GAP/CONN/DCEP/BV-05-C',
-                       'GAP/CONN/GCEP/BV-05-C', 'GAP/BROB/BCST/BV-03-C',
-                       'GAP/PRIV/CONN/BI-01-C', 'GAP/BROB/OBSV/BV-06-C',
-                       'GAP/PRIV/CONN/BV-11-C']},
+        "test_cases": ['GAP/PRIV/CONN/BV-10-C',
+                       'GAP/PRIV/CONN/BV-11-C',
+                       'GAP/CONN/ACEP/BV-03-C', # As of PTS v7.6.2, not supported
+                       'GAP/CONN/DCEP/BV-05-C', # As of PTS v7.6.2, not supported
+                       'GAP/CONN/GCEP/BV-05-C', # As of PTS v7.6.2, not supported
+                       'GAP/CONN/NCON/BV-02-C',
+                       'GAP/CONN/UCON/BV-06-C',
+                       'GAP/BROB/BCST/BV-03-C',
+                       'GAP/BROB/OBSV/BV-06-C',
+                       'SM/MAS/KDU/BV-05-C',
+                       'SM/MAS/KDU/BV-10-C',
+                       'SM/MAS/KDU/BV-11-C',
+                       'SM/SLA/KDU/BV-02-C',
+                       'SM/SLA/KDU/BV-08-C',
+                       ]
+    },
 
     "mesh_subnet_count.conf": {
         "overlay": {'CONFIG_BT_MESH_SUBNET_COUNT': '1'},
-        "test_cases": ['MESH/NODE/CFG/NKL/BI-03-C']},
+        "test_cases": ['MESH/NODE/CFG/NKL/BI-03-C']
+    },
 
     "l2cap_param_update.conf": {
         "overlay": {'CONFIG_BT_CTLR_CONN_PARAM_REQ': 'n'},
         "test_cases": ['GAP/CONN/CPUP/BV-01-C', 'GAP/CONN/CPUP/BV-02-C',
-                       'GAP/CONN/CPUP/BV-03-C', 'L2CAP/LE/CPU/BV-01-C']},
+                       'GAP/CONN/CPUP/BV-03-C', 'L2CAP/LE/CPU/BV-01-C']
+    },
 
     "gap_writable_device_name.conf": {
         "overlay": {'CONFIG_BT_DEVICE_NAME_DYNAMIC': 'y',
                     'CONFIG_BT_DEVICE_NAME_GATT_WRITABLE': 'y'},
-        'test_cases': ['GAP/GAT/BV-05-C']},
+        'test_cases': ['GAP/GAT/BV-05-C']
+    },
 }
 
 # ****************************************************************************
