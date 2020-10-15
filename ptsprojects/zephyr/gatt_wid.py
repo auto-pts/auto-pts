@@ -25,6 +25,7 @@ from ptsprojects.stack import get_stack, GattPrimary, GattService, GattSecondary
 from time import sleep
 from ptsprojects.testcase import MMI
 import socket
+from random import randint
 
 log = logging.debug
 
@@ -88,6 +89,9 @@ def gatt_server_fetch_db():
             db.attr_add(handle, GattCharacteristicDescriptor(handle, perm, uuid, att_rsp, val))
 
     return db
+
+
+COMPARED_VALUE = []
 
 
 # wid handlers section begin
@@ -1462,7 +1466,8 @@ def hdl_wid_130(desc):
 
 
 def hdl_wid_132(desc):
-    btp.gatts_add_svc(0, UUID.VND16_1)
+    rnd = randint(1000, 9999)
+    btp.gatts_add_svc(0, str(rnd))
     btp.gatts_start_server()
     return True
 
@@ -1483,6 +1488,40 @@ def hdl_wid_136(desc):
 
 def hdl_wid_137(desc):
     return True
+
+
+def hdl_wid_138(desc):
+    MMI.reset()
+    MMI.parse_description(desc)
+
+    hdl = MMI.args[0]
+
+    if not hdl:
+        logging.error("parsing error")
+        return False
+
+    read_val = btp.gatts_get_attr_val(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl)
+    COMPARED_VALUE.append(read_val)
+
+    return True
+
+
+def hdl_wid_139(desc):
+    MMI.reset()
+    MMI.parse_description(desc)
+
+    hdl = MMI.args[0]
+
+    if not hdl:
+        logging.error("parsing error")
+        return False
+
+    read_val = btp.gatts_get_attr_val(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl)
+    if read_val == COMPARED_VALUE[0]:
+        return True
+    else:
+        return False
+
 
 def hdl_wid_2000(desc):
     stack = get_stack()
