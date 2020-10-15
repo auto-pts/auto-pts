@@ -155,7 +155,7 @@ def apply_overlay(zephyr_wd, base_conf, cfg_name, overlay):
 
 autopts2board = {
     None: None,
-    'nrf52': 'nrf52840_pca10056',
+    'nrf52': 'nrf52840dk_nrf52840',
     'reel_board' : 'reel_board'
 }
 
