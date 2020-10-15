@@ -800,6 +800,7 @@ def run_test_case(ptses, test_case_instances, test_case_name, stats, session_log
         # FIXME
         return 'NOT_IMPLEMENTED'
 
+    test_case_lt1.reset()
     test_case_lt1.initialize_logging(session_log_dir)
     file_handler = logging.FileHandler(test_case_lt1.log_filename)
     file_handler.setFormatter(formatter)
