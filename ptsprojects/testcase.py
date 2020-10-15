@@ -408,6 +408,10 @@ class TestCase(PTSCallback):
         self.log_filename = log_filename
         self.log_dir = log_dir
 
+    def reset(self):
+        self.status = "init"
+        self.state = None
+
     def __str__(self):
         """Returns string representation"""
         return "%s %s" % (self.project_name, self.name)
