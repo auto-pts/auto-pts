@@ -485,6 +485,23 @@ class L2cap:
 
         return chan.is_connected(10)
 
+    def wait_for_disconnection(self, chan_id, timeout):
+        if not self.is_connected(chan_id):
+            return True
+
+        flag = Event()
+        flag.set()
+
+        t = Timer(timeout, timeout_cb, [flag])
+        t.start()
+
+        while flag.is_set():
+            if not self.is_connected(chan_id):
+                t.cancel()
+                return True
+
+        return False
+
     def rx(self, chan_id, data):
         chan = self._chan_lookup_id(chan_id)
         if chan is None:

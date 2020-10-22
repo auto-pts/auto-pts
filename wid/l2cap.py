@@ -91,12 +91,12 @@ def hdl_wid_36(desc):
 def hdl_wid_37(desc):
     """
     Implements: TSC_MMI_upper_tester_confirm_LE_data
-    :param desc: Did the Upper Tester send first data frame of xxxx to the PTS.
+    :param desc: Did the Upper Tester send the data xxxx to the PTS?
                  Click Yes if it matched, otherwise click No.
     :return:
     """
     # This pattern is matching first data frame
-    pattern = re.compile(r"frame\sof\s([0-9a-fA-F]+)")
+    pattern = re.compile(r"send\sthe\sdata\s([0-9a-fA-F]+)")
     data = pattern.findall(desc)
     if not data:
         logging.error("%s parsing error", hdl_wid_37.__name__)
@@ -168,7 +168,7 @@ def hdl_wid_43(desc):
     """
     stack = get_stack()
 
-    btp.l2cap_send_data(0, "FF", 40)
+    btp.l2cap_send_data(0, "FF", 21)
 
     return True
 
@@ -413,6 +413,9 @@ def hdl_wid_112(desc):
 
     return True
 
+def hdl_wid_254(desc):
+    # TODO: Fix to actually verify result of 'Insufficient Encryption Key Size' 0x0007 error
+    return get_stack().l2cap.wait_for_disconnection(0, 30)
 
 def hdl_wid_255(desc):
     stack = get_stack()
