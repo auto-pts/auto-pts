@@ -138,7 +138,7 @@ def set_pixits(pts):
     pts.set_pixit("GAP", "TSPX_gen_disc_scan_min", "10240")
     pts.set_pixit("GAP", "TSPX_database_file", "Database-GAP.sig")
     pts.set_pixit("GAP", "TSPX_iut_rx_mtu", "23")
-    pts.set_pixit("GAP", "TSPX_iut_private_address_interval", "60000")
+    pts.set_pixit("GAP", "TSPX_iut_private_address_interval", "30000")
     pts.set_pixit("GAP", "TSPX_iut_privacy_enabled", "FALSE")
     pts.set_pixit("GAP", "TSPX_psm", "1001")
     pts.set_pixit("GAP", "TSPX_iut_valid_connection_interval_min", "00C8")
