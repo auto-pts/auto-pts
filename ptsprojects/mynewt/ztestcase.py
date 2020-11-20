@@ -34,7 +34,7 @@ class ZTestCase(TestCaseLT1):
         self.mynewtctl = get_iut()
 
         # first command is to start QEMU or HW
-        self.cmds.insert(0, TestFunc(self.mynewtctl.start))
+        self.cmds.insert(0, TestFunc(self.mynewtctl.start, self))
         self.cmds.insert(1, TestFunc(self.mynewtctl.wait_iut_ready_event))
 
         self.cmds.append(TestFuncCleanUp(self.stack.cleanup))
