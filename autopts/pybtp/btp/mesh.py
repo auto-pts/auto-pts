@@ -639,6 +639,12 @@ def mesh_store_net_data():
     stack.mesh.net_recv_ev_store.data = True
 
 
+def mesh_store_model_data():
+    stack = get_stack()
+
+    stack.mesh.model_recv_ev_store.data = True
+
+
 def mesh_iv_test_mode_autoinit():
     stack = get_stack()
 
@@ -1556,6 +1562,24 @@ def mesh_prov_node_added_ev(mesh, data, data_len):
     stack.mesh.node_added(net_idx, addr, uuid, num_elems)
 
 
+def mesh_model_recv_ev(mesh, data, data_len):
+    logging.debug("%s %r %r", mesh_model_recv_ev.__name__, data, data_len)
+
+    stack = get_stack()
+
+    if not stack.mesh.model_recv_ev_store.data:
+        return
+
+    hdr_fmt = '<HHB'
+    hdr_len = struct.calcsize(hdr_fmt)
+
+    (src, dst, payload_len) = struct.unpack_from(hdr_fmt, data, 0)
+    (payload,) = struct.unpack_from('<%ds' % payload_len, data, hdr_len)
+    payload = binascii.hexlify(payload)
+
+    stack.mesh.model_recv_ev_data.data = (src, dst, payload)
+
+
 MESH_EV = {
     defs.MESH_EV_OUT_NUMBER_ACTION: mesh_out_number_action_ev,
     defs.MESH_EV_OUT_STRING_ACTION: mesh_out_string_action_ev,
@@ -1572,4 +1596,5 @@ MESH_EV = {
     defs.MESH_EV_LPN_TERMINATED: mesh_lpn_terminated_ev,
     defs.MESH_EV_LPN_POLLED: mesh_lpn_polled_ev,
     defs.MESH_EV_PROV_NODE_ADDED: mesh_prov_node_added_ev,
+    defs.MESH_EV_MODEL_RECV: mesh_model_recv_ev,
 }

@@ -477,6 +477,10 @@ class Mesh:
         self.net_recv_ev_store = Property(False)
         # net_recv_ev_data (ttl, ctl, src, dst, payload)
         self.net_recv_ev_data = Property(None)
+        # model_recv_ev_store - store data for further verification
+        self.model_recv_ev_store = Property(False)
+        # model_recv_ev_data (src, dst, payload)
+        self.model_recv_ev_data = Property(None)
         self.incomp_timer_exp = Property(False)
         self.friendship = Property(False)
         self.lpn = Property(False)
