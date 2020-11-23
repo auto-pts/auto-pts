@@ -447,6 +447,9 @@ class Mesh:
         self.last_seen_prov_link_state = Property(None)
         self.prov_invalid_bearer_rcv = Property(False)
 
+        # network data
+        self.lt1_addr = 0x0001
+
         # provision node data
         self.net_key = '0123456789abcdef0123456789abcdef'
         self.net_key_idx = 0x0000
@@ -503,6 +506,10 @@ class Mesh:
         self.provisioning_in_progress = Property(None)
         self.nodes_added = Property({})
         self.nodes_expected = Property([])
+
+        # SAR
+        self.sar_transmitter_state = Property((0x01, 0x07, 0x01, 0x07, 0x01, 0x02, 0x03))
+        self.sar_receiver_state = Property((0x04, 0x02, 0x01, 0x01, 0x01))
 
         # MMDL expected status data
         self.expect_status_data = Property({
