@@ -517,8 +517,8 @@ def mesh_lpn_poll():
     iutctl.btp_socket.send_wait_rsp(*MESH['lpn_poll'])
 
 
-def mesh_model_send(src, dst, payload):
-    logging.debug("%s %r %r %r", mesh_model_send.__name__, src, dst, payload)
+def mesh_model_send(src, dst, payload, ttl=0xff):
+    logging.debug("%s %r %r %r %r", mesh_model_send.__name__, src, dst, payload, ttl)
 
     if isinstance(src, str):
         src = int(src, 16)
@@ -526,13 +526,16 @@ def mesh_model_send(src, dst, payload):
     if isinstance(dst, str):
         dst = int(dst, 16)
 
+    if isinstance(ttl, str):
+        ttl = int(ttl, 16)
+
     payload = binascii.unhexlify(payload)
     payload_len = len(payload)
 
     if payload_len > 0xff:
         raise BTPError("Payload exceeds PDU")
 
-    data = bytearray(struct.pack("<HHB", src, dst, payload_len))
+    data = bytearray(struct.pack("<BHHB", ttl, src, dst, payload_len))
     data.extend(payload)
 
     iutctl = get_iut()
