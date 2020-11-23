@@ -291,9 +291,13 @@ def hdl_wid_22(params: WIDParams):
 def hdl_wid_23(params: WIDParams):
     """
     Implements: SEND_SEGMENTED_DATA
-    description: Please send a segmented message encrypted with an application
-                 key with source address 0x%04X and destination address 0x%04X
+    description: Please send a multiple packet long segmented access message encrypted with an application key with
+                 source address 0x0002, destination address 0x0001 and Not Zero TTL.
     """
+    if re.search('not zero ttl', params.description, re.IGNORECASE):
+        ttl = 0xff
+    else:
+        ttl = 0
 
     # This pattern is matching source and destination addresses
     pattern = re.compile(
@@ -307,7 +311,7 @@ def hdl_wid_23(params: WIDParams):
 
     btp.mesh_model_send(int(params.get('source address'), 16),
                         int(params.get('destination address'), 16),
-                        'ff' * 16)
+                        'ff' * 24, ttl)
     return True
 
 
@@ -538,6 +542,10 @@ def hdl_wid_39(params: WIDParams):
     if int(params.get('address'), 16) != recv_dst:
         logging.error("Destination address does not match")
         return False
+
+    stack.mesh.net_recv_ev_data.data = None
+    stack.mesh.model_recv_ev_data.data = None
+
     return True
 
 
@@ -648,6 +656,45 @@ def hdl_wid_51(params: WIDParams):
     if int(params.get('address'), 16) != recv_dst:
         logging.error("Destination address does not match")
         return False
+    return True
+
+
+def hdl_wid_52(params: WIDParams):
+    """
+    Implements: CONFIRM_TRANSPORT_SEGMENTDATA
+    :desccription: Please confirm the following transport packet was not processed with
+                   destination address : 0x%04X
+    :return:
+    """
+    stack = get_stack()
+
+    # This pattern is destination addresses
+    pattern = re.compile(r'(address)\s+\:\s+([0][xX][0-9a-fA-F]+)')
+    params = pattern.findall(params.description)
+    if not params:
+        logging.error("%s parsing error", hdl_wid_39.__name__)
+        return False
+
+    params = dict(params)
+
+    if not stack.mesh.model_recv_ev_data.data:
+        logging.error("No data received")
+        return True
+
+    (recv_src, recv_dst, recv_pdu) = \
+        stack.mesh.model_recv_ev_data.data
+
+    if int(params.get('address'), 16) == recv_dst:
+        logging.error("Destination address match")
+        return False
+
+    stack.mesh.net_recv_ev_data.data = None
+    stack.mesh.model_recv_ev_data.data = None
+
+    return True
+
+
+def hdl_wid_55(_: WIDParams):
     return True
 
 
@@ -2441,6 +2488,10 @@ def hdl_wid_522(params: WIDParams):
     return True
 
 
+def hdl_wid_526(params: WIDParams):
+    return True
+
+
 def hdl_wid_550(params: WIDParams):
     """
     Implements:
@@ -2933,6 +2984,41 @@ def hdl_wid_652(_: WIDParams):
     """
 
     # TODO: Confirm composition data
+    return True
+
+
+def hdl_wid_674(_: WIDParams):
+    return False
+
+
+def hdl_wid_942(_: WIDParams):
+    stack = get_stack()
+
+    btp.mesh_sar_transmitter_get(stack.mesh.lt1_addr)
+    return True
+
+
+def hdl_wid_943(_: WIDParams):
+    stack = get_stack()
+
+    btp.mesh_sar_transmitter_set(
+        stack.mesh.lt1_addr, *stack.mesh.sar_transmitter_state.data)
+
+    return True
+
+
+def hdl_wid_944(_: WIDParams):
+    stack = get_stack()
+
+    btp.mesh_sar_receiver_get(stack.mesh.lt1_addr)
+    return True
+
+
+def hdl_wid_945(_: WIDParams):
+    stack = get_stack()
+
+    btp.mesh_sar_receiver_set(
+        stack.mesh.lt1_addr, *stack.mesh.sar_receiver_state.data)
     return True
 
 
