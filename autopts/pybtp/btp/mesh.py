@@ -259,6 +259,18 @@ MESH = {
     "va_del": (defs.BTP_SERVICE_ID_MESH,
                defs.MESH_VA_DEL,
                CONTROLLER_INDEX),
+    "sar_transmitter_get": (defs.BTP_SERVICE_ID_MESH,
+                            defs.MESH_SAR_TRANSMITTER_GET,
+                            CONTROLLER_INDEX),
+    "sar_transmitter_set": (defs.BTP_SERVICE_ID_MESH,
+                            defs.MESH_SAR_TRANSMITTER_SET,
+                            CONTROLLER_INDEX),
+    "sar_receiver_get": (defs.BTP_SERVICE_ID_MESH,
+                         defs.MESH_SAR_RECEIVER_GET,
+                         CONTROLLER_INDEX),
+    "sar_receiver_set": (defs.BTP_SERVICE_ID_MESH,
+                         defs.MESH_SAR_RECEIVER_SET,
+                         CONTROLLER_INDEX),
 }
 
 
@@ -578,6 +590,76 @@ def mesh_proxy_identity():
 
     iutctl = get_iut()
     iutctl.btp_socket.send_wait_rsp(*MESH['proxy_identity'])
+
+
+def mesh_sar_transmitter_get(dst):
+    logging.debug("%s 0x%02x", mesh_sar_transmitter_get.__name__, dst)
+
+    data = bytearray(struct.pack("<H", dst))
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*MESH['sar_transmitter_get'], data=data)
+
+
+def mesh_sar_transmitter_set(dst, seg_int_step,
+                             unicast_retrans_count,
+                             unicast_retrans_without_prog_count,
+                             unicast_retrans_int_step,
+                             unicast_retrans_int_inc,
+                             multicast_retrans_count,
+                             multicast_retrans_int):
+    logging.debug("%s 0x%02x %r %r %r %r %r %r %r", mesh_sar_transmitter_set.__name__,
+                  dst,
+                  seg_int_step,
+                  unicast_retrans_count,
+                  unicast_retrans_without_prog_count,
+                  unicast_retrans_int_step,
+                  unicast_retrans_int_inc,
+                  multicast_retrans_count,
+                  multicast_retrans_int)
+
+    data = bytearray(struct.pack("<HBBBBBBB", dst, seg_int_step,
+                                 unicast_retrans_count,
+                                 unicast_retrans_without_prog_count,
+                                 unicast_retrans_int_step,
+                                 unicast_retrans_int_inc,
+                                 multicast_retrans_count,
+                                 multicast_retrans_int))
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*MESH['sar_transmitter_set'], data=data)
+
+
+def mesh_sar_receiver_get(dst):
+    logging.debug("%s 0x%02x", mesh_sar_receiver_get.__name__, dst)
+
+    data = bytearray(struct.pack("<H", dst))
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*MESH['sar_receiver_get'], data=data)
+
+
+def mesh_sar_receiver_set(dst, seg_thresh,
+                          ack_delay_inc,
+                          ack_retrans_count,
+                          discard_timeout,
+                          rx_seg_int_step):
+    logging.debug("%s 0x%02x %r %r %r %r %r", mesh_sar_receiver_set.__name__,
+                  dst,
+                  seg_thresh,
+                  ack_delay_inc,
+                  ack_retrans_count,
+                  discard_timeout,
+                  rx_seg_int_step)
+
+    data = bytearray(struct.pack("<HBBBBB", dst, seg_thresh,
+                                 ack_delay_inc,
+                                 ack_retrans_count,
+                                 discard_timeout,
+                                 rx_seg_int_step))
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*MESH['sar_receiver_set'], data=data)
 
 
 def mesh_out_number_action_ev(mesh, data, data_len):
