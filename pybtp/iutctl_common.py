@@ -265,6 +265,7 @@ class RTT2PTY:
         pty = None
         try:
             for line in iter(self.rtt2pty_process.stdout.readline, b''):
+                line = line.decode('UTF-8')
                 if line.startswith('PTY name is '):
                     pty = line[len('PTY name is '):].strip()
         except IOError:
