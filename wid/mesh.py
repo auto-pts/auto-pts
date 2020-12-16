@@ -106,7 +106,7 @@ def hdl_wid_8(desc):
     """
     stack = get_stack()
 
-    ret = stack.mesh.oob_data.data
+    ret = stack.mesh.oob_data.data.decode('UTF-8')
 
     # cleanup
     stack.mesh.oob_data.data = None
@@ -1601,7 +1601,7 @@ def hdl_wid_601(desc):
         logging.error("%s parsing error", hdl_wid_601.__name__)
         return False
 
-    current_faults = stack.mesh.health_current_faults.data
+    current_faults = stack.mesh.health_current_faults.data.decode('UTF-8')
 
     if params[0].upper() != current_faults.upper():
         logging.error("Fault array does not match %r vs %r", params[0],
