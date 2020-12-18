@@ -765,8 +765,6 @@ def hdl_wid_205(desc):
                  ready.
     :return:
     """
-    btp.mesh_iv_update_test_mode(True)
-    btp.mesh_iv_update_toggle()
     return True
 
 
