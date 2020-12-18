@@ -376,7 +376,8 @@ def test_cases(ptses):
         ZTestCase("MESH", "MESH/NODE/IVU/BV-03-C", cmds=pre_conditions +
                   [TestFunc(btp.mesh_iv_test_mode_autoinit)],
                   generic_wid_hdl=mesh_wid_hdl),
-        ZTestCase("MESH", "MESH/NODE/IVU/BV-04-C", cmds=pre_conditions,
+        ZTestCase("MESH", "MESH/NODE/IVU/BV-04-C", cmds=pre_conditions +
+                  [TestFunc(btp.mesh_iv_test_mode_autoinit)],
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/IVU/BV-05-C", cmds=pre_conditions +
                   [TestFunc(btp.mesh_iv_test_mode_autoinit)],
