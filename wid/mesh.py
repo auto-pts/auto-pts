@@ -1445,6 +1445,15 @@ def hdl_wid_368(desc):
     return True
 
 
+def hdl_wid_372(desc):
+    """
+    Implements:
+    :param desc: Please confirm that IUT ignores Proxy Configuration message.
+    :return:
+    """
+    return True
+
+
 def hdl_wid_500(desc):
     """
     Implements:
