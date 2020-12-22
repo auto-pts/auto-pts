@@ -84,7 +84,7 @@ def set_pixits(ptses):
     pts.set_pixit("MESH", "TSPX_iut_model_id_used", "0002")
     pts.set_pixit("MESH", "TSPX_OOB_code", "00000000000000000102030405060708")
     pts.set_pixit("MESH", "TSPX_subscription_address_list", "C302")
-    pts.set_pixit("MESH", "TSPX_vendor_model_id", "ffff1234")
+    pts.set_pixit("MESH", "TSPX_vendor_model_id", "05f11234")
     pts.set_pixit("MESH", "TSPX_maximum_network_message_cache_entries", "2")
     pts.set_pixit("MESH", "TSPX_health_valid_test_ids", "00")
     pts.set_pixit("MESH", "TSPX_iut_comp_data_page", "0")
