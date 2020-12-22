@@ -335,6 +335,20 @@ class Mesh:
 
         return False
 
+    def wait_for_attention_timer_exp(self, timeout):
+        flag = Event()
+        flag.set()
+
+        t = Timer(timeout, timeout_cb, [flag])
+        t.start()
+
+        while flag.is_set():
+            state, bearer = self.last_seen_prov_link_state.data
+            if state == 'closed':
+                t.cancel()
+                return True
+
+        return False
 
 class L2capChan:
     def __init__(self, chan_id, psm, peer_mtu, peer_mps, our_mtu, our_mps,

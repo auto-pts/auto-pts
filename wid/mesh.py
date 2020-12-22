@@ -460,13 +460,7 @@ def hdl_wid_37(desc):
     """
     stack = get_stack()
 
-    if not stack.mesh.last_seen_prov_link_state.data:
-        return False
-
-    state, bearer = stack.mesh.last_seen_prov_link_state.data
-    if state == 'closed':
-        return True
-    return False
+    return stack.mesh.wait_for_attention_timer_exp(90)
 
 
 def hdl_wid_38(desc):
