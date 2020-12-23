@@ -121,6 +121,7 @@ class MynewtCtl:
         except BTPError as err:
             log("Unexpected event received (%s), expected IUT ready!", err)
             self.stop()
+            raise err
         else:
             log("IUT ready event received OK")
 
