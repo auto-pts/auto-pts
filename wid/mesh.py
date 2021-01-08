@@ -1240,6 +1240,9 @@ def hdl_wid_333(desc):
                  Please click OK when friendship is terminated.
     :return:
     """
+    stack = get_stack()
+    assert stack.mesh.wait_for_lpn_terminated(timeout=60)
+
     return True
 
 
@@ -1529,7 +1532,9 @@ def hdl_wid_560(desc):
     :param desc: Lower Tester 2 is waiting for IUT's heartbeat triggered by friendship termination.
     :return:
     """
-    btp.mesh_lpn(False)
+    stack = get_stack()
+    assert stack.mesh.wait_for_lpn_terminated(timeout=60)
+
     return True
 
 
@@ -1539,6 +1544,9 @@ def hdl_wid_561(desc):
     :param desc: Lower Tester 2 is waiting for IUT's heartbeat triggered by friendship establishment.
     :return:
     """
+    stack = get_stack()
+    assert stack.mesh.wait_for_lpn_established(timeout=60)
+
     return True
 
 
@@ -1546,15 +1554,6 @@ def hdl_wid_562(desc):
     """
     Implements:
     :param desc: Friendship will be terminated between Lower Tester 1 and IUT. Verifying no heartbeat is triggered by the termination...
-    :return:
-    """
-    return True
-
-
-def hdl_wid_564(desc):
-    """
-    Implements:
-    :param desc: Please wait until Friendship is reestablished between Lower Tester 1 and IUT. Click OK to send Heartbeat Subscription Set message to IUT (Low Power Node).
     :return:
     """
     return True
@@ -1568,6 +1567,20 @@ def hdl_wid_563(desc):
                  to IUT (Low Power Node).
     :return:
     """
+    return True
+
+
+def hdl_wid_564(desc):
+    """
+    Implements:
+    :param desc: Please wait until Friendship is reestablished between Lower Tester
+                 1 and IUT. Click OK to send Heartbeat Subscription Set message
+                 to IUT (Low Power Node).
+    :return:
+    """
+    stack = get_stack()
+    assert stack.mesh.wait_for_lpn_established(timeout=60)
+
     return True
 
 
