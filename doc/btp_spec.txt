@@ -1852,3 +1852,54 @@ Events:
 
 		This event indicates that segmented message incomplete timer
 		expired.
+
+	Opcode 0x89 - Friendship Established Event
+
+		Controller Index:	<controller id>
+		Event parameters:	Network Key Index (2 octet)
+					LPN address (2 octet)
+					Receive delay (1 octets)
+					Poll timeout (4 octets)
+
+		This event indicates that a Friendship has been established
+		(as a Friend).
+
+	Opcode 0x8a - Friendship Terminated Event
+
+		Controller Index:	<controller id>
+		Event parameters:	Network Key Index (2 octet)
+					LPN address (2 octet)
+
+		This event indicates that a Friendship has been terminated
+		(as a Friend).
+
+	Opcode 0x8b - LPN Established Event
+
+		Controller Index:	<controller id>
+		Event parameters:	Network Key Index (2 octet)
+					Friend address (2 octet)
+					Queue size (1 octets)
+					Receive window (1 octets)
+
+		This event indicates that a Friendship has been established
+		(as a LPN).
+
+	Opcode 0x8c - LPN Terminated Event
+
+		Controller Index:	<controller id>
+		Event parameters:	Network Key Index (2 octet)
+					Friend address (2 octet)
+
+		This event indicates that a Friendship has been terminated
+		(as a LPN).
+
+	Opcode 0x8d - LPN Polled Event
+
+		Controller Index:	<controller id>
+		Event parameters:	Network Key Index (2 octet)
+					Friend address (2 octet)
+					Retry (1 octet)
+
+		Retry parameter is a binary value indicaing that a poll was a retry.
+
+		This event indicates that the IUT as an LPN has polled a Friend.
