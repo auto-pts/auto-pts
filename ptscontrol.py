@@ -748,8 +748,35 @@ class PyPTS:
 
     def get_bluetooth_address(self):
         """Returns PTS bluetooth address string"""
+        try:
+            address = self._pts.GetPTSBluetoothAddress()
+        except Exception as e:
+            address = ""
 
-        return self._pts.GetPTSBluetoothAddress()
+        if address == "":
+            self.connect_to_dongle()
+            try:
+                address = self._pts.GetPTSBluetoothAddress()
+            except Exception as e:
+                log("Connecting to dongle failed.")
+                raise e
+
+        return address
+
+    def connect_to_dongle(self):
+        deviceToConnect = None
+        devices = self._pts.GetDeviceList()
+        for device in devices:
+            if 'USB:Free' in device:
+                log("Connecting to dual-mode dongle")
+                deviceToConnect = device
+                break
+            elif 'COM' in device:
+                log("Connecting to LE-only dongle")
+                deviceToConnect = device
+                break
+        if deviceToConnect is not None:
+            self._pts.SelectDevice(deviceToConnect)
 
     def bd_addr(self):
         """Returns PTS Bluetooth address as a colon separated string"""
