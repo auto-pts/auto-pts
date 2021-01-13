@@ -4820,5 +4820,1476 @@
         </Rows>
       </PIXIT>
     </PROJECT_INFORMATION>
+    <PROJECT_INFORMATION NAME="MMDL" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
+      <PICS>
+        <Name>MMDL</Name>
+        <Version />
+        <Rows>
+          <!-- Table 0a:Mesh Specification Versions -->
+          <Row>
+            <Name>TSPC_MMDL_0a_1</Name>
+            <Description>Mesh Specification v1.0 (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <!-- Table 0b:Mesh Model Specification Versions -->
+          <Row>
+            <Name>TSPC_MMDL_0b_1</Name>
+            <Description>Mesh Model Specification v1.0 (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <!-- Table 0c:Mesh Model Specification Versions -->
+          <Row>
+            <Name>TSPC_MMDL_0c_1</Name>
+            <Description>Mesh Model Specification v1.0.1 (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <!-- Table 1: Bluetooth Core Specification v4.0 or Later -->
+          <Row>
+            <Name>TSPC_MMDL_1_1</Name>
+            <Description>Core Specification 4.0 or later (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <!-- Table 2: Generic Server Models -->
+          <Row>
+            <Name>TSPC_MMDL_2_1</Name>
+            <Description>Generic OnOff Server (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_2_2</Name>
+            <Description>Generic Level Server (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_2_3</Name>
+            <Description>Generic Default Transition Time Server (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_2_4</Name>
+            <Description>Generic Power OnOff Server (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_2_5</Name>
+            <Description>Generic Power OnOff Setup Server (C.2)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_2_6</Name>
+            <Description>Generic Power Level Server (C.3)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_2_7</Name>
+            <Description>Generic Power Level Setup Server (C.4)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_2_8</Name>
+            <Description>Generic Battery Server (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_2_9</Name>
+            <Description>Generic Location Server (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_2_10</Name>
+            <Description>Generic Location Setup Server (C.5)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_2_11</Name>
+            <Description>Generic User Property Server (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_2_12</Name>
+            <Description>Generic Admin Property Server (C.6)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_2_13</Name>
+            <Description>Generic Manufacturer Property Server (C.6)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_2_14</Name>
+            <Description>Generic Client Property Server (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <!-- Table 3: Generic Client Models -->
+          <Row>
+            <Name>TSPC_MMDL_3_1</Name>
+            <Description>Generic OnOff Client (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_3_2</Name>
+            <Description>Generic Level Client (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_3_3</Name>
+            <Description>Generic Default Transition Time Client (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_3_4</Name>
+            <Description>Generic Power OnOff Client (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_3_5</Name>
+            <Description>Generic Power Level Client (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_3_6</Name>
+            <Description>Generic Battery Client (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_3_7</Name>
+            <Description>Generic Location Client (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_3_8</Name>
+            <Description>Generic Property Client (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <!-- Table 4: Generic OnOff Client -->
+          <Row>
+            <Name>TSPC_MMDL_4_1</Name>
+            <Description>Generic OnOff Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_4_2</Name>
+            <Description>Generic OnOff Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_4_3</Name>
+            <Description>Generic OnOff Set Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <!-- Table 5: Generic Level Client -->
+          <Row>
+            <Name>TSPC_MMDL_5_1</Name>
+            <Description>Generic Level Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_5_2</Name>
+            <Description>Generic Level Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_5_3</Name>
+            <Description>Generic Level Set Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_5_4</Name>
+            <Description>Generic Delta Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_5_5</Name>
+            <Description>Generic Delta Set Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_5_6</Name>
+            <Description>Generic Move Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_5_7</Name>
+            <Description>Generic Move Set Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <!-- Table 6: Generic default transition time client -->
+          <Row>
+            <Name>TSPC_MMDL_6_1</Name>
+            <Description>Generic Default Transition Time Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_6_2</Name>
+            <Description>Generic Default Transition Time Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_6_3</Name>
+            <Description>Generic Default Transition Time Set Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <!-- Table 7: Node Capabilities - Upper Transport Layer -->
+          <Row>
+            <Name>TSPC_MMDL_7_1</Name>
+            <Description>Generic OnPowerUp Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_7_2</Name>
+            <Description>Generic OnPowerUp Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_7_3</Name>
+            <Description>Generic OnPowerUp Set Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <!-- Table 8: Generic Level Client -->
+          <Row>
+            <Name>TSPC_MMDL_8_1</Name>
+            <Description>Generic Power Level Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_8_2</Name>
+            <Description>Generic Power Level Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_8_3</Name>
+            <Description>Generic Power Level Set Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_8_4</Name>
+            <Description>Generic Power Last Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_8_5</Name>
+            <Description>Generic Power Default Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_8_6</Name>
+            <Description>Generic Power Default Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_8_7</Name>
+            <Description>Generic Power Default Set Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_8_8</Name>
+            <Description>Generic Power Range Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_8_9</Name>
+            <Description>Generic Power Range Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_8_10</Name>
+            <Description>Generic Power Range Set Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <!-- Table 9: Generic Location Client -->
+          <Row>
+            <Name>TSPC_MMDL_9_1</Name>
+            <Description>Generic Location Global Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_9_2</Name>
+            <Description>Generic Location Global Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_9_3</Name>
+            <Description>Generic Location Global Set Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_9_4</Name>
+            <Description>Generic Location Local Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_9_5</Name>
+            <Description>Generic Location Local Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_9_6</Name>
+            <Description>Generic Location Local Set Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <!-- Table 10: Generic Property Client -->
+          <Row>
+            <Name>TSPC_MMDL_10_1</Name>
+            <Description>Generic User Properties Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_10_2</Name>
+            <Description>Generic User Property Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_10_3</Name>
+            <Description>Generic User Property Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_10_4</Name>
+            <Description>Generic User Property Set Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_10_5</Name>
+            <Description>Generic Admin Properties Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_10_6</Name>
+            <Description>Generic Admin Property Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_10_7</Name>
+            <Description>Generic Admin Property Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_10_8</Name>
+            <Description>Generic Admin Property Set Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_10_9</Name>
+            <Description>Generic Manufacturer Properties Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_10_10</Name>
+            <Description>Generic Manufacturer Property Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_10_11</Name>
+            <Description>Generic Manufacturer Property Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_10_12</Name>
+            <Description>Generic Manufacturer Property Set Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_10_13</Name>
+            <Description>Generic Client Properties Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <!-- Table 11: Sensor Server Models -->
+          <Row>
+            <Name>TSPC_MMDL_11_1</Name>
+            <Description>Sensor Server (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_11_2</Name>
+            <Description>Sensor Setup Server (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <!-- Table 12: Sensor Client Models -->
+          <Row>
+            <Name>TSPC_MMDL_12_1</Name>
+            <Description>Sensor Client (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <!-- Table 13: Sensor Client -->
+          <Row>
+            <Name>TSPC_MMDL_13_1</Name>
+            <Description>Sensor Descriptor Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_13_2</Name>
+            <Description>Sensor Cadence Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_13_3</Name>
+            <Description>Sensor Cadence Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_13_4</Name>
+            <Description>Sensor Cadence Set Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_13_5</Name>
+            <Description>Sensor Settings Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_13_6</Name>
+            <Description>Sensor Setting Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_13_7</Name>
+            <Description>Sensor Setting Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_13_8</Name>
+            <Description>Sensor Setting Set Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_13_9</Name>
+            <Description>Sensor Data Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_13_10</Name>
+            <Description>Sensor Column Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_13_11</Name>
+            <Description>Sensor Series Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <!-- Table 14: Time and Scenes Server Models -->
+          <Row>
+            <Name>TSPC_MMDL_14_1</Name>
+            <Description>Time Server (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_14_2</Name>
+            <Description>Time Setup Server (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_14_3</Name>
+            <Description>Scene Server (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_14_4</Name>
+            <Description>Scene Setup Server (C.2)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_14_5</Name>
+            <Description>Scheduler Server (C.4)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_14_6</Name>
+            <Description>Scheduler Setup Server (C.3)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <!-- Table 15: Time and Scenes Client Models -->
+          <Row>
+            <Name>TSPC_MMDL_15_1</Name>
+            <Description>Time Client (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_15_2</Name>
+            <Description>Scene Client (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_15_3</Name>
+            <Description>Scheduler Client (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <!-- Table 16: Time Client -->
+          <Row>
+            <Name>TSPC_MMDL_16_1</Name>
+            <Description>Time Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_16_2</Name>
+            <Description>Time Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_16_3</Name>
+            <Description>Time Zone Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_16_4</Name>
+            <Description>Time Zone Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_16_5</Name>
+            <Description>TAI-UTC Delta Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_16_6</Name>
+            <Description>TAI-UTC Delta Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_16_7</Name>
+            <Description>Time Role Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_16_8</Name>
+            <Description>Time Role Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <!-- Table 17: Scene Client -->
+          <Row>
+            <Name>TSPC_MMDL_17_1</Name>
+            <Description>Scene Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_17_2</Name>
+            <Description>Scenes Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_17_3</Name>
+            <Description>Scene Store/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_17_4</Name>
+            <Description>Scene Store Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_17_5</Name>
+            <Description>Scene Recall/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_17_6</Name>
+            <Description>Scene Recall Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <!-- Table 18: Scheduler Client -->
+          <Row>
+            <Name>TSPC_MMDL_18_1</Name>
+            <Description>Scheduler Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_18_2</Name>
+            <Description>Scheduler Action Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_18_3</Name>
+            <Description>Scheduler Action Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_18_4</Name>
+            <Description>Scheduler Action Set Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <!-- Table 19: Lighting Server Models -->
+          <Row>
+            <Name>TSPC_MMDL_19_1</Name>
+            <Description>Light Lightness Server (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_19_2</Name>
+            <Description>Light Lightness Setup Server (C.2)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_19_3</Name>
+            <Description>Light CTL Server (C.3)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_19_4</Name>
+            <Description>Light CTL Temperature Server (C.4)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_19_5</Name>
+            <Description>Light CTL Setup Server (C.5)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_19_6</Name>
+            <Description>Light HSL Server (C.3)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_19_7</Name>
+            <Description>Light HSL Hue Server (C.6)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_19_8</Name>
+            <Description>Light HSL Saturation Server (C.6)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_19_9</Name>
+            <Description>Light HSL Setup Server (C.7)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_19_10</Name>
+            <Description>Light xyL Server (C.3)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_19_11</Name>
+            <Description>Light xyL Setup Server (C.8)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <!-- Table 20: Lighting Control Models -->
+          <Row>
+            <Name>TSPC_MMDL_20_1</Name>
+            <Description>Light LC Server (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_20_2</Name>
+            <Description>Light LC Setup Server (C.2)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <!-- Table 21: Lighting Client Models -->
+          <Row>
+            <Name>TSPC_MMDL_21_1</Name>
+            <Description>Light Lightness Client (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_21_2</Name>
+            <Description>Light CTL Client (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_21_3</Name>
+            <Description>Light HSL Client (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_21_4</Name>
+            <Description>Light xyL Client (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_21_5</Name>
+            <Description>Light LC Client (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <!-- Table 22: Light Lightness Client -->
+          <Row>
+            <Name>TSPC_MMDL_22_1</Name>
+            <Description>Light Lightness Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_22_2</Name>
+            <Description>Light Lightness Set/Status(C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_22_3</Name>
+            <Description>Light Lightness Set Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_22_4</Name>
+            <Description>Light Lightness Linear Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_22_5</Name>
+            <Description>Light Lightness Linear Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_22_6</Name>
+            <Description>Light Lightness Linear Set Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_22_7</Name>
+            <Description>Light Lightness Last Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_22_8</Name>
+            <Description>Light Lightness Default Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_22_9</Name>
+            <Description>Light Lightness Default Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_22_10</Name>
+            <Description>Light Lightness Default Set Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_22_11</Name>
+            <Description>Light Lightness Range Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_22_12</Name>
+            <Description>Light Lightness Range Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_22_13</Name>
+            <Description>Light Lightness Range Set Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <!-- Table 23: Light CTL Client -->
+          <Row>
+            <Name>TSPC_MMDL_23_1</Name>
+            <Description>Light CTL Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_23_2</Name>
+            <Description>Light CTL Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_23_3</Name>
+            <Description>Light CTL Set Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_23_4</Name>
+            <Description>Light CTL Temperature Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_23_5</Name>
+            <Description>Light CTL Temperature Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_23_6</Name>
+            <Description>Light CTL Temperature Set Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_23_7</Name>
+            <Description>Light CTL Default Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_23_8</Name>
+            <Description>Light CTL Default Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_23_9</Name>
+            <Description>Light CTL Default Set Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_23_10</Name>
+            <Description>Light CTL Temperature Range Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_23_11</Name>
+            <Description>Light CTL Temperature Range Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_23_12</Name>
+            <Description>Light CTL Temperature Range Set Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <!-- Table 24: Light HSL Client -->
+          <Row>
+            <Name>TSPC_MMDL_24_1</Name>
+            <Description>Light HSL Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_24_2</Name>
+            <Description>Light HSL Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_24_3</Name>
+            <Description>Light HSL Set Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_24_4</Name>
+            <Description>Light HSL Target Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_24_5</Name>
+            <Description>Light HSL Default Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_24_6</Name>
+            <Description>Light HSL Default Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_24_7</Name>
+            <Description>Light HSL Default Set Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_24_8</Name>
+            <Description>Light HSL Range Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_24_9</Name>
+            <Description>Light HSL Range Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_24_10</Name>
+            <Description>Light HSL Range Set Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_24_11</Name>
+            <Description>Light HSL Hue Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_24_12</Name>
+            <Description>Light HSL Hue Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_24_13</Name>
+            <Description>Light HSL Hue Set Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_24_14</Name>
+            <Description>Light HSL Saturation Get/Status (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_24_15</Name>
+            <Description>Light HSL Saturation Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_24_16</Name>
+            <Description>Light HSL Saturation Set Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <!-- Table 25: Light xyL Client -->
+          <Row>
+            <Name>TSPC_MMDL_25_1</Name>
+            <Description>Light xyL Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_25_2</Name>
+            <Description>Light xyL Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_25_3</Name>
+            <Description>Light xyL Set Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_25_4</Name>
+            <Description>Light xyL Target Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_25_5</Name>
+            <Description>Light xyL Default Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_25_6</Name>
+            <Description>Light xyL Default Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_25_7</Name>
+            <Description>Light xyL Default Set Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_25_8</Name>
+            <Description>Light xyL Range Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_25_9</Name>
+            <Description>Light xyL Range Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_25_10</Name>
+            <Description>Light xyL Range Set Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <!-- Table 26: Light LC Client -->
+          <Row>
+            <Name>TSPC_MMDL_26_1</Name>
+            <Description>Light LC Mode Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_26_2</Name>
+            <Description>Light LC Mode Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_26_3</Name>
+            <Description>Light LC Mode Set Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_26_4</Name>
+            <Description>Light LC OM Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_26_5</Name>
+            <Description>Light LC OM Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_26_6</Name>
+            <Description>Light LC OM Set Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_26_7</Name>
+            <Description>Light LC Light OnOff Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_26_8</Name>
+            <Description>Light LC Light OnOff Set/Status(C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_26_9</Name>
+            <Description>Light LC Light OnOff Set Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_26_10</Name>
+            <Description>Light LC Property Get/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_26_11</Name>
+            <Description>Light LC Property Set/Status (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_26_12</Name>
+            <Description>Light LC Property Set Unacknowledged (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_27_1</Name>
+            <Description>Generic OnOff State on Secondary Elements (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_27_2</Name>
+            <Description>Generic Level State on Secondary Elements (C.2)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_ALL</Name>
+            <Description>Enables all test cases when set.</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_ALL</Name>
+            <Description>Enables all test cases when set.</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+        </Rows>
+      </PICS>
+      <PIXIT>
+        <Name>MMDL</Name>
+        <Version>1.0</Version>
+        <Rows>
+          <Row>
+            <Name>TSPX_bd_addr_iut</Name>
+            <Description>The unique 48-bit Bluetooth device address (BD_ADDR) of the IUT. This was filled in during workspace creation.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>000000000000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_time_guard</Name>
+            <Description>The time in milliseconds, to break PTS from waiting for a required event, if time guard is used by the test case. (Default: 300000)</Description>
+            <Type>INTEGER</Type>
+            <Value>300000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_use_implicit_send</Name>
+            <Description>Whether to receive a message via Implicit Send when an action or attention is needed by test operator. (Default: TRUE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>TRUE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_tester_database_file</Name>
+            <Description>Location of SIG database file. (Default: C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_SMPP_db.xml)</Description>
+            <Type>IA5STRING</Type>
+            <Value>C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_SMPP_db.xml</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_mtu_size</Name>
+            <Description>MTU size. (Default: 23)</Description>
+            <Type>INTEGER</Type>
+            <Value>23</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_delete_link_key</Name>
+            <Description>Whether to delete link key or not. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_delete_ltk</Name>
+            <Description>Whether to delete Long Term Key or not. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_security_enabled</Name>
+            <Description>Whether to set security for the test suite. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_iut_setup_att_over_br_edr</Name>
+            <Description>IUT can optionally test ATT over BR/EDR connection when this flag is set when applicable. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_scan_interval</Name>
+            <Description>The scan interval value N*0.625ms. Default is setto fast scan interval.(Default: 30)</Description>
+            <Type>INTEGER</Type>
+            <Value>30</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_scan_window</Name>
+            <Description>The scan window value N*0.625ms. Default is set to fast scan window.(Default: 30)</Description>
+            <Type>INTEGER</Type>
+            <Value>30</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_scan_filter</Name>
+            <Description>The scan filter setting to allow accept filter accept list only device.(Default: 0 - Fileter none)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>00</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_advertising_interval_min</Name>
+            <Description>The minimum advertising interval value N*0.625ms. PTS will using this value to set advertising parameters.(Default: 160)</Description>
+            <Type>INTEGER</Type>
+            <Value>160</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_advertising_interval_max</Name>
+            <Description>The maximum advertising interval value N*0.625ms. PTS will using this value to set advertising parameters.(Default: 160)</Description>
+            <Type>INTEGER</Type>
+            <Value>160</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_tester_OOB_information</Name>
+            <Description>The 16-bit tester OOB information value. PTS will advertise using this value when in peripheral role.(Default: F87F)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>F87F</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_device_uuid</Name>
+            <Description>used for mesh beacon. (Default: 001BDC0810210B0E0A0C000B0E0A0C00)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>001BDC0810210B0E0A0C000B0E0A0C00</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_device_uuid2</Name>
+            <Description>used for tester2 mesh beacon. (Default: 00000000000000000000000000000000)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>00000000000000000000000000000000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_use_pb_gatt_bearer</Name>
+            <Description>PB ADV or PB GATT bearer for PROT test cases. (Default: TRUE - PB-ADV)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_iut_comp_data_page</Name>
+            <Description>The page number of the composition data (Default: 0)</Description>
+            <Type>INTEGER</Type>
+            <Value>0</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_oob_state_change</Name>
+            <Description>Indicates if the IUT supports out-of-band triggered state changes. If set to TRUE, then the IUT supports Upper Tester commands to trigger a state change. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_sensor_property_ids</Name>
+            <Description>Specifies properties used by sensor data publishing test cases. Property entries are separated by semicolons. Each entry carries 2-octet property ID and supported range in hexadecimal, separated by commas (e.g. 0001,00,FF;0002,0010,FFF0 describes 2 properties and their supported ranges). Additionally, each entry can include its element number (e.g. 0,0001,00,FF;3,0002,0010,FFF0 describes one property on the Primary Element and another property on the Secondary Element #3). (Default: 004E,0010,FFF0)</Description>
+            <Type>IA5STRING</Type>
+            <Value>004E,0010,FFF0</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_enable_IUT_provisioner</Name>
+            <Description>Indicates if the IUT performs provisioning for client cases. If set to TRUE, PTS expects to get provisioned by the IUT. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_cadence_property_IDs</Name>
+            <Description>Specifies properties used by sensor data publishing test cases. Property entries are separated by semicolons. Each entry carries 2-octet property ID and supported range in hexadecimal, separated by commas (e.g. 0001,00,FF;0002,0010,FFF0 describes 2 properties and their supported ranges). Additionally, each entry can include its element number (e.g. 0,0001,00,FF;3,0002,0010,FFF0 describes one property on the Primary Element and another property on the Secondary Element #3). (Default: 004E,0010,FFF0)</Description>
+            <Type>IA5STRING</Type>
+            <Value>0042,004E,006F</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_iut_generic_power_range</Name>
+            <Description>Maximum possible range supported by IUT for Generic Power Range state.</Description>
+            <Type>IA5STRING</Type>
+            <Value>0001,FFFF</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_iut_light_lightness_range</Name>
+            <Description>Maximum possible range supported by IUT for Light Lighness Range state.</Description>
+            <Type>IA5STRING</Type>
+            <Value>0001,FFFF</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_iut_light_ctl_temperature_range</Name>
+            <Description>Maximum possible range supported by IUT for Light CTL Temperature  Range state.</Description>
+            <Type>IA5STRING</Type>
+            <Value>0320,4E20</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_iut_light_hsl_hue_range</Name>
+            <Description>Maximum possible range supported by IUT for Light HSL Hue Range state.</Description>
+            <Type>IA5STRING</Type>
+            <Value>0000,FFFF</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_iut_light_hsl_saturation_range</Name>
+            <Description>Maximum possible range supported by IUT for Light HSL Saturation Range state.</Description>
+            <Type>IA5STRING</Type>
+            <Value>0000,FFFF</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_iut_light_xyl_x_range</Name>
+            <Description>Maximum possible range supported by IUT for Light xyL x Range state.</Description>
+            <Type>IA5STRING</Type>
+            <Value>0000,FFFF</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_iut_light_xyl_y_range</Name>
+            <Description>Maximum possible range supported by IUT for Light xyL y Range state.</Description>
+            <Type>IA5STRING</Type>
+            <Value>0000,FFFF</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_Procedure_Timeout</Name>
+            <Description>The time in seconds. (Default: 60)</Description>
+            <Value>60</Value>
+            <Type>INTEGER</Type>
+          </Row>
+          <Row>
+            <Name>TSPX_Client_BLOB_ID</Name>
+            <Description>Unique identifier for the BLOB being transferred by the BLOB Transfer Client IUT. (Default: 1)</Description>
+            <Value>1100000000000011</Value>
+            <Type>OCTETSTRING</Type>
+          </Row>
+          <Row>
+            <Name>TSPX_Client_BLOB_Data</Name>
+            <Description>BLOB being transferred by the IUT.</Description>
+            <Value />
+            <Type>IA5STRING</Type>
+          </Row>
+          <Row>
+            <Name>TSPX_TTL</Name>
+            <Description>TTL. (Default: 2)</Description>
+            <Value>2</Value>
+            <Type>INTEGER</Type>
+          </Row>
+          <Row>
+            <Name>TSPX_Reception_Counter</Name>
+            <Description>Reception Counter for the Pull BLOB Transfer Mode. (Default: 5)</Description>
+            <Value>5</Value>
+            <Type>INTEGER</Type>
+          </Row>
+          <Row>
+            <Name>TSPX_Server_Timeout</Name>
+            <Description>Timer value before Server enters Suspended state. (Default: 10)</Description>
+            <Value>10</Value>
+            <Type>INTEGER</Type>
+          </Row>
+          <Row>
+            <Name>TSPX_Firmware_ID</Name>
+            <Description>Firmware_ID used by device to varify firmware.(Default: 1)</Description>
+            <Value>11000011</Value>
+            <Type>OCTETSTRING</Type>
+          </Row>
+          <Row>
+            <Name>TSPX_Firmware_Metadata</Name>
+            <Description>Firmware metadata for the incoming firmware on the IUT. (Default: )</Description>
+            <Value>1100000000000011</Value>
+            <Type>OCTETSTRING</Type>
+          </Row>
+          <Row>
+            <Name>TSPX_Firmware_Update_URI</Name>
+            <Description>URI used for test case execution. (Default: http://www.dummy.com)</Description>
+            <Value>http://www.dummy.com</Value>
+            <Type>IA5STRING</Type>
+          </Row>
+          <Row>
+            <Name>TSPX_New_Firmware_Image</Name>
+            <Description>Firmware being transferred by the IUT.</Description>
+            <Value />
+            <Type>IA5STRING</Type>
+          </Row>
+          <Row>
+            <Name>TSPX_Update_Firmware_Image_Index</Name>
+            <Description>Firmware Image Index value to identiy firmware used for testing. (Default: 0)</Description>
+            <Value>0</Value>
+            <Type>INTEGER</Type>
+          </Row>
+        </Rows>
+      </PIXIT>
+    </PROJECT_INFORMATION>
   </PROJECTS_INFORMATION>
 </WORKSPACE_INFORMATION>
