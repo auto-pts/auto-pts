@@ -694,6 +694,10 @@ def hdl_wid_52(params: WIDParams):
     return True
 
 
+def hdl_wid_53(_: WIDParams):
+    return True
+
+
 def hdl_wid_55(_: WIDParams):
     return True
 
@@ -3019,6 +3023,25 @@ def hdl_wid_945(_: WIDParams):
 
     btp.mesh_sar_receiver_set(
         stack.mesh.lt1_addr, *stack.mesh.sar_receiver_state.data)
+    return True
+
+
+def hdl_wid_946(_: WIDParams):
+    stack = get_stack()
+
+    # TODO: Set IUT to provisioner for client test?
+
+    btp.mesh_cfg_model_app_bind(
+        stack.mesh.net_idx, 2, 2, stack.mesh.app_idx, 0xbf55)
+
+    btp.mesh_opcodes_aggregator_init(
+        stack.mesh.net_idx, stack.mesh.app_idx, stack.mesh.address_lt1, stack.mesh.address_lt1)
+
+    btp.mesh_health_attention_set(stack.mesh.address_lt1, stack.mesh.app_idx, 0x05, True)
+    btp.mesh_health_attention_set(stack.mesh.address_lt1, stack.mesh.app_idx, 0x06, False)
+
+    btp.mesh_opcodes_aggregator_send()
+
     return True
 
 

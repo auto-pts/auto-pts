@@ -277,6 +277,12 @@ MESH = {
     "models_metadata_get": (defs.BTP_SERVICE_ID_MESH,
                             defs.MESH_MODELS_METADATA_GET,
                             CONTROLLER_INDEX),
+    "opcodes_aggregator_init": (defs.BTP_SERVICE_ID_MESH,
+                                defs.MESH_OPCODES_AGGREGATOR_INIT,
+                                CONTROLLER_INDEX),
+    "opcodes_aggregator_send": (defs.BTP_SERVICE_ID_MESH,
+                                defs.MESH_OPCODES_AGGREGATOR_SEND,
+                                CONTROLLER_INDEX, ""),
 }
 
 
@@ -696,6 +702,23 @@ def mesh_models_metadata_get(net_idx, addr, page, offset):
 
     stack = get_stack()
     stack.mesh.models_metadata.data = rsp
+
+
+def mesh_opcodes_aggregator_init(net_idx, app_idx, dst, elem_addr):
+    logging.debug("%s %r %r %r %r", mesh_opcodes_aggregator_init.__name__,
+                  net_idx, app_idx, dst, elem_addr)
+
+    data = bytearray(struct.pack("<HHHH", net_idx, app_idx, dst, elem_addr))
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*MESH['opcodes_aggregator_init'], data=data)
+
+
+def mesh_opcodes_aggregator_send():
+    logging.debug("%s", mesh_opcodes_aggregator_send.__name__)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*MESH['opcodes_aggregator_send'])
 
 
 def mesh_out_number_action_ev(mesh, data, data_len):
