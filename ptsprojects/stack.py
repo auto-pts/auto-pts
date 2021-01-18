@@ -223,7 +223,7 @@ class Gap:
         if addr:
             return addr.decode("utf-8")
         else:
-            return ""
+            return "000000000000"
 
 
     def iut_addr_set(self, addr, addr_type):
