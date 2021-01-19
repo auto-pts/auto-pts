@@ -156,10 +156,10 @@ class BTPWorker(BTPSocket):
                         continue
 
                 self._rx_queue.put(data)
-            except socket.timeout:
-                pass
-            except socket.error:
-                pass
+            except (socket.timeout, socket.error):
+                pass # these are expected so ignore
+            except Exception as e:
+                logging.error("%r", e)
 
     @staticmethod
     def _read_timeout(flag):
