@@ -22,7 +22,6 @@ import serial
 from pybtp import defs
 from pybtp.types import BTPError
 from pybtp.iutctl_common import BTPWorker, BTP_ADDRESS, RTT2PTY
-from bot.config import BotProjects
 
 
 log = logging.debug
@@ -52,17 +51,17 @@ def get_qemu_cmd(kernel_image):
 class ZephyrCtl:
     '''Zephyr OS Control Class'''
 
-    def __init__(self, kernel_image, tty_file, board_name=None, use_rtt2pty=None):
+    def __init__(self, kernel_image, tty_file, board_id, board_name=None, use_rtt2pty=None):
         """Constructor."""
-        log("%s.%s kernel_image=%s tty_file=%s board_name=%s",
+        log("%s.%s kernel_image=%s tty_file=%s board_name=%s board_id=%s",
             self.__class__, self.__init__.__name__, kernel_image, tty_file,
-            board_name)
+            board_name, board_id)
 
         self.kernel_image = kernel_image
         self.tty_file = tty_file
 
         if self.tty_file and board_name:  # DUT is a hardware board, not QEMU
-            self.board = Board(board_name, kernel_image, self)
+            self.board = Board(board_name, board_id, kernel_image, self)
         else:  # DUT is QEMU or a board that won't be reset
             self.board = None
 
@@ -220,12 +219,13 @@ class Board:
         reel
     ]
 
-    def __init__(self, board_name, kernel_image, iutctl):
+    def __init__(self, board_name, board_id, kernel_image, iutctl):
         """Constructor of board"""
         if board_name not in self.names:
             raise Exception("Board name %s is not supported!" % board_name)
 
         self.name = board_name
+        self.board_id = board_id
         self.kernel_image = kernel_image
         self.reset_cmd = self.get_reset_cmd()
         self.iutctl = iutctl
@@ -314,7 +314,10 @@ class Board:
         Dependency: nRF5x command line tools
 
         """
-        return 'nrfjprog -r -s ' + BotProjects[0]['auto_pts']['board_id']
+        cmd_reset = ['nrfjprog', '-r']
+        if self.board_id != '':
+            cmd_reset.extend(('--snr', self.board_id))
+        return " ".join(cmd_reset)
 
     def _get_reset_cmd_reel(self):
         """Return reset command for Reel_Board DUT
@@ -334,7 +337,7 @@ def init_stub():
     ZEPHYR = ZephyrCtlStub()
 
 
-def init(kernel_image, tty_file, board=None, use_rtt2pty=False):
+def init(kernel_image, tty_file, board_id, board=None, use_rtt2pty=False):
     """IUT init routine
 
     kernel_image -- Path to Zephyr kernel image
@@ -342,11 +345,12 @@ def init(kernel_image, tty_file, board=None, use_rtt2pty=False):
                 BTP communication with HW DUT will be done over this TTY.
     board -- HW DUT board to use for testing. This parameter is used only
              if tty_file is specified
+    board_id -- Serial number of the HW DUT board to use for testing.
     """
     global ZEPHYR
 
     board_family = (board[:4] + 'x') if ('nrf5' in board) else board
-    ZEPHYR = ZephyrCtl(kernel_image, tty_file, board_family, use_rtt2pty)
+    ZEPHYR = ZephyrCtl(kernel_image, tty_file, board_id, board_family, use_rtt2pty)
 
 
 def cleanup():
