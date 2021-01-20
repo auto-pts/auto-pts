@@ -130,7 +130,7 @@ This may contain few sections:
     - `project_path` - path to project source directory
     - `workspace` - PTS workspace path to be used
     - `board` - IUT used. Currently nrf52 is supported only
-    - `board_id` - Segger ID of the IUT used.
+    - `board_id` - Serial number of the IUT used.
     - `enable_max_logs` - enable debug logs
     - `retry` - maximum repeat count per test
     - `bd_addr` - IUT Bluetooth Address (optional)
