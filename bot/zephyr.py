@@ -161,13 +161,6 @@ def apply_overlay(zephyr_wd, base_conf, cfg_name, overlay):
     os.chdir(cwd)
 
 
-autopts2board = {
-    None: None,
-    'nrf52': 'nrf52840dk_nrf52840',
-    'reel_board' : 'reel_board'
-}
-
-
 def get_tty_path(name):
     """Returns tty path (eg. /dev/ttyUSB0) of serial device with specified name
     :param name: device name
