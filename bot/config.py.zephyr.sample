@@ -32,6 +32,7 @@ z['auto_pts'] = {
     'project_path': '/path/to/project',
     'workspace': 'zephyr-master',
     'board': 'nrf52',
+    'board_id': '',
     'enable_max_logs': False,
     'retry': 2,
     'bd_addr': '',
