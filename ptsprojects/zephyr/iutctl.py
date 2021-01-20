@@ -209,14 +209,14 @@ class Board:
 
     arduino_101 = "arduino_101"
     c1000 = "c1000"
-    nrf52 = "nrf52"
+    nrf5x = "nrf5x"
     reel  = "reel_board"
 
     # for command line options
     names = [
         arduino_101,
         c1000,
-        nrf52,
+        nrf5x,
         reel
     ]
 
@@ -268,7 +268,7 @@ class Board:
         reset_cmd_getters = {
             self.arduino_101: self._get_reset_cmd_arduino_101,
             self.c1000: self._get_reset_cmd_c1000,
-            self.nrf52: self._get_reset_cmd_nrf52,
+            self.nrf5x: self._get_reset_cmd_nrf5x,
             self.reel: self._get_reset_cmd_reel
         }
 
@@ -308,13 +308,13 @@ class Board:
         return self.get_openocd_reset_cmd(openocd_bin, openocd_scripts,
                                           openocd_cfg)
 
-    def _get_reset_cmd_nrf52(self):
-        """Return reset command for nRF52 DUT
+    def _get_reset_cmd_nrf5x(self):
+        """Return reset command for nRF52 and nRF53 DUT
 
         Dependency: nRF5x command line tools
 
         """
-        return 'nrfjprog -f nrf52 -s {} -r'.format(BotProjects[0]['auto_pts']['board_id'])
+        return 'nrfjprog -r -s ' + BotProjects[0]['auto_pts']['board_id']
 
     def _get_reset_cmd_reel(self):
         """Return reset command for Reel_Board DUT
@@ -345,7 +345,8 @@ def init(kernel_image, tty_file, board=None, use_rtt2pty=False):
     """
     global ZEPHYR
 
-    ZEPHYR = ZephyrCtl(kernel_image, tty_file, board, use_rtt2pty)
+    board_family = (board[:4] + 'x') if ('nrf5' in board) else board
+    ZEPHYR = ZephyrCtl(kernel_image, tty_file, board_family, use_rtt2pty)
 
 
 def cleanup():
