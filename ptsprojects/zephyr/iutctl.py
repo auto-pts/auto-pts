@@ -22,6 +22,8 @@ import serial
 from pybtp import defs
 from pybtp.types import BTPError
 from pybtp.iutctl_common import BTPWorker, BTP_ADDRESS, RTT2PTY
+from bot.config import BotProjects
+
 
 log = logging.debug
 ZEPHYR = None
@@ -312,7 +314,7 @@ class Board:
         Dependency: nRF5x command line tools
 
         """
-        return 'nrfjprog -f nrf52 -r'
+        return 'nrfjprog -f nrf52 -s {} -r'.format(BotProjects[0]['auto_pts']['board_id'])
 
     def _get_reset_cmd_reel(self):
         """Return reset command for Reel_Board DUT
