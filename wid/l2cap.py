@@ -109,6 +109,20 @@ def hdl_wid_37(desc):
 
     return data[0] == tx_data[0]
 
+def hdl_wid_38(desc):
+    """
+    Implements: TSC_MMI_upper_tester_send_LE_data_packet1
+    :param desc: Upper Tester command IUT to send a nonsegmented LE data packet to the PTS with any values.
+    :return:
+    """
+    stack = get_stack()
+    channel = stack.l2cap._chan_lookup_id(0)
+    if not channel:
+        return False
+
+    btp.l2cap_send_data(0, 'FF')
+    return True
+
 
 def hdl_wid_39(desc):
     """
