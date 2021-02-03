@@ -181,8 +181,12 @@ def hdl_wid_43(desc):
     :return:
     """
     stack = get_stack()
+    l2cap = stack.l2cap
+    channel = l2cap._chan_lookup_id(0)
+    if not channel:
+        return False
 
-    btp.l2cap_send_data(0, "FF", 21)
+    btp.l2cap_send_data(0, 'FF' * channel.peer_mps)
 
     return True
 
