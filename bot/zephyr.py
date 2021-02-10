@@ -104,9 +104,10 @@ def build_and_flash(zephyr_wd, board, board_id, conf_file=None):
     # Set Zephyr project env variables
     env = source_zephyr_env(zephyr_wd)
 
-    cmd_build = ['west',  'build', '-p', 'auto', '-b', board]
+    cmd_build = ['west', 'build', '-p', 'always', '-b', board]
     if conf_file:
         cmd_build.extend(('--', '-DCONF_FILE={}'.format(conf_file)))
+
     check_call(cmd_build, env=env, cwd=tester_dir)
 
     cmd_flash = ['west', 'flash', '--erase']
