@@ -220,6 +220,27 @@ MESH = {
     "cfg_model_app_bind_vnd": (defs.BTP_SERVICE_ID_MESH,
                                defs.MESH_CFG_MODEL_APP_BIND_VND,
                                CONTROLLER_INDEX),
+    "health_fault_get": (defs.BTP_SERVICE_ID_MESH,
+                         defs.MESH_HEALTH_FAULT_GET,
+                         CONTROLLER_INDEX),
+    "health_fault_clear": (defs.BTP_SERVICE_ID_MESH,
+                           defs.MESH_HEALTH_FAULT_CLEAR,
+                           CONTROLLER_INDEX),
+    "health_fault_test": (defs.BTP_SERVICE_ID_MESH,
+                          defs.MESH_HEALTH_FAULT_TEST,
+                          CONTROLLER_INDEX),
+    "health_period_get": (defs.BTP_SERVICE_ID_MESH,
+                          defs.MESH_HEALTH_PERIOD_GET,
+                          CONTROLLER_INDEX),
+    "health_period_set": (defs.BTP_SERVICE_ID_MESH,
+                          defs.MESH_HEALTH_PERIOD_SET,
+                          CONTROLLER_INDEX),
+    "health_attention_get": (defs.BTP_SERVICE_ID_MESH,
+                             defs.MESH_HEALTH_ATTENTION_GET,
+                             CONTROLLER_INDEX),
+    "health_attention_set": (defs.BTP_SERVICE_ID_MESH,
+                             defs.MESH_HEALTH_ATTENTION_SET,
+                             CONTROLLER_INDEX),
 }
 
 
@@ -1293,6 +1314,98 @@ def mesh_cfg_lpn_polltimeout_get(net_idx, addr, unicast_addr):
     (timeout,) = struct.unpack_from('<3s', rsp)
     timeout = int(binascii.hexlify(timeout))
     stack.mesh.model_data = timeout
+
+
+def mesh_health_fault_get(addr, app_idx, cid):
+    logging.debug("%s", mesh_health_fault_get.__name__)
+
+    stack = get_stack()
+    iutctl = get_iut()
+
+    data = bytearray(struct.pack("<HHH", addr, app_idx, cid))
+
+    iutctl.btp_socket.send_wait_rsp(*MESH['health_fault_get'], data)
+
+
+def mesh_health_fault_clear(addr, app_idx, cid, ack):
+    logging.debug("%s", mesh_health_fault_clear.__name__)
+
+    stack = get_stack()
+    iutctl = get_iut()
+
+    data = bytearray(struct.pack("<HHHB", addr, app_idx, cid, ack))
+
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MESH['health_fault_clear'], data)
+
+    if ack:
+        (test_id,) = struct.unpack_from('<B', rsp)
+        stack.mesh.model_data = test_id
+
+def mesh_health_fault_test(addr, app_idx, cid, test_id, ack):
+    logging.debug("%s", mesh_health_fault_test.__name__)
+
+    stack = get_stack()
+    iutctl = get_iut()
+
+    data = bytearray(struct.pack("<HHHBB", addr, app_idx, cid, test_id, ack))
+
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MESH['health_fault_test'], data)
+
+    if ack:
+        (test_id, cid) = struct.unpack_from('<BH', rsp)
+        stack.mesh.model_data = [test_id, cid]
+
+
+def mesh_health_period_get(addr, app_idx):
+    logging.debug("%s", mesh_health_period_get.__name__)
+
+    stack = get_stack()
+    iutctl = get_iut()
+
+    data = bytearray(struct.pack("<HH", addr, app_idx))
+
+    iutctl.btp_socket.send_wait_rsp(*MESH['health_period_get'], data)
+
+
+def mesh_health_period_set(addr, app_idx, divisor, ack):
+    logging.debug("%s", mesh_health_period_set.__name__)
+
+    stack = get_stack()
+    iutctl = get_iut()
+
+    data = bytearray(struct.pack("<HHBB", addr, app_idx, divisor, ack))
+
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MESH['health_period_set'], data)
+
+    if ack:
+        (status,) = struct.unpack_from('<B', rsp)
+        stack.mesh.model_data = status
+
+
+def mesh_health_attention_get(addr, app_idx):
+    logging.debug("%s", mesh_health_attention_get.__name__)
+
+    stack = get_stack()
+    iutctl = get_iut()
+
+    data = bytearray(struct.pack("<HH", addr, app_idx))
+
+    iutctl.btp_socket.send_wait_rsp(*MESH['health_attention_get'], data)
+
+
+def mesh_health_attention_set(addr, app_idx, attention, ack):
+    logging.debug("%s", mesh_health_attention_set.__name__)
+
+    stack = get_stack()
+    iutctl = get_iut()
+
+    data = bytearray(struct.pack("<HHBB", addr, app_idx, attention, ack))
+
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MESH['health_attention_set'], data)
+
+    if ack:
+        (status,) = struct.unpack_from('<B', rsp)
+        stack.mesh.model_data = status
 
 
 def mesh_lpn_polled_ev(mesh, data, data_len):
