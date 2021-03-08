@@ -309,6 +309,14 @@ class Mesh:
         # Node Identity
         self.proxy_identity = False
 
+        # Config Client
+        self.net_idx = 0x0000
+        self.addr = 0x0001
+        self.net_key_index = 0x0000
+        self.el_address = 0x0001
+        self.status = Property(None)
+        self.model_data = Property(None)
+
         # MMDL expected status data
         self.expect_status_data = Property({
             "Ack": True,

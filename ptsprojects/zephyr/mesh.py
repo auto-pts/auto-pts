@@ -86,7 +86,6 @@ def set_pixits(ptses):
     pts.set_pixit("MESH", "TSPX_po_addr", "0200")
     pts.set_pixit("MESH", "TSPX_po2_addr", "0210")
     pts.set_pixit("MESH", "TSPX_oob_certificates", "")
-    pts.set_pixit("MESH", "TSPX_number_of_intermediate_certificates_on_iut", "")
     pts.set_pixit("MESH", "TSPX_Max_Number_Of_Paths", "1")
     pts.set_pixit("MESH", "Max_Number_Of_Dependent_Nodes_Per_Path", "1")
     pts.set_pixit("MESH", "TSPX_iut_model_id_publish_not_supported", "0000")
@@ -198,6 +197,9 @@ def test_cases(ptses):
             MeshVals.subscription_addr_list1)),
         TestFunc(lambda: pts.update_pixit_param(
             "MESH", "TSPX_OOB_code", oob)),
+        TestFunc(lambda: pts.update_pixit_param(
+            "MESH", "TSPX_enable_IUT_provisioner", "FALSE")),
+        TestFunc(lambda: stack.mesh.set_iut_provisioner(False)),
     ]
 
     pre_conditions = common_pre_conditions + [
@@ -237,6 +239,11 @@ def test_cases(ptses):
             "MESH", "TSPX_OOB_code", oob)),
     ]
 
+    pre_conditions_prov = pre_conditions + [
+        TestFunc(lambda: pts.update_pixit_param(
+            "MESH", "TSPX_enable_IUT_provisioner", "TRUE")),
+        TestFunc(lambda: stack.mesh.set_iut_provisioner(True)),
+    ]
     custom_test_cases = [
         ZTestCase("MESH", "MESH/NODE/CFG/CFGR/BV-01-C", cmds=pre_conditions +
                   [TestFunc(lambda: pts.update_pixit_param(
@@ -268,6 +275,62 @@ def test_cases(ptses):
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/SR/MPXS/BV-09-C", cmds=pre_conditions +
                   [TestFunc(lambda: get_stack().mesh.proxy_identity_enable())],
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CFGCL/KR/BV-01-C", cmds=pre_conditions,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CFGCL/KR/BV-02-C", cmds=pre_conditions,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CFGCL/CFG/SNBP/BV-01-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CFGCL/CFG/COMP/BV-01-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CFGCL/CFG/DTTL/BV-01-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CFGCL/CFG/GPXY/BV-01-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CFGCL/CFG/CFGF/BV-01-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CFGCL/CFG/CFGR/BV-01-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CFGCL/CFG/MP/BV-01-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CFGCL/CFG/SL/BV-01-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CFGCL/CFG/SL/BV-02-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CFGCL/CFG/NKL/BV-01-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CFGCL/CFG/NKL/BV-02-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CFGCL/CFG/NKL/BV-03-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CFGCL/CFG/AKL/BV-01-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CFGCL/CFG/AKL/BV-02-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CFGCL/CFG/AKL/BV-03-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CFGCL/CFG/AKL/BV-04-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CFGCL/CFG/MAKL/BV-01-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CFGCL/CFG/MAKL/BV-02-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CFGCL/CFG/MAKL/BV-03-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CFGCL/CFG/MAKL/BV-04-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CFGCL/CFG/NID/BV-01-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CFGCL/CFG/RST/BV-01-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CFGCL/CFG/HBP/BV-01-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CFGCL/CFG/HBS/BV-01-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CFGCL/CFG/NTX/BV-01-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CFGCL/CFG/LPNPT/BV-01-C", cmds=pre_conditions_prov,
                   generic_wid_hdl=mesh_wid_hdl),
     ]
 
