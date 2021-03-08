@@ -2373,6 +2373,115 @@ def hdl_wid_604(desc):
     return True
 
 
+def hdl_wid_605(desc):
+    """
+    Implements:
+    :param desc:
+    :return:
+    """
+    stack = get_stack()
+
+    if "Health Fault Get" in desc:
+        pattern = re.compile(r'(Company\sID)\s=\s+([0][xX][0-9a-fA-F]+)')
+        params = pattern.findall(desc)
+
+        if not params:
+            logging.error("%s parsing error", hdl_wid_605.__name__)
+            return False
+        params = dict(params)
+
+        cid = int(params.get('Company ID'), 16)
+
+        btp.mesh_health_fault_get(stack.mesh.addr, stack.mesh.app_idx, cid)
+        return True
+
+    if "Health Fault Clear" in desc:
+        pattern = re.compile(r'(Company\sID)\s=\s+([0][xX][0-9a-fA-F]+)')
+        params = pattern.findall(desc)
+
+        if not params:
+            logging.error("%s parsing error", hdl_wid_605.__name__)
+            return False
+        params = dict(params)
+
+        cid = int(params.get('Company ID'), 16)
+        ack = True
+
+        if "Unreliable" in desc:
+            ack = False
+
+        btp.mesh_health_fault_clear(stack.mesh.addr, stack.mesh.app_idx, cid, ack)
+
+        return (not ack) or (ack and stack.mesh.model_data == 0x00)
+
+    if "Health Fault Test" in desc:
+        pattern = re.compile(r'(Test\sID|Company\sID)\s=\s+([0][xX][0-9a-fA-F]+)')
+        params = pattern.findall(desc)
+
+        if not params:
+            logging.error("%s parsing error", hdl_wid_605.__name__)
+            return False
+        params = dict(params)
+
+        cid = int(params.get('Company ID'), 16)
+
+        pattern = re.compile(r'(Test\sID|Company\sID)\s=\s+([0-9a-fA-F]+)')
+        params = pattern.findall(desc)
+
+        if not params:
+            logging.error("%s parsing error", hdl_wid_605.__name__)
+            return False
+        params = dict(params)
+
+        test_id = int(params.get("Test ID"))
+
+        ack = True
+        if "Unreliable" in desc:
+            ack = False
+
+        btp.mesh_health_fault_test(stack.mesh.addr, stack.mesh.app_idx, cid, test_id, ack)
+
+        return (not ack) or (ack and stack.mesh.model_data == [test_id, cid])
+
+    if "Health Period Get" in desc:
+        btp.mesh_health_period_get(stack.mesh.addr, stack.mesh.app_idx)
+        return True
+
+    if "Health Period Set" in desc:
+        devisor = 0x01
+        ack = True
+
+        if "Unreliable" in desc:
+            ack = False
+
+        btp.mesh_health_period_set(stack.mesh.addr, stack.mesh.app_idx, devisor, ack)
+
+        return (not ack) or (ack and stack.mesh.model_data == devisor)
+
+    if "Attention Get" in desc:
+        btp.mesh_health_attention_get(stack.mesh.addr, stack.mesh.app_idx)
+        return True
+
+    if "Attention Set" in desc:
+        attention = 0x01
+        ack = True
+
+        if "Unreliable" in desc:
+            ack = False
+
+        btp.mesh_health_attention_set(stack.mesh.addr, stack.mesh.app_idx, attention, ack)
+        return True
+
+
+def hdl_wid_606(desc):
+    """
+    Implements:
+    :param desc:
+    :return:
+    """
+    stack = get_stack()
+
+    return stack.mesh.model_data == 1
 
 def hdl_wid_625(desc):
     """

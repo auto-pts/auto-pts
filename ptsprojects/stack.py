@@ -316,6 +316,7 @@ class Mesh:
         self.el_address = 0x0001
         self.status = Property(None)
         self.model_data = Property(None)
+        self.app_idx = 0x0000
 
         # MMDL expected status data
         self.expect_status_data = Property({
