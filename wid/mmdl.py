@@ -1630,7 +1630,7 @@ def hdl_wid_666(desc):
     time.sleep(5)
 
     prop_id = int(re.findall(r'0x([0-9A-F]{2,})', desc)[0], 16)
-    sensor_value = (0xffff / 2)
+    sensor_value = int(0xffff / 2)
     btp.mmdl_sensor_data_set(prop_id, struct.pack("<I", sensor_value))
     return True
 
