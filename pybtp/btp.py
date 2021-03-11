@@ -618,7 +618,7 @@ def parse_handle_description(description):
     """
     logging.debug("description=%r", description)
 
-    match = re.search(r"\bhandle \b([0-9A-Fa-f]+)\b", description)
+    match = re.search(r"\bhandle (?:0x)?([0-9A-Fa-f]+)\b", description)
     if match:
         handle = match.group(1)
         logging.debug("handle=%r", handle)
