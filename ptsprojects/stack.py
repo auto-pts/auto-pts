@@ -278,7 +278,7 @@ class Mesh:
         self.flags = 0x00
         self.iv_idx = 0x00000000
         self.seq_num = 0x00000000
-        self.addr = 0x0b0c
+        self.address = 0x0003
         self.dev_key = '0123456789abcdef0123456789abcdef'
 
         # health model data
@@ -317,6 +317,8 @@ class Mesh:
         self.status = Property(None)
         self.model_data = Property(None)
         self.app_idx = 0x0000
+        self.address_lt2 = None
+        self.is_prov_adv = None
 
         # MMDL expected status data
         self.expect_status_data = Property({
