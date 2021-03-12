@@ -79,6 +79,17 @@ def hdl_wid_6(desc):
                  click Cancel.
     :return:
     """
+    stack = get_stack()
+
+    addr = 0x0002
+    attention_duration = 0x00
+
+    if not stack.mesh.is_initialized:
+        btp.mesh_config_prov()
+        btp.mesh_init()
+    if not stack.mesh.is_provisioned.data:
+        btp.mesch_provision_adv(stack.mesh.dev_uuid, addr, attention_duration)
+
     return True
 
 
@@ -367,6 +378,32 @@ def hdl_wid_31(desc):
     if stack.mesh.wait_for_incomp_timer_exp(90):
         return True
     return False
+
+def hdl_wid_33(desc):
+    """
+    Implements:
+    :param desc: 'Please start create link and provisioning. PTS will broadcast unprovisioned device beacon with UUID = TSPX_device_uuid value"
+    :return:
+    """
+    stack = get_stack()
+    uuid = stack.mesh.dev_uuid
+    addr = 0x0002
+    attention_duration = 0x00
+
+    if not stack.mesh.is_initialized:
+        btp.mesh_config_prov()
+        btp.mesh_init()
+
+    btp.mesh_provision_adv(uuid, addr, attention_duration)
+    return True
+
+def hdl_wid_34(desc):
+    """
+    Implements:
+    :param desc: 'Please confirm IUT did not receive link ack so it will fail. Click Yes if it is not received. Otherwise click No.'
+    :return:
+    """
+    return True
 
 
 def hdl_wid_35(desc):
@@ -1416,7 +1453,13 @@ def hdl_wid_500(desc):
     :param desc: Waiting for Composition Data Get Request.
     :return:
     """
-    return True
+    stack = get_stack()
+    page = 0x00
+    addr = 0x0002
+
+    btp.mesh_composition_data_get(stack.mesh.net_idx, addr, page)
+
+    return stack.mesh.status == 0x00
 
 
 def hdl_wid_501(desc):

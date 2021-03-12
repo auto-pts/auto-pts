@@ -332,6 +332,16 @@ def test_cases(ptses):
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/CFGCL/CFG/LPNPT/BV-01-C", cmds=pre_conditions_prov,
                   generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/PVNR/PROV/BV-07-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/PVNR/PBADV/BV-01-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/PVNR/PBADV/BV-02-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/PVNR/PBADV/BV-03-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/PVNR/PBADV/BI-01-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
     ]
 
     test_cases_lt2 = [

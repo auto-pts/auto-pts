@@ -241,6 +241,9 @@ MESH = {
     "health_attention_set": (defs.BTP_SERVICE_ID_MESH,
                              defs.MESH_HEALTH_ATTENTION_SET,
                              CONTROLLER_INDEX),
+    "provision_adv": (defs.BTP_SERVICE_ID_MESH,
+                      defs.MESH_PROVISION_ADV,
+                      CONTROLLER_INDEX),
 }
 
 
@@ -265,7 +268,7 @@ def mesh_config_prov():
 
 
 def mesh_prov_node():
-    logging.debug("%s", mesh_config_prov.__name__)
+    logging.debug("%s", mesh_prov_node.__name__)
 
     stack = get_stack()
 
@@ -275,11 +278,26 @@ def mesh_prov_node():
     data = bytearray(struct.pack("<16sHBIIH16s", net_key,
                                  stack.mesh.net_key_idx, stack.mesh.flags,
                                  stack.mesh.iv_idx, stack.mesh.seq_num,
-                                 stack.mesh.addr, dev_key))
+                                 stack.mesh.address, dev_key))
 
     iutctl = get_iut()
 
     iutctl.btp_socket.send_wait_rsp(*MESH['prov_node'], data=data)
+
+
+def mesh_provision_adv(uuid, addr, attention_duration):
+    logging.debug("%s", mesh_provision_adv.__name__)
+
+    iutctl = get_iut()
+    stack = get_stack()
+    uuid = binascii.unhexlify(uuid)
+    net_key = binascii.unhexlify(stack.mesh.net_key)
+
+    data = bytearray(struct.pack("<16sHHB16s", uuid, stack.mesh.net_key_idx, addr, attention_duration, net_key))
+
+    iutctl.btp_socket.send_wait_rsp(*MESH['provision_adv'], data=data)
+
+    stack.mesh.is_prov_adv = True
 
 
 def mesh_init():
