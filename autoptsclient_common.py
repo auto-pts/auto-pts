@@ -447,7 +447,7 @@ def init_pts(args, tc_db_table_name=None):
         thread.join(timeout=180.0)
 
         # check init completed
-        if thread.isAlive():
+        if thread.is_alive():
             raise Exception("(%r) init failed" % (id(proxy_list[index]),))
 
     return proxy_list
