@@ -13,10 +13,12 @@
 # more details.
 #
 
+import socket
 import subprocess
 import os
 import logging
 import shlex
+import sys
 import serial
 
 from pybtp import defs
@@ -70,6 +72,7 @@ class ZephyrCtl:
         self.test_case = None
         self.rtt2pty_process = None
         self.iut_log_file = None
+        self.btp_address = BTP_ADDRESS
 
         if use_rtt2pty:
             self.rtt2pty = RTT2PTY()
@@ -87,11 +90,22 @@ class ZephyrCtl:
         self.flush_serial()
 
         self.btp_socket = BTPWorker()
-        self.btp_socket.open()
+        self.btp_socket.open(self.btp_address)
 
         if self.tty_file:
-            socat_cmd = ("socat -x -v %s,rawer,b115200 UNIX-CONNECT:%s" %
-                         (self.tty_file, BTP_ADDRESS))
+            if sys.platform == "win32":
+                # On windows socat.exe does not support setting serial baud rate.
+                # Set it with 'mode' from cmd.exe
+                COM = "COM" + str(int(self.tty_file["/dev/ttyS".__len__():]) + 1)
+                mode_cmd = (">nul 2>nul cmd.exe /c \"mode " + COM + "BAUD=115200 PARITY=n DATA=8 STOP=1\"")
+                os.system(mode_cmd)
+
+                socat_cmd = ("socat.exe -x -v tcp:" + socket.gethostbyname(socket.gethostname()) +
+                             ":%s,retry=100,interval=1 %s,raw,b115200" %
+                             (self.btp_socket.sock.getsockname()[1], self.tty_file))
+            else:
+                socat_cmd = ("socat -x -v %s,rawer,b115200 UNIX-CONNECT:%s" %
+                             (self.tty_file, self.btp_address))
 
             log("Starting socat process: %s", socat_cmd)
 
