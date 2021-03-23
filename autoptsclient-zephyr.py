@@ -19,6 +19,7 @@
 
 import os
 import sys
+import ctypes
 import argparse
 from distutils.spawn import find_executable
 
@@ -27,6 +28,7 @@ import ptsprojects.zephyr as autoprojects
 import ptsprojects.stack as stack
 from pybtp import btp
 from ptsprojects.zephyr.iutctl import get_iut
+from winutils import have_admin_rights
 
 
 def check_args(args):
@@ -41,10 +43,14 @@ def check_args(args):
         sys.exit("Server IP address not specified!")
 
     if tty_file:
-        if (not tty_file.startswith("/dev/tty") and
+        if tty_file.startswith("COM"):
+            if not os.path.exists(tty_file):
+                sys.exit("%s COM file does not exist!" % repr(tty_file))
+            args.tty_file = "/dev/ttyS" + str(int(tty_file["COM".__len__():]) - 1)
+        elif (not tty_file.startswith("/dev/tty") and
                 not tty_file.startswith("/dev/pts")):
-            sys.exit("%s is not a TTY file!" % repr(tty_file))
-        if not os.path.exists(tty_file):
+            sys.exit("%s is not a TTY nor COM file!" % repr(tty_file))
+        elif not os.path.exists(tty_file):
             sys.exit("%s TTY file does not exist!" % repr(tty_file))
     else:  # no TTY - will run DUT in QEMU
         if not find_executable(qemu_bin):
@@ -96,7 +102,8 @@ def parse_args():
 
 def main():
     """Main."""
-    if os.geteuid() == 0:  # root privileges are not needed
+
+    if have_admin_rights():  # root privileges are not needed
         sys.exit("Please do not run this program as root.")
 
     args = parse_args()

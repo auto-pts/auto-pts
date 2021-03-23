@@ -733,8 +733,14 @@ class TestCase(PTSCallback):
         if os.path.exists(subproc_path):
             log("%s, run pre test case script" % self.post_run.__name__)
             self.lf_subproc = open(subproc_dir + "sp_pre_stdout.log", "w")
-            subproc_cmd = " ".join(
-                [subproc_path, self.project_name, self.name])
+
+            if sys.platform == "win32":
+                subproc_cmd = " ".join(["python", repr(subproc_path),
+                                        self.project_name, self.name])
+            else:
+                subproc_cmd = " ".join(
+                    [subproc_path, self.project_name, self.name])
+
             self.tc_subproc = subprocess.Popen(shlex.split(subproc_cmd),
                                                shell=False,
                                                stdin=subprocess.PIPE,
@@ -790,8 +796,14 @@ class TestCase(PTSCallback):
         if os.path.exists(subproc_path):
             log("%s, run post test case script" % self.post_run.__name__)
             self.lf_subproc = open(subproc_dir + "sp_post_stdout.log", "w")
-            subproc_cmd = " ".join(
-                [subproc_path, self.project_name, self.name])
+
+            if sys.platform == "win32":
+                subproc_cmd = " ".join(["python", repr(subproc_path),
+                                        self.project_name, self.name])
+            else:
+                subproc_cmd = " ".join(
+                    [subproc_path, self.project_name, self.name])
+
             self.tc_subproc = subprocess.Popen(shlex.split(subproc_cmd),
                                                shell=False,
                                                stdin=subprocess.PIPE,

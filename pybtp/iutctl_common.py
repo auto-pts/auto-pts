@@ -17,13 +17,15 @@ import os
 import logging
 import socket
 import binascii
+import sys
 import threading
 import signal
 import subprocess
 import serial
 import time
-from fcntl import fcntl, F_GETFL, F_SETFL
-from os import O_NONBLOCK, read
+if sys.platform != "win32":
+    from fcntl import fcntl, F_GETFL, F_SETFL
+    from os import O_NONBLOCK, read
 import queue
 
 from . import defs
@@ -52,13 +54,17 @@ class BTPSocket(object):
         self.conn = None
         self.addr = None
 
-    def open(self):
+    def open(self, btp_address=BTP_ADDRESS):
         """Open BTP socket for IUT"""
-        if os.path.exists(BTP_ADDRESS):
-            os.remove(BTP_ADDRESS)
+        if os.path.exists(btp_address):
+            os.remove(btp_address)
 
-        self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        self.sock.bind(BTP_ADDRESS)
+        if sys.platform == "win32":
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.sock.bind((socket.gethostname(), 0))
+        else:
+            self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            self.sock.bind(btp_address)
 
         # queue only one connection
         self.sock.listen(1)
@@ -124,13 +130,18 @@ class BTPSocket(object):
 
     def close(self):
         try:
-            self.sock.shutdown(socket.SHUT_RDWR)
+            self.conn.shutdown(socket.SHUT_RDWR)
+            self.conn.close()
             self.sock.close()
         except:
             pass
+        # TODO We should wait for the [FIN, ACK] packet to arrive or
+        # next connection could fail(on Windows race occurred)
+        time.sleep(2)
         self.sock = None
         self.conn = None
         self.addr = None
+
 
 class BTPWorker(BTPSocket):
     def __init__(self):
