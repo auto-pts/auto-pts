@@ -570,6 +570,8 @@ class L2cap:
         if chan is None:
             logging.error("unknown channel")
             return
+        # Remove channel from saved channels
+        self.channels.remove(chan)
 
         chan.disconnected(psm, bd_addr_type, bd_addr, reason)
 
