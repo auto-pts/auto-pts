@@ -3351,6 +3351,10 @@ def gap_passkey_disp_ev_(gap, data, data_len):
     addr_type, addr, passkey = struct.unpack(fmt, data)
     addr = binascii.hexlify(addr[::-1])
 
+    # unpacking passkey to int loses leading 0s,
+    # let's add them back if lost
+    passkey = str(passkey).zfill(6)
+
     logging.debug("passkey = %r", passkey)
 
     gap.passkey.data = passkey
