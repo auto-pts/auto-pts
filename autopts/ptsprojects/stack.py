@@ -512,6 +512,10 @@ class Mesh:
         self.sar_transmitter_state = Property((0x01, 0x07, 0x01, 0x07, 0x01, 0x02, 0x03))
         self.sar_receiver_state = Property((0x04, 0x02, 0x01, 0x01, 0x01))
 
+        # Large Composition Data models
+        self.large_comp_data = Property(None)
+        self.models_metadata = Property(None)
+
         # MMDL expected status data
         self.expect_status_data = Property({
             "Ack": True,
