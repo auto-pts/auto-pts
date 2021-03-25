@@ -47,6 +47,7 @@ import xmlrpc.client
 import pythoncom
 import ptsprojects.ptstypes as ptstypes
 import ctypes
+from pathlib import Path
 
 log = logging.debug
 
@@ -511,8 +512,11 @@ class PyPTS:
         workspace_dir = os.path.dirname(workspace_path)
         workspace_name = os.path.basename(workspace_path)
 
+        temp_workspace_dir = os.path.join(workspace_dir, "_" + self.get_bluetooth_address())
+        Path(temp_workspace_dir).mkdir(parents=False, exist_ok=True)
+
         self._temp_workspace_path = \
-            os.path.join(workspace_dir, "temp_" + workspace_name)
+            os.path.join(temp_workspace_dir, "temp_" + workspace_name)
         shutil.copy2(workspace_path, self._temp_workspace_path)
         log("Using temporary workspace: %s", self._temp_workspace_path)
 
