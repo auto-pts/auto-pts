@@ -3022,6 +3022,46 @@ def hdl_wid_945(_: WIDParams):
     return True
 
 
+def hdl_wid_950(_: WIDParams):
+    return True
+
+
+def hdl_wid_951(_: WIDParams):
+    return True
+
+
+def hdl_wid_952(params: WIDParams):
+    stack = get_stack()
+
+    found = re.findall(r'0x[0-9A-F]+', params.description, re.I)
+    if not found:
+        logging.error("%s Parsing error!", hdl_wid_952.__name__)
+        return False
+
+    page, offset = int(found[0], 16), int(found[1], 16)
+
+    btp.mesh_large_comp_data_get(
+        stack.mesh.net_key_idx, stack.mesh.lt1_addr, page, offset)
+
+    return True
+
+
+def hdl_wid_953(params: WIDParams):
+    stack = get_stack()
+
+    found = re.findall(r'0x[0-9A-F]+', params.description, re.I)
+    if not found:
+        logging.error("%s Parsing error!", hdl_wid_953.__name__)
+        return False
+
+    page, offset = int(found[0], 16), int(found[1], 16)
+
+    btp.mesh_models_metadata_get(
+        stack.mesh.net_key_idx, stack.mesh.lt1_addr, page, offset)
+
+    return True
+
+
 def hdl_wid_20101(_: WIDParams):
     """
     description: Please send discover primary services command to the PTS.
