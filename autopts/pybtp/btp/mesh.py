@@ -271,6 +271,12 @@ MESH = {
     "sar_receiver_set": (defs.BTP_SERVICE_ID_MESH,
                          defs.MESH_SAR_RECEIVER_SET,
                          CONTROLLER_INDEX),
+    "large_comp_data_get": (defs.BTP_SERVICE_ID_MESH,
+                            defs.MESH_LARGE_COMP_DATA_GET,
+                            CONTROLLER_INDEX),
+    "models_metadata_get": (defs.BTP_SERVICE_ID_MESH,
+                            defs.MESH_MODELS_METADATA_GET,
+                            CONTROLLER_INDEX),
 }
 
 
@@ -660,6 +666,36 @@ def mesh_sar_receiver_set(dst, seg_thresh,
 
     iutctl = get_iut()
     iutctl.btp_socket.send_wait_rsp(*MESH['sar_receiver_set'], data=data)
+
+
+def mesh_large_comp_data_get(net_idx, addr, page, offset):
+    logging.debug("%s %r %r %r %r", mesh_large_comp_data_get.__name__,
+                  net_idx, addr, page, offset)
+
+    data = bytearray(struct.pack("<HHBH", net_idx, addr, page, offset))
+
+    iutctl = get_iut()
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MESH['large_comp_data_get'], data=data)
+
+    logging.debug("comp data len %d %r", len(rsp), binascii.hexlify(rsp))
+
+    stack = get_stack()
+    stack.mesh.large_comp_data.data = rsp
+
+
+def mesh_models_metadata_get(net_idx, addr, page, offset):
+    logging.debug("%s %r %r %r %r", mesh_models_metadata_get.__name__,
+                  net_idx, addr, page, offset)
+
+    data = bytearray(struct.pack("<HHBH", net_idx, addr, page, offset))
+
+    iutctl = get_iut()
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MESH['models_metadata_get'], data=data)
+
+    logging.debug("metadata len %d %r", len(rsp), binascii.hexlify(rsp))
+
+    stack = get_stack()
+    stack.mesh.models_metadata.data = rsp
 
 
 def mesh_out_number_action_ev(mesh, data, data_len):
