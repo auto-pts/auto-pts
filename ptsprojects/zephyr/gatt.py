@@ -129,7 +129,7 @@ def set_pixits(ptses):
     pts.set_pixit("GATT", "TSPX_iut_setup_att_over_br_edr", "FALSE")
     pts.set_pixit("GATT", "TSPX_tester_database_file",
                   "C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\GATT_Qualification_Test_Databases.xml")
-    pts.set_pixit("GATT", "TSPX_iut_is_client_periphral", "FALSE")
+    pts.set_pixit("GATT", "TSPX_iut_is_client_periphral", "TRUE")
     pts.set_pixit("GATT", "TSPX_iut_is_server_central", "FALSE")
     pts.set_pixit("GATT", "TSPX_mtu_size", "23")
     pts.set_pixit("GATT", "TSPX_pin_code", "0000")
@@ -154,7 +154,7 @@ def set_pixits(ptses):
     pts2.set_pixit("GATT", "TSPX_iut_setup_att_over_br_edr", "FALSE")
     pts2.set_pixit("GATT", "TSPX_tester_database_file",
                   "C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\GATT_Qualification_Test_Databases.xml")
-    pts2.set_pixit("GATT", "TSPX_iut_is_client_periphral", "FALSE")
+    pts2.set_pixit("GATT", "TSPX_iut_is_client_periphral", "TRUE")
     pts2.set_pixit("GATT", "TSPX_iut_is_server_central", "FALSE")
     pts2.set_pixit("GATT", "TSPX_mtu_size", "23")
     pts2.set_pixit("GATT", "TSPX_pin_code", "0000")
