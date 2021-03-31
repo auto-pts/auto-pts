@@ -38,10 +38,12 @@ def check_args(args):
     qemu_bin = autoprojects.iutctl.QEMU_BIN
     tty_file = args.tty_file
     kernel_image = args.kernel_image
-    ip_addr = args.ip_addr
 
-    if not ip_addr:
-        sys.exit("Server IP address not specified!")
+    if not args.ip_addr:
+        args.ip_addr = ['127.0.0.1'] * len(args.srv_port)
+
+    if not args.local_addr:
+        args.local_addr = ['127.0.0.1'] * len(args.cli_port)
 
     if tty_file:
         if tty_file.startswith("COM"):
