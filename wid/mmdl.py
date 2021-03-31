@@ -74,7 +74,7 @@ def mmdl_wid_hdl(wid, description, test_case_name):
 def iut_reset():
     # Wait a few seconds before resetting so that all settings are stored on the flash
     # Some models save from a callback that is triggered after a few seconds.
-    time.sleep(7)
+    time.sleep(5)
     zephyrctl = btp.get_iut_method()
 
     zephyrctl.wait_iut_ready_event()
@@ -82,9 +82,6 @@ def iut_reset():
     btp.core_reg_svc_mesh()
     btp.gap_read_ctrl_info()
     btp.mesh_init()
-
-    # Wait a few seconds so that Mesh is initialized and everything is loaded from flash
-    time.sleep(5)
 
 
 def hdl_wid_13(desc):
@@ -102,10 +99,7 @@ def hdl_wid_13(desc):
         btp.mesh_init()
 
     if stack.mesh.is_provisioned.data:
-        # Wait a few seconds so that Mesh is initialized and everything is loaded from flash
-        time.sleep(7)
         btp.mesh_reset()
-        time.sleep(5)
 
     return True
 
@@ -1630,7 +1624,7 @@ def hdl_wid_666(desc):
     time.sleep(5)
 
     prop_id = int(re.findall(r'0x([0-9A-F]{2,})', desc)[0], 16)
-    sensor_value = (0xffff / 2)
+    sensor_value = int(0xffff / 2)
     btp.mmdl_sensor_data_set(prop_id, struct.pack("<I", sensor_value))
     return True
 

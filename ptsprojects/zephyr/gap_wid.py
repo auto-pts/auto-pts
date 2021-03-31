@@ -15,13 +15,14 @@
 
 import logging
 import sys
-from pybtp import btp
+from pybtp import btp, types
 from pybtp.types import Prop, Perm, UUID, AdType, UriScheme, bdaddr_reverse
 import re
 import struct
 from ptsprojects.stack import get_stack
 from binascii import hexlify
 from time import sleep
+import socket
 
 log = logging.debug
 
@@ -36,6 +37,64 @@ def gap_wid_hdl(wid, description, test_case_name):
         return handler(description)
     except AttributeError as e:
         logging.exception(e)
+
+
+# For tests that expect "OK" response even if read operation is not successful
+def gap_wid_hdl_failed_read(wid, description, test_case_name):
+    log("%s, %r, %r, %s", gap_wid_hdl.__name__, wid, description,
+        test_case_name)
+    module = sys.modules[__name__]
+
+    if wid == 112:
+        bd_addr = btp.pts_addr_get()
+        bd_addr_type = btp.pts_addr_type_get()
+
+        handle = btp.parse_handle_description(description)
+        if not handle:
+            return False
+
+        try:
+            btp.gattc_read(bd_addr_type, bd_addr, handle)
+            btp.gattc_read_rsp()
+        except socket.timeout:
+            pass
+        return True
+    else:
+        try:
+            handler = getattr(module, "hdl_wid_%d" % wid)
+            return handler(description)
+        except AttributeError as e:
+            logging.exception(e)
+
+
+def gap_wid_hdl_mode1_lvl2(wid, description, test_case_name):
+    log("%s, %r, %r, %s", gap_wid_hdl.__name__, wid, description,
+        test_case_name)
+    module = sys.modules[__name__]
+
+    if wid == 139:
+        return hdl_wid_139_mode1_lvl2(description)
+    else:
+        try:
+            handler = getattr(module, "hdl_wid_%d" % wid)
+            return handler(description)
+        except AttributeError as e:
+            logging.exception(e)
+
+
+def gap_wid_hdl_mode1_lvl4(wid, description, test_case_name):
+    log("%s, %r, %r, %s", gap_wid_hdl.__name__, wid, description,
+        test_case_name)
+    module = sys.modules[__name__]
+
+    if wid == 139:
+        return hdl_wid_139_mode1_lvl4(description)
+    else:
+        try:
+            handler = getattr(module, "hdl_wid_%d" % wid)
+            return handler(description)
+        except AttributeError as e:
+            logging.exception(e)
 
 
 # wid handlers section begin
@@ -518,6 +577,72 @@ def hdl_wid_139(desc):
     return False
 
 
+def hdl_wid_139_mode1_lvl4(desc):
+    attrs = btp.gatts_get_attrs(type_uuid='2803')
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
+    for attr in attrs:
+        if not attr:
+            continue
+
+        (handle, permission, type_uuid) = attr
+        data = btp.gatts_get_attr_val(bd_addr_type, bd_addr, handle)
+        if not data:
+            continue
+
+        (att_rsp, val_len, val) = data
+
+        hdr = '<BH'
+        hdr_len = struct.calcsize(hdr)
+        uuid_len = val_len - hdr_len
+
+        (props, handle, chrc_uuid) = struct.unpack("<BH%ds" % uuid_len, val)
+        chrc_value_attr = btp.gatts_get_attrs(start_handle=handle,
+                                              end_handle=handle)
+        if not chrc_value_attr:
+            continue
+
+        (handle, permission, type_uuid) = chrc_value_attr[0]
+        if permission & Perm.write_authn:
+            return format(handle, 'x').zfill(4)
+
+    return False
+
+
+def hdl_wid_139_mode1_lvl2(desc):
+    attrs = btp.gatts_get_attrs(type_uuid='2803')
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
+    for attr in attrs:
+        if not attr:
+            continue
+
+        (handle, permission, type_uuid) = attr
+        data = btp.gatts_get_attr_val(bd_addr_type, bd_addr, handle)
+        if not data:
+            continue
+
+        (att_rsp, val_len, val) = data
+
+        hdr = '<BH'
+        hdr_len = struct.calcsize(hdr)
+        uuid_len = val_len - hdr_len
+
+        (props, handle, chrc_uuid) = struct.unpack("<BH%ds" % uuid_len, val)
+        chrc_value_attr = btp.gatts_get_attrs(start_handle=handle,
+                                              end_handle=handle)
+        if not chrc_value_attr:
+            continue
+
+        (handle, permission, type_uuid) = chrc_value_attr[0]
+        if permission & Perm.write_enc:
+            return format(handle, 'x').zfill(4)
+
+    return False
+
+
 def hdl_wid_141(desc):
     return btp.gatts_verify_write_success(desc)
 
@@ -731,9 +856,54 @@ def hdl_wid_204(desc):
     return btp.check_discov_results()
 
 
+def hdl_wid_208(desc):
+    btp.gap_pair()
+    return True
+
+
+def hdl_wid_209(desc):
+    return True
+
+
+def hdl_wid_224(desc):
+    return True
+
+
+def hdl_wid_225(desc):
+    return True
+
+
+def hdl_wid_226(desc):
+    return True
+
+
+def hdl_wid_227(desc):
+    stack = get_stack()
+
+    try:
+        btp.l2cap_conn(None, None, 128)
+    except types.BTPError:
+        pass
+    return True
+
+
 def hdl_wid_1002(desc):
     stack = get_stack()
     return stack.gap.get_passkey()
+
+
+def hdl_wid_20001(desc):
+    btp.gap_set_conn()
+    btp.gap_adv_ind_on()
+    return True
+
+def hdl_wid_20115(desc):
+    btp.gap_disconn()
+    return True
+
+def hdl_wid_20100(desc):
+    btp.gap_conn()
+    return True
 
 
 def hdl_wid_2142(desc):
