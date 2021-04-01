@@ -280,6 +280,7 @@ class Mesh:
         self.seq_num = 0x00000000
         self.address = 0x0003
         self.dev_key = '0123456789abcdef0123456789abcdef'
+        self.iut_is_provisioner = False
 
         # health model data
         self.health_test_id = Property(0x00)
@@ -334,6 +335,9 @@ class Mesh:
             'Remaining Time': 0,
         })
 
+    def set_iut_provisioner(self, _is_prov):
+        self.iut_is_provisioner = _is_prov
+
     def recv_status_data_set(self, key, data):
         if key in self.recv_status_data.data:
             self.recv_status_data.data[key] = data
@@ -382,7 +386,14 @@ class Mesh:
 
         return False
 
-    def wait_for_attention_timer_exp(self, timeout):
+    def wait_for_prov_link_close(self, timeout):
+        if not self.last_seen_prov_link_state.data:
+            self.last_seen_prov_link_state.data = ('uninitialized', None)
+
+        state, _ = self.last_seen_prov_link_state.data
+        if state == 'closed':
+            return True
+
         flag = Event()
         flag.set()
 
@@ -390,7 +401,7 @@ class Mesh:
         t.start()
 
         while flag.is_set():
-            state, bearer = self.last_seen_prov_link_state.data
+            state, _ = self.last_seen_prov_link_state.data
             if state == 'closed':
                 t.cancel()
                 return True

@@ -80,15 +80,22 @@ def hdl_wid_6(desc):
     :return:
     """
     stack = get_stack()
-
-    addr = 0x0002
     attention_duration = 0x00
 
     if not stack.mesh.is_initialized:
         btp.mesh_config_prov()
         btp.mesh_init()
-    if not stack.mesh.is_provisioned.data:
-        btp.mesch_provision_adv(stack.mesh.dev_uuid, addr, attention_duration)
+
+        if stack.mesh.iut_is_provisioner:
+            btp.mesh_prov_node()
+
+    if stack.mesh.iut_is_provisioner:
+        if not stack.mesh.is_prov_adv:
+            btp.mesh_provision_adv(stack.mesh.dev_uuid, stack.mesh.addr, attention_duration)
+        else:
+            stack.mesh.wait_for_prov_link_close(90)
+            stack.mesh.address_lt2 = stack.mesh.addr + 1
+            btp.mesh_provision_adv(stack.mesh.dev_uuid, stack.mesh.address_lt2, attention_duration)
 
     return True
 
@@ -139,6 +146,9 @@ def hdl_wid_12(desc):
         btp.mesh_config_prov()
         btp.mesh_init()
 
+        if stack.mesh.iut_is_provisioner:
+            btp.mesh_prov_node()
+
     return True
 
 
@@ -147,7 +157,7 @@ def hdl_wid_13(desc):
     Implements: RE_PROVISIONING_PROVISIONER
     :param desc: There is no shared security information. Please remove any
                  security information if any. PTS is waiting for beacon to
-                 start provisioning from
+                 start provisioning from IUT with UUID value indicated in 'TSPX_device_uuid'
     :return:
     """
     stack = get_stack()
@@ -259,9 +269,36 @@ def hdl_wid_21(desc):
 def hdl_wid_22(desc):
     """
     Implements:
-    :param desc: Please bind an AppKey to a Model Id = 2 for the testing.
+    :param desc: Please bind an AppKey to a Model Id = %d for the testing.
     :return:
     """
+    stack = get_stack()
+
+    if not stack.mesh.iut_is_provisioner:
+        return True
+
+    pattern = re.compile(
+        r'(Model\sId)\s=\s+([0-9a-fA-F]+)')
+    params = pattern.findall(desc)
+    if not params:
+        logging.error("%s parsing error", hdl_wid_22.__name__)
+        return
+
+    params = dict(params)
+
+    model_id = int(params.get('Model Id'), 16)
+    app_key_idx = 0x0000
+
+    if stack.mesh.address_lt2:
+        btp.mesh_cfg_model_app_bind(stack.mesh.net_idx, stack.mesh.address_lt2, stack.mesh.el_address, app_key_idx,
+                                    model_id)
+    else:
+        btp.mesh_cfg_model_app_bind(stack.mesh.net_idx, stack.mesh.addr, stack.mesh.el_address, app_key_idx,
+                                model_id)
+
+        btp.mesh_cfg_model_app_bind(stack.mesh.net_idx, stack.mesh.address, stack.mesh.el_address, app_key_idx,
+                                model_id)
+
     return True
 
 
@@ -379,10 +416,12 @@ def hdl_wid_31(desc):
         return True
     return False
 
+
 def hdl_wid_33(desc):
     """
     Implements:
-    :param desc: 'Please start create link and provisioning. PTS will broadcast unprovisioned device beacon with UUID = TSPX_device_uuid value"
+    :param desc: 'Please start create link and provisioning.
+                  PTS will broadcast unprovisioned device beacon with UUID = TSPX_device_uuid value"
     :return:
     """
     stack = get_stack()
@@ -394,8 +433,12 @@ def hdl_wid_33(desc):
         btp.mesh_config_prov()
         btp.mesh_init()
 
+        if stack.mesh.iut_is_provisioner:
+            btp.mesh_prov_node()
+
     btp.mesh_provision_adv(uuid, addr, attention_duration)
     return True
+
 
 def hdl_wid_34(desc):
     """
@@ -477,7 +520,7 @@ def hdl_wid_37(desc):
     """
     stack = get_stack()
 
-    return stack.mesh.wait_for_attention_timer_exp(90)
+    return stack.mesh.wait_for_prov_link_close(90)
 
 
 def hdl_wid_38(desc):
@@ -787,6 +830,17 @@ def hdl_wid_210(desc):
     return False
 
 
+def hdl_wid_212(desc):
+    """
+    Implements:
+    :param desc: This is Lower Tester 2 which is in the reject list filter and
+                 should not receive any update. Click OK to continue monitoring
+                 for any beacon until timeout.
+    :return:
+    """
+    return True
+
+
 def hdl_wid_216(desc):
     """
     Implements: IUT_GENERATE_SECURE_NETWORK_BEACON_LESS96
@@ -914,9 +968,31 @@ def hdl_wid_255(desc):
     """
     return True
 
-def hdl_wid_260(desc):
 
+def hdl_wid_260(desc):
+    """
+    Implements:
+    :param desc: Please start another PTS and run Lower Tester 2 test case which
+                 is the node that has been rejected and set the correct TSPX_device_uuid
+                 value for tester 2 which is different than the Lower Tester 1.
+                 Please have the IUT provision both testers to share the same network
+                 security credentials. Click OK when ready.
+    :return:
+    """
     return True
+
+
+def hdl_wid_261(desc):
+    """
+    Implements:
+    :param desc: This is Lower Tester 2 acting as a node that has been rejected.
+                 Please set the correct TSPX_device_uuid value before running this
+                 test case for IUT to start provisioning these two testers to share
+                 the same network security credential. Click OK when ready.
+    :return:
+    """
+    return True
+
 
 def hdl_wid_262(desc):
     """
@@ -947,6 +1023,56 @@ def hdl_wid_268(desc):
     return True
 
 
+def hdl_wid_269(desc):
+    """
+    Implements:
+    :param desc: This is Lower Tester 2 which will not receive any update.
+                 Please wait until IUT finishes the Key Refresh procedure with Lower Tester 1,
+                 and then click OK for Lower Tester 2 to send a Mesh message.
+    :return:
+    """
+    return True
+
+
+def hdl_wid_270(desc):
+    """
+    Implements:
+    :param desc: Please confirm that IUT ignores the sent Mesh message
+    :return:
+    """
+    return True
+
+
+def hdl_wid_271(desc):
+    """
+    Implements:
+    :param desc: Please confirm that Lower Tester 2 did not receive any secure beacons
+    :return:
+    """
+    stack = get_stack()
+    return True
+
+
+def hdl_wid_272(desc):
+    """
+    Implements:
+    :param desc: Please send a Mesh message from Lower Tester 2 to IUT.
+                 Confirm that IUT ignores the message from Lower Tester 2
+    :return:
+    """
+    stack = get_stack()
+    return True
+
+
+def hdl_wid_273(desc):
+    """
+    Implements:
+    :param desc: Please confirm that IUT received a Mesh message, NID: 0x37
+    :return:
+    """
+    stack = get_stack()
+    return True
+
 def hdl_wid_274(desc):
     """
     Implements: KEY_REFRESH_WAIT_FOR_INVALID_MSG
@@ -954,6 +1080,89 @@ def hdl_wid_274(desc):
                  See Output Log for details
     :return:
     """
+    return True
+
+
+def hdl_wid_275(desc):
+    """
+    Implements:
+    :param desc: Please send Config Key Refresh Phase Get.
+    :return:
+    """
+    stack = get_stack()
+
+    btp.mesh_cfg_krp_get(stack.mesh.net_idx, stack.mesh.addr, stack.mesh.net_key_index)
+
+    return stack.mesh.status == 0x00 and stack.mesh.data == 0x00
+
+
+def hdl_wid_276(desc):
+    """
+    Implements:
+    :param desc: Please send NetKey Update.
+    :return:
+    """
+    stack = get_stack()
+
+    net_key_idx = 0x0000
+    net_key = '00000000000000000000000000000001'
+
+    btp.mesh_cfg_netkey_update(stack.mesh.net_idx, stack.mesh.addr, net_key, net_key_idx)
+    btp.mesh_cfg_netkey_update(stack.mesh.net_idx, stack.mesh.address, net_key, net_key_idx)
+
+    return stack.mesh.status == 0x00
+
+
+def hdl_wid_277(desc):
+    """
+    Implements:
+    :param desc: Please send AppKey Update.
+    :return:
+    """
+    stack = get_stack()
+
+    app_key_up = '00000000000000000000000000000001'
+    app_key_idx = 0x0000
+
+    btp.mesh_cfg_appkey_update(stack.mesh.net_idx, stack.mesh.addr, stack.mesh.net_key_index, app_key_up,
+                               app_key_idx)
+    btp.mesh_cfg_appkey_update(stack.mesh.net_idx, stack.mesh.address, stack.mesh.net_key_index, app_key_up,
+                               app_key_idx)
+
+    return stack.mesh.status == 0x00
+
+
+def hdl_wid_278(desc):
+    """
+    Implements:
+    :param desc: Waiting for Secure Network Beacon with Key Refresh On and Iv Update Off.
+    :return:
+    """
+    stack = get_stack()
+    phase = 0x02
+    net_key_index = 0x0000
+    net_idx = 0x0000
+
+    btp.mesh_cfg_krp_set(stack.mesh.net_idx, stack.mesh.addr, stack.mesh.net_key_index, phase)
+    btp.mesh_cfg_krp_set(net_idx, stack.mesh.address, net_key_index, phase)
+
+    return True
+
+
+def hdl_wid_279(desc):
+    """
+    Implements:
+    :param desc: Waiting for Secure Network Beacon with Key Refresh Off and Iv Update Off.
+    :return:
+    """
+    stack = get_stack()
+    phase = 0x03
+    net_key_index = 0x0000
+    net_idx = 0x0000
+
+    btp.mesh_cfg_krp_set(stack.mesh.net_idx, stack.mesh.addr, stack.mesh.net_key_index, phase)
+    btp.mesh_cfg_krp_set(net_idx, stack.mesh.address, net_key_index, phase)
+
     return True
 
 
@@ -1012,6 +1221,54 @@ def hdl_wid_285(desc):
     :return:
     """
     return True
+
+
+def hdl_wid_286(desc):
+    """
+    Implements:
+    :param desc: Waiting for Config Key Refresh Phase Set message with Phase Set to 0x02.
+    :return:
+    """
+    stack = get_stack()
+    pattern = re.compile(
+        r'(Phase)\sSet\sto\s+([0][xX][0-9a-fA-F]+)')
+    params = pattern.findall(desc)
+    if not params:
+        logging.error("%s parsing error", hdl_wid_286.__name__)
+        return
+    params = dict(params)
+
+    phase = int(params.get('Phase'), 16)
+    net_key_index = 0x0000
+
+    btp.mesh_cfg_krp_set(stack.mesh.net_idx, stack.mesh.addr, net_key_index, phase)
+    btp.mesh_cfg_krp_set(stack.mesh.net_idx, stack.mesh.address, net_key_index, phase)
+
+    return stack.mesh.status == 0x00
+
+
+def hdl_wid_287(desc):
+    """
+    Implements:
+    :param desc: Waiting for Config Key Refresh Phase Set message with Phase Set to 0x03.
+    :return:
+    """
+    stack = get_stack()
+    pattern = re.compile(
+        r'(Phase)\sSet\sto\s+([0][xX][0-9a-fA-F]+)')
+    params = pattern.findall(desc)
+    if not params:
+        logging.error("%s parsing error", hdl_wid_286.__name__)
+        return
+    params = dict(params)
+
+    phase = int(params.get('Phase'), 16)
+    net_key_index = 0x0000
+
+    btp.mesh_cfg_krp_set(stack.mesh.net_idx, stack.mesh.addr, net_key_index, phase)
+    btp.mesh_cfg_krp_set(stack.mesh.net_idx, stack.mesh.address, net_key_index, phase)
+
+    return stack.mesh.status == 0x00
 
 
 def hdl_wid_302(desc):
@@ -1455,11 +1712,16 @@ def hdl_wid_500(desc):
     """
     stack = get_stack()
     page = 0x00
-    addr = 0x0002
 
-    btp.mesh_composition_data_get(stack.mesh.net_idx, addr, page)
+    if not stack.mesh.iut_is_provisioner:
+        return True
 
-    return stack.mesh.status == 0x00
+    if stack.mesh.address_lt2:
+        btp.mesh_composition_data_get(stack.mesh.net_idx, stack.mesh.address_lt2, page)
+    else:
+        btp.mesh_composition_data_get(stack.mesh.net_idx, stack.mesh.addr, page)
+
+    return True
 
 
 def hdl_wid_501(desc):
@@ -1469,6 +1731,9 @@ def hdl_wid_501(desc):
     :return:
     """
     stack = get_stack()
+
+    if not stack.mesh.iut_is_provisioner:
+        return True
 
     btp.mesh_cfg_beacon_get(stack.mesh.net_idx, stack.mesh.addr)
 
@@ -1482,6 +1747,9 @@ def hdl_wid_502(desc):
     :return:
     """
     stack = get_stack()
+
+    if not stack.mesh.iut_is_provisioner:
+        return True
 
     pattern = re.compile(r'with\s+([0-9a-fA-F]+)')
     val = pattern.findall(desc)
@@ -1511,6 +1779,9 @@ def hdl_wid_504(desc):
     """
     stack = get_stack()
 
+    if not stack.mesh.iut_is_provisioner:
+        return True
+
     btp.mesh_cfg_default_ttl_get(stack.mesh.net_idx, stack.mesh.addr)
 
     return True
@@ -1524,6 +1795,9 @@ def hdl_wid_505(desc):
     """
     stack = get_stack()
     val = 0x00
+
+    if not stack.mesh.iut_is_provisioner:
+        return True
 
     btp.mesh_cfg_default_ttl_set(stack.mesh.net_idx, stack.mesh.addr, val)
     return True
@@ -1548,6 +1822,9 @@ def hdl_wid_507(desc):
     """
     stack = get_stack()
 
+    if not stack.mesh.iut_is_provisioner:
+        return True
+
     btp.mesh_cfg_friend_get(stack.mesh.net_idx, stack.mesh.addr)
     return True
 
@@ -1559,6 +1836,9 @@ def hdl_wid_508(desc):
     :return:
     """
     stack = get_stack()
+
+    if not stack.mesh.iut_is_provisioner:
+        return True
 
     val = 0x00
 
@@ -1592,6 +1872,9 @@ def hdl_wid_510(desc):
 
     stack = get_stack()
 
+    if not stack.mesh.iut_is_provisioner:
+        return True
+
     pattern = re.compile(r'(Destination|CountLog|PeriodLog|TTL|Features)\sfield set to\s+([0][xX][0-9a-fA-F]+)')
     params = pattern.findall(desc)
     if not params:
@@ -1619,6 +1902,9 @@ def hdl_wid_511(desc):
     """
     stack = get_stack()
 
+    if not stack.mesh.iut_is_provisioner:
+        return True
+
     btp.mesh_cfg_heartbeat_pub_get(stack.mesh.net_idx, stack.mesh.addr)
 
     return stack.mesh.status == 0x00
@@ -1631,6 +1917,9 @@ def hdl_wid_514(desc):
     :return:
     """
     stack = get_stack()
+
+    if not stack.mesh.iut_is_provisioner:
+        return True
 
     if "Config GATT Proxy Get" in desc:
         btp.mesh_cfg_gatt_proxy_get(stack.mesh.net_idx, stack.mesh.addr)
@@ -1861,6 +2150,9 @@ def hdl_wid_515(desc):
     :return:
     """
     stack = get_stack()
+
+    if not stack.mesh.iut_is_provisioner:
+        return True
 
     if "Model App Bind" in desc or r"Model App Unbind" in desc:
         pattern = re.compile(r'(Element\sAddress|AppKey\sIndex|SIG\sModel\sID)\s=\s+([0-9a-fA-F]+)')
@@ -2097,7 +2389,20 @@ def hdl_wid_518(desc):
     :param desc: Please send AppKey Add.
     :return:
     """
-    return True
+    stack = get_stack()
+
+    if not stack.mesh.iut_is_provisioner:
+        return True
+
+    app_key = '0123456789abcdef0123456789fedcba'
+    app_key_idx = 0x0000
+    if stack.mesh.address_lt2:
+        btp.mesh_cfg_appkey_add(stack.mesh.net_idx, stack.mesh.address_lt2, stack.mesh.net_key_index, app_key,
+                                app_key_idx)
+    else:
+        btp.mesh_cfg_appkey_add(stack.mesh.net_idx, stack.mesh.addr, stack.mesh.net_key_index, app_key, app_key_idx)
+        btp.mesh_cfg_appkey_add(stack.mesh.net_idx, stack.mesh.address, stack.mesh.net_key_index, app_key, app_key_idx)
+    return stack.mesh.status == 0x00
 
 
 def hdl_wid_519(desc):
@@ -2168,6 +2473,9 @@ def hdl_wid_522(desc):
     """
     stack = get_stack()
 
+    if not stack.mesh.iut_is_provisioner:
+        return True
+
     pattern = re.compile(r'page\s+([0][xX][0-9a-fA-F]+)')
     val = pattern.findall(desc)
     if not val:
@@ -2177,7 +2485,7 @@ def hdl_wid_522(desc):
 
     btp.mesh_composition_data_get(stack.mesh.net_idx, stack.mesh.addr, page)
 
-    return stack.mesh.status == 0x00
+    return True
 
 
 def hdl_wid_550(desc):
@@ -2187,6 +2495,9 @@ def hdl_wid_550(desc):
     :return:
     """
     stack = get_stack()
+
+    if not stack.mesh.iut_is_provisioner:
+        return True
 
     pattern = re.compile(r'(Source|Destination)=+([0][xX][0-9a-fA-F]+)')
     params = pattern.findall(desc)
@@ -2424,6 +2735,9 @@ def hdl_wid_605(desc):
     """
     stack = get_stack()
 
+    if not stack.mesh.iut_is_provisioner:
+        return True
+
     if "Health Fault Get" in desc:
         pattern = re.compile(r'(Company\sID)\s=\s+([0][xX][0-9a-fA-F]+)')
         params = pattern.findall(desc)
@@ -2554,6 +2868,9 @@ def hdl_wid_650(desc):
     :return:
     """
     stack = get_stack()
+
+    if not stack.mesh.iut_is_provisioner:
+        return True
 
     if "Config Relay Get" in desc:
         btp.mesh_cfg_relay_get(stack.mesh.net_idx, stack.mesh.addr)
