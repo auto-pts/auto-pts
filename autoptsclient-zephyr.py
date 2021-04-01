@@ -117,12 +117,14 @@ def main():
 
     # Setup project PIXITS
     autoprojects.gap.set_pixits(ptses[0])
+    autoprojects.dis.set_pixits(ptses[0])
     autoprojects.sm.set_pixits(ptses[0])
     autoprojects.l2cap.set_pixits(ptses[0])
     autoprojects.gatt.set_pixits(ptses)
     autoprojects.mesh.set_pixits(ptses)
 
     test_cases = autoprojects.gap.test_cases(ptses[0])
+    test_cases += autoprojects.dis.test_cases(ptses)
     test_cases += autoprojects.gatt.test_cases(ptses)
     test_cases += autoprojects.sm.test_cases(ptses[0])
     test_cases += autoprojects.l2cap.test_cases(ptses[0])

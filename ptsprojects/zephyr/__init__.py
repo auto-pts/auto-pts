@@ -22,6 +22,7 @@ import ptsprojects.zephyr.gatt
 import ptsprojects.zephyr.sm
 import ptsprojects.zephyr.l2cap
 import ptsprojects.zephyr.mesh
+import ptsprojects.zephyr.dis
 
 # Constants
 ZEPHYR_PROJECT_URL = "https://github.com/zephyrproject-rtos/zephyr"
