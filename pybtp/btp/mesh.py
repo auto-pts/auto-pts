@@ -220,6 +220,12 @@ MESH = {
     "cfg_model_app_bind_vnd": (defs.BTP_SERVICE_ID_MESH,
                                defs.MESH_CFG_MODEL_APP_BIND_VND,
                                CONTROLLER_INDEX),
+    "cfg_krp_get": (defs.BTP_SERVICE_ID_MESH,
+                    defs.MESH_CFG_KRP_GET,
+                    CONTROLLER_INDEX),
+    "cfg_krp_set": (defs.BTP_SERVICE_ID_MESH,
+                    defs.MESH_CFG_KRP_SET,
+                    CONTROLLER_INDEX),
     "health_fault_get": (defs.BTP_SERVICE_ID_MESH,
                          defs.MESH_HEALTH_FAULT_GET,
                          CONTROLLER_INDEX),
@@ -706,6 +712,35 @@ def mesh_composition_data_get(net_idx, addr, page):
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MESH['composition_data_get'], data)
 
     (status,) = struct.unpack_from('<B', rsp)
+
+def mesh_cfg_krp_get(net_idx, addr, net_key_idx):
+    logging.debug("%s", mesh_cfg_krp_get.__name__)
+
+    stack = get_stack()
+    iutctl = get_iut()
+
+    data = bytearray(struct.pack("<HHH", net_idx, addr, net_key_idx))
+
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MESH['cfg_krp_get'], data)
+
+    (status, phase) = struct.unpack_from('<BB', rsp)
+    stack.mesh.status = status
+    stack.mesh.data = phase
+
+
+def mesh_cfg_krp_set(net_idx, addr, net_key_idx, phase):
+    logging.debug("%s", mesh_cfg_krp_set.__name__)
+
+    stack = get_stack()
+    iutctl = get_iut()
+
+    data = bytearray(struct.pack("<HHHB", net_idx, addr, net_key_idx, phase))
+
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MESH['cfg_krp_set'], data)
+
+    (status, phase) = struct.unpack_from('<BB', rsp)
+    stack.mesh.status = status
+    stack.mesh.data = phase
 
 
 def mesh_cfg_default_ttl_get(net_idx, addr):
