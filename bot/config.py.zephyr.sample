@@ -93,6 +93,53 @@ z['iut_config'] = {
 
     "prj.conf": {},  # Default config file name
 
+    "l2cap_no_eatt.conf": {
+        "overlay": {'CONFIG_BT_L2CAP_ECRED': 'y',
+                    'CONFIG_BT_EATT': 'n'},
+        "test_cases": ['L2CAP/ECFC/BI-01-C',
+                       'L2CAP/ECFC/BI-02-C',
+                       'L2CAP/ECFC/BI-03-C',
+                       'L2CAP/ECFC/BI-04-C',
+                       'L2CAP/ECFC/BI-05-C',
+                       'L2CAP/ECFC/BI-06-C',
+
+                       'L2CAP/ECFC/BV-01-C',
+                       'L2CAP/ECFC/BV-02-C',
+                       'L2CAP/ECFC/BV-03-C',
+                       'L2CAP/ECFC/BV-04-C',
+                       'L2CAP/ECFC/BV-06-C',
+                       'L2CAP/ECFC/BV-07-C',
+                       'L2CAP/ECFC/BV-08-C',
+                       'L2CAP/ECFC/BV-09-C',
+                       'L2CAP/ECFC/BV-10-C',
+                       'L2CAP/ECFC/BV-12-C',
+                       'L2CAP/ECFC/BV-13-C',
+                       'L2CAP/ECFC/BV-14-C',
+                       'L2CAP/ECFC/BV-15-C',
+                       'L2CAP/ECFC/BV-16-C',
+                       'L2CAP/ECFC/BV-17-C',
+                       'L2CAP/ECFC/BV-18-C',
+                       'L2CAP/ECFC/BV-19-C',
+                       'L2CAP/ECFC/BV-20-C',
+                       'L2CAP/ECFC/BV-21-C',
+                       'L2CAP/ECFC/BV-22-C',
+                       'L2CAP/ECFC/BV-23-C',
+                       'L2CAP/ECFC/BV-24-C',
+                       'L2CAP/ECFC/BV-25-C',
+                       'L2CAP/ECFC/BV-26-C',
+                       'L2CAP/ECFC/BV-27-C',
+                       ]
+    },
+
+    "l2cap_eatt_authentication.conf": {
+        "overlay": {'CONFIG_BT_L2CAP_ECRED': 'y',
+                    'CONFIG_BT_EATT': 'y',
+                    'CONFIG_BT_EATT_SEC_LEVEL': '2'},
+        "test_cases": [
+                       'L2CAP/ECFC/BV-11-C',
+                       ]
+    },
+
     "enforce_mitm.conf": {
         "overlay": {'CONFIG_BT_SMP_ENFORCE_MITM': 'y'},
         "test_cases": ['SM/SLA/PKE/BV-05-C',
