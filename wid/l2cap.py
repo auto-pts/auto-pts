@@ -320,13 +320,9 @@ def hdl_wid_100(desc):
 
 
 def hdl_wid_101(desc):
-    # wait for potential pending disconnect events
-    time.sleep(5)
-    stack = get_stack()
-    channels = stack.l2cap.rx_data_get_all(10)
-    if len(channels) == 0:
-        return True
-    btp.l2cap_disconn(0)
+    l2cap = get_stack().l2cap
+    for channel in l2cap.channels:
+        btp.l2cap_disconn(channel.id)
     return True
 
 
@@ -336,7 +332,9 @@ def hdl_wid_102(desc):
 
 def hdl_wid_103(desc):
     stack = get_stack()
-    btp.l2cap_reconfigure(None, None, 0,
+    chan = stack.l2cap._chan_lookup_id(0)
+    time.sleep(10)
+    btp.l2cap_reconfigure(None, None, chan.our_mtu + 1,
                           [chan.id for chan in stack.l2cap.channels])
     return True
 
@@ -353,29 +351,14 @@ def hdl_wid_105(desc):
 
 
 def hdl_wid_106(desc):
-    stack = get_stack()
-    l2cap = stack.l2cap
-
-    btp.l2cap_le_listen(l2cap.psm, l2cap.initial_mtu,
-                        l2cap.insufficient_authen)
     return True
 
 
 def hdl_wid_107(desc):
-    stack = get_stack()
-    l2cap = stack.l2cap
-
-    btp.l2cap_le_listen(l2cap.psm, l2cap.initial_mtu,
-                        l2cap.insufficient_author)
     return True
 
 
 def hdl_wid_108(desc):
-    stack = get_stack()
-    l2cap = stack.l2cap
-
-    btp.l2cap_le_listen(l2cap.psm, l2cap.initial_mtu,
-                        l2cap.insufficient_key_sz)
     return True
 
 
@@ -507,9 +490,18 @@ def hdl_wid_259(desc):
 
 
 def hdl_wid_260(desc):
+    # Verify if IUT received "Some connections refused –
+    # insufficient resources available"
+    # Verify if IUT received "All connections refused –
+    # unacceptable parameters"
     stack = get_stack()
-    # TODO: Fix to actually verify result
-    return not stack.l2cap.is_connected(0)
+    # We test it on 2 channels, so we expect only one
+    # to be connected (for condition 1) or none
+    # (for condition 2)
+    chan1 = stack.l2cap.is_connected(0)
+    chan2 = stack.l2cap.is_connected(1)
+    result = (chan1 ^ chan2) or (not chan1 and not chan2)
+    return result
 
 
 def hdl_wid_261(desc):
