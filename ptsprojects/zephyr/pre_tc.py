@@ -24,32 +24,16 @@ import signal
 PROFILE = None
 TEST_CASE = None
 
-BTMON_PROC = None
-BTMON_LOG = None
-# XXX: Fill me - btmon path example: /home/user/bluez/monitor/btmon
-BTMON_PATH = 'btmon'
-
 # XXX: Fill me - logs dir example: /home/user/btmon_logs/
 LOGS_DIR = 'iut_logs/'
 
 
 def cleanup():
-    if BTMON_PROC:
-        BTMON_PROC.terminate()
-
-        BTMON_PROC.wait()
-
-
-def run_btmon():
-    global BTMON_PROC, TEST_CASE
-
-    TEST_CASE = TEST_CASE.replace("/", "-")
-
-    BTMON_PROC = subprocess.Popen([BTMON_PATH, "-w", LOGS_DIR + PROFILE + "/" +
-                                   TEST_CASE], shell=False)
+    pass
 
 
 def main():
+    return  # Remove this if any subprocess is implemented
     global PROFILE, TEST_CASE
 
     atexit.register(cleanup)
@@ -60,15 +44,13 @@ def main():
     if not os.path.exists(LOGS_DIR + PROFILE):
         os.makedirs(LOGS_DIR + PROFILE)
 
-    run_btmon()
+    # Start some subprocess here
 
     while True:
         line = sys.stdin.readline()
 
         if line == "#close\n":
-            BTMON_PROC.terminate()
-            BTMON_PROC.wait()
-
+            # Terminate subprocess here
             break
 
 
