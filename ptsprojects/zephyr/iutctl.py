@@ -24,7 +24,7 @@ import serial
 
 from pybtp import defs
 from pybtp.types import BTPError
-from pybtp.iutctl_common import BTPWorker, BTP_ADDRESS, RTT2PTY
+from pybtp.iutctl_common import BTPWorker, BTP_ADDRESS, RTT2PTY, BTMON
 
 log = logging.debug
 ZEPHYR = None
@@ -79,8 +79,10 @@ class ZephyrCtl:
 
         if use_rtt2pty:
             self.rtt2pty = RTT2PTY()
+            self.btmon = BTMON()
         else:
             self.rtt2pty = None
+            self.btmon = None
 
     def get_debugger_snr(self):
         debuggers = subprocess.Popen('nrfjprog --com',
@@ -160,11 +162,22 @@ class ZephyrCtl:
 
     def rtt2pty_start(self):
         if self.rtt2pty:
-            self.rtt2pty.start(os.path.join(self.test_case.log_dir, 'iut-zephyr.log'))
+            self.rtt2pty.start(os.path.join(self.test_case.log_dir, 'iut-zephyr.log'), self.debugger_snr)
 
     def rtt2pty_stop(self):
         if self.rtt2pty:
             self.rtt2pty.stop()
+
+    def btmon_start(self):
+        if self.btmon:
+            log_file = os.path.join(self.test_case.log_dir,
+                                    self.test_case.name.replace('/', '_') +
+                                    '_btmon.log')
+            self.btmon.start(log_file, self.debugger_snr)
+
+    def btmon_stop(self):
+        if self.btmon:
+            self.btmon.stop()
 
     def reset(self):
         """Restart IUT related processes and reset the IUT"""
@@ -177,6 +190,7 @@ class ZephyrCtl:
         if not self.board:
             return
 
+        self.btmon_stop()
         self.rtt2pty_stop()
 
         self.board.reset()
@@ -198,6 +212,7 @@ class ZephyrCtl:
             log("IUT ready event received OK")
 
         self.rtt2pty_start()
+        self.btmon_start()
 
     def stop(self):
         """Powers off the Zephyr OS"""
