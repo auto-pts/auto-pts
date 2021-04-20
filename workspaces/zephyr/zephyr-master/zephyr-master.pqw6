@@ -3778,7 +3778,7 @@
           <Row>
             <Name>TSPC_MESH_2_2</Name>
             <Description>Provisioner (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <!-- Table 3: Node Capabilities - Bearers -->
@@ -3997,13 +3997,13 @@
           <Row>
             <Name>TSPC_MESH_11_3</Name>
             <Description>Configuration Client Model (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_11_4</Name>
             <Description>Health Client Model (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <!-- Table 12: Node Capabilities - Proxy -->
@@ -4159,7 +4159,7 @@
           <Row>
             <Name>TSPC_MESH_17_1</Name>
             <Description>Advertising Bearer (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4172,25 +4172,25 @@
           <Row>
             <Name>TSPC_MESH_18_1</Name>
             <Description>Receiving Unprovisioned Device Beacon (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_18_2</Name>
             <Description>PB-ADV (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_18_3</Name>
             <Description>Generic Provisioning Layer (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_18_4</Name>
             <Description>Provisioning Protocol(Provisioning Client) (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -4208,38 +4208,38 @@
           <Row>
             <Name>TSPC_MESH_18_7</Name>
             <Description>Provisioning: Public Key OOB (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_18_8</Name>
             <Description>Provisioning: Public Key No OOB (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_18_9</Name>
             <Description>Provisioning: Authentication Output OOB (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_18_10</Name>
             <Description>Provisioning: Authentication Input OOB (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_18_11</Name>
             <Description>Provisioning: Authentication Static or No OOB (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <!-- Table 19: Provisioner - Mesh Management -->
           <Row>
             <Name>TSPC_MESH_19_1</Name>
             <Description>Receiving Secure Network Beacon (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <!-- Table 20: GATT Client Requirements -->
@@ -4277,13 +4277,13 @@
           <Row>
             <Name>TSPC_MESH_21_1</Name>
             <Description>Broadcaster (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_21_2</Name>
             <Description>Observer (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
