@@ -1783,6 +1783,731 @@ Commands and responses:
 
 		In case of an error, the error response will be returned.
 
+	Opcode 0x14 - Config Composition Data Get
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Page (1 octet)
+
+		This command is used to get the Config Composition Data.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x15  Config Beacon Get
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		Response Parameters:    Beacon Status (1 octet)
+
+		This command is used to send the Config Beacon Get messages.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x16 - Config Beacon Set
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Value (1 octet)
+		Response Parameters: 	Beacon Status (1 octet)
+
+		This command is used to send the Config Beacon Set messages.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x18 - Config Default TTL Get
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		Response Parameters:    TTL Status (1 octet)
+
+		This command is used to send the Config Default TTL Get messages.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x19 - Config Default TTL Set
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Value (1 octet)
+		Response parameters: 	TTL Status (1 octet)
+
+		This command is used to send the Config Default TTL Set messages.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x1a - Config GATT Proxy Get
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		Response parameters: 	GATT Proxy Status (1 octet)
+
+		This command is used to send the Config GATT Proxy Get messages.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x1b - Config GATT Proxy Set
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Value (1 octet)
+		Response parameters: 	GATT Proxy Status (1 octet)
+
+		This command is used to send the Config GATT Proxy Set messages.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x1c - Config Friend Get
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		Response parameters: 	Friend Status (1 octet)
+
+		This command is used to send the Config Friend Get messages.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x1d - Config Friend Set
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Value (1 octet)
+		Response parameters: 	GATT Proxy Status (1 octet)
+
+		This command is used to send the Config Friend Set messages.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x1e - Config Relay Get
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		Response parameters: 	Relay Status (1 octet)
+
+		This command is used to send the Config Relay Get messages.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x1f - Config Relay Set
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Value (1 octet)
+		Response parameters: 	Relay Status (1 octet)
+
+		This command is used to send the Config Relay Set messages.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x20 - Config Model Publication Get
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Element address (2 octets)
+		                        Model ID (2 octets)
+		Response parameters: 	Model Publication Status (1 octet)
+
+		This command is used to send the Config Model Publication Get messages.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x21 - Config Model Publication Set
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Element address (2 octets)
+		                        Model ID (2 octets)
+		                        Publication destination address (2 octets)
+		                        Application index (2 octets)
+		                        Friendship credential flag (1 octet)
+		                        TTL (1 octet)
+		                        Period (1 octet)
+		                        Transmit (1 octet)
+		Response parameters: 	Model Publication Status (1 octet)
+
+		This command is used to send the Config Model Publication Set messages.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x22 - Config Model Subscription Add
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Element address (2 octets)
+		                        Subscription address (2 octets)
+                                Model ID (2 octets)
+		Response parameters: 	Model Subscription Status (1 octet)
+
+		This command is used to send the Config Model Subscription Add messages.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x23 - Config Model Subscription Del
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Element address (2 octets)
+		                        Subscription address (2 octets)
+		                        Model ID (2 octets)
+		Response parameters: 	Model Subscription Status (1 octet)
+
+		This command is used to send the Config Model Subscription Del messages.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x24 - Config Model Network Key Add
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Network key (16 octets)
+		                        Network key index (2 octets)
+		Response parameters: 	Model Netkey Status (1 octet)
+
+		This command is used to send the Config Model Network Key Add messages.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x25 - Config Model Network Key Get
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		Response parameters: 	Model Netkey Status (1 octet)
+
+		This command is used to send the Config Model Network Key Get messages.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x26 - Config Model Network Key Del
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Network key index (2 octets)
+		Response parameters: 	Model Netkey Status (1 octet)
+
+		This command is used to send the Config Model Network Key Del messages.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x27 - Config Model Application Key Add
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Network key index (2 octets)
+		                        Application key (16 octets)
+		                        Application key index (2 octets)
+		Response parameters: 	Model Appkey Status (1 octet)
+
+		This command is used to send the Config Model Application Key Add messages.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x28 - Config Model Application Key Delete
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Network key index (2 octets)
+		                        Application key index (2 octets)
+		Response parameters: 	Model Appkey Status (1 octet)
+
+		This command is used to send the Config Model Application Key Delete messages.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x29 - Config Model Application Key Get
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Application key index (2 octets)
+		Response parameters: 	Model Appkey Status (1 octet)
+
+		This command is used to send the Config Model Application Key Get messages.
+
+		In case of an error, the error response will be returned.
+
+    Opcode 0x2A - Config Model Application Bind
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Element address (2 octets)
+		                        Application key index (2 octets)
+		                        Model ID (2 octets)
+		Response parameters: 	Model Application Bind Status (1 octet)
+
+		This command is used to send the Config Model Application Bind messages.
+
+		In case of an error, the error response will be returned.
+
+    Opcode 0x2B - Config Model Application Unbind
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Element address (2 octets)
+		                        Application key index (2 octets)
+		                        Model ID (2 octets)
+		Response parameters: 	Model Application Unbind Status (1 octet)
+
+		This command is used to send the Config Model Application Unbind messages.
+
+		In case of an error, the error response will be returned.
+
+    Opcode 0x2C - Config Model Application Get
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Element address (2 octets)
+		                        Application key index (2 octets)
+		                        Model ID (2 octets)
+		Response parameters: 	Model Application Status (1 octet)
+
+		This command is used to send the Config Model Application Get messages.
+
+		In case of an error, the error response will be returned.
+
+    Opcode 0x2D - Config Model Application Vendor Get
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Element address (2 octets)
+		                        Application key index (2 octets)
+		                        Model ID (2 octets)
+		                        CID (2 octets)
+		Response parameters: 	Model Application Status (1 octet)
+
+		This command is used to send the Config Model Application Vendor Get messages.
+
+		In case of an error, the error response will be returned.
+
+    Opcode 0x2E - Config Model Heartbeat Publication Set
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Network key index (2 octets)
+		                        Destination address (2 octets)
+		                        Count (1 octet)
+		                        Period (1 octet)
+		                        TTL (1 octet)
+		                        Features (2 octets)
+		Response parameters: 	Model Heartbeat Publication Status (1 octet)
+
+		This command is used to send the Config Model Heartbeat Publication Set messages.
+
+		In case of an error, the error response will be returned.
+
+    Opcode 0x2F - Config Model Heartbeat Publication Get
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		Response parameters: 	Model Heartbeat Publication Status (1 octet)
+
+		This command is used to send the Config Model Heartbeat Publication Get messages.
+
+		In case of an error, the error response will be returned.
+
+    Opcode 0x30 - Config Model Heartbeat Subscription Set
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Source (2 octets)
+		                        Destination address (2 octets)
+		                        Period (1 octet)
+		Response parameters: 	Model Heartbeat Subscription Status (1 octet)
+
+		This command is used to send the Config Model Heartbeat Subscription Set messages.
+
+		In case of an error, the error response will be returned.
+
+    Opcode 0x31 - Config Model Heartbeat Subscription Get
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		Response parameters: 	Model Heartbeat Subscription Status (1 octet)
+
+		This command is used to send the Config Model Heartbeat Subscription Get messages.
+
+		In case of an error, the error response will be returned.
+
+    Opcode 0x32 - Config Model Network Transmit Get
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		Response parameters: 	Model Network Transmit Status (1 octet)
+
+		This command is used to send the Config Model Network Transmit Get messages.
+
+		In case of an error, the error response will be returned.
+
+    Opcode 0x33 - Config Model Network Transmit Set
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Transmit (1 octet)
+		Response parameters: 	ModelNetwork Transmit Status (1 octet)
+
+		This command is used to send the Config Model Network Transmit Set messages.
+
+		In case of an error, the error response will be returned.
+
+    Opcode 0x34 - Config Model Subscription Overwrite
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Element address (2 octets)
+		                        Subscription address (2 octets)
+		                        Model ID (2 octets)
+		Response parameters: 	Model Subscription Status (1 octet)
+
+		This command is used to send the Config Model Subscription Overwrite messages.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x35 - Config Model Subscription Delete All
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Element address (2 octets)
+		                        Model ID (2 octets)
+		Response parameters: 	Model Subscription Status (1 octet)
+
+		This command is used to send th Config Model Subscription Delete All messages.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x36 - Config Model Subscription Get
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Element address (2 octets)
+		                        Model ID (2 octets)
+		Response parameters: 	Model Subscription Status (1 octet)
+
+		This command is used to send the Config Model Subscription Get messages.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x37 - Config Model Subscription Vendor Get
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Element address (2 octets)
+		                        Model ID (2 octets)
+		                        CID (2 octets)
+		Response parameters: 	Model Subscription Status (1 octet)
+
+		This command is used to send the Config Model Subscription Vendor Get messages.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x38 - Config Model Subscription Virtual Address Add
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Element address (2 octets)
+		                        Model ID (2 octets)
+		                        Virtual address (16 octets)
+		Response parameters: 	Model Subscription Status (1 octet)
+
+		This command is used to send the Config Model Subscription Virtual Address Add messages.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x39 - Config Model Subscription Virtual Address Delete
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Element address (2 octets)
+		                        Model ID (2 octets)
+		                        Virtual address (16 octets)
+		Response parameters: 	Model Subscription Status (1 octet)
+
+		This command is used to send the Config Model Subscription Virtual Address Delete messages.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x3A - Config Model Subscription Virtual Address Overwrite
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Element address (2 octets)
+		                        Model ID (2 octets)
+		                        Virtual address (16 octets)
+		Response parameters: 	Model Subscription Status (1 octet)
+
+		This command is used to send the Config Model Subscription Virtual Address Overwrite messages.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x3B - Config Model Network Key Update
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Network key (16 octets)
+		                        Network key index (2 octets)
+		Response parameters: 	Model Netkey Status (1 octet)
+
+		This command is used to send the Config Model Network Key Update messages.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x3C - Config Model Application Key Update
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Network key index (2 octets)
+		                        Appkey key (16 octets)
+		                        Application key index (2 octets)
+		Response parameters: 	Model Appkey Status (1 octet)
+
+		This command is used to send the Config Model Application Key Update messages.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x3D - Config Model Node Identity Set
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Network key index (2 octets)
+		                        Identity (1 octet)
+		Response parameters: 	Model Node Identity Status (1 octet)
+
+		This command is used to send the Config Model Node Identity Set messages.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x3E - Config Model Node Identity Get
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Network key index (2 octets)
+		Response parameters: 	Model Node Identity Status (1 octet)
+
+		This command is used to send the Config Model Node Identity Get messages.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x3F - Config Model Node Identity Reset
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		Response parameters: 	Model Node Identity Status (1 octet)
+
+		This command is used to send the Config Model Node Identity Reset messages.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x40 - Config Model LPN Polltimeout Get
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Unicast Address (2 octets)
+		Response parameters: 	Model Node Identity Status (1 octet)
+
+		This command is used to send the Config Model LPN Polltimeout Get messages.
+
+		In case of an error, the error response will be returned.
+
+    Opcode 0x41 - Config Model Publication Virtual Address Set
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Element address (2 octets)
+		                        Model ID (2 octets)
+		                        Virtual address (16 octets)
+		                        Application key index (2 octets)
+		                        Credential flag (1 octet)
+		                        TTL (1 octet)
+		                        Period (1 octet)
+		                        Transmit (1 octet)
+		Response parameters: 	Model Publication Status (1 octet)
+
+		This command is used to send the Config Model Publication Virtual Address Set messages.
+
+		In case of an error, the error response will be returned.
+
+    Opcode 0x42 - Config Model Application Vendor Bind
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Element address (2 octets)
+		                        Application key index (2 octets)
+		                        Model ID (2 octets)
+		                        CID (2 octets)
+		Response parameters: 	Model Application Bind Status (1 octet)
+
+		This command is used to send the Config Model Application Vendor Bind messages.
+
+		In case of an error, the error response will be returned.
+
+    Opcode 0x43 - Health Fault Get
+
+		Controller Index:       <controller id>
+		Command parameters:     Node address (2 octets)
+		                        Application index (2 octets)
+		                        CID (2 octets)
+
+		This command is used to send the Health Fault Get messages.
+
+		In case of an error, the error response will be returned.
+
+    Opcode 0x44 - Health Fault Clear
+
+		Controller Index:       <controller id>
+		Command parameters:     Node address (2 octets)
+		                        Application index (2 octets)
+		                        CID (2 octets)
+		                        Acknowledgement (1 octet)
+		Response parameters: 	Health Fault Clear Status (1 octet)
+
+		This command is used to send the Health Fault Clear messages.
+
+		In case of an error, the error response will be returned.
+
+    Opcode 0x45 - Health Fault Test
+
+		Controller Index:       <controller id>
+		Command parameters:     Node address (2 octets)
+		                        Application index (2 octets)
+		                        CID (2 octets)
+		                        Test ID (1 octet)
+		                        Acknowledgement (1 octet)
+		Response parameters: 	Health Fault Test Status (1 octet)
+
+		This command is used to send the Health Fault Test messages.
+
+		In case of an error, the error response will be returned.
+
+    Opcode 0x46 - Health Period Get
+
+		Controller Index:       <controller id>
+		Command parameters:     Node address (2 octets)
+		                        Application index (2 octets)
+		Response parameters: 	Health Period Get Status (1 octet)
+
+		This command is used to send the Health Period Get messages.
+
+		In case of an error, the error response will be returned.
+
+    Opcode 0x47 - Health Period Set
+
+		Controller Index:       <controller id>
+		Command parameters:     Node address (2 octets)
+		                        Application index (2 octets)
+		                        Divisor (1 octet)
+		                        Acknowledgement (1 octet)
+		Response parameters: 	Health Period Set Status (1 octet)
+
+		This command is used to send the Health Period Set messages.
+
+		In case of an error, the error response will be returned.
+
+    Opcode 0x48 - Health Attention Get
+
+		Controller Index:       <controller id>
+		Command parameters:     Node address (2 octets)
+		                        Application index (2 octets)
+		Response parameters: 	Health Attention Get Status (1 octet)
+
+		This command is used to send the Health Attention Get messages.
+
+		In case of an error, the error response will be returned.
+
+    Opcode 0x49 - Health Attention Set
+
+		Controller Index:       <controller id>
+		Command parameters:     Node address (2 octets)
+		                        Application index (2 octets)
+		                        Attention (1 octet)
+		                        Acknowledgement (1 octet)
+		Response parameters: 	Health Attention Set Status (1 octet)
+
+		This command is used to send the Health Attention Set messages.
+
+		In case of an error, the error response will be returned.
+
+    Opcode 0x4A - Provision Advertising
+
+		Controller Index:       <controller id>
+		Command parameters:     UUID (16 octets)
+		                        Network key index (2 octets)
+		                        Node address (2 octets)
+		                        Attention duration(1 octet)
+		                        Network key (16 octets)
+
+		This command is used to start the provision advertising.
+
+		In case of an error, the error response will be returned.
+
+    Opcode 0x48 - Config Key Refesh Phase Get
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Network key index (2 octets)
+		Response parameters: 	Key Refesh Get Status (1 octet)
+		                        Phase (1 octets)
+
+		This command is used to send the Key Refesh Phase Get messages.
+
+		In case of an error, the error response will be returned.
+
+    Opcode 0x49 - Key Refesh Phase Set
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		                        Node address (2 octets)
+		                        Network key index (2 octets)
+		                        Phase (1 octet)
+		Response parameters: 	Key Refesh Phase Set Status (1 octet)
+		                        Phase (1 octets)
+
+		This command is used to send the Key Refesh Phase Set messages.
+
+		In case of an error, the error response will be returned.
+
 Events:
 	Opcode 0x80 - Output number action Event
 
