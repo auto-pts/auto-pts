@@ -286,13 +286,21 @@ def hdl_wid_56(desc):
 
 
 def hdl_wid_57(desc):
+    """
+    Implements: TSC_MMI_upper_tester_send_le_data_packet4
+    :param desc: Upper Tester command IUT to send at least 4 frames of LE data packets to the PTS.
+    :return:
+    """
     stack = get_stack()
     l2cap = stack.l2cap
     channel = l2cap._chan_lookup_id(0)
     if not channel:
         return False
 
-    btp.l2cap_send_data(0, '00' * (channel.peer_mps * 4))
+    # Reserve 2 octets for L2CAP SDU Length field in each frame.
+    for i in range(4):
+        btp.l2cap_send_data(0, '00' * (channel.peer_mps - 2))
+
     return True
 
 
