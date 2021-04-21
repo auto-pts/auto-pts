@@ -1,4 +1,4 @@
-<WORKSPACE_INFORMATION NAME="Mynewt Nimble Host" CREATED_WITH="Profile Tuning Suite, 8.0.1, 8" BD_ADDR="000000000000" QDID="164784">
+<WORKSPACE_INFORMATION NAME="Mynewt Nimble Host" CREATED_WITH="Profile Tuning Suite, 8.0.2, 3" BD_ADDR="000000000000" QDID="164784">
   <PROJECTS_INFORMATION>
     <PROJECT_INFORMATION NAME="GAP" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
       <PICS>
@@ -3691,7 +3691,7 @@
           <Row>
             <Name>TSPC_MESH_6_3</Name>
             <Description>Friend Cache (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <!-- Table 7: Node Capabilities - Upper Transport Layer -->
@@ -3710,13 +3710,13 @@
           <Row>
             <Name>TSPC_MESH_7_3</Name>
             <Description>Friend Feature (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_7_4</Name>
             <Description>Low Power Feature (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
