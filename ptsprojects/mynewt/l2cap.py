@@ -37,7 +37,7 @@ from wid import l2cap_wid_hdl
 le_psm = 128
 le_psm_eatt = 0x27
 psm_unsupported = 241
-le_initial_mtu = 120
+le_initial_mtu = 264
 le_mps = 100
 
 

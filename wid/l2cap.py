@@ -292,7 +292,7 @@ def hdl_wid_57(desc):
     if not channel:
         return False
 
-    btp.l2cap_send_data(0, '00' * (channel.peer_mps))
+    btp.l2cap_send_data(0, '00' * (channel.peer_mps * 4 - 2))
     return True
 
 
