@@ -84,7 +84,7 @@ def set_pixits(ptses):
     pts.set_pixit("MESH", "TSPX_iut_model_id_used", "0002")
     pts.set_pixit("MESH", "TSPX_OOB_code", "00000000000000000102030405060708")
     pts.set_pixit("MESH", "TSPX_subscription_address_list", "C302")
-    pts.set_pixit("MESH", "TSPX_vendor_model_id", "ffff1234")
+    pts.set_pixit("MESH", "TSPX_vendor_model_id", "00021234")
     pts.set_pixit("MESH", "TSPX_maximum_network_message_cache_entries", "10")
     pts.set_pixit("MESH", "TSPX_health_valid_test_ids", "00")
     pts.set_pixit("MESH", "TSPX_iut_comp_data_page", "0")
@@ -375,7 +375,8 @@ def test_cases(ptses):
         ZTestCase("MESH", "MESH/NODE/IVU/BV-03-C", cmds=pre_conditions +
                   [TestFunc(btp.mesh_iv_test_mode_autoinit)],
                   generic_wid_hdl=mesh_wid_hdl),
-        ZTestCase("MESH", "MESH/NODE/IVU/BV-04-C", cmds=pre_conditions,
+        ZTestCase("MESH", "MESH/NODE/IVU/BV-04-C", cmds=pre_conditions +
+                  [TestFunc(btp.mesh_iv_test_mode_autoinit)],
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/IVU/BV-05-C", cmds=pre_conditions +
                   [TestFunc(btp.mesh_iv_test_mode_autoinit)],
@@ -579,6 +580,12 @@ def test_cases(ptses):
         ZTestCase("MESH", "MESH/SR/PROX/BV-11-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/SR/PROX/BV-15-C", cmds=pre_conditions,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/SR/PROX/BI-02-C", cmds=pre_conditions,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/NODE/FRND/FN/BV-22-C", cmds=pre_conditions,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/NODE/FRND/FN/BV-23-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
     ]
 

@@ -1327,6 +1327,25 @@ def check_discov_results(addr_type=None, addr=None, discovered=True, eir=None):
     return False
 
 
+def check_scan_rep_and_rsp(report, response):
+    stack = get_stack()
+    devices = stack.gap.found_devices.data
+
+    # remove trailing zeros
+    report = report.rstrip('0')
+    response = response.rstrip('0')
+    if len(report) % 2 != 0:
+        report += '0'
+    if len(response) % 2 != 0:
+        response += '0'
+
+    for device in devices:
+        eir = str(binascii.hexlify(device.eir)).lstrip('b\'').rstrip('\'')
+        if report in eir and response in eir:
+            return True
+    return False
+
+
 def gap_stop_discov():
     logging.debug("%s", gap_stop_discov.__name__)
 
@@ -3350,6 +3369,10 @@ def gap_passkey_disp_ev_(gap, data, data_len):
 
     addr_type, addr, passkey = struct.unpack(fmt, data)
     addr = binascii.hexlify(addr[::-1])
+
+    # unpacking passkey to int loses leading 0s,
+    # let's add them back if lost
+    passkey = str(passkey).zfill(6)
 
     logging.debug("passkey = %r", passkey)
 

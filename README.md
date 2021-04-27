@@ -166,3 +166,11 @@ Install required Python modules with:
 # IRC Channel on freenode.net
 
 Our IRC channel on freenode.net is #autopts
+
+# Slack Channel 
+
+First join [Zephyr Slack Workspace](https://join.slack.com/t/zephyrproject/shared_invite/zt-953wf991-q7qw_houhNJrwT~Ac1TJEg)
+Then join our Channel `#auto-pts`
+
+Or join using direct link [auto-pts](https://zephyrproject.slack.com/archives/CG1N5KGUT)
+

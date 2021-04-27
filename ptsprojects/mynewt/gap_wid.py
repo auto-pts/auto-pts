@@ -57,6 +57,15 @@ def hdl_wid_5(desc):
     return True
 
 
+def hdl_wid_9(desc):
+    stack = get_stack()
+
+    btp.gap_set_conn()
+
+    btp.gap_adv_ind_on(ad=stack.gap.ad, sd=stack.gap.sd)
+    return True
+
+
 def hdl_wid_10(desc):
     btp.gap_stop_discov()
     return btp.check_discov_results(discovered=True)
@@ -670,7 +679,8 @@ def hdl_wid_157(desc):
     btp.gap_start_discov(transport='le', type='active', mode='observe')
     sleep(10)  # Give some time to discover devices
     btp.gap_stop_discov()
-    return btp.check_discov_results()
+    report, response = re.findall(r'[0-9]{62}', desc)
+    return btp.check_scan_rep_and_rsp(report, response)
 
 
 def hdl_wid_158(desc):

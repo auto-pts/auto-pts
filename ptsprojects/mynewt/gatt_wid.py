@@ -1293,6 +1293,74 @@ def hdl_wid_147(desc):
     return True
 
 
+def hdl_wid_151(desc):
+    chrcs = btp.gatts_get_attrs(type_uuid='2803')
+    for chrc in chrcs:
+        handle, perm, type_uuid = chrc
+
+        chrc_data = btp.gatts_get_attr_val(btp.pts_addr_type_get(),
+                                           btp.pts_addr_get(), handle)
+        if not chrc_data:
+            continue
+
+        att_rsp, val_len, val = chrc_data
+
+        hdr = '<BH'
+        hdr_len = struct.calcsize(hdr)
+        uuid_len = val_len - hdr_len
+
+        prop, handle, chrc_uuid = struct.unpack("<BH%ds" % uuid_len, val)
+        chrc_value_attr = btp.gatts_get_attrs(start_handle=handle,
+                                              end_handle=handle)
+        if not chrc_value_attr:
+            continue
+
+        handle, perm, type_uuid = chrc_value_attr[0]
+        if perm & Perm.read and perm & Perm.write:
+            chrc_value_data = btp.gatts_get_attr_val(btp.pts_addr_type_get(),
+                                                 btp.pts_addr_get(), handle)
+        if not chrc_value_data:
+            continue
+
+        _, val_len, _ = chrc_value_data
+        if val_len == 1:
+            return '{0:04x}'.format(handle, 'x')
+
+
+def hdl_wid_152(desc):
+    chrcs = btp.gatts_get_attrs(type_uuid='2803')
+    for chrc in chrcs:
+        handle, perm, type_uuid = chrc
+
+        chrc_data = btp.gatts_get_attr_val(btp.pts_addr_type_get(),
+                                           btp.pts_addr_get(), handle)
+        if not chrc_data:
+            continue
+
+        att_rsp, val_len, val = chrc_data
+
+        hdr = '<BH'
+        hdr_len = struct.calcsize(hdr)
+        uuid_len = val_len - hdr_len
+
+        prop, handle, chrc_uuid = struct.unpack("<BH%ds" % uuid_len, val)
+        chrc_value_attr = btp.gatts_get_attrs(start_handle=handle,
+                                              end_handle=handle)
+        if not chrc_value_attr:
+            continue
+
+        handle, perm, type_uuid = chrc_value_attr[0]
+        if perm & Perm.read and perm & Perm.write:
+            chrc_value_data = btp.gatts_get_attr_val(btp.pts_addr_type_get(),
+                                                 btp.pts_addr_get(), handle)
+        if not chrc_value_data:
+            continue
+
+        _, val_len, _ = chrc_value_data
+        if val_len == 300:
+            return '{0:04x}'.format(handle, 'x')
+
+
 def hdl_wid_304(desc):
     MMI.reset()
     MMI.parse_description(desc)

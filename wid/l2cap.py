@@ -21,7 +21,7 @@ import struct
 import sys
 import time
 
-from ptsprojects.stack import get_stack
+from ptsprojects.stack import get_stack, L2cap
 from pybtp import btp
 from pybtp.types import BTPError
 
@@ -292,7 +292,7 @@ def hdl_wid_57(desc):
     if not channel:
         return False
 
-    btp.l2cap_send_data(0, '00' * (channel.peer_mps * 4))
+    btp.l2cap_send_data(0, '00' * (channel.peer_mps))
     return True
 
 
@@ -320,6 +320,12 @@ def hdl_wid_100(desc):
 
 
 def hdl_wid_101(desc):
+    # wait for potential pending disconnect events
+    time.sleep(5)
+    stack = get_stack()
+    channels = stack.l2cap.rx_data_get_all(10)
+    if len(channels) == 0:
+        return True
     btp.l2cap_disconn(0)
     return True
 
