@@ -19,10 +19,13 @@ import os
 import sys
 import schedule
 import time
+import _locale
 
 from bot.config import BotProjects
 from bot.zephyr import main as zephyr
 from bot.mynewt import main as mynewt
+from winutils import have_admin_rights
+
 
 # TODO Find more sophisticated way
 weekdays2schedule = {
@@ -42,6 +45,12 @@ project2main = {
 
 
 def main():
+    # Workaround for logging error: "UnicodeEncodeError: 'charmap' codec can't
+    # encode character '\xe6' in position 138: character maps to <undefined>",
+    # which occurs under Windows with default encoding other than cp1252
+    # each time log() is called.
+    _locale._getdefaultlocale = (lambda *args: ['en_US', 'utf8'])
+
     for project in BotProjects:
         # TODO Solve the issue of overlapping jobs
         if 'scheduler' in project:
@@ -57,7 +66,7 @@ def main():
 
 
 if __name__ == "__main__":
-    if os.geteuid() == 0:  # root privileges are not needed
+    if have_admin_rights():  # root privileges are not needed
         print("Please do not run this program as root.")
         sys.exit(1)
 

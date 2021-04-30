@@ -26,9 +26,10 @@ z = zephyr_nrf52 = {
 # AutoPTS configuration
 # ****************************************************************************
 z['auto_pts'] = {
-    'server_ip': ['192.168.0.2'],
-    'client_port': 65001,
-    'local_ip' : ['192.168.0.100'],
+    # 'server_ip': ['192.168.3.2', '192.168.3.2'],
+    # 'local_ip': ['192.168.3.2', '192.168.3.2'],
+    'cli_port': [65001, 65003],
+    'srv_port': [65000, 65002],
     'project_path': '/path/to/project',
     'workspace': 'zephyr-master',
     'board': 'nrf52',
@@ -84,6 +85,12 @@ z['gdrive'] = {
 # ****************************************************************************
 
 z['iut_config'] = {
+    "default": {  # Default west build without option -- -DCONF_FILE=<file.conf>
+        "test_cases": [
+            'MESH'
+        ],
+    },
+
     "prj.conf": {},  # Default config file name
 
     "enforce_mitm.conf": {
