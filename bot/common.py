@@ -15,6 +15,8 @@
 
 
 import os
+import re
+import subprocess
 import sys
 import mimetypes
 import datetime
@@ -41,6 +43,7 @@ REPORT_XLSX = "report.xlsx"
 REPORT_TXT = "report.txt"
 COMMASPACE = ', '
 
+devices_in_use = []
 
 # ****************************************************************************
 # Mail
@@ -450,6 +453,48 @@ def update_repos(project_path, git_config):
         repos_dict[repo] = repo_dict
 
     return repos_dict
+
+
+def get_free_device():
+    tty = None
+    jlink = None
+    debuggers = subprocess.Popen('nrfjprog --com',
+                                 shell=True,
+                                 stdout=subprocess.PIPE
+                                 ).stdout.read().decode()
+
+    if sys.platform == "win32":
+        reg = "[0-9]+\s+COM[0-9]+(?=\s+.+)"
+    else:
+        reg = "[0-9]+\s+/dev/\w+(?=\s+.+)"
+
+    debuggers = re.findall(reg, debuggers)
+    for d in debuggers:
+        d_info = d.split()
+        if len(d_info) < 2:
+            continue
+
+        srn = d_info[0]
+        dev = d_info[1]
+
+        if not srn in devices_in_use:
+            devices_in_use.append(srn)
+            tty = dev
+            jlink = srn
+            break
+
+    if not tty:
+        sys.exit('No free device found!')
+
+    if tty.startswith("COM"):
+        tty = "/dev/ttyS" + str(int(tty["COM".__len__():]) - 1)
+
+    return tty, jlink
+
+
+def release_device(jlink_srn):
+    if jlink_srn:
+        devices_in_use.remove(jlink_srn)
 
 
 def cleanup():

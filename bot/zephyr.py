@@ -23,6 +23,7 @@ import sys
 import time
 import datetime
 import collections
+import serial
 
 import autoptsclient_common as autoptsclient
 import ptsprojects.zephyr as autoprojects
@@ -41,9 +42,14 @@ def check_call(cmd, env=None, cwd=None, shell=True):
     :param shell: if true, the command will be executed through the shell
     :return: returncode
     """
+    executable = '/bin/bash'
     cmd = subprocess.list2cmdline(cmd)
 
-    return subprocess.check_call(cmd, env=env, cwd=cwd, shell=shell, executable='/bin/bash')
+    if sys.platform == 'win32':
+        executable = None
+        shell = False
+
+    return subprocess.check_call(cmd, env=env, cwd=cwd, shell=shell, executable=executable)
 
 
 def _validate_pair(ob):
@@ -62,6 +68,10 @@ def source_zephyr_env(zephyr_wd):
     :return: environment variables set
     """
     logging.debug("{}: {}".format(source_zephyr_env.__name__, zephyr_wd))
+
+    if sys.platform == 'win32':
+        # zephyr-env.cmd prints nothing, so env would be empty {}
+        return None
 
     cmd = ['source', './zephyr-env.sh', '&&', 'env']
     cmd = subprocess.list2cmdline(cmd)
@@ -87,12 +97,12 @@ def source_zephyr_env(zephyr_wd):
     return env
 
 
-def build_and_flash(zephyr_wd, board, conf_file=None):
+def build_and_flash(zephyr_wd, board, tty, conf_file=None):
     """Build and flash Zephyr binary
     :param zephyr_wd: Zephyr source path
     :param board: IUT
+    :param tty path
     :param conf_file: configuration file to be used
-    :return: TTY path
     """
     logging.debug("{}: {} {} {}". format(build_and_flash.__name__, zephyr_wd,
                                          board, conf_file))
@@ -102,13 +112,16 @@ def build_and_flash(zephyr_wd, board, conf_file=None):
     env = source_zephyr_env(zephyr_wd)
 
     cmd = ['west',  'build', '-p', 'auto', '-b', board]
-    if conf_file:
+    if conf_file and conf_file != 'default':
         cmd.extend(('--', '-DCONF_FILE={}'.format(conf_file)))
 
-    check_call(cmd, env=env, cwd=tester_dir)
-    check_call(['west', 'flash'], env=env, cwd=tester_dir)
+    if sys.platform == 'win32':
+        cmd = subprocess.list2cmdline(cmd)
+        cmd = ['bash.exe', '-c', '-i', cmd]  # bash.exe == wsl
 
-    return get_tty_path("J-Link")
+    check_call(cmd, env=env, cwd=tester_dir)
+    check_call(['west', 'flash', '--skip-rebuild', '--board-dir', tty],
+               env=env, cwd=tester_dir)
 
 
 def flush_serial(tty):
@@ -119,8 +132,14 @@ def flush_serial(tty):
     if not tty:
         return
 
-    check_call(['while', 'read', '-t', '0', 'var', '<', tty, ';', 'do',
-                'continue;', 'done'])
+    if sys.platform == 'win32':
+        COM = "COM" + str(int(tty["/dev/ttyS".__len__():]) + 1)
+        ser = serial.Serial(COM, 115200, timeout=5)
+        ser.flushInput()
+        ser.flushOutput()
+    else:
+        check_call(['while', 'read', '-t', '0', 'var', '<', tty, ';', 'do',
+                    'continue;', 'done'])
 
 
 def apply_overlay(zephyr_wd, base_conf, cfg_name, overlay):
@@ -212,20 +231,31 @@ class PtsInitArgs(object):
     'autoptsclient.init_pts' function
     """
     def __init__(self, args):
-        self.ip_addr = args['server_ip']
-        self.local_addr = args['local_ip']
         self.workspace = args["workspace"]
         self.bd_addr = args["bd_addr"]
         self.enable_max_logs = args["enable_max_logs"]
         self.retry = args["retry"]
         self.test_cases = []
         self.excluded = []
+        self.srv_port = args["srv_port"]
+        self.cli_port = args["cli_port"]
+
+        if 'server_ip' in args:
+            self.ip_addr = args['server_ip']
+        else:
+            self.ip_addr = ['127.0.0.1'] * len(self.srv_port)
+
+        if 'local_ip' in args:
+            self.local_addr = args['local_ip']
+        else:
+            self.local_addr = ['127.0.0.1'] * len(self.cli_port)
 
 
-def run_tests(args, iut_config):
+def run_tests(args, iut_config, tty):
     """Run test cases
     :param args: AutoPTS arguments
     :param iut_config: IUT configuration
+    :param tty path
     :return: tuple of (status, results) dictionaries
     """
     results = {}
@@ -271,9 +301,10 @@ def run_tests(args, iut_config):
             apply_overlay(args["project_path"], config_default, config,
                           value['overlay'])
 
-        tty = build_and_flash(args["project_path"],
-                              autopts2board[args["board"]],
-                              config)
+        build_and_flash(args["project_path"],
+                        autopts2board[args["board"]],
+                        tty,
+                        config)
         logging.debug("TTY path: %s" % tty)
 
         flush_serial(tty)
@@ -362,6 +393,7 @@ def compose_mail(args, mail_cfg, mail_ctx):
 
     return subject, body
 
+
 def main(cfg):
 
     start_time = time.time()
@@ -374,9 +406,16 @@ def main(cfg):
     zephyr_hash = bot.common.update_repos(args['project_path'],
                                           cfg["git"])['zephyr']
 
-    summary, results, descriptions, regressions = \
-        run_tests(args, cfg.get('iut_config', {}))
+    tty, jlink_srn = bot.common.get_free_device()
 
+    try:
+        summary, results, descriptions, regressions = \
+            run_tests(args, cfg.get('iut_config', {}), tty)
+    except Exception as e:
+        bot.common.release_device(jlink_srn)
+        raise e
+
+    bot.common.release_device(jlink_srn)
     results = collections.OrderedDict(sorted(results.items()))
 
     report_file = bot.common.make_report_xlsx(results, summary, regressions,
