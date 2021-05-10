@@ -37,6 +37,7 @@ from wid import l2cap_wid_hdl
 le_psm = 128
 psm_unsupported = 241
 psm_authentication_required = 242
+psm_authorization_required = 243
 psm_encryption_key_size_required = 244
 le_initial_mtu = 120
 
@@ -146,6 +147,40 @@ def test_cases(pts):
                            TestFunc(stack.l2cap_init, psm_authentication_required, le_initial_mtu),
                            TestFunc(btp.l2cap_le_listen, psm_authentication_required)]
 
+    pre_conditions_keysize = [TestFunc(btp.core_reg_svc_gap),
+                           TestFunc(btp.core_reg_svc_l2cap),
+                           TestFunc(btp.gap_read_ctrl_info),
+                           TestFunc(lambda: pts.update_pixit_param(
+                               "L2CAP", "TSPX_bd_addr_iut",
+                               stack.gap.iut_addr_get_str())),
+                           TestFunc(lambda: pts.update_pixit_param(
+                               "L2CAP", "TSPX_bd_addr_iut_le",
+                               stack.gap.iut_addr_get_str())),
+                           TestFunc(lambda: pts.update_pixit_param(
+                               "L2CAP", "TSPX_iut_address_type_random",
+                               "TRUE" if stack.gap.iut_addr_is_random()
+                               else "FALSE")),
+                           TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public),
+                           TestFunc(stack.l2cap_init, psm_encryption_key_size_required, le_initial_mtu),
+                           TestFunc(btp.l2cap_le_listen, psm_encryption_key_size_required)]
+
+    pre_conditions_author = [TestFunc(btp.core_reg_svc_gap),
+                              TestFunc(btp.core_reg_svc_l2cap),
+                              TestFunc(btp.gap_read_ctrl_info),
+                              TestFunc(lambda: pts.update_pixit_param(
+                                  "L2CAP", "TSPX_bd_addr_iut",
+                                  stack.gap.iut_addr_get_str())),
+                              TestFunc(lambda: pts.update_pixit_param(
+                                  "L2CAP", "TSPX_bd_addr_iut_le",
+                                  stack.gap.iut_addr_get_str())),
+                              TestFunc(lambda: pts.update_pixit_param(
+                                  "L2CAP", "TSPX_iut_address_type_random",
+                                  "TRUE" if stack.gap.iut_addr_is_random()
+                                  else "FALSE")),
+                              TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public),
+                              TestFunc(stack.l2cap_init, psm_authorization_required, le_initial_mtu),
+                              TestFunc(btp.l2cap_le_listen, psm_authorization_required)]
+
     test_cases = [
         # Connection Parameter Update
         ZTestCase("L2CAP", "L2CAP/LE/CPU/BV-01-C",
@@ -207,12 +242,26 @@ def test_cases(pts):
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-07-C",
                   pre_conditions,
                   generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-10-C",
+                  pre_conditions +
+                  [TestFunc(lambda: stack.l2cap.psm_set(psm_authentication_required))],
+                  generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-11-C",
                   pre_conditions_auth,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-12-C",
+                  pre_conditions +
+                  [TestFunc(lambda: stack.l2cap.psm_set(psm_authorization_required))],
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-13-C",
+                  pre_conditions_author,
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-14-C",
                   pre_conditions +
                   [TestFunc(lambda: stack.l2cap.psm_set(psm_encryption_key_size_required))],
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-15-C",
+                  pre_conditions_keysize,
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BI-01-C",
                   pre_conditions,
