@@ -437,9 +437,33 @@ def hdl_wid_112(desc):
 
     return True
 
+
+def hdl_wid_135(desc):
+    return True
+
+
+def hdl_wid_136(desc):
+    return True
+
+
+def hdl_wid_137(desc):
+    return True
+
+
+def hdl_wid_252(desc):
+    # TODO: Fix to actually verify result of 'Insufficient Authentication' 0x0005 error
+    return get_stack().l2cap.wait_for_disconnection(0, 30)
+
+
+def hdl_wid_253(desc):
+    # TODO: Fix to actually verify result of 'Insufficient Authorization' 0x0006 error
+    return get_stack().l2cap.wait_for_disconnection(0, 30)
+
+
 def hdl_wid_254(desc):
     # TODO: Fix to actually verify result of 'Insufficient Encryption Key Size' 0x0007 error
     return get_stack().l2cap.wait_for_disconnection(0, 30)
+
 
 def hdl_wid_255(desc):
     stack = get_stack()
