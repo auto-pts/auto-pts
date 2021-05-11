@@ -373,7 +373,7 @@ def hdl_wid_111(desc):
     l2cap = stack.l2cap
 
     channels = l2cap.rx_data_get_all(10)
-    if not (len(channels) == 1):
+    if len(channels) == 0:
         return False
 
     rx_data = channels[0]
@@ -452,7 +452,7 @@ def hdl_wid_255(desc):
     stack = get_stack()
     l2cap = stack.l2cap
 
-    btp.l2cap_conn(None, None, l2cap.psm, num=2)
+    btp.l2cap_conn(None, None, l2cap.psm, l2cap.initial_mtu, 2)
     return True
 
 
