@@ -114,6 +114,17 @@ def hdl_wid_5(desc):
     return True
 
 
+def hdl_wid_9(desc):
+    stack = get_stack()
+
+    btp.gap_adv_off()
+    btp.gap_set_conn()
+    btp.gap_set_gendiscov()
+
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    return True
+
+
 def hdl_wid_10(desc):
     btp.gap_stop_discov()
     return btp.check_discov_results(discovered=True)
