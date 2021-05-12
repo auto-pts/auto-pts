@@ -353,6 +353,10 @@ def hdl_wid_72(desc):
     return True
 
 
+def hdl_wid_73(desc):
+    return True
+
+
 def hdl_wid_74(desc):
     hdl_wid_72(desc)
     return True
