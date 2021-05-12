@@ -164,6 +164,7 @@ z['iut_config'] = {
                        'GAP/BROB/BCST/BV-03-C',
                        'GAP/BROB/BCST/BV-04-C',
                        'GAP/BROB/OBSV/BV-06-C',
+                       'GAP/DISC/RPA/BV-01-C',
                        'SM/MAS/KDU/BV-05-C',
                        'SM/MAS/KDU/BV-10-C',
                        'SM/MAS/KDU/BV-11-C',
