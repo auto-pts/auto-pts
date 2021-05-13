@@ -446,17 +446,8 @@ def test_cases(pts):
         ZTestCase("GAP", "GAP/SEC/AUT/BV-17-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.core_reg_svc_gatt),
-                   TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   TestFunc(btp.gap_conn, start_wid=78),
-                   TestFunc(btp.gattc_read, Addr.le_public,
-                            pts_bd_addr, "0001", start_wid=112),
-                   # Bonding shall start automatically, so ignore wid: 108
-                   # "Please start the Bonding Procedure..."
-
-                   # Await read response after bonding
-                   TestFunc(btp.gattc_read_rsp, store_val=False,
-                            post_wid=108),
-                   TestFunc(btp.gap_disconn, start_wid=44)]),
+                   TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/AUT/BV-18-C",
                   cmds=pre_conditions + init_gatt_db +
                        [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output)],
