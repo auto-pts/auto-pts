@@ -530,7 +530,17 @@ def hdl_wid_127(desc):
 
 
 def hdl_wid_130(desc):
-    return btp.gatts_verify_write_fail(desc)
+    if ('invalid MAC' in desc):
+        return btp.gatts_verify_write_fail(desc)
+    else:
+        # GAP/SEC/CSIGN/BI-02-C expects two successes and fail
+        # during first success check might occur second gatts_attr_value_changed_ev,
+        # which will not be checked. Check up to three times if write fail occured
+        for i in range(3):
+            if not btp.gatts_verify_write_success(desc):
+                return True
+        return False
+
 
 
 def hdl_wid_137(desc):
