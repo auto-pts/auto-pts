@@ -498,18 +498,9 @@ def test_cases(pts):
                   [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output)],
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/CSIGN/BI-02-C",
-                  edit1_wids={161: hdl_wid_161},
-                  verify_wids={130: lambda x: (
-                      btp.gatts_verify_write_success(x) and
-                      btp.gatts_verify_write_success(x) and
-                      btp.gatts_verify_write_fail(x))},
                   cmds=pre_conditions + init_gatt_db +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
-                   TestFunc(btp.gap_set_conn),
-                   TestFunc(lambda: btp.gap_adv_ind_on(ad=get_stack().gap.ad,
-                                                       sd=get_stack().gap.sd)),
-                   TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
-                            start_wid=77)]),
+                       [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output)],
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/CSIGN/BI-03-C",
                   cmds=pre_conditions + init_gatt_db +
                   [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output)],
