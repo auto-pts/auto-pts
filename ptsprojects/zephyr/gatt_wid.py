@@ -1481,6 +1481,21 @@ def hdl_wid_134(desc):
     return True
 
 
+def hdl_wid_135(desc):
+    MMI.reset()
+    MMI.parse_description(desc)
+
+    hdl = MMI.args[0]
+
+    if not hdl:
+        logging.error("parsing error")
+        return False
+
+    btp.gattc_write(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
+                    hdl, '01', 1)
+    return True
+
+
 def hdl_wid_136(desc):
     btp.gatts_add_svc(0, UUID.VND16_2)
     btp.gatts_start_server()
@@ -1504,6 +1519,21 @@ def hdl_wid_138(desc):
     read_val = btp.gatts_get_attr_val(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl)
     COMPARED_VALUE.append(read_val)
 
+    return True
+
+
+def hdl_wid_142(desc):
+    MMI.reset()
+    MMI.parse_description(desc)
+
+    hdl = MMI.args[0]
+
+    if not hdl:
+        logging.error("parsing error")
+        return False
+
+    btp.gattc_write(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
+                    hdl, '02', 1)
     return True
 
 
