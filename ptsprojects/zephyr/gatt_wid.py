@@ -763,10 +763,10 @@ def hdl_wid_76(desc):
         return False
 
     handle = params[0]
-    size = int(params[1])
+    off = int(params[1])
 
     btp.gattc_write_long(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
-                         handle, 0, '12', size)
+                         handle, off, '12', None)
     btp.gattc_write_long_rsp(True)
 
     return True
