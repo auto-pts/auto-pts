@@ -113,7 +113,7 @@ def test_cases(pts):
 
     stack.gap_init()
 
-    pre_conditions = [TestFunc(btp.core_reg_svc_gap),
+    common = [TestFunc(btp.core_reg_svc_gap),
                       TestFunc(btp.core_reg_svc_l2cap),
                       TestFunc(btp.gap_read_ctrl_info),
                       TestFunc(lambda: pts.update_pixit_param(
@@ -126,60 +126,16 @@ def test_cases(pts):
                           "L2CAP", "TSPX_iut_address_type_random",
                           "TRUE" if stack.gap.iut_addr_is_random()
                           else "FALSE")),
-                      TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public),
-                      TestFunc(stack.l2cap_init, le_psm, le_initial_mtu),
-                      TestFunc(btp.l2cap_le_listen, le_psm)]
+                      TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public)]
 
-    pre_conditions_auth = [TestFunc(btp.core_reg_svc_gap),
-                           TestFunc(btp.core_reg_svc_l2cap),
-                           TestFunc(btp.gap_read_ctrl_info),
-                           TestFunc(lambda: pts.update_pixit_param(
-                               "L2CAP", "TSPX_bd_addr_iut",
-                               stack.gap.iut_addr_get_str())),
-                           TestFunc(lambda: pts.update_pixit_param(
-                               "L2CAP", "TSPX_bd_addr_iut_le",
-                               stack.gap.iut_addr_get_str())),
-                           TestFunc(lambda: pts.update_pixit_param(
-                               "L2CAP", "TSPX_iut_address_type_random",
-                               "TRUE" if stack.gap.iut_addr_is_random()
-                               else "FALSE")),
-                           TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public),
-                           TestFunc(stack.l2cap_init, psm_authentication_required, le_initial_mtu),
-                           TestFunc(btp.l2cap_le_listen, psm_authentication_required)]
-
-    pre_conditions_keysize = [TestFunc(btp.core_reg_svc_gap),
-                           TestFunc(btp.core_reg_svc_l2cap),
-                           TestFunc(btp.gap_read_ctrl_info),
-                           TestFunc(lambda: pts.update_pixit_param(
-                               "L2CAP", "TSPX_bd_addr_iut",
-                               stack.gap.iut_addr_get_str())),
-                           TestFunc(lambda: pts.update_pixit_param(
-                               "L2CAP", "TSPX_bd_addr_iut_le",
-                               stack.gap.iut_addr_get_str())),
-                           TestFunc(lambda: pts.update_pixit_param(
-                               "L2CAP", "TSPX_iut_address_type_random",
-                               "TRUE" if stack.gap.iut_addr_is_random()
-                               else "FALSE")),
-                           TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public),
-                           TestFunc(stack.l2cap_init, psm_encryption_key_size_required, le_initial_mtu),
-                           TestFunc(btp.l2cap_le_listen, psm_encryption_key_size_required)]
-
-    pre_conditions_author = [TestFunc(btp.core_reg_svc_gap),
-                              TestFunc(btp.core_reg_svc_l2cap),
-                              TestFunc(btp.gap_read_ctrl_info),
-                              TestFunc(lambda: pts.update_pixit_param(
-                                  "L2CAP", "TSPX_bd_addr_iut",
-                                  stack.gap.iut_addr_get_str())),
-                              TestFunc(lambda: pts.update_pixit_param(
-                                  "L2CAP", "TSPX_bd_addr_iut_le",
-                                  stack.gap.iut_addr_get_str())),
-                              TestFunc(lambda: pts.update_pixit_param(
-                                  "L2CAP", "TSPX_iut_address_type_random",
-                                  "TRUE" if stack.gap.iut_addr_is_random()
-                                  else "FALSE")),
-                              TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public),
-                              TestFunc(stack.l2cap_init, psm_authorization_required, le_initial_mtu),
-                              TestFunc(btp.l2cap_le_listen, psm_authorization_required)]
+    pre_conditions = common + [TestFunc(stack.l2cap_init, le_psm, le_initial_mtu),
+                               TestFunc(btp.l2cap_le_listen, le_psm)]
+    pre_conditions_auth = common + [TestFunc(stack.l2cap_init, psm_authentication_required, le_initial_mtu),
+                                    TestFunc(btp.l2cap_le_listen, psm_authentication_required)]
+    pre_conditions_keysize = common + [TestFunc(stack.l2cap_init, psm_encryption_key_size_required, le_initial_mtu),
+                                       TestFunc(btp.l2cap_le_listen, psm_encryption_key_size_required)]
+    pre_conditions_author = common + [TestFunc(stack.l2cap_init, psm_authorization_required, le_initial_mtu),
+                                      TestFunc(btp.l2cap_le_listen, psm_authorization_required)]
 
     test_cases = [
         # Connection Parameter Update
