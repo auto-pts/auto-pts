@@ -42,6 +42,15 @@ def gatt_wid_hdl(wid, description, test_case_name):
         logging.exception(e)
 
 
+def gatt_wid_hdl_no_write_rsp_check(wid, description, test_case_name):
+    if wid == 76:
+        log("%s, %r, %r, %s", gatt_wid_hdl_no_write_rsp_check.__name__, wid, description,
+            test_case_name)
+        return hdl_wid_76_no_rsp_check(description)
+    else:
+        return gatt_wid_hdl(wid, description, test_case_name)
+
+
 def gatt_server_fetch_db():
     db = GattDB()
     bd_addr = btp.pts_addr_get()
@@ -768,6 +777,22 @@ def hdl_wid_76(desc):
     btp.gattc_write_long(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
                          handle, off, '12', None)
     btp.gattc_write_long_rsp(True)
+
+    return True
+
+
+def hdl_wid_76_no_rsp_check(desc):
+    pattern = re.compile("'([0-9a-fA-F]+)'")
+    params = pattern.findall(desc)
+    if not params:
+        logging.error("parsing error")
+        return False
+
+    handle = params[0]
+    off = int(params[1])
+
+    btp.gattc_write_long(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
+                         handle, off, '12', None)
 
     return True
 

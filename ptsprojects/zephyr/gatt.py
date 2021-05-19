@@ -33,7 +33,7 @@ from pybtp.types import UUID, Addr, IOCap, Prop, Perm
 from time import sleep
 import logging
 from ptsprojects.stack import get_stack
-from ptsprojects.zephyr.gatt_wid import gatt_wid_hdl
+from ptsprojects.zephyr.gatt_wid import gatt_wid_hdl, gatt_wid_hdl_no_write_rsp_check
 from ptsprojects.zephyr.gattc_wid import gattc_wid_hdl
 
 
@@ -797,18 +797,30 @@ def test_cases_client(pts):
         ZTestCase("GATT", "GATT/CL/GAW/BI-13-C",
                   pre_conditions,
                   generic_wid_hdl=gatt_wid_hdl),
+        ZTestCase("GATT", "GATT/CL/GAW/BV-06-C",
+                  pre_conditions,
+                  generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/CL/GAW/BV-08-C",
                   pre_conditions,
                   generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/CL/GAW/BV-09-C",
                   pre_conditions,
                   generic_wid_hdl=gatt_wid_hdl),
+        ZTestCase("GATT", "GATT/CL/GAW/BI-32-C",
+                  pre_conditions,
+                  generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/CL/GAW/BI-33-C",
                   pre_conditions,
                   generic_wid_hdl=gatt_wid_hdl),
+        ZTestCase("GATT", "GATT/CL/GAW/BV-10-C",
+                  pre_conditions,
+                  generic_wid_hdl=gatt_wid_hdl_no_write_rsp_check),
         ZTestCase("GATT", "GATT/CL/GAW/BI-34-C",
                   pre_conditions,
                   generic_wid_hdl=gatt_wid_hdl),
+        ZTestCase("GATT", "GATT/CL/GAW/BI-37-C",
+                  pre_conditions,
+                  generic_wid_hdl=gatt_wid_hdl_no_write_rsp_check),
         ZTestCase("GATT", "GATT/CL/GAN/BV-01-C",
                   cmds=pre_conditions,
                   generic_wid_hdl=gatt_wid_hdl),
