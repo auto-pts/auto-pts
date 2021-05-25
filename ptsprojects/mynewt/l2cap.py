@@ -37,6 +37,9 @@ from wid import l2cap_wid_hdl
 le_psm = 128
 le_psm_eatt = 0x27
 psm_unsupported = 241
+psm_authentication_required = 242
+psm_authorization_required = 243
+psm_encryption_key_size_required = 244
 le_initial_mtu = 120
 le_mps = 100
 
@@ -138,6 +141,13 @@ def test_cases(pts):
         TestFunc(btp.l2cap_le_listen, le_psm)
     ]
 
+    pre_conditions_auth = common + [TestFunc(stack.l2cap_init, psm_authentication_required, le_initial_mtu),
+                                    TestFunc(btp.l2cap_le_listen, psm_authentication_required)]
+    pre_conditions_keysize = common + [TestFunc(stack.l2cap_init, psm_encryption_key_size_required, le_initial_mtu),
+                                       TestFunc(btp.l2cap_le_listen, psm_encryption_key_size_required)]
+    pre_conditions_author = common + [TestFunc(stack.l2cap_init, psm_authorization_required, le_initial_mtu),
+                                      TestFunc(btp.l2cap_le_listen, psm_authorization_required)]
+
     pre_conditions_1 = common + [
         TestFunc(stack.l2cap_init, le_psm_eatt, le_initial_mtu),
         TestFunc(btp.l2cap_le_listen, le_psm_eatt, mtu=le_initial_mtu)
@@ -207,6 +217,27 @@ def test_cases(pts):
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-07-C",
                   pre_conditions,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-10-C",
+                  pre_conditions +
+                  [TestFunc(lambda: stack.l2cap.psm_set(psm_authentication_required))],
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-11-C",
+                  pre_conditions_auth,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-12-C",
+                  pre_conditions +
+                  [TestFunc(lambda: stack.l2cap.psm_set(psm_authorization_required))],
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-13-C",
+                  pre_conditions_author,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-14-C",
+                  pre_conditions +
+                  [TestFunc(lambda: stack.l2cap.psm_set(psm_encryption_key_size_required))],
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-15-C",
+                  pre_conditions_keysize,
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BI-01-C",
                   pre_conditions,
