@@ -1061,6 +1061,7 @@ def var_store_get_wrong_passkey(description):
     passkey = get_stack().gap.get_passkey()
 
     # Passkey is in range 0-999999
+    passkey = int(passkey)
     if passkey > 0:
         return str(passkey - 1).zfill(6)
     else:
