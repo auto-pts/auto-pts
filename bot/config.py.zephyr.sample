@@ -36,6 +36,9 @@ z['auto_pts'] = {
     'enable_max_logs': False,
     'retry': 2,
     'bd_addr': '',
+    # 'ykush': '3',  # 1|2|3|a
+    'recovery': False,
+    'superguard': 15,  # minutes
 }
 
 # ****************************************************************************

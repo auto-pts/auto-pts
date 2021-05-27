@@ -204,6 +204,11 @@ class PtsInitArgs(object):
         self.retry = args["retry"]
         self.test_cases = []
         self.excluded = []
+        self.srv_port = args["srv_port"]
+        self.cli_port = args["cli_port"]
+        self.ykush = args.get('ykush', None)
+        self.recovery = args.get('recovery', False)
+        self.superguard = 60 * args.get('superguard', None)
 
 
 def run_tests(args, iut_config):
@@ -236,15 +241,28 @@ def run_tests(args, iut_config):
         if 'overlay' in value:
             _args[config_default].excluded += _args[config].test_cases
 
-    ptses = autoptsclient.init_pts(_args[config_default],
-                                   "mynewt_" + str(args["board"]))
+    while True:
+        try:
+            ptses = autoptsclient.init_pts(_args[config_default],
+                                           "mynewt_" + str(args["board"]))
 
-    btp.init(get_iut)
-    # Main instance of PTS
-    pts = ptses[0]
+            btp.init(get_iut)
 
-    # Read PTS Version and keep it for later use
-    args['pts_ver'] = "%s" % pts.get_version()
+            # Main instance of PTS
+            pts = ptses[0]
+
+            # Read PTS Version and keep it for later use
+            args['pts_ver'] = "%s" % pts.get_version()
+        except Exception as exc:
+            if _args[config_default].recovery:
+                ptses = exc.args[1]
+                for pts in ptses:
+                    autoptsclient.recover_autoptsserver(pts)
+                time.sleep(20)
+                continue
+            else:
+                raise exc
+        break
 
     stack.init_stack()
     stack_inst = stack.get_stack()
