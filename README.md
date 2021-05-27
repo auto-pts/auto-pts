@@ -2,12 +2,12 @@
 
    * [Introduction](#introduction)
    * [Architecture](#architecture)
+   * [Linux Prerequisites](#linux-prerequisites)
    * [Windows Prerequisites](#windows-prerequisites)
-   * [Generating Interop Assembly](#generating-interop-assembly)
    * [PTS Workspace Setup](#pts-workspace-setup)
    * [Running in Client/Server Mode](#running-in-clientserver-mode)
-   * [Running Test Script on Windows](#running-test-script-on-windows)
    * [Running AutoPTSClientBot](#running-autoptsclientbot)
+   * [Zephyr with AutoPTS step-by-step setup tutorial](#zephyr-with-autopts-step-by-step-setup-tutorial)
    * [IRC Channel on freenode.net](#irc-channel-on-freenodenet)
 
 # Introduction
@@ -34,6 +34,8 @@ Over 460 test cases have been automated for Zephyr OS and Mynewt OS which reduce
 
 **Bluetooth Test Protocol (BTP)**: Used to communicate with the IUT. See `doc/btp_spec.txt`
 
+Update: Now for Zephyr you can run auto-pts client and server both under Windows 10: [Zephyr with AutoPTS step-by-step setup tutorial](#zephyr-with-autopts-step-by-step-setup-tutorial)
+
 # Linux Prerequisites
 
 1. `socat` that is used to transfer BTP data stream from UART's tty file.
@@ -43,6 +45,10 @@ Over 460 test cases have been automated for Zephyr OS and Mynewt OS which reduce
 2. Additionally, install required Python modules with:
 
         python3 -m pip install --user -r autoptsclient_requirements.txt
+
+3. Download and install latest nrftools (version >= 10.12.1) from site
+   https://www.nordicsemi.com/Software-and-tools/Development-Tools/nRF-Command-Line-Tools/Download
+   and run default install.
 
 # Windows Prerequisites
 
@@ -126,7 +132,8 @@ This may contain few sections:
 - `name` - AutoPTS project name
 * `auto_pts` - AutoPTS configuration
     - `server_ip` - AutoPTSServer IP address
-    - `client_port` - local AutoPTSClient port
+    - `cli_port` - AutoPTSClient port(s)
+    - `srv_port` - AutoPTSServer port(s)
     - `project_path` - path to project source directory
     - `workspace` - PTS workspace path to be used
     - `board` - IUT used. Currently nrf52 is supported only
@@ -162,6 +169,16 @@ Install required Python modules with:
 **Usage**
 
     ./autoptsclient_bot.py
+
+# Zephyr with AutoPTS step-by-step setup tutorial
+Check out the guide how to set up AutoPTS for Zephyr + nRF52 under:
+- Linux + Windows 10 virtual machine
+
+  https://github.com/zephyrproject-rtos/zephyr/blob/main/doc/guides/bluetooth/autopts/autopts-linux.rst
+
+- Windows 10
+
+  https://github.com/zephyrproject-rtos/zephyr/blob/main/doc/guides/bluetooth/autopts/autopts-win10.rst
 
 # IRC Channel on freenode.net
 
