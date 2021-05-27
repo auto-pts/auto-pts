@@ -19,10 +19,12 @@
 
 import os
 import errno
+import subprocess
 import sys
 import random
 import socket
 import logging
+import traceback
 import xmlrpc.client
 import queue
 import threading
@@ -41,6 +43,7 @@ from config import SERVER_PORT, CLIENT_PORT
 
 import tempfile
 import xml.etree.ElementTree as ET
+from utils import InterruptableThread
 
 log = logging.debug
 
@@ -369,8 +372,20 @@ class FakeProxy(object):
         pass
 
 
-def init_pts_thread_entry(proxy, local_address, local_port, workspace_path, 
-                          bd_addr, enable_max_logs):
+def init_pts_thread_entry_wrapper(func):
+    def wrapper(*args):
+        exeptions = args[6]
+        try:
+            func(*args)
+        except Exception as exc:
+            logging.exception(exc)
+            exeptions.put(exc)
+    return wrapper
+
+
+@init_pts_thread_entry_wrapper
+def init_pts_thread_entry(proxy, local_address, local_port, workspace_path,
+                          bd_addr, enable_max_logs, exceptions):
     """PTS instance initialization thread function entry"""
 
     sys.stdout.flush()
@@ -414,6 +429,7 @@ def init_pts(args, tc_db_table_name=None):
 
     proxy_list = []
     thread_list = []
+    exceptions = queue.Queue()
 
     init_logging('_' + '_'.join(str(x) for x in args.cli_port))
 
@@ -430,7 +446,7 @@ def init_pts(args, tc_db_table_name=None):
 
         thread = threading.Thread(target=init_pts_thread_entry,
                                   args=(proxy, local_addr, local_port, args.workspace,
-                                        args.bd_addr, args.enable_max_logs))
+                                        args.bd_addr, args.enable_max_logs, exceptions))
         thread.start()
 
         proxy_list.append(proxy)
@@ -447,7 +463,31 @@ def init_pts(args, tc_db_table_name=None):
         if thread.is_alive():
             raise Exception("(%r) init failed" % (id(proxy_list[index]),))
 
+    exeption_msg = ''
+    while not exceptions.empty():
+        try:
+            exeption_msg += str(exceptions.get_nowait()) + '\n'
+        except:
+            traceback.print_exc()
+        finally:
+            print(exeption_msg)
+
+    if exeption_msg != '':
+        raise Exception(exeption_msg, proxy_list)
+
     return proxy_list
+
+
+def reinit_pts(ptses, args, tc_db_table_name=None):
+    """Reinitialization procedure for PTS instances"""
+
+    try:
+        for pts in ptses:
+            pts.unregister_xmlrpc_ptscallback()
+    except:
+        traceback.print_exc()
+
+    return init_pts(args, tc_db_table_name)
 
 
 def get_result_color(status):
@@ -712,7 +752,19 @@ def synchronize_instances(state, break_state=None):
             return
 
 
-def run_test_case_thread_entry(pts, test_case):
+def run_test_case_thread_entry_wrapper(func):
+    def wrapper(*args):
+        exeptions = args[2]
+        try:
+            func(*args)
+        except Exception as exc:
+            logging.exception(exc)
+            exeptions.put(exc)
+    return wrapper
+
+
+@run_test_case_thread_entry_wrapper
+def run_test_case_thread_entry(pts, test_case, exceptions):
     """Runs the test case specified by a TestCase instance.
 
     [1] xmlrpclib.Fault normally happens due to unhandled exception in the
@@ -760,8 +812,12 @@ def run_test_case_thread_entry(pts, test_case):
         error_code = get_error_code(None)
 
     finally:
-        if error_code == ptstypes.E_XML_RPC_ERROR:
-            pts.recover_pts()
+        try:
+            if error_code == ptstypes.E_XML_RPC_ERROR:
+                pts.recover_pts()
+        except Exception as error:
+            logging.exception(error)
+            exceptions.put(error)
         test_case.state = "FINISHING"
         synchronize_instances(test_case.state)
         test_case.post_run(error_code)  # stop qemu and other commands
@@ -771,8 +827,17 @@ def run_test_case_thread_entry(pts, test_case):
         test_case)
 
 
+def run_test_case_thread_fun(results, ptses, test_case_instances, test_case_name, stats,
+                             session_log_dir, exceptions):
+    status, duration = run_test_case(ptses, test_case_instances, test_case_name, stats,
+                  session_log_dir, exceptions)
+    results.append(status)
+    results.append(duration)
+
+
 @run_test_case_wrapper
-def run_test_case(ptses, test_case_instances, test_case_name, stats, session_log_dir):
+def run_test_case(ptses, test_case_instances, test_case_name, stats,
+                  session_log_dir, exceptions):
     def test_case_lookup_name(name, test_case_class):
         """Return 'test_case_class' instance if found or None otherwise"""
         if test_case_instances is None:
@@ -824,14 +889,14 @@ def run_test_case(ptses, test_case_instances, test_case_name, stats, session_log
 
         pts_thread = threading.Thread(
             target=run_test_case_thread_entry,
-            args=(ptses[0], test_case_lt1))
+            args=(ptses[0], test_case_lt1, exceptions))
         pts_threads.append(pts_thread)
         pts_thread.start()
 
         if test_case_lt2:
             pts_thread = threading.Thread(
                 target=run_test_case_thread_entry,
-                args=(ptses[1], test_case_lt2))
+                args=(ptses[1], test_case_lt2, exceptions))
             pts_threads.append(pts_thread)
             pts_thread.start()
 
@@ -897,12 +962,51 @@ def run_test_cases(ptses, test_case_instances, args):
     # Statistics
     stats = TestCaseRunStats(projects, test_cases, args.retry, TEST_CASE_DB)
 
+    exceptions = queue.Queue()
+
     for test_case in test_cases:
         stats.run_count = 0
 
         while True:
-            status, duration = run_test_case(ptses, test_case_instances,
-                                             test_case, stats, session_log_dir)
+            timeout = False
+
+            if args.superguard:
+                results = []
+                guarded_thread = InterruptableThread(target=run_test_case_thread_fun,
+                                                     args=(results, ptses,
+                                                           test_case_instances,
+                                                           test_case, stats,
+                                                           session_log_dir,
+                                                           exceptions), daemon=True)
+
+                guarded_thread.start()
+                guarded_thread.join(timeout=args.superguard)
+
+                if guarded_thread.is_alive():
+                    exceptions.put(Exception('Superguard timeout'))
+                    guarded_thread.interrupt()
+                    status = 'SUPERGUARD TIMEOUT'
+                    duration = args.superguard
+                    timeout = True
+                else:
+                    status = results[0]
+                    duration = results[1]
+            else:
+                status, duration = run_test_case(ptses, test_case_instances,
+                                                 test_case, stats,
+                                                 session_log_dir, exceptions)
+
+            exeption_msg = ''
+            while not exceptions.empty():
+                try:
+                    exeption_msg += str(exceptions.get_nowait()) + '\n'
+                except:
+                    traceback.print_exc()
+                finally:
+                    print(exeption_msg)
+
+            if timeout or args.recovery and (exeption_msg != '' or status != 'PASS'):
+                run_recovery(args, ptses)
 
             if status == 'PASS' or stats.run_count == args.retry:
                 if TEST_CASE_DB:
@@ -961,3 +1065,48 @@ class CliParser(argparse.ArgumentParser):
 
         self.add_argument("-C", "--cli_port", type=int, nargs="+", default=[CLIENT_PORT],
                           help="Specify the client port number")
+
+
+def run_recovery(args, ptses):
+    # It is hard to say, when we should restart PTS or board.
+    # Some wrong result statuses are not accompanied by exceptions,
+    # e.g. when test finished with RUNNING status.
+    ykush = args.ykush
+    if ykush:
+        board_power(ykush, False)
+
+    time.sleep(20)  # Server could already restart by itself,
+    try:
+        for pts in ptses:
+            recover_autoptsserver(pts)  # but restart it anyway
+    except:
+        traceback.print_exc()
+
+    if ykush:
+        board_power(ykush, True)
+    time.sleep(20)  # Give server some time to restart
+
+    try:
+        reinit_pts(ptses, args)
+    except:
+        traceback.print_exc()
+
+
+def recover_autoptsserver(server):
+    if server:
+        print('Attempting to recover autoptsserver')
+        log('Attempting to recover autoptsserver')
+        server.request_recovery()
+        return 0
+    return 1
+
+
+def board_power(ykush_port, on=True):
+    ykushcmd = 'ykushcmd'
+    if sys.platform == "win32":
+        ykushcmd += '.exe'
+
+    if on:
+        subprocess.Popen([ykushcmd, '-u', str(ykush_port)])
+    else:
+        subprocess.Popen([ykushcmd, '-d', str(ykush_port)])

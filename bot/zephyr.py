@@ -239,16 +239,11 @@ class PtsInitArgs(object):
         self.excluded = []
         self.srv_port = args["srv_port"]
         self.cli_port = args["cli_port"]
-
-        if 'server_ip' in args:
-            self.ip_addr = args['server_ip']
-        else:
-            self.ip_addr = ['127.0.0.1'] * len(self.srv_port)
-
-        if 'local_ip' in args:
-            self.local_addr = args['local_ip']
-        else:
-            self.local_addr = ['127.0.0.1'] * len(self.cli_port)
+        self.ip_addr = args.get('server_ip', ['127.0.0.1'] * len(self.srv_port))
+        self.local_addr = args.get('local_ip', ['127.0.0.1'] * len(self.cli_port))
+        self.ykush = args.get('ykush', None)
+        self.recovery = args.get('recovery', False)
+        self.superguard = 60 * args.get('superguard', None)
 
 
 def run_tests(args, iut_config, tty):
@@ -282,15 +277,28 @@ def run_tests(args, iut_config, tty):
         if 'overlay' in value:
             _args[config_default].excluded += _args[config].test_cases
 
-    ptses = autoptsclient.init_pts(_args[config_default],
-                                   "zephyr_" + str(args["board"]))
+    while True:
+        try:
+            ptses = autoptsclient.init_pts(_args[config_default],
+                                           "zephyr_" + str(args["board"]))
 
-    btp.init(get_iut)
-    # Main instance of PTS
-    pts = ptses[0]
+            btp.init(get_iut)
 
-    # Read PTS Version and keep it for later use
-    args['pts_ver'] = "%s" % pts.get_version()
+            # Main instance of PTS
+            pts = ptses[0]
+
+            # Read PTS Version and keep it for later use
+            args['pts_ver'] = "%s" % pts.get_version()
+        except Exception as exc:
+            if _args[config_default].recovery:
+                ptses = exc.args[1]
+                for pts in ptses:
+                    autoptsclient.recover_autoptsserver(pts)
+                time.sleep(20)
+                continue
+            else:
+                raise exc
+        break
 
     stack.init_stack()
     stack_inst = stack.get_stack()
@@ -405,6 +413,10 @@ def main(cfg):
 
     zephyr_hash = bot.common.update_repos(args['project_path'],
                                           cfg["git"])['zephyr']
+
+    if 'ykush' in args:
+        autoptsclient.board_power(args['ykush'], True)
+        time.sleep(1)
 
     tty, jlink_srn = bot.common.get_free_device()
 
