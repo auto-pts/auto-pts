@@ -21,6 +21,8 @@ import os
 import sys
 import ctypes
 import argparse
+import time
+import traceback
 from distutils.spawn import find_executable
 import _locale
 
@@ -45,6 +47,10 @@ def check_args(args):
     if not args.local_addr:
         args.local_addr = ['127.0.0.1'] * len(args.cli_port)
 
+    if args.ykush:
+        autoptsclient.board_power(args.ykush, True)
+        time.sleep(1)
+
     if tty_file:
         if tty_file.startswith("COM"):
             if not os.path.exists(tty_file):
@@ -61,6 +67,8 @@ def check_args(args):
 
     if not os.path.isfile(kernel_image):
         sys.exit("kernel_image %s is not a file!" % repr(kernel_image))
+
+    args.superguard = 60 * args.superguard
 
 
 def parse_args():
@@ -91,6 +99,18 @@ def parse_args():
                             help="Use RTT2PTY to capture logs from device."
                             "Requires rtt2pty tool and rtt support on IUT.",
                             action='store_true', default=False)
+
+    arg_parser.add_argument("--recovery", action='store_true', default=False,
+                            help="Specify if autoptsserver should try to recover"
+                            " itself after exception.")
+
+    arg_parser.add_argument("--superguard", default=0, metavar='MINUTES', type=float,
+                            help="Specify amount of time in minutes, after which"
+                            " super guard will blindly trigger recovery steps.")
+
+    arg_parser.add_argument("--ykush", metavar='YKUSH_PORT', help="Specify "
+                            "ykush downstream port number, so on BTP TIMEOUT "
+                            "the iut board could be powered off and on.")
 
     # Hidden option to save test cases data in TestCase.db
     arg_parser.add_argument("-s", "--store", action="store_true",
@@ -161,19 +181,28 @@ def main():
 
 
 if __name__ == "__main__":
+    while True:
+        try:
+            main()
+            break
 
-    # os._exit: not the cleanest but the easiest way to exit the server thread
-    try:
-        main()
+        # os._exit: not the cleanest but the easiest way to exit the server thread
+        except KeyboardInterrupt:  # Ctrl-C
+            os._exit(14)
 
-    except KeyboardInterrupt:  # Ctrl-C
-        os._exit(14)
+        # SystemExit is thrown in arg_parser.parse_args and in sys.exit
+        except SystemExit:
+            raise  # let the default handlers do the work
 
-    # SystemExit is thrown in arg_parser.parse_args and in sys.exit
-    except SystemExit:
-        raise  # let the default handlers do the work
+        except Exception as exc:
+            traceback.print_exc()
+            try:
+                ptses = exc.args[1]
+                for pts in ptses:
+                    autoptsclient.recover_autoptsserver(pts)
+                time.sleep(20)
+            except:
+                traceback.print_exc()
 
-    except BaseException:
-        import traceback
-        traceback.print_exc()
-        os._exit(16)
+        except:
+            os._exit(16)
