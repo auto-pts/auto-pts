@@ -17,13 +17,15 @@ import os
 import logging
 import socket
 import binascii
+import sys
 import threading
 import signal
 import subprocess
 import serial
 import time
-from fcntl import fcntl, F_GETFL, F_SETFL
-from os import O_NONBLOCK, read
+if sys.platform != "win32":
+    from fcntl import fcntl, F_GETFL, F_SETFL
+    from os import O_NONBLOCK, read
 import queue
 
 from . import defs
@@ -52,13 +54,17 @@ class BTPSocket(object):
         self.conn = None
         self.addr = None
 
-    def open(self):
+    def open(self, btp_address=BTP_ADDRESS):
         """Open BTP socket for IUT"""
-        if os.path.exists(BTP_ADDRESS):
-            os.remove(BTP_ADDRESS)
+        if os.path.exists(btp_address):
+            os.remove(btp_address)
 
-        self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        self.sock.bind(BTP_ADDRESS)
+        if sys.platform == "win32":
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.sock.bind((socket.gethostname(), 0))
+        else:
+            self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            self.sock.bind(btp_address)
 
         # queue only one connection
         self.sock.listen(1)
@@ -124,13 +130,18 @@ class BTPSocket(object):
 
     def close(self):
         try:
-            self.sock.shutdown(socket.SHUT_RDWR)
+            self.conn.shutdown(socket.SHUT_RDWR)
+            self.conn.close()
             self.sock.close()
         except:
             pass
+        # TODO We should wait for the [FIN, ACK] packet to arrive or
+        # next connection could fail(on Windows race occurred)
+        time.sleep(2)
         self.sock = None
         self.conn = None
         self.addr = None
+
 
 class BTPWorker(BTPSocket):
     def __init__(self):
@@ -253,8 +264,12 @@ class RTT2PTY:
         self.log_filename = None
         self.log_file = None
 
-    def _start_rtt2pty_proc(self):
-        self.rtt2pty_process = subprocess.Popen('rtt2pty',
+    def _start_rtt2pty_proc(self, debugger_snr=None):
+        cmd = ['rtt2pty']
+        if debugger_snr:
+            cmd.append('-s ' + debugger_snr)
+
+        self.rtt2pty_process = subprocess.Popen(cmd,
                                                 shell=False,
                                                 stdout=subprocess.PIPE,
                                                 stderr=subprocess.PIPE)
@@ -283,10 +298,9 @@ class RTT2PTY:
             file.write(decoded)
             file.flush()
 
-
-    def start(self, log_filename):
+    def start(self, log_filename, debugger_snr=None):
         self.log_filename = log_filename
-        self.pty_name = self._start_rtt2pty_proc()
+        self.pty_name = self._start_rtt2pty_proc(debugger_snr)
 
         self.serial = serial.Serial(self.pty_name, 115200, timeout=0)
         self.stop_thread.clear()
@@ -310,3 +324,25 @@ class RTT2PTY:
             self.rtt2pty_process.send_signal(signal.SIGINT)
             self.rtt2pty_process.wait()
             self.rtt2pty_process = None
+
+
+class BTMON:
+    def __init__(self):
+        self.btmon_process = None
+        self.pty_name = None
+        self.log_file = None
+
+    def start(self, log_file, debugger_snr):
+        self.log_file = log_file
+        cmd = ['btmon', '-J', 'NRF52,' + debugger_snr, '-w', self.log_file]
+
+        self.btmon_process = subprocess.Popen(cmd,
+                                              shell=False,
+                                              stdout=subprocess.PIPE,
+                                              stderr=subprocess.PIPE)
+
+    def stop(self):
+        if self.btmon_process and self.btmon_process.poll() is None:
+            self.btmon_process.send_signal(signal.SIGINT)
+            self.btmon_process.wait()
+            self.btmon_process = None

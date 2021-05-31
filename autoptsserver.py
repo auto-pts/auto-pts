@@ -28,6 +28,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 
+import argparse
 import os
 import wmi
 import sys
@@ -92,14 +93,39 @@ class PyPTSWithXmlRpcCallback(ptscontrol.PyPTS):
         self.client_xmlrpc_proxy = None
 
 
+class SvrArgumentParser(argparse.ArgumentParser):
+    def __init__(self, description):
+        argparse.ArgumentParser.__init__(self, description=description)
+
+        self.add_argument("-S", "--srv_port", type=int, default=SERVER_PORT,
+                          help="Specify the server port number")
+
+    def check_args(self, args):
+        """Sanity check command line arguments"""
+
+        srv_port = args.srv_port
+        if srv_port:
+            if not 49152 <= srv_port <= 65535:
+                sys.exit("Invalid server port number=%s, expected range <49152,65535> " % (srv_port,))
+        else:
+            sys.exit("%s is needed but not found!" % (srv_port,))
+
+    def parse_args(self, args=None, namespace=None):
+        args = super().parse_args()
+        self.check_args(args)
+        return args
+
+
 def main():
     """Main."""
     winutils.exit_if_admin()
 
+    args = SvrArgumentParser("PTS automation server").parse_args()
+
     script_name = os.path.basename(sys.argv[0])  # in case it is full path
     script_name_no_ext = os.path.splitext(script_name)[0]
 
-    log_filename = "%s.log" % (script_name_no_ext,)
+    log_filename = "%s_%s.log" % (script_name_no_ext, str(args.srv_port))
     format = ("%(asctime)s %(name)s %(levelname)s : %(message)s")
 
     logging.basicConfig(format=format,
@@ -115,9 +141,9 @@ def main():
     pts = PyPTSWithXmlRpcCallback()
     print("OK")
 
-    print("Serving on port {} ...".format(SERVER_PORT))
+    print("Serving on port {} ...".format(args.srv_port))
 
-    server = xmlrpc.server.SimpleXMLRPCServer(("", SERVER_PORT), allow_none=True)
+    server = xmlrpc.server.SimpleXMLRPCServer(("", args.srv_port), allow_none=True)
     server.register_instance(pts)
     server.register_introspection_functions()
     server.serve_forever()

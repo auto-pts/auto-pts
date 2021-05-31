@@ -13,15 +13,18 @@
 # more details.
 #
 
+import re
+import socket
 import subprocess
 import os
 import logging
 import shlex
+import sys
 import serial
 
 from pybtp import defs
 from pybtp.types import BTPError
-from pybtp.iutctl_common import BTPWorker, BTP_ADDRESS, RTT2PTY
+from pybtp.iutctl_common import BTPWorker, BTP_ADDRESS, RTT2PTY, BTMON
 
 log = logging.debug
 ZEPHYR = None
@@ -56,10 +59,12 @@ class ZephyrCtl:
             self.__class__, self.__init__.__name__, kernel_image, tty_file,
             board_name)
 
+        self.debugger_snr = None
         self.kernel_image = kernel_image
         self.tty_file = tty_file
 
         if self.tty_file and board_name:  # DUT is a hardware board, not QEMU
+            self.get_debugger_snr()
             self.board = Board(board_name, kernel_image, self)
         else:  # DUT is QEMU or a board that won't be reset
             self.board = None
@@ -70,11 +75,31 @@ class ZephyrCtl:
         self.test_case = None
         self.rtt2pty_process = None
         self.iut_log_file = None
+        self.btp_address = BTP_ADDRESS + self.debugger_snr
 
         if use_rtt2pty:
             self.rtt2pty = RTT2PTY()
+            self.btmon = BTMON()
         else:
             self.rtt2pty = None
+            self.btmon = None
+
+    def get_debugger_snr(self):
+        debuggers = subprocess.Popen('nrfjprog --com',
+                                     shell=True,
+                                     stdout=subprocess.PIPE
+                                     ).stdout.read().decode()
+
+        if sys.platform == "win32":
+            COM = "COM" + str(int(self.tty_file["/dev/ttyS".__len__():]) + 1)
+            reg = "[0-9]+(?=\s+" + COM + ".+)"
+        else:
+            reg = "[0-9]+(?=\s+" + self.tty_file + ".+)"
+
+        try:
+            self.debugger_snr = re.findall(reg, debuggers)[0]
+        except:
+            sys.exit("No debuggers associated with the device found")
 
     def start(self, test_case):
         """Starts the Zephyr OS"""
@@ -87,11 +112,22 @@ class ZephyrCtl:
         self.flush_serial()
 
         self.btp_socket = BTPWorker()
-        self.btp_socket.open()
+        self.btp_socket.open(self.btp_address)
 
         if self.tty_file:
-            socat_cmd = ("socat -x -v %s,rawer,b115200 UNIX-CONNECT:%s" %
-                         (self.tty_file, BTP_ADDRESS))
+            if sys.platform == "win32":
+                # On windows socat.exe does not support setting serial baud rate.
+                # Set it with 'mode' from cmd.exe
+                COM = "COM" + str(int(self.tty_file["/dev/ttyS".__len__():]) + 1)
+                mode_cmd = (">nul 2>nul cmd.exe /c \"mode " + COM + "BAUD=115200 PARITY=n DATA=8 STOP=1\"")
+                os.system(mode_cmd)
+
+                socat_cmd = ("socat.exe -x -v tcp:" + socket.gethostbyname(socket.gethostname()) +
+                             ":%s,retry=100,interval=1 %s,raw,b115200" %
+                             (self.btp_socket.sock.getsockname()[1], self.tty_file))
+            else:
+                socat_cmd = ("socat -x -v %s,rawer,b115200 UNIX-CONNECT:%s" %
+                             (self.tty_file, self.btp_address))
 
             log("Starting socat process: %s", socat_cmd)
 
@@ -126,11 +162,22 @@ class ZephyrCtl:
 
     def rtt2pty_start(self):
         if self.rtt2pty:
-            self.rtt2pty.start(os.path.join(self.test_case.log_dir, 'iut-zephyr.log'))
+            self.rtt2pty.start(os.path.join(self.test_case.log_dir, 'iut-zephyr.log'), self.debugger_snr)
 
     def rtt2pty_stop(self):
         if self.rtt2pty:
             self.rtt2pty.stop()
+
+    def btmon_start(self):
+        if self.btmon:
+            log_file = os.path.join(self.test_case.log_dir,
+                                    self.test_case.name.replace('/', '_') +
+                                    '_btmon.log')
+            self.btmon.start(log_file, self.debugger_snr)
+
+    def btmon_stop(self):
+        if self.btmon:
+            self.btmon.stop()
 
     def reset(self):
         """Restart IUT related processes and reset the IUT"""
@@ -143,6 +190,7 @@ class ZephyrCtl:
         if not self.board:
             return
 
+        self.btmon_stop()
         self.rtt2pty_stop()
 
         self.board.reset()
@@ -164,6 +212,7 @@ class ZephyrCtl:
             log("IUT ready event received OK")
 
         self.rtt2pty_start()
+        self.btmon_start()
 
     def stop(self):
         """Powers off the Zephyr OS"""
@@ -225,8 +274,8 @@ class Board:
 
         self.name = board_name
         self.kernel_image = kernel_image
-        self.reset_cmd = self.get_reset_cmd()
         self.iutctl = iutctl
+        self.reset_cmd = self.get_reset_cmd()
 
     def reset(self):
         """Reset HW DUT board with openocd
@@ -312,7 +361,7 @@ class Board:
         Dependency: nRF5x command line tools
 
         """
-        return 'nrfjprog -f nrf52 -r'
+        return 'nrfjprog -f nrf52 -r -s ' + self.iutctl.debugger_snr
 
     def _get_reset_cmd_reel(self):
         """Return reset command for Reel_Board DUT
@@ -321,6 +370,7 @@ class Board:
 
         """
         return 'pyocd cmd -c reset'
+
 
 def get_iut():
     return ZEPHYR

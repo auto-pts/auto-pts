@@ -19,14 +19,17 @@
 
 import os
 import sys
+import ctypes
 import argparse
 from distutils.spawn import find_executable
+import _locale
 
 import autoptsclient_common as autoptsclient
 import ptsprojects.zephyr as autoprojects
 import ptsprojects.stack as stack
 from pybtp import btp
 from ptsprojects.zephyr.iutctl import get_iut
+from winutils import have_admin_rights
 
 
 def check_args(args):
@@ -35,16 +38,22 @@ def check_args(args):
     qemu_bin = autoprojects.iutctl.QEMU_BIN
     tty_file = args.tty_file
     kernel_image = args.kernel_image
-    ip_addr = args.ip_addr
 
-    if not ip_addr:
-        sys.exit("Server IP address not specified!")
+    if not args.ip_addr:
+        args.ip_addr = ['127.0.0.1'] * len(args.srv_port)
+
+    if not args.local_addr:
+        args.local_addr = ['127.0.0.1'] * len(args.cli_port)
 
     if tty_file:
-        if (not tty_file.startswith("/dev/tty") and
+        if tty_file.startswith("COM"):
+            if not os.path.exists(tty_file):
+                sys.exit("%s COM file does not exist!" % repr(tty_file))
+            args.tty_file = "/dev/ttyS" + str(int(tty_file["COM".__len__():]) - 1)
+        elif (not tty_file.startswith("/dev/tty") and
                 not tty_file.startswith("/dev/pts")):
-            sys.exit("%s is not a TTY file!" % repr(tty_file))
-        if not os.path.exists(tty_file):
+            sys.exit("%s is not a TTY nor COM file!" % repr(tty_file))
+        elif not os.path.exists(tty_file):
             sys.exit("%s TTY file does not exist!" % repr(tty_file))
     else:  # no TTY - will run DUT in QEMU
         if not find_executable(qemu_bin):
@@ -96,7 +105,14 @@ def parse_args():
 
 def main():
     """Main."""
-    if os.geteuid() == 0:  # root privileges are not needed
+
+    # Workaround for logging error: "UnicodeEncodeError: 'charmap' codec can't
+    # encode character '\xe6' in position 138: character maps to <undefined>",
+    # which occurs under Windows with default encoding other than cp1252
+    # each time log() is called.
+    _locale._getdefaultlocale = (lambda *args: ['en_US', 'utf8'])
+
+    if have_admin_rights():  # root privileges are not needed
         sys.exit("Please do not run this program as root.")
 
     args = parse_args()
