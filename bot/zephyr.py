@@ -244,7 +244,7 @@ class PtsInitArgs(object):
         self.local_addr = args.get('local_ip', ['127.0.0.1'] * len(self.cli_port))
         self.ykush = args.get('ykush', None)
         self.recovery = args.get('recovery', False)
-        self.superguard = 60 * args.get('superguard', None)
+        self.superguard = 60 * float(args.get('superguard', 0))
 
 
 def run_tests(args, iut_config, tty):
