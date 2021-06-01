@@ -216,7 +216,8 @@ def get_test_cases(ptses):
     :param pts: PTS proxy instance
     :return: ZTestCase list
     """
-    test_cases = autoprojects.gap.test_cases(ptses[0])
+    test_cases = autoprojects.dis.test_cases(ptses)
+    test_cases += autoprojects.gap.test_cases(ptses[0])
     test_cases += autoprojects.gatt.test_cases(ptses)
     test_cases += autoprojects.sm.test_cases(ptses[0])
     test_cases += autoprojects.l2cap.test_cases(ptses[0])
@@ -321,6 +322,7 @@ def run_tests(args, iut_config, tty):
         autoprojects.iutctl.init(args["kernel_image"], tty, args["board"])
 
         # Setup project PIXITS
+        autoprojects.dis.set_pixits(ptses[0])
         autoprojects.gap.set_pixits(ptses[0])
         autoprojects.gatt.set_pixits(ptses)
         autoprojects.sm.set_pixits(ptses[0])
