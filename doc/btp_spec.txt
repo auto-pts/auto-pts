@@ -1904,6 +1904,16 @@ Events:
 
 		This event indicates that the IUT as an LPN has polled a Friend.
 
+	Opcode 0x8e - Provisioned Node Added
+
+		Controller Index:	<controller id>
+		Event parameters:	Network Key Index (2 octets)
+					Address (2 octets)
+					UUID (16 octets)
+					Number of elements (1 octet)
+
+		This event indicates that the IUT has provisioned a new node.
+
 Mesh Model Service (ID 5)
 ==================
 

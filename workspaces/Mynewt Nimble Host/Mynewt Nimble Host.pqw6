@@ -1,4 +1,4 @@
-<WORKSPACE_INFORMATION NAME="Mynewt Nimble Host" CREATED_WITH="Profile Tuning Suite, 8.0.2, 3" BD_ADDR="000000000000" QDID="164784">
+<WORKSPACE_INFORMATION NAME="Mynewt Nimble Host" CREATED_WITH="Profile Tuning Suite, 8.0.3, 2" BD_ADDR="000000000000" QDID="164784">
   <PROJECTS_INFORMATION>
     <PROJECT_INFORMATION NAME="GAP" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
       <PICS>
@@ -3544,12 +3544,11 @@
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
-          <!-- Table 1: Bluetooth Core Specification v4.0 or Later -->
           <Row>
-            <Name>TSPC_MESH_1_1</Name>
-            <Description>Core Specification v4.0 or later (M)</Description>
+            <Name>TSPC_MESH_0a_3</Name>
+            <Description>Erratum 16350 (C1)</Description>
             <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <!-- Table 2: Roles -->
           <Row>

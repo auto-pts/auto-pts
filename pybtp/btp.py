@@ -618,7 +618,7 @@ def parse_handle_description(description):
     """
     logging.debug("description=%r", description)
 
-    match = re.search(r"\bhandle \b([0-9A-Fa-f]+)\b", description)
+    match = re.search(r"\bhandle (?:0x)?([0-9A-Fa-f]+)\b", description)
     if match:
         handle = match.group(1)
         logging.debug("handle=%r", handle)
@@ -1061,6 +1061,7 @@ def var_store_get_wrong_passkey(description):
     passkey = get_stack().gap.get_passkey()
 
     # Passkey is in range 0-999999
+    passkey = int(passkey)
     if passkey > 0:
         return str(passkey - 1).zfill(6)
     else:
@@ -3899,6 +3900,19 @@ def mesh_lpn_polled_ev(mesh, data, data_len):
     (net_idx, frnd_addr, retry) = struct.unpack_from(hdr_fmt, data, 0)
 
 
+def mesh_prov_node_added_ev(mesh, data, data_len):
+    logging.debug("%s", mesh_prov_node_added_ev.__name__)
+
+    stack = get_stack()
+
+    hdr_fmt = '<HH16sB'
+    hdr_len = struct.calcsize(hdr_fmt)
+
+    (net_idx, addr, uuid, num_elems) = struct.unpack_from(hdr_fmt, data, 0)
+
+    logging.debug("0x%04x 0x%04x %r %u", net_idx, addr, uuid, num_elems)
+
+
 MESH_EV = {
     defs.MESH_EV_OUT_NUMBER_ACTION: mesh_out_number_action_ev,
     defs.MESH_EV_OUT_STRING_ACTION: mesh_out_string_action_ev,
@@ -3914,6 +3928,7 @@ MESH_EV = {
     defs.MESH_EV_LPN_ESTABLISHED: mesh_lpn_established_ev,
     defs.MESH_EV_LPN_TERMINATED: mesh_lpn_terminated_ev,
     defs.MESH_EV_LPN_POLLED: mesh_lpn_polled_ev,
+    defs.MESH_EV_PROV_NODE_ADDED: mesh_prov_node_added_ev,
 }
 
 
