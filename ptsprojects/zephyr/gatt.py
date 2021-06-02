@@ -44,6 +44,7 @@ class Value:
     eight_bytes_2 = 'FEDCBA9876543210'
     long_1 = eight_bytes_1 * 4
     long_2 = eight_bytes_2 * 4
+    long_3 = eight_bytes_2 * 7
 
 
 iut_attr_db_off = 0x000b
@@ -297,6 +298,13 @@ def test_cases_server(ptses):
                      TestFunc(btp.gatts_start_server),
                      TestFunc(btp.gap_adv_ind_on, start_wid=1)]
 
+    init_server_5 = [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
+                     TestFunc(btp.gatts_add_char, 0,
+                              Prop.read | Prop.write,
+                              Perm.read | Perm.write, UUID.VND16_3),
+                     TestFunc(btp.gatts_set_val, 0, Value.long_3),
+                     TestFunc(btp.gatts_start_server)]
+
     test_cases = [
         ZTestCase("GATT", "GATT/SR/GAC/BV-01-C",
                   pre_conditions_1 + init_server_1,
@@ -463,6 +471,18 @@ def test_cases_server(ptses):
         ZTestCase("GATT", "GATT/SR/GAW/BV-11-C",
                   pre_conditions_1 + init_server_2,
                   generic_wid_hdl=gatt_wid_hdl),
+        ZTestCase("GATT", "GATT/SR/GAW/BV-12-C",
+                  pre_conditions_1 + init_server_2,
+                  generic_wid_hdl=gatt_wid_hdl),
+        ZTestCase("GATT", "GATT/SR/GAW/BV-13-C",
+                  pre_conditions_1 + init_server_5,
+                  generic_wid_hdl=gatt_wid_hdl),
+        ZTestCase("GATT", "GATT/SR/GAW/BV-14-C",
+                  pre_conditions_1 + init_server_5,
+                  generic_wid_hdl=gatt_wid_hdl),
+        ZTestCase("GATT", "GATT/SR/GPM/BV-05-C",
+                  pre_conditions_1 +init_server_2 ,
+                  generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAW/BV-07-C",
                   pre_conditions_1 + init_server_2,
                   generic_wid_hdl=gatt_wid_hdl),
@@ -521,6 +541,9 @@ def test_cases_server(ptses):
         ZTestCase("GATT", "GATT/SR/GAS/BV-07-C",
                   cmds=pre_conditions_1 +
                        [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=gatt_wid_hdl),
+        ZTestCase("GATT", "GATT/SR/GAS/BV-08-C",
+                  cmds=pre_conditions_1 + init_server_2,
                   generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAT/BV-01-C",
                   pre_conditions_1 + init_server_2,
@@ -786,6 +809,9 @@ def test_cases_client(pts):
                   pre_conditions,
                   generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/CL/GAW/BI-09-C",
+                  pre_conditions,
+                  generic_wid_hdl=gatt_wid_hdl),
+        ZTestCase("GATT", "GATT/CL/GAW/BI-10-C",
                   pre_conditions,
                   generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/CL/GAW/BI-11-C",

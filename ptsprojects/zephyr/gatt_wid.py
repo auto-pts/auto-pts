@@ -1562,6 +1562,16 @@ def hdl_wid_142(desc):
     return True
 
 
+def hdl_wid_144(desc):
+    '''
+    Please initiate one L2CAP channel disconnection to the PTS.
+    '''
+    #TODO: This requires disconnecting one of EATT channels while EATT is being enabled -
+    # we would need to access these channels via bttester API, have them saved and receive
+    # callbacks from them (like for regular L2CAP server)
+    return False
+
+
 def hdl_wid_139(desc):
     MMI.reset()
     MMI.parse_description(desc)
