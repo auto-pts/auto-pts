@@ -111,9 +111,11 @@ def build_and_flash(zephyr_wd, board, tty, conf_file=None):
     # Set Zephyr project env variables
     env = source_zephyr_env(zephyr_wd)
 
+    check_call('rm -rf build/'.split(), cwd=tester_dir)
+
     cmd = ['west',  'build', '-p', 'auto', '-b', board]
-    if conf_file and conf_file != 'default':
-        cmd.extend(('--', '-DCONF_FILE={}'.format(conf_file)))
+    if conf_file and conf_file != 'default' and conf_file != 'prj.conf':
+        cmd.extend(('--', '-DOVERLAY_CONFIG={}'.format(conf_file)))
 
     if sys.platform == 'win32':
         cmd = subprocess.list2cmdline(cmd)
@@ -156,23 +158,9 @@ def apply_overlay(zephyr_wd, base_conf, cfg_name, overlay):
 
     os.chdir(tester_app_dir)
 
-    with open(base_conf, 'r') as base:
-        with open(cfg_name, 'w') as config:
-            for line in base.readlines():
-                re_config = re.compile(
-                    r'(?P<config_key>\w+)=(?P<config_value>\w+)*')
-                match = re_config.match(line)
-                if match and match.group('config_key') in overlay:
-                    v = overlay.pop(match.group('config_key'))
-                    config.write(
-                        "{}={}\n".format(
-                            match.group('config_key'), v))
-                else:
-                    config.write(line)
-
-            # apply what's left
-            for k, v in list(overlay.items()):
-                config.write("{}={}\n".format(k, v))
+    with open(cfg_name, 'w') as config:
+        for k, v in list(overlay.items()):
+            config.write("{}={}\n".format(k, v))
 
     os.chdir(cwd)
 
