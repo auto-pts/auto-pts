@@ -75,7 +75,11 @@ class ZephyrCtl:
         self.test_case = None
         self.rtt2pty_process = None
         self.iut_log_file = None
-        self.btp_address = BTP_ADDRESS + self.debugger_snr
+
+        if self.debugger_snr:
+            self.btp_address = BTP_ADDRESS + self.debugger_snr
+        else:
+            self.btp_address = BTP_ADDRESS
 
         if use_rtt2pty:
             self.rtt2pty = RTT2PTY()
