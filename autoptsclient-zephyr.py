@@ -36,7 +36,9 @@ class ZephyrClient(autoptsclient.Client):
                                 "testing. Normally a zephyr.elf file.")
 
         args = arg_parser.parse_args()
-        args.qemu_bin = autoprojects.iutctl.QEMU_BIN
+
+        if args.hci is None:
+            args.qemu_bin = autoprojects.iutctl.QEMU_BIN
 
         self.check_args(args)
 
@@ -49,7 +51,7 @@ class ZephyrClient(autoptsclient.Client):
             sys.exit("kernel_image %s is not a file!" % repr(args.kernel_image))
 
     def init_iutctl(self, args):
-        autoprojects.iutctl.init(args.kernel_image, args.tty_file, args.board, args.rtt2pty)
+        autoprojects.iutctl.init(args)
 
     def setup_project_pixits(self, ptses):
         autoprojects.gap.set_pixits(ptses[0])

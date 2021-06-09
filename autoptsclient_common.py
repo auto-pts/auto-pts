@@ -1090,6 +1090,9 @@ class CliParser(argparse.ArgumentParser):
         self.add_argument("-s", "--store", action="store_true",
                           default=False, help=argparse.SUPPRESS)
 
+        self.add_argument("--hci", type=int, default=None, help="Specify the number of the"
+                          " HCI controller(currently only used under native posix)")
+
         if board_names:
             self.add_argument("-t", "--tty-file",
                               help="If TTY is specified, BTP communication "
@@ -1161,10 +1164,14 @@ class Client:
         # each time log() is called.
         _locale._getdefaultlocale = (lambda *args: ['en_US', 'utf8'])
 
-        if have_admin_rights():  # root privileges are not needed
-            sys.exit("Please do not run this program as root.")
-
         args = self.parse_args()
+
+        # root privileges only needed for native mode.
+        if args.hci is not None:
+        	if not have_admin_rights():
+        		sys.exit("Please run this program as root.")
+        elif have_admin_rights():
+                sys.exit("Please do not run this program as root.")
 
         if args.store:
             tc_db_table_name = self.store_tag + str(args.board)
@@ -1240,7 +1247,8 @@ class Client:
             if not find_executable(qemu_bin):
                 sys.exit("%s is needed but not found!" % (qemu_bin,))
         else:
-            sys.exit("No TTY, COM, QEMU_BIN or btpclient.py path has been specified!")
+            if args.hci is None:
+                sys.exit("No TTY, HCI, COM, QEMU_BIN or btpclient.py path has been specified!")
 
         args.superguard = 60 * args.superguard
 

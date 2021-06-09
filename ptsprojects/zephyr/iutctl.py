@@ -53,23 +53,26 @@ def get_qemu_cmd(kernel_image):
 class ZephyrCtl:
     '''Zephyr OS Control Class'''
 
-    def __init__(self, kernel_image, tty_file, board_name=None, use_rtt2pty=None):
+    def __init__(self, args):
         """Constructor."""
         log("%s.%s kernel_image=%s tty_file=%s board_name=%s",
-            self.__class__, self.__init__.__name__, kernel_image, tty_file,
-            board_name)
+            self.__class__, self.__init__.__name__, args.kernel_image,
+            args.tty_file, args.board)
 
         self.debugger_snr = None
-        self.kernel_image = kernel_image
-        self.tty_file = tty_file
+        self.kernel_image = args.kernel_image
+        self.tty_file = args.tty_file
+        self.hci = args.hci
+        self.native = None
 
-        if self.tty_file and board_name:  # DUT is a hardware board, not QEMU
+        if self.tty_file and args.board:  # DUT is a hardware board, not QEMU
             self.get_debugger_snr()
-            self.board = Board(board_name, kernel_image, self)
+            self.board = Board(args.board, args.kernel_image, self)
         else:  # DUT is QEMU or a board that won't be reset
             self.board = None
 
         self.qemu_process = None
+        self.native_process = None
         self.socat_process = None
         self.btp_socket = None
         self.test_case = None
@@ -81,7 +84,7 @@ class ZephyrCtl:
         else:
             self.btp_address = BTP_ADDRESS
 
-        if use_rtt2pty:
+        if args.rtt2pty:
             self.rtt2pty = RTT2PTY()
             self.btmon = BTMON()
         else:
@@ -140,6 +143,20 @@ class ZephyrCtl:
                                                   shell=False,
                                                   stdout=self.iut_log_file,
                                                   stderr=self.iut_log_file)
+        elif self.hci is not None:
+            socat_cmd = ("socat -x -v %%s,rawer,b115200 UNIX-CONNECT:%s &" %
+                         (self.btp_address))
+
+            native_cmd = ("%s --bt-dev=hci%d --attach_uart_cmd=\"%s\"" %
+                          (self.kernel_image, self.hci, socat_cmd))
+
+            log("Starting native zephyr process: %s", native_cmd)
+
+            # TODO check if zephyr process has started correctly
+            self.native_process = subprocess.Popen(shlex.split(native_cmd),
+                                                   shell=False,
+                                                   stdout=self.iut_log_file,
+                                                   stderr=self.iut_log_file)
         else:
             qemu_cmd = get_qemu_cmd(self.kernel_image)
 
@@ -225,6 +242,11 @@ class ZephyrCtl:
         if self.btp_socket:
             self.btp_socket.close()
             self.btp_socket = None
+
+        if self.native_process and self.native_process.poll() is None:
+            self.native_process.terminate()
+            self.native_process.wait()  # do not let zombies take over
+            self.native_process = None
 
         if self.qemu_process and self.qemu_process.poll() is None:
             self.qemu_process.terminate()
@@ -386,18 +408,14 @@ def init_stub():
     ZEPHYR = ZephyrCtlStub()
 
 
-def init(kernel_image, tty_file, board=None, use_rtt2pty=False):
+def init(args):
     """IUT init routine
 
-    kernel_image -- Path to Zephyr kernel image
-    tty_file -- Path to TTY file, if specified QEMU will not be used and
-                BTP communication with HW DUT will be done over this TTY.
-    board -- HW DUT board to use for testing. This parameter is used only
-             if tty_file is specified
+    args -- Argument
     """
     global ZEPHYR
 
-    ZEPHYR = ZephyrCtl(kernel_image, tty_file, board, use_rtt2pty)
+    ZEPHYR = ZephyrCtl(args)
 
 
 def cleanup():
