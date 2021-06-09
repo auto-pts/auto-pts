@@ -69,6 +69,18 @@ def parse_args():
                                  "Requires rtt2pty tool and rtt support on IUT.",
                             action='store_true', default=False)
 
+    arg_parser.add_argument("--recovery", action='store_true', default=False,
+                            help="Specify if autoptsserver should try to recover"
+                                 " itself after exception.")
+
+    arg_parser.add_argument("--superguard", default=0, metavar='MINUTES', type=float,
+                            help="Specify amount of time in minutes, after which"
+                                 " super guard will blindly trigger recovery steps.")
+
+    arg_parser.add_argument("--ykush", metavar='YKUSH_PORT', help="Specify "
+                                                                  "ykush downstream port number, so on BTP TIMEOUT "
+                                                                  "the iut board could be powered off and on.")
+
     # Hidden option to save test cases data in TestCase.db
     arg_parser.add_argument("-s", "--store", action="store_true",
                             default=False, help=argparse.SUPPRESS)
