@@ -16,7 +16,7 @@
 #
 
 """Common code for the auto PTS clients"""
-
+import _locale
 import os
 import errno
 import subprocess
@@ -28,6 +28,7 @@ import traceback
 import xmlrpc.client
 import queue
 import threading
+from distutils.spawn import find_executable
 from traceback import format_exception
 from xmlrpc.server import SimpleXMLRPCServer
 import time
@@ -35,8 +36,10 @@ import datetime
 import argparse
 from termcolor import colored
 
+from ptsprojects import stack
 from ptsprojects.testcase import PTSCallback, TestCaseLT1, TestCaseLT2
 from ptsprojects.testcase_db import TestCaseTable
+from pybtp import btp
 from pybtp.types import BTPError, SynchError
 import ptsprojects.ptstypes as ptstypes
 from config import SERVER_PORT, CLIENT_PORT
@@ -44,6 +47,7 @@ from config import SERVER_PORT, CLIENT_PORT
 import tempfile
 import xml.etree.ElementTree as ET
 from utils import InterruptableThread
+from winutils import have_admin_rights
 
 log = logging.debug
 
@@ -328,6 +332,7 @@ def init_logging(tag=""):
                         filename=log_filename,
                         filemode='w',
                         level=logging.DEBUG)
+
 
 class FakeProxy(object):
     """Fake PTS XML-RPC proxy client.
@@ -1024,7 +1029,7 @@ def run_test_cases(ptses, test_case_instances, args):
 
 
 class CliParser(argparse.ArgumentParser):
-    def __init__(self, description):
+    def __init__(self, description, board_names=None):
         argparse.ArgumentParser.__init__(self, description=description)
 
         self.add_argument("-i", "--ip_addr", nargs="+",
@@ -1065,6 +1070,192 @@ class CliParser(argparse.ArgumentParser):
 
         self.add_argument("-C", "--cli_port", type=int, nargs="+", default=[CLIENT_PORT],
                           help="Specify the client port number")
+
+        self.add_argument("--recovery", action='store_true', default=False,
+                          help="Specify if autoptsserver should try to recover"
+                          " itself after exception.")
+
+        self.add_argument("--superguard", default=0, metavar='MINUTES', type=float,
+                          help="Specify amount of time in minutes, after which"
+                          " super guard will blindly trigger recovery steps.")
+
+        self.add_argument("--ykush", metavar='YKUSH_PORT', help="Specify "
+                          "ykush downstream port number, so on BTP TIMEOUT "
+                          "the iut device could be powered off and on.")
+
+        # Hidden option to select qemu bin file
+        self.add_argument("--qemu_bin", help=argparse.SUPPRESS, default=None)
+
+        # Hidden option to save test cases data in TestCase.db
+        self.add_argument("-s", "--store", action="store_true",
+                          default=False, help=argparse.SUPPRESS)
+
+        if board_names:
+            self.add_argument("-t", "--tty-file",
+                              help="If TTY is specified, BTP communication "
+                              "with OS running on hardware will be done over "
+                              "this TTY. Hence, QEMU will not be used.")
+
+            self.add_argument("-b", "--board",
+                              help="Used DUT board. This option is used to "
+                              "select DUT reset command that is run before "
+                              "each test case. If board is not specified DUT "
+                              "will not be reset. Supported boards: %s. " %
+                              (", ".join(board_names, ),), choices=board_names)
+
+            self.add_argument("--rtt2pty",
+                              help="Use RTT2PTY to capture logs from device."
+                              "Requires rtt2pty tool and rtt support on IUT.",
+                              action='store_true', default=False)
+        else:
+            self.add_argument("btpclient_path",
+                              help="Path to tool btpclient.")
+
+
+class Client:
+    """AutoPTS Client abstract class.
+
+       Contains common client steps.
+
+    """
+
+    def __init__(self, get_iut, store_tag):
+        self.test_cases = None
+        self.get_iut = get_iut
+        self.store_tag = store_tag
+
+    def start(self):
+        """Start main with exception handling."""
+        while True:
+            try:
+                self.main()
+                break
+
+            # os._exit: not the cleanest but the easiest way to exit the server thread
+            except KeyboardInterrupt:  # Ctrl-C
+                os._exit(14)
+
+            # SystemExit is thrown in arg_parser.parse_args and in sys.exit
+            except SystemExit:
+                raise  # let the default handlers do the work
+
+            except Exception as exc:
+                traceback.print_exc()
+                try:
+                    ptses = exc.args[1]
+                    for pts in ptses:
+                        recover_autoptsserver(pts)
+                    time.sleep(20)
+                except:
+                    traceback.print_exc()
+
+            except:
+                os._exit(16)
+
+    def main(self):
+        """Main."""
+
+        # Workaround for logging error: "UnicodeEncodeError: 'charmap' codec can't
+        # encode character '\xe6' in position 138: character maps to <undefined>",
+        # which occurs under Windows with default encoding other than cp1252
+        # each time log() is called.
+        _locale._getdefaultlocale = (lambda *args: ['en_US', 'utf8'])
+
+        if have_admin_rights():  # root privileges are not needed
+            sys.exit("Please do not run this program as root.")
+
+        args = self.parse_args()
+
+        if args.store:
+            tc_db_table_name = self.store_tag + str(args.board)
+        else:
+            tc_db_table_name = None
+
+        ptses = init_pts(args, tc_db_table_name)
+
+        btp.init(self.get_iut)
+        self.init_iutctl(args)
+
+        stack.init_stack()
+        stack_inst = stack.get_stack()
+        stack_inst.synch_init([pts.callback_thread for pts in ptses])
+
+        self.setup_project_pixits(ptses)
+        self.setup_test_cases(ptses)
+
+        run_test_cases(ptses, self.test_cases, args)
+
+        self.cleanup()
+
+        print("\nBye!")
+        sys.stdout.flush()
+
+        for pts in ptses:
+            pts.unregister_xmlrpc_ptscallback()
+
+        # not the cleanest but the easiest way to exit the server thread
+        os._exit(0)
+
+    def parse_args(self):
+        """Parses command line arguments and options"""
+
+        arg_parser = CliParser("PTS automation client")
+        args = arg_parser.parse_args()
+
+        self.check_args(args)
+
+        return args
+
+    def check_args(self, args):
+        """Sanity check command line arguments"""
+
+        qemu_bin = args.qemu_bin
+
+        if not args.ip_addr:
+            args.ip_addr = ['127.0.0.1'] * len(args.srv_port)
+
+        if not args.local_addr:
+            args.local_addr = ['127.0.0.1'] * len(args.cli_port)
+
+        if args.ykush:
+            board_power(args.ykush, True)
+            time.sleep(1)
+
+        if 'tty_file' in args:
+            tty_file = args.tty_file
+
+            if tty_file.startswith("COM"):
+                if not os.path.exists(tty_file):
+                    sys.exit("%s COM file does not exist!" % repr(tty_file))
+                args.tty_file = "/dev/ttyS" + str(int(tty_file["COM".__len__():]) - 1)
+            elif (not tty_file.startswith("/dev/tty") and
+                  not tty_file.startswith("/dev/pts")):
+                sys.exit("%s is not a TTY nor COM file!" % repr(tty_file))
+            elif not os.path.exists(tty_file):
+                sys.exit("%s TTY file does not exist!" % repr(tty_file))
+        elif 'btpclient_path' in args:
+            if not os.path.exists(args.btpclient_path):
+                sys.exit("Path %s of btpclient.py file does not exist!" % repr(args.btpclient_path))
+        elif qemu_bin:
+            if not find_executable(qemu_bin):
+                sys.exit("%s is needed but not found!" % (qemu_bin,))
+        else:
+            sys.exit("No TTY, COM, QEMU_BIN or btpclient.py path has been specified!")
+
+        args.superguard = 60 * args.superguard
+
+    # Overwrite those
+    def init_iutctl(self, args):
+        sys.exit("Client.init_iutctl not implemented")
+
+    def setup_project_pixits(self, ptses):
+        sys.exit("Client.setup_project_pixits not implemented")
+
+    def setup_test_cases(self, ptses):
+        sys.exit("Client.setup_test_cases not implemented")
+
+    def cleanup(self):
+        sys.exit("Client.cleanup not implemented")
 
 
 def run_recovery(args, ptses):
