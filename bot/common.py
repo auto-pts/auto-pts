@@ -497,6 +497,17 @@ def release_device(jlink_srn):
         devices_in_use.remove(jlink_srn)
 
 
+def pre_cleanup():
+    """Perform cleanup before test run
+    :return: None
+    """
+    try:
+        shutil.copytree("logs", "oldlogs", dirs_exist_ok=True)
+        shutil.rmtree("logs")
+    except OSError:
+        pass
+
+
 def cleanup():
     """Perform cleanup
     :return: None

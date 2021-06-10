@@ -348,6 +348,8 @@ def compose_mail(args, mail_cfg, mail_ctx):
 def main(cfg):
     print("Mynewt bot start!")
 
+    bot.common.pre_cleanup()
+
     start_time = time.time()
 
     args = cfg['auto_pts']
