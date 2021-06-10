@@ -19,190 +19,64 @@
 
 import os
 import sys
-import ctypes
-import argparse
-import time
-import traceback
-from distutils.spawn import find_executable
-import _locale
 
 import autoptsclient_common as autoptsclient
 import ptsprojects.zephyr as autoprojects
-import ptsprojects.stack as stack
-from pybtp import btp
 from ptsprojects.zephyr.iutctl import get_iut
-from winutils import have_admin_rights
 
 
-def check_args(args):
-    """Sanity check command line arguments"""
+class ZephyrClient(autoptsclient.Client):
+    def parse_args(self):
+        arg_parser = autoptsclient.CliParser("PTS automation client",
+                                             autoprojects.iutctl.Board.names)
 
-    qemu_bin = autoprojects.iutctl.QEMU_BIN
-    tty_file = args.tty_file
-    kernel_image = args.kernel_image
+        # IUT specific arguments below
+        arg_parser.add_argument("kernel_image",
+                                help="Zephyr OS kernel image to be used for "
+                                "testing. Normally a zephyr.elf file.")
 
-    if not args.ip_addr:
-        args.ip_addr = ['127.0.0.1'] * len(args.srv_port)
+        args = arg_parser.parse_args()
+        args.qemu_bin = autoprojects.iutctl.QEMU_BIN
 
-    if not args.local_addr:
-        args.local_addr = ['127.0.0.1'] * len(args.cli_port)
+        self.check_args(args)
 
-    if args.ykush:
-        autoptsclient.board_power(args.ykush, True)
-        time.sleep(1)
+        return args
 
-    if tty_file:
-        if tty_file.startswith("COM"):
-            if not os.path.exists(tty_file):
-                sys.exit("%s COM file does not exist!" % repr(tty_file))
-            args.tty_file = "/dev/ttyS" + str(int(tty_file["COM".__len__():]) - 1)
-        elif (not tty_file.startswith("/dev/tty") and
-                not tty_file.startswith("/dev/pts")):
-            sys.exit("%s is not a TTY nor COM file!" % repr(tty_file))
-        elif not os.path.exists(tty_file):
-            sys.exit("%s TTY file does not exist!" % repr(tty_file))
-    else:  # no TTY - will run DUT in QEMU
-        if not find_executable(qemu_bin):
-            sys.exit("%s is needed but not found!" % (qemu_bin,))
+    def check_args(self, args):
+        autoptsclient.Client.check_args(self, args)
 
-    if not os.path.isfile(kernel_image):
-        sys.exit("kernel_image %s is not a file!" % repr(kernel_image))
+        if not os.path.isfile(args.kernel_image):
+            sys.exit("kernel_image %s is not a file!" % repr(args.kernel_image))
 
-    args.superguard = 60 * args.superguard
+    def init_iutctl(self, args):
+        autoprojects.iutctl.init(args.kernel_image, args.tty_file, args.board, args.rtt2pty)
 
+    def setup_project_pixits(self, ptses):
+        autoprojects.gap.set_pixits(ptses[0])
+        autoprojects.dis.set_pixits(ptses[0])
+        autoprojects.sm.set_pixits(ptses[0])
+        autoprojects.l2cap.set_pixits(ptses[0])
+        autoprojects.gatt.set_pixits(ptses)
+        autoprojects.mesh.set_pixits(ptses)
 
-def parse_args():
-    """Parses command line arguments and options"""
+    def setup_test_cases(self, ptses):
+        self.test_cases = autoprojects.gap.test_cases(ptses[0])
+        self.test_cases += autoprojects.dis.test_cases(ptses)
+        self.test_cases += autoprojects.gatt.test_cases(ptses)
+        self.test_cases += autoprojects.sm.test_cases(ptses[0])
+        self.test_cases += autoprojects.l2cap.test_cases(ptses[0])
+        self.test_cases += autoprojects.mesh.test_cases(ptses)
 
-    arg_parser = autoptsclient.CliParser("PTS automation client")
-
-    # IUT specific arguments below
-    arg_parser.add_argument("kernel_image",
-                            help="Zephyr OS kernel image to be used for "
-                            "testing. Normally a zephyr.elf file.")
-
-    arg_parser.add_argument("-t", "--tty-file",
-                            help="If TTY is specified, BTP communication "
-                            "with Zephyr OS running on hardware will "
-                            "be done over this TTY. Hence, QEMU will "
-                            "not be used.")
-
-    board_names = autoprojects.iutctl.Board.names
-    arg_parser.add_argument("-b", "--board",
-                            help="Used DUT board. This option is used to "
-                            "select DUT reset command that is run before "
-                            "each test case. If board is not specified DUT "
-                            "will not be reset. Supported boards: %s. " %
-                            (", ".join(board_names,),), choices=board_names)
-
-    arg_parser.add_argument("--rtt2pty",
-                            help="Use RTT2PTY to capture logs from device."
-                            "Requires rtt2pty tool and rtt support on IUT.",
-                            action='store_true', default=False)
-
-    arg_parser.add_argument("--recovery", action='store_true', default=False,
-                            help="Specify if autoptsserver should try to recover"
-                            " itself after exception.")
-
-    arg_parser.add_argument("--superguard", default=0, metavar='MINUTES', type=float,
-                            help="Specify amount of time in minutes, after which"
-                            " super guard will blindly trigger recovery steps.")
-
-    arg_parser.add_argument("--ykush", metavar='YKUSH_PORT', help="Specify "
-                            "ykush downstream port number, so on BTP TIMEOUT "
-                            "the iut board could be powered off and on.")
-
-    # Hidden option to save test cases data in TestCase.db
-    arg_parser.add_argument("-s", "--store", action="store_true",
-                            default=False, help=argparse.SUPPRESS)
-
-    args = arg_parser.parse_args()
-
-    check_args(args)
-
-    return args
+    def cleanup(self):
+        autoprojects.iutctl.cleanup()
 
 
 def main():
     """Main."""
 
-    # Workaround for logging error: "UnicodeEncodeError: 'charmap' codec can't
-    # encode character '\xe6' in position 138: character maps to <undefined>",
-    # which occurs under Windows with default encoding other than cp1252
-    # each time log() is called.
-    _locale._getdefaultlocale = (lambda *args: ['en_US', 'utf8'])
-
-    if have_admin_rights():  # root privileges are not needed
-        sys.exit("Please do not run this program as root.")
-
-    args = parse_args()
-
-    if args.store:
-        tc_db_table_name = "zephyr_" + str(args.board)
-    else:
-        tc_db_table_name = None
-
-    ptses = autoptsclient.init_pts(args, tc_db_table_name)
-
-    btp.init(get_iut)
-    autoprojects.iutctl.init(args.kernel_image, args.tty_file, args.board, args.rtt2pty)
-
-    stack.init_stack()
-    stack_inst = stack.get_stack()
-    stack_inst.synch_init([pts.callback_thread for pts in ptses])
-
-    # Setup project PIXITS
-    autoprojects.gap.set_pixits(ptses[0])
-    autoprojects.dis.set_pixits(ptses[0])
-    autoprojects.sm.set_pixits(ptses[0])
-    autoprojects.l2cap.set_pixits(ptses[0])
-    autoprojects.gatt.set_pixits(ptses)
-    autoprojects.mesh.set_pixits(ptses)
-
-    test_cases = autoprojects.gap.test_cases(ptses[0])
-    test_cases += autoprojects.dis.test_cases(ptses)
-    test_cases += autoprojects.gatt.test_cases(ptses)
-    test_cases += autoprojects.sm.test_cases(ptses[0])
-    test_cases += autoprojects.l2cap.test_cases(ptses[0])
-    test_cases += autoprojects.mesh.test_cases(ptses)
-
-    autoptsclient.run_test_cases(ptses, test_cases, args)
-
-    autoprojects.iutctl.cleanup()
-
-    print("\nBye!")
-    sys.stdout.flush()
-
-    for pts in ptses:
-        pts.unregister_xmlrpc_ptscallback()
-
-    # not the cleanest but the easiest way to exit the server thread
-    os._exit(0)
+    client = ZephyrClient(get_iut, "zephyr_")
+    client.start()
 
 
 if __name__ == "__main__":
-    while True:
-        try:
-            main()
-            break
-
-        # os._exit: not the cleanest but the easiest way to exit the server thread
-        except KeyboardInterrupt:  # Ctrl-C
-            os._exit(14)
-
-        # SystemExit is thrown in arg_parser.parse_args and in sys.exit
-        except SystemExit:
-            raise  # let the default handlers do the work
-
-        except Exception as exc:
-            traceback.print_exc()
-            try:
-                ptses = exc.args[1]
-                for pts in ptses:
-                    autoptsclient.recover_autoptsserver(pts)
-                time.sleep(20)
-            except:
-                traceback.print_exc()
-
-        except:
-            os._exit(16)
+    main()
