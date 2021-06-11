@@ -243,8 +243,13 @@ class GDrive(object):
         return file
 
     def cd(self, dir_=None):
+        """
+            :param dir_: file object or id of the folder
+        """
         if not dir_:
             self.cwd_id = self.basedir_id
+        elif type(dir_) is str:
+            self.cwd_id = dir_
         else:
             self.cwd_id = dir_.get('id')
 
@@ -261,7 +266,7 @@ class Drive(GDrive):
         else:
             dir_ = self.mkdir(iut)
         self.cd(dir_)
-        dir_ = self.mkdir(datetime.datetime.now().strftime("%Y_%m_%d"))
+        dir_ = self.mkdir(datetime.datetime.now().strftime("%Y_%m_%d_%H_%M"))
         self.cd(dir_)
         return "{}".format(dir_.get('webViewLink'))
 
@@ -269,6 +274,22 @@ class Drive(GDrive):
         print("Uploading {} ...".format(file))
         self.cp(file)
         print("Done")
+
+    def upload_folder(self, folder):
+        def recursive(directory):
+            with os.scandir(directory) as it:
+                for file in it:
+                    if file.is_dir():
+                        parent = self.pwd()
+                        dir_ = self.mkdir(file.name)
+                        self.cd(dir_)
+                        recursive(os.path.join(directory, file.name))
+                        self.cd(parent)
+                    else:
+                        filepath = os.path.relpath(os.path.join(directory, file.name))
+                        self.upload(filepath)
+
+        recursive(folder)
 
 
 # ****************************************************************************
@@ -389,6 +410,24 @@ def archive_recursive(dir_path):
                                     os.path.join(dir_path, os.path.pardir)))
 
     return zip_file_path
+
+
+def archive_testcases(dir_path):
+    def recursive(directory, depth):
+        depth -= 1
+        with os.scandir(directory) as it:
+            for file in it:
+                if file.is_dir():
+                    if depth > 0:
+                        recursive(os.path.join(directory, file.name), depth)
+                    else:
+                        filepath = os.path.relpath(os.path.join(directory, file.name))
+                        archive_recursive(filepath)
+                        shutil.rmtree(filepath)
+
+    depth = 3
+    recursive(dir_path, depth)
+    return dir_path
 
 
 def update_sources(repo_path, remote, branch, stash_changes=False, update_repo=True):
@@ -513,6 +552,6 @@ def cleanup():
     :return: None
     """
     try:
-        shutil.rmtree("logs")
+        pass
     except OSError:
         pass

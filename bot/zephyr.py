@@ -437,7 +437,7 @@ def main(cfg):
     report_file = bot.common.make_report_xlsx(results, summary, regressions,
                                               descriptions)
     report_txt = bot.common.make_report_txt(results, zephyr_hash["desc"])
-    logs_file = bot.common.archive_recursive("logs")
+    logs_folder = bot.common.archive_testcases("logs")
 
     end_time = time.time()
 
@@ -446,7 +446,7 @@ def main(cfg):
         url = drive.new_workdir(args['board'])
         drive.upload(report_file)
         drive.upload(report_txt)
-        drive.upload(logs_file)
+        drive.upload_folder(logs_folder)
         drive.upload("TestCase.db")
 
     if 'mail' in cfg:
