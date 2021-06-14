@@ -135,7 +135,13 @@ def send_mail(cfg, subject, body, attachments=None):
     # Attach the files if there is any
     if attachments:
         for filename in attachments:
-            mimetype = mimetypes.guess_type(filename)[0].split('/', 1)
+            file_type = mimetypes.guess_type(filename)
+            if file_type[0] is None:
+                ext = os.path.splitext(filename)[1]
+                print('MIME Error: File extension %s is unknown. '
+                      'Try to associate it with app.' % ext)
+                continue
+            mimetype = file_type[0].split('/', 1)
             attachment = MIMEBase(mimetype[0], mimetype[1])
             attachment.set_payload(open(filename, 'rb').read())
             encoders.encode_base64(attachment)
