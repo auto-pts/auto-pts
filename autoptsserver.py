@@ -45,10 +45,12 @@ import xmlrpc.client
 import xmlrpc.server
 import winutils
 import ptscontrol
+from os.path import dirname, abspath
 from config import SERVER_PORT
 from queue import Queue
 
 log = logging.debug
+PROJECT_DIR = dirname(abspath(__file__))
 
 
 class PyPTSWithXmlRpcCallback(ptscontrol.PyPTS):
@@ -251,7 +253,7 @@ class Server(threading.Thread):
 
         logging.basicConfig(format=format,
                             filename=log_filename,
-                            filemode='w',
+                            filemode='a',
                             level=logging.DEBUG)
 
         c = wmi.WMI()
@@ -319,6 +321,11 @@ if __name__ == "__main__":
     winutils.exit_if_admin()
     args = SvrArgumentParser("PTS automation server").parse_args()
     queue = Queue()
+
+    with os.scandir(PROJECT_DIR) as it:
+        for file in it:
+            if file.name.startswith('autoptsserver_') and file.name.endswith('.log'):
+                os.remove(file)
 
     superguard = SuperGuard(float(args.superguard), queue)
     if args.superguard:
