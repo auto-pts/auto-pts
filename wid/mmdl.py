@@ -104,6 +104,15 @@ def hdl_wid_13(desc):
     return True
 
 
+def hdl_wid_515(desc):
+    """
+    MMDL/SR/SCH/BV-01-C
+
+    :param desc: Please confirm the following message is correct.
+    """
+    return True
+
+
 def hdl_wid_523(desc):
     """
     MMDL/SR/LLC/BV-07-C
@@ -1396,6 +1405,380 @@ def scene_recall_unack(params):
     return scene_recall(params, False)
 
 
+def light_xyl_get(params):
+    btp.mmdl_light_xyl_get()
+    return True
+
+
+def light_xyl_set(params, ack):
+    lightness = params['xyL Lightness']
+    x_value = params['xyL x']
+    y_value = params['xyL y']
+    tt = params.get('Transition Time', None)
+    delay = params.get('Delay', None)
+    btp.mmdl_light_xyl_set(lightness, x_value, y_value, tt, delay, ack=ack)
+
+    stack = get_stack()
+    stack.mesh.expect_status_data_set('Ack', ack)
+    stack.mesh.expect_status_data_set('Status', [lightness, x_value, y_value])
+    return True
+
+
+def light_xyl_set_ack(params):
+    return light_xyl_set(params, True)
+
+
+def light_xyl_set_unack(params):
+    return light_xyl_set(params, False)
+
+
+def light_xyl_status(params):
+    lightness = params['xyL Lightness']
+    x_value = params['xyL x']
+    y_value = params['xyL y']
+
+    stack = get_stack()
+    return [lightness, x_value, y_value] == stack.mesh.recv_status_data_get('Status')
+
+
+def light_xyl_target_get(params):
+    btp.mmdl_light_xyl_target_get()
+    return True
+
+
+def light_xyl_target_status(params):
+    lightness = params['Target xyL Lightness']
+    x_value = params['Target xyL x']
+    y_value = params['Target xyL y']
+
+    stack = get_stack()
+    return [lightness, x_value, y_value] == stack.mesh.recv_status_data_get('Status')
+
+
+def light_xyl_default_get(params):
+    btp.mmdl_light_xyl_default_get()
+    return True
+
+
+def light_xyl_default_set(params, ack):
+    lightness = params['Lightness']
+    x_value = params['xyL x']
+    y_value = params['xyL y']
+
+    btp.mmdl_light_xyl_default_set(lightness, x_value, y_value, ack=ack)
+
+    stack = get_stack()
+    stack.mesh.expect_status_data_set('Ack', ack)
+    stack.mesh.expect_status_data_set('Status', [lightness, x_value, y_value])
+    return True
+
+
+def light_xyl_default_set_ack(params):
+    return light_xyl_default_set(params, True)
+
+
+def light_xyl_default_set_unack(params):
+    return light_xyl_default_set(params, False)
+
+
+def light_xyl_default_status(params):
+    lightness = params['Lightness']
+    x_value = params['xyL x']
+    y_value = params['xyL y']
+
+    stack = get_stack()
+    return [lightness, x_value, y_value] == stack.mesh.recv_status_data_get('Status')
+
+
+def light_xyl_range_get(params):
+    btp.mmdl_light_xyl_range_get()
+    return True
+
+
+def light_xyl_range_set(params, ack):
+    min_x = params['xyL x Range Min']
+    min_y = params['xyL y Range Min']
+    max_x = params['xyL x Range Max']
+    max_y = params['xyL y Range Max']
+
+    btp.mmdl_light_xyl_range_set(min_x, min_y, max_x, max_y, ack=ack)
+
+    stack = get_stack()
+    stack.mesh.expect_status_data_set('Ack', ack)
+    stack.mesh.expect_status_data_set('Status', [min_x, min_y, max_x, max_y])
+    return True
+
+
+def light_xyl_range_set_ack(params):
+    return light_xyl_range_set(params, True)
+
+
+def light_xyl_range_set_unack(params):
+    return light_xyl_range_set(params, False)
+
+
+def light_xyl_range_status(params):
+    expect_status_code = params['Status Code']
+    min_x = params['xyL x Range Min']
+    min_y = params['xyL y Range Min']
+    max_x = params['xyL x Range Max']
+    max_y = params['xyL y Range Max']
+
+    stack = get_stack()
+    return [expect_status_code, min_x, min_y, max_x, max_y] == stack.mesh.recv_status_data_get('Status')
+
+
+def light_hsl_get(params):
+    btp.mmdl_light_hsl_get()
+    return True
+
+
+def light_hsl_set(params, ack):
+    lightness = params['HSL Lightness']
+    hue = params['HSL Hue']
+    saturation = params['HSL Saturation']
+    tt = params.get('Transition Time', None)
+    delay = params.get('Delay', None)
+    btp.mmdl_light_hsl_set(lightness, hue, saturation, tt, delay, ack=ack)
+
+    stack = get_stack()
+    stack.mesh.expect_status_data_set('Ack', ack)
+    stack.mesh.expect_status_data_set('Status', [lightness, hue, saturation])
+    return True
+
+
+def light_hsl_set_ack(params):
+    return light_hsl_set(params, True)
+
+
+def light_hsl_set_unack(params):
+    return light_hsl_set(params, False)
+
+
+def light_hsl_status(params):
+    lightness = params['HSL Lightness']
+    hue = params['HSL Hue']
+    saturation = params['HSL Saturation']
+
+    stack = get_stack()
+    return [lightness, hue, saturation] == stack.mesh.recv_status_data_get('Status')
+
+
+def light_hsl_target_get(params):
+    btp.mmdl_light_hsl_target_get()
+    return True
+
+
+def light_hsl_target_status(params):
+    lightness = params['HSL Lightness']
+    hue = params['HSL Hue']
+    saturation = params['HSL Saturation']
+
+    stack = get_stack()
+    return [lightness, hue, saturation] == stack.mesh.recv_status_data_get('Status')
+
+
+def light_hsl_default_get(params):
+    btp.mmdl_light_hsl_default_get()
+    return True
+
+
+def light_hsl_default_set(params, ack):
+    lightness = params['HSL Lightness']
+    hue = params['HSL Hue']
+    saturation = params['HSL Saturation']
+    btp.mmdl_light_hsl_default_set(lightness, hue, saturation, ack=ack)
+
+    stack = get_stack()
+    stack.mesh.expect_status_data_set('Ack', ack)
+    stack.mesh.expect_status_data_set('Status', [lightness, hue, saturation])
+    return True
+
+
+def light_hsl_default_set_ack(params):
+    return light_hsl_default_set(params, True)
+
+
+def light_hsl_default_set_unack(params):
+    return light_hsl_default_set(params, False)
+
+
+def light_hsl_default_status(params):
+    lightness = params['HSL Lightness']
+    hue = params['HSL Hue']
+    saturation = params['HSL Saturation']
+
+    stack = get_stack()
+    return [lightness, hue, saturation] == stack.mesh.recv_status_data_get('Status')
+
+
+def light_hsl_range_get(params):
+    btp.mmdl_light_hsl_range_get()
+    return True
+
+
+def light_hsl_range_set(params, ack):
+    hue_min = params['Hue Range Min']
+    saturation_min = params['Saturation Range Min']
+    hue_max = params['Hue Range Max']
+    saturation_max = params['Saturation Range Max']
+    btp.mmdl_light_hsl_range_set(hue_min, saturation_min, hue_max, saturation_max, ack=ack)
+
+    stack = get_stack()
+    stack.mesh.expect_status_data_set('Ack', ack)
+    stack.mesh.expect_status_data_set('Status', [hue_min, saturation_min, hue_max, saturation_max])
+    return True
+
+
+def light_hsl_range_set_ack(params):
+    return light_hsl_range_set(params, True)
+
+
+def light_hsl_range_set_unack(params):
+    return light_hsl_range_set(params, False)
+
+
+def light_hsl_range_status(params):
+    status_code = params['Status Code']
+    hue_min = params['Hue Range Min']
+    saturation_min = params['Saturation Range Min']
+    hue_max = params['Hue Range Max']
+    saturation_max = params['Saturation Range Max']
+
+    stack = get_stack()
+    return [status_code, hue_min, saturation_min, hue_max, saturation_max] == stack.mesh.recv_status_data_get('Status')
+
+
+def light_hsl_hue_get(params):
+    btp.mmdl_light_hsl_hue_get()
+    return True
+
+
+def light_hsl_hue_set(params, ack):
+    hue = params['HSL Hue']
+    tt = params.get('Transition Time', None)
+    delay = params.get('Delay', None)
+    btp.mmdl_light_hsl_hue_set(hue, tt, delay, ack=ack)
+
+    stack = get_stack()
+    stack.mesh.expect_status_data_set('Ack', ack)
+    stack.mesh.expect_status_data_set('Status', [hue])
+    return True
+
+
+def light_hsl_hue_set_ack(params):
+    return light_hsl_hue_set(params, True)
+
+
+def light_hsl_hue_set_unack(params):
+    return light_hsl_hue_set(params, False)
+
+
+def light_hsl_saturation_get(params):
+    btp.mmdl_light_hsl_saturation_get()
+    return True
+
+
+def light_hsl_hue_status(params):
+    hue = params['Present Hue']
+
+    stack = get_stack()
+    return [hue] == stack.mesh.recv_status_data_get('Status')
+
+
+def light_hsl_saturation_set(params, ack):
+    saturation = params['HSL Saturation']
+    tt = params.get('Transition Time', None)
+    delay = params.get('Delay', None)
+    btp.mmdl_light_hsl_saturation_set(saturation, tt, delay, ack=ack)
+
+    stack = get_stack()
+    stack.mesh.expect_status_data_set('Ack', ack)
+    stack.mesh.expect_status_data_set('Status', [saturation])
+    return True
+
+
+def light_hsl_saturation_set_ack(params):
+    return light_hsl_saturation_set(params, True)
+
+
+def light_hsl_saturation_set_unack(params):
+    return light_hsl_saturation_set(params, False)
+
+
+def light_hsl_saturation_status(params):
+    saturation = params['Present Saturation']
+
+    stack = get_stack()
+    return [saturation] == stack.mesh.recv_status_data_get('Status')
+
+
+def scheduler_get(params):
+    btp.mmdl_scheduler_get()
+    return True
+
+
+def scheduler_action_get(params):
+    index = params['Index']
+
+    btp.mmdl_scheduler_action_get(index)
+    return True
+
+
+def scheduler_action_set(params, ack):
+    index = params['Index4']
+    year = params['Year']
+    month = params['Month']
+    day = params['Day']
+    hour = params['Hour']
+    minute = params['Minute']
+    second = params['Second']
+    day_of_week = params['DayOfWeek']
+    action = params['Action']
+    scene_num = params['Scene Number']
+    transition_time = params['Transition Time']
+
+    btp.mmdl_scheduler_action_set(index, year, month, day, hour, minute, second, day_of_week, action,
+                                  transition_time, scene_num, ack=ack)
+    stack = get_stack()
+    stack.mesh.expect_status_data_set('Ack', ack)
+    stack.mesh.expect_status_data_set('Status', [index, year, month, day, hour, minute, second, day_of_week, action,
+                                                 transition_time, scene_num])
+    return True
+
+
+def scheduler_action_set_ack(params):
+    return scheduler_action_set(params, True)
+
+
+def scheduler_action_set_unack(params):
+    return scheduler_action_set(params, False)
+
+
+def scheduler_status(params):
+    schedules = params['Schedules']
+
+    stack = get_stack()
+    return [schedules] == stack.mesh.recv_status_data_get('Status')
+
+
+def scheduler_action_status(params):
+    year = params['Year']
+    month = params['Month']
+    day = params['Day']
+    hour = params['Hour']
+    minute = params['Minute']
+    second = params['Second']
+    day_of_week = params['DayOfWeek']
+    action = params['Action']
+    scene_num = params['Scene Number']
+    transition_time = params['Transition Time']
+
+    stack = get_stack()
+    return [year, month, day, hour, minute, second, day_of_week, action, transition_time,
+            scene_num] == stack.mesh.recv_status_data_get('Status')
+
+
 def parse_send(params):
     opcode = params['Op Code']
     cmds = {
@@ -1551,6 +1934,48 @@ def parse_send(params):
         0x8247: scene_store_procedure_unack,
         0x8242: scene_recall_ack,
         0x8243: scene_recall_unack,
+        0x8283: light_xyl_get,
+        0x8284: light_xyl_set_ack,
+        0x8285: light_xyl_set_unack,
+        0x8286: light_xyl_status,
+        0x8287: light_xyl_target_get,
+        0x8288: light_xyl_target_status,
+        0x8289: light_xyl_default_get,
+        0x828A: light_xyl_default_status,
+        0x828D: light_xyl_default_set_ack,
+        0x828E: light_xyl_default_set_unack,
+        0x828B: light_xyl_range_get,
+        0x828C: light_xyl_range_status,
+        0x828F: light_xyl_range_set_ack,
+        0x8290: light_xyl_range_set_unack,
+        0x826D: light_hsl_get,
+        0x8276: light_hsl_set_ack,
+        0x8277: light_hsl_set_unack,
+        0x8278: light_hsl_status,
+        0x8279: light_hsl_target_get,
+        0x827A: light_hsl_target_status,
+        0x827B: light_hsl_default_get,
+        0x827C: light_hsl_default_status,
+        0x827F: light_hsl_default_set_ack,
+        0x8280: light_hsl_default_set_unack,
+        0x827D: light_hsl_range_get,
+        0x8281: light_hsl_range_set_ack,
+        0x8282: light_hsl_range_set_unack,
+        0x827E: light_hsl_range_status,
+        0x826E: light_hsl_hue_get,
+        0x826F: light_hsl_hue_set_ack,
+        0x8270: light_hsl_hue_set_unack,
+        0x8271: light_hsl_hue_status,
+        0x8272: light_hsl_saturation_get,
+        0x8273: light_hsl_saturation_set_ack,
+        0x8274: light_hsl_saturation_set_unack,
+        0x8275: light_hsl_saturation_status,
+        0x8248: scheduler_action_get,
+        0x8249: scheduler_get,
+        0x824A: scheduler_status,
+        0x5F: scheduler_action_status,
+        0x60: scheduler_action_set_ack,
+        0x61: scheduler_action_set_unack,
     }
 
     if opcode not in cmds:
