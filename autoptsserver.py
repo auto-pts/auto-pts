@@ -158,15 +158,12 @@ def delete_workspaces():
         with os.scandir(directory) as it:
             for file in it:
                 if file.is_dir() and depth > 0:
-                    recursive(os.path.join(directory, file.name), depth)
+                    recursive(file.path, depth)
                 elif file.name.startswith('temp_') and file.name.endswith('.pqw6'):
-                    filepath = directory + os.sep + file.name
-                    newfilepath = filepath + '.deleted_' + now + '.old'
-                    os.rename(filepath, newfilepath)
+                    os.remove(file)
 
     depth = 4
-    now = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
-    recursive('workspaces', depth)
+    recursive(os.path.join(PROJECT_DIR, 'workspaces'), depth)
 
 
 def recover_pts(ykush_ports=None):
