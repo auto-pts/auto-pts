@@ -1,4 +1,4 @@
-<WORKSPACE_INFORMATION NAME="zephyr-master" CREATED_WITH="Profile Tuning Suite, 8.0.1, 8" BD_ADDR="000000000000" QDID="164934">
+<WORKSPACE_INFORMATION NAME="zephyr-master" CREATED_WITH="Profile Tuning Suite, 8.0.3, 2" BD_ADDR="000000000000" QDID="164934">
   <PROJECTS_INFORMATION>
     <PROJECT_INFORMATION NAME="DIS" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
       <PICS>
@@ -1228,7 +1228,7 @@
           <Row>
             <Name>TSPC_GAP_25_4</Name>
             <Description>Authorization Procedure (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -3762,12 +3762,11 @@
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
-          <!-- Table 1: Bluetooth Core Specification v4.0 or Later -->
           <Row>
-            <Name>TSPC_MESH_1_1</Name>
-            <Description>Core Specification v4.0 or later (M)</Description>
+            <Name>TSPC_MESH_0a_3</Name>
+            <Description>Erratum 16350 (C1)</Description>
             <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <!-- Table 2: Roles -->
           <Row>
