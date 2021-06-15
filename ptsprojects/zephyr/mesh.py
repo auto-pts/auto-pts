@@ -93,6 +93,17 @@ def set_pixits(ptses):
                   "00000000000000000000000000000000")
     pts.set_pixit("MESH", "TSPX_enable_IUT_provisioner", "FALSE")
     pts.set_pixit("MESH", "TSPX_maximum_number_of_supported_subnets", "1")
+    pts.set_pixit("MESH", "TSPX_pt_addr", "0300")
+    pts.set_pixit("MESH", "TSPX_pt2_addr", "0310")
+    pts.set_pixit("MESH", "TSPX_po_addr", "0200")
+    pts.set_pixit("MESH", "TSPX_po2_addr", "0210")
+    pts.set_pixit("MESH", "TSPX_oob_certificates", "")
+    pts.set_pixit("MESH", "TSPX_number_of_intermediate_certificates_on_iut", "")
+    pts.set_pixit("MESH", "TSPX_Max_Number_Of_Paths", "1")
+    pts.set_pixit("MESH", "Max_Number_Of_Dependent_Nodes_Per_Path", "1")
+    pts.set_pixit("MESH", "TSPX_iut_model_id_publish_not_supported", "0000")
+    pts.set_pixit("MESH", "TSPX_mdf_label_uuid_for_virtual_address", "112233445566778899AABBCCDDEEFFEE")
+
 
     if len(ptses) < 2:
         return
@@ -139,6 +150,16 @@ def set_pixits(ptses):
                    "00000000000000000000000000000000")
     pts2.set_pixit("MESH", "TSPX_enable_IUT_provisioner", "FALSE")
     pts2.set_pixit("MESH", "TSPX_maximum_number_of_supported_subnets", "1")
+    pts.set_pixit("MESH", "TSPX_pt_addr", "0300")
+    pts.set_pixit("MESH", "TSPX_pt2_addr", "0310")
+    pts.set_pixit("MESH", "TSPX_po_addr", "0200")
+    pts.set_pixit("MESH", "TSPX_po2_addr", "0210")
+    pts.set_pixit("MESH", "TSPX_oob_certificates", "")
+    pts.set_pixit("MESH", "TSPX_number_of_intermediate_certificates_on_iut", "")
+    pts.set_pixit("MESH", "TSPX_Max_Number_Of_Paths", "1")
+    pts.set_pixit("MESH", "Max_Number_Of_Dependent_Nodes_Per_Path", "1")
+    pts.set_pixit("MESH", "TSPX_iut_model_id_publish_not_supported", "0000")
+    pts.set_pixit("MESH", "TSPX_mdf_label_uuid_for_virtual_address", "112233445566778899AABBCCDDEEFFEE")
 
 
 def test_cases(ptses):

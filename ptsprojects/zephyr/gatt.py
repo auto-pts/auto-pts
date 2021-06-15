@@ -126,7 +126,6 @@ def set_pixits(ptses):
     pts.set_pixit("GATT", "TSPX_time_guard", "180000")
     pts.set_pixit("GATT", "TSPX_selected_handle", "0012")
     pts.set_pixit("GATT", "TSPX_use_implicit_send", "TRUE")
-    pts.set_pixit("GATT", "TSPX_secure_simple_pairing_pass_key_confirmation", "FALSE")
     pts.set_pixit("GATT", "TSPX_iut_use_dynamic_bd_addr", "FALSE")
     pts.set_pixit("GATT", "TSPX_iut_setup_att_over_br_edr", "FALSE")
     pts.set_pixit("GATT", "TSPX_tester_database_file",
@@ -151,11 +150,10 @@ def set_pixits(ptses):
     pts2.set_pixit("GATT", "TSPX_time_guard", "180000")
     pts2.set_pixit("GATT", "TSPX_selected_handle", "0012")
     pts2.set_pixit("GATT", "TSPX_use_implicit_send", "TRUE")
-    pts2.set_pixit("GATT", "TSPX_secure_simple_pairing_pass_key_confirmation", "FALSE")
     pts2.set_pixit("GATT", "TSPX_iut_use_dynamic_bd_addr", "FALSE")
     pts2.set_pixit("GATT", "TSPX_iut_setup_att_over_br_edr", "FALSE")
     pts2.set_pixit("GATT", "TSPX_tester_database_file",
-                  "C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\GATT_Qualification_Test_Databases.xml")
+                   "C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\GATT_Qualification_Test_Databases.xml")
     pts2.set_pixit("GATT", "TSPX_iut_is_client_periphral", "TRUE")
     pts2.set_pixit("GATT", "TSPX_iut_is_server_central", "FALSE")
     pts2.set_pixit("GATT", "TSPX_mtu_size", "23")

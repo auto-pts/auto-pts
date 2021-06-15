@@ -133,6 +133,7 @@ def set_pixits(pts):
     pts.set_pixit("GAP", "TSPX_pin_code", "0000")
     pts.set_pixit("GAP", "TSPX_time_guard", "300000")
     pts.set_pixit("GAP", "TSPX_use_implicit_send", "TRUE")
+    pts.set_pixit("GAP", "TSPX_use_dynamic_pin", "FALSE")
     pts.set_pixit("GAP", "TSPX_secure_simple_pairing_pass_key_confirmation",
                   "FALSE")
     pts.set_pixit("GAP", "TSPX_using_public_device_address", "TRUE")
@@ -146,6 +147,7 @@ def set_pixits(pts):
     pts.set_pixit("GAP", "TSPX_iut_private_address_interval", "30000")
     pts.set_pixit("GAP", "TSPX_iut_privacy_enabled", "FALSE")
     pts.set_pixit("GAP", "TSPX_psm", "1001")
+    pts.set_pixit("GAP", "TSPX_psm_2", "2001")
     pts.set_pixit("GAP", "TSPX_iut_valid_connection_interval_min", "00C8")
     pts.set_pixit("GAP", "TSPX_iut_valid_connection_interval_max", "03C0")
     pts.set_pixit("GAP", "TSPX_iut_valid_connection_latency", "0006")
@@ -165,7 +167,7 @@ def set_pixits(pts):
     pts.set_pixit("GAP", "TSPX_maximum_ce_length", "0000")
     pts.set_pixit("GAP", "TSPX_conn_update_int_min", "0032")
     pts.set_pixit("GAP", "TSPX_conn_update_int_max", "0046")
-    pts.set_pixit("GAP", "TSPX_conn_update_slave_latency", "0001")
+    pts.set_pixit("GAP", "TSPX_conn_update_peripheral_latency", "0001")
     pts.set_pixit("GAP", "TSPX_conn_update_supervision_timeout", "01F4")
     pts.set_pixit("GAP", "TSPX_pairing_before_service_request", "FALSE")
     pts.set_pixit("GAP", "TSPX_iut_mandates_mitm", "FALSE")
@@ -179,7 +181,11 @@ def set_pixits(pts):
     pts.set_pixit("GAP",
                   "TSPX_iut_device_name_in_adv_packet_for_random_address", iut_device_name)
     pts.set_pixit("GAP", "TSPX_Tgap_104", "60000")
-    pts.set_pixit("GAP", "TSPX_URI", "162F2F7777772E626C7565746F6F74682E636F6D")
+    pts.set_pixit("GAP", "TSPX_URI", "000168747470733A2F2F7777772E626C7565746F6F74682E636F6D")
+    pts.set_pixit("GAP", "TSPX_periodic_advertising_data", "0201040503001801180D095054532D4741502D3036423803190000")
+    pts.set_pixit("GAP", "TSPX_Min_Encryption_Key_Size", "07")
+    pts.set_pixit("GAP", "TSPX_broadcast_code", "8ED03323D1205E2D58191BF6285C3182")
+    pts.set_pixit("GAP", "TSPX_gap_iut_role", "Peripheral")
 
 
 def test_cases(pts):
