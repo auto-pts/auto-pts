@@ -77,6 +77,7 @@ def iut_reset():
     time.sleep(5)
     zephyrctl = btp.get_iut_method()
 
+    zephyrctl.reset(True)
     zephyrctl.wait_iut_ready_event()
     btp.core_reg_svc_gap()
     btp.core_reg_svc_mesh()

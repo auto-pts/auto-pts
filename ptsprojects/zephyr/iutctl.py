@@ -149,6 +149,8 @@ class ZephyrCtl:
 
         self.btp_socket.accept()
 
+        self.reset(False)
+
     def flush_serial(self):
         log("%s.%s", self.__class__, self.flush_serial.__name__)
         # Try to read data or timeout
@@ -179,12 +181,14 @@ class ZephyrCtl:
         if self.btmon:
             self.btmon.stop()
 
-    def reset(self):
+    def reset(self, full_reset=False):
         """Restart IUT related processes and reset the IUT"""
         log("%s.%s", self.__class__, self.reset.__name__)
 
-        self.stop()
-        self.start(self.test_case)
+        if full_reset:
+            self.stop()
+            self.start(self.test_case)
+
         self.flush_serial()
 
         if not self.board:
@@ -197,8 +201,6 @@ class ZephyrCtl:
 
     def wait_iut_ready_event(self):
         """Wait until IUT sends ready event after power up"""
-        self.reset()
-
         tuple_hdr, tuple_data = self.btp_socket.read()
 
         try:

@@ -105,6 +105,7 @@ def hdl_wid_141(desc):
 def hdl_wid_143(desc):
     zephyrctl = get_iut()
 
+    zephyrctl.reset(True)
     zephyrctl.wait_iut_ready_event()
     btp.core_reg_svc_gap()
     btp.gap_read_ctrl_info()
