@@ -41,3 +41,7 @@ def hdl_wid_24(desc):
 
 def hdl_wid_17(desc):
     return btp.verify_description(desc)
+
+
+def hdl_wid_52(desc):
+    return btp.verify_description(desc)
