@@ -315,7 +315,7 @@ def hdl_wid_25(desc):
 
     pts_chrc_uuid = MMI.args[0]
     pts_chrc_handles = [int(MMI.args[1], 16), int(MMI.args[2], 16),
-                        int(MMI.args[3], 16)]
+                        int(MMI.args[3], 16), int(MMI.args[4], 16)]
 
     iut_start_handle = None
     iut_end_handle = None
