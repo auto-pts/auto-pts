@@ -45,6 +45,7 @@ class Value:
     long_1 = eight_bytes_1 * 4
     long_2 = eight_bytes_2 * 4
     long_3 = eight_bytes_2 * 7
+    long_4 = one_byte * 64
 
 
 iut_attr_db_off = 0x000b
@@ -303,6 +304,9 @@ def test_cases_server(ptses):
                               Prop.read | Prop.write,
                               Perm.read | Perm.write, UUID.VND16_3),
                      TestFunc(btp.gatts_set_val, 0, Value.long_3),
+                     TestFunc(btp.gatts_add_desc, 0,
+                              Perm.read | Perm.write, UUID.VND16_4),
+                     TestFunc(btp.gatts_set_val, 0, Value.long_4),
                      TestFunc(btp.gatts_start_server)]
 
     test_cases = [
@@ -409,10 +413,10 @@ def test_cases_server(ptses):
                   pre_conditions_1 + init_server_3,
                   generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAR/BV-07-C",
-                  pre_conditions_1 + init_server_1,
+                  pre_conditions_1 + init_server_5,
                   generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAR/BV-08-C",
-                  pre_conditions_1 + init_server_1,
+                  pre_conditions_1 + init_server_5,
                   generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAW/BV-01-C",
                   pre_conditions_1 + init_server_2,
