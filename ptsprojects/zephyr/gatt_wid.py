@@ -1587,6 +1587,18 @@ def hdl_wid_151(desc):
     return '{0:04x}'.format(1, 'x')
 
 
+def hdl_wid_152(desc):
+    # Return handle of characteristic that has fixed, known size larger than MTU-3, and does not require security.
+    # In Zephyr this can be only device name.
+    db = gatt_server_fetch_db().db
+    for i in range(1, len(db)+1):
+        if db[i].uuid == UUID.device_name:
+            return '{0:04x}'.format(db[i].value_handle, 'x')
+    # if nothing found, return correctly formatted response that will cause other response than expected and FAIL,
+    # but will prevent infinite loop of asking wid 152
+    return '{0:04x}'.format(1, 'x')
+
+
 def hdl_wid_139(desc):
     MMI.reset()
     MMI.parse_description(desc)
