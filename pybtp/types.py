@@ -102,6 +102,7 @@ class UUID:
     SCC = '2903'
     CPF = '2904'
     CAF = '2905'
+    CSF = '2B29'
     device_name = '2A00'
     appearance = '2A01'
     service_changed = '2A05'

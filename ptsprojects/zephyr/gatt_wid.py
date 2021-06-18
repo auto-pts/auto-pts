@@ -1572,6 +1572,21 @@ def hdl_wid_144(desc):
     return False
 
 
+def hdl_wid_151(desc):
+    # Return handle of characteristic that has fixed, known size, and does not require security.
+    # In Zephyr there are two options: CCC and CSF.
+    db = gatt_server_fetch_db().db
+    for i in range(1, len(db)+1):
+
+        if db[i].uuid == UUID.CSF:
+            return '{0:04x}'.format(db[i].value_handle, 'x')
+        elif db[i].uuid == UUID.CCC:
+            return '{0:04x}'.format(db[i].handle, 'x')
+    # if nothing found, return correctly formatted response that will cause other response than expected and FAIL,
+    # but will prevent infinite loop of asking wid 151
+    return '{0:04x}'.format(1, 'x')
+
+
 def hdl_wid_139(desc):
     MMI.reset()
     MMI.parse_description(desc)
