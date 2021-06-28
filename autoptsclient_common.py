@@ -1221,7 +1221,7 @@ class Client:
             board_power(args.ykush, True)
             time.sleep(1)
 
-        if 'tty_file' in args:
+        if 'tty_file' in args and args.tty_file:
             tty_file = args.tty_file
 
             if tty_file.startswith("COM"):
