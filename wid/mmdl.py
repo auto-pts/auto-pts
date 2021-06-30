@@ -2028,6 +2028,9 @@ def hdl_wid_663(desc):
     iut_reset()
     return True
 
+def hdl_wid_515(desc):
+
+    return True
 
 def hdl_wid_664(desc):
     """
