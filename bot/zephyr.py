@@ -24,6 +24,7 @@ import time
 import datetime
 import collections
 import serial
+from argparse import Namespace
 
 import autoptsclient_common as autoptsclient
 import ptsprojects.zephyr as autoprojects
@@ -307,7 +308,9 @@ def run_tests(args, iut_config, tty):
         flush_serial(tty)
         time.sleep(10)
 
-        autoprojects.iutctl.init(args["kernel_image"], tty, args["board"])
+        autoprojects.iutctl.init(Namespace(kernel_image=args["kernel_image"],
+                                           tty_file=tty, board=args["board"],
+                                           hci=None, rtt2pty=None))
 
         # Setup project PIXITS
         autoprojects.dis.set_pixits(ptses[0])
