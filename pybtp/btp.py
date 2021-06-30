@@ -5659,6 +5659,7 @@ def event_handler(hdr, data):
     logging.error("Unhandled event! svc_id %s op %s", hdr.svc_id, hdr.op)
     return False
 
+
 def get_iut_method():
     return get_iut()
 

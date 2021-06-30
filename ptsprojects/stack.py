@@ -321,14 +321,14 @@ class Mesh:
         self.expect_status_data = Property({
             "Ack": True,
             'Status': [],
-            'Remaining Time': None,
+            'Remaining Time': 0,
         })
 
         # MMDL received status data
         self.recv_status_data = Property({
             "Ack": True,
             'Status': [],
-            'Remaining Time': None,
+            'Remaining Time': 0,
         })
 
     def recv_status_data_set(self, key, data):
