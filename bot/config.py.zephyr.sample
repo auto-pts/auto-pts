@@ -162,11 +162,11 @@ z['iut_config'] = {
 
     "enforce_mitm.conf": {
         "overlay": {'CONFIG_BT_SMP_ENFORCE_MITM': 'y'},
-        "test_cases": ['SM/SLA/PKE/BV-05-C',
-                       'SM/SLA/SCPK/BI-04-C',
-                       'SM/MAS/OOB/BI-01-C',
-                       'SM/SLA/OOB/BV-04-C',
-                       'SM/SLA/OOB/BI-02-C',
+        "test_cases": ['SM/PER/PKE/BV-05-C',
+                       'SM/PER/SCPK/BI-04-C',
+                       'SM/CEN/OOB/BI-01-C',
+                       'SM/PER/OOB/BV-04-C',
+                       'SM/PER/OOB/BI-02-C',
                        'GAP/SEC/AUT/BV-11-C',
                        'GAP/SEC/AUT/BV-12-C',
                        'GAP/SEC/AUT/BV-13-C'
@@ -245,11 +245,11 @@ z['iut_config'] = {
                        'GAP/BROB/BCST/BV-04-C',
                        'GAP/BROB/OBSV/BV-06-C',
                        'GAP/DISC/RPA/BV-01-C',
-                       'SM/MAS/KDU/BV-05-C',
-                       'SM/MAS/KDU/BV-10-C',
-                       'SM/MAS/KDU/BV-11-C',
-                       'SM/SLA/KDU/BV-02-C',
-                       'SM/SLA/KDU/BV-08-C',
+                       'SM/CEN/KDU/BV-05-C',
+                       'SM/CEN/KDU/BV-10-C',
+                       'SM/CEN/KDU/BV-11-C',
+                       'SM/PER/KDU/BV-02-C',
+                       'SM/PER/KDU/BV-08-C',
                        ]
     },
 
