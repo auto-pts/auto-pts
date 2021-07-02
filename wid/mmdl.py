@@ -1421,6 +1421,13 @@ def light_xyl_set(params, ack):
     stack = get_stack()
     stack.mesh.expect_status_data_set('Ack', ack)
     stack.mesh.expect_status_data_set('Status', [lightness, x_value, y_value])
+
+    remaining_time = stack.mesh.recv_status_data_get('Remaining Time')
+    if remaining_time:
+        stack.mesh.expect_status_data_set(
+            'Status', stack.mesh.recv_status_data_get('Status'))
+        stack.mesh.expect_status_data_set(
+            'Remaining Time', remaining_time)
     return True
 
 
@@ -1544,6 +1551,13 @@ def light_hsl_set(params, ack):
     stack = get_stack()
     stack.mesh.expect_status_data_set('Ack', ack)
     stack.mesh.expect_status_data_set('Status', [lightness, hue, saturation])
+
+    remaining_time = stack.mesh.recv_status_data_get('Remaining Time')
+    if remaining_time:
+        stack.mesh.expect_status_data_set(
+            'Status', stack.mesh.recv_status_data_get('Status'))
+        stack.mesh.expect_status_data_set(
+            'Remaining Time', remaining_time)
     return True
 
 
