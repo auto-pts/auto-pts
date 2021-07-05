@@ -30,8 +30,8 @@
 
 import argparse
 import copy
-import datetime
 import os
+import shutil
 import subprocess
 import threading
 import time
@@ -140,6 +140,14 @@ class SvrArgumentParser(argparse.ArgumentParser):
         args = super().parse_args()
         self.check_args(args)
         return args
+
+
+def get_workspace(workspace):
+    for root, dirs, files in os.walk(os.path.join(PROJECT_DIR, 'workspaces'),
+                                     topdown=True):
+        for name in dirs:
+            if name == workspace:
+                return os.path.join(root, name)
 
 
 def kill_all_processes(name):
@@ -265,6 +273,9 @@ class Server(threading.Thread):
 
         self.server = xmlrpc.server.SimpleXMLRPCServer(("", args.srv_port), allow_none=True)
         self.server.register_function(self.request_recovery, 'request_recovery')
+        self.server.register_function(self.list_workspace_tree, 'list_workspace_tree')
+        self.server.register_function(self.copy_file, 'copy_file')
+        self.server.register_function(self.delete_file, 'delete_file')
         self.server.register_instance(self.pts)
         self.server.register_introspection_functions()
         self.server.serve_forever()
@@ -290,6 +301,34 @@ class Server(threading.Thread):
             traceback.print_exc()
         if self.queue:
             self.queue.put(Exception(msg))
+
+    def list_workspace_tree(self, workspace_dir):
+        self.pts.last_restart_time = time.time()
+        logs_root = get_workspace(workspace_dir)
+        list = []
+        for root, dirs, files in os.walk(logs_root,
+                                         topdown=False):
+            for name in files:
+                list.append(os.path.join(root, name))
+
+            list.append(root)
+
+        return list
+
+    def copy_file(self, file_path):
+        self.pts.last_restart_time = time.time()
+        file_bin = None
+        if os.path.isfile(file_path):
+            with open(file_path, 'rb') as handle:
+                file_bin = xmlrpc.client.Binary(handle.read())
+        return file_bin
+
+    def delete_file(self, file_path):
+        self.pts.last_restart_time = time.time()
+        if os.path.isfile(file_path):
+            os.remove(file_path)
+        elif os.path.isdir(file_path):
+            shutil.rmtree(file_path, ignore_errors=True)
 
 
 def multi_main(args, queue, superguard):
