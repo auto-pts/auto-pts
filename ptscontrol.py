@@ -256,7 +256,7 @@ class PyPTS:
         self._recov_in_progress = False
 
         self._temp_workspace_path = None
-        self.last_restart_time = None
+        self.last_start_time = time.time()
 
         # This is done to have valid _pts in case client does not restart_pts
         # and uses other methods. Normally though, the client should
@@ -385,8 +385,6 @@ class PyPTS:
         """
 
         log("%s", self.restart_pts.__name__)
-
-        self.last_restart_time = time.time()
 
         # Startup of ptscontrol doesn't have PTS pid yet set - no pts running
         if self._pts_proc:
@@ -607,6 +605,8 @@ class PyPTS:
 
         log("Starting %s %s %s", self.run_test_case.__name__, project_name,
             test_case_name)
+
+        self.last_start_time = time.time()
 
         self._pts_logger.set_test_case_name(test_case_name)
 
