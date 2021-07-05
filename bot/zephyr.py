@@ -63,41 +63,6 @@ def _validate_pair(ob):
     return True
 
 
-def source_zephyr_env(zephyr_wd):
-    """Sets the project environment variables
-    :param zephyr_wd: Zephyr source path
-    :return: environment variables set
-    """
-    logging.debug("{}: {}".format(source_zephyr_env.__name__, zephyr_wd))
-
-    if sys.platform == 'win32':
-        # zephyr-env.cmd prints nothing, so env would be empty {}
-        return None
-
-    cmd = ['source', './zephyr-env.sh', '&&', 'env']
-    cmd = subprocess.list2cmdline(cmd)
-
-    p = subprocess.Popen(cmd, cwd=zephyr_wd, shell=True,
-                         stdout=subprocess.PIPE, executable='/bin/bash')
-
-    output = p.stdout.readlines()
-    lines = []
-    for line in output:
-        lines.append(line.decode())
-
-    # XXX: Doesn't parse functions for now
-    filtered_lines = filter(lambda x: (not x.startswith(('BASH_FUNC',
-                                                         ' ', '}'))), lines)
-    pairs = map(lambda l: l.rstrip().split('=', 1),
-                filtered_lines)
-    valid_pairs = filter(_validate_pair, pairs)
-
-    env = dict(valid_pairs)
-    p.communicate()
-
-    return env
-
-
 def build_and_flash(zephyr_wd, board, tty, conf_file=None):
     """Build and flash Zephyr binary
     :param zephyr_wd: Zephyr source path
@@ -109,9 +74,6 @@ def build_and_flash(zephyr_wd, board, tty, conf_file=None):
                                          board, conf_file))
     tester_dir = os.path.join(zephyr_wd, "tests", "bluetooth", "tester")
 
-    # Set Zephyr project env variables
-    env = source_zephyr_env(zephyr_wd)
-
     check_call('rm -rf build/'.split(), cwd=tester_dir)
 
     cmd = ['west',  'build', '-p', 'auto', '-b', board]
@@ -122,9 +84,9 @@ def build_and_flash(zephyr_wd, board, tty, conf_file=None):
         cmd = subprocess.list2cmdline(cmd)
         cmd = ['bash.exe', '-c', '-i', cmd]  # bash.exe == wsl
 
-    check_call(cmd, env=env, cwd=tester_dir)
-    check_call(['west', 'flash', '--skip-rebuild', '--board-dir', tty],
-               env=env, cwd=tester_dir)
+    check_call(cmd, cwd=tester_dir)
+    check_call(['west', 'flash', '--skip-rebuild',
+                '--board-dir', tty], cwd=tester_dir)
 
 
 def flush_serial(tty):
