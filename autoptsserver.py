@@ -205,7 +205,7 @@ class SuperGuard(threading.Thread):
         while not self.end:
             idle_num = 0
             for srv in self.servers:
-                if time.time() - srv.last_restart() > self.timeout:
+                if time.time() - srv.last_start() > self.timeout:
                     idle_num += 1
 
             if idle_num == len(self.servers) and idle_num != 0:
@@ -234,9 +234,9 @@ class Server(threading.Thread):
         self.args = args
         self.pts = None
 
-    def last_restart(self):
+    def last_start(self):
         if self.pts:
-            return self.pts.last_restart_time
+            return self.pts.last_start_time
         return time.time()
 
     def main(self, args):
