@@ -17,7 +17,6 @@
 
 import logging
 import os
-import re
 import subprocess
 import sys
 import time
@@ -31,7 +30,6 @@ import ptsprojects.zephyr as autoprojects
 import ptsprojects.stack as stack
 from pybtp import btp
 from ptsprojects.zephyr.iutctl import get_iut
-
 import bot.common
 
 
@@ -191,8 +189,8 @@ class PtsInitArgs(object):
         self.stress_test = args.get('stress_test', False)
         self.test_cases = []
         self.excluded = []
-        self.srv_port = args["srv_port"]
-        self.cli_port = args["cli_port"]
+        self.srv_port = args.get('srv_port', [65000])
+        self.cli_port = args.get('cli_port', [65001])
         self.ip_addr = args.get('server_ip', ['127.0.0.1'] * len(self.srv_port))
         self.local_addr = args.get('local_ip', ['127.0.0.1'] * len(self.cli_port))
         self.ykush = args.get('ykush', None)
@@ -404,6 +402,7 @@ def main(cfg):
         drive.upload(report_txt)
         drive.upload_folder(logs_folder)
         drive.upload("TestCase.db")
+        bot.common.upload_bpv_logs(drive, PtsInitArgs(args))
 
     if 'mail' in cfg:
         print("Sending email ...")

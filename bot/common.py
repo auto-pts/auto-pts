@@ -36,6 +36,9 @@ from apiclient import discovery, errors
 from apiclient.http import MediaFileUpload
 from httplib2 import Http
 from oauth2client import file, client, tools
+from xmlrpc.client import ServerProxy
+from os.path import dirname, abspath
+from pathlib import Path
 
 SCOPES = 'https://www.googleapis.com/auth/drive'
 CLIENT_SECRET_FILE = 'client_secret.json'
@@ -44,6 +47,7 @@ REPORT_TXT = "report.txt"
 COMMASPACE = ', '
 
 devices_in_use = []
+PROJECT_DIR = dirname(dirname(abspath(__file__)))
 
 # ****************************************************************************
 # Mail
@@ -281,10 +285,14 @@ class Drive(GDrive):
         self.cp(file)
         print("Done")
 
-    def upload_folder(self, folder):
+    def upload_folder(self, folder, excluded=None):
         def recursive(directory):
             with os.scandir(directory) as it:
                 for file in it:
+                    if excluded and (file.name in excluded or
+                                     os.path.splitext(file.name)[1] in excluded):
+                        continue
+
                     if file.is_dir():
                         parent = self.pwd()
                         dir_ = self.mkdir(file.name)
@@ -418,7 +426,7 @@ def archive_recursive(dir_path):
     return zip_file_path
 
 
-def archive_testcases(dir_path):
+def archive_testcases(dir_path, depth=3):
     def recursive(directory, depth):
         depth -= 1
         with os.scandir(directory) as it:
@@ -431,9 +439,83 @@ def archive_testcases(dir_path):
                         archive_recursive(filepath)
                         shutil.rmtree(filepath)
 
-    depth = 3
     recursive(dir_path, depth)
     return dir_path
+
+
+def upload_bpv_logs(gdrive, args):
+    """Copy Bluetooth Protocol Viewer logs from auto-pts servers.
+    :param gdrive: to upload the logs
+    :param server_addr: list of servers addresses
+    :param server_port: list of servers ports
+    """
+    excluded = ['SIGDatabase', 'logfiles', '.pqw6', '.xml', '.txt']
+    logs_folder = 'tmp/' + args.workspace
+
+    shutil.rmtree(logs_folder, ignore_errors=True)
+
+    if sys.platform == 'win32':
+        workspace_path = get_workspace(args.workspace)
+        shutil.copytree(workspace_path, logs_folder)
+        archive_testcases(logs_folder, depth=3)
+        gdrive.upload_folder(logs_folder, excluded=excluded)
+        delete_bpv_logs(workspace_path)
+        return
+
+    server_addr = args.ip_addr
+    server_port = args.srv_port
+
+    for i in range(len(server_addr)):
+        if i != 0 and server_addr[i] in server_addr[0:i]:
+            continue
+
+        with ServerProxy("http://{}:{}/".format(server_addr[i], server_port[i]),
+                         allow_none=True,) as proxy:
+            list = proxy.list_workspace_tree(args.workspace)
+            if len(list) == 0:
+                continue
+
+            workspace_root = list.pop()
+            while len(list) > 0:
+                file_path = list.pop(0)
+                try:
+                    file_bin = proxy.copy_file(file_path)
+
+                    if not os.path.splitext(file_path)[1] in ['.pts', '.pqw6']:
+                        proxy.delete_file(file_path)
+
+                    if file_bin is None:
+                        continue
+
+                    file_path = '/'.join([logs_folder,
+                                          file_path[len(workspace_root)+1:]
+                                         .replace('\\', '/')])
+                    Path(os.path.dirname(file_path)).mkdir(parents=True,
+                                                           exist_ok=True)
+
+                    with open(file_path, 'wb') as handle:
+                        handle.write(file_bin.data)
+                except:
+                    pass
+
+    if os.path.exists(logs_folder):
+        archive_testcases(logs_folder, depth=3)
+        gdrive.upload_folder(logs_folder, excluded=excluded)
+
+
+def get_workspace(workspace):
+    for root, dirs, files in os.walk(os.path.join(PROJECT_DIR, 'workspaces'),
+                                     topdown=True):
+        for name in dirs:
+            if name == workspace:
+                return os.path.join(root, name)
+
+
+def delete_bpv_logs(workspace_path):
+    with os.scandir(workspace_path) as it:
+        for file in it:
+            if file.is_dir():
+                shutil.rmtree(file.path, ignore_errors=True)
 
 
 def update_sources(repo_path, remote, branch, stash_changes=False, update_repo=True):
