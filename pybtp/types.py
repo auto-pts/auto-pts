@@ -90,7 +90,7 @@ class AdDuration:
     forever = 0xFFFFFFFF
 
 class UriScheme:
-    https = b'17'
+    https = b'\x17'
 
 
 class UUID:
