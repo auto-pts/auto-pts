@@ -181,7 +181,7 @@ def set_pixits(pts):
     pts.set_pixit("GAP",
                   "TSPX_iut_device_name_in_adv_packet_for_random_address", iut_device_name)
     pts.set_pixit("GAP", "TSPX_Tgap_104", "60000")
-    pts.set_pixit("GAP", "TSPX_URI", "000168747470733A2F2F7777772E626C7565746F6F74682E636F6D")
+    pts.set_pixit("GAP", "TSPX_URI", "176769746875622e636f6d2f696e74656c2f6175746f2d707473")
     pts.set_pixit("GAP", "TSPX_periodic_advertising_data", "0201040503001801180D095054532D4741502D3036423803190000")
     pts.set_pixit("GAP", "TSPX_Min_Encryption_Key_Size", "07")
     pts.set_pixit("GAP", "TSPX_broadcast_code", "8ED03323D1205E2D58191BF6285C3182")
