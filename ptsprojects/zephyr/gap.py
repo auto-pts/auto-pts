@@ -33,6 +33,7 @@ from pybtp import btp
 from pybtp.types import Addr, IOCap, AdType, AdFlags, Prop, Perm
 import binascii
 from . import gatt
+from autoptsclient_common import get_unique_name
 from ptsprojects.stack import get_stack
 from .gap_wid import gap_wid_hdl, gap_wid_hdl_mode1_lvl2, gap_wid_hdl_mode1_lvl4, gap_wid_hdl_failed_read
 
@@ -74,30 +75,12 @@ init_gatt_db = [TestFunc(btp.core_reg_svc_gatt),
                 TestFunc(btp.gatts_set_val, 0, '04'),
                 TestFunc(btp.gatts_start_server)]
 
-iut_device_name = 'Tester'.encode('utf-8')
+
 iut_manufacturer_data = 'ABCD'
 iut_appearance = '1111'
 iut_svc_data = '1111'
 iut_flags = '11'
 iut_svcs = '1111'
-iut_attr_db_off = 0x000b
-
-
-class AdData:
-    ad_manuf = (AdType.manufacturer_data, 'ABCD')
-    ad_name_sh = (AdType.name_short, binascii.hexlify(iut_device_name))
-
-
-# Advertising data
-ad = [(AdType.uuid16_some, '1111'),
-      (AdType.gap_appearance, '1111'),
-      (AdType.name_short, binascii.hexlify('Tester'.encode('utf-8'))),
-      (AdType.manufacturer_data, '11111111'),
-      (AdType.uuid16_svc_data, '111111')]
-
-
-def __get_attr_u16_hdl_str(offset):
-    return '{0:04x}'.format(iut_attr_db_off + offset, 'x')
 
 
 def set_pixits(ptses):
@@ -111,12 +94,15 @@ def set_pixits(ptses):
 
     pts = ptses[0]
 
+    global iut_device_name
+    iut_device_name = get_unique_name(pts)
+
     ad_str_flags = str(AdType.flags).zfill(2) + \
         str(AdFlags.br_edr_not_supp).zfill(2)
     ad_str_flags_len = str(len(ad_str_flags) // 2).zfill(2)
     ad_str_name_short = str(AdType.name_short).zfill(2) + \
         bytes.hex(iut_device_name)
-    ad_str_name_short_len = str(len(ad_str_name_short) // 2).zfill(2)
+    ad_str_name_short_len = format((len(ad_str_name_short) // 2), 'x').zfill(2)
     ad_pixit = ad_str_flags_len + ad_str_flags + ad_str_name_short_len + \
         ad_str_name_short
 

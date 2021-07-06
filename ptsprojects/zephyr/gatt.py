@@ -30,6 +30,7 @@ except ImportError:  # running this module as script
 from pybtp import btp
 from pybtp.types import UUID, Addr, IOCap, Prop, Perm
 import logging
+from autoptsclient_common import get_unique_name
 from ptsprojects.stack import get_stack
 from ptsprojects.zephyr.gatt_wid import gatt_wid_hdl
 from ptsprojects.zephyr.gattc_wid import gattc_wid_hdl
@@ -119,6 +120,9 @@ def set_pixits(ptses):
 
     pts = ptses[0]
 
+    global iut_device_name
+    iut_device_name = get_unique_name(pts)
+
     pts.set_pixit("GATT", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
     pts.set_pixit("GATT", "TSPX_iut_device_name_in_adv_packet_for_random_address", "")
     pts.set_pixit("GATT", "TSPX_security_enabled", "FALSE")
@@ -172,6 +176,7 @@ def test_cases_server(ptses):
     stack = get_stack()
 
     pre_conditions = [TestFunc(btp.core_reg_svc_gap),
+                      TestFunc(stack.gap_init, iut_device_name),
                       TestFunc(btp.gap_read_ctrl_info),
                       TestFunc(lambda: pts.update_pixit_param(
                           "GATT", "TSPX_bd_addr_iut",
@@ -185,6 +190,7 @@ def test_cases_server(ptses):
                       TestFunc(btp.gap_set_gendiscov)]
 
     pre_conditions_1 = [TestFunc(btp.core_reg_svc_gap),
+                        TestFunc(stack.gap_init, iut_device_name),
                         TestFunc(btp.core_reg_svc_gatt),
                         TestFunc(btp.gap_read_ctrl_info),
                         TestFunc(lambda: pts.update_pixit_param(
@@ -708,7 +714,7 @@ def test_cases(ptses):
 
     stack = get_stack()
 
-    stack.gap_init()
+    stack.gap_init(iut_device_name)
 
     test_cases = test_cases_client(ptses[0])
     test_cases += test_cases_server(ptses)

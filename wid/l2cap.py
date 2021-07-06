@@ -58,9 +58,10 @@ def hdl_wid_15(desc):
     :param desc: Action: Place the IUT in connectable mode.
     :return:
     """
+    stack = btp.get_stack()
     btp.gap_set_conn()
     btp.gap_set_gendiscov()
-    btp.gap_adv_ind_on()
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
 
     return True
 
@@ -278,9 +279,10 @@ def hdl_wid_56(desc):
     :param desc: Action: Place the IUT in connectable mode.
     :return:
     """
+    stack = btp.get_stack()
     btp.gap_set_conn()
     btp.gap_set_gendiscov()
-    btp.gap_adv_ind_on()
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
 
     return True
 
@@ -533,9 +535,10 @@ def hdl_wid_262(desc):
 
 
 def hdl_wid_20001(desc):
+    stack = btp.get_stack()
     btp.gap_set_conn()
     btp.gap_set_gendiscov()
-    btp.gap_adv_ind_on()
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
     return True
 
 

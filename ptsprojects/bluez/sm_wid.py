@@ -17,6 +17,7 @@ import logging
 import sys
 from pybtp import btp
 from wid.sm import sm_wid_hdl as gen_wid_hdl
+from ptsprojects.stack import get_stack
 
 log = logging.debug
 
@@ -56,6 +57,7 @@ def hdl_wid_109(desc):
 
 
 def hdl_wid_115(desc):
+    stack = get_stack()
     btp.gap_set_conn()
-    btp.gap_adv_ind_on()
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
     return True

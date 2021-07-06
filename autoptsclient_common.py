@@ -321,6 +321,17 @@ def get_my_ip_address():
     return my_ip_address
 
 
+def get_unique_name(pts):
+    name = 'Tester'
+
+    # get address of PTS dongle IUT is connecting to
+    pts_addr = pts.q_bd_addr.replace(":", "")
+    #use last 6 characters of PTS dongle adress
+    name += "_" + pts_addr[6:12]
+
+    return name.encode('utf-8')
+
+
 get_my_ip_address.cached_address = None
 
 

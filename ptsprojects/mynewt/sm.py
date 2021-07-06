@@ -30,6 +30,7 @@ except ImportError:  # running this module as script
 
 from pybtp import btp
 from pybtp.types import Addr, IOCap
+from autoptsclient_common import get_unique_name
 from ptsprojects.stack import get_stack
 from .sm_wid import sm_wid_hdl
 
@@ -44,6 +45,9 @@ def set_pixits(ptses):
     ptses -- list of PyPTS instances"""
 
     pts = ptses[0]
+
+    global iut_device_name
+    iut_device_name = get_unique_name(pts)
 
     pts.set_pixit("SM", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
     pts.set_pixit("SM", "TSPX_iut_device_name_in_adv_packet_for_random_address", "")
@@ -71,10 +75,14 @@ def test_cases(ptses):
     stack.gap_init()
 
     pre_conditions = [TestFunc(btp.core_reg_svc_gap),
+                      TestFunc(stack.gap_init, iut_device_name),
                       TestFunc(btp.gap_read_ctrl_info),
                       TestFunc(lambda: pts.update_pixit_param(
                           "SM", "TSPX_bd_addr_iut",
                           stack.gap.iut_addr_get_str())),
+                      TestFunc(lambda: pts.update_pixit_param(
+                          "SM", "TSPX_iut_device_name_in_adv_packet_for_random_address",
+                          iut_device_name)),
                       TestFunc(lambda: pts.update_pixit_param(
                           "SM", "TSPX_OOB_Data", stack.gap.oob_legacy)),
                       TestFunc(lambda: pts.update_pixit_param(
