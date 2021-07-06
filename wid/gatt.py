@@ -106,9 +106,10 @@ COMPARED_VALUE = []
 
 # wid handlers section begin
 def hdl_wid_1(desc):
+    stack = get_stack()
     btp.gap_set_conn()
     btp.gap_set_gendiscov()
-    btp.gap_adv_ind_on()
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
     return True
 
 

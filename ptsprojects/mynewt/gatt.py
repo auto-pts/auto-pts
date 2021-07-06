@@ -33,6 +33,7 @@ from pybtp.types import UUID, Addr, IOCap, Prop, Perm
 from time import sleep
 import logging, coloredlogs
 from ptsprojects.stack import get_stack
+from autoptsclient_common import get_unique_name
 from ptsprojects.mynewt.gatt_wid import gatt_wid_hdl
 from ptsprojects.mynewt.gattc_wid import gattc_wid_hdl
 import struct
@@ -139,6 +140,9 @@ def set_pixits(ptses):
     ptses -- list of PyPTS instances"""
 
     pts = ptses[0]
+
+    global iut_device_name
+    iut_device_name = get_unique_name(pts)
 
     pts.set_pixit("GATT", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
     pts.set_pixit("GATT", "TSPX_iut_device_name_in_adv_packet_for_random_address", "")
@@ -289,7 +293,7 @@ def test_cases(ptses):
 
     stack = get_stack()
 
-    stack.gap_init()
+    stack.gap_init(iut_device_name)
 
     pts.update_pixit_param("GATT", "TSPX_delete_link_key", "TRUE")
     pts.update_pixit_param("GATT", "TSPX_delete_ltk", "TRUE")

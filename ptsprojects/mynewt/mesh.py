@@ -40,6 +40,7 @@ from uuid import uuid4
 from binascii import hexlify
 import random
 from time import sleep
+from autoptsclient_common import get_unique_name
 
 
 device_uuid = hexlify(uuid4().bytes)
@@ -56,6 +57,9 @@ def set_pixits(ptses):
     ptses -- list of PyPTS instances"""
 
     pts = ptses[0]
+
+    global iut_device_name
+    iut_device_name = get_unique_name(pts)
 
     pts.set_pixit("MESH", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
     pts.set_pixit("MESH", "TSPX_bd_addr_additional_whitelist", "")
@@ -166,7 +170,7 @@ def test_cases(ptses):
     rand_in_actions = random.choice(in_actions) if in_size else 0
     crpl_size = 10  # Maximum capacity of the replay protection list
 
-    stack.gap_init()
+    stack.gap_init(iut_device_name)
     stack.mesh_init(device_uuid, oob, out_size, rand_out_actions, in_size,
                     rand_in_actions, crpl_size)
 
