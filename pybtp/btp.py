@@ -3090,30 +3090,6 @@ def gattc_read_multiple_rsp(store_val=False, store_rsp=False):
             VERIFY_VALUES.append((binascii.hexlify(values[0])).upper())
 
 
-def gattc_read_multiple_rsp(store_val=False, store_rsp=False):
-    iutctl = get_iut()
-
-    tuple_hdr, tuple_data = iutctl.btp_socket.read()
-    logging.debug("%s received %r %r", gattc_read_multiple_rsp.__name__,
-                  tuple_hdr, tuple_data)
-
-    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
-                  defs.GATT_READ_MULTIPLE)
-
-    rsp, values = gatt_dec_read_rsp(tuple_data[0])
-    logging.debug("%s %r %r", gattc_read_multiple_rsp.__name__, rsp, values)
-
-    if store_rsp or store_val:
-        global VERIFY_VALUES
-        VERIFY_VALUES = []
-
-        if store_rsp:
-            VERIFY_VALUES.append(att_rsp_str[rsp])
-
-        if store_val:
-            VERIFY_VALUES.append((binascii.hexlify(values[0])).upper())
-
-
 def gattc_write_rsp(store_rsp=False, timeout=None):
     iutctl = get_iut()
 
