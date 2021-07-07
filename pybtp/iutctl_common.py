@@ -135,9 +135,6 @@ class BTPSocket(object):
             self.sock.close()
         except:
             pass
-        # TODO We should wait for the [FIN, ACK] packet to arrive or
-        # next connection could fail(on Windows race occurred)
-        time.sleep(2)
         self.sock = None
         self.conn = None
         self.addr = None
