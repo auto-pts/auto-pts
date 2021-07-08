@@ -156,7 +156,7 @@ def hdl_wid_41(desc):
     """
     stack = get_stack()
 
-    btp.l2cap_conn(None, None, stack.l2cap.psm)
+    btp.l2cap_conn(None, None, stack.l2cap.psm, 256)
 
     return True
 
