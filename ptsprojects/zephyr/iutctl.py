@@ -13,7 +13,6 @@
 # more details.
 #
 
-import re
 import socket
 import subprocess
 import os
@@ -25,7 +24,7 @@ import serial
 
 from pybtp import defs
 from pybtp.types import BTPError
-from pybtp.iutctl_common import BTPWorker, BTP_ADDRESS, RTT2PTY, BTMON
+from pybtp.iutctl_common import BTPWorker, BTP_ADDRESS, BTMON, RTT, get_debugger_snr
 
 log = logging.debug
 ZEPHYR = None
@@ -67,7 +66,7 @@ class ZephyrCtl:
         self.native = None
 
         if self.tty_file and args.board_name:  # DUT is a hardware board, not QEMU
-            self.get_debugger_snr()
+            self.debugger_snr = get_debugger_snr(self.tty_file)
             self.board = Board(args.board_name, args.kernel_image, self)
         else:  # DUT is QEMU or a board that won't be reset
             self.board = None
@@ -77,7 +76,6 @@ class ZephyrCtl:
         self.socat_process = None
         self.btp_socket = None
         self.test_case = None
-        self.rtt2pty_process = None
         self.iut_log_file = None
 
         if self.debugger_snr:
@@ -85,30 +83,8 @@ class ZephyrCtl:
         else:
             self.btp_address = BTP_ADDRESS
 
-        if args.rtt2pty:
-            self.rtt2pty = RTT2PTY()
-            self.btmon = BTMON()
-        else:
-            self.rtt2pty = None
-            self.btmon = None
-
-    def get_debugger_snr(self):
-        debuggers = subprocess.Popen('nrfjprog --com',
-                                     shell=True,
-                                     stdout=subprocess.PIPE
-                                     ).stdout.read().decode()
-
-        if sys.platform == "win32":
-            com = "COM" + str(int(self.tty_file["/dev/ttyS".__len__():]) + 1)
-            reg = r"[0-9]+(?=\s+" + com + ".+)"
-        else:
-            reg = r"[0-9]+(?=\s+" + self.tty_file + ".+)"
-
-        results = re.findall(reg, debuggers)
-        if not results:
-            sys.exit("No debuggers associated with the device found")
-
-        self.debugger_snr = results[0]
+        self.rtt_logger = RTT() if args.rtt_log else None
+        self.btmon = BTMON() if args.btmon else None
 
     def start(self, test_case):
         """Starts the Zephyr OS"""
@@ -183,14 +159,6 @@ class ZephyrCtl:
         except serial.SerialException:
             pass
 
-    def rtt2pty_start(self):
-        if self.rtt2pty:
-            self.rtt2pty.start(os.path.join(self.test_case.log_dir, 'iut-zephyr.log'), self.debugger_snr)
-
-    def rtt2pty_stop(self):
-        if self.rtt2pty:
-            self.rtt2pty.stop()
-
     def btmon_start(self):
         if self.btmon:
             log_file = os.path.join(self.test_case.log_dir,
@@ -201,6 +169,17 @@ class ZephyrCtl:
     def btmon_stop(self):
         if self.btmon:
             self.btmon.stop()
+
+    def rtt_logger_start(self):
+        if self.rtt_logger:
+            log_file = os.path.join(self.test_case.log_dir,
+                                    self.test_case.name.replace('/', '_') +
+                                    '_iutctl.log')
+            self.rtt_logger.start('Logger', log_file, self.debugger_snr)
+
+    def rtt_logger_stop(self):
+        if self.rtt_logger:
+            self.rtt_logger.stop()
 
     def reset(self):
         """Restart IUT related processes and reset the IUT"""
@@ -213,8 +192,8 @@ class ZephyrCtl:
         if not self.board:
             return
 
+        self.rtt_logger_stop()
         self.btmon_stop()
-        self.rtt2pty_stop()
 
         self.board.reset()
 
@@ -234,7 +213,7 @@ class ZephyrCtl:
         else:
             log("IUT ready event received OK")
 
-        self.rtt2pty_start()
+        self.rtt_logger_start()
         self.btmon_start()
 
     def stop(self):
@@ -260,8 +239,8 @@ class ZephyrCtl:
             self.iut_log_file.close()
             self.iut_log_file = None
 
-        if self.rtt2pty:
-            self.rtt2pty.stop()
+        self.rtt_logger_stop()
+        self.btmon_stop()
 
         if self.socat_process:
             self.socat_process.terminate()

@@ -22,10 +22,8 @@ import subprocess
 import sys
 import threading
 import time
-import serial
-if sys.platform != "win32":
-    from fcntl import fcntl, F_GETFL, F_SETFL
-    from os import O_NONBLOCK
+import pylink
+import re
 
 from pybtp import defs
 from pybtp.types import BTPError
@@ -251,77 +249,93 @@ class BTPWorker(BTPSocket):
         self.event_handler_cb = event_handler
 
 
-class RTT2PTY:
+def get_debugger_snr(tty_file):
+    debuggers = subprocess.Popen('nrfjprog --com',
+                                 shell=True,
+                                 stdout=subprocess.PIPE
+                                 ).stdout.read().decode()
+
+    if sys.platform == "win32":
+        COM = "COM" + str(int(tty_file["/dev/ttyS".__len__():]) + 1)
+        reg = "[0-9]+(?=\s+" + COM + ".+)"
+    else:
+        reg = "[0-9]+(?=\s+" + tty_file + ".+)"
+
+    try:
+        return re.findall(reg, debuggers)[0]
+    except:
+        sys.exit("No debuggers associated with the device found")
+
+
+class RTT:
     def __init__(self):
-        self.serial = None
-        self.rtt2pty_process = None
-        self.pty_name = None
-        self.serial_thread = None
+        self.read_thread = None
         self.stop_thread = threading.Event()
         self.log_filename = None
         self.log_file = None
+        self.jlink = None
+        pylink.logger.setLevel(logging.WARNING)
 
-    def _start_rtt2pty_proc(self, debugger_snr=None):
-        cmd = ['rtt2pty']
-        if debugger_snr:
-            cmd.append('-s ' + debugger_snr)
-
-        self.rtt2pty_process = subprocess.Popen(cmd,
-                                                shell=False,
-                                                stdout=subprocess.PIPE,
-                                                stderr=subprocess.PIPE)
-        flags = fcntl(self.rtt2pty_process.stdout, F_GETFL)  # get current p.stdout flags
-        fcntl(self.rtt2pty_process.stdout, F_SETFL, flags | O_NONBLOCK)
-
-        time.sleep(3)
-        pty = None
-        try:
-            for line in iter(self.rtt2pty_process.stdout.readline, b''):
-                line = line.decode('UTF-8')
-                if line.startswith('PTY name is '):
-                    pty = line[len('PTY name is '):].strip()
-        except IOError:
-            pass
-
-        return pty
-
-    @staticmethod
-    def _read_from_port(device, stop_thread, file):
-        while not stop_thread.is_set():
-            line = device.readline()
+    def _get_buffer_index(self, buffer_name):
+        timeout = time.time() + 10
+        num_up = 0
+        while True:
             try:
-                decoded = line.decode()
+                num_up = self.jlink.rtt_get_num_up_buffers()
+                break
+            except pylink.errors.JLinkRTTException:
+                if time.time() > timeout:
+                    break
+                time.sleep(0.1)
+
+        for buf_index in range(num_up):
+            buf = self.jlink.rtt_get_buf_descriptor(buf_index, True)
+            if buf.name == buffer_name:
+                return buf_index
+
+    def _read_from_buffer(self, jlink, buffer_index, stop_thread, file):
+        while not stop_thread.is_set() and jlink.connected():
+            byte_list = jlink.rtt_read(buffer_index, 1024)
+            try:
+                if len(byte_list) > 0:
+                    file.write(bytes(byte_list))
+                    file.flush()
             except UnicodeDecodeError:
                 continue
-            file.write(decoded)
-            file.flush()
 
-    def start(self, log_filename, debugger_snr=None):
+    def start(self, buffer_name, log_filename, debugger_snr=None):
+        log("%s.%s", self.__class__, self.start.__name__)
         self.log_filename = log_filename
-        self.pty_name = self._start_rtt2pty_proc(debugger_snr)
+        target_device = "NRF52840_XXAA"
+        self.jlink = pylink.JLink()
+        self.jlink.open(serial_no=debugger_snr)
+        self.jlink.set_tif(pylink.enums.JLinkInterfaces.SWD)
+        self.jlink.connect(target_device)
+        self.jlink.rtt_start()
 
-        self.serial = serial.Serial(self.pty_name, 115200, timeout=0)
+        buffer_index = self._get_buffer_index(buffer_name)
         self.stop_thread.clear()
-        self.log_file = open(self.log_filename, 'a')
-        self.serial_thread = threading.Thread(
-            target=self._read_from_port, args=(self.serial, self.stop_thread, self.log_file))
-        self.serial_thread.start()
+        self.log_file = open(self.log_filename, 'ab')
+        self.read_thread = threading.Thread(target=self._read_from_buffer,
+                                            args=(self.jlink,
+                                                  buffer_index,
+                                                  self.stop_thread,
+                                                  self.log_file))
+        self.read_thread.start()
 
     def stop(self):
+        log("%s.%s", self.__class__, self.stop.__name__)
         self.stop_thread.set()
 
-        if self.serial_thread:
-            self.serial_thread.join()
-            self.serial_thread = None
+        if self.read_thread:
+            self.read_thread.join()
+            self.read_thread = None
+            self.jlink.rtt_stop()
+            self.jlink.close()
 
         if self.log_file:
             self.log_file.close()
             self.log_file = None
-
-        if self.rtt2pty_process and self.rtt2pty_process.poll() is None:
-            self.rtt2pty_process.send_signal(signal.SIGINT)
-            self.rtt2pty_process.wait()
-            self.rtt2pty_process = None
 
 
 class BTMON:
@@ -331,6 +345,7 @@ class BTMON:
         self.log_file = None
 
     def start(self, log_file, debugger_snr):
+        log("%s.%s", self.__class__, self.start.__name__)
         self.log_file = log_file
         cmd = ['btmon', '-J', 'NRF52,' + debugger_snr, '-w', self.log_file]
 
@@ -340,6 +355,7 @@ class BTMON:
                                               stderr=subprocess.PIPE)
 
     def stop(self):
+        log("%s.%s", self.__class__, self.stop.__name__)
         if self.btmon_process and self.btmon_process.poll() is None:
             self.btmon_process.send_signal(signal.SIGINT)
             self.btmon_process.wait()

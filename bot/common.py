@@ -79,6 +79,8 @@ class BotConfigArgs(Namespace):
         self.kernel_image = args.get('kernel_image', None)
         self.database_file = args.get('database_file', DATABASE_FILE)
         self.store = args.get('store', False)
+        self.rtt_log = args.get('rtt_log', False)
+        self.btmon = args.get('btmon', False)
         self.test_cases = []
         self.excluded = []
 

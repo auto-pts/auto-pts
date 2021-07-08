@@ -21,7 +21,7 @@ import serial
 
 from pybtp import defs
 from pybtp.types import BTPError
-from pybtp.iutctl_common import BTPWorker, BTP_ADDRESS, RTT2PTY
+from pybtp.iutctl_common import BTPWorker, BTP_ADDRESS, RTT, BTMON, get_debugger_snr
 
 log = logging.debug
 MYNEWT = None
@@ -42,17 +42,14 @@ class MynewtCtl:
 
         self.tty_file = args.tty_file
         self.board = Board(args.board_name, self)
-
         self.socat_process = None
         self.btp_socket = None
         self.test_case = None
-        self.rtt2pty_process = None
         self.iut_log_file = None
 
-        if args.rtt2pty:
-            self.rtt2pty = RTT2PTY()
-        else:
-            self.rtt2pty = None
+        self.debugger_snr = get_debugger_snr(self.tty_file)
+        self.rtt_logger = RTT() if args.rtt_log else None
+        self.btmon = BTMON() if args.btmon else None
 
     def start(self, test_case):
         """Starts the Mynewt OS"""
@@ -88,13 +85,27 @@ class MynewtCtl:
         ser.read(99999)
         ser.close()
 
-    def rtt2pty_start(self):
-        if self.rtt2pty:
-            self.rtt2pty.start(os.path.join(self.test_case.log_dir, 'iut-mynewt.log'))
+    def btmon_start(self):
+        if self.btmon:
+            log_file = os.path.join(self.test_case.log_dir,
+                                    self.test_case.name.replace('/', '_') +
+                                    '_btmon.log')
+            self.btmon.start(log_file, self.debugger_snr)
 
-    def rtt2pty_stop(self):
-        if self.rtt2pty:
-            self.rtt2pty.stop()
+    def btmon_stop(self):
+        if self.btmon:
+            self.btmon.stop()
+
+    def rtt_logger_start(self):
+        if self.rtt_logger:
+            log_file = os.path.join(self.test_case.log_dir,
+                                    self.test_case.name.replace('/', '_') +
+                                    '_iutctl.log')
+            self.rtt_logger.start('Logger', log_file, self.debugger_snr)
+
+    def rtt_logger_stop(self):
+        if self.rtt_logger:
+            self.rtt_logger.stop()
 
     def reset(self):
         """Restart IUT related processes and reset the IUT"""
@@ -104,7 +115,8 @@ class MynewtCtl:
         self.start(self.test_case)
         self.flush_serial()
 
-        self.rtt2pty_stop()
+        self.rtt_logger_stop()
+        self.btmon_stop()
 
         self.board.reset()
 
@@ -125,7 +137,8 @@ class MynewtCtl:
         else:
             log("IUT ready event received OK")
 
-        self.rtt2pty_start()
+        self.rtt_logger_start()
+        self.btmon_start()
 
     def stop(self):
         """Powers off the Mynewt OS"""
@@ -143,8 +156,8 @@ class MynewtCtl:
             self.iut_log_file.close()
             self.iut_log_file = None
 
-        if self.rtt2pty:
-            self.rtt2pty.stop()
+        self.rtt_logger_stop()
+        self.btmon_stop()
 
         if self.socat_process:
             self.socat_process.terminate()
