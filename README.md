@@ -192,6 +192,8 @@ This may contain few sections:
     - `recovery` - enable recovery after non-valid result (optional)
     - `superguard` - force recovery when server has been idle for the given time (optional)
     - `ykush` - reconnect board/PTS dongle during recovery, if YKUSH Switchable Hub is used (optional)
+    - `rtt_log` - collect IUT logs via RTT J-Link buffer named "Logger"
+    - `btmon` - collect IUT btsnoops with btmon
 - `git` - Git repositories configuration (optional)
     - `path` - path to project repo
     - `remote` - git remote repo name
