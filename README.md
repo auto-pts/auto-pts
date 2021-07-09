@@ -142,6 +142,7 @@ This may contain few sections:
     - `board` - IUT used. Currently nrf52 is supported only
     - `enable_max_logs` - enable debug logs
     - `retry` - maximum repeat count per test
+    - `stress test` - repeat every test `retry` number of times, even if result was PASS
     - `bd_addr` - IUT Bluetooth Address (optional)
 - `mail` - Mail configuration (optional)
     - `sender` - sender e-mail address

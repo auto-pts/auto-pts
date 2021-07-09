@@ -1014,7 +1014,7 @@ def run_test_cases(ptses, test_case_instances, args):
                     (exeption_msg != '' or status not in {'PASS', 'INCONC', 'FAIL'}):
                 run_recovery(args, ptses)
 
-            if status == 'PASS' or stats.run_count == args.retry:
+            if (status == 'PASS' and not args.stress_test) or stats.run_count == args.retry:
                 if TEST_CASE_DB:
                     TEST_CASE_DB.update_statistics(test_case, duration, status)
 
@@ -1065,6 +1065,9 @@ class CliParser(argparse.ArgumentParser):
         self.add_argument("-r", "--retry", type=int, default=0,
                           help="Repeat test if failed. Parameter specifies "
                                "maximum repeat count per test")
+
+        self.add_argument("--stress_test", action='store_true', default=False,
+                          help="Repeat every test even if previous result was PASS")
 
         self.add_argument("-S", "--srv_port", type=int, nargs="+", default=[SERVER_PORT],
                           help="Specify the server port number")
