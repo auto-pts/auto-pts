@@ -182,7 +182,7 @@ def test_cases(ptses):
                   defs.MESH_IN_ENTER_STRING,
                   defs.MESH_IN_ENTER_NUMBER | defs.MESH_IN_ENTER_STRING]
 
-    oob = 16 * '0'
+    oob = 16 * '00'
     out_size = random.randint(0, 2)
     rand_out_actions = random.choice(out_actions) if out_size else 0
     in_size = random.randint(0, 2)
@@ -208,6 +208,8 @@ def test_cases(ptses):
             "MESH", "TSPX_subscription_address_list",
             MeshVals.subscription_addr_list1)),
         TestFunc(lambda: pts.update_pixit_param(
+            "MESH", "TSPX_OOB_code", oob)),
+        TestFunc(lambda: pts.update_pixit_param(
             "MESH", "TSPX_device_uuid", stack.mesh.dev_uuid)),
         TestFunc(lambda: pts.update_pixit_param(
             "MESH", "TSPX_device_uuid2", device_uuid2)),
@@ -219,6 +221,8 @@ def test_cases(ptses):
             "MESH", "TSPX_device_uuid", device_uuid2)),
         TestFunc(lambda: pts2.update_pixit_param(
             "MESH", "TSPX_device_uuid2", stack.mesh.dev_uuid)),
+        TestFunc(lambda: pts2.update_pixit_param(
+            "MESH", "TSPX_OOB_code", oob)),
     ]
 
     # Some test cases require device_uuid and device_uuid2 to be swapped
@@ -235,6 +239,8 @@ def test_cases(ptses):
             "MESH", "TSPX_device_uuid", stack.mesh.dev_uuid)),
         TestFunc(lambda: pts2.update_pixit_param(
             "MESH", "TSPX_device_uuid2", device_uuid2)),
+        TestFunc(lambda: pts2.update_pixit_param(
+            "MESH", "TSPX_OOB_code", oob)),
     ]
 
 
