@@ -225,6 +225,7 @@ class PtsInitArgs(object):
         self.bd_addr = args["bd_addr"]
         self.enable_max_logs = args["enable_max_logs"]
         self.retry = args["retry"]
+        self.stress_test = args["stress_test"]
         self.test_cases = []
         self.excluded = []
         self.srv_port = args["srv_port"]
