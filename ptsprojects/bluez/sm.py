@@ -129,7 +129,7 @@ def test_cases(pts):
                       # FIXME Find better place to store PTS bdaddr
                       TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public)]
 
-    test_cases = [
+    custom_test_cases = [
         BTestCase("SM", "SM/MAS/PROT/BV-01-C",
                   pre_conditions,
                   generic_wid_hdl=sm_wid_hdl),
@@ -139,138 +139,34 @@ def test_cases(pts):
         BTestCase("SM", "SM/SLA/JW/BV-02-C",
                   pre_conditions,
                   generic_wid_hdl=sm_wid_hdl),
-        BTestCase("SM", "SM/MAS/JW/BV-05-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=sm_wid_hdl),
-        BTestCase("SM", "SM/MAS/JW/BI-01-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=sm_wid_hdl),
         BTestCase("SM", "SM/SLA/JW/BI-02-C",
                   pre_conditions,
                   generic_wid_hdl=sm_wid_hdl),
         BTestCase("SM", "SM/SLA/JW/BI-03-C",
                   pre_conditions,
                   generic_wid_hdl=sm_wid_hdl),
-        BTestCase("SM", "SM/MAS/JW/BI-04-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=sm_wid_hdl),
-        BTestCase("SM", "SM/MAS/PKE/BV-01-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=sm_wid_hdl),
-        BTestCase("SM", "SM/SLA/PKE/BV-02-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=sm_wid_hdl),
-        BTestCase("SM", "SM/MAS/PKE/BV-04-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=sm_wid_hdl),
-        BTestCase("SM", "SM/SLA/PKE/BV-05-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=sm_wid_hdl),
-        BTestCase("SM", "SM/MAS/PKE/BI-01-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=sm_wid_hdl),
-        BTestCase("SM", "SM/MAS/PKE/BI-02-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=sm_wid_hdl),
-        BTestCase("SM", "SM/SLA/PKE/BI-03-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=sm_wid_hdl),
-        BTestCase("SM", "SM/MAS/OOB/BV-05-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=sm_wid_hdl),
-        BTestCase("SM", "SM/SLA/OOB/BV-06-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=sm_wid_hdl),
-        BTestCase("SM", "SM/MAS/OOB/BV-07-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=sm_wid_hdl),
-        BTestCase("SM", "SM/SLA/OOB/BV-08-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=sm_wid_hdl),
-        BTestCase("SM", "SM/MAS/EKS/BV-01-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=sm_wid_hdl),
-        BTestCase("SM", "SM/SLA/EKS/BV-02-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=sm_wid_hdl),
-        BTestCase("SM", "SM/MAS/EKS/BI-01-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=sm_wid_hdl),
-        BTestCase("SM", "SM/SLA/EKS/BI-02-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=sm_wid_hdl),
         BTestCase("SM", "SM/MAS/SIGN/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                    TestFunc(btp.core_reg_svc_gatt)],
                   generic_wid_hdl=sm_wid_hdl),
-        BTestCase("SM", "SM/MAS/SIGN/BV-03-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=sm_wid_hdl),
-        BTestCase("SM", "SM/MAS/SIGN/BI-01-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=sm_wid_hdl),
-        BTestCase("SM", "SM/SLA/KDU/BV-01-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=sm_wid_hdl),
-        BTestCase("SM", "SM/SLA/KDU/BV-02-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=sm_wid_hdl),
-        BTestCase("SM", "SM/SLA/KDU/BV-03-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=sm_wid_hdl),
-        BTestCase("SM", "SM/MAS/KDU/BV-04-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=sm_wid_hdl),
-        BTestCase("SM", "SM/MAS/KDU/BV-05-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=sm_wid_hdl),
-        BTestCase("SM", "SM/MAS/KDU/BV-06-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=sm_wid_hdl),
-        BTestCase("SM", "SM/SLA/KDU/BV-07-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=sm_wid_hdl),
-        BTestCase("SM", "SM/SLA/SIP/BV-01-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=sm_wid_hdl),
-        BTestCase("SM", "SM/MAS/SIP/BV-02-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=sm_wid_hdl),
-        BTestCase("SM", "SM/SLA/SIE/BV-01-C",
-                  pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=sm_wid_hdl),
     ]
+
+    test_case_name_list = pts.get_test_case_list('SM')
+    test_cases = []
+
+    for tc_name in test_case_name_list:
+        instance = BTestCase('SM', tc_name,
+                             pre_conditions +
+                             [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                             generic_wid_hdl=sm_wid_hdl)
+
+        for custom_tc in custom_test_cases:
+            if tc_name == custom_tc.name:
+                instance = custom_tc
+                break
+
+        test_cases.append(instance)
 
     return test_cases
 

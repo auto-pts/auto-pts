@@ -19,7 +19,6 @@ try:
     from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
         TestFuncCleanUp
     from ptsprojects.bluez.btestcase import BTestCase
-
 except ImportError:  # running this module as script
     import sys
     sys.path.append("../..")  # to be able to locate the following imports
@@ -28,13 +27,12 @@ except ImportError:  # running this module as script
         TestFuncCleanUp
     from ptsprojects.bluez.btestcase import BTestCase
 
-from time import sleep
 from pybtp import btp
 from pybtp.types import Addr, IOCap, UUID, Prop, Perm, AdType, AdFlags
 import binascii
-import re
 from ptsprojects.stack import get_stack
-from .gap_wid import gap_wid_hdl, hdl_wid_161
+from wid.gap import hdl_wid_161
+from .gap_wid import gap_wid_hdl
 
 
 class SVC:
@@ -194,92 +192,14 @@ def test_cases(pts):
         # TODO: Get PTS address type
         TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public)]
 
-    test_cases = [
-        BTestCase("GAP", "GAP/BROB/BCST/BV-01-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/BROB/BCST/BV-02-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
+    custom_test_cases = [
         BTestCase("GAP", "GAP/BROB/BCST/BV-03-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/BROB/BCST/BV-04-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/BROB/BCST/BV-05-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/BROB/OBSV/BV-01-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/BROB/OBSV/BV-02-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/BROB/OBSV/BV-03-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/BROB/OBSV/BV-04-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/BROB/OBSV/BV-05-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/BROB/OBSV/BV-06-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/DISC/NONM/BV-01-C",
-                  pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/DISC/NONM/BV-02-C",
-                  pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/DISC/LIMM/BV-03-C",
-                  pre_conditions,
-                generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/DISC/LIMM/BV-04-C",
-                  pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/DISC/GENM/BV-03-C",
-                  pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/DISC/GENM/BV-04-C",
-                  pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/DISC/LIMP/BV-01-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/DISC/LIMP/BV-02-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/DISC/LIMP/BV-03-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/DISC/LIMP/BV-04-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/DISC/LIMP/BV-05-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/DISC/GENP/BV-01-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/DISC/GENP/BV-02-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/DISC/GENP/BV-03-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/DISC/GENP/BV-04-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/DISC/GENP/BV-05-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/DISC/RPA/BV-01-C",
-                  cmds=pre_conditions,
                   generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/IDLE/NAMP/BV-01-C",
                   pre_conditions +
@@ -292,93 +212,9 @@ def test_cases(pts):
                    TestFunc(btp.gattc_read_uuid_rsp, post_wid=73),
                    TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
                             start_wid=77)]),
-        BTestCase("GAP", "GAP/IDLE/NAMP/BV-02-C",
-                  pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/CONN/NCON/BV-01-C",
-                  pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/CONN/NCON/BV-02-C",
-                  pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/CONN/NCON/BV-03-C",
-                  pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/CONN/UCON/BV-01-C",
-                  pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/CONN/UCON/BV-02-C",
-                  pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/CONN/UCON/BV-03-C",
-                  pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/CONN/UCON/BV-06-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/CONN/ACEP/BV-01-C",
-                  pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/CONN/ACEP/BV-03-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/CONN/ACEP/BV-04-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/CONN/GCEP/BV-01-C",
-                  pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/CONN/GCEP/BV-02-C",
-                  pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/CONN/GCEP/BV-05-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/CONN/GCEP/BV-06-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/CONN/DCEP/BV-01-C",
-                  pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/CONN/DCEP/BV-03-C",
-                  pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/CONN/DCEP/BV-05-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/CONN/DCEP/BV-06-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/CONN/CPUP/BV-01-C",
-                  pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/CONN/CPUP/BV-02-C",
-                  pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/CONN/CPUP/BV-03-C",
-                  pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/CONN/CPUP/BV-04-C",
-                  pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/CONN/CPUP/BV-05-C",
-                  pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/CONN/CPUP/BV-06-C",
-                  pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/CONN/CPUP/BV-08-C",
-                  pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/CONN/TERM/BV-01-C",
-                  pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/CONN/PRDA/BV-01-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/CONN/PRDA/BV-02-C",
-                  cmds=pre_conditions,
                   generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/BOND/NBON/BV-01-C",
                   cmds=pre_conditions +
@@ -456,13 +292,10 @@ def test_cases(pts):
                   cmds=pre_conditions + init_gatt_db +
                        [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/SEC/AUT/BV-21-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
         # TODO: Inform about lost bond
-        BTestCase("GAP", "GAP/SEC/AUT/BV-22-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
+        # BTestCase("GAP", "GAP/SEC/AUT/BV-22-C",
+        #           cmds=pre_conditions,
+        #           generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/SEC/AUT/BV-23-C",
                   cmds=pre_conditions + init_gatt_db +
                        [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
@@ -508,57 +341,9 @@ def test_cases(pts):
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/PRIV/CONN/BV-11-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/PRIV/CONN/BI-01-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/ADV/BV-01-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/ADV/BV-02-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/ADV/BV-03-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/ADV/BV-04-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/ADV/BV-05-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/ADV/BV-08-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/ADV/BV-09-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/ADV/BV-10-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/ADV/BV-11-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/ADV/BV-12-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/ADV/BV-13-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/ADV/BV-14-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/ADV/BV-15-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/ADV/BV-16-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/ADV/BV-17-C",
-                  cmds=pre_conditions,
                   generic_wid_hdl=gap_wid_hdl),
         # GAP/GAT/BV-01-C
         # wid: 158 description: IUT support both Central and Peripheral roles.
@@ -574,13 +359,22 @@ def test_cases(pts):
                 #   no_wid=158,
                   cmds=pre_conditions + init_gatt_db,
                   generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/GAT/BV-04-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
-        BTestCase("GAP", "GAP/GAT/BV-05-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gap_wid_hdl),
     ]
+
+    test_case_name_list = pts.get_test_case_list('GAP')
+    test_cases = []
+
+    for tc_name in test_case_name_list:
+        instance = BTestCase('GAP', tc_name,
+                             cmds=pre_conditions,
+                             generic_wid_hdl=gap_wid_hdl)
+
+        for custom_tc in custom_test_cases:
+            if tc_name == custom_tc.name:
+                instance = custom_tc
+                break
+
+        test_cases.append(instance)
 
     return test_cases
 
