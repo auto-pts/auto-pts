@@ -24,7 +24,7 @@ from threading import Timer, Event
 
 from . import defs
 from .types import BTPError, gap_settings_btp2txt, addr2btp_ba, Addr, OwnAddrType, AdDuration
-from pybtp.types import Perm
+from pybtp.types import Perm, L2capSecLevels
 from .iutctl_common import set_event_handler
 from random import randint
 from collections import namedtuple
@@ -3245,8 +3245,8 @@ def l2cap_send_data(chan_id, val, val_mtp=None):
     stack.l2cap.tx(chan_id, val)
 
 
-def l2cap_listen(psm, transport, mtu=0, response=0):
-    logging.debug("%s %r %r", l2cap_le_listen.__name__, psm, transport)
+def l2cap_listen(psm, transport, mtu=0, req_sec=L2capSecLevels.no_sec, req_key_size=0, response=0):
+    logging.debug("%s %r %r %r %r", l2cap_le_listen.__name__, psm, transport, req_sec, req_key_size)
 
     iutctl = get_iut()
 
@@ -3256,6 +3256,8 @@ def l2cap_listen(psm, transport, mtu=0, response=0):
     data_ba = bytearray(struct.pack('H', psm))
     data_ba.extend(struct.pack('B', transport))
     data_ba.extend(struct.pack('H', mtu))
+    data_ba.extend(struct.pack('B', req_sec))
+    data_ba.extend(struct.pack('B', req_key_size))
     data_ba.extend(struct.pack('H', response))
 
     iutctl.btp_socket.send(*L2CAP['listen'], data=data_ba)
