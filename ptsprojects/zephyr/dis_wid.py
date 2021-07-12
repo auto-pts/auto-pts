@@ -17,6 +17,7 @@
 import logging
 import sys
 from pybtp import btp
+from wid.dis import dis_wid_hdl as gen_wid_hdl
 
 log = logging.debug
 
@@ -30,11 +31,4 @@ def dis_wid_hdl(wid, description, test_case_name):
         handler = getattr(module, "hdl_wid_%d" % wid)
         return handler(description)
     except AttributeError as e:
-        logging.exception(e)
-
-
-# wid handlers section begin
-def hdl_wid_20001(desc):
-    btp.gap_set_conn()
-    btp.gap_adv_ind_on()
-    return True
+        return gen_wid_hdl(wid, description, test_case_name, False)

@@ -147,56 +147,24 @@ def test_cases(ptses):
         # TODO: Get PTS address type
         TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public)]
 
-    test_cases = [
-        ZTestCase("DIS", "DIS/SR/SD/BV-01-C",
-                  pre_conditions + init_server,
-                  generic_wid_hdl=dis_wid_hdl),
-        ZTestCase("DIS", "DIS/SR/DEC/BV-01-C",
-                  pre_conditions + init_server,
-                  generic_wid_hdl=dis_wid_hdl),
-        ZTestCase("DIS", "DIS/SR/DEC/BV-02-C",
-                  pre_conditions + init_server,
-                  generic_wid_hdl=dis_wid_hdl),
-        ZTestCase("DIS", "DIS/SR/DEC/BV-03-C",
-                  pre_conditions + init_server,
-                  generic_wid_hdl=dis_wid_hdl),
-        ZTestCase("DIS", "DIS/SR/DEC/BV-04-C",
-                  pre_conditions + init_server,
-                  generic_wid_hdl=dis_wid_hdl),
-        ZTestCase("DIS", "DIS/SR/DEC/BV-05-C",
-                  pre_conditions + init_server,
-                  generic_wid_hdl=dis_wid_hdl),
-        ZTestCase("DIS", "DIS/SR/DEC/BV-06-C",
-                  pre_conditions + init_server,
-                  generic_wid_hdl=dis_wid_hdl),
-        ZTestCase("DIS", "DIS/SR/DEC/BV-09-C",
-                  pre_conditions + init_server,
-                  generic_wid_hdl=dis_wid_hdl),
-        ZTestCase("DIS", "DIS/SR/SD/BV-01-C",
-                  pre_conditions + init_server,
-                  generic_wid_hdl=dis_wid_hdl),
-        ZTestCase("DIS", "DIS/SR/CR/BV-01-C",
-                  pre_conditions + init_server,
-                  generic_wid_hdl=dis_wid_hdl),
-        ZTestCase("DIS", "DIS/SR/CR/BV-02-C",
-                  pre_conditions + init_server,
-                  generic_wid_hdl=dis_wid_hdl),
-        ZTestCase("DIS", "DIS/SR/CR/BV-03-C",
-                  pre_conditions + init_server,
-                  generic_wid_hdl=dis_wid_hdl),
-        ZTestCase("DIS", "DIS/SR/CR/BV-04-C",
-                  pre_conditions + init_server,
-                  generic_wid_hdl=dis_wid_hdl),
-        ZTestCase("DIS", "DIS/SR/CR/BV-05-C",
-                  pre_conditions + init_server,
-                  generic_wid_hdl=dis_wid_hdl),
-        ZTestCase("DIS", "DIS/SR/CR/BV-06-C",
-                  pre_conditions + init_server,
-                  generic_wid_hdl=dis_wid_hdl),
-        ZTestCase("DIS", "DIS/SR/CR/BV-09-C",
-                  pre_conditions + init_server,
-                  generic_wid_hdl=dis_wid_hdl),
+    custom_test_cases = [
     ]
+
+    test_case_name_list = pts.get_test_case_list('DIS')
+    test_cases = []
+
+    for tc_name in test_case_name_list:
+        instance = ZTestCase("DIS", tc_name,
+                             cmds=pre_conditions + init_server,
+                             generic_wid_hdl=dis_wid_hdl)
+
+        for custom_tc in custom_test_cases:
+            if tc_name == custom_tc.name:
+                instance = custom_tc
+                break
+
+        test_cases.append(instance)
+
     return test_cases
 
 

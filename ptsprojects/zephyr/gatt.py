@@ -19,7 +19,6 @@ try:
     from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
         TestFuncCleanUp, MMI
     from ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
-
 except ImportError:  # running this module as script
     import sys
     sys.path.append("../..")  # to be able to locate the following imports
@@ -30,11 +29,11 @@ except ImportError:  # running this module as script
 
 from pybtp import btp
 from pybtp.types import UUID, Addr, IOCap, Prop, Perm
-from time import sleep
 import logging
 from ptsprojects.stack import get_stack
-from ptsprojects.zephyr.gatt_wid import gatt_wid_hdl, gatt_wid_hdl_no_write_rsp_check
+from ptsprojects.zephyr.gatt_wid import gatt_wid_hdl
 from ptsprojects.zephyr.gattc_wid import gattc_wid_hdl
+from wid.gatt import gatt_wid_hdl_no_write_rsp_check
 
 
 class Value:
@@ -327,7 +326,7 @@ def test_cases_server(ptses):
                      TestFunc(btp.gatts_set_val, 0, Value.long_5),
                      TestFunc(btp.gatts_start_server)]
 
-    test_cases = [
+    custom_test_cases = [
         ZTestCase("GATT", "GATT/SR/GAC/BV-01-C",
                   pre_conditions_1 + init_server_1,
                   generic_wid_hdl=gatt_wid_hdl),
@@ -339,18 +338,6 @@ def test_cases_server(ptses):
                   generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAD/BV-03-C",
                   pre_conditions_1 + init_server_1,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/SR/GAD/BV-04-C",
-                  pre_conditions_1,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/SR/GAD/BV-05-C",
-                  pre_conditions_1,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/SR/GAD/BV-06-C",
-                  pre_conditions_1,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/SR/GAR/BV-01-C",
-                  pre_conditions_1,
                   generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAR/BI-01-C",
                   pre_conditions_1 + init_server_1,
@@ -369,9 +356,6 @@ def test_cases_server(ptses):
                   generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAR/BV-03-C",
                   pre_conditions_1 + init_server_1,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/SR/GAR/BI-06-C",
-                  pre_conditions_1,
                   generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAR/BI-07-C",
                   pre_conditions_1 + init_server_1,
@@ -396,9 +380,6 @@ def test_cases_server(ptses):
                   generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAR/BI-13-C",
                   pre_conditions_1 + init_server_1,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/SR/GAR/BI-14-C",
-                  pre_conditions_1,
                   generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAR/BI-15-C",
                   pre_conditions_1 + init_server_1,
@@ -591,9 +572,6 @@ def test_cases_server(ptses):
         ZTestCase("GATT", "GATT/SR/GPA/BV-07-C",
                   pre_conditions_1 + init_server_1,
                   generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/SR/GPA/BV-08-C",
-                  pre_conditions_1,
-                  generic_wid_hdl=gatt_wid_hdl),
         # TODO rewrite GATT/SR/GPA/BV-11-C
         ZTestCase("GATT", "GATT/SR/GPA/BV-11-C",
                   cmds=pre_conditions +
@@ -618,17 +596,24 @@ def test_cases_server(ptses):
         ZTestCase("GATT", "GATT/SR/GPA/BV-12-C",
                   pre_conditions_1 + init_server_3,
                   generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/SR/UNS/BI-01-C",
-                  pre_conditions_1,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/SR/UNS/BI-02-C",
-                  pre_conditions_1,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/SR/GAC/BI-01-C",
-                  pre_conditions_1,
-                  generic_wid_hdl=gatt_wid_hdl),
-
     ]
+
+    test_case_name_list = pts.get_test_case_list('GATT')
+    test_cases = []
+
+    for tc_name in test_case_name_list:
+        if not tc_name.startswith('GATT/SR'):
+            continue
+        instance = ZTestCase('GATT', tc_name,
+                             cmds=pre_conditions_1,
+                             generic_wid_hdl=gatt_wid_hdl)
+
+        for custom_tc in custom_test_cases:
+            if tc_name == custom_tc.name:
+                instance = custom_tc
+                break
+
+        test_cases.append(instance)
 
     if len(ptses) < 2:
         return test_cases
@@ -674,212 +659,49 @@ def test_cases_client(pts):
                       TestFunc(btp.core_reg_svc_gatt),
                       TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public)]
 
-    test_cases = [
-        ZTestCase("GATT", "GATT/CL/GAC/BV-01-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
+    custom_test_cases = [
         ZTestCase("GATT", "GATT/CL/GAD/BV-01-C",
                   pre_conditions,
                   generic_wid_hdl=gattc_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAD/BV-02-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/CL/GAD/BV-03-C",
                   pre_conditions,
                   generic_wid_hdl=gattc_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAD/BV-04-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAD/BV-05-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAD/BV-06-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAR/BV-01-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAR/BI-01-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAR/BI-02-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAR/BI-03-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAR/BI-04-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAR/BI-05-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAR/BI-06-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAR/BI-07-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAR/BI-09-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAR/BI-10-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAR/BI-11-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAR/BV-03-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/CL/GAR/BV-04-C",
                   cmds=pre_conditions,
                   generic_wid_hdl=gattc_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAR/BI-12-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAR/BI-13-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAR/BI-14-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAR/BI-15-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAR/BI-16-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAR/BI-17-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAR/BV-05-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAR/BI-18-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAR/BI-19-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAR/BI-20-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAR/BI-21-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAR/BI-22-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAR/BV-06-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/CL/GAR/BV-07-C",
                   cmds=pre_conditions,
                   generic_wid_hdl=gattc_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAR/BI-35-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAW/BV-01-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
         # PTS issue #15965
-        ZTestCase("GATT", "GATT/CL/GAW/BV-02-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAW/BV-03-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAW/BI-02-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAW/BI-03-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAW/BI-04-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAW/BI-05-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAW/BI-06-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAW/BV-05-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAW/BI-07-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAW/BI-08-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAW/BI-09-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAW/BI-10-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAW/BI-11-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAW/BI-12-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAW/BI-13-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAW/BV-06-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAW/BV-08-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAW/BV-09-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAW/BI-32-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAW/BI-33-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
+        # ZTestCase("GATT", "GATT/CL/GAW/BV-02-C",
         ZTestCase("GATT", "GATT/CL/GAW/BV-10-C",
                   pre_conditions,
                   generic_wid_hdl=gatt_wid_hdl_no_write_rsp_check),
-        ZTestCase("GATT", "GATT/CL/GAW/BI-34-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/CL/GAW/BI-37-C",
                   pre_conditions,
                   generic_wid_hdl=gatt_wid_hdl_no_write_rsp_check),
-        ZTestCase("GATT", "GATT/CL/GAN/BV-01-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAI/BV-01-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAS/BV-01-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAS/BV-02-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAS/BV-03-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAS/BV-04-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
         # PTS CASE0036198
-        ZTestCase("GATT", "GATT/CL/GAT/BV-01-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
+        # ZTestCase("GATT", "GATT/CL/GAT/BV-01-C",
         # PTS CASE0036198
-        ZTestCase("GATT", "GATT/CL/GAT/BV-02-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl),
+        # ZTestCase("GATT", "GATT/CL/GAT/BV-02-C",
     ]
+
+    test_case_name_list = pts.get_test_case_list('GATT')
+    test_cases = []
+
+    for tc_name in test_case_name_list:
+        if not tc_name.startswith('GATT/CL'):
+            continue
+        instance = ZTestCase("GATT", tc_name,
+                             cmds=pre_conditions,
+                             generic_wid_hdl=gatt_wid_hdl)
+
+        for custom_tc in custom_test_cases:
+            if tc_name == custom_tc.name:
+                instance = custom_tc
+                break
+
+        test_cases.append(instance)
 
     return test_cases
 
