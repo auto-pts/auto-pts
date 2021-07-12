@@ -241,3 +241,8 @@ class Perm:
     @staticmethod
     def decode(perm):
         return decode_flag_name(perm, Perm.names)
+
+class L2capSecLevels:
+    no_sec = 0x01
+    authen = 0x02
+    author = 0x03

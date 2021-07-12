@@ -28,8 +28,8 @@ except ImportError:  # running this module as script
         TestFuncCleanUp
     from ptsprojects.zephyr.ztestcase import ZTestCase
 
-from pybtp import btp
-from pybtp.types import Addr
+from pybtp import btp, defs
+from pybtp.types import Addr, L2capSecLevels
 from ptsprojects.stack import get_stack, L2cap
 from wid import l2cap_wid_hdl
 
@@ -145,6 +145,8 @@ def test_cases(pts):
     pre_conditions_eatt = common + [TestFunc(lambda: pts.update_pixit_param("L2CAP", "TSPX_iut_supported_max_channels", "2")),
                                     TestFunc(stack.l2cap_init, le_psm_eatt, le_initial_mtu),
                                     TestFunc(btp.l2cap_le_listen, le_psm_eatt)]
+    pre_conditions_eatt_sec = common + [TestFunc(lambda: pts.update_pixit_param("L2CAP", "TSPX_iut_supported_max_channels", "2")),
+                                        TestFunc(stack.l2cap_init, le_psm_eatt, le_initial_mtu)]
 
     test_cases = [
         # Connection Parameter Update
@@ -294,14 +296,19 @@ def test_cases(pts):
                   pre_conditions_eatt,
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/ECFC/BV-11-C",
-                  # this test requires EATT enabled, don't create L2CAP server
-                  common,
+                  pre_conditions_eatt_sec +
+                  [TestFunc(btp.l2cap_listen, le_psm_eatt, le_initial_mtu,
+                            defs.L2CAP_TRANSPORT_LE, L2capSecLevels.authen, 0)],
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/ECFC/BV-13-C",
-                  pre_conditions_eatt,
+                  pre_conditions_eatt_sec +
+                  [TestFunc(btp.l2cap_listen, le_psm_eatt, le_initial_mtu,
+                            defs.L2CAP_TRANSPORT_LE, L2capSecLevels.author, 0)],
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/ECFC/BV-15-C",
-                  pre_conditions_eatt,
+                  pre_conditions_eatt_sec +
+                  [TestFunc(btp.l2cap_listen, le_psm_eatt, le_initial_mtu,
+                            defs.L2CAP_TRANSPORT_LE, L2capSecLevels.no_sec, 16)],
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/ECFC/BV-17-C",
                   pre_conditions_eatt,

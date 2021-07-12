@@ -1429,6 +1429,8 @@ Commands and responses:
 		Command parameters:	PSM (2 octets)
 					Transport (1 octet)
 					MTU (2 octets)
+					Security_Type (1 octet)
+					Key_Size (1 octet)
 					Response (2 octets)
 		Response parameters:	<none>
 
@@ -1440,6 +1442,10 @@ Commands and responses:
 		incoming data.
 
 		The MTU parameter is used to specify initial MTU for channels.
+
+		Security_Type defines if security is required for establishing
+		connection. Key_Size defines authentication key size required for
+		security of connection.
 
 		Response parameter can be used to specify a response value used in
 		L2CAP Connection Response to send non-success responses like
