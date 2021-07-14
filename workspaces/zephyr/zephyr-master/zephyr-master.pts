@@ -6,6 +6,14 @@
     <profile>
       <name>GAP</name>
       <item>
+        <table>8a</table>
+        <row>14a</row>
+      </item>
+      <item>
+        <table>20A</table>
+        <row>14a</row>
+      </item>
+      <item>
         <table>25</table>
         <row>13</row>
       </item>
@@ -661,6 +669,18 @@
     <profile>
       <name>L2CAP</name>
       <item>
+        <table>4</table>
+        <row>3</row>
+      </item>
+      <item>
+        <table>4</table>
+        <row>2</row>
+      </item>
+      <item>
+        <table>4</table>
+        <row>1</row>
+      </item>
+      <item>
         <table>2</table>
         <row>40</row>
       </item>
@@ -966,6 +986,10 @@
       <item>
         <table>4</table>
         <row>23</row>
+      </item>
+      <item>
+        <table>4</table>
+        <row>25</row>
       </item>
       <item>
         <table>4</table>
@@ -1455,6 +1479,10 @@
     </profile>
     <profile>
       <name>MESH</name>
+      <item>
+        <table>4</table>
+        <row>13</row>
+      </item>
       <item>
         <table>0a</table>
         <row>3</row>
