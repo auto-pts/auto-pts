@@ -156,6 +156,9 @@ class Gap:
         self.conn_params = Property(None)
         self.pairing_failed_rcvd = False
 
+        # bond_lost data (addr_type, addr)
+        self.bond_lost_ev_data = Property(None)
+
     def wait_for_connection(self, timeout):
         if self.is_connected():
             return True
