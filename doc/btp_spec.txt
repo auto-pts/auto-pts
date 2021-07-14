@@ -678,7 +678,15 @@ Events:
 		This event can be sent when the IUT requires a pairing consent
 		from the user.
 
-	Opcode 0x8b - Pairing Failed event
+	Opcode 0x8b - Bond Lost event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+							Address (6 octets)
+
+		This event can be sent when IUT lost a bond with a peer device.
+
+	Opcode 0x8c - Pairing Failed event
 
 		Controller Index:	<controller id>
 		Event parameters:	Address_Type (1 octet)

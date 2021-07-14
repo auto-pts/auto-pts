@@ -681,8 +681,7 @@ def hdl_wid_142(desc):
 
 
 def hdl_wid_143(desc):
-    logging.debug("No API to: 'Inform about lost bond'")
-    return True
+    return bool(get_stack().gap.bond_lost_ev_data.data)
 
 
 def hdl_wid_144(desc):
