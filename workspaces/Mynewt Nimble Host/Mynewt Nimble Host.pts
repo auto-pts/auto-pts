@@ -10,8 +10,16 @@
         <row>11</row>
       </item>
       <item>
+        <table>8a</table>
+        <row>14a</row>
+      </item>
+      <item>
         <table>25</table>
         <row>12</row>
+      </item>
+      <item>
+        <table>20A</table>
+        <row>14a</row>
       </item>
       <item>
         <table>25</table>
@@ -152,6 +160,10 @@
       <item>
         <table>20A</table>
         <row>11</row>
+      </item>
+      <item>
+        <table>20A</table>
+        <row>14</row>
       </item>
       <item>
         <table>20A</table>
@@ -583,6 +595,10 @@
       </item>
       <item>
         <table>8a</table>
+        <row>14</row>
+      </item>
+      <item>
+        <table>8a</table>
         <row>2</row>
       </item>
       <item>
@@ -604,6 +620,18 @@
     </profile>
     <profile>
       <name>L2CAP</name>
+      <item>
+        <table>4</table>
+        <row>3</row>
+      </item>
+      <item>
+        <table>4</table>
+        <row>2</row>
+      </item>
+      <item>
+        <table>4</table>
+        <row>1</row>
+      </item>
       <item>
         <table>2</table>
         <row>40</row>
@@ -1252,6 +1280,10 @@
     </profile>
     <profile>
       <name>MESH</name>
+      <item>
+        <table>4</table>
+        <row>13</row>
+      </item>
       <item>
         <table>0a</table>
         <row>3</row>
