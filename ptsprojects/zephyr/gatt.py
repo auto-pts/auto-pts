@@ -510,16 +510,13 @@ def test_cases_server(ptses):
         # TODO rewrite GATT/SR/GAS/BV-01-C
         ZTestCase("GATT", "GATT/SR/GAS/BV-01-C",
                   cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-
-                   # Service Changed is triggered for bonded devices only
-                   TestFunc(btp.gap_wait_for_connection,
-                            post_wid=1, skip_call=(2,)),
-                   TestFunc(btp.gap_pair, post_wid=1, skip_call=(2,)),
-
-                   TestFunc(btp.gap_wait_for_disconnection, post_wid=96),
+                  [TestFunc(btp.gap_wait_for_disconnection, 60, post_wid=96),
                    TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1, post_wid=96),
-                   TestFunc(btp.gatts_start_server, post_wid=96)],
+                   TestFunc(btp.gatts_start_server, post_wid=96),
+                   TestFunc(btp.gap_wait_for_disconnection, 60, post_wid=96),
+                   TestFunc(btp.gatts_add_svc, 0, UUID.VND16_2, post_wid=96),
+                   TestFunc(btp.gatts_start_server, post_wid=96)
+                   ],
                   generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAS/BV-02-C",
                   cmds=pre_conditions_1 +
