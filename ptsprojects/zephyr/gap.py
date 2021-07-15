@@ -650,6 +650,9 @@ def test_cases(pts):
         ZTestCase("GAP", "GAP/ADV/BV-17-C",
                   cmds=pre_conditions,
                   generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/ADV/BV-18-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=gap_wid_hdl),
         # GAP/GAT/BV-01-C
         # wid: 158 description: IUT support both Central and Peripheral roles.
         # Click Yes if IUT act as Central role to execute this test otherwise

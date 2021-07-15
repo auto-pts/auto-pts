@@ -74,6 +74,7 @@ class AdType:
     public_target_addr = 0x17
     random_target_addr = 0x18
     advertising_interval = 0x1a
+    advertising_interval_long = 0x2f
     le_bt_device_addr = 0x1b
     le_role = 0x1c
     uri = 0x24
