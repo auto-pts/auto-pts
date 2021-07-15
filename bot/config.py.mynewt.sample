@@ -183,6 +183,7 @@ m['iut_config'] = {
             'GAP/SEC/SEM/BI-22-C',
             'GAP/SEC/SEM/BI-23-C',
             'GAP/SEC/SEM/BV-23-C',
+            'GAP/SEC/SEM/BV-45-C',
         ]
     },
 
