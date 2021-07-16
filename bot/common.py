@@ -391,7 +391,7 @@ def make_report_txt(results_dict, zephyr_hash):
     for tc, result in list(results_dict.items()):
         # The frist id in the test case is test group
         tg = tc.split('/')[0]
-        f.write("%s\t%s\t%s\n" % (tg, tc, result))
+        f.write("%s%s%s\n" % (tg.ljust(8,' '), tc.ljust(32, ' '), result))
 
     f.close()
 
