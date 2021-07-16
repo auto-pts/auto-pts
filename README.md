@@ -66,7 +66,7 @@ Alternatively, you can use auto-pts workspaces. Auto-pts provides ready PTS work
 
   * bluez
   * Mynewt Nimble Host
-  * zephyr-main
+  * zephyr-master
   * zephyr-v1.14
   * zephyr-v2.2.0
 
@@ -92,11 +92,11 @@ Then start the AutoPTS Client using e.g. own workspace file:
 
 **Testing Zephyr combined (controller + host) build on nRF52**:
 
-    ./autoptsclient-zephyr.py zephyr-main <path>/zephyr.elf -i SERVER_IP -l LOCAL_IP -t /dev/ttyACM0 -b nrf52
+    ./autoptsclient-zephyr.py zephyr-master <path>/zephyr.elf -i SERVER_IP -l LOCAL_IP -t /dev/ttyACM0 -b nrf52
 
 **Testing Zephyr Host Stack on native posix**:
 
-    ./autoptsclient-zephyr.py zephyr-main <path>/zephyr.exe -i SERVER_IP -l LOCAL_IP --hci 0
+    ./autoptsclient-zephyr.py zephyr-master <path>/zephyr.exe -i SERVER_IP -l LOCAL_IP --hci 0
 
 **Testing Mynewt build on nRF52**:
 
