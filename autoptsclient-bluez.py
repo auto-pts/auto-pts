@@ -26,6 +26,9 @@ from ptsprojects.bluez.iutctl import get_iut
 
 
 class BluezClient(autoptsclient.Client):
+    def __init__(self):
+        super().__init__(get_iut, 'bluez')
+
     def parse_args(self):
         arg_parser = autoptsclient.CliParser("PTS automation client")
         args = arg_parser.parse_args()
@@ -38,10 +41,6 @@ class BluezClient(autoptsclient.Client):
         autoprojects.iutctl.AUTO_PTS_LOCAL = autoptsclient.AUTO_PTS_LOCAL
         autoprojects.iutctl.init(args.btpclient_path)
 
-    def setup_project_pixits(self, ptses):
-        autoprojects.gap.set_pixits(ptses[0])
-        autoprojects.sm.set_pixits(ptses[0])
-
     def setup_test_cases(self, ptses):
         self.test_cases = autoprojects.gap.test_cases(ptses[0])
         self.test_cases += autoprojects.sm.test_cases(ptses[0])
@@ -53,7 +52,7 @@ class BluezClient(autoptsclient.Client):
 def main():
     """Main."""
 
-    client = BluezClient(get_iut, "bluez_")
+    client = BluezClient()
     client.start()
 
 

@@ -17,6 +17,7 @@
 
 """Common code for the auto PTS clients"""
 import _locale
+import importlib
 import os
 import errno
 import subprocess
@@ -53,6 +54,10 @@ log = logging.debug
 
 RUNNING_TEST_CASE = {}
 TEST_CASE_DB = None
+
+autoprojects = None
+
+profiles = {'dis', 'gap', 'gatt', 'sm', 'l2cap', 'mesh', 'mmdl'}
 
 # To test autopts client locally:
 # Envrinment variable AUTO_PTS_LOCAL must be set for FakeProxy to
@@ -1126,10 +1131,11 @@ class Client:
 
     """
 
-    def __init__(self, get_iut, store_tag):
+    def __init__(self, get_iut, project):
         self.test_cases = None
         self.get_iut = get_iut
-        self.store_tag = store_tag
+        self.store_tag = project + '_'
+        setup_project_name(project)
 
     def start(self):
         """Start main with exception handling."""
@@ -1172,8 +1178,8 @@ class Client:
 
         # root privileges only needed for native mode.
         if args.hci is not None:
-        	if not have_admin_rights():
-        		sys.exit("Please run this program as root.")
+            if not have_admin_rights():
+                sys.exit("Please run this program as root.")
         elif have_admin_rights():
                 sys.exit("Please do not run this program as root.")
 
@@ -1261,7 +1267,7 @@ class Client:
         sys.exit("Client.init_iutctl not implemented")
 
     def setup_project_pixits(self, ptses):
-        sys.exit("Client.setup_project_pixits not implemented")
+        setup_project_pixits(ptses)
 
     def setup_test_cases(self, ptses):
         sys.exit("Client.setup_test_cases not implemented")
@@ -1293,6 +1299,20 @@ def run_recovery(args, ptses):
         reinit_pts(ptses, args)
     except:
         traceback.print_exc()
+
+    setup_project_pixits(ptses)
+
+
+def setup_project_name(project):
+    global autoprojects
+    autoprojects = importlib.import_module('ptsprojects.' + project)
+
+
+def setup_project_pixits(ptses):
+    for profile in profiles:
+        mod = getattr(autoprojects, profile)
+        if mod is not None:
+            mod.set_pixits(ptses)
 
 
 def recover_autoptsserver(server):

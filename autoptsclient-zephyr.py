@@ -26,6 +26,9 @@ from ptsprojects.zephyr.iutctl import get_iut
 
 
 class ZephyrClient(autoptsclient.Client):
+    def __init__(self):
+        super().__init__(get_iut, 'zephyr')
+
     def parse_args(self):
         arg_parser = autoptsclient.CliParser("PTS automation client",
                                              autoprojects.iutctl.Board.names)
@@ -53,15 +56,6 @@ class ZephyrClient(autoptsclient.Client):
     def init_iutctl(self, args):
         autoprojects.iutctl.init(args)
 
-    def setup_project_pixits(self, ptses):
-        autoprojects.gap.set_pixits(ptses[0])
-        autoprojects.dis.set_pixits(ptses[0])
-        autoprojects.sm.set_pixits(ptses[0])
-        autoprojects.l2cap.set_pixits(ptses[0])
-        autoprojects.gatt.set_pixits(ptses)
-        autoprojects.mesh.set_pixits(ptses)
-        autoprojects.mmdl.set_pixits(ptses)
-
     def setup_test_cases(self, ptses):
         self.test_cases = autoprojects.gap.test_cases(ptses[0])
         self.test_cases += autoprojects.dis.test_cases(ptses)
@@ -78,7 +72,7 @@ class ZephyrClient(autoptsclient.Client):
 def main():
     """Main."""
 
-    client = ZephyrClient(get_iut, "zephyr_")
+    client = ZephyrClient()
     client.start()
 
 

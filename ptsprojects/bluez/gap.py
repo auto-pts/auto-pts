@@ -69,14 +69,16 @@ iut_svcs = '1111'
 iut_attr_db_off = 0x000b
 
 
-def set_pixits(pts):
+def set_pixits(ptses):
     """Setup GAP profile PIXITS for workspace. Those values are used for test
     case if not updated within test case.
 
     PIXITS always should be updated accordingly to project and newest version of
     PTS.
 
-    pts -- Instance of PyPTS"""
+    ptses -- list of PyPTS instances"""
+
+    pts = ptses[0]
 
     ad_str_flags = str(AdType.flags).zfill(2) + \
                    str(AdFlags.br_edr_not_supp).zfill(2)
