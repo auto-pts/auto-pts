@@ -31,7 +31,7 @@ z['auto_pts'] = {
     'cli_port': [65001, 65003],
     'srv_port': [65000, 65002],
     'project_path': '/path/to/project',
-    'workspace': 'zephyr-main',
+    'workspace': 'zephyr-master',
     'board': 'nrf52',
     'enable_max_logs': False,
     'retry': 2,
@@ -48,7 +48,7 @@ z['git'] = {
     'zephyr': {
         'path': 'path/to/repo',
         'remote': 'origin',
-        'branch': 'main',
+        'branch': 'master',
         'stash_changes': False,
     },
 }
