@@ -26,6 +26,9 @@ from ptsprojects.mynewt.iutctl import get_iut
 
 
 class MynewtClient(autoptsclient.Client):
+    def __init__(self):
+        super().__init__(get_iut, 'mynewt')
+
     def parse_args(self):
         arg_parser = autoptsclient.CliParser("PTS automation client",
                                              autoprojects.iutctl.Board.names)
@@ -37,13 +40,6 @@ class MynewtClient(autoptsclient.Client):
 
     def init_iutctl(self, args):
         autoprojects.iutctl.init(args.tty_file, args.board, args.rtt2pty)
-
-    def setup_project_pixits(self, ptses):
-        autoprojects.gap.set_pixits(ptses[0])
-        autoprojects.sm.set_pixits(ptses[0])
-        autoprojects.l2cap.set_pixits(ptses[0])
-        autoprojects.gatt.set_pixits(ptses[0])
-        autoprojects.mesh.set_pixits(ptses)
 
     def setup_test_cases(self, ptses):
         self.test_cases = autoprojects.gap.test_cases(ptses[0])
@@ -59,7 +55,7 @@ class MynewtClient(autoptsclient.Client):
 def main():
     """Main."""
 
-    client = MynewtClient(get_iut, "mynewt_")
+    client = MynewtClient()
     client.start()
 
 

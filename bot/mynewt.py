@@ -283,11 +283,8 @@ def run_tests(args, iut_config):
         autoprojects.iutctl.init(tty, args["board"])
 
         # Setup project PIXITS
-        autoprojects.gap.set_pixits(ptses[0])
-        autoprojects.gatt.set_pixits(ptses[0])
-        autoprojects.sm.set_pixits(ptses[0])
-        autoprojects.l2cap.set_pixits(ptses[0])
-        autoprojects.mesh.set_pixits(ptses)
+        autoptsclient.setup_project_name('mynewt')
+        autoptsclient.setup_project_pixits(ptses)
 
         test_cases = get_test_cases(ptses)
 

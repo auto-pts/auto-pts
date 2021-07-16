@@ -129,14 +129,16 @@ class PTS_DB:
     CHR_READ_WRITE_ALT_HDL = u16_hdl_str(iut_attr_db_off + 27)
 
 
-def set_pixits(pts):
+def set_pixits(ptses):
     """Setup GATT profile PIXITS for workspace. Those values are used for test
     case if not updated within test case.
 
     PIXITS always should be updated accordingly to project and newest version of
     PTS.
 
-    pts -- Instance of PyPTS"""
+    ptses -- list of PyPTS instances"""
+
+    pts = ptses[0]
 
     pts.set_pixit("GATT", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
     pts.set_pixit("GATT", "TSPX_iut_device_name_in_adv_packet_for_random_address", "")

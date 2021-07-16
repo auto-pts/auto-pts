@@ -42,7 +42,6 @@ import random
 from time import sleep
 
 
-
 def set_pixits(ptses):
     """Setup MESH profile PIXITS for workspace. Those values are used for test
     case if not updated within test case.
@@ -50,7 +49,7 @@ def set_pixits(ptses):
     PIXITS always should be updated accordingly to project and newest version of
     PTS.
 
-    pts -- Instance of PyPTS"""
+    ptses -- list of PyPTS instances"""
 
     pts = ptses[0]
 
