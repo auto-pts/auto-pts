@@ -196,17 +196,17 @@ class PtsInitArgs(object):
     'autoptsclient.init_pts' function
     """
     def __init__(self, args):
-        self.ip_addr = args['server_ip']
-        self.local_addr = args['local_ip']
         self.workspace = args["workspace"]
         self.bd_addr = args["bd_addr"]
-        self.enable_max_logs = args["enable_max_logs"]
-        self.retry = args["retry"]
-        self.stress_test = args["stress_test"]
+        self.enable_max_logs = args.get('enable_max_logs', False)
+        self.retry = args.get('retry', 0);
+        self.stress_test = args.get('stress_test', False)
         self.test_cases = []
         self.excluded = []
         self.srv_port = args["srv_port"]
         self.cli_port = args["cli_port"]
+        self.ip_addr = args.get('server_ip', ['127.0.0.1'] * len(self.srv_port))
+        self.local_addr = args.get('local_ip', ['127.0.0.1'] * len(self.cli_port))
         self.ykush = args.get('ykush', None)
         self.recovery = args.get('recovery', False)
         self.superguard = 60 * float(args.get('superguard', 0))
