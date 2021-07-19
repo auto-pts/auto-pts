@@ -41,10 +41,6 @@ class BluezClient(autoptsclient.Client):
         autoprojects.iutctl.AUTO_PTS_LOCAL = autoptsclient.AUTO_PTS_LOCAL
         autoprojects.iutctl.init(args.btpclient_path)
 
-    def setup_test_cases(self, ptses):
-        self.test_cases = autoprojects.gap.test_cases(ptses[0])
-        self.test_cases += autoprojects.sm.test_cases(ptses[0])
-
     def cleanup(self):
         autoprojects.iutctl.cleanup()
 

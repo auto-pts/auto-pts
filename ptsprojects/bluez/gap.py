@@ -156,9 +156,11 @@ def set_pixits(ptses):
     pts.set_pixit("GAP", "TSPX_URI", "162F2F7777772E626C7565746F6F74682E636F6D")
 
 
-def test_cases(pts):
+def test_cases(ptses):
     """Returns a list of GAP test cases
-    pts -- Instance of PyPTS"""
+    ptses -- list of PyPTS instances"""
+
+    pts = ptses[0]
 
     pts_bd_addr = pts.q_bd_addr
 

@@ -1270,7 +1270,7 @@ class Client:
         setup_project_pixits(ptses)
 
     def setup_test_cases(self, ptses):
-        sys.exit("Client.setup_test_cases not implemented")
+        self.test_cases = setup_test_cases(ptses)
 
     def cleanup(self):
         sys.exit("Client.cleanup not implemented")
@@ -1313,6 +1313,17 @@ def setup_project_pixits(ptses):
         mod = getattr(autoprojects, profile)
         if mod is not None:
             mod.set_pixits(ptses)
+
+
+def setup_test_cases(ptses):
+    test_cases = []
+
+    for profile in profiles:
+        mod = getattr(autoprojects, profile)
+        if mod is not None:
+            test_cases += mod.test_cases(ptses)
+
+    return test_cases
 
 
 def recover_autoptsserver(server):

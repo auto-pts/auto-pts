@@ -41,13 +41,6 @@ class MynewtClient(autoptsclient.Client):
     def init_iutctl(self, args):
         autoprojects.iutctl.init(args.tty_file, args.board, args.rtt2pty)
 
-    def setup_test_cases(self, ptses):
-        self.test_cases = autoprojects.gap.test_cases(ptses[0])
-        self.test_cases += autoprojects.gatt.test_cases(ptses[0])
-        self.test_cases += autoprojects.sm.test_cases(ptses[0])
-        self.test_cases += autoprojects.l2cap.test_cases(ptses[0])
-        self.test_cases += autoprojects.mesh.test_cases(ptses)
-
     def cleanup(self):
         autoprojects.iutctl.cleanup()
 

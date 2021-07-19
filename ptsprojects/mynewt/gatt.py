@@ -281,8 +281,11 @@ def test_cases_client(pts):
     return test_cases
 
 
-def test_cases(pts):
-    """Returns a list of GATT test cases"""
+def test_cases(ptses):
+    """Returns a list of GATT test cases
+    ptses -- list of PyPTS instances"""
+
+    pts = ptses[0]
 
     stack = get_stack()
 

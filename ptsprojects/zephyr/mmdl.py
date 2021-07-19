@@ -85,7 +85,7 @@ def set_pixits(ptses):
 
 def test_cases(ptses):
     """Returns a list of MMDL test cases
-    pts -- Instance of PyPTS"""
+    ptses -- list of PyPTS instances"""
 
     pts = ptses[0]
 
