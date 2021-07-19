@@ -109,9 +109,11 @@ def set_pixits(ptses):
     pts.set_pixit("L2CAP", "TSPX_generate_local_busy", "TRUE")
 
 
-def test_cases(pts):
+def test_cases(ptses):
     """Returns a list of L2CAP test cases
-    pts -- Instance of PyPTS"""
+    ptses -- list of PyPTS instances"""
+
+    pts = ptses[0]
 
     pts_bd_addr = pts.q_bd_addr
 

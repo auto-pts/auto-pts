@@ -162,22 +162,6 @@ def get_tty_path(name):
     return None
 
 
-def get_test_cases(ptses):
-    """Get all test cases
-    :param pts: PTS proxy instance
-    :return: ZTestCase list
-    """
-    test_cases = autoprojects.dis.test_cases(ptses)
-    test_cases += autoprojects.gap.test_cases(ptses[0])
-    test_cases += autoprojects.gatt.test_cases(ptses)
-    test_cases += autoprojects.sm.test_cases(ptses[0])
-    test_cases += autoprojects.l2cap.test_cases(ptses[0])
-    test_cases += autoprojects.mesh.test_cases(ptses)
-    test_cases += autoprojects.mmdl.test_cases(ptses)
-
-    return test_cases
-
-
 class PtsInitArgs(object):
     """
     Translates arguments provided in 'config.py' file to be used by
@@ -280,7 +264,7 @@ def run_tests(args, iut_config, tty):
         autoptsclient.setup_project_name('zephyr')
         autoptsclient.setup_project_pixits(ptses)
 
-        test_cases = get_test_cases(ptses)
+        test_cases = autoptsclient.setup_test_cases(ptses)
 
         status_count, results_dict, regressions = autoptsclient.run_test_cases(
             ptses, test_cases, _args[config])

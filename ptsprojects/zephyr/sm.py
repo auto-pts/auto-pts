@@ -57,9 +57,12 @@ def set_pixits(ptses):
     pts.set_pixit("SM", "TSPX_OOB_Data", "0000000000000000FE12036E5A889F4D")
     pts.set_pixit("SM", "TSPX_tester_role_optional", "L2CAP_ROLE_INITIATOR")
 
-def test_cases(pts):
+
+def test_cases(ptses):
     """Returns a list of SM test cases
-    pts -- Instance of PyPTS"""
+    ptses -- list of PyPTS instances"""
+
+    pts = ptses[0]
 
     pts_bd_addr = pts.q_bd_addr
     iut_device_name = 'Tester'

@@ -56,15 +56,6 @@ class ZephyrClient(autoptsclient.Client):
     def init_iutctl(self, args):
         autoprojects.iutctl.init(args)
 
-    def setup_test_cases(self, ptses):
-        self.test_cases = autoprojects.gap.test_cases(ptses[0])
-        self.test_cases += autoprojects.dis.test_cases(ptses)
-        self.test_cases += autoprojects.gatt.test_cases(ptses)
-        self.test_cases += autoprojects.sm.test_cases(ptses[0])
-        self.test_cases += autoprojects.l2cap.test_cases(ptses[0])
-        self.test_cases += autoprojects.mesh.test_cases(ptses)
-        self.test_cases += autoprojects.mmdl.test_cases(ptses)
-
     def cleanup(self):
         autoprojects.iutctl.cleanup()
 
