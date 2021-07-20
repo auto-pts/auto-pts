@@ -20,6 +20,7 @@ import os
 import logging
 import shlex
 import sys
+import time
 import serial
 
 from pybtp import defs
@@ -249,6 +250,7 @@ class ZephyrCtl:
             self.native_process = None
 
         if self.qemu_process and self.qemu_process.poll() is None:
+            time.sleep(1)
             self.qemu_process.terminate()
             self.qemu_process.wait()  # do not let zombies take over
             self.qemu_process = None
@@ -262,8 +264,9 @@ class ZephyrCtl:
 
         if self.socat_process:
             self.socat_process.terminate()
-            self.socat_process.wait();
+            self.socat_process.wait()
             self.socat_process = None
+
 
 class ZephyrCtlStub:
     '''Zephyr OS Control Class with stubs for testing'''
