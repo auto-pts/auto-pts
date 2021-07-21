@@ -284,15 +284,11 @@ class ZephyrCtlStub:
 class Board:
     """HW DUT board"""
 
-    arduino_101 = "arduino_101"
-    c1000 = "c1000"
     nrf52 = "nrf52"
     reel  = "reel_board"
 
     # for command line options
     names = [
-        arduino_101,
-        c1000,
         nrf52,
         reel
     ]
@@ -343,8 +339,6 @@ class Board:
     def get_reset_cmd(self):
         """Return reset command for a board"""
         reset_cmd_getters = {
-            self.arduino_101: self._get_reset_cmd_arduino_101,
-            self.c1000: self._get_reset_cmd_c1000,
             self.nrf52: self._get_reset_cmd_nrf52,
             self.reel: self._get_reset_cmd_reel
         }
@@ -354,36 +348,6 @@ class Board:
         reset_cmd = reset_cmd_getter()
 
         return reset_cmd
-
-    def _get_reset_cmd_arduino_101(self):
-        """Return reset command for Arduino 101 DUT
-
-        Dependency: Zephyr SDK
-
-        """
-        openocd_bin = "/opt/zephyr-sdk/sysroots/x86_64-pokysdk-linux/usr/bin/openocd"
-        openocd_scripts = "/opt/zephyr-sdk/sysroots/x86_64-pokysdk-linux/usr/share/openocd/scripts"
-        openocd_cfg = os.path.join(
-            os.path.split(self.kernel_image)[0],
-            "../../../../../../boards/x86/arduino_101/support/openocd.cfg")
-
-        return self.get_openocd_reset_cmd(openocd_bin, openocd_scripts,
-                                          openocd_cfg)
-
-    def _get_reset_cmd_c1000(self):
-        """Return reset command for C1000 DUT
-
-        Dependency: zflash
-
-        """
-        openocd_bin = "/opt/zephyr-sdk/sysroots/x86_64-pokysdk-linux/usr/bin/openocd"
-        openocd_scripts = "/opt/zephyr-sdk/sysroots/x86_64-pokysdk-linux/usr/share/openocd/scripts"
-        openocd_cfg = os.path.join(
-            os.path.split(self.kernel_image)[0],
-            "../../../../../../boards/x86/quark_se_c1000_devboard/support/")
-
-        return self.get_openocd_reset_cmd(openocd_bin, openocd_scripts,
-                                          openocd_cfg)
 
     def _get_reset_cmd_nrf52(self):
         """Return reset command for nRF52 DUT

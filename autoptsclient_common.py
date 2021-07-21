@@ -1050,6 +1050,10 @@ class CliParser(argparse.ArgumentParser):
                                "The file should be located on the "
                                "machine, where automation server is running.")
 
+        self.add_argument("kernel_image", nargs='?', default=None,
+                          help="OS kernel image to be used for testing,"
+                               "e.g. elf file for qemu, exe for native.")
+
         self.add_argument("-a", "--bd-addr",
                           help="Bluetooth device address of the IUT")
 
@@ -1256,9 +1260,15 @@ class Client:
         elif qemu_bin:
             if not find_executable(qemu_bin):
                 sys.exit("%s is needed but not found!" % (qemu_bin,))
+
+            if args.kernel_image is None or not os.path.isfile(args.kernel_image):
+                sys.exit("kernel_image %s is not a file!" % repr(args.kernel_image))
         else:
             if args.hci is None:
                 sys.exit("No TTY, HCI, COM, QEMU_BIN or btpclient.py path has been specified!")
+
+            if args.kernel_image is None or not os.path.isfile(args.kernel_image):
+                sys.exit("kernel_image %s is not a file!" % repr(args.kernel_image))
 
         args.superguard = 60 * args.superguard
 
