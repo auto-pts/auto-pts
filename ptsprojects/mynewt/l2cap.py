@@ -163,64 +163,9 @@ def test_cases(ptses):
 
     custom_test_cases = [
         # Connection Parameter Update
-        ZTestCase("L2CAP", "L2CAP/LE/CPU/BV-01-C",
-                  pre_conditions,
-                  generic_wid_hdl=l2cap_wid_hdl),
-        ZTestCase("L2CAP", "L2CAP/LE/CPU/BV-02-C",
-                  pre_conditions,
-                  generic_wid_hdl=l2cap_wid_hdl),
-        ZTestCase("L2CAP", "L2CAP/LE/CPU/BI-01-C",
-                  pre_conditions,
-                  generic_wid_hdl=l2cap_wid_hdl),
-        ZTestCase("L2CAP", "L2CAP/LE/CPU/BI-02-C",
-                  pre_conditions,
-                  generic_wid_hdl=l2cap_wid_hdl),
-
-        # Command Reject
-        ZTestCase("L2CAP", "L2CAP/LE/REJ/BI-01-C",
-                  pre_conditions,
-                  generic_wid_hdl=l2cap_wid_hdl),
-        ZTestCase("L2CAP", "L2CAP/LE/REJ/BI-02-C",
-                  pre_conditions,
-                  generic_wid_hdl=l2cap_wid_hdl),
-
-        # LE Credit Based Flow Control Mode
-        ZTestCase("L2CAP", "L2CAP/COS/CFC/BV-01-C",
-                  pre_conditions,
-                  generic_wid_hdl=l2cap_wid_hdl),
-        ZTestCase("L2CAP", "L2CAP/COS/CFC/BV-02-C",
-                  pre_conditions,
-                  generic_wid_hdl=l2cap_wid_hdl),
-        ZTestCase("L2CAP", "L2CAP/COS/CFC/BV-03-C",
-                  pre_conditions,
-                  generic_wid_hdl=l2cap_wid_hdl),
-        ZTestCase("L2CAP", "L2CAP/COS/CFC/BV-04-C",
-                  pre_conditions,
-                  generic_wid_hdl=l2cap_wid_hdl),
-        ZTestCase("L2CAP", "L2CAP/COS/CFC/BV-05-C",
-                  pre_conditions,
-                  generic_wid_hdl=l2cap_wid_hdl),
-        ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-01-C",
-                  pre_conditions,
-                  generic_wid_hdl=l2cap_wid_hdl),
-        ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-02-C",
-                  pre_conditions,
-                  generic_wid_hdl=l2cap_wid_hdl),
-        ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-03-C",
-                  pre_conditions,
-                  generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-04-C",
                   pre_conditions +
                   [TestFunc(lambda: stack.l2cap.psm_set(psm_unsupported))],
-                  generic_wid_hdl=l2cap_wid_hdl),
-        ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-05-C",
-                  pre_conditions,
-                  generic_wid_hdl=l2cap_wid_hdl),
-        ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-06-C",
-                  pre_conditions,
-                  generic_wid_hdl=l2cap_wid_hdl),
-        ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-07-C",
-                  pre_conditions,
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-10-C",
                   pre_conditions +
@@ -243,31 +188,6 @@ def test_cases(ptses):
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-15-C",
                   pre_conditions_keysize,
                   generic_wid_hdl=l2cap_wid_hdl),
-        ZTestCase("L2CAP", "L2CAP/LE/CFC/BI-01-C",
-                  pre_conditions,
-                  generic_wid_hdl=l2cap_wid_hdl),
-        ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-08-C",
-                  pre_conditions,
-                  generic_wid_hdl=l2cap_wid_hdl),
-        ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-09-C",
-                  pre_conditions,
-                  generic_wid_hdl=l2cap_wid_hdl),
-        ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-16-C",
-                  pre_conditions,
-                  generic_wid_hdl=l2cap_wid_hdl),
-        ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-18-C",
-                  pre_conditions,
-                  generic_wid_hdl=l2cap_wid_hdl),
-        ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-19-C",
-                  pre_conditions,
-                  generic_wid_hdl=l2cap_wid_hdl),
-        ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-20-C",
-                  pre_conditions,
-                  generic_wid_hdl=l2cap_wid_hdl),
-        ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-21-C",
-                  pre_conditions,
-                  generic_wid_hdl=l2cap_wid_hdl),
-
         # Enhanced Credit Based Flow Control Channel
         ZTestCase("L2CAP", "L2CAP/ECFC/BV-11-C",
                   pre_conditions_2,
@@ -289,9 +209,14 @@ def test_cases(ptses):
     test_cases = []
 
     for tc_name in test_case_name_list:
-        instance = ZTestCase('L2CAP', tc_name,
-                             pre_conditions_1,
-                             generic_wid_hdl=l2cap_wid_hdl)
+        if tc_name.startswith('L2CAP/ECFC'):
+            instance = ZTestCase('L2CAP', tc_name,
+                                 pre_conditions_1,
+                                 generic_wid_hdl=l2cap_wid_hdl)
+        else:
+            instance = ZTestCase('L2CAP', tc_name,
+                                 pre_conditions,
+                                 generic_wid_hdl=l2cap_wid_hdl)
 
         for custom_tc in custom_test_cases:
             if tc_name == custom_tc.name:
