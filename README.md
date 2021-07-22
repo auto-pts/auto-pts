@@ -8,7 +8,8 @@
    * [Running in Client/Server Mode](#running-in-clientserver-mode)
    * [Running AutoPTSClientBot](#running-autoptsclientbot)
    * [Zephyr with AutoPTS step-by-step setup tutorial](#zephyr-with-autopts-step-by-step-setup-tutorial)
-   * [IRC Channel on freenode.net](#irc-channel-on-freenodenet)
+   * [More examples of run and tips](#more-examples-of-run-and-tips)
+   * [Slack Channel](#slack-channel)
 
 # Introduction
 
@@ -16,7 +17,7 @@ The Bluetooth Profile Tuning Suite (PTS) is a Bluetooth testing tool provided by
 
 auto-pts is the Bluetooth PTS automation framework. auto-pts uses PTSControl COM API of PTS to automate testing.
 
-Over 460 test cases have been automated for Zephyr OS and Mynewt OS which reduced testing time from one man-month to 9 hours. auto-pts has been used to automate testing of three Bluetooth stacks thus far:
+Over 630 test cases have been automated for Zephyr OS and Mynewt OS which reduced testing time from 'one man - 2 months' to 15 hours. auto-pts has been used to automate testing of three Bluetooth stacks thus far:
 
 * BlueZ
 * Zephyr BLE
@@ -24,19 +25,28 @@ Over 460 test cases have been automated for Zephyr OS and Mynewt OS which reduce
 
 # Architecture
 
-![](images/autp-pts-architecture-diagram.png)
+2 setups are available:
+
+### Linux + Windows
+
+![](images/auto-pts-architecture-linux-diagram.png)
+
+### Windows
+
+![](images/auto-pts-architecture-win10-diagram.png)
+
 
 **auto-pts server**: Implemented in Python 3. Runs on Windows and provides over-the-network XML-RPC interface to PTS.
 
-**auto-pts client**: Implemented in Python 3. Runs on GNU/Linux, communicates with the auto-pts server (to start/stop test cases, to send response to PTS inquiries) and communicates with the Implementation Under Test to take appropriate actions.
+**auto-pts client**: Implemented in Python 3. Runs on GNU/Linux or Windows, communicates with the auto-pts server (to start/stop test cases, to send response to PTS inquiries) and communicates with the Implementation Under Test to take appropriate actions.
 
 **Implementation Under Test (IUT)**: It is the host running Bluetooth stack to be tested, this could be an emulator or real hardware. The IUT is controlled by using Bluetooth Test Protocol.
 
 **Bluetooth Test Protocol (BTP)**: Used to communicate with the IUT. See `doc/btp_spec.txt`
 
-Update: Now for Zephyr you can run auto-pts client and server both under Windows 10: [Zephyr with AutoPTS step-by-step setup tutorial](#zephyr-with-autopts-step-by-step-setup-tutorial)
-
 # Linux Prerequisites
+
+For auto-pts client under Linux:
 
 1. `socat` that is used to transfer BTP data stream from UART's tty file.
 
@@ -46,17 +56,49 @@ Update: Now for Zephyr you can run auto-pts client and server both under Windows
 
         python3 -m pip install --user -r autoptsclient_requirements.txt
 
-3. Download and install latest nrftools (version >= 10.12.1) from site
-   https://www.nordicsemi.com/Software-and-tools/Development-Tools/nRF-Command-Line-Tools/Download
-   and run default install.
+The rest of the setup is platform/mode specific:
+
+### BlueZ
+
+See [ptsprojects/bluez/README.md](./ptsprojects/bluez/README.md)
+
+### Zephyr BLE
+
+See [Zephyr with AutoPTS step-by-step setup tutorial](#zephyr-with-autopts-step-by-step-setup-tutorial)
+
+### Mynewt NimBLE
+
+Perform setup from [Apache MyNewt](https://mynewt.apache.org/latest/get_started/index.html), typically:
+
+1. [Install Newt](https://mynewt.apache.org/latest/newt/install/newt_linux.html)
+2. [Instal toolchain and J-Link](https://mynewt.apache.org/latest/get_started/native_install/cross_tools.html)
+3. Test setup with [Blinky project](https://mynewt.apache.org/latest/tutorials/blinky/nRF52.html)
 
 # Windows Prerequisites
+
+For auto-pts server:
 
 To be able to run PTS in automation mode, there should be no PTS instances running in the GUI mode. Hence, before running these scripts close the PTS GUI.
 
 1. Install required modules with:
 
         python.exe -m pip install --user -r autoptsserver_requirements.txt
+
+For auto-pts client:
+
+1. Install required modules with:
+
+        python.exe -m pip install --user -r autoptsclient_requirements.txt
+
+2. Download socat.exe from https://sourceforge.net/projects/unix-utils/files/socat/1.7.3.2/ and add to PATH socat.exe directory.
+
+The rest of the auto-pts client setup is platform/mode specific:
+
+### Zephyr BLE
+
+Check out [Zephyr with AutoPTS step-by-step setup tutorial](#zephyr-with-autopts-step-by-step-setup-tutorial)
+
+### MyNewt NimBle (WIP)
 
 # PTS Workspace Setup
 
@@ -92,7 +134,7 @@ Then start the AutoPTS Client using e.g. own workspace file:
 
 **Testing Zephyr combined (controller + host) build on nRF52**:
 
-    ./autoptsclient-zephyr.py zephyr-master <path>/zephyr.elf -i SERVER_IP -l LOCAL_IP -t /dev/ttyACM0 -b nrf52
+    ./autoptsclient-zephyr.py zephyr-master -i SERVER_IP -l LOCAL_IP -t /dev/ttyACM0 -b nrf52
 
 **Testing Zephyr Host Stack on native posix**:
 
@@ -134,7 +176,8 @@ and `bot/config.py.mynewt.sample` are provided. The file contains setup and proj
 This may contain few sections:
 - `name` - AutoPTS project name
 * `auto_pts` - AutoPTS configuration
-    - `server_ip` - AutoPTSServer IP address
+    - `client_ip` - AutoPTSClient IP address/es
+    - `server_ip` - AutoPTSServer IP address/es
     - `cli_port` - AutoPTSClient port(s)
     - `srv_port` - AutoPTSServer port(s)
     - `project_path` - path to project source directory
@@ -144,6 +187,14 @@ This may contain few sections:
     - `retry` - maximum repeat count per test
     - `stress test` - repeat every test `retry` number of times, even if result was PASS
     - `bd_addr` - IUT Bluetooth Address (optional)
+    - `recovery` - enable recovery after non-valid result (optional)
+    - `superguard` - force recovery when server has been idle for the given time (optional)
+    - `ykush` - reconnect board/PTS dongle during recovery, if YKUSH Switchable Hub is used (optional)
+- `git` - Git repositories configuration (optional)
+    - `path` - path to project repo
+    - `remote` - git remote repo name
+    - `branch` - branch selected at git checkout
+    - `stash_changes` - stash changes if local repo is dirty
 - `mail` - Mail configuration (optional)
     - `sender` - sender e-mail address
     - `smtp_host`, `smtp_port` - sender SMTP configuration
@@ -151,6 +202,7 @@ This may contain few sections:
     - `passwd` - sender mailbox password. When Google account is used [allow
     less secure apps to access account](https://myaccount.google.com/lesssecureapps)
     - `recipients` - list of e-mail addresses
+    - `start_tls` - put SMTP server into TLS mode
 * `gdrive` - GDrive configuration (optional)
     - `root_directory_id` - Root Directory ID, can be obtained from URL,
     `https://drive.google.com/drive/u/0/folders/<GoogleDriveDirID>`
@@ -184,9 +236,83 @@ Check out the guide how to set up AutoPTS for Zephyr + nRF52 under:
 
   https://github.com/zephyrproject-rtos/zephyr/blob/main/doc/guides/bluetooth/autopts/autopts-win10.rst
 
-# IRC Channel on freenode.net
+# More examples of run and tips
 
-Our IRC channel on freenode.net is #autopts
+**Run many instances of autoptsserver on one Windows**
+
+Run in first console:
+
+    $ python autoptsserver.py
+
+and in second console:
+
+    $ python autoptsserver.py -S 65002
+
+or both in one console
+
+    $ python autoptsserver.py -S 65000 65002
+
+**Run many autoptsclient-zephyr.py instances on one machine**
+
+Under Windows, run in first console: (-S 65000 -C 65001 by default)
+
+    $ python ./autoptsclient-zephyr.py zephyr-master -t COM3 -b nrf52
+
+and in second console:
+
+    $ python ./autoptsclient-zephyr.py zephyr-master -t COM4 -b nrf52 -S 65002 -C 65003
+
+and more. Note that IP 127.0.0.1 is default, so there is no need to specify with -i and -l options.
+
+Under Linux, run in first console: (-S 65000 -C 65001 by default)
+
+    $ ./autoptsclient-zephyr.py zephyr-master -i 192.168.4.2 192.168.4.2 -l 192.168.4.1 192.168.4.1 -t /dev/ttyACM0 -b nrf52
+
+in second console:
+
+    $ ./autoptsclient-zephyr.py zephyr-master -i 192.168.4.2 192.168.4.2 -l 192.168.4.1 192.168.4.1 -t /dev/ttyACM1 -b nrf52 -S 65002 -C 65003
+
+**Example run of autoptsclient-zephyr for MESH testing:**
+
+In some test cases 2 instances of PTS are needed. So run autoptsserver with 2 instances:
+
+    $ python autoptsserver.py -S 65000 65002
+
+Under Windows, run in second console:
+
+    $ python ./autoptsclient-zephyr.py zephyr-master -t COM3 -b nrf52 -c MESH -S 65000 65002 -C 65001 65003
+
+Under Linux, run in one console:
+
+    $ ./autoptsclient-zephyr.py zephyr-master -i 192.168.4.2 192.168.4.2 -l 192.168.4.1 192.168.4.1 -t /dev/ttyACM0 -b nrf52 -c MESH -S 65000 65002 -C 65001 65003
+
+#### Recovery tips
+
+This feature was created to enable long runs of bot without supervision, because in continuous development some regressions on IUT or PTS side sometimes loop a test case somewhere.
+
+**Recover autoptsserver after exception**
+
+After python exception caught, kills **all** existing processes of PTS.exe, Fts.exe on Windows machine, cleans temporary PTS workspaces, and tries to restart autoptsserver. So if you need 2 autoptsserver instances, e.g. for MESH tests, this is the proper way to run them with recovery:
+
+    $ python autoptsserver.py -S 65000 65002 --recovery
+    
+If you have YKUSH hub, you can run with option --ykush, so recovery steps will include re-plugin of PTS dongles:
+
+    $ python autoptsserver.py -S 65000 65002 --recovery --ykush 1 2
+
+where 1 and 2 are numbers of YKUSH USB ports (More about [YKUSH hub](https://www.yepkit.com/products/ykush)).
+
+Helpful --superguard option will blindly trigger recovery after given amount of time in minutes:
+
+    $ python autoptsserver.py -S 65000 65002 --superguard 15
+
+**Recover autoptsclient after exception**
+
+Recovery of autoptsclient is triggered after python exception or test case result other than PASS, INCONC or FAIL. It sends recovery request to autoptsserver, so server has to run in recovery mode too.
+
+    $ python ./autoptsclient-zephyr.py zephyr-master -t COM3 -b nrf52 --recovery
+
+Options --superguard and --ykush works on autoptsclient same as on autoptsserver. So when run with --superguard 15, after 15 minutes of unfinished test case, superguard will force recovery. With option --ykush \<port\> the IUT board will be re-plugged during recovery.
 
 # Slack Channel 
 
