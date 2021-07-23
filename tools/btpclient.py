@@ -812,12 +812,12 @@ def cmd_loop(cmds_dict):
                              rl_prompt_ignore(sgr_reset))
 
     while True:
-        input = eval(input(prompt))
+        text = input(prompt)
 
-        if input == '':
+        if text == '':
             continue
 
-        words = input.split()
+        words = text.split()
         choice = words[0]
         params = words[1:]
 
