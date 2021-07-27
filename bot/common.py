@@ -25,6 +25,7 @@ import sqlite3 as sql
 import git
 import shutil
 import zipfile
+import yaml
 
 import smtplib
 from email.mime.multipart import MIMEMultipart
@@ -319,6 +320,13 @@ def make_report_xlsx(results_dict, status_dict, regressions_list,
     :param regressions_list: list of regressions found
     :return:
     """
+
+    with open('errata.yaml', 'r') as stream:
+        try:
+            errata = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+
     header = "AutoPTS Report: " \
              "{}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
     workbook = xlsxwriter.Workbook(REPORT_XLSX)
@@ -338,6 +346,8 @@ def make_report_xlsx(results_dict, status_dict, regressions_list,
 
     for k, v in list(results_dict.items()):
         worksheet.write(row, col, k)
+        if k in errata:
+            v += ' - ERRATA ' + errata[k]
         worksheet.write(row, col + 1, v)
         if k in list(descriptions.keys()):
             worksheet.write(row, col + 2, descriptions[k])
@@ -395,8 +405,19 @@ def make_report_txt(results_dict, zephyr_hash):
     filename = os.path.join(os.getcwd(), REPORT_TXT)
     f = open(filename, "w")
 
+    errata = {}
+
+    with open('errata.yaml', 'r') as stream:
+        try:
+            errata = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+
     f.write("%s\n" % zephyr_hash)
     for tc, result in list(results_dict.items()):
+        if tc in errata:
+            result += ' - ERRATA ' + errata[tc]
+
         # The frist id in the test case is test group
         tg = tc.split('/')[0]
         f.write("%s%s%s\n" % (tg.ljust(8,' '), tc.ljust(32, ' '), result))
