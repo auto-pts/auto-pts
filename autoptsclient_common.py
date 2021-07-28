@@ -1310,7 +1310,7 @@ def setup_project_name(project):
 
 def setup_project_pixits(ptses):
     for profile in profiles:
-        mod = getattr(autoprojects, profile)
+        mod = getattr(autoprojects, profile, None)
         if mod is not None:
             mod.set_pixits(ptses)
 
@@ -1319,7 +1319,7 @@ def setup_test_cases(ptses):
     test_cases = []
 
     for profile in profiles:
-        mod = getattr(autoprojects, profile)
+        mod = getattr(autoprojects, profile, None)
         if mod is not None:
             test_cases += mod.test_cases(ptses)
 
