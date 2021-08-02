@@ -308,6 +308,19 @@ def hdl_wid_59(desc):
     return True
 
 
+def hdl_wid_60(desc):
+    data = re.search("[A-F0-9]{32,}", desc).group(0)
+    # strip data length from first position
+    data = data[4:]
+    stack = get_stack()
+    rx_data = stack.l2cap.rx_data_get_all(10)
+    for channels in rx_data:
+        for rxed in channels:
+            if binascii.hexlify(rxed).decode().upper() == data:
+                return True
+    return False
+
+
 def hdl_wid_100(desc):
     l2cap = get_stack().l2cap
     for channel in l2cap.channels:
@@ -529,6 +542,10 @@ def hdl_wid_262(desc):
     for _ in range(5):
         btp.l2cap_send_data(0, '00' * channel.peer_mtu)
         time.sleep(2)
+    return True
+
+
+def hdl_wid_270(desc):
     return True
 
 

@@ -203,6 +203,9 @@ def test_cases(ptses):
                   [TestFunc(btp.l2cap_le_listen, le_psm_eatt, le_initial_mtu,
                             L2cap.unacceptable_parameters)],
                   generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BV-29-C",
+                  pre_conditions_2,
+                  generic_wid_hdl=l2cap_wid_hdl),
     ]
 
     test_case_name_list = pts.get_test_case_list('L2CAP')
