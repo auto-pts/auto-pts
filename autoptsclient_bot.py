@@ -15,11 +15,13 @@
 # more details.
 #
 import logging
+import os
 import sys
 import time
 import _locale
-
 import schedule
+import importlib
+from argparse import ArgumentParser, RawTextHelpFormatter, SUPPRESS
 
 from bot.config import BotProjects
 from bot.zephyr import main as zephyr
@@ -44,14 +46,69 @@ project2main = {
 }
 
 
+class CliParser(ArgumentParser):
+    def __init__(self, parents):
+        super().__init__(formatter_class=RawTextHelpFormatter,
+                         usage=sys.argv[0] + ' [project|myconfig] [-h] [<other project specific options>]',
+                         parents=parents,
+                         description='''AutoPTS Bot Client v0.x
+
+optional positional arguments:
+  {mynewt,zephyr,myconfig}
+                        Select project to run as a simple client or
+                        give the name of custom configuration file.
+    mynewt              Run as autoptsclient-mynewt.py
+    zephyr              Run as autoptsclient-zephyr.py
+    myconfig            Name of custom bot/myconfig.py file. ''', epilog='''
+Example usage:
+Run bot with the default bot/config.py:
+$ python autoptsclient_bot.py
+
+Run bot with a custom config py file. myconfig is an example name,
+but the file must be in bot/.:
+$ python autoptsclient_bot.py myconfig
+
+Run bot as a simple client, e.g. for 'zephyr' project:
+$ python autoptsclient_bot.py zephyr zephyr-master -t /dev/ttyACM0 -l 192.168.3.1 -i 192.168.3.2 -b nrf52 -c GAP
+
+Run bot with overwritten options of config.py:
+$ python autoptsclient_bot.py -c GAP/CONN --rtt-log
+
+Print help for 'zephyr' project:
+$ python autoptsclient_bot.py zephyr -h''')
+        # Just ignore the other project-specific positional arguments
+        self.add_argument('other', nargs='*', default=None, help=SUPPRESS)
+
+
 def main():
     # Workaround for logging error: "UnicodeEncodeError: 'charmap' codec can't
     # encode character '\xe6' in position 138: character maps to <undefined>",
     # which occurs under Windows with default encoding other than cp1252
     # each time log() is called.
-    _locale._getdefaultlocale = (lambda *args: ['en_US', 'utf8'])
+    _locale._getdefaultlocale = (lambda *arg: ['en_US', 'utf8'])
 
-    for project in BotProjects:
+    bot_projects = []
+    parents = []
+    mod = None
+
+    if len(sys.argv) > 1 and os.path.isfile('bot/' + sys.argv[1] + '.py'):
+        conf = sys.argv.pop(1)
+        mod = importlib.import_module('bot.' + conf)
+
+        if conf in project2main.keys():
+            parents.append(mod.BotCliParser(False))
+        else:
+            bot_projects += mod.BotProjects
+    else:
+        bot_projects = BotProjects
+
+    arg_parser = CliParser(parents)
+    arg_parser.parse_known_args()
+
+    if len(bot_projects) == 0 and mod is not None:
+        mod.SimpleClient().start()
+
+    for project in bot_projects:
         # TODO Solve the issue of overlapping jobs
         if 'scheduler' in project:
             for day, time_ in list(project['scheduler'].items()):

@@ -15,22 +15,17 @@
 # more details.
 #
 
-import collections
-import datetime
 import logging
 import os
 import subprocess
 import sys
 import time
-from argparse import Namespace
-
+import datetime
+import collections
 import serial
-
-from pybtp import btp
 import autoptsclient_common as autoptsclient
-import ptsprojects.stack as stack
 import ptsprojects.zephyr as autoprojects
-from ptsprojects.zephyr.iutctl import get_iut
+from ptsprojects.zephyr.iutctl import get_iut, log
 import bot.common
 
 
@@ -151,122 +146,6 @@ def get_tty_path(name):
     return None
 
 
-class PtsInitArgs:
-    """
-    Translates arguments provided in 'config.py' file to be used by
-    'autoptsclient.init_pts' function
-    """
-
-    def __init__(self, args):
-        self.workspace = args["workspace"]
-        self.bd_addr = args["bd_addr"]
-        self.enable_max_logs = args.get('enable_max_logs', False)
-        self.retry = args.get('retry', 0)
-        self.stress_test = args.get('stress_test', False)
-        self.test_cases = []
-        self.excluded = []
-        self.srv_port = args.get('srv_port', [65000])
-        self.cli_port = args.get('cli_port', [65001])
-        self.ip_addr = args.get('server_ip', ['127.0.0.1'] * len(self.srv_port))
-        self.local_addr = args.get('local_ip', ['127.0.0.1'] * len(self.cli_port))
-        self.ykush = args.get('ykush', None)
-        self.recovery = args.get('recovery', False)
-        self.superguard = 60 * float(args.get('superguard', 0))
-
-
-def run_tests(args, iut_config, tty):
-    """Run test cases
-    :param args: AutoPTS arguments
-    :param iut_config: IUT configuration
-    :param tty path
-    :return: tuple of (status, results) dictionaries
-    """
-    results = {}
-    status = {}
-    descriptions = {}
-    total_regressions = []
-    _args = {}
-
-    config_default = "prj.conf"
-    _args[config_default] = PtsInitArgs(args)
-
-    for config, value in list(iut_config.items()):
-        if 'test_cases' not in value:
-            # Rename default config
-            _args[config] = _args.pop(config_default)
-            config_default = config
-            continue
-
-        if config != config_default:
-            _args[config] = PtsInitArgs(args)
-
-        _args[config].test_cases = value.get('test_cases', [])
-
-        if 'overlay' in value:
-            _args[config_default].excluded += _args[config].test_cases
-
-    ptses = []
-    autoptsclient.init_pts(_args[config_default], ptses,
-                           "zephyr_" + str(args["board"]))
-    btp.init(get_iut)
-
-    # Main instance of PTS
-    pts = ptses[0]
-
-    # Read PTS Version and keep it for later use
-    args['pts_ver'] = "%s" % pts.get_version()
-
-    stack.init_stack()
-    stack_inst = stack.get_stack()
-    stack_inst.synch_init([pts.callback_thread for pts in ptses])
-
-    for config, value in list(iut_config.items()):
-        if 'overlay' in value:
-            apply_overlay(args["project_path"], config_default, config,
-                          value['overlay'])
-
-        build_and_flash(args["project_path"],
-                        autopts2board[args["board"]],
-                        tty,
-                        config)
-        logging.debug("TTY path: %s", tty)
-
-        flush_serial(tty)
-        time.sleep(10)
-
-        autoprojects.iutctl.init(Namespace(kernel_image=args["kernel_image"],
-                                           tty_file=tty, board=args["board"],
-                                           hci=None, rtt2pty=None))
-
-        # Setup project PIXITS
-        autoptsclient.setup_project_name('zephyr')
-        autoptsclient.setup_project_pixits(ptses)
-
-        test_cases = autoptsclient.setup_test_cases(ptses)
-
-        status_count, results_dict, regressions = autoptsclient.run_test_cases(
-            ptses, test_cases, _args[config])
-        total_regressions += regressions
-
-        for k, v in list(status_count.items()):
-            if k in list(status.keys()):
-                status[k] += v
-            else:
-                status[k] = v
-
-        results.update(results_dict)
-        autoprojects.iutctl.cleanup()
-
-    for test_case_name in list(results.keys()):
-        project_name = test_case_name.split('/')[0]
-        descriptions[test_case_name] = \
-            pts.get_test_case_description(project_name, test_case_name)
-
-    autoptsclient.shutdown_pts(ptses)
-
-    return status, results, descriptions, total_regressions
-
-
 def zephyr_hash_url(commit):
     """ Create URL for commit in Zephyr
     :param commit: Commit ID to append
@@ -316,6 +195,51 @@ def compose_mail(args, mail_cfg, mail_ctx):
     return subject, body
 
 
+class ZephyrBotConfigArgs(bot.common.BotConfigArgs):
+    def __init__(self, args):
+        super().__init__(args)
+        self.board_name = args['board']
+        self.tty_file = args['tty_file']
+
+
+class ZephyrBotCliParser(bot.common.BotCliParser):
+    def __init__(self, add_help=True):
+        super().__init__(description="PTS automation client",
+                         board_names=autoprojects.iutctl.Board.names,
+                         add_help=add_help)
+
+
+class ZephyrBotClient(bot.common.BotClient):
+    def __init__(self):
+        super().__init__(get_iut, 'zephyr', autoprojects.iutctl.Board.names)
+        self.arg_parser = ZephyrBotCliParser()
+        self.parse_config = ZephyrBotConfigArgs
+        self.config_default = "prj.conf"
+
+    def apply_config(self, args, config, value):
+        if 'overlay' in value:
+            apply_overlay(args.project_path, self.config_default, config,
+                          value['overlay'])
+
+        log("TTY path: %s" % args.tty_file)
+
+        if not args.no_build:
+            build_and_flash(args.project_path, autopts2board[args.board_name],
+                            args.tty_file, config)
+
+            flush_serial(args.tty_file)
+            time.sleep(10)
+
+
+class ZephyrClient(autoptsclient.Client):
+    def __init__(self):
+        super().__init__(get_iut, 'zephyr', autoprojects.iutctl.Board.names)
+
+
+SimpleClient = ZephyrClient
+BotCliParser = ZephyrBotCliParser
+
+
 def main(cfg):
 
     bot.common.pre_cleanup()
@@ -337,11 +261,11 @@ def main(cfg):
         autoptsclient.board_power(args['ykush'], True)
         time.sleep(1)
 
-    tty, jlink_srn = bot.common.get_free_device()
+    args['tty_file'], jlink_srn = bot.common.get_free_device()
 
     try:
         summary, results, descriptions, regressions = \
-            run_tests(args, cfg.get('iut_config', {}), tty)
+            ZephyrBotClient().run_tests(args, cfg.get('iut_config', {}))
     except Exception as e:
         bot.common.release_device(jlink_srn)
         raise e
@@ -364,7 +288,7 @@ def main(cfg):
         drive.upload(report_txt)
         drive.upload_folder(logs_folder)
         drive.upload("TestCase.db")
-        bot.common.upload_bpv_logs(drive, PtsInitArgs(args))
+        bot.common.upload_bpv_logs(drive, ZephyrBotConfigArgs(args))
 
     if 'mail' in cfg:
         print("Sending email ...")

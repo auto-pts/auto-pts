@@ -40,13 +40,12 @@ def get_iut_cmd(btpclient_path):
 class IUTCtl:
     '''IUT Control Class'''
 
-    def __init__(self, btpclient_path):
+    def __init__(self, args):
         """Constructor."""
         log("%s.%s btpclient_path=%s", self.__class__, self.__init__.__name__,
-            btpclient_path)
+            args.btpclient_path)
 
-        self.btpclient_path = btpclient_path
-
+        self.btpclient_path = args.btpclient_path
         self.btp_socket = None
         self.iut_process = None
 
@@ -109,14 +108,14 @@ def get_iut():
     return IUT
 
 
-def init(btpclient_path):
+def init(args):
     """IUT init routine"""
     global IUT_LOG_FO
     global IUT
 
     IUT_LOG_FO = open("iut-bluez.log", "w")
 
-    IUT = IUTCtl(btpclient_path)
+    IUT = IUTCtl(args)
 
 
 def cleanup():

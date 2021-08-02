@@ -20,13 +20,9 @@ import os
 import subprocess
 import sys
 import time
-
-import autoptsclient_common as autoptsclient
 import ptsprojects.mynewt as autoprojects
-import ptsprojects.stack as stack
-from pybtp import btp
-from ptsprojects.mynewt.iutctl import get_iut
-
+from autoptsclient_common import Client
+from ptsprojects.mynewt.iutctl import get_iut, log
 import bot.common
 
 
@@ -118,8 +114,6 @@ def build_and_flash(project_path, board, overlay=None):
     check_call('newt load {}_boot'.format(board).split(), cwd=project_path)
     check_call('newt load bttester'.split(), cwd=project_path)
 
-    return get_tty_path("J-Link")
-
 
 def get_target_description(project_path):
     return subprocess.check_output('newt target show bttester', shell=True,
@@ -176,116 +170,6 @@ def make_repo_status(repos_info):
     return ', '.join(status_list)
 
 
-class PtsInitArgs:
-    """
-    Translates arguments provided in 'config.py' file to be used by
-    'autoptsclient.init_pts' function
-    """
-
-    def __init__(self, args):
-        self.workspace = args["workspace"]
-        self.bd_addr = args["bd_addr"]
-        self.enable_max_logs = args.get('enable_max_logs', False)
-        self.retry = args.get('retry', 0)
-        self.stress_test = args.get('stress_test', False)
-        self.test_cases = []
-        self.excluded = []
-        self.srv_port = args.get('srv_port', [65000])
-        self.cli_port = args.get('cli_port', [65001])
-        self.ip_addr = args.get('server_ip', ['127.0.0.1'] * len(self.srv_port))
-        self.local_addr = args.get('local_ip', ['127.0.0.1'] * len(self.cli_port))
-        self.ykush = args.get('ykush', None)
-        self.recovery = args.get('recovery', False)
-        self.superguard = 60 * float(args.get('superguard', 0))
-
-
-def run_tests(args, iut_config):
-    """Run test cases
-    :param args: AutoPTS arguments
-    :param iut_config: IUT configuration
-    :return: tuple of (status, results) dictionaries
-    """
-    results = {}
-    status = {}
-    descriptions = {}
-    total_regressions = []
-    _args = {}
-
-    config_default = "default.conf"
-    _args[config_default] = PtsInitArgs(args)
-
-    for config, value in list(iut_config.items()):
-        if 'test_cases' not in value:
-            # Rename default config
-            _args[config] = _args.pop(config_default)
-            config_default = config
-            continue
-
-        if config != config_default:
-            _args[config] = PtsInitArgs(args)
-
-        _args[config].test_cases = value.get('test_cases', [])
-
-        if 'overlay' in value:
-            _args[config_default].excluded += _args[config].test_cases
-
-    ptses = []
-    autoptsclient.init_pts(_args[config_default], ptses,
-                           "mynewt_" + str(args["board"]))
-    btp.init(get_iut)
-
-    # Main instance of PTS
-    pts = ptses[0]
-
-    # Read PTS Version and keep it for later use
-    args['pts_ver'] = "%s" % pts.get_version()
-
-    stack.init_stack()
-    stack_inst = stack.get_stack()
-    stack_inst.synch_init([pts.callback_thread for pts in ptses])
-
-    for config, value in list(iut_config.items()):
-        overlay = None
-
-        if 'overlay' in value:
-            overlay = value['overlay']
-
-        tty = build_and_flash(args["project_path"], args["board"], overlay)
-        logging.debug("TTY path: %s",  tty)
-
-        time.sleep(10)
-
-        autoprojects.iutctl.init(tty, args["board"])
-
-        # Setup project PIXITS
-        autoptsclient.setup_project_name('mynewt')
-        autoptsclient.setup_project_pixits(ptses)
-
-        test_cases = autoptsclient.setup_test_cases(ptses)
-
-        status_count, results_dict, regressions = autoptsclient.run_test_cases(
-            ptses, test_cases, _args[config])
-        total_regressions += regressions
-
-        for k, v in list(status_count.items()):
-            if k in list(status.keys()):
-                status[k] += v
-            else:
-                status[k] = v
-
-        results.update(results_dict)
-        autoprojects.iutctl.cleanup()
-
-    for test_case_name in list(results.keys()):
-        project_name = test_case_name.split('/')[0]
-        descriptions[test_case_name] = \
-            pts.get_test_case_description(project_name, test_case_name)
-
-    autoptsclient.shutdown_pts(ptses)
-
-    return status, results, descriptions, total_regressions
-
-
 def compose_mail(args, mail_cfg, mail_ctx):
     """ Create a email body
     """
@@ -317,6 +201,48 @@ def compose_mail(args, mail_cfg, mail_ctx):
     return subject, body
 
 
+class MynewtBotConfigArgs(bot.common.BotConfigArgs):
+    def __init__(self, args):
+        super().__init__(args)
+        self.board_name = args['board']
+        self.tty_file = args.get('tty_file', None)
+
+
+class MynewtBotCliParser(bot.common.BotCliParser):
+    def __init__(self, add_help=True):
+        super().__init__(description="PTS automation client", board_names=autoprojects.iutctl.Board.names,
+                         add_help=add_help)
+
+
+class MynewtBotClient(bot.common.BotClient):
+    def __init__(self):
+        super().__init__(get_iut, 'mynewt', autoprojects.iutctl.Board.names)
+        self.arg_parser = MynewtBotCliParser()
+        self.parse_config = MynewtBotConfigArgs
+        self.config_default = "default.conf"
+
+    def apply_config(self, args, config, value):
+        overlay = None
+
+        if 'overlay' in value:
+            overlay = value['overlay']
+
+        log("TTY path: %s" % args.tty_file)
+
+        if not args.no_build:
+            build_and_flash(args.project_path, args.board_name, overlay)
+            time.sleep(10)
+
+
+class MynewtClient(Client):
+    def __init__(self):
+        super().__init__(get_iut, 'mynewt', autoprojects.iutctl.Board.names)
+
+
+SimpleClient = MynewtClient
+BotCliParser = MynewtBotCliParser
+
+
 def main(cfg):
     print("Mynewt bot start!")
 
@@ -332,8 +258,9 @@ def main(cfg):
     else:
         repo_status = ''
 
+    args['tty_file'], jlink_srn = bot.common.get_free_device()
     summary, results, descriptions, regressions = \
-        run_tests(args, cfg.get('iut_config', {}))
+        MynewtBotClient().run_tests(args, cfg.get('iut_config', {}))
 
     report_file = bot.common.make_report_xlsx(results, summary, regressions,
                                               descriptions)
@@ -353,7 +280,7 @@ def main(cfg):
         drive.upload_folder(logs_folder)
         drive.upload(build_info_file)
         drive.upload("TestCase.db")
-        bot.common.upload_bpv_logs(drive, PtsInitArgs(args))
+        bot.common.upload_bpv_logs(drive, MynewtBotConfigArgs(args))
 
     if 'mail' in cfg:
         print("Sending email ...")

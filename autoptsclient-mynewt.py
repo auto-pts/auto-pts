@@ -24,22 +24,7 @@ from ptsprojects.mynewt.iutctl import get_iut
 
 class MynewtClient(autoptsclient.Client):
     def __init__(self):
-        super().__init__(get_iut, 'mynewt')
-
-    def parse_args(self):
-        arg_parser = autoptsclient.CliParser("PTS automation client",
-                                             autoprojects.iutctl.Board.names)
-
-        args = arg_parser.parse_args()
-        self.check_args(args)
-
-        return args
-
-    def init_iutctl(self, args):
-        autoprojects.iutctl.init(args.tty_file, args.board, args.rtt2pty)
-
-    def cleanup(self):
-        autoprojects.iutctl.cleanup()
+        super().__init__(get_iut, 'mynewt', autoprojects.iutctl.Board.names)
 
 
 def main():

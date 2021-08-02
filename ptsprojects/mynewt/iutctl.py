@@ -32,16 +32,16 @@ SERIAL_BAUDRATE = 115200
 class MynewtCtl:
     """Mynewt OS Control Class"""
 
-    def __init__(self, tty_file, board_name, use_rtt2pty=None):
+    def __init__(self, args):
         """Constructor."""
         log("%s.%s tty_file=%s board_name=%s",
-            self.__class__, self.__init__.__name__, tty_file,
-            board_name)
+            self.__class__, self.__init__.__name__, args.tty_file,
+            args.board_name)
 
-        assert tty_file and board_name
+        assert args.tty_file and args.board_name
 
-        self.tty_file = tty_file
-        self.board = Board(board_name, self)
+        self.tty_file = args.tty_file
+        self.board = Board(args.board_name, self)
 
         self.socat_process = None
         self.btp_socket = None
@@ -49,7 +49,7 @@ class MynewtCtl:
         self.rtt2pty_process = None
         self.iut_log_file = None
 
-        if use_rtt2pty:
+        if args.rtt2pty:
             self.rtt2pty = RTT2PTY()
         else:
             self.rtt2pty = None
@@ -214,7 +214,7 @@ def init_stub():
     MYNEWT = MynewtCtlStub()
 
 
-def init(tty_file, board, use_rtt2pty=False):
+def init(args):
     """IUT init routine
 
     tty_file -- Path to TTY file. BTP communication with HW DUT will be done
@@ -223,7 +223,7 @@ def init(tty_file, board, use_rtt2pty=False):
     """
     global MYNEWT
 
-    MYNEWT = MynewtCtl(tty_file, board, use_rtt2pty)
+    MYNEWT = MynewtCtl(args)
 
 
 def cleanup():

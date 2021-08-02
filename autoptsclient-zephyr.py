@@ -23,26 +23,7 @@ from ptsprojects.zephyr.iutctl import get_iut
 
 class ZephyrClient(autoptsclient.Client):
     def __init__(self):
-        super().__init__(get_iut, 'zephyr')
-
-    def parse_args(self):
-        arg_parser = autoptsclient.CliParser("PTS automation client",
-                                             autoprojects.iutctl.Board.names)
-
-        args = arg_parser.parse_args()
-
-        if args.hci is None:
-            args.qemu_bin = autoprojects.iutctl.QEMU_BIN
-
-        self.check_args(args)
-
-        return args
-
-    def init_iutctl(self, args):
-        autoprojects.iutctl.init(args)
-
-    def cleanup(self):
-        autoprojects.iutctl.cleanup()
+        super().__init__(get_iut, 'zephyr', autoprojects.iutctl.Board.names)
 
 
 def main():
