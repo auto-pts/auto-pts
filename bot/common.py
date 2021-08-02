@@ -22,8 +22,8 @@ import shutil
 import zipfile
 import smtplib
 import datetime
-from os.path import dirname, abspath
 from pathlib import Path
+from argparse import Namespace
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
@@ -39,6 +39,9 @@ from googleapiclient.http import MediaFileUpload
 from httplib2 import Http
 from oauth2client import file, client, tools
 
+import autoptsclient_common as autoptsclient
+from autoptsclient_common import CliParser, Client
+
 SCOPES = 'https://www.googleapis.com/auth/drive'
 CLIENT_SECRET_FILE = 'client_secret.json'
 REPORT_XLSX = "report.xlsx"
@@ -46,7 +49,120 @@ REPORT_TXT = "report.txt"
 COMMASPACE = ', '
 
 devices_in_use = []
-PROJECT_DIR = dirname(dirname(abspath(__file__)))
+PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+class BotCliParser(CliParser):
+    def __init__(self, description='PTS automation client', board_names=None,
+                 add_help=True):
+        super().__init__(description=description, board_names=board_names,
+                         add_help=add_help)
+
+        self.add_argument('--nb', dest='no_build', action='store_true',
+                          help='Skip build and flash in bot mode.', default=False)
+
+
+class BotConfigArgs(Namespace):
+    """
+    Translates arguments provided in 'config.py' file as dictionary
+    into a namespace used by common Client.
+    """
+
+    def __init__(self, args):
+        self.workspace = args['workspace']
+        self.project_path = args['project_path']
+        self.srv_port = args.get('srv_port', [65000])
+        self.cli_port = args.get('cli_port', [65001])
+        self.ip_addr = args.get('server_ip', ['127.0.0.1'] * len(self.srv_port))
+        self.local_addr = args.get('local_ip', ['127.0.0.1'] * len(self.cli_port))
+        self.kernel_image = args.get('kernel_image', None)
+        self.store = args.get('store', True)
+        self.test_cases = []
+        self.excluded = []
+
+        self.bd_addr = args.get('bd_addr', '')
+        self.enable_max_logs = args.get('enable_max_logs', False)
+        self.retry = args.get('retry', 0)
+        self.stress_test = args.get('stress_test', False)
+        self.ykush = args.get('ykush', None)
+        self.recovery = args.get('recovery', False)
+        self.superguard = 60 * float(args.get('superguard', 0))
+
+
+class BotClient(Client):
+    def __init__(self, get_iut, project, boards=None):
+        # Please implement this bot client
+        super().__init__(get_iut, project, boards)
+        self.arg_parser = BotCliParser("PTS automation client", boards)
+        self.parse_config = BotConfigArgs
+        self.config_default = "default.conf"
+
+    def add_positional_args(self):
+        pass
+
+    def apply_config(self, args, config, value):
+        pass
+
+    def run_tests(self, args, iut_config):
+        """Run test cases
+            :param args: AutoPTS arguments
+            :param iut_config: IUT configuration
+            :return: tuple of (status, results) dictionaries
+            """
+
+        results = {}
+        status = {}
+        descriptions = {}
+        total_regressions = []
+        _args = {}
+
+        config_default = self.config_default
+        _args[config_default] = self.parse_args(self.parse_config(args))
+        autoptsclient.init_logging('_' + '_'.join(str(x) for x in _args[config_default].cli_port))
+
+        for config, value in list(iut_config.items()):
+            if 'test_cases' not in value:
+                # Rename default config
+                _args[config] = _args.pop(config_default)
+                config_default = config
+                continue
+
+            if config != config_default:
+                _args[config] = self.parse_args(self.parse_config(args))
+
+            _args[config].test_cases = value.get('test_cases', [])
+
+            if 'overlay' in value:
+                _args[config_default].excluded += _args[config].test_cases
+
+        for config, value in list(iut_config.items()):
+            self.apply_config(_args[config], config, value)
+
+            status_count, results_dict, regressions = self.start(_args[config])
+
+            total_regressions += regressions
+
+            for k, v in list(status_count.items()):
+                if k in list(status.keys()):
+                    status[k] += v
+                else:
+                    status[k] = v
+
+            results.update(results_dict)
+
+        with ServerProxy("http://{}:{}/".format(
+                _args[config_default].ip_addr[0],
+                _args[config_default].srv_port[0]), allow_none=True, ) as pts:
+            # Read PTS Version and keep it for later use
+            args['pts_ver'] = "%s" % pts.get_version()
+
+            for test_case_name in list(results.keys()):
+                project_name = test_case_name.split('/')[0]
+                descriptions[test_case_name] = \
+                    pts.get_test_case_description(project_name, test_case_name)
+
+        return status, results, descriptions, total_regressions
+
 
 # ****************************************************************************
 # Mail
