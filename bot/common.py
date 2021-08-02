@@ -321,11 +321,16 @@ def make_report_xlsx(results_dict, status_dict, regressions_list,
     :return:
     """
 
-    with open('errata.yaml', 'r') as stream:
-        try:
+    errata = {}
+
+    try:
+        with open('errata.yaml', 'r') as stream:
             errata = yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
+    except Exception as exc:
+        print(exc)
+
+    if errata is None:
+        errata = {}
 
     header = "AutoPTS Report: " \
              "{}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
@@ -407,11 +412,14 @@ def make_report_txt(results_dict, zephyr_hash):
 
     errata = {}
 
-    with open('errata.yaml', 'r') as stream:
-        try:
+    try:
+        with open('errata.yaml', 'r') as stream:
             errata = yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
+    except Exception as exc:
+        print(exc)
+
+    if errata is None:
+        errata = {}
 
     f.write("%s\n" % zephyr_hash)
     for tc, result in list(results_dict.items()):
