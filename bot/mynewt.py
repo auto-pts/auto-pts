@@ -338,8 +338,11 @@ def main(cfg):
 
     args = cfg['auto_pts']
 
-    repos_info = bot.common.update_repos(args['project_path'], cfg["git"])
-    repo_status = make_repo_status(repos_info)
+    if 'git' in cfg:
+        repos_info = bot.common.update_repos(args['project_path'], cfg["git"])
+        repo_status = make_repo_status(repos_info)
+    else:
+        repo_status = ''
 
     summary, results, descriptions, regressions = \
         run_tests(args, cfg.get('iut_config', {}))
