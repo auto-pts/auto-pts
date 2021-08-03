@@ -339,8 +339,11 @@ def main(cfg):
                                         'bluetooth', 'tester', 'outdir',
                                         'zephyr', 'zephyr.elf')
 
-    zephyr_hash = bot.common.update_repos(args['project_path'],
-                                          cfg["git"])['zephyr']
+    if 'git' in cfg:
+        zephyr_hash = bot.common.update_repos(args['project_path'],
+                                              cfg['git'])['zephyr']
+    else:
+        zephyr_hash = {'desc': '', 'commit': ''}
 
     if 'ykush' in args:
         autoptsclient.board_power(args['ykush'], True)
