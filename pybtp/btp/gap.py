@@ -913,15 +913,15 @@ def check_scan_rep_and_rsp(report, response):
     devices = stack.gap.found_devices.data
 
     # remove trailing zeros
-    report = report.rstrip('0')
-    response = response.rstrip('0')
+    report = report.rstrip('0').upper()
+    response = response.rstrip('0').upper()
     if len(report) % 2 != 0:
         report += '0'
     if len(response) % 2 != 0:
         response += '0'
 
     for device in devices:
-        eir = str(binascii.hexlify(device.eir)).lstrip('b\'').rstrip('\'')
+        eir = str(binascii.hexlify(device.eir)).lstrip('b\'').rstrip('\'').upper()
         if report in eir and response in eir:
             return True
     return False
