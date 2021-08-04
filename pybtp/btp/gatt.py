@@ -22,14 +22,13 @@ import struct
 from ptsprojects.stack import GattCharacteristic
 from pybtp import defs
 from pybtp.types import BTPError, addr2btp_ba, Perm
-from pybtp.btp.btp import btp_hdr_check, CONTROLLER_INDEX, get_iut_method as get_iut, btp2uuid
+from pybtp.btp.btp import btp_hdr_check, CONTROLLER_INDEX, get_iut_method as get_iut, btp2uuid,\
+    clear_verify_values, add_to_verify_values, get_verify_values, extend_verify_values
 from pybtp.btp.gap import gap_wait_for_connection
+from pybtp.types import BTPError, addr2btp_ba
 
 #  Global temporary objects
 GATT_SVCS = None
-
-#  A sequence of values to verify in PTS MMI description
-VERIFY_VALUES = None
 
 GATTS = {
     "add_svc": (defs.BTP_SERVICE_ID_GATT, defs.GATT_ADD_SERVICE,
@@ -546,12 +545,12 @@ def _gattc_find_included_rsp():
         end_grp_handle = "%04X" % (incl[1][1],)
         uuid = incl[1][2]
 
-        VERIFY_VALUES.append(att_handle)
-        VERIFY_VALUES.append(inc_svc_handle)
-        VERIFY_VALUES.append(end_grp_handle)
-        VERIFY_VALUES.append(uuid)
+        add_to_verify_values(att_handle)
+        add_to_verify_values(inc_svc_handle)
+        add_to_verify_values(end_grp_handle)
+        add_to_verify_values(uuid)
 
-    logging.debug("Set verify values to: %r", VERIFY_VALUES)
+    logging.debug("Set verify values to: %r", get_verify_values())
 
 
 def gattc_find_included(bd_addr_type, bd_addr, start_hdl=None, end_hdl=None):
@@ -566,8 +565,8 @@ def gattc_find_included(bd_addr_type, bd_addr, start_hdl=None, end_hdl=None):
     gattc_disc_all_prim(bd_addr_type, bd_addr)
     svcs_tuple = gattc_disc_all_prim_rsp()
 
-    global VERIFY_VALUES
-    VERIFY_VALUES = []
+
+    clear_verify_values()
 
     for start, end, _ in svcs_tuple:
         _gattc_find_included_req(bd_addr_type, bd_addr, start, end)
@@ -1328,20 +1327,18 @@ def gattc_disc_all_prim_rsp(store_rsp=False):
     svcs_list = gatt_dec_disc_rsp(tuple_data[0], "service")
     logging.debug("%s %r", gattc_disc_all_prim_rsp.__name__, svcs_list)
 
-    if store_rsp:
-        global VERIFY_VALUES
-
-        VERIFY_VALUES = []
+    if store_rsp:  
+        clear_verify_values()
 
         for svc in svcs_list:
             # Keep just UUID since PTS checks only UUID.
             uuid = svc[2].upper()
 
             # avoid repeated service uuid, it should be verified only once
-            if uuid not in VERIFY_VALUES:
-                VERIFY_VALUES.append(uuid)
+            if uuid not in get_verify_values():
+                add_to_verify_values(uuid)
 
-        logging.debug("Set verify values to: %r", VERIFY_VALUES)
+        logging.debug("Set verify values to: %r", get_verify_values())
 
     return svcs_list
 
@@ -1360,9 +1357,7 @@ def gattc_disc_prim_uuid_rsp(store_rsp=False):
     logging.debug("%s %r", gattc_disc_prim_uuid_rsp.__name__, svcs_list)
 
     if store_rsp:
-        global VERIFY_VALUES
-
-        VERIFY_VALUES = []
+        clear_verify_values()
 
         for svc in svcs_list:
             start_handle = "%04X" % (svc[0],)
@@ -1374,18 +1369,18 @@ def gattc_disc_prim_uuid_rsp(store_rsp=False):
             if len(uuid) > 4:
                 uuid = "-".join([uuid[i:i + 4] for i in range(0, len(uuid), 4)])
 
-            VERIFY_VALUES.append(start_handle)
-            VERIFY_VALUES.append(end_handle)
+            add_to_verify_values(start_handle)
+            add_to_verify_values(end_handle)
 
             # avoid repeated service uuid, it should be verified only once, for
             # example:
             # gattc_disc_prim_uuid_rsp ((1, 3, ('\xc9N',)),
             # (48, 50, ('\xc9N',)), (64, 66, ('\xc9N',)),
             # (80, 82, ('\xc9N',)), (144, 150, ('\xc9N',)))
-            if uuid not in VERIFY_VALUES:
-                VERIFY_VALUES.append(uuid)
+            if uuid not in get_verify_values():
+                add_to_verify_values(uuid)
 
-        logging.debug("Set verify values to: %r", VERIFY_VALUES)
+        logging.debug("Set verify values to: %r", get_verify_values())
 
 
 def gattc_find_included_rsp(store_rsp=False):
@@ -1402,8 +1397,7 @@ def gattc_find_included_rsp(store_rsp=False):
     logging.debug("%s %r", gattc_find_included_rsp.__name__, incls_tuple)
 
     if store_rsp:
-        global VERIFY_VALUES
-        VERIFY_VALUES = []
+        clear_verify_values()
 
         for incl in incls_tuple:
             att_handle = "%04X" % (incl[0][0],)
@@ -1411,12 +1405,12 @@ def gattc_find_included_rsp(store_rsp=False):
             end_grp_handle = "%04X" % (incl[1][1],)
             uuid = incl[1][2]
 
-            VERIFY_VALUES.append(att_handle)
-            VERIFY_VALUES.append(inc_svc_handle)
-            VERIFY_VALUES.append(end_grp_handle)
-            VERIFY_VALUES.append(uuid)
+            add_to_verify_values(att_handle)
+            add_to_verify_values(inc_svc_handle)
+            add_to_verify_values(end_grp_handle)
+            add_to_verify_values(uuid)
 
-        logging.debug("Set verify values to: %r", VERIFY_VALUES)
+        logging.debug("Set verify values to: %r", get_verify_values())
 
 
 def gattc_disc_all_chrc_rsp(store_rsp=False):
@@ -1443,13 +1437,12 @@ def gattc_disc_all_chrc_rsp(store_rsp=False):
                                         value_handle=value_handle))
 
     if store_rsp:
-        global VERIFY_VALUES
-        VERIFY_VALUES = []
+        clear_verify_values()
 
         for attr in attrs:
-            VERIFY_VALUES.append("%04X" % attr.handle)
+            add_to_verify_values("%04X" % attr.handle)
 
-        logging.debug("Set verify values to: %r", VERIFY_VALUES)
+        logging.debug("Set verify values to: %r", get_verify_values())
 
     return attrs
 
@@ -1468,8 +1461,7 @@ def gattc_disc_chrc_uuid_rsp(store_rsp=False):
     logging.debug("%s %r", gattc_disc_chrc_uuid_rsp.__name__, chrcs_list)
 
     if store_rsp:
-        global VERIFY_VALUES
-        VERIFY_VALUES = []
+        clear_verify_values()
 
         for chrc in chrcs_list:
             handle = "%04X" % (chrc[1],)
@@ -1479,10 +1471,10 @@ def gattc_disc_chrc_uuid_rsp(store_rsp=False):
             if len(uuid) > 4:
                 uuid = "-".join([uuid[i:i + 4] for i in range(0, len(uuid), 4)])
 
-            VERIFY_VALUES.append(handle)
-            VERIFY_VALUES.append(uuid)
+            add_to_verify_values(handle)
+            add_to_verify_values(uuid)
 
-        logging.debug("Set verify values to: %r", VERIFY_VALUES)
+        logging.debug("Set verify values to: %r", get_verify_values())
 
 
 def gattc_disc_all_desc_rsp(store_rsp=False):
@@ -1499,16 +1491,15 @@ def gattc_disc_all_desc_rsp(store_rsp=False):
     logging.debug("%s %r", gattc_disc_all_desc_rsp.__name__, descs_list)
 
     if store_rsp:
-        global VERIFY_VALUES
-        VERIFY_VALUES = []
+        clear_verify_values()
 
         for desc in descs_list:
             handle = "%04X" % (desc[0],)
             uuid = desc[1]
-            VERIFY_VALUES.append(handle)
-            VERIFY_VALUES.append(uuid)
+            add_to_verify_values(handle)
+            add_to_verify_values(uuid)
 
-        logging.debug("Set verify values to: %r", VERIFY_VALUES)
+        logging.debug("Set verify values to: %r", get_verify_values())
 
 
 att_rsp_str = {0: "",
@@ -1542,14 +1533,13 @@ def gattc_read_rsp(store_rsp=False, store_val=False, timeout=None):
     logging.debug("%s %r %r", gattc_read_rsp.__name__, rsp, value)
 
     if store_rsp or store_val:
-        global VERIFY_VALUES
-        VERIFY_VALUES = []
+        clear_verify_values()
 
         if store_rsp:
-            VERIFY_VALUES.append(att_rsp_str[rsp])
+            add_to_verify_values(att_rsp_str[rsp])
 
         if store_val:
-            VERIFY_VALUES.append((binascii.hexlify(value[0])).upper())
+            add_to_verify_values((binascii.hexlify(value[0])).upper())
 
 
 def gattc_read_uuid_rsp(store_rsp=False, store_val=False):
@@ -1565,19 +1555,18 @@ def gattc_read_uuid_rsp(store_rsp=False, store_val=False):
     logging.debug("%s %r %r", gattc_read_uuid_rsp.__name__, rsp, value)
 
     if store_rsp or store_val:
-        global VERIFY_VALUES
-        VERIFY_VALUES = []
+        clear_verify_values()
 
         if store_rsp:
-            VERIFY_VALUES.append(att_rsp_str[rsp])
+            add_to_verify_values(att_rsp_str[rsp])
 
         if store_val:
             n = len(value[0])
 
             value = (binascii.hexlify(value[0]).decode('utf-8')).upper()
             if len(value) > 0:
-                chunks = [value[i:i + len(value) // n] for i in range(0, len(value), len(value) // n)]
-                VERIFY_VALUES.extend(chunks)
+                chunks = [value[i:i+len(value)//n] for i in range(0, len(value), len(value)//n)]
+                extend_verify_values(chunks)
 
 
 def gattc_read_long_rsp(store_rsp=False, store_val=False):
@@ -1593,14 +1582,13 @@ def gattc_read_long_rsp(store_rsp=False, store_val=False):
     logging.debug("%s %r %r", gattc_read_long_rsp.__name__, rsp, value)
 
     if store_rsp or store_val:
-        global VERIFY_VALUES
-        VERIFY_VALUES = []
+        clear_verify_values()
 
         if store_rsp:
-            VERIFY_VALUES.append(att_rsp_str[rsp])
+            add_to_verify_values(att_rsp_str[rsp])
 
         if store_val:
-            VERIFY_VALUES.append((binascii.hexlify(value[0])).upper())
+            add_to_verify_values((binascii.hexlify(value[0])).decode().upper())
 
 
 def gattc_read_multiple_rsp(store_val=False, store_rsp=False):
@@ -1617,14 +1605,13 @@ def gattc_read_multiple_rsp(store_val=False, store_rsp=False):
     logging.debug("%s %r %r", gattc_read_multiple_rsp.__name__, rsp, values)
 
     if store_rsp or store_val:
-        global VERIFY_VALUES
-        VERIFY_VALUES = []
+        clear_verify_values()
 
         if store_rsp:
-            VERIFY_VALUES.append(att_rsp_str[rsp])
+            add_to_verify_values(att_rsp_str[rsp])
 
         if store_val:
-            VERIFY_VALUES.append((binascii.hexlify(values[0])).upper())
+            add_to_verify_values((binascii.hexlify(values[0])).upper())
 
 
 def gattc_write_rsp(store_rsp=False, timeout=None):
@@ -1643,9 +1630,8 @@ def gattc_write_rsp(store_rsp=False, timeout=None):
     logging.debug("%s %r", gattc_write_rsp.__name__, rsp)
 
     if store_rsp:
-        global VERIFY_VALUES
-        VERIFY_VALUES = []
-        VERIFY_VALUES.append(att_rsp_str[rsp])
+        clear_verify_values()
+        add_to_verify_values(att_rsp_str[rsp])
 
 
 def gattc_write_long_rsp(store_rsp=False):
@@ -1662,9 +1648,8 @@ def gattc_write_long_rsp(store_rsp=False):
     logging.debug("%s %r", gattc_write_long_rsp.__name__, rsp)
 
     if store_rsp:
-        global VERIFY_VALUES
-        VERIFY_VALUES = []
-        VERIFY_VALUES.append(att_rsp_str[rsp])
+        clear_verify_values()
+        add_to_verify_values(att_rsp_str[rsp])
 
 
 def gattc_write_reliable_rsp(store_rsp=False):
@@ -1681,6 +1666,5 @@ def gattc_write_reliable_rsp(store_rsp=False):
     logging.debug("%s %r", gattc_write_long_rsp.__name__, rsp)
 
     if store_rsp:
-        global VERIFY_VALUES
-        VERIFY_VALUES = []
-        VERIFY_VALUES.append(att_rsp_str[rsp])
+        clear_verify_values()
+        add_to_verify_values(att_rsp_str[rsp])

@@ -35,9 +35,6 @@ PTS_BD_ADDR = LeAddress(addr_type=0, addr='000000000000')
 # Devices found
 LeAdv = namedtuple('LeAdv', 'addr_type addr rssi flags eir')
 
-#  A sequence of values to verify in PTS MMI description
-VERIFY_VALUES = None
-
 CONTROLLER_INDEX = 0
 
 CORE = {
@@ -72,6 +69,26 @@ CORE = {
 }
 
 
+def clear_verify_values():
+    stack = get_stack()
+    stack.gatt.verify_values = []
+
+
+def add_to_verify_values(item):
+    stack = get_stack()
+    stack.gatt.verify_values.append(item)
+
+
+def get_verify_values():
+    stack = get_stack()
+    return stack.gatt.verify_values
+
+
+def extend_verify_values(item):
+    stack = get_stack()
+    stack.gatt.verify_values.extend(item)
+
+
 def verify_description(description):
     """A function to verify that values are in PTS MMI description
 
@@ -84,16 +101,17 @@ def verify_description(description):
 
     description = description.upper()
 
-    global VERIFY_VALUES
-    logging.debug("Verifying values: %r", VERIFY_VALUES)
+    verify_values = get_verify_values()
 
-    if not VERIFY_VALUES:
+    logging.debug("Verifying values: %r", verify_values)
+
+    if not verify_values:
         return True
 
-    # VERIFY_VALUES shall not be a string: all its characters will be verified
-    assert isinstance(VERIFY_VALUES, list), "VERIFY_VALUES should be a list!"
+    # verify_values shall not be a string: all its characters will be verified
+    assert isinstance(verify_values, list), "verify_values should be a list!"
 
-    for value in VERIFY_VALUES:
+    for value in verify_values:
         logging.debug("Verifying: %r", value)
 
         value = value.upper()
@@ -107,7 +125,7 @@ def verify_description(description):
 
     logging.debug("All verifications passed")
 
-    VERIFY_VALUES = None
+    clear_verify_values()
 
     return True
 
@@ -124,16 +142,16 @@ def verify_multiple_read_description(description):
     """
     logging.debug("description=%r", description)
 
-    global VERIFY_VALUES
-    logging.debug("Verifying values: %r", VERIFY_VALUES)
+    verify_values = get_verify_values()
+    logging.debug("Verifying values: %r", verify_values)
 
-    if not VERIFY_VALUES:
+    if not verify_values:
         return True
 
-    # VERIFY_VALUES shall not be a string: all its characters will be verified
-    assert isinstance(VERIFY_VALUES, list), "VERIFY_VALUES should be a list!"
+    # verify_values shall not be a string: all its characters will be verified
+    assert isinstance(verify_values, list), "verify_values should be a list!"
     exp_mtp_read = ""
-    for value in VERIFY_VALUES:
+    for value in verify_values:
         try:
             exp_mtp_read = exp_mtp_read.join(value)
         except TypeError:
@@ -148,7 +166,7 @@ def verify_multiple_read_description(description):
 
     logging.debug("Multiple read verifications passed")
 
-    VERIFY_VALUES = None
+    clear_verify_values()
 
     return True
 
