@@ -19,18 +19,10 @@ from ptsprojects.testcase import TestFunc
 from ptsprojects.zephyr.ztestcase import ZTestCase
 
 from pybtp import btp
-from pybtp.types import Addr, IOCap, AdType, AdFlags
-from . import gatt
+from pybtp.types import Addr, IOCap, AdType, AdFlags, Prop, Perm, UUID
 from autoptsclient_common import get_unique_name
 from ptsprojects.stack import get_stack
 from .gap_wid import gap_wid_hdl, gap_wid_hdl_mode1_lvl2, gap_wid_hdl_mode1_lvl4
-
-
-class UUID:
-    gap_svc = '1800'
-    device_name = '2A00'
-    VND16_1 = 'AA50'
-    VND16_2 = 'AA51'
 
 
 class SVC:
@@ -42,24 +34,24 @@ class CHAR:
 
 
 init_gatt_db = [TestFunc(btp.core_reg_svc_gatt),
-                TestFunc(btp.gatts_add_svc, 0, gatt.UUID.VND16_1),
-                TestFunc(btp.gatts_add_char, 0, gatt.Prop.read,
-                         gatt.Perm.read | gatt.Perm.read_authn,
-                         gatt.UUID.VND16_2),
+                TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
+                TestFunc(btp.gatts_add_char, 0, Prop.read,
+                         Perm.read | Perm.read_authn,
+                         UUID.VND16_2),
                 TestFunc(btp.gatts_set_val, 0, '01'),
-                TestFunc(btp.gatts_add_char, 0, gatt.Prop.read,
-                         gatt.Perm.read | gatt.Perm.read_enc,
-                         gatt.UUID.VND16_3),
+                TestFunc(btp.gatts_add_char, 0, Prop.read,
+                         Perm.read | Perm.read_enc,
+                         UUID.VND16_3),
                 TestFunc(btp.gatts_set_val, 0, '02'),
                 TestFunc(btp.gatts_add_char, 0,
-                         gatt.Prop.read | gatt.Prop.auth_swrite,
-                         gatt.Perm.read | gatt.Perm.write,
-                         gatt.UUID.VND16_3),
+                         Prop.read | Prop.auth_swrite,
+                         Perm.read | Perm.write,
+                         UUID.VND16_3),
                 TestFunc(btp.gatts_set_val, 0, '03'),
                 TestFunc(btp.gatts_add_char, 0,
-                         gatt.Prop.read | gatt.Prop.auth_swrite,
-                         gatt.Perm.read_authn | gatt.Perm.write_authn,
-                         gatt.UUID.VND16_4),
+                         Prop.read | Prop.auth_swrite,
+                         Perm.read_authn | Perm.write_authn,
+                         UUID.VND16_4),
                 TestFunc(btp.gatts_set_val, 0, '04'),
                 TestFunc(btp.gatts_start_server)]
 

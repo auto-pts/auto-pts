@@ -51,16 +51,6 @@ def check_call(cmd, env=None, cwd=None, shell=True):
     return subprocess.check_call(cmd, env=env, cwd=cwd, shell=shell, executable=executable)
 
 
-def _validate_pair(ob):
-    try:
-        if not (len(ob) == 2):
-            raise ValueError
-    except BaseException:
-        return False
-
-    return True
-
-
 def build_and_flash(zephyr_wd, board, tty, conf_file=None):
     """Build and flash Zephyr binary
     :param zephyr_wd: Zephyr source path
@@ -96,8 +86,8 @@ def flush_serial(tty):
         return
 
     if sys.platform == 'win32':
-        COM = "COM" + str(int(tty["/dev/ttyS".__len__():]) + 1)
-        ser = serial.Serial(COM, 115200, timeout=5)
+        com = "COM" + str(int(tty["/dev/ttyS".__len__():]) + 1)
+        ser = serial.Serial(com, 115200, timeout=5)
         ser.flushInput()
         ser.flushOutput()
     else:
@@ -149,12 +139,12 @@ def get_tty_path(name):
 
     end_of_pipe = awk.stdout
     for line in end_of_pipe:
-        device, serial = line.decode().rstrip().split(" ")
-        serial_devices[device] = serial
+        device, filepath = line.decode().rstrip().split(" ")
+        serial_devices[device] = filepath
 
-    for device, serial in list(serial_devices.items()):
+    for device, filepath in list(serial_devices.items()):
         if name in device:
-            tty = os.path.basename(serial)
+            tty = os.path.basename(filepath)
             return "/dev/{}".format(tty)
 
     return None
@@ -374,6 +364,7 @@ def main(cfg):
     logs_folder = bot.common.archive_testcases("logs")
 
     end_time = time.time()
+    url = None
 
     if 'gdrive' in cfg:
         drive = bot.common.Drive(cfg['gdrive'])
@@ -388,14 +379,13 @@ def main(cfg):
         print("Sending email ...")
 
         # keep mail related context to simplify the code
-        mail_ctx = {}
+        mail_ctx = {"summary": bot.common.status_dict2summary_html(summary),
+                    "regression": bot.common.regressions2html(regressions,
+                                                              descriptions)}
 
         # Summary
-        mail_ctx["summary"] = bot.common.status_dict2summary_html(summary)
 
         # Regression and test case description
-        mail_ctx["regression"] = bot.common.regressions2html(regressions,
-                                                             descriptions)
 
         # Zephyr commit id link in HTML format
 
@@ -407,7 +397,7 @@ def main(cfg):
                                                       zephyr_hash["desc"])
 
         # Log in Google drive in HTML format
-        if 'gdrive' in cfg:
+        if 'gdrive' in cfg and url:
             mail_ctx["log_url"] = bot.common.url2html(url, "Results on Google Drive")
         else:
             mail_ctx["log_url"] = "Not Available"

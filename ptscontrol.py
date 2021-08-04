@@ -102,9 +102,8 @@ class PTSLogger(win32com.server.connect.ConnectableServer):
         """
 
         logger = logging.getLogger(self.__class__.__name__)
-        log = logger.info
 
-        log("%d %s %s %s" % (log_type, logtype_string, log_time, log_message))
+        logger.info("%d %s %s %s" % (log_type, logtype_string, log_time, log_message))
 
         try:
             if self._callback is not None:
@@ -149,26 +148,25 @@ class PTSSender(win32com.server.connect.ConnectableServer):
         };
         """
         logger = logging.getLogger(self.__class__.__name__)
-        log = logger.info
         timer = 0
 
         # Remove whitespaces from project and test case name
         project_name = project_name.replace(" ", "")
         test_case = test_case.replace(" ", "")
 
-        log("*" * 20)
-        log("BEGIN OnImplicitSend:")
-        log("project_name: %s %s" % (project_name, type(project_name)))
-        log("wid: %d %s" % (wid, type(wid)))
-        log("test_case_name: %s %s" % (test_case, type(test_case)))
-        log("description: %s %s" % (description, type(description)))
-        log("style: %s 0x%x", ptstypes.MMI_STYLE_STRING[style], style)
+        logger.info("*" * 20)
+        logger.info("BEGIN OnImplicitSend:")
+        logger.info("project_name: %s %s" % (project_name, type(project_name)))
+        logger.info("wid: %d %s" % (wid, type(wid)))
+        logger.info("test_case_name: %s %s" % (test_case, type(test_case)))
+        logger.info("description: %s %s" % (description, type(description)))
+        logger.info("style: %s 0x%x", ptstypes.MMI_STYLE_STRING[style], style)
 
         rsp = ""
 
         try:
             if self._callback is not None:
-                log("Calling callback.on_implicit_send")
+                logger.info("Calling callback.on_implicit_send")
                 rsp = self._callback.on_implicit_send(project_name, wid,
                                                       test_case, description,
                                                       style)
@@ -185,19 +183,19 @@ class PTSSender(win32com.server.connect.ConnectableServer):
                             rsp = "Cancel"
                             break
 
-                        log("Rechecking response...")
+                        logger.info("Rechecking response...")
                         time.sleep(1)
                         rsp = self._callback.get_pending_response(test_case)
 
-                log("callback returned on_implicit_send, respose: %r", rsp)
+                logger.info("callback returned on_implicit_send, respose: %r", rsp)
 
         except xmlrpc.client.Fault as err:
-            log("A fault occurred, code = %d, string = %s" %
-                (err.faultCode, err.faultString))
+            logger.info("A fault occurred, code = %d, string = %s" %
+                        (err.faultCode, err.faultString))
 
         except Exception as e:
-            log("Caught exception")
-            log(e)
+            logger.info("Caught exception")
+            logger.info(e)
             # exit does not work, cause app is blocked in PTS.RunTestCase?
             sys.exit("Exception in OnImplicitSend")
 
@@ -257,6 +255,14 @@ class PyPTS:
 
         self._temp_workspace_path = None
         self.last_start_time = time.time()
+
+        self._pts = None
+        self._pts_proc = None
+        self._pts_logger = None
+        self._pts_sender = None
+        self.__bd_addr = None
+        self._com_logger = None
+        self._com_sender = None
 
         # This is done to have valid _pts in case client does not restart_pts
         # and uses other methods. Normally though, the client should
@@ -631,7 +637,7 @@ class PyPTS:
         """NOTE: According to documentation 'StopTestCase() is not currently
         implemented'"""
 
-        log("%s %s %s", self.is_active_test_case.__name__, project_name,
+        log("%s %s %s", self.stop_test_case.__name__, project_name,
             test_case_name)
 
         self._pts.StopTestCase(project_name, test_case_name)
@@ -757,7 +763,8 @@ class PyPTS:
         """Returns PTS bluetooth address string"""
         try:
             address = self._pts.GetPTSBluetoothAddress()
-        except Exception:
+        except Exception as e:
+            logging.exception(e)
             address = ""
 
         if address == "":
@@ -771,19 +778,19 @@ class PyPTS:
         return address
 
     def connect_to_dongle(self):
-        deviceToConnect = None
+        device_to_connect = None
         devices = self._pts.GetDeviceList()
         for device in devices:
             if 'USB:Free' in device:
                 log("Connecting to dual-mode dongle")
-                deviceToConnect = device
+                device_to_connect = device
                 break
             elif 'COM' in device:
                 log("Connecting to LE-only dongle")
-                deviceToConnect = device
+                device_to_connect = device
                 break
-        if deviceToConnect is not None:
-            self._pts.SelectDevice(deviceToConnect)
+        if device_to_connect is not None:
+            self._pts.SelectDevice(device_to_connect)
 
     def bd_addr(self):
         """Returns PTS Bluetooth address as a colon separated string"""
@@ -835,84 +842,3 @@ def parse_args():
     args = arg_parser.parse_args()
 
     return args
-
-
-def main():
-    """Rudimentary testing."""
-
-    args = parse_args()
-
-    script_name = os.path.basename(sys.argv[0])  # in case it is full path
-    script_name_no_ext = os.path.splitext(script_name)[0]
-
-    log_filename = "%s.log" % (script_name_no_ext,)
-    logging.basicConfig(format='%(name)s [%(asctime)s] %(message)s',
-                        filename=log_filename,
-                        filemode='w',
-                        level=logging.DEBUG)
-
-    pts = PyPTS()
-
-    pts.open_workspace(args.workspace)
-
-    # pts.run_test_case("RFCOMM", "TC_RFC_BV_19_C")
-
-    project_count = pts.get_project_count()
-    print("Project count:", project_count)
-
-    # print all projects and their test cases
-    for project_index in range(project_count):
-        project_name = pts.get_project_name(project_index)
-        print("\nProject name:", project_name)
-        print("Project version:", pts.get_project_version(project_name))
-        test_case_count = pts.get_test_case_count(project_name)
-        print("Test case count:", test_case_count)
-
-        for test_case_index in range(test_case_count):
-            test_case_name = pts.get_test_case_name(
-                project_name, test_case_index)
-            print("\nTest case project:", project_name)
-            print("Test case name:", test_case_name)
-            print("Test case description:", pts.get_test_case_description(
-                project_name, test_case_index))
-            print("Is active test case:", pts.is_active_test_case(
-                project_name, test_case_name))
-
-    print("\n\n\n\nTSS file info:")
-
-    # print all projects and their test cases
-    for project_index in range(project_count):
-        project_name = pts.get_project_name(project_index)
-        print("\nProject name:", project_name)
-        print("Project version:", pts.get_project_version(project_name))
-        test_case_count = pts.get_test_case_count_from_tss_file(project_name)
-        print("Test case count:", test_case_count)
-
-        test_cases = pts.get_test_cases_from_tss_file(project_name)
-        print(test_cases)
-
-        for test_case in test_cases:
-            print(test_case)
-
-    pts.update_pixit_param("L2CAP", "TSPX_iut_role_initiator", "FALSE")
-    pts.update_pixit_param("L2CAP", "TSPX_iut_role_initiator", "TRUE")
-
-    pts.set_pics("L2CAP", "TSPC_L2CAP_3_13", True)
-    pts.set_pics("L2CAP", "TSPC_L2CAP_3_13", False)
-
-    pts.enable_maximum_logging(True)
-    pts.enable_maximum_logging(False)
-
-    pts.set_call_timeout(600000)
-    pts.set_call_timeout(0)
-
-    pts.save_test_history_log(True)
-    pts.save_test_history_log(False)
-
-    print("PTS Bluetooth Address: ", pts.get_bluetooth_address())
-    print("PTS BD_ADDR: ", pts.bd_addr())
-    print("PTS Version: ", pts.get_version())
-
-
-if __name__ == "__main__":
-    main()

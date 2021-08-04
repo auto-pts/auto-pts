@@ -52,7 +52,7 @@ def get_qemu_cmd(kernel_image):
 
 
 class ZephyrCtl:
-    '''Zephyr OS Control Class'''
+    """Zephyr OS Control Class"""
 
     def __init__(self, args):
         """Constructor."""
@@ -99,15 +99,16 @@ class ZephyrCtl:
                                      ).stdout.read().decode()
 
         if sys.platform == "win32":
-            COM = "COM" + str(int(self.tty_file["/dev/ttyS".__len__():]) + 1)
-            reg = r"[0-9]+(?=\s+" + COM + ".+)"
+            com = "COM" + str(int(self.tty_file["/dev/ttyS".__len__():]) + 1)
+            reg = r"[0-9]+(?=\s+" + com + ".+)"
         else:
             reg = r"[0-9]+(?=\s+" + self.tty_file + ".+)"
 
-        try:
-            self.debugger_snr = re.findall(reg, debuggers)[0]
-        except BaseException:
+        results = re.findall(reg, debuggers)
+        if not results:
             sys.exit("No debuggers associated with the device found")
+
+        self.debugger_snr = results[0]
 
     def start(self, test_case):
         """Starts the Zephyr OS"""
@@ -126,8 +127,8 @@ class ZephyrCtl:
             if sys.platform == "win32":
                 # On windows socat.exe does not support setting serial baud rate.
                 # Set it with 'mode' from cmd.exe
-                COM = "COM" + str(int(self.tty_file["/dev/ttyS".__len__():]) + 1)
-                mode_cmd = (">nul 2>nul cmd.exe /c \"mode " + COM + "BAUD=115200 PARITY=n DATA=8 STOP=1\"")
+                com = "COM" + str(int(self.tty_file["/dev/ttyS".__len__():]) + 1)
+                mode_cmd = (">nul 2>nul cmd.exe /c \"mode " + com + "BAUD=115200 PARITY=n DATA=8 STOP=1\"")
                 os.system(mode_cmd)
 
                 socat_cmd = ("socat.exe -x -v tcp:" + socket.gethostbyname(socket.gethostname()) +
@@ -146,7 +147,7 @@ class ZephyrCtl:
                                                   stderr=self.iut_log_file)
         elif self.hci is not None:
             socat_cmd = ("socat -x -v %%s,rawer,b115200 UNIX-CONNECT:%s &" %
-                         (self.btp_address))
+                         self.btp_address)
 
             native_cmd = ("%s --bt-dev=hci%d --attach_uart_cmd=\"%s\"" %
                           (self.kernel_image, self.hci, socat_cmd))
@@ -269,7 +270,7 @@ class ZephyrCtl:
 
 
 class ZephyrCtlStub:
-    '''Zephyr OS Control Class with stubs for testing'''
+    """Zephyr OS Control Class with stubs for testing"""
 
     def __init__(self):
         """Constructor."""
@@ -322,7 +323,8 @@ class Board:
         if reset_process.wait():
             logging.error("openocd reset failed")
 
-    def get_openocd_reset_cmd(self, openocd_bin, openocd_scripts, openocd_cfg):
+    @staticmethod
+    def get_openocd_reset_cmd(openocd_bin, openocd_scripts, openocd_cfg):
         """Compute openocd reset command"""
         if not os.path.isfile(openocd_bin):
             raise Exception("openocd %r not found!", openocd_bin)
@@ -360,7 +362,8 @@ class Board:
         """
         return 'nrfjprog -f nrf52 -r -s ' + self.iutctl.debugger_snr
 
-    def _get_reset_cmd_reel(self):
+    @staticmethod
+    def _get_reset_cmd_reel():
         """Return reset command for Reel_Board DUT
 
         Dependency: pyocd command line tools

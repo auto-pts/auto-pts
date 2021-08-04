@@ -30,7 +30,7 @@ SERIAL_BAUDRATE = 115200
 
 
 class MynewtCtl:
-    '''Mynewt OS Control Class'''
+    """Mynewt OS Control Class"""
 
     def __init__(self, tty_file, board_name, use_rtt2pty=None):
         """Constructor."""
@@ -153,7 +153,7 @@ class MynewtCtl:
 
 
 class MynewtCtlStub:
-    '''Mynewt OS Control Class with stubs for testing'''
+    """Mynewt OS Control Class with stubs for testing"""
 
     def __init__(self):
         """Constructor."""
@@ -198,7 +198,8 @@ class Board:
         if reset_process.wait():
             logging.error("reset failed")
 
-    def get_reset_cmd(self):
+    @staticmethod
+    def get_reset_cmd():
         """Return reset command for a board"""
 
         return 'nrfjprog -f nrf52 -r'

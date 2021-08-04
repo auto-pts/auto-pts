@@ -44,8 +44,7 @@ def hdl_wid_47(desc):
 
     # Name cannot be used for AD Data in BlueZ because BlueZ alwasy use Name
     # for SD Data. So, override the AD data here.
-    stack.gap.ad = {}
-    stack.gap.ad[AdType.manufacturer_data] = 'FFFFABCD'
+    stack.gap.ad = {AdType.manufacturer_data: 'FFFFABCD'}
 
     btp.gap_adv_ind_on(ad=stack.gap.ad)
 

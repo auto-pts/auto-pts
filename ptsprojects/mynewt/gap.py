@@ -19,18 +19,11 @@ from ptsprojects.testcase import TestFunc
 from ptsprojects.mynewt.ztestcase import ZTestCase
 
 from pybtp import btp
-from pybtp.types import Addr, IOCap, AdType, AdFlags
+from pybtp.types import Addr, IOCap, AdType, AdFlags, Prop, Perm, UUID
 from . import gatt
 from autoptsclient_common import get_unique_name
 from ptsprojects.stack import get_stack
 from .gap_wid import gap_wid_hdl, gap_wid_hdl_failed_read, gap_wid_hdl_mode1_lvl2
-
-
-class UUID:
-    gap_svc = '1800'
-    device_name = '2A00'
-    VND16_1 = 'AA50'
-    VND16_2 = 'AA51'
 
 
 class SVC:
@@ -43,13 +36,13 @@ class CHAR:
 
 init_gatt_db = [TestFunc(btp.core_reg_svc_gatt),
                 TestFunc(btp.gatts_add_svc, 0, gatt.PTS_DB.SVC),
-                TestFunc(btp.gatts_add_char, 0, gatt.Prop.read,
-                         gatt.Perm.read | gatt.Perm.read_authn,
+                TestFunc(btp.gatts_add_char, 0, Prop.read,
+                         Perm.read | Perm.read_authn,
                          gatt.PTS_DB.CHR_READ_WRITE_AUTHEN),
                 TestFunc(btp.gatts_set_val,
                          gatt.PTS_DB.CHR_READ_WRITE_AUTHEN_ID, '01'),
-                TestFunc(btp.gatts_add_char, 0, gatt.Prop.read,
-                         gatt.Perm.read | gatt.Perm.read_enc,
+                TestFunc(btp.gatts_add_char, 0, Prop.read,
+                         Perm.read | Perm.read_enc,
                          gatt.PTS_DB.CHR_READ_WRITE_ENC),
                 TestFunc(btp.gatts_set_val,
                          gatt.PTS_DB.CHR_READ_WRITE_ENC_ID, '02'),

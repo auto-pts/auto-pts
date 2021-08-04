@@ -194,6 +194,10 @@ class TestFunc:
         TestFunc(my_function, arg1, arg2, kwd1=5, start_wid=117)
 
         """
+        self.skip_call = None
+        self.start_wid = None
+        self.stop_wid = None
+        self.post_wid = None
         self.func = func
         self.__set_attrs(kwds)
         self.args = args
@@ -289,7 +293,7 @@ class PTSCallback(object):
     def __init__(self):
         pass
 
-    def log(self, log_type, logtype_string, log_time, log_message):
+    def log(self, log_type, logtype_string, log_time, log_message, test_case_name):
         """Implements:
 
         interface IPTSControlClientLogger : IUnknown {
@@ -333,10 +337,8 @@ class TestCase(PTSCallback):
                         self.verify_wids, self.ok_cancel_wids,
                         self.generic_wid_hdl, self.log_filename, self.log_dir)
 
-    def __init__(self, project_name, test_case_name, cmds=[],
-                 ptsproject_name=None, no_wid=None, edit1_wids=None,
-                 verify_wids=None, ok_cancel_wids=None,
-                 generic_wid_hdl=None, log_filename=None, log_dir=None):
+    def __init__(self, project_name, test_case_name, cmds=None, ptsproject_name=None, no_wid=None, edit1_wids=None,
+                 verify_wids=None, ok_cancel_wids=None, generic_wid_hdl=None, log_filename=None, log_dir=None):
         """TestCase constructor
 
         cmds -- a list of TestCmd and TestFunc or single instance of them
@@ -369,6 +371,9 @@ class TestCase(PTSCallback):
                            that came to test case.
 
         """
+        super().__init__()
+        if cmds is None:
+            cmds = []
         self.project_name = project_name
         self.name = test_case_name
         # a.k.a. final verdict
@@ -432,7 +437,7 @@ class TestCase(PTSCallback):
         self.log_dir = test_log_dir
         self.log_filename = os.path.join(test_log_dir, timestamp_name + ".log")
 
-    def log(self, log_type, logtype_string, log_time, log_message):
+    def log(self, log_type, logtype_string, log_time, log_message, test_case_name):
         """Overrides PTSCallback method. Handles
         PTSControl.IPTSControlClientLogger.Log"""
 
@@ -524,7 +529,7 @@ class TestCase(PTSCallback):
         if not self.verify_wids or wid not in self.verify_wids:
             search_strings = ["confirm", "verify"]
 
-            if any(str in description.lower() for str in search_strings):
+            if any(string in description.lower() for string in search_strings):
                 logging.warning("Verification missing for: %r", description)
 
         return my_response
@@ -553,8 +558,6 @@ class TestCase(PTSCallback):
         MMI_Style_Ok_Cancel2"""
         log("%s, %r ok_cancel_wids=%r",
             self.handle_mmi_style_ok_cancel.__name__, wid, self.ok_cancel_wids)
-
-        my_response = ""
 
         if self.ok_cancel_wids and wid in list(self.ok_cancel_wids.keys()):
             response = self.ok_cancel_wids[wid]
@@ -687,8 +690,6 @@ class TestCase(PTSCallback):
         # assert test_case_name == self.name, \
         #     "Unexpected test case name %r should be %r" % \
         #     (test_case_name, self.name)
-
-        my_response = ""
 
         # start/stop command if triggered by wid
         self.start_stop_cmds_by_wid(wid, description)
@@ -850,4 +851,4 @@ def get_max_test_case_desc(test_cases):
         if test_case_name_len > max_test_case_name:
             max_test_case_name = test_case_name_len
 
-    return (max_project_name, max_test_case_name)
+    return max_project_name, max_test_case_name

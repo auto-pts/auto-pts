@@ -46,7 +46,7 @@ def main():
     while True:
         line = sys.stdin.readline()
 
-        if line == "#close\n":
+        if line == "#close\n" and CONFIG_PROC:
             CONFIG_PROC.terminate()
             CONFIG_PROC.wait()
 

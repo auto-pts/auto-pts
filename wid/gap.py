@@ -79,7 +79,7 @@ def hdl_wid_11(desc):
 
 
 def hdl_wid_12(desc):
-    btp.gap_start_discov(type='passive', mode='observe')
+    btp.gap_start_discov(discov_type='passive', mode='observe')
     return True
 
 
@@ -555,7 +555,7 @@ def hdl_wid_137(desc):
 
 
 def hdl_wid_138(desc):
-    btp.gap_start_discov(transport='le', type='active', mode='observe')
+    btp.gap_start_discov(transport='le', discov_type='active', mode='observe')
     sleep(10)  # Give some time to discover devices
     btp.gap_stop_discov()
     return btp.check_discov_results()
@@ -777,7 +777,7 @@ def hdl_wid_156(desc):
 
 
 def hdl_wid_157(desc):
-    btp.gap_start_discov(transport='le', type='active', mode='observe')
+    btp.gap_start_discov(transport='le', discov_type='active', mode='observe')
     sleep(10)  # Give some time to discover devices
     btp.gap_stop_discov()
     report, response = re.findall(r'[0-9]{62}', desc)
@@ -822,8 +822,6 @@ def hdl_wid_161(desc):
     if properties & Prop.auth_swrite == 0:
         return
 
-    chrc_uuid = btp.btp2uuid(uuid_len, chrc_uuid)
-
     value = btp.gatts_get_attr_val(bd_addr_type, bd_addr, handle)
     if not value:
         return
@@ -837,7 +835,7 @@ def hdl_wid_162(desc):
 
 
 def hdl_wid_169(desc):
-    btp.gap_start_discov(type='active', mode='observe')
+    btp.gap_start_discov(discov_type='active', mode='observe')
     return True
 
 
@@ -875,7 +873,7 @@ def hdl_wid_179(desc):
 
 
 def hdl_wid_204(desc):
-    btp.gap_start_discov(type='passive', mode='observe')
+    btp.gap_start_discov(discov_type='passive', mode='observe')
     sleep(10)
     btp.gap_stop_discov()
     return btp.check_discov_results()

@@ -365,7 +365,7 @@ def core_log_message(message):
     logging.debug("%s", core_log_message.__name__)
 
     message_data = bytearray(message)
-    data = struct.pack('H', len(message_data))
+    data = bytearray(struct.pack('H', len(message_data)))
     data.extend(message_data)
 
     iutctl = get_iut()
@@ -410,8 +410,6 @@ def event_handler(hdr, data):
     if not stack:
         logging.info("Stack not initialized")
         return False
-
-    cb = None
 
     if hdr.svc_id == defs.BTP_SERVICE_ID_MESH:
         if hdr.op in MESH_EV and stack.mesh:

@@ -20,7 +20,7 @@ from ptsprojects.testcase import TestFunc
 from ptsprojects.zephyr.ztestcase import ZTestCase
 
 from pybtp import btp
-from pybtp.types import Addr, Prop, Perm
+from pybtp.types import Addr
 from . import gatt
 from autoptsclient_common import get_unique_name
 from ptsprojects.stack import get_stack
@@ -34,9 +34,6 @@ class Value:
     eight_bytes_2 = 'FEDCBA9876543210'
     long_1 = eight_bytes_1 * 4
     long_2 = eight_bytes_2 * 4
-
-
-iut_attr_db_off = 0x000b
 
 
 # these UUIDs are in little endian

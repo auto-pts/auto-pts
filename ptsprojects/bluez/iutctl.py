@@ -122,8 +122,9 @@ def init(btpclient_path):
 def cleanup():
     """IUT cleanup routine"""
     global IUT_LOG_FO, IUT
-    IUT_LOG_FO.close()
-    IUT_LOG_FO = None
+    if IUT_LOG_FO:
+        IUT_LOG_FO.close()
+        IUT_LOG_FO = None
 
     if IUT:
         IUT.stop()

@@ -328,7 +328,8 @@ def gatts_verify_write_success(description):
         logging.debug("%s Handle %r. Value %r has been successfully written",
                       gatts_verify_write_success.__name__, handle, value)
         return True
-    except BaseException:
+    except BaseException as e:
+        logging.exception(e)
         logging.debug("%s PTS failed to write attribute value",
                       gatts_verify_write_success.__name__)
         return False
@@ -536,10 +537,10 @@ def _gattc_find_included_rsp():
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
                   defs.GATT_FIND_INCLUDED)
 
-    incls_tuple = gatt_dec_disc_rsp(tuple_data[0], "include")
-    logging.debug("%s %r", gattc_find_included_rsp.__name__, incls_tuple)
+    incls_list = gatt_dec_disc_rsp(tuple_data[0], "include")
+    logging.debug("%s %r", gattc_find_included_rsp.__name__, incls_list)
 
-    for incl in incls_tuple:
+    for incl in incls_list:
         att_handle = "%04X" % (incl[0][0],)
         inc_svc_handle = "%04X" % (incl[1][0],)
         end_grp_handle = "%04X" % (incl[1][1],)
@@ -588,9 +589,9 @@ def gattc_disc_all_chrc_find_attrs_rsp(exp_chars, store_attrs=False):
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
                   defs.GATT_DISC_ALL_CHRC)
 
-    chars_tuple = gatt_dec_disc_rsp(tuple_data[0], "characteristic")
+    chars_list = gatt_dec_disc_rsp(tuple_data[0], "characteristic")
 
-    for char in chars_tuple:
+    for char in chars_list:
         for exp_char in exp_chars:
             # Check if option expected attribute parameters match
             if ((exp_char[0] and exp_char[0] != char[0]) or
@@ -1223,6 +1224,8 @@ def gatt_dec_disc_rsp(data, attr_type):
     attrs_list = []
     offset = 0
 
+    # TODO: Use types instead of tuples
+
     for x in range(attr_cnt):
         if attr_type == "service":
             attr, attr_len = gatt_dec_svc_attr(attrs[offset:])
@@ -1236,7 +1239,7 @@ def gatt_dec_disc_rsp(data, attr_type):
         attrs_list.append(attr)
         offset += attr_len
 
-    return tuple(attrs_list)
+    return attrs_list
 
 
 def gatt_dec_read_rsp(data):
@@ -1286,9 +1289,9 @@ def gattc_disc_prim_uuid_find_attrs_rsp(exp_svcs, store_attrs=False):
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
                   defs.GATT_DISC_PRIM_UUID)
 
-    svcs_tuple = gatt_dec_disc_rsp(tuple_data[0], "service")
+    svcs_list = gatt_dec_disc_rsp(tuple_data[0], "service")
 
-    for svc in svcs_tuple:
+    for svc in svcs_list:
         for exp_svc in exp_svcs:
             # Check if option expected attribute parameters match
             if ((exp_svc[0] and exp_svc[0] != svc[0]) or
@@ -1320,15 +1323,15 @@ def gattc_disc_all_prim_rsp(store_rsp=False):
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
                   defs.GATT_DISC_ALL_PRIM)
 
-    svcs_tuple = gatt_dec_disc_rsp(tuple_data[0], "service")
-    logging.debug("%s %r", gattc_disc_all_prim_rsp.__name__, svcs_tuple)
+    svcs_list = gatt_dec_disc_rsp(tuple_data[0], "service")
+    logging.debug("%s %r", gattc_disc_all_prim_rsp.__name__, svcs_list)
 
     if store_rsp:
         global VERIFY_VALUES
 
         VERIFY_VALUES = []
 
-        for svc in svcs_tuple:
+        for svc in svcs_list:
             # Keep just UUID since PTS checks only UUID.
             uuid = svc[2].upper()
 
@@ -1338,7 +1341,7 @@ def gattc_disc_all_prim_rsp(store_rsp=False):
 
         logging.debug("Set verify values to: %r", VERIFY_VALUES)
 
-    return svcs_tuple
+    return svcs_list
 
 
 def gattc_disc_prim_uuid_rsp(store_rsp=False):
@@ -1351,15 +1354,15 @@ def gattc_disc_prim_uuid_rsp(store_rsp=False):
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
                   defs.GATT_DISC_PRIM_UUID)
 
-    svcs_tuple = gatt_dec_disc_rsp(tuple_data[0], "service")
-    logging.debug("%s %r", gattc_disc_prim_uuid_rsp.__name__, svcs_tuple)
+    svcs_list = gatt_dec_disc_rsp(tuple_data[0], "service")
+    logging.debug("%s %r", gattc_disc_prim_uuid_rsp.__name__, svcs_list)
 
     if store_rsp:
         global VERIFY_VALUES
 
         VERIFY_VALUES = []
 
-        for svc in svcs_tuple:
+        for svc in svcs_list:
             start_handle = "%04X" % (svc[0],)
             end_handle = "%04X" % (svc[1],)
 
@@ -1425,10 +1428,10 @@ def gattc_disc_all_chrc_rsp(store_rsp=False):
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
                   defs.GATT_DISC_ALL_CHRC)
 
-    chrcs_tuple = gatt_dec_disc_rsp(tuple_data[0], "characteristic")
-    logging.debug("%s %r", gattc_disc_all_chrc_rsp.__name__, chrcs_tuple)
+    chrcs_list = gatt_dec_disc_rsp(tuple_data[0], "characteristic")
+    logging.debug("%s %r", gattc_disc_all_chrc_rsp.__name__, chrcs_list)
 
-    for chrc in chrcs_tuple:
+    for chrc in chrcs_list:
         (handle, value_handle, prop, uuid) = chrc
         attrs.append(GattCharacteristic(handle=handle,
                                         perm=Perm.read,
@@ -1459,14 +1462,14 @@ def gattc_disc_chrc_uuid_rsp(store_rsp=False):
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
                   defs.GATT_DISC_CHRC_UUID)
 
-    chrcs_tuple = gatt_dec_disc_rsp(tuple_data[0], "characteristic")
-    logging.debug("%s %r", gattc_disc_chrc_uuid_rsp.__name__, chrcs_tuple)
+    chrcs_list = gatt_dec_disc_rsp(tuple_data[0], "characteristic")
+    logging.debug("%s %r", gattc_disc_chrc_uuid_rsp.__name__, chrcs_list)
 
     if store_rsp:
         global VERIFY_VALUES
         VERIFY_VALUES = []
 
-        for chrc in chrcs_tuple:
+        for chrc in chrcs_list:
             handle = "%04X" % (chrc[1],)
             uuid = chrc[3]
 
@@ -1490,14 +1493,14 @@ def gattc_disc_all_desc_rsp(store_rsp=False):
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
                   defs.GATT_DISC_ALL_DESC)
 
-    descs_tuple = gatt_dec_disc_rsp(tuple_data[0], "descriptor")
-    logging.debug("%s %r", gattc_disc_all_desc_rsp.__name__, descs_tuple)
+    descs_list = gatt_dec_disc_rsp(tuple_data[0], "descriptor")
+    logging.debug("%s %r", gattc_disc_all_desc_rsp.__name__, descs_list)
 
     if store_rsp:
         global VERIFY_VALUES
         VERIFY_VALUES = []
 
-        for desc in descs_tuple:
+        for desc in descs_list:
             handle = "%04X" % (desc[0],)
             uuid = desc[1]
             VERIFY_VALUES.append(handle)

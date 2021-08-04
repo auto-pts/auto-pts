@@ -533,7 +533,7 @@ class L2cap:
         self.initial_mtu = initial_mtu
         self.channels = []
 
-    def _chan_lookup_id(self, chan_id):
+    def chan_lookup_id(self, chan_id):
         for chan in self.channels:
             if chan.id == chan_id:
                 return chan
@@ -545,7 +545,7 @@ class L2cap:
             chan.data_rx = []
 
     def reconfigured(self, chan_id, peer_mtu, peer_mps, our_mtu, our_mps):
-        channel = self._chan_lookup_id(chan_id)
+        channel = self.chan_lookup_id(chan_id)
         channel.peer_mtu = peer_mtu
         channel.peer_mps = peer_mps
         channel.our_mtu = our_mtu
@@ -556,7 +556,7 @@ class L2cap:
 
     def connected(self, chan_id, psm, peer_mtu, peer_mps, our_mtu, our_mps,
                   bd_addr_type, bd_addr):
-        chan = self._chan_lookup_id(chan_id)
+        chan = self.chan_lookup_id(chan_id)
         if chan is None:
             chan = L2capChan(chan_id, psm, peer_mtu, peer_mps, our_mtu, our_mps,
                              bd_addr_type, bd_addr)
@@ -566,7 +566,7 @@ class L2cap:
                        bd_addr_type, bd_addr)
 
     def disconnected(self, chan_id, psm, bd_addr_type, bd_addr, reason):
-        chan = self._chan_lookup_id(chan_id)
+        chan = self.chan_lookup_id(chan_id)
         if chan is None:
             logging.error("unknown channel")
             return
@@ -576,7 +576,7 @@ class L2cap:
         chan.disconnected(psm, bd_addr_type, bd_addr, reason)
 
     def is_connected(self, chan_id):
-        chan = self._chan_lookup_id(chan_id)
+        chan = self.chan_lookup_id(chan_id)
         if chan is None:
             logging.error("unknown channel")
             return False
@@ -601,7 +601,7 @@ class L2cap:
         return False
 
     def rx(self, chan_id, data):
-        chan = self._chan_lookup_id(chan_id)
+        chan = self.chan_lookup_id(chan_id)
         if chan is None:
             logging.error("unknown channel")
             return
@@ -609,7 +609,7 @@ class L2cap:
         chan.rx(data)
 
     def tx(self, chan_id, data):
-        chan = self._chan_lookup_id(chan_id)
+        chan = self.chan_lookup_id(chan_id)
         if chan is None:
             logging.error("unknown channel")
             return
@@ -625,7 +625,7 @@ class L2cap:
         return data
 
     def tx_data_get(self, chan_id):
-        chan = self._chan_lookup_id(chan_id)
+        chan = self.chan_lookup_id(chan_id)
         if chan is None:
             logging.error("unknown channel")
             return None
