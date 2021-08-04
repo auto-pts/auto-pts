@@ -15,10 +15,10 @@
 # more details.
 #
 
-from ptsprojects.testcase import AbstractMethodException
-from ptsprojects.zephyr.iutctl import get_qemu_cmd, BTP_ADDRESS
-from pybtp.iutctl_common import BTPSocket
 from pybtp import defs, btp
+from pybtp.iutctl_common import BTPSocket
+from ptsprojects.zephyr.iutctl import get_qemu_cmd, BTP_ADDRESS
+from ptsprojects.testcase import AbstractMethodException
 import os
 import sys
 import socket

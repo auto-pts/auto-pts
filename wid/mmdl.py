@@ -2010,7 +2010,7 @@ def hdl_wid_660(desc):
             return True
         else:
             stack = get_stack()
-            if stack.mesh.expect_status_data_get("Ack") == False:
+            if stack.mesh.expect_status_data_get("Ack") is False:
                 return True
             elif stack.mesh.expect_status_data.data == stack.mesh.recv_status_data.data:
                 return True
