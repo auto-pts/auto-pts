@@ -190,7 +190,7 @@ def test_cases_server(pts):
     ]
 
     test_case_name_list = pts.get_test_case_list('GATT')
-    test_cases = []
+    tc_list = []
 
     for tc_name in test_case_name_list:
         instance = ZTestCase('GATT', tc_name,
@@ -202,9 +202,9 @@ def test_cases_server(pts):
                 instance = custom_tc
                 break
 
-        test_cases.append(instance)
+        tc_list.append(instance)
 
-    return test_cases
+    return tc_list
 
 
 def test_cases_client(pts):
@@ -244,7 +244,7 @@ def test_cases_client(pts):
     ]
 
     test_case_name_list = pts.get_test_case_list('GATT')
-    test_cases = []
+    tc_list = []
 
     for tc_name in test_case_name_list:
         instance = ZTestCase("GATT", tc_name,
@@ -256,9 +256,9 @@ def test_cases_client(pts):
                 instance = custom_tc
                 break
 
-        test_cases.append(instance)
+        tc_list.append(instance)
 
-    return test_cases
+    return tc_list
 
 
 def test_cases(ptses):
@@ -274,7 +274,7 @@ def test_cases(ptses):
     pts.update_pixit_param("GATT", "TSPX_delete_link_key", "TRUE")
     pts.update_pixit_param("GATT", "TSPX_delete_ltk", "TRUE")
 
-    test_cases = test_cases_client(pts)
-    test_cases += test_cases_server(pts)
+    tc_list = test_cases_client(pts)
+    tc_list += test_cases_server(pts)
 
-    return test_cases
+    return tc_list

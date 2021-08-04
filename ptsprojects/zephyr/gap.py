@@ -423,7 +423,7 @@ def test_cases(ptses):
     ]
 
     test_case_name_list = pts.get_test_case_list('GAP')
-    test_cases = []
+    tc_list = []
 
     for tc_name in test_case_name_list:
         instance = ZTestCase('GAP', tc_name,
@@ -435,6 +435,6 @@ def test_cases(ptses):
                 instance = custom_tc
                 break
 
-        test_cases.append(instance)
+        tc_list.append(instance)
 
-    return test_cases
+    return tc_list
