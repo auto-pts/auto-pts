@@ -15,15 +15,8 @@
 
 """GAP test cases"""
 
-try:
-    from ptsprojects.testcase import TestFunc
-    from ptsprojects.bluez.btestcase import BTestCase
-except ImportError:  # running this module as script
-    import sys
-    sys.path.append("../..")  # to be able to locate the following imports
-
-    from ptsprojects.testcase import TestFunc
-    from ptsprojects.bluez.btestcase import BTestCase
+from ptsprojects.testcase import TestFunc
+from ptsprojects.bluez.btestcase import BTestCase
 
 from pybtp import btp
 from pybtp.types import Addr, IOCap, UUID, Prop, Perm, AdType
@@ -376,29 +369,3 @@ def test_cases(ptses):
         test_cases.append(instance)
 
     return test_cases
-
-
-def main():
-    """Main."""
-    import ptsprojects.zephyr.iutctl as iutctl
-
-    iutctl.init_stub()
-
-    test_cases_ = test_cases("AB:CD:EF:12:34:56")
-
-    for test_case in test_cases_:
-        print()
-        print(test_case)
-
-        if test_case.edit1_wids:
-            print("edit1_wids: ", test_case.edit1_wids)
-
-        if test_case.verify_wids:
-            print("verify_wids: ", test_case.verify_wids)
-
-        for index, cmd in enumerate(test_case.cmds):
-            print(index, cmd)
-
-
-if __name__ == "__main__":
-    main()

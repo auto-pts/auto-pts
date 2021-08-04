@@ -15,15 +15,8 @@
 
 """GATT test cases"""
 
-try:
-    from ptsprojects.testcase import TestFunc
-    from ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
-except ImportError:  # running this module as script
-    import sys
-    sys.path.append("../..")  # to be able to locate the following imports
-
-    from ptsprojects.testcase import TestFunc
-    from ptsprojects.zephyr.ztestcase import ZTestCase
+from ptsprojects.testcase import TestFunc
+from ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
 
 from pybtp import btp
 from pybtp.types import UUID, Addr, IOCap, Prop, Perm
@@ -709,38 +702,3 @@ def test_cases(ptses):
     test_cases += test_cases_server(ptses)
 
     return test_cases
-
-
-def main():
-    """Main."""
-    import ptsprojects.zephyr.iutctl as iutctl
-
-    iutctl.init_stub()
-
-    test_cases_ = test_cases("AB:CD:EF:12:34:56")
-
-    for test_case in test_cases_:
-        print()
-        print(test_case)
-
-        if test_case.edit1_wids:
-            print(("edit1_wids: %r" % test_case.edit1_wids))
-
-        if test_case.verify_wids:
-            print(("verify_wids: %r" % test_case.verify_wids))
-
-        for index, cmd in enumerate(test_case.cmds):
-            str_cmd = str(cmd)
-
-            if isinstance(cmd, TestFunc):
-                if cmd.func == btp.gatts_add_char:
-                    str_cmd += ", Properties: %s" % Prop.decode(cmd.args[1])
-                    str_cmd += ", Permissions: %s" % Perm.decode(cmd.args[2])
-                elif cmd.func == btp.gatts_add_desc:
-                    str_cmd += ", Permissions: %s" % Perm.decode(cmd.args[1])
-
-            print(("%d) %s" % (index, str_cmd)))
-
-
-if __name__ == "__main__":
-    main()

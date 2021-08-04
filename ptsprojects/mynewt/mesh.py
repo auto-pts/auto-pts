@@ -15,19 +15,8 @@
 
 """MESH test cases"""
 
-try:
-    from ptsprojects.testcase import TestFunc
-    from ptsprojects.mynewt.ztestcase import ZTestCase, ZTestCaseSlave
-
-except ImportError:  # running this module as script
-    import sys
-    import os
-    # to be able to locate the following imports
-    sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../..")
-
-    from ptsprojects.testcase import TestFunc
-    from ptsprojects.mynewt.ztestcase import ZTestCase, ZTestCaseSlave
-
+from ptsprojects.testcase import TestFunc
+from ptsprojects.mynewt.ztestcase import ZTestCase, ZTestCaseSlave
 
 from pybtp import defs, btp
 from pybtp.types import MeshVals
@@ -963,34 +952,3 @@ def test_cases(ptses):
         pts2 = ptses[1]
 
     return test_cases
-
-
-def main():
-    """Main."""
-    import ptsprojects.mynewt.iutctl as iutctl
-
-    class pts:
-        pass
-
-    pts.q_bd_addr = "AB:CD:EF:12:34:56"
-
-    iutctl.init_stub()
-
-    test_cases_ = test_cases(pts)
-
-    for test_case in test_cases_:
-        print()
-        print(test_case)
-
-        if test_case.edit1_wids:
-            print("edit1_wids: %r" % test_case.edit1_wids)
-
-        if test_case.verify_wids:
-            print("verify_wids: %r" % test_case.verify_wids)
-
-        for index, cmd in enumerate(test_case.cmds):
-            print("%d) %s" % (index, cmd))
-
-
-if __name__ == "__main__":
-    main()
