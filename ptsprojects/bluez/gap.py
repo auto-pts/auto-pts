@@ -85,13 +85,13 @@ def set_pixits(ptses):
     iut_device_name = get_unique_name(pts)
 
     ad_str_flags = str(AdType.flags).zfill(2) + \
-                   str(AdFlags.br_edr_not_supp).zfill(2)
+        str(AdFlags.br_edr_not_supp).zfill(2)
     ad_str_flags_len = str(len(ad_str_flags) // 2).zfill(2)
     ad_str_name_short = str(AdType.name_short).zfill(2) + \
-                        binascii.hexlify(iut_device_name)
+        binascii.hexlify(iut_device_name)
     ad_str_name_short_len = format((len(ad_str_name_short) // 2), 'x').zfill(2)
     ad_str_manufacturer_data = str(format(AdType.manufacturer_data, 'x')).zfill(2) + \
-                               iut_manufacturer_data
+        iut_manufacturer_data
     ad_str_manufacturer_data_len = str(len(ad_str_manufacturer_data) / 2).zfill(2)
 
     ad_pixit = ad_str_manufacturer_data_len + ad_str_manufacturer_data
@@ -254,19 +254,19 @@ def test_cases(ptses):
                   generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/SEC/AUT/BV-11-C",
                   cmds=pre_conditions + init_gatt_db +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/SEC/AUT/BV-12-C",
                   cmds=pre_conditions + init_gatt_db +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/SEC/AUT/BV-13-C",
                   cmds=pre_conditions + init_gatt_db +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/SEC/AUT/BV-14-C",
                   cmds=pre_conditions + init_gatt_db +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/SEC/AUT/BV-17-C",
                   cmds=pre_conditions +
@@ -284,7 +284,7 @@ def test_cases(ptses):
                    TestFunc(btp.gap_disconn, start_wid=44)]),
         BTestCase("GAP", "GAP/SEC/AUT/BV-18-C",
                   cmds=pre_conditions + init_gatt_db +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output)],
+                  [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output)],
                   generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/SEC/AUT/BV-19-C",
                   cmds=pre_conditions +
@@ -298,7 +298,7 @@ def test_cases(ptses):
                    TestFunc(btp.gap_disconn, start_wid=44)]),
         BTestCase("GAP", "GAP/SEC/AUT/BV-20-C",
                   cmds=pre_conditions + init_gatt_db +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gap_wid_hdl),
         # TODO: Inform about lost bond
         # BTestCase("GAP", "GAP/SEC/AUT/BV-22-C",
@@ -306,15 +306,15 @@ def test_cases(ptses):
         #           generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/SEC/AUT/BV-23-C",
                   cmds=pre_conditions + init_gatt_db +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/SEC/AUT/BV-24-C",
                   cmds=pre_conditions + init_gatt_db +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/SEC/CSIGN/BV-01-C",
                   cmds=pre_conditions + init_gatt_db +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/SEC/CSIGN/BV-02-C",
                   cmds=pre_conditions + init_gatt_db +
@@ -361,10 +361,10 @@ def test_cases(ptses):
         # Testing central role.
         BTestCase("GAP", "GAP/GAT/BV-01-C",
                   cmds=pre_conditions + init_gatt_db,
-                        generic_wid_hdl=gap_wid_hdl),
+                  generic_wid_hdl=gap_wid_hdl),
         # Testing peripheral role.
         BTestCase("GAP", "GAP/GAT/BV-01-C",
-                #   no_wid=158,
+                  #   no_wid=158,
                   cmds=pre_conditions + init_gatt_db,
                   generic_wid_hdl=gap_wid_hdl),
     ]

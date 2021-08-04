@@ -42,7 +42,7 @@ def addr2btp_ba(addr_str):
 
 
 def bdaddr_reverse(addr):
-    return ''.join([addr[i:i+2] for i in range(0, len(addr), 2)][::-1])
+    return ''.join([addr[i:i + 2] for i in range(0, len(addr), 2)][::-1])
 
 
 class BTPError(Exception):
@@ -87,8 +87,10 @@ class AdFlags:
     sim_le_br_edr_contr = 0x08
     sim_le_br_edr_host = 0x10
 
+
 class AdDuration:
     forever = 0xFFFFFFFF
+
 
 class UriScheme:
     https = b'\x17'
@@ -134,10 +136,12 @@ class Addr:
     le_public = 0
     le_random = 1
 
+
 class OwnAddrType:
     le_identity_address = 0
     le_resolvable_private_address = 1
     le_non_resolvable_private_address = 2
+
 
 class MeshVals:
     subscription_addr_list1 = 'C302'
@@ -242,6 +246,7 @@ class Perm:
     @staticmethod
     def decode(perm):
         return decode_flag_name(perm, Perm.names)
+
 
 class L2capSecLevels:
     no_sec = 0x01

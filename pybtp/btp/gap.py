@@ -919,5 +919,3 @@ def check_scan_rep_and_rsp(report, response):
         if report in eir and response in eir:
             return True
     return False
-
-

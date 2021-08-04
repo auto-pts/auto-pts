@@ -126,23 +126,23 @@ def test_cases(ptses):
     stack.gap_init(iut_device_name)
 
     common = [TestFunc(btp.core_reg_svc_gap),
-                      TestFunc(btp.core_reg_svc_l2cap),
-                      TestFunc(btp.gap_read_ctrl_info),
-                      TestFunc(lambda: pts.update_pixit_param(
-                          "L2CAP", "TSPX_bd_addr_iut",
-                          stack.gap.iut_addr_get_str())),
-                      TestFunc(lambda: pts.update_pixit_param(
-                          "L2CAP", "TSPX_bd_addr_iut_le",
-                          stack.gap.iut_addr_get_str())),
-                      TestFunc(lambda: pts.update_pixit_param(
-                          "L2CAP", "TSPX_iut_supported_max_channels", "2")),
-                      TestFunc(lambda: pts.update_pixit_param(
-                          "L2CAP", "TSPX_IUT_mps", format(le_mps, '04x'))),
-                      TestFunc(lambda: pts.update_pixit_param(
-                          "L2CAP", "TSPX_iut_address_type_random",
-                          "TRUE" if stack.gap.iut_addr_is_random()
-                          else "FALSE")),
-                      TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public)]
+              TestFunc(btp.core_reg_svc_l2cap),
+              TestFunc(btp.gap_read_ctrl_info),
+              TestFunc(lambda: pts.update_pixit_param(
+                  "L2CAP", "TSPX_bd_addr_iut",
+                  stack.gap.iut_addr_get_str())),
+              TestFunc(lambda: pts.update_pixit_param(
+                  "L2CAP", "TSPX_bd_addr_iut_le",
+                  stack.gap.iut_addr_get_str())),
+              TestFunc(lambda: pts.update_pixit_param(
+                  "L2CAP", "TSPX_iut_supported_max_channels", "2")),
+              TestFunc(lambda: pts.update_pixit_param(
+                  "L2CAP", "TSPX_IUT_mps", format(le_mps, '04x'))),
+              TestFunc(lambda: pts.update_pixit_param(
+                  "L2CAP", "TSPX_iut_address_type_random",
+                  "TRUE" if stack.gap.iut_addr_is_random()
+                  else "FALSE")),
+              TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public)]
 
     pre_conditions = common + [
         TestFunc(stack.l2cap_init, le_psm, le_initial_mtu),

@@ -148,8 +148,9 @@ class MynewtCtl:
 
         if self.socat_process:
             self.socat_process.terminate()
-            self.socat_process.wait();
+            self.socat_process.wait()
             self.socat_process = None
+
 
 class MynewtCtlStub:
     '''Mynewt OS Control Class with stubs for testing'''

@@ -133,7 +133,7 @@ class BTPSocket(object):
             self.conn.shutdown(socket.SHUT_RDWR)
             self.conn.close()
             self.sock.close()
-        except:
+        except BaseException:
             pass
         self.sock = None
         self.conn = None
@@ -165,7 +165,7 @@ class BTPWorker(BTPSocket):
 
                 self._rx_queue.put(data)
             except (socket.timeout, socket.error):
-                pass # these are expected so ignore
+                pass  # these are expected so ignore
             except Exception as e:
                 logging.error("%r", e)
 
@@ -270,7 +270,7 @@ class RTT2PTY:
                                                 shell=False,
                                                 stdout=subprocess.PIPE,
                                                 stderr=subprocess.PIPE)
-        flags = fcntl(self.rtt2pty_process.stdout, F_GETFL) # get current p.stdout flags
+        flags = fcntl(self.rtt2pty_process.stdout, F_GETFL)  # get current p.stdout flags
         fcntl(self.rtt2pty_process.stdout, F_SETFL, flags | O_NONBLOCK)
 
         time.sleep(3)

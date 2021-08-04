@@ -24,6 +24,8 @@ ipy ./tools/create-workspace.py ./workspaces/pts_file.pts ./workspaces
 
 """
 
+import Interop.PTSControl as PTSControl
+import ptsprojects.ptstypes as ptstypes
 import os
 import re
 import sys
@@ -39,12 +41,10 @@ import System
 sys.path.insert(
     0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-import ptsprojects.ptstypes as ptstypes
 
 # load the PTS interop assembly
 clr.AddReferenceToFile("Interop.PTSControl.dll")
 
-import Interop.PTSControl as PTSControl
 
 log = logging.debug
 
@@ -156,7 +156,7 @@ def patch_workspace_file(workspace_file):
     """Patch workspace file to remove invalid information
 
     The information removed is:
-    PATH="C:\PATH\auto-pts\workspaces\qsd_zephyr_mv11_20160623"
+    PATH=r"C:\PATH\auto-pts\workspaces\qsd_zephyr_mv11_20160623"
 
     It is replaced with
     PATH=""

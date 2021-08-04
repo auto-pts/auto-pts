@@ -74,7 +74,7 @@ def build_and_flash(zephyr_wd, board, tty, conf_file=None):
 
     check_call('rm -rf build/'.split(), cwd=tester_dir)
 
-    cmd = ['west',  'build', '-p', 'auto', '-b', board]
+    cmd = ['west', 'build', '-p', 'auto', '-b', board]
     if conf_file and conf_file != 'default' and conf_file != 'prj.conf':
         cmd.extend(('--', '-DOVERLAY_CONFIG={}'.format(conf_file)))
 
@@ -129,7 +129,7 @@ def apply_overlay(zephyr_wd, base_conf, cfg_name, overlay):
 autopts2board = {
     None: None,
     'nrf52': 'nrf52840dk_nrf52840',
-    'reel_board' : 'reel_board'
+    'reel_board': 'reel_board'
 }
 
 
@@ -165,11 +165,12 @@ class PtsInitArgs(object):
     Translates arguments provided in 'config.py' file to be used by
     'autoptsclient.init_pts' function
     """
+
     def __init__(self, args):
         self.workspace = args["workspace"]
         self.bd_addr = args["bd_addr"]
         self.enable_max_logs = args.get('enable_max_logs', False)
-        self.retry = args.get('retry', 0);
+        self.retry = args.get('retry', 0)
         self.stress_test = args.get('stress_test', False)
         self.test_cases = []
         self.excluded = []
@@ -413,7 +414,7 @@ def main(cfg):
 
         # Elapsed Time
         mail_ctx["elapsed_time"] = str(datetime.timedelta(
-                                       seconds = (end_time - start_time)))
+                                       seconds=(end_time - start_time)))
 
         subject, body = compose_mail(args, cfg['mail'], mail_ctx)
 

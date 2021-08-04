@@ -61,7 +61,7 @@ def set_pixits(ptses):
     pts.set_pixit("MMDL", "TSPX_time_guard", "300000")
     pts.set_pixit("MMDL", "TSPX_use_implicit_send", "TRUE")
     pts.set_pixit("MMDL", "TSPX_tester_database_file",
-                  "C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_SMPP_db.xml")
+                  r"C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_SMPP_db.xml")
     pts.set_pixit("MMDL", "TSPX_mtu_size", "23")
     pts.set_pixit("MMDL", "TSPX_delete_link_key", "TRUE")
     pts.set_pixit("MMDL", "TSPX_delete_ltk", "TRUE")

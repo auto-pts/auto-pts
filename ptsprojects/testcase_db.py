@@ -101,4 +101,3 @@ class TestCaseTable(object):
             duration += count_unknown * duration // (num_test_cases - count_unknown)
 
         return duration
-

@@ -132,8 +132,10 @@ def set_pixits(ptses):
     pts.set_pixit("GATT", "TSPX_use_implicit_send", "TRUE")
     pts.set_pixit("GATT", "TSPX_iut_use_dynamic_bd_addr", "FALSE")
     pts.set_pixit("GATT", "TSPX_iut_setup_att_over_br_edr", "FALSE")
-    pts.set_pixit("GATT", "TSPX_tester_database_file",
-                  "C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\GATT_Qualification_Test_Databases.xml")
+    pts.set_pixit(
+        "GATT",
+        "TSPX_tester_database_file",
+        r"C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\GATT_Qualification_Test_Databases.xml")
     pts.set_pixit("GATT", "TSPX_iut_is_client_periphral", "TRUE")
     pts.set_pixit("GATT", "TSPX_iut_is_server_central", "FALSE")
     pts.set_pixit("GATT", "TSPX_mtu_size", "23")
@@ -156,8 +158,10 @@ def set_pixits(ptses):
     pts2.set_pixit("GATT", "TSPX_use_implicit_send", "TRUE")
     pts2.set_pixit("GATT", "TSPX_iut_use_dynamic_bd_addr", "FALSE")
     pts2.set_pixit("GATT", "TSPX_iut_setup_att_over_br_edr", "FALSE")
-    pts2.set_pixit("GATT", "TSPX_tester_database_file",
-                   "C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\GATT_Qualification_Test_Databases.xml")
+    pts2.set_pixit(
+        "GATT",
+        "TSPX_tester_database_file",
+        r"C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\GATT_Qualification_Test_Databases.xml")
     pts2.set_pixit("GATT", "TSPX_iut_is_client_periphral", "TRUE")
     pts2.set_pixit("GATT", "TSPX_iut_is_server_central", "FALSE")
     pts2.set_pixit("GATT", "TSPX_mtu_size", "23")
@@ -490,7 +494,7 @@ def test_cases_server(ptses):
                   pre_conditions_1 + init_server_5,
                   generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GPM/BV-05-C",
-                  pre_conditions_1 +init_server_2 ,
+                  pre_conditions_1 + init_server_2,
                   generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAW/BV-07-C",
                   pre_conditions_1 + init_server_2,
@@ -526,27 +530,27 @@ def test_cases_server(ptses):
                   generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAS/BV-02-C",
                   cmds=pre_conditions_1 +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAS/BV-03-C",
                   cmds=pre_conditions_1 +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAS/BV-04-C",
                   cmds=pre_conditions_1 +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAS/BV-05-C",
                   cmds=pre_conditions_1 + init_server_2 +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAS/BV-06-C",
                   cmds=pre_conditions_1 +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAS/BV-07-C",
                   cmds=pre_conditions_1 +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAS/BV-08-C",
                   cmds=pre_conditions_1 + init_server_2,
@@ -625,15 +629,15 @@ def test_cases_server(ptses):
     pre_conditions_lt2 = [TestFunc(lambda: pts2.update_pixit_param(
         "GATT", "TSPX_bd_addr_iut",
         stack.gap.iut_addr_get_str())),
-                          TestFunc(lambda: pts2.update_pixit_param(
-                              "GATT", "TSPX_iut_use_dynamic_bd_addr",
-                              "TRUE" if stack.gap.iut_addr_is_random()
-                              else "FALSE"))]
+        TestFunc(lambda: pts2.update_pixit_param(
+            "GATT", "TSPX_iut_use_dynamic_bd_addr",
+            "TRUE" if stack.gap.iut_addr_is_random()
+            else "FALSE"))]
 
     test_cases_lt2 = [
         ZTestCase("GATT", "GATT/SR/GAS/BV-03-C",
                   cmds=pre_conditions_1 +
-                       [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gatt_wid_hdl,
                   lt2="GATT/SR/GAS/BV-03-C-LT2"),
         ZTestCaseSlave("GATT", "GATT/SR/GAS/BV-03-C-LT2",

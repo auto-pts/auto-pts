@@ -31,12 +31,14 @@ except ImportError:  # running this module as script
 from pybtp import btp
 from pybtp.types import UUID, Addr, IOCap, Prop, Perm
 from time import sleep
-import logging, coloredlogs
+import logging
+import coloredlogs
 from ptsprojects.stack import get_stack
 from autoptsclient_common import get_unique_name
 from ptsprojects.mynewt.gatt_wid import gatt_wid_hdl
 from ptsprojects.mynewt.gattc_wid import gattc_wid_hdl
 import struct
+
 
 class Value:
     one_byte = '01'
@@ -60,7 +62,6 @@ def __get_attr_u16_hdl_str(offset):
 
 def __get_attr_u16_hdl_uc_str(offset):
     return '{0:04x}'.format(iut_attr_db_off + offset, 'X')
-
 
 
 def hdl_str(hdl):
@@ -154,8 +155,10 @@ def set_pixits(ptses):
     pts.set_pixit("GATT", "TSPX_secure_simple_pairing_pass_key_confirmation", "FALSE")
     pts.set_pixit("GATT", "TSPX_iut_use_dynamic_bd_addr", "FALSE")
     pts.set_pixit("GATT", "TSPX_iut_setup_att_over_br_edr", "FALSE")
-    pts.set_pixit("GATT", "TSPX_tester_database_file",
-                  "C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\GATT_Qualification_Test_Databases.xml")
+    pts.set_pixit(
+        "GATT",
+        "TSPX_tester_database_file",
+        r"C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\GATT_Qualification_Test_Databases.xml")
     pts.set_pixit("GATT", "TSPX_iut_is_client_periphral", "FALSE")
     pts.set_pixit("GATT", "TSPX_iut_is_server_central", "FALSE")
     pts.set_pixit("GATT", "TSPX_mtu_size", "23")
@@ -172,29 +175,29 @@ def test_cases_server(pts):
     stack = get_stack()
 
     pre_conditions_1 = [TestFunc(btp.core_reg_svc_gap),
-                      TestFunc(btp.core_reg_svc_gatt),
-                      TestFunc(btp.gap_read_ctrl_info),
-                      TestFunc(lambda: pts.update_pixit_param(
-                          "GATT", "TSPX_bd_addr_iut",
-                          stack.gap.iut_addr_get_str())),
-                      TestFunc(lambda: pts.update_pixit_param(
-                          "GATT", "TSPX_iut_use_dynamic_bd_addr",
-                          "TRUE" if stack.gap.iut_addr_is_random()
-                          else "FALSE")),
-                      TestFunc(stack.gatt_init)]
+                        TestFunc(btp.core_reg_svc_gatt),
+                        TestFunc(btp.gap_read_ctrl_info),
+                        TestFunc(lambda: pts.update_pixit_param(
+                            "GATT", "TSPX_bd_addr_iut",
+                            stack.gap.iut_addr_get_str())),
+                        TestFunc(lambda: pts.update_pixit_param(
+                            "GATT", "TSPX_iut_use_dynamic_bd_addr",
+                            "TRUE" if stack.gap.iut_addr_is_random()
+                            else "FALSE")),
+                        TestFunc(stack.gatt_init)]
 
     pre_conditions_2 = [TestFunc(btp.core_reg_svc_gap),
-                      TestFunc(btp.core_reg_svc_gatt),
-                      TestFunc(btp.gap_read_ctrl_info),
-                      TestFunc(lambda: pts.update_pixit_param(
-                          "GATT", "TSPX_bd_addr_iut",
-                          stack.gap.iut_addr_get_str())),
-                      TestFunc(lambda: pts.update_pixit_param(
-                          "GATT", "TSPX_iut_use_dynamic_bd_addr",
-                          "TRUE" if stack.gap.iut_addr_is_random()
-                          else "FALSE")),
-                      TestFunc(btp.gap_set_gendiscov),
-                      TestFunc(btp.gap_set_conn)]
+                        TestFunc(btp.core_reg_svc_gatt),
+                        TestFunc(btp.gap_read_ctrl_info),
+                        TestFunc(lambda: pts.update_pixit_param(
+                            "GATT", "TSPX_bd_addr_iut",
+                            stack.gap.iut_addr_get_str())),
+                        TestFunc(lambda: pts.update_pixit_param(
+                            "GATT", "TSPX_iut_use_dynamic_bd_addr",
+                            "TRUE" if stack.gap.iut_addr_is_random()
+                            else "FALSE")),
+                        TestFunc(btp.gap_set_gendiscov),
+                        TestFunc(btp.gap_set_conn)]
 
     custom_test_cases = [
         ZTestCase("GATT", "GATT/SR/GAS/BV-01-C",
@@ -242,12 +245,12 @@ def test_cases_client(pts):
     stack = get_stack()
 
     pre_conditions_cl = [TestFunc(btp.core_reg_svc_gap),
-                      TestFunc(btp.gap_read_ctrl_info),
-                      TestFunc(lambda: pts.update_pixit_param(
-                          "GATT", "TSPX_bd_addr_iut",
-                          stack.gap.iut_addr_get_str())),
-                      TestFunc(btp.core_reg_svc_gatt),
-                      TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public)]
+                         TestFunc(btp.gap_read_ctrl_info),
+                         TestFunc(lambda: pts.update_pixit_param(
+                             "GATT", "TSPX_bd_addr_iut",
+                             stack.gap.iut_addr_get_str())),
+                         TestFunc(btp.core_reg_svc_gatt),
+                         TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public)]
 
     custom_test_cases = [
         ZTestCase("GATT", "GATT/CL/GAD/BV-01-C",

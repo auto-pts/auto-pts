@@ -808,8 +808,14 @@ def mmdl_sensor_get(sensor_id):
         stack = get_stack()
         stack.mesh.recv_status_data_set('Status', [
             sensor_id_0, sensor_data_0, sensor_id_1, sensor_data_1, sensor_id_2, sensor_data_2])
-        logging.debug('Status: Sensor id = 0x%x Sensor data = 0x%x \n Sensor id = 0x%x Sensor data = 0x%x \n Sensor id = 0x%x Sensor data = 0x%x',
-                      sensor_id_0, sensor_data_0, sensor_id_1, sensor_data_1, sensor_id_2, sensor_data_2)
+        logging.debug(
+            'Status: Sensor id = 0x%x Sensor data = 0x%x \n Sensor id = 0x%x Sensor data = 0x%x \n Sensor id = 0x%x Sensor data = 0x%x',
+            sensor_id_0,
+            sensor_data_0,
+            sensor_id_1,
+            sensor_data_1,
+            sensor_id_2,
+            sensor_data_2)
 
 
 def mmdl_sensor_cadence_get(sensor_id):
@@ -943,8 +949,13 @@ def mmdl_time_get():
     stack = get_stack()
     stack.mesh.recv_status_data_set(
         'Status', [tai, subsecond, uncertainty, tai_utc_delta, time_zone_offset])
-    logging.debug('Status: TAI Seconds = %r , Subsecond = %r , Uncertainty = %r , TAI-UTC Delta = %r , Time Zone Offset = %r',
-                  tai, subsecond, uncertainty, tai_utc_delta, time_zone_offset)
+    logging.debug(
+        'Status: TAI Seconds = %r , Subsecond = %r , Uncertainty = %r , TAI-UTC Delta = %r , Time Zone Offset = %r',
+        tai,
+        subsecond,
+        uncertainty,
+        tai_utc_delta,
+        time_zone_offset)
 
 
 def mmdl_time_set(tai, subsecond, uncertainty, tai_utc_delta, time_zone_offset):
@@ -965,8 +976,13 @@ def mmdl_time_set(tai, subsecond, uncertainty, tai_utc_delta, time_zone_offset):
     stack = get_stack()
     stack.mesh.recv_status_data_set(
         'Status', [tai, subsecond, uncertainty, tai_utc_delta, time_zone_offset])
-    logging.debug('Status: TAI Seconds = %r , Subsecond = %r , Uncertainty = %r , TAI-UTC Delta = %r , Time Zone Offset = %r',
-                  tai, subsecond, uncertainty, tai_utc_delta, time_zone_offset)
+    logging.debug(
+        'Status: TAI Seconds = %r , Subsecond = %r , Uncertainty = %r , TAI-UTC Delta = %r , Time Zone Offset = %r',
+        tai,
+        subsecond,
+        uncertainty,
+        tai_utc_delta,
+        time_zone_offset)
 
 
 def mmdl_time_role_get():
@@ -1449,7 +1465,7 @@ def mmdl_light_ctl_temperature_set(ctl_temperature, ctl_delta_uv, tt=None, delay
     logging.debug("%s", mmdl_light_ctl_temperature_set.__name__)
 
     iutctl = get_iut()
-    data = bytearray(struct.pack("<BHh", ack,  ctl_temperature, ctl_delta_uv))
+    data = bytearray(struct.pack("<BHh", ack, ctl_temperature, ctl_delta_uv))
 
     if tt is not None:
         data.extend(struct.pack("<B", tt))
@@ -1767,7 +1783,7 @@ def mmdl_light_hsl_default_get():
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['light_hsl_default_get'])
 
     hdr_fmt = '<HHH'
-    lightness,hue, saturation = struct.unpack_from(hdr_fmt, rsp)
+    lightness, hue, saturation = struct.unpack_from(hdr_fmt, rsp)
     stack = get_stack()
     stack.mesh.recv_status_data_set('Status', [lightness, hue, saturation])
     logging.debug('Status: %r', stack.mesh.recv_status_data_get("Status"))

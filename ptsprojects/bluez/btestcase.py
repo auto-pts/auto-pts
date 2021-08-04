@@ -20,6 +20,7 @@ from ptsprojects.testcase import TestCaseLT1, TestCaseLT2, TestFunc, \
 from ptsprojects.stack import get_stack
 from ptsprojects.bluez.iutctl import get_iut
 
+
 class BTestCase(TestCaseLT1):
     """A Bluez test case class"""
 

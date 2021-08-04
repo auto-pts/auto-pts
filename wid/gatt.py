@@ -140,14 +140,14 @@ def hdl_wid_11(desc):
 
 
 def hdl_wid_12(desc):
-    btp.gattc_exchange_mtu(btp.pts_addr_type_get(),btp.pts_addr_get())
+    btp.gattc_exchange_mtu(btp.pts_addr_type_get(), btp.pts_addr_get())
     return True
 
 
 def hdl_wid_15(desc):
     btp.gattc_find_included(btp.pts_addr_type_get(), btp.pts_addr_get(),
                             '0001', 'FFFF')
-    
+
     btp.gattc_find_included_rsp(True)
     return True
 
@@ -948,7 +948,7 @@ def hdl_wid_92(desc):
     bd_addr_type = btp.pts_addr_type_get()
 
     # This pattern is matching Notification handle
-    pattern = re.compile("(handle)\s?=\s?'([0-9a-fA-F]+)'")
+    pattern = re.compile(r"(handle)\s?=\s?'([0-9a-fA-F]+)'")
     params = pattern.findall(desc)
     if not params:
         logging.error("parsing error")
@@ -1027,13 +1027,13 @@ def hdl_wid_99(desc):
 
 
 def hdl_wid_102(desc):
-    pattern = re.compile("(ATTRIBUTE\sHANDLE|"
-                         "INCLUDED\sSERVICE\sATTRIBUTE\sHANDLE|"
-                         "END\sGROUP\sHANDLE|"
+    pattern = re.compile(r"(ATTRIBUTE\sHANDLE|"
+                         r"INCLUDED\sSERVICE\sATTRIBUTE\sHANDLE|"
+                         r"END\sGROUP\sHANDLE|"
                          "UUID|"
                          "PROPERTIES|"
                          "HANDLE|"
-                         "SECONDARY\sSERVICE)\s?=\s?'([0-9a-fA-F]+)'", re.IGNORECASE)
+                         r"SECONDARY\sSERVICE)\s?=\s?'([0-9a-fA-F]+)'", re.IGNORECASE)
     params = pattern.findall(desc)
     if not params:
         logging.error("parsing error")
@@ -1083,7 +1083,7 @@ def hdl_wid_102(desc):
             return False
 
         if not isinstance(attr, GattSecondary) or \
-                        attr.uuid != params.get('SECONDARY SERVICE').upper():
+                attr.uuid != params.get('SECONDARY SERVICE').upper():
             return False
 
         return True
@@ -1092,13 +1092,13 @@ def hdl_wid_102(desc):
 
 
 def hdl_wid_104(desc):
-    pattern = re.compile("(ATTRIBUTE\sHANDLE|"
+    pattern = re.compile(r"(ATTRIBUTE\sHANDLE|"
                          "VALUE|"
                          "FORMAT|"
                          "EXPONENT|"
                          "UINT|"
                          "NAMESPACE|"
-                         "DESCRIPTION)\s?=\s?'?([0-9a-fA-F]+)'?", re.IGNORECASE)
+                         r"DESCRIPTION)\s?=\s?'?([0-9a-fA-F]+)'?", re.IGNORECASE)
     params = pattern.findall(desc)
     if not params:
         logging.error("parsing error")
@@ -1636,7 +1636,7 @@ def hdl_wid_144(desc):
     """
     Please initiate one L2CAP channel disconnection to the PTS.
     """
-    #TODO: This requires disconnecting one of EATT channels while EATT is being enabled -
+    # TODO: This requires disconnecting one of EATT channels while EATT is being enabled -
     # we would need to access these channels via bttester API, have them saved and receive
     # callbacks from them (like for regular L2CAP server)
     return False
@@ -1684,7 +1684,7 @@ def hdl_wid_151(desc):
         handle, perm, type_uuid = chrc_value_attr[0]
         if perm & Perm.read and perm & Perm.write:
             chrc_value_data = btp.gatts_get_attr_val(btp.pts_addr_type_get(),
-                                                 btp.pts_addr_get(), handle)
+                                                     btp.pts_addr_get(), handle)
         if not chrc_value_data:
             continue
 
@@ -1718,7 +1718,7 @@ def hdl_wid_152(desc):
         handle, perm, type_uuid = chrc_value_attr[0]
         if perm & Perm.read and perm & Perm.write:
             chrc_value_data = btp.gatts_get_attr_val(btp.pts_addr_type_get(),
-                                                 btp.pts_addr_get(), handle)
+                                                     btp.pts_addr_get(), handle)
         if not chrc_value_data:
             continue
 

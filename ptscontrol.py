@@ -302,8 +302,8 @@ class PyPTS:
                 '''Search for matching recover function, PIXIT and recover
                 if value was changed. '''
                 item = next(x for x in self._recov if ((x[0] ==
-                            self.set_pixit) and (x[1][0] == profile) and
-                            (x[1][1] == pixit)))
+                                                        self.set_pixit) and (x[1][0] == profile) and
+                                                       (x[1][1] == pixit)))
 
                 self._recov.remove(item)
                 log("%s, re-set pixit: %s", self.add_recov.__name__, pixit)
@@ -585,8 +585,8 @@ class PyPTS:
                     '''Search for matching recover function, PIXIT and recover
                     if value was changed. '''
                     item = next(x for x in self._recov if ((x[0] ==
-                                self.set_pixit) and (x[1][0] ==
-                                tch[1][0]) and (x[1][1] == tch[1][1])))
+                                                            self.set_pixit) and (x[1][0] ==
+                                                                                 tch[1][0]) and (x[1][1] == tch[1][1])))
 
                     self._recover_item(item)
 

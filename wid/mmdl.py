@@ -117,7 +117,8 @@ def hdl_wid_523(desc):
     """
     MMDL/SR/LLC/BV-07-C
 
-    :param desc: Please change IUT's Light LC Occupancy state to 1, simulating that occupancy has been reported by occupancy sensors.
+    :param desc: Please change IUT's Light LC Occupancy state to 1,
+                 simulating that occupancy has been reported by occupancy sensors.
     """
     return True
 
@@ -2028,13 +2029,17 @@ def hdl_wid_663(desc):
     iut_reset()
     return True
 
+
 def hdl_wid_515(desc):
 
     return True
 
+
 def hdl_wid_664(desc):
     """
-    Please set the IUT's property 0x0069 outside the range (4008, BFF8).\n\nPTS will wait for Sensor Status messages being published at a new 8-second interval.
+    Please set the IUT's property 0x0069 outside the range (4008, BFF8).
+
+    PTS will wait for Sensor Status messages being published at a new 8-second interval.
     """
     prop_id = re.findall(r'0x([0-9A-F]{2,})', desc)[0]
     range_values = re.findall(r'\(([0-9A-F]{2,}), ([0-9A-F]{2,})\)', desc)[0]
@@ -2045,7 +2050,9 @@ def hdl_wid_664(desc):
 
 def hdl_wid_665(desc):
     """
-    Please set the IUT's property 0x0069 inside the range (4008, BFF8).\n\nPTS will wait for Sensor Status messages being published at a new 2-second interval.
+    Please set the IUT's property 0x0069 inside the range (4008, BFF8).
+
+    PTS will wait for Sensor Status messages being published at a new 2-second interval.
     """
     prop_id = re.findall(r'0x([0-9A-F]{2,})', desc)[0]
     range_values = re.findall(r'\(([0-9A-F]{2,}), ([0-9A-F]{2,})\)', desc)[0]
@@ -2062,7 +2069,8 @@ def hdl_wid_666(desc):
     Please set the property 0x0069 at a convenient value that allows for future increments/decrements.
     """
     global sensor_value
-    # Wait a few seconds before publishing a new state to satisfy a requirement for Min Interval between published messages.
+    # Wait a few seconds before publishing a new state to satisfy a
+    # requirement for Min Interval between published messages.
     time.sleep(5)
 
     prop_id = int(re.findall(r'0x([0-9A-F]{2,})', desc)[0], 16)
@@ -2073,11 +2081,17 @@ def hdl_wid_666(desc):
 
 def hdl_wid_667(desc):
     """
-    Please increase the value of the property 0x0069 with a quantity smaller than 332C.\n\nPTS expects the IUT not to publish any message.
-    Please increase the value of the property 0x0069 with a quantity smaller than 20 percent.\n\nPTS expects the IUT not to publish any message.
+    Please increase the value of the property 0x0069 with a quantity smaller than 332C.
+
+    PTS expects the IUT not to publish any message.
+
+    Please increase the value of the property 0x0069 with a quantity smaller than 20 percent.
+
+    PTS expects the IUT not to publish any message.
     """
     global sensor_value
-    # Wait a few seconds before publishing a new state to satisfy a requirement for Min Interval between published messages.
+    # Wait a few seconds before publishing a new state to satisfy a
+    # requirement for Min Interval between published messages.
     time.sleep(5)
 
     prop_id = int(re.findall(r'0x([0-9A-F]{2,})', desc)[0], 16)
@@ -2093,11 +2107,17 @@ def hdl_wid_667(desc):
 
 def hdl_wid_668(desc):
     """
-    Please increase the value of the property 0x0069 with a quantity larger than 332C.\n\nPTS expects the IUT to publish the new state.
-    Please increase the value of the property 0x0069 with a quantity larger than 20 percent.\n\nPTS expects the IUT to publish the new state.
+    Please increase the value of the property 0x0069 with a quantity larger than 332C.
+
+    PTS expects the IUT to publish the new state.
+
+    Please increase the value of the property 0x0069 with a quantity larger than 20 percent.
+
+    PTS expects the IUT to publish the new state.
     """
     global sensor_value
-    # Wait a few seconds before publishing a new state to satisfy a requirement for Min Interval between published messages.
+    # Wait a few seconds before publishing a new state to satisfy a
+    # requirement for Min Interval between published messages.
     time.sleep(5)
 
     prop_id = int(re.findall(r'0x([0-9A-F]{2,})', desc)[0], 16)
@@ -2114,11 +2134,17 @@ def hdl_wid_668(desc):
 
 def hdl_wid_669(desc):
     """
-    Please decrease the value of the property 0x0069 with a quantity smaller than 332C.\n\nPTS expects the IUT not to publish any message.
-    Please decrease the value of the property 0x0069 with a quantity smaller than 20 percent.\n\nPTS expects the IUT not to publish any message.
+    Please decrease the value of the property 0x0069 with a quantity smaller than 332C.
+
+    PTS expects the IUT not to publish any message.
+
+    Please decrease the value of the property 0x0069 with a quantity smaller than 20 percent.
+
+    PTS expects the IUT not to publish any message.
     """
     global sensor_value
-    # Wait a few seconds before publishing a new state to satisfy a requirement for Min Interval between published messages.
+    # Wait a few seconds before publishing a new state to satisfy a
+    # requirement for Min Interval between published messages.
     time.sleep(5)
 
     prop_id = int(re.findall(r'0x([0-9A-F]{2,})', desc)[0], 16)
@@ -2134,10 +2160,13 @@ def hdl_wid_669(desc):
 
 def hdl_wid_670(desc):
     """
-    Please decrease the value of the property 0x0069 with a quantity larger than 332C.\n\nPTS expects the IUT to publish the new state.
+    Please decrease the value of the property 0x0069 with a quantity larger than 332C.
+
+    PTS expects the IUT to publish the new state.
     """
     global sensor_value
-    # Wait a few seconds before publishing a new state to satisfy a requirement for Min Interval between published messages.
+    # Wait a few seconds before publishing a new state to satisfy a
+    # requirement for Min Interval between published messages.
     time.sleep(5)
 
     prop_id = int(re.findall(r'0x([0-9A-F]{2,})', desc)[0], 16)

@@ -53,6 +53,8 @@ PROJECT_DIR = dirname(dirname(abspath(__file__)))
 # ****************************************************************************
 # Mail
 # ****************************************************************************
+
+
 def status_dict2summary_html(status_dict):
     """Creates HTML formatted summary from status dictionary
     :param status_dict: status dictionary, where key is status and value is
@@ -259,7 +261,7 @@ class GDrive(object):
         """
         if not dir_:
             self.cwd_id = self.basedir_id
-        elif type(dir_) is str:
+        elif isinstance(dir_, str):
             self.cwd_id = dir_
         else:
             self.cwd_id = dir_.get('id')
@@ -428,7 +430,7 @@ def make_report_txt(results_dict, zephyr_hash):
 
         # The frist id in the test case is test group
         tg = tc.split('/')[0]
-        f.write("%s%s%s\n" % (tg.ljust(8,' '), tc.ljust(32, ' '), result))
+        f.write("%s%s%s\n" % (tg.ljust(8, ' '), tc.ljust(32, ' '), result))
 
     f.close()
 
@@ -517,14 +519,14 @@ def upload_bpv_logs(gdrive, args):
                         continue
 
                     file_path = '/'.join([logs_folder,
-                                          file_path[len(workspace_root)+1:]
-                                         .replace('\\', '/')])
+                                          file_path[len(workspace_root) + 1:]
+                                          .replace('\\', '/')])
                     Path(os.path.dirname(file_path)).mkdir(parents=True,
                                                            exist_ok=True)
 
                     with open(file_path, 'wb') as handle:
                         handle.write(file_bin.data)
-                except:
+                except BaseException:
                     pass
 
     if os.path.exists(logs_folder):
@@ -565,7 +567,7 @@ def update_sources(repo_path, remote, branch, stash_changes=False, update_repo=T
         if dirty and (not stash_changes):
             print('Repo is dirty. Not updating')
             return repo.git.describe('--always'), \
-                   repo.git.show('-s', '--format=%H') + '-dirty'
+                repo.git.show('-s', '--format=%H') + '-dirty'
 
         if dirty and stash_changes:
             print('Repo is dirty. Stashing changes')
@@ -575,7 +577,7 @@ def update_sources(repo_path, remote, branch, stash_changes=False, update_repo=T
         repo.git.checkout('{}/{}'.format(remote, branch))
 
     return repo.git.describe('--always'), \
-           repo.git.show('-s', '--format=%H')
+        repo.git.show('-s', '--format=%H')
 
 
 def update_repos(project_path, git_config):
@@ -620,9 +622,9 @@ def get_free_device():
                                  ).stdout.read().decode()
 
     if sys.platform == "win32":
-        reg = "[0-9]+\s+COM[0-9]+(?=\s+.+)"
+        reg = r"[0-9]+\s+COM[0-9]+(?=\s+.+)"
     else:
-        reg = "[0-9]+\s+/dev/\w+(?=\s+.+)"
+        reg = r"[0-9]+\s+/dev/\w+(?=\s+.+)"
 
     debuggers = re.findall(reg, debuggers)
     for d in debuggers:
@@ -633,7 +635,7 @@ def get_free_device():
         srn = d_info[0]
         dev = d_info[1]
 
-        if not srn in devices_in_use:
+        if srn not in devices_in_use:
             devices_in_use.append(srn)
             tty = dev
             jlink = srn
