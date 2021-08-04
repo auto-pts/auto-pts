@@ -122,17 +122,18 @@ class BTPSocket(object):
         logging.debug("btpclient command: send %d %d %d %r",
                       svc_id, op, ctrl_index, str(data))
 
-        bin = enc_frame(svc_id, op, ctrl_index, data)
+        frame = enc_frame(svc_id, op, ctrl_index, data)
 
-        logging.debug("sending frame %r", bin)
-        self.conn.send(bin)
+        logging.debug("sending frame %r", frame)
+        self.conn.send(frame)
 
     def close(self):
         try:
             self.conn.shutdown(socket.SHUT_RDWR)
             self.conn.close()
             self.sock.close()
-        except BaseException:
+        except BaseException as e:
+            logging.exception(e)
             pass
         self.sock = None
         self.conn = None
@@ -253,6 +254,7 @@ class BTPWorker(BTPSocket):
 
 class RTT2PTY:
     def __init__(self):
+        self.serial = None
         self.rtt2pty_process = None
         self.pty_name = None
         self.serial_thread = None
@@ -284,9 +286,10 @@ class RTT2PTY:
 
         return pty
 
-    def _read_from_port(self, serial, stop_thread, file):
+    @staticmethod
+    def _read_from_port(device, stop_thread, file):
         while not stop_thread.is_set():
-            line = serial.readline()
+            line = device.readline()
             try:
                 decoded = line.decode()
             except UnicodeDecodeError:

@@ -138,7 +138,7 @@ def hdl_wid_149(desc):
     """
     Please enter the following OOB confirmation and OOB random to the IUT.
     """
-    m = re.findall(r"\[([A-Fa-f0-9]+)\]", desc)
+    m = re.findall(r"\[([A-Fa-f0-9]+)]", desc)
     conf, rand = m
     btp.gap_oob_sc_set_remote_data(r=rand, c=conf)
     return True

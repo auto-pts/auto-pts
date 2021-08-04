@@ -17,36 +17,35 @@
 
 """Common code for the auto PTS clients"""
 import _locale
-import importlib
-import os
+import argparse
+import datetime
 import errno
-import subprocess
-import sys
+import importlib
+import logging
+import os
+import queue
 import random
 import socket
-import logging
-import traceback
-import xmlrpc.client
-import queue
+import subprocess
+import sys
+import tempfile
 import threading
-from distutils.spawn import find_executable
-from traceback import format_exception
-from xmlrpc.server import SimpleXMLRPCServer
 import time
-import datetime
-import argparse
+import traceback
+import xml.etree.ElementTree as ElementTree
+import xmlrpc.client
+from distutils.spawn import find_executable
+from xmlrpc.server import SimpleXMLRPCServer
+
 from termcolor import colored
 
+import ptsprojects.ptstypes as ptstypes
+from config import SERVER_PORT, CLIENT_PORT
 from ptsprojects import stack
 from ptsprojects.testcase import PTSCallback, TestCaseLT1, TestCaseLT2
 from ptsprojects.testcase_db import TestCaseTable
 from pybtp import btp
 from pybtp.types import BTPError, SynchError
-import ptsprojects.ptstypes as ptstypes
-from config import SERVER_PORT, CLIENT_PORT
-
-import tempfile
-import xml.etree.ElementTree as ET
 from utils import InterruptableThread
 from winutils import have_admin_rights
 
@@ -64,6 +63,7 @@ profiles = {'dis', 'gap', 'gatt', 'sm', 'l2cap', 'mesh', 'mmdl'}
 # be used. When FakeProxy is used autoptsserver on Windows will
 # not be contacted.
 AUTO_PTS_LOCAL = "AUTO_PTS_LOCAL" in os.environ
+
 
 # xmlrpclib._Method patched to get __repr__ and __str__
 #
@@ -95,6 +95,7 @@ class _Method:
         return "<%s.%s %s %s>" % (self.__class__.__module__,
                                   self.__class__.__name__,
                                   self.__name, self.__send)
+
     __str__ = __repr__
 
 
@@ -103,6 +104,7 @@ xmlrpc.client._Method = _Method
 
 class ClientCallback(PTSCallback):
     def __init__(self):
+        super().__init__()
         self.exception = queue.Queue()
         self._pending_responses = {}
 
@@ -145,19 +147,17 @@ class ClientCallback(PTSCallback):
 
         logger = logging.getLogger("{}.{}".format(self.__class__.__name__,
                                                   self.log.__name__))
-        log = logger.info
-
-        log("%s %s %s %s %s" % (ptstypes.PTS_LOGTYPE_STRING[log_type],
-                                logtype_string, log_time, test_case_name,
-                                log_message))
+        logger.info("%s %s %s %s %s" % (ptstypes.PTS_LOGTYPE_STRING[log_type],
+                                        logtype_string, log_time, test_case_name,
+                                        log_message))
 
         try:
             if test_case_name in RUNNING_TEST_CASE:
                 RUNNING_TEST_CASE[test_case_name].log(log_type, logtype_string,
-                                                      log_time, log_message)
+                                                      log_time, log_message, test_case_name)
 
-        except Exception:
-            logging.exception("Log caught exception")
+        except Exception as e:
+            logging.exception(e)
             self.exception.put(sys.exc_info()[1])
 
             # exit does not work, cause app is blocked in PTS.RunTestCase?
@@ -183,42 +183,35 @@ class ClientCallback(PTSCallback):
         logger = logging.getLogger("{}.{}".format(
             self.__class__.__name__, self.on_implicit_send.__name__))
 
-        log = logger.info
-
-        log("*" * 20)
-        log("BEGIN OnImplicitSend:")
-        log("project_name: %s" % project_name)
-        log("wid: %s" % wid)
-        log("test_case_name: %s" % test_case_name)
-        log("description: %s" % description)
-        log("style: %s 0x%x", ptstypes.MMI_STYLE_STRING[style], style)
+        logger.info("*" * 20)
+        logger.info("BEGIN OnImplicitSend:")
+        logger.info("project_name: %s" % project_name)
+        logger.info("wid: %s" % wid)
+        logger.info("test_case_name: %s" % test_case_name)
+        logger.info("description: %s" % description)
+        logger.info("style: %s 0x%x", ptstypes.MMI_STYLE_STRING[style], style)
 
         try:
             # XXX: 361 WID MESH sends tc name with leading white spaces
             test_case_name = test_case_name.lstrip()
 
-            log("Calling test cases on_implicit_send")
+            logger.info("Calling test cases on_implicit_send")
 
-            testcase_response \
-                = RUNNING_TEST_CASE[test_case_name].on_implicit_send(
-                    project_name,
-                    wid,
-                    test_case_name,
-                    description,
-                    style)
+            testcase_response = RUNNING_TEST_CASE[test_case_name].on_implicit_send(project_name, wid, test_case_name,
+                                                                                   description, style)
 
-            log("test case returned on_implicit_send, response: %s",
-                testcase_response)
+            logger.info("test case returned on_implicit_send, response: %s",
+                        testcase_response)
 
-        except Exception:
-            logging.exception("OnImplicitSend caught exception")
+        except Exception as e:
+            logging.exception("OnImplicitSend caught exception {}".format(e))
             self.exception.put(sys.exc_info()[1])
 
             # exit does not work, cause app is blocked in PTS.RunTestCase?
             sys.exit("Exception in OnImplicitSend")
 
-        log("END OnImplicitSend:")
-        log("*" * 20)
+        logger.info("END OnImplicitSend:")
+        logger.info("*" * 20)
 
         return testcase_response
 
@@ -340,10 +333,10 @@ def init_logging(tag=""):
     script_name_no_ext = os.path.splitext(script_name)[0]
 
     log_filename = "%s%s.log" % (script_name_no_ext, tag)
-    format = ("%(asctime)s %(name)s %(levelname)s %(filename)-25s "
-              "%(lineno)-5s %(funcName)-25s : %(message)s")
+    format_template = ("%(asctime)s %(name)s %(levelname)s %(filename)-25s "
+                       "%(lineno)-5s %(funcName)-25s : %(message)s")
 
-    logging.basicConfig(format=format,
+    logging.basicConfig(format=format_template,
                         filename=log_filename,
                         filemode='w',
                         level=logging.DEBUG)
@@ -400,6 +393,7 @@ def init_pts_thread_entry_wrapper(func):
         except Exception as exc:
             logging.exception(exc)
             exeptions.put(exc)
+
     return wrapper
 
 
@@ -460,7 +454,7 @@ def init_pts(args, tc_db_table_name=None):
         else:
             proxy = xmlrpc.client.ServerProxy(
                 "http://{}:{}/".format(server_addr, server_port),
-                allow_none=True,)
+                allow_none=True, )
 
         print("(%r) Starting PTS %s:%s ..." % (id(proxy), server_addr, server_port))
 
@@ -487,7 +481,8 @@ def init_pts(args, tc_db_table_name=None):
     while not exceptions.empty():
         try:
             exeption_msg += str(exceptions.get_nowait()) + '\n'
-        except BaseException:
+        except BaseException as e:
+            logging.exception(e)
             traceback.print_exc()
         finally:
             print(exeption_msg)
@@ -504,7 +499,8 @@ def reinit_pts(ptses, args, tc_db_table_name=None):
     try:
         for pts in ptses:
             pts.unregister_xmlrpc_ptscallback()
-    except BaseException:
+    except BaseException as e:
+        logging.exception(e)
         traceback.print_exc()
 
     return init_pts(args, tc_db_table_name)
@@ -534,8 +530,8 @@ class TestCaseRunStats(object):
         self.index = 0
 
         self.xml_results = tempfile.NamedTemporaryFile(delete=False).name
-        root = ET.Element("results")
-        tree = ET.ElementTree(root)
+        root = ElementTree.Element("results")
+        tree = ElementTree.ElementTree(root)
         tree.write(self.xml_results)
 
         self.db = db
@@ -551,12 +547,12 @@ class TestCaseRunStats(object):
             self.est_duration = 0
 
     def update(self, test_case_name, duration, status):
-        tree = ET.parse(self.xml_results)
+        tree = ElementTree.parse(self.xml_results)
         root = tree.getroot()
 
         elem = root.find("./test_case[@name='%s']" % test_case_name)
         if elem is None:
-            elem = ET.SubElement(root, 'test_case')
+            elem = ElementTree.SubElement(root, 'test_case')
 
             status_previous = None
             if self.db:
@@ -588,7 +584,7 @@ class TestCaseRunStats(object):
         return regression
 
     def get_results(self):
-        tree = ET.parse(self.xml_results)
+        tree = ElementTree.parse(self.xml_results)
         root = tree.getroot()
 
         results = {}
@@ -600,14 +596,14 @@ class TestCaseRunStats(object):
         return results
 
     def get_regressions(self):
-        tree = ET.parse(self.xml_results)
+        tree = ElementTree.parse(self.xml_results)
         root = tree.getroot()
         tcs_xml = root.findall("./test_case[@regression='True']")
 
         return [tc_xml.attrib["name"] for tc_xml in tcs_xml]
 
     def get_status_count(self):
-        tree = ET.parse(self.xml_results)
+        tree = ElementTree.parse(self.xml_results)
         root = tree.getroot()
 
         status_dict = {}
@@ -754,8 +750,6 @@ def get_error_code(exc):
 
 def synchronize_instances(state, break_state=None):
     """Synchronize instances to be in one state before executing further"""
-    match = False
-
     while True:
         time.sleep(1)
         match = True
@@ -780,6 +774,7 @@ def run_test_case_thread_entry_wrapper(func):
         except Exception as exc:
             logging.exception(exc)
             exeptions.put(exc)
+
     return wrapper
 
 
@@ -826,9 +821,8 @@ def run_test_case_thread_entry(pts, test_case, exceptions):
         logging.exception(error)
         error_code = get_error_code(error)
 
-    except BaseException:
-        traceback_list = format_exception(sys.exc_info())
-        logging.exception("".join(traceback_list))
+    except BaseException as ex:
+        logging.exception(ex)
         error_code = get_error_code(None)
 
     finally:
@@ -871,9 +865,9 @@ def run_test_case(ptses, test_case_instances, test_case_name, stats,
 
     logger = logging.getLogger()
 
-    format = ("%(asctime)s %(name)s %(levelname)s %(filename)-25s "
-              "%(lineno)-5s %(funcName)-25s : %(message)s")
-    formatter = logging.Formatter(format)
+    format_template = ("%(asctime)s %(name)s %(levelname)s %(filename)-25s "
+                       "%(lineno)-5s %(funcName)-25s : %(message)s")
+    formatter = logging.Formatter(format_template)
 
     # Lookup TestCase class instance
     test_case_lt1 = test_case_lookup_name(test_case_name, TestCaseLT1)
@@ -1020,7 +1014,8 @@ def run_test_cases(ptses, test_case_instances, args):
             while not exceptions.empty():
                 try:
                     exeption_msg += str(exceptions.get_nowait()) + '\n'
-                except BaseException:
+                except BaseException as e:
+                    logging.exception(e)
                     traceback.print_exc()
                 finally:
                     print(exeption_msg)
@@ -1096,15 +1091,15 @@ class CliParser(argparse.ArgumentParser):
 
         self.add_argument("--recovery", action='store_true', default=False,
                           help="Specify if autoptsserver should try to recover"
-                          " itself after exception.")
+                               " itself after exception.")
 
         self.add_argument("--superguard", default=0, metavar='MINUTES', type=float,
                           help="Specify amount of time in minutes, after which"
-                          " super guard will blindly trigger recovery steps.")
+                               " super guard will blindly trigger recovery steps.")
 
         self.add_argument("--ykush", metavar='YKUSH_PORT', help="Specify "
-                          "ykush downstream port number, so on BTP TIMEOUT "
-                          "the iut device could be powered off and on.")
+                                                                "ykush downstream port number, so on BTP TIMEOUT "
+                                                                "the iut device could be powered off and on.")
 
         # Hidden option to select qemu bin file
         self.add_argument("--qemu_bin", help=argparse.SUPPRESS, default=None)
@@ -1114,24 +1109,25 @@ class CliParser(argparse.ArgumentParser):
                           default=False, help=argparse.SUPPRESS)
 
         self.add_argument("--hci", type=int, default=None, help="Specify the number of the"
-                          " HCI controller(currently only used under native posix)")
+                                                                " HCI controller(currently only used "
+                                                                "under native posix)")
 
         if board_names:
             self.add_argument("-t", "--tty-file",
                               help="If TTY is specified, BTP communication "
-                              "with OS running on hardware will be done over "
-                              "this TTY. Hence, QEMU will not be used.")
+                                   "with OS running on hardware will be done over "
+                                   "this TTY. Hence, QEMU will not be used.")
 
             self.add_argument("-b", "--board",
                               help="Used DUT board. This option is used to "
-                              "select DUT reset command that is run before "
-                              "each test case. If board is not specified DUT "
-                              "will not be reset. Supported boards: %s. " %
-                              (", ".join(board_names, ),), choices=board_names)
+                                   "select DUT reset command that is run before "
+                                   "each test case. If board is not specified DUT "
+                                   "will not be reset. Supported boards: %s. " %
+                                   (", ".join(board_names, ),), choices=board_names)
 
             self.add_argument("--rtt2pty",
                               help="Use RTT2PTY to capture logs from device."
-                              "Requires rtt2pty tool and rtt support on IUT.",
+                                   "Requires rtt2pty tool and rtt support on IUT.",
                               action='store_true', default=False)
         else:
             self.add_argument("btpclient_path",
@@ -1160,7 +1156,7 @@ class Client:
 
             # os._exit: not the cleanest but the easiest way to exit the server thread
             except KeyboardInterrupt:  # Ctrl-C
-                os._exit(14)
+                exit(14)
 
             # SystemExit is thrown in arg_parser.parse_args and in sys.exit
             except SystemExit:
@@ -1174,11 +1170,13 @@ class Client:
                     for pts in ptses:
                         recover_autoptsserver(pts)
                     time.sleep(20)
-                except BaseException:
+                except BaseException as e:
+                    logging.exception(e)
                     traceback.print_exc()
 
-            except BaseException:
-                os._exit(16)
+            except BaseException as e:
+                logging.exception(e)
+                exit(16)
 
     def main(self):
         """Main."""
@@ -1187,7 +1185,7 @@ class Client:
         # encode character '\xe6' in position 138: character maps to <undefined>",
         # which occurs under Windows with default encoding other than cp1252
         # each time log() is called.
-        _locale._getdefaultlocale = (lambda *args: ['en_US', 'utf8'])
+        _locale._getdefaultlocale = (lambda *arg: ['en_US', 'utf8'])
 
         args = self.parse_args()
 
@@ -1226,7 +1224,7 @@ class Client:
             pts.unregister_xmlrpc_ptscallback()
 
         # not the cleanest but the easiest way to exit the server thread
-        os._exit(0)
+        exit(0)
 
     def parse_args(self):
         """Parses command line arguments and options"""
@@ -1309,7 +1307,8 @@ def run_recovery(args, ptses):
     try:
         for pts in ptses:
             recover_autoptsserver(pts)  # but restart it anyway
-    except BaseException:
+    except BaseException as e:
+        logging.exception(e)
         traceback.print_exc()
 
     if ykush:
@@ -1318,7 +1317,8 @@ def run_recovery(args, ptses):
 
     try:
         reinit_pts(ptses, args)
-    except BaseException:
+    except BaseException as e:
+        logging.exception(e)
         traceback.print_exc()
 
     setup_project_pixits(ptses)

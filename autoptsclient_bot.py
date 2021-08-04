@@ -14,8 +14,7 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
-
-import os
+import logging
 import sys
 import schedule
 import time
@@ -72,13 +71,14 @@ if __name__ == "__main__":
 
     try:
         main()
-        os._exit(0)
+        exit(0)
     except KeyboardInterrupt:  # Ctrl-C
-        os._exit(14)
+        exit(14)
     except SystemExit:
         raise
-    except BaseException:
+    except BaseException as e:
+        logging.exception(e)
         import traceback
 
         traceback.print_exc()
-        os._exit(16)
+        exit(16)

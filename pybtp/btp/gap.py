@@ -276,8 +276,13 @@ def gap_wait_for_disconnection(timeout=30):
     stack.gap.wait_for_disconnection(timeout)
 
 
-def gap_adv_ind_on(ad={}, sd={}, duration=AdDuration.forever, own_addr_type=OwnAddrType.le_identity_address):
+def gap_adv_ind_on(ad=None, sd=None, duration=AdDuration.forever, own_addr_type=OwnAddrType.le_identity_address):
     logging.debug("%s %r %r", gap_adv_ind_on.__name__, ad, sd)
+
+    if ad is None:
+        ad = {}
+    if sd is None:
+        sd = {}
 
     stack = get_stack()
 
@@ -290,6 +295,7 @@ def gap_adv_ind_on(ad={}, sd={}, duration=AdDuration.forever, own_addr_type=OwnA
     data_ba = bytearray()
     ad_ba = bytearray()
     sd_ba = bytearray()
+    data = bytearray()
 
     for ad_type, ad_data in list(ad.items()):
         if isinstance(ad_data, str):
@@ -306,7 +312,7 @@ def gap_adv_ind_on(ad={}, sd={}, duration=AdDuration.forever, own_addr_type=OwnA
             try:
                 data = bytes.fromhex(sd_data)
             except TypeError:
-                data = bytes.fromhex(ad_data.decode('utf-8'))
+                data = bytes.fromhex(sd_data.decode('utf-8'))
         else:
             data = sd_data
         sd_ba.extend(bytes([sd_type]))
@@ -675,13 +681,13 @@ def gap_set_bondable_off():
     __gap_current_settings_update(tuple_data)
 
 
-def gap_start_discov(transport='le', type='active', mode='general'):
+def gap_start_discov(transport='le', discov_type='active', mode='general'):
     """GAP Start Discovery function.
 
     Possible options (key: <values>):
 
     transport: <le, bredr>
-    type: <active, passive>
+    discov_type: <active, passive>
     mode: <general, limited, observe>
 
     """
@@ -696,7 +702,7 @@ def gap_start_discov(transport='le', type='active', mode='general'):
     else:
         flags |= defs.GAP_DISCOVERY_FLAG_BREDR
 
-    if type == "active":
+    if discov_type == "active":
         flags |= defs.GAP_DISCOVERY_FLAG_LE_ACTIVE_SCAN
 
     if mode == "limited":

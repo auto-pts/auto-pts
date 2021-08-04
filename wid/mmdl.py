@@ -66,7 +66,7 @@ def mmdl_wid_hdl(wid, description, test_case_name):
         return "WAIT"
 
     except AttributeError as e:
-        logging.exception(e.message)
+        logging.exception(e)
 
 
 def iut_reset():
@@ -161,7 +161,7 @@ def parse_params(desc):
         if len(fields) < 2:
             continue
         field_name = fields[0]
-        m = re.search(r"\[([\-A-Fa-f0-9x\(\) ]+)\]", fields[1])
+        m = re.search(r"\[([\-A-Fa-f0-9x() ]+)]", fields[1])
         if not m:
             field_dict[field_name] = None
             continue
@@ -542,8 +542,8 @@ def gen_mfr_props_status(params):
 
 
 def gen_mfr_prop_get(params):
-    id = params['Property ID']
-    btp.mmdl_gen_prop_get(kind=0x00, prop_id=id)
+    prop_id = params['Property ID']
+    btp.mmdl_gen_prop_get(kind=0x00, prop_id=prop_id)
     return True
 
 
@@ -588,8 +588,8 @@ def gen_admin_props_status(params):
 
 
 def gen_admin_prop_get(params):
-    id = params['Property ID']
-    btp.mmdl_gen_prop_get(kind=0x01, prop_id=id)
+    prop_id = params['Property ID']
+    btp.mmdl_gen_prop_get(kind=0x01, prop_id=prop_id)
     return True
 
 
@@ -657,8 +657,8 @@ def gen_usr_props_status(params):
 
 
 def gen_usr_prop_get(params):
-    id = params['Property ID']
-    btp.mmdl_gen_prop_get(kind=0x02, prop_id=id)
+    prop_id = params['Property ID']
+    btp.mmdl_gen_prop_get(kind=0x02, prop_id=prop_id)
     return True
 
 
@@ -671,8 +671,8 @@ def gen_usr_prop_status(params):
 
 
 def gen_cli_props_get(params):
-    id = params['Property ID']
-    btp.mmdl_gen_props_get(kind=0x03, prop_id=id)
+    prop_id = params['Property ID']
+    btp.mmdl_gen_props_get(kind=0x03, prop_id=prop_id)
     return True
 
 
@@ -1312,14 +1312,14 @@ def light_ctl_temp_range_get(params):
 
 
 def light_ctl_temp_range_set(params, ack):
-    min = params['Range Min']
-    max = params['Range Max']
+    range_min = params['Range Min']
+    range_max = params['Range Max']
 
-    btp.mmdl_light_ctl_temp_range_set(min, max, ack=ack)
+    btp.mmdl_light_ctl_temp_range_set(range_min, range_max, ack=ack)
 
     stack = get_stack()
     stack.mesh.expect_status_data_set('Ack', ack)
-    stack.mesh.expect_status_data_set('Status', [min, max])
+    stack.mesh.expect_status_data_set('Status', [range_min, range_max])
     return True
 
 
@@ -1332,12 +1332,12 @@ def light_ctl_temp_range_set_unack(params):
 
 
 def light_ctl_temp_range_status(params):
-    min = params['Range Min']
-    max = params['Range Max']
+    range_min = params['Range Min']
+    range_max = params['Range Max']
     status = params['Status Code']
     stack = get_stack()
 
-    return [status, min, max] == stack.mesh.recv_status_data_get('Status')
+    return [status, range_min, range_max] == stack.mesh.recv_status_data_get('Status')
 
 
 def scene_get(params):
@@ -2036,8 +2036,8 @@ def hdl_wid_664(desc):
     """
     prop_id = re.findall(r'0x([0-9A-F]{2,})', desc)[0]
     range_values = re.findall(r'\(([0-9A-F]{2,}), ([0-9A-F]{2,})\)', desc)[0]
-    sensor_value = int(range_values[0], 16) - 1
-    btp.mmdl_sensor_data_set(int(prop_id, 16), struct.pack("<I", sensor_value))
+    sensor_val = int(range_values[0], 16) - 1
+    btp.mmdl_sensor_data_set(int(prop_id, 16), struct.pack("<I", sensor_val))
     return True
 
 
@@ -2049,8 +2049,8 @@ def hdl_wid_665(desc):
     """
     prop_id = re.findall(r'0x([0-9A-F]{2,})', desc)[0]
     range_values = re.findall(r'\(([0-9A-F]{2,}), ([0-9A-F]{2,})\)', desc)[0]
-    sensor_value = int(range_values[0], 16) + 1
-    btp.mmdl_sensor_data_set(int(prop_id, 16), struct.pack("<I", sensor_value))
+    sensor_val = int(range_values[0], 16) + 1
+    btp.mmdl_sensor_data_set(int(prop_id, 16), struct.pack("<I", sensor_val))
     return True
 
 

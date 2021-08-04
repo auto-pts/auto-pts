@@ -19,7 +19,7 @@ from collections import namedtuple
 HDR_LEN = 5
 
 
-def dec_hdr(bin):
+def dec_hdr(frame):
     """Decode BTP frame header
 
     BTP header format
@@ -31,13 +31,13 @@ def dec_hdr(bin):
     """
     Header = namedtuple('Header', 'svc_id op ctrl_index data_len')
 
-    return Header._make(struct.unpack("<BBBH", bin))
+    return Header._make(struct.unpack("<BBBH", frame))
 
 
-def dec_data(bin):
-    data_len = len(bin)
+def dec_data(frame):
+    data_len = len(frame)
 
-    return struct.unpack('<%ds' % data_len, bin)
+    return struct.unpack('<%ds' % data_len, frame)
 
 
 def enc_frame(svc_id, op, ctrl_index, data):

@@ -37,7 +37,6 @@ from distutils.spawn import find_executable
 sys.path.insert(
     0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-
 BTP_SOCKET = None
 QEMU_PROCESS = None
 
@@ -316,13 +315,13 @@ class SendCmd(Cmd):
         self.help.build(
             short_help="Send BTP command to tester",
             synopsis="%s <service_id> <opcode> <index> [<data>]" %
-            self.name,
+                     self.name,
             description=(
                 "send <int> <int> <int> <hex>\n"
                 "(send SERVICE_ID_CORE = 0x00, OP_CORE_REGISTER_SERVICE = 0x03"
                 ",Controller Index = 0, SERVICE_ID_GAP = 0x01...)"),
             example="%s 0 1 0 01" %
-            self.name)
+                    self.name)
 
     def run(self, svc_id, op, ctrl_index, data=""):
         # TODO: should data be None and later check be done to append or not
@@ -514,7 +513,7 @@ class HelpCmd(Cmd):
             short_help=short_help,
             synopsis="%s [command]" % self.name,
             description="Run '%s command' to see detailed help about "
-            "specific command" % self.name,
+                        "specific command" % self.name,
             sub_cmds=cmds)
 
     def run(self, cmd_name=None):
@@ -769,8 +768,6 @@ def generic_srvc_cmd_handler(svc, cmd):
     for i in range(3):
         frame.append(str(btp_cmd[i]))
 
-    data = None
-
     # add data if there is any
     if len(btp_cmd) > 3:
         data = str(btp_cmd[3])
@@ -863,9 +860,9 @@ def parse_args():
                             "-c",
                             metavar="FILE",
                             help="File with initial commands to run. Each "
-                            "command should be on a separate line in the "
-                            "file.  Comment lines start with the hash "
-                            "character.")
+                                 "command should be on a separate line in the "
+                                 "file.  Comment lines start with the hash "
+                                 "character.")
 
     args = arg_parser.parse_args()
 
@@ -877,10 +874,10 @@ def main():
     my_name = get_my_name()
 
     log_filename = "%s.log" % (my_name,)
-    format = ("%(asctime)s %(name)s %(levelname)s %(filename)-25s "
-              "%(lineno)-5s %(funcName)-25s : %(message)s")
+    format_template = ("%(asctime)s %(name)s %(levelname)s %(filename)-25s "
+                       "%(lineno)-5s %(funcName)-25s : %(message)s")
 
-    logging.basicConfig(format=format,
+    logging.basicConfig(format=format_template,
                         filename=log_filename,
                         filemode='w',
                         level=logging.DEBUG)

@@ -124,22 +124,22 @@ class SvrArgumentParser(argparse.ArgumentParser):
                           help="Specify ykush hub downstream port number, so "
                           "during recovery steps PTS dongle could be replugged.")
 
-    def check_args(self, args):
+    def check_args(self, arg):
         """Sanity check command line arguments"""
 
-        for srv_port in args.srv_port:
+        for srv_port in arg.srv_port:
             if not 49152 <= srv_port <= 65535:
                 sys.exit("Invalid server port number=%s, expected range <49152,65535> " % (srv_port,))
 
-        if len(args.srv_port) == 1:
-            args.srv_port = args.srv_port[0]
+        if len(arg.srv_port) == 1:
+            arg.srv_port = arg.srv_port[0]
 
-        args.superguard = 60 * args.superguard
+        arg.superguard = 60 * arg.superguard
 
-    def parse_args(self, args=None, namespace=None):
-        args = super().parse_args()
-        self.check_args(args)
-        return args
+    def parse_args(self, arg=None, namespace=None):
+        arg = super().parse_args()
+        self.check_args(arg)
+        return arg
 
 
 def get_workspace(workspace):
@@ -156,22 +156,23 @@ def kill_all_processes(name):
         try:
             ps.Terminate()
             log("%s process (PID %d) terminated successfully" % (name, ps.ProcessId))
-        except BaseException:
+        except BaseException as exc:
+            logging.exception(exc)
             log("There is no %s process running with id: %d" % (name, ps.ProcessId))
 
 
 def delete_workspaces():
     def recursive(directory, depth):
         depth -= 1
-        with os.scandir(directory) as it:
-            for file in it:
-                if file.is_dir() and depth > 0:
-                    recursive(file.path, depth)
-                elif file.name.startswith('temp_') and file.name.endswith('.pqw6'):
-                    os.remove(file)
+        with os.scandir(directory) as iterator:
+            for f in iterator:
+                if f.is_dir() and depth > 0:
+                    recursive(f.path, depth)
+                elif f.name.startswith('temp_') and f.name.endswith('.pqw6'):
+                    os.remove(f)
 
-    depth = 4
-    recursive(os.path.join(PROJECT_DIR, 'workspaces'), depth)
+    init_depth = 4
+    recursive(os.path.join(PROJECT_DIR, 'workspaces'), init_depth)
 
 
 def recover_pts(ykush_ports=None):
@@ -201,10 +202,10 @@ def turn_on_dongle(ykush_ports):
 
 
 class SuperGuard(threading.Thread):
-    def __init__(self, timeout, queue):
+    def __init__(self, timeout, _queue):
         threading.Thread.__init__(self, daemon=True)
         self.servers = []
-        self.queue = queue
+        self.queue = _queue
         self.timeout = timeout
         self.end = False
         self.was_timeout = False
@@ -227,19 +228,19 @@ class SuperGuard(threading.Thread):
         self.servers.clear()
         self.was_timeout = False
 
-    def add_server(self, server):
-        self.servers.append(server)
+    def add_server(self, srv):
+        self.servers.append(srv)
 
     def terminate(self):
         self.end = True
 
 
 class Server(threading.Thread):
-    def __init__(self, args=None, queue=None):
+    def __init__(self, _args=None, _queue=None):
         threading.Thread.__init__(self, daemon=True)
-        self.queue = queue
+        self.queue = _queue
         self.server = None
-        self.args = args
+        self.args = _args
         self.pts = None
 
     def last_start(self):
@@ -247,16 +248,16 @@ class Server(threading.Thread):
             return self.pts.last_start_time
         return time.time()
 
-    def main(self, args):
+    def main(self, _args):
         """Main."""
         pythoncom.CoInitialize()
         script_name = os.path.basename(sys.argv[0])  # in case it is full path
         script_name_no_ext = os.path.splitext(script_name)[0]
 
-        log_filename = "%s_%s.log" % (script_name_no_ext, str(args.srv_port))
-        format = ("%(asctime)s %(name)s %(levelname)s : %(message)s")
+        log_filename = "%s_%s.log" % (script_name_no_ext, str(_args.srv_port))
+        format_template = "%(asctime)s %(name)s %(levelname)s : %(message)s"
 
-        logging.basicConfig(format=format,
+        logging.basicConfig(format=format_template,
                             filename=log_filename,
                             filemode='a',
                             level=logging.DEBUG)
@@ -269,9 +270,9 @@ class Server(threading.Thread):
         self.pts = PyPTSWithXmlRpcCallback()
         print("OK")
 
-        print("Serving on port {} ...".format(args.srv_port))
+        print("Serving on port {} ...".format(_args.srv_port))
 
-        self.server = xmlrpc.server.SimpleXMLRPCServer(("", args.srv_port), allow_none=True)
+        self.server = xmlrpc.server.SimpleXMLRPCServer(("", _args.srv_port), allow_none=True)
         self.server.register_function(self.request_recovery, 'request_recovery')
         self.server.register_function(self.list_workspace_tree, 'list_workspace_tree')
         self.server.register_function(self.copy_file, 'copy_file')
@@ -285,7 +286,8 @@ class Server(threading.Thread):
     def run(self):
         try:
             self.main(self.args)
-        except Exception:
+        except Exception as exc:
+            logging.exception(exc)
             print('Server ', str(self.args.srv_port), ' finished')
             self.terminate('from Server process on port ' +
                            str(self.args.srv_port) + ':\n' + traceback.format_exc())
@@ -297,7 +299,8 @@ class Server(threading.Thread):
         try:
             if self.server:
                 threading.Thread(target=self.server.shutdown, daemon=True).start()
-        except BaseException:
+        except BaseException as exc:
+            logging.exception(exc)
             traceback.print_exc()
         if self.queue:
             self.queue.put(Exception(msg))
@@ -305,15 +308,15 @@ class Server(threading.Thread):
     def list_workspace_tree(self, workspace_dir):
         self.pts.last_restart_time = time.time()
         logs_root = get_workspace(workspace_dir)
-        list = []
+        file_list = []
         for root, dirs, files in os.walk(logs_root,
                                          topdown=False):
             for name in files:
-                list.append(os.path.join(root, name))
+                file_list.append(os.path.join(root, name))
 
-            list.append(root)
+            file_list.append(root)
 
-        return list
+        return file_list
 
     def copy_file(self, file_path):
         self.pts.last_restart_time = time.time()
@@ -331,23 +334,23 @@ class Server(threading.Thread):
             shutil.rmtree(file_path, ignore_errors=True)
 
 
-def multi_main(args, queue, superguard):
+def multi_main(_args, _queue, _superguard):
     """Multi server main."""
 
     servers = []
-    for port in args.srv_port:
-        args_copy = copy.deepcopy(args)
+    for port in _args.srv_port:
+        args_copy = copy.deepcopy(_args)
         args_copy.srv_port = port
-        srv = Server(args=args_copy, queue=queue)
+        srv = Server(_args=args_copy, _queue=_queue)
         servers.append(srv)
         srv.start()
         superguard.add_server(srv)
         sleep(5)
 
-    while queue.empty():
+    while _queue.empty():
         for srv in servers:
             if not srv.is_alive():
-                queue.put(Exception('Server is down'))
+                _queue.put(Exception('Server is down'))
         sleep(2)  # This loop has a huge impact on the performance of server threads
 
     [s.terminate('') for s in servers]
@@ -370,7 +373,7 @@ if __name__ == "__main__":
     while True:
         try:
             if isinstance(args.srv_port, int):
-                server = Server(queue=queue)
+                server = Server(_queue=queue)
                 superguard.add_server(server)
 
                 server.main(args)  # Run server in main process
@@ -381,7 +384,8 @@ if __name__ == "__main__":
             while not queue.empty():
                 try:
                     exceptions += str(queue.get_nowait()) + '\n'
-                except BaseException:
+                except BaseException as ex:
+                    logging.exception(ex)
                     traceback.print_exc()
 
             if exceptions != '':
@@ -389,12 +393,13 @@ if __name__ == "__main__":
             break
 
         except KeyboardInterrupt:  # Ctrl-C
-            os._exit(14)
+            exit(14)
 
-        except BaseException:
+        except BaseException as e:
+            logging.exception(e)
             traceback.print_exc()
             if args.recovery or superguard.was_timeout:
                 superguard.clear()
                 recover_pts(args.ykush)
             else:
-                os._exit(16)
+                exit(16)

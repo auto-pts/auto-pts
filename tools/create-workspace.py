@@ -189,8 +189,8 @@ def init_logging():
     # log to stdout
     stream_handler = logging.StreamHandler(sys.stdout)
     stream_handler.setLevel(logging.DEBUG)
-    format = ("%(asctime)s %(levelname)s : %(message)s")
-    formatter = logging.Formatter(format)
+    format_template = "%(asctime)s %(levelname)s : %(message)s"
+    formatter = logging.Formatter(format_template)
     stream_handler.setFormatter(formatter)
     logger.addHandler(stream_handler)
 

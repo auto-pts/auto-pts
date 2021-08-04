@@ -19,7 +19,7 @@ from ptsprojects.testcase import TestFunc
 from ptsprojects.mynewt.ztestcase import ZTestCase
 
 from pybtp import btp
-from pybtp.types import Addr, Prop, Perm
+from pybtp.types import Addr
 from ptsprojects.stack import get_stack
 from autoptsclient_common import get_unique_name
 from ptsprojects.mynewt.gatt_wid import gatt_wid_hdl

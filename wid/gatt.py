@@ -1682,15 +1682,19 @@ def hdl_wid_151(desc):
             continue
 
         handle, perm, type_uuid = chrc_value_attr[0]
-        if perm & Perm.read and perm & Perm.write:
-            chrc_value_data = btp.gatts_get_attr_val(btp.pts_addr_type_get(),
-                                                     btp.pts_addr_get(), handle)
+        if not perm & Perm.read or not perm & Perm.write:
+            continue
+
+        chrc_value_data = btp.gatts_get_attr_val(btp.pts_addr_type_get(),
+                                                 btp.pts_addr_get(), handle)
         if not chrc_value_data:
             continue
 
         _, val_len, _ = chrc_value_data
         if val_len == 1:
             return '{0:04x}'.format(handle)
+
+    return False
 
 
 def hdl_wid_152(desc):
@@ -1716,15 +1720,19 @@ def hdl_wid_152(desc):
             continue
 
         handle, perm, type_uuid = chrc_value_attr[0]
-        if perm & Perm.read and perm & Perm.write:
-            chrc_value_data = btp.gatts_get_attr_val(btp.pts_addr_type_get(),
-                                                     btp.pts_addr_get(), handle)
+        if not perm & Perm.read or not perm & Perm.write:
+            continue
+
+        chrc_value_data = btp.gatts_get_attr_val(btp.pts_addr_type_get(),
+                                                 btp.pts_addr_get(), handle)
         if not chrc_value_data:
             continue
 
         _, val_len, _ = chrc_value_data
         if val_len == 300:
             return '{0:04x}'.format(handle)
+
+    return False
 
 
 def hdl_wid_304(desc):

@@ -353,6 +353,7 @@ def main(cfg):
     build_info_file = get_build_info_file(os.path.abspath(args['project_path']))
 
     end_time = time.time()
+    url = None
 
     if 'gdrive' in cfg:
         drive = bot.common.Drive(cfg['gdrive'])
@@ -368,19 +369,16 @@ def main(cfg):
         print("Sending email ...")
 
         # keep mail related context to simplify the code
-        mail_ctx = {}
+        mail_ctx = {"summary": bot.common.status_dict2summary_html(summary),
+                    "regression": bot.common.regressions2html(regressions,
+                                                              descriptions), "mynewt_repo_status": repo_status}
 
         # Summary
-        mail_ctx["summary"] = bot.common.status_dict2summary_html(summary)
 
         # Regression and test case description
-        mail_ctx["regression"] = bot.common.regressions2html(regressions,
-                                                             descriptions)
-
-        mail_ctx["mynewt_repo_status"] = repo_status
 
         # Log in Google drive in HTML format
-        if 'gdrive' in cfg:
+        if 'gdrive' in cfg and url:
             mail_ctx["log_url"] = bot.common.url2html(url,
                                                       "Results on Google Drive")
         else:
