@@ -541,14 +541,10 @@ def hdl_wid_48(desc):
         logging.debug("parsing error")
         return False
 
-    btp.gattc_read(btp.pts_addr_type_get(), btp.pts_addr_get(),
-                   hdl)
+    btp.gattc_read_long(btp.pts_addr_type_get(), btp.pts_addr_get(),
+                        hdl, 0, 1)
 
-    try:
-        btp.gattc_read_rsp(True, True, 40)
-    except socket.timeout:
-        pass
-
+    btp.gattc_read_long_rsp(False, True)
     return True
 
 
