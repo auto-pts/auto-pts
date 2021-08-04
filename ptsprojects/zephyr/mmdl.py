@@ -102,7 +102,7 @@ def test_cases(ptses):
             "MMDL", "TSPX_bd_addr_iut",
             stack.gap.iut_addr_get_str()))]
 
-    test_cases = [
+    tc_list = [
         ZTestCase("MMDL", "MMDL/SR-CL/COMP/BV-01-C", cmds=pre_conditions,
                   generic_wid_hdl=mmdl_wid_hdl),
 
@@ -923,4 +923,4 @@ def test_cases(ptses):
                   generic_wid_hdl=mmdl_wid_hdl),
     ]
 
-    return test_cases
+    return tc_list

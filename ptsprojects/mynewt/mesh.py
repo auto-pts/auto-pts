@@ -933,7 +933,7 @@ def test_cases(ptses):
     ]
 
     test_case_name_list = pts.get_test_case_list('MESH')
-    test_cases = []
+    tc_list = []
 
     for tc_name in test_case_name_list:
         instance = ZTestCase('MESH', tc_name,
@@ -945,10 +945,10 @@ def test_cases(ptses):
                 instance = custom_tc
                 break
 
-        test_cases.append(instance)
+        tc_list.append(instance)
 
     if len(ptses) == 2:
-        test_cases += test_cases_slaves
+        tc_list += test_cases_slaves
         pts2 = ptses[1]
 
-    return test_cases
+    return tc_list
