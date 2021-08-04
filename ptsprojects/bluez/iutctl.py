@@ -78,8 +78,11 @@ class IUTCtl:
         """Wait until IUT sends ready event after power up"""
         tuple_hdr, tuple_data = self.btp_socket.read()
 
-        if (tuple_hdr.svc_id != defs.BTP_SERVICE_ID_CORE or
-                tuple_hdr.op != defs.CORE_EV_IUT_READY):
+        try:
+            if (tuple_hdr.svc_id != defs.BTP_SERVICE_ID_CORE or
+                    tuple_hdr.op != defs.CORE_EV_IUT_READY):
+                raise BTPError("Failed to get ready event")
+        except BTPError as err:
             log("Unexpected event received (%s), expected IUT ready!", err)
             self.stop()
         else:

@@ -12,16 +12,13 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
-import array
-import binascii
 import logging
 import re
 import socket
-import struct
 import sys
 import time
 
-from ptsprojects.stack import get_stack, L2cap
+from ptsprojects.stack import get_stack
 from pybtp import btp
 from pybtp.types import BTPError
 

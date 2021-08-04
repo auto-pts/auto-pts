@@ -16,9 +16,8 @@
 """MMDL test cases"""
 
 try:
-    from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
-        TestFuncCleanUp
-    from ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
+    from ptsprojects.testcase import TestFunc
+    from ptsprojects.zephyr.ztestcase import ZTestCase
 
 except ImportError:  # running this module as script
     import sys
@@ -26,20 +25,16 @@ except ImportError:  # running this module as script
     # to be able to locate the following imports
     sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../..")
 
-    from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
-        TestFuncCleanUp
-    from ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
+    from ptsprojects.testcase import TestFunc
+    from ptsprojects.zephyr.ztestcase import ZTestCase
 
 
 from pybtp import defs, btp
-from pybtp.types import MeshVals
 from ptsprojects.stack import get_stack
-from ptsprojects.stack import SynchPoint
 from wid import mmdl_wid_hdl
 from uuid import uuid4
 from binascii import hexlify
 import random
-from time import sleep
 
 
 device_uuid = hexlify(uuid4().bytes)

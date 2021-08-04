@@ -30,7 +30,7 @@ def gatt_wid_hdl(wid, description, test_case_name):
     try:
         handler = getattr(module, "hdl_wid_%d" % wid)
         return handler(description)
-    except AttributeError as e:
+    except AttributeError:
         return gen_wid_hdl(wid, description, test_case_name, False)
 
 
@@ -50,12 +50,12 @@ def hdl_wid_151(desc):
     for i in range(1, len(db) + 1):
 
         if db[i].uuid == UUID.CSF:
-            return '{0:04x}'.format(db[i].value_handle, 'x')
+            return '{0:04x}'.format(db[i].value_handle)
         elif db[i].uuid == UUID.CCC:
-            return '{0:04x}'.format(db[i].handle, 'x')
+            return '{0:04x}'.format(db[i].handle)
     # if nothing found, return correctly formatted response that will cause other response than expected and FAIL,
     # but will prevent infinite loop of asking wid 151
-    return '{0:04x}'.format(1, 'x')
+    return '{0:04x}'.format(1)
 
 
 def hdl_wid_152(desc):
@@ -64,7 +64,7 @@ def hdl_wid_152(desc):
     db = gatt_server_fetch_db().db
     for i in range(1, len(db) + 1):
         if db[i].uuid == UUID.device_name:
-            return '{0:04x}'.format(db[i].value_handle, 'x')
+            return '{0:04x}'.format(db[i].value_handle)
     # if nothing found, return correctly formatted response that will cause other response than expected and FAIL,
     # but will prevent infinite loop of asking wid 152
-    return '{0:04x}'.format(1, 'x')
+    return '{0:04x}'.format(1)

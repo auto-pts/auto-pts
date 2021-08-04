@@ -914,7 +914,6 @@ def hdl_wid_226(desc):
 
 
 def hdl_wid_227(desc):
-    stack = get_stack()
 
     try:
         btp.l2cap_conn(None, None, 128)

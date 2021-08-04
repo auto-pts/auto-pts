@@ -17,11 +17,9 @@ import logging
 import sys
 import struct
 from pybtp import btp
-from pybtp.types import Perm, MeshVals
 import re
 import time
 from ptsprojects.stack import get_stack
-from time import sleep
 
 # MMDL ATS ver. 1.0
 
@@ -2027,11 +2025,6 @@ def hdl_wid_661(desc):
 
 def hdl_wid_663(desc):
     iut_reset()
-    return True
-
-
-def hdl_wid_515(desc):
-
     return True
 
 

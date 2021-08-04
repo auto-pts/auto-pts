@@ -17,9 +17,6 @@
 
 """Mynewt auto PTS client"""
 
-import os
-import sys
-
 import autoptsclient_common as autoptsclient
 import ptsprojects.mynewt as autoprojects
 from ptsprojects.mynewt.iutctl import get_iut

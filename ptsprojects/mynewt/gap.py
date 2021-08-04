@@ -16,20 +16,18 @@
 """GAP test cases"""
 
 try:
-    from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
-        TestFuncCleanUp
+    from ptsprojects.testcase import TestFunc
     from ptsprojects.mynewt.ztestcase import ZTestCase
 
 except ImportError:  # running this module as script
     import sys
     sys.path.append("../..")  # to be able to locate the following imports
 
-    from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
-        TestFuncCleanUp
+    from ptsprojects.testcase import TestFunc
     from ptsprojects.mynewt.ztestcase import ZTestCase
 
 from pybtp import btp
-from pybtp.types import Addr, IOCap, AdType, AdFlags, Prop, Perm
+from pybtp.types import Addr, IOCap, AdType, AdFlags
 from . import gatt
 from autoptsclient_common import get_unique_name
 from ptsprojects.stack import get_stack

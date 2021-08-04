@@ -15,11 +15,9 @@
 # more details.
 #
 
-import os
 import sys
 import atexit
 import subprocess
-import signal
 
 CONFIG_PROC = None
 # XXX: Fill me - nrfjprog path example: /home/user/tool/nrfjprog

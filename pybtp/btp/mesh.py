@@ -426,8 +426,6 @@ def mesh_invalid_bearer_ev(mesh, data, data_len):
     logging.debug("%s %r %r", mesh_invalid_bearer_ev.__name__, data, data_len)
 
     hdr_fmt = '<B'
-    hdr_len = struct.calcsize(hdr_fmt)
-
     (opcode,) = struct.unpack_from(hdr_fmt, data, 0)
 
     stack.mesh.prov_invalid_bearer_rcv.data = True
@@ -447,7 +445,6 @@ def mesh_frnd_established_ev(mesh, data, data_len):
     stack = get_stack()
 
     hdr_fmt = '<HHBI'
-    hdr_len = struct.calcsize(hdr_fmt)
 
     (net_idx, lpn_addr, recv_delay, polltimeout) = \
         struct.unpack_from(hdr_fmt, data, 0)
@@ -461,7 +458,6 @@ def mesh_frnd_terminated_ev(mesh, data, data_len):
     stack = get_stack()
 
     hdr_fmt = '<HH'
-    hdr_len = struct.calcsize(hdr_fmt)
 
     (net_idx, lpn_addr) = struct.unpack_from(hdr_fmt, data, 0)
 
@@ -474,7 +470,6 @@ def mesh_lpn_established_ev(mesh, data, data_len):
     stack = get_stack()
 
     hdr_fmt = '<HHBB'
-    hdr_len = struct.calcsize(hdr_fmt)
 
     (net_idx, frnd_addr, queue_size, recv_win) = \
         struct.unpack_from(hdr_fmt, data, 0)
@@ -488,7 +483,6 @@ def mesh_lpn_terminated_ev(mesh, data, data_len):
     stack = get_stack()
 
     hdr_fmt = '<HH'
-    hdr_len = struct.calcsize(hdr_fmt)
 
     (net_idx, frnd_addr) = struct.unpack_from(hdr_fmt, data, 0)
 
@@ -498,10 +492,7 @@ def mesh_lpn_terminated_ev(mesh, data, data_len):
 def mesh_lpn_polled_ev(mesh, data, data_len):
     logging.debug("%s", mesh_lpn_polled_ev.__name__)
 
-    stack = get_stack()
-
     hdr_fmt = '<HHB'
-    hdr_len = struct.calcsize(hdr_fmt)
 
     (net_idx, frnd_addr, retry) = struct.unpack_from(hdr_fmt, data, 0)
 
@@ -509,10 +500,7 @@ def mesh_lpn_polled_ev(mesh, data, data_len):
 def mesh_prov_node_added_ev(mesh, data, data_len):
     logging.debug("%s", mesh_prov_node_added_ev.__name__)
 
-    stack = get_stack()
-
     hdr_fmt = '<HH16sB'
-    hdr_len = struct.calcsize(hdr_fmt)
 
     (net_idx, addr, uuid, num_elems) = struct.unpack_from(hdr_fmt, data, 0)
 

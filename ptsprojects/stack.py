@@ -14,10 +14,8 @@
 #
 
 import logging
-import time
 from threading import Lock, Timer, Event
 from pybtp.types import AdType
-from binascii import hexlify
 
 
 STACK = None

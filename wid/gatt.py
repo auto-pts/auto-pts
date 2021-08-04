@@ -601,7 +601,7 @@ def hdl_wid_52(desc):
 
     if attr.uuid == UUID.CEP:
         (value_read,) = struct.unpack("<H", attr.value)
-        value_read = '{0:04x}'.format(value_read, 'x')
+        value_read = '{0:04x}'.format(value_read)
     else:
         value_read = hexlify(attr.value).upper()
 
@@ -1201,7 +1201,7 @@ def hdl_wid_110(desc):
 
         handle, perm, type_uuid = chrc_value_attr[0]
         if not (perm & Perm.read) or not (prop & Prop.read):
-            return '{0:04x}'.format(handle, 'x')
+            return '{0:04x}'.format(handle)
 
     return '0000'
 
@@ -1270,7 +1270,7 @@ def hdl_wid_112(desc):
         if att_rsp != 8:
             continue
 
-        return '{0:04x}'.format(handle, 'x')
+        return '{0:04x}'.format(handle)
 
     return '0000'
 
@@ -1340,7 +1340,7 @@ def hdl_wid_114(desc):
 
         handle, perm, type_uuid = chrc_value_attr[0]
         if perm & Perm.read_authn:
-            return '{0:04x}'.format(handle, 'x')
+            return '{0:04x}'.format(handle)
 
     return '0000'
 
@@ -1387,7 +1387,7 @@ def hdl_wid_118(desc):
         logging.error("No attribute found!")
         return "0000"
 
-    return '{0:04x}'.format(handle + 1, 'x')
+    return '{0:04x}'.format(handle + 1)
 
 
 def hdl_wid_119(desc):
@@ -1419,10 +1419,10 @@ def hdl_wid_119(desc):
     uuid_invalid = 1
 
     while True:
-        if format(uuid_invalid, 'x').zfill(4) in uuid_list:
+        if format(uuid_invalid).zfill(4) in uuid_list:
             uuid_invalid += 1
         else:
-            uuid_invalid = format(uuid_invalid, 'x').zfill(4)
+            uuid_invalid = format(uuid_invalid).zfill(4)
             break
 
     return uuid_invalid
@@ -1453,7 +1453,7 @@ def hdl_wid_120(desc):
 
         handle, perm, type_uuid = chrc_value_attr[0]
         if not (perm & Perm.write) or not (prop & Prop.write):
-            return '{0:04x}'.format(handle, 'x')
+            return '{0:04x}'.format(handle)
 
     return '0000'
 
@@ -1492,7 +1492,7 @@ def hdl_wid_121(desc):
         if att_rsp != 0x0c:
             continue
 
-        return '{0:04x}'.format(handle, 'x')
+        return '{0:04x}'.format(handle)
 
     return '0000'
 
@@ -1690,7 +1690,7 @@ def hdl_wid_151(desc):
 
         _, val_len, _ = chrc_value_data
         if val_len == 1:
-            return '{0:04x}'.format(handle, 'x')
+            return '{0:04x}'.format(handle)
 
 
 def hdl_wid_152(desc):
@@ -1724,7 +1724,7 @@ def hdl_wid_152(desc):
 
         _, val_len, _ = chrc_value_data
         if val_len == 300:
-            return '{0:04x}'.format(handle, 'x')
+            return '{0:04x}'.format(handle)
 
 
 def hdl_wid_304(desc):

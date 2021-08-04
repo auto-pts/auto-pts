@@ -16,28 +16,22 @@
 """GATT test cases"""
 
 try:
-    from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
-        TestFuncCleanUp, MMI
+    from ptsprojects.testcase import TestFunc
     from ptsprojects.mynewt.ztestcase import ZTestCase
 
 except ImportError:  # running this module as script
     import sys
     sys.path.append("../..")  # to be able to locate the following imports
 
-    from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
-        TestFuncCleanUp, MMI
+    from ptsprojects.testcase import TestFunc
     from ptsprojects.mynewt.ztestcase import ZTestCase
 
 from pybtp import btp
-from pybtp.types import UUID, Addr, IOCap, Prop, Perm
-from time import sleep
-import logging
-import coloredlogs
+from pybtp.types import Addr, Prop, Perm
 from ptsprojects.stack import get_stack
 from autoptsclient_common import get_unique_name
 from ptsprojects.mynewt.gatt_wid import gatt_wid_hdl
 from ptsprojects.mynewt.gattc_wid import gattc_wid_hdl
-import struct
 
 
 class Value:
@@ -52,28 +46,16 @@ class Value:
 iut_attr_db_off = 0x000b
 
 
-def __get_attr_hdl_str(offset):
-    return '{0:x}'.format(iut_attr_db_off + offset, 'x')
-
-
-def __get_attr_u16_hdl_str(offset):
-    return '{0:04x}'.format(iut_attr_db_off + offset, 'x')
-
-
-def __get_attr_u16_hdl_uc_str(offset):
-    return '{0:04x}'.format(iut_attr_db_off + offset, 'X')
-
-
 def hdl_str(hdl):
-    return '{0:x}'.format(hdl, 'x')
+    return '{0:x}'.format(hdl)
 
 
 def u16_hdl_str(hdl):
-    return '{0:04x}'.format(hdl, 'x')
+    return '{0:04x}'.format(hdl)
 
 
 def u16_hdl_uc_str(hdl):
-    return '{0:04x}'.format(hdl, 'X')
+    return '{0:04x}'.format(hdl)
 
 
 class PTS_DB:
@@ -171,7 +153,6 @@ def set_pixits(ptses):
 def test_cases_server(pts):
     """Returns a list of GATT Server test cases"""
 
-    pts_bd_addr = pts.q_bd_addr
     stack = get_stack()
 
     pre_conditions_1 = [TestFunc(btp.core_reg_svc_gap),

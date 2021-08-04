@@ -17,9 +17,6 @@
 
 """Bluez auto PTS client"""
 
-import os
-import sys
-
 import autoptsclient_common as autoptsclient
 import ptsprojects.bluez as autoprojects
 from ptsprojects.bluez.iutctl import get_iut
