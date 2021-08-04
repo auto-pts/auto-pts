@@ -110,6 +110,7 @@ def hdl_wid_37(desc):
 
     return data[0] == tx_data[0]
 
+
 def hdl_wid_38(desc):
     """
     Implements: TSC_MMI_upper_tester_send_LE_data_packet1

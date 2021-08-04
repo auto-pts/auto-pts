@@ -225,7 +225,6 @@ class Gap:
         else:
             return "000000000000"
 
-
     def iut_addr_set(self, addr, addr_type):
         self.iut_bd_addr.data["address"] = addr
         self.iut_bd_addr.data["type"] = addr_type
@@ -429,6 +428,7 @@ class Mesh:
                 return True
 
         return False
+
 
 class L2capChan:
     def __init__(self, chan_id, psm, peer_mtu, peer_mps, our_mtu, our_mps,
@@ -666,13 +666,13 @@ class SynchElem:
 
     def find_matching(self, test_case, wid):
         matching_items = [item for item in self.sync_points if
-                            item.test_case == test_case and item.wid == wid]
+                          item.test_case == test_case and item.wid == wid]
         if matching_items:
             return matching_items[0]
         return None
 
     def is_ready(self):
-       return all([item.is_waiting() for item in self.sync_points])
+        return all([item.is_waiting() for item in self.sync_points])
 
     def clear(self, clear_element):
         for clear_item in clear_element.sync_points:

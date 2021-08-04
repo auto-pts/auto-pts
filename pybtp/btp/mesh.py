@@ -154,7 +154,7 @@ def mesh_input_number(number):
 
     iutctl = get_iut()
 
-    if type(number) is str:
+    if isinstance(number, str):
         number = int(number)
 
     data = bytearray(struct.pack("<I", number))

@@ -1553,7 +1553,8 @@ def hdl_wid_561(desc):
 def hdl_wid_562(desc):
     """
     Implements:
-    :param desc: Friendship will be terminated between Lower Tester 1 and IUT. Verifying no heartbeat is triggered by the termination...
+    :param desc: Friendship will be terminated between Lower Tester 1 and IUT.
+                 Verifying no heartbeat is triggered by the termination...
     :return:
     """
     return True

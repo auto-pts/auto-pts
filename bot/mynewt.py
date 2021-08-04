@@ -181,11 +181,12 @@ class PtsInitArgs(object):
     Translates arguments provided in 'config.py' file to be used by
     'autoptsclient.init_pts' function
     """
+
     def __init__(self, args):
         self.workspace = args["workspace"]
         self.bd_addr = args["bd_addr"]
         self.enable_max_logs = args.get('enable_max_logs', False)
-        self.retry = args.get('retry', 0);
+        self.retry = args.get('retry', 0)
         self.stress_test = args.get('stress_test', False)
         self.test_cases = []
         self.excluded = []

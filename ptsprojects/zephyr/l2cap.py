@@ -128,19 +128,19 @@ def test_cases(ptses):
     stack.gap_init(iut_device_name)
 
     common = [TestFunc(btp.core_reg_svc_gap),
-                      TestFunc(btp.core_reg_svc_l2cap),
-                      TestFunc(btp.gap_read_ctrl_info),
-                      TestFunc(lambda: pts.update_pixit_param(
-                          "L2CAP", "TSPX_bd_addr_iut",
-                          stack.gap.iut_addr_get_str())),
-                      TestFunc(lambda: pts.update_pixit_param(
-                          "L2CAP", "TSPX_bd_addr_iut_le",
-                          stack.gap.iut_addr_get_str())),
-                      TestFunc(lambda: pts.update_pixit_param(
-                          "L2CAP", "TSPX_iut_address_type_random",
-                          "TRUE" if stack.gap.iut_addr_is_random()
-                          else "FALSE")),
-                      TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public)]
+              TestFunc(btp.core_reg_svc_l2cap),
+              TestFunc(btp.gap_read_ctrl_info),
+              TestFunc(lambda: pts.update_pixit_param(
+                  "L2CAP", "TSPX_bd_addr_iut",
+                  stack.gap.iut_addr_get_str())),
+              TestFunc(lambda: pts.update_pixit_param(
+                  "L2CAP", "TSPX_bd_addr_iut_le",
+                  stack.gap.iut_addr_get_str())),
+              TestFunc(lambda: pts.update_pixit_param(
+                  "L2CAP", "TSPX_iut_address_type_random",
+                  "TRUE" if stack.gap.iut_addr_is_random()
+                  else "FALSE")),
+              TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public)]
 
     pre_conditions = common + [TestFunc(stack.l2cap_init, le_psm, le_initial_mtu),
                                TestFunc(btp.l2cap_le_listen, le_psm)]
@@ -150,11 +150,17 @@ def test_cases(ptses):
                                        TestFunc(btp.l2cap_le_listen, psm_encryption_key_size_required)]
     pre_conditions_author = common + [TestFunc(stack.l2cap_init, psm_authorization_required, le_initial_mtu),
                                       TestFunc(btp.l2cap_le_listen, psm_authorization_required)]
-    pre_conditions_eatt = common + [TestFunc(lambda: pts.update_pixit_param("L2CAP", "TSPX_iut_supported_max_channels", "2")),
-                                    TestFunc(stack.l2cap_init, le_psm_eatt, le_initial_mtu),
-                                    TestFunc(btp.l2cap_le_listen, le_psm_eatt)]
-    pre_conditions_eatt_sec = common + [TestFunc(lambda: pts.update_pixit_param("L2CAP", "TSPX_iut_supported_max_channels", "2")),
-                                        TestFunc(stack.l2cap_init, le_psm_eatt, le_initial_mtu)]
+    pre_conditions_eatt = common + [
+        TestFunc(
+            lambda: pts.update_pixit_param(
+                "L2CAP", "TSPX_iut_supported_max_channels", "2")), TestFunc(
+            stack.l2cap_init, le_psm_eatt, le_initial_mtu), TestFunc(
+                    btp.l2cap_le_listen, le_psm_eatt)]
+    pre_conditions_eatt_sec = common + [
+        TestFunc(
+            lambda: pts.update_pixit_param(
+                "L2CAP", "TSPX_iut_supported_max_channels", "2")), TestFunc(
+            stack.l2cap_init, le_psm_eatt, le_initial_mtu)]
 
     custom_test_cases = [
         # Connection Parameter Update

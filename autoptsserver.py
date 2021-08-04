@@ -156,7 +156,7 @@ def kill_all_processes(name):
         try:
             ps.Terminate()
             log("%s process (PID %d) terminated successfully" % (name, ps.ProcessId))
-        except:
+        except BaseException:
             log("There is no %s process running with id: %d" % (name, ps.ProcessId))
 
 
@@ -297,7 +297,7 @@ class Server(threading.Thread):
         try:
             if self.server:
                 threading.Thread(target=self.server.shutdown, daemon=True).start()
-        except:
+        except BaseException:
             traceback.print_exc()
         if self.queue:
             self.queue.put(Exception(msg))
@@ -369,7 +369,7 @@ if __name__ == "__main__":
 
     while True:
         try:
-            if type(args.srv_port) is int:
+            if isinstance(args.srv_port, int):
                 server = Server(queue=queue)
                 superguard.add_server(server)
 
@@ -381,7 +381,7 @@ if __name__ == "__main__":
             while not queue.empty():
                 try:
                     exceptions += str(queue.get_nowait()) + '\n'
-                except:
+                except BaseException:
                     traceback.print_exc()
 
             if exceptions != '':
@@ -391,7 +391,7 @@ if __name__ == "__main__":
         except KeyboardInterrupt:  # Ctrl-C
             os._exit(14)
 
-        except:
+        except BaseException:
             traceback.print_exc()
             if args.recovery or superguard.was_timeout:
                 superguard.clear()

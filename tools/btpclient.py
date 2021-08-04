@@ -15,6 +15,10 @@
 # more details.
 #
 
+from ptsprojects.testcase import AbstractMethodException
+from ptsprojects.zephyr.iutctl import get_qemu_cmd, BTP_ADDRESS
+from pybtp.iutctl_common import BTPSocket
+from pybtp import defs, btp
 import os
 import sys
 import socket
@@ -33,10 +37,6 @@ from distutils.spawn import find_executable
 sys.path.insert(
     0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from pybtp import defs, btp
-from pybtp.iutctl_common import BTPSocket
-from ptsprojects.zephyr.iutctl import get_qemu_cmd, BTP_ADDRESS
-from ptsprojects.testcase import AbstractMethodException
 
 BTP_SOCKET = None
 QEMU_PROCESS = None
@@ -677,10 +677,10 @@ def print_controller_info(data):
 
     address = binascii.hexlify(address[::-1]).upper()
     print("IUT BD_ADDR: %r" % address)
-    print("Supported Settings: %r %s" % \
-        (supported_settings, get_settings_names(supported_settings)))
-    print("Current Settings: %r %s" % \
-        (current_settings, get_settings_names(current_settings)))
+    print("Supported Settings: %r %s" %
+          (supported_settings, get_settings_names(supported_settings)))
+    print("Current Settings: %r %s" %
+          (current_settings, get_settings_names(current_settings)))
     print("Class Of Device: %r" % class_of_device)
     print("Name: '%s'" % name)
     print("Short Name: '%s'" % short_name)

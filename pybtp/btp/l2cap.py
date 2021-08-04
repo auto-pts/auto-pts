@@ -58,7 +58,7 @@ def l2cap_conn(bd_addr, bd_addr_type, psm, mtu=0, num=1):
     iutctl = get_iut()
     gap_wait_for_connection()
 
-    if type(psm) is str:
+    if isinstance(psm, str):
         psm = int(psm, 16)
 
     bd_addr = pts_addr_get(bd_addr)
@@ -77,14 +77,14 @@ def l2cap_conn(bd_addr, bd_addr_type, psm, mtu=0, num=1):
     logging.debug("id %r", chan_ids)
 
 
-l2cap_result_str = {0:  "Success",
-                    2:  "LE_PSM not supported",
-                    4:  "Insufficient Resources",
-                    5:  "insufficient authentication",
-                    6:  "insufficient authorization",
-                    7:  "insufficient encryption key size",
-                    8:  "insufficient encryption",
-                    9:  "Invalid Source CID",
+l2cap_result_str = {0: "Success",
+                    2: "LE_PSM not supported",
+                    4: "Insufficient Resources",
+                    5: "insufficient authentication",
+                    6: "insufficient authorization",
+                    7: "insufficient encryption key size",
+                    8: "insufficient encryption",
+                    9: "Invalid Source CID",
                     10: "Source CID already allocated",
                     }
 
@@ -142,7 +142,7 @@ def l2cap_listen(psm, transport, mtu=0, req_sec=L2capSecLevels.no_sec, req_key_s
 
     iutctl = get_iut()
 
-    if type(psm) is str:
+    if isinstance(psm, str):
         psm = int(psm, 16)
 
     data_ba = bytearray(struct.pack('H', psm))

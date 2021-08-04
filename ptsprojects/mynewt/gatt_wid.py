@@ -89,9 +89,9 @@ def hdl_wid_24(desc):
     pts_services = []
 
     for i in range(num_includes):
-        pts_services.append([int(MMI.args[i+0], 16),
-                             int(MMI.args[i+1], 16),
-                             int(MMI.args[i+2], 16)])
+        pts_services.append([int(MMI.args[i + 0], 16),
+                             int(MMI.args[i + 1], 16),
+                             int(MMI.args[i + 2], 16)])
 
     iut_services = []
 
@@ -223,7 +223,7 @@ def hdl_wid_81(desc):
     MMI.parse_description(desc)
 
     hdl = int(MMI.args[0], 16)
-    val_mtp = int(MMI.args[1], 10)+1
+    val_mtp = int(MMI.args[1], 10) + 1
 
     if not hdl or not val_mtp:
         logging.error("parsing error")

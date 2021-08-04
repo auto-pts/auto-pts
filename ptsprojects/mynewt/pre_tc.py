@@ -43,7 +43,7 @@ def popen_and_call(cmd, **popen_args):
     """
     Runs the given args in a subprocess.Popen, and then calls the function
     onExit when the subprocess completes.
-    onExit is a callable object, and popenArgs is a list/tuple of args that 
+    onExit is a callable object, and popenArgs is a list/tuple of args that
     would give to subprocess.Popen.
     """
 

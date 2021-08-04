@@ -73,6 +73,7 @@ iut_flags = '11'
 iut_svcs = '1111'
 iut_attr_db_off = 0x000b
 
+
 def set_pixits(ptses):
     """Setup DIS profile PIXITS for workspace. Those values are used for test
     case if not updated within test case.
@@ -91,7 +92,7 @@ def set_pixits(ptses):
     pts.set_pixit("DIS", "TSPX_time_guard", "180000")
     pts.set_pixit("DIS", "TSPX_use_implicit_send", "TRUE")
     pts.set_pixit("DIS", "TSPX_tester_database_file",
-                  "C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PS_DIS.xml")
+                  r"C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PS_DIS.xml")
     pts.set_pixit("DIS", "TSPX_mtu_size", "23")
     pts.set_pixit("DIS", "TSPX_secure_simple_pairing_pass_key_confirmation", "FALSE")
     pts.set_pixit("DIS", "TSPX_delete_link_key", "TRUE")

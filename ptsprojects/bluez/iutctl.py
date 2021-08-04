@@ -50,7 +50,6 @@ class IUTCtl:
         self.btp_socket = None
         self.iut_process = None
 
-
     def start(self):
         """Starts the IUT"""
 
@@ -88,7 +87,6 @@ class IUTCtl:
 
     def reset(self):
         """Reset IUT like removing all paired devices"""
-
 
     def stop(self):
         """Powers off the IUT"""

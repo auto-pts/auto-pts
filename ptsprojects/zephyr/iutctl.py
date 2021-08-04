@@ -100,13 +100,13 @@ class ZephyrCtl:
 
         if sys.platform == "win32":
             COM = "COM" + str(int(self.tty_file["/dev/ttyS".__len__():]) + 1)
-            reg = "[0-9]+(?=\s+" + COM + ".+)"
+            reg = r"[0-9]+(?=\s+" + COM + ".+)"
         else:
-            reg = "[0-9]+(?=\s+" + self.tty_file + ".+)"
+            reg = r"[0-9]+(?=\s+" + self.tty_file + ".+)"
 
         try:
             self.debugger_snr = re.findall(reg, debuggers)[0]
-        except:
+        except BaseException:
             sys.exit("No debuggers associated with the device found")
 
     def start(self, test_case):
@@ -288,7 +288,7 @@ class Board:
     """HW DUT board"""
 
     nrf52 = "nrf52"
-    reel  = "reel_board"
+    reel = "reel_board"
 
     # for command line options
     names = [

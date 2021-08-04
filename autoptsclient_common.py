@@ -326,7 +326,7 @@ def get_unique_name(pts):
 
     # get address of PTS dongle IUT is connecting to
     pts_addr = pts.q_bd_addr.replace(":", "")
-    #use last 6 characters of PTS dongle adress
+    # use last 6 characters of PTS dongle adress
     name += "_" + pts_addr[6:12]
 
     return name.encode('utf-8')
@@ -488,7 +488,7 @@ def init_pts(args, tc_db_table_name=None):
     while not exceptions.empty():
         try:
             exeption_msg += str(exceptions.get_nowait()) + '\n'
-        except:
+        except BaseException:
             traceback.print_exc()
         finally:
             print(exeption_msg)
@@ -505,7 +505,7 @@ def reinit_pts(ptses, args, tc_db_table_name=None):
     try:
         for pts in ptses:
             pts.unregister_xmlrpc_ptscallback()
-    except:
+    except BaseException:
         traceback.print_exc()
 
     return init_pts(args, tc_db_table_name)
@@ -515,7 +515,7 @@ def get_result_color(status):
     if status == "PASS":
         return "green"
     elif status == "FAIL":
-       return "red"
+        return "red"
     elif status == "INCONC":
         return "yellow"
     else:
@@ -576,7 +576,7 @@ class TestCaseRunStats(object):
         elem.attrib["status"] = status
 
         if elem.attrib["status"] != "PASS" and \
-                        elem.attrib["status_previous"] == "PASS":
+                elem.attrib["status_previous"] == "PASS":
             regression = True
         else:
             regression = False
@@ -717,8 +717,8 @@ def run_test_case_wrapper(func):
 
         result = ("{}".format(status).ljust(16) +
                   end_time_str.rjust(len(end_time_str)) +
-                retries_msg.rjust(len("#{}".format(retries_max)) + margin) +
-                regression_msg.rjust(len("REGRESSION") + margin))
+                  retries_msg.rjust(len("#{}".format(retries_max)) + margin) +
+                  regression_msg.rjust(len("REGRESSION") + margin))
 
         if sys.stdout.isatty():
             output_color = get_result_color(status)
@@ -851,7 +851,7 @@ def run_test_case_thread_entry(pts, test_case, exceptions):
 def run_test_case_thread_fun(results, ptses, test_case_instances, test_case_name, stats,
                              session_log_dir, exceptions):
     status, duration = run_test_case(ptses, test_case_instances, test_case_name, stats,
-                  session_log_dir, exceptions)
+                                     session_log_dir, exceptions)
     results.append(status)
     results.append(duration)
 
@@ -873,7 +873,7 @@ def run_test_case(ptses, test_case_instances, test_case_name, stats,
     logger = logging.getLogger()
 
     format = ("%(asctime)s %(name)s %(levelname)s %(filename)-25s "
-                "%(lineno)-5s %(funcName)-25s : %(message)s")
+              "%(lineno)-5s %(funcName)-25s : %(message)s")
     formatter = logging.Formatter(format)
 
     # Lookup TestCase class instance
@@ -1021,7 +1021,7 @@ def run_test_cases(ptses, test_case_instances, args):
             while not exceptions.empty():
                 try:
                     exeption_msg += str(exceptions.get_nowait()) + '\n'
-                except:
+                except BaseException:
                     traceback.print_exc()
                 finally:
                     print(exeption_msg)
@@ -1174,10 +1174,10 @@ class Client:
                     for pts in ptses:
                         recover_autoptsserver(pts)
                     time.sleep(20)
-                except:
+                except BaseException:
                     traceback.print_exc()
 
-            except:
+            except BaseException:
                 os._exit(16)
 
     def main(self):
@@ -1196,7 +1196,7 @@ class Client:
             if not have_admin_rights():
                 sys.exit("Please run this program as root.")
         elif have_admin_rights():
-                sys.exit("Please do not run this program as root.")
+            sys.exit("Please do not run this program as root.")
 
         if args.store:
             tc_db_table_name = self.store_tag + str(args.board)
@@ -1309,7 +1309,7 @@ def run_recovery(args, ptses):
     try:
         for pts in ptses:
             recover_autoptsserver(pts)  # but restart it anyway
-    except:
+    except BaseException:
         traceback.print_exc()
 
     if ykush:
@@ -1318,7 +1318,7 @@ def run_recovery(args, ptses):
 
     try:
         reinit_pts(ptses, args)
-    except:
+    except BaseException:
         traceback.print_exc()
 
     setup_project_pixits(ptses)

@@ -139,7 +139,7 @@ def hdl_wid_173(desc):
     # Prepare space for URI
     stack.gap.sd.clear()
     stack.gap.sd[AdType.uri] = UriScheme.https + \
-                               'github.com/intel/auto-pts'.encode()
+        'github.com/intel/auto-pts'.encode()
 
     btp.gap_adv_ind_on(sd=stack.gap.sd)
 

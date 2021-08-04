@@ -130,7 +130,7 @@ def gatts_add_inc_svc(hdl):
 
     iutctl = get_iut()
 
-    if type(hdl) is str:
+    if isinstance(hdl, str):
         hdl = int(hdl, 16)
 
     data_ba = bytearray()
@@ -148,7 +148,7 @@ def gatts_add_char(hdl, prop, perm, uuid):
 
     iutctl = get_iut()
 
-    if type(hdl) is str:
+    if isinstance(hdl, str):
         hdl = int(hdl, 16)
 
     data_ba = bytearray()
@@ -179,7 +179,7 @@ def gatts_set_val(hdl, val):
 
     iutctl = get_iut()
 
-    if type(hdl) is str:
+    if isinstance(hdl, str):
         hdl = int(hdl, 16)
 
     data_ba = bytearray()
@@ -206,7 +206,7 @@ def gatts_add_desc(hdl, perm, uuid):
 
     iutctl = get_iut()
 
-    if type(hdl) is str:
+    if isinstance(hdl, str):
         hdl = int(hdl, 16)
 
     data_ba = bytearray()
@@ -233,10 +233,10 @@ def gatts_change_database(start_hdl, end_hdl, vis):
 
     iutctl = get_iut()
 
-    if type(start_hdl) is str:
+    if isinstance(start_hdl, str):
         start_hdl = int(start_hdl, 16)
 
-    if type(end_hdl) is str:
+    if isinstance(end_hdl, str):
         end_hdl = int(end_hdl, 16)
 
     data_ba = bytearray()
@@ -266,7 +266,7 @@ def gatts_set_enc_key_size(hdl, enc_key_size):
 
     iutctl = get_iut()
 
-    if type(hdl) is str:
+    if isinstance(hdl, str):
         hdl = int(hdl, 16)
 
     data_ba = bytearray()
@@ -382,13 +382,13 @@ def gatts_get_attrs(start_handle=0x0001, end_handle=0xffff, type_uuid=None):
 
     data_ba = bytearray()
 
-    if type(start_handle) is str:
+    if isinstance(start_handle, str):
         start_handle = int(start_handle, 16)
 
     start_hdl_ba = struct.pack('H', start_handle)
     data_ba.extend(start_hdl_ba)
 
-    if type(end_handle) is str:
+    if isinstance(end_handle, str):
         end_handle = int(end_handle, 16)
 
     end_hdl_ba = struct.pack('H', end_handle)
@@ -422,7 +422,7 @@ def gatts_get_attr_val(bd_addr_type, bd_addr, handle):
     data_ba = bytearray()
 
     bd_addr_ba = addr2btp_ba(bd_addr)
-    if type(handle) is str:
+    if isinstance(handle, str):
         handle = int(handle, 16)
 
     hdl_ba = struct.pack('H', handle)
@@ -466,7 +466,7 @@ def gattc_exchange_mtu(bd_addr_type, bd_addr):
 
 def gattc_disc_all_prim(bd_addr_type, bd_addr):
     logging.debug("%s %r %r", gattc_disc_all_prim.__name__, bd_addr_type,
-                   bd_addr)
+                  bd_addr)
     iutctl = get_iut()
 
     gap_wait_for_connection()
@@ -506,10 +506,10 @@ def _gattc_find_included_req(bd_addr_type, bd_addr, start_hdl, end_hdl):
                   bd_addr_type, bd_addr, start_hdl, end_hdl)
     iutctl = get_iut()
 
-    if type(end_hdl) is str:
+    if isinstance(end_hdl, str):
         end_hdl = int(end_hdl, 16)
 
-    if type(start_hdl) is str:
+    if isinstance(start_hdl, str):
         start_hdl = int(start_hdl, 16)
 
     data_ba = bytearray()
@@ -627,22 +627,22 @@ def gattc_disc_all_chrc(bd_addr_type, bd_addr, start_hdl, stop_hdl, svc=None):
                     (svc[0][1] and svc[0][1] != s[1]) and
                     (svc[0][2] and svc[0][2] != s[2])):
 
-                    # To take n-th service
-                    svc_nb -= 1
-                    if svc_nb != 0:
-                        continue
+                # To take n-th service
+                svc_nb -= 1
+                if svc_nb != 0:
+                    continue
 
-                    start_hdl = s[0]
-                    stop_hdl = s[1]
+                start_hdl = s[0]
+                stop_hdl = s[1]
 
-                    logging.debug("Got requested service!")
+                logging.debug("Got requested service!")
 
-                    break
+                break
 
-    if type(start_hdl) is str:
+    if isinstance(start_hdl, str):
         start_hdl = int(start_hdl, 16)
 
-    if type(stop_hdl) is str:
+    if isinstance(stop_hdl, str):
         stop_hdl = int(stop_hdl, 16)
 
     data_ba = bytearray()
@@ -666,10 +666,10 @@ def gattc_disc_chrc_uuid(bd_addr_type, bd_addr, start_hdl, stop_hdl, uuid):
 
     gap_wait_for_connection()
 
-    if type(stop_hdl) is str:
+    if isinstance(stop_hdl, str):
         stop_hdl = int(stop_hdl, 16)
 
-    if type(start_hdl) is str:
+    if isinstance(start_hdl, str):
         start_hdl = int(start_hdl, 16)
 
     data_ba = bytearray()
@@ -701,10 +701,10 @@ def gattc_disc_all_desc(bd_addr_type, bd_addr, start_hdl, stop_hdl):
 
     gap_wait_for_connection()
 
-    if type(start_hdl) is str:
+    if isinstance(start_hdl, str):
         start_hdl = int(start_hdl, 16)
 
-    if type(stop_hdl) is str:
+    if isinstance(stop_hdl, str):
         stop_hdl = int(stop_hdl, 16)
 
     data_ba = bytearray()
@@ -732,16 +732,16 @@ def gattc_read_char_val(bd_addr_type, bd_addr, char):
                 (char[0][2] and char[0][2] != c[2])
                 (char[0][3] and char[0][3] != c[3])):
 
-                # To take n-th service
-                char_nb -= 1
-                if char_nb != 0:
-                    continue
+            # To take n-th service
+            char_nb -= 1
+            if char_nb != 0:
+                continue
 
-                logging.debug("Got requested char, val handle = %r!", c[1])
+            logging.debug("Got requested char, val handle = %r!", c[1])
 
-                gattc_read(bd_addr_type, bd_addr, c[1])
+            gattc_read(bd_addr_type, bd_addr, c[1])
 
-                break
+            break
 
 
 def gattc_read(bd_addr_type, bd_addr, hdl):
@@ -754,7 +754,7 @@ def gattc_read(bd_addr_type, bd_addr, hdl):
     data_ba = bytearray()
 
     bd_addr_ba = addr2btp_ba(bd_addr)
-    if type(hdl) is str:
+    if isinstance(hdl, str):
         hdl = int(hdl, 16)
     hdl_ba = struct.pack('H', hdl)
 
@@ -772,10 +772,10 @@ def gattc_read_uuid(bd_addr_type, bd_addr, start_hdl, end_hdl, uuid):
 
     gap_wait_for_connection()
 
-    if type(start_hdl) is str:
+    if isinstance(start_hdl, str):
         start_hdl = int(start_hdl, 16)
 
-    if type(end_hdl) is str:
+    if isinstance(end_hdl, str):
         end_hdl = int(end_hdl, 16)
 
     data_ba = bytearray()
@@ -809,11 +809,11 @@ def gattc_read_long(bd_addr_type, bd_addr, hdl, off, modif_off=None):
 
     data_ba = bytearray()
 
-    if type(off) is str:
+    if isinstance(off, str):
         off = int(off, 16)
     if modif_off:
         off += modif_off
-    if type(hdl) is str:
+    if isinstance(hdl, str):
         hdl = int(hdl, 16)
 
     bd_addr_ba = addr2btp_ba(bd_addr)
@@ -883,7 +883,7 @@ def gattc_write_without_rsp(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
 
     gap_wait_for_connection()
 
-    if type(hdl) is str:
+    if isinstance(hdl, str):
         hdl = int(hdl, 16)
 
     if val_mtp:
@@ -914,7 +914,7 @@ def gattc_signed_write(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
 
     gap_wait_for_connection()
 
-    if type(hdl) is str:
+    if isinstance(hdl, str):
         hdl = int(hdl, 16)
 
     if val_mtp:
@@ -950,7 +950,7 @@ def gattc_write(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
 
     gap_wait_for_connection()
 
-    if type(hdl) is str:
+    if isinstance(hdl, str):
         hdl = int(hdl, 16)
 
     if val_mtp:
@@ -977,10 +977,10 @@ def gattc_write_long(bd_addr_type, bd_addr, hdl, off, val, length=None):
                   bd_addr_type, hdl, off, val, length)
     gap_wait_for_connection()
 
-    if type(hdl) is str:
+    if isinstance(hdl, str):
         hdl = int(hdl, 16)  # convert string in hex format to int
 
-    if type(off) is str:
+    if isinstance(off, str):
         off = int(off, 16)
 
     if length:
@@ -1012,7 +1012,7 @@ def gattc_write_reliable(bd_addr_type, bd_addr, hdl, off, val, val_mtp=None):
 
     gap_wait_for_connection()
 
-    if type(hdl) is str:
+    if isinstance(hdl, str):
         hdl = int(hdl, 16)
 
     if val_mtp:
@@ -1042,7 +1042,7 @@ def gattc_cfg_notify(bd_addr_type, bd_addr, enable, ccc_hdl):
                   bd_addr, enable, ccc_hdl)
     gap_wait_for_connection()
 
-    if type(ccc_hdl) is str:
+    if isinstance(ccc_hdl, str):
         ccc_hdl = int(ccc_hdl, 16)
 
     iutctl = get_iut()
@@ -1071,7 +1071,7 @@ def gattc_cfg_indicate(bd_addr_type, bd_addr, enable, ccc_hdl):
                   bd_addr_type, bd_addr, enable, ccc_hdl)
     gap_wait_for_connection()
 
-    if type(ccc_hdl) is str:
+    if isinstance(ccc_hdl, str):
         ccc_hdl = int(ccc_hdl, 16)
 
     iutctl = get_iut()
@@ -1367,7 +1367,7 @@ def gattc_disc_prim_uuid_rsp(store_rsp=False):
 
             # add hyphens to long uuid: 0000-1157-0000-0000-0123-4567-89AB-CDEF
             if len(uuid) > 4:
-                uuid = "-".join([uuid[i:i+4] for i in range(0, len(uuid), 4)])
+                uuid = "-".join([uuid[i:i + 4] for i in range(0, len(uuid), 4)])
 
             VERIFY_VALUES.append(start_handle)
             VERIFY_VALUES.append(end_handle)
@@ -1472,7 +1472,7 @@ def gattc_disc_chrc_uuid_rsp(store_rsp=False):
 
             # add hyphens to long uuid: 0000-1157-0000-0000-0123-4567-89AB-CDEF
             if len(uuid) > 4:
-                uuid = "-".join([uuid[i:i+4] for i in range(0, len(uuid), 4)])
+                uuid = "-".join([uuid[i:i + 4] for i in range(0, len(uuid), 4)])
 
             VERIFY_VALUES.append(handle)
             VERIFY_VALUES.append(uuid)
@@ -1506,17 +1506,17 @@ def gattc_disc_all_desc_rsp(store_rsp=False):
         logging.debug("Set verify values to: %r", VERIFY_VALUES)
 
 
-att_rsp_str = {0:   "",
-               1:   "Invalid handle error",
-               2:   "read is not permitted error",
-               3:   "write is not permitted error",
-               5:   "authentication error",
-               7:   "Invalid offset error",
-               8:   "authorization error",
-               10:  "attribute not found error",
-               12:  "encryption key size error",
-               13:  "Invalid attribute value length error",
-               14:  "unlikely error",
+att_rsp_str = {0: "",
+               1: "Invalid handle error",
+               2: "read is not permitted error",
+               3: "write is not permitted error",
+               5: "authentication error",
+               7: "Invalid offset error",
+               8: "authorization error",
+               10: "attribute not found error",
+               12: "encryption key size error",
+               13: "Invalid attribute value length error",
+               14: "unlikely error",
                128: "Application error",
                }
 
@@ -1571,7 +1571,7 @@ def gattc_read_uuid_rsp(store_rsp=False, store_val=False):
 
             value = (binascii.hexlify(value[0]).decode('utf-8')).upper()
             if len(value) > 0:
-                chunks = [value[i:i+len(value)//n] for i in range(0, len(value), len(value)//n)]
+                chunks = [value[i:i + len(value) // n] for i in range(0, len(value), len(value) // n)]
                 VERIFY_VALUES.extend(chunks)
 
 

@@ -80,8 +80,8 @@ def test_cases(ptses):
                           "SM", "TSPX_bd_addr_iut",
                           stack.gap.iut_addr_get_str())),
                       TestFunc(lambda: pts.update_pixit_param(
-                         "SM", "TSPX_iut_device_name_in_adv_packet_for_random_address",
-                         iut_device_name)),
+                          "SM", "TSPX_iut_device_name_in_adv_packet_for_random_address",
+                          iut_device_name)),
                       TestFunc(lambda: pts.update_pixit_param(
                           "SM", "TSPX_Bonding_Flags", "01"
                           if stack.gap.current_settings_get('Bondable')
@@ -217,7 +217,7 @@ def test_cases(ptses):
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/PER/SIE/BV-01-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),],
+                  [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output), ],
                   generic_wid_hdl=sm_wid_hdl),
     ]
 
