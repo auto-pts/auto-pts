@@ -156,7 +156,7 @@ def patch_workspace_file(workspace_file):
     """Patch workspace file to remove invalid information
 
     The information removed is:
-    PATH=r"C:\PATH\auto-pts\workspaces\qsd_zephyr_mv11_20160623"
+    PATH='C:\\PATH\\auto-pts\\workspaces\\qsd_zephyr_mv11_20160623'
 
     It is replaced with
     PATH=""

@@ -809,7 +809,8 @@ def mmdl_sensor_get(sensor_id):
         stack.mesh.recv_status_data_set('Status', [
             sensor_id_0, sensor_data_0, sensor_id_1, sensor_data_1, sensor_id_2, sensor_data_2])
         logging.debug(
-            'Status: Sensor id = 0x%x Sensor data = 0x%x \n Sensor id = 0x%x Sensor data = 0x%x \n Sensor id = 0x%x Sensor data = 0x%x',
+            ("Status: Sensor id = 0x%x Sensor data = 0x%x \n Sensor id = 0x%x "
+             "Sensor data = 0x%x \n Sensor id = 0x%x Sensor data = 0x%x"),
             sensor_id_0,
             sensor_data_0,
             sensor_id_1,

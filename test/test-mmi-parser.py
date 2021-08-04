@@ -23,13 +23,8 @@ case a new description parsing is added.
 
 """
 
-from ptsprojects.testcase import MmiParser
 import sys
 import os
-
-# to be able to find ptsprojects module
-sys.path.insert(
-    0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 
 descriptions = [
@@ -134,19 +129,26 @@ Description: Verify that the Implementation Under Test (IUT) can send Discover a
 ]
 
 
-print("Descriptions:")
-for item in descriptions:
-    print(item, "\n")
+if __name__ == '__main__':
+    # to be able to find ptsprojects module
+    sys.path.insert(
+        0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-print("\nInitiating parsing")
+    from ptsprojects.testcase import MmiParser
 
-MMI = MmiParser()
+    print("Descriptions:")
+    for item in descriptions:
+        print(item, "\n")
 
-for item in descriptions:
-    description, args = item
-    print("\nParsing: %r\nExpecting: %r" % (description, args))
-    MMI.parse_description(description)
-    print("Got:", 5 * " ", MMI.args)
-    assert args == MMI.args, \
-        "Error parsing description found=%r, expected=%r" % (MMI.args, args)
-    print("OK")
+    print("\nInitiating parsing")
+
+    MMI = MmiParser()
+
+    for item in descriptions:
+        description, args = item
+        print("\nParsing: %r\nExpecting: %r" % (description, args))
+        MMI.parse_description(description)
+        print("Got:", 5 * " ", MMI.args)
+        assert args == MMI.args, \
+            "Error parsing description found=%r, expected=%r" % (MMI.args, args)
+        print("OK")
