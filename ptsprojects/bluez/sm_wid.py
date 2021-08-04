@@ -30,7 +30,7 @@ def sm_wid_hdl(wid, description, test_case_name):
     try:
         handler = getattr(module, "hdl_wid_%d" % wid)
         return handler(description)
-    except AttributeError as e:
+    except AttributeError:
         return gen_wid_hdl(wid, description, test_case_name, False)
 
 

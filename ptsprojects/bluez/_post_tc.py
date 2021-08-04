@@ -15,10 +15,8 @@
 # more details.
 #
 
-import os
 import sys
 import subprocess
-import signal
 
 
 def remove_paired_devices():

@@ -13,8 +13,6 @@
 # more details.
 #
 
-"""Automated PTS projects (bluetooth profiles and protocols) for Bluez IUT"""
-
 import ptsprojects.bluez.iutctl
 
 import ptsprojects.bluez.gap

@@ -21,7 +21,6 @@ import sys
 import mimetypes
 import datetime
 import xlsxwriter
-import sqlite3 as sql
 import git
 import shutil
 import zipfile
@@ -219,8 +218,8 @@ class GDrive(object):
             except errors.HttpError:
                 sys.exit(1)
 
-            for file in response.get('files', []):
-                results[file.get('name')] = file
+            for f in response.get('files', []):
+                results[f.get('name')] = f
             page_token = response.get('nextPageToken', None)
             if page_token is None:
                 break
@@ -283,27 +282,27 @@ class Drive(GDrive):
         self.cd(dir_)
         return "{}".format(dir_.get('webViewLink'))
 
-    def upload(self, file):
-        print("Uploading {} ...".format(file))
-        self.cp(file)
+    def upload(self, f):
+        print("Uploading {} ...".format(f))
+        self.cp(f)
         print("Done")
 
     def upload_folder(self, folder, excluded=None):
         def recursive(directory):
             with os.scandir(directory) as it:
-                for file in it:
-                    if excluded and (file.name in excluded or
-                                     os.path.splitext(file.name)[1] in excluded):
+                for f in it:
+                    if excluded and (f.name in excluded or
+                                     os.path.splitext(f.name)[1] in excluded):
                         continue
 
-                    if file.is_dir():
+                    if f.is_dir():
                         parent = self.pwd()
-                        dir_ = self.mkdir(file.name)
+                        dir_ = self.mkdir(f.name)
                         self.cd(dir_)
-                        recursive(os.path.join(directory, file.name))
+                        recursive(os.path.join(directory, f.name))
                         self.cd(parent)
                     else:
-                        filepath = os.path.relpath(os.path.join(directory, file.name))
+                        filepath = os.path.relpath(os.path.join(directory, f.name))
                         self.upload(filepath)
 
         recursive(folder)
@@ -461,12 +460,12 @@ def archive_testcases(dir_path, depth=3):
     def recursive(directory, depth):
         depth -= 1
         with os.scandir(directory) as it:
-            for file in it:
-                if file.is_dir():
+            for f in it:
+                if f.is_dir():
                     if depth > 0:
-                        recursive(os.path.join(directory, file.name), depth)
+                        recursive(os.path.join(directory, f.name), depth)
                     else:
-                        filepath = os.path.relpath(os.path.join(directory, file.name))
+                        filepath = os.path.relpath(os.path.join(directory, f.name))
                         archive_recursive(filepath)
                         shutil.rmtree(filepath)
 
@@ -544,9 +543,9 @@ def get_workspace(workspace):
 
 def delete_bpv_logs(workspace_path):
     with os.scandir(workspace_path) as it:
-        for file in it:
-            if file.is_dir():
-                shutil.rmtree(file.path, ignore_errors=True)
+        for f in it:
+            if f.is_dir():
+                shutil.rmtree(f.path, ignore_errors=True)
 
 
 def update_sources(repo_path, remote, branch, stash_changes=False, update_repo=True):

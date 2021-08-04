@@ -16,26 +16,22 @@
 """GAP test cases"""
 
 try:
-    from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
-        TestFuncCleanUp
+    from ptsprojects.testcase import TestFunc
     from ptsprojects.zephyr.ztestcase import ZTestCase
 
 except ImportError:  # running this module as script
     import sys
     sys.path.append("../..")  # to be able to locate the following imports
 
-    from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
-        TestFuncCleanUp
+    from ptsprojects.testcase import TestFunc
     from ptsprojects.zephyr.ztestcase import ZTestCase
 
-from time import sleep
 from pybtp import btp
-from pybtp.types import Addr, IOCap, AdType, AdFlags, Prop, Perm
-import binascii
+from pybtp.types import Addr, IOCap, AdType, AdFlags
 from . import gatt
 from autoptsclient_common import get_unique_name
 from ptsprojects.stack import get_stack
-from .gap_wid import gap_wid_hdl, gap_wid_hdl_mode1_lvl2, gap_wid_hdl_mode1_lvl4, gap_wid_hdl_failed_read
+from .gap_wid import gap_wid_hdl, gap_wid_hdl_mode1_lvl2, gap_wid_hdl_mode1_lvl4
 
 
 class UUID:

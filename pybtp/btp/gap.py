@@ -127,7 +127,6 @@ def gap_connected_ev_(gap, data, data_len):
     logging.debug("%s %r", gap_connected_ev_.__name__, data)
 
     hdr_fmt = '<B6sHHH'
-    hdr_len = struct.calcsize(hdr_fmt)
 
     addr_type, addr, itvl, latency, timeout = struct.unpack_from(hdr_fmt, data)
     addr = binascii.hexlify(addr[::-1])

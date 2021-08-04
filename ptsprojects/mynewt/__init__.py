@@ -13,8 +13,6 @@
 # more details.
 #
 
-"""Automated PTS projects (bluetooth profiles and protocols) for Zephyr IUT"""
-
 import ptsprojects.mynewt.iutctl
 
 import ptsprojects.mynewt.gap

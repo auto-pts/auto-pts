@@ -35,7 +35,7 @@ def gatt_wid_hdl(wid, description, test_case_name):
     try:
         handler = getattr(module, "hdl_wid_%d" % wid)
         return handler(description)
-    except AttributeError as e:
+    except AttributeError:
         return gen_wid_hdl(wid, description, test_case_name, False)
 
 
@@ -65,7 +65,7 @@ def hdl_wid_17(desc):
 
     attrs = btp.gatts_get_attrs(type_uuid='2800')
     for attr in attrs:
-        handle, perm, type_uuid = attr
+        handle, _, _ = attr
         (_, uuid_len, uuid) = btp.gatts_get_attr_val(
             btp.pts_addr_type_get(),
             btp.pts_addr_get(), handle)
@@ -189,11 +189,10 @@ def hdl_wid_76(desc):
     MMI.parse_description(desc)
 
     hdl = MMI.args[0]
-    offset = MMI.args[1]
 
     btp.gattc_write_reliable(btp.pts_addr_type_get(),
                              btp.pts_addr_get(),
-                             MMI.args[0], 0, '12', 1)
+                             hdl, 0, '12', 1)
     btp.gattc_write_reliable_rsp(True)
 
     return True
@@ -288,13 +287,13 @@ def hdl_wid_110(desc):
 
         handle, perm, type_uuid = chrc_value_attr[0]
         if not (perm & Perm.read):
-            return '{0:04x}'.format(handle, 'x')
+            return '{0:04x}'.format(handle)
 
     return '0000'
 
 
 def hdl_wid_118(desc):
-    return '{0:04x}'.format(65000, 'x')
+    return '{0:04x}'.format(65000)
 
 
 def hdl_wid_121(desc):
@@ -303,33 +302,33 @@ def hdl_wid_121(desc):
     chrcs = btp.gatts_get_attrs(type_uuid='2803')
 
     for chrc in chrcs:
-        handle, perm, type_uuid = chrc
+        handle, perm, _ = chrc
 
         chrc_val = btp.gatts_get_attr_val(btp.pts_addr_type_get(),
                                           btp.pts_addr_get(), handle)
         if not chrc_val:
             continue
 
-        (att_rsp, val_len, val) = chrc_val
+        (_, val_len, val) = chrc_val
 
         hdr = '<BH'
         hdr_len = struct.calcsize(hdr)
         uuid_len = val_len - hdr_len
 
-        prop, handle, chrc_uuid = struct.unpack("<BH%ds" % uuid_len, val)
+        _, handle, _ = struct.unpack("<BH%ds" % uuid_len, val)
         chrc_value_attr = btp.gatts_get_attrs(start_handle=handle,
                                               end_handle=handle)
         if not chrc_value_attr:
             continue
 
-        handle, perm, type_uuid = chrc_value_attr[0]
+        handle, perm, _ = chrc_value_attr[0]
         chrc_value_data = btp.gatts_get_attr_val(btp.pts_addr_type_get(),
                                                  btp.pts_addr_get(), handle)
         if not chrc_value_data:
             continue
 
         if perm & Perm.write_enc and perm & Perm.read_enc:
-            return '{0:04x}'.format(handle, 'x')
+            return '{0:04x}'.format(handle)
 
     return '0000'
 
@@ -339,32 +338,32 @@ def hdl_wid_122(desc):
     # TODO This needs reworking
     chrcs = btp.gatts_get_attrs(type_uuid='2803')
     for chrc in chrcs:
-        handle, perm, type_uuid = chrc
+        handle, perm, _ = chrc
 
         chrc_data = btp.gatts_get_attr_val(btp.pts_addr_type_get(),
                                            btp.pts_addr_get(), handle)
         if not chrc_data:
             continue
 
-        att_rsp, val_len, val = chrc_data
+        _, val_len, val = chrc_data
 
         hdr = '<BH'
         hdr_len = struct.calcsize(hdr)
         uuid_len = val_len - hdr_len
 
-        prop, handle, chrc_uuid = struct.unpack("<BH%ds" % uuid_len, val)
+        _, handle, chrc_uuid = struct.unpack("<BH%ds" % uuid_len, val)
         chrc_value_attr = btp.gatts_get_attrs(start_handle=handle,
                                               end_handle=handle)
         if not chrc_value_attr:
             continue
 
-        handle, perm, type_uuid = chrc_value_attr[0]
+        handle, perm, _ = chrc_value_attr[0]
         chrc_value_data = btp.gatts_get_attr_val(btp.pts_addr_type_get(),
                                                  btp.pts_addr_get(), handle)
         if not chrc_value_data:
             continue
 
-        att_rsp, val_len, val = chrc_value_data
+        _, val_len, val = chrc_value_data
 
         if perm & Perm.read and perm & Perm.read_enc:
             return btp.btp2uuid(uuid_len, chrc_uuid)

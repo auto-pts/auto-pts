@@ -16,7 +16,6 @@
 import os
 import logging
 import socket
-import binascii
 import sys
 import threading
 import signal
@@ -25,7 +24,7 @@ import serial
 import time
 if sys.platform != "win32":
     from fcntl import fcntl, F_GETFL, F_SETFL
-    from os import O_NONBLOCK, read
+    from os import O_NONBLOCK
 import queue
 
 from . import defs

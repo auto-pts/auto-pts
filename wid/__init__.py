@@ -13,7 +13,6 @@
 # more details.
 #
 
-"""Common WID handlers implementation"""
 
 from .l2cap import l2cap_wid_hdl
 from .mesh import mesh_wid_hdl

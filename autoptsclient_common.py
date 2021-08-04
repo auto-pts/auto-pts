@@ -156,7 +156,7 @@ class ClientCallback(PTSCallback):
                 RUNNING_TEST_CASE[test_case_name].log(log_type, logtype_string,
                                                       log_time, log_message)
 
-        except Exception as e:
+        except Exception:
             logging.exception("Log caught exception")
             self.exception.put(sys.exc_info()[1])
 
@@ -198,7 +198,6 @@ class ClientCallback(PTSCallback):
             test_case_name = test_case_name.lstrip()
 
             log("Calling test cases on_implicit_send")
-            caller_pts_id = list(RUNNING_TEST_CASE.keys()).index(test_case_name)
 
             testcase_response \
                 = RUNNING_TEST_CASE[test_case_name].on_implicit_send(
@@ -211,7 +210,7 @@ class ClientCallback(PTSCallback):
             log("test case returned on_implicit_send, response: %s",
                 testcase_response)
 
-        except Exception as e:
+        except Exception:
             logging.exception("OnImplicitSend caught exception")
             self.exception.put(sys.exc_info()[1])
 

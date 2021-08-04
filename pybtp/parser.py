@@ -13,7 +13,6 @@
 # more details.
 #
 
-import binascii
 import struct
 from collections import namedtuple
 

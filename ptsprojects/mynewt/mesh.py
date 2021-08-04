@@ -16,8 +16,7 @@
 """MESH test cases"""
 
 try:
-    from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
-        TestFuncCleanUp
+    from ptsprojects.testcase import TestFunc
     from ptsprojects.mynewt.ztestcase import ZTestCase, ZTestCaseSlave
 
 except ImportError:  # running this module as script
@@ -26,8 +25,7 @@ except ImportError:  # running this module as script
     # to be able to locate the following imports
     sys.path.append(os.path.dirname(os.path.realpath(__file__)) + "/../..")
 
-    from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
-        TestFuncCleanUp
+    from ptsprojects.testcase import TestFunc
     from ptsprojects.mynewt.ztestcase import ZTestCase, ZTestCaseSlave
 
 
@@ -160,7 +158,6 @@ def test_cases(ptses):
 
     pts = ptses[0]
     stack = get_stack()
-    pts_bd_addr = pts.q_bd_addr
 
     out_actions = [defs.MESH_OUT_DISPLAY_NUMBER,
                    defs.MESH_OUT_DISPLAY_STRING,

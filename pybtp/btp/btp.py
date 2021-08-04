@@ -15,11 +15,6 @@
 
 """Wrapper around btp messages. The functions are added as needed."""
 
-from .mesh import MESH_EV
-from .l2cap import L2CAP_EV
-from pybtp.iutctl_common import set_event_handler
-from .gatt import GATT_EV
-from .gap import GAP_EV
 import logging
 import re
 import struct
@@ -399,6 +394,13 @@ def init(get_iut_method):
 
     get_iut = get_iut_method
     set_event_handler(event_handler)
+
+
+from .gap import GAP_EV
+from .gatt import GATT_EV
+from .l2cap import L2CAP_EV
+from .mesh import MESH_EV
+from pybtp.iutctl_common import set_event_handler
 
 
 def event_handler(hdr, data):

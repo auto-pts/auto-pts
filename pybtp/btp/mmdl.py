@@ -1379,15 +1379,6 @@ def mmdl_light_lc_property_set(prop_id, prop_val, ack=True):
             'Status: Property value = %r , Property Id = %r ', prop_val, prop_id)
 
 
-def mmdl_sensor_data_set(prop_id, prop_val):
-    logging.debug("%s", mmdl_sensor_data_set.__name__)
-
-    iutctl = get_iut()
-    data = bytearray(struct.pack("<HH", prop_id, prop_val))
-
-    iutctl.btp_socket.send_wait_rsp(*MMDL['light_lc_property_set'], data=data)
-
-
 def mmdl_sensor_data_set(sensor_id, raw_values):
     logging.debug("%s", mmdl_sensor_data_set.__name__)
 

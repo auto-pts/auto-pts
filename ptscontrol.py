@@ -757,7 +757,7 @@ class PyPTS:
         """Returns PTS bluetooth address string"""
         try:
             address = self._pts.GetPTSBluetoothAddress()
-        except Exception as e:
+        except Exception:
             address = ""
 
         if address == "":

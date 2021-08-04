@@ -16,15 +16,13 @@
 """GATT test cases"""
 
 try:
-    from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
-        TestFuncCleanUp, MMI
+    from ptsprojects.testcase import TestFunc
     from ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
 except ImportError:  # running this module as script
     import sys
     sys.path.append("../..")  # to be able to locate the following imports
 
-    from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
-        TestFuncCleanUp, MMI
+    from ptsprojects.testcase import TestFunc
     from ptsprojects.zephyr.ztestcase import ZTestCase
 
 from pybtp import btp
@@ -50,18 +48,6 @@ class Value:
 
 
 iut_attr_db_off = 0x000b
-
-
-def __get_attr_hdl_str(offset):
-    return '{0:x}'.format(iut_attr_db_off + offset, 'x')
-
-
-def __get_attr_u16_hdl_str(offset):
-    return '{0:04x}'.format(iut_attr_db_off + offset, 'x')
-
-
-def __get_attr_u16_hdl_uc_str(offset):
-    return '{0:04x}'.format(iut_attr_db_off + offset, 'X')
 
 
 def verify_gatt_sr_gpa_bv_04_c(description):
@@ -176,7 +162,6 @@ def test_cases_server(ptses):
 
     pts = ptses[0]
 
-    pts_bd_addr = pts.q_bd_addr
     stack = get_stack()
 
     pre_conditions = [TestFunc(btp.core_reg_svc_gap),

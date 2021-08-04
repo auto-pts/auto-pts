@@ -20,7 +20,6 @@ from pybtp.types import Perm, MeshVals
 import re
 import time
 from ptsprojects.stack import get_stack
-from time import sleep
 
 # Mesh ATS ver. 1.0
 
@@ -221,7 +220,6 @@ def hdl_wid_19(desc):
                  with the following network header: %s
     :return:
     """
-    stack = get_stack()
 
     # This pattern is matching Time to Live (TTL) value, Source (SRC) and
     # Destination (DST) of the network packet to be sent
@@ -244,7 +242,6 @@ def hdl_wid_20(desc):
     :param desc: Please enter a valid group address the IUT knows
     :return:
     """
-    stack = get_stack()
     return 'C000'
 
 
@@ -254,7 +251,6 @@ def hdl_wid_21(desc):
     :param desc: Please enter a valid virtual address the IUT knows
     :return:
     """
-    stack = get_stack()
     return '8000'
 
 
@@ -274,7 +270,6 @@ def hdl_wid_23(desc):
                  key with source address 0x%04X and destination address 0x%04X
     :return:
     """
-    stack = get_stack()
 
     # This pattern is matching source and destination addresses
     pattern = re.compile(
@@ -433,7 +428,6 @@ def hdl_wid_36(desc):
                  key with source address 0x%04X and destination address 0x%04X
     :return:
     """
-    stack = get_stack()
 
     # This pattern is matching source and destination addresses
     pattern = re.compile(
@@ -514,7 +508,6 @@ def hdl_wid_40(desc):
                  supported.
     :return:
     """
-    stack = get_stack()
     return True
 
 
@@ -525,7 +518,6 @@ def hdl_wid_43(desc):
                  expected.
     :return:
     """
-    stack = get_stack()
     return True
 
 
@@ -537,7 +529,6 @@ def hdl_wid_44(desc):
                  (address 0x%04X)
     :return:
     """
-    stack = get_stack()
 
     # This pattern is matching source and destination label addresses
     pattern = re.compile(
@@ -561,7 +552,6 @@ def hdl_wid_45(desc):
     :param desc: Please clear replay protection list cache.
     :return:
     """
-    stack = get_stack()
     btp.mesh_rpl_clear()
     return True
 
@@ -657,7 +647,6 @@ def hdl_wid_94(desc):
                  Refresh Flag set to %d and IV Update Flag set to %d
     :return:
     """
-    stack = get_stack()
     return True
 
 
@@ -720,7 +709,6 @@ def hdl_wid_202(desc):
                  Click OK when ready.
     :return:
     """
-    stack = get_stack()
 
     btp.mesh_iv_update_test_mode(True)
     btp.mesh_iv_update_toggle()
@@ -751,7 +739,6 @@ def hdl_wid_204(desc):
                  Index (m - 1) and new IV index (m).
     :return:
     """
-    stack = get_stack()
     return True
 
 
@@ -796,7 +783,6 @@ def hdl_wid_216(desc):
                  Network beacons (Mesh Beacon with Beacon type = 0x01).
     :return:
     """
-    stack = get_stack()
 
     btp.mesh_iv_update_test_mode(False)
 
@@ -857,7 +843,6 @@ def hdl_wid_220(desc):
                  Secure Network beacons.
     :return:
     """
-    stack = get_stack()
     return True
 
 
@@ -885,7 +870,6 @@ def hdl_wid_222(desc):
                  ready
     :return:
     """
-    stack = get_stack()
 
     btp.mesh_iv_update_toggle()
 
@@ -900,7 +884,6 @@ def hdl_wid_223(desc):
                  procedure for at least 96 hours
     :return:
     """
-    stack = get_stack()
 
     btp.mesh_iv_update_test_mode(False)
     return True
@@ -945,7 +928,6 @@ def hdl_wid_268(desc):
     :param desc: Press OK when IUT is ready for Key Refresh Procedure
     :return:
     """
-    stack = get_stack()
     return True
 
 
@@ -956,7 +938,6 @@ def hdl_wid_274(desc):
                  See Output Log for details
     :return:
     """
-    stack = get_stack()
     return True
 
 
@@ -1014,7 +995,6 @@ def hdl_wid_285(desc):
                  skipping phase 2
     :return:
     """
-    stack = get_stack()
     return True
 
 
@@ -1034,7 +1014,6 @@ def hdl_wid_303(desc):
     :param desc:
     :return:
     """
-    stack = get_stack()
 
     btp.mesh_lpn(True)
     return True
@@ -1067,7 +1046,6 @@ def hdl_wid_308(desc):
     :param desc:
     :return:
     """
-    stack = get_stack()
 
     btp.mesh_lpn_poll()
     return True
@@ -1102,7 +1080,6 @@ def hdl_wid_312(desc):
     :param desc:
     :return:
     """
-    stack = get_stack()
 
     btp.mesh_lpn_poll()
     return True
@@ -1114,7 +1091,6 @@ def hdl_wid_313(desc):
     :param desc:
     :return:
     """
-    stack = get_stack()
 
     btp.mesh_lpn_poll()
     return True
@@ -1126,7 +1102,6 @@ def hdl_wid_314(desc):
     :param desc:
     :return:
     """
-    stack = get_stack()
 
     btp.mesh_lpn_poll()
     return True
@@ -1138,7 +1113,6 @@ def hdl_wid_315(desc):
     :param desc:
     :return:
     """
-    stack = get_stack()
     btp.mesh_lpn(True)
     return True
 
@@ -1188,7 +1162,6 @@ def hdl_wid_326(desc):
     :param desc:
     :return:
     """
-    stack = get_stack()
 
     btp.mesh_lpn(False)
     return True
@@ -1473,7 +1446,6 @@ def hdl_wid_519(desc):
     :param desc: Click OK to put the IUT back into an unprovisioned state.
     :return:
     """
-    stack = get_stack()
 
     btp.mesh_reset()
     return True
@@ -1485,7 +1457,6 @@ def hdl_wid_520(desc):
     :param desc: Please configure the IUT to start advertising on all networks.
     :return:
     """
-    stack = get_stack()
 
     btp.mesh_proxy_identity()
     return True
@@ -1497,7 +1468,6 @@ def hdl_wid_521(desc):
     :param desc: Please configure the IUT to stop advertising on all networks.
     :return:
     """
-    stack = get_stack()
 
     time.sleep(60)
     return True
@@ -1680,7 +1650,6 @@ def hdl_wid_625(desc):
                  done.
     :return:
     """
-    stack = get_stack()
 
     logging.debug("CONFIG_BT_MESH_SUBNET_COUNT=1")
     return True
@@ -1692,7 +1661,6 @@ def hdl_wid_652(desc):
     :param desc: Please confirm the %s = %s.
     :return:
     """
-    stack = get_stack()
 
     # TODO: Confirm composition data
     return True

@@ -16,20 +16,17 @@
 """GAP test cases"""
 
 try:
-    from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
-        TestFuncCleanUp
+    from ptsprojects.testcase import TestFunc
     from ptsprojects.bluez.btestcase import BTestCase
 except ImportError:  # running this module as script
     import sys
     sys.path.append("../..")  # to be able to locate the following imports
 
-    from ptsprojects.testcase import TestCase, TestCmd, TestFunc, \
-        TestFuncCleanUp
+    from ptsprojects.testcase import TestFunc
     from ptsprojects.bluez.btestcase import BTestCase
 
 from pybtp import btp
-from pybtp.types import Addr, IOCap, UUID, Prop, Perm, AdType, AdFlags
-import binascii
+from pybtp.types import Addr, IOCap, UUID, Prop, Perm, AdType
 from autoptsclient_common import get_unique_name
 from ptsprojects.stack import get_stack
 from wid.gap import hdl_wid_161
@@ -84,12 +81,6 @@ def set_pixits(ptses):
     global iut_device_name
     iut_device_name = get_unique_name(pts)
 
-    ad_str_flags = str(AdType.flags).zfill(2) + \
-        str(AdFlags.br_edr_not_supp).zfill(2)
-    ad_str_flags_len = str(len(ad_str_flags) // 2).zfill(2)
-    ad_str_name_short = str(AdType.name_short).zfill(2) + \
-        binascii.hexlify(iut_device_name)
-    ad_str_name_short_len = format((len(ad_str_name_short) // 2), 'x').zfill(2)
     ad_str_manufacturer_data = str(format(AdType.manufacturer_data, 'x')).zfill(2) + \
         iut_manufacturer_data
     ad_str_manufacturer_data_len = str(len(ad_str_manufacturer_data) / 2).zfill(2)

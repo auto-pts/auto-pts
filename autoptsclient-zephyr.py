@@ -16,10 +16,6 @@
 #
 
 """Zephyr auto PTS client"""
-
-import os
-import sys
-
 import autoptsclient_common as autoptsclient
 import ptsprojects.zephyr as autoprojects
 from ptsprojects.zephyr.iutctl import get_iut

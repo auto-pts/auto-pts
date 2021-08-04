@@ -18,8 +18,6 @@
 import os
 import sys
 import atexit
-import subprocess
-import signal
 
 PROFILE = None
 TEST_CASE = None
