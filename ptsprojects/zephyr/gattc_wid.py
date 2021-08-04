@@ -19,6 +19,8 @@ import sys
 from pybtp import btp
 from ptsprojects.zephyr.gatt_wid import gatt_wid_hdl
 
+from ptsprojects.testcase import MMI
+
 
 log = logging.debug
 
