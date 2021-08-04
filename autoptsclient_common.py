@@ -1169,6 +1169,7 @@ class Client:
             except Exception as exc:
                 traceback.print_exc()
                 try:
+                    # FIXME: why would a generic Exception have ptses as args?
                     ptses = exc.args[1]
                     for pts in ptses:
                         recover_autoptsserver(pts)
