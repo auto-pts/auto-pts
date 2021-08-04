@@ -780,7 +780,7 @@ def hdl_wid_157(desc):
     btp.gap_start_discov(transport='le', discov_type='active', mode='observe')
     sleep(10)  # Give some time to discover devices
     btp.gap_stop_discov()
-    report, response = re.findall(r'[0-9]{62}', desc)
+    report, response = re.findall(r'[a-fA-F0-9]{62}', desc)
     return btp.check_scan_rep_and_rsp(report, response)
 
 
