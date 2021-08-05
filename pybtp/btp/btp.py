@@ -15,14 +15,15 @@
 
 """Wrapper around btp messages. The functions are added as needed."""
 
+from collections import namedtuple
+from uuid import UUID
 import logging
 import re
 import struct
-from collections import namedtuple
+
 from ptsprojects.stack import get_stack
 from pybtp import defs
 from pybtp.types import BTPError
-from uuid import UUID
 
 #  get IUT global method from iutctl
 get_iut = None
@@ -335,8 +336,7 @@ def core_reg_svc_rsp_succ():
     if (tuple_hdr, tuple_data) != expected_frame:
         logging.error("frames mismatch")
         raise BTPError("Unexpected response received!")
-    else:
-        logging.debug("response is valid")
+    logging.debug("response is valid")
 
 
 def core_unreg_svc_rsp_succ():
@@ -357,8 +357,7 @@ def core_unreg_svc_rsp_succ():
     if (tuple_hdr, tuple_data) != expected_frame:
         logging.error("frames mismatch")
         raise BTPError("Unexpected response received!")
-    else:
-        logging.debug("response is valid")
+    logging.debug("response is valid")
 
 
 def core_log_message(message):
@@ -381,8 +380,7 @@ def btp2uuid(uuid_len, uu):
     if uuid_len == 2:
         (uu,) = struct.unpack("H", uu)
         return format(uu, 'x').upper()
-    else:
-        return UUID(bytes=uu[::-1]).urn[9:].replace('-', '').upper()
+    return UUID(bytes=uu[::-1]).urn[9:].replace('-', '').upper()
 
 
 def get_iut_method():

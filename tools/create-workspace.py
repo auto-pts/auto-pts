@@ -24,8 +24,6 @@ ipy ./tools/create-workspace.py ./workspaces/pts_file.pts ./workspaces
 
 """
 
-import Interop.PTSControl as PTSControl
-import ptsprojects.ptstypes as ptstypes
 import os
 import re
 import sys
@@ -34,6 +32,7 @@ import logging
 import argparse
 import fileinput
 
+import Interop.PTSControl as PTSControl
 import clr
 import System
 
@@ -41,6 +40,7 @@ import System
 sys.path.insert(
     0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
+import ptsprojects.ptstypes as ptstypes
 
 # load the PTS interop assembly
 clr.AddReferenceToFile("Interop.PTSControl.dll")

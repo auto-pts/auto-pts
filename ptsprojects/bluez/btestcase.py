@@ -27,8 +27,7 @@ class BTestCase(TestCaseLT1):
     def __init__(self, *args, **kwargs):
         """Refer to TestCase.__init__ for parameters and their documentation"""
 
-        super(BTestCase, self).__init__(*args, ptsproject_name="bluez",
-                                        **kwargs)
+        super().__init__(*args, ptsproject_name="bluez", **kwargs)
 
         self.stack = get_stack()
         self.bluezctrl = get_iut()
@@ -48,6 +47,4 @@ class BTestCaseSlave(TestCaseLT2):
     def __init__(self, *args, **kwargs):
         """ Refer to TestCase.__init__ for parameters and their documentation"""
 
-        super(BTestCaseSlave, self).__init__(*args,
-                                             ptsproject_name="bluez",
-                                             **kwargs)
+        super().__init__(*args, ptsproject_name="bluez", **kwargs)

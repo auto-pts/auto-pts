@@ -68,7 +68,7 @@ def exec_adb_root():
     if not USE_ADB:
         return
 
-    """Runs "adb root" command"""
+    # Runs "adb root" command
     exec_iut_cmd("adb root", True, False)
     # it takes an instance of time to get adbd restarted with root permissions
     exec_iut_cmd("adb wait-for-device", True, False)

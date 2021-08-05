@@ -16,15 +16,14 @@
 
 """DIS test cases"""
 
-from ptsprojects.testcase import TestFunc
-from ptsprojects.zephyr.ztestcase import ZTestCase
-
 from pybtp import btp
 from pybtp.types import Addr
-from . import gatt
 from autoptsclient_common import get_unique_name
 from ptsprojects.stack import get_stack
+from ptsprojects.testcase import TestFunc
+from ptsprojects.zephyr import gatt
 from ptsprojects.zephyr.dis_wid import dis_wid_hdl
+from ptsprojects.zephyr.ztestcase import ZTestCase
 
 
 class Value:

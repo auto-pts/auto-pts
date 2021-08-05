@@ -15,15 +15,15 @@
 
 """MMDL test cases"""
 
-from ptsprojects.testcase import TestFunc
-from ptsprojects.zephyr.ztestcase import ZTestCase
+from binascii import hexlify
+from uuid import uuid4
+import random
 
 from pybtp import defs, btp
-from ptsprojects.stack import get_stack
 from wid import mmdl_wid_hdl
-from uuid import uuid4
-from binascii import hexlify
-import random
+from ptsprojects.stack import get_stack
+from ptsprojects.testcase import TestFunc
+from ptsprojects.zephyr.ztestcase import ZTestCase
 
 
 device_uuid = hexlify(uuid4().bytes)

@@ -18,11 +18,12 @@
 import binascii
 import logging
 import struct
+
 from ptsprojects.stack import get_stack
 from pybtp import defs
-from .btp import CONTROLLER_INDEX, btp_hdr_check, pts_addr_get, pts_addr_type_get, get_iut_method as get_iut
-from .gap import gap_wait_for_connection
 from pybtp.types import addr2btp_ba, L2capSecLevels
+from pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, pts_addr_get, pts_addr_type_get, get_iut_method as get_iut
+from pybtp.btp.gap import gap_wait_for_connection
 
 L2CAP = {
     "read_supp_cmds": (defs.BTP_SERVICE_ID_L2CAP,

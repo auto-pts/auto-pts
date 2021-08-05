@@ -13,9 +13,9 @@
 # more details.
 #
 
-from . import defs
-
 from binascii import unhexlify
+
+from pybtp import defs
 
 gap_settings_btp2txt = {
     defs.GAP_SETTINGS_POWERED: "Powered",
@@ -52,12 +52,10 @@ class BTPError(Exception):
     accordingly to show that BTP error has occurred.
 
     """
-    pass
 
 
 class SynchError(Exception):
     """Exception raised if cannot synchronize"""
-    pass
 
 
 class AdType:

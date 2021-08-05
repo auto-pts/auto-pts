@@ -15,14 +15,13 @@
 
 """SM test cases"""
 
-from ptsprojects.testcase import TestFunc
-from ptsprojects.bluez.btestcase import BTestCase
-
 from pybtp import btp
 from pybtp.types import Addr, IOCap
-from ptsprojects.stack import get_stack
 from autoptsclient_common import get_unique_name
-from .sm_wid import sm_wid_hdl
+from ptsprojects.stack import get_stack
+from ptsprojects.testcase import TestFunc
+from ptsprojects.bluez.btestcase import BTestCase
+from ptsprojects.bluez.sm_wid import sm_wid_hdl
 
 
 def set_pixits(ptses):

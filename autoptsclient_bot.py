@@ -16,9 +16,10 @@
 #
 import logging
 import sys
-import schedule
 import time
 import _locale
+
+import schedule
 
 from bot.config import BotProjects
 from bot.zephyr import main as zephyr
@@ -71,9 +72,9 @@ if __name__ == "__main__":
 
     try:
         main()
-        exit(0)
+        sys.exit(0)
     except KeyboardInterrupt:  # Ctrl-C
-        exit(14)
+        sys.exit(14)
     except SystemExit:
         raise
     except BaseException as e:
@@ -81,4 +82,4 @@ if __name__ == "__main__":
         import traceback
 
         traceback.print_exc()
-        exit(16)
+        sys.exit(16)

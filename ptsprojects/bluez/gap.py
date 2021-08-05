@@ -15,15 +15,14 @@
 
 """GAP test cases"""
 
-from ptsprojects.testcase import TestFunc
-from ptsprojects.bluez.btestcase import BTestCase
-
 from pybtp import btp
 from pybtp.types import Addr, IOCap, UUID, Prop, Perm, AdType
 from autoptsclient_common import get_unique_name
-from ptsprojects.stack import get_stack
 from wid.gap import hdl_wid_161
-from .gap_wid import gap_wid_hdl
+from ptsprojects.stack import get_stack
+from ptsprojects.testcase import TestFunc
+from ptsprojects.bluez.btestcase import BTestCase
+from ptsprojects.bluez.gap_wid import gap_wid_hdl
 
 
 class SVC:

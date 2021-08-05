@@ -15,8 +15,7 @@
 
 """Test case that manages Zephyr IUT"""
 
-from ptsprojects.testcase import TestCaseLT1, TestCaseLT2, TestFunc, \
-    TestFuncCleanUp
+from ptsprojects.testcase import TestCaseLT1, TestCaseLT2, TestFunc, TestFuncCleanUp
 from ptsprojects.stack import get_stack
 from ptsprojects.zephyr.iutctl import get_iut
 
@@ -27,8 +26,7 @@ class ZTestCase(TestCaseLT1):
     def __init__(self, *args, **kwargs):
         """Refer to TestCase.__init__ for parameters and their documentation"""
 
-        super(ZTestCase, self).__init__(*args, ptsproject_name="zephyr",
-                                        **kwargs)
+        super().__init__(*args, ptsproject_name="zephyr", **kwargs)
 
         self.stack = get_stack()
         self.zephyrctl = get_iut()
@@ -48,5 +46,4 @@ class ZTestCaseSlave(TestCaseLT2):
     def __init__(self, *args, **kwargs):
         """Refer to TestCase.__init__ for parameters and their documentation"""
 
-        super(ZTestCaseSlave, self).__init__(*args, ptsproject_name="zephyr",
-                                             **kwargs)
+        super().__init__(*args, ptsproject_name="zephyr", **kwargs)

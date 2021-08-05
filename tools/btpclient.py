@@ -15,10 +15,6 @@
 # more details.
 #
 
-from pybtp import defs, btp
-from pybtp.iutctl_common import BTPSocket
-from ptsprojects.zephyr.iutctl import get_qemu_cmd, BTP_ADDRESS
-from ptsprojects.testcase import AbstractMethodException
 import os
 import sys
 import socket
@@ -36,6 +32,11 @@ from distutils.spawn import find_executable
 # to be able to find ptsprojects module
 sys.path.insert(
     0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from pybtp import defs, btp
+from pybtp.iutctl_common import BTPSocket
+from ptsprojects.zephyr.iutctl import get_qemu_cmd, BTP_ADDRESS
+from ptsprojects.testcase import AbstractMethodException
 
 BTP_SOCKET = None
 QEMU_PROCESS = None

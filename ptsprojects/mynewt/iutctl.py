@@ -157,7 +157,6 @@ class MynewtCtlStub:
 
     def __init__(self):
         """Constructor."""
-        pass
 
     def start(self):
         """Starts the Mynewt OS"""

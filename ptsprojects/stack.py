@@ -15,8 +15,7 @@
 
 import logging
 from threading import Lock, Timer, Event
-from pybtp.types import AdType
-
+from pybtp.types import AdType, Addr
 
 STACK = None
 
@@ -72,11 +71,10 @@ class GattDB:
     def attr_lookup_handle(self, handle):
         if handle in self.db:
             return self.db[handle]
-        else:
-            return None
+        return None
 
 
-class Property(object):
+class Property:
     def __init__(self, data):
         self._lock = Lock()
         self.data = data
@@ -192,7 +190,7 @@ class Gap:
         return False
 
     def is_connected(self):
-        return False if (self.connected.data is None) else True
+        return self.connected.data
 
     def current_settings_set(self, key):
         if key in self.current_settings.data:
@@ -211,25 +209,22 @@ class Gap:
     def current_settings_get(self, key):
         if key in self.current_settings.data:
             return self.current_settings.data[key]
-        else:
-            logging.error("%s %s not in current_settings",
-                          self.current_settings_get.__name__, key)
-            return False
+        logging.error("%s %s not in current_settings",
+                      self.current_settings_get.__name__, key)
+        return False
 
     def iut_addr_get_str(self):
         addr = self.iut_bd_addr.data["address"]
         if addr:
             return addr.decode("utf-8")
-        else:
-            return "000000000000"
+        return "000000000000"
 
     def iut_addr_set(self, addr, addr_type):
         self.iut_bd_addr.data["address"] = addr
         self.iut_bd_addr.data["type"] = addr_type
 
     def iut_addr_is_random(self):
-        # FIXME: Do not use hard-coded 0x01 <-> le_random
-        return True if self.iut_bd_addr.data["type"] == 0x01 else False
+        return self.iut_bd_addr.data["type"] == Addr.le_random
 
     def iut_has_privacy(self):
         return self.current_settings_get("Privacy")
@@ -333,30 +328,28 @@ class Mesh:
             self.recv_status_data.data[key] = data
         else:
             logging.error("%s %s not in store data",
-                          self.recv_status_data.__name__, key)
+                          self.recv_status_data_set.__name__, key)
 
     def recv_status_data_get(self, key):
         if key in self.recv_status_data.data:
             return self.recv_status_data.data[key]
-        else:
-            logging.error("%s %s not in store data",
-                          self.recv_status_data.__name__, key)
-            return False
+        logging.error("%s %s not in store data",
+                      self.recv_status_data_get.__name__, key)
+        return False
 
     def expect_status_data_set(self, key, data):
         if key in self.expect_status_data.data:
             self.expect_status_data.data[key] = data
         else:
             logging.error("%s %s not in store data",
-                          self.expect_status_data.__name__, key)
+                          self.expect_status_data_set.__name__, key)
 
     def expect_status_data_get(self, key):
         if key in self.expect_status_data.data:
             return self.expect_status_data.data[key]
-        else:
-            logging.error("%s %s not in store data",
-                          self.expect_status_data.__name__, key)
-            return False
+        logging.error("%s %s not in store data",
+                      self.expect_status_data_get.__name__, key)
+        return False
 
     def proxy_identity_enable(self):
         self.proxy_identity = True

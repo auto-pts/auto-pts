@@ -33,7 +33,7 @@ from . import ptstypes
 log = logging.debug
 
 
-class MmiParser(object):
+class MmiParser:
     """"Interface to parsing arguments from description of MMI
 
     It is assumed that all arguments in description are enclosed in single
@@ -261,7 +261,6 @@ class TestFunc:
 
     def stop(self):
         """Does nothing, since not easy job to stop a function"""
-        pass
 
     def __str__(self):
         """Returns string representation"""
@@ -274,7 +273,6 @@ class TestFunc:
 
 class TestFuncCleanUp(TestFunc):
     """Clean-up function that is invoked after running test case in PTS."""
-    pass
 
 
 def is_cleanup_func(func):
@@ -284,10 +282,9 @@ def is_cleanup_func(func):
 
 class AbstractMethodException(Exception):
     """Exception raised if an abstract method is called."""
-    pass
 
 
-class PTSCallback(object):
+class PTSCallback:
     """Base class for PTS callback implementors"""
 
     def __init__(self):
@@ -502,8 +499,7 @@ class TestCase(PTSCallback):
                                 my_response = no_response
                                 log("%r not found, skipping...", x)
                                 break  # for x in verify:
-                            else:
-                                my_response = yes_response
+                            my_response = yes_response
 
                         # If all elements in the list have been successfully
                         # verified, break here
@@ -513,8 +509,7 @@ class TestCase(PTSCallback):
                         if verify.upper() not in description.upper():
                             my_response = no_response
                             break
-                        else:
-                            my_response = yes_response
+                        my_response = yes_response
 
             if my_response is yes_response:
                 log("All verifications passed")
@@ -612,6 +607,7 @@ class TestCase(PTSCallback):
             try:
                 cmd.start()
             except Exception as e:
+                logging.exception(e)
                 self.thread_exception.put(sys.exc_info()[1])
                 log("Caught exception in post_wid_thread %r", e)
                 break
@@ -648,12 +644,10 @@ class TestCase(PTSCallback):
         if response == "WAIT":
             return response
 
-        if style == ptstypes.MMI_Style_Edit1 \
-                or style == ptstypes.MMI_Style_Edit2:
+        if style in (ptstypes.MMI_Style_Edit1, ptstypes.MMI_Style_Edit2):
             return str(response)
 
-        if style == ptstypes.MMI_Style_Ok_Cancel1 \
-                or style == ptstypes.MMI_Style_Ok_Cancel2:
+        if style in (ptstypes.MMI_Style_Ok_Cancel1, ptstypes.MMI_Style_Ok_Cancel2):
             return "OK" if response else "Cancel"
 
         if style == ptstypes.MMI_Style_Yes_No1:
@@ -662,16 +656,17 @@ class TestCase(PTSCallback):
         if style == ptstypes.MMI_Style_Yes_No_Cancel1:
             if response is None:
                 return "Cancel"
-            elif response:
+            if response:
                 return "Yes"
-            else:
-                return "No"
+            return "No"
 
         if style == ptstypes.MMI_Style_Ok:
             return "Ok"
 
         if style == ptstypes.MMI_Style_Abort_Retry1:
             return "Retry" if response else "Abort"
+
+        return "Cancel"
 
     def on_implicit_send(self, project_name, wid, test_case_name, description,
                          style):
@@ -710,7 +705,7 @@ class TestCase(PTSCallback):
 
         # if there are post wid TestFunc waiting run those in separate
         # thread
-        if len(self.post_wid_queue):
+        if self.post_wid_queue:
             log("Running post_wid test functions")
             self.post_wid_thread = Thread(None, self.run_post_wid_cmds)
             self.post_wid_thread.start()
@@ -819,14 +814,14 @@ class TestCaseLT1(TestCase):
     def copy(self):
         """Copy constructor"""
 
-        test_case = super(TestCaseLT1, self).copy()
+        test_case = super().copy()
         test_case.name_lt2 = self.name_lt2
 
         return test_case
 
     def __init__(self, *args, **kwargs):
         name_lt2 = kwargs.pop('lt2', None)
-        super(TestCaseLT1, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.name_lt2 = name_lt2
 
 

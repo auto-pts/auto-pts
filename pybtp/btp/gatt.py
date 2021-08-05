@@ -18,12 +18,12 @@
 import binascii
 import logging
 import struct
+
 from ptsprojects.stack import GattCharacteristic
-from pybtp.types import Perm
 from pybtp import defs
-from .btp import btp_hdr_check, CONTROLLER_INDEX, get_iut_method as get_iut, btp2uuid
-from .gap import gap_wait_for_connection
-from pybtp.types import BTPError, addr2btp_ba
+from pybtp.types import BTPError, addr2btp_ba, Perm
+from pybtp.btp.btp import btp_hdr_check, CONTROLLER_INDEX, get_iut_method as get_iut, btp2uuid
+from pybtp.btp.gap import gap_wait_for_connection
 
 #  Global temporary objects
 GATT_SVCS = None
@@ -594,6 +594,7 @@ def gattc_disc_all_chrc_find_attrs_rsp(exp_chars, store_attrs=False):
     for char in chars_list:
         for exp_char in exp_chars:
             # Check if option expected attribute parameters match
+            # TODO: Use class and a comparison method
             if ((exp_char[0] and exp_char[0] != char[0]) or
                     (exp_char[1] and exp_char[1] != char[1]) or
                     (exp_char[2] and exp_char[2] != char[2]) or
@@ -1294,6 +1295,7 @@ def gattc_disc_prim_uuid_find_attrs_rsp(exp_svcs, store_attrs=False):
     for svc in svcs_list:
         for exp_svc in exp_svcs:
             # Check if option expected attribute parameters match
+            # TODO: Use class and a comparison method
             if ((exp_svc[0] and exp_svc[0] != svc[0]) or
                     (exp_svc[1] and exp_svc[1] != svc[1]) or
                     (exp_svc[2] and exp_svc[2] != svc[2])):

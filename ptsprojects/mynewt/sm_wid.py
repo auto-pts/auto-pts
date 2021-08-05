@@ -15,11 +15,12 @@
 
 import logging
 import sys
-from time import sleep
-from .iutctl import get_iut
-from ptsprojects.stack import get_stack
+import time
+
 from pybtp import btp
 from wid.sm import sm_wid_hdl as gen_wid_hdl
+from ptsprojects.stack import get_stack
+from ptsprojects.mynewt.iutctl import get_iut
 
 log = logging.debug
 
@@ -43,7 +44,7 @@ def hdl_wid_100(desc):
 
 
 def hdl_wid_102(desc):
-    sleep(2)
+    time.sleep(2)
     btp.gap_disconn()
     return True
 

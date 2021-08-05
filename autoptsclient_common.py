@@ -16,7 +16,6 @@
 #
 
 """Common code for the auto PTS clients"""
-import _locale
 import argparse
 import datetime
 import errno
@@ -37,6 +36,7 @@ import xmlrpc.client
 from distutils.spawn import find_executable
 from xmlrpc.server import SimpleXMLRPCServer
 
+import _locale
 from termcolor import colored
 
 import ptsprojects.ptstypes as ptstypes
@@ -147,9 +147,9 @@ class ClientCallback(PTSCallback):
 
         logger = logging.getLogger("{}.{}".format(self.__class__.__name__,
                                                   self.log.__name__))
-        logger.info("%s %s %s %s %s" % (ptstypes.PTS_LOGTYPE_STRING[log_type],
-                                        logtype_string, log_time, test_case_name,
-                                        log_message))
+        logger.info("%s %s %s %s %s", ptstypes.PTS_LOGTYPE_STRING[log_type],
+                    logtype_string, log_time, test_case_name,
+                    log_message)
 
         try:
             if test_case_name in RUNNING_TEST_CASE:
@@ -185,10 +185,10 @@ class ClientCallback(PTSCallback):
 
         logger.info("*" * 20)
         logger.info("BEGIN OnImplicitSend:")
-        logger.info("project_name: %s" % project_name)
-        logger.info("wid: %s" % wid)
-        logger.info("test_case_name: %s" % test_case_name)
-        logger.info("description: %s" % description)
+        logger.info("project_name: %s", project_name)
+        logger.info("wid: %s", wid)
+        logger.info("test_case_name: %s", test_case_name)
+        logger.info("description: %s", description)
         logger.info("style: %s 0x%x", ptstypes.MMI_STYLE_STRING[style], style)
 
         try:
@@ -204,7 +204,7 @@ class ClientCallback(PTSCallback):
                         testcase_response)
 
         except Exception as e:
-            logging.exception("OnImplicitSend caught exception {}".format(e))
+            logging.exception("OnImplicitSend caught exception %s", e)
             self.exception.put(sys.exc_info()[1])
 
             # exit does not work, cause app is blocked in PTS.RunTestCase?
@@ -342,12 +342,12 @@ def init_logging(tag=""):
                         level=logging.DEBUG)
 
 
-class FakeProxy(object):
+class FakeProxy:
     """Fake PTS XML-RPC proxy client.
 
     Usefull when testing code locally and auto-pts server is not needed"""
 
-    class System(object):
+    class System:
         def listMethods(self):
             pass
 
@@ -509,15 +509,14 @@ def reinit_pts(ptses, args, tc_db_table_name=None):
 def get_result_color(status):
     if status == "PASS":
         return "green"
-    elif status == "FAIL":
+    if status == "FAIL":
         return "red"
-    elif status == "INCONC":
+    if status == "INCONC":
         return "yellow"
-    else:
-        return "white"
+    return "white"
 
 
-class TestCaseRunStats(object):
+class TestCaseRunStats:
     def __init__(self, projects, test_cases, retry_count, db=None):
 
         self.run_count_max = retry_count + 1  # Run test at least once
@@ -570,11 +569,7 @@ class TestCaseRunStats(object):
 
         elem.attrib["status"] = status
 
-        if elem.attrib["status"] != "PASS" and \
-                elem.attrib["status_previous"] == "PASS":
-            regression = True
-        else:
-            regression = False
+        regression = bool(elem.attrib["status"] != "PASS" and elem.attrib["status_previous"] == "PASS")
 
         elem.attrib["regression"] = str(regression)
         elem.attrib["run_count"] = str(run_count + 1)
@@ -1156,7 +1151,7 @@ class Client:
 
             # os._exit: not the cleanest but the easiest way to exit the server thread
             except KeyboardInterrupt:  # Ctrl-C
-                exit(14)
+                sys.exit(14)
 
             # SystemExit is thrown in arg_parser.parse_args and in sys.exit
             except SystemExit:
@@ -1176,7 +1171,7 @@ class Client:
 
             except BaseException as e:
                 logging.exception(e)
-                exit(16)
+                sys.exit(16)
 
     def main(self):
         """Main."""
@@ -1224,7 +1219,7 @@ class Client:
             pts.unregister_xmlrpc_ptscallback()
 
         # not the cleanest but the easiest way to exit the server thread
-        exit(0)
+        sys.exit(0)
 
     def parse_args(self):
         """Parses command line arguments and options"""

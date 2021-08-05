@@ -15,14 +15,13 @@
 
 """L2CAP test cases"""
 
-from ptsprojects.testcase import TestFunc
-from ptsprojects.mynewt.ztestcase import ZTestCase
-
+from autoptsclient_common import get_unique_name
 from pybtp import btp
 from pybtp.types import Addr
-from ptsprojects.stack import get_stack, L2cap
-from autoptsclient_common import get_unique_name
 from wid import l2cap_wid_hdl
+from ptsprojects.stack import get_stack, L2cap
+from ptsprojects.testcase import TestFunc
+from ptsprojects.mynewt.ztestcase import ZTestCase
 
 
 le_psm = 128

@@ -13,23 +13,23 @@
 # more details.
 #
 
-import os
 import logging
+import os
+import queue
+import signal
 import socket
+import subprocess
 import sys
 import threading
-import signal
-import subprocess
-import serial
 import time
+import serial
 if sys.platform != "win32":
     from fcntl import fcntl, F_GETFL, F_SETFL
     from os import O_NONBLOCK
-import queue
 
-from . import defs
-from .types import BTPError
-from .parser import enc_frame, dec_hdr, dec_data, HDR_LEN
+from pybtp import defs
+from pybtp.types import BTPError
+from pybtp.parser import enc_frame, dec_hdr, dec_data, HDR_LEN
 
 log = logging.debug
 
@@ -46,7 +46,7 @@ def set_event_handler(event_handler):
     EVENT_HANDLER = event_handler
 
 
-class BTPSocket(object):
+class BTPSocket:
 
     def __init__(self):
         self.sock = None
@@ -134,7 +134,6 @@ class BTPSocket(object):
             self.sock.close()
         except BaseException as e:
             logging.exception(e)
-            pass
         self.sock = None
         self.conn = None
         self.addr = None
@@ -142,7 +141,7 @@ class BTPSocket(object):
 
 class BTPWorker(BTPSocket):
     def __init__(self):
-        super(BTPWorker, self).__init__()
+        super().__init__()
 
         self._rx_queue = queue.Queue()
         self._running = threading.Event()
@@ -154,7 +153,7 @@ class BTPWorker(BTPSocket):
     def _rx_task(self):
         while self._running.is_set():
             try:
-                data = super(BTPWorker, self).read(timeout=1.0)
+                data = super().read(timeout=1.0)
 
                 hdr = data[0]
                 if hdr.op >= 0x80:
@@ -197,7 +196,7 @@ class BTPWorker(BTPSocket):
 
     def send_wait_rsp(self, svc_id, op, ctrl_index, data, cb=None,
                       user_data=None):
-        super(BTPWorker, self).send(svc_id, op, ctrl_index, data)
+        super().send(svc_id, op, ctrl_index, data)
         ret = True
 
         while ret:
@@ -233,7 +232,7 @@ class BTPWorker(BTPSocket):
     def accept(self, timeout=10.0):
         logging.debug("%s", self.accept.__name__)
 
-        super(BTPWorker, self).accept(timeout)
+        super().accept(timeout)
 
         self._running.set()
         self._rx_worker.start()
@@ -246,7 +245,7 @@ class BTPWorker(BTPSocket):
 
         self._reset_rx_queue()
 
-        super(BTPWorker, self).close()
+        super().close()
 
     def register_event_handler(self, event_handler):
         self.event_handler_cb = event_handler

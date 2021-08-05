@@ -16,6 +16,7 @@
 
 import logging
 import sys
+
 from wid.dis import dis_wid_hdl as gen_wid_hdl
 
 log = logging.debug
