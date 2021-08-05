@@ -16,10 +16,11 @@
 import logging
 import sys
 import socket
-from pybtp import btp
-from ptsprojects.stack import get_stack
 from time import sleep
+
+from pybtp import btp
 from wid.gap import gap_wid_hdl as gen_wid_hdl, hdl_wid_139_mode1_lvl2
+from ptsprojects.stack import get_stack
 
 log = logging.debug
 
@@ -42,8 +43,7 @@ def gap_wid_hdl_failed_read(wid, description, test_case_name):
         log("%s, %r, %r, %s", gap_wid_hdl_failed_read.__name__, wid, description,
             test_case_name)
         return hdl_wid_112_timeout(description)
-    else:
-        return gap_wid_hdl(wid, description, test_case_name)
+    return gap_wid_hdl(wid, description, test_case_name)
 
 
 # For tests in SC only, mode 1 level 3
@@ -52,8 +52,7 @@ def gap_wid_hdl_mode1_lvl2(wid, description, test_case_name):
         log("%s, %r, %r, %s", gap_wid_hdl_mode1_lvl2.__name__, wid, description,
             test_case_name)
         return hdl_wid_139_mode1_lvl2(description)
-    else:
-        return gap_wid_hdl(wid, description, test_case_name)
+    return gap_wid_hdl(wid, description, test_case_name)
 
 
 def hdl_wid_79(desc):
@@ -99,7 +98,7 @@ def hdl_wid_112_timeout(desc):
 
 
 def hdl_wid_204(desc):
-    btp.gap_start_discov(type='passive', mode='observe')
+    btp.gap_start_discov(discov_type='passive', mode='observe')
     sleep(10)
     btp.gap_stop_discov()
     return btp.check_discov_results(addr_type=0x02)

@@ -26,6 +26,11 @@ case a new description parsing is added.
 import sys
 import os
 
+# to be able to find ptsprojects module
+sys.path.insert(
+    0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from ptsprojects.testcase import MmiParser
 
 descriptions = [
 
@@ -41,7 +46,6 @@ descriptions = [
       "Description: Verify that the Implementation Under Test (IUT) can send data according to negotiate MTU size."),
      ['00D3', '45']),
 
-
     # project_name: GATT
     # wid: 27
     # test_case_name: TC_GAD_CL_BV_04_C
@@ -55,7 +59,6 @@ descriptions = [
       "Description: Verify that the Implementation Under Test (IUT) "
       "can send Discover all charactieristics of a service."),
      ["180A", "0x0030", "0x0047"]),
-
 
     # project_name: GATT
     # wid: 20
@@ -74,7 +77,6 @@ descriptions = [
       "Services UUID = '0000-A00C-0000-0000-0123-4567-89AB-CDEF'O."),
      ["0000-A00C-0000-0000-0123-4567-89AB-CDEF",
       "0000-A00C-0000-0000-0123-4567-89AB-CDEF"]),
-
 
     # project_name: GATT
     # wid: 52
@@ -95,7 +97,6 @@ descriptions = [
       "Description: Verify that the Implementation Under Test (IUT) can send Read long characteristic "
       "to PTS random select adopted database."),
      ["cd", "11223344556677889900123456789012345678901234567890123456789011223344556677889900112233"]),
-
 
     # this one is more of a verfication, than descripion that needs to be parsed
     # by MmiParser
@@ -125,19 +126,12 @@ descriptions = [
       "Click Yes if IUT receive it, otherwise click No.\n\n"
       "Description: Verify that the Implementation Under Test (IUT) "
       "can send Discover all include services in database."),
-        ["0x0002", "0x0080", "0x0085", "0x3C3A",
-         "0x0021", "0x0001", "0x0006", "0x2805",
-         "0x0091", "0x0001", "0x0006", "0x2805"])
+     ["0x0002", "0x0080", "0x0085", "0x3C3A",
+      "0x0021", "0x0001", "0x0006", "0x2805",
+      "0x0091", "0x0001", "0x0006", "0x2805"])
 ]
 
-
 if __name__ == '__main__':
-    # to be able to find ptsprojects module
-    sys.path.insert(
-        0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
-    from ptsprojects.testcase import MmiParser
-
     print("Descriptions:")
     for item in descriptions:
         print(item, "\n")

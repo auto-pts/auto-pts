@@ -18,9 +18,10 @@
 import binascii
 import logging
 import struct
+
 from ptsprojects.stack import get_stack
 from pybtp import defs
-from .btp import CONTROLLER_INDEX, get_iut_method as get_iut
+from pybtp.btp.btp import CONTROLLER_INDEX, get_iut_method as get_iut
 
 MMDL = {
     "read_supp_cmds": (defs.BTP_SERVICE_ID_MMDL,
@@ -1523,26 +1524,26 @@ def mmdl_light_ctl_temp_range_get():
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['light_ctl_temp_range_get'])
 
     hdr_fmt = '<BHH'
-    status, min, max = struct.unpack_from(hdr_fmt, rsp)
+    status, range_min, range_max = struct.unpack_from(hdr_fmt, rsp)
     stack = get_stack()
-    stack.mesh.recv_status_data_set('Status', [status, min, max])
+    stack.mesh.recv_status_data_set('Status', [status, range_min, range_max])
     logging.debug('Status: %r', stack.mesh.recv_status_data_get("Status"))
 
 
-def mmdl_light_ctl_temp_range_set(min, max, ack=True):
+def mmdl_light_ctl_temp_range_set(range_min, range_max, ack=True):
     logging.debug("%s", mmdl_light_ctl_temp_range_set.__name__)
 
     iutctl = get_iut()
-    data = bytearray(struct.pack("<BHH", ack, min, max))
+    data = bytearray(struct.pack("<BHH", ack, range_min, range_max))
 
     (rsp,) = iutctl.btp_socket.send_wait_rsp(
         *MMDL['light_ctl_temp_range_set'], data=data)
 
     if ack:
         hdr_fmt = '<BHH'
-        status, min, max = struct.unpack_from(hdr_fmt, rsp)
+        status, range_min, range_max = struct.unpack_from(hdr_fmt, rsp)
         stack = get_stack()
-        stack.mesh.recv_status_data_set('Status', [min, max])
+        stack.mesh.recv_status_data_set('Status', [range_min, range_max])
         logging.debug('Status: %r', stack.mesh.recv_status_data_get("Status"))
 
 

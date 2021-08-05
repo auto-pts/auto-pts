@@ -13,19 +13,20 @@
 # more details.
 #
 
-import logging
-import sys
-from pybtp import btp
-import re
-import struct
 from binascii import hexlify
+from random import randint
+from time import sleep
+import logging
+import re
+import socket
+import struct
+import sys
+
+from pybtp import btp
 from pybtp.types import Prop, Perm, IOCap, UUID
+from ptsprojects.testcase import MMI
 from ptsprojects.stack import get_stack, GattPrimary, GattService, GattSecondary, GattServiceIncluded, \
     GattCharacteristic, GattCharacteristicDescriptor, GattDB
-from time import sleep
-from ptsprojects.testcase import MMI
-import socket
-from random import randint
 
 log = logging.debug
 
@@ -48,8 +49,7 @@ def gatt_wid_hdl_no_write_rsp_check(wid, description, test_case_name):
         log("%s, %r, %r, %s", gatt_wid_hdl_no_write_rsp_check.__name__, wid, description,
             test_case_name)
         return hdl_wid_76_no_rsp_check(description)
-    else:
-        return gatt_wid_hdl(wid, description, test_case_name)
+    return gatt_wid_hdl(wid, description, test_case_name)
 
 
 def gatt_server_fetch_db():
@@ -68,7 +68,7 @@ def gatt_server_fetch_db():
 
         att_rsp, val_len, val = attr_val
 
-        if type_uuid == '2800' or type_uuid == '2801':
+        if type_uuid in ('2800', '2801'):
             uuid = btp.btp2uuid(val_len, val)
 
             if type_uuid == '2800':
@@ -182,9 +182,8 @@ def hdl_wid_17(desc):
             iut_services.remove(service)
             logging.debug("Service %s found", service)
             continue
-        else:
-            logging.error("Service %s not found", service)
-            return False
+        logging.error("Service %s not found", service)
+        return False
     return True
 
 
@@ -278,16 +277,15 @@ def hdl_wid_22(desc):
         if uuid in uuids_from_parse:
             logging.debug("UUUID %r present", uuid)
             continue
-        else:
-            logging.debug("UUID %r not present", uuid)
-            return False
+        logging.debug("UUID %r not present", uuid)
+        return False
+
     for handle in parsed_handles:
         if handle in parsed_handles:
             logging.debug("Handle %r present", handle)
             continue
-        else:
-            logging.debug("Handle $r not present", handle)
-            return False
+        logging.debug("Handle %r not present", handle)
+        return False
 
     return True
 
@@ -308,14 +306,14 @@ def hdl_wid_23(desc):
     iut_services = []
 
     # [start_hdl, end_hdl, uuid]
-    iut_service = None
+    iut_service = []
 
     # Get all primary services
     attrs = btp.gatts_get_attrs(type_uuid='2800')
     for attr in attrs:
         start_handle, perm, type_uuid = attr
 
-        if iut_service is not None:
+        if iut_service:
             iut_service[1] = start_handle - 1
             iut_services.append(iut_service)
             iut_service = None
@@ -335,9 +333,8 @@ def hdl_wid_23(desc):
             iut_services.remove(service)
             logging.debug("Service %r found", service)
             continue
-        else:
-            logging.error("Service %r not found", service)
-            return False
+        logging.error("Service %r not found", service)
+        return False
 
     return True
 
@@ -348,25 +345,27 @@ def hdl_wid_24(desc):
 
     db = gatt_server_fetch_db()
 
-    if MMI.args:
-        incl_handle = int(MMI.args[1], 16)
-        attr = db.attr_lookup_handle(incl_handle)
-        if attr is None or not isinstance(attr, GattService):
-            logging.error("service not found")
-            return False
+    if not MMI.args:
+        return False
 
-        incl_uuid = attr.uuid
-        attr = db.attr_lookup_handle(int(MMI.args[0], 16))
-        if attr is None or not isinstance(attr, GattServiceIncluded):
-            logging.error("included not found")
-            return False
+    incl_handle = int(MMI.args[1], 16)
+    attr = db.attr_lookup_handle(incl_handle)
+    if attr is None or not isinstance(attr, GattService):
+        logging.error("service not found")
+        return False
 
-        if attr.end_grp_hdl != int(MMI.args[2], 16) \
-                or incl_uuid != MMI.args[3]:
-            logging.error("end group handle not found")
-            return False
+    incl_uuid = attr.uuid
+    attr = db.attr_lookup_handle(int(MMI.args[0], 16))
+    if attr is None or not isinstance(attr, GattServiceIncluded):
+        logging.error("included not found")
+        return False
 
-        return True
+    if attr.end_grp_hdl != int(MMI.args[2], 16) \
+            or incl_uuid != MMI.args[3]:
+        logging.error("end group handle not found")
+        return False
+
+    return True
 
 
 def hdl_wid_25(desc):
@@ -965,7 +964,7 @@ def hdl_wid_92(desc):
     # delay to let the PTS subscribe for notifications
     sleep(2)
 
-    btp.gatts_set_val(handle, hexlify(value)),
+    btp.gatts_set_val(handle, hexlify(value))
 
     return True
 
@@ -1003,7 +1002,7 @@ def hdl_wid_98(desc):
     # delay to let the PTS subscribe for notifications
     sleep(2)
 
-    btp.gatts_set_val(handle, hexlify(value)),
+    btp.gatts_set_val(handle, hexlify(value))
 
     return True
 
@@ -1039,7 +1038,7 @@ def hdl_wid_102(desc):
         logging.error("parsing error")
         return False
 
-    params = dict([(k.upper(), v) for k, v in params])
+    params = {k.upper(): v for (k, v) in params}
     db = gatt_server_fetch_db()
 
     if "INCLUDED SERVICE ATTRIBUTE HANDLE" in params:
@@ -1104,7 +1103,7 @@ def hdl_wid_104(desc):
         logging.error("parsing error")
         return False
 
-    params = dict([(k.upper(), v) for k, v in params])
+    params = {k.upper(): v for (k, v) in params}
     db = gatt_server_fetch_db()
 
     attr = db.attr_lookup_handle(int(params.get('ATTRIBUTE HANDLE'), 16))
@@ -1200,7 +1199,7 @@ def hdl_wid_110(desc):
             continue
 
         handle, perm, type_uuid = chrc_value_attr[0]
-        if not (perm & Perm.read) or not (prop & Prop.read):
+        if not perm & Perm.read or not prop & Prop.read:
             return '{0:04x}'.format(handle)
 
     return '0000'
@@ -1230,7 +1229,7 @@ def hdl_wid_111(desc):
             continue
 
         handle, perm, type_uuid = chrc_value_attr[0]
-        if not (perm & Perm.read) or not (prop & Prop.read):
+        if not perm & Perm.read or not prop & Prop.read:
             return btp.btp2uuid(uuid_len, chrc_uuid)
 
     return '0000'
@@ -1452,7 +1451,7 @@ def hdl_wid_120(desc):
             continue
 
         handle, perm, type_uuid = chrc_value_attr[0]
-        if not (perm & Perm.write) or not (prop & Prop.write):
+        if not perm & Perm.write or not prop & Prop.write:
             return '{0:04x}'.format(handle)
 
     return '0000'
@@ -1653,10 +1652,7 @@ def hdl_wid_139(desc):
         return False
 
     read_val = btp.gatts_get_attr_val(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl)
-    if read_val == COMPARED_VALUE[0]:
-        return True
-    else:
-        return False
+    return bool(read_val == COMPARED_VALUE[0])
 
 
 def hdl_wid_151(desc):
@@ -1743,10 +1739,7 @@ def hdl_wid_304(desc):
     val = MMI.args[1]
     _, _, data = btp.gatts_get_attr_val(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl)
     data = hexlify(data).decode().upper()
-    if data in val:
-        return True
-    else:
-        return False
+    return bool(data in val)
 
 
 def hdl_wid_400(desc):

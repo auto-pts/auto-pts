@@ -15,9 +15,9 @@
 
 import logging
 import sys
-from pybtp import btp
 
-from .gatt_wid import gatt_wid_hdl
+from pybtp import btp
+from ptsprojects.zephyr.gatt_wid import gatt_wid_hdl
 
 
 log = logging.debug

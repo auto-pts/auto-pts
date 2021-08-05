@@ -34,20 +34,22 @@ Cause of tight coupling with PTS, this module is Windows specific
 """
 
 import os
-import wmi
 import sys
 import time
 import logging
 import argparse
 import shutil
+import xmlrpc.client
+import ctypes
+from pathlib import Path
+
 import win32com.client
 import win32com.server.connect
 import win32com.server.util
-import xmlrpc.client
 import pythoncom
+import wmi
+
 import ptsprojects.ptstypes as ptstypes
-import ctypes
-from pathlib import Path
 
 log = logging.debug
 
@@ -68,7 +70,7 @@ class PTSLogger(win32com.server.connect.ConnectableServer):
 
     def __init__(self):
         """"Constructor"""
-        super(PTSLogger, self).__init__()
+        super().__init__()
 
         self._callback = None
         self._maximum_logging = False
@@ -103,7 +105,7 @@ class PTSLogger(win32com.server.connect.ConnectableServer):
 
         logger = logging.getLogger(self.__class__.__name__)
 
-        logger.info("%d %s %s %s" % (log_type, logtype_string, log_time, log_message))
+        logger.info("%d %s %s %s", log_type, logtype_string, log_time, log_message)
 
         try:
             if self._callback is not None:
@@ -124,7 +126,7 @@ class PTSSender(win32com.server.connect.ConnectableServer):
 
     def __init__(self):
         """"Constructor"""
-        super(PTSSender, self).__init__()
+        super().__init__()
 
         self._callback = None
 
@@ -156,10 +158,10 @@ class PTSSender(win32com.server.connect.ConnectableServer):
 
         logger.info("*" * 20)
         logger.info("BEGIN OnImplicitSend:")
-        logger.info("project_name: %s %s" % (project_name, type(project_name)))
-        logger.info("wid: %d %s" % (wid, type(wid)))
-        logger.info("test_case_name: %s %s" % (test_case, type(test_case)))
-        logger.info("description: %s %s" % (description, type(description)))
+        logger.info("project_name: %s %s", project_name, type(project_name))
+        logger.info("wid: %d %s", wid, type(wid))
+        logger.info("test_case_name: %s %s", test_case, type(test_case))
+        logger.info("description: %s %s", description, type(description))
         logger.info("style: %s 0x%x", ptstypes.MMI_STYLE_STRING[style], style)
 
         rsp = ""
@@ -190,8 +192,8 @@ class PTSSender(win32com.server.connect.ConnectableServer):
                 logger.info("callback returned on_implicit_send, respose: %r", rsp)
 
         except xmlrpc.client.Fault as err:
-            logger.info("A fault occurred, code = %d, string = %s" %
-                        (err.faultCode, err.faultString))
+            logger.info("A fault occurred, code = %d, string = %s",
+                        err.faultCode, err.faultString)
 
         except Exception as e:
             logger.info("Caught exception")
@@ -228,7 +230,7 @@ def parse_ptscontrol_error(err):
         return ptscontrol_e_string
 
     except Exception:
-        raise Exception(err)
+        raise Exception() from err
 
 
 class PyPTS:
@@ -300,13 +302,12 @@ class PyPTS:
         log("%s %r %r %r", self.add_recov.__name__, func, args, kwds)
 
         # Re-set recovery element to avoid duplications
-        if func == self.set_pixit:
+        if func == self.set_pixit:  # pylint: disable=W0143
             profile = args[0]
             pixit = args[1]
             # Look for possible re-setable PIXIT
             try:
-                '''Search for matching recover function, PIXIT and recover
-                if value was changed. '''
+                # Search for matching recover function, PIXIT and recover if value was changed.
                 item = next(x for x in self._recov if ((x[0] ==
                                                         self.set_pixit) and (x[1][0] == profile) and
                                                        (x[1][1] == pixit)))
@@ -785,7 +786,7 @@ class PyPTS:
                 log("Connecting to dual-mode dongle")
                 device_to_connect = device
                 break
-            elif 'COM' in device:
+            if 'COM' in device:
                 log("Connecting to LE-only dongle")
                 device_to_connect = device
                 break

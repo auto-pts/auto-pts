@@ -14,18 +14,17 @@
 #
 
 """GATT test cases"""
-
-from ptsprojects.testcase import TestFunc
-from ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
+import logging
 
 from pybtp import btp
 from pybtp.types import UUID, Addr, IOCap, Prop, Perm
-import logging
 from autoptsclient_common import get_unique_name
+from wid.gatt import gatt_wid_hdl_no_write_rsp_check
 from ptsprojects.stack import get_stack
+from ptsprojects.testcase import TestFunc
 from ptsprojects.zephyr.gatt_wid import gatt_wid_hdl
 from ptsprojects.zephyr.gattc_wid import gattc_wid_hdl
-from wid.gatt import gatt_wid_hdl_no_write_rsp_check
+from ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
 
 
 class Value:

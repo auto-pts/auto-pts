@@ -77,8 +77,8 @@ def build_and_flash(project_path, board, overlay=None):
     :param overlay: configuration map to be used
     :return: TTY path
     """
-    logging.debug("{}: {} {} {}".format(build_and_flash.__name__, project_path,
-                                        board, overlay))
+    logging.debug("%s: %s %s %s", build_and_flash.__name__, project_path,
+                  board, overlay)
 
     check_call('rm -rf bin/'.split(), cwd=project_path)
     check_call('rm -rf targets/{}_boot/'.format(board).split(),
@@ -90,8 +90,8 @@ def build_and_flash(project_path, board, overlay=None):
     check_call('newt target create bttester'.split(), cwd=project_path)
 
     check_call(
-        'newt target set {}_boot bsp=@apache-mynewt-core/hw/bsp/{}'.format(
-            board, board).split(), cwd=project_path)
+        'newt target set {0}_boot bsp=@apache-mynewt-core/hw/bsp/{0}'.format(
+            board).split(), cwd=project_path)
     check_call(
         'newt target set {}_boot app=@mcuboot/boot/mynewt'.format(
             board).split(), cwd=project_path)
@@ -176,7 +176,7 @@ def make_repo_status(repos_info):
     return ', '.join(status_list)
 
 
-class PtsInitArgs(object):
+class PtsInitArgs:
     """
     Translates arguments provided in 'config.py' file to be used by
     'autoptsclient.init_pts' function
@@ -242,14 +242,14 @@ def run_tests(args, iut_config):
             # Read PTS Version and keep it for later use
             args['pts_ver'] = "%s" % pts.get_version()
         except Exception as exc:
+            logging.exception(exc)
             if _args[config_default].recovery:
                 ptses = exc.args[1]
                 for pts in ptses:
                     autoptsclient.recover_autoptsserver(pts)
                 time.sleep(20)
                 continue
-            else:
-                raise exc
+            raise exc
         break
 
     stack.init_stack()
@@ -263,7 +263,7 @@ def run_tests(args, iut_config):
             overlay = value['overlay']
 
         tty = build_and_flash(args["project_path"], args["board"], overlay)
-        logging.debug("TTY path: %s" % tty)
+        logging.debug("TTY path: %s",  tty)
 
         time.sleep(10)
 

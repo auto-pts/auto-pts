@@ -379,15 +379,15 @@ def hdl_wid_111(desc):
         return False
 
     rx_data = channels[0]
-    if not (len(rx_data) == 1):
+    if not len(rx_data) == 1:
         return False
 
     data_packet = rx_data[0]
-    if not (len(data_packet) == int(data[0])):
+    if not len(data_packet) == int(data[0]):
         return False
 
     comp_data = bytearray(list(range(len(data_packet))))
-    if not (data_packet == comp_data):
+    if not data_packet == comp_data:
         return False
 
     return True
@@ -398,26 +398,26 @@ def hdl_wid_112(desc):
     l2cap = stack.l2cap
 
     channels = l2cap.rx_data_get_all(10)
-    if not (len(channels) == 2):
+    if len(channels) != 2:
         return False
 
     data_0 = channels[0]
-    if not(len(data_0) == 1):
+    if len(data_0) != 1:
         return False
 
     data_0 = data_0[0]
     data_1 = channels[1]
-    if not (len(data_1) == 1):
+    if len(data_1) != 1:
         return False
 
     data_1 = data_1[0]
 
     expected = bytes.fromhex('aa' * len(data_0))
-    if not (data_0 == expected):
+    if not data_0 == expected:
         return False
 
     expected = bytes.fromhex('55' * len(data_1))
-    if not (data_1 == expected):
+    if not data_1 == expected:
         return False
 
     return True
@@ -511,7 +511,7 @@ def hdl_wid_261(desc):
     stack = get_stack()
     channels = stack.l2cap.rx_data_get_all(10)
     chan = stack.l2cap.chan_lookup_id(0)
-    if not (len(channels) == 1):
+    if len(channels) != 1:
         return False
 
     rx_data = channels[0]

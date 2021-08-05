@@ -18,11 +18,11 @@ import struct
 import sys
 import time
 from binascii import hexlify
-from time import sleep
-from wid.gatt import gatt_wid_hdl as gen_wid_hdl
-from ptsprojects.testcase import MMI
+
 from pybtp import btp
 from pybtp.types import Perm
+from wid.gatt import gatt_wid_hdl as gen_wid_hdl
+from ptsprojects.testcase import MMI
 
 log = logging.debug
 
@@ -47,7 +47,7 @@ def hdl_wid_3(desc):
 
 def hdl_wid_12(desc):
     btp.gattc_exchange_mtu(btp.pts_addr_type_get(), btp.pts_addr_get())
-    sleep(10)
+    time.sleep(10)
     return True
 
 
@@ -72,10 +72,7 @@ def hdl_wid_17(desc):
         uuid = btp.btp2uuid(uuid_len, uuid)
         iut_services.append(uuid)
 
-    if iut_services == MMI.args:
-        return True
-    else:
-        return False
+    return bool(iut_services == MMI.args)
 
 
 def hdl_wid_24(desc):
@@ -119,15 +116,14 @@ def hdl_wid_24(desc):
             iut_services.remove(service)
             logging.debug("Service %r found", service)
             continue
-        else:
-            logging.error("Service %r not found", service)
-            return False
+        logging.error("Service %r not found", service)
+        return False
 
     return True
 
 
 def hdl_wid_49(desc):
-    sleep(30)
+    time.sleep(30)
     return True
 
 
@@ -154,10 +150,7 @@ def hdl_wid_52(desc):
 
     value_read = hexlify(value).decode('utf-8')
 
-    if value_read == MMI.args[1]:
-        return True
-    else:
-        return False
+    return bool(value_read == MMI.args[1])
 
 
 def hdl_wid_75(desc):
@@ -169,7 +162,7 @@ def hdl_wid_75(desc):
     handle = int(MMI.args[0], 16)
     value = MMI.args[1]
 
-    sleep(5)
+    time.sleep(5)
 
     attr = btp.gatts_get_attr_val(btp.pts_addr_type_get(),
                                   btp.pts_addr_get(), handle)
@@ -178,10 +171,7 @@ def hdl_wid_75(desc):
 
     parsed_val = hexlify(val).decode('utf-8').upper()
 
-    if value == parsed_val:
-        return True
-    else:
-        return False
+    return bool(value == parsed_val)
 
 
 def hdl_wid_76(desc):
@@ -237,12 +227,12 @@ def hdl_wid_81(desc):
 
 
 def hdl_wid_92(desc):
-    sleep(2)
+    time.sleep(2)
     return True
 
 
 def hdl_wid_98(desc):
-    sleep(5)
+    time.sleep(5)
     return True
 
 
@@ -286,7 +276,7 @@ def hdl_wid_110(desc):
             continue
 
         handle, perm, type_uuid = chrc_value_attr[0]
-        if not (perm & Perm.read):
+        if not perm & Perm.read:
             return '{0:04x}'.format(handle)
 
     return '0000'

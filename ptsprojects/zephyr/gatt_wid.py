@@ -15,6 +15,7 @@
 
 import logging
 import sys
+
 from pybtp import btp
 from pybtp.types import UUID
 from wid.gatt import gatt_wid_hdl as gen_wid_hdl, gatt_server_fetch_db
@@ -51,7 +52,7 @@ def hdl_wid_151(desc):
 
         if db[i].uuid == UUID.CSF:
             return '{0:04x}'.format(db[i].value_handle)
-        elif db[i].uuid == UUID.CCC:
+        if db[i].uuid == UUID.CCC:
             return '{0:04x}'.format(db[i].handle)
     # if nothing found, return correctly formatted response that will cause other response than expected and FAIL,
     # but will prevent infinite loop of asking wid 151

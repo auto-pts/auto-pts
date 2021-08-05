@@ -18,10 +18,11 @@
 import binascii
 import logging
 import struct
+
 from ptsprojects.stack import get_stack
 from pybtp import defs
-from .btp import CONTROLLER_INDEX, get_iut_method as get_iut
 from pybtp.types import BTPError
+from pybtp.btp.btp import CONTROLLER_INDEX, get_iut_method as get_iut
 
 MESH = {
     "read_supp_cmds": (defs.BTP_SERVICE_ID_MESH,

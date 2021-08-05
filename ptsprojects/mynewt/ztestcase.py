@@ -27,8 +27,7 @@ class ZTestCase(TestCaseLT1):
     def __init__(self, *args, **kwargs):
         """Refer to TestCase.__init__ for parameters and their documentation"""
 
-        super(ZTestCase, self).__init__(*args, ptsproject_name="mynewt",
-                                        **kwargs)
+        super().__init__(*args, ptsproject_name="mynewt", **kwargs)
 
         self.stack = get_stack()
         self.mynewtctl = get_iut()
@@ -48,5 +47,4 @@ class ZTestCaseSlave(TestCaseLT2):
     def __init__(self, *args, **kwargs):
         """Refer to TestCase.__init__ for parameters and their documentation"""
 
-        super(ZTestCaseSlave, self).__init__(*args, ptsproject_name="mynewt",
-                                             **kwargs)
+        super().__init__(*args, ptsproject_name="mynewt", **kwargs)

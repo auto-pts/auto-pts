@@ -3,7 +3,7 @@ import sqlite3
 DATABASE_FILE = 'TestCase.db'
 
 
-class TestCaseTable(object):
+class TestCaseTable:
     def __init__(self, name):
         self._open()
         self.name = name
@@ -65,6 +65,7 @@ class TestCaseTable(object):
             return row[0]
 
         self._close()
+        return None
 
     def get_result(self, test_case_name):
         self._open()
@@ -77,6 +78,7 @@ class TestCaseTable(object):
             return row[0]
 
         self._close()
+        return None
 
     def estimate_session_duration(self, test_cases_names, run_count_max):
         duration = 0

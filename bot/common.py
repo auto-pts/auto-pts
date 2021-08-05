@@ -12,33 +12,32 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
-
-
+import logging
 import os
 import re
 import subprocess
 import sys
 import mimetypes
-import datetime
-import xlsxwriter
-import git
 import shutil
 import zipfile
-import yaml
-
 import smtplib
+import datetime
+from os.path import dirname, abspath
+from pathlib import Path
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
 from email import encoders
 
+from xmlrpc.client import ServerProxy
+import git
+import yaml
+import xlsxwriter
+
 from apiclient import discovery, errors
 from apiclient.http import MediaFileUpload
 from httplib2 import Http
 from oauth2client import file, client, tools
-from xmlrpc.client import ServerProxy
-from os.path import dirname, abspath
-from pathlib import Path
 
 SCOPES = 'https://www.googleapis.com/auth/drive'
 CLIENT_SECRET_FILE = 'client_secret.json'
@@ -167,7 +166,7 @@ def send_mail(cfg, subject, body, attachments=None):
 # ****************************************************************************
 # Google Drive
 # ****************************************************************************
-class GDrive(object):
+class GDrive:
     def __init__(self, cfg):
         self.basedir_id = cfg['root_directory_id']
         self.cwd_id = self.basedir_id
@@ -196,13 +195,13 @@ class GDrive(object):
         }
 
         try:
-            file = self.service.files().create(
+            f = self.service.files().create(
                 body=file_metadata,
                 fields='id, name, webViewLink').execute()
         except errors.HttpError:
             sys.exit(1)
 
-        return file
+        return f
 
     def ls(self):
         results = {}
@@ -244,7 +243,7 @@ class GDrive(object):
             mimetype=mime_type)
 
         try:
-            file = self.service.files().create(
+            f = self.service.files().create(
                 body=file_metadata,
                 media_body=media,
                 fields='id, name').execute()
@@ -252,7 +251,7 @@ class GDrive(object):
             print(err)
             sys.exit(1)
 
-        return file
+        return f
 
     def cd(self, dir_=None):
         """
@@ -501,13 +500,13 @@ def upload_bpv_logs(gdrive, args):
 
         with ServerProxy("http://{}:{}/".format(server_addr[i], server_port[i]),
                          allow_none=True,) as proxy:
-            list = proxy.list_workspace_tree(args.workspace)
-            if len(list) == 0:
+            file_list = proxy.list_workspace_tree(args.workspace)
+            if len(file_list) == 0:
                 continue
 
-            workspace_root = list.pop()
-            while len(list) > 0:
-                file_path = list.pop(0)
+            workspace_root = file_list.pop()
+            while len(file_list) > 0:
+                file_path = file_list.pop(0)
                 try:
                     file_bin = proxy.copy_file(file_path)
 
@@ -525,8 +524,8 @@ def upload_bpv_logs(gdrive, args):
 
                     with open(file_path, 'wb') as handle:
                         handle.write(file_bin.data)
-                except BaseException:
-                    pass
+                except BaseException as e:
+                    logging.exception(e)
 
     if os.path.exists(logs_folder):
         archive_testcases(logs_folder, depth=3)
@@ -539,6 +538,7 @@ def get_workspace(workspace):
         for name in dirs:
             if name == workspace:
                 return os.path.join(root, name)
+    return None
 
 
 def delete_bpv_logs(workspace_path):

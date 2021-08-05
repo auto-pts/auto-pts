@@ -30,24 +30,26 @@
 
 import argparse
 import copy
+import logging
 import os
 import shutil
 import subprocess
+import sys
 import threading
 import time
 import traceback
-from time import sleep
-import pythoncom
-import wmi
-import sys
-import logging
 import xmlrpc.client
 import xmlrpc.server
-import winutils
-import ptscontrol
 from os.path import dirname, abspath
-from config import SERVER_PORT
 from queue import Queue
+from time import sleep
+
+import pythoncom
+import wmi
+import winutils
+
+import ptscontrol
+from config import SERVER_PORT
 
 log = logging.debug
 PROJECT_DIR = dirname(abspath(__file__))
@@ -58,10 +60,9 @@ class PyPTSWithXmlRpcCallback(ptscontrol.PyPTS):
 
     def __init__(self):
         """Constructor"""
+        super().__init__()
 
         log("%s", self.__init__.__name__)
-
-        ptscontrol.PyPTS.__init__(self)
 
         # address of the auto-pts client that started it's own xmlrpc server to
         # receive callback messages
@@ -124,7 +125,8 @@ class SvrArgumentParser(argparse.ArgumentParser):
                           help="Specify ykush hub downstream port number, so "
                           "during recovery steps PTS dongle could be replugged.")
 
-    def check_args(self, arg):
+    @staticmethod
+    def check_args(arg):
         """Sanity check command line arguments"""
 
         for srv_port in arg.srv_port:
@@ -136,7 +138,7 @@ class SvrArgumentParser(argparse.ArgumentParser):
 
         arg.superguard = 60 * arg.superguard
 
-    def parse_args(self, arg=None, namespace=None):
+    def parse_args(self, args=None, namespace=None):
         arg = super().parse_args()
         self.check_args(arg)
         return arg
@@ -148,6 +150,7 @@ def get_workspace(workspace):
         for name in dirs:
             if name == workspace:
                 return os.path.join(root, name)
+    return None
 
 
 def kill_all_processes(name):
@@ -240,7 +243,7 @@ class Server(threading.Thread):
         threading.Thread.__init__(self, daemon=True)
         self.queue = _queue
         self.server = None
-        self.args = _args
+        self._args = _args
         self.pts = None
 
     def last_start(self):
@@ -285,12 +288,12 @@ class Server(threading.Thread):
 
     def run(self):
         try:
-            self.main(self.args)
+            self.main(self._args)
         except Exception as exc:
             logging.exception(exc)
-            print('Server ', str(self.args.srv_port), ' finished')
+            print('Server ', str(self._args.srv_port), ' finished')
             self.terminate('from Server process on port ' +
-                           str(self.args.srv_port) + ':\n' + traceback.format_exc())
+                           str(self._args.srv_port) + ':\n' + traceback.format_exc())
 
     def request_recovery(self):
         self.terminate('Recovery request')
@@ -306,7 +309,7 @@ class Server(threading.Thread):
             self.queue.put(Exception(msg))
 
     def list_workspace_tree(self, workspace_dir):
-        self.pts.last_restart_time = time.time()
+        self.pts.last_start_time = time.time()
         logs_root = get_workspace(workspace_dir)
         file_list = []
         for root, dirs, files in os.walk(logs_root,
@@ -319,7 +322,7 @@ class Server(threading.Thread):
         return file_list
 
     def copy_file(self, file_path):
-        self.pts.last_restart_time = time.time()
+        self.pts.last_start_time = time.time()
         file_bin = None
         if os.path.isfile(file_path):
             with open(file_path, 'rb') as handle:
@@ -327,7 +330,7 @@ class Server(threading.Thread):
         return file_bin
 
     def delete_file(self, file_path):
-        self.pts.last_restart_time = time.time()
+        self.pts.last_start_time = time.time()
         if os.path.isfile(file_path):
             os.remove(file_path)
         elif os.path.isdir(file_path):
@@ -353,12 +356,13 @@ def multi_main(_args, _queue, _superguard):
                 _queue.put(Exception('Server is down'))
         sleep(2)  # This loop has a huge impact on the performance of server threads
 
-    [s.terminate('') for s in servers]
+    for s in servers:
+        s.terminate('')
 
 
 if __name__ == "__main__":
     winutils.exit_if_admin()
-    args = SvrArgumentParser("PTS automation server").parse_args()
+    _args = SvrArgumentParser("PTS automation server").parse_args()
     queue = Queue()
 
     with os.scandir(PROJECT_DIR) as it:
@@ -366,19 +370,19 @@ if __name__ == "__main__":
             if file.name.startswith('autoptsserver_') and file.name.endswith('.log'):
                 os.remove(file)
 
-    superguard = SuperGuard(float(args.superguard), queue)
-    if args.superguard:
+    superguard = SuperGuard(float(_args.superguard), queue)
+    if _args.superguard:
         superguard.start()
 
     while True:
         try:
-            if isinstance(args.srv_port, int):
+            if isinstance(_args.srv_port, int):
                 server = Server(_queue=queue)
                 superguard.add_server(server)
 
-                server.main(args)  # Run server in main process
+                server.main(_args)  # Run server in main process
             else:
-                multi_main(args, queue, superguard)  # Run many servers in threads
+                multi_main(_args, queue, superguard)  # Run many servers in threads
 
             exceptions = ''
             while not queue.empty():
@@ -393,13 +397,13 @@ if __name__ == "__main__":
             break
 
         except KeyboardInterrupt:  # Ctrl-C
-            exit(14)
+            sys.exit(14)
 
         except BaseException as e:
             logging.exception(e)
             traceback.print_exc()
-            if args.recovery or superguard.was_timeout:
+            if _args.recovery or superguard.was_timeout:
                 superguard.clear()
-                recover_pts(args.ykush)
+                recover_pts(_args.ykush)
             else:
-                exit(16)
+                sys.exit(16)

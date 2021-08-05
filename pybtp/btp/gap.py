@@ -20,11 +20,12 @@ import logging
 import re
 import struct
 from random import randint
+
 from ptsprojects.stack import get_stack, ConnParams
 from pybtp import defs
-from .btp import pts_addr_get, pts_addr_type_get, btp_hdr_check, CONTROLLER_INDEX, set_pts_addr, LeAdv,\
-    get_iut_method as get_iut
 from pybtp.types import BTPError, gap_settings_btp2txt, addr2btp_ba, Addr, OwnAddrType, AdDuration
+from pybtp.btp.btp import pts_addr_get, pts_addr_type_get, btp_hdr_check, CONTROLLER_INDEX, set_pts_addr, LeAdv, \
+    get_iut_method as get_iut
 
 GAP = {
     "start_adv": (defs.BTP_SERVICE_ID_GAP, defs.GAP_START_ADVERTISING,

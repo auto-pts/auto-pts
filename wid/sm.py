@@ -158,10 +158,7 @@ def hdl_wid_155(desc):
 
 def hdl_wid_156(desc):
     stack = get_stack()
-    if stack.gap.is_connected():
-        return False
-    else:
-        return True
+    return not stack.gap.is_connected()
 
 
 def hdl_wid_1009(desc):

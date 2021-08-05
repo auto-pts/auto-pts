@@ -15,15 +15,14 @@
 
 """GAP test cases"""
 
-from ptsprojects.testcase import TestFunc
-from ptsprojects.mynewt.ztestcase import ZTestCase
-
 from pybtp import btp
 from pybtp.types import Addr, IOCap, AdType, AdFlags, Prop, Perm, UUID
-from . import gatt
 from autoptsclient_common import get_unique_name
 from ptsprojects.stack import get_stack
-from .gap_wid import gap_wid_hdl, gap_wid_hdl_failed_read, gap_wid_hdl_mode1_lvl2
+from ptsprojects.testcase import TestFunc
+from ptsprojects.mynewt import gatt
+from ptsprojects.mynewt.ztestcase import ZTestCase
+from ptsprojects.mynewt.gap_wid import gap_wid_hdl, gap_wid_hdl_failed_read, gap_wid_hdl_mode1_lvl2
 
 
 class SVC:

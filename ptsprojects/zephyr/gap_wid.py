@@ -14,12 +14,13 @@
 #
 
 import logging
+import socket
 import sys
+
 from pybtp import btp
 from pybtp.types import UUID, AdType, UriScheme
-from ptsprojects.stack import get_stack
 from wid.gap import gap_wid_hdl as gen_wid_hdl, hdl_wid_139_mode1_lvl2, hdl_wid_139_mode1_lvl4
-import socket
+from ptsprojects.stack import get_stack
 
 log = logging.debug
 
@@ -55,8 +56,7 @@ def gap_wid_hdl_failed_read(wid, description, test_case_name):
         except socket.timeout:
             pass
         return True
-    else:
-        return gap_wid_hdl(wid, description, test_case_name)
+    return gap_wid_hdl(wid, description, test_case_name)
 
 
 # For tests in SC only, mode 1 level 3
@@ -65,8 +65,7 @@ def gap_wid_hdl_mode1_lvl2(wid, description, test_case_name):
         log("%s, %r, %r, %s", gap_wid_hdl_mode1_lvl2.__name__, wid, description,
             test_case_name)
         return hdl_wid_139_mode1_lvl2(description)
-    else:
-        return gap_wid_hdl(wid, description, test_case_name)
+    return gap_wid_hdl(wid, description, test_case_name)
 
 
 def gap_wid_hdl_mode1_lvl4(wid, description, test_case_name):
@@ -74,8 +73,7 @@ def gap_wid_hdl_mode1_lvl4(wid, description, test_case_name):
         log("%s, %r, %r, %s", gap_wid_hdl.__name__, wid, description,
             test_case_name)
         return hdl_wid_139_mode1_lvl4(description)
-    else:
-        return gap_wid_hdl(wid, description, test_case_name)
+    return gap_wid_hdl(wid, description, test_case_name)
 
 
 def hdl_wid_46(desc):
@@ -119,14 +117,13 @@ def hdl_wid_127(desc):
 def hdl_wid_130(desc):
     if 'invalid MAC' in desc:
         return btp.gatts_verify_write_fail(desc)
-    else:
-        # GAP/SEC/CSIGN/BI-02-C expects two successes and fail
-        # during first success check might occur second gatts_attr_value_changed_ev,
-        # which will not be checked. Check up to three times if write fail occured
-        for i in range(3):
-            if not btp.gatts_verify_write_success(desc):
-                return True
-        return False
+    # GAP/SEC/CSIGN/BI-02-C expects two successes and fail
+    # during first success check might occur second gatts_attr_value_changed_ev,
+    # which will not be checked. Check up to three times if write fail occured
+    for i in range(3):
+        if not btp.gatts_verify_write_success(desc):
+            return True
+    return False
 
 
 def hdl_wid_162(desc):

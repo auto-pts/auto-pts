@@ -14,20 +14,18 @@
 #
 
 """MESH test cases"""
-
-from ptsprojects.testcase import TestFunc
-from ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
+from binascii import hexlify
+from time import sleep
+from uuid import uuid4
+import random
 
 from pybtp import defs, btp
 from pybtp.types import MeshVals
-from ptsprojects.stack import get_stack
-from ptsprojects.stack import SynchPoint
-from wid import mesh_wid_hdl
-from uuid import uuid4
-from binascii import hexlify
-import random
-from time import sleep
 from autoptsclient_common import get_unique_name
+from wid import mesh_wid_hdl
+from ptsprojects.stack import get_stack, SynchPoint
+from ptsprojects.testcase import TestFunc
+from ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
 
 
 def set_pixits(ptses):
@@ -266,7 +264,7 @@ def test_cases(ptses):
                   [TestFunc(btp.mesh_store_net_data)],
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/SR/MPXS/BV-09-C", cmds=pre_conditions +
-                  [TestFunc(lambda: get_stack().mesh.proxy_identity_enable())],
+                  [TestFunc(get_stack().mesh.proxy_identity_enable)],
                   generic_wid_hdl=mesh_wid_hdl),
     ]
 

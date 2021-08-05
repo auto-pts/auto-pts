@@ -15,20 +15,21 @@
 # more details.
 #
 
+import collections
+import datetime
 import logging
 import os
 import subprocess
 import sys
 import time
-import datetime
-import collections
-import serial
 from argparse import Namespace
 
-import autoptsclient_common as autoptsclient
-import ptsprojects.zephyr as autoprojects
-import ptsprojects.stack as stack
+import serial
+
 from pybtp import btp
+import autoptsclient_common as autoptsclient
+import ptsprojects.stack as stack
+import ptsprojects.zephyr as autoprojects
 from ptsprojects.zephyr.iutctl import get_iut
 import bot.common
 
@@ -58,8 +59,8 @@ def build_and_flash(zephyr_wd, board, tty, conf_file=None):
     :param tty path
     :param conf_file: configuration file to be used
     """
-    logging.debug("{}: {} {} {}". format(build_and_flash.__name__, zephyr_wd,
-                                         board, conf_file))
+    logging.debug("%s: %s %s %s", build_and_flash.__name__, zephyr_wd,
+                                         board, conf_file)
     tester_dir = os.path.join(zephyr_wd, "tests", "bluetooth", "tester")
 
     check_call('rm -rf build/'.split(), cwd=tester_dir)
@@ -150,7 +151,7 @@ def get_tty_path(name):
     return None
 
 
-class PtsInitArgs(object):
+class PtsInitArgs:
     """
     Translates arguments provided in 'config.py' file to be used by
     'autoptsclient.init_pts' function
@@ -217,14 +218,14 @@ def run_tests(args, iut_config, tty):
             # Read PTS Version and keep it for later use
             args['pts_ver'] = "%s" % pts.get_version()
         except Exception as exc:
+            logging.exception(exc)
             if _args[config_default].recovery:
                 ptses = exc.args[1]
                 for pts in ptses:
                     autoptsclient.recover_autoptsserver(pts)
                 time.sleep(20)
                 continue
-            else:
-                raise exc
+            raise exc
         break
 
     stack.init_stack()
@@ -240,7 +241,7 @@ def run_tests(args, iut_config, tty):
                         autopts2board[args["board"]],
                         tty,
                         config)
-        logging.debug("TTY path: %s" % tty)
+        logging.debug("TTY path: %s", tty)
 
         flush_serial(tty)
         time.sleep(10)

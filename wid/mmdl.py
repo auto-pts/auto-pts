@@ -14,11 +14,12 @@
 #
 
 import logging
-import sys
-import struct
-from pybtp import btp
 import re
+import struct
+import sys
 import time
+
+from pybtp import btp
 from ptsprojects.stack import get_stack
 
 # MMDL ATS ver. 1.0
@@ -2002,20 +2003,17 @@ def hdl_wid_660(desc):
     log("%r", params)
     if desc.startswith('Please send') or desc.startswith('Please confirm the received'):
         return parse_send(params)
-    elif desc.startswith('Please confirm IUT has successfully set the new state.'):
+    if desc.startswith('Please confirm IUT has successfully set the new state.'):
         if params:
             parse_send(params)
             return True
-        else:
-            stack = get_stack()
-            if stack.mesh.expect_status_data_get("Ack") is False:
-                return True
-            elif stack.mesh.expect_status_data.data == stack.mesh.recv_status_data.data:
-                return True
-            else:
-                return False
-    else:
+        stack = get_stack()
+        if stack.mesh.expect_status_data_get("Ack") is False:
+            return True
+        if stack.mesh.expect_status_data.data == stack.mesh.recv_status_data.data:
+            return True
         return False
+    return False
 
 
 def hdl_wid_661(desc):

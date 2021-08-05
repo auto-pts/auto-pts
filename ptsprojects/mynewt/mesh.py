@@ -15,19 +15,19 @@
 
 """MESH test cases"""
 
-from ptsprojects.testcase import TestFunc
-from ptsprojects.mynewt.ztestcase import ZTestCase, ZTestCaseSlave
-
-from pybtp import defs, btp
-from pybtp.types import MeshVals
-from ptsprojects.stack import get_stack
-from ptsprojects.stack import SynchPoint
-from wid import mesh_wid_hdl
-from uuid import uuid4
 from binascii import hexlify
 import random
 from time import sleep
+from uuid import uuid4
+
+from pybtp import defs, btp
+from pybtp.types import MeshVals
 from autoptsclient_common import get_unique_name
+from wid import mesh_wid_hdl
+from ptsprojects.stack import get_stack
+from ptsprojects.stack import SynchPoint
+from ptsprojects.testcase import TestFunc
+from ptsprojects.mynewt.ztestcase import ZTestCase, ZTestCaseSlave
 
 
 device_uuid = hexlify(uuid4().bytes)

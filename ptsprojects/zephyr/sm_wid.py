@@ -15,9 +15,10 @@
 
 import logging
 import sys
+
 from pybtp import btp
-from .iutctl import get_iut
 from wid.sm import sm_wid_hdl as gen_wid_hdl
+from ptsprojects.zephyr.iutctl import get_iut
 
 log = logging.debug
 

@@ -14,11 +14,12 @@
 #
 
 import logging
+import re
 import sys
+import time
+
 from pybtp import btp
 from pybtp.types import Perm, MeshVals
-import re
-import time
 from ptsprojects.stack import get_stack
 
 # Mesh ATS ver. 1.0
@@ -126,11 +127,6 @@ def hdl_wid_12(desc):
     if not stack.mesh.is_initialized:
         btp.mesh_config_prov()
         btp.mesh_init()
-    else:
-        if stack.mesh.is_provisioned.data:
-            return True
-        else:
-            return True
 
     return True
 
@@ -148,11 +144,6 @@ def hdl_wid_13(desc):
     if not stack.mesh.is_initialized:
         btp.mesh_config_prov()
         btp.mesh_init()
-    else:
-        if stack.mesh.is_provisioned.data:
-            return True
-        else:
-            return True
 
     return True
 
@@ -277,7 +268,7 @@ def hdl_wid_23(desc):
     params = pattern.findall(desc)
     if not params:
         logging.error("%s parsing error", hdl_wid_23.__name__)
-        return
+        return False
 
     params = dict(params)
 
@@ -314,11 +305,7 @@ def hdl_wid_26(desc):
     """
     stack = get_stack()
 
-    if stack.mesh.prov_invalid_bearer_rcv.data:
-        rsp = True
-    else:
-        rsp = False
-
+    rsp = bool(stack.mesh.prov_invalid_bearer_rcv.data)
     # Cleanup
     stack.mesh.prov_invalid_bearer_rcv.data = False
     return rsp
@@ -535,7 +522,7 @@ def hdl_wid_44(desc):
     params = pattern.findall(desc)
     if not params:
         logging.error("%s parsing error", hdl_wid_44.__name__)
-        return
+        return False
 
     params = dict(params)
 
@@ -633,10 +620,7 @@ def hdl_wid_90(desc):
     """
     stack = get_stack()
 
-    if stack.mesh.is_provisioned.data is True:
-        return True
-    else:
-        return False
+    return bool(stack.mesh.is_provisioned.data)
 
 
 def hdl_wid_94(desc):
@@ -658,7 +642,7 @@ def hdl_wid_103(desc):
     # Mesh Provisioning data in
     attr = btp.gatts_get_attrs(type_uuid='2adb')
     if not attr:
-        return
+        return False
 
     (handle, permission, type_uuid) = attr.pop()
     if not permission & Perm.write:
@@ -667,7 +651,7 @@ def hdl_wid_103(desc):
     # Mesh Provisioning data out
     attr = btp.gatts_get_attrs(type_uuid='2adc')
     if not attr:
-        return
+        return False
 
     (handle, permission, type_uuid) = attr.pop()
     if permission & Perm.write:
@@ -694,10 +678,7 @@ def hdl_wid_201(desc):
     """
     stack = get_stack()
 
-    if stack.mesh.is_provisioned.data is True:
-        return True
-    else:
-        return False
+    return bool(stack.mesh.is_provisioned.data)
 
 
 def hdl_wid_202(desc):
@@ -725,10 +706,7 @@ def hdl_wid_203(desc):
     """
     stack = get_stack()
 
-    if stack.mesh.is_provisioned.data is True:
-        return True
-    else:
-        return False
+    return bool(stack.mesh.is_provisioned.data)
 
 
 def hdl_wid_204(desc):
@@ -769,8 +747,7 @@ def hdl_wid_210(desc):
         btp.mesh_config_prov()
         btp.mesh_init()
         return True
-    else:
-        return False
+    return False
 
 
 def hdl_wid_216(desc):

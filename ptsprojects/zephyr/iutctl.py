@@ -274,7 +274,6 @@ class ZephyrCtlStub:
 
     def __init__(self):
         """Constructor."""
-        pass
 
     def start(self):
         """Starts the Zephyr OS"""
@@ -327,13 +326,13 @@ class Board:
     def get_openocd_reset_cmd(openocd_bin, openocd_scripts, openocd_cfg):
         """Compute openocd reset command"""
         if not os.path.isfile(openocd_bin):
-            raise Exception("openocd %r not found!", openocd_bin)
+            raise Exception("openocd {} not found!".format(openocd_bin))
 
         if not os.path.isdir(openocd_scripts):
-            raise Exception("openocd scripts %r not found!", openocd_scripts)
+            raise Exception("openocd scripts {} not found!".format(openocd_scripts))
 
         if not os.path.isfile(openocd_cfg):
-            raise Exception("openocd config %r not found!", openocd_cfg)
+            raise Exception("openocd config {} not found!".format(openocd_cfg))
 
         reset_cmd = ('%s -s %s -f %s -c "init" -c "targets 1" '
                      '-c "reset halt" -c "reset run" -c "shutdown"' %

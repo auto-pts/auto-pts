@@ -798,7 +798,7 @@ def hdl_wid_161(desc):
 
     attr = btp.gatts_get_attrs(handle, handle)
     if not attr:
-        return
+        return None
 
     (handle, permission, type_uuid) = attr.pop()
 
@@ -808,7 +808,7 @@ def hdl_wid_161(desc):
     # Check if characteristic has signed write property
     value = btp.gatts_get_attr_val(bd_addr_type, bd_addr, handle - 1)
     if not value:
-        return
+        return None
 
     (att_rsp, val_len, val) = value
 
@@ -820,11 +820,11 @@ def hdl_wid_161(desc):
                                                           val)
 
     if properties & Prop.auth_swrite == 0:
-        return
+        return None
 
     value = btp.gatts_get_attr_val(bd_addr_type, bd_addr, handle)
     if not value:
-        return
+        return None
 
     (att_rsp, val_len, val) = value
     return val_len

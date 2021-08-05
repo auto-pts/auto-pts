@@ -22,8 +22,7 @@ def var_store_get_passkey(description):
     pk = get_stack().gap.get_passkey()
     if pk:
         return str(pk).zfill(6)
-    else:
-        return '000000'
+    return '000000'
 
 
 def var_store_get_wrong_passkey(description):
@@ -33,5 +32,4 @@ def var_store_get_wrong_passkey(description):
     passkey = int(passkey)
     if passkey > 0:
         return str(passkey - 1).zfill(6)
-    else:
-        return str(passkey + 1).zfill(6)
+    return str(passkey + 1).zfill(6)
