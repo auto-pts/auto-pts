@@ -256,7 +256,8 @@ class CallbackThread(threading.Thread):
 
     def __init__(self, port):
         log("%s.%s port=%r", self.__class__.__name__, self.__init__.__name__, port)
-        threading.Thread.__init__(self)
+        super().__init__()
+        self.server = None
         self.callback = ClientCallback()
         self.port = port
         self.current_test_case = None
@@ -267,11 +268,19 @@ class CallbackThread(threading.Thread):
 
         log("Serving on port %s ...", self.port)
 
-        server = SimpleXMLRPCServer(("", self.port),
-                                    allow_none=True, logRequests=False)
-        server.register_instance(self.callback)
-        server.register_introspection_functions()
-        server.serve_forever()
+        self.server = SimpleXMLRPCServer(("", self.port),
+                                         allow_none=True, logRequests=False)
+        self.server.register_instance(self.callback)
+        self.server.register_introspection_functions()
+        self.server.serve_forever()
+
+    def remote_shutdown(self):
+        thread = threading.Thread(target=self.shutdown_thread)
+        thread.start()
+        thread.join()
+
+    def shutdown_thread(self):
+        self.server.shutdown()
 
     def set_current_test_case(self, name):
         log("%s.%s %s", self.__class__.__name__, self.set_current_test_case.__name__, name)
@@ -1212,14 +1221,12 @@ class Client:
 
         self.cleanup()
 
-        print("\nBye!")
-        sys.stdout.flush()
-
         for pts in ptses:
             pts.unregister_xmlrpc_ptscallback()
+            pts.callback_thread.remote_shutdown()
 
-        # not the cleanest but the easiest way to exit the server thread
-        sys.exit(0)
+        print("\nBye!")
+        sys.stdout.flush()
 
     def parse_args(self):
         """Parses command line arguments and options"""
