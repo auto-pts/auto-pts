@@ -42,6 +42,39 @@ class Value:
 iut_attr_db_off = 0x000b
 
 
+def __get_attr_hdl_str(offset):
+    return '{0:x}'.format(iut_attr_db_off + offset, 'x')
+
+
+def __get_attr_u16_hdl_str(offset):
+    return '{0:04x}'.format(iut_attr_db_off + offset, 'x')
+
+
+def __get_attr_u16_hdl_uc_str(offset):
+    return '{0:04x}'.format(iut_attr_db_off + offset, 'X')
+
+
+def __add_unique_char_to_service():
+    # Get value between 0x3000 and 0x9999 to avoid any 16 bit UUIDs
+    # from BT SIG Assigned Number
+    stack = get_stack()
+    svc = 0x3000 + stack.gatt.last_unique_uuid
+    stack.gatt.last_unique_uuid += 1
+
+    if svc > 0x9999:
+        logging.debug('reached 0x9999, looping back to 0x3000')
+        svc = 0x3000
+        stack.gatt.last_unique_uuid = 0
+
+    btp.gap_wait_for_disconnection(60),
+    btp.gatts_add_svc(0, format(svc, 'x')),
+    btp.gatts_start_server()
+
+
+def update_service_gatt_sr_gas_bv_01_c():
+    __add_unique_char_to_service()
+
+
 def verify_gatt_sr_gpa_bv_04_c(description):
     """Verification function for GATT/SR/GPA/BV-04-C
 
@@ -495,13 +528,7 @@ def test_cases_server(ptses):
         # TODO rewrite GATT/SR/GAS/BV-01-C
         ZTestCase("GATT", "GATT/SR/GAS/BV-01-C",
                   cmds=pre_conditions +
-                  [TestFunc(btp.gap_wait_for_disconnection, 60, post_wid=96),
-                   TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1, post_wid=96),
-                   TestFunc(btp.gatts_start_server, post_wid=96),
-                   TestFunc(btp.gap_wait_for_disconnection, 60, post_wid=96),
-                   TestFunc(btp.gatts_add_svc, 0, UUID.VND16_2, post_wid=96),
-                   TestFunc(btp.gatts_start_server, post_wid=96)
-                   ],
+                  [TestFunc(update_service_gatt_sr_gas_bv_01_c, post_wid=96)],
                   generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAS/BV-02-C",
                   cmds=pre_conditions_1 +
