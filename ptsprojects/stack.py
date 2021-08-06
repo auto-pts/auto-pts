@@ -734,6 +734,8 @@ class Synch:
 class Gatt:
     def __init__(self):
         self.server_db = GattDB()
+        self.last_unique_uuid = 0
+        self.verify_values = []
 
     def attr_value_set(self, handle, value):
         attr = self.server_db.attr_lookup_handle(handle)
