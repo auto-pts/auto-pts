@@ -38,6 +38,8 @@ L2CAP = {
                CONTROLLER_INDEX),
     "reconfigure": (defs.BTP_SERVICE_ID_L2CAP, defs.L2CAP_RECONFIGURE,
                     CONTROLLER_INDEX),
+    "conn_param_update": (defs.BTP_SERVICE_ID_L2CAP, defs.L2CAP_CONN_PARAM_UPDATE,
+                          CONTROLLER_INDEX),
 }
 
 
@@ -114,6 +116,33 @@ def l2cap_disconn(chan_id):
 
     l2cap_command_rsp_succ(defs.L2CAP_DISCONNECT)
 
+def l2cap_conn_param_update(bd_addr, bd_addr_type, conn_itvl_min,
+                            conn_itvl_max, conn_latency, supervision_timeout):
+    logging.debug("%s %r %r", l2cap_conn_param_update.__name__, bd_addr, bd_addr_type)
+    iutctl = get_iut()
+
+    gap_wait_for_connection()
+
+    data_ba = bytearray()
+    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
+
+    data_ba.extend(chr(pts_addr_type_get(bd_addr_type)).encode('utf-8'))
+    data_ba.extend(bd_addr_ba)
+
+    conn_itvl_min_ba = struct.pack('H', conn_itvl_min)
+    conn_itvl_max_ba = struct.pack('H', conn_itvl_max)
+    conn_latency_ba = struct.pack('H', conn_latency)
+    supervision_timeout_ba = struct.pack('H', supervision_timeout)
+
+    data_ba.extend(conn_itvl_min_ba)
+    data_ba.extend(conn_itvl_max_ba)
+    data_ba.extend(conn_latency_ba)
+    data_ba.extend(supervision_timeout_ba)
+
+    iutctl.btp_socket.send(*L2CAP['conn_param_update'], data=data_ba)
+
+    # Expected result
+    l2cap_command_rsp_succ(defs.L2CAP_CONN_PARAM_UPDATE)
 
 def l2cap_send_data(chan_id, val, val_mtp=None):
     logging.debug("%s %r %r %r", l2cap_send_data.__name__, chan_id, val,

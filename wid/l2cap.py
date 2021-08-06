@@ -305,8 +305,8 @@ def hdl_wid_58(desc):
 
 
 def hdl_wid_59(desc):
-    btp.gap_conn_param_update(btp.pts_addr_get(), btp.pts_addr_type_get(),
-                              720, 864, 0, 400)
+    btp.l2cap_conn_param_update(btp.pts_addr_get(), btp.pts_addr_type_get(),
+                                720, 864, 0, 400)
     return True
 
 
