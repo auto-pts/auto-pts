@@ -34,8 +34,8 @@ import git
 import yaml
 import xlsxwriter
 
-from apiclient import discovery, errors
-from apiclient.http import MediaFileUpload
+from googleapiclient import discovery, errors
+from googleapiclient.http import MediaFileUpload
 from httplib2 import Http
 from oauth2client import file, client, tools
 

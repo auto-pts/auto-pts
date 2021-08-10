@@ -309,7 +309,7 @@ class Server(threading.Thread):
             self.queue.put(Exception(msg))
 
     def list_workspace_tree(self, workspace_dir):
-        self.pts.last_start_time = time.time()
+        # self.pts.last_start_time = time.time()
         logs_root = get_workspace(workspace_dir)
         file_list = []
         for root, dirs, files in os.walk(logs_root,
@@ -322,7 +322,7 @@ class Server(threading.Thread):
         return file_list
 
     def copy_file(self, file_path):
-        self.pts.last_start_time = time.time()
+        # self.pts.last_start_time = time.time()
         file_bin = None
         if os.path.isfile(file_path):
             with open(file_path, 'rb') as handle:
@@ -330,7 +330,7 @@ class Server(threading.Thread):
         return file_bin
 
     def delete_file(self, file_path):
-        self.pts.last_start_time = time.time()
+        # self.pts.last_start_time = time.time()
         if os.path.isfile(file_path):
             os.remove(file_path)
         elif os.path.isdir(file_path):

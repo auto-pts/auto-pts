@@ -274,12 +274,12 @@ class CallbackThread(threading.Thread):
         self.server.register_introspection_functions()
         self.server.serve_forever()
 
-    def remote_shutdown(self):
-        thread = threading.Thread(target=self.shutdown_thread)
+    def stop(self):
+        thread = threading.Thread(target=self._shutdown_thread)
         thread.start()
         thread.join()
 
-    def shutdown_thread(self):
+    def _shutdown_thread(self):
         self.server.shutdown()
 
     def set_current_test_case(self, name):
@@ -490,29 +490,19 @@ def init_pts(args, tc_db_table_name=None):
     while not exceptions.empty():
         try:
             exeption_msg += str(exceptions.get_nowait()) + '\n'
-        except BaseException as e:
-            logging.exception(e)
-            traceback.print_exc()
-        finally:
-            print(exeption_msg)
+        except queue.Empty:
+            break
 
-    if exeption_msg != '':
+    if exeption_msg:
         raise Exception(exeption_msg, proxy_list)
 
     return proxy_list
 
 
-def reinit_pts(ptses, args, tc_db_table_name=None):
-    """Reinitialization procedure for PTS instances"""
-
-    try:
-        for pts in ptses:
-            pts.unregister_xmlrpc_ptscallback()
-    except BaseException as e:
-        logging.exception(e)
-        traceback.print_exc()
-
-    return init_pts(args, tc_db_table_name)
+def shutdown_pts(ptses):
+    for pts in ptses:
+        pts.unregister_xmlrpc_ptscallback()
+        pts.callback_thread.stop()
 
 
 def get_result_color(status):
@@ -1149,38 +1139,21 @@ class Client:
         self.test_cases = None
         self.get_iut = get_iut
         self.store_tag = project + '_'
+        self.ptses = None
         setup_project_name(project)
 
     def start(self):
         """Start main with exception handling."""
-        while True:
-            try:
-                self.main()
-                break
-
-            # os._exit: not the cleanest but the easiest way to exit the server thread
-            except KeyboardInterrupt:  # Ctrl-C
-                sys.exit(14)
-
-            # SystemExit is thrown in arg_parser.parse_args and in sys.exit
-            except SystemExit:
-                raise  # let the default handlers do the work
-
-            except Exception as exc:
-                traceback.print_exc()
-                try:
-                    # FIXME: why would a generic Exception have ptses as args?
-                    ptses = exc.args[1]
-                    for pts in ptses:
-                        recover_autoptsserver(pts)
-                    time.sleep(20)
-                except BaseException as e:
-                    logging.exception(e)
-                    traceback.print_exc()
-
-            except BaseException as e:
-                logging.exception(e)
-                sys.exit(16)
+        try:
+            self.main()
+        except KeyboardInterrupt:  # Ctrl-C
+            shutdown_pts(self.ptses)
+            self.cleanup()
+        except Exception as exc:
+            logging.exception(exc)
+            shutdown_pts(self.ptses)
+            self.cleanup()
+            sys.exit(1)
 
     def main(self):
         """Main."""
@@ -1205,25 +1178,22 @@ class Client:
         else:
             tc_db_table_name = None
 
-        ptses = init_pts(args, tc_db_table_name)
+        self.ptses = init_pts(args, tc_db_table_name)
 
         btp.init(self.get_iut)
         self.init_iutctl(args)
 
         stack.init_stack()
         stack_inst = stack.get_stack()
-        stack_inst.synch_init([pts.callback_thread for pts in ptses])
+        stack_inst.synch_init([pts.callback_thread for pts in self.ptses])
 
-        self.setup_project_pixits(ptses)
-        self.setup_test_cases(ptses)
+        self.setup_project_pixits(self.ptses)
+        self.setup_test_cases(self.ptses)
 
-        run_test_cases(ptses, self.test_cases, args)
+        run_test_cases(self.ptses, self.test_cases, args)
 
         self.cleanup()
-
-        for pts in ptses:
-            pts.unregister_xmlrpc_ptscallback()
-            pts.callback_thread.remote_shutdown()
+        shutdown_pts(self.ptses)
 
         print("\nBye!")
         sys.stdout.flush()
@@ -1317,11 +1287,8 @@ def run_recovery(args, ptses):
         board_power(ykush, True)
     time.sleep(20)  # Give server some time to restart
 
-    try:
-        reinit_pts(ptses, args)
-    except BaseException as e:
-        logging.exception(e)
-        traceback.print_exc()
+    shutdown_pts(ptses)
+    init_pts(ptses, args)
 
     setup_project_pixits(ptses)
 

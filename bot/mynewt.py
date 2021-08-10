@@ -293,8 +293,7 @@ def run_tests(args, iut_config):
         descriptions[test_case_name] = \
             pts.get_test_case_description(project_name, test_case_name)
 
-    for pts in ptses:
-        pts.unregister_xmlrpc_ptscallback()
+    autoptsclient.shutdown_pts(ptses)
 
     return status, results, descriptions, total_regressions
 
