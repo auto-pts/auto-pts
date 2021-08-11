@@ -19,15 +19,12 @@ from binascii import hexlify
 from uuid import uuid4
 import random
 
+from autoptsclient_common import get_unique_name
 from pybtp import defs, btp
 from wid import mmdl_wid_hdl
 from ptsprojects.stack import get_stack
 from ptsprojects.testcase import TestFunc
 from ptsprojects.zephyr.ztestcase import ZTestCase
-
-
-device_uuid = hexlify(uuid4().bytes)
-device_uuid2 = hexlify(uuid4().bytes)
 
 
 def set_pixits(ptses):
@@ -57,8 +54,8 @@ def set_pixits(ptses):
     pts.set_pixit("MMDL", "TSPX_advertising_interval_min", "160")
     pts.set_pixit("MMDL", "TSPX_advertising_interval_max", "160")
     pts.set_pixit("MMDL", "TSPX_tester_OOB_information", "F87F")
-    pts.set_pixit("MMDL", "TSPX_device_uuid", device_uuid)
-    pts.set_pixit("MMDL", "TSPX_device_uuid2", device_uuid2)
+    pts.set_pixit("MESH", "TSPX_device_uuid", "00000000000000000000000000000000")
+    pts.set_pixit("MESH", "TSPX_device_uuid2", "001BDC0810210B0E0A0C000B0E0A0C00")
     pts.set_pixit("MMDL", "TSPX_use_pb_gatt_bearer", "FALSE")
     pts.set_pixit("MMDL", "TSPX_iut_comp_data_page", "0")
     pts.set_pixit("MMDL", "TSPX_OOB_state_change", "FALSE")
@@ -75,6 +72,9 @@ def test_cases(ptses):
 
     stack = get_stack()
 
+    device_uuid = hexlify(uuid4().bytes)
+    device_uuid2 = hexlify(uuid4().bytes)
+
     out_actions = [defs.MESH_OUT_DISPLAY_NUMBER,
                    defs.MESH_OUT_DISPLAY_STRING,
                    defs.MESH_OUT_DISPLAY_NUMBER | defs.MESH_OUT_DISPLAY_STRING]
@@ -82,14 +82,15 @@ def test_cases(ptses):
                   defs.MESH_IN_ENTER_STRING,
                   defs.MESH_IN_ENTER_NUMBER | defs.MESH_IN_ENTER_STRING]
 
-    oob = 16 * '0'
+    oob = 16 * '00'
     out_size = random.randint(0, 2)
     rand_out_actions = random.choice(out_actions) if out_size else 0
     in_size = random.randint(0, 2)
     rand_in_actions = random.choice(in_actions) if in_size else 0
     crpl_size = 10  # Maximum capacity of the replay protection list
 
-    stack.gap_init()
+    iut_device_name = get_unique_name(pts)
+    stack.gap_init(iut_device_name)
     stack.mesh_init(device_uuid, oob, out_size, rand_out_actions, in_size,
                     rand_in_actions, crpl_size)
 
@@ -98,6 +99,10 @@ def test_cases(ptses):
         TestFunc(btp.core_reg_svc_mesh),
         TestFunc(btp.core_reg_svc_mmdl),
         TestFunc(btp.gap_read_ctrl_info),
+        TestFunc(lambda: pts.update_pixit_param(
+            "MESH", "TSPX_device_uuid", stack.mesh.dev_uuid)),
+        TestFunc(lambda: pts.update_pixit_param(
+            "MESH", "TSPX_device_uuid2", device_uuid2)),
         TestFunc(lambda: pts.update_pixit_param(
             "MMDL", "TSPX_bd_addr_iut",
             stack.gap.iut_addr_get_str()))]

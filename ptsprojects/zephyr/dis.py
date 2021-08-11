@@ -70,11 +70,9 @@ def set_pixits(ptses):
     ptses -- list of PyPTS instances"""
 
     pts = ptses[0]
-    global iut_device_name
-    iut_device_name = get_unique_name(pts)
 
     pts.set_pixit("DIS", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
-    pts.set_pixit("DIS", "TSPX_iut_device_name_in_adv_packet_for_random_address", iut_device_name)
+    pts.set_pixit("DIS", "TSPX_iut_device_name_in_adv_packet_for_random_address", "")
     pts.set_pixit("DIS", "TSPX_time_guard", "180000")
     pts.set_pixit("DIS", "TSPX_use_implicit_send", "TRUE")
     pts.set_pixit("DIS", "TSPX_tester_database_file",
@@ -116,6 +114,7 @@ def test_cases(ptses):
     pts = ptses[0]
 
     pts_bd_addr = pts.q_bd_addr
+    iut_device_name = get_unique_name(pts)
     stack = get_stack()
 
     pre_conditions = [
@@ -129,6 +128,8 @@ def test_cases(ptses):
             stack.gap.iut_addr_get_str())),
         TestFunc(lambda: pts.update_pixit_param(
             "DIS", "TSPX_delete_link_key", "TRUE")),
+        TestFunc(lambda: pts.update_pixit_param(
+            "DIS", "TSPX_iut_device_name_in_adv_packet_for_random_address", iut_device_name)),
 
         # We do this on test case, because previous one could update
         # this if RPA was used by PTS

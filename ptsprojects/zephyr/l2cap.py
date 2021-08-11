@@ -44,9 +44,6 @@ def set_pixits(ptses):
 
     pts = ptses[0]
 
-    global iut_device_name
-    iut_device_name = get_unique_name(pts)
-
     pts.set_pixit("L2CAP", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
     pts.set_pixit("L2CAP", "TSPX_bd_addr_iut_le", "DEADBEEFDEAD")
     pts.set_pixit("L2CAP", "TSPX_client_class_of_device", "100104")
@@ -64,9 +61,9 @@ def set_pixits(ptses):
     pts.set_pixit("L2CAP", "TSPX_tester_mps", "0017")
     pts.set_pixit("L2CAP", "TSPX_tester_mtu", "02A0")
     pts.set_pixit("L2CAP", "TSPX_iut_role_initiator", "True")
-    pts.set_pixit("L2CAP", "TSPX_spsm", format(le_psm, '04x'))
+    pts.set_pixit("L2CAP", "TSPX_spsm", "0000")
     pts.set_pixit("L2CAP", "TSPX_psm", "0001")
-    pts.set_pixit("L2CAP", "TSPX_psm_unsupported", format(psm_unsupported, '04x'))
+    pts.set_pixit("L2CAP", "TSPX_psm_unsupported", "0000")
     pts.set_pixit("L2CAP", "TSPX_psm_authentication_required", "00F2")
     pts.set_pixit("L2CAP", "TSPX_psm_authorization_required", "00F3")
     pts.set_pixit("L2CAP", "TSPX_psm_encryption_key_size_required", "00F4")
@@ -114,6 +111,7 @@ def test_cases(ptses):
 
     stack = get_stack()
 
+    iut_device_name = get_unique_name(pts)
     stack.gap_init(iut_device_name)
 
     common = [TestFunc(btp.core_reg_svc_gap),
@@ -125,6 +123,10 @@ def test_cases(ptses):
               TestFunc(lambda: pts.update_pixit_param(
                   "L2CAP", "TSPX_bd_addr_iut_le",
                   stack.gap.iut_addr_get_str())),
+              TestFunc(lambda: pts.update_pixit_param(
+                  "L2CAP", "TSPX_spsm", format(le_psm, '04x'))),
+              TestFunc(lambda: pts.update_pixit_param(
+                  "L2CAP", "TSPX_psm_unsupported", format(psm_unsupported, '04x'))),
               TestFunc(lambda: pts.update_pixit_param(
                   "L2CAP", "TSPX_iut_address_type_random",
                   "TRUE" if stack.gap.iut_addr_is_random()

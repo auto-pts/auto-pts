@@ -39,9 +39,6 @@ def set_pixits(ptses):
 
     pts = ptses[0]
 
-    global iut_device_name
-    iut_device_name = get_unique_name(pts)
-
     pts.set_pixit("MESH", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
     pts.set_pixit("MESH", "TSPX_bd_addr_additional_whitelist", "")
     pts.set_pixit("MESH", "TSPX_time_guard", "300000")
@@ -161,6 +158,7 @@ def test_cases(ptses):
 
     pts = ptses[0]
 
+    iut_device_name = get_unique_name(pts)
     stack = get_stack()
 
     device_uuid = hexlify(uuid4().bytes)
@@ -184,7 +182,7 @@ def test_cases(ptses):
     stack.mesh_init(device_uuid, oob, out_size, rand_out_actions, in_size,
                     rand_in_actions, crpl_size)
 
-    pre_conditions = [
+    common_pre_conditions = [
         TestFunc(btp.core_reg_svc_gap),
         TestFunc(btp.core_reg_svc_mesh),
         TestFunc(btp.gap_read_ctrl_info),
@@ -200,11 +198,15 @@ def test_cases(ptses):
             MeshVals.subscription_addr_list1)),
         TestFunc(lambda: pts.update_pixit_param(
             "MESH", "TSPX_OOB_code", oob)),
+    ]
+
+    pre_conditions = common_pre_conditions + [
         TestFunc(lambda: pts.update_pixit_param(
             "MESH", "TSPX_device_uuid", stack.mesh.dev_uuid)),
         TestFunc(lambda: pts.update_pixit_param(
             "MESH", "TSPX_device_uuid2", device_uuid2)),
     ]
+
     pre_conditions_slave = [
         TestFunc(lambda: pts2.update_pixit_param(
             "MESH", "TSPX_bd_addr_iut", stack.gap.iut_addr_get_str())),
@@ -217,12 +219,13 @@ def test_cases(ptses):
     ]
 
     # Some test cases require device_uuid and device_uuid2 to be swapped
-    pre_conditions_lt2 = pre_conditions + [
+    pre_conditions_lt2 = common_pre_conditions + [
         TestFunc(lambda: pts.update_pixit_param(
             "MESH", "TSPX_device_uuid", device_uuid2)),
         TestFunc(lambda: pts.update_pixit_param(
             "MESH", "TSPX_device_uuid2", stack.mesh.dev_uuid)),
     ]
+
     pre_conditions_lt2_slave = [
         TestFunc(lambda: pts2.update_pixit_param(
             "MESH", "TSPX_bd_addr_iut", stack.gap.iut_addr_get_str())),

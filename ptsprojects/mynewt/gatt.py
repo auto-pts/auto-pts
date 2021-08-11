@@ -115,9 +115,6 @@ def set_pixits(ptses):
 
     pts = ptses[0]
 
-    global iut_device_name
-    iut_device_name = get_unique_name(pts)
-
     pts.set_pixit("GATT", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
     pts.set_pixit("GATT", "TSPX_iut_device_name_in_adv_packet_for_random_address", "")
     pts.set_pixit("GATT", "TSPX_security_enabled", "FALSE")
@@ -267,11 +264,9 @@ def test_cases(ptses):
     pts = ptses[0]
 
     stack = get_stack()
+    iut_device_name = get_unique_name(pts)
 
     stack.gap_init(iut_device_name)
-
-    pts.update_pixit_param("GATT", "TSPX_delete_link_key", "TRUE")
-    pts.update_pixit_param("GATT", "TSPX_delete_ltk", "TRUE")
 
     tc_list = test_cases_client(pts)
     tc_list += test_cases_server(pts)
