@@ -73,18 +73,6 @@ def set_pixits(ptses):
 
     pts = ptses[0]
 
-    global iut_device_name
-    iut_device_name = get_unique_name(pts)
-
-    ad_str_flags = str(AdType.flags).zfill(2) + \
-        str(AdFlags.br_edr_not_supp).zfill(2)
-    ad_str_flags_len = str(len(ad_str_flags) // 2).zfill(2)
-    ad_str_name_short = str(AdType.name_short).zfill(2) + \
-        bytes.hex(iut_device_name)
-    ad_str_name_short_len = format((len(ad_str_name_short) // 2), 'x').zfill(2)
-    ad_pixit = ad_str_flags_len + ad_str_flags + ad_str_name_short_len + \
-        ad_str_name_short
-
     # Set GAP common PIXIT values
     pts.set_pixit("GAP", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
     pts.set_pixit("GAP", "TSPX_bd_addr_PTS", "C000DEADBEEF")
@@ -140,13 +128,13 @@ def set_pixits(ptses):
     pts.set_pixit("GAP", "TSPX_iut_mandates_mitm", "FALSE")
     pts.set_pixit("GAP", "TSPX_encryption_before_service_request", "FALSE")
     pts.set_pixit("GAP", "TSPX_tester_appearance", "0000")
-    pts.set_pixit("GAP", "TSPX_advertising_data", ad_pixit)
+    pts.set_pixit("GAP", "TSPX_advertising_data", "")
     pts.set_pixit("GAP", "TSPX_iut_device_IRK_for_resolvable_privacy_address_generation_procedure",
                   "00000000000000000000000000000000")
     pts.set_pixit("GAP", "TSPX_tester_device_IRK_for_resolvable_privacy_address_generation_procedure",
                   "0123456789ABCDEF0123456789ABCDEF")
     pts.set_pixit("GAP",
-                  "TSPX_iut_device_name_in_adv_packet_for_random_address", iut_device_name)
+                  "TSPX_iut_device_name_in_adv_packet_for_random_address", "")
     pts.set_pixit("GAP", "TSPX_Tgap_104", "60000")
     pts.set_pixit("GAP", "TSPX_URI", "176769746875622e636f6d2f696e74656c2f6175746f2d707473")
     pts.set_pixit("GAP", "TSPX_periodic_advertising_data", "0201040503001801180D095054532D4741502D3036423803190000")
@@ -162,6 +150,16 @@ def test_cases(ptses):
     pts = ptses[0]
 
     pts_bd_addr = pts.q_bd_addr
+
+    iut_device_name = get_unique_name(pts)
+    ad_str_flags = str(AdType.flags).zfill(2) + \
+                   str(AdFlags.br_edr_not_supp).zfill(2)
+    ad_str_flags_len = str(len(ad_str_flags) // 2).zfill(2)
+    ad_str_name_short = str(AdType.name_short).zfill(2) + \
+                        bytes.hex(iut_device_name)
+    ad_str_name_short_len = format((len(ad_str_name_short) // 2), 'x').zfill(2)
+    ad_pixit = ad_str_flags_len + ad_str_flags + ad_str_name_short_len + \
+               ad_str_name_short
 
     stack = get_stack()
 
@@ -185,6 +183,10 @@ def test_cases(ptses):
         TestFunc(lambda: pts.update_pixit_param(
             "GAP", "TSPX_using_random_device_address",
             "TRUE" if stack.gap.iut_addr_is_random() else "FALSE")),
+        TestFunc(lambda: pts.update_pixit_param(
+            "GAP", "TSPX_iut_device_name_in_adv_packet_for_random_address", iut_device_name)),
+        TestFunc(lambda: pts.update_pixit_param(
+            "GAP", "TSPX_advertising_data", ad_pixit)),
 
         # We do this on test case, because previous one could update
         # this if RPA was used by PTS

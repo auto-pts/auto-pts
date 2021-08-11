@@ -98,9 +98,6 @@ def set_pixits(ptses):
 
     pts = ptses[0]
 
-    global iut_device_name
-    iut_device_name = get_unique_name(pts)
-
     pts.set_pixit("GATT", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
     pts.set_pixit("GATT", "TSPX_iut_device_name_in_adv_packet_for_random_address", "")
     pts.set_pixit("GATT", "TSPX_security_enabled", "FALSE")
@@ -154,6 +151,7 @@ def test_cases_server(ptses):
 
     pts = ptses[0]
 
+    iut_device_name = get_unique_name(pts)
     stack = get_stack()
 
     pre_conditions = [TestFunc(btp.core_reg_svc_gap),
@@ -633,15 +631,19 @@ def test_cases_client(pts):
     """
 
     pts_bd_addr = pts.q_bd_addr
+    iut_device_name = get_unique_name(pts)
     stack = get_stack()
 
-    pre_conditions = [TestFunc(btp.core_reg_svc_gap),
-                      TestFunc(btp.gap_read_ctrl_info),
-                      TestFunc(lambda: pts.update_pixit_param(
-                          "GATT", "TSPX_bd_addr_iut",
-                          stack.gap.iut_addr_get_str())),
-                      TestFunc(btp.core_reg_svc_gatt),
-                      TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public)]
+    pre_conditions = [
+        TestFunc(stack.gap_init, iut_device_name),
+        TestFunc(btp.core_reg_svc_gap),
+        TestFunc(btp.gap_read_ctrl_info),
+        TestFunc(lambda: pts.update_pixit_param(
+            "GATT", "TSPX_bd_addr_iut",
+            stack.gap.iut_addr_get_str())),
+        TestFunc(btp.core_reg_svc_gatt),
+        TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public)
+    ]
 
     custom_test_cases = [
         ZTestCase("GATT", "GATT/CL/GAD/BV-01-C",
@@ -692,10 +694,6 @@ def test_cases_client(pts):
 
 def test_cases(ptses):
     """Returns a list of GATT test cases"""
-
-    stack = get_stack()
-
-    stack.gap_init(iut_device_name)
 
     tc_list = test_cases_client(ptses[0])
     tc_list += test_cases_server(ptses)

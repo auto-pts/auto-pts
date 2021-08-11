@@ -50,7 +50,6 @@ init_gatt_db = [TestFunc(btp.core_reg_svc_gatt),
                 TestFunc(btp.gatts_start_server)]
 
 
-iut_device_name = 'Tester'
 iut_manufacturer_data = 'FFFFABCD'
 iut_appearance = '1111'
 iut_svc_data = '1111'
@@ -69,15 +68,6 @@ def set_pixits(ptses):
     ptses -- list of PyPTS instances"""
 
     pts = ptses[0]
-
-    global iut_device_name
-    iut_device_name = get_unique_name(pts)
-
-    ad_str_manufacturer_data = str(format(AdType.manufacturer_data, 'x')).zfill(2) + \
-        iut_manufacturer_data
-    ad_str_manufacturer_data_len = str(len(ad_str_manufacturer_data) / 2).zfill(2)
-
-    ad_pixit = ad_str_manufacturer_data_len + ad_str_manufacturer_data
 
     # Set GAP common PIXIT values
     pts.set_pixit("GAP", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
@@ -132,13 +122,13 @@ def set_pixits(ptses):
     pts.set_pixit("GAP", "TSPX_iut_mandates_mitm", "FALSE")
     pts.set_pixit("GAP", "TSPX_encryption_before_service_request", "FALSE")
     pts.set_pixit("GAP", "TSPX_tester_appearance", "0000")
-    pts.set_pixit("GAP", "TSPX_advertising_data", ad_pixit)
+    pts.set_pixit("GAP", "TSPX_advertising_data", "")
     pts.set_pixit("GAP", "TSPX_iut_device_IRK_for_resolvable_privacy_address_generation_procedure",
                   "00000000000000000000000000000000")
     pts.set_pixit("GAP", "TSPX_tester_device_IRK_for_resolvable_privacy_address_generation_procedure",
                   "0123456789ABCDEF0123456789ABCDEF")
     pts.set_pixit("GAP",
-                  "TSPX_iut_device_name_in_adv_packet_for_random_address", iut_device_name)
+                  "TSPX_iut_device_name_in_adv_packet_for_random_address", "")
     pts.set_pixit("GAP", "TSPX_Tgap_104", "60000")
     pts.set_pixit("GAP", "TSPX_URI", "162F2F7777772E626C7565746F6F74682E636F6D")
 
@@ -149,8 +139,14 @@ def test_cases(ptses):
 
     pts = ptses[0]
 
-    pts_bd_addr = pts.q_bd_addr
+    ad_str_manufacturer_data = str(format(AdType.manufacturer_data, 'x')).zfill(2) + \
+                               iut_manufacturer_data
+    ad_str_manufacturer_data_len = str(len(ad_str_manufacturer_data) / 2).zfill(2)
 
+    ad_pixit = ad_str_manufacturer_data_len + ad_str_manufacturer_data
+
+    pts_bd_addr = pts.q_bd_addr
+    iut_device_name = get_unique_name(pts)
     stack = get_stack()
 
     pre_conditions = [
@@ -162,21 +158,25 @@ def test_cases(ptses):
         TestFunc(btp.gap_read_ctrl_info),
         TestFunc(btp.gap_set_bondable_on),
         TestFunc(lambda: pts.update_pixit_param(
-                 "GAP", "TSPX_bd_addr_iut",
-                 stack.gap.iut_addr_get_str())),
+            "GAP", "TSPX_bd_addr_iut",
+            stack.gap.iut_addr_get_str())),
         TestFunc(lambda: pts.update_pixit_param(
-                 "GAP", "TSPX_iut_privacy_enabled",
-                 "TRUE" if stack.gap.iut_has_privacy() else "FALSE")),
+            "GAP", "TSPX_iut_privacy_enabled",
+            "TRUE" if stack.gap.iut_has_privacy() else "FALSE")),
         TestFunc(lambda: pts.update_pixit_param(
-                 "GAP", "TSPX_using_public_device_address",
-                 "FALSE" if stack.gap.iut_addr_is_random() else "TRUE")),
+            "GAP", "TSPX_using_public_device_address",
+            "FALSE" if stack.gap.iut_addr_is_random() else "TRUE")),
         TestFunc(lambda: pts.update_pixit_param(
-                 "GAP", "TSPX_using_private_device_address",
-                 "TRUE" if stack.gap.iut_addr_is_random() else "FALSE")),
+            "GAP", "TSPX_using_private_device_address",
+            "TRUE" if stack.gap.iut_addr_is_random() else "FALSE")),
         TestFunc(lambda: pts.update_pixit_param(
-                 "GAP", "TSPX_using_random_device_address",
-                 "TRUE" if stack.gap.iut_addr_is_random()
-                 else "FALSE")),
+            "GAP", "TSPX_iut_device_name_in_adv_packet_for_random_address", iut_device_name)),
+        TestFunc(lambda: pts.update_pixit_param(
+            "GAP", "TSPX_advertising_data", ad_pixit)),
+        TestFunc(lambda: pts.update_pixit_param(
+            "GAP", "TSPX_using_random_device_address",
+            "TRUE" if stack.gap.iut_addr_is_random()
+            else "FALSE")),
 
         # We do this on test case, because previous one could
         # update this if RPA was used by PTS

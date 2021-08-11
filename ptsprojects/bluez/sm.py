@@ -34,8 +34,6 @@ def set_pixits(ptses):
     ptses -- list of PyPTS instances"""
 
     pts = ptses[0]
-    global iut_device_name
-    iut_device_name = get_unique_name(pts)
 
     pts.set_pixit("SM", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
     pts.set_pixit("SM", "TSPX_SMP_pin_code", "111111")
@@ -109,7 +107,7 @@ def test_cases(ptses):
     pts = ptses[0]
 
     pts_bd_addr = pts.q_bd_addr
-
+    iut_device_name = get_unique_name(pts)
     stack = get_stack()
 
     stack.gap_init(name=iut_device_name)
