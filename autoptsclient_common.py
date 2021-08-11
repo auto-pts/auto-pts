@@ -65,43 +65,6 @@ profiles = {'dis', 'gap', 'gatt', 'sm', 'l2cap', 'mesh', 'mmdl'}
 AUTO_PTS_LOCAL = "AUTO_PTS_LOCAL" in os.environ
 
 
-# xmlrpclib._Method patched to get __repr__ and __str__
-#
-# This is used to log and print xmlrpclib.ServerProxy methods. Without this
-# patch TestCase with xmlrpc TestFunc, e.g. pts.update_pixit_param, will cause
-# traceback:
-#
-# Fault: <Fault 1: '<type \'exceptions.Exception\'>:method
-# "update_pixit_param.__str__" is not supported'>
-#
-# To be used till this fix is backported to python 2.7
-# https://bugs.python.org/issue1690840
-
-
-class _Method:
-    # some magic to bind an XML-RPC method to an RPC server.
-    # supports "nested" methods (e.g. examples.getStateName)
-    def __init__(self, send, name):
-        self.__send = send
-        self.__name = name
-
-    def __getattr__(self, name):
-        return _Method(self.__send, "%s.%s" % (self.__name, name))
-
-    def __call__(self, *args):
-        return self.__send(self.__name, args)
-
-    def __repr__(self):
-        return "<%s.%s %s %s>" % (self.__class__.__module__,
-                                  self.__class__.__name__,
-                                  self.__name, self.__send)
-
-    __str__ = __repr__
-
-
-xmlrpc.client._Method = _Method
-
-
 class ClientCallback(PTSCallback):
     def __init__(self):
         super().__init__()
