@@ -37,6 +37,21 @@ def l2cap_wid_hdl(wid, description, test_case_name):
         logging.exception(e)
 
 
+def l2cap_wid_hdl_one_ecfc_chan(wid, description, test_case_name):
+    log("%s, %r, %r, %s", l2cap_wid_hdl.__name__, wid, description,
+        test_case_name)
+
+    if wid == 255:
+        stack = get_stack()
+        l2cap = stack.l2cap
+
+        btp.l2cap_conn(None, None, l2cap.psm, l2cap.initial_mtu, 1, 1)
+        return True
+    else:
+        return l2cap_wid_hdl(wid, description, test_case_name)
+
+
+
 # wid handlers section begin
 def hdl_wid_14(desc):
     """
@@ -469,7 +484,7 @@ def hdl_wid_255(desc):
     stack = get_stack()
     l2cap = stack.l2cap
 
-    btp.l2cap_conn(None, None, l2cap.psm, l2cap.initial_mtu, 2)
+    btp.l2cap_conn(None, None, l2cap.psm, l2cap.initial_mtu, 2, 1)
     return True
 
 

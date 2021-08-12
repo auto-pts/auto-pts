@@ -1380,6 +1380,7 @@ Commands and responses:
 					PSM (2 octets)
 					MTU (2 octets)
 					Num (1 octet)
+					ECFC (1 octet)
 		Response parameters:	Num (1 octet)
 					Chan_IDs (1 octet x num of channels created)
 
@@ -1390,9 +1391,12 @@ Commands and responses:
 		Connected Event (or Disconnected Event in case of an error)
 		shall be expected after issuing this command.
 
-		if Num > 1 then Enhanced Credit Based L2CAP channel shall be created.
+		if Num > 1 then Enhanced Credit Based L2CAP channels shall be created.
 		Return value will contain a list of Chan_IDs that were created by
 		this command.
+		if ECFC == 1 then Enhanced Credit Based L2CAP channel shall be created even
+		if Num == 1. This is used to create single Enhanced CFC channel. This flag must
+		be set to 1 when Num > 1.
 
 		In case of an error, the error response will be returned.
 

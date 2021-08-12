@@ -14,6 +14,6 @@
 #
 
 
-from .l2cap import l2cap_wid_hdl
+from .l2cap import l2cap_wid_hdl, l2cap_wid_hdl_one_ecfc_chan
 from .mesh import mesh_wid_hdl
 from .mmdl import mmdl_wid_hdl

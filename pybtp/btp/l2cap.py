@@ -53,7 +53,7 @@ def l2cap_command_rsp_succ(op=None):
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_L2CAP, op)
 
 
-def l2cap_conn(bd_addr, bd_addr_type, psm, mtu=0, num=1):
+def l2cap_conn(bd_addr, bd_addr_type, psm, mtu=0, num=1, ecfc=0):
     logging.debug("%s %r %r %r", l2cap_conn.__name__, bd_addr, bd_addr_type,
                   psm)
     iutctl = get_iut()
@@ -71,6 +71,7 @@ def l2cap_conn(bd_addr, bd_addr_type, psm, mtu=0, num=1):
     data_ba.extend(struct.pack('H', psm))
     data_ba.extend(struct.pack('H', mtu))
     data_ba.extend(struct.pack('B', num))
+    data_ba.extend(struct.pack('B', ecfc))
 
     iutctl.btp_socket.send(*L2CAP['connect'], data=data_ba)
 
