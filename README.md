@@ -292,13 +292,10 @@ This feature was created to enable long runs of bot without supervision, because
 
 **Recover autoptsserver after exception**
 
-After python exception caught, kills **all** existing processes of PTS.exe, Fts.exe on Windows machine, cleans temporary PTS workspaces, and tries to restart autoptsserver. So if you need 2 autoptsserver instances, e.g. for MESH tests, this is the proper way to run them with recovery:
+Autoptsserver can recover itself after python exception or after request received from autoptsclient.
+If you have YKUSH hub, you can run server with option --ykush, so recovery steps will include re-plugin of PTS dongles:
 
-    $ python autoptsserver.py -S 65000 65002 --recovery
-    
-If you have YKUSH hub, you can run with option --ykush, so recovery steps will include re-plugin of PTS dongles:
-
-    $ python autoptsserver.py -S 65000 65002 --recovery --ykush 1 2
+    $ python autoptsserver.py -S 65000 65002 --ykush 1 2
 
 where 1 and 2 are numbers of YKUSH USB ports (More about [YKUSH hub](https://www.yepkit.com/products/ykush)).
 
@@ -308,7 +305,8 @@ Helpful --superguard option will blindly trigger recovery after given amount of 
 
 **Recover autoptsclient after exception**
 
-Recovery of autoptsclient is triggered after python exception or test case result other than PASS, INCONC or FAIL. It sends recovery request to autoptsserver, so server has to run in recovery mode too.
+Recovery of autoptsclient can be enabled with --recovery option and is triggered after python exception or test case result other than PASS, INCONC or FAIL.
+Then it sends recovery request to autoptsserver, restarting and reinitializing PTSes.
 
     $ python ./autoptsclient-zephyr.py zephyr-master -t COM3 -b nrf52 --recovery
 
