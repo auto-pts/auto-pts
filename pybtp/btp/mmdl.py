@@ -1935,11 +1935,11 @@ def mmdl_scheduler_action_set(index, year, month, day, hour, minute, second, day
 
     iutctl = get_iut()
     data = bytearray(
-        struct.pack("<BBBBBBBBBBBH", ack, index, year, month, day, hour, minute, second, day_of_week, action,
+        struct.pack("<BBBHBBBBBBBH", ack, index, year, month, day, hour, minute, second, day_of_week, action,
                     transition_time, scene_num))
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['scheduler_action_set'], data)
     if ack:
-        hdr_fmt = '<BBBBBBBBBH'
+        hdr_fmt = '<BBBHBBBBBH'
         year, month, day, hour, minute, second, day_of_week, action, transition_time, scene_num = struct.unpack_from(
             hdr_fmt, rsp)
         stack = get_stack()
