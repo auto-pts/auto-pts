@@ -24,6 +24,7 @@ import logging
 import os
 import queue
 import random
+import signal
 import socket
 import subprocess
 import sys
@@ -63,6 +64,25 @@ profiles = {'dis', 'gap', 'gatt', 'sm', 'l2cap', 'mesh', 'mmdl'}
 # be used. When FakeProxy is used autoptsserver on Windows will
 # not be contacted.
 AUTO_PTS_LOCAL = "AUTO_PTS_LOCAL" in os.environ
+RUN_END = False
+
+
+class RunEnd(Exception):
+    pass
+
+
+class PtsServerProxy(xmlrpc.client.ServerProxy):
+    def __init__(self, uri, transport=None, encoding=None, verbose=False,
+                 allow_none=False, use_datetime=False, use_builtin_types=False,
+                 *, headers=(), context=None):
+        super().__init__(uri, transport, encoding, verbose, allow_none, use_datetime,
+                         use_builtin_types, headers=headers, context=context)
+
+    def __getattr__(self, name):
+        if RUN_END:
+            raise RunEnd
+
+        return super().__getattr__(name)
 
 
 class ClientCallback(PTSCallback):
@@ -224,6 +244,7 @@ class CallbackThread(threading.Thread):
         self.callback = ClientCallback()
         self.port = port
         self.current_test_case = None
+        self.end = False
 
     def run(self):
         """Starts the xmlrpc callback server"""
@@ -235,15 +256,15 @@ class CallbackThread(threading.Thread):
                                          allow_none=True, logRequests=False)
         self.server.register_instance(self.callback)
         self.server.register_introspection_functions()
-        self.server.serve_forever()
+        self.server.timeout = 1.0
+
+        while not self.end:
+            self.server.handle_request()
+
+        self.server.server_close()
 
     def stop(self):
-        thread = threading.Thread(target=self._shutdown_thread)
-        thread.start()
-        thread.join()
-
-    def _shutdown_thread(self):
-        self.server.shutdown()
+        self.end = True
 
     def set_current_test_case(self, name):
         log("%s.%s %s", self.__class__.__name__, self.set_current_test_case.__name__, name)
@@ -378,7 +399,6 @@ def init_pts_thread_entry(proxy, local_address, local_port, workspace_path,
     proxy.restart_pts()
     print("(%r) OK" % (id(proxy),))
 
-    proxy.callback_thread = CallbackThread(local_port)
     proxy.callback_thread.start()
 
     proxy.set_call_timeout(300000)  # milliseconds
@@ -410,33 +430,43 @@ def init_pts_thread_entry(proxy, local_address, local_port, workspace_path,
     proxy.enable_maximum_logging(enable_max_logs)
 
 
-def init_pts(args, tc_db_table_name=None):
+def init_pts(args, ptses, tc_db_table_name=None):
     """Initialization procedure for PTS instances"""
 
-    proxy_list = []
+    proxy_list = ptses
     thread_list = []
     exceptions = queue.Queue()
+    i = 0
 
     init_logging('_' + '_'.join(str(x) for x in args.cli_port))
 
     for server_addr, local_addr, server_port, local_port \
             in zip(args.ip_addr, args.local_addr, args.srv_port, args.cli_port):
-        if AUTO_PTS_LOCAL:
-            proxy = FakeProxy()
-        else:
-            proxy = xmlrpc.client.ServerProxy(
-                "http://{}:{}/".format(server_addr, server_port),
-                allow_none=True, )
 
+        if i < len(proxy_list):
+            proxy = proxy_list[i]
+            if isinstance(proxy.callback_thread, CallbackThread):
+                proxy.callback_thread.stop()
+        else:
+            if AUTO_PTS_LOCAL:
+                proxy = FakeProxy()
+            else:
+                proxy = PtsServerProxy(
+                    "http://{}:{}/".format(server_addr, server_port),
+                    allow_none=True, )
+
+            proxy_list.append(proxy)
+
+        proxy.callback_thread = CallbackThread(local_port)
         print("(%r) Starting PTS %s:%s ..." % (id(proxy), server_addr, server_port))
 
         thread = threading.Thread(target=init_pts_thread_entry,
                                   args=(proxy, local_addr, local_port, args.workspace,
                                         args.bd_addr, args.enable_max_logs, exceptions))
-        thread.start()
 
-        proxy_list.append(proxy)
         thread_list.append(thread)
+        thread.start()
+        i += 1
 
     if tc_db_table_name:
         global TEST_CASE_DB
@@ -464,8 +494,13 @@ def init_pts(args, tc_db_table_name=None):
 
 def shutdown_pts(ptses):
     for pts in ptses:
-        pts.unregister_xmlrpc_ptscallback()
-        pts.callback_thread.stop()
+        proxy = xmlrpc.client.ServerProxy(
+            'http://%s/' % pts.__getattribute__('_ServerProxy__host'),
+            allow_none=True)
+        proxy.unregister_xmlrpc_ptscallback()
+
+        if isinstance(pts.callback_thread, CallbackThread):
+            pts.callback_thread.stop()
 
 
 def get_result_color(status):
@@ -967,6 +1002,9 @@ def run_test_cases(ptses, test_case_instances, args):
                                                  test_case, stats,
                                                  session_log_dir, exceptions)
 
+            if RUN_END:
+                raise RunEnd
+
             exeption_msg = ''
             while not exceptions.empty():
                 try:
@@ -1102,12 +1140,20 @@ class Client:
         self.test_cases = None
         self.get_iut = get_iut
         self.store_tag = project + '_'
-        self.ptses = None
+        self.ptses = []
         setup_project_name(project)
 
     def start(self):
         """Start main with exception handling."""
+
+        def sigint_handler(sig, frame):
+            """Thread safe SIGINT interrupting"""
+            global RUN_END
+            RUN_END = True
+
         try:
+            signal.signal(signal.SIGINT, sigint_handler)
+
             self.main()
         except KeyboardInterrupt:  # Ctrl-C
             shutdown_pts(self.ptses)
@@ -1141,7 +1187,7 @@ class Client:
         else:
             tc_db_table_name = None
 
-        self.ptses = init_pts(args, tc_db_table_name)
+        init_pts(args, self.ptses, tc_db_table_name)
 
         btp.init(self.get_iut)
         self.init_iutctl(args)
@@ -1231,29 +1277,44 @@ class Client:
 
 
 def run_recovery(args, ptses):
-    # It is hard to say, when we should restart PTS or board.
-    # Some wrong result statuses are not accompanied by exceptions,
-    # e.g. when test finished with RUNNING status.
+    def wait_for_server_restart(pts):
+        for i in range(int(args.superguard) if args.superguard else 60):
+            try:
+                if pts.ready():
+                    break
+            except Exception:
+                time.sleep(1)
+
+    log('Running recovery')
+
     ykush = args.ykush
     if ykush:
         board_power(ykush, False)
 
-    time.sleep(20)  # Server could already restart by itself,
+    for pts in ptses:
+        wait_for_server_restart(pts)
+
     try:
         for pts in ptses:
-            recover_autoptsserver(pts)  # but restart it anyway
-    except BaseException as e:
+            pts.request_recovery()
+    except Exception as e:
         logging.exception(e)
         traceback.print_exc()
 
+    for pts in ptses:
+        wait_for_server_restart(pts)
+
     if ykush:
         board_power(ykush, True)
-    time.sleep(20)  # Give server some time to restart
 
-    shutdown_pts(ptses)
-    init_pts(ptses, args)
+    init_pts(args, ptses)
+
+    stack_inst = stack.get_stack()
+    stack_inst.cleanup()
+    stack_inst.synch_init([pts.callback_thread for pts in ptses])
 
     setup_project_pixits(ptses)
+    log('Recovery finished')
 
 
 def setup_project_name(project):
@@ -1277,15 +1338,6 @@ def setup_test_cases(ptses):
             test_cases += mod.test_cases(ptses)
 
     return test_cases
-
-
-def recover_autoptsserver(server):
-    if server:
-        print('Attempting to recover autoptsserver')
-        log('Attempting to recover autoptsserver')
-        server.request_recovery()
-        return 0
-    return 1
 
 
 def board_power(ykush_port, on=True):

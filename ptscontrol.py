@@ -41,6 +41,7 @@ import argparse
 import shutil
 import xmlrpc.client
 import ctypes
+import threading
 from pathlib import Path
 
 import win32com.client
@@ -59,6 +60,22 @@ logtype_whitelist = [ptstypes.PTS_LOGTYPE_START_TEST,
                      ptstypes.PTS_LOGTYPE_FINAL_VERDICT]
 
 PTS_WORKSPACE_FILE_EXT = ".pqw6"
+PTS_START_LOCK = threading.RLock()
+
+
+def pts_lock_wrapper(lock):
+    def _pts_lock_wrapper(func):
+        def __pts_lock_wrapper(*args):
+            try:
+                lock.acquire()
+                ret = func(*args)
+            finally:
+                lock.release()
+            return ret
+
+        return __pts_lock_wrapper
+
+    return _pts_lock_wrapper
 
 
 class PTSLogger(win32com.server.connect.ConnectableServer):
@@ -356,6 +373,7 @@ class PyPTS:
 
         func(*args, **kwds)
 
+    @pts_lock_wrapper(PTS_START_LOCK)
     def recover_pts(self):
         """Recovers PTS from errors occured during RunTestCase call.
 
@@ -384,6 +402,7 @@ class PyPTS:
 
         self._recov_in_progress = False
 
+    @pts_lock_wrapper(PTS_START_LOCK)
     def restart_pts(self):
         """Restarts PTS
 
@@ -399,6 +418,7 @@ class PyPTS:
         time.sleep(1)  # otherwise there are COM errors occasionally
         self.start_pts()
 
+    @pts_lock_wrapper(PTS_START_LOCK)
     def start_pts(self):
         """Starts PTS
 
@@ -472,6 +492,10 @@ class PyPTS:
         self._pts.CreateWorkspace(bd_addr, pts_file_path, workspace_name,
                                   workspace_path)
 
+    def delete_temp_workspace(self):
+        if self._temp_workspace_path and os.path.exists(self._temp_workspace_path):
+            os.remove(self._temp_workspace_path)
+
     @staticmethod
     def _get_own_workspaces():
         """Get auto-pts own workspaces"""
@@ -487,6 +511,7 @@ class PyPTS:
 
         return workspaces
 
+    @pts_lock_wrapper(PTS_START_LOCK)
     def open_workspace(self, workspace_path):
         """Opens existing workspace"""
 

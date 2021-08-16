@@ -205,28 +205,16 @@ def run_tests(args, iut_config, tty):
         if 'overlay' in value:
             _args[config_default].excluded += _args[config].test_cases
 
-    while True:
-        try:
-            ptses = autoptsclient.init_pts(_args[config_default],
-                                           "zephyr_" + str(args["board"]))
+    ptses = []
+    autoptsclient.init_pts(_args[config_default], ptses,
+                           "zephyr_" + str(args["board"]))
+    btp.init(get_iut)
 
-            btp.init(get_iut)
+    # Main instance of PTS
+    pts = ptses[0]
 
-            # Main instance of PTS
-            pts = ptses[0]
-
-            # Read PTS Version and keep it for later use
-            args['pts_ver'] = "%s" % pts.get_version()
-        except Exception as exc:
-            logging.exception(exc)
-            if _args[config_default].recovery:
-                ptses = exc.args[1]
-                for pts in ptses:
-                    autoptsclient.recover_autoptsserver(pts)
-                time.sleep(20)
-                continue
-            raise exc
-        break
+    # Read PTS Version and keep it for later use
+    args['pts_ver'] = "%s" % pts.get_version()
 
     stack.init_stack()
     stack_inst = stack.get_stack()

@@ -679,6 +679,13 @@ class Synch:
         self._pending_responses = []
         self._sync_callbacks = sync_callbacks
 
+    def reinit(self, sync_callbacks):
+        self._synch_table.clear()
+        self._pending_responses.clear()
+        self._sync_callbacks.clear()
+        for cb in sync_callbacks:
+            self._sync_callbacks.append(cb)
+
     def add_synch_element(self, elem):
         self._synch_table.append(SynchElem(elem))
 
@@ -805,7 +812,10 @@ class Stack:
         self.gatt = Gatt()
 
     def synch_init(self, sync_callbacks):
-        self.synch = Synch(sync_callbacks)
+        if not self.synch:
+            self.synch = Synch(sync_callbacks)
+        else:
+            self.synch.reinit(sync_callbacks)
 
     def cleanup(self):
         if self.gap:
