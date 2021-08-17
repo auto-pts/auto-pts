@@ -54,8 +54,8 @@ def set_pixits(ptses):
     pts.set_pixit("MMDL", "TSPX_advertising_interval_min", "160")
     pts.set_pixit("MMDL", "TSPX_advertising_interval_max", "160")
     pts.set_pixit("MMDL", "TSPX_tester_OOB_information", "F87F")
-    pts.set_pixit("MESH", "TSPX_device_uuid", "00000000000000000000000000000000")
-    pts.set_pixit("MESH", "TSPX_device_uuid2", "001BDC0810210B0E0A0C000B0E0A0C00")
+    pts.set_pixit("MMDL", "TSPX_device_uuid", "00000000000000000000000000000000")
+    pts.set_pixit("MMDL", "TSPX_device_uuid2", "001BDC0810210B0E0A0C000B0E0A0C00")
     pts.set_pixit("MMDL", "TSPX_use_pb_gatt_bearer", "FALSE")
     pts.set_pixit("MMDL", "TSPX_iut_comp_data_page", "0")
     pts.set_pixit("MMDL", "TSPX_OOB_state_change", "FALSE")
@@ -100,9 +100,9 @@ def test_cases(ptses):
         TestFunc(btp.core_reg_svc_mmdl),
         TestFunc(btp.gap_read_ctrl_info),
         TestFunc(lambda: pts.update_pixit_param(
-            "MESH", "TSPX_device_uuid", stack.mesh.dev_uuid)),
+            "MMDL", "TSPX_device_uuid", stack.mesh.dev_uuid)),
         TestFunc(lambda: pts.update_pixit_param(
-            "MESH", "TSPX_device_uuid2", device_uuid2)),
+            "MMDL", "TSPX_device_uuid2", device_uuid2)),
         TestFunc(lambda: pts.update_pixit_param(
             "MMDL", "TSPX_bd_addr_iut",
             stack.gap.iut_addr_get_str()))]
