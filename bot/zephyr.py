@@ -207,8 +207,9 @@ def run_tests(args, iut_config, tty):
 
     while True:
         try:
-            ptses = autoptsclient.init_pts(_args[config_default],
-                                           "zephyr_" + str(args["board"]))
+            ptses = []
+            autoptsclient.init_pts(_args[config_default], ptses,
+                                   "zephyr_" + str(args["board"]))
 
             btp.init(get_iut)
 

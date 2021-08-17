@@ -231,8 +231,9 @@ def run_tests(args, iut_config):
 
     while True:
         try:
-            ptses = autoptsclient.init_pts(_args[config_default],
-                                           "mynewt_" + str(args["board"]))
+            ptses = []
+            autoptsclient.init_pts(_args[config_default], ptses,
+                                   "mynewt_" + str(args["board"]))
 
             btp.init(get_iut)
 
