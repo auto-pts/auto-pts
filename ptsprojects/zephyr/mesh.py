@@ -267,7 +267,7 @@ def test_cases(ptses):
                   [TestFunc(btp.mesh_store_net_data)],
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/SR/MPXS/BV-09-C", cmds=pre_conditions +
-                  [TestFunc(get_stack().mesh.proxy_identity_enable)],
+                  [TestFunc(lambda: get_stack().mesh.proxy_identity_enable())],
                   generic_wid_hdl=mesh_wid_hdl),
     ]
 
