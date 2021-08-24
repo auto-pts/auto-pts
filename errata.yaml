@@ -4,3 +4,7 @@
 
 GAP/SEC/AUT/BV-14-C: CASE0071522
 GAP/SEC/AUT/BV-23-C: CASE0071522
+L2CAP/ECFC/BV-11-C: https://github.com/zephyrproject-rtos/zephyr/pull/37605
+L2CAP/ECFC/BV-13-C: https://github.com/zephyrproject-rtos/zephyr/pull/37605
+L2CAP/ECFC/BV-15-C: https://github.com/zephyrproject-rtos/zephyr/pull/37605
+GATT/SR/GAR/BI-11-C: https://github.com/zephyrproject-rtos/zephyr/pull/37599
