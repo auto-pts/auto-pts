@@ -98,8 +98,6 @@ z['iut_config'] = {
 
     "gatt_long_dev_name.conf": {
         "overlay": {
-            'CONFIG_BT_EATT': 'y',
-            'CONFIG_BT_L2CAP_ECRED': 'y',
             'CONFIG_BT_EATT_MAX': '5',
             'CONFIG_BT_CONN_DISABLE_SECURITY': 'y',
             'CONFIG_BT_DEVICE_NAME_MAX': '64',
@@ -112,7 +110,6 @@ z['iut_config'] = {
 
     "l2cap_no_eatt.conf": {
         "overlay": {
-            'CONFIG_BT_L2CAP_ECRED': 'y',
             'CONFIG_BT_EATT': 'n',
         },
         "test_cases": [
@@ -155,8 +152,6 @@ z['iut_config'] = {
 
     "l2cap_eatt_authentication.conf": {
         "overlay": {
-            'CONFIG_BT_L2CAP_ECRED': 'y',
-            'CONFIG_BT_EATT': 'y',
             'CONFIG_BT_EATT_SEC_LEVEL': '2',
             },
         "test_cases": [
@@ -232,16 +227,6 @@ z['iut_config'] = {
             'GAP/SEC/SEM/BV-40-C',
             'GAP/SEC/SEM/BV-42-C',
             'GAP/SEC/SEM/BV-44-C',
-        ]
-    },
-
-    "eatt.conf": {
-        "overlay": {
-            'CONFIG_BT_L2CAP_ECRED=y': 'y',
-            'CONFIG_BT_EATT': 'y',
-        },
-        "test_cases": [
-            'GATT/SR/GAC/BI-01-C',
         ]
     },
 
