@@ -16,7 +16,7 @@
 """L2CAP test cases"""
 
 from pybtp import btp, defs
-from pybtp.types import Addr, L2capSecLevels
+from pybtp.types import Addr, L2CAPConnectionResponse
 from autoptsclient_common import get_unique_name
 from wid import l2cap_wid_hdl
 from ptsprojects.stack import get_stack
@@ -126,90 +126,63 @@ def test_cases(ptses):
               TestFunc(lambda: pts.update_pixit_param(
                   "L2CAP", "TSPX_spsm", format(le_psm, '04x'))),
               TestFunc(lambda: pts.update_pixit_param(
+                  "L2CAP", "TSPX_psm_authentication_required", format(le_psm, '04x'))),
+              TestFunc(lambda: pts.update_pixit_param(
+                  "L2CAP", "TSPX_psm_authorization_required", format(le_psm, '04x'))),
+              TestFunc(lambda: pts.update_pixit_param(
+                  "L2CAP", "TSPX_psm_encryption_key_size_required", format(le_psm, '04x'))),
+              TestFunc(lambda: pts.update_pixit_param(
                   "L2CAP", "TSPX_psm_unsupported", format(psm_unsupported, '04x'))),
+              TestFunc(lambda: pts.update_pixit_param(
+                  "L2CAP", "TSPX_iut_supported_max_channels", "2")),
               TestFunc(lambda: pts.update_pixit_param(
                   "L2CAP", "TSPX_iut_address_type_random",
                   "TRUE" if stack.gap.iut_addr_is_random()
                   else "FALSE")),
               TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public)]
 
-    pre_conditions = common + [TestFunc(stack.l2cap_init, le_psm, le_initial_mtu),
-                               TestFunc(btp.l2cap_le_listen, le_psm)]
-    pre_conditions_auth = common + [TestFunc(stack.l2cap_init, psm_authentication_required, le_initial_mtu),
-                                    TestFunc(btp.l2cap_le_listen, psm_authentication_required)]
-    pre_conditions_keysize = common + [TestFunc(stack.l2cap_init, psm_encryption_key_size_required, le_initial_mtu),
-                                       TestFunc(btp.l2cap_le_listen, psm_encryption_key_size_required)]
-    pre_conditions_author = common + [TestFunc(stack.l2cap_init, psm_authorization_required, le_initial_mtu),
-                                      TestFunc(btp.l2cap_le_listen, psm_authorization_required)]
+    pre_conditions = common + [TestFunc(stack.l2cap_init, le_psm, le_initial_mtu)]
+    pre_conditions_authen = common + [TestFunc(stack.l2cap_init, le_psm, le_initial_mtu),
+                                      TestFunc(btp.l2cap_le_listen, le_psm, le_initial_mtu,
+                                               L2CAPConnectionResponse.insufficient_authentication)]
+    pre_conditions_keysize = common + [TestFunc(stack.l2cap_init, le_psm, le_initial_mtu),
+                                       TestFunc(btp.l2cap_le_listen, le_psm, le_initial_mtu,
+                                                L2CAPConnectionResponse.insufficient_encryption_key_size)]
+    pre_conditions_author = common + [TestFunc(stack.l2cap_init, le_psm, le_initial_mtu),
+                                      TestFunc(btp.l2cap_le_listen, le_psm, le_initial_mtu,
+                                               L2CAPConnectionResponse.insufficient_authorization)]
     pre_conditions_eatt = common + [
-        TestFunc(
-            lambda: pts.update_pixit_param(
-                "L2CAP", "TSPX_iut_supported_max_channels", "2")), TestFunc(
-            stack.l2cap_init, le_psm_eatt, le_initial_mtu), TestFunc(
-                    btp.l2cap_le_listen, le_psm_eatt)]
-    pre_conditions_eatt_sec = common + [
-        TestFunc(
-            lambda: pts.update_pixit_param(
-                "L2CAP", "TSPX_iut_supported_max_channels", "2")), TestFunc(
-            stack.l2cap_init, le_psm_eatt, le_initial_mtu)]
+        TestFunc(stack.l2cap_init, le_psm_eatt, le_initial_mtu),
+    ]
 
     custom_test_cases = [
-        # Connection Parameter Update
+        ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-03-C",
+                  pre_conditions +
+                  [TestFunc(lambda: btp.l2cap_le_listen(le_psm))],
+                  generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-04-C",
                   pre_conditions +
                   [TestFunc(lambda: stack.l2cap.psm_set(psm_unsupported))],
                   generic_wid_hdl=l2cap_wid_hdl),
-        ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-10-C",
-                  pre_conditions +
-                  [TestFunc(lambda: stack.l2cap.psm_set(psm_authentication_required))],
-                  generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-11-C",
-                  pre_conditions_auth,
-                  generic_wid_hdl=l2cap_wid_hdl),
-        ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-12-C",
-                  pre_conditions +
-                  [TestFunc(lambda: stack.l2cap.psm_set(psm_authorization_required))],
+                  pre_conditions_authen,
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-13-C",
                   pre_conditions_author,
                   generic_wid_hdl=l2cap_wid_hdl),
-        ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-14-C",
-                  pre_conditions +
-                  [TestFunc(lambda: stack.l2cap.psm_set(psm_encryption_key_size_required))],
-                  generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-15-C",
                   pre_conditions_keysize,
                   generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-20-C",
+                  pre_conditions +
+                  [TestFunc(lambda: btp.l2cap_le_listen(le_psm))],
+                  generic_wid_hdl=l2cap_wid_hdl),
         # Enhanced Credit Based Flow Control Channel
-        ZTestCase("L2CAP", "L2CAP/ECFC/BV-11-C",
-                  pre_conditions_eatt_sec +
-                  [TestFunc(btp.l2cap_listen, le_psm_eatt, le_initial_mtu,
-                            defs.L2CAP_TRANSPORT_LE, L2capSecLevels.authen, 0)],
-                  generic_wid_hdl=l2cap_wid_hdl),
-        ZTestCase("L2CAP", "L2CAP/ECFC/BV-13-C",
-                  pre_conditions_eatt_sec +
-                  [TestFunc(btp.l2cap_listen, le_psm_eatt, le_initial_mtu,
-                            defs.L2CAP_TRANSPORT_LE, L2capSecLevels.author, 0)],
-                  generic_wid_hdl=l2cap_wid_hdl),
-        ZTestCase("L2CAP", "L2CAP/ECFC/BV-15-C",
-                  pre_conditions_eatt_sec +
-                  [TestFunc(btp.l2cap_listen, le_psm_eatt, le_initial_mtu,
-                            defs.L2CAP_TRANSPORT_LE, L2capSecLevels.no_sec, 16)],
+        ZTestCase("L2CAP", "L2CAP/ECFC/BV-07-C",
+                  pre_conditions_eatt,
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/ECFC/BV-23-C",
                   pre_conditions,
-                  generic_wid_hdl=l2cap_wid_hdl),
-        ZTestCase("L2CAP", "L2CAP/ECFC/BI-01-C",
-                  pre_conditions,
-                  generic_wid_hdl=l2cap_wid_hdl),
-        ZTestCase("L2CAP", "L2CAP/COS/ECFC/BV-01-C",
-                  pre_conditions_eatt,
-                  generic_wid_hdl=l2cap_wid_hdl),
-        ZTestCase("L2CAP", "L2CAP/COS/ECFC/BV-02-C",
-                  pre_conditions_eatt,
-                  generic_wid_hdl=l2cap_wid_hdl),
-        ZTestCase("L2CAP", "L2CAP/COS/ECFC/BV-03-C",
-                  pre_conditions_eatt,
                   generic_wid_hdl=l2cap_wid_hdl),
     ]
 
@@ -217,7 +190,7 @@ def test_cases(ptses):
     tc_list = []
 
     for tc_name in test_case_name_list:
-        if tc_name.startswith('L2CAP/ECFC'):
+        if 'ECFC' in tc_name:
             instance = ZTestCase('L2CAP', tc_name,
                                  pre_conditions_eatt,
                                  generic_wid_hdl=l2cap_wid_hdl)

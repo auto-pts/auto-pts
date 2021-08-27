@@ -245,7 +245,8 @@ class Perm:
         return decode_flag_name(perm, Perm.names)
 
 
-class L2capSecLevels:
-    no_sec = 0x01
-    authen = 0x02
-    author = 0x03
+class L2CAPConnectionResponse:
+    success = 0
+    insufficient_authentication = 1
+    insufficient_authorization = 2
+    insufficient_encryption_key_size = 3
