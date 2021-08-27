@@ -19,8 +19,8 @@ import sys
 import time
 
 from ptsprojects.stack import get_stack
-from pybtp import btp
-from pybtp.types import BTPError
+from pybtp import btp, defs
+from pybtp.types import BTPError, L2CAPConnectionResponse
 
 log = logging.debug
 
@@ -353,14 +353,29 @@ def hdl_wid_105(desc):
 
 
 def hdl_wid_106(desc):
+    stack = get_stack()
+    l2cap = stack.l2cap
+
+    btp.l2cap_listen(l2cap.psm, defs.L2CAP_TRANSPORT_LE,
+                     l2cap.initial_mtu, L2CAPConnectionResponse.insufficient_authentication)
     return True
 
 
 def hdl_wid_107(desc):
+    stack = get_stack()
+    l2cap = stack.l2cap
+
+    btp.l2cap_listen(l2cap.psm, defs.L2CAP_TRANSPORT_LE,
+                     l2cap.initial_mtu, L2CAPConnectionResponse.insufficient_authorization)
     return True
 
 
 def hdl_wid_108(desc):
+    stack = get_stack()
+    l2cap = stack.l2cap
+
+    btp.l2cap_listen(l2cap.psm, defs.L2CAP_TRANSPORT_LE,
+                     l2cap.initial_mtu, L2CAPConnectionResponse.insufficient_encryption_key_size)
     return True
 
 

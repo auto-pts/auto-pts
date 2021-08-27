@@ -1451,6 +1451,12 @@ Commands and responses:
 		L2CAP Connection Response to send non-success responses like
 		Insufficient Authentication.
 
+		Valid Response values:
+					0x00 = Success
+					0x01 = Insufficient authentication
+					0x02 = Insufficient authorization
+					0x03 = Insufficient encryption key size
+
 		In case of an error, the error response will be returned.
 
 	Opcode 0x06 - Accept Connection Request
