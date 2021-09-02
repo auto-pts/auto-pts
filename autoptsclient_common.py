@@ -44,7 +44,7 @@ import ptsprojects.ptstypes as ptstypes
 from config import SERVER_PORT, CLIENT_PORT
 from ptsprojects import stack
 from ptsprojects.testcase import PTSCallback, TestCaseLT1, TestCaseLT2
-from ptsprojects.testcase_db import TestCaseTable
+from ptsprojects.testcase_db import TestCaseTable, DATABASE_FILE
 from pybtp import btp
 from pybtp.types import BTPError, SynchError
 from utils import InterruptableThread
@@ -470,7 +470,7 @@ def init_pts(args, ptses, tc_db_table_name=None):
 
     if tc_db_table_name:
         global TEST_CASE_DB
-        TEST_CASE_DB = TestCaseTable(tc_db_table_name)
+        TEST_CASE_DB = TestCaseTable(tc_db_table_name, args.database_file)
 
     for index, thread in enumerate(thread_list):
         thread.join(timeout=180.0)
@@ -1092,6 +1092,8 @@ class CliParser(argparse.ArgumentParser):
         # Hidden option to save test cases data in TestCase.db
         self.add_argument("-s", "--store", action="store_true",
                           default=False, help=argparse.SUPPRESS)
+        self.add_argument("--database-file", type=str, default=DATABASE_FILE,
+                          help=argparse.SUPPRESS)
 
         self.add_argument("--hci", type=int, default=None, help="Specify the number of the"
                                                                 " HCI controller(currently only used "

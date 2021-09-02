@@ -41,6 +41,7 @@ from oauth2client import file, client, tools
 
 import autoptsclient_common as autoptsclient
 from autoptsclient_common import CliParser, Client
+from ptsprojects.testcase_db import DATABASE_FILE
 
 SCOPES = 'https://www.googleapis.com/auth/drive'
 CLIENT_SECRET_FILE = 'client_secret.json'
@@ -76,7 +77,8 @@ class BotConfigArgs(Namespace):
         self.ip_addr = args.get('server_ip', ['127.0.0.1'] * len(self.srv_port))
         self.local_addr = args.get('local_ip', ['127.0.0.1'] * len(self.cli_port))
         self.kernel_image = args.get('kernel_image', None)
-        self.store = args.get('store', True)
+        self.database_file = args.get('database_file', DATABASE_FILE)
+        self.store = args.get('store', False)
         self.test_cases = []
         self.excluded = []
 

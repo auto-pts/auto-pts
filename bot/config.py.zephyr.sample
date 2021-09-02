@@ -34,6 +34,8 @@ z['auto_pts'] = {
     'srv_port': [65000, 65002],
     'project_path': '/path/to/project',
     'workspace': 'zephyr-master',
+    # 'database_file': 'path/to/zephyrTestCase.db',
+    # 'store': True,
     'board': 'nrf52',
     'enable_max_logs': False,
     'retry': 2,

@@ -25,6 +25,7 @@ import collections
 import serial
 import autoptsclient_common as autoptsclient
 import ptsprojects.zephyr as autoprojects
+from ptsprojects.testcase_db import DATABASE_FILE
 from ptsprojects.zephyr.iutctl import get_iut, log
 import bot.common
 
@@ -247,6 +248,10 @@ def main(cfg):
     start_time = time.time()
 
     args = cfg['auto_pts']
+
+    if 'database_file' not in args:
+        args['database_file'] = DATABASE_FILE
+
     args['kernel_image'] = os.path.join(args['project_path'], 'tests',
                                         'bluetooth', 'tester', 'outdir',
                                         'zephyr', 'zephyr.elf')
@@ -287,7 +292,7 @@ def main(cfg):
         drive.upload(report_file)
         drive.upload(report_txt)
         drive.upload_folder(logs_folder)
-        drive.upload("TestCase.db")
+        drive.upload(args['database_file'])
         bot.common.upload_bpv_logs(drive, ZephyrBotConfigArgs(args))
 
     if 'mail' in cfg:

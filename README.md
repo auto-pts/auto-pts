@@ -182,6 +182,8 @@ This may contain few sections:
     - `srv_port` - AutoPTSServer port(s)
     - `project_path` - path to project source directory
     - `workspace` - PTS workspace path to be used
+    - `store` - set True to save run results in a database .db file (default False)
+    - `database_file` - custom path to database .db file (default path: <project-dir>/TestCase.db)
     - `board` - IUT used. Currently nrf52 is supported only
     - `enable_max_logs` - enable debug logs
     - `retry` - maximum repeat count per test

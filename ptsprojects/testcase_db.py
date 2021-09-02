@@ -4,7 +4,8 @@ DATABASE_FILE = 'TestCase.db'
 
 
 class TestCaseTable:
-    def __init__(self, name):
+    def __init__(self, name, database_file=DATABASE_FILE):
+        self.database_file = database_file
         self._open()
         self.name = name
 
@@ -16,7 +17,7 @@ class TestCaseTable:
         self._close()
 
     def _open(self):
-        self.conn = sqlite3.connect(DATABASE_FILE)
+        self.conn = sqlite3.connect(self.database_file)
         self.cursor = self.conn.cursor()
 
     def _close(self):
