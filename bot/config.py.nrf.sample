@@ -32,6 +32,8 @@ n['auto_pts'] = {
     'srv_port': [65000],
     'project_path': '~/path/to/ncs/nrf',
     'workspace': 'nrf-v160',
+    # 'database_file': 'path/to/nrfTestCase.db',
+    # 'store': True,
     'board': 'nrf52',
     'enable_max_logs': False,
     'retry': 2,

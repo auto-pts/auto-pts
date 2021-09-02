@@ -24,6 +24,7 @@ import ptsprojects.mynewt as autoprojects
 from autoptsclient_common import Client
 from ptsprojects.mynewt.iutctl import get_iut, log
 import bot.common
+from ptsprojects.testcase_db import DATABASE_FILE
 
 
 def check_call(cmd, env=None, cwd=None, shell=True):
@@ -252,6 +253,9 @@ def main(cfg):
 
     args = cfg['auto_pts']
 
+    if 'database_file' not in args:
+        args['database_file'] = DATABASE_FILE
+
     if 'git' in cfg:
         repos_info = bot.common.update_repos(args['project_path'], cfg["git"])
         repo_status = make_repo_status(repos_info)
@@ -279,7 +283,7 @@ def main(cfg):
         drive.upload(report_txt)
         drive.upload_folder(logs_folder)
         drive.upload(build_info_file)
-        drive.upload("TestCase.db")
+        drive.upload(args['database_file'])
         bot.common.upload_bpv_logs(drive, MynewtBotConfigArgs(args))
 
     if 'mail' in cfg:
