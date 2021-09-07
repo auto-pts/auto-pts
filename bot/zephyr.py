@@ -27,6 +27,7 @@ import autoptsclient_common as autoptsclient
 import ptsprojects.zephyr as autoprojects
 from ptsprojects.testcase_db import DATABASE_FILE
 from ptsprojects.zephyr.iutctl import get_iut, log
+from pathlib import Path
 import bot.common
 
 
@@ -156,6 +157,30 @@ def zephyr_hash_url(commit):
                                  commit)
 
 
+def make_readme_md(start_time, end_time, commit_sha, pts_ver):
+    """Creates README.md for Github logging repo
+    """
+    readme_file = 'tmp/README.md'
+
+    Path(os.path.dirname(readme_file)).mkdir(parents=True, exist_ok=True)
+
+    with open(readme_file, 'w') as f:
+        readme_body = '''# AutoPTS report
+
+    Start time: {}
+
+    End time: {}
+
+    PTS version: {}
+
+    HEAD commit: {} [{}]
+    '''.format(start_time, end_time, pts_ver, commit_sha['commit'], commit_sha['desc'])
+
+        f.write(readme_body)
+
+    return readme_file
+
+
 def compose_mail(args, mail_cfg, mail_ctx):
     """ Create a email body
     """
@@ -246,6 +271,7 @@ def main(cfg):
     bot.common.pre_cleanup()
 
     start_time = time.time()
+    start_time_stamp = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
 
     args = cfg['auto_pts']
 
@@ -281,19 +307,49 @@ def main(cfg):
     report_file = bot.common.make_report_xlsx(results, summary, regressions,
                                               descriptions)
     report_txt = bot.common.make_report_txt(results, zephyr_hash["desc"])
-    logs_folder = bot.common.archive_testcases("logs")
 
     end_time = time.time()
+    end_time_stamp = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
     url = None
+    github_link = None
+    report_folder = None
+
+    if 'githubdrive' in cfg or 'gdrive' in cfg:
+        args_ns = ZephyrBotConfigArgs(args)
+        pts_logs = bot.common.pull_server_logs(args_ns)
+        iut_logs = 'logs/'
+        readme_file = make_readme_md(start_time_stamp, end_time_stamp,
+                                     zephyr_hash, args['pts_ver'])
+        report_folder = bot.common.make_report_folder(iut_logs, pts_logs, report_file,
+                                                      report_txt, readme_file,
+                                                      args['database_file'],
+                                                      '_iut_zephyr_' + start_time_stamp)
+
+    if 'githubdrive' in cfg:
+        print("Uploading to Github ...")
+        commit_msg_pattern = '{branch}_{timestamp}_{commit_sha}'
+        branch = 'no_branch'
+        commit_sha = 'no_sha'
+
+        if 'commit_msg' in cfg['githubdrive'] and \
+                cfg['githubdrive']['commit_msg'] is not None:
+            commit_msg_pattern = cfg['githubdrive']['commit_msg']
+
+        if 'git' in cfg:
+            commit_sha = zephyr_hash['commit']
+            branch = cfg['git']['zephyr']['branch']
+
+        commit_msg = commit_msg_pattern.format(
+            timestamp=start_time_stamp, branch=branch, commit_sha=commit_sha)
+        github_link, report_folder = bot.common.github_push_report(
+            report_folder, cfg['githubdrive'], commit_msg)
 
     if 'gdrive' in cfg:
+        print("Uploading to GDrive ...")
+        bot.common.archive_testcases(report_folder, depth=2)
         drive = bot.common.Drive(cfg['gdrive'])
         url = drive.new_workdir(args['board'])
-        drive.upload(report_file)
-        drive.upload(report_txt)
-        drive.upload_folder(logs_folder)
-        drive.upload(args['database_file'])
-        bot.common.upload_bpv_logs(drive, ZephyrBotConfigArgs(args))
+        drive.upload_folder(report_folder)
 
     if 'mail' in cfg:
         print("Sending email ...")
@@ -319,8 +375,16 @@ def main(cfg):
         # Log in Google drive in HTML format
         if 'gdrive' in cfg and url:
             mail_ctx["log_url"] = bot.common.url2html(url, "Results on Google Drive")
-        else:
-            mail_ctx["log_url"] = "Not Available"
+
+        if 'githubdrive' in cfg and github_link:
+            if 'log_url' in mail_ctx:
+                mail_ctx["log_url"] += '<br>'
+            else:
+                mail_ctx["log_url"] = ''
+            mail_ctx['log_url'] += bot.common.url2html(github_link, 'Results on Github')
+
+        if 'log_url' not in mail_ctx:
+            mail_ctx['log_url'] = 'Not Available'
 
         # Elapsed Time
         mail_ctx["elapsed_time"] = str(datetime.timedelta(

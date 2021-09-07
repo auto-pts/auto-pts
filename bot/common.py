@@ -408,21 +408,20 @@ class Drive(GDrive):
 
     def upload_folder(self, folder, excluded=None):
         def recursive(directory):
-            with os.scandir(directory) as it:
-                for f in it:
-                    if excluded and (f.name in excluded or
-                                     os.path.splitext(f.name)[1] in excluded):
-                        continue
+            for f in os.scandir(directory):
+                if excluded and (f.name in excluded or
+                                 os.path.splitext(f.name)[1] in excluded):
+                    continue
 
-                    if f.is_dir():
-                        parent = self.pwd()
-                        dir_ = self.mkdir(f.name)
-                        self.cd(dir_)
-                        recursive(os.path.join(directory, f.name))
-                        self.cd(parent)
-                    else:
-                        filepath = os.path.relpath(os.path.join(directory, f.name))
-                        self.upload(filepath)
+                if f.is_dir():
+                    parent = self.pwd()
+                    dir_ = self.mkdir(f.name)
+                    self.cd(dir_)
+                    recursive(os.path.join(directory, f.name))
+                    self.cd(parent)
+                else:
+                    filepath = os.path.relpath(os.path.join(directory, f.name))
+                    self.upload(filepath)
 
         recursive(folder)
 
@@ -564,6 +563,80 @@ def make_report_txt(results_dict, zephyr_hash):
 
 
 # ****************************************************************************
+# .txt result file
+# ****************************************************************************
+def make_report_folder(iut_logs, pts_logs, report_xlsx, report_txt,
+                       readme_file, database_file, tag=''):
+    """Creates folder containing .txt and .xlsx reports, pulled logs
+    from autoptsserver, iut logs and additional README.md.
+    """
+    def get_deepest_dirs(logs_tree, dst_tree, max_depth):
+        def recursive(directory, depth=3):
+            depth -= 1
+
+            for file in os.scandir(directory):
+                if file.is_dir():
+                    if depth > 0:
+                        recursive(file.path, depth)
+                    else:
+                        dst_file = os.path.join(dst_tree, file.name)
+                        try:
+                            shutil.move(file.path, dst_file)
+                        except:  # skip waiting for BPV to release the file
+                            shutil.copy(file.path, dst_file)
+
+        recursive(logs_tree, max_depth)
+
+    report_dir = 'tmp/autopts_report'
+    shutil.rmtree(report_dir, ignore_errors=True)
+    Path(report_dir).mkdir(parents=True, exist_ok=True)
+
+    shutil.copy(report_txt, os.path.join(report_dir, 'report{}.txt'.format(tag)))
+    shutil.copy(report_xlsx, os.path.join(report_dir, 'report{}.xlsx'.format(tag)))
+    shutil.copy(readme_file, os.path.join(report_dir, 'README.md'))
+    shutil.copy(database_file, os.path.join(report_dir, os.path.basename(database_file)))
+
+    iut_logs_new = os.path.join(report_dir, 'iut_logs')
+    pts_logs_new = os.path.join(report_dir, 'pts_logs')
+
+    get_deepest_dirs(iut_logs, iut_logs_new, 3)
+    get_deepest_dirs(pts_logs, pts_logs_new, 3)
+
+    return os.path.join(os.getcwd(), report_dir)
+
+
+def github_push_report(report_folder, log_git_conf, commit_msg):
+    """Commits and pushes report folder to Github repo
+    param: report_folder path to the report folder
+    param: log_git_conf git settings from githubdrive field of config.py
+    param: commit_msg ready commit message
+    """
+    update_sources(log_git_conf['path'], log_git_conf['remote'],
+                   log_git_conf['branch'], True, True)
+
+    dst_folder = os.path.join(log_git_conf['path'], log_git_conf['subdir'], os.path.basename(report_folder))
+
+    if os.path.exists(dst_folder):
+        shutil.rmtree(dst_folder)
+
+    shutil.move(report_folder, dst_folder)
+
+    repo = git.Repo(log_git_conf['path'])
+    repo.git.add(dst_folder)
+    remote = repo.remotes[log_git_conf['remote']]
+
+    repo.index.commit(commit_msg)
+    remote.push('HEAD:' + log_git_conf['branch'])
+
+    head_sha = repo.head.object.hexsha
+    remote_url = remote.config_reader.get('url')
+    repo_name = re.findall(r'(?<=/).+(?=\.git)', remote_url)[0]
+    repo_owner = re.findall(r'(?<=\/|:).+(?=\/.+?\.git)', remote_url)[0]
+
+    return 'https://github.com/{}/{}/tree/{}'.format(repo_owner, repo_name, head_sha), dst_folder
+
+
+# ****************************************************************************
 # Miscellaneous
 # ****************************************************************************
 def archive_recursive(dir_path):
@@ -586,38 +659,30 @@ def archive_recursive(dir_path):
 def archive_testcases(dir_path, depth=3):
     def recursive(directory, depth):
         depth -= 1
-        with os.scandir(directory) as it:
-            for f in it:
-                if f.is_dir():
-                    if depth > 0:
-                        recursive(os.path.join(directory, f.name), depth)
-                    else:
-                        filepath = os.path.relpath(os.path.join(directory, f.name))
-                        archive_recursive(filepath)
-                        shutil.rmtree(filepath)
+        for f in os.scandir(directory):
+            if f.is_dir():
+                if depth > 0:
+                    recursive(os.path.join(directory, f.name), depth)
+                else:
+                    filepath = os.path.relpath(os.path.join(directory, f.name))
+                    archive_recursive(filepath)
+                    shutil.rmtree(filepath)
 
     recursive(dir_path, depth)
     return dir_path
 
 
-def upload_bpv_logs(gdrive, args):
+def pull_server_logs(args):
     """Copy Bluetooth Protocol Viewer logs from auto-pts servers.
-    :param gdrive: to upload the logs
     :param server_addr: list of servers addresses
     :param server_port: list of servers ports
     """
-    excluded = ['SIGDatabase', 'logfiles', '.pqw6', '.xml', '.txt']
     logs_folder = 'tmp/' + args.workspace
 
     shutil.rmtree(logs_folder, ignore_errors=True)
 
     if sys.platform == 'win32':
-        workspace_path = get_workspace(args.workspace)
-        shutil.copytree(workspace_path, logs_folder)
-        archive_testcases(logs_folder, depth=3)
-        gdrive.upload_folder(logs_folder, excluded=excluded)
-        delete_bpv_logs(workspace_path)
-        return
+        return get_workspace(args.workspace)
 
     server_addr = args.ip_addr
     server_port = args.srv_port
@@ -627,7 +692,7 @@ def upload_bpv_logs(gdrive, args):
             continue
 
         with ServerProxy("http://{}:{}/".format(server_addr[i], server_port[i]),
-                         allow_none=True,) as proxy:
+                         allow_none=True, ) as proxy:
             file_list = proxy.list_workspace_tree(args.workspace)
             if len(file_list) == 0:
                 continue
@@ -655,9 +720,7 @@ def upload_bpv_logs(gdrive, args):
                 except BaseException as e:
                     logging.exception(e)
 
-    if os.path.exists(logs_folder):
-        archive_testcases(logs_folder, depth=3)
-        gdrive.upload_folder(logs_folder, excluded=excluded)
+    return logs_folder
 
 
 def get_workspace(workspace):
@@ -667,13 +730,6 @@ def get_workspace(workspace):
             if name == workspace:
                 return os.path.join(root, name)
     return None
-
-
-def delete_bpv_logs(workspace_path):
-    with os.scandir(workspace_path) as it:
-        for f in it:
-            if f.is_dir():
-                shutil.rmtree(f.path, ignore_errors=True)
 
 
 def update_sources(repo_path, remote, branch, stash_changes=False, update_repo=True):
