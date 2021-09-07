@@ -284,7 +284,8 @@ def main(cfg):
         drive.upload_folder(logs_folder)
         drive.upload(build_info_file)
         drive.upload(args['database_file'])
-        bot.common.upload_bpv_logs(drive, MynewtBotConfigArgs(args))
+        pts_logs = bot.common.pull_server_logs(MynewtBotConfigArgs(args))
+        drive.upload_folder(pts_logs)
 
     if 'mail' in cfg:
         print("Sending email ...")

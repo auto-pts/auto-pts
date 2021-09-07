@@ -76,6 +76,20 @@ z['mail'] = {
 }
 
 # ****************************************************************************
+# Github configuration
+#
+# To commit and push logs to Github.
+# Configured ssh-agent must be started earlier.
+# ****************************************************************************
+z['githubdrive'] = {
+    'path': 'path/to/repo',
+    'remote': 'origin',
+    'branch': 'main',
+    'subdir': 'host/',
+    'commit_msg': '{branch}_{timestamp}_{commit_sha}',
+}
+
+# ****************************************************************************
 # Google Drive configuration
 #
 # To put the tests execution logs to Google Drive
