@@ -1398,6 +1398,15 @@ def hdl_wid_372(desc):
     return True
 
 
+def hdl_wid_373(desc):
+    """
+    Implements:
+    :param desc: Received Node Identity.Wait for 60 seconds.After that, IUT expect to stop advertising Node Identity
+    :return:
+    """
+    return True
+
+
 def hdl_wid_500(desc):
     """
     Implements:
@@ -1446,6 +1455,33 @@ def hdl_wid_521(desc):
     """
 
     time.sleep(60)
+    return True
+
+
+def hdl_wid_527(desc):
+    """
+    Implements:
+    :param desc: Please click Yes if TSPX_iut_model_id_used supports periodic publishing.
+    :return:
+    """
+    return True
+
+
+def hdl_wid_528(desc):
+    """
+    Implements:
+    :param desc: Please click Yes if Please click Yes if TSPX_iut_model_id_used supports publishing on state change.
+    :return:
+    """
+    return True
+
+
+def hdl_wid_529(desc):
+    """
+    Implements:
+    :param desc: Please triggered state change that will generate publish message.
+    :return:
+    """
     return True
 
 
