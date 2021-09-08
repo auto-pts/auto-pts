@@ -351,6 +351,10 @@ def make_report_xlsx(results_dict, status_dict, regressions_list,
 
     for k, v in list(results_dict.items()):
         worksheet.write(row, col, k)
+        if v[0] == 'PASS' and int(v[1]) > 1:
+            v = '{} ({})'.format(v[0], v[1])
+        else:
+            v = v[0]
         if k in errata:
             v += ' - ERRATA ' + errata[k]
         worksheet.write(row, col + 1, v)
@@ -423,10 +427,14 @@ def make_report_txt(results_dict, zephyr_hash):
 
     f.write("%s\n" % zephyr_hash)
     for tc, result in list(results_dict.items()):
+        if result[0] == 'PASS' and int(result[1]) > 1:
+            result = '{} ({})'.format(result[0], result[1])
+        else:
+            result = result[0]
         if tc in errata:
             result += ' - ERRATA ' + errata[tc]
 
-        # The frist id in the test case is test group
+        # The first id in the test case is test group
         tg = tc.split('/')[0]
         f.write("%s%s%s\n" % (tg.ljust(8, ' '), tc.ljust(32, ' '), result))
 

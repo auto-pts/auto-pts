@@ -548,7 +548,7 @@ class TestCaseRunStats:
 
         for tc_xml in root.findall("./test_case"):
             results[tc_xml.attrib["name"]] = \
-                tc_xml.attrib["status"]
+                (tc_xml.attrib["status"], tc_xml.attrib["run_count"])
 
         return results
 
