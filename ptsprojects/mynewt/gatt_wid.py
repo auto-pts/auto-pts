@@ -162,7 +162,9 @@ def hdl_wid_75(desc):
     handle = int(MMI.args[0], 16)
     value = MMI.args[1]
 
-    time.sleep(5)
+    # write was unsuccessful
+    if not btp.gatts_verify_write_success(desc):
+        return False
 
     attr = btp.gatts_get_attr_val(btp.pts_addr_type_get(),
                                   btp.pts_addr_get(), handle)
