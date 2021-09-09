@@ -154,6 +154,9 @@ def test_cases(ptses):
     pre_conditions_eatt = common + [
         TestFunc(stack.l2cap_init, le_psm_eatt, le_initial_mtu),
     ]
+    pre_conditions_eatt_success = pre_conditions_eatt + [
+        TestFunc(btp.l2cap_le_listen, le_psm_eatt, le_initial_mtu, L2CAPConnectionResponse.success),
+    ]
 
     custom_test_cases = [
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-03-C",
@@ -181,6 +184,18 @@ def test_cases(ptses):
         ZTestCase("L2CAP", "L2CAP/ECFC/BV-07-C",
                   pre_conditions_eatt,
                   generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BV-11-C",
+                  pre_conditions_eatt,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BV-13-C",
+                  pre_conditions_eatt,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BV-15-C",
+                  pre_conditions_eatt,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BV-22-C",
+                  pre_conditions_eatt,
+                  generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/ECFC/BV-23-C",
                   pre_conditions,
                   generic_wid_hdl=l2cap_wid_hdl),
@@ -195,7 +210,7 @@ def test_cases(ptses):
     for tc_name in test_case_name_list:
         if 'ECFC' in tc_name:
             instance = ZTestCase('L2CAP', tc_name,
-                                 pre_conditions_eatt,
+                                 pre_conditions_eatt_success,
                                  generic_wid_hdl=l2cap_wid_hdl)
         else:
             instance = ZTestCase('L2CAP', tc_name,
