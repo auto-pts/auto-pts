@@ -16,6 +16,8 @@
 # Sample user_config file
 # Apply your changes and rename it to config.py
 
+from bot.iut_config.nrf import iut_config_mesh, iut_config_mmdl
+
 BotProjects = []
 
 n = nrf_v160 = {
@@ -95,13 +97,7 @@ n['git'] = {
 # To apply test case specific changes in IUT configuration
 # ****************************************************************************
 
-n['iut_config'] = {
-    "default": {  # Default west build without option -- -DCONF_FILE=<file.conf>
-        "test_cases": [
-            'MMDL',
-        ],
-    },
-}
+n['iut_config'] = iut_config_mmdl
 
 # ****************************************************************************
 # Scheduler configuration
@@ -192,17 +188,7 @@ z['git'] = {
 # To apply test case specific changes in IUT configuration
 # ****************************************************************************
 
-z['iut_config'] = {
-    "default": {  # Default west build without option -- -DCONF_FILE=<file.conf>
-        "test_cases": [
-            'MESH',
-        ],
-    },
-    # "mesh_subnet_count.conf": {
-    #     "overlay": {'CONFIG_BT_MESH_SUBNET_COUNT': '1'},
-    #     "test_cases": ['MESH/NODE/CFG/NKL/BI-03-C']
-    # },
-}
+z['iut_config'] = iut_config_mesh
 
 # ****************************************************************************
 # Scheduler configuration
