@@ -6,3 +6,6 @@ GAP/SEC/AUT/BV-14-C: CASE0071522
 GAP/SEC/AUT/BV-23-C: CASE0071522
 MESH/NODE/PROV/BV-10-C: CASE0071466 Fixed in 8.1.0
 MESH/NODE/CFG/HBP/BV-02-C: CASE0071465 Fixed in 8.1.0
+L2CAP/ECFC/BV-07-C: CASE0071749
+L2CAP/ECFC/BV-22-C: https://github.com/zephyrproject-rtos/zephyr/issues/37611
+L2CAP/ECFC/BV-24-C: https://github.com/zephyrproject-rtos/zephyr/issues/37611
