@@ -88,11 +88,12 @@ def test_cases(ptses):
     in_size = random.randint(0, 2)
     rand_in_actions = random.choice(in_actions) if in_size else 0
     crpl_size = 10  # Maximum capacity of the replay protection list
+    auth_method = 0x00
 
     iut_device_name = get_unique_name(pts)
     stack.gap_init(iut_device_name)
     stack.mesh_init(device_uuid, oob, out_size, rand_out_actions, in_size,
-                    rand_in_actions, crpl_size)
+                    rand_in_actions, crpl_size, auth_method)
 
     pre_conditions = [
         TestFunc(btp.core_reg_svc_gap),
