@@ -1491,6 +1491,17 @@ Commands and responses:
 
 		In case of an error, the error response will be returned.
 
+	Opcode 0x08 - Credits
+
+		Controller Index:	<controller id>
+		Command parameters:	Chan_ID (1 octet)
+		Return Parameters:	<none>
+
+		This command is used to instruct IUT to return credits on
+		specified channel.
+
+		In case of an error, the error response will be returned.
+
 Events:
 	Opcode 0x80 - Connection Request Event
 

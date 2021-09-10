@@ -347,6 +347,7 @@ def hdl_wid_101(desc):
 
 
 def hdl_wid_102(desc):
+    btp.l2cap_credits(0)
     return True
 
 
