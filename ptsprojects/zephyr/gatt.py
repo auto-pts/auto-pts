@@ -199,7 +199,8 @@ def test_cases_server(ptses):
                           else "FALSE")),
                       TestFunc(btp.core_reg_svc_gatt),
                       TestFunc(btp.gap_set_conn),
-                      TestFunc(btp.gap_set_gendiscov)]
+                      TestFunc(btp.gap_set_gendiscov),
+                      TestFunc(stack.gatt_init)]
 
     pre_conditions_1 = [TestFunc(btp.core_reg_svc_gap),
                         TestFunc(stack.gap_init, iut_device_name),
@@ -669,7 +670,8 @@ def test_cases_client(pts):
             "GATT", "TSPX_bd_addr_iut",
             stack.gap.iut_addr_get_str())),
         TestFunc(btp.core_reg_svc_gatt),
-        TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public)
+        TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public),
+        TestFunc(stack.gatt_init)
     ]
 
     custom_test_cases = [
