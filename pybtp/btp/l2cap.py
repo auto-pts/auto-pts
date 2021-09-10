@@ -41,6 +41,8 @@ L2CAP = {
                     CONTROLLER_INDEX),
     "disconnect_eatt_chans": (defs.BTP_SERVICE_ID_L2CAP, defs.L2CAP_DISCONNECT_EATT_CHANS,
                               CONTROLLER_INDEX),
+    "set_option": (defs.BTP_SERVICE_ID_L2CAP, defs.L2CAP_SET_OPTION,
+                    CONTROLLER_INDEX),
 }
 
 
@@ -201,6 +203,19 @@ def l2cap_reconfigure(bd_addr, bd_addr_type, mtu, channels):
     iutctl.btp_socket.send(*L2CAP['reconfigure'], data=data_ba)
 
     l2cap_command_rsp_succ(defs.L2CAP_RECONFIGURE)
+
+
+def l2cap_set_option(chan_id, option):
+    logging.debug("%s %r %r", l2cap_set_option.__name__, chan_id, option)
+
+    iutctl = get_iut()
+
+    data_ba = bytearray(chr(chan_id).encode('utf-8'))
+    data_ba.extend(struct.pack('B', option))
+
+    iutctl.btp_socket.send(*L2CAP['set_option'], data=data_ba)
+
+    l2cap_command_rsp_succ(defs.L2CAP_SET_OPTION)
 
 
 def l2cap_connected_ev(l2cap, data, data_len):

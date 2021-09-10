@@ -344,6 +344,7 @@ def hdl_wid_101(desc):
 
 
 def hdl_wid_102(desc):
+    btp.l2cap_set_option(0, 1)
     return True
 
 

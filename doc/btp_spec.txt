@@ -1491,6 +1491,19 @@ Commands and responses:
 
 		In case of an error, the error response will be returned.
 
+	Opcode 0x08 - Set Option
+
+		Controller Index:	<controller id>
+		Command parameters:	Chan_ID (1 octet)
+					Options (1 octet)
+		Return Parameters:	<none>
+
+		This command is used to tune selected channel behavior.
+
+		Valid options values:
+			0x00 = Stall (don't return credits)
+			0x01 = Unstall (return available credits)
+
 Events:
 	Opcode 0x80 - Connection Request Event
 
