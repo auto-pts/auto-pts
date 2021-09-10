@@ -79,15 +79,6 @@ iut_config = {
         ]
     },
 
-    "l2cap_eatt_authentication.conf": {
-        "overlay": {
-            'CONFIG_BT_EATT_SEC_LEVEL': '2',
-        },
-        "test_cases": [
-            'L2CAP/ECFC/BV-11-C',
-        ]
-    },
-
     "enforce_mitm.conf": {
         "overlay": {
             'CONFIG_BT_SMP_ENFORCE_MITM': 'y',
