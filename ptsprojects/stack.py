@@ -254,7 +254,7 @@ class Gap:
 
 class Mesh:
     def __init__(self, uuid, oob, output_size, output_actions, input_size,
-                 input_actions, crpl_size):
+                 input_actions, crpl_size, auth_metod):
 
         # init data
         self.dev_uuid = uuid
@@ -264,6 +264,7 @@ class Mesh:
         self.input_size = input_size
         self.input_actions = input_actions
         self.crpl_size = crpl_size
+        self.auth_metod = auth_metod
 
         self.oob_action = Property(None)
         self.oob_data = Property(None)
@@ -281,6 +282,7 @@ class Mesh:
         self.address = 0x0003
         self.dev_key = '0123456789abcdef0123456789abcdef'
         self.iut_is_provisioner = False
+        self.pub_key = Property(None)
 
         # health model data
         self.health_test_id = Property(0x00)
@@ -441,6 +443,13 @@ class Mesh:
                 return True
 
         return False
+
+    def pub_key_set(self, pub_key):
+        self.pub_key.data = pub_key
+        logging.debug("%s", self.pub_key.data)
+
+    def pub_key_get(self):
+        return self.pub_key.data
 
 
 class L2capChan:
@@ -825,9 +834,9 @@ class Stack:
                        svcs, uri)
 
     def mesh_init(self, uuid, oob, output_size, output_actions, input_size,
-                  input_actions, crpl_size):
+                  input_actions, crpl_size, auth_method):
         self.mesh = Mesh(uuid, oob, output_size, output_actions, input_size,
-                         input_actions, crpl_size)
+                         input_actions, crpl_size, auth_method)
 
     def l2cap_init(self, psm, initial_mtu):
         self.l2cap = L2cap(psm, initial_mtu)
@@ -849,7 +858,7 @@ class Stack:
             self.mesh_init(self.mesh.dev_uuid, self.mesh.static_auth,
                            self.mesh.output_size, self.mesh.output_actions,
                            self.mesh.input_size, self.mesh.input_actions,
-                           self.mesh.crpl_size)
+                           self.mesh.crpl_size, self.mesh.auth_metod)
         if self.gatt:
             self.gatt_init()
 

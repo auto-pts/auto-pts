@@ -107,13 +107,21 @@ def hdl_wid_7(desc):
     :return:
     """
     stack = get_stack()
+    pattern = re.compile(
+        r'(the\snumber):\s\s+([0-9]+)')
+    params = pattern.findall(desc)
+    if not params:
+        logging.error("%s parsing error", hdl_wid_7.__name__)
+        return stack.mesh.oob_data.data
+    else:
+        params = dict(params)
+        stack.mesh.oob_data.data = int(params.get('the number'), 16)
 
-    ret = stack.mesh.oob_data.data
-
+    btp.mesh_input_number(stack.mesh.oob_data.data)
     # cleanup
     stack.mesh.oob_data.data = None
     stack.mesh.oob_action.data = None
-    return ret
+    return True
 
 
 def hdl_wid_8(desc):
@@ -131,6 +139,18 @@ def hdl_wid_8(desc):
     stack.mesh.oob_action.data = None
     return ret
 
+def hdl_wid_10(desc):
+    """
+    Implements:
+    :param desc: Please twist the number of times:
+    :return:
+    """
+    stack = get_stack()
+    ret = stack.mesh.oob_data.data
+    # cleanup
+    stack.mesh.oob_data.data = None
+    stack.mesh.oob_action.data = None
+    return ret
 
 def hdl_wid_12(desc):
     """

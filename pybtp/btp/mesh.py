@@ -266,9 +266,10 @@ def mesh_config_prov():
     output_actions = stack.mesh.output_actions
     input_size = stack.mesh.input_size
     input_actions = stack.mesh.input_actions
+    auth_method = stack.mesh.auth_metod
 
-    data = bytearray(struct.pack("<16s16sBHBH", uuid, static_auth, output_size,
-                                 output_actions, input_size, input_actions))
+    data = bytearray(struct.pack("<16s16sBHBHB", uuid, static_auth, output_size,
+                                 output_actions, input_size, input_actions, auth_method))
 
     iutctl.btp_socket.send_wait_rsp(*MESH['config_prov'], data=data)
 
@@ -285,6 +286,9 @@ def mesh_prov_node():
                                  stack.mesh.net_key_idx, stack.mesh.flags,
                                  stack.mesh.iv_idx, stack.mesh.seq_num,
                                  stack.mesh.address, dev_key))
+    pub_key = stack.mesh.pub_key_get()
+    if pub_key:
+        data.extend(struct.pack("<64s", binascii.unhexlify(pub_key)))
 
     iutctl = get_iut()
 
