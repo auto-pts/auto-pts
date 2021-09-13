@@ -113,13 +113,11 @@ def test_cases(ptses):
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/CEN/OOB/BV-05-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   TestFunc(btp.gap_oob_legacy_set_data, stack.gap.oob_legacy)],
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/CEN/OOB/BV-07-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   TestFunc(btp.gap_oob_legacy_set_data, stack.gap.oob_legacy)],
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/CEN/OOB/BV-09-C",
                   pre_conditions +
@@ -143,13 +141,11 @@ def test_cases(ptses):
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/PER/OOB/BV-06-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   TestFunc(btp.gap_oob_legacy_set_data, stack.gap.oob_legacy)],
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/PER/OOB/BV-08-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   TestFunc(btp.gap_oob_legacy_set_data, stack.gap.oob_legacy)],
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/PER/OOB/BV-10-C",
                   pre_conditions +
