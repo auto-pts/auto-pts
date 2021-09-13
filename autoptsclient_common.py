@@ -67,7 +67,7 @@ AUTO_PTS_LOCAL = "AUTO_PTS_LOCAL" in os.environ
 RUN_END = False
 
 
-class RunEnd(Exception):
+class RunEnd(KeyboardInterrupt):
     pass
 
 
@@ -1144,27 +1144,31 @@ class Client:
         self.arg_parser = CliParser("PTS automation client", self.boards)
         self.add_positional_args()
         setup_project_name(project)
+        self.prev_sigint_handler = None
 
     def start(self, args=None):
         """Start main with exception handling."""
 
         def sigint_handler(sig, frame):
             """Thread safe SIGINT interrupting"""
-            global RUN_END
-            RUN_END = True
+            set_end()
+
+            if sys.platform != "win32":
+                signal.signal(signal.SIGINT, self.prev_sigint_handler)
+                threading.Thread(target=signal.raise_signal(signal.SIGINT)).start()
 
         try:
+            self.prev_sigint_handler = signal.getsignal(signal.SIGINT)
             signal.signal(signal.SIGINT, sigint_handler)
 
             return self.main(args)
-        except KeyboardInterrupt:  # Ctrl-C
+        except BaseException as e:  # Ctrl-C
+            if not isinstance(e, KeyboardInterrupt):
+                logging.exception(e)
+            set_end()
             shutdown_pts(self.ptses)
             self.cleanup()
-        except Exception as exc:
-            logging.exception(exc)
-            shutdown_pts(self.ptses)
-            self.cleanup()
-            sys.exit(1)
+            raise
 
     def main(self, _args=None):
         """Main."""
@@ -1292,6 +1296,11 @@ class Client:
 
     def cleanup(self):
         autoprojects.iutctl.cleanup()
+
+
+def set_end():
+    global RUN_END
+    RUN_END = True
 
 
 def run_recovery(args, ptses):

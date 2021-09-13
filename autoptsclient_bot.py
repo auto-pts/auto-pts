@@ -16,18 +16,20 @@
 #
 import logging
 import os
+import signal
 import sys
+import threading
 import time
 import _locale
 import schedule
 import importlib
 from argparse import ArgumentParser, RawTextHelpFormatter, SUPPRESS
 
+from autoptsclient_common import set_end
 from bot.config import BotProjects
 from bot.zephyr import main as zephyr
 from bot.mynewt import main as mynewt
 from winutils import have_admin_rights
-
 
 # TODO Find more sophisticated way
 weekdays2schedule = {
@@ -121,17 +123,31 @@ def main():
         else:
             project2main[project['name']](project)
 
+    return 0
+
 
 if __name__ == "__main__":
+    def sigint_handler(sig, frame):
+        """Thread safe SIGINT interrupting"""
+        set_end()
+
+        if sys.platform != "win32":
+            signal.signal(signal.SIGINT, prev_sigint_handler)
+            threading.Thread(target=signal.raise_signal(signal.SIGINT)).start()
+
+    rc = 1
+
     if have_admin_rights():  # root privileges are not needed
         print("Please do not run this program as root.")
         sys.exit(1)
 
     try:
-        main()
-        sys.exit(0)
+        prev_sigint_handler = signal.getsignal(signal.SIGINT)
+        signal.signal(signal.SIGINT, sigint_handler)
+
+        rc = main()
     except KeyboardInterrupt:  # Ctrl-C
-        sys.exit(14)
+        rc = 14
     except SystemExit:
         raise
     except BaseException as e:
@@ -139,4 +155,7 @@ if __name__ == "__main__":
         import traceback
 
         traceback.print_exc()
-        sys.exit(16)
+        rc = 16
+
+    set_end()
+    sys.exit(rc)
