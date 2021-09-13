@@ -175,15 +175,6 @@ iut_config = {
         ]
     },
 
-    "mesh_subnet_count.conf": {
-        "overlay": {
-            'CONFIG_BT_MESH_SUBNET_COUNT': '1',
-        },
-        "test_cases": [
-            'MESH/NODE/CFG/NKL/BI-03-C',
-        ]
-    },
-
     "l2cap_param_update.conf": {
         "overlay": {
             'CONFIG_BT_CTLR_CONN_PARAM_REQ': 'n',
