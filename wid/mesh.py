@@ -2735,9 +2735,6 @@ def hdl_wid_605(desc):
     """
     stack = get_stack()
 
-    if not stack.mesh.iut_is_provisioner:
-        return True
-
     if "Health Fault Get" in desc:
         pattern = re.compile(r'(Company\sID)\s=\s+([0][xX][0-9a-fA-F]+)')
         params = pattern.findall(desc)
