@@ -339,7 +339,10 @@ def hdl_wid_100(desc):
 def hdl_wid_101(desc):
     l2cap = get_stack().l2cap
     for channel in l2cap.channels:
-        btp.l2cap_disconn(channel.id)
+        try:
+            btp.l2cap_disconn(channel.id)
+        except BTPError:
+            logging.debug("Ignoring expected error on L2CAP disconnect")
     return True
 
 
