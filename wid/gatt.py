@@ -52,6 +52,14 @@ def gatt_wid_hdl_no_write_rsp_check(wid, description, test_case_name):
     return gatt_wid_hdl(wid, description, test_case_name)
 
 
+def gatt_wid_hdl_no_long_read(wid, description, test_case_name):
+    if wid == 48:
+        log("%s, %r, %r, %s", gatt_wid_hdl_no_long_read.__name__, wid, description,
+            test_case_name)
+        return hdl_wid_48_no_long_read(description)
+    return gatt_wid_hdl(wid, description, test_case_name)
+
+
 def gatt_server_fetch_db():
     db = GattDB()
     bd_addr = btp.pts_addr_get()
@@ -529,6 +537,22 @@ def hdl_wid_46(desc):
 
 def hdl_wid_47(desc):
     return btp.verify_description(desc)
+
+
+def hdl_wid_48_no_long_read(desc):
+    MMI.reset()
+    MMI.parse_description(desc)
+
+    hdl = MMI.args[0]
+
+    if not hdl:
+        logging.debug("parsing error")
+        return False
+
+    btp.gattc_read(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl)
+
+    btp.gattc_read_rsp(True, True)
+    return True
 
 
 def hdl_wid_48(desc):
