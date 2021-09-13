@@ -4,8 +4,19 @@
 
 GAP/SEC/AUT/BV-14-C: CASE0071522
 GAP/SEC/AUT/BV-23-C: CASE0071522
-MESH/NODE/PROV/BV-10-C: CASE0071466 Fixed in 8.1.0
-MESH/NODE/CFG/HBP/BV-02-C: CASE0071465 Fixed in 8.1.0
 L2CAP/ECFC/BV-07-C: CASE0071749
 L2CAP/ECFC/BV-22-C: https://github.com/zephyrproject-rtos/zephyr/issues/37611
 L2CAP/ECFC/BV-24-C: https://github.com/zephyrproject-rtos/zephyr/issues/37611
+MESH/NODE/PROV/BV-10-C: CASE0071466 Fixed in 8.1.0
+MESH/NODE/CFG/HBP/BV-02-C: CASE0071465 Fixed in 8.1.0
+MESH/CFGCL/CFG/SL/BV-01-C: CASE0071125 Fixed in 8.1.0
+MESH/PVNR/PROV/BI-14-C: https://github.com/zephyrproject-rtos/zephyr/pull/38492
+MESH/PVNR/PROV/BI-16-C: https://github.com/zephyrproject-rtos/zephyr/pull/38492
+MESH/PVNR/PROV/BV-01-C: https://github.com/zephyrproject-rtos/zephyr/pull/38492
+MESH/PVNR/PROV/BV-02-C: https://github.com/zephyrproject-rtos/zephyr/pull/38492
+MESH/PVNR/PROV/BV-03-C: https://github.com/zephyrproject-rtos/zephyr/pull/38492
+MESH/PVNR/PROV/BV-04-C: https://github.com/zephyrproject-rtos/zephyr/pull/38492
+MESH/PVNR/PROV/BV-05-C: https://github.com/zephyrproject-rtos/zephyr/pull/38492
+MESH/PVNR/PROV/BV-06-C: https://github.com/zephyrproject-rtos/zephyr/pull/38492
+MESH/PVNR/PROV/BV-08-C: https://github.com/zephyrproject-rtos/zephyr/pull/38492
+MESH/PVNR/PROV/BI-18-C: https://github.com/zephyrproject-rtos/zephyr/pull/38492 https://github.com/zephyrproject-rtos/zephyr/pull/38464
