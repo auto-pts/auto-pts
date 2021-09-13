@@ -1931,7 +1931,7 @@ def hdl_wid_514(desc):
         return True
 
     if "Config Model Subscription" in desc:
-        sub_address = 0x0002
+        sub_address = 0xc000
         model_id = 0x0000
 
         if "Virtual Address Add" in desc:
