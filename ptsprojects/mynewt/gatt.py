@@ -189,6 +189,8 @@ def test_cases_server(pts):
     tc_list = []
 
     for tc_name in test_case_name_list:
+        if not tc_name.startswith('GATT/SR'):
+            continue
         instance = ZTestCase('GATT', tc_name,
                              cmds=pre_conditions_1,
                              generic_wid_hdl=gatt_wid_hdl)
@@ -244,6 +246,8 @@ def test_cases_client(pts):
     tc_list = []
 
     for tc_name in test_case_name_list:
+        if not tc_name.startswith('GATT/CL'):
+            continue
         instance = ZTestCase("GATT", tc_name,
                              cmds=pre_conditions_cl,
                              generic_wid_hdl=gatt_wid_hdl)
