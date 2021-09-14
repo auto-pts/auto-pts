@@ -43,6 +43,7 @@ from termcolor import colored
 import ptsprojects.ptstypes as ptstypes
 from config import SERVER_PORT, CLIENT_PORT
 from ptsprojects import stack
+from ptsprojects.boards import com_to_tty, get_available_boards, tty_exists
 from ptsprojects.testcase import PTSCallback, TestCaseLT1, TestCaseLT2
 from ptsprojects.testcase_db import TestCaseTable, DATABASE_FILE
 from pybtp import btp
@@ -1101,9 +1102,12 @@ class CliParser(argparse.ArgumentParser):
 
         if board_names:
             self.add_argument("-t", "--tty-file",
-                              help="If TTY is specified, BTP communication "
+                              help="If TTY(or COM) is specified, BTP communication "
                                    "with OS running on hardware will be done over "
                                    "this TTY. Hence, QEMU will not be used.")
+
+            self.add_argument("-j", "--jlink", dest="debugger_snr", type=str, default=None,
+                              help="Specify jlink serial number manually.")
 
             self.add_argument("-b", "--board", dest='board_name',
                               help="Used DUT board. This option is used to "
@@ -1133,7 +1137,7 @@ class Client:
 
     """
 
-    def __init__(self, get_iut, project, boards=None):
+    def __init__(self, get_iut, project, hw_mode=False):
         """
         param get_iut: function from autoptsprojects.<project>.iutctl
         param project: name of project
@@ -1143,12 +1147,12 @@ class Client:
         self.test_cases = None
         self.get_iut = get_iut
         self.store_tag = project + '_'
-        self.boards = boards
+        setup_project_name(project)
+        self.boards = None if hw_mode else get_available_boards(project)
         self.ptses = []
         self.args = None
         self.arg_parser = CliParser("PTS automation client", self.boards)
         self.add_positional_args()
-        setup_project_name(project)
         self.prev_sigint_handler = None
 
     def start(self, args=None):
@@ -1260,19 +1264,14 @@ class Client:
             time.sleep(1)
 
         if 'tty_file' in args and args.tty_file:
-            tty_file = args.tty_file
+            if not tty_exists(args.tty_file):
+                sys.exit("%s serial port does not exist!" % repr(args.tty_file))
 
-            if tty_file.startswith("COM"):
-                if not os.path.exists(tty_file):
-                    sys.exit("%s COM file does not exist!" % repr(tty_file))
-                args.tty_file = "/dev/ttyS" + str(int(tty_file["COM".__len__():]) - 1)
-            elif (not tty_file.startswith("/dev/tty") and
-                  not tty_file.startswith("/dev/pts")):
-                sys.exit("%s is not a TTY nor COM file!" % repr(tty_file))
-            elif not os.path.exists(tty_file) and \
-                    (tty_file.startswith('/dev/ttyS') and
-                     not os.path.exists('COM' + str(int(tty_file["/dev/ttyS".__len__():]) + 1))):
-                sys.exit("%s TTY file does not exist!" % repr(tty_file))
+            if args.tty_file.startswith("COM"):
+                try:
+                    args.tty_file = com_to_tty(args.tty_file)
+                except ValueError:
+                    sys.exit("Port {} is not a valid COM port!".format(args.tty_file))
         elif 'btpclient_path' in args:
             if not os.path.exists(args.btpclient_path):
                 sys.exit("Path %s of btpclient.py file does not exist!" % repr(args.btpclient_path))

@@ -1,9 +1,8 @@
-#!/usr/bin/env python
-
 #
 # auto-pts - The Bluetooth PTS Automation Framework
 #
-# Copyright (c) 2017, Intel Corporation.
+# Copyright (c) 2021, Intel Corporation.
+# Copyright (c) 2021, Codecoup.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms and conditions of the GNU General Public License,
@@ -15,22 +14,17 @@
 # more details.
 #
 
-"""Zephyr auto PTS client"""
-import autoptsclient_common as autoptsclient
-from ptsprojects.zephyr.iutctl import get_iut
+supported_projects = ['zephyr']
 
 
-class ZephyrClient(autoptsclient.Client):
-    def __init__(self):
-        super().__init__(get_iut, 'zephyr')
+def reset_cmd(iutctl):
+    """Return reset command for nRF52 DUT
 
+    Dependency: nRF5x command line tools
+    """
+    with_srn = ''
 
-def main():
-    """Main."""
+    if iutctl.debugger_snr:
+        with_srn = ' -s {}'.format(iutctl.debugger_snr)
 
-    client = ZephyrClient()
-    client.start()
-
-
-if __name__ == "__main__":
-    main()
+    return 'nrfjprog -f nrf52 -r {}'.format(with_srn)

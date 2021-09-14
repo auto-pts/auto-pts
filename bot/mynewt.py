@@ -20,11 +20,11 @@ import os
 import subprocess
 import sys
 import time
-import ptsprojects.mynewt as autoprojects
 from autoptsclient_common import Client
 from ptsprojects.mynewt.iutctl import get_iut, log
 import bot.common
 from ptsprojects.testcase_db import DATABASE_FILE
+from ptsprojects.boards import get_available_boards, get_free_device, release_device, get_build_and_flash
 
 
 def check_call(cmd, env=None, cwd=None, shell=True):
@@ -211,13 +211,14 @@ class MynewtBotConfigArgs(bot.common.BotConfigArgs):
 
 class MynewtBotCliParser(bot.common.BotCliParser):
     def __init__(self, add_help=True):
-        super().__init__(description="PTS automation client", board_names=autoprojects.iutctl.Board.names,
+        super().__init__(description="PTS automation client",
+                         board_names=get_available_boards('mynewt'),
                          add_help=add_help)
 
 
 class MynewtBotClient(bot.common.BotClient):
     def __init__(self):
-        super().__init__(get_iut, 'mynewt', autoprojects.iutctl.Board.names)
+        super().__init__(get_iut, 'mynewt', True)
         self.arg_parser = MynewtBotCliParser()
         self.parse_config = MynewtBotConfigArgs
         self.config_default = "default.conf"
@@ -231,13 +232,18 @@ class MynewtBotClient(bot.common.BotClient):
         log("TTY path: %s" % args.tty_file)
 
         if not args.no_build:
-            build_and_flash(args.project_path, args.board_name, overlay)
+            build_and_flash_fun = get_build_and_flash(args.board_name)
+
+            if build_and_flash_fun is None:
+                build_and_flash_fun = build_and_flash
+
+            build_and_flash_fun(args.project_path, args.board_name, overlay)
             time.sleep(10)
 
 
 class MynewtClient(Client):
     def __init__(self):
-        super().__init__(get_iut, 'mynewt', autoprojects.iutctl.Board.names)
+        super().__init__(get_iut, 'mynewt', True)
 
 
 SimpleClient = MynewtClient
@@ -262,9 +268,16 @@ def main(cfg):
     else:
         repo_status = ''
 
-    args['tty_file'], jlink_srn = bot.common.get_free_device()
-    summary, results, descriptions, regressions = \
-        MynewtBotClient().run_tests(args, cfg.get('iut_config', {}))
+    if 'tty_file' not in args:
+        args['tty_file'], jlink_srn = get_free_device()
+        if args['tty_file'] is None:
+            sys.exit('No free device found!')
+
+    try:
+        summary, results, descriptions, regressions = \
+            MynewtBotClient().run_tests(args, cfg.get('iut_config', {}))
+    finally:
+        release_device(args['tty_file'])
 
     report_file = bot.common.make_report_xlsx(results, summary, regressions,
                                               descriptions)

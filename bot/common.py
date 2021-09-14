@@ -49,7 +49,6 @@ REPORT_XLSX = "report.xlsx"
 REPORT_TXT = "report.txt"
 COMMASPACE = ', '
 
-devices_in_use = []
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
@@ -76,6 +75,8 @@ class BotConfigArgs(Namespace):
         self.cli_port = args.get('cli_port', [65001])
         self.ip_addr = args.get('server_ip', ['127.0.0.1'] * len(self.srv_port))
         self.local_addr = args.get('local_ip', ['127.0.0.1'] * len(self.cli_port))
+        self.tty_file = args.get('tty_file', None)
+        self.debugger_snr = args.get('debugger_snr', None)
         self.kernel_image = args.get('kernel_image', None)
         self.database_file = args.get('database_file', DATABASE_FILE)
         self.store = args.get('store', False)
@@ -94,10 +95,10 @@ class BotConfigArgs(Namespace):
 
 
 class BotClient(Client):
-    def __init__(self, get_iut, project, boards=None):
+    def __init__(self, get_iut, project, hw_mode):
         # Please implement this bot client
-        super().__init__(get_iut, project, boards)
-        self.arg_parser = BotCliParser("PTS automation client", boards)
+        super().__init__(get_iut, project, hw_mode)
+        self.arg_parser = BotCliParser("PTS automation client", self.boards)
         self.parse_config = BotConfigArgs
         self.config_default = "default.conf"
 
@@ -795,48 +796,6 @@ def update_repos(project_path, git_config):
         repos_dict[repo] = repo_dict
 
     return repos_dict
-
-
-def get_free_device():
-    tty = None
-    jlink = None
-    debuggers = subprocess.Popen('nrfjprog --com',
-                                 shell=True,
-                                 stdout=subprocess.PIPE
-                                 ).stdout.read().decode()
-
-    if sys.platform == "win32":
-        reg = r"[0-9]+\s+COM[0-9]+(?=\s+.+)"
-    else:
-        reg = r"[0-9]+\s+/dev/\w+(?=\s+.+)"
-
-    debuggers = re.findall(reg, debuggers)
-    for d in debuggers:
-        d_info = d.split()
-        if len(d_info) < 2:
-            continue
-
-        srn = d_info[0]
-        dev = d_info[1]
-
-        if srn not in devices_in_use:
-            devices_in_use.append(srn)
-            tty = dev
-            jlink = srn
-            break
-
-    if not tty:
-        sys.exit('No free device found!')
-
-    if tty.startswith("COM"):
-        tty = "/dev/ttyS" + str(int(tty["COM".__len__():]) - 1)
-
-    return tty, jlink
-
-
-def release_device(jlink_srn):
-    if jlink_srn:
-        devices_in_use.remove(jlink_srn)
 
 
 def pre_cleanup():

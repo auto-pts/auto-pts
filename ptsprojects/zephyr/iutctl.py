@@ -23,8 +23,9 @@ import time
 import serial
 
 from pybtp import defs
+from ptsprojects.boards import Board, get_debugger_snr, tty_to_com
 from pybtp.types import BTPError
-from pybtp.iutctl_common import BTPWorker, BTP_ADDRESS, BTMON, RTT, get_debugger_snr
+from pybtp.iutctl_common import BTPWorker, BTP_ADDRESS, BTMON, RTT
 
 log = logging.debug
 ZEPHYR = None
@@ -59,15 +60,16 @@ class ZephyrCtl:
             self.__class__, self.__init__.__name__, args.kernel_image,
             args.tty_file, args.board_name)
 
-        self.debugger_snr = None
+        self.debugger_snr = args.debugger_snr
         self.kernel_image = args.kernel_image
         self.tty_file = args.tty_file
         self.hci = args.hci
         self.native = None
 
         if self.tty_file and args.board_name:  # DUT is a hardware board, not QEMU
-            self.debugger_snr = get_debugger_snr(self.tty_file)
-            self.board = Board(args.board_name, args.kernel_image, self)
+            if self.debugger_snr is None:
+                self.debugger_snr = get_debugger_snr(self.tty_file)
+            self.board = Board(args.board_name, self)
         else:  # DUT is QEMU or a board that won't be reset
             self.board = None
 
@@ -77,14 +79,15 @@ class ZephyrCtl:
         self.btp_socket = None
         self.test_case = None
         self.iut_log_file = None
+        self.rtt_logger = None
+        self.btmon = None
 
         if self.debugger_snr:
             self.btp_address = BTP_ADDRESS + self.debugger_snr
+            self.rtt_logger = RTT() if args.rtt_log else None
+            self.btmon = BTMON() if args.btmon else None
         else:
             self.btp_address = BTP_ADDRESS
-
-        self.rtt_logger = RTT() if args.rtt_log else None
-        self.btmon = BTMON() if args.btmon else None
 
     def start(self, test_case):
         """Starts the Zephyr OS"""
@@ -103,7 +106,7 @@ class ZephyrCtl:
             if sys.platform == "win32":
                 # On windows socat.exe does not support setting serial baud rate.
                 # Set it with 'mode' from cmd.exe
-                com = "COM" + str(int(self.tty_file["/dev/ttyS".__len__():]) + 1)
+                com = tty_to_com(self.tty_file)
                 mode_cmd = (">nul 2>nul cmd.exe /c \"mode " + com + "BAUD=115200 PARITY=n DATA=8 STOP=1\"")
                 os.system(mode_cmd)
 
@@ -152,7 +155,12 @@ class ZephyrCtl:
         log("%s.%s", self.__class__, self.flush_serial.__name__)
         # Try to read data or timeout
         try:
-            ser = serial.Serial(port=self.tty_file,
+            if sys.platform == 'win32':
+                tty = tty_to_com(self.tty_file)
+            else:
+                tty = self.tty_file
+
+            ser = serial.Serial(port=tty,
                                 baudrate=SERIAL_BAUDRATE, timeout=1)
             ser.read(99999)
             ser.close()
@@ -261,93 +269,6 @@ class ZephyrCtlStub:
     def stop(self):
         """Powers off the Zephyr OS"""
         log("%s.%s", self.__class__, self.stop.__name__)
-
-
-class Board:
-    """HW DUT board"""
-
-    nrf52 = "nrf52"
-    reel = "reel_board"
-
-    # for command line options
-    names = [
-        nrf52,
-        reel
-    ]
-
-    def __init__(self, board_name, kernel_image, iutctl):
-        """Constructor of board"""
-        if board_name not in self.names:
-            raise Exception("Board name %s is not supported!" % board_name)
-
-        self.name = board_name
-        self.kernel_image = kernel_image
-        self.iutctl = iutctl
-        self.reset_cmd = self.get_reset_cmd()
-
-    def reset(self):
-        """Reset HW DUT board with openocd
-
-        With introduction of persistent storage in DUT flashing kernel image in
-        addition to reset will become necessary
-
-        """
-        log("About to reset DUT: %r", self.reset_cmd)
-
-        reset_process = subprocess.Popen(shlex.split(self.reset_cmd),
-                                         shell=False,
-                                         stdout=self.iutctl.iut_log_file,
-                                         stderr=self.iutctl.iut_log_file)
-        if reset_process.wait():
-            logging.error("openocd reset failed")
-
-    @staticmethod
-    def get_openocd_reset_cmd(openocd_bin, openocd_scripts, openocd_cfg):
-        """Compute openocd reset command"""
-        if not os.path.isfile(openocd_bin):
-            raise Exception("openocd {} not found!".format(openocd_bin))
-
-        if not os.path.isdir(openocd_scripts):
-            raise Exception("openocd scripts {} not found!".format(openocd_scripts))
-
-        if not os.path.isfile(openocd_cfg):
-            raise Exception("openocd config {} not found!".format(openocd_cfg))
-
-        reset_cmd = ('%s -s %s -f %s -c "init" -c "targets 1" '
-                     '-c "reset halt" -c "reset run" -c "shutdown"' %
-                     (openocd_bin, openocd_scripts, openocd_cfg))
-
-        return reset_cmd
-
-    def get_reset_cmd(self):
-        """Return reset command for a board"""
-        reset_cmd_getters = {
-            self.nrf52: self._get_reset_cmd_nrf52,
-            self.reel: self._get_reset_cmd_reel
-        }
-
-        reset_cmd_getter = reset_cmd_getters[self.name]
-
-        reset_cmd = reset_cmd_getter()
-
-        return reset_cmd
-
-    def _get_reset_cmd_nrf52(self):
-        """Return reset command for nRF52 DUT
-
-        Dependency: nRF5x command line tools
-
-        """
-        return 'nrfjprog -f nrf52 -r -s ' + self.iutctl.debugger_snr
-
-    @staticmethod
-    def _get_reset_cmd_reel():
-        """Return reset command for Reel_Board DUT
-
-        Dependency: pyocd command line tools
-
-        """
-        return 'pyocd cmd -c reset'
 
 
 def get_iut():

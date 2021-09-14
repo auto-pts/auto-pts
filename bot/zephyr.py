@@ -25,6 +25,7 @@ import collections
 import serial
 import autoptsclient_common as autoptsclient
 import ptsprojects.zephyr as autoprojects
+from ptsprojects.boards import get_available_boards, get_free_device, tty_to_com, release_device
 from ptsprojects.testcase_db import DATABASE_FILE
 from ptsprojects.zephyr.iutctl import get_iut, log
 from pathlib import Path
@@ -84,7 +85,7 @@ def flush_serial(tty):
         return
 
     if sys.platform == 'win32':
-        com = "COM" + str(int(tty["/dev/ttyS".__len__():]) + 1)
+        com = tty_to_com(tty)
         ser = serial.Serial(com, 115200, timeout=5)
         ser.flushInput()
         ser.flushOutput()
@@ -231,13 +232,13 @@ class ZephyrBotConfigArgs(bot.common.BotConfigArgs):
 class ZephyrBotCliParser(bot.common.BotCliParser):
     def __init__(self, add_help=True):
         super().__init__(description="PTS automation client",
-                         board_names=autoprojects.iutctl.Board.names,
+                         board_names=get_available_boards('mynewt'),
                          add_help=add_help)
 
 
 class ZephyrBotClient(bot.common.BotClient):
     def __init__(self):
-        super().__init__(get_iut, 'zephyr', autoprojects.iutctl.Board.names)
+        super().__init__(get_iut, 'zephyr', True)
         self.arg_parser = ZephyrBotCliParser()
         self.parse_config = ZephyrBotConfigArgs
         self.config_default = "prj.conf"
@@ -259,7 +260,7 @@ class ZephyrBotClient(bot.common.BotClient):
 
 class ZephyrClient(autoptsclient.Client):
     def __init__(self):
-        super().__init__(get_iut, 'zephyr', autoprojects.iutctl.Board.names)
+        super().__init__(get_iut, 'zephyr', True)
 
 
 SimpleClient = ZephyrClient
@@ -292,16 +293,17 @@ def main(cfg):
         autoptsclient.board_power(args['ykush'], True)
         time.sleep(1)
 
-    args['tty_file'], jlink_srn = bot.common.get_free_device()
+    if 'tty_file' not in args:
+        args['tty_file'], jlink_srn = get_free_device()
+        if args['tty_file'] is None:
+            sys.exit('No free device found!')
 
     try:
         summary, results, descriptions, regressions = \
             ZephyrBotClient().run_tests(args, cfg.get('iut_config', {}))
-    except Exception as e:
-        bot.common.release_device(jlink_srn)
-        raise e
+    finally:
+        release_device(args['tty_file'])
 
-    bot.common.release_device(jlink_srn)
     results = collections.OrderedDict(sorted(results.items()))
 
     report_file = bot.common.make_report_xlsx(results, summary, regressions,
