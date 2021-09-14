@@ -71,7 +71,10 @@ def hdl_wid_48_no_long_read(desc):
 
     btp.gattc_read(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl)
 
-    btp.gattc_read_rsp(True, True)
+    try:
+        btp.gattc_read_rsp(True, True)
+    except socket.timeout:
+        pass
     return True
 
 
