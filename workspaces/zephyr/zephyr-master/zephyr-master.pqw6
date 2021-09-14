@@ -1,4 +1,4 @@
-<WORKSPACE_INFORMATION NAME="zephyr-master" CREATED_WITH="Profile Tuning Suite, 8.0.3, 2" BD_ADDR="000000000000" QDID="164934">
+<WORKSPACE_INFORMATION NAME="zephyr-master" CREATED_WITH="Profile Tuning Suite, 8.0.3, 2" BD_ADDR="000000000000" QDID="175486">
   <PROJECTS_INFORMATION>
     <PROJECT_INFORMATION NAME="DIS" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
       <PICS>
@@ -3834,7 +3834,7 @@
           <Row>
             <Name>TSPC_MESH_4_7</Name>
             <Description>Provisioning Public Key OOB (C.5)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -3852,13 +3852,13 @@
           <Row>
             <Name>TSPC_MESH_4_10</Name>
             <Description>Provisioning: Authentication Input OOB (C.6)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_4_11</Name>
             <Description>Provisioning: Authentication Static OOB (C.6)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
