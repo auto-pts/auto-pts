@@ -258,6 +258,9 @@ def test_cases_client(pts):
         ZTestCase("GATT", "GATT/CL/GAR/BV-07-C",
                   cmds=pre_conditions_cl,
                   generic_wid_hdl=gattc_wid_hdl),
+        ZTestCase("GATT", "GATT/CL/GAT/BV-01-C",
+                  cmds=pre_conditions_cl,
+                  generic_wid_hdl=gattc_wid_hdl_no_read_long),
         # Not supported
         # PTS issue #15965
         # ZTestCase("GATT", "GATT/CL/GAW/BV-02-C",
