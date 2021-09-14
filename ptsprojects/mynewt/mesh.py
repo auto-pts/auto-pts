@@ -157,11 +157,14 @@ def test_cases(ptses):
     in_size = random.randint(0, 2)
     rand_in_actions = random.choice(in_actions) if in_size else 0
     crpl_size = 10  # Maximum capacity of the replay protection list
+    auth_metod = 0x00
+    pub_key = ("F465E43FF23D3F1B9DC7DFC04DA8758184DBC966204796ECCF0D6CF5E16500CC"
+                    + "0201D048BCBBD899EEEFC424164E33C201C2B010CA6B4D43A8A155CAD8ECB279")
 
     iut_device_name = get_unique_name(pts)
     stack.gap_init(iut_device_name)
     stack.mesh_init(device_uuid, oob, out_size, rand_out_actions, in_size,
-                    rand_in_actions, crpl_size)
+                    rand_in_actions, crpl_size, auth_metod)
 
     common_pre_conditions = [
         TestFunc(btp.core_reg_svc_gap),
@@ -219,7 +222,7 @@ def test_cases(ptses):
                   cmds=pre_conditions +
                   [TestFunc(stack.mesh_init, device_uuid, oob,
                             random.randint(1, 2), random.choice(out_actions),
-                            in_size, rand_in_actions, crpl_size)],
+                            in_size, rand_in_actions, crpl_size, auth_metod)],
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/TNPT/BV-06-C", cmds=pre_conditions +
                   [TestFunc(btp.mesh_store_net_data)],
