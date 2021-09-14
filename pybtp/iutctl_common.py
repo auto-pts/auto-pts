@@ -244,24 +244,6 @@ class BTPWorker(BTPSocket):
         self.event_handler_cb = event_handler
 
 
-def get_debugger_snr(tty_file):
-    debuggers = subprocess.Popen('nrfjprog --com',
-                                 shell=True,
-                                 stdout=subprocess.PIPE
-                                 ).stdout.read().decode()
-
-    if sys.platform == "win32":
-        COM = "COM" + str(int(tty_file["/dev/ttyS".__len__():]) + 1)
-        reg = "[0-9]+(?=\s+" + COM + ".+)"
-    else:
-        reg = "[0-9]+(?=\s+" + tty_file + ".+)"
-
-    try:
-        return re.findall(reg, debuggers)[0]
-    except:
-        sys.exit("No debuggers associated with the device found")
-
-
 class RTT:
     def __init__(self):
         self.read_thread = None

@@ -33,6 +33,8 @@ m['auto_pts'] = {
     'local_ip' : ['192.168.0.100'],
     'project_path': '/path/to/project',
     'workspace': 'Mynewt Nimble Host',
+    # 'debugger_srn': 'xxxxxxxx',
+    # 'tty_file': '/dev/ttyUSB',
     # 'database_file': 'path/to/mynewtTestCase.db',
     # 'store': True,
     'board': 'nordic_pca10056',

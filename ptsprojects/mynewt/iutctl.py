@@ -20,8 +20,9 @@ import os
 import serial
 
 from pybtp import defs
+from ptsprojects.boards import Board, get_debugger_snr
 from pybtp.types import BTPError
-from pybtp.iutctl_common import BTPWorker, BTP_ADDRESS, RTT, BTMON, get_debugger_snr
+from pybtp.iutctl_common import BTPWorker, BTP_ADDRESS, RTT, BTMON
 
 log = logging.debug
 MYNEWT = None
@@ -41,13 +42,14 @@ class MynewtCtl:
         assert args.tty_file and args.board_name
 
         self.tty_file = args.tty_file
+        self.debugger_snr = get_debugger_snr(self.tty_file) \
+            if args.debugger_snr is None else args.debugger_snr
         self.board = Board(args.board_name, self)
         self.socat_process = None
         self.btp_socket = None
         self.test_case = None
         self.iut_log_file = None
 
-        self.debugger_snr = get_debugger_snr(self.tty_file)
         self.rtt_logger = RTT() if args.rtt_log else None
         self.btmon = BTMON() if args.btmon else None
 
@@ -178,43 +180,6 @@ class MynewtCtlStub:
     def stop(self):
         """Powers off the Mynewt OS"""
         log("%s.%s", self.__class__, self.stop.__name__)
-
-
-class Board:
-    """HW DUT board"""
-
-    # for command line options
-    names = [
-        'nordic_pca10056'
-    ]
-
-    def __init__(self, board_name, iutctl):
-        """Constructor of board"""
-        if board_name not in self.names:
-            raise Exception("Board name %s is not supported!" % board_name)
-
-        self.name = board_name
-        self.reset_cmd = self.get_reset_cmd()
-        self.iutctl = iutctl
-
-    def reset(self):
-        """Reset HW DUT board with
-        """
-        log("About to reset DUT: %r", self.reset_cmd)
-
-        reset_process = subprocess.Popen(shlex.split(self.reset_cmd),
-                                         shell=False,
-                                         stdout=self.iutctl.iut_log_file,
-                                         stderr=self.iutctl.iut_log_file)
-
-        if reset_process.wait():
-            logging.error("reset failed")
-
-    @staticmethod
-    def get_reset_cmd():
-        """Return reset command for a board"""
-
-        return 'nrfjprog -f nrf52 -r'
 
 
 def get_iut():

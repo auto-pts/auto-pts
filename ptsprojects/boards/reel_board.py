@@ -1,9 +1,8 @@
-#!/usr/bin/env python
-
 #
 # auto-pts - The Bluetooth PTS Automation Framework
 #
-# Copyright (c) 2017, Intel Corporation.
+# Copyright (c) 2021, Intel Corporation.
+# Copyright (c) 2021, Codecoup.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms and conditions of the GNU General Public License,
@@ -15,22 +14,12 @@
 # more details.
 #
 
-"""Zephyr auto PTS client"""
-import autoptsclient_common as autoptsclient
-from ptsprojects.zephyr.iutctl import get_iut
+supported_projects = ['zephyr']
 
 
-class ZephyrClient(autoptsclient.Client):
-    def __init__(self):
-        super().__init__(get_iut, 'zephyr')
+def reset_cmd(iutctl):
+    """Return reset command for Reel_Board DUT
 
-
-def main():
-    """Main."""
-
-    client = ZephyrClient()
-    client.start()
-
-
-if __name__ == "__main__":
-    main()
+    Dependency: pyocd command line tools
+    """
+    return 'pyocd cmd -c reset'

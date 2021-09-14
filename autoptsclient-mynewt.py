@@ -18,13 +18,12 @@
 """Mynewt auto PTS client"""
 
 import autoptsclient_common as autoptsclient
-import ptsprojects.mynewt as autoprojects
 from ptsprojects.mynewt.iutctl import get_iut
 
 
 class MynewtClient(autoptsclient.Client):
     def __init__(self):
-        super().__init__(get_iut, 'mynewt', autoprojects.iutctl.Board.names)
+        super().__init__(get_iut, 'mynewt')
 
 
 def main():
