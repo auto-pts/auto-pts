@@ -938,6 +938,15 @@ def hdl_wid_1002(desc):
     return stack.gap.get_passkey()
 
 
+def hdl_wid_2000(desc):
+    stack = get_stack()
+
+    passkey = stack.gap.passkey.data
+    stack.gap.passkey.data = None
+
+    return passkey
+
+
 def hdl_wid_20001(desc):
     stack = get_stack()
     btp.gap_set_conn()
