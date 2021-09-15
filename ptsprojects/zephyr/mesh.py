@@ -179,6 +179,7 @@ def test_cases(ptses):
     auth_metod = 0x00
     pub_key = ("F465E43FF23D3F1B9DC7DFC04DA8758184DBC966204796ECCF0D6CF5E16500CC"
                "0201D048BCBBD899EEEFC424164E33C201C2B010CA6B4D43A8A155CAD8ECB279")
+    priv_key = "529AA0670D72CD6497502ED473502B037E8803B5C60829A5A3CAA219505530BA"
 
     stack.gap_init(iut_device_name)
     stack.mesh_init(device_uuid, oob, out_size, rand_out_actions, in_size,
@@ -253,6 +254,16 @@ def test_cases(ptses):
             "MESH", "TSPX_device_public_key", pub_key)),
         TestFunc(lambda: stack.mesh.pub_key_set(pub_key)),
     ]
+
+    pre_conditions_pub_priv_key = pre_conditions + [
+        TestFunc(lambda: pts.update_pixit_param(
+            "MESH", "TSPX_device_public_key", pub_key)),
+        TestFunc(lambda: stack.mesh.pub_key_set(pub_key)),
+        TestFunc(lambda: pts.update_pixit_param(
+            "MESH", "TSPX_device_private_key", priv_key)),
+        TestFunc(lambda: stack.mesh.priv_key_set(priv_key))
+    ]
+
     custom_test_cases = [
         ZTestCase("MESH", "MESH/NODE/CFG/CFGR/BV-01-C", cmds=pre_conditions +
                   [TestFunc(lambda: pts.update_pixit_param(
@@ -272,6 +283,28 @@ def test_cases(ptses):
                   [TestFunc(stack.mesh_init, device_uuid, oob,
                             random.randint(1, 2), random.choice(out_actions),
                             in_size, rand_in_actions, crpl_size, auth_metod)],
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/NODE/PROV/BV-02-C", cmds=
+                   [TestFunc(stack.mesh_init, device_uuid, oob,
+                             out_size, rand_out_actions,
+                             random.randint(1, 2), random.choice(in_actions), crpl_size, auth_metod)] +
+                   pre_conditions,
+                   generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/NODE/PROV/BV-04-C", cmds=
+                  [TestFunc(stack.mesh_init, device_uuid, oob,
+                            1, defs.MESH_OUT_DISPLAY_NUMBER,
+                            in_size, rand_in_actions, crpl_size, auth_metod)] +
+                  pre_conditions_pub_priv_key,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/NODE/PROV/BV-05-C", cmds=
+                  [TestFunc(stack.mesh_init, device_uuid, oob,
+                            out_size, rand_out_actions,
+                            random.randint(1, 2), random.choice(in_actions), crpl_size, auth_metod)] +
+                  pre_conditions_pub_priv_key,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/NODE/PROV/BV-06-C", cmds=pre_conditions_pub_priv_key,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/NODE/PROV/BV-08-C", cmds=pre_conditions_pub_priv_key,
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/TNPT/BV-06-C", cmds=pre_conditions +
                   [TestFunc(btp.mesh_store_net_data)],

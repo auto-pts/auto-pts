@@ -112,16 +112,17 @@ def hdl_wid_7(desc):
     params = pattern.findall(desc)
     if not params:
         logging.error("%s parsing error", hdl_wid_7.__name__)
-        return stack.mesh.oob_data.data
+        ret = stack.mesh.oob_data.data
     else:
         params = dict(params)
         stack.mesh.oob_data.data = int(params.get('the number'), 16)
+        btp.mesh_input_number(stack.mesh.oob_data.data)
+        ret = True
 
-    btp.mesh_input_number(stack.mesh.oob_data.data)
     # cleanup
     stack.mesh.oob_data.data = None
     stack.mesh.oob_action.data = None
-    return True
+    return ret
 
 
 def hdl_wid_8(desc):
@@ -132,7 +133,17 @@ def hdl_wid_8(desc):
     """
     stack = get_stack()
 
-    ret = stack.mesh.oob_data.data.decode('UTF-8')
+    pattern = re.compile(
+        r'(string):\s\s+([a-zA-Z]+).')
+    params = pattern.findall(desc)
+    if not params:
+        logging.error("%s parsing error", hdl_wid_7.__name__)
+        ret = stack.mesh.oob_data.data.decode('UTF-8')
+    else:
+        params = dict(params)
+        stack.mesh.oob_data.data = params.get('string')
+        btp.mesh_input_string(stack.mesh.oob_data.data)
+        ret = True
 
     # cleanup
     stack.mesh.oob_data.data = None

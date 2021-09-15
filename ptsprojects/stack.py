@@ -283,6 +283,7 @@ class Mesh:
         self.dev_key = '0123456789abcdef0123456789abcdef'
         self.iut_is_provisioner = False
         self.pub_key = Property(None)
+        self.priv_key = Property(None)
 
         # health model data
         self.health_test_id = Property(0x00)
@@ -446,10 +447,15 @@ class Mesh:
 
     def pub_key_set(self, pub_key):
         self.pub_key.data = pub_key
-        logging.debug("%s", self.pub_key.data)
 
     def pub_key_get(self):
         return self.pub_key.data
+
+    def priv_key_set(self, priv_key):
+        self.priv_key.data = priv_key
+
+    def priv_key_get(self):
+        return self.priv_key.data
 
 
 class L2capChan:

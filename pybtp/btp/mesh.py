@@ -271,6 +271,13 @@ def mesh_config_prov():
     data = bytearray(struct.pack("<16s16sBHBHB", uuid, static_auth, output_size,
                                  output_actions, input_size, input_actions, auth_method))
 
+    pub_key = stack.mesh.pub_key_get()
+    priv_key = stack.mesh.priv_key_get()
+
+    if pub_key and priv_key:
+        data.extend(struct.pack("<64s", binascii.unhexlify(pub_key)))
+        data.extend(struct.pack("<32s", binascii.unhexlify(priv_key)))
+
     iutctl.btp_socket.send_wait_rsp(*MESH['config_prov'], data=data)
 
 
@@ -355,7 +362,10 @@ def mesh_input_string(string):
 
     iutctl = get_iut()
 
-    data = bytearray(string)
+    string_len = len(string)
+
+    data = bytearray(struct.pack("<B", string_len))
+    data.extend(string.encode('UTF-8'))
 
     iutctl.btp_socket.send_wait_rsp(*MESH['input_str'], data=data)
 
