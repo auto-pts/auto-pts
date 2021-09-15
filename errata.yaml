@@ -11,11 +11,10 @@ GAP/SEC/AUT/BV-23-C: CASE0071522
 L2CAP/ECFC/BV-07-C: CASE0071749
 L2CAP/ECFC/BV-22-C: https://github.com/zephyrproject-rtos/zephyr/issues/37611
 L2CAP/ECFC/BV-24-C: https://github.com/zephyrproject-rtos/zephyr/issues/37611
+MESH/CFGCL/KR/BV-04-C: Fixed in 8.1.0
 MESH/NODE/PROV/BV-10-C: CASE0071466 Fixed in 8.1.0
 MESH/NODE/CFG/HBP/BV-02-C: CASE0071465 Fixed in 8.1.0
 MESH/CFGCL/CFG/SL/BV-01-C: CASE0071125 Fixed in 8.1.0
-MESH/PVNR/PROV/BI-14-C: https://github.com/zephyrproject-rtos/zephyr/pull/38492
-MESH/PVNR/PROV/BI-16-C: https://github.com/zephyrproject-rtos/zephyr/pull/38492
 MESH/PVNR/PROV/BV-01-C: https://github.com/zephyrproject-rtos/zephyr/pull/38492
 MESH/PVNR/PROV/BV-02-C: https://github.com/zephyrproject-rtos/zephyr/pull/38492
 MESH/PVNR/PROV/BV-03-C: https://github.com/zephyrproject-rtos/zephyr/pull/38492
@@ -23,4 +22,17 @@ MESH/PVNR/PROV/BV-04-C: https://github.com/zephyrproject-rtos/zephyr/pull/38492
 MESH/PVNR/PROV/BV-05-C: https://github.com/zephyrproject-rtos/zephyr/pull/38492
 MESH/PVNR/PROV/BV-06-C: https://github.com/zephyrproject-rtos/zephyr/pull/38492
 MESH/PVNR/PROV/BV-08-C: https://github.com/zephyrproject-rtos/zephyr/pull/38492
-MESH/PVNR/PROV/BI-18-C: https://github.com/zephyrproject-rtos/zephyr/pull/38492 https://github.com/zephyrproject-rtos/zephyr/pull/38464
+MESH/NODE/PROV/BV-02-C: https://github.com/zephyrproject-rtos/zephyr/pull/38492
+MESH/NODE/PROV/BV-04-C: https://github.com/zephyrproject-rtos/zephyr/pull/38492
+MESH/NODE/PROV/BV-05-C: https://github.com/zephyrproject-rtos/zephyr/pull/38492
+MESH/NODE/PROV/BV-06-C: https://github.com/zephyrproject-rtos/zephyr/pull/38492
+MESH/NODE/PROV/BV-08-C: https://github.com/zephyrproject-rtos/zephyr/pull/38492
+MESH/PVNR/PROV/BI-18-C: https://github.com/zephyrproject-rtos/zephyr/pull/38464
+MESH/NODE/PROV/BI-02-C: https://github.com/zephyrproject-rtos/zephyr/pull/38250
+MESH/NODE/CFG/MP/BI-03-C: https://github.com/zephyrproject-rtos/zephyr/pull/38360
+MESH/NODE/FRND/FN/BV-08-C: https://github.com/zephyrproject-rtos/zephyr/pull/38312
+MMDL/SR/LLC/BV-04-C: CASE0071677 - https://github.com/nrfconnect/sdk-nrf/pull/5585
+MMDL/SR/SCE/BV-03-C: CASE0071374 - https://github.com/nrfconnect/sdk-nrf/pull/5614
+MMDL/CL/SNR/BV-07-C: CASE0071833
+MMDL/CL/SNR/BV-08-C: CASE0071833
+MMDL/CL/SNR/BV-09-C: CASE0071833
