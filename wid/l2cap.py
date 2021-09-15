@@ -575,3 +575,7 @@ def hdl_wid_20001(desc):
 def hdl_wid_20100(desc):
     btp.gap_conn()
     return True
+
+
+def hdl_wid_20128(desc):
+    return True
