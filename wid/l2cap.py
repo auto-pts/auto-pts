@@ -12,6 +12,7 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
+import binascii
 import logging
 import re
 import socket
@@ -322,6 +323,22 @@ def hdl_wid_59(desc):
     btp.gap_conn_param_update(btp.pts_addr_get(), btp.pts_addr_type_get(),
                               720, 864, 0, 400)
     return True
+
+
+def hdl_wid_60(desc):
+    # use (\w{4,}) to avoid catching word "L2CAP"
+    control_data = re.search(r"(\w{4,})([A-F0-9]+)", desc).group(0)
+    stack = get_stack()
+    l2cap = stack.l2cap
+
+    channels = l2cap.rx_data_get_all(10)
+
+    for chan in channels:
+        for data in chan:
+            if binascii.hexlify(data).decode().upper() in control_data:
+                return True
+
+    return False
 
 
 def hdl_wid_100(desc):
