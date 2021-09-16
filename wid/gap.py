@@ -471,6 +471,9 @@ def hdl_wid_106(desc):
 
 
 def hdl_wid_108(desc):
+    if desc == 'Please start the Bonding Procedure in bondable mode.':
+        return True
+
     btp.gap_pair()
     return True
 
