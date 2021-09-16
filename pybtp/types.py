@@ -252,6 +252,7 @@ class L2CAPConnectionResponse:
     insufficient_authentication = 1
     insufficient_authorization = 2
     insufficient_encryption_key_size = 3
+    insufficient_encryption = 4
 
 
 class WIDParams(NamedTuple):
