@@ -273,18 +273,18 @@ class Gap:
 
 
 class Mesh:
-    def __init__(self, uuid, oob, output_size, output_actions, input_size,
-                 input_actions, crpl_size, auth_metod):
+    def __init__(self, uuid, uuid_lt2=None):
 
         # init data
         self.dev_uuid = uuid
-        self.static_auth = oob
-        self.output_size = output_size
-        self.output_actions = output_actions
-        self.input_size = input_size
-        self.input_actions = input_actions
-        self.crpl_size = crpl_size
-        self.auth_metod = auth_metod
+        self.dev_uuid_lt2 = uuid_lt2
+        self.static_auth = None
+        self.output_size = 0
+        self.output_actions = None
+        self.input_size = 0
+        self.input_actions = None
+        self.crpl_size = 0
+        self.auth_metod = 0
 
         self.oob_action = Property(None)
         self.oob_data = Property(None)
@@ -299,7 +299,7 @@ class Mesh:
         self.flags = 0x00
         self.iv_idx = 0x00000000
         self.seq_num = 0x00000000
-        self.address = 0x0003
+        self.address_iut = 0x0003
         self.dev_key = '0123456789abcdef0123456789abcdef'
         self.iut_is_provisioner = False
         self.pub_key = Property(None)
@@ -335,14 +335,16 @@ class Mesh:
 
         # Config Client
         self.net_idx = 0x0000
-        self.addr = 0x0001
+        self.address_lt1 = 0x0001
+        self.address_lt2 = None
         self.net_key_index = 0x0000
         self.el_address = 0x0001
         self.status = Property(None)
         self.model_data = Property(None)
         self.app_idx = 0x0000
-        self.address_lt2 = None
-        self.is_prov_adv = None
+        self.provisioning_in_progress = Property(None)
+        self.nodes_added = Property({})
+        self.nodes_expected = Property([])
 
         # MMDL expected status data
         self.expect_status_data = Property({
@@ -357,6 +359,45 @@ class Mesh:
             'Status': [],
             'Remaining Time': 0,
         })
+
+    def get_dev_uuid(self):
+        return self.dev_uuid
+
+    def get_dev_uuid_lt2(self):
+        return self.dev_uuid_lt2
+
+    def set_prov_data(self, oob, output_size, output_actions, input_size,
+                      input_actions, crpl_size, auth_method):
+        self.static_auth = oob
+        self.output_size = output_size
+        self.output_actions = output_actions
+        self.input_size = input_size
+        self.input_actions = input_actions
+        self.crpl_size = crpl_size
+        self.auth_metod = auth_method
+
+    def node_added(self, net_idx, addr, uuid, num_elems):
+        self.nodes_added.data[uuid] = (net_idx, addr, uuid, num_elems)
+
+    def expect_node(self, uuid):
+        self.nodes_expected.data.append(uuid)
+
+    def wait_for_node_added_uuid(self, timeout, uuid):
+        if uuid in self.nodes_added.data:
+            return True
+
+        flag = Event()
+        flag.set()
+
+        t = Timer(timeout, timeout_cb, [flag])
+        t.start()
+
+        while flag.is_set():
+            if uuid in self.nodes_added.data:
+                t.cancel()
+                return True
+
+        return False
 
     def set_iut_provisioner(self, _is_prov):
         self.iut_is_provisioner = _is_prov
@@ -864,13 +905,17 @@ class Stack:
 
     def gap_init(self, name=None, manufacturer_data=None, appearance=None,
                  svc_data=None, flags=None, svcs=None, uri=None):
+        if self.gap:
+            return
+
         self.gap = Gap(name, manufacturer_data, appearance, svc_data, flags,
                        svcs, uri)
 
-    def mesh_init(self, uuid, oob, output_size, output_actions, input_size,
-                  input_actions, crpl_size, auth_method):
-        self.mesh = Mesh(uuid, oob, output_size, output_actions, input_size,
-                         input_actions, crpl_size, auth_method)
+    def mesh_init(self, uuid, uuid_lt2=None):
+        if self.mesh:
+            return
+
+        self.mesh = Mesh(uuid, uuid_lt2)
 
     def l2cap_init(self, psm, initial_mtu):
         self.l2cap = L2cap(psm, initial_mtu)
@@ -886,13 +931,11 @@ class Stack:
 
     def cleanup(self):
         if self.gap:
-            self.gap_init(self.gap.name, self.gap.manufacturer_data)
+            self.gap = Gap(self.gap.name, self.gap.manufacturer_data, None, None, None, None, None)
 
         if self.mesh:
-            self.mesh_init(self.mesh.dev_uuid, self.mesh.static_auth,
-                           self.mesh.output_size, self.mesh.output_actions,
-                           self.mesh.input_size, self.mesh.input_actions,
-                           self.mesh.crpl_size, self.mesh.auth_metod)
+            self.mesh = Mesh(self.mesh.get_dev_uuid(), self.mesh.get_dev_uuid_lt2())
+
         if self.gatt:
             self.gatt_init()
 
