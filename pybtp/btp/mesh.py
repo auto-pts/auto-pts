@@ -292,7 +292,7 @@ def mesh_prov_node():
     data = bytearray(struct.pack("<16sHBIIH16s", net_key,
                                  stack.mesh.net_key_idx, stack.mesh.flags,
                                  stack.mesh.iv_idx, stack.mesh.seq_num,
-                                 stack.mesh.address, dev_key))
+                                 stack.mesh.address_iut, dev_key))
     pub_key = stack.mesh.pub_key_get()
     if pub_key:
         data.extend(struct.pack("<64s", binascii.unhexlify(pub_key)))
@@ -303,7 +303,7 @@ def mesh_prov_node():
 
 
 def mesh_provision_adv(uuid, addr, attention_duration):
-    logging.debug("%s", mesh_provision_adv.__name__)
+    logging.debug("%s %r %r %r", mesh_provision_adv.__name__, uuid, addr, attention_duration)
 
     iutctl = get_iut()
     stack = get_stack()
@@ -314,7 +314,7 @@ def mesh_provision_adv(uuid, addr, attention_duration):
 
     iutctl.btp_socket.send_wait_rsp(*MESH['provision_adv'], data=data)
 
-    stack.mesh.is_prov_adv = True
+    stack.mesh.provisioning_in_progress.data = True
 
 
 def mesh_init():
@@ -582,10 +582,13 @@ def mesh_prov_link_open_ev(mesh, data, data_len):
 
 def mesh_prov_link_closed_ev(mesh, data, data_len):
     logging.debug("%s %r", mesh_prov_link_closed_ev.__name__, data)
+    stack = get_stack()
 
     (bearer,) = struct.unpack('<B', data)
 
     mesh.last_seen_prov_link_state.data = ('closed', bearer)
+
+    stack.mesh.provisioning_in_progress.data = False
 
 
 def mesh_store_net_data():
@@ -726,6 +729,7 @@ def mesh_composition_data_get(net_idx, addr, page):
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MESH['composition_data_get'], data)
 
     (status,) = struct.unpack_from('<B', rsp)
+
 
 def mesh_cfg_krp_get(net_idx, addr, net_key_idx):
     logging.debug("%s", mesh_cfg_krp_get.__name__)
@@ -1486,11 +1490,13 @@ def mesh_lpn_polled_ev(mesh, data, data_len):
 def mesh_prov_node_added_ev(mesh, data, data_len):
     logging.debug("%s", mesh_prov_node_added_ev.__name__)
 
+    stack = get_stack()
     hdr_fmt = '<HH16sB'
-
     (net_idx, addr, uuid, num_elems) = struct.unpack_from(hdr_fmt, data, 0)
+    uuid = binascii.hexlify(uuid)
 
     logging.debug("0x%04x 0x%04x %r %u", net_idx, addr, uuid, num_elems)
+    stack.mesh.node_added(net_idx, addr, uuid, num_elems)
 
 
 MESH_EV = {

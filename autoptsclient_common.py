@@ -326,7 +326,7 @@ def init_logging(tag=""):
     script_name_no_ext = os.path.splitext(script_name)[0]
 
     log_filename = "%s%s.log" % (script_name_no_ext, tag)
-    format_template = ("%(asctime)s %(name)s %(levelname)s %(filename)-25s "
+    format_template = ("%(asctime)s %(threadName)s %(name)s %(levelname)s %(filename)-25s "
                        "%(lineno)-5s %(funcName)-25s : %(message)s")
 
     logging.basicConfig(format=format_template,

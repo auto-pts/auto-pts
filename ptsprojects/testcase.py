@@ -710,7 +710,7 @@ class TestCase(PTSCallback):
             self.post_wid_thread = Thread(None, self.run_post_wid_cmds)
             self.post_wid_thread.start()
 
-        log("Sending response %r", my_response)
+        log("Sending response %r to wid %d test case %s", my_response, wid, test_case_name)
         return my_response
 
     def pre_run(self):

@@ -117,12 +117,9 @@ class BTPSocket:
         logging.debug("%s, %r %r %r %r",
                       self.send.__name__, svc_id, op, ctrl_index, str(data))
 
-        logging.debug("btpclient command: send %d %d %d %r",
-                      svc_id, op, ctrl_index, str(data))
-
         frame = enc_frame(svc_id, op, ctrl_index, data)
 
-        logging.debug("sending frame %r", frame)
+        logging.debug("sending frame %r", frame.hex())
         self.conn.send(frame)
 
     def close(self):
@@ -143,6 +140,7 @@ class BTPWorker(BTPSocket):
 
         self._rx_queue = queue.Queue()
         self._running = threading.Event()
+        self._lock = threading.Lock()
 
         self._rx_worker = threading.Thread(target=self._rx_task)
 
@@ -192,12 +190,10 @@ class BTPWorker(BTPSocket):
 
         raise socket.timeout
 
-    def send_wait_rsp(self, svc_id, op, ctrl_index, data, cb=None,
-                      user_data=None):
-        super().send(svc_id, op, ctrl_index, data)
-        ret = True
-
-        while ret:
+    def send_wait_rsp(self, svc_id, op, ctrl_index, data):
+        self._lock.acquire()
+        try:
+            super().send(svc_id, op, ctrl_index, data)
             tuple_hdr, tuple_data = self.read()
 
             if tuple_hdr.svc_id != svc_id:
@@ -213,10 +209,9 @@ class BTPWorker(BTPSocket):
                     "Invalid opcode 0x%.2x in the response, expected 0x%.2x!" %
                     (tuple_hdr.op, op))
 
-            if cb and callable(cb):
-                ret = cb(tuple_data, user_data)
-            else:
-                return tuple_data
+            return tuple_data
+        finally:
+            self._lock.release()
 
     def _reset_rx_queue(self):
         while not self._rx_queue.empty():
