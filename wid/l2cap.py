@@ -542,12 +542,9 @@ def hdl_wid_260(desc):
 def hdl_wid_261(desc):
     time.sleep(2)
     stack = get_stack()
-    channels = stack.l2cap.rx_data_get_all(10)
     chan = stack.l2cap.chan_lookup_id(0)
-    if len(channels) != 1:
-        return False
+    rx_data = stack.l2cap.rx_data_get(0, 10)
 
-    rx_data = channels[0]
     size = [len(d) for d in rx_data]
     return size == 2 * [chan.our_mtu]
 

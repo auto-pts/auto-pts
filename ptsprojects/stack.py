@@ -640,6 +640,14 @@ class L2cap:
 
         chan.tx(data)
 
+    def rx_data_get(self, chan_id, timeout):
+        chan = self.chan_lookup_id(chan_id)
+        if chan is None:
+            logging.error("unknown channel")
+            return None
+
+        return chan.rx_data_get(timeout)
+
     def rx_data_get_all(self, timeout):
         data = []
 
