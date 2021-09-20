@@ -1,0 +1,59 @@
+#
+# auto-pts - The Bluetooth PTS Automation Framework
+#
+# Copyright (c) 2022, Codecoup.
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms and conditions of the GNU General Public License,
+# version 2, as published by the Free Software Foundation.
+#
+# This program is distributed in the hope it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
+#
+from argparse import Namespace
+from datetime import timedelta, datetime
+from common import zephyr_pr_job, zephyr_job, GithubCron
+
+email = {  # Admin emails that will receive python exceptions and bot logs
+    "sender": "john.doe@example.com",
+    "smtp_host": 'smtp.example.com',
+    "smtp_port": 587,
+    "name": "John",
+    "passwd": "<PASSWD>",
+    "start_tls": False,
+    "recipients": [
+        "1234@example.com",
+        "5678@example.com",
+    ],
+}
+
+# Jobs fired with magic sentence
+magic_tags = {
+    '#AutoPTS run': Namespace(func=zephyr_pr_job, cfg='config_zephyr_cron_pull',
+                              bisect='config_zephyr_bisect'),
+}
+
+run_now = (datetime.now() + timedelta(seconds=10)).strftime('%H:%M:%S')
+
+# Scheduled cyclical jobs
+cyclical_jobs = [
+    Namespace(func=zephyr_job, cfg='config_zephyr_cron_testing',
+              day='friday', hour=run_now, bisect='config_zephyr_bisect',
+              included='SM/CEN/JW/BV-05-C', excluded=''),
+
+    Namespace(func=zephyr_job, cfg='config_zephyr_cron_host',
+              day='friday', hour='19:00', included='', excluded='MESH'),
+    Namespace(func=zephyr_job, cfg='config_zephyr_cron_mesh',
+              day='friday', hour='19:01', included='MESH', excluded=''),
+]
+
+# Users with privileges to fire the bot with magic sentence
+privileged_users = ['github_user_1', 'github_user_2']
+
+github_crons = [
+    GithubCron(60, magic_tags, 'zephyrproject-rtos', 'zephyr',
+               privileged_users,
+               access_token='mygithubtokenxxxxxxxxxxxxxxxxxxxxxxxxxxx'),
+]
