@@ -675,7 +675,7 @@ def github_push_report(report_folder, log_git_conf, commit_msg):
     param: commit_msg ready commit message
     """
     update_sources(log_git_conf['path'], log_git_conf['remote'],
-                   log_git_conf['branch'], True, True)
+                   log_git_conf['branch'], True)
 
     dst_folder = os.path.join(log_git_conf['path'], log_git_conf['subdir'], os.path.basename(report_folder))
 

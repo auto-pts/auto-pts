@@ -199,9 +199,11 @@ This may contain few sections:
     - `remote` - git remote repo name
     - `branch` - branch selected at git checkout
     - `stash_changes` - stash changes if local repo is dirty
+    - `update_repo` - if False, prevents bot from updating the repo
 - `mail` - Mail configuration (optional)
     - `sender` - sender e-mail address
     - `smtp_host`, `smtp_port` - sender SMTP configuration
+    - `subject` - overrides default email title
     - `name` - to be used in message footer
     - `passwd` - sender mailbox password. When Google account is used [allow
     less secure apps to access account](https://myaccount.google.com/lesssecureapps)
