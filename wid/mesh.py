@@ -1735,6 +1735,16 @@ def hdl_wid_373(desc):
     return True
 
 
+def hdl_wid_394(desc):
+    """
+    Implements:
+    :param desc: Please start advertising the Mesh Proxy Service with Node Identity.
+    :return:
+    """
+    btp.mesh_proxy_identity()
+    return True
+
+
 def hdl_wid_500(desc):
     """
     Implements:
