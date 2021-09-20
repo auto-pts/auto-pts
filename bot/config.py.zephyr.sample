@@ -54,6 +54,7 @@ z['git'] = {
         'remote': 'origin',
         'branch': 'master',
         'stash_changes': False,
+        'update_repo': False,
     },
 }
 
@@ -73,6 +74,7 @@ z['mail'] = {
         "1234@example.com",
         "5678@example.com",
     ],
+    # "subject": "Custom email subject",
 }
 
 # ****************************************************************************
