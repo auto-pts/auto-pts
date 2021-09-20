@@ -315,9 +315,6 @@ def test_cases(ptses):
         ZTestCase("MESH", "MESH/NODE/TNPT/BV-08-C", cmds=pre_conditions +
                   [TestFunc(btp.mesh_store_net_data)],
                   generic_wid_hdl=mesh_wid_hdl),
-        ZTestCase("MESH", "MESH/SR/MPXS/BV-09-C", cmds=pre_conditions +
-                  [TestFunc(lambda: get_stack().mesh.proxy_identity_enable())],
-                  generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/CFGCL/KR/BV-01-C", cmds=pre_conditions_prov,
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/CFGCL/KR/BV-02-C", cmds=pre_conditions_prov,
