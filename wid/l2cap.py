@@ -581,6 +581,10 @@ def hdl_wid_262(desc):
     return True
 
 
+def hdl_wid_270(desc):
+    return True
+
+
 def hdl_wid_20001(desc):
     stack = btp.get_stack()
     btp.gap_set_conn()
