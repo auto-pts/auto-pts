@@ -487,6 +487,11 @@ def hdl_wid_137(desc):
     return True
 
 
+def hdl_wid_251(desc):
+    # TODO: Fix to actually verify result of 'Insufficient Encryption' 0x0008 error
+    return get_stack().l2cap.wait_for_disconnection(0, 30)
+
+
 def hdl_wid_252(desc):
     # TODO: Fix to actually verify result of 'Insufficient Authentication' 0x0005 error
     return get_stack().l2cap.wait_for_disconnection(0, 30)
