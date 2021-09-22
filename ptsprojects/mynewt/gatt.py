@@ -23,6 +23,7 @@ from ptsprojects.testcase import TestFunc
 from ptsprojects.mynewt.ztestcase import ZTestCase
 from ptsprojects.mynewt.gatt_wid import gatt_wid_hdl
 from ptsprojects.mynewt.gattc_wid import gattc_wid_hdl, gattc_wid_hdl_no_read_long
+from wid.gatt import gattc_wid_hdl_multiple_indications
 
 
 class Value:
@@ -261,6 +262,9 @@ def test_cases_client(pts):
         ZTestCase("GATT", "GATT/CL/GAT/BV-01-C",
                   cmds=pre_conditions_cl,
                   generic_wid_hdl=gattc_wid_hdl_no_read_long),
+        ZTestCase("GATT", "GATT/CL/GAI/BI-01-C",
+                  cmds=pre_conditions_cl,
+                  generic_wid_hdl=gattc_wid_hdl_multiple_indications),
         # Not supported
         # PTS issue #15965
         # ZTestCase("GATT", "GATT/CL/GAW/BV-02-C",
