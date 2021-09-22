@@ -161,6 +161,10 @@ def hdl_wid_156(desc):
     return not stack.gap.is_connected()
 
 
+def hdl_wid_173(desc):
+    return btp.gap_wait_for_pairing_fail()
+
+
 def hdl_wid_1009(desc):
     return btp.var_store_get_passkey(desc)
 

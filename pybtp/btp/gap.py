@@ -233,6 +233,24 @@ def gap_pairing_consent_ev_(gap, data, data_len):
     logging.debug("received %r", (_addr_t, _addr))
 
 
+def gap_pairing_failed_ev_(gap, data, data_len):
+    stack = get_stack()
+    logging.debug("%s", gap_pairing_failed_ev_.__name__)
+
+    logging.debug("received %r", data)
+
+    fmt = '<B6sH'
+    if len(data) != struct.calcsize(fmt):
+        raise BTPError("Invalid data length")
+
+    _addr_t, _addr, _reason = struct.unpack_from(fmt, data)
+    _addr = binascii.hexlify(_addr[::-1]).decode()
+
+    logging.debug("received %r", (_addr_t, _addr, _reason))
+
+    stack.gap.pairing_failed_rcvd = True
+
+
 GAP_EV = {
     defs.GAP_EV_NEW_SETTINGS: gap_new_settings_ev_,
     defs.GAP_EV_DEVICE_FOUND: gap_device_found_ev_,
@@ -243,6 +261,7 @@ GAP_EV = {
     defs.GAP_EV_CONN_PARAM_UPDATE: gap_conn_param_update_ev_,
     defs.GAP_EV_SEC_LEVEL_CHANGED: gap_sec_level_changed_ev_,
     defs.GAP_EV_PAIRING_CONSENT_REQ: gap_pairing_consent_ev_,
+    defs.GAP_EV_PAIRING_FAILED: gap_pairing_failed_ev_,
 }
 
 
@@ -275,6 +294,12 @@ def gap_wait_for_disconnection(timeout=30):
     stack = get_stack()
 
     stack.gap.wait_for_disconnection(timeout)
+
+
+def gap_wait_for_pairing_fail(timeout=30):
+    stack = get_stack()
+
+    return stack.gap.gap_wait_for_pairing_fail(timeout)
 
 
 def gap_adv_ind_on(ad=None, sd=None, duration=AdDuration.forever, own_addr_type=OwnAddrType.le_identity_address):
