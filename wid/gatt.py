@@ -30,6 +30,8 @@ from ptsprojects.stack import get_stack, GattPrimary, GattService, GattSecondary
 
 log = logging.debug
 
+indication_subbed_already = False
+
 
 def gatt_wid_hdl(wid, description, test_case_name, logs=True):
     if logs:
@@ -59,12 +61,48 @@ def gatt_wid_hdl_no_long_read(wid, description, test_case_name):
         return hdl_wid_48_no_long_read(description)
     return gatt_wid_hdl(wid, description, test_case_name)
 
+
 def gatt_wid_hdl_no_btp_reply(wid, description, test_case_name):
     if wid == 48:
         log("%s, %r, %r, %s", gatt_wid_hdl_no_btp_reply.__name__, wid, description,
             test_case_name)
         return hdl_wid_48_no_btp_reply(description)
     return gatt_wid_hdl(wid, description, test_case_name)
+
+
+def gattc_wid_hdl_multiple_indications(wid, description, test_case_name):
+    global indication_subbed_already
+    if wid == 99:
+        log("%s, %r, %r, %s", gatt_wid_hdl.__name__, wid, description,
+            test_case_name)
+        pattern = re.compile("'([0-9a-fA-F]+)'")
+        params = pattern.findall(description)
+        if not params:
+            logging.error("parsing error")
+            return False
+
+        handle = params[0]
+
+        btp.gattc_cfg_indicate(btp.pts_addr_type_get(), btp.pts_addr_get(),
+                               1, handle)
+
+        if not indication_subbed_already:
+            indication_subbed_already = True
+        else:
+            btp.gattc_notification_ev(btp.pts_addr_get(),
+                                      btp.pts_addr_type_get(), 2)
+            btp.gattc_notification_ev(btp.pts_addr_get(),
+                                      btp.pts_addr_type_get(), 2)
+        return True
+
+    module = sys.modules[__name__]
+
+    try:
+        handler = getattr(module, "hdl_wid_%d" % wid)
+        return handler(description)
+    except AttributeError:
+        return gatt_wid_hdl(wid, description, test_case_name)
+
 
 def gatt_server_fetch_db():
     db = GattDB()

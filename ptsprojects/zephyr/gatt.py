@@ -19,7 +19,8 @@ import logging
 from pybtp import btp
 from pybtp.types import UUID, Addr, IOCap, Prop, Perm
 from autoptsclient_common import get_unique_name
-from wid.gatt import gatt_wid_hdl_no_write_rsp_check, gatt_wid_hdl_no_long_read, gatt_wid_hdl_no_btp_reply
+from wid.gatt import gatt_wid_hdl_no_write_rsp_check, gatt_wid_hdl_no_long_read, gatt_wid_hdl_no_btp_reply, \
+                     gattc_wid_hdl_multiple_indications
 from ptsprojects.stack import get_stack
 from ptsprojects.testcase import TestFunc
 from ptsprojects.zephyr.gatt_wid import gatt_wid_hdl
@@ -534,6 +535,9 @@ def test_cases_server(ptses):
         ZTestCase("GATT", "GATT/SR/GAI/BV-01-C",
                   pre_conditions_1 + init_server_2,
                   generic_wid_hdl=gatt_wid_hdl),
+        ZTestCase("GATT", "GATT/SR/GAI/BI-01-C",
+                  pre_conditions_1 + init_server_2,
+                  generic_wid_hdl=gattc_wid_hdl_multiple_indications),
         # TODO rewrite GATT/SR/GAS/BV-01-C
         ZTestCase("GATT", "GATT/SR/GAS/BV-01-C",
                   cmds=pre_conditions +
