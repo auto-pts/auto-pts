@@ -154,6 +154,7 @@ class Gap:
 
         self.passkey = Property(None)
         self.conn_params = Property(None)
+        self.pairing_failed_rcvd = False
 
     def wait_for_connection(self, timeout):
         if self.is_connected():
@@ -250,6 +251,22 @@ class Gap:
                     break
 
         return self.passkey.data
+
+    def gap_wait_for_pairing_fail(self, timeout=5):
+        if self.pairing_failed_rcvd is False:
+            flag = Event()
+            flag.set()
+
+            t = Timer(timeout, timeout_cb, [flag])
+            t.start()
+
+            while flag.is_set():
+                if self.pairing_failed_rcvd:
+                    self.pairing_failed_rcvd = False
+                    t.cancel()
+                    break
+
+        return True
 
 
 class Mesh:
