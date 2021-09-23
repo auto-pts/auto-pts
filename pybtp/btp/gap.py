@@ -88,7 +88,9 @@ GAP = {
                     CONTROLLER_INDEX, 1),
     "set_mitm_off": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_MITM,
                      CONTROLLER_INDEX, 0),
-    "reset": (defs.BTP_SERVICE_ID_GAP, defs.GAP_RESET, CONTROLLER_INDEX, "")
+    "reset": (defs.BTP_SERVICE_ID_GAP, defs.GAP_RESET, CONTROLLER_INDEX, ""),
+    "set_filter_accept_list": (defs.BTP_SERVICE_ID_GAP,
+                            defs.GAP_SET_FILTER_ACCEPT_LIST, CONTROLLER_INDEX)
 }
 
 
@@ -435,6 +437,37 @@ def gap_conn(bd_addr=None, bd_addr_type=None, own_addr_type=OwnAddrType.le_ident
     data_ba.extend(chr(own_addr_type).encode('utf-8'))
 
     iutctl.btp_socket.send(*GAP['conn'], data=data_ba)
+
+    gap_command_rsp_succ()
+
+
+def set_filter_accept_list(address_list=None):
+    """ Send tuples (address, address_type) to IUT
+        and save them to the filter accept list.
+        If address_list=None PTS's (address,type) will be sent.
+
+        Arguments:
+        address_list -- addrs and their types as tuples:
+            address_list = [('DB:F5:72:56:C9:EF', 0), ('DB:F5:72:56:C9:EF', 0)]
+    """
+    logging.debug("%s %s", set_filter_accept_list.__name__, address_list)
+    iutctl = get_iut()
+
+    data_ba = bytearray()
+
+    if not address_list:
+        address_list = [(pts_addr_get(None), pts_addr_type_get(None))]
+
+    addr_cnt_ba = chr(len(address_list)).encode('utf-8')
+    data_ba.extend(addr_cnt_ba)
+
+    for addr, type in address_list:
+        bd_addr_ba = addr2btp_ba(addr)
+        bd_addr_type_ba = chr(type).encode('utf-8')
+        data_ba.extend(bd_addr_type_ba)
+        data_ba.extend(bd_addr_ba)
+
+    iutctl.btp_socket.send(*GAP['set_filter_accept_list'], data=data_ba)
 
     gap_command_rsp_succ()
 
