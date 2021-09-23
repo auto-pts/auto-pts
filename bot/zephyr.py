@@ -286,7 +286,7 @@ def main(cfg):
             sys.exit('No free device found!')
 
     try:
-        summary, results, descriptions, regressions = \
+        summary, results, descriptions, regressions, args['pts_ver'], args['platform'] = \
             ZephyrBotClient().run_tests(args, cfg.get('iut_config', {}))
     finally:
         release_device(args['tty_file'])
