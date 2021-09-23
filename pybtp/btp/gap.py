@@ -473,10 +473,12 @@ def gap_conn(bd_addr=None, bd_addr_type=None, own_addr_type=OwnAddrType.le_ident
 
     data_ba = bytearray()
     bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
+    bd_addr_type_ba = chr(pts_addr_type_get(bd_addr_type)).encode('utf-8')
+    own_addr_type_ba = chr(own_addr_type).encode('utf-8')
 
-    data_ba.extend(chr(pts_addr_type_get(bd_addr_type)).encode('utf-8'))
+    data_ba.extend(bd_addr_type_ba)
     data_ba.extend(bd_addr_ba)
-    data_ba.extend(chr(own_addr_type).encode('utf-8'))
+    data_ba.extend(own_addr_type_ba)
 
     iutctl.btp_socket.send(*GAP['conn'], data=data_ba)
 
