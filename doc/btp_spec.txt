@@ -383,6 +383,8 @@ Commands and responses:
 
 		This command is used to create a Link Layer connection with
 		remote device.
+		Address '00:00:00:00:00:00' and type '0' will attempt to
+		use address from filter accept list.
 
 		In case of an error, the error response will be returned.
 
@@ -564,6 +566,22 @@ Commands and responses:
 		Return Parameters:	<none>
 
 		This command is used to set MITM setting.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x1c - Set filter accept list
+
+		Controller Index: <controller id>
+
+		Command parameters:
+			Address_Type #N (1 octet)
+			Address #N (6 octets)
+			for N from 1 to the number of addresses
+			in the filter accept list.
+
+		This command is used to set filter accept list.
+		When set, connect with address: '00:00:00:00:00:00'
+		and type '0' to use addresses from the list.
 
 		In case of an error, the error response will be returned.
 
