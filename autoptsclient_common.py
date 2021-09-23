@@ -927,27 +927,56 @@ test_case_blacklist = [
 ]
 
 
-def run_test_cases(ptses, test_case_instances, args):
-    """Runs a list of test cases"""
-
+def get_test_cases(pts, test_cases, included, excluded):
+    """
+    param: pts: proxy to initiated pts instance
+    param: test_cases: names (or prefixes) of test cases to run in
+    current configuration
+    param: included: test cases specified with -c option
+    param: excluded: test cases specified with -e option
+    """
     def run_or_not(test_case_name):
         for entry in test_case_blacklist:
             if entry in test_case_name:
                 return False
 
-        if args.excluded:
-            for n in args.excluded:
+        if excluded:
+            for n in excluded:
                 if test_case_name.startswith(n):
                     return False
 
-        if args.test_cases:
-            for n in args.test_cases:
+        if test_cases:
+            for n in test_cases:
                 if test_case_name.startswith(n):
                     return True
 
             return False
 
-        return True
+    if len(included) > 0:
+        _included = []
+
+        for inc in included:
+            for tc in test_cases:
+                if tc.startswith(inc):
+                    _included.append(tc)
+                elif inc.startswith(tc):
+                    _included.append(inc)
+
+        test_cases = _included
+
+    projects = pts.get_project_list()
+
+    _test_cases = []
+
+    for project in projects:
+        _test_case_list = pts.get_test_case_list(project)
+        _test_cases += [tc for tc in _test_case_list if run_or_not(tc)]
+
+    return _test_cases
+
+
+def run_test_cases(ptses, test_case_instances, args):
+    """Runs a list of test cases"""
 
     ports_str = '_'.join(str(x) for x in args.cli_port)
     now = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
@@ -958,13 +987,8 @@ def run_test_cases(ptses, test_case_instances, args):
         if e.errno != errno.EEXIST:
             raise
 
-    test_cases = []
-
+    test_cases = args.test_cases
     projects = ptses[0].get_project_list()
-
-    for project in projects:
-        _test_case_list = ptses[0].get_test_case_list(project)
-        test_cases += [tc for tc in _test_case_list if run_or_not(tc)]
 
     # Statistics
     stats = TestCaseRunStats(projects, test_cases, args.retry, TEST_CASE_DB)
@@ -1214,7 +1238,7 @@ class Client:
         self.setup_project_pixits(self.ptses)
         self.setup_test_cases(self.ptses)
 
-        status_count, results_dict, regressions = run_test_cases(self.ptses, self.test_cases, self.args)
+        stats = self.run_test_cases()
 
         self.cleanup()
         shutdown_pts(self.ptses)
@@ -1222,7 +1246,7 @@ class Client:
         print("\nBye!")
         sys.stdout.flush()
 
-        return status_count, results_dict, regressions
+        return stats
 
     def parse_args(self, arg_ns=None):
         """Parses command line arguments and options
@@ -1298,6 +1322,13 @@ class Client:
 
     def setup_test_cases(self, ptses):
         self.test_cases = setup_test_cases(ptses)
+
+    def run_test_cases(self):
+        test_cases_names = self.args.test_cases
+        included = []
+        excluded = self.args.excluded
+        self.args.test_cases = get_test_cases(self.ptses[0], test_cases_names, included, excluded)
+        return run_test_cases(self.ptses, self.test_cases, self.args)
 
     def cleanup(self):
         autoprojects.iutctl.cleanup()

@@ -12,6 +12,7 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
+import copy
 import logging
 import os
 import re
@@ -51,6 +52,7 @@ REPORT_TXT = "report.txt"
 COMMASPACE = ', '
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+log = logging.debug
 
 
 class BotCliParser(CliParser):
@@ -102,6 +104,7 @@ class BotClient(Client):
         self.arg_parser = BotCliParser("PTS automation client", self.boards)
         self.parse_config = BotConfigArgs
         self.config_default = "default.conf"
+        self.iut_config = None
 
     def add_positional_args(self):
         pass
@@ -109,13 +112,7 @@ class BotClient(Client):
     def apply_config(self, args, config, value):
         pass
 
-    def run_tests(self, args, iut_config):
-        """Run test cases
-            :param args: AutoPTS arguments
-            :param iut_config: IUT configuration
-            :return: tuple of (status, results) dictionaries
-            """
-
+    def run_test_cases(self):
         results = {}
         status = {}
         descriptions = {}
@@ -123,10 +120,12 @@ class BotClient(Client):
         _args = {}
 
         config_default = self.config_default
-        _args[config_default] = self.parse_args(self.parse_config(args))
-        autoptsclient.init_logging('_' + '_'.join(str(x) for x in _args[config_default].cli_port))
+        _args[config_default] = self.args
 
-        for config, value in list(iut_config.items()):
+        excluded = _args[config_default].excluded
+        included = _args[config_default].test_cases
+
+        for config, value in list(self.iut_config.items()):
             if 'test_cases' not in value:
                 # Rename default config
                 _args[config] = _args.pop(config_default)
@@ -134,17 +133,31 @@ class BotClient(Client):
                 continue
 
             if config != config_default:
-                _args[config] = self.parse_args(self.parse_config(args))
+                _args[config] = copy.deepcopy(_args[config_default])
+                _args[config].excluded = excluded
 
-            _args[config].test_cases = value.get('test_cases', [])
+            _args[config].test_cases = autoptsclient.get_test_cases(
+                self.ptses[0], value.get('test_cases', []), included, excluded)
 
             if 'overlay' in value:
-                _args[config_default].excluded += _args[config].test_cases
+                if len(_args[config].test_cases) > 0:
+                    _args[config_default].excluded += _args[config].test_cases
+                else:
+                    _args.__delitem__(config)
+                    log('No test cases for {} config, ignored.'.format(config))
 
-        for config, value in list(iut_config.items()):
-            self.apply_config(_args[config], config, value)
+        _args[config_default].test_cases = autoptsclient.get_test_cases(
+            self.ptses[0], self.ptses[0].get_project_list(), included, excluded)
 
-            status_count, results_dict, regressions = self.start(_args[config])
+        if len(_args[config_default].test_cases) == 0:
+            _args.__delitem__(config_default)
+            log('No test cases for {} config, ignored.'.format(config_default))
+
+        for config in _args.keys():
+            self.apply_config(_args[config], config, self.iut_config[config])
+
+            status_count, results_dict, regressions = \
+                autoptsclient.run_test_cases(self.ptses, self.test_cases, _args[config])
 
             total_regressions += regressions
 
@@ -156,19 +169,26 @@ class BotClient(Client):
 
             results.update(results_dict)
 
-        with ServerProxy("http://{}:{}/".format(
-                _args[config_default].ip_addr[0],
-                _args[config_default].srv_port[0]), allow_none=True, ) as pts:
-            # Read PTS Version and keep it for later use
-            args['pts_ver'] = "%s" % pts.get_version()
-            args['platform'] = '{}'.format(pts.get_system_model())
-
             for test_case_name in list(results.keys()):
                 project_name = test_case_name.split('/')[0]
                 descriptions[test_case_name] = \
-                    pts.get_test_case_description(project_name, test_case_name)
+                    self.ptses[0].get_test_case_description(project_name, test_case_name)
 
-        return status, results, descriptions, total_regressions
+        pts_ver = '{}'.format(self.ptses[0].get_version())
+        platform = '{}'.format(self.ptses[0].get_system_model())
+
+        return status, results, descriptions, total_regressions, pts_ver, platform
+
+    def run_tests(self, args, iut_config):
+        """Run test cases
+            :param args: AutoPTS arguments
+            :param iut_config: IUT configuration
+            :return: tuple of (status, results) dictionaries
+            """
+
+        self.iut_config = iut_config
+
+        return self.start(self.parse_config(args))
 
 
 # ****************************************************************************
