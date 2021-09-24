@@ -567,13 +567,15 @@ class TestCaseRunStats:
         elem.attrib["status"] = status
 
         regression = bool(elem.attrib["status"] != "PASS" and elem.attrib["status_previous"] == "PASS")
+        progress = bool(elem.attrib["status"] == "PASS" and elem.attrib["status_previous"] != "PASS")
 
         elem.attrib["regression"] = str(regression)
+        elem.attrib["progress"] = str(progress)
         elem.attrib["run_count"] = str(run_count + 1)
 
         tree.write(self.xml_results)
 
-        return regression
+        return regression, progress
 
     def get_results(self):
         tree = ElementTree.parse(self.xml_results)
@@ -591,6 +593,13 @@ class TestCaseRunStats:
         tree = ElementTree.parse(self.xml_results)
         root = tree.getroot()
         tcs_xml = root.findall("./test_case[@regression='True']")
+
+        return [tc_xml.attrib["name"] for tc_xml in tcs_xml]
+
+    def get_progresses(self):
+        tree = ElementTree.parse(self.xml_results)
+        root = tree.getroot()
+        tcs_xml = root.findall("./test_case[@progress='True']")
 
         return [tc_xml.attrib["name"] for tc_xml in tcs_xml]
 
@@ -612,53 +621,36 @@ class TestCaseRunStats:
         """Prints test case list status summary"""
         print("\nSummary:\n")
 
-        status_str = "Status"
-        status_str_len = len(status_str)
-        count_str_len = len("Count")
-        total_str_len = len("Total")
-        regressions_str = "Regressions"
-        regressions_str_len = len(regressions_str)
-        regressions_count = len(self.get_regressions())
-        regressions_count_str_len = len(str(regressions_count))
-        num_test_cases_str = str(self.num_test_cases)
-        num_test_cases_str_len = len(num_test_cases_str)
+        content = [['Status', 'Count'], '=']
         status_count = self.get_status_count()
-
-        status_just = max(status_str_len, total_str_len)
-        count_just = max(count_str_len, num_test_cases_str_len)
-
-        title_str = ''
-        border = ''
-
-        if regressions_count != 0:
-            status_just = max(status_just, regressions_str_len)
-            count_just = max(count_just, regressions_count_str_len)
-
         for status, count in list(status_count.items()):
-            status_just = max(status_just, len(status))
-            count_just = max(count_just, len(str(count)))
+            content.append([status, str(count)])
 
-            status_just += self.margin
-            title_str = status_str.ljust(status_just) + "Count".rjust(count_just)
-            border = "=" * (status_just + count_just)
+        content.append(['='])
+        content.append(['Total', str(self.num_test_cases)])
 
-        print(title_str)
-        print(border)
+        regressions = len(self.get_regressions())
+        if regressions != 0:
+            content.append(['='])
+            content.append(['Regressions', str(regressions)])
 
-        # print each status and count
-        for status in sorted(status_count.keys()):
-            count = status_count[status]
-            print(status.ljust(status_just) + str(count).rjust(count_just))
+        progresses = len(self.get_progresses())
+        if regressions != 0:
+            if (content[len(content) - 1]) != 1:
+                content.append(['='])
+            content.append(['Progresses', str(progresses)])
 
-        # print total
-        print(border)
-        print("Total".ljust(status_just) + num_test_cases_str.rjust(count_just))
+        max_len = 0
+        for line in content:
+            if len(line) == 2:
+                max_len = max(max_len, len(' '.join(line)))
 
-        if regressions_count != 0:
-            print(border)
-
-        print(regressions_str.ljust(status_just) +
-              str(regressions_count).rjust(count_just))
+        for line in content:
+            if len(line) == 1:
+                print(line[0] * max_len)
+            elif len(line) == 2:
+                spaces = ' ' * (max_len - len(line[0]) - len(line[1]))
+                print('{}{}{}'.format(line[0], spaces, line[1]))
 
 
 def run_test_case_wrapper(func):
@@ -686,7 +678,7 @@ def run_test_case_wrapper(func):
         status = func(*args)
         end_time = time.time() - start_time
 
-        regression = stats.update(test_case_name, end_time, status)
+        regression, progress = stats.update(test_case_name, end_time, status)
 
         retries_max = run_count_max - 1
         if run_count:
@@ -696,6 +688,8 @@ def run_test_case_wrapper(func):
 
         if regression and run_count == retries_max:
             regression_msg = "REGRESSION"
+        elif progress:
+            regression_msg = "PROGRESS"
         else:
             regression_msg = ""
 
@@ -1055,7 +1049,7 @@ def run_test_cases(ptses, test_case_instances, args):
 
     stats.print_summary()
 
-    return stats.get_status_count(), stats.get_results(), stats.get_regressions()
+    return stats.get_status_count(), stats.get_results(), stats.get_regressions(), stats.get_progresses()
 
 
 class CliParser(argparse.ArgumentParser):

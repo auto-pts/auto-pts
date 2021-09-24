@@ -190,13 +190,15 @@ def compose_mail(args, mail_cfg, mail_ctx):
     <p><b>Execution Time</b>: {}</p>
     {}
     {}
+    {}
     <h3>Logs</h3>
     {}
     <p>Sincerely,</p>
     <p> {}</p>
     '''.format(ww_dd_str, args["board"], mail_ctx["repos_info"], args['platform'],
                args['pts_ver'], mail_ctx["elapsed_time"], mail_ctx["summary"],
-               mail_ctx["regression"], mail_ctx["log_url"], mail_cfg['name'])
+               mail_ctx["regression"], mail_ctx["progresses"],
+               mail_ctx["log_url"], mail_cfg['name'])
 
     if 'subject' in mail_cfg:
         subject = mail_cfg['subject']
@@ -286,7 +288,7 @@ def main(cfg):
             sys.exit('No free device found!')
 
     try:
-        summary, results, descriptions, regressions, args['pts_ver'], args['platform'] = \
+        summary, results, descriptions, regressions, progresses, args['pts_ver'], args['platform'] = \
             ZephyrBotClient().run_tests(args, cfg.get('iut_config', {}))
     finally:
         release_device(args['tty_file'])
@@ -297,8 +299,9 @@ def main(cfg):
     pts_logs, xmls = bot.common.pull_server_logs(args_ns)
 
     report_file = bot.common.make_report_xlsx(results, summary, regressions,
-                                              descriptions, xmls)
-    report_txt = bot.common.make_report_txt(results, repo_status)
+                                              progresses, descriptions, xmls)
+    report_txt = bot.common.make_report_txt(results, regressions,
+                                            progresses, repo_status)
 
     end_time = time.time()
     end_time_stamp = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
@@ -348,7 +351,10 @@ def main(cfg):
         mail_ctx = {"summary": bot.common.status_dict2summary_html(summary),
                     "regression": bot.common.regressions2html(regressions,
                                                               descriptions),
-                    "repos_info": repo_status}
+                    "repos_info": repo_status,
+                    "progresses": bot.common.progresses2html(progresses,
+                                                             descriptions)
+                    }
 
         # Summary
 
