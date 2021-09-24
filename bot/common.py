@@ -117,6 +117,7 @@ class BotClient(Client):
         status = {}
         descriptions = {}
         total_regressions = []
+        total_progresses = []
         _args = {}
 
         config_default = self.config_default
@@ -156,10 +157,11 @@ class BotClient(Client):
         for config in _args.keys():
             self.apply_config(_args[config], config, self.iut_config[config])
 
-            status_count, results_dict, regressions = \
+            status_count, results_dict, regressions, progresses = \
                 autoptsclient.run_test_cases(self.ptses, self.test_cases, _args[config])
 
             total_regressions += regressions
+            total_progresses += progresses
 
             for k, v in list(status_count.items()):
                 if k in list(status.keys()):
@@ -177,7 +179,7 @@ class BotClient(Client):
         pts_ver = '{}'.format(self.ptses[0].get_version())
         platform = '{}'.format(self.ptses[0].get_system_model())
 
-        return status, results, descriptions, total_regressions, pts_ver, platform
+        return status, results, descriptions, total_regressions, total_progresses, pts_ver, platform
 
     def run_tests(self, args, iut_config):
         """Run test cases
@@ -261,6 +263,27 @@ def regressions2html(regressions, descriptions):
             msg += "<p>{}</p>".format(name)
     else:
         msg += "<p>No regressions found</p>"
+
+    return msg
+
+
+def progresses2html(progresses, descriptions):
+    """Creates HTML formatted message with regressions
+    :param progresses: list of regressions found
+    :return: HTML formatted message
+    """
+    msg = "<h3>Progresses</h3>"
+
+    progresses_list = []
+    for name in progresses:
+        progresses_list.append(
+            name + " - " + descriptions.get(name, "no description"))
+
+    if progresses_list:
+        for name in progresses_list:
+            msg += "<p>{}</p>".format(name)
+    else:
+        msg += "<p>No progresses found</p>"
 
     return msg
 
@@ -454,12 +477,14 @@ class Drive(GDrive):
 # ****************************************************************************
 # FIXME don't use statuses from status_dict, count it from results dict instead
 def make_report_xlsx(results_dict, status_dict, regressions_list,
-                     descriptions):
+                     progresses_list, descriptions):
     """Creates excel file containing test cases results and summary pie chart
     :param results_dict: dictionary with test cases results
     :param status_dict: status dictionary, where key is status and value is
     status count
     :param regressions_list: list of regressions found
+    :param progresses_list: list of regressions found
+    :param descriptions: test cases
     :return:
     """
 
@@ -504,6 +529,8 @@ def make_report_xlsx(results_dict, status_dict, regressions_list,
             worksheet.write(row, col + 2, descriptions[k])
         if k in regressions_list:
             worksheet.write(row, col + 3, "REGRESSION")
+        if k in progresses_list:
+            worksheet.write(row, col + 3, "PROGRESS")
         row += 1
 
     summary_row = 2
@@ -547,9 +574,14 @@ def make_report_xlsx(results_dict, status_dict, regressions_list,
 # ****************************************************************************
 # .txt result file
 # ****************************************************************************
-def make_report_txt(results_dict, zephyr_hash):
+def make_report_txt(results_dict, regressions_list,
+                    progresses_list, repo_status):
     """Creates txt file containing test cases results
     :param results_dict: dictionary with test cases results
+    :param regressions_list: list of regressions found
+    :param progresses_list: list of regressions found
+    :param repo_status: information about current commit from all
+    configured repositories
     :return: txt file path
     """
 
@@ -567,12 +599,19 @@ def make_report_txt(results_dict, zephyr_hash):
     if errata is None:
         errata = {}
 
-    f.write("%s\n" % zephyr_hash)
+    f.write("%s\n" % repo_status)
     for tc, result in list(results_dict.items()):
-        if result[0] == 'PASS' and int(result[1]) > 1:
-            result = '{} ({})'.format(result[0], result[1])
-        else:
-            result = result[0]
+        res = result[0]
+        if result[0] == 'PASS':
+            if int(result[1]) > 1:
+                res = '{} ({})'.format(res, result[1])
+            if tc in progresses_list:
+                res = '{} - PROGRESS '.format(res)
+        elif tc in regressions_list:
+            res = '{} - REGRESSION '.format(res)
+
+        result = res
+
         if tc in errata:
             result += ' - ERRATA ' + errata[tc]
 

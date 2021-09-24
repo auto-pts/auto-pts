@@ -252,14 +252,15 @@ def main(cfg):
             sys.exit('No free device found!')
 
     try:
-        summary, results, descriptions, regressions, args['pts_ver'], args['platform'] = \
+        summary, results, descriptions, regressions, progresses, args['pts_ver'], args['platform'] = \
             MynewtBotClient().run_tests(args, cfg.get('iut_config', {}))
     finally:
         release_device(args['tty_file'])
 
     report_file = bot.common.make_report_xlsx(results, summary, regressions,
-                                              descriptions)
-    report_txt = bot.common.make_report_txt(results, repo_status)
+                                              progresses, descriptions)
+    report_txt = bot.common.make_report_txt(results, regressions,
+                                            progresses, repo_status)
     logs_folder = bot.common.archive_testcases("logs")
 
     build_info_file = get_build_info_file(os.path.abspath(args['project_path']))
