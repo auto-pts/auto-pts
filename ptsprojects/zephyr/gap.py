@@ -187,6 +187,8 @@ def test_cases(ptses):
             "GAP", "TSPX_iut_device_name_in_adv_packet_for_random_address", iut_device_name)),
         TestFunc(lambda: pts.update_pixit_param(
             "GAP", "TSPX_advertising_data", ad_pixit)),
+        TestFunc(lambda: pts.update_pixit_param(
+            "GAP", "TSPX_delete_ltk", "TRUE")),
 
         # We do this on test case, because previous one could update
         # this if RPA was used by PTS
