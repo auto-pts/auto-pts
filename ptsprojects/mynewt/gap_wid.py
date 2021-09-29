@@ -55,12 +55,6 @@ def gap_wid_hdl_mode1_lvl2(wid, description, test_case_name):
     return gap_wid_hdl(wid, description, test_case_name)
 
 
-def hdl_wid_79(desc):
-    stack = get_stack()
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
-    return True
-
-
 def hdl_wid_104(desc):
     return True
 
