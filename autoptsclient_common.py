@@ -1034,7 +1034,7 @@ def run_test_cases(ptses, test_case_instances, args):
                     print(exeption_msg)
 
             if timeout or args.recovery and \
-                    (exeption_msg != '' or status not in {'PASS', 'INCONC', 'FAIL', "NOT_IMPLEMENTED"}):
+                    (exeption_msg != '' or status not in args.not_recover):
                 run_recovery(args, ptses)
 
             if (status == 'PASS' and not args.stress_test) or stats.run_count == args.retry:
@@ -1093,8 +1093,13 @@ class CliParser(argparse.ArgumentParser):
                           help="Specify the client port number")
 
         self.add_argument("--recovery", action='store_true', default=False,
-                          help="Specify if autoptsserver should try to recover"
-                               " itself after exception.")
+                          help="Specify if autoptsclient should try to recover"
+                               " itself after wrong status.")
+
+        self.add_argument("--not_recover", nargs='+',
+                          default=['PASS', 'INCONC', 'FAIL', 'NOT_IMPLEMENTED'],
+                          help="Specify at which statuses autoptsclient should "
+                               "try to recover itself.")
 
         self.add_argument("--superguard", default=0, metavar='MINUTES', type=float,
                           help="Specify amount of time in minutes, after which"
