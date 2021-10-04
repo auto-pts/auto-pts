@@ -159,6 +159,7 @@ class BotClient(Client):
                 _args[config_default].srv_port[0]), allow_none=True, ) as pts:
             # Read PTS Version and keep it for later use
             args['pts_ver'] = "%s" % pts.get_version()
+            args['platform'] = '{}'.format(pts.get_system_model())
 
             for test_case_name in list(results.keys()):
                 project_name = test_case_name.split('/')[0]

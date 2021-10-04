@@ -183,7 +183,7 @@ def compose_mail(args, mail_cfg, mail_ctx):
     <b> Source:</b> {} </p>
     <h2>2. PTS Setup</h2>
     <p><b> OS:</b> Windows 10 <br>
-    <b> Platform:</b> VirtualBox <br>
+    <b> Platform:</b> {} <br>
     <b> Version:</b> {} </p>
     <h2>3. Test Results</h2>
     <p><b>Execution Time</b>: {}</p>
@@ -193,7 +193,7 @@ def compose_mail(args, mail_cfg, mail_ctx):
     {}
     <p>Sincerely,</p>
     <p> {}</p>
-    '''.format(args["board"], mail_ctx["mynewt_repo_status"],
+    '''.format(args["board"], mail_ctx["mynewt_repo_status"], args['platform'],
                args['pts_ver'], mail_ctx["elapsed_time"], mail_ctx["summary"],
                mail_ctx["regression"], mail_ctx["log_url"], mail_cfg['name'])
 

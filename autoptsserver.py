@@ -298,6 +298,7 @@ class Server(threading.Thread):
         self.server.register_function(self.copy_file, 'copy_file')
         self.server.register_function(self.delete_file, 'delete_file')
         self.server.register_function(self.ready, 'ready')
+        self.server.register_function(self.get_system_model, 'get_system_model')
         self.server.register_instance(self.pts)
         self.server.register_introspection_functions()
         self.server.timeout = 1.0
@@ -320,6 +321,24 @@ class Server(threading.Thread):
 
     def ready(self):
         return self.is_ready
+
+    def get_system_model(self):
+        proc = subprocess.Popen(['systeminfo'],
+                                shell=False,
+                                stdout=subprocess.PIPE,
+                                stderr=subprocess.PIPE)
+        stdout, stderr = proc.communicate()
+
+        if stdout:
+            info = stdout.splitlines()
+            for line in info:
+                line = line.decode('utf-8')
+                if 'System Model' in line:
+                    for platform in ['VirtualBox', 'VMware']:
+                        if platform in line:
+                            return platform
+                    return 'Real HW'
+        return 'Unknown'
 
     def list_workspace_tree(self, workspace_dir):
         logs_root = get_workspace(workspace_dir)
