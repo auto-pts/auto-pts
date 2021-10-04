@@ -282,6 +282,7 @@ class PyPTS:
         self.__bd_addr = None
         self._com_logger = None
         self._com_sender = None
+        self._device = None
 
         # This is done to have valid _pts in case client does not restart_pts
         # and uses other methods. Normally though, the client should
@@ -787,6 +788,14 @@ class PyPTS:
 
     def get_bluetooth_address(self):
         """Returns PTS bluetooth address string"""
+        if self._device is not None:
+            device = self._pts.GetSelectedDevice()
+            if device != self._device:
+                device_to_connect = self._device.replace(r'InUse', r'Free')
+                rc = self._pts.SelectDevice(device_to_connect)
+                if rc < 0:
+                    raise Exception('Reconnection to dongle {} failed'.format(device_to_connect))
+
         try:
             address = self._pts.GetPTSBluetoothAddress()
         except Exception as e:
@@ -801,6 +810,7 @@ class PyPTS:
                 log("Connecting to dongle failed.")
                 raise e
 
+        self._device = self._pts.GetSelectedDevice()
         return address
 
     def connect_to_dongle(self):
