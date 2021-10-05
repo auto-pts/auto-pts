@@ -49,3 +49,5 @@ MMDL/SR/LHSLSA/BV-04-C: CASE0071690
 MMDL/SR/LLN/BV-15-C: CASE0071690
 MMDL/SR/LLN/BV-16-C: CASE0071690
 MMDL/SR/LXYL/BV-07-C: CASE0071690
+MMDL/SR/LLC/BV-06-C: Unstable - conversion issue in bound states.
+MMDL/SR/LLC/BV-07-C: Unstable - conversion issue in bound states.
