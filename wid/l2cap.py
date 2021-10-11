@@ -169,8 +169,9 @@ def hdl_wid_41(desc):
     :return:
     """
     stack = get_stack()
+    l2cap = stack.l2cap
 
-    btp.l2cap_conn(None, None, stack.l2cap.psm, 256)
+    btp.l2cap_conn(None, None, stack.l2cap.psm, l2cap.initial_mtu)
 
     return True
 
