@@ -158,9 +158,9 @@ iut_config = {
         "test_cases": [
             'GAP/PRIV/CONN/BV-10-C',
             'GAP/PRIV/CONN/BV-11-C',
-            'GAP/CONN/ACEP/BV-03-C',  # As of PTS v7.6.2, not supported
-            'GAP/CONN/DCEP/BV-05-C',  # As of PTS v7.6.2, not supported
-            'GAP/CONN/GCEP/BV-05-C',  # As of PTS v7.6.2, not supported
+            'GAP/CONN/ACEP/BV-03-C',
+            'GAP/CONN/DCEP/BV-05-C',
+            'GAP/CONN/GCEP/BV-05-C',
             'GAP/CONN/NCON/BV-02-C',
             'GAP/CONN/UCON/BV-06-C',
             'GAP/BROB/BCST/BV-03-C',
