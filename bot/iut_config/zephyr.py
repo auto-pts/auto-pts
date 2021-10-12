@@ -187,18 +187,6 @@ iut_config = {
         ]
     },
 
-    "gap_auto_update_conn_params.conf": {
-        "overlay": {
-            'CONFIG_BT_GAP_AUTO_UPDATE_CONN_PARAMS': 'n',
-        },
-        "test_cases": [
-            'L2CAP/LE/CFC/BV-06-C',
-            'L2CAP/LE/CFC/BV-18-C',
-            'L2CAP/LE/CFC/BV-19-C',
-            'L2CAP/LE/CFC/BV-21-C',
-        ]
-    },
-
     "gap_writable_device_name.conf": {
         "overlay": {
             'CONFIG_BT_DEVICE_NAME_DYNAMIC': 'y',
