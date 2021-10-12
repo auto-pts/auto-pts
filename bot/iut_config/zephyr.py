@@ -76,6 +76,16 @@ iut_config = {
             'L2CAP/ECFC/BV-25-C',
             'L2CAP/ECFC/BV-26-C',
             'L2CAP/ECFC/BV-27-C',
+            'L2CAP/ECFC/BV-28-C',
+            'L2CAP/ECFC/BV-29-C',
+            'L2CAP/ECFC/BV-30-C',
+            'L2CAP/ECFC/BV-31-C',
+            'L2CAP/ECFC/BV-32-C',
+            'L2CAP/ECFC/BV-33-C',
+            'L2CAP/ECFC/BV-34-C',
+            'L2CAP/ECFC/BV-35-C',
+            'L2CAP/ECFC/BV-38-C',
+            'L2CAP/ECFC/BV-41-C',
         ]
     },
 
