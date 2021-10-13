@@ -590,6 +590,11 @@ def hdl_wid_270(desc):
     return True
 
 
+def hdl_wid_271(desc):
+    disconnected = get_stack().l2cap.wait_for_disconnection(0, 30)
+    disconnected &= get_stack().l2cap.wait_for_disconnection(1, 30)
+    return disconnected
+
 def hdl_wid_20001(desc):
     stack = btp.get_stack()
     btp.gap_set_conn()
