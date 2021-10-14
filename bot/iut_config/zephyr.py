@@ -123,9 +123,6 @@ iut_config = {
             'CONFIG_BT_SMP_ENFORCE_MITM': 'y',
         },
         "test_cases": [
-            'GAP/SEC/SEM/BV-21-C',
-            'GAP/SEC/SEM/BV-22-C',
-            'GAP/SEC/SEM/BV-26-C',
             'GAP/SEC/SEM/BV-38-C',
             'GAP/SEC/SEM/BV-40-C',
             'GAP/SEC/SEM/BV-42-C',
@@ -141,8 +138,11 @@ iut_config = {
             'CONFIG_BT_SMP_SC_PAIR_ONLY': 'y',
         },
         "test_cases": [
+            'GAP/SEC/SEM/BV-21-C',
+            'GAP/SEC/SEM/BV-22-C',
             'GAP/SEC/SEM/BV-23-C',
             'GAP/SEC/SEM/BV-24-C',
+            'GAP/SEC/SEM/BV-26-C',
             'GAP/SEC/SEM/BV-27-C',
             'GAP/SEC/SEM/BV-28-C',
             'GAP/SEC/SEM/BV-29-C',
