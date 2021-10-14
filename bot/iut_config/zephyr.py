@@ -104,23 +104,6 @@ iut_config = {
         ]
     },
 
-    "sec_m1l4.conf": {
-        "overlay": {
-            'CONFIG_BT_PRIVACY': 'y',
-            'CONFIG_BT_SMP_ENFORCE_MITM': 'y',
-            'CONFIG_BT_SMP_SC_ONLY': 'y',
-            'CONFIG_BT_SMP_SC_PAIR_ONLY': 'y',
-        },
-        "test_cases": [
-            'GAP/SEC/SEM/BV-23-C',
-            'GAP/SEC/SEM/BV-24-C',
-            'GAP/SEC/SEM/BV-27-C',
-            'GAP/SEC/SEM/BV-28-C',
-            'GAP/SEC/SEM/BV-29-C',
-            'GAP/SEC/SEM/BI-09-C',
-            'GAP/SEC/SEM/BI-10-C',
-        ]
-    },
     "sc_m1l2.conf": {
         "overlay": {
             'CONFIG_BT_PRIVACY': 'y',
@@ -147,6 +130,24 @@ iut_config = {
             'GAP/SEC/SEM/BV-40-C',
             'GAP/SEC/SEM/BV-42-C',
             'GAP/SEC/SEM/BV-44-C',
+        ]
+    },
+
+    "sec_m1l4.conf": {
+        "overlay": {
+            'CONFIG_BT_PRIVACY': 'y',
+            'CONFIG_BT_SMP_ENFORCE_MITM': 'y',
+            'CONFIG_BT_SMP_SC_ONLY': 'y',
+            'CONFIG_BT_SMP_SC_PAIR_ONLY': 'y',
+        },
+        "test_cases": [
+            'GAP/SEC/SEM/BV-23-C',
+            'GAP/SEC/SEM/BV-24-C',
+            'GAP/SEC/SEM/BV-27-C',
+            'GAP/SEC/SEM/BV-28-C',
+            'GAP/SEC/SEM/BV-29-C',
+            'GAP/SEC/SEM/BI-09-C',
+            'GAP/SEC/SEM/BI-10-C',
         ]
     },
 
