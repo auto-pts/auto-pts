@@ -26,7 +26,6 @@ iut_config = {
 
     "gatt_long_dev_name.conf": {
         "overlay": {
-            'CONFIG_BT_EATT_MAX': '5',
             'CONFIG_BT_CONN_DISABLE_SECURITY': 'y',
             'CONFIG_BT_DEVICE_NAME_MAX': '64',
             'CONFIG_BT_DEVICE_NAME': '\"' + 'T' * 63 + '\"',
