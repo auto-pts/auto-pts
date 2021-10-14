@@ -104,18 +104,6 @@ iut_config = {
         ]
     },
 
-    "sec_priv_mitm.conf": {
-        "overlay": {
-            'CONFIG_BT_PRIVACY': 'y',
-            'CONFIG_BT_SMP_ENFORCE_MITM': 'y',
-        },
-        "test_cases": [
-            'GAP/SEC/SEM/BV-21-C',
-            'GAP/SEC/SEM/BV-22-C',
-            'GAP/SEC/SEM/BV-26-C',
-        ]
-    },
-
     "sec_m1l4.conf": {
         "overlay": {
             'CONFIG_BT_PRIVACY': 'y',
@@ -152,6 +140,9 @@ iut_config = {
             'CONFIG_BT_SMP_ENFORCE_MITM': 'y',
         },
         "test_cases": [
+            'GAP/SEC/SEM/BV-21-C',
+            'GAP/SEC/SEM/BV-22-C',
+            'GAP/SEC/SEM/BV-26-C',
             'GAP/SEC/SEM/BV-38-C',
             'GAP/SEC/SEM/BV-40-C',
             'GAP/SEC/SEM/BV-42-C',
