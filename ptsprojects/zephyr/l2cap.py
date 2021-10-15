@@ -18,7 +18,7 @@
 from pybtp import btp, defs
 from pybtp.types import Addr, L2CAPConnectionResponse
 from autoptsclient_common import get_unique_name
-from wid import l2cap_wid_hdl, l2cap_wid_hdl_one_ecfc_chan
+from wid import l2cap_wid_hdl, l2cap_wid_hdl_one_ecfc_chan, l2cap_wid_hdl_hold_credit
 from ptsprojects.stack import get_stack
 from ptsprojects.testcase import TestFunc
 from ptsprojects.zephyr.ztestcase import ZTestCase
@@ -202,6 +202,9 @@ def test_cases(ptses):
         ZTestCase("L2CAP", "L2CAP/ECFC/BV-25-C",
                   pre_conditions_eatt,
                   generic_wid_hdl=l2cap_wid_hdl_one_ecfc_chan),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BI-02-C",
+                  pre_conditions_eatt,
+                  generic_wid_hdl=l2cap_wid_hdl_hold_credit),
     ]
 
     test_case_name_list = pts.get_test_case_list('L2CAP')
