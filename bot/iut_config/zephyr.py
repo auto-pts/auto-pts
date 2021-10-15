@@ -83,7 +83,6 @@ iut_config = {
             'L2CAP/ECFC/BV-33-C',
             'L2CAP/ECFC/BV-34-C',
             'L2CAP/ECFC/BV-35-C',
-            'L2CAP/ECFC/BV-38-C',
             'L2CAP/ECFC/BV-41-C',
         ]
     },
