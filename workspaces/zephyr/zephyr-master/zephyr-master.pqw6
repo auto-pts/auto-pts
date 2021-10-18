@@ -1,4 +1,4 @@
-<WORKSPACE_INFORMATION NAME="zephyr-master" CREATED_WITH="Profile Tuning Suite, 8.1.1, 9" BD_ADDR="000000000000" QDID="164934">
+<WORKSPACE_INFORMATION NAME="zephyr-master" CREATED_WITH="Profile Tuning Suite, 8.1.2, 5" BD_ADDR="000000000000" QDID="176842">
   <PROJECTS_INFORMATION>
     <PROJECT_INFORMATION NAME="DIS" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
       <PICS>
@@ -1162,7 +1162,7 @@
           <Row>
             <Name>TSPC_GAP_23_2</Name>
             <Description>Directed connectable mode (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -2968,6 +2968,482 @@
         </Rows>
       </PIXIT>
     </PROJECT_INFORMATION>
+    <PROJECT_INFORMATION NAME="IOPT" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
+      <PICS>
+        <Name>IOPT</Name>
+        <Version />
+        <Rows>
+          <Row>
+            <Name>TSPC_GAP_1_2</Name>
+            <Description>Limited-discoverable mode (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_1_3</Name>
+            <Description>General-discoverable mode (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_HFP_1_1</Name>
+            <Description>Role: Audio Gateway (AG)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SDP_1b_2</Name>
+            <Description>Support for client role. (C.1)</Description>
+            <Reference>SDP, 2.1</Reference>
+            <Status>C.1</Status>
+            <Role />
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SDP_2_1</Name>
+            <Description>Support for respond on search of single Service, using ServiceSearchRequest. (C.2)</Description>
+            <Reference>SDP, 4.5</Reference>
+            <Status>C.2</Status>
+            <Role />
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_AdvancedAudioDistributionProfile_Sink</Name>
+            <Description>Support for: Advanced Audio Distribution Profile.              Role: Sink</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_AdvancedAudioDistributionProfile_Source</Name>
+            <Description>Support for: Advanced Audio Distribution Profile.              Role: Source</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_AVRemoteControlProfile_CT</Name>
+            <Description>Support for: Audio\Video Remote Control Profile.              Role: Controller</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_AVRemoteControlProfile_TG</Name>
+            <Description>Support for: Audio\Video Remote Control Profile.              Role: Target</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_BasicImagingProfile_CLIENT</Name>
+            <Description>Support for: Basic Imaging Profile.                                      Role: Client</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_BasicImagingProfile_SERVER_ImagingAutomaticArchive</Name>
+            <Description>Support for: Basic Imaging Profile.                                      Role: Server                Functionality: Imaging autoarchive</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_BasicImagingProfile_SERVER_ImagingReferencedObjects</Name>
+            <Description>Support for: Basic Imaging Profile.                                      Role: Server                Functionality: Imaging referenced objects</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_BasicImagingProfile_SERVER_ImagingResponder</Name>
+            <Description>Support for: Basic Imaging Profile.                                      Role: Server                Functionality: Imaging responder</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_BasicPrintingProfile_PRINTER</Name>
+            <Description>Support for: Basic Printing Profile.                                       Role: Printer</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_BasicPrintingProfile_PRINTER_ReflectedUI</Name>
+            <Description>Support for: Basic Printing Profile.                                       Role: Printer              Functionality: Reflected UI</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_BasicPrintingProfile_SENDER_Referenced_objects_Service</Name>
+            <Description>Support for: Basic Printing Profile.                                       Role: Sender              Functionality: Reference objects service</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_DialUpNetworkingProfile_DT</Name>
+            <Description>Support for: Dial-Up Networking Profile.                             Role: Data Terminal</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_DialUpNetworkingProfile_GW</Name>
+            <Description>Support for: Dial-Up Networking Profile.                             Role: Gateway</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_ExtendedServiceDiscoveryProfile_IP_LAP</Name>
+            <Description>Support for: Extended Service Discovery Profile.              Version: IP-LAP</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_ExtendedServiceDiscoveryProfile_IP_PAN</Name>
+            <Description>Support for: Extended Service Discovery Profile.              Version: IP-PAN</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_ExtendedServiceDiscoveryProfile_L2CAP</Name>
+            <Description>Support for: Extended Service Discovery Profile.              Version: L2CAP</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_FAXProfile_DT</Name>
+            <Description>Support for: FAX Profile.                                                      Role: Data Terminal</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_FAXProfile_GW</Name>
+            <Description>Support for: FAX Profile.                                                      Role: Gateway</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_FileTransferProfile_CLIENT</Name>
+            <Description>Support for: File Transfer Profile.                                        Role: Client </Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_FileTransferProfile_SERVER</Name>
+            <Description>Support for: File Transfer Profile.                                        Role: Server</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_HealthDeviceProfile_Sink</Name>
+            <Description>Support for: Health Device Profile                                       Role: Sink</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_HealthDeviceProfile_Source</Name>
+            <Description>Support for: Health Device Profile                                       Role: Source</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_NewHandsFreeProfile_AG</Name>
+            <Description>Support for: Handsfree Profile                         Role: Audio gateway</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_NewHandsFreeProfile_HF</Name>
+            <Description>Support for: Handsfree Profile                         Role: Hands-Free unit</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_HardCopyReplacementProfile_CLIENT_CR_RegisterNotofication_support</Name>
+            <Description>Support for: Hard Copy cable Replacement Profile.           Role: Client                 Functionality: CR register notification support</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_HardCopyReplacementProfile_CLIENT_print</Name>
+            <Description>Support for: Hard Copy cable Replacement Profile.           Role: Client                 Functionality: Print</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_HardCopyReplacementProfile_CLIENT_scan</Name>
+            <Description>Support for: Hard Copy cable Replacement Profile.           Role: Client                 Functionality: Scan</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_HardCopyReplacementProfile_SERVER_print</Name>
+            <Description>Support for: Hard Copy cable Replacement Profile.           Role: Server               Functionality: Print</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_HardCopyReplacementProfile_SERVER_scan</Name>
+            <Description>Support for: Hard Copy cable Replacement Profile.           Role: Server               Functionality: Scan</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_HeadsetProfile_AG</Name>
+            <Description>Support for: Headset Profile                                               Role: Audio Gateway</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_HeadsetProfile_HS</Name>
+            <Description>Support for: Headset Profile.                                              Role: Headset</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_HumanInterfaceDeviceProfile</Name>
+            <Description>Support for: Human Interface Device Profile                      Role: Device</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_HID_Host</Name>
+            <Description>Support for: Human Interface Device Profile                      Role: Host</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_LANAccessProfile_DT</Name>
+            <Description>Support for: LAN Access Profile.                                         Role: Data Terminal</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_LANAccessProfile_LAP</Name>
+            <Description>Support for: LAN Access Profile.                                         Role: LAN Access Point</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_MessageAccessProfile_MCE</Name>
+            <Description>Support for: Message Access Profile                                Role: MCE</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_MessageAccessProfile_MSE</Name>
+            <Description>Support for: Message Access Profile                                Role: MSE</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_ObjectPushProfile_CLIENT</Name>
+            <Description>Support for: Object Push Profile.                                        Role: Client</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_ObjectPushProfile_SERVER</Name>
+            <Description>Support for: Object Push Profile.                                        Role: Server  </Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_PersonalAreaNetworkProfile_GN</Name>
+            <Description>Support for: Personal Area Network Profile.                       Role: GN</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_PersonalAreaNetworkProfile_NAP</Name>
+            <Description>Support for: Personal Area Network Profile.                       Role: NAP</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_PersonalAreaNetworkProfile_PANU</Name>
+            <Description>Support for: Personal Area Network Profile.                       Role: PANU</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_PhonebookAccessProfile_PCE</Name>
+            <Description>Support for: Personal phone book access.                          Role: PCE.</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_PhonebookAccessProfile_PSE</Name>
+            <Description>Support for: Personal phone book access.                          Role: PSE.</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_SerialPortProfile_Service</Name>
+            <Description>Support for: Serial Port Profile.                                            Role: Dev B</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_ServiceDiscoveryApplicationProfile</Name>
+            <Description>Support for: Service Discovery Application Profile.</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_SIMAccessProfile_CLIENT</Name>
+            <Description>Support for: SIM access Profile.                                           Role: Client</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_SIMAccessProfile_SERVER</Name>
+            <Description>Support for: SIM access Profile.                                           Role: Server</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_SynchronizationProfile_CLIENT</Name>
+            <Description>Support for: Synchronization Profile.                                   Role: Client</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_SynchronizationProfile_SERVER</Name>
+            <Description>Support for: Synchronization Profile.                                   Role: Server</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_UDIProfile_MT</Name>
+            <Description>Support for: UDI Profile.                                                      Role: MT</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_UDIProfile_TA</Name>
+            <Description>Support for: UDI Profile.                                                      Role: TA</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_VideoDistributionProfile_Sink</Name>
+            <Description>Support for: Video distribution Profile.                                 Role: Sink </Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_VideoDistributionProfile_Source</Name>
+            <Description>Support for: Video distribution Profile.                                 Role: Source</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_WAPOverBluetooth_CLIENT</Name>
+            <Description>Support for: WAP over Bluetooth Profile.                            Role: Client</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_WAPOverBluetooth_PROXY</Name>
+            <Description>Support for: WAP over Bluetooth Profile.                            Role: PROXY </Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_GNSS_SERVER</Name>
+            <Description>Support for: GNSS Profile. 	Role: Server</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_3DSP_Display</Name>
+            <Description>Support for: 3DSP Profile.  	Role: Display</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_support_3DSP_Glasses</Name>
+            <Description>Support for: 3DSP Profile.  	Role: Glasses</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_ALL</Name>
+            <Description>Enables all test cases when set.</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+        </Rows>
+      </PICS>
+      <PIXIT>
+        <Name>IOPT</Name>
+        <Version />
+        <Rows>
+          <Row>
+            <Name>TSPX_security_enabled</Name>
+            <Description>Whether security is required for establishing connections. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_delete_link_key</Name>
+            <Description>Whether to delete the stored link key in PTS at the beginning of each test case. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_bd_addr_iut</Name>
+            <Description>Not Used</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>000000000000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_class_of_device_pts</Name>
+            <Description>The class of device for the PTS. (Default: 200404) </Description>
+            <Type>OCTETSTRING</Type>
+            <Value>200404</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_class_of_device_test_pts_initiator</Name>
+            <Description>Currently not used</Description>
+            <Type>BOOLEAN</Type>
+            <Value>TRUE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_limited_inquiry_used</Name>
+            <Description>Currently not used</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_pin_code</Name>
+            <Description>The PIN code that is used to authenticate connections between PTS and IUT. (Default: 0000)</Description>
+            <Type>IA5STRING</Type>
+            <Value>0000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_time_guard</Name>
+            <Description>The time in milliseconds, to break PTS from waiting for a required event, if time guard is used by the test case. (Default: 200000)</Description>
+            <Type>INTEGER</Type>
+            <Value>200000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_device_search_time</Name>
+            <Description>The maximum time PTS searches for devices.(Default: 20)</Description>
+            <Type>INTEGER</Type>
+            <Value>20</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_use_implicit_send</Name>
+            <Description>Whether to receive a message via Implicit Send when an action or attention is needed by test operator. (Default: TRUE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>TRUE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_secure_simple_pairing_pass_key_confirmation</Name>
+            <Description>Whether manual confirmation on generated key is required during secure simple pairing (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+        </Rows>
+      </PIXIT>
+    </PROJECT_INFORMATION>
     <PROJECT_INFORMATION NAME="L2CAP" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
       <PICS>
         <Name>L2CAP</Name>
@@ -4672,7 +5148,7 @@
           </Row>
           <Row>
             <Name>TSPX_oob_certificates</Name>
-            <Description>List of certificates for PTS to use to provision the IUT. The public key certificate is listed first. The certificate authorities (CAs) are listed next, separated by semicolons. For example 'c:\certs\pubkey.cer;c:\certs\int-ca.cer;c:\serts\root-ca.cer' specifes the public key certificate, the intermediate CA, and the root CA.</Description>
+            <Description>List of certificates for PTS to use to provision the IUT. The public key certificate is listed first. The certificate authorities (CAs) are listed next, separated by semicolons. For example 'c:\certs\pubkey.cer;c:\certs\int-ca.cer;c:\certs\root-ca.cer' specifes the public key certificate, the intermediate CA, and the root CA.</Description>
             <Type>IA5STRING</Type>
             <Value />
           </Row>
