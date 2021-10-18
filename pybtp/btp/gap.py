@@ -239,7 +239,7 @@ def gap_pairing_failed_ev_(gap, data, data_len):
 
     logging.debug("received %r", data)
 
-    fmt = '<B6sH'
+    fmt = '<B6sB'
     if len(data) != struct.calcsize(fmt):
         raise BTPError("Invalid data length")
 
@@ -248,7 +248,7 @@ def gap_pairing_failed_ev_(gap, data, data_len):
 
     logging.debug("received %r", (_addr_t, _addr, _reason))
 
-    stack.gap.pairing_failed_rcvd = True
+    stack.gap.pairing_failed_rcvd.data = (_addr_t, _addr, _reason)
 
 
 def gap_bond_lost_ev_(gap, data, data_len):
