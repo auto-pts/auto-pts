@@ -690,8 +690,8 @@ Events:
 
 		Controller Index:	<controller id>
 		Event parameters:	Address_Type (1 octet)
-							Address (6 octets)
-							Reason (6 octets)
+					Address (6 octets)
+					Reason (1 octet)
 
 		This event can be sent when IUT pairing procedure fails with
 		specified reason.

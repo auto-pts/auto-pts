@@ -239,7 +239,7 @@ def gap_pairing_failed_ev_(gap, data, data_len):
 
     logging.debug("received %r", data)
 
-    fmt = '<B6sH'
+    fmt = '<B6sB'
     if len(data) != struct.calcsize(fmt):
         raise BTPError("Invalid data length")
 
