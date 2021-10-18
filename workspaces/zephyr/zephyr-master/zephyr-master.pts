@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <project>
-  <qdid>164934</qdid>
+  <qdid>176842</qdid>
   <name>zephyr-master</name>
   <pics>
     <profile>
@@ -264,6 +264,10 @@
       <item>
         <table>23</table>
         <row>1</row>
+      </item>
+      <item>
+        <table>23</table>
+        <row>2</row>
       </item>
       <item>
         <table>23</table>
@@ -759,12 +763,12 @@
     <profile>
       <name>SUM ICS</name>
       <item>
-        <table>52</table>
-        <row>1</row>
+        <table>31</table>
+        <row>22</row>
       </item>
       <item>
-        <table>31</table>
-        <row>21</row>
+        <table>52</table>
+        <row>1</row>
       </item>
     </profile>
     <profile>
