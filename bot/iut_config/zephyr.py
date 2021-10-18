@@ -109,6 +109,10 @@ iut_config = {
             'CONFIG_BT_SMP_ENFORCE_MITM': 'n',
         },
         "test_cases": [
+            'SM/CEN/KDU/BI-02-C',
+            'SM/CEN/KDU/BI-03-C',
+            'SM/PER/KDU/BI-02-C',
+            'SM/PER/KDU/BI-03-C',
             'GAP/SEC/SEM/BV-37-C',
             'GAP/SEC/SEM/BV-39-C',
             'GAP/SEC/SEM/BV-41-C',
