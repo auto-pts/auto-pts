@@ -275,9 +275,6 @@ class PyPTS:
         self._temp_workspace_path = None
         self.last_start_time = time.time()
 
-        self._project_name = None
-        self._test_case_name = None
-
         self._pts = None
         self._pts_proc = None
         self._pts_logger = None
@@ -642,9 +639,6 @@ class PyPTS:
         log("Starting %s %s %s", self.run_test_case.__name__, project_name,
             test_case_name)
 
-        self._project_name = project_name
-        self._test_case_name = test_case_name
-
         self.last_start_time = time.time()
 
         self._pts_logger.set_test_case_name(test_case_name)
@@ -770,18 +764,11 @@ class PyPTS:
         self._pts.EnableMaximumLogging(enable)
         self._pts_logger.enable_maximum_logging(enable)
 
-    def pts_timeout(self):
-        log("%s STOP TEST CASE", self.pts_timeout.__name__)
-        self._pts.StopTestCase(self._project_name, self._test_case_name)
-
     def set_call_timeout(self, timeout):
         """Sets a timeout period in milliseconds for the RunTestCase() calls
         to PTS."""
 
         self._pts.SetPTSCallTimeout(timeout)
-
-        t = threading.Timer(60.0, self.pts_timeout)
-        t.start()  # after
 
         if timeout:
             self.add_recov(self.set_call_timeout, timeout)
