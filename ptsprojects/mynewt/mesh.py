@@ -163,8 +163,7 @@ def test_cases(ptses):
 
     iut_device_name = get_unique_name(pts)
     stack.gap_init(iut_device_name)
-    stack.mesh_init(device_uuid, oob, out_size, rand_out_actions, in_size,
-                    rand_in_actions, crpl_size, auth_metod)
+    stack.mesh_init(device_uuid, device_uuid2)
 
     common_pre_conditions = [
         TestFunc(btp.core_reg_svc_gap),
