@@ -15,9 +15,9 @@
 
 """MESH test cases"""
 from binascii import hexlify
+import random
 from time import sleep
 from uuid import uuid4
-import random
 
 from pybtp import defs, btp
 from pybtp.types import MeshVals
@@ -940,8 +940,8 @@ def test_cases(ptses):
 
     for tc_name in test_case_name_list:
         instance = ZTestCase('MESH', tc_name,
-                            cmds=pre_conditions,
-                            generic_wid_hdl=mesh_wid_hdl)
+                             cmds=pre_conditions,
+                             generic_wid_hdl=mesh_wid_hdl)
 
         for custom_tc in custom_test_cases + test_cases_lt2:
             if tc_name == custom_tc.name:
