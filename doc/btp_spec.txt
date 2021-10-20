@@ -426,7 +426,10 @@ Commands and responses:
 					Address (6 octets)
 		Return Parameters:	<none>
 
-		This command is used to initiate pairing with remote.
+		This command is used to initiate security with remote. If
+		peer is already paired IUT is expected to enable security
+		(encryption) with peer. If peer is not paired IUT shall
+		start pairing process.
 
 		In case of an error, the error response will be returned.
 
