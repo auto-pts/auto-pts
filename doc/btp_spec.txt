@@ -139,6 +139,17 @@ Commands and responses:
 
 		In case of an error, the error response will be returned.
 
+	Opcode 0x06 - Read BTP MTU
+
+		Controller Index:	<non-controller>
+		Command parameters:	<none>
+		Response parameters:	BTP_MTU (2 octets)
+
+		This allows to read BTP protocol MTU on OUT device. MTU is maximum
+		number of bytes that IUT can receive or send (including BTP header).
+
+		In case of an error, the error response will be returned.
+
 Events:
 	Opcode 0x80 - IUT ready event
 
