@@ -904,9 +904,6 @@ class Stack:
 
     def gap_init(self, name=None, manufacturer_data=None, appearance=None,
                  svc_data=None, flags=None, svcs=None, uri=None):
-        if self.gap:
-            return
-
         self.gap = Gap(name, manufacturer_data, appearance, svc_data, flags,
                        svcs, uri)
 
