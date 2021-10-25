@@ -108,9 +108,9 @@ class Gap:
 
         if name:
             if isinstance(name, bytes):
-                self.ad[AdType.name_short] = name
+                self.ad[AdType.name_full] = name
             else:
-                self.ad[AdType.name_short] = name.encode('utf-8')
+                self.ad[AdType.name_full] = name.encode('utf-8')
 
         if manufacturer_data:
             self.sd[AdType.manufacturer_data] = manufacturer_data
