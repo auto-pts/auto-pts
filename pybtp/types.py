@@ -62,6 +62,7 @@ class AdType:
     flags = 1
     uuid16_some = 2
     name_short = 8
+    name_full = 9
     tx_power = 10
     uuid16_svc_solicit = 20
     uuid16_svc_data = 22
