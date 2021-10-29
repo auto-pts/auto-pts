@@ -155,11 +155,10 @@ def test_cases(ptses):
     ad_str_flags = str(AdType.flags).zfill(2) + \
                    str(AdFlags.br_edr_not_supp).zfill(2)
     ad_str_flags_len = str(len(ad_str_flags) // 2).zfill(2)
-    ad_str_name_short = str(AdType.name_short).zfill(2) + \
+    ad_str_name = str(AdType.name_full).zfill(2) + \
                         bytes.hex(iut_device_name)
-    ad_str_name_short_len = format((len(ad_str_name_short) // 2), 'x').zfill(2)
-    ad_pixit = ad_str_flags_len + ad_str_flags + ad_str_name_short_len + \
-               ad_str_name_short
+    ad_str_name_len = format((len(ad_str_name) // 2), 'x').zfill(2)
+    ad_pixit = ad_str_flags_len + ad_str_flags + ad_str_name_len + ad_str_name
 
     stack = get_stack()
 
