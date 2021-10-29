@@ -19,10 +19,10 @@ import os
 import time
 
 from distutils.spawn import find_executable
-from config import SERVER_PORT, CLIENT_PORT
-from ptsprojects.boards import tty_exists, com_to_tty
-from ptsprojects.testcase_db import DATABASE_FILE
-from utils import usb_power
+from autopts.config import SERVER_PORT, CLIENT_PORT
+from autopts.ptsprojects.boards import tty_exists, com_to_tty
+from autopts.ptsprojects.testcase_db import DATABASE_FILE
+from autopts.utils import usb_power
 
 
 class CliParser(argparse.ArgumentParser):

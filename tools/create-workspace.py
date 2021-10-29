@@ -36,15 +36,10 @@ import Interop.PTSControl as PTSControl
 import clr
 import System
 
-# to be able to find PTS interop assembly and ptsprojects module
-sys.path.insert(
-    0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
-import ptsprojects.ptstypes as ptstypes
+from autopts.ptsprojects import ptstypes
 
 # load the PTS interop assembly
 clr.AddReferenceToFile("Interop.PTSControl.dll")
-
 
 log = logging.debug
 
@@ -127,17 +122,17 @@ def parse_args():
 
     arg_parser.add_argument("workspace_path",
                             help="The path to the folder where the new "
-                            "workspace should be created")
+                                 "workspace should be created")
 
     arg_parser.add_argument("-i", "--iut-bd-addr",
                             help="A 64 bit unsigned integer that contains the "
-                            "Bluetooth Device Address (BDADDR) of the "
-                            "Implementation Under Test (IUT). By default fake "
-                            "address will be used.")
+                                 "Bluetooth Device Address (BDADDR) of the "
+                                 "Implementation Under Test (IUT). By default fake "
+                                 "address will be used.")
 
     arg_parser.add_argument("-w", "--workspace-name",
                             help="The name of the workspace to be created."
-                            "By default the name of PTS file will be used.")
+                                 "By default the name of PTS file will be used.")
 
     args = arg_parser.parse_args()
 
@@ -214,7 +209,7 @@ def main():
         workspace_name = args.workspace_name
     else:
         workspace_name = (
-            "autopts_" + os.path.basename(os.path.splitext(pts_file_path)[0]))
+                "autopts_" + os.path.basename(os.path.splitext(pts_file_path)[0]))
 
     workspace_dir = os.path.join(workspace_path, workspace_name)
     workspace_file = os.path.join(workspace_dir, workspace_name + ".pqw6")

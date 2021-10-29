@@ -23,14 +23,7 @@ case a new description parsing is added.
 
 """
 
-import sys
-import os
-
-# to be able to find ptsprojects module
-sys.path.insert(
-    0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
-from ptsprojects.testcase import MmiParser
+from autopts.ptsprojects.testcase import MmiParser
 
 descriptions = [
 

@@ -25,11 +25,11 @@ import schedule
 import importlib
 from argparse import ArgumentParser, RawTextHelpFormatter, SUPPRESS
 
-from autoptsclient_common import set_end
-from bot.config import BotProjects
-from bot.zephyr import main as zephyr
-from bot.mynewt import main as mynewt
-from winutils import have_admin_rights
+from autopts.client import set_end
+from autopts.bot.config import BotProjects
+from autopts.bot.zephyr import main as zephyr
+from autopts.bot.mynewt import main as mynewt
+from autopts.winutils import have_admin_rights
 
 # TODO Find more sophisticated way
 weekdays2schedule = {
@@ -95,7 +95,7 @@ def main():
 
     if len(sys.argv) > 1 and os.path.isfile('bot/' + sys.argv[1] + '.py'):
         conf = sys.argv.pop(1)
-        mod = importlib.import_module('bot.' + conf)
+        mod = importlib.import_module('autopts.bot.' + conf)
 
         if conf in project2main.keys():
             parents.append(mod.BotCliParser(add_help=False))

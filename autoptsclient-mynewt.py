@@ -16,14 +16,16 @@
 #
 
 """Mynewt auto PTS client"""
+import importlib
 
-import autoptsclient_common as autoptsclient
-from ptsprojects.mynewt.iutctl import get_iut
+from autopts import client as autoptsclient
+from autopts.ptsprojects.mynewt.iutctl import get_iut
 
 
 class MynewtClient(autoptsclient.Client):
     def __init__(self):
-        super().__init__(get_iut, 'mynewt')
+        project = importlib.import_module('autopts.ptsprojects.mynewt')
+        super().__init__(get_iut, project, 'mynewt')
 
 
 def main():

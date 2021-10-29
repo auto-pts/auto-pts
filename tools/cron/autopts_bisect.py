@@ -35,10 +35,11 @@ import traceback
 import mimetypes
 from os.path import dirname, abspath
 
-AUTOPTS_REPO=dirname(dirname(dirname(abspath(__file__))))
+AUTOPTS_REPO = dirname(dirname(dirname(abspath(__file__))))
 sys.path.insert(0, AUTOPTS_REPO)
 
-from bot.common import send_mail
+from autopts.bot.common import send_mail
+
 mimetypes.add_type('text/plain', '.log')
 
 run_test_fun = None
@@ -118,7 +119,7 @@ def bisect(cfg, test_case, good_commit, bad_commit=''):
         print('{} does not exists!'.format(conf_path))
         return None
 
-    mod = importlib.import_module('bot.' + cfg)
+    mod = importlib.import_module('autopts.bot.' + cfg)
     project_repo = mod.BotProjects[0]['auto_pts']['project_path']
 
     last_bad = get_sha(project_repo)
@@ -223,7 +224,7 @@ class Bisect:
 
         for i, tc in enumerate(test_cases):
             first_bad, last_bad, res = bisect(self.cfg_name,
-                                         tc, self.good_commit)
+                                              tc, self.good_commit)
             self.send_mail(tc, res)
 
             end = time.time()
@@ -240,6 +241,7 @@ class Bisect:
 
 if __name__ == '__main__':
     from tools.cron.common import run_test
+
     set_run_test_fun(run_test)
 
     if len(sys.argv) == 3:

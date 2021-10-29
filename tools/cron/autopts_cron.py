@@ -33,7 +33,7 @@ import threading
 import cron_config
 from time import sleep
 from os.path import dirname, abspath
-from winutils import have_admin_rights
+from autopts.winutils import have_admin_rights
 from common import kill_processes, set_end as set_end_common, set_cron_cfg
 
 END = False
