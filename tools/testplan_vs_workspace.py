@@ -24,10 +24,7 @@ import pandas as pd
 import win32com
 import wmi
 
-sys.path.insert(
-    0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
-from ptscontrol import PyPTS
+from autopts.ptscontrol import PyPTS
 
 
 class PyPTSControl(PyPTS):

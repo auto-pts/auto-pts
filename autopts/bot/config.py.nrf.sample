@@ -1,0 +1,205 @@
+#
+# auto-pts - The Bluetooth PTS Automation Framework
+#
+# Copyright (c) 2018, Intel Corporation.
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms and conditions of the GNU General Public License,
+# version 2, as published by the Free Software Foundation.
+#
+# This program is distributed in the hope it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
+#
+
+# Sample user_config file
+# Apply your changes and rename it to config.py
+
+from autopts.bot.iut_config.nrf import iut_config_mesh, iut_config_mmdl
+
+BotProjects = []
+
+n = nrf_v160 = {
+    'name': 'zephyr'
+}
+
+# ****************************************************************************
+# AutoPTS configuration
+# ****************************************************************************
+n['auto_pts'] = {
+    'server_ip': ['192.168.56.115'],
+    'local_ip': ['192.168.56.1'],
+    'cli_port': [65001],
+    'srv_port': [65000],
+    'project_path': '~/path/to/ncs/nrf',
+    'workspace': 'nrf-v160',
+    # 'database_file': 'path/to/nrfTestCase.db',
+    # 'store': True,
+    'board': 'nrf52',
+    'enable_max_logs': False,
+    'retry': 2,
+    'bd_addr': '',
+    # 'ykush': '3',  # 1|2|3|a
+    'recovery': False,
+    'superguard': 15,  # minutes
+}
+
+# ****************************************************************************
+# Git repositories configuration
+# ****************************************************************************
+n['git'] = {
+    'nrf': {
+        'remote': 'origin',
+        'branch': 'master',
+        'stash_changes': False,
+        'path': '~/path/to/ncs/nrf',
+        'update_repo': False,
+    },
+    'zephyr': {
+        'remote': 'origin',
+        'branch': 'master',
+        'stash_changes': False,
+        'path': '~/path/to/ncs/zephyr',
+        'update_repo': False,
+    },
+}
+
+# ****************************************************************************
+# Mailbox configuration
+#
+# To send an email report with test result summary
+# ****************************************************************************
+# z['mail'] = {
+#     "sender": "john.doe@example.com",
+#     "smtp_host": 'smtp.example.com',
+#     "smtp_port": 587,
+#     "name": "John",
+#     "passwd": "<PASSWD>",
+#     "start_tls": False,
+#     "recipients": [
+#         "1234@example.com",
+#         "5678@example.com",
+#     ],
+# }
+
+# ****************************************************************************
+# Google Drive configuration
+#
+# To put the tests execution logs to Google Drive
+# ****************************************************************************
+# z['gdrive'] = {
+#     "root_directory_id": "<GoogleDriveDirID>",
+#     "credentials_file": "/path/to/credentials.json",
+# }
+
+# ****************************************************************************
+# IUT configuration
+#
+# To apply test case specific changes in IUT configuration
+# ****************************************************************************
+
+n['iut_config'] = iut_config_mmdl
+
+# ****************************************************************************
+# Scheduler configuration
+#
+# To run the tests periodically
+# ****************************************************************************
+# z['scheduler'] = {
+#     'monday': '10:20',
+#     'friday': '20:00',
+# }
+
+BotProjects.append(nrf_v160)
+
+z = zephyr_nrf52 = {
+    'name': 'zephyr'
+}
+
+# ****************************************************************************
+# AutoPTS configuration
+# ****************************************************************************
+z['auto_pts'] = {
+    'server_ip': ['192.168.56.115'],
+    'local_ip': ['192.168.56.1'],
+    'cli_port': [65001],
+    'srv_port': [65000],
+    'project_path': '~/path/to/ncs/zephyr',
+    'workspace': 'nrf-v160',
+    'board': 'nrf52',
+    'enable_max_logs': False,
+    'retry': 2,
+    'bd_addr': '',
+    # 'ykush': '3',  # 1|2|3|a
+    'recovery': False,
+    'superguard': 15,  # minutes
+}
+
+# ****************************************************************************
+# Git repositories configuration
+# ****************************************************************************
+z['git'] = {
+    'nrf': {
+        'remote': 'origin',
+        'branch': 'master',
+        'stash_changes': False,
+        'path': '~/path/to/ncs/nrf',
+        'update_repo': False,
+    },
+    'zephyr': {
+        'remote': 'origin',
+        'branch': 'master',
+        'stash_changes': False,
+        'path': '~/path/to/ncs/zephyr',
+        'update_repo': False,
+    },
+}
+
+# ****************************************************************************
+# Mailbox configuration
+#
+# To send an email report with test result summary
+# ****************************************************************************
+# z['mail'] = {
+#     "sender": "john.doe@example.com",
+#     "smtp_host": 'smtp.example.com',
+#     "smtp_port": 587,
+#     "name": "John",
+#     "passwd": "<PASSWD>",
+#     "start_tls": False,
+#     "recipients": [
+#         "1234@example.com",
+#         "5678@example.com",
+#     ],
+# }
+
+# ****************************************************************************
+# Google Drive configuration
+#
+# To put the tests execution logs to Google Drive
+# ****************************************************************************
+# z['gdrive'] = {
+#     "root_directory_id": "<GoogleDriveDirID>",
+#     "credentials_file": "/path/to/credentials.json",
+# }
+
+# ****************************************************************************
+# IUT configuration
+#
+# To apply test case specific changes in IUT configuration
+# ****************************************************************************
+
+z['iut_config'] = iut_config_mesh
+
+# ****************************************************************************
+# Scheduler configuration
+#
+# To run the tests periodically
+# ****************************************************************************
+# z['scheduler'] = {
+#     'monday': '10:20',
+#     'friday': '20:00',
+# }
+
+BotProjects.append(zephyr_nrf52)

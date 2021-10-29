@@ -28,10 +28,7 @@ import os
 import win32com
 import wmi
 
-sys.path.insert(
-    0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
-from ptscontrol import PyPTS
+from autopts.ptscontrol import PyPTS
 
 
 class PyPTSControl(PyPTS):
@@ -75,7 +72,7 @@ if __name__ == '__main__':
         sys.exit('Usage:\n$ python3 {} <project_name> path/to/workspace.pqw6'.format(sys.argv[0]))
 
     project = sys.argv[1]
-    mod = importlib.import_module('bot.iut_config.' + project)
+    mod = importlib.import_module('autopts.bot.iut_config.' + project)
     iut_config = mod.iut_config
     test_case_prefixes = []
 

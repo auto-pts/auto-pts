@@ -60,7 +60,7 @@ The rest of the setup is platform/mode specific:
 
 ### BlueZ
 
-See [ptsprojects/bluez/README.md](./ptsprojects/bluez/README.md)
+See [ptsprojects/bluez/README.md](autopts/ptsprojects/bluez/README.md)
 
 ### Zephyr BLE
 
@@ -146,7 +146,7 @@ Then start the AutoPTS Client using e.g. own workspace file:
 
 **Testing BlueZ on Linux**:
 
-See [ptsprojects/bluez/README.md](./ptsprojects/bluez/README.md)
+See [ptsprojects/bluez/README.md](autopts/ptsprojects/bluez/README.md)
 
 # Running AutoPTSClientBot
 

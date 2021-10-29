@@ -43,7 +43,7 @@ from os.path import dirname, abspath
 from datetime import datetime, timedelta, date
 from requests.structures import CaseInsensitiveDict
 from autopts_bisect import Bisect, set_run_test_fun
-from bot.common import update_sources, send_mail, update_repos
+from autopts.bot.common import update_sources, send_mail, update_repos
 
 AUTOPTS_REPO=dirname(dirname(dirname(abspath(__file__))))
 sys.path.insert(0, AUTOPTS_REPO)
@@ -451,7 +451,7 @@ def update_zephyr_tools():
     version_tag = None
 
     for tag in tags:
-        if 'rc' not in tag['name']:
+        if 'rc' not in tag['name'] and 'beta' not in tag['name']:
             version_tag = tag['name']
             break
 

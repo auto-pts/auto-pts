@@ -16,16 +16,17 @@
 #
 
 """Bluez auto PTS client"""
+import importlib
 
-import autoptsclient_common as autoptsclient
-import ptsprojects.bluez as autoprojects
-from ptsprojects.bluez.iutctl import get_iut
+from autopts import client as autoptsclient
+from autopts.ptsprojects.bluez import iutctl
 
 
 class BluezClient(autoptsclient.Client):
     def __init__(self):
-        super().__init__(get_iut, 'bluez')
-        autoprojects.iutctl.AUTO_PTS_LOCAL = autoptsclient.AUTO_PTS_LOCAL
+        project = importlib.import_module('autopts.ptsprojects.bluez')
+        super().__init__(iutctl.get_iut, project, 'bluez')
+        iutctl.AUTO_PTS_LOCAL = autoptsclient.AUTO_PTS_LOCAL
 
 
 def main():

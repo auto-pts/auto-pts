@@ -16,13 +16,16 @@
 #
 
 """Zephyr auto PTS client"""
-import autoptsclient_common as autoptsclient
-from ptsprojects.zephyr.iutctl import get_iut
+import importlib
+
+from autopts import client as autoptsclient
+from autopts.ptsprojects.zephyr.iutctl import get_iut
 
 
 class ZephyrClient(autoptsclient.Client):
     def __init__(self):
-        super().__init__(get_iut, 'zephyr')
+        project = importlib.import_module('autopts.ptsprojects.zephyr')
+        super().__init__(get_iut, project, 'zephyr')
 
 
 def main():

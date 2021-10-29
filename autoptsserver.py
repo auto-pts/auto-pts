@@ -47,11 +47,10 @@ import pythoncom
 import win32com
 import win32com.client
 import wmi
-import winutils
+from autopts import winutils, ptscontrol
 
-import ptscontrol
-from config import SERVER_PORT
-from utils import usb_power
+from autopts.config import SERVER_PORT
+from autopts.utils import usb_power
 
 log = logging.debug
 PROJECT_DIR = dirname(abspath(__file__))
@@ -156,7 +155,7 @@ class SvrArgumentParser(argparse.ArgumentParser):
 
 
 def get_workspace(workspace):
-    for root, dirs, files in os.walk(os.path.join(PROJECT_DIR, 'workspaces'),
+    for root, dirs, files in os.walk(os.path.join(PROJECT_DIR, 'autopts/workspaces'),
                                      topdown=True):
         for name in dirs:
             if name == workspace:
@@ -186,7 +185,7 @@ def delete_workspaces():
                     os.remove(f)
 
     init_depth = 4
-    recursive(os.path.join(PROJECT_DIR, 'workspaces'), init_depth)
+    recursive(os.path.join(PROJECT_DIR, 'autopts/workspaces'), init_depth)
 
 
 def power_dongle(ykush_port, on=True):
