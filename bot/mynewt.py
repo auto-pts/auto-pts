@@ -27,19 +27,6 @@ from ptsprojects.testcase_db import DATABASE_FILE
 from ptsprojects.boards import get_available_boards, get_free_device, release_device, get_build_and_flash
 
 
-def check_call(cmd, env=None, cwd=None, shell=True):
-    """Run command with arguments.  Wait for command to complete.
-    :param cmd: command to run
-    :param env: environment variables for the new process
-    :param cwd: sets current directory before execution
-    :param shell: if true, the command will be executed through the shell
-    :return: returncode
-    """
-    cmd = subprocess.list2cmdline(cmd)
-
-    return subprocess.check_call(cmd, env=env, cwd=cwd, shell=shell)
-
-
 def get_tty_path(name):
     """Returns tty path (eg. /dev/ttyUSB0) of serial device with specified name
     :param name: device name
@@ -77,43 +64,43 @@ def build_and_flash(project_path, board, overlay=None):
     logging.debug("%s: %s %s %s", build_and_flash.__name__, project_path,
                   board, overlay)
 
-    check_call('rm -rf bin/'.split(), cwd=project_path)
-    check_call('rm -rf targets/{}_boot/'.format(board).split(),
-               cwd=project_path)
-    check_call('rm -rf targets/bttester/'.split(), cwd=project_path)
+    bot.common.check_call('rm -rf bin/'.split(), cwd=project_path)
+    bot.common.check_call('rm -rf targets/{}_boot/'.format(board).split(),
+                          cwd=project_path)
+    bot.common.check_call('rm -rf targets/bttester/'.split(), cwd=project_path)
 
-    check_call('newt target create {}_boot'.format(board).split(),
-               cwd=project_path)
-    check_call('newt target create bttester'.split(), cwd=project_path)
+    bot.common.check_call('newt target create {}_boot'.format(board).split(),
+                          cwd=project_path)
+    bot.common.check_call('newt target create bttester'.split(), cwd=project_path)
 
-    check_call(
+    bot.common.check_call(
         'newt target set {0}_boot bsp=@apache-mynewt-core/hw/bsp/{0}'.format(
             board).split(), cwd=project_path)
-    check_call(
+    bot.common.check_call(
         'newt target set {}_boot app=@mcuboot/boot/mynewt'.format(
             board).split(), cwd=project_path)
 
-    check_call(
+    bot.common.check_call(
         'newt target set bttester bsp=@apache-mynewt-core/hw/bsp/{}'.format(
             board).split(), cwd=project_path)
-    check_call(
+    bot.common.check_call(
         'newt target set bttester app=@apache-mynewt-nimble/apps/bttester'.split(),
         cwd=project_path)
 
     if overlay is not None:
         config = ':'.join(['{}={}'.format(k, v) for k, v in list(overlay.items())])
-        check_call('newt target set bttester syscfg={}'.format(config).split(),
-                   cwd=project_path)
+        bot.common.check_call('newt target set bttester syscfg={}'.format(config).split(),
+                              cwd=project_path)
 
-    check_call('newt build {}_boot'.format(board).split(), cwd=project_path)
-    check_call('newt build bttester'.split(), cwd=project_path)
+    bot.common.check_call('newt build {}_boot'.format(board).split(), cwd=project_path)
+    bot.common.check_call('newt build bttester'.split(), cwd=project_path)
 
-    check_call('newt create-image -2 {}_boot timestamp'.format(board).split(),
-               cwd=project_path)
-    check_call('newt create-image -2 bttester timestamp'.split(), cwd=project_path)
+    bot.common.check_call('newt create-image -2 {}_boot timestamp'.format(board).split(),
+                          cwd=project_path)
+    bot.common.check_call('newt create-image -2 bttester timestamp'.split(), cwd=project_path)
 
-    check_call('newt load {}_boot'.format(board).split(), cwd=project_path)
-    check_call('newt load bttester'.split(), cwd=project_path)
+    bot.common.check_call('newt load {}_boot'.format(board).split(), cwd=project_path)
+    bot.common.check_call('newt load bttester'.split(), cwd=project_path)
 
 
 def get_target_description(project_path):

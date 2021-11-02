@@ -32,24 +32,6 @@ from pathlib import Path
 import bot.common
 
 
-def check_call(cmd, env=None, cwd=None, shell=True):
-    """Run command with arguments.  Wait for command to complete.
-    :param cmd: command to run
-    :param env: environment variables for the new process
-    :param cwd: sets current directory before execution
-    :param shell: if true, the command will be executed through the shell
-    :return: returncode
-    """
-    executable = '/bin/bash'
-    cmd = subprocess.list2cmdline(cmd)
-
-    if sys.platform == 'win32':
-        executable = None
-        shell = False
-
-    return subprocess.check_call(cmd, env=env, cwd=cwd, shell=shell, executable=executable)
-
-
 def build_and_flash(zephyr_wd, board, tty, conf_file=None):
     """Build and flash Zephyr binary
     :param zephyr_wd: Zephyr source path
@@ -61,7 +43,7 @@ def build_and_flash(zephyr_wd, board, tty, conf_file=None):
                                          board, conf_file)
     tester_dir = os.path.join(zephyr_wd, "tests", "bluetooth", "tester")
 
-    check_call('rm -rf build/'.split(), cwd=tester_dir)
+    bot.common.check_call('rm -rf build/'.split(), cwd=tester_dir)
 
     cmd = ['west', 'build', '-p', 'auto', '-b', board]
     if conf_file and conf_file != 'default' and conf_file != 'prj.conf':
@@ -71,9 +53,9 @@ def build_and_flash(zephyr_wd, board, tty, conf_file=None):
         cmd = subprocess.list2cmdline(cmd)
         cmd = ['bash.exe', '-c', '-i', cmd]  # bash.exe == wsl
 
-    check_call(cmd, cwd=tester_dir)
-    check_call(['west', 'flash', '--skip-rebuild',
-                '--board-dir', tty], cwd=tester_dir)
+    bot.common.check_call(cmd, cwd=tester_dir)
+    bot.common.check_call(['west', 'flash', '--skip-rebuild',
+                           '--board-dir', tty], cwd=tester_dir)
 
 
 def flush_serial(tty):
@@ -90,8 +72,8 @@ def flush_serial(tty):
         ser.flushInput()
         ser.flushOutput()
     else:
-        check_call(['while', 'read', '-t', '0', 'var', '<', tty, ';', 'do',
-                    'continue;', 'done'])
+        bot.common.check_call(['while', 'read', '-t', '0', 'var', '<', tty, ';', 'do',
+                               'continue;', 'done'])
 
 
 def apply_overlay(zephyr_wd, base_conf, cfg_name, overlay):
