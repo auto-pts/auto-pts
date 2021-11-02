@@ -40,6 +40,7 @@ from httplib2 import Http
 from oauth2client import file, client, tools
 
 import autoptsclient_common as autoptsclient
+import bot
 from autoptsclient_common import CliParser, Client
 from ptsprojects.testcase_db import DATABASE_FILE
 
@@ -571,6 +572,7 @@ def make_report_folder(iut_logs, pts_logs, report_xlsx, report_txt,
     """Creates folder containing .txt and .xlsx reports, pulled logs
     from autoptsserver, iut logs and additional README.md.
     """
+
     def get_deepest_dirs(logs_tree, dst_tree, max_depth):
         def recursive(directory, depth=3):
             depth -= 1
@@ -640,6 +642,26 @@ def github_push_report(report_folder, log_git_conf, commit_msg):
 # ****************************************************************************
 # Miscellaneous
 # ****************************************************************************
+
+
+def check_call(cmd, env=None, cwd=None, shell=True):
+    """Run command with arguments.  Wait for command to complete.
+    :param cmd: command to run
+    :param env: environment variables for the new process
+    :param cwd: sets current directory before execution
+    :param shell: if true, the command will be executed through the shell
+    :return: returncode
+    """
+    executable = '/bin/bash'
+    cmd = subprocess.list2cmdline(cmd)
+
+    if sys.platform == 'win32':
+        executable = None
+        shell = False
+
+    return subprocess.check_call(cmd, env=env, cwd=cwd, shell=shell, executable=executable)
+
+
 def archive_recursive(dir_path):
     """Archive directory recursively
     :return: newly created zip file path
@@ -712,7 +734,7 @@ def pull_server_logs(args):
 
                     file_path = '/'.join([logs_folder,
                                           file_path[len(workspace_root) + 1:]
-                                          .replace('\\', '/')])
+                                         .replace('\\', '/')])
                     Path(os.path.dirname(file_path)).mkdir(parents=True,
                                                            exist_ok=True)
 
@@ -733,35 +755,41 @@ def get_workspace(workspace):
     return None
 
 
-def update_sources(repo_path, remote, branch, stash_changes=False, update_repo=True):
+def describe_repo(repo_path):
     """GIT Update sources
-    :param repo: git repository path
-    :param remote: git repository remote name
-    :param branch: git repository branch name
-    :param stash_changes: stash non-committed changes
-    :param update_repo: update repo
+    :param repo_path: git repository path
     :return: Commit SHA at HEAD
     """
     repo = git.Repo(repo_path)
 
-    if update_repo:
-        print('Updating ' + repo_path)
+    return repo.git.describe('--always'), repo.git.show('-s', '--format=%H')
 
-        dirty = repo.is_dirty()
-        if dirty and (not stash_changes):
-            print('Repo is dirty. Not updating')
-            return repo.git.describe('--always'), \
-                repo.git.show('-s', '--format=%H') + '-dirty'
 
-        if dirty and stash_changes:
-            print('Repo is dirty. Stashing changes')
-            repo.git.stash('--include-untracked')
+def update_sources(repo_path, remote, branch, stash_changes=False):
+    """GIT Update sources
+    :param repo_path: git repository path
+    :param remote: git repository remote name
+    :param branch: git repository branch name
+    :param stash_changes: stash non-committed changes
+    :return: Commit SHA at HEAD
+    """
+    repo = git.Repo(repo_path)
 
-        repo.git.fetch(remote)
-        repo.git.checkout('{}/{}'.format(remote, branch))
+    print('Updating ' + repo_path)
 
-    return repo.git.describe('--always'), \
-        repo.git.show('-s', '--format=%H')
+    dirty = repo.is_dirty()
+    if dirty and (not stash_changes):
+        print('Repo is dirty. Not updating')
+        return repo.git.describe('--always'), repo.git.show('-s', '--format=%H') + '-dirty'
+
+    if dirty and stash_changes:
+        print('Repo is dirty. Stashing changes')
+        repo.git.stash('--include-untracked')
+
+    repo.git.fetch(remote)
+    repo.git.checkout('{}/{}'.format(remote, branch))
+
+    return describe_repo(repo_path)
 
 
 def make_repo_status(repos_info):
@@ -791,17 +819,18 @@ def update_repos(project_path, git_config):
 
         project_path.join(repo_path)
 
-        if 'update_repo' in conf:
-            update_repo = conf["update_repo"]
+        if conf.get('update_repo', False):
+            desc, commit = update_sources(repo_path, conf["remote"],
+                                          conf["branch"], conf["stash_changes"])
         else:
-            update_repo = True
+            desc, commit = describe_repo(repo_path)
 
-        desc, commit = update_sources(repo_path, conf["remote"],
-                                      conf["branch"], conf["stash_changes"],
-                                      update_repo)
         repo_dict["commit"] = commit
         repo_dict["desc"] = desc
         repos_dict[repo] = repo_dict
+
+        if conf.get('west_update', False):
+            bot.common.check_call(['west', 'update'], cwd=repo_path)
 
     return repos_dict
 
