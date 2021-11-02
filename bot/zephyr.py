@@ -158,7 +158,7 @@ def zephyr_hash_url(commit):
                                  commit)
 
 
-def make_readme_md(start_time, end_time, commit_sha, pts_ver):
+def make_readme_md(start_time, end_time, repos_info, pts_ver):
     """Creates README.md for Github logging repo
     """
     readme_file = 'tmp/README.md'
@@ -174,10 +174,12 @@ def make_readme_md(start_time, end_time, commit_sha, pts_ver):
 
     PTS version: {}
 
-    HEAD commit: {} [{}]
-    '''.format(start_time, end_time, pts_ver, commit_sha['commit'], commit_sha['desc'])
+    Repositories:
 
+    '''.format(start_time, end_time, pts_ver)
         f.write(readme_body)
+
+        f.writelines(['\t{}: {} [{}]\n'.format(name, info['commit'], info['desc']) for name, info in repos_info.items()])
 
     return readme_file
 
@@ -208,7 +210,7 @@ def compose_mail(args, mail_cfg, mail_ctx):
     {}
     <p>Sincerely,</p>
     <p> {}</p>
-    '''.format(ww_dd_str, args["board"], mail_ctx["zephyr_hash"], args['platform'],
+    '''.format(ww_dd_str, args["board"], mail_ctx["repos_info"], args['platform'],
                args['pts_ver'], mail_ctx["elapsed_time"], mail_ctx["summary"],
                mail_ctx["regression"], mail_ctx["log_url"], mail_cfg['name'])
 
@@ -284,10 +286,11 @@ def main(cfg):
                                         'zephyr', 'zephyr.elf')
 
     if 'git' in cfg:
-        zephyr_hash = bot.common.update_repos(args['project_path'],
-                                              cfg['git'])['zephyr']
+        repos_info = bot.common.update_repos(args['project_path'], cfg["git"])
+        repo_status = bot.common.make_repo_status(repos_info)
     else:
-        zephyr_hash = {'desc': '', 'commit': ''}
+        repos_info = {}
+        repo_status = ''
 
     if 'ykush' in args:
         autoptsclient.board_power(args['ykush'], True)
@@ -308,7 +311,7 @@ def main(cfg):
 
     report_file = bot.common.make_report_xlsx(results, summary, regressions,
                                               descriptions)
-    report_txt = bot.common.make_report_txt(results, zephyr_hash["desc"])
+    report_txt = bot.common.make_report_txt(results, repo_status)
 
     end_time = time.time()
     end_time_stamp = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
@@ -321,7 +324,7 @@ def main(cfg):
         pts_logs = bot.common.pull_server_logs(args_ns)
         iut_logs = 'logs/'
         readme_file = make_readme_md(start_time_stamp, end_time_stamp,
-                                     zephyr_hash, args['pts_ver'])
+                                     repos_info, args['pts_ver'])
         report_folder = bot.common.make_report_folder(iut_logs, pts_logs, report_file,
                                                       report_txt, readme_file,
                                                       args['database_file'],
@@ -338,7 +341,7 @@ def main(cfg):
             commit_msg_pattern = cfg['githubdrive']['commit_msg']
 
         if 'git' in cfg:
-            commit_sha = zephyr_hash['commit']
+            commit_sha = repos_info['zephyr']['commit']
             branch = cfg['git']['zephyr']['branch']
 
         commit_msg = commit_msg_pattern.format(
@@ -359,20 +362,12 @@ def main(cfg):
         # keep mail related context to simplify the code
         mail_ctx = {"summary": bot.common.status_dict2summary_html(summary),
                     "regression": bot.common.regressions2html(regressions,
-                                                              descriptions)}
+                                                              descriptions),
+                    "repos_info": repo_status}
 
         # Summary
 
         # Regression and test case description
-
-        # Zephyr commit id link in HTML format
-
-        # Commit id may have "-dirty" if the source is dirty.
-        commit_id = zephyr_hash["commit"]
-        if commit_id.endswith('-dirty'):
-            commit_id = commit_id[:-6]
-        mail_ctx["zephyr_hash"] = bot.common.url2html(zephyr_hash_url(commit_id),
-                                                      zephyr_hash["desc"])
 
         # Log in Google drive in HTML format
         if 'gdrive' in cfg and url:
