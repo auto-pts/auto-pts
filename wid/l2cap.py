@@ -599,6 +599,28 @@ def hdl_wid_262(desc):
     return True
 
 
+def hdl_wid_267(desc):
+    # PTS want us to use specific Source CID but we can just ignore it as it
+    # should not require that
+    stack = get_stack()
+    l2cap = stack.l2cap
+
+    btp.l2cap_conn(None, None, l2cap.psm, l2cap.initial_mtu)
+    return True
+
+
+def hdl_wid_268(desc):
+    # PTS ask to disconnect channel with specified SCID and DCID but we can just
+    # disconnect last connected channel (1) to be conforming with TS
+
+    btp.l2cap_disconn(1)
+
+    # Wait for disconnected event before replying to PTS to avoid sending next
+    # connect too soon
+    get_stack().l2cap.wait_for_disconnection(1, 30)
+    return True
+
+
 def hdl_wid_270(desc):
     return True
 
