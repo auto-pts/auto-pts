@@ -162,15 +162,6 @@ def get_build_info_file(project_path):
     return file_name
 
 
-def make_repo_status(repos_info):
-    status_list = []
-
-    for name, info in list(repos_info.items()):
-        status_list.append('{}={}'.format(name, info['commit']))
-
-    return ', '.join(status_list)
-
-
 def compose_mail(args, mail_cfg, mail_ctx):
     """ Create a email body
     """
@@ -258,7 +249,7 @@ def main(cfg):
 
     if 'git' in cfg:
         repos_info = bot.common.update_repos(args['project_path'], cfg["git"])
-        repo_status = make_repo_status(repos_info)
+        repo_status = bot.common.make_repo_status(repos_info)
     else:
         repo_status = ''
 
@@ -293,7 +284,8 @@ def main(cfg):
         # keep mail related context to simplify the code
         mail_ctx = {"summary": bot.common.status_dict2summary_html(summary),
                     "regression": bot.common.regressions2html(regressions,
-                                                              descriptions), "mynewt_repo_status": repo_status}
+                                                              descriptions),
+                    "mynewt_repo_status": repo_status}
 
         # Summary
 

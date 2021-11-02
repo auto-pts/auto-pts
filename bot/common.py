@@ -764,6 +764,15 @@ def update_sources(repo_path, remote, branch, stash_changes=False, update_repo=T
         repo.git.show('-s', '--format=%H')
 
 
+def make_repo_status(repos_info):
+    status_list = []
+
+    for name, info in list(repos_info.items()):
+        status_list.append('{}={}'.format(name, info['commit']))
+
+    return ', '.join(status_list)
+
+
 def update_repos(project_path, git_config):
     """GIT Update sources
     :param project_path: path to project root
