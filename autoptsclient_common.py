@@ -58,6 +58,11 @@ TEST_CASE_DB = None
 
 autoprojects = None
 
+# The number of seconds to wait for autoptsserver restart.
+# - during normal recovery:
+MIN_SERVER_RESTART_TIME = 40
+# - during recovery of recovery
+MAX_SERVER_RESTART_TIME = 60
 
 # To test autopts client locally:
 # Envrinment variable AUTO_PTS_LOCAL must be set for FakeProxy to
@@ -1337,14 +1342,47 @@ def set_end():
     RUN_END = True
 
 
+def recover_at_exception(func):
+    """The ultimate recovery of recovery, in case of server
+     jammed/crashed, but there is still a chance it will be recovered."""
+    def _recover_at_exception(*args, **kwargs):
+        restart_time = MAX_SERVER_RESTART_TIME
+
+        while True:
+            try:
+                return func(*args, **kwargs)
+            except Exception as e:
+                logging.exception(e)
+                traceback.print_exc()
+
+                if isinstance(e, RunEnd):
+                    # Stopped with SIGINT
+                    break
+
+                time.sleep(restart_time)
+
+                if args[0].superguard:
+                    # Wait longer next time. Hopefully the server
+                    # superguard will work and trigger the restart.
+                    restart_time = args[0].superguard
+
+    return _recover_at_exception
+
+
+@recover_at_exception
 def run_recovery(args, ptses):
     def wait_for_server_restart(pts):
-        for i in range(int(args.superguard) if args.superguard else 60):
+        i = MIN_SERVER_RESTART_TIME
+        for i in range(MIN_SERVER_RESTART_TIME):
             try:
                 if pts.ready():
                     break
             except Exception:
+                # Server is still resetting. Wait a little more.
                 time.sleep(1)
+
+        if i >= MIN_SERVER_RESTART_TIME:
+            log('Timeout at wait_for_server_restart()')
 
     log('Running recovery')
 
