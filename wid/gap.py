@@ -954,6 +954,18 @@ def hdl_wid_402(desc):
     return True
 
 
+def hdl_wid_403(desc):
+    #Please perform the Directed Connection Establishment Procedure using RPA
+    #then resolve the PTS address and connect with PTS.
+    stack = get_stack()
+
+    if not stack.gap.iut_has_privacy():
+        return False
+
+    btp.gap_conn()
+    return True
+
+
 def hdl_wid_1002(desc):
     stack = get_stack()
     return stack.gap.get_passkey()
