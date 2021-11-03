@@ -1731,6 +1731,31 @@ def hdl_wid_139(params: WIDParams):
     return bool(read_val == COMPARED_VALUE[0])
 
 
+def hdl_wid_150(params: WIDParams):
+    """
+    Please send an ATT_Write_Request to Client Support Features handle = 'XXXX'O to enable Multiple Handle Value Notifications.
+    Discover all characteristics if needed.
+    """
+    MMI.reset()
+    MMI.parse_description(params.description)
+
+    hdl = MMI.args[0]
+
+    # First read the existing value in Client Supported Features.
+    btp.gattc_read(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl)
+    btp.gattc_read_rsp(False, True)
+    client_support_features = int(btp.get_verify_values()[0])
+
+    # Set Multiple Handle Value Notifications bit in features.
+    multi_hvn_bit = 4
+    value = client_support_features | multi_hvn_bit
+
+    btp.gattc_write(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl, f'{value:02x}')
+    btp.gattc_write_rsp()
+
+    return True
+
+
 def hdl_wid_151(_: WIDParams):
     chrcs = btp.gatts_get_attrs(type_uuid='2803')
     for chrc in chrcs:
