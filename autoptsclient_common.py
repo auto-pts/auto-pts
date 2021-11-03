@@ -1337,6 +1337,19 @@ def set_end():
     RUN_END = True
 
 
+def recover_at_exception(func):
+    def _recover_at_exception(*args, **kwargs):
+        while True:
+            try:
+                return func(*args, **kwargs)
+            except Exception as e:
+                logging.exception(e)
+                traceback.print_exc()
+                time.sleep(40)
+    return _recover_at_exception
+
+
+@recover_at_exception
 def run_recovery(args, ptses):
     def wait_for_server_restart(pts):
         for i in range(int(args.superguard) if args.superguard else 60):
@@ -1345,6 +1358,8 @@ def run_recovery(args, ptses):
                     break
             except Exception:
                 time.sleep(1)
+        if i >= 60 or i >= int(args.superguard):
+            log('Timeout at wait_for_server_restart()')
 
     log('Running recovery')
 
