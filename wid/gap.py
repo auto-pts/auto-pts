@@ -962,9 +962,25 @@ def hdl_wid_403(desc):
     if not stack.gap.iut_has_privacy():
         return False
 
-    btp.gap_conn()
+    if stack.gap.peripheral.data:
+        bd_addr = btp.pts_addr_get()
+        bd_addr_type = btp.pts_addr_type_get()
+
+        btp.gap_direct_adv_on(bd_addr, bd_addr_type, 0 , 1)
+    else:
+        btp.gap_conn()
+
     return True
 
+def hdl_wid_406(desc):
+    #Please enter General Connectable Mode using private addresses.
+    #Note: IUT is expected to do directed advertising with target address set
+    #to peer RPA...when WID 403 is received
+
+    stack = get_stack()
+    stack.gap.peripheral.data = True
+
+    return True
 
 def hdl_wid_1002(desc):
     stack = get_stack()

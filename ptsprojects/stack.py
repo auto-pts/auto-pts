@@ -152,6 +152,8 @@ class Gap:
         self.discoverying = Property(False)
         self.found_devices = Property([])  # List of found devices
 
+        self.peripheral = Property(False) # IUT role in test
+
         self.passkey = Property(None)
         self.conn_params = Property(None)
         self.pairing_failed_rcvd = Property(None)
