@@ -16,7 +16,7 @@
 import logging
 import os
 import sys
-from bot.mynewt import check_call
+from bot.common import check_call
 
 supported_projects = ['mynewt']
 
