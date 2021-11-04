@@ -392,7 +392,7 @@ def gap_adv_off():
     __gap_current_settings_update(tuple_data)
 
 
-def gap_direct_adv_on(addr, addr_type, high_duty=0):
+def gap_direct_adv_on(addr, addr_type, high_duty=0, peer_rpa=0):
     logging.debug("%s %r %r", gap_direct_adv_on.__name__, addr, high_duty)
 
     stack = get_stack()
@@ -407,7 +407,15 @@ def gap_direct_adv_on(addr, addr_type, high_duty=0):
     bd_addr_ba = addr2btp_ba(addr)
     data_ba.extend(chr(addr_type).encode('utf-8'))
     data_ba.extend(bd_addr_ba)
-    data_ba.extend(chr(high_duty).encode('utf-8'))
+
+    opts = 0
+    if high_duty:
+        opts |= defs.GAP_START_DIRECT_ADV_HD
+
+    if peer_rpa:
+        opts |= defs.GAP_START_DIRECT_ADV_PEER_RPA
+
+    data_ba.extend(struct.pack('H', opts))
 
     iutctl.btp_socket.send(*GAP['start_direct_adv'], data=data_ba)
 
