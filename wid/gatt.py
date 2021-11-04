@@ -1690,7 +1690,7 @@ def hdl_wid_141(params: WIDParams):
 
     hdl1 = MMI.args[0]
     hdl2 = MMI.args[1]
-    btp.gattc_read_multiple(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl1, hdl2)
+    btp.gattc_read_multiple_var(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl1, hdl2)
     return '0000'
 
 
