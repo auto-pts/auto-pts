@@ -159,6 +159,18 @@ def test_cases(ptses):
     pre_conditions_eatt_success = pre_conditions_eatt + [
         TestFunc(btp.l2cap_le_listen, le_psm_eatt, le_initial_mtu, L2CAPConnectionResponse.success),
     ]
+    pre_conditions_eatt_authen = pre_conditions_eatt + [
+        TestFunc(btp.l2cap_le_listen, le_psm_eatt, le_initial_mtu,
+                 L2CAPConnectionResponse.insufficient_authentication),
+    ]
+    pre_conditions_eatt_keysize = pre_conditions_eatt + [
+        TestFunc(btp.l2cap_le_listen, le_psm_eatt, le_initial_mtu,
+                 L2CAPConnectionResponse.insufficient_encryption_key_size),
+    ]
+    pre_conditions_eatt_author = pre_conditions_eatt + [
+        TestFunc(btp.l2cap_le_listen, le_psm_eatt, le_initial_mtu,
+                  L2CAPConnectionResponse.insufficient_authorization),
+    ]
 
     custom_test_cases = [
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-03-C",
@@ -187,13 +199,13 @@ def test_cases(ptses):
                   pre_conditions_eatt,
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/ECFC/BV-11-C",
-                  pre_conditions_eatt,
+                  pre_conditions_eatt_authen,
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/ECFC/BV-13-C",
-                  pre_conditions_eatt,
+                  pre_conditions_eatt_author,
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/ECFC/BV-15-C",
-                  pre_conditions_eatt,
+                  pre_conditions_eatt_keysize,
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/ECFC/BV-22-C",
                   pre_conditions_eatt,
