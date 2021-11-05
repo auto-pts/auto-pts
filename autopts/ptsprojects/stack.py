@@ -515,6 +515,9 @@ class Mesh:
         self.large_comp_data = Property(None)
         self.models_metadata = Property(None)
 
+        # MMDL Blob transfer timeout
+        self.timeout = 0
+
         # MMDL expected status data
         self.expect_status_data = Property({
             "Ack": True,
@@ -575,6 +578,12 @@ class Mesh:
 
     def set_iut_provisioner(self, _is_prov):
         self.iut_is_provisioner = _is_prov
+
+    def timeout_set(self, timeout):
+        self.timeout = timeout
+
+    def timeout_get(self):
+        return self.timeout
 
     def recv_status_data_set(self, key, data):
         if key in self.recv_status_data.data:

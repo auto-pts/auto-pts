@@ -306,6 +306,42 @@ MMDL = {
     "scheduler_action_set": (defs.BTP_SERVICE_ID_MMDL,
                              defs.MMDL_SCHEDULER_ACTION_SET,
                              CONTROLLER_INDEX),
+    "dfu_info_get": (defs.BTP_SERVICE_ID_MMDL,
+                     defs.MMDL_DFU_INF_GET,
+                     CONTROLLER_INDEX),
+    "blob_info_get": (defs.BTP_SERVICE_ID_MMDL,
+                      defs.MMDL_BLOB_INFO_GET,
+                      CONTROLLER_INDEX),
+    "dfu_update_firmware_check": (defs.BTP_SERVICE_ID_MMDL,
+                                  defs.MMDL_DFU_UPDATE_FIRMWARE_CHECK,
+                                  CONTROLLER_INDEX),
+    "dfu_update_firmware_get": (defs.BTP_SERVICE_ID_MMDL,
+                                defs.MMDL_DFU_UPDATE_FIRMWARE_GET,
+                                CONTROLLER_INDEX),
+    "dfu_update_firmware_cancel": (defs.BTP_SERVICE_ID_MMDL,
+                                   defs.MMDL_DFU_UPDATE_FIRMWARE_CANCEL,
+                                   CONTROLLER_INDEX),
+    "dfu_update_firmware_start": (defs.BTP_SERVICE_ID_MMDL,
+                                  defs.MMDL_DFU_UPDATE_FIRMWARE_START,
+                                  CONTROLLER_INDEX),
+    "mmdl_blob_srv_recv": (defs.BTP_SERVICE_ID_MMDL,
+                           defs.MMDL_BLOB_SRV_RECV,
+                           CONTROLLER_INDEX),
+    "blob_transfer_start": (defs.BTP_SERVICE_ID_MMDL,
+                            defs.MMDL_BLOB_TRANSFER_START,
+                            CONTROLLER_INDEX),
+    "blob_transfer_cancel": (defs.BTP_SERVICE_ID_MMDL,
+                             defs.MMDL_BLOB_TRANSFER_CANCEL,
+                             CONTROLLER_INDEX),
+    "blob_transfer_get": (defs.BTP_SERVICE_ID_MMDL,
+                          defs.MMDL_BLOB_TRANSFER_GET,
+                          CONTROLLER_INDEX),
+    "blob_srv_cancel": (defs.BTP_SERVICE_ID_MMDL,
+                        defs.MMDL_BLOB_SRV_CANCEL,
+                        CONTROLLER_INDEX),
+    "dfu_update_firmware_apply": (defs.BTP_SERVICE_ID_MMDL,
+                                  defs.MMDL_DFU_UPDATE_FIRMWARE_APPLY,
+                                  CONTROLLER_INDEX),
 }
 
 
@@ -1947,3 +1983,135 @@ def mmdl_scheduler_action_set(index, year, month, day, hour, minute, second, day
                                         [index, year, month, day, hour, minute, second, day_of_week, action,
                                          transition_time, scene_num])
         logging.debug('Status: %r', stack.mesh.recv_status_data_get("Status"))
+
+
+def mmdl_dfu_info_get(limit):
+    logging.debug("%s", mmdl_dfu_info_get.__name__)
+
+    iutctl = get_iut()
+    stack = get_stack()
+
+    data = bytearray(struct.pack("<B", limit))
+
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['dfu_info_get'], data)
+
+
+def mmdl_blob_info_get(addr):
+    logging.debug("%s", mmdl_blob_info_get.__name__)
+
+    iutctl = get_iut()
+
+    data = bytearray(struct.pack("<H", addr))
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['blob_info_get'], data)
+
+
+def mmdl_dfu_update_firmware_check(index, slot_idx, slot_size, fwid, metadata):
+    logging.debug("%s", mmdl_dfu_update_firmware_check.__name__)
+
+    iutctl = get_iut()
+
+    payload_fwid = binascii.unhexlify(fwid)
+    fwid_len = len(payload_fwid)
+
+    payload_metadata = binascii.unhexlify(metadata)
+    metadata_len = len(payload_metadata)
+
+    data = bytearray(struct.pack("<BBBBB", index, slot_idx, slot_size, fwid_len, metadata_len))
+
+    data.extend(payload_metadata)
+
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['dfu_update_firmware_check'], data)
+
+    hdr_fmt = '<BBB'
+    index, status, effect = struct.unpack_from(hdr_fmt, rsp)
+    stack = get_stack()
+    stack.mesh.recv_status_data_set('Status', [index, status, effect])
+    logging.debug('Status: %r', stack.mesh.recv_status_data_get("Status"))
+
+
+def mmdl_dfu_update_firmware_get():
+    logging.debug("%s", mmdl_dfu_update_firmware_get.__name__)
+
+    iutctl = get_iut()
+
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['dfu_update_firmware_get'], "")
+
+    hdr_fmt = '<B'
+    status = struct.unpack_from(hdr_fmt, rsp)
+
+
+def mmdl_dfu_update_firmware_cancel():
+    logging.debug("%s", mmdl_dfu_update_firmware_cancel.__name__)
+
+    iutctl = get_iut()
+
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['dfu_update_firmware_cancel'], "")
+
+
+def mmdl_dfu_update_firmware_start(addr, slot_idx, slot_size, block_size, chunk_size, fwid, metadata):
+    logging.debug("%s", mmdl_dfu_update_firmware_start.__name__)
+
+    iutctl = get_iut()
+
+    payload_fwid = binascii.unhexlify(fwid)
+    fwid_len = len(payload_fwid)
+
+    payload_metadata = binascii.unhexlify(metadata)
+    metadata_len = len(payload_metadata)
+
+    data = bytearray(struct.pack("<HBBBBBH", addr, slot_idx, slot_size, fwid_len, metadata_len, block_size, chunk_size))
+
+    data.extend(payload_metadata)
+
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['dfu_update_firmware_start'], data)
+
+
+def mmdl_blob_srv_recv(id, timeout):
+    logging.debug("%s", mmdl_blob_srv_recv.__name__)
+    iutctl = get_iut()
+
+    data = bytearray(struct.pack("<QH", id, timeout))
+
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['mmdl_blob_srv_recv'], data)
+
+
+def mmdl_blob_transfer_start(id, block_size, chunk_size, timeout, size, addr):
+    logging.debug("%s", mmdl_blob_transfer_start.__name__)
+
+    iutctl = get_iut()
+
+    data = bytearray(struct.pack("<QHBHHH", id, size, block_size, chunk_size, timeout, addr))
+
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['blob_transfer_start'], data)
+
+
+def mmdl_blob_transfer_cancel():
+    logging.debug("%s", mmdl_blob_transfer_cancel.__name__)
+
+    iutctl = get_iut()
+
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['blob_transfer_cancel'], "")
+
+
+def mmdl_blob_transfer_get():
+    logging.debug("%s", mmdl_blob_transfer_get.__name__)
+
+    iutctl = get_iut()
+
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['blob_transfer_get'], "")
+
+
+def mmdl_blob_srv_cancel():
+    logging.debug("%s", mmdl_blob_srv_cancel.__name__)
+
+    iutctl = get_iut()
+
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['blob_srv_cancel'], "")
+
+
+def mmdl_dfu_update_firmware_apply():
+    logging.debug("%s", mmdl_dfu_update_firmware_apply.__name__)
+
+    iutctl = get_iut()
+
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['dfu_update_firmware_apply'], "")
