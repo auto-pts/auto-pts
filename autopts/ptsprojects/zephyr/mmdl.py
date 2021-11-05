@@ -61,6 +61,13 @@ def set_pixits(ptses):
     pts.set_pixit("MMDL", "TSPX_sensor_property_ids", "1,0069,0010,FFF0")
     pts.set_pixit("MMDL", "TSPX_enable_IUT_provisioner", "FALSE")
     pts.set_pixit("MMDL", "TSPX_cadence_property_IDs", "1,0069,0010,FFF0")
+    pts.set_pixit("MMDL", "TSPX_Procedure_Timeout", "60")
+    pts.set_pixit("MMDL", "TSPX_Server_Timeout", "10")
+    pts.set_pixit("MMDL", "TSPX_Client_BLOB_Data", r"data.txt")
+    pts.set_pixit("MMDL", "TSPX_New_Firmware_Image", r"data2.txt")
+    pts.set_pixit("MMDL", "TSPX_Update_Firmware_Image_Index", "0")
+    pts.set_pixit("MMDL", "TSPX_Client_BLOB_ID", "1100000000000011")
+    pts.set_pixit("MMDL", "TSPX_Reception_Counter", "5")
 
 
 def test_cases(ptses):
@@ -92,6 +99,8 @@ def test_cases(ptses):
     crpl_size = 10  # Maximum capacity of the replay protection list
     auth_method = 0x00
     iut_device_name = get_unique_name(pts)
+    timeout = 20
+    FD_timeout = 80
 
     pre_conditions = [
         TestFunc(btp.core_reg_svc_gap),
@@ -110,7 +119,22 @@ def test_cases(ptses):
             "MMDL", "TSPX_bd_addr_iut",
             stack.gap.iut_addr_get_str()))]
 
-    custom_test_cases = []
+    custom_test_cases = [
+        ZTestCase("MMDL", "MMDL/SR/BT/BV-02-C", cmds=pre_conditions + [
+            TestFunc(lambda: pts.update_pixit_param(
+                "MMDL", "TSPX_Server_Timeout", timeout)),
+            TestFunc(lambda: stack.mesh.timeout_set(timeout))],
+                  generic_wid_hdl=mmdl_wid_hdl),
+        ZTestCase("MMDL", "MMDL/SR/BT/BV-08-C", cmds=pre_conditions + [
+            TestFunc(lambda: pts.update_pixit_param(
+                "MMDL", "TSPX_Server_Timeout", timeout)),
+            TestFunc(lambda: stack.mesh.timeout_set(timeout))],
+                  generic_wid_hdl=mmdl_wid_hdl),
+        ZTestCase("MMDL", "MMDL/SR/FD/BV-07-C", cmds=pre_conditions + [
+            TestFunc(lambda: pts.update_pixit_param(
+                "MMDL", "TSPX_Server_Timeout", FD_timeout))],
+                  generic_wid_hdl=mmdl_wid_hdl),
+    ]
 
     test_case_name_list = pts.get_test_case_list('MMDL')
     tc_list = []
