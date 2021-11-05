@@ -94,6 +94,14 @@ def hdl_wid_525(_: WIDParams):
     return True
 
 
+def hdl_wid_526(_: WIDParams):
+    """
+    :param desc: Please remove application and network security on IUT.
+                 Click OK to when the IUT is in unprovisioned state.
+    """
+    return True
+
+
 def hdl_wid_630(_: WIDParams):
     iut_reset()
     return True
@@ -2138,4 +2146,174 @@ def hdl_wid_670(params: WIDParams):
 
 
 def hdl_wid_671(_: WIDParams):
+    return True
+
+
+def hdl_wid_850(_: WIDParams):
+    """
+    Please initiate the transfer of the test object to the Lower Tester.
+    """
+
+    stack = get_stack()
+    timeout = stack.mesh.timeout_get()
+    addr = 0x0001
+    id = 0x1100000000000011
+    block_size = 6
+    chunk_size = 8
+    blob_data_size = 80
+
+    btp.mmdl_blob_info_get(addr)
+
+    time.sleep(5)
+
+    btp.mmdl_blob_transfer_start(id, block_size, chunk_size, timeout, blob_data_size, addr)
+
+    return True
+
+
+def hdl_wid_851(_: WIDParams):
+    """
+    Please initiate the transfer of the test object to the Lower Tester.
+    """
+    timeout = 20
+    addr = 0x0001
+    id = 0x1100000000000011
+    block_size = 6
+    chunk_size = 65
+    blob_data_size = 80
+
+    btp.mmdl_blob_info_get(addr)
+
+    time.sleep(5)
+
+    btp.mmdl_blob_transfer_start(id, block_size, chunk_size, timeout, blob_data_size, addr)
+
+    return True
+
+
+def hdl_wid_853(_: WIDParams):
+    stack = get_stack()
+    timeout = stack.mesh.timeout_get()
+    id = 0x1100000000000011
+
+    btp.mmdl_blob_srv_recv(id, timeout)
+
+    return True
+
+
+def hdl_wid_854(_: WIDParams):
+    """
+    Please wait for PTS to timeout. Lower Tester should not receive any messages regarding BLOB transfer.
+    """
+    return True
+
+
+def hdl_wid_855(_: WIDParams):
+    """
+    Please query the state of BLOB transfer by sending Lower Tester BLOB_TRANSFER_GET message.
+    """
+    btp.mmdl_blob_transfer_get()
+    return True
+
+
+def hdl_wid_856(_: WIDParams):
+    stack = get_stack()
+    timeout = stack.mesh.timeout_get()
+    addr1 = 0x0001
+    addr2 = 0x0065
+    id = 0x1100000000000011
+    block_size = 18
+    chunk_size = 11
+    blob_data_size = 80
+
+    btp.mmdl_blob_info_get(addr1)
+    time.sleep(5)
+    btp.mmdl_blob_info_get(addr2)
+    time.sleep(5)
+    btp.mmdl_blob_transfer_start(id, block_size, chunk_size, timeout, blob_data_size, addr1)
+
+    return True
+
+
+def hdl_wid_857(_: WIDParams):
+    """
+    Please check BLOB data matched value in TSPX_Client_BLOB_Data.
+    """
+    return True
+
+
+def hdl_wid_858(_: WIDParams):
+    return True
+
+
+def hdl_wid_859(_: WIDParams):
+    """
+    Please confirm that the IUT has reported BLOB transfer procedure failure.
+    """
+    return True
+
+
+def hdl_wid_860(_: WIDParams):
+    btp.mmdl_blob_transfer_cancel()
+    return True
+
+
+def hdl_wid_970(_: WIDParams):
+    """
+       :param desc: Please updates firmware.Click Yes after update is complete and device is up and running.
+       :return:
+       """
+
+    return True
+
+
+def hdl_wid_977(_: WIDParams):
+    limit = 0x01
+
+    btp.mmdl_dfu_info_get(limit)
+    return True
+
+
+def hdl_wid_989(_: WIDParams):
+    index = 0x00
+    slot_size = 0x01
+    slot_idx = 0x00
+
+    fwid = "11000011"
+    metadata = "1100000000000011"
+
+    btp.mmdl_dfu_update_firmware_check(index, slot_idx, slot_size, fwid, metadata)
+    return True
+
+
+def hdl_wid_990(_: WIDParams):
+    addr_1 = 0x0001
+    addr_2 = 0x0100
+    addr_3 = 0x0123
+
+    slot_idx = 0x00
+    slot_size = 80
+    block_size = 18
+    chunk_size = 8
+
+    fwid = "11000011"
+    metadata = "1100000000000011"
+
+    btp.mmdl_dfu_update_firmware_start(addr_1, slot_idx, slot_size, block_size, chunk_size, fwid, metadata)
+    time.sleep(5)
+    btp.mmdl_dfu_update_firmware_start(addr_2, slot_idx, slot_size, block_size, chunk_size, fwid, metadata)
+    time.sleep(5)
+    btp.mmdl_dfu_update_firmware_start(addr_3, slot_idx, slot_size, block_size, chunk_size, fwid, metadata)
+    time.sleep(10)
+
+    return False
+
+
+def hdl_wid_992(_: WIDParams):
+    btp.mmdl_dfu_update_firmware_get()
+    return True
+
+
+def hdl_wid_993(_: WIDParams):
+    btp.mmdl_dfu_update_firmware_cancel()
     return True

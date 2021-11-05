@@ -186,6 +186,9 @@ def hdl_wid_13(params: WIDParams):
         btp.mesh_config_prov()
         btp.mesh_init()
 
+    if stack.mesh.is_provisioned.data:
+        btp.mesh_reset()
+
     return True
 
 
