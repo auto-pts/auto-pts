@@ -1035,7 +1035,9 @@ def hdl_wid_267(_: WIDParams):
 
 
 def hdl_wid_400(_: WIDParams):
-    btp.gap_conn()
+    btp.set_filter_accept_list()
+    bd_addr = '000000000000'
+    btp.gap_conn(bd_addr)
     return True
 
 
