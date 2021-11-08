@@ -173,6 +173,10 @@ def test_cases(ptses):
     ]
 
     custom_test_cases = [
+        ZTestCase("L2CAP", "L2CAP/LE/CFC/BI-02-C",
+                  pre_conditions +
+                  [TestFunc(lambda: btp.l2cap_le_listen(le_psm))],
+                  generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-03-C",
                   pre_conditions +
                   [TestFunc(lambda: btp.l2cap_le_listen(le_psm))],
