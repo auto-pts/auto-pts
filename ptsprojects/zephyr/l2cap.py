@@ -201,6 +201,10 @@ def test_cases(ptses):
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-25-C",
                   pre_conditions_authen,
                   generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-30-C",
+                  pre_conditions +
+                  [TestFunc(lambda: btp.l2cap_le_listen(le_psm))],
+                  generic_wid_hdl=l2cap_wid_hdl),
         # Enhanced Credit Based Flow Control Channel
         ZTestCase("L2CAP", "L2CAP/ECFC/BV-07-C",
                   pre_conditions_eatt,
