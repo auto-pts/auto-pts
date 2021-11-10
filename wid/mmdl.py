@@ -776,16 +776,16 @@ def sensor_settings_status(params):
 
 
 def sensor_setting_get(params):
-    sensor_id = 0x0042
+    sensor_id = 0x004e
     setting_id = 0x006e
     btp.mmdl_sensor_setting_get(sensor_id, setting_id)
     return True
 
 
 def sensor_setting_set(params, ack):
-    sensor_id = 0x0042
+    sensor_id = 0x004e
     setting_id = 0x006e
-    setting_raw = '010101'
+    setting_raw = '00'
     btp.mmdl_sensor_setting_set(sensor_id, setting_id, setting_raw, ack)
     return True
 
