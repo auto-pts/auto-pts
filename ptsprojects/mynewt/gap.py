@@ -23,7 +23,7 @@ from ptsprojects.testcase import TestFunc
 from ptsprojects.mynewt import gatt
 from ptsprojects.mynewt.ztestcase import ZTestCase
 from ptsprojects.mynewt.gap_wid import gap_wid_hdl, gap_wid_hdl_failed_read, gap_wid_hdl_mode1_lvl2
-
+from time import sleep
 
 class SVC:
     gap = (None, None, UUID.gap_svc)
@@ -218,7 +218,9 @@ def test_cases(ptses):
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/BOND/BON/BV-03-C",
                   cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output)],
+                  [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
+                   # give some time before returning wid 118 to allow pair to finish
+                   TestFunc(sleep, 1, start_wid=118)],
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/BOND/BON/BV-04-C",
                   cmds=pre_conditions +
