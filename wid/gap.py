@@ -474,7 +474,12 @@ def hdl_wid_106(desc):
 
 
 def hdl_wid_108(desc):
-    btp.gap_pair()
+
+    if desc == 'Please start the Bonding Procedure in bondable mode.':
+        btp.gap_set_bondable_on()
+    else:
+        # Please configure the IUT into LE Security and start pairing process.
+        btp.gap_pair()
     return True
 
 
