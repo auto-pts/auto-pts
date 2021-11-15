@@ -286,6 +286,7 @@ class Server(threading.Thread):
                 logging.exception(e)
                 kill_all_processes('PTS.exe')
 
+            ptscontrol.set_stop_pts(False)
             self.is_ready = False
 
         return 0
@@ -340,6 +341,7 @@ class Server(threading.Thread):
     def request_recovery(self):
         self.is_ready = False
         self.recovery_request = True
+        ptscontrol.set_stop_pts(True)
 
     def terminate(self):
         self.is_ready = False
