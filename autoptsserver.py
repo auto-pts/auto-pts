@@ -44,6 +44,8 @@ from os.path import dirname, abspath
 from time import sleep
 
 import pythoncom
+import win32com
+import win32com.client
 import wmi
 import winutils
 
@@ -196,6 +198,28 @@ def power_dongle(ykush_port, on=True):
     p.wait()
 
 
+def dongle_exists(serial_address):
+    if 'USB' in serial_address:
+        serial_address = serial_address.split(r':')[2]
+        try:
+            wmi = win32com.client.GetObject("winmgmts:")
+            for usb in wmi.InstancesOf("Win32_USBHub"):
+                if serial_address in usb.DeviceID:
+                    return True
+        except Exception as e:
+            logging.exception(e)
+        return False
+    else:
+        try:
+            wmi = win32com.client.GetObject("winmgmts:")
+            for usb in wmi.InstancesOf("Win32_SerialPort"):
+                if serial_address in usb.DeviceID:
+                    return True
+        except Exception as e:
+            logging.exception(e)
+        return False
+
+
 class SuperGuard(threading.Thread):
     def __init__(self, timeout):
         threading.Thread.__init__(self, daemon=True)
@@ -235,10 +259,13 @@ class Server(threading.Thread):
         self.server = None
         self._args = _args
         self.pts = None
+        self._device = None
         self.end = False
         self.recovery_request = False
         self.name = 'S-' + str(self._args.srv_port)
         self.is_ready = False
+        if self._args.ykush and type(self._args.ykush) is list:
+            self._args.ykush = ' '.join(self._args.ykush)
 
     def last_start(self):
         try:
@@ -284,10 +311,15 @@ class Server(threading.Thread):
 
         if self._args.ykush:
             power_dongle(self._args.ykush, False)
+            while self._device and dongle_exists(self._device):
+                pass
             power_dongle(self._args.ykush, True)
+            while self._device and not dongle_exists(self._device):
+                pass
 
         print("Starting PTS ...")
         self.pts = PyPTSWithXmlRpcCallback()
+        self._device = self.pts._device
         print("OK")
 
         print("Serving on port {} ...".format(self._args.srv_port))
