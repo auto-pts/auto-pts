@@ -78,6 +78,26 @@ def pts_lock_wrapper(lock):
     return _pts_lock_wrapper
 
 
+STOP_PTS = False
+
+
+class StopPTS(Exception):
+    pass
+
+
+def set_stop_pts(stop=True):
+    global STOP_PTS
+    STOP_PTS = stop
+
+
+def force_pts_stop_wrapper(func):
+    def _force_pts_stop_wrapper(*args):
+        if STOP_PTS:
+            raise StopPTS
+        return func(*args)
+    return _force_pts_stop_wrapper
+
+
 class PTSLogger(win32com.server.connect.ConnectableServer):
     """PTS control client logger callback implementation"""
     _reg_desc_ = "AutoPTS Logger"
@@ -155,6 +175,7 @@ class PTSSender(win32com.server.connect.ConnectableServer):
         """Unsets the callback"""
         self._callback = None
 
+    @force_pts_stop_wrapper
     def OnImplicitSend(self, project_name, wid, test_case, description, style):
         """Implements:
 
