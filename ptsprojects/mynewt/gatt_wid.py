@@ -153,29 +153,6 @@ def hdl_wid_52(desc):
     return bool(value_read == MMI.args[1])
 
 
-def hdl_wid_75(desc):
-    MMI.reset()
-    MMI.parse_description(desc)
-    if not MMI.args:
-        logging.debug("parsing error")
-
-    handle = int(MMI.args[0], 16)
-    value = MMI.args[1]
-
-    # write was unsuccessful
-    if not btp.gatts_verify_write_success(desc):
-        return False
-
-    attr = btp.gatts_get_attr_val(btp.pts_addr_type_get(),
-                                  btp.pts_addr_get(), handle)
-
-    _, _, val = attr
-
-    parsed_val = hexlify(val).decode('utf-8').upper()
-
-    return bool(value == parsed_val)
-
-
 def hdl_wid_76(desc):
     MMI.reset()
     MMI.parse_description(desc)
