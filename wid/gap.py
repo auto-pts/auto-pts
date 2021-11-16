@@ -942,6 +942,12 @@ def hdl_wid_232(desc):
     return True
 
 
+def hdl_wid_267(desc):
+    # Click Yes if device support User Interaction to pair with the peer.
+    # As we are already paired, we can only enable security - return False
+    return False
+
+
 def hdl_wid_400(desc):
     btp.gap_conn()
     return True
