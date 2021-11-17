@@ -17,7 +17,7 @@
 
 from autoptsclient_common import get_unique_name
 from pybtp import btp
-from pybtp.types import Addr
+from pybtp.types import Addr, L2CAPConnectionResponse
 from wid import l2cap_wid_hdl, l2cap_wid_hdl_hold_credit
 from ptsprojects.stack import get_stack, L2cap
 from ptsprojects.testcase import TestFunc
@@ -155,6 +155,14 @@ def test_cases(ptses):
         TestFunc(stack.l2cap_init, le_psm_eatt, le_initial_mtu),
     ]
 
+    # EATT is not supported in NimBLE, but we need to listen on EATT PSM in ECFC tests
+    pre_conditions_eatt = common + [TestFunc(stack.l2cap_init, le_psm_eatt, le_initial_mtu)]
+    pre_conditions_eatt_authen = pre_conditions_eatt + [TestFunc(btp.l2cap_le_listen, le_psm_eatt, le_initial_mtu,
+                                                        L2CAPConnectionResponse.insufficient_authentication)]
+    pre_conditions_eatt_author = pre_conditions_eatt + [TestFunc(btp.l2cap_le_listen, le_psm_eatt, le_initial_mtu,
+                                                        L2CAPConnectionResponse.insufficient_authorization)]
+    pre_conditions_eatt_keysize = pre_conditions_eatt + [TestFunc(btp.l2cap_le_listen, le_psm_eatt, le_initial_mtu,
+                                                        L2CAPConnectionResponse.insufficient_encryption_key_size)]
     custom_test_cases = [
         # Connection Parameter Update
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-04-C",
@@ -184,13 +192,13 @@ def test_cases(ptses):
                   generic_wid_hdl=l2cap_wid_hdl),
         # Enhanced Credit Based Flow Control Channel
         ZTestCase("L2CAP", "L2CAP/ECFC/BV-11-C",
-                  pre_conditions_2,
+                  pre_conditions_eatt_authen,
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/ECFC/BV-13-C",
-                  pre_conditions_2,
+                  pre_conditions_eatt_author,
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/ECFC/BV-15-C",
-                  pre_conditions_2,
+                  pre_conditions_eatt_keysize,
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/ECFC/BV-27-C",
                   pre_conditions_1 +
