@@ -18,7 +18,7 @@
 from autoptsclient_common import get_unique_name
 from pybtp import btp
 from pybtp.types import Addr
-from wid import l2cap_wid_hdl
+from wid import l2cap_wid_hdl, l2cap_wid_hdl_hold_credit
 from ptsprojects.stack import get_stack, L2cap
 from ptsprojects.testcase import TestFunc
 from ptsprojects.mynewt.ztestcase import ZTestCase
@@ -206,6 +206,9 @@ def test_cases(ptses):
         ZTestCase("L2CAP", "L2CAP/COS/ECFC/BV-03-C",
                   pre_conditions_1,
                   generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BI-02-C",
+                  pre_conditions_1,
+                  generic_wid_hdl=l2cap_wid_hdl_hold_credit),
     ]
 
     test_case_name_list = pts.get_test_case_list('L2CAP')
