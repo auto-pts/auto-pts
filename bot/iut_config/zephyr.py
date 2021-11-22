@@ -193,15 +193,4 @@ iut_config = {
             'L2CAP/LE/CPU/BV-01-C',
         ]
     },
-
-    "gap_writable_device_name.conf": {
-        "overlay": {
-            'CONFIG_BT_DEVICE_NAME_DYNAMIC': 'y',
-            'CONFIG_BT_DEVICE_NAME_GATT_WRITABLE': 'y',
-            'CONFIG_BT_CONN_DISABLE_SECURITY': 'y',
-        },
-        'test_cases': [
-            'GAP/GAT/BV-05-C',
-        ]
-    },
 }
