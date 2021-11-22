@@ -1172,6 +1172,28 @@ Commands and responses:
 
 		In case of an error, the error response will be returned.
 
+	Opcode 0x20 - Read Multiple Variable Length Characteristic Values
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Handles_Count (1 octet)
+					Handles (variable)
+		Response parameters:	ATT_Response (1 octet)
+					Total_Data_Length (2 octets)
+					Data (variable)
+
+		This procedure is used to read multiple variable length
+		Characteristic Values from a server.
+		Read results are returned in the response to this command in
+		form of {Length, Value} tuples. The Total_Data_Length is total
+		length of response data (sum of lengths of all tuples}.
+		ATT_Response shall be set to 0x00, if Read has been completed
+		successfully. Otherwise it shall be set to ATT error code
+		received.
+
+		In case of an error, the error response will be returned.
+
 	Opcode 0x15 - Write Without Response
 
 		Controller Index:	<controller id>
