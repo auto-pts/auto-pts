@@ -18,7 +18,7 @@
 from autoptsclient_common import get_unique_name
 from pybtp import btp
 from pybtp.types import Addr, L2CAPConnectionResponse
-from wid import l2cap_wid_hdl, l2cap_wid_hdl_hold_credit
+from wid import l2cap_wid_hdl, l2cap_wid_hdl_hold_credit, l2cap_wid_hdl_one_ecfc_chan
 from ptsprojects.stack import get_stack, L2cap
 from ptsprojects.testcase import TestFunc
 from ptsprojects.mynewt.ztestcase import ZTestCase
@@ -211,6 +211,9 @@ def test_cases(ptses):
                   [TestFunc(btp.l2cap_le_listen, le_psm_eatt, le_initial_mtu,
                             L2cap.unacceptable_parameters)],
                   generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BV-29-C",
+                  pre_conditions_1,
+                  generic_wid_hdl=l2cap_wid_hdl_one_ecfc_chan),
         ZTestCase("L2CAP", "L2CAP/COS/ECFC/BV-01-C",
                   pre_conditions_1,
                   generic_wid_hdl=l2cap_wid_hdl),
