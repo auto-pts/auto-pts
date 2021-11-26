@@ -110,10 +110,6 @@ iut_config = {
         },
         "test_cases": ['GAP/BROB/BCST/BV-04-C']},
 
-    "mesh_subnet_count.conf": {
-        "overlay": {'BLE_MESH_SUBNET_COUNT': '1'},
-        "test_cases": ['MESH/NODE/CFG/NKL/BI-03-C']},
-
     "l2cap_param_update.conf": {
 
         "overlay": {'BTTESTER_CONN_PARAM_UPDATE': '1'},
