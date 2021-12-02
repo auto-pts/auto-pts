@@ -345,17 +345,6 @@ def hdl_wid_142(desc):
     return True
 
 
-def hdl_wid_147(desc):
-    MMI.reset()
-    MMI.parse_description(desc)
-
-    hdl1 = MMI.args[0]
-    hdl2 = MMI.args[1]
-    btp.gattc_read_multiple_var(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl1, hdl2)
-    btp.gattc_read_multiple_var(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl1, hdl2)
-    return True
-
-
 def hdl_wid_400(desc):
     log("Mynewt sends EATT supported bit")
     return '0000'
