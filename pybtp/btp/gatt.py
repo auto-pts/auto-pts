@@ -829,13 +829,7 @@ def gattc_read_long(bd_addr_type, bd_addr, hdl, off, modif_off=None):
     iutctl.btp_socket.send(*GATTC['read_long'], data=data_ba)
 
 
-def gattc_read_multiple(bd_addr_type, bd_addr, *hdls):
-    logging.debug("%s %r %r %r", gattc_read_multiple.__name__, bd_addr_type,
-                  bd_addr, hdls)
-    iutctl = get_iut()
-
-    gap_wait_for_connection()
-
+def _create_read_multiple_req(bd_addr_type, bd_addr, *hdls):
     data_ba = bytearray()
 
     bd_addr_ba = addr2btp_ba(bd_addr)
@@ -849,7 +843,16 @@ def gattc_read_multiple(bd_addr_type, bd_addr, *hdls):
     data_ba.extend(bd_addr_ba)
     data_ba.extend(chr(len(hdls)).encode('utf-8'))
     data_ba.extend(hdls_ba)
+    return data_ba
 
+def gattc_read_multiple(bd_addr_type, bd_addr, *hdls):
+    logging.debug("%s %r %r %r", gattc_read_multiple.__name__, bd_addr_type,
+                  bd_addr, hdls)
+    iutctl = get_iut()
+
+    gap_wait_for_connection()
+
+    data_ba = _create_read_multiple_req(bd_addr_type, bd_addr, *hdls)
     iutctl.btp_socket.send(*GATTC['read_multiple'], data=data_ba)
 
 
@@ -860,20 +863,7 @@ def gattc_read_multiple_var(bd_addr_type, bd_addr, *hdls):
 
     gap_wait_for_connection()
 
-    data_ba = bytearray()
-
-    bd_addr_ba = addr2btp_ba(bd_addr)
-    hdls_j = ''.join(hdl for hdl in hdls)
-    hdls_byte_table = [hdls_j[i:i + 2] for i in range(0, len(hdls_j), 2)]
-    hdls_swp = ''.join([c[1] + c[0] for c in zip(hdls_byte_table[::2],
-                                                 hdls_byte_table[1::2])])
-    hdls_ba = binascii.unhexlify(bytearray(hdls_swp))
-
-    data_ba.extend(chr(bd_addr_type))
-    data_ba.extend(bd_addr_ba)
-    data_ba.extend(chr(len(hdls)))
-    data_ba.extend(hdls_ba)
-
+    data_ba = _create_read_multiple_req(bd_addr_type, bd_addr, *hdls)
     iutctl.btp_socket.send(*GATTC['read_multiple_var'], data=data_ba)
 
 
