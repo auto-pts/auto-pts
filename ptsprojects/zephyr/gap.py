@@ -253,15 +253,13 @@ def test_cases(ptses):
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/AUT/BV-19-C",
                   cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   TestFunc(btp.gap_conn, start_wid=78),
+                  [TestFunc(btp.gap_conn, start_wid=78),
                    TestFunc(btp.gap_pair, start_wid=108, skip_call=(2,)),
-                   TestFunc(btp.gattc_read_rsp, store_val=False,
-                            post_wid=108, skip_call=(1,)),
                    TestFunc(btp.gattc_read, Addr.le_public,
                             pts_bd_addr, "0009", start_wid=112),
                    TestFunc(btp.gattc_read_rsp, store_val=False,
-                            post_wid=112, skip_call=(1,)),
+                            post_wid=112),
+                   TestFunc(btp.gap_pair, start_wid=227),
                    TestFunc(btp.gap_disconn, start_wid=44)]),
         ZTestCase("GAP", "GAP/SEC/AUT/BV-20-C",
                   cmds=pre_conditions +
