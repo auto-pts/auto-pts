@@ -18,6 +18,7 @@ import sys
 import re
 from ptsprojects.stack import get_stack
 from pybtp import btp
+from pybtp.types import WIDParams
 
 log = logging.debug
 
@@ -30,58 +31,58 @@ def sm_wid_hdl(wid, description, test_case_name, logs=True):
 
     try:
         handler = getattr(module, "hdl_wid_%d" % wid)
-        return handler(description)
+        return handler(WIDParams(wid, description, test_case_name))
     except AttributeError as e:
         logging.exception(e)
 
 
-def hdl_wid_100(desc):
+def hdl_wid_100(_: WIDParams):
     btp.gap_conn()
     return get_stack().gap.wait_for_connection(30)
 
 
-def hdl_wid_101(desc):
+def hdl_wid_101(_: WIDParams):
     btp.gap_conn()
     return True
 
 
-def hdl_wid_102(desc):
+def hdl_wid_102(_: WIDParams):
     btp.gap_disconn()
     return get_stack().gap.wait_for_disconnection(30)
 
 
-def hdl_wid_104(desc):
-    return btp.var_store_get_passkey(desc)
+def hdl_wid_104(params: WIDParams):
+    return btp.var_store_get_passkey(params.description)
 
 
-def hdl_wid_106(desc):
-    return btp.var_store_get_wrong_passkey(desc)
+def hdl_wid_106(params: WIDParams):
+    return btp.var_store_get_wrong_passkey(params.description)
 
 
-def hdl_wid_108(desc):
+def hdl_wid_108(_: WIDParams):
     btp.gap_pair()
     return True
 
 
-def hdl_wid_109(desc):
+def hdl_wid_109(_: WIDParams):
     btp.gap_set_mitm_off()
     btp.gap_pair()
     return True
 
 
-def hdl_wid_110(desc):
+def hdl_wid_110(_: WIDParams):
     pts_bd_addr = btp.pts_addr_get()
     pts_bd_addr_type = btp.pts_addr_type_get()
     btp.gattc_signed_write(pts_bd_addr_type, pts_bd_addr, "0001", "01")
     return True
 
 
-def hdl_wid_111(desc):
+def hdl_wid_111(_: WIDParams):
     # TODO: Verify if the MAC and signed counter has been received correctly
     return True
 
 
-def hdl_wid_115(desc):
+def hdl_wid_115(_: WIDParams):
     stack = get_stack()
 
     btp.gap_set_conn()
@@ -90,17 +91,17 @@ def hdl_wid_115(desc):
     return True
 
 
-def hdl_wid_116(desc):
+def hdl_wid_116(_: WIDParams):
     # TODO: Click Yes if the failure of pairing process due to timeout has
     # been notified on the IUT.
     return True
 
 
-def hdl_wid_141(desc):
-    return btp.var_store_get_passkey(desc)
+def hdl_wid_141(params: WIDParams):
+    return btp.var_store_get_passkey(params.description)
 
 
-def hdl_wid_145(desc):
+def hdl_wid_145(_: WIDParams):
     """
     Please configure IUT's OOB data flag with 'No remote OOB data present'
 
@@ -109,7 +110,7 @@ def hdl_wid_145(desc):
     return True
 
 
-def hdl_wid_146(desc):
+def hdl_wid_146(_: WIDParams):
     """
     Please configure IUT's OOB flag with 'Remote OOB data present'
 
@@ -118,7 +119,7 @@ def hdl_wid_146(desc):
     return True
 
 
-def hdl_wid_147(desc):
+def hdl_wid_147(_: WIDParams):
     """
     Please enter 16 bytes IUT's OOB Data (confirmation).
     """
@@ -126,7 +127,7 @@ def hdl_wid_147(desc):
     return c
 
 
-def hdl_wid_148(desc):
+def hdl_wid_148(_: WIDParams):
     """
     Please enter 16 bytes IUT's OOB Key (random number).
     """
@@ -134,57 +135,57 @@ def hdl_wid_148(desc):
     return r
 
 
-def hdl_wid_149(desc):
+def hdl_wid_149(params: WIDParams):
     """
     Please enter the following OOB confirmation and OOB random to the IUT.
     """
-    m = re.findall(r"\[([A-Fa-f0-9]+)]", desc)
+    m = re.findall(r"\[([A-Fa-f0-9]+)]", params.description)
     conf, rand = m
     btp.gap_oob_sc_set_remote_data(r=rand, c=conf)
     return True
 
 
-def hdl_wid_152(desc):
+def hdl_wid_152(_: WIDParams):
     return True
 
 
-def hdl_wid_154(desc):
+def hdl_wid_154(_: WIDParams):
     return True
 
 
-def hdl_wid_155(desc):
+def hdl_wid_155(_: WIDParams):
     return True
 
 
-def hdl_wid_156(desc):
+def hdl_wid_156(_: WIDParams):
     stack = get_stack()
     return not stack.gap.is_connected()
 
 
-def hdl_wid_173(desc):
+def hdl_wid_173(_: WIDParams):
     return btp.gap_wait_for_pairing_fail()
 
 
-def hdl_wid_1009(desc):
-    return btp.var_store_get_passkey(desc)
+def hdl_wid_1009(params: WIDParams):
+    return btp.var_store_get_passkey(params.description)
 
 
-def hdl_wid_20001(desc):
+def hdl_wid_20001(_: WIDParams):
     stack = get_stack()
     btp.gap_set_conn()
     btp.gap_adv_ind_on(ad=stack.gap.ad)
     return True
 
 
-def hdl_wid_20100(desc):
+def hdl_wid_20100(_: WIDParams):
     btp.gap_conn()
     return True
 
 
-def hdl_wid_20011(desc):
-    return btp.var_store_get_passkey(desc)
+def hdl_wid_20011(params: WIDParams):
+    return btp.var_store_get_passkey(params.description)
 
 
-def hdl_wid_20115(desc):
+def hdl_wid_20115(_: WIDParams):
     btp.gap_disconn()
     return True

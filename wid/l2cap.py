@@ -20,8 +20,8 @@ import sys
 import time
 
 from ptsprojects.stack import get_stack
-from pybtp import btp, defs
-from pybtp.types import BTPError, L2CAPConnectionResponse
+from pybtp import btp
+from pybtp.types import BTPError, WIDParams
 
 log = logging.debug
 
@@ -33,7 +33,7 @@ def l2cap_wid_hdl(wid, description, test_case_name):
 
     try:
         handler = getattr(module, "hdl_wid_%d" % wid)
-        return handler(description)
+        return handler(WIDParams(wid, description, test_case_name))
     except AttributeError as e:
         logging.exception(e)
 
@@ -67,22 +67,20 @@ def l2cap_wid_hdl_hold_credit(wid, description, test_case_name):
 
 
 # wid handlers section begin
-def hdl_wid_14(desc):
+def hdl_wid_14(_: WIDParams):
     """
     Implements: TSC_MMI_iut_disable_connection
-    :param desc: Initiate an L2CAP disconnection from the IUT to the PTS.
-    :return:
+    description: Initiate an L2CAP disconnection from the IUT to the PTS.
     """
     btp.l2cap_disconn(0)
 
     return True
 
 
-def hdl_wid_15(desc):
+def hdl_wid_15(_: WIDParams):
     """
     Implements: TSC_MMI_tester_enable_connection
-    :param desc: Action: Place the IUT in connectable mode.
-    :return:
+    description: Action: Place the IUT in connectable mode.
     """
     stack = btp.get_stack()
     btp.gap_set_conn()
@@ -92,11 +90,10 @@ def hdl_wid_15(desc):
     return True
 
 
-def hdl_wid_22(desc):
+def hdl_wid_22(_: WIDParams):
     """
     Implements: TSC_MMI_iut_disable_acl_connection
-    :param desc: Initiate an ACL disconnection from the IUT to the PTS.
-    :return:
+    description: Initiate an ACL disconnection from the IUT to the PTS.
     """
     btp.gap_wait_for_connection()
     btp.gap_disconn()
@@ -104,27 +101,25 @@ def hdl_wid_22(desc):
     return True
 
 
-def hdl_wid_36(desc):
+def hdl_wid_36(_: WIDParams):
     """
     Implements: TSC_MMI_iut_send_le_flow_control_credit
-    :param desc: Command IUT to send LE Flow Control Credit to increase the LE data packet that PTS can send.
-    :return:
+    description: Command IUT to send LE Flow Control Credit to increase the LE data packet that PTS can send.
     """
 
     # handled by host L2CAP layer or application
     return True
 
 
-def hdl_wid_37(desc):
+def hdl_wid_37(params: WIDParams):
     """
     Implements: TSC_MMI_upper_tester_confirm_LE_data
-    :param desc: Did the Upper Tester send the data xxxx to the PTS?
+    description: Did the Upper Tester send the data xxxx to the PTS?
                  Click Yes if it matched, otherwise click No.
-    :return:
     """
     # This pattern is matching first data frame
     pattern = re.compile(r"send\sthe\sdata\s([0-9a-fA-F]+)")
-    data = pattern.findall(desc)
+    data = pattern.findall(params.description)
     if not data:
         logging.error("%s parsing error", hdl_wid_37.__name__)
         return False
@@ -137,11 +132,10 @@ def hdl_wid_37(desc):
     return data[0] == tx_data[0]
 
 
-def hdl_wid_38(desc):
+def hdl_wid_38(_: WIDParams):
     """
     Implements: TSC_MMI_upper_tester_send_LE_data_packet1
-    :param desc: Upper Tester command IUT to send a nonsegmented LE data packet to the PTS with any values.
-    :return:
+    description: Upper Tester command IUT to send a nonsegmented LE data packet to the PTS with any values.
     """
     stack = get_stack()
     channel = stack.l2cap.chan_lookup_id(0)
@@ -152,12 +146,11 @@ def hdl_wid_38(desc):
     return True
 
 
-def hdl_wid_39(desc):
+def hdl_wid_39(_: WIDParams):
     """
     Implements: TSC_MMI_upper_tester_confirm_receive_command_not_understaood
-    :param desc: Did Implementation Under Test (IUT) receive L2CAP Reject with 'command not understood' error.
+    description: Did Implementation Under Test (IUT) receive L2CAP Reject with 'command not understood' error.
                  Click Yes if it is, otherwise click No.
-    :return:
     """
     stack = get_stack()
 
@@ -165,22 +158,20 @@ def hdl_wid_39(desc):
     return not stack.l2cap.is_connected(0)
 
 
-def hdl_wid_40(desc):
+def hdl_wid_40(_: WIDParams):
     """
     Implements: TSC_MMI_upper_tester_confirm_data_receive
-    :param desc: Please confirm the Upper Tester receive data
-    :return:
+    description: Please confirm the Upper Tester receive data
     """
     stack = get_stack()
     rx_data = stack.l2cap.rx_data_get_all(10)
     return rx_data is not None
 
 
-def hdl_wid_41(desc):
+def hdl_wid_41(_: WIDParams):
     """
     Implements: TSC_MMI_iut_send_le_credit_based_connection_request
-    :param desc: Using the Implementation Under Test (IUT), send a LE Credit based connection request to PTS.
-    :return:
+    description: Using the Implementation Under Test (IUT), send a LE Credit based connection request to PTS.
     """
     stack = get_stack()
     l2cap = stack.l2cap
@@ -190,12 +181,11 @@ def hdl_wid_41(desc):
     return True
 
 
-def hdl_wid_42(desc):
+def hdl_wid_42(_: WIDParams):
     """
     Implements: TSC_MMI_upper_tester_confirm_receive_reject_psm
-    :param desc: Did Implementation Under Test (IUT) receive Request Reject with 'LE_PSM not supported' 0x0002 error.
+    description: Did Implementation Under Test (IUT) receive Request Reject with 'LE_PSM not supported' 0x0002 error.
                  Click Yes if it is, otherwise click No.
-    :return:
     """
     stack = get_stack()
 
@@ -203,11 +193,10 @@ def hdl_wid_42(desc):
     return not stack.l2cap.is_connected(0)
 
 
-def hdl_wid_43(desc):
+def hdl_wid_43(_: WIDParams):
     """
     Implements: TSC_MMI_upper_tester_send_le_data_packet_large
-    :param desc: Upper Tester command IUT to send multiple LE frame data packet to the PTS.
-    :return:
+    description: Upper Tester command IUT to send multiple LE frame data packet to the PTS.
     """
     stack = get_stack()
     l2cap = stack.l2cap
@@ -220,12 +209,11 @@ def hdl_wid_43(desc):
     return True
 
 
-def hdl_wid_48(desc):
+def hdl_wid_48(_: WIDParams):
     """
     Implements: TSC_MMI_upper_tester_confirm_receive_reject_resources
-    :param desc: Did Implementation Under Test (IUT) receive Connection refused 'Insufficient Resources' 0x0004 error.
+    description: Did Implementation Under Test (IUT) receive Connection refused 'Insufficient Resources' 0x0004 error.
                  Click Yes if it is, otherwise click No.
-    :return:
     """
     stack = get_stack()
 
@@ -233,23 +221,21 @@ def hdl_wid_48(desc):
     return not stack.l2cap.is_connected(0)
 
 
-def hdl_wid_51(desc):
+def hdl_wid_51(_: WIDParams):
     """
     Implements: TSC_MMI_iut_enable_le_connection
-    :param desc: Initiate or create LE ACL connection to the PTS.
-    :return:
+    description: Initiate or create LE ACL connection to the PTS.
     """
     btp.gap_conn()
 
     return True
 
 
-def hdl_wid_52(desc):
+def hdl_wid_52(_: WIDParams):
     """
     Implements: TSC_MMI_upper_tester_confirm_receive_reject_invalid_source_cid
-    :param desc: Did Implementation Under Test (IUT) receive Connection refused 'Invalid Source CID' 0x0009 error.
+    description: Did Implementation Under Test (IUT) receive Connection refused 'Invalid Source CID' 0x0009 error.
                  And does not send anything over refuse LE data channel. Click Yes if it is, otherwise click No.
-    :return:
     """
     stack = get_stack()
 
@@ -257,12 +243,11 @@ def hdl_wid_52(desc):
     return not stack.l2cap.is_connected(0)
 
 
-def hdl_wid_53(desc):
+def hdl_wid_53(_: WIDParams):
     """
     Implements: TSC_MMI_upper_tester_confirm_receive_reject_source_cid_already_allocated
-    :param desc: Did Implementation Under Test (IUT) receive Connection refused 'Source CID Already Allocated' 0x000A
+    description: Did Implementation Under Test (IUT) receive Connection refused 'Source CID Already Allocated' 0x000A
                  error. And does not send anything over refuse LE data channel. Click Yes if it is, otherwise click No.
-    :return:
     """
     stack = get_stack()
 
@@ -271,12 +256,11 @@ def hdl_wid_53(desc):
     return not stack.l2cap.is_connected(0)
 
 
-def hdl_wid_54(desc):
+def hdl_wid_54(_: WIDParams):
     """
     Implements: TSC_MMI_upper_tester_confirm_receive_reject_unacceptable_parameters
-    :param desc: Did Implementation Under Test (IUT) receive Connection refused 'Unacceptable Parameters' 0x000B error.
+    description: Did Implementation Under Test (IUT) receive Connection refused 'Unacceptable Parameters' 0x000B error.
                  Click Yes if it is, otherwise click No.
-    :return:
     """
     stack = get_stack()
 
@@ -284,11 +268,10 @@ def hdl_wid_54(desc):
     return not stack.l2cap.is_connected(0)
 
 
-def hdl_wid_55(desc):
+def hdl_wid_55(_: WIDParams):
     """
-    :param desc: Upper Tester command IUT to send LE data packet to the PTS with
+    description: Upper Tester command IUT to send LE data packet to the PTS with
     larger or equal to the TSPX_tester_mps and smaller or equal to the TSPX_tester_mtu values.
-    :return:
 
     """
     stack = get_stack()
@@ -301,11 +284,10 @@ def hdl_wid_55(desc):
     return True
 
 
-def hdl_wid_56(desc):
+def hdl_wid_56(_: WIDParams):
     """
     Implements: TSC_MMI_tester_enable_connection
-    :param desc: Action: Place the IUT in connectable mode.
-    :return:
+    description: Action: Place the IUT in connectable mode.
     """
     stack = btp.get_stack()
     btp.gap_set_conn()
@@ -315,7 +297,7 @@ def hdl_wid_56(desc):
     return True
 
 
-def hdl_wid_57(desc):
+def hdl_wid_57(_: WIDParams):
     stack = get_stack()
     l2cap = stack.l2cap
     channel = l2cap.chan_lookup_id(0)
@@ -328,19 +310,19 @@ def hdl_wid_57(desc):
     return True
 
 
-def hdl_wid_58(desc):
+def hdl_wid_58(_: WIDParams):
     return True
 
 
-def hdl_wid_59(desc):
+def hdl_wid_59(_: WIDParams):
     btp.gap_conn_param_update(btp.pts_addr_get(), btp.pts_addr_type_get(),
                               720, 864, 0, 400)
     return True
 
 
-def hdl_wid_60(desc):
+def hdl_wid_60(params: WIDParams):
     # use (\w{4,}) to avoid catching word "L2CAP"
-    control_data = re.search(r"(\w{4,})([A-F0-9]+)", desc).group(0)
+    control_data = re.search(r"(\w{4,})([A-F0-9]+)", params.description).group(0)
     stack = get_stack()
     l2cap = stack.l2cap
 
@@ -354,7 +336,7 @@ def hdl_wid_60(desc):
     return False
 
 
-def hdl_wid_100(desc):
+def hdl_wid_100(_: WIDParams):
     l2cap = get_stack().l2cap
     for channel in l2cap.channels:
         try:
@@ -367,7 +349,7 @@ def hdl_wid_100(desc):
     return True
 
 
-def hdl_wid_101(desc):
+def hdl_wid_101(_: WIDParams):
     l2cap = get_stack().l2cap
     for channel in l2cap.channels:
         try:
@@ -377,12 +359,12 @@ def hdl_wid_101(desc):
     return True
 
 
-def hdl_wid_102(desc):
+def hdl_wid_102(_: WIDParams):
     btp.l2cap_credits(0)
     return True
 
 
-def hdl_wid_103(desc):
+def hdl_wid_103(_: WIDParams):
     stack = get_stack()
     chan = stack.l2cap.chan_lookup_id(0)
     time.sleep(10)
@@ -391,32 +373,32 @@ def hdl_wid_103(desc):
     return True
 
 
-def hdl_wid_104(desc):
+def hdl_wid_104(_: WIDParams):
     stack = get_stack()
     stack.l2cap.clear_data()
     return True
 
 
-def hdl_wid_105(desc):
+def hdl_wid_105(_: WIDParams):
     logging.error("Updating MPS size is not supported.")
     return False
 
 
-def hdl_wid_106(desc):
+def hdl_wid_106(_: WIDParams):
     return True
 
 
-def hdl_wid_107(desc):
+def hdl_wid_107(_: WIDParams):
     return True
 
 
-def hdl_wid_108(desc):
+def hdl_wid_108(_: WIDParams):
     return True
 
 
-def hdl_wid_111(desc):
+def hdl_wid_111(params: WIDParams):
     pattern = re.compile(r"\s([0-9]+)\s")
-    data = pattern.findall(desc)
+    data = pattern.findall(params.description)
     if not data:
         logging.error("%s parsing error", hdl_wid_111.__name__)
         return False
@@ -443,7 +425,7 @@ def hdl_wid_111(desc):
     return True
 
 
-def hdl_wid_112(desc):
+def hdl_wid_112(_: WIDParams):
     stack = get_stack()
     l2cap = stack.l2cap
 
@@ -473,39 +455,39 @@ def hdl_wid_112(desc):
     return True
 
 
-def hdl_wid_135(desc):
+def hdl_wid_135(_: WIDParams):
     return True
 
 
-def hdl_wid_136(desc):
+def hdl_wid_136(_: WIDParams):
     return True
 
 
-def hdl_wid_137(desc):
+def hdl_wid_137(_: WIDParams):
     return True
 
 
-def hdl_wid_251(desc):
+def hdl_wid_251(_: WIDParams):
     # TODO: Fix to actually verify result of 'Insufficient Encryption' 0x0008 error
     return get_stack().l2cap.wait_for_disconnection(0, 30)
 
 
-def hdl_wid_252(desc):
+def hdl_wid_252(_: WIDParams):
     # TODO: Fix to actually verify result of 'Insufficient Authentication' 0x0005 error
     return get_stack().l2cap.wait_for_disconnection(0, 30)
 
 
-def hdl_wid_253(desc):
+def hdl_wid_253(_: WIDParams):
     # TODO: Fix to actually verify result of 'Insufficient Authorization' 0x0006 error
     return get_stack().l2cap.wait_for_disconnection(0, 30)
 
 
-def hdl_wid_254(desc):
+def hdl_wid_254(_: WIDParams):
     # TODO: Fix to actually verify result of 'Insufficient Encryption Key Size' 0x0007 error
     return get_stack().l2cap.wait_for_disconnection(0, 30)
 
 
-def hdl_wid_255(desc):
+def hdl_wid_255(_: WIDParams):
     stack = get_stack()
     l2cap = stack.l2cap
 
@@ -513,12 +495,12 @@ def hdl_wid_255(desc):
     return True
 
 
-def hdl_wid_256(desc):
+def hdl_wid_256(_: WIDParams):
     btp.gap_wait_for_connection()
     return True
 
 
-def hdl_wid_257(desc):
+def hdl_wid_257(_: WIDParams):
     stack = get_stack()
     l2cap = stack.l2cap
     channel = l2cap.chan_lookup_id(0)
@@ -530,7 +512,7 @@ def hdl_wid_257(desc):
     return True
 
 
-def hdl_wid_258(desc):
+def hdl_wid_258(_: WIDParams):
     stack = get_stack()
     l2cap = stack.l2cap
     channel = l2cap.chan_lookup_id(0)
@@ -542,11 +524,11 @@ def hdl_wid_258(desc):
     return True
 
 
-def hdl_wid_259(desc):
+def hdl_wid_259(_: WIDParams):
     return True
 
 
-def hdl_wid_260(desc):
+def hdl_wid_260(_: WIDParams):
     # Verify if IUT received "Some connections refused –
     # insufficient resources available"
     # Verify if IUT received "All connections refused –
@@ -561,7 +543,7 @@ def hdl_wid_260(desc):
     return result
 
 
-def hdl_wid_261(desc):
+def hdl_wid_261(_: WIDParams):
     time.sleep(2)
     stack = get_stack()
     chan = stack.l2cap.chan_lookup_id(0)
@@ -571,7 +553,7 @@ def hdl_wid_261(desc):
     return size == 2 * [chan.our_mtu]
 
 
-def hdl_wid_262(desc):
+def hdl_wid_262(_: WIDParams):
     stack = get_stack()
     l2cap = stack.l2cap
     channel = l2cap.chan_lookup_id(0)
@@ -584,8 +566,8 @@ def hdl_wid_262(desc):
     return True
 
 
-def hdl_wid_267(desc):
-    # PTS want us to use specific Source CID but we can just ignore it as it
+def hdl_wid_267(_: WIDParams):
+    # PTS want us to use specific Source CID, but we can just ignore it as it
     # should not require that
     stack = get_stack()
     l2cap = stack.l2cap
@@ -594,8 +576,8 @@ def hdl_wid_267(desc):
     return True
 
 
-def hdl_wid_268(desc):
-    # PTS ask to disconnect channel with specified SCID and DCID but we can just
+def hdl_wid_268(_: WIDParams):
+    # PTS ask to disconnect channel with specified SCID and DCID, but we can just
     # disconnect last connected channel (1) to be conforming with TS
 
     btp.l2cap_disconn(1)
@@ -606,16 +588,17 @@ def hdl_wid_268(desc):
     return True
 
 
-def hdl_wid_270(desc):
+def hdl_wid_270(_: WIDParams):
     return True
 
 
-def hdl_wid_271(desc):
+def hdl_wid_271(_: WIDParams):
     disconnected = get_stack().l2cap.wait_for_disconnection(0, 30)
     disconnected &= get_stack().l2cap.wait_for_disconnection(1, 30)
     return disconnected
 
-def hdl_wid_20001(desc):
+
+def hdl_wid_20001(_: WIDParams):
     stack = btp.get_stack()
     btp.gap_set_conn()
     btp.gap_set_gendiscov()
@@ -623,10 +606,10 @@ def hdl_wid_20001(desc):
     return True
 
 
-def hdl_wid_20100(desc):
+def hdl_wid_20100(_: WIDParams):
     btp.gap_conn()
     return True
 
 
-def hdl_wid_20128(desc):
+def hdl_wid_20128(_: WIDParams):
     return True

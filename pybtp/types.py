@@ -14,6 +14,7 @@
 #
 
 from binascii import unhexlify
+from typing import NamedTuple
 
 from pybtp import defs
 
@@ -251,3 +252,9 @@ class L2CAPConnectionResponse:
     insufficient_authentication = 1
     insufficient_authorization = 2
     insufficient_encryption_key_size = 3
+
+
+class WIDParams(NamedTuple):
+    wid: int
+    description: str
+    test_case_name: str

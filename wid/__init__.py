@@ -12,7 +12,7 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
-
+from typing import NamedTuple
 
 from .l2cap import l2cap_wid_hdl, l2cap_wid_hdl_one_ecfc_chan, l2cap_wid_hdl_hold_credit
 from .mesh import mesh_wid_hdl

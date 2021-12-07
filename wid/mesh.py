@@ -19,11 +19,10 @@ import sys
 import time
 
 from pybtp import btp
-from pybtp.types import Perm, MeshVals
+from pybtp.types import Perm, MeshVals, WIDParams
 from ptsprojects.stack import get_stack
 
 # Mesh ATS ver. 1.0
-
 log = logging.debug
 
 
@@ -32,7 +31,6 @@ def hdl_pending_mesh_wids(wid, test_case_name, description):
         test_case_name)
     stack = get_stack()
     module = sys.modules[__name__]
-    lt2 = bool('LT2' in test_case_name)
 
     actions = stack.synch.perform_synch(wid, test_case_name, description)
     if not actions:
@@ -40,7 +38,7 @@ def hdl_pending_mesh_wids(wid, test_case_name, description):
 
     for action in actions:
         handler = getattr(module, "hdl_wid_%d" % action.wid)
-        result = handler(action.description, lt2)
+        result = handler(WIDParams(wid, description, test_case_name))
         stack.synch.prepare_pending_response(action.test_case,
                                              result, action.delay)
 
@@ -52,14 +50,12 @@ def mesh_wid_hdl(wid, description, test_case_name):
         test_case_name)
     module = sys.modules[__name__]
 
-    lt2 = bool('LT2' in test_case_name)
-
     try:
         handler = getattr(module, "hdl_wid_%d" % wid)
 
         stack = get_stack()
         if not stack.synch or not stack.synch.is_required_synch(test_case_name, wid):
-            return handler(description, lt2)
+            return handler(WIDParams(wid, description, test_case_name))
 
         response = hdl_pending_mesh_wids(wid, test_case_name, description)
 
@@ -74,13 +70,12 @@ def mesh_wid_hdl(wid, description, test_case_name):
 
 
 # wid handlers section begin
-def hdl_wid_6(desc, lt2):
+def hdl_wid_6(params: WIDParams):
     """
     Implements: SEND_ADV_BEACON
-    :param desc: Advertising Mesh Beacon Packet. Wait for other side to be
+    description: Advertising Mesh Beacon Packet. Wait for other side to be
                  ready and click OK to broadcast Mesh beacon packet, otherwise
                  click Cancel.
-    :return:
     """
     stack = get_stack()
     attention_duration = 0x00
@@ -96,7 +91,7 @@ def hdl_wid_6(desc, lt2):
         if stack.mesh.provisioning_in_progress.data:
             stack.mesh.wait_for_prov_link_close(timeout=90)
 
-        if lt2:
+        if bool('LT2' in params.test_case_name):
             stack.mesh.address_lt2 = stack.mesh.address_lt1 + 1
             btp.mesh_provision_adv(stack.mesh.dev_uuid_lt2, stack.mesh.address_lt2, attention_duration)
         else:
@@ -105,16 +100,15 @@ def hdl_wid_6(desc, lt2):
     return True
 
 
-def hdl_wid_7(desc, lt2):
+def hdl_wid_7(params: WIDParams):
     """
     Implements: ENTER_NUMBER
-    :param desc: Please enter the number:
-    :return:
+    description: Please enter the number:
     """
     stack = get_stack()
     pattern = re.compile(
         r'(the\snumber):\s\s+([0-9]+)')
-    params = pattern.findall(desc)
+    params = pattern.findall(params.description)
     if not params:
         logging.error("%s parsing error", hdl_wid_7.__name__)
         ret = stack.mesh.oob_data.data
@@ -130,17 +124,16 @@ def hdl_wid_7(desc, lt2):
     return ret
 
 
-def hdl_wid_8(desc, lt2):
+def hdl_wid_8(params: WIDParams):
     """
     Implements: ENTER_STRING
-    :param desc: Please enter string:
-    :return:
+    description: Please enter string:
     """
     stack = get_stack()
 
     pattern = re.compile(
         r'(string):\s\s+([a-zA-Z]+).')
-    params = pattern.findall(desc)
+    params = pattern.findall(params.description)
     if not params:
         logging.error("%s parsing error", hdl_wid_7.__name__)
         ret = stack.mesh.oob_data.data.decode('UTF-8')
@@ -155,11 +148,11 @@ def hdl_wid_8(desc, lt2):
     stack.mesh.oob_action.data = None
     return ret
 
-def hdl_wid_10(desc, lt2):
+
+def hdl_wid_10(_: WIDParams):
     """
     Implements:
-    :param desc: Please twist the number of times:
-    :return:
+    description: Please twist the number of times:
     """
     stack = get_stack()
     ret = stack.mesh.oob_data.data
@@ -168,13 +161,13 @@ def hdl_wid_10(desc, lt2):
     stack.mesh.oob_action.data = None
     return ret
 
-def hdl_wid_12(desc, lt2):
+
+def hdl_wid_12(_: WIDParams):
     """
     Implements: RE_PROVISIONING_NODE
-    :param desc: There is no shared security information. Please start
+    description: There is no shared security information. Please start
                  provisioning from a remote or an additional provisioner side.
                  Remove the remote side's security information if any.
-    :return:
     """
     stack = get_stack()
 
@@ -188,13 +181,12 @@ def hdl_wid_12(desc, lt2):
     return True
 
 
-def hdl_wid_13(desc, lt2):
+def hdl_wid_13(_: WIDParams):
     """
     Implements: RE_PROVISIONING_PROVISIONER
-    :param desc: There is no shared security information. Please remove any
+    description: There is no shared security information. Please remove any
                  security information if any. PTS is waiting for beacon to
                  start provisioning from IUT with UUID value indicated in 'TSPX_device_uuid'
-    :return:
     """
     stack = get_stack()
 
@@ -205,26 +197,24 @@ def hdl_wid_13(desc, lt2):
     return True
 
 
-def hdl_wid_15(desc, lt2):
+def hdl_wid_15(_: WIDParams):
     return True
 
 
-def hdl_wid_17(desc, lt2):
+def hdl_wid_17(_: WIDParams):
     """
     Implements: RECEIVED_NETWORK_DATA
-    :param desc: PTS will send a packet to the IUT. Please click OK when ready
+    description: PTS will send a packet to the IUT. Please click OK when ready
                  to receive a packet.
-    :return:
     """
     btp.mesh_store_net_data()
     return True
 
 
-def hdl_wid_18(desc, lt2):
+def hdl_wid_18(params: WIDParams):
     """
     Implements: CONFIRM_NETWORK_DATA
-    :param desc: Please confirm the following network packet was received: %s
-    :return:
+    description: Please confirm the following network packet was received: %s
     """
     stack = get_stack()
 
@@ -239,7 +229,7 @@ def hdl_wid_18(desc, lt2):
     # to be received
     pattern = re.compile(r'(TTL|CTL|SRC|DST|TransportPDU):'
                          r'\s+\[([0][xX][0-9a-fA-F]+)]')
-    params = pattern.findall(desc)
+    params = pattern.findall(params.description)
     if not params:
         logging.error("%s parsing error", hdl_wid_18.__name__)
         return False
@@ -261,18 +251,17 @@ def hdl_wid_18(desc, lt2):
     return False
 
 
-def hdl_wid_19(desc, lt2):
+def hdl_wid_19(params: WIDParams):
     """
     Implements: SEND_NETWORK_DATA
-    :param desc: Please send a network packet with maximum TransportPDU size
+    description: Please send a network packet with maximum TransportPDU size
                  with the following network header: %s
-    :return:
     """
 
     # This pattern is matching Time to Live (TTL) value, Source (SRC) and
     # Destination (DST) of the network packet to be sent
     pattern = re.compile(r'(TTL|SRC|DST):\s+\[([0][xX][0-9a-fA-F]+)]')
-    params = pattern.findall(desc)
+    params = pattern.findall(params.description)
     if not params:
         logging.error("%s parsing error", hdl_wid_19.__name__)
         return False
@@ -284,29 +273,26 @@ def hdl_wid_19(desc, lt2):
     return True
 
 
-def hdl_wid_20(desc, lt2):
+def hdl_wid_20(_: WIDParams):
     """
     Implements: ENTER_GROUP_ADDRESS
-    :param desc: Please enter a valid group address the IUT knows
-    :return:
+    description: Please enter a valid group address the IUT knows
     """
     return 'C000'
 
 
-def hdl_wid_21(desc, lt2):
+def hdl_wid_21(_: WIDParams):
     """
     Implements: ENTER_VIRTUAL_ADDRESS
-    :param desc: Please enter a valid virtual address the IUT knows
-    :return:
+    description: Please enter a valid virtual address the IUT knows
     """
     return '8000'
 
 
-def hdl_wid_22(desc, lt2):
+def hdl_wid_22(params: WIDParams):
     """
     Implements:
-    :param desc: Please bind an AppKey to a Model Id = %d for the testing.
-    :return:
+    description: Please bind an AppKey to a Model Id = %d for the testing.
     """
     stack = get_stack()
 
@@ -315,17 +301,17 @@ def hdl_wid_22(desc, lt2):
 
     pattern = re.compile(
         r'(Model\sId)\s=\s+([0-9a-fA-F]+)')
-    params = pattern.findall(desc)
-    if not params:
+    command_params = pattern.findall(params.description)
+    if not command_params:
         logging.error("%s parsing error", hdl_wid_22.__name__)
         return
 
-    params = dict(params)
+    command_params = dict(command_params)
 
-    model_id = int(params.get('Model Id'), 16)
+    model_id = int(command_params.get('Model Id'), 16)
     app_key_idx = 0x0000
 
-    if len(stack.mesh.nodes_expected.data) == 2 and lt2:
+    if len(stack.mesh.nodes_expected.data) == 2 and bool('LT2' in params.test_case_name):
         btp.mesh_cfg_model_app_bind(stack.mesh.net_idx, stack.mesh.address_lt2, stack.mesh.el_address, app_key_idx,
                                     model_id)
     else:
@@ -335,18 +321,17 @@ def hdl_wid_22(desc, lt2):
     return stack.mesh.status == 0x00
 
 
-def hdl_wid_23(desc, lt2):
+def hdl_wid_23(params: WIDParams):
     """
     Implements: SEND_SEGMENTED_DATA
-    :param desc: Please send a segmented message encrypted with an application
+    description: Please send a segmented message encrypted with an application
                  key with source address 0x%04X and destination address 0x%04X
-    :return:
     """
 
     # This pattern is matching source and destination addresses
     pattern = re.compile(
         r'(source\saddress|destination\saddress)\s+([0][xX][0-9a-fA-F]+)')
-    params = pattern.findall(desc)
+    params = pattern.findall(params.description)
     if not params:
         logging.error("%s parsing error", hdl_wid_23.__name__)
         return False
@@ -359,11 +344,10 @@ def hdl_wid_23(desc, lt2):
     return True
 
 
-def hdl_wid_24(desc, lt2):
+def hdl_wid_24(_: WIDParams):
     """
     Implements: CONFIRM_CLOSE_LINK
-    :param desc: Please confirm Link Close was received
-    :return:
+    description: Please confirm Link Close was received
     """
     stack = get_stack()
 
@@ -378,11 +362,10 @@ def hdl_wid_24(desc, lt2):
     return False
 
 
-def hdl_wid_26(desc, lt2):
+def hdl_wid_26(_: WIDParams):
     """
     Implements: CONFIRM_RFU_BEARER_OPCODE
-    :param desc: Please confirm invalid bearer opcode
-    :return:
+    description: Please confirm invalid bearer opcode
     """
     stack = get_stack()
 
@@ -392,12 +375,11 @@ def hdl_wid_26(desc, lt2):
     return rsp
 
 
-def hdl_wid_30(desc, lt2):
+def hdl_wid_30(params: WIDParams):
     """
     Implements: CONFIRM_NOT_NETWORK_DATA
-    :param desc: Please confirm the IUT has ignored the following network
+    description: Please confirm the IUT has ignored the following network
                  packet = %s
-    :return:
     """
     stack = get_stack()
 
@@ -411,7 +393,7 @@ def hdl_wid_30(desc, lt2):
     # to be received
     pattern = re.compile(r'(TTL|CTL|SRC|DST|TransportPDU)\\:'
                          r'\s+\[([0][xX][0-9a-fA-F]+)\\]')
-    params = pattern.findall(desc)
+    params = pattern.findall(params.description)
     if not params:
         logging.error("%s parsing error", hdl_wid_30.__name__)
         return False
@@ -436,12 +418,11 @@ def hdl_wid_30(desc, lt2):
     return True
 
 
-def hdl_wid_31(desc, lt2):
+def hdl_wid_31(_: WIDParams):
     """
     Implements: CONFIRM_TIMER_EXPIRED
-    :param desc: Please confirm that IUT's incomplete timer is expired.
-                 Click OK to proceed. Otherwise click Cancel.
-    :return:
+    description: Please confirm that IUT's incomplete timer is expired.
+                 Click OK to proceed. Otherwise, click Cancel.
     """
     stack = get_stack()
 
@@ -450,12 +431,11 @@ def hdl_wid_31(desc, lt2):
     return False
 
 
-def hdl_wid_33(desc, lt2):
+def hdl_wid_33(_: WIDParams):
     """
     Implements:
-    :param desc: 'Please start create link and provisioning.
-                  PTS will broadcast unprovisioned device beacon with UUID = TSPX_device_uuid value"
-    :return:
+    description: 'Please start create link and provisioning.
+                  PTS will broadcast unprovisioned device beacon with UUID = TSPX_device_uuid value'
     """
     stack = get_stack()
     uuid = stack.mesh.dev_uuid
@@ -473,20 +453,18 @@ def hdl_wid_33(desc, lt2):
     return True
 
 
-def hdl_wid_34(desc, lt2):
+def hdl_wid_34(_: WIDParams):
     """
-    Implements:
-    :param desc: 'Please confirm IUT did not receive link ack so it will fail. Click Yes if it is not received. Otherwise click No.'
-    :return:
+    Implements: description: 'Please confirm IUT did not receive link ack, so it will fail. Click Yes if it is not
+    received. Otherwise, click No.'
     """
     return True
 
 
-def hdl_wid_35(desc, lt2):
+def hdl_wid_35(params: WIDParams):
     """
     Implements: CONFIRM_TRANSPORT_DATA
-    :param desc: Please confirm the following transport packet was received: %s
-    :return:
+    description: Please confirm the following transport packet was received: %s
     """
     stack = get_stack()
 
@@ -498,7 +476,7 @@ def hdl_wid_35(desc, lt2):
     # This pattern is matching Time to Live (TTL) value, Control (CTL),
     # Source (SRC) and Destination (DST)
     pattern = re.compile(r'(TTL|CTL|SRC|DST):\s+\[([0][xX][0-9a-fA-F]+)]')
-    params = pattern.findall(desc)
+    params = pattern.findall(params.description)
     if not params:
         logging.error("%s parsing error", hdl_wid_35.__name__)
         return False
@@ -520,18 +498,17 @@ def hdl_wid_35(desc, lt2):
     return False
 
 
-def hdl_wid_36(desc, lt2):
+def hdl_wid_36(params: WIDParams):
     """
     Implements: SEND_UNSEGMENTED_DATA
-    :param desc: Please send the unsegmented packet encrypted with application
+    description: Please send the unsegmented packet encrypted with application
                  key with source address 0x%04X and destination address 0x%04X
-    :return:
     """
 
     # This pattern is matching source and destination addresses
     pattern = re.compile(
         r'(source\saddress|destination\saddress)\s+([0][xX][0-9a-fA-F]+)')
-    params = pattern.findall(desc)
+    params = pattern.findall(params.description)
     if not params:
         logging.error("%s parsing error", hdl_wid_36.__name__)
         return False
@@ -544,24 +521,22 @@ def hdl_wid_36(desc, lt2):
     return True
 
 
-def hdl_wid_37(desc, lt2):
+def hdl_wid_37(_: WIDParams):
     """
     Implements: IUT_CONFIRM_ATTENTION_TIMER_STATE
-    :param desc: Please confirm IUT Attention Timer state of its primary
+    description: Please confirm IUT Attention Timer state of its primary
                  Element is 0x00.
-    :return:
     """
     stack = get_stack()
 
     return stack.mesh.wait_for_prov_link_close(90)
 
 
-def hdl_wid_38(desc, lt2):
+def hdl_wid_38(_: WIDParams):
     """
     Implements: ENTER_REPLAY_PROTECTION_SIZE
-    :param desc: Please clear replay protection list. Please enter size of
+    description: Please clear replay protection list. Please enter size of
                  replay protection in decimal format.
-    :return:
     """
     stack = get_stack()
     btp.mesh_rpl_clear()
@@ -569,18 +544,17 @@ def hdl_wid_38(desc, lt2):
     return str(stack.mesh.crpl_size)
 
 
-def hdl_wid_39(desc, lt2):
+def hdl_wid_39(params: WIDParams):
     """
     Implements: CONFIRM_TRANSPORT_SEGMENTDATA
-    :param desc: Please confirm you can decrypt the transport packet with
+    description: Please confirm you can decrypt the transport packet with
                  destination address : 0x%04X
-    :return:
     """
     stack = get_stack()
 
     # This pattern is destination addresses
     pattern = re.compile(r'(address)\s+:\s+([0][xX][0-9a-fA-F]+)')
-    params = pattern.findall(desc)
+    params = pattern.findall(params.description)
     if not params:
         logging.error("%s parsing error", hdl_wid_39.__name__)
         return False
@@ -600,39 +574,36 @@ def hdl_wid_39(desc, lt2):
     return True
 
 
-def hdl_wid_40(desc, lt2):
+def hdl_wid_40(_: WIDParams):
     """
     Implements: ASK_MODEL_SUPPORT
-    :param desc: Please click Yes if Configuration model and Health model are
+    description: Please click Yes if Configuration model and Health model are
                  supported.
-    :return:
     """
     return True
 
 
-def hdl_wid_43(desc, lt2):
+def hdl_wid_43(_: WIDParams):
     """
     Implements: SEND_DATA_INVALID_KEY
-    :param desc: PTS will send a message with invalid key. No response is
+    description: PTS will send a message with invalid key. No response is
                  expected.
-    :return:
     """
     return True
 
 
-def hdl_wid_44(desc, lt2):
+def hdl_wid_44(params: WIDParams):
     """
     Implements: SEND_SEGMENTED_DATA_VIRTUAL
-    :param desc: Please send a segmented message encrypted with an application
+    description: Please send a segmented message encrypted with an application
                  key with source address 0x%04X and destination label %s
                  (address 0x%04X)
-    :return:
     """
 
     # This pattern is matching source and destination label addresses
     pattern = re.compile(
         r'(source\saddress|\(address)\s+([0][xX][0-9a-fA-F]+)')
-    params = pattern.findall(desc)
+    params = pattern.findall(params.description)
     if not params:
         logging.error("%s parsing error", hdl_wid_44.__name__)
         return False
@@ -645,22 +616,20 @@ def hdl_wid_44(desc, lt2):
     return True
 
 
-def hdl_wid_45(desc, lt2):
+def hdl_wid_45(_: WIDParams):
     """
     Implements: IUT_CLEAR_REPLAY_PROTECTION_CACHE
-    :param desc: Please clear replay protection list cache.
-    :return:
+    description: Please clear replay protection list cache.
     """
     btp.mesh_rpl_clear()
     return True
 
 
-def hdl_wid_46(desc, lt2):
+def hdl_wid_46(_: WIDParams):
     """
     Implements: IUT_SEND_UNPROVISONED_BEACONS
-    :param desc: Please order IUT to send unprovisioned device beacons with
+    description: Please order IUT to send unprovisioned device beacons with
                  UUID set to TSPX_device_uuid.
-    :return:
     """
     stack = get_stack()
 
@@ -673,17 +642,16 @@ def hdl_wid_46(desc, lt2):
     return True
 
 
-def hdl_wid_51(desc, lt2):
+def hdl_wid_51(params: WIDParams):
     """
-    :param desc: Please confirm you can decode the control transport packet with
+    description: Please confirm you can decode the control transport packet with
                  destination address : 0x%04X
-    :return:
     """
     stack = get_stack()
 
     # This pattern is destination addresses
     pattern = re.compile(r'(address)\s+:\s+([0][xX][0-9a-fA-F]+)')
-    params = pattern.findall(desc)
+    params = pattern.findall(params.description)
     if not params:
         logging.error("%s parsing error", hdl_wid_39.__name__)
         return False
@@ -703,12 +671,11 @@ def hdl_wid_51(desc, lt2):
     return True
 
 
-def hdl_wid_81(desc, lt2):
+def hdl_wid_81(_: WIDParams):
     """
     Implements: IUT_ADVERTISE_UNPROVISIONED_STATE
-    :param desc: Please order IUT to advertise Connectable Advertising PDU for
+    description: Please order IUT to advertise Connectable Advertising PDU for
                  Mesh Provisioning Service.
-    :return:
     """
     stack = get_stack()
     if stack.mesh.is_provisioned.data:
@@ -720,37 +687,34 @@ def hdl_wid_81(desc, lt2):
     return True
 
 
-def hdl_wid_85(desc, lt2):
+def hdl_wid_85(_: WIDParams):
     return True
 
 
-def hdl_wid_90(desc, lt2):
+def hdl_wid_90(_: WIDParams):
     """
     Implements: IUT_SEND_SECURE_NETWORK_BEACON
-    :param desc: Please order IUT to send secure network beacon to the PTS.
+    description: Please order IUT to send secure network beacon to the PTS.
                  PTS will wait for
-    :return:
     """
     stack = get_stack()
 
     return bool(stack.mesh.is_provisioned.data)
 
 
-def hdl_wid_94(desc, lt2):
+def hdl_wid_94(_: WIDParams):
     """
     Implements: IUT_SEND_SECURE_NETWORK_BEACON_WITH_FLAGS
-    :param desc: Please order IUT to send a secure network beacon with Key
+    description: Please order IUT to send a secure network beacon with Key
                  Refresh Flag set to %d and IV Update Flag set to %d
-    :return:
     """
     return True
 
 
-def hdl_wid_103(desc, lt2):
+def hdl_wid_103(_: WIDParams):
     """
     Implements: CONFIRM_INVALID_DATA
-    :param desc: Please confirm the invalid data is not written to handle = %s.
-    :return:
+    description: Please confirm the invalid data is not written to handle = %s.
     """
     # Mesh Provisioning data in
     attr = btp.gatts_get_attrs(type_uuid='2adb')
@@ -772,7 +736,7 @@ def hdl_wid_103(desc, lt2):
     return True
 
 
-def hdl_wid_104(desc, lt2):
+def hdl_wid_104(_: WIDParams):
     stack = get_stack()
 
     ret = stack.gap.wait_for_connection(30)
@@ -782,25 +746,23 @@ def hdl_wid_104(desc, lt2):
     return ret
 
 
-def hdl_wid_201(desc, lt2):
+def hdl_wid_201(_: WIDParams):
     """
     Implements: IUT_GENERATE_SECURE_NETWORK_BEACON
-    :param desc: Order IUT to generate a non-connectable Secure Network beacon
+    description: Order IUT to generate a non-connectable Secure Network beacon
                  (Mesh Beacon with Beacon type = 0x01).
-    :return:
     """
     stack = get_stack()
 
     return bool(stack.mesh.is_provisioned.data)
 
 
-def hdl_wid_202(desc, lt2):
+def hdl_wid_202(_: WIDParams):
     """
     Implements: IUT_GENERATE_UPDATE_IN_PROGRESS_SECURE_NETWORK_BEACON
-    :param desc: Order IUT to enter the 'IV Update in Progress' state and set
+    description: Order IUT to enter the 'IV Update in Progress' state and set
                  the 'IV Update in progress' flag in the secure network beacon.
                  Click OK when ready.
-    :return:
     """
 
     btp.mesh_iv_update_test_mode(True)
@@ -808,51 +770,47 @@ def hdl_wid_202(desc, lt2):
     return True
 
 
-def hdl_wid_203(desc, lt2):
+def hdl_wid_203(_: WIDParams):
     """
     Implements: IUT_ACCEPT_AND_SEND_IV_INDEX42_SECURE_NETWORK_BEACON
-    :param desc: Order IUT to power up and accept secure network beacon with IV
+    description: Order IUT to power up and accept secure network beacon with IV
                  index = n+42 and the IV update flag set to 0, and to transmit
                  secure network beacons with the received IV values. Click OK
                  when IUT is ready.
-    :return:
     """
     stack = get_stack()
 
     return bool(stack.mesh.is_provisioned.data)
 
 
-def hdl_wid_204(desc, lt2):
+def hdl_wid_204(_: WIDParams):
     """
     Implements: IUT_ACCEPT_MESH_MESSAGE_IN_PROGRESS_STATE
-    :param desc: Click OK when IUT is ready to accept Mesh messages with old IV
+    description: Click OK when IUT is ready to accept Mesh messages with old IV
                  Index (m - 1) and new IV index (m).
-    :return:
     """
     return True
 
 
-def hdl_wid_205(desc, lt2):
+def hdl_wid_205(_: WIDParams):
     """
     Implements: IUT_SEND_SEGMENTATION_MESH_MESSAGE_IN_PROGRESS_STATE
-    :param desc: Order IUT to prepare large size of composition data that can
+    description: Order IUT to prepare large size of composition data that can
                  be sent as fragmented packets to the PTS. During IV Update in
                  Progress state PTS will hold acknowledgment response and
                  beacon IV update in progress flag on. Click OK when it is
                  ready.
-    :return:
     """
     return True
 
 
-def hdl_wid_210(desc, lt2):
+def hdl_wid_210(_: WIDParams):
     """
     Implements: IUT_REMOVE_SECURITY_INFO
-    :param desc: Order IUT to remove all shared security information since this
+    description: Order IUT to remove all shared security information since this
                  test case is run on different network other than primary
                  network. PTS will start provisioning IUT to different subnet.
                  Click OK when ready.
-    :return:
     """
     stack = get_stack()
 
@@ -863,25 +821,23 @@ def hdl_wid_210(desc, lt2):
     return False
 
 
-def hdl_wid_212(desc, lt2):
+def hdl_wid_212(_: WIDParams):
     """
     Implements:
-    :param desc: This is Lower Tester 2 which is in the reject list filter and
+    description: This is Lower Tester 2 which is in the reject list filter and
                  should not receive any update. Click OK to continue monitoring
                  for any beacon until timeout.
-    :return:
     """
     return True
 
 
-def hdl_wid_216(desc, lt2):
+def hdl_wid_216(_: WIDParams):
     """
     Implements: IUT_GENERATE_SECURE_NETWORK_BEACON_LESS96
-    :param desc: Please make sure IUT has performed an IV Update procedure less
+    description: Please make sure IUT has performed an IV Update procedure less
                  than 96 hours ago. PTS will verify IUT does not perform
                  another update. Order IUT to generate non-connectable Secure
                  Network beacons (Mesh Beacon with Beacon type = 0x01).
-    :return:
     """
 
     btp.mesh_iv_update_test_mode(False)
@@ -889,14 +845,13 @@ def hdl_wid_216(desc, lt2):
     return True
 
 
-def hdl_wid_217(desc, lt2):
+def hdl_wid_217(_: WIDParams):
     """
     Implements: IUT_GENERATE_SECURE_NETWORK_BEACON_MORE96_INDEX_42
-    :param desc: Please make sure IUT has been in Normal Operation state for
+    description: Please make sure IUT has been in Normal Operation state for
                  more than 96 hours. PTS will verify IUT can ignore Secure
                  Network beacons with an IV Index greater than last known IV
                  Index plus 42. Order IUT to generate Secure Network beacons.
-    :return:
     """
     stack = get_stack()
 
@@ -905,14 +860,13 @@ def hdl_wid_217(desc, lt2):
     return True
 
 
-def hdl_wid_218(desc, lt2):
+def hdl_wid_218(_: WIDParams):
     """
     Implements: IUT_GENERATE_SECURE_NETWORK_BEACON_WRONG_INDEX
-    :param desc: Please make sure IUT has been in Normal Operation state for
+    description: Please make sure IUT has been in Normal Operation state for
                  more than 96 hours. PTS will verify IUT can ignore Secure
                  Network beacons with an abnormal IV Index value. Order IUT to
                  generate Secure Network beacons.
-    :return:
     """
     stack = get_stack()
 
@@ -920,13 +874,12 @@ def hdl_wid_218(desc, lt2):
     return True
 
 
-def hdl_wid_219(desc, lt2):
+def hdl_wid_219(_: WIDParams):
     """
     Implements: IUT_GENERATE_SECURE_NETWORK_BEACON_WRONG_SUBNET
-    :param desc: PTS will verify IUT, on a primary subnet, can ignore Secure
+    description: PTS will verify IUT, on a primary subnet, can ignore Secure
                  Network beacons from other subnets. Order IUT to generate
                  Secure Network beacons.
-    :return:
     """
     stack = get_stack()
 
@@ -935,24 +888,22 @@ def hdl_wid_219(desc, lt2):
     return False
 
 
-def hdl_wid_220(desc, lt2):
+def hdl_wid_220(_: WIDParams):
     """
     Implements: IUT_GENERATE_SECURE_NETWORK_BEACON_INVALID_INDEX
-    :param desc: PTS will verify IUT can ignore Secure Network beacons with IV
+    description: PTS will verify IUT can ignore Secure Network beacons with IV
                  Index values that cannot be accepted. Order IUT to generate
                  Secure Network beacons.
-    :return:
     """
     return True
 
 
-def hdl_wid_221(desc, lt2):
+def hdl_wid_221(_: WIDParams):
     """
     Implements: IUT_READY_FOR_UPDATE_IN_PROGRESS_SECURE_NETWORK_BEACON
-    :param desc: The Lower Tester will advertise a new Secure Network beacon
+    description: The Lower Tester will advertise a new Secure Network beacon
                  with the IV Update Flag set to 1, IV Index incremented by 1
                  (new IV Index m = n + 1). Click OK when IUT is ready
-    :return:
     """
     stack = get_stack()
 
@@ -961,14 +912,13 @@ def hdl_wid_221(desc, lt2):
     return True
 
 
-def hdl_wid_222(desc, lt2):
+def hdl_wid_222(_: WIDParams):
     """
     Implements: IUT_GENERATE_NORMAL_STATE_NETWORK_BEACON
-    :param desc: Order IUT to send a Secure Network beacon from the IUT showing
+    description: Order IUT to send a Secure Network beacon from the IUT showing
                  it is in Normal Operation state with the IV Update flag set to
                  0 and the IV Index set to the new IV Index (m). Click OK when
                  ready
-    :return:
     """
 
     btp.mesh_iv_update_toggle()
@@ -976,154 +926,138 @@ def hdl_wid_222(desc, lt2):
     return True
 
 
-def hdl_wid_223(desc, lt2):
+def hdl_wid_223(_: WIDParams):
     """
     Implements: IUT_DEACTIVIATE_IV_UPDATE_TEST_MODE
-    :param desc: Please order IUT to deactivate IV update test mode in oder to
+    description: Please order IUT to deactivate IV update test mode in oder to
                  set it to a state where it cannot accept a new IV Update
                  procedure for at least 96 hours
-    :return:
     """
 
     btp.mesh_iv_update_test_mode(False)
     return True
 
 
-def hdl_wid_255(desc, lt2):
+def hdl_wid_255(_: WIDParams):
     """
     Implements:
-    :param desc: Press OK to send a Secure Network Beacon with the Key Refresh
+    description: Press OK to send a Secure Network Beacon with the Key Refresh
                  Flag (Flags bit 0) set to 0, the IV Update Flag (Flags bit 1)
                  set to 0, the Network ID set to the current Network ID, the
                  IV Index set to the current IV Index, and the Authentication
                  Value calculated with the new NetKey
-    :return:
     """
     return True
 
 
-def hdl_wid_260(desc, lt2):
+def hdl_wid_260(_: WIDParams):
     """
     Implements:
-    :param desc: Please start another PTS and run Lower Tester 2 test case which
+    description: Please start another PTS and run Lower Tester 2 test case which
                  is the node that has been rejected and set the correct TSPX_device_uuid
                  value for tester 2 which is different than the Lower Tester 1.
                  Please have the IUT provision both testers to share the same network
                  security credentials. Click OK when ready.
-    :return:
     """
     return True
 
 
-def hdl_wid_261(desc, lt2):
+def hdl_wid_261(_: WIDParams):
     """
     Implements:
-    :param desc: This is Lower Tester 2 acting as a node that has been rejected.
+    description: This is Lower Tester 2 acting as a node that has been rejected.
                  Please set the correct TSPX_device_uuid value before running this
                  test case for IUT to start provisioning these two testers to share
                  the same network security credential. Click OK when ready.
-    :return:
     """
     return True
 
 
-def hdl_wid_262(desc, lt2):
+def hdl_wid_262(_: WIDParams):
     """
     Implements: KEY_REFRESH_READY_FOR_ROUND2
-    :param desc: Press OK when tester and IUT is ready to go to the second
+    description: Press OK when tester and IUT is ready to go to the second
                  round of key refresh
-    :return:
     """
     return True
 
 
-def hdl_wid_267(desc, lt2):
+def hdl_wid_267(_: WIDParams):
     """
     Implements:
-    :param desc: Please click OK after friendship is established between Low
+    description: Please click OK after friendship is established between Low
                  Power Node (Lower Tester 1) and Friend Node (IUT).
-    :return:
     """
     return True
 
 
-def hdl_wid_268(desc, lt2):
+def hdl_wid_268(_: WIDParams):
     """
     Implements: KEY_REFRESH_READY
-    :param desc: Press OK when IUT is ready for Key Refresh Procedure
-    :return:
+    description: Press OK when IUT is ready for Key Refresh Procedure
     """
     return True
 
 
-def hdl_wid_269(desc, lt2):
+def hdl_wid_269(_: WIDParams):
     """
     Implements:
-    :param desc: This is Lower Tester 2 which will not receive any update.
+    description: This is Lower Tester 2 which will not receive any update.
                  Please wait until IUT finishes the Key Refresh procedure with Lower Tester 1,
                  and then click OK for Lower Tester 2 to send a Mesh message.
-    :return:
     """
     return True
 
 
-def hdl_wid_270(desc, lt2):
+def hdl_wid_270(_: WIDParams):
     """
     Implements:
-    :param desc: Please confirm that IUT ignores the sent Mesh message
-    :return:
+    description: Please confirm that IUT ignores the sent Mesh message
     """
     stack = get_stack()
     return stack.mesh.net_recv_ev_data.data is None
 
 
-def hdl_wid_271(desc, lt2):
+def hdl_wid_271(_: WIDParams):
     """
     Implements:
-    :param desc: Please confirm that Lower Tester 2 did not receive any secure beacons
-    :return:
+    description: Please confirm that Lower Tester 2 did not receive any secure beacons
     """
-    stack = get_stack()
     return True
 
 
-def hdl_wid_272(desc, lt2):
+def hdl_wid_272(_: WIDParams):
     """
     Implements:
-    :param desc: Please send a Mesh message from Lower Tester 2 to IUT.
+    description: Please send a Mesh message from Lower Tester 2 to IUT.
                  Confirm that IUT ignores the message from Lower Tester 2
-    :return:
     """
     stack = get_stack()
     stack.mesh.net_recv_ev_store.data = True
     return stack.mesh.net_recv_ev_data.data is None
 
 
-def hdl_wid_273(desc, lt2):
+def hdl_wid_273(_: WIDParams):
     """
     Implements:
-    :param desc: Please confirm that IUT received a Mesh message, NID: 0x37
-    :return:
+    description: Please confirm that IUT received a Mesh message, NID: 0x37
     """
-    stack = get_stack()
     return True
 
 
-def hdl_wid_274(desc, lt2):
+def hdl_wid_274(_: WIDParams):
     """
     Implements: KEY_REFRESH_WAIT_FOR_INVALID_MSG
-    :param desc: Lower Tester will send an invalid Mesh message in 5 sec.
+    description: Lower Tester will send an invalid Mesh message in 5 sec.
                  See Output Log for details
-    :return:
     """
     return True
 
 
-def hdl_wid_275(desc, lt2):
+def hdl_wid_275(_: WIDParams):
     """
     Implements:
-    :param desc: Please send Config Key Refresh Phase Get.
-    :return:
+    description: Please send Config Key Refresh Phase Get.
     """
     stack = get_stack()
 
@@ -1132,11 +1066,10 @@ def hdl_wid_275(desc, lt2):
     return stack.mesh.status == 0x00 and stack.mesh.data == 0x00
 
 
-def hdl_wid_276(desc, lt2):
+def hdl_wid_276(_: WIDParams):
     """
     Implements:
-    :param desc: Please send NetKey Update.
-    :return:
+    description: Please send NetKey Update.
     """
     stack = get_stack()
 
@@ -1149,11 +1082,10 @@ def hdl_wid_276(desc, lt2):
     return stack.mesh.status == 0x00
 
 
-def hdl_wid_277(desc, lt2):
+def hdl_wid_277(_: WIDParams):
     """
     Implements:
-    :param desc: Please send AppKey Update.
-    :return:
+    description: Please send AppKey Update.
     """
     stack = get_stack()
 
@@ -1172,11 +1104,10 @@ def hdl_wid_277(desc, lt2):
     return stack.mesh.status == 0x00
 
 
-def hdl_wid_278(desc, lt2):
+def hdl_wid_278(_: WIDParams):
     """
     Implements:
-    :param desc: Waiting for Secure Network Beacon with Key Refresh On and Iv Update Off.
-    :return:
+    description: Waiting for Secure Network Beacon with Key Refresh On and Iv Update Off.
     """
     stack = get_stack()
     phase = 0x02
@@ -1189,11 +1120,10 @@ def hdl_wid_278(desc, lt2):
     return True
 
 
-def hdl_wid_279(desc, lt2):
+def hdl_wid_279(_: WIDParams):
     """
     Implements:
-    :param desc: Waiting for Secure Network Beacon with Key Refresh Off and Iv Update Off.
-    :return:
+    description: Waiting for Secure Network Beacon with Key Refresh Off and Iv Update Off.
     """
     stack = get_stack()
     phase = 0x03
@@ -1206,73 +1136,66 @@ def hdl_wid_279(desc, lt2):
     return True
 
 
-def hdl_wid_280(desc, lt2):
+def hdl_wid_280(_: WIDParams):
     """
     Implements:
-    :param desc: Waiting 5 seconds to initiate phase 1 to Friend Node.
-    :return:
+    description: Waiting 5 seconds to initiate phase 1 to Friend Node.
     """
     return True
 
 
-def hdl_wid_281(desc, lt2):
+def hdl_wid_281(_: WIDParams):
     """
     Implements:
-    :param desc: Waiting 15 seconds to initiate phase 2.
-    :return:
+    description: Waiting 15 seconds to initiate phase 2.
     """
     return True
 
 
-def hdl_wid_282(desc, lt2):
+def hdl_wid_282(_: WIDParams):
     """
     Implements:
-    :param desc: Please order Lower Tester 1 to initiate friend poll.
+    description: Please order Lower Tester 1 to initiate friend poll.
                  Waiting 15 seconds to initiate phase 3.
-    :return:
     """
     return True
 
 
-def hdl_wid_283(desc, lt2):
+def hdl_wid_283(_: WIDParams):
     """
     Implements:
-    :param desc: Waiting LPN's response from NetKey Update Message.
+    description: Waiting LPN's response from NetKey Update Message.
                  Please order Lower Tester 1 to initiate friend poll.
-    :return:
     """
     return True
 
 
-def hdl_wid_284(desc, lt2):
+def hdl_wid_284(_: WIDParams):
     """
     Implements:
-    :param desc: Waiting 5 seconds to initiate phase 1 to Low Power Node.
-    :return:
+    description: Waiting 5 seconds to initiate phase 1 to Low Power Node.
     """
     return True
 
 
-def hdl_wid_285(desc, lt2):
+def hdl_wid_285(_: WIDParams):
     """
     Implements: KEY_REFRESH_READY_SKIP_PAHSE_2
-    :param desc: Press OK when IUT is ready for Key Refresh Procedure with
+    description: Press OK when IUT is ready for Key Refresh Procedure with
                  skipping phase 2
-    :return:
     """
     return True
 
 
-def hdl_wid_286(desc, lt2):
+def hdl_wid_286(params: WIDParams):
     """
     Implements:
-    :param desc: Waiting for Config Key Refresh Phase Set message with Phase Set to 0x02.
-    :return:
+    description: Waiting for Config Key Refresh Phase Set message with Phase Set to 0x02.
     """
     stack = get_stack()
     pattern = re.compile(
         r'(Phase)\sSet\sto\s+([0][xX][0-9a-fA-F]+)')
-    params = pattern.findall(desc)
+    params = pattern.findall(params.description)
     if not params:
         logging.error("%s parsing error", hdl_wid_286.__name__)
         return
@@ -1287,16 +1210,15 @@ def hdl_wid_286(desc, lt2):
     return stack.mesh.status == 0x00
 
 
-def hdl_wid_287(desc, lt2):
+def hdl_wid_287(params: WIDParams):
     """
     Implements:
-    :param desc: Waiting for Config Key Refresh Phase Set message with Phase Set to 0x03.
-    :return:
+    description: Waiting for Config Key Refresh Phase Set message with Phase Set to 0x03.
     """
     stack = get_stack()
     pattern = re.compile(
         r'(Phase)\sSet\sto\s+([0][xX][0-9a-fA-F]+)')
-    params = pattern.findall(desc)
+    params = pattern.findall(params.description)
     if not params:
         logging.error("%s parsing error", hdl_wid_286.__name__)
         return
@@ -1311,231 +1233,209 @@ def hdl_wid_287(desc, lt2):
     return stack.mesh.status == 0x00
 
 
-def hdl_wid_302(desc, lt2):
+def hdl_wid_302(_: WIDParams):
     """
     Implements:
-    :param desc: Please click OK to send Friend Poll to receive the messages
+    description: Please click OK to send Friend Poll to receive the messages
                  Lower Tester 2 sent.
-    :return:
     """
     return True
 
 
-def hdl_wid_303(desc, lt2):
+def hdl_wid_303(_: WIDParams):
     """
     Implements:
-    :param desc:
-    :return:
+    description:
     """
 
     btp.mesh_lpn(True)
     return True
 
 
-def hdl_wid_304(desc, lt2):
+def hdl_wid_304(_: WIDParams):
     """
     Implements:
-    :param desc: Please click OK to send Friend Poll message.
-    :return:
+    description: Please click OK to send Friend Poll message.
     """
     return True
 
 
-def hdl_wid_305(desc, lt2):
+def hdl_wid_305(_: WIDParams):
     """
     Implements:
-    :param desc: Please click OK to send Friend Poll after Lower Tester 2
+    description: Please click OK to send Friend Poll after Lower Tester 2
                  sends Secure Network Beacons with a different Key Refresh
                  flag.
-    :return:
     """
     return True
 
 
-def hdl_wid_306(desc, lt2):
+def hdl_wid_306(_: WIDParams):
     """
     Implements:
-    :param desc: Waiting for Lower Tester 1 to establish Friendship with IUT
+    description: Waiting for Lower Tester 1 to establish Friendship with IUT
                  so Lower Tester 2 will know the Friend Cache size.
-    :return:
     """
     return True
 
 
-def hdl_wid_308(desc, lt2):
+def hdl_wid_308(_: WIDParams):
     """
     Implements:
-    :param desc:
-    :return:
+    description:
     """
 
     btp.mesh_lpn_poll()
     return True
 
 
-def hdl_wid_310(desc, lt2):
+def hdl_wid_310(_: WIDParams):
     """
     Implements:
-    :param desc: Send Mesh message to Friend Node from Lower Tester 2.
+    description: Send Mesh message to Friend Node from Lower Tester 2.
                  Lower Tester 1 will not send the Friend Poll Message to the
                  IUT for twice the PollTimeout time. IUT should remove the
                  Lower Tester 1 as a Friend
-    :return:
     """
     return True
 
 
-def hdl_wid_311(desc, lt2):
+def hdl_wid_311(_: WIDParams):
     """
     Implements:
-    :param desc: Press OK to send a Secure Network Beacon with the Key Refresh
+    description: Press OK to send a Secure Network Beacon with the Key Refresh
                  Flag (Flags bit 0) set to 0, the IV Update Flag (Flags bit 1)
                  set to 1.
-    :return:
     """
     return True
 
 
-def hdl_wid_312(desc, lt2):
+def hdl_wid_312(_: WIDParams):
     """
     Implements:
-    :param desc:
-    :return:
+    description:
     """
 
     btp.mesh_lpn_poll()
     return True
 
 
-def hdl_wid_313(desc, lt2):
+def hdl_wid_313(_: WIDParams):
     """
     Implements:
-    :param desc:
-    :return:
+    description:
     """
 
     btp.mesh_lpn_poll()
     return True
 
 
-def hdl_wid_314(desc, lt2):
+def hdl_wid_314(_: WIDParams):
     """
     Implements:
-    :param desc:
-    :return:
+    description:
     """
 
     btp.mesh_lpn_poll()
     return True
 
 
-def hdl_wid_315(desc, lt2):
+def hdl_wid_315(_: WIDParams):
     """
     Implements:
-    :param desc:
-    :return:
+    description:
     """
     btp.mesh_lpn(True)
     return True
 
 
-def hdl_wid_317(desc, lt2):
+def hdl_wid_317(_: WIDParams):
     """
     Implements:
-    :param desc: Please click OK to send a message with TTL field set to
+    description: Please click OK to send a message with TTL field set to
                  value = 3.
-    :return:
     """
     return True
 
 
-def hdl_wid_318(desc, lt2):
+def hdl_wid_318(_: WIDParams):
     """
     Implements:
-    :param desc: Please click OK to send partial segments of segmented
+    description: Please click OK to send partial segments of segmented
                  messages to IUT.
-    :return:
     """
     return True
 
 
-def hdl_wid_319(desc, lt2):
+def hdl_wid_319(_: WIDParams):
     """
     Implements:
-    :param desc: Click OK to send Mesh messages to IUT(Friend Node).
-    :return:
+    description: Click OK to send Mesh messages to IUT(Friend Node).
     """
     return True
 
 
-def hdl_wid_324(desc, lt2):
+def hdl_wid_324(_: WIDParams):
     """
     Implements:
-    :param desc: Lower Tester 2 is waiting for IUT to send Friend Clear
+    description: Lower Tester 2 is waiting for IUT to send Friend Clear
                  message.
-    :return:
     """
     return True
 
 
-def hdl_wid_326(desc, lt2):
+def hdl_wid_326(_: WIDParams):
     """
     Implements:
-    :param desc:
-    :return:
+    description:
     """
 
     btp.mesh_lpn(False)
     return True
 
 
-def hdl_wid_327(desc, lt2):
+def hdl_wid_327(_: WIDParams):
     """
     Implements:
-    :param desc: Click OK button after friendship is established between
+    description: Click OK button after friendship is established between
                  Lower Tester 1 and IUT
-    :return:
     """
     return True
 
 
-def hdl_wid_329(desc, lt2):
+def hdl_wid_329(_: WIDParams):
     """
     Implements:
-    :param desc: Click OK to send Friend Timeout Get Message after Lower
+    description: Click OK to send Friend Timeout Get Message after Lower
                  Tester 1 and IUT established friendship.
-    :return:
     """
     return True
 
 
-def hdl_wid_330(desc, lt2):
+def hdl_wid_330(_: WIDParams):
     """
     Implements:
-    :param desc: Click OK to send Friend Clear Message.
-    :return:
+    description: Click OK to send Friend Clear Message.
     """
     return True
 
 
-def hdl_wid_332(desc, lt2):
+def hdl_wid_332(_: WIDParams):
     """
     Implements:
-    :param desc: Please send Heartbeat Publication Set message from Lower
+    description: Please send Heartbeat Publication Set message from Lower
                  Tester 2 to IUT, and then send Friend Poll from IUT to Lower Tester 1.
-    :return:
     """
     stack = get_stack()
     assert stack.mesh.wait_for_lpn_established(timeout=60)
     return True
 
 
-def hdl_wid_333(desc, lt2):
+def hdl_wid_333(_: WIDParams):
     """
     Implements:
-    :param desc: Lower Tester 1 will now stop responding to Friend Poll from IUT.
+    description: Lower Tester 1 will now stop responding to Friend Poll from IUT.
                  Please click OK when friendship is terminated.
-    :return:
     """
     stack = get_stack()
     assert stack.mesh.wait_for_lpn_terminated(timeout=60)
@@ -1543,107 +1443,97 @@ def hdl_wid_333(desc, lt2):
     return True
 
 
-def hdl_wid_335(desc, lt2):
+def hdl_wid_335(_: WIDParams):
     """
     Implements:
-    :param desc: Please click OK to send Friend Poll message after Lower
+    description: Please click OK to send Friend Poll message after Lower
                  Tester 2 sends out Friend Clear message.
-    :return:
     """
     return True
 
 
-def hdl_wid_336(desc, lt2):
+def hdl_wid_336(_: WIDParams):
     """
     Implements:
-    :param desc: If Lower Tester 1 and IUT are not previously provisioned,
+    description: If Lower Tester 1 and IUT are not previously provisioned,
                  please use a second instance of PTS to perform provisioning
                  first by executing MESH/NODE/FRND/TWO_NODES_PROVISIONER test
                  case.
-    :return:
     """
     return True
 
 
-def hdl_wid_337(desc, lt2):
+def hdl_wid_337(_: WIDParams):
     """
     Implements:
-    :param desc: Please start Lower Tester 2 first before establishing
+    description: Please start Lower Tester 2 first before establishing
                  friendship between Lower Tester 1 and IUT.
-    :return:
     """
     return True
 
 
-def hdl_wid_339(desc, lt2):
+def hdl_wid_339(_: WIDParams):
     """
     Implements:
-    :param desc: Friendship is established successfully.
-    :return:
+    description: Friendship is established successfully.
     """
     return True
 
 
-def hdl_wid_340(desc, lt2):
+def hdl_wid_340(params: WIDParams):
     """
     Implements:
-    :param desc: Lower Tester 1 is a Low Power Node, and IUT is Friend Node.
+    description: Lower Tester 1 is a Low Power Node, and IUT is Friend Node.
                  If Lower Tester 1 and IUT are not previously provisioned,
                  please use a second instance of PTS to perform provisioning
                  first by executing MESH/NODE/FRND/TWO_NODES_PROVISIONER test
                  case.
-    :return:
     """
-    return hdl_wid_336(desc, lt2)
+    return hdl_wid_336(params)
 
 
-def hdl_wid_341(desc, lt2):
+def hdl_wid_341(_: WIDParams):
     """
     Implements:
-    :param desc: Please click OK to send Friend Poll message after Lower
+    description: Please click OK to send Friend Poll message after Lower
                  Tester 2 sends Mesh message(s) and config friend set message.
-    :return:
     """
     return True
 
 
-def hdl_wid_342(desc, lt2):
+def hdl_wid_342(_: WIDParams):
     """
     Implements:
-    :param desc: Please wait for IUT and Lower Tester 1 to establish
+    description: Please wait for IUT and Lower Tester 1 to establish
                  friendship. Click OK to send Mesh messages to IUT
                  (Friend Node).
-    :return:
     """
     return True
 
 
-def hdl_wid_344(desc, lt2):
+def hdl_wid_344(_: WIDParams):
     """
     Implements:
-    :param desc: Please click OK to send Mesh packet(s) after Lower Tester 1
+    description: Please click OK to send Mesh packet(s) after Lower Tester 1
                  adds subscription address to IUT.
-    :return:
     """
     return True
 
 
-def hdl_wid_345(desc, lt2):
+def hdl_wid_345(_: WIDParams):
     """
     Implements:
-    :param desc: Please click OK to send Friend Poll message after IUT receives
+    description: Please click OK to send Friend Poll message after IUT receives
                  beacon from Lower Tester 1
-    :return:
     """
     return True
 
 
-def hdl_wid_346(desc, lt2):
+def hdl_wid_346(_: WIDParams):
     """
     Implements: IUT_SEND_FRIEND_SUBSCRIPTION_LIST_ADD
-    :param desc: Please send Friend Subscription List Add message to Lower
+    description: Please send Friend Subscription List Add message to Lower
                  Tester.
-    :return:
     """
     stack = get_stack()
     group_address = MeshVals.subscription_addr_list1
@@ -1653,12 +1543,11 @@ def hdl_wid_346(desc, lt2):
     return True
 
 
-def hdl_wid_347(desc, lt2):
+def hdl_wid_347(_: WIDParams):
     """
     Implements: IUT_SEND_FRIEND_SUBSCRIPTION_LIST_REMOVE
-    :param desc: Please send Friend Subscription List Remove message to Lower
+    description: Please send Friend Subscription List Remove message to Lower
                  Tester.
-    :return:
     """
     stack = get_stack()
     group_address = MeshVals.subscription_addr_list1
@@ -1674,102 +1563,96 @@ def hdl_wid_347(desc, lt2):
     return True
 
 
-def hdl_wid_348(desc, lt2):
+def hdl_wid_348(_: WIDParams):
     """
     Implements:
-    :param desc: Please click OK to send Friend Poll message after IUT caches
+    description: Please click OK to send Friend Poll message after IUT caches
                  netkey update message.
-    :return:
     """
     return True
 
 
-def hdl_wid_353(desc, lt2):
+def hdl_wid_353(_: WIDParams):
     return True
 
 
-def hdl_wid_354(desc, lt2):
+def hdl_wid_354(_: WIDParams):
     return True
 
 
-def hdl_wid_355(desc, lt2):
+def hdl_wid_355(_: WIDParams):
     return True
 
 
-def hdl_wid_356(desc, lt2):
+def hdl_wid_356(_: WIDParams):
     return True
 
 
-def hdl_wid_357(desc, lt2):
+def hdl_wid_357(_: WIDParams):
     return True
 
 
-def hdl_wid_358(desc, lt2):
+def hdl_wid_358(_: WIDParams):
     return True
 
 
-def hdl_wid_361(desc, lt2):
+def hdl_wid_361(_: WIDParams):
     return True
 
 
-def hdl_wid_362(desc, lt2):
+def hdl_wid_362(_: WIDParams):
     return True
 
 
-def hdl_wid_364(desc, lt2):
+def hdl_wid_364(_: WIDParams):
     return True
 
 
-def hdl_wid_366(desc, lt2):
+def hdl_wid_366(_: WIDParams):
     return True
 
 
-def hdl_wid_367(desc, lt2):
+def hdl_wid_367(_: WIDParams):
     return True
 
 
-def hdl_wid_368(desc, lt2):
-    """
-    Implements:
-    :param desc: Please confirm that IUT received the mesh packet to LT1.
-    :return:
-    """
-    return True
-
-
-def hdl_wid_372(desc, lt2):
+def hdl_wid_368(_: WIDParams):
     """
     Implements:
-    :param desc: Please confirm that IUT ignores Proxy Configuration message.
-    :return:
+    description: Please confirm that IUT received the mesh packet to LT1.
     """
     return True
 
 
-def hdl_wid_373(desc, lt2):
+def hdl_wid_372(_: WIDParams):
     """
     Implements:
-    :param desc: Received Node Identity.Wait for 60 seconds.After that, IUT expect to stop advertising Node Identity
-    :return:
+    description: Please confirm that IUT ignores Proxy Configuration message.
     """
     return True
 
 
-def hdl_wid_394(desc, lt2):
+def hdl_wid_373(_: WIDParams):
     """
     Implements:
-    :param desc: Please start advertising the Mesh Proxy Service with Node Identity.
-    :return:
+    description: Received Node Identity.Wait for 60 seconds.After that, IUT expect to stop advertising Node Identity
+    """
+    return True
+
+
+def hdl_wid_394(_: WIDParams):
+    """
+    Implements:
+    description: Please start advertising the Mesh Proxy Service with Node Identity.
     """
     btp.mesh_proxy_identity()
     return True
 
 
-def hdl_wid_500(desc, lt2):
+def hdl_wid_500(params: WIDParams):
     """
     Implements:
-    :param desc: Waiting for Composition Data Get Request.
-    :return:
+    description: Waiting for Composition Data Get Request.
     """
     stack = get_stack()
     page = 0x00
@@ -1780,7 +1663,7 @@ def hdl_wid_500(desc, lt2):
     for node_uuid in stack.mesh.nodes_expected.data:
         stack.mesh.wait_for_node_added_uuid(timeout=60, uuid=node_uuid)
 
-    if len(stack.mesh.nodes_expected.data) == 1 or not lt2:
+    if len(stack.mesh.nodes_expected.data) == 1 or not bool('LT2' in params.test_case_name):
         btp.mesh_composition_data_get(stack.mesh.net_idx, stack.mesh.address_lt1, page)
     else:
         btp.mesh_composition_data_get(stack.mesh.net_idx, stack.mesh.address_lt2, page)
@@ -1788,11 +1671,10 @@ def hdl_wid_500(desc, lt2):
     return True
 
 
-def hdl_wid_501(desc, lt2):
+def hdl_wid_501(_: WIDParams):
     """
     Implements:
-    :param desc: Send Config Beacon Get.
-    :return:
+    description: Send Config Beacon Get.
     """
     stack = get_stack()
 
@@ -1804,11 +1686,10 @@ def hdl_wid_501(desc, lt2):
     return True
 
 
-def hdl_wid_502(desc, lt2):
+def hdl_wid_502(params: WIDParams):
     """
     Implements:
-    :param desc: Please send Config Beacon Set with 0.
-    :return:
+    description: Please send Config Beacon Set with 0.
     """
     stack = get_stack()
 
@@ -1816,7 +1697,7 @@ def hdl_wid_502(desc, lt2):
         return True
 
     pattern = re.compile(r'with\s+([0-9a-fA-F]+)')
-    val = pattern.findall(desc)
+    val = pattern.findall(params.description)
     if not val:
         logging.error("%s parsing error", hdl_wid_502.__name__)
         return False
@@ -1826,20 +1707,18 @@ def hdl_wid_502(desc, lt2):
     return stack.mesh.status == int(val[0], 16)
 
 
-def hdl_wid_503(desc, lt2):
+def hdl_wid_503(params: WIDParams):
     """
     Implements:
-    :param desc: Please send Config Beacon Set with 1.
-    :return:
+    description: Please send Config Beacon Set with 1.
     """
-    return hdl_wid_502(desc, lt2)
+    return hdl_wid_502(params)
 
 
-def hdl_wid_504(desc, lt2):
+def hdl_wid_504(_: WIDParams):
     """
     Implements:
-    :param desc: Please send Config Default TTL Get.
-    :return:mesh_model_send
+    description: Please send Config Default TTL Get.
     """
     stack = get_stack()
 
@@ -1851,11 +1730,10 @@ def hdl_wid_504(desc, lt2):
     return True
 
 
-def hdl_wid_505(desc, lt2):
+def hdl_wid_505(_: WIDParams):
     """
     Implements:
-    :param desc: Please send Config Default TTL Set.
-    :return:mesh_model_send
+    description: Please send Config Default TTL Set.
     """
     stack = get_stack()
     val = 0x00
@@ -1867,22 +1745,20 @@ def hdl_wid_505(desc, lt2):
     return True
 
 
-def hdl_wid_506(desc, lt2):
+def hdl_wid_506(_: WIDParams):
     """
     Implements:
-    :param desc: Please confirm the TTL value = 0x0.
-    :return:mesh_model_send
+    description: Please confirm the TTL value = 0x0.
     """
     stack = get_stack()
 
     return stack.mesh.status == 0x00
 
 
-def hdl_wid_507(desc, lt2):
+def hdl_wid_507(_: WIDParams):
     """
     Implements:
-    :param desc: Please send Config Friend Get.
-    :return:
+    description: Please send Config Friend Get.
     """
     stack = get_stack()
 
@@ -1893,11 +1769,10 @@ def hdl_wid_507(desc, lt2):
     return True
 
 
-def hdl_wid_508(desc, lt2):
+def hdl_wid_508(_: WIDParams):
     """
     Implements:
-    :param desc: Please send Config Friend Set.
-    :return:
+    description: Please send Config Friend Set.
     """
     stack = get_stack()
 
@@ -1910,16 +1785,15 @@ def hdl_wid_508(desc, lt2):
     return stack.mesh.status == 0x00
 
 
-def hdl_wid_509(desc, lt2):
+def hdl_wid_509(params: WIDParams):
     """
     Implements:
-    :param desc: Please confirm the [...] value = 0x0.
-    :return:
+    description: Please confirm the [...] value = 0x0.
     """
     stack = get_stack()
 
     pattern = re.compile(r'value\s=\s+([0-9a-fA-F]+)')
-    val = pattern.findall(desc)
+    val = pattern.findall(params.description)
     if not val:
         logging.error("%s parsing error", hdl_wid_509.__name__)
         return False
@@ -1927,11 +1801,10 @@ def hdl_wid_509(desc, lt2):
     return stack.mesh.status == int(val[0], 16)
 
 
-def hdl_wid_510(desc, lt2):
+def hdl_wid_510(params: WIDParams):
     """
     Implements:
-    :param desc: Heartbeat Publication Set
-    :return:
+    description: Heartbeat Publication Set
     """
 
     stack = get_stack()
@@ -1940,7 +1813,7 @@ def hdl_wid_510(desc, lt2):
         return True
 
     pattern = re.compile(r'(Destination|CountLog|PeriodLog|TTL|Features)\sfield set to\s+([0][xX][0-9a-fA-F]+)')
-    params = pattern.findall(desc)
+    params = pattern.findall(params.description)
     if not params:
         logging.error("%s parsing error", hdl_wid_510.__name__)
         return False
@@ -1958,11 +1831,10 @@ def hdl_wid_510(desc, lt2):
     return stack.mesh.status == 0x00
 
 
-def hdl_wid_511(desc, lt2):
+def hdl_wid_511(_: WIDParams):
     """
     Implements:
-    :param desc: Heartbeat Publication Get
-    :return:
+    description: Heartbeat Publication Get
     """
     stack = get_stack()
 
@@ -1974,79 +1846,78 @@ def hdl_wid_511(desc, lt2):
     return stack.mesh.status == 0x00
 
 
-def hdl_wid_514(desc, lt2):
+def hdl_wid_514(params: WIDParams):
     """
     Implements:
-    :param desc:
-    :return:
+    description:
     """
     stack = get_stack()
 
     if not stack.mesh.iut_is_provisioner:
         return True
 
-    if "Config GATT Proxy Get" in desc:
+    if "Config GATT Proxy Get" in params.description:
         btp.mesh_cfg_gatt_proxy_get(stack.mesh.net_idx, stack.mesh.address_lt1)
         return True
 
-    if "Config GATT Proxy Set" in desc:
+    if "Config GATT Proxy Set" in params.description:
         val = 0x00
         btp.mesh_cfg_gatt_proxy_set(stack.mesh.net_idx, stack.mesh.address_lt1, val)
         return True
 
-    if "Config Model Subscription" in desc:
+    if "Config Model Subscription" in params.description:
         sub_address = 0xc000
         model_id = 0x0000
 
-        if "Virtual Address Add" in desc:
+        if "Virtual Address Add" in params.description:
             stack.mesh.model_data = [stack.mesh.el_address, int(stack.mesh.dev_uuid, 16), model_id]
 
             btp.mesh_cfg_model_sub_va_add(stack.mesh.net_idx, stack.mesh.address_lt1, stack.mesh.el_address, model_id,
                                           stack.mesh.dev_uuid)
             return stack.mesh.status == 0x00
 
-        if "Virtual Address Delete" in desc:
+        if "Virtual Address Delete" in params.description:
             stack.mesh.model_data = [stack.mesh.el_address, int(stack.mesh.dev_uuid, 16), model_id]
 
             btp.mesh_cfg_model_sub_va_del(stack.mesh.net_idx, stack.mesh.address_lt1, stack.mesh.el_address, model_id,
                                           stack.mesh.dev_uuid)
             return stack.mesh.status == 0x00
 
-        if "Virtual Address Overwrite" in desc:
+        if "Virtual Address Overwrite" in params.description:
             stack.mesh.model_data = [stack.mesh.el_address, int(stack.mesh.dev_uuid, 16), model_id]
 
             btp.mesh_cfg_model_sub_va_ovw(stack.mesh.net_idx, stack.mesh.address_lt1, stack.mesh.el_address, model_id,
                                           stack.mesh.dev_uuid)
             return stack.mesh.status == 0x00
 
-        if "Add" in desc:
+        if "Add" in params.description:
             stack.mesh.model_data = [stack.mesh.el_address, sub_address, model_id]
 
             btp.mesh_cfg_model_sub_add(stack.mesh.net_idx, stack.mesh.address_lt1, stack.mesh.el_address, sub_address,
                                        model_id)
             return stack.mesh.status == 0x00
 
-        if "Delete All" in desc:
+        if "Delete All" in params.description:
             stack.mesh.model_data = [stack.mesh.el_address, model_id]
 
             btp.mesh_cfg_model_sub_del_all(stack.mesh.net_idx, stack.mesh.address_lt1, stack.mesh.el_address, model_id)
             return stack.mesh.status == 0x00
 
-        if "Delete" in desc:
+        if "Delete" in params.description:
             stack.mesh.model_data = [stack.mesh.el_address, sub_address, model_id]
 
             btp.mesh_cfg_model_sub_del(stack.mesh.net_idx, stack.mesh.address_lt1, stack.mesh.el_address, sub_address,
                                        model_id)
             return stack.mesh.status == 0x00
 
-        if "Overwrite" in desc:
+        if "Overwrite" in params.description:
             stack.mesh.model_data = [stack.mesh.el_address, sub_address, model_id]
 
             btp.mesh_cfg_model_sub_ovw(stack.mesh.net_idx, stack.mesh.address_lt1, stack.mesh.el_address, sub_address,
                                        model_id)
             return stack.mesh.status == 0x00
 
-    if "Config Vendor Model Subscription Get" in desc:
+    if "Config Vendor Model Subscription Get" in params.description:
         model_id = 0x1234
         cid = 0x05F1
         el_address = 0x0001
@@ -2055,7 +1926,7 @@ def hdl_wid_514(desc, lt2):
         btp.mesh_cfg_model_sub_vnd_get(stack.mesh.net_idx, stack.mesh.address_lt1, el_address, model_id, cid)
         return stack.mesh.status == 0x00
 
-    if "Config SIG Model Subscription Get " in desc:
+    if "Config SIG Model Subscription Get " in params.description:
         model_id = 0x0001
         el_address = 0x0001
         stack.mesh.model_data = [el_address, model_id]
@@ -2063,29 +1934,31 @@ def hdl_wid_514(desc, lt2):
         btp.mesh_cfg_model_sub_get(stack.mesh.net_idx, stack.mesh.address_lt1, el_address, model_id)
         return stack.mesh.status == 0x00
 
-    if "AppKey Add" in desc:
+    if "AppKey Add" in params.description:
         app_key = '0123456789abcdef0123456789fedcba'
         app_key_idx = 0x0001
 
         stack.mesh.model_data = [stack.mesh.net_key_index, app_key_idx, hex(int(app_key, 16))]
-        btp.mesh_cfg_appkey_add(stack.mesh.net_idx, stack.mesh.address_lt1, stack.mesh.net_key_index, app_key, app_key_idx)
+        btp.mesh_cfg_appkey_add(stack.mesh.net_idx, stack.mesh.address_lt1,
+                                stack.mesh.net_key_index, app_key, app_key_idx)
         return stack.mesh.status == 0x00
 
-    if "AppKey Update" in desc:
+    if "AppKey Update" in params.description:
         app_key = '0123456789abcdef0123456789fedcba'
         app_key_up = '0123456789abcdef0123456789fedcbc'
         app_key_idx = 0x0001
 
         stack.mesh.model_data = [stack.mesh.net_key_index, app_key_idx, int(app_key_up, 16)]
-        btp.mesh_cfg_appkey_add(stack.mesh.net_idx, stack.mesh.address_lt1, stack.mesh.net_key_index, app_key, app_key_idx)
+        btp.mesh_cfg_appkey_add(stack.mesh.net_idx, stack.mesh.address_lt1,
+                                stack.mesh.net_key_index, app_key, app_key_idx)
         btp.mesh_cfg_appkey_update(stack.mesh.net_idx, stack.mesh.address_lt1, stack.mesh.net_key_index, app_key_up,
                                    app_key_idx)
         logging.debug("Status = 0x%2x", stack.mesh.status)
         return True  # status is not checked because PTS returned status != 0x00
 
-    if "AppKey Delete" in desc:
+    if "AppKey Delete" in params.description:
         pattern = re.compile(r'(NetKey\sindex|AppKey\sindex)\s+([0][xX][0-9a-fA-F]+)')
-        params = pattern.findall(desc)
+        params = pattern.findall(params.description)
 
         if not params:
             logging.error("%s parsing error", hdl_wid_514.__name__)
@@ -2100,9 +1973,9 @@ def hdl_wid_514(desc, lt2):
         logging.debug("Status = 0x%2x", stack.mesh.status)
         return True  # status is not checked because PTS returned status != 0x00
 
-    if "AppKey Get" in desc:
+    if "AppKey Get" in params.description:
         pattern = re.compile(r'(NetKey\sindex)\s+([0][xX][0-9a-fA-F]+)')
-        params = pattern.findall(desc)
+        params = pattern.findall(params.description)
 
         if not params:
             logging.error("%s parsing error", hdl_wid_514.__name__)
@@ -2115,36 +1988,38 @@ def hdl_wid_514(desc, lt2):
         logging.debug("Status = 0x%2x", stack.mesh.status)
         return True  # status is not checked because PTS returned status != 0x00
 
-    if "Model App Bind" in desc:
+    if "Model App Bind" in params.description:
         app_key_idx = 0x0000
         model_id = 0x0002
         app_key = '0123456789abcdef0123456789fedcba'
 
-        btp.mesh_cfg_appkey_add(stack.mesh.net_idx, stack.mesh.address_lt1, stack.mesh.net_key_index, app_key, app_key_idx)
+        btp.mesh_cfg_appkey_add(stack.mesh.net_idx, stack.mesh.address_lt1,
+                                stack.mesh.net_key_index, app_key, app_key_idx)
 
         btp.mesh_cfg_model_app_bind(stack.mesh.net_idx, stack.mesh.address_lt1, stack.mesh.el_address, app_key_idx,
-                                       model_id)
+                                    model_id)
 
         stack.mesh.model_data = [stack.mesh.el_address, app_key_idx, model_id]
 
         return stack.mesh.status == 0x00
 
-    if "Model App Unbind" in desc:
+    if "Model App Unbind" in params.description:
         app_key_idx = 0x0000
         model_id = 0x0002
         app_key = '0123456789abcdef0123456789fedcba'
 
-        btp.mesh_cfg_appkey_add(stack.mesh.net_idx, stack.mesh.address_lt1, stack.mesh.net_key_index, app_key, app_key_idx)
+        btp.mesh_cfg_appkey_add(stack.mesh.net_idx, stack.mesh.address_lt1,
+                                stack.mesh.net_key_index, app_key, app_key_idx)
         btp.mesh_cfg_model_app_bind(stack.mesh.net_idx, stack.mesh.address_lt1, stack.mesh.el_address, app_key_idx,
-                                       model_id)
+                                    model_id)
         stack.mesh.model_data = [stack.mesh.el_address, app_key_idx, model_id]
 
         btp.mesh_cfg_model_app_unbind(stack.mesh.net_idx, stack.mesh.address_lt1, stack.mesh.el_address, app_key_idx,
-                                         model_id)
+                                      model_id)
 
         return stack.mesh.status == 0x00
 
-    if "SIG Model App Get" in desc:
+    if "SIG Model App Get" in params.description:
         model_id = 0x0002
         stack.mesh.model_data = [stack.mesh.el_address, model_id]
 
@@ -2152,7 +2027,7 @@ def hdl_wid_514(desc, lt2):
 
         return stack.mesh.status == 0x00
 
-    if "Vendor Model App Get" in desc:
+    if "Vendor Model App Get" in params.description:
         model_id = 0x1234
         cid = 0x05F1
         stack.mesh.model_data = [stack.mesh.el_address, model_id, cid]
@@ -2161,36 +2036,36 @@ def hdl_wid_514(desc, lt2):
 
         return True
 
-    if "Network Transmit Get" in desc:
+    if "Network Transmit Get" in params.description:
         btp.mesh_cfg_net_transmit_get(stack.mesh.net_idx, stack.mesh.address_lt1)
 
         return True
 
-    if "Network Transmit Set" in desc:
+    if "Network Transmit Set" in params.description:
         transmit = 0x01
 
         btp.mesh_cfg_net_transmit_set(stack.mesh.net_idx, stack.mesh.address_lt1, transmit)
 
         return True
 
-    if "Node Identity Set" in desc:
-        pattern = re.findall(r'\s+([0-9a-fA-F]+)', desc)
+    if "Node Identity Set" in params.description:
+        pattern = re.findall(r'\s+([0-9a-fA-F]+)', params.description)
         identity = int(pattern[0], 16)
 
         btp.mesh_cfg_node_idt_set(stack.mesh.net_idx, stack.mesh.address_lt1, stack.mesh.net_key_index, identity)
 
         return stack.mesh.status == 0x00 and stack.mesh.model_data == identity
 
-    if "Node Identity Get" in desc:
+    if "Node Identity Get" in params.description:
         identity = 0x01
 
         btp.mesh_cfg_node_idt_get(stack.mesh.net_idx, stack.mesh.address_lt1, stack.mesh.net_key_index)
 
         return stack.mesh.status == 0x00 and stack.mesh.model_data == identity
 
-    if "Low Power Node PollTimeout Get" in desc:
+    if "Low Power Node PollTimeout Get" in params.description:
         pattern = re.compile(r'(address)\s+([0][xX][0-9a-fA-F]+)')
-        params = pattern.findall(desc)
+        params = pattern.findall(params.description)
 
         if not params:
             logging.error("%s parsing error", hdl_wid_514.__name__)
@@ -2207,20 +2082,19 @@ def hdl_wid_514(desc, lt2):
         return False
 
 
-def hdl_wid_515(desc, lt2):
+def hdl_wid_515(params: WIDParams):
     """
     Implements:
-    :param desc:
-    :return:
+    description:
     """
     stack = get_stack()
 
     if not stack.mesh.iut_is_provisioner:
         return True
 
-    if "Model App Bind" in desc or r"Model App Unbind" in desc:
+    if "Model App Bind" in params.description or r"Model App Unbind" in params.description:
         pattern = re.compile(r'(Element\sAddress|AppKey\sIndex|SIG\sModel\sID)\s=\s+([0-9a-fA-F]+)')
-        params = pattern.findall(desc)
+        params = pattern.findall(params.description)
 
         if not params:
             logging.error("%s parsing error", hdl_wid_515.__name__)
@@ -2233,9 +2107,9 @@ def hdl_wid_515(desc, lt2):
 
         return stack.mesh.model_data == [el_address, mod_app_idx, model_id]
 
-    if "SIG Model App Get" in desc:
+    if "SIG Model App Get" in params.description:
         pattern = re.compile(r'(Element\sAddress|SIG\sModel\sID)\s=\s+([0-9a-fA-F]+)')
-        params = pattern.findall(desc)
+        params = pattern.findall(params.description)
 
         if not params:
             logging.error("%s parsing error", hdl_wid_515.__name__)
@@ -2247,9 +2121,9 @@ def hdl_wid_515(desc, lt2):
 
         return stack.mesh.model_data == [el_address, model_id]
 
-    if "AppKey Add" in desc:
+    if "AppKey Add" in params.description:
         pattern = re.compile(r'(NetKeyIndex|AppKeyIndex|AppKey)\s=\s+([0-9a-fA-F]+)')
-        params = pattern.findall(desc)
+        params = pattern.findall(params.description)
 
         if not params:
             logging.error("%s parsing error", hdl_wid_515.__name__)
@@ -2262,9 +2136,9 @@ def hdl_wid_515(desc, lt2):
 
         return [net_key_idx, app_key_idx, app_key] == stack.mesh.model_data
 
-    if "Vendor Model App Get" in desc:
+    if "Vendor Model App Get" in params.description:
         pattern = re.compile(r'(Element\sAddress|Vendor\sModel\sID)\s=\s+([0-9a-fA-F]+)')
-        params = pattern.findall(desc)
+        params = pattern.findall(params.description)
 
         if not params:
             logging.error("%s parsing error", hdl_wid_515.__name__)
@@ -2277,9 +2151,9 @@ def hdl_wid_515(desc, lt2):
 
         return [el_addr, model_id, cid] == stack.mesh.model_data
 
-    if "AppKey Update" in desc:
+    if "AppKey Update" in params.description:
         pattern = re.compile(r'(NetKeyIndex|AppKeyIndex|AppKey)\s=\s+([0-9a-fA-F]+)')
-        params = pattern.findall(desc)
+        params = pattern.findall(params.description)
 
         if not params:
             logging.error("%s parsing error", hdl_wid_515.__name__)
@@ -2293,7 +2167,7 @@ def hdl_wid_515(desc, lt2):
         return [net_key_index, app_key_idx, app_key_up] == stack.mesh.model_data
 
 
-def parse_params(desc, lt2):
+def parse_command_parameters(desc):
     field_dict = {}
     txt = desc.splitlines()[1:]
     for line in txt:
@@ -2302,7 +2176,7 @@ def parse_params(desc, lt2):
         if len(fields) < 2:
             continue
         field_name = fields[0]
-        m = re.search(r"\[([\-A-Fa-f0-9x\(\) ]+)\]", fields[1])
+        m = re.search(r"\[([\-A-Fa-f0-9x() ]+)]", fields[1])
         if not m:
             field_dict[field_name] = None
             continue
@@ -2426,32 +2300,29 @@ def parse_send(params):
     return cmds[opcode](params)
 
 
-def hdl_wid_516(desc, lt2):
+def hdl_wid_516(params: WIDParams):
     """
     Implements:
-    :param desc:
-    :return:
+    description:
     """
-    params = parse_params(desc, lt2)
-    log("%r", params)
+    command_params = parse_command_parameters(params.description)
+    log("%r", command_params)
 
-    return parse_send(params)
+    return parse_send(command_params)
 
 
-def hdl_wid_517(desc, lt2):
+def hdl_wid_517(_: WIDParams):
     """
     Implements:
-    :param desc: Please confirm the received messages are correct.
-    :return:
+    description: Please confirm the received messages are correct.
     """
     return True
 
 
-def hdl_wid_518(desc, lt2):
+def hdl_wid_518(params: WIDParams):
     """
     Implements:
-    :param desc: Please send AppKey Add.
-    :return:
+    description: Please send AppKey Add.
     """
     stack = get_stack()
 
@@ -2462,7 +2333,7 @@ def hdl_wid_518(desc, lt2):
     app_key_idx = 0x0000
 
     if len(stack.mesh.nodes_expected.data) == 2:
-        if lt2:
+        if bool('LT2' in params.test_case_name):
             btp.mesh_cfg_appkey_add(stack.mesh.net_idx, stack.mesh.address_lt2, stack.mesh.net_key_index, app_key,
                                     app_key_idx)
         else:
@@ -2480,71 +2351,64 @@ def hdl_wid_518(desc, lt2):
     return stack.mesh.status == 0x00
 
 
-def hdl_wid_519(desc, lt2):
+def hdl_wid_519(_: WIDParams):
     """
     Implements: CONFIRM_DEVICE_RESET
-    :param desc: Click OK to put the IUT back into an unprovisioned state.
-    :return:
+    description: Click OK to put the IUT back into an unprovisioned state.
     """
 
     btp.mesh_reset()
     return True
 
 
-def hdl_wid_520(desc, lt2):
+def hdl_wid_520(_: WIDParams):
     """
     Implements: NODE_IDENTITY_START_AD
-    :param desc: Please configure the IUT to start advertising on all networks.
-    :return:
+    description: Please configure the IUT to start advertising on all networks.
     """
 
     btp.mesh_proxy_identity()
     return True
 
 
-def hdl_wid_521(desc, lt2):
+def hdl_wid_521(_: WIDParams):
     """
     Implements: NODE_IDENTITY_STOP_AD
-    :param desc: Please configure the IUT to stop advertising on all networks.
-    :return:
+    description: Please configure the IUT to stop advertising on all networks.
     """
 
     time.sleep(60)
     return True
 
 
-def hdl_wid_527(desc, lt2):
+def hdl_wid_527(_: WIDParams):
     """
     Implements:
-    :param desc: Please click Yes if TSPX_iut_model_id_used supports periodic publishing.
-    :return:
+    description: Please click Yes if TSPX_iut_model_id_used supports periodic publishing.
     """
     return True
 
 
-def hdl_wid_528(desc, lt2):
+def hdl_wid_528(_: WIDParams):
     """
     Implements:
-    :param desc: Please click Yes if Please click Yes if TSPX_iut_model_id_used supports publishing on state change.
-    :return:
+    description: Please click Yes if Please click Yes if TSPX_iut_model_id_used supports publishing on state change.
     """
     return True
 
 
-def hdl_wid_529(desc, lt2):
+def hdl_wid_529(_: WIDParams):
     """
     Implements:
-    :param desc: Please triggered state change that will generate publish message.
-    :return:
+    description: Please trigger state change that will generate publish message.
     """
     return True
 
 
-def hdl_wid_522(desc, lt2):
+def hdl_wid_522(params: WIDParams):
     """
     Implements:
-    :param desc:Please send a Composition Data Get Request for page 0xff or the highest supported page number
-    :return:
+    description:Please send a Composition Data Get Request for page 0xff or the highest supported page number
     """
     stack = get_stack()
 
@@ -2552,7 +2416,7 @@ def hdl_wid_522(desc, lt2):
         return True
 
     pattern = re.compile(r'page\s+([0][xX][0-9a-fA-F]+)')
-    val = pattern.findall(desc)
+    val = pattern.findall(params.description)
     if not val:
         logging.error("%s parsing error", hdl_wid_522.__name__)
         return False
@@ -2563,11 +2427,10 @@ def hdl_wid_522(desc, lt2):
     return True
 
 
-def hdl_wid_550(desc, lt2):
+def hdl_wid_550(params: WIDParams):
     """
     Implements:
-    :param desc: Please send Heartbeat Subscription Set message to the Lower Tester
-    :return:
+    description: Please send Heartbeat Subscription Set message to the Lower Tester
     """
     stack = get_stack()
 
@@ -2575,34 +2438,33 @@ def hdl_wid_550(desc, lt2):
         return True
 
     pattern = re.compile(r'(Source|Destination)=+([0][xX][0-9a-fA-F]+)')
-    params = pattern.findall(desc)
-    if not params:
+    command_params = pattern.findall(params.description)
+    if not command_params:
         logging.error("%s parsing error", hdl_wid_550.__name__)
         return False
-    params = dict(params)
+    command_params = dict(command_params)
 
-    source = int(params.get('Source'), 16)
-    destination = int(params.get('Destination'), 16)
+    source = int(command_params.get('Source'), 16)
+    destination = int(command_params.get('Destination'), 16)
 
     pattern = re.compile(r'(PeriodLog)\sset to\s+([0][xX][0-9a-fA-F]+)')
-    params = pattern.findall(desc)
-    if not params:
+    command_params = pattern.findall(params.description)
+    if not command_params:
         logging.error("%s parsing error", hdl_wid_550.__name__)
         return False
-    params = dict(params)
+    command_params = dict(command_params)
 
-    period_log = int(params.get('PeriodLog'), 16)
+    period_log = int(command_params.get('PeriodLog'), 16)
 
     btp.mesh_cfg_heartbeat_sub_set(stack.mesh.net_idx, stack.mesh.address_lt1, source, destination, period_log)
 
     return stack.mesh.status == 0x00
 
 
-def hdl_wid_551(desc, lt2):
+def hdl_wid_551(_: WIDParams):
     """
     Implements:
-    :param desc: Please send Heartbeat Subscription Get to the Lower Tester - PTS.
-    :return:
+    description: Please send Heartbeat Subscription Get to the Lower Tester - PTS.
     """
     stack = get_stack()
 
@@ -2614,52 +2476,47 @@ def hdl_wid_551(desc, lt2):
     return stack.mesh.status == 0x00
 
 
-def hdl_wid_552(desc, lt2):
+def hdl_wid_552(_: WIDParams):
     """
     Implements:
-    :param desc: This test require two instances of PTS running. This is Lower
+    description: This test requires two instances of PTS running. This is Lower
                  Tester 1. Please start another PTS instance and run
                  TESTCASE_LT2 test case. Prepare the IUT for provisioning by
                  Lower Tester 2. Click OK when Lower Tester 1 is ready.
                  Lower Tester 2 will provision, establish friendship and add
                  subscription list to the IUT.
-    :return:
     """
     return True
 
 
-def hdl_wid_555(desc, lt2):
+def hdl_wid_555(params: WIDParams):
     """
     Implements:
-    :param desc: Please send Heartbeat Subscription Set message to the Lower Tester
-    :return:
+    description: Please send Heartbeat Subscription Set message to the Lower Tester
     """
-    return hdl_wid_550(desc, lt2)
+    return hdl_wid_550(params)
 
 
-def hdl_wid_556(desc, lt2):
-    """
-    Implements:
-    :param desc:  Please send Heartbeat Subscription Set message to the Lower Tester
-    :return:
-    """
-    return hdl_wid_550(desc, lt2)
-
-
-def hdl_wid_557(desc, lt2):
+def hdl_wid_556(params: WIDParams):
     """
     Implements:
-    :param desc: Please send Heartbeat message to Low Power Node address
-    :return:
+    description:  Please send Heartbeat Subscription Set message to the Lower Tester
+    """
+    return hdl_wid_550(params)
+
+
+def hdl_wid_557(_: WIDParams):
+    """
+    Implements:
+    description: Please send Heartbeat message to Low Power Node address
     """
     return True
 
 
-def hdl_wid_560(desc, lt2):
+def hdl_wid_560(_: WIDParams):
     """
     Implements:
-    :param desc: Lower Tester 2 is waiting for IUT's heartbeat triggered by friendship termination.
-    :return:
+    description: Lower Tester 2 is waiting for IUT's heartbeat triggered by friendship termination.
     """
     stack = get_stack()
     assert stack.mesh.wait_for_lpn_terminated(timeout=60)
@@ -2667,11 +2524,10 @@ def hdl_wid_560(desc, lt2):
     return True
 
 
-def hdl_wid_561(desc, lt2):
+def hdl_wid_561(_: WIDParams):
     """
     Implements:
-    :param desc: Lower Tester 2 is waiting for IUT's heartbeat triggered by friendship establishment.
-    :return:
+    description: Lower Tester 2 is waiting for IUT's heartbeat triggered by friendship establishment.
     """
     stack = get_stack()
     assert stack.mesh.wait_for_lpn_established(timeout=60)
@@ -2679,36 +2535,33 @@ def hdl_wid_561(desc, lt2):
     return True
 
 
-def hdl_wid_562(desc, lt2):
+def hdl_wid_562(_: WIDParams):
     """
     Implements:
-    :param desc: Friendship will be terminated between Lower Tester 1 and IUT.
+    description: Friendship will be terminated between Lower Tester 1 and IUT.
                  Verifying no heartbeat is triggered by the termination...
-    :return:
     """
     return True
 
 
-def hdl_wid_563(desc, lt2):
+def hdl_wid_563(_: WIDParams):
     """
     Implements:
-    :param desc: Please wait until Friendship is established between Lower Tester
+    description: Please wait until Friendship is established between Lower Tester
                  1 and IUT. Click OK to send Heartbeat Subscription Set message
                  to IUT (Low Power Node).
-    :return:
     """
     stack = get_stack()
     assert stack.mesh.wait_for_lpn_established(timeout=60)
     return True
 
 
-def hdl_wid_564(desc, lt2):
+def hdl_wid_564(_: WIDParams):
     """
     Implements:
-    :param desc: Please wait until Friendship is reestablished between Lower Tester
+    description: Please wait until Friendship is reestablished between Lower Tester
                  1 and IUT. Click OK to send Heartbeat Subscription Set message
                  to IUT (Low Power Node).
-    :return:
     """
     stack = get_stack()
     assert stack.mesh.wait_for_lpn_established(timeout=60)
@@ -2716,11 +2569,10 @@ def hdl_wid_564(desc, lt2):
     return True
 
 
-def hdl_wid_600(desc, lt2):
+def hdl_wid_600(_: WIDParams):
     """
     Implements: CONFIGURE_FAULT_ARRAY
-    :param desc: Please generate faults on the IUT.
-    :return:
+    description: Please generate faults on the IUT.
     """
     stack = get_stack()
 
@@ -2732,17 +2584,16 @@ def hdl_wid_600(desc, lt2):
     return True
 
 
-def hdl_wid_601(desc, lt2):
+def hdl_wid_601(params: WIDParams):
     """
     Implements: CONFIRM_HEALTH_CURRENT_STATUS
-    :param desc: Please confirm the fault array = %s.
-    :return:
+    description: Please confirm the fault array = %s.
     """
     stack = get_stack()
 
     # This pattern is matching fault array
     pattern = re.compile(r'array\s=\s([0-9a-fA-F]+)')
-    params = pattern.findall(desc)
+    params = pattern.findall(params.description)
     if not params:
         logging.error("%s parsing error", hdl_wid_601.__name__)
         return False
@@ -2756,17 +2607,16 @@ def hdl_wid_601(desc, lt2):
     return True
 
 
-def hdl_wid_603(desc, lt2):
+def hdl_wid_603(params: WIDParams):
     """
     Implements: CONFIRM_HEALTH_FAULT_STATUS_STATUS_1
-    :param desc: Please confirm the test ID %x and no registered faults.
-    :return:
+    description: Please confirm the test ID %x and no registered faults.
     """
     stack = get_stack()
 
     # Pattern looking for test ID
     pattern = re.compile(r"(ID)\s+([0-9a-fA-F]+)", re.IGNORECASE)
-    found = pattern.findall(desc)
+    found = pattern.findall(params.description)
     if not found:
         logging.error("%s Parsing error!", hdl_wid_603.__name__)
         return False
@@ -2780,18 +2630,17 @@ def hdl_wid_603(desc, lt2):
     return True
 
 
-def hdl_wid_604(desc, lt2):
+def hdl_wid_604(params: WIDParams):
     """
     Implements: CONFIRM_HEALTH_FAULT_STATUS_STATUS_2
-    :param desc: Please confirm the test ID %x and the registered fault array
+    description: Please confirm the test ID %x and the registered fault array
                  %s.
-    :return:
     """
     stack = get_stack()
 
     # Pattern looking for fault array and test ID
     pattern = re.compile(r"(array|ID)\s+([0-9a-fA-F]+)", re.IGNORECASE)
-    found = pattern.findall(desc)
+    found = pattern.findall(params.description)
     if not found:
         logging.error("%s Parsing error!", hdl_wid_604.__name__)
         return False
@@ -2804,206 +2653,203 @@ def hdl_wid_604(desc, lt2):
     return True
 
 
-def hdl_wid_605(desc, lt2):
+def hdl_wid_605(params: WIDParams):
     """
     Implements:
-    :param desc:
-    :return:
+    description:
     """
     stack = get_stack()
 
-    if "Health Fault Get" in desc:
+    if "Health Fault Get" in params.description:
         pattern = re.compile(r'(Company\sID)\s=\s+([0][xX][0-9a-fA-F]+)')
-        params = pattern.findall(desc)
+        command_params = pattern.findall(params.description)
 
-        if not params:
+        if not command_params:
             logging.error("%s parsing error", hdl_wid_605.__name__)
             return False
-        params = dict(params)
+        command_params = dict(command_params)
 
-        cid = int(params.get('Company ID'), 16)
+        cid = int(command_params.get('Company ID'), 16)
 
         btp.mesh_health_fault_get(stack.mesh.address_lt1, stack.mesh.app_idx, cid)
         return True
 
-    if "Health Fault Clear" in desc:
+    if "Health Fault Clear" in params.description:
         pattern = re.compile(r'(Company\sID)\s=\s+([0][xX][0-9a-fA-F]+)')
-        params = pattern.findall(desc)
+        command_params = pattern.findall(params.description)
 
-        if not params:
+        if not command_params:
             logging.error("%s parsing error", hdl_wid_605.__name__)
             return False
-        params = dict(params)
+        command_params = dict(command_params)
 
-        cid = int(params.get('Company ID'), 16)
+        cid = int(command_params.get('Company ID'), 16)
         ack = True
 
-        if "Unreliable" in desc:
+        if "Unreliable" in params.description:
             ack = False
 
         btp.mesh_health_fault_clear(stack.mesh.address_lt1, stack.mesh.app_idx, cid, ack)
 
         return (not ack) or (ack and stack.mesh.model_data == 0x00)
 
-    if "Health Fault Test" in desc:
+    if "Health Fault Test" in params.description:
         pattern = re.compile(r'(Test\sID|Company\sID)\s=\s+([0][xX][0-9a-fA-F]+)')
-        params = pattern.findall(desc)
+        command_params = pattern.findall(params.description)
 
-        if not params:
+        if not command_params:
             logging.error("%s parsing error", hdl_wid_605.__name__)
             return False
-        params = dict(params)
+        command_params = dict(command_params)
 
-        cid = int(params.get('Company ID'), 16)
+        cid = int(command_params.get('Company ID'), 16)
 
         pattern = re.compile(r'(Test\sID|Company\sID)\s=\s+([0-9a-fA-F]+)')
-        params = pattern.findall(desc)
+        command_params = pattern.findall(params.description)
 
-        if not params:
+        if not command_params:
             logging.error("%s parsing error", hdl_wid_605.__name__)
             return False
-        params = dict(params)
+        command_params = dict(command_params)
 
-        test_id = int(params.get("Test ID"))
+        test_id = int(command_params.get("Test ID"))
 
         ack = True
-        if "Unreliable" in desc:
+        if "Unreliable" in params.description:
             ack = False
 
         btp.mesh_health_fault_test(stack.mesh.address_lt1, stack.mesh.app_idx, cid, test_id, ack)
 
         return (not ack) or (ack and stack.mesh.model_data == [test_id, cid])
 
-    if "Health Period Get" in desc:
+    if "Health Period Get" in params.description:
         btp.mesh_health_period_get(stack.mesh.address_lt1, stack.mesh.app_idx)
         return True
 
-    if "Health Period Set" in desc:
+    if "Health Period Set" in params.description:
         devisor = 0x01
         ack = True
 
-        if "Unreliable" in desc:
+        if "Unreliable" in params.description:
             ack = False
 
         btp.mesh_health_period_set(stack.mesh.address_lt1, stack.mesh.app_idx, devisor, ack)
 
         return (not ack) or (ack and stack.mesh.model_data == devisor)
 
-    if "Attention Get" in desc:
+    if "Attention Get" in params.description:
         btp.mesh_health_attention_get(stack.mesh.address_lt1, stack.mesh.app_idx)
         return True
 
-    if "Attention Set" in desc:
+    if "Attention Set" in params.description:
         attention = 0x01
         ack = True
 
-        if "Unreliable" in desc:
+        if "Unreliable" in params.description:
             ack = False
 
         btp.mesh_health_attention_set(stack.mesh.address_lt1, stack.mesh.app_idx, attention, ack)
         return True
 
 
-def hdl_wid_606(desc, lt2):
+def hdl_wid_606(_: WIDParams):
     """
     Implements:
-    :param desc:
-    :return:
+    description:
     """
     stack = get_stack()
 
     return stack.mesh.model_data == 1
 
-def hdl_wid_625(desc, lt2):
+
+def hdl_wid_625(_: WIDParams):
     """
     Implements: NETKEY_REDUCE_RESOURCES
-    :param desc: Reduce resources to only allow one NetKey Index. Press OK when
+    description: Reduce resources to only allow one NetKey Index. Press OK when
                  done.
-    :return:
     """
 
     logging.debug("CONFIG_BT_MESH_SUBNET_COUNT=1")
     return True
 
 
-def hdl_wid_626(desc, lt2):
+def hdl_wid_626(_: WIDParams):
     """
     Implements:
-    :param desc:
-    :return:
+    description:
     """
     return True
 
 
-def hdl_wid_650(desc, lt2):
+def hdl_wid_650(params: WIDParams):
     """
     Implements:
-    :param desc:
-    :return:
+    description:
     """
     stack = get_stack()
 
     if not stack.mesh.iut_is_provisioner:
         return True
 
-    if "Config Relay Get" in desc:
+    if "Config Relay Get" in params.description:
         btp.mesh_cfg_relay_get(stack.mesh.net_idx, stack.mesh.address_lt1)
         return True
 
-    if "Config Relay Set" in desc:
+    if "Config Relay Set" in params.description:
         new_relay = 0x00
         new_transmit = 0x00
         btp.mesh_cfg_relay_set(stack.mesh.net_idx, stack.mesh.address_lt1, new_relay, new_transmit)
         return True
 
-    if "Config Model Publication GET" in desc:
+    if "Config Model Publication GET" in params.description:
         pattern = re.compile(r'(Element\sAddress|Model\sId)\s=\s+([0][xX][0-9a-fA-F]+)')
-        params = pattern.findall(desc)
+        command_params = pattern.findall(params.description)
 
-        if not params:
+        if not command_params:
             logging.error("%s parsing error", hdl_wid_650.__name__)
             return False
-        params = dict(params)
+        command_params = dict(command_params)
 
-        el_address = int(params.get('Element Address'), 16)
-        model_id = int(params.get('Model Id'), 16)
+        el_address = int(command_params.get('Element Address'), 16)
+        model_id = int(command_params.get('Model Id'), 16)
 
         btp.mesh_cfg_model_publication_get(stack.mesh.net_idx, stack.mesh.address_lt1, el_address, model_id)
         return stack.mesh.status == 0x00
 
-    if "Config Model Publication SET" in desc:
-        pattern = re.compile(r'(Element\sAddress|Publish\sAddress|AppKey\sIndex|Credential\sFlag|RFU|Publish\sTTL|Publish\sPeriod|'
+    if "Config Model Publication SET" in params.description:
+        pattern = re.compile(r'(Element\sAddress|Publish\sAddress|AppKey\sIndex'
+                             r'|Credential\sFlag|RFU|Publish\sTTL|Publish\sPeriod|'
                              r'ModelId)\s=\s+([0-9a-fA-F]+)')
 
-        params = pattern.findall(desc)
+        command_params = pattern.findall(params.description)
 
-        if not params:
+        if not command_params:
             logging.error("%s parsing error", hdl_wid_650.__name__)
             return False
-        params = dict(params)
+        command_params = dict(command_params)
 
-        el_address = int(params.get('Element Address'), 16)
-        pub_addr = int(params.get('Publish Address'), 16)
-        appkey_index = int(params.get('AppKey Index'), 16)
-        cred_flag = int(params.get('Credential Flag'), 16)
-        ttl = int(params.get('Publish TTL'), 16)
-        period = int(params.get('Publish Period'), 16)
-        model_id = int(params.get('ModelId'), 16)
+        el_address = int(command_params.get('Element Address'), 16)
+        pub_addr = int(command_params.get('Publish Address'), 16)
+        appkey_index = int(command_params.get('AppKey Index'), 16)
+        cred_flag = int(command_params.get('Credential Flag'), 16)
+        ttl = int(command_params.get('Publish TTL'), 16)
+        period = int(command_params.get('Publish Period'), 16)
+        model_id = int(command_params.get('ModelId'), 16)
         transmit = 0x00
 
-        if "Publish Address = a group address" in desc:
+        if "Publish Address = a group address" in params.description:
             pub_addr = 0xC000
 
         btp.mesh_cfg_model_publication_set(stack.mesh.net_idx, stack.mesh.address_lt1, el_address, model_id, pub_addr,
-                                              appkey_index, cred_flag, ttl, period, transmit)
+                                           appkey_index, cred_flag, ttl, period, transmit)
         return stack.mesh.status == 0x00
 
-    if 'Config Model Publication VIRTUAL ADDRESS SET' in desc:
+    if 'Config Model Publication VIRTUAL ADDRESS SET' in params.description:
         pattern = re.compile(
             r'(Element\sAddress|Publish\sAddress|AppKey\sIndex|Credential\sFlag|RFU|Publish\sTTL|Publish\s'
             r'Period|ModelId)\s=\s+([0-9a-fA-F]+)')
 
-        params = pattern.findall(desc)
+        params = pattern.findall(params.description)
 
         if not params:
             logging.error("%s parsing error", hdl_wid_650.__name__)
@@ -3023,13 +2869,12 @@ def hdl_wid_650(desc, lt2):
                                 appkey_index)
         btp.mesh_cfg_model_app_bind(stack.mesh.net_idx, stack.mesh.address_lt1, el_address, appkey_index, model_id)
 
-
-        btp.mesh_cfg_model_pub_va_set(stack.mesh.net_idx, stack.mesh.address_lt1, el_address, model_id, stack.mesh.dev_uuid,
-                                      appkey_index, cred_flag, ttl, period, transmit)
+        btp.mesh_cfg_model_pub_va_set(stack.mesh.net_idx, stack.mesh.address_lt1, el_address,
+                                      model_id, stack.mesh.dev_uuid, appkey_index, cred_flag, ttl, period, transmit)
         logging.debug("Status = 0x%2x", stack.mesh.status)
         return stack.mesh.status == 0x00
 
-    if "NetKey Add" in desc:
+    if "NetKey Add" in params.description:
         net_key_idx = 0x0001
         net_key = '00000000000000000000000000000001'
 
@@ -3037,21 +2882,21 @@ def hdl_wid_650(desc, lt2):
 
         return stack.mesh.status == 0x00
 
-    if "NetKey Update" in desc:
+    if "NetKey Update" in params.description:
         net_key = '00000000000000000000000000000001'
 
         btp.mesh_cfg_netkey_update(stack.mesh.net_idx, stack.mesh.address_lt1, net_key, stack.mesh.net_key_index)
 
         return stack.mesh.status == 0x00
 
-    if "NetKey Get" in desc:
+    if "NetKey Get" in params.description:
         btp.mesh_cfg_netkey_get(stack.mesh.net_idx, stack.mesh.address_lt1)
 
         return True
 
-    if "NetKey Delete" in desc:
+    if "NetKey Delete" in params.description:
         pattern = re.compile(r'index\s+([0-9a-fA-F]+)')
-        val = pattern.findall(desc)
+        val = pattern.findall(params.description)
         if not val:
             logging.error("%s parsing error", hdl_wid_650.__name__)
             return False
@@ -3060,17 +2905,16 @@ def hdl_wid_650(desc, lt2):
 
         return stack.mesh.status == 0x00
 
-    if "Node Reset" in desc:
+    if "Node Reset" in params.description:
         btp.mesh_cfg_node_reset(stack.mesh.net_idx, stack.mesh.address_lt1)
 
         return stack.mesh.status == 0x01
 
 
-def hdl_wid_652(desc, lt2):
+def hdl_wid_652(_: WIDParams):
     """
     Implements: CONFIRM_GENERIC
-    :param desc: Please confirm the %s = %s.
-    :return:
+    description: Please confirm the %s = %s.
     """
 
     # TODO: Confirm composition data
