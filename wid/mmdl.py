@@ -21,9 +21,9 @@ import time
 
 from pybtp import btp
 from ptsprojects.stack import get_stack
+from pybtp.types import WIDParams
 
 # MMDL ATS ver. 1.0
-
 log = logging.debug
 
 
@@ -39,7 +39,7 @@ def hdl_pending_mmdl_wids(wid, test_case_name, description):
 
     for action in actions:
         handler = getattr(module, "hdl_wid_%d" % action.wid)
-        result = handler(action.description)
+        result = handler(WIDParams(wid, description, test_case_name))
         stack.synch.prepare_pending_response(action.test_case,
                                              result, action.delay)
 
@@ -56,7 +56,7 @@ def mmdl_wid_hdl(wid, description, test_case_name):
 
         stack = get_stack()
         if not stack.synch or not stack.synch.is_required_synch(test_case_name, wid):
-            return handler(description)
+            return handler(WIDParams(wid, description, test_case_name))
 
         response = hdl_pending_mmdl_wids(wid, test_case_name, description)
 
@@ -83,13 +83,12 @@ def iut_reset():
     btp.mesh_init()
 
 
-def hdl_wid_13(desc):
+def hdl_wid_13(_: WIDParams):
     """
     Implements: RE_PROVISIONING_PROVISIONER
-    :param desc: There is no shared security information. Please remove any
+    description: There is no shared security information. Please remove any
                  security information if any. PTS is waiting for beacon to
                  start provisioning from
-    :return:
     """
     stack = get_stack()
 
@@ -103,59 +102,58 @@ def hdl_wid_13(desc):
     return True
 
 
-def hdl_wid_515(desc):
+def hdl_wid_515(_: WIDParams):
     """
     MMDL/SR/SCH/BV-01-C
 
-    :param desc: Please confirm the following message is correct.
+    description: Please confirm the following message is correct.
     """
     return True
 
 
-def hdl_wid_523(desc):
+def hdl_wid_523(_: WIDParams):
     """
     MMDL/SR/LLC/BV-07-C
 
-    :param desc: Please change IUT's Light LC Occupancy state to 1,
+    description: Please change IUT's Light LC Occupancy state to 1,
                  simulating that occupancy has been reported by occupancy sensors.
     """
     return True
 
 
-def hdl_wid_525(desc):
+def hdl_wid_525(_: WIDParams):
     """
     MMDL/SR/LLC/BV-08-C
 
-    :param desc: Please change the IUT's Light LC Property states are set
+    description: Please change the IUT's Light LC Property states are set
                  such that the transitions of the Light LC Light OnOff state
                  are immediate by default (transition time of zero).
     """
     return True
 
 
-def hdl_wid_630(desc):
+def hdl_wid_630(_: WIDParams):
     iut_reset()
     return True
 
 
-def hdl_wid_631(desc):
+def hdl_wid_631(_: WIDParams):
     iut_reset()
     return True
 
 
-def hdl_wid_652(desc):
+def hdl_wid_652(_: WIDParams):
     """
     Implements: CONFIRM_GENERIC
-    :param desc: Please confirm the %s = %s.
-    :return:
+    description: Please confirm the %s = %s.
     """
     # TODO: Confirm composition data
     return True
 
 
-def parse_params(desc):
+def parse_command_params(description):
     field_dict = {}
-    txt = desc.splitlines()[1:]
+    txt = description.splitlines()[1:]
     for line in txt:
         line = line.strip()
         fields = line.split(': ', 1)
@@ -179,7 +177,7 @@ def parse_params(desc):
     return field_dict
 
 
-def gen_onoff_get(params):
+def gen_onoff_get(_):
     btp.mmdl_gen_onoff_get()
     return True
 
@@ -210,7 +208,7 @@ def gen_onoff_status(params):
     return [present_onoff] == stack.mesh.recv_status_data_get('Status')
 
 
-def gen_lvl_get(params):
+def gen_lvl_get(_):
     btp.mmdl_gen_lvl_get()
     return True
 
@@ -281,7 +279,7 @@ def gen_lvl_status(params):
     return [current_lvl] == stack.mesh.recv_status_data_get('Status')
 
 
-def gen_dtt_get(params):
+def gen_dtt_get(_):
     btp.mmdl_gen_dtt_get()
     return True
 
@@ -310,7 +308,7 @@ def gen_dtt_status(params):
     return [tt] == stack.mesh.recv_status_data_get('Status')
 
 
-def gen_ponoff_get(params):
+def gen_ponoff_get(_):
     btp.mmdl_gen_ponoff_get()
     return True
 
@@ -339,7 +337,7 @@ def gen_ponoff_status(params):
     return [on_power_up] == stack.mesh.recv_status_data_get('Status')
 
 
-def gen_plvl_get(params):
+def gen_plvl_get(_):
     btp.mmdl_gen_plvl_get()
     return True
 
@@ -370,12 +368,12 @@ def gen_plvl_status(params):
     return [power_level] == stack.mesh.recv_status_data_get('Status')
 
 
-def gen_plvl_dflt_get(params):
+def gen_plvl_dflt_get(_):
     btp.mmdl_gen_plvl_dflt_get()
     return True
 
 
-def gen_plvl_last_get(params):
+def gen_plvl_last_get(_):
     btp.mmdl_gen_plvl_last_get()
     return True
 
@@ -410,7 +408,7 @@ def gen_plvl_dflt_status(params):
     return [power_default] == stack.mesh.recv_status_data_get('Status')
 
 
-def gen_plvl_range_get(params):
+def gen_plvl_range_get(_):
     btp.mmdl_gen_plvl_range_get()
     return True
 
@@ -442,7 +440,7 @@ def gen_plvl_range_status(params):
     return [status, range_min, range_max] == stack.mesh.recv_status_data_get('Status')
 
 
-def gen_battery_get(params):
+def gen_battery_get(_):
     btp.mmdl_gen_battery_get()
     return True
 
@@ -456,7 +454,7 @@ def gen_battery_status(params):
     return [power_default, discharge_min, charge_min, flags] == stack.mesh.recv_status_data_get('Status')
 
 
-def gen_loc_global_get(params):
+def gen_loc_global_get(_):
     btp.mmdl_gen_loc_global_get()
     return True
 
@@ -490,7 +488,7 @@ def gen_loc_global_status(params):
     return [lat, lon, alt] == stack.mesh.recv_status_data_get('Status')
 
 
-def gen_loc_local_get(params):
+def gen_loc_local_get(_):
     btp.mmdl_gen_loc_local_get()
     return True
 
@@ -530,7 +528,7 @@ def gen_loc_local_status(params):
     return [north, east, alt, floor, location_uncert] == stack.mesh.recv_status_data_get('Status')
 
 
-def gen_mfr_props_get(params):
+def gen_mfr_props_get(_):
     btp.mmdl_gen_props_get(kind=0x00)
     return True
 
@@ -576,7 +574,7 @@ def gen_mfr_prop_status(params):
     return [prop_id, access, val] == stack.mesh.recv_status_data_get('Status')
 
 
-def gen_admin_props_get(params):
+def gen_admin_props_get(_):
     btp.mmdl_gen_props_get(kind=0x01)
     return True
 
@@ -624,7 +622,7 @@ def gen_admin_prop_status(params):
     return [prop_id, access, val] == stack.mesh.recv_status_data_get('Status')
 
 
-def gen_usr_props_get(params):
+def gen_usr_props_get(_):
     btp.mmdl_gen_props_get(kind=0x02)
     return True
 
@@ -694,10 +692,10 @@ def sensor_desc_get(params):
 
 
 def sensor_desc_status(params):
-    desc = params['Descriptor']
+    params.description = params['Descriptor']
 
     stack = get_stack()
-    return [desc] == stack.mesh.recv_status_data_get('Status')
+    return [params.description] == stack.mesh.recv_status_data_get('Status')
 
 
 def sensor_get(params):
@@ -728,13 +726,13 @@ def sensor_status(params):
     return stack.mesh.expect_status_data_get('Status') == stack.mesh.recv_status_data_get('Status')
 
 
-def sensor_cadence_get(params):
+def sensor_cadence_get(_):
     sensor_id = 0x0042
     btp.mmdl_sensor_cadence_get(sensor_id)
     return True
 
 
-def sensor_cadence_set(params, ack):
+def sensor_cadence_set(_, ack):
     sensor_id = 0x0042
     cadence_data = "0100a00100a0"
     btp.mmdl_sensor_cadence_set(sensor_id, cadence_data, ack=ack)
@@ -761,7 +759,7 @@ def sensor_cadence_status(params):
     return [prop_id, cadence_data] == stack.mesh.recv_status_data_get('Status')
 
 
-def sensor_settings_get(params):
+def sensor_settings_get(_):
     sensor_id = 0x0042
     btp.mmdl_sensor_settings_get(sensor_id)
     return True
@@ -775,14 +773,14 @@ def sensor_settings_status(params):
     return [sensor_id, settings] == stack.mesh.recv_status_data_get('Status')
 
 
-def sensor_setting_get(params):
+def sensor_setting_get(_):
     sensor_id = 0x004e
     setting_id = 0x006e
     btp.mmdl_sensor_setting_get(sensor_id, setting_id)
     return True
 
 
-def sensor_setting_set(params, ack):
+def sensor_setting_set(_, ack):
     sensor_id = 0x004e
     setting_id = 0x006e
     setting_raw = '00'
@@ -798,11 +796,11 @@ def sensor_setting_set_unack(params):
     return sensor_setting_set(params, False)
 
 
-def sensor_setting_status(params):
+def sensor_setting_status(_):
     return True
 
 
-def sensor_column_get(params):
+def sensor_column_get(_):
     sensor_id = 0x0042
     raw_value = '10'
     btp.mmdl_sensor_column_get(sensor_id, raw_value)
@@ -837,7 +835,7 @@ ZONE_CHANGE_ZERO_POINT = 0x40
 UTC_CHANGE_ZERO_POINT = 0x00FF
 
 
-def time_get(params):
+def time_get(_):
     btp.mmdl_time_get()
     return True
 
@@ -869,7 +867,7 @@ def time_status(params):
     return [tai, subsecond, uncertainty, tai_utc_delta, time_zone_offset] == stack.mesh.recv_status_data_get('Status')
 
 
-def time_role_get(params):
+def time_role_get(_):
     btp.mmdl_time_role_get()
     return True
 
@@ -889,7 +887,7 @@ def time_role_status(params):
     return [role] == stack.mesh.recv_status_data_get('Status')
 
 
-def time_zone_get(params):
+def time_zone_get(_):
     btp.mmdl_time_zone_get()
     return True
 
@@ -913,7 +911,7 @@ def time_zone_status(params):
     return [current_offset, new_offset, timestamp] == stack.mesh.recv_status_data_get('Status')
 
 
-def time_tai_utc_delta_get(params):
+def time_tai_utc_delta_get(_):
     btp.mmdl_time_tai_utc_delta_get()
     return True
 
@@ -937,7 +935,7 @@ def time_tai_utc_delta_status(params):
     return [delta_current, delta_new, timestamp] == stack.mesh.recv_status_data_get('Status')
 
 
-def light_lightness_get(params):
+def light_lightness_get(_):
     btp.mmdl_light_lightness_get()
     return True
 
@@ -968,7 +966,7 @@ def light_lightness_status(params):
     return [power_level] == stack.mesh.recv_status_data_get('Status')
 
 
-def light_lightness_linear_get(params):
+def light_lightness_linear_get(_):
     btp.mmdl_light_lightness_linear_get()
     return True
 
@@ -999,7 +997,7 @@ def light_lightness_linear_status(params):
     return [power_level] == stack.mesh.recv_status_data_get('Status')
 
 
-def light_lightness_last_get(params):
+def light_lightness_last_get(_):
     btp.mmdl_light_lightness_last_get()
     return True
 
@@ -1010,7 +1008,7 @@ def light_lightness_last_status(params):
     return [power_level] == stack.mesh.recv_status_data_get('Status')
 
 
-def light_lightness_default_get(params):
+def light_lightness_default_get(_):
     btp.mmdl_light_lightness_default_get()
     return True
 
@@ -1039,7 +1037,7 @@ def light_lightness_default_status(params):
     return [power_level] == stack.mesh.recv_status_data_get('Status')
 
 
-def light_lightness_range_get(params):
+def light_lightness_range_get(_):
     btp.mmdl_light_lightness_range_get()
     return True
 
@@ -1073,7 +1071,7 @@ def light_lightness_range_status(params):
     return [status, min_val, max_val] == stack.mesh.recv_status_data_get('Status')
 
 
-def light_lc_mode_get(params):
+def light_lc_mode_get(_):
     btp.mmdl_light_lc_mode_get()
     return True
 
@@ -1102,7 +1100,7 @@ def light_lc_mode_status(params):
     return [mode] == stack.mesh.recv_status_data_get('Status')
 
 
-def light_lc_occupancy_mode_get(params):
+def light_lc_occupancy_mode_get(_):
     btp.mmdl_light_lc_occupancy_mode_get()
     return True
 
@@ -1131,7 +1129,7 @@ def light_lc_occupancy_mode_status(params):
     return [occupancy_mode] == stack.mesh.recv_status_data_get('Status')
 
 
-def light_lc_light_onoff_mode_get(params):
+def light_lc_light_onoff_mode_get(_):
     btp.mmdl_light_lc_light_onoff_mode_get()
     return True
 
@@ -1195,7 +1193,7 @@ def light_lc_property_status(params):
     return [prop_id, prop_val] == stack.mesh.recv_status_data_get('Status')
 
 
-def light_ctl_states_get(params):
+def light_ctl_states_get(_):
     btp.mmdl_light_ctl_states_get()
     return True
 
@@ -1233,7 +1231,7 @@ def light_ctl_states_status(params):
     return [current_light, current_temp] == stack.mesh.recv_status_data_get('Status')
 
 
-def light_ctl_temperature_get(params):
+def light_ctl_temperature_get(_):
     btp.mmdl_light_ctl_temperature_get()
     return True
 
@@ -1270,7 +1268,7 @@ def light_ctl_temperature_status(params):
     return [current_temp, current_delta] == stack.mesh.recv_status_data_get('Status')
 
 
-def light_ctl_default_get(params):
+def light_ctl_default_get(_):
     btp.mmdl_light_ctl_default_get()
     return True
 
@@ -1307,7 +1305,7 @@ def light_ctl_default_status(params):
     return [ctl_lightness, ctl_temp, ctl_delta] == stack.mesh.recv_status_data_get('Status')
 
 
-def light_ctl_temp_range_get(params):
+def light_ctl_temp_range_get(_):
     btp.mmdl_light_ctl_temp_range_get()
     return True
 
@@ -1341,7 +1339,7 @@ def light_ctl_temp_range_status(params):
     return [status, range_min, range_max] == stack.mesh.recv_status_data_get('Status')
 
 
-def scene_get(params):
+def scene_get(_):
     btp.mmdl_scene_get()
     return True
 
@@ -1354,7 +1352,7 @@ def scene_status(params):
     return [expect_status_code, scene] == stack.mesh.recv_status_data_get('Status')
 
 
-def scene_register_get(params):
+def scene_register_get(_):
     btp.mmdl_scene_register_get()
     return True
 
@@ -1405,7 +1403,7 @@ def scene_recall_unack(params):
     return scene_recall(params, False)
 
 
-def light_xyl_get(params):
+def light_xyl_get(_):
     btp.mmdl_light_xyl_get()
     return True
 
@@ -1448,7 +1446,7 @@ def light_xyl_status(params):
     return [lightness, x_value, y_value] == stack.mesh.recv_status_data_get('Status')
 
 
-def light_xyl_target_get(params):
+def light_xyl_target_get(_):
     btp.mmdl_light_xyl_target_get()
     return True
 
@@ -1462,7 +1460,7 @@ def light_xyl_target_status(params):
     return [lightness, x_value, y_value] == stack.mesh.recv_status_data_get('Status')
 
 
-def light_xyl_default_get(params):
+def light_xyl_default_get(_):
     btp.mmdl_light_xyl_default_get()
     return True
 
@@ -1497,7 +1495,7 @@ def light_xyl_default_status(params):
     return [lightness, x_value, y_value] == stack.mesh.recv_status_data_get('Status')
 
 
-def light_xyl_range_get(params):
+def light_xyl_range_get(_):
     btp.mmdl_light_xyl_range_get()
     return True
 
@@ -1535,7 +1533,7 @@ def light_xyl_range_status(params):
     return [expect_status_code, min_x, min_y, max_x, max_y] == stack.mesh.recv_status_data_get('Status')
 
 
-def light_hsl_get(params):
+def light_hsl_get(_):
     btp.mmdl_light_hsl_get()
     return True
 
@@ -1578,7 +1576,7 @@ def light_hsl_status(params):
     return [lightness, hue, saturation] == stack.mesh.recv_status_data_get('Status')
 
 
-def light_hsl_target_get(params):
+def light_hsl_target_get(_):
     btp.mmdl_light_hsl_target_get()
     return True
 
@@ -1592,7 +1590,7 @@ def light_hsl_target_status(params):
     return [lightness, hue, saturation] == stack.mesh.recv_status_data_get('Status')
 
 
-def light_hsl_default_get(params):
+def light_hsl_default_get(_):
     btp.mmdl_light_hsl_default_get()
     return True
 
@@ -1626,7 +1624,7 @@ def light_hsl_default_status(params):
     return [lightness, hue, saturation] == stack.mesh.recv_status_data_get('Status')
 
 
-def light_hsl_range_get(params):
+def light_hsl_range_get(_):
     btp.mmdl_light_hsl_range_get()
     return True
 
@@ -1663,7 +1661,7 @@ def light_hsl_range_status(params):
     return [status_code, hue_min, saturation_min, hue_max, saturation_max] == stack.mesh.recv_status_data_get('Status')
 
 
-def light_hsl_hue_get(params):
+def light_hsl_hue_get(_):
     btp.mmdl_light_hsl_hue_get()
     return True
 
@@ -1688,7 +1686,7 @@ def light_hsl_hue_set_unack(params):
     return light_hsl_hue_set(params, False)
 
 
-def light_hsl_saturation_get(params):
+def light_hsl_saturation_get(_):
     btp.mmdl_light_hsl_saturation_get()
     return True
 
@@ -1727,7 +1725,7 @@ def light_hsl_saturation_status(params):
     return [saturation] == stack.mesh.recv_status_data_get('Status')
 
 
-def scheduler_get(params):
+def scheduler_get(_):
     btp.mmdl_scheduler_get()
     return True
 
@@ -1998,14 +1996,14 @@ def parse_send(params):
     return cmds[opcode](params)
 
 
-def hdl_wid_660(desc):
-    params = parse_params(desc)
-    log("%r", params)
-    if desc.startswith('Please send') or desc.startswith('Please confirm the received'):
-        return parse_send(params)
-    if desc.startswith('Please confirm IUT has successfully set the new state.'):
-        if params:
-            parse_send(params)
+def hdl_wid_660(params: WIDParams):
+    command_params = parse_command_params(params.description)
+    log("%r", command_params)
+    if params.description.startswith('Please send') or params.description.startswith('Please confirm the received'):
+        return parse_send(command_params)
+    if params.description.startswith('Please confirm IUT has successfully set the new state.'):
+        if command_params:
+            parse_send(command_params)
             return True
         stack = get_stack()
         if stack.mesh.expect_status_data_get("Ack") is False:
@@ -2016,37 +2014,37 @@ def hdl_wid_660(desc):
     return False
 
 
-def hdl_wid_661(desc):
+def hdl_wid_661(_: WIDParams):
     iut_reset()
     return True
 
 
-def hdl_wid_663(desc):
+def hdl_wid_663(_: WIDParams):
     iut_reset()
     return True
 
 
-def hdl_wid_664(desc):
+def hdl_wid_664(params: WIDParams):
     """
     Please set the IUT's property 0x0069 outside the range (4008, BFF8).
 
     PTS will wait for Sensor Status messages being published at a new 8-second interval.
     """
-    prop_id = re.findall(r'0x([0-9A-F]{2,})', desc)[0]
-    range_values = re.findall(r'\(([0-9A-F]{2,}), ([0-9A-F]{2,})\)', desc)[0]
+    prop_id = re.findall(r'0x([0-9A-F]{2,})', params.description)[0]
+    range_values = re.findall(r'\(([0-9A-F]{2,}), ([0-9A-F]{2,})\)', params.description)[0]
     sensor_val = int(range_values[0], 16) - 1
     btp.mmdl_sensor_data_set(int(prop_id, 16), struct.pack("<I", sensor_val))
     return True
 
 
-def hdl_wid_665(desc):
+def hdl_wid_665(params: WIDParams):
     """
     Please set the IUT's property 0x0069 inside the range (4008, BFF8).
 
     PTS will wait for Sensor Status messages being published at a new 2-second interval.
     """
-    prop_id = re.findall(r'0x([0-9A-F]{2,})', desc)[0]
-    range_values = re.findall(r'\(([0-9A-F]{2,}), ([0-9A-F]{2,})\)', desc)[0]
+    prop_id = re.findall(r'0x([0-9A-F]{2,})', params.description)[0]
+    range_values = re.findall(r'\(([0-9A-F]{2,}), ([0-9A-F]{2,})\)', params.description)[0]
     sensor_val = int(range_values[0], 16) + 1
     btp.mmdl_sensor_data_set(int(prop_id, 16), struct.pack("<I", sensor_val))
     return True
@@ -2055,7 +2053,7 @@ def hdl_wid_665(desc):
 global sensor_value
 
 
-def hdl_wid_666(desc):
+def hdl_wid_666(params: WIDParams):
     """
     Please set the property 0x0069 at a convenient value that allows for future increments/decrements.
     """
@@ -2064,13 +2062,13 @@ def hdl_wid_666(desc):
     # requirement for Min Interval between published messages.
     time.sleep(5)
 
-    prop_id = int(re.findall(r'0x([0-9A-F]{2,})', desc)[0], 16)
+    prop_id = int(re.findall(r'0x([0-9A-F]{2,})', params.description)[0], 16)
     sensor_value = int(0xffff / 2)
     btp.mmdl_sensor_data_set(prop_id, struct.pack("<I", sensor_value))
     return True
 
 
-def hdl_wid_667(desc):
+def hdl_wid_667(params: WIDParams):
     """
     Please increase the value of the property 0x0069 with a quantity smaller than 332C.
 
@@ -2085,18 +2083,18 @@ def hdl_wid_667(desc):
     # requirement for Min Interval between published messages.
     time.sleep(5)
 
-    prop_id = int(re.findall(r'0x([0-9A-F]{2,})', desc)[0], 16)
-    if 'percent' in desc:
-        percent = int(re.findall(r'(\d+) percent.', desc)[0])
+    prop_id = int(re.findall(r'0x([0-9A-F]{2,})', params.description)[0], 16)
+    if 'percent' in params.description:
+        percent = int(re.findall(r'(\d+) percent.', params.description)[0])
         sensor_value = int(sensor_value * ((100.0 + (percent - 1)) / 100.0))
     else:
-        quantity = int(re.findall(r'([0-9A-F]{2,})\.', desc)[0], 16)
+        quantity = int(re.findall(r'([0-9A-F]{2,})\.', params.description)[0], 16)
         sensor_value += (quantity - 1)
     btp.mmdl_sensor_data_set(prop_id, struct.pack("<I", sensor_value))
     return True
 
 
-def hdl_wid_668(desc):
+def hdl_wid_668(params: WIDParams):
     """
     Please increase the value of the property 0x0069 with a quantity larger than 332C.
 
@@ -2111,19 +2109,19 @@ def hdl_wid_668(desc):
     # requirement for Min Interval between published messages.
     time.sleep(5)
 
-    prop_id = int(re.findall(r'0x([0-9A-F]{2,})', desc)[0], 16)
-    if 'percent' in desc:
-        percent = int(re.findall(r'(\d+) percent.', desc)[0])
+    prop_id = int(re.findall(r'0x([0-9A-F]{2,})', params.description)[0], 16)
+    if 'percent' in params.description:
+        percent = int(re.findall(r'(\d+) percent.', params.description)[0])
         sensor_value = int(sensor_value * ((100.0 + (percent + 1)) / 100.0))
     else:
-        quantity = int(re.findall(r'([0-9A-F]{2,})\.', desc)[0], 16)
+        quantity = int(re.findall(r'([0-9A-F]{2,})\.', params.description)[0], 16)
         sensor_value += (quantity + 1)
 
     btp.mmdl_sensor_data_set(prop_id, struct.pack("<I", sensor_value))
     return True
 
 
-def hdl_wid_669(desc):
+def hdl_wid_669(params: WIDParams):
     """
     Please decrease the value of the property 0x0069 with a quantity smaller than 332C.
 
@@ -2138,18 +2136,18 @@ def hdl_wid_669(desc):
     # requirement for Min Interval between published messages.
     time.sleep(5)
 
-    prop_id = int(re.findall(r'0x([0-9A-F]{2,})', desc)[0], 16)
-    if 'percent' in desc:
-        percent = int(re.findall(r'(\d+) percent.', desc)[0])
+    prop_id = int(re.findall(r'0x([0-9A-F]{2,})', params.description)[0], 16)
+    if 'percent' in params.description:
+        percent = int(re.findall(r'(\d+) percent.', params.description)[0])
         sensor_value = int(sensor_value * ((100.0 - (percent - 1)) / 100.0))
     else:
-        quantity = int(re.findall(r'([0-9A-F]{2,})\.', desc)[0], 16)
+        quantity = int(re.findall(r'([0-9A-F]{2,})\.', params.description)[0], 16)
         sensor_value -= (quantity - 1)
     btp.mmdl_sensor_data_set(prop_id, struct.pack("<I", sensor_value))
     return True
 
 
-def hdl_wid_670(desc):
+def hdl_wid_670(params: WIDParams):
     """
     Please decrease the value of the property 0x0069 with a quantity larger than 332C.
 
@@ -2160,16 +2158,16 @@ def hdl_wid_670(desc):
     # requirement for Min Interval between published messages.
     time.sleep(5)
 
-    prop_id = int(re.findall(r'0x([0-9A-F]{2,})', desc)[0], 16)
-    if 'percent' in desc:
-        percent = int(re.findall(r'(\d+) percent.', desc)[0])
+    prop_id = int(re.findall(r'0x([0-9A-F]{2,})', params.description)[0], 16)
+    if 'percent' in params.description:
+        percent = int(re.findall(r'(\d+) percent.', params.description)[0])
         sensor_value = int(sensor_value * ((100.0 - (percent + 1)) / 100.0))
     else:
-        quantity = int(re.findall(r'([0-9A-F]{2,})\.', desc)[0], 16)
+        quantity = int(re.findall(r'([0-9A-F]{2,})\.', params.description)[0], 16)
         sensor_value -= (quantity + 1)
     btp.mmdl_sensor_data_set(prop_id, struct.pack("<I", sensor_value))
     return True
 
 
-def hdl_wid_671(desc):
+def hdl_wid_671(_: WIDParams):
     return True

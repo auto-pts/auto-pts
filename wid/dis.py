@@ -17,6 +17,7 @@ import logging
 import sys
 from pybtp import btp
 from ptsprojects.stack import get_stack
+from pybtp.types import WIDParams
 
 log = logging.debug
 
@@ -29,13 +30,13 @@ def dis_wid_hdl(wid, description, test_case_name, logs=True):
 
     try:
         handler = getattr(module, "hdl_wid_%d" % wid)
-        return handler(description)
+        return handler(WIDParams(wid, description, test_case_name))
     except AttributeError as e:
         logging.exception(e)
 
 
 # wid handlers section begin
-def hdl_wid_20001(desc):
+def hdl_wid_20001(_: WIDParams):
     stack = get_stack()
     btp.gap_set_conn()
     btp.gap_adv_ind_on(ad=stack.gap.ad)
