@@ -67,6 +67,9 @@ GAP = {
     "passkey_entry_rsp": (defs.BTP_SERVICE_ID_GAP,
                           defs.GAP_PASSKEY_ENTRY,
                           CONTROLLER_INDEX),
+    "passkey_confirm_rsp": (defs.BTP_SERVICE_ID_GAP,
+                          defs.GAP_PASSKEY_CONFIRM,
+                          CONTROLLER_INDEX),
     "start_direct_adv": (defs.BTP_SERVICE_ID_GAP, defs.GAP_START_DIRECT_ADV,
                          CONTROLLER_INDEX),
     "conn_param_update": (defs.BTP_SERVICE_ID_GAP,
@@ -269,12 +272,31 @@ def gap_bond_lost_ev_(gap, data, data_len):
     gap.bond_lost_ev_data.data = (_addr_t, _addr)
 
 
+def gap_passkey_confirm_req_ev_(gap, data, data_len):
+    logging.debug("%s", gap_passkey_confirm_req_ev_.__name__)
+    iutctl = get_iut()
+
+    fmt = '<B6sI'
+
+    # Unpack and swap address
+
+    _addr_type, _addr, _passkey = struct.unpack(fmt, data)
+    _addr = binascii.hexlify(_addr[::-1]).lower().decode('utf-8')
+
+    passkey = str(_passkey).zfill(6)
+
+    logging.debug("passkey = %r", passkey)
+
+    gap.passkey.data = passkey
+
+
 GAP_EV = {
     defs.GAP_EV_NEW_SETTINGS: gap_new_settings_ev_,
     defs.GAP_EV_DEVICE_FOUND: gap_device_found_ev_,
     defs.GAP_EV_DEVICE_CONNECTED: gap_connected_ev_,
     defs.GAP_EV_DEVICE_DISCONNECTED: gap_disconnected_ev_,
     defs.GAP_EV_PASSKEY_DISPLAY: gap_passkey_disp_ev_,
+    defs.GAP_EV_PASSKEY_CONFIRM_REQ: gap_passkey_confirm_req_ev_,
     defs.GAP_EV_IDENTITY_RESOLVED: gap_identity_resolved_ev_,
     defs.GAP_EV_CONN_PARAM_UPDATE: gap_conn_param_update_ev_,
     defs.GAP_EV_SEC_LEVEL_CHANGED: gap_sec_level_changed_ev_,
@@ -590,6 +612,29 @@ def gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey):
     data_ba.extend(passkey_ba)
 
     iutctl.btp_socket.send(*GAP['passkey_entry_rsp'], data=data_ba)
+
+    gap_command_rsp_succ()
+
+
+def gap_passkey_confirm_rsp(bd_addr, bd_addr_type, passkey):
+    logging.debug("%s %r %r", gap_passkey_confirm_rsp.__name__, bd_addr,
+                  bd_addr_type)
+    iutctl = get_iut()
+
+    data_ba = bytearray()
+    bd_addr_ba = addr2btp_ba(bd_addr)
+
+    data_ba.extend(chr(bd_addr_type).encode('utf-8'))
+    data_ba.extend(bd_addr_ba)
+
+    if isinstance(passkey, str):
+        passkey = int(passkey)
+
+    match = int(passkey == int(get_stack().gap.get_passkey()))
+
+    data_ba.extend(chr(match).encode('utf-8'))
+
+    iutctl.btp_socket.send(*GAP['passkey_confirm_rsp'], data=data_ba)
 
     gap_command_rsp_succ()
 

@@ -101,6 +101,24 @@ def hdl_wid_141(params: WIDParams):
     return btp.var_store_get_passkey(params.description)
 
 
+def hdl_wid_142(params: WIDParams):
+    """
+    Please confirm the following number matches IUT: [passkey]
+    """
+    pattern = '[\d]{6}'
+    passkey = re.search(pattern, params.description)[0]
+    stack = get_stack()
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
+    if stack.gap.get_passkey() is None:
+        return False
+
+    btp.gap_passkey_confirm_rsp(bd_addr, bd_addr_type, passkey)
+
+    return stack.gap.passkey.data == passkey
+
+
 def hdl_wid_145(_: WIDParams):
     """
     Please configure IUT's OOB data flag with 'No remote OOB data present'
