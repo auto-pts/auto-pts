@@ -1017,7 +1017,7 @@ def run_test_cases(ptses, test_case_instances, args):
                     print(exeption_msg)
 
             if timeout or args.recovery and \
-                    (exeption_msg != '' or status not in {'PASS', 'INCONC', 'FAIL'}):
+                    (exeption_msg != '' or status not in {'PASS', 'INCONC', 'FAIL', "NOT_IMPLEMENTED"}):
                 run_recovery(args, ptses)
 
             if (status == 'PASS' and not args.stress_test) or stats.run_count == args.retry:
