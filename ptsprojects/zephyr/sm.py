@@ -77,12 +77,6 @@ def test_cases(ptses):
                       TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public)]
 
     custom_test_cases = [
-        ZTestCase("SM", "SM/CEN/PROT/BV-01-C",
-                  pre_conditions,
-                  generic_wid_hdl=sm_wid_hdl),
-        ZTestCase("SM", "SM/PER/PROT/BV-02-C",
-                  pre_conditions,
-                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/CEN/PKE/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
