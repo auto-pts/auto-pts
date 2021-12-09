@@ -15,7 +15,7 @@
 
 import logging
 from threading import Lock, Timer, Event
-from pybtp.types import AdType, Addr
+from pybtp.types import AdType, Addr, IOCap
 
 STACK = None
 
@@ -160,6 +160,8 @@ class Gap:
 
         # bond_lost data (addr_type, addr)
         self.bond_lost_ev_data = Property(None)
+        # if no io_cap was set it means we use no_input_output
+        self.io_cap = IOCap.no_input_output
 
     def wait_for_connection(self, timeout):
         if self.is_connected():
