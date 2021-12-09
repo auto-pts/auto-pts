@@ -84,15 +84,11 @@ def test_cases(ptses):
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/CEN/SCJW/BV-01-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   TestFunc(btp.gap_set_bondable_off),
-                   ],
+                  [TestFunc(btp.gap_set_bondable_off)],
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/CEN/SCJW/BV-04-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   TestFunc(btp.gap_set_bondable_off),
-                   ],
+                  [TestFunc(btp.gap_set_bondable_off)],
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/CEN/SCPK/BV-01-C",
                   pre_conditions +
@@ -118,15 +114,11 @@ def test_cases(ptses):
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/PER/SCJW/BV-02-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   TestFunc(btp.gap_set_bondable_off),
-                   ],
+                  [TestFunc(btp.gap_set_bondable_off)],
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/PER/SCJW/BV-03-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   TestFunc(btp.gap_set_bondable_off),
-                   ],
+                  [TestFunc(btp.gap_set_bondable_off)],
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/CEN/OOB/BV-01-C",
                   pre_conditions +
