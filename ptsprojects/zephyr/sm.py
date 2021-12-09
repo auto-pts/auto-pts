@@ -194,6 +194,10 @@ def test_cases(ptses):
                   pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.keyboard_display)],
                   generic_wid_hdl=sm_wid_hdl),
+        ZTestCase("SM", "SM/PER/SCPK/BV-03-C",
+                  pre_conditions +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.keyboard_only)],
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/PER/SCPK/BI-04-C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.keyboard_only)],

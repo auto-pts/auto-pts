@@ -18,7 +18,7 @@ import sys
 import re
 from ptsprojects.stack import get_stack
 from pybtp import btp
-from pybtp.types import WIDParams
+from pybtp.types import WIDParams, IOCap
 
 log = logging.debug
 
@@ -52,6 +52,13 @@ def hdl_wid_102(_: WIDParams):
 
 
 def hdl_wid_104(params: WIDParams):
+    stack = get_stack()
+    if stack.gap.io_cap == IOCap.keyboard_only:
+        bd_addr = btp.pts_addr_get()
+        bd_addr_type = btp.pts_addr_type_get()
+        if stack.gap.get_passkey() is None:
+            return False
+        btp.gap_passkey_entry_rsp(bd_addr, bd_addr_type, stack.gap.passkey.data)
     return btp.var_store_get_passkey(params.description)
 
 
