@@ -182,8 +182,7 @@ def test_cases(ptses):
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/CEN/SIGN/BV-01-C",
                   pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   TestFunc(btp.core_reg_svc_gatt)],
+                  [TestFunc(btp.core_reg_svc_gatt)],
                   generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/PER/SCPK/BV-02-C",
                   pre_conditions +
