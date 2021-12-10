@@ -46,30 +46,6 @@ def gatt_wid_hdl(wid, description, test_case_name, logs=True):
         logging.exception(e)
 
 
-def gatt_wid_hdl_no_write_rsp_check(wid, description, test_case_name):
-    if wid == 76:
-        log("%s, %r, %r, %s", gatt_wid_hdl_no_write_rsp_check.__name__, wid, description,
-            test_case_name)
-        return hdl_wid_76_no_rsp_check(WIDParams(wid, description, test_case_name))
-    return gatt_wid_hdl(wid, description, test_case_name)
-
-
-def gatt_wid_hdl_no_long_read(wid, description, test_case_name):
-    if wid == 48:
-        log("%s, %r, %r, %s", gatt_wid_hdl_no_long_read.__name__, wid, description,
-            test_case_name)
-        return hdl_wid_48_no_long_read(WIDParams(wid, description, test_case_name))
-    return gatt_wid_hdl(wid, description, test_case_name)
-
-
-def gatt_wid_hdl_no_btp_reply(wid, description, test_case_name):
-    if wid == 48:
-        log("%s, %r, %r, %s", gatt_wid_hdl_no_btp_reply.__name__, wid, description,
-            test_case_name)
-        return hdl_wid_48_no_btp_reply(WIDParams(wid, description, test_case_name))
-    return gatt_wid_hdl(wid, description, test_case_name)
-
-
 def gattc_wid_hdl_multiple_indications(wid, description, test_case_name):
     global indication_subbed_already
     if wid == 99:
@@ -209,6 +185,9 @@ def hdl_wid_16(_: WIDParams):
 
 
 def hdl_wid_17(params: WIDParams):
+    if params.test_case_name.startswith('GATT/CL'):
+        return btp.verify_description(params.description)
+
     MMI.reset()
     MMI.parse_description(params.description)
     pts_services = MMI.args
@@ -392,6 +371,9 @@ def hdl_wid_23(params: WIDParams):
 
 
 def hdl_wid_24(params: WIDParams):
+    if params.test_case_name.startswith('GATT/CL'):
+        return btp.verify_description(params.description)
+
     MMI.reset()
     MMI.parse_description(params.description)
 
@@ -582,37 +564,6 @@ def hdl_wid_47(params: WIDParams):
     return btp.verify_description(params.description)
 
 
-def hdl_wid_48_no_long_read(params: WIDParams):
-    MMI.reset()
-    MMI.parse_description(params.description)
-
-    hdl = MMI.args[0]
-
-    if not hdl:
-        logging.debug("parsing error")
-        return False
-
-    btp.gattc_read(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl)
-
-    btp.gattc_read_rsp(True, True)
-    return True
-
-
-def hdl_wid_48_no_btp_reply(params: WIDParams):
-    MMI.reset()
-    MMI.parse_description(params.description)
-
-    hdl = MMI.args[0]
-
-    if not hdl:
-        logging.debug("parsing error")
-        return False
-
-    btp.gattc_read(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl)
-
-    return True
-
-
 def hdl_wid_48(params: WIDParams):
     MMI.reset()
     MMI.parse_description(params.description)
@@ -623,9 +574,31 @@ def hdl_wid_48(params: WIDParams):
         logging.debug("parsing error")
         return False
 
+    no_read_long_tests = [
+        "GATT/CL/GAR/BI-01-C",
+        "GATT/CL/GAR/BI-02-C",
+        "GATT/CL/GAR/BI-04-C",
+        "GATT/CL/GAR/BI-05-C",
+        "GATT/CL/GAR/BI-11-C",
+        "GATT/CL/GAR/BI-35-C",
+        "GATT/CL/GAR/BV-01-C",
+    ]
+
+    no_btp_reply_tests = [
+        "GATT/CL/GAT/BV-01-C",
+    ]
+
+    if params.test_case_name in no_read_long_tests:
+        btp.gattc_read(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl)
+        btp.gattc_read_rsp(False, True)
+        return True
+
+    if params.test_case_name in no_btp_reply_tests:
+        btp.gattc_read(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl)
+        return True
+
     btp.gattc_read_long(btp.pts_addr_type_get(), btp.pts_addr_get(),
                         hdl, 0, 1)
-
     btp.gattc_read_long_rsp(False, True)
     return True
 
@@ -662,6 +635,9 @@ def hdl_wid_51(params: WIDParams):
 
 
 def hdl_wid_52(params: WIDParams):
+    if params.test_case_name.startswith('GATT/CL'):
+        return btp.verify_description(params.description)
+
     MMI.reset()
     MMI.parse_description(params.description)
 
@@ -907,34 +883,25 @@ def hdl_wid_75(params: WIDParams):
 
 def hdl_wid_76(params: WIDParams):
     pattern = re.compile("'([0-9a-fA-F]+)'")
-    params = pattern.findall(params.description)
-    if not params:
+    command_params = pattern.findall(params.description)
+    if not command_params:
         logging.error("parsing error")
         return False
 
-    handle = params[0]
-    off = int(params[1])
+    handle = command_params[0]
+    off = int(command_params[1])
 
     btp.gattc_write_long(btp.pts_addr_type_get(), btp.pts_addr_get(),
                          handle, off, '12', None)
+    no_rsp_check_tests = [
+        "GATT/CL/GAW/BV-10-C",
+        "GATT/CL/GAW/BI-37-C"
+    ]
+
+    if params.test_case_name in no_rsp_check_tests:
+        return True
+
     btp.gattc_write_long_rsp(True)
-
-    return True
-
-
-def hdl_wid_76_no_rsp_check(params):
-    pattern = re.compile("'([0-9a-fA-F]+)'")
-    params = pattern.findall(params.description)
-    if not params:
-        logging.error("parsing error")
-        return False
-
-    handle = params[0]
-    off = int(params[1])
-
-    btp.gattc_write_long(btp.pts_addr_type_get(), btp.pts_addr_get(),
-                         handle, off, '12', None)
-
     return True
 
 
