@@ -183,7 +183,7 @@ def hdl_wid_4(_: WIDParams):
 def hdl_wid_10(_: WIDParams):
     btp.gattc_disc_all_prim(btp.pts_addr_type_get(),
                             btp.pts_addr_get())
-    btp.gattc_disc_all_prim_rsp()
+    btp.gattc_disc_all_prim_rsp(store_rsp=True)
     return True
 
 
