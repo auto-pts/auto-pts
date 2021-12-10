@@ -19,12 +19,10 @@ import logging
 from pybtp import btp
 from pybtp.types import UUID, Addr, IOCap, Prop, Perm
 from autoptsclient_common import get_unique_name
-from wid.gatt import gatt_wid_hdl_no_write_rsp_check, gatt_wid_hdl_no_long_read, gatt_wid_hdl_no_btp_reply, \
-                     gattc_wid_hdl_multiple_indications
+from wid.gatt import gattc_wid_hdl_multiple_indications
 from ptsprojects.stack import get_stack
 from ptsprojects.testcase import TestFunc
 from ptsprojects.zephyr.gatt_wid import gatt_wid_hdl
-from ptsprojects.zephyr.gattc_wid import gattc_wid_hdl
 from ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
 
 
@@ -690,51 +688,8 @@ def test_cases_client(pts):
     ]
 
     custom_test_cases = [
-        ZTestCase("GATT", "GATT/CL/GAD/BV-01-C",
-                  pre_conditions,
-                  generic_wid_hdl=gattc_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAD/BV-03-C",
-                  pre_conditions,
-                  generic_wid_hdl=gattc_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAR/BV-04-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gattc_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAR/BV-07-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=gattc_wid_hdl),
         # PTS issue #15965
         # ZTestCase("GATT", "GATT/CL/GAW/BV-02-C",
-        ZTestCase("GATT", "GATT/CL/GAW/BV-10-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl_no_write_rsp_check),
-        ZTestCase("GATT", "GATT/CL/GAW/BI-37-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl_no_write_rsp_check),
-
-        ZTestCase("GATT", "GATT/CL/GAR/BI-01-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl_no_long_read),
-        ZTestCase("GATT", "GATT/CL/GAR/BI-02-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl_no_long_read),
-        ZTestCase("GATT", "GATT/CL/GAR/BI-03-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl_no_long_read),
-        ZTestCase("GATT", "GATT/CL/GAR/BI-04-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl_no_long_read),
-        ZTestCase("GATT", "GATT/CL/GAR/BI-05-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl_no_long_read),
-        ZTestCase("GATT", "GATT/CL/GAR/BI-35-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl_no_long_read),
-        ZTestCase("GATT", "GATT/CL/GAR/BV-01-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl_no_long_read),
-        ZTestCase("GATT", "GATT/CL/GAT/BV-01-C",
-                  pre_conditions,
-                  generic_wid_hdl=gatt_wid_hdl_no_btp_reply),
     ]
 
     test_case_name_list = pts.get_test_case_list('GATT')

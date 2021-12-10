@@ -22,7 +22,6 @@ from ptsprojects.stack import get_stack
 from ptsprojects.testcase import TestFunc
 from ptsprojects.mynewt.ztestcase import ZTestCase
 from ptsprojects.mynewt.gatt_wid import gatt_wid_hdl
-from ptsprojects.mynewt.gattc_wid import gattc_wid_hdl, gattc_wid_hdl_no_read_long
 from wid.gatt import gattc_wid_hdl_multiple_indications
 
 
@@ -226,42 +225,6 @@ def test_cases_client(pts):
                          TestFunc(stack.gatt_init)]
 
     custom_test_cases = [
-        ZTestCase("GATT", "GATT/CL/GAD/BV-01-C",
-                  pre_conditions_cl,
-                  generic_wid_hdl=gattc_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAD/BV-03-C",
-                  pre_conditions_cl,
-                  generic_wid_hdl=gattc_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAR/BI-01-C",
-                  cmds=pre_conditions_cl,
-                  generic_wid_hdl=gattc_wid_hdl_no_read_long),
-        ZTestCase("GATT", "GATT/CL/GAR/BI-02-C",
-                  cmds=pre_conditions_cl,
-                  generic_wid_hdl=gattc_wid_hdl_no_read_long),
-        ZTestCase("GATT", "GATT/CL/GAR/BI-04-C",
-                  cmds=pre_conditions_cl,
-                  generic_wid_hdl=gattc_wid_hdl_no_read_long),
-        ZTestCase("GATT", "GATT/CL/GAR/BI-05-C",
-                  cmds=pre_conditions_cl,
-                  generic_wid_hdl=gattc_wid_hdl_no_read_long),
-        ZTestCase("GATT", "GATT/CL/GAR/BI-11-C",
-                  cmds=pre_conditions_cl,
-                  generic_wid_hdl=gattc_wid_hdl_no_read_long),
-        ZTestCase("GATT", "GATT/CL/GAR/BI-35-C",
-                  cmds=pre_conditions_cl,
-                  generic_wid_hdl=gattc_wid_hdl_no_read_long),
-        ZTestCase("GATT", "GATT/CL/GAR/BV-01-C",
-                  cmds=pre_conditions_cl,
-                  generic_wid_hdl=gattc_wid_hdl_no_read_long),
-        ZTestCase("GATT", "GATT/CL/GAR/BV-04-C",
-                  cmds=pre_conditions_cl,
-                  generic_wid_hdl=gattc_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAR/BV-07-C",
-                  cmds=pre_conditions_cl,
-                  generic_wid_hdl=gattc_wid_hdl),
-        ZTestCase("GATT", "GATT/CL/GAT/BV-01-C",
-                  cmds=pre_conditions_cl,
-                  generic_wid_hdl=gattc_wid_hdl_no_read_long),
         ZTestCase("GATT", "GATT/CL/GAI/BI-01-C",
                   cmds=pre_conditions_cl,
                   generic_wid_hdl=gattc_wid_hdl_multiple_indications),
