@@ -66,6 +66,17 @@ def hdl_wid_106(params: WIDParams):
     return btp.var_store_get_wrong_passkey(params.description)
 
 
+def hdl_wid_107(params: WIDParams):
+    passkey = btp.parse_passkey_description(params.description)
+    stack = get_stack()
+
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
+    btp.gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey)
+    return True
+
+
 def hdl_wid_108(_: WIDParams):
     btp.gap_pair()
     return True
