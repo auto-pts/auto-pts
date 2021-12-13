@@ -58,7 +58,6 @@ TEST_CASE_DB = None
 
 autoprojects = None
 
-profiles = {'dis', 'gap', 'gatt', 'sm', 'l2cap', 'mesh', 'mmdl'}
 
 # To test autopts client locally:
 # Envrinment variable AUTO_PTS_LOCAL must be set for FakeProxy to
@@ -1354,8 +1353,14 @@ def setup_project_name(project):
     autoprojects = importlib.import_module('ptsprojects.' + project)
 
 
+def _get_profiles(ptses):
+    pts_projects = ptses[0].get_project_list()
+    profiles = set(map(str.lower, pts_projects))
+    return profiles
+
+
 def setup_project_pixits(ptses):
-    for profile in profiles:
+    for profile in _get_profiles(ptses):
         mod = getattr(autoprojects, profile, None)
         if mod is not None:
             mod.set_pixits(ptses)
@@ -1364,7 +1369,7 @@ def setup_project_pixits(ptses):
 def setup_test_cases(ptses):
     test_cases = []
 
-    for profile in profiles:
+    for profile in _get_profiles(ptses):
         mod = getattr(autoprojects, profile, None)
         if mod is not None:
             test_cases += mod.test_cases(ptses)
