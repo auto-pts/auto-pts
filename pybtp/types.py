@@ -259,3 +259,18 @@ class WIDParams(NamedTuple):
     wid: int
     description: str
     test_case_name: str
+
+
+att_rsp_str = {0: "",
+               1: "Invalid handle error",
+               2: "read is not permitted error",
+               3: "write is not permitted error",
+               5: "authentication error",
+               7: "Invalid offset error",
+               8: "authorization error",
+               10: "attribute not found error",
+               12: "encryption key size error",
+               13: "Invalid attribute value length error",
+               14: "unlikely error",
+               128: "Application error",
+               }

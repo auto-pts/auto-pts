@@ -21,11 +21,11 @@ import struct
 
 from ptsprojects.stack import GattCharacteristic
 from pybtp import defs
-from pybtp.types import BTPError, addr2btp_ba, Perm
-from pybtp.btp.btp import btp_hdr_check, CONTROLLER_INDEX, get_iut_method as get_iut, btp2uuid,\
+from pybtp.btp.btp import btp_hdr_check, CONTROLLER_INDEX, get_iut_method as get_iut, btp2uuid, \
     clear_verify_values, add_to_verify_values, get_verify_values, extend_verify_values
 from pybtp.btp.gap import gap_wait_for_connection
 from pybtp.types import BTPError, addr2btp_ba
+from pybtp.types import Perm, att_rsp_str
 
 #  Global temporary objects
 GATT_SVCS = None
@@ -493,7 +493,7 @@ def gattc_disc_prim_uuid(bd_addr_type, bd_addr, uuid):
     data_ba = bytearray()
 
     bd_addr_ba = addr2btp_ba(bd_addr)
-    uuid_ba = bytes.fromhex(uuid.replace("-", ""))
+    uuid_ba = bytes.fromhex(uuid.replace("-", ""))[::-1]
 
     data_ba.extend(chr(bd_addr_type).encode('utf-8'))
     data_ba.extend(bd_addr_ba)
@@ -1253,6 +1253,31 @@ def gatt_dec_read_rsp(data):
     return att_rsp, val
 
 
+def gatt_dec_read_uuid_rsp(data):
+    """Decodes Read UUID Response data.
+    """
+    offset = 0
+
+    hdr = '<BB'
+    hdr_len = struct.calcsize(hdr)
+
+    att_rsp, val_count = struct.unpack_from(hdr, data, offset)
+    offset += hdr_len
+    char_values = []
+
+    for i in range(val_count):
+        hdr = '<HB'
+        hdr_len = struct.calcsize(hdr)
+        handle, data_len = struct.unpack_from(hdr, data, offset)
+        offset += hdr_len
+        val = struct.unpack_from('%ds' % data_len, data, offset)[0]
+        offset += data_len
+
+        char_values.append((handle, val))
+
+    return att_rsp, char_values
+
+
 def gatt_dec_write_rsp(data):
     """Decodes Write Response data.
 
@@ -1494,21 +1519,6 @@ def gattc_disc_all_desc_rsp(store_rsp=False):
         logging.debug("Set verify values to: %r", get_verify_values())
 
 
-att_rsp_str = {0: "",
-               1: "Invalid handle error",
-               2: "read is not permitted error",
-               3: "write is not permitted error",
-               5: "authentication error",
-               7: "Invalid offset error",
-               8: "authorization error",
-               10: "attribute not found error",
-               12: "encryption key size error",
-               13: "Invalid attribute value length error",
-               14: "unlikely error",
-               128: "Application error",
-               }
-
-
 def gattc_read_rsp(store_rsp=False, store_val=False, timeout=None):
     iutctl = get_iut()
 
@@ -1531,7 +1541,7 @@ def gattc_read_rsp(store_rsp=False, store_val=False, timeout=None):
             add_to_verify_values(att_rsp_str[rsp])
 
         if store_val:
-            add_to_verify_values((binascii.hexlify(value[0])).upper())
+            add_to_verify_values(binascii.hexlify(value[0]).decode().upper())
 
 
 def gattc_read_uuid_rsp(store_rsp=False, store_val=False):
@@ -1543,8 +1553,8 @@ def gattc_read_uuid_rsp(store_rsp=False, store_val=False):
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT, defs.GATT_READ_UUID)
 
-    rsp, value = gatt_dec_read_rsp(tuple_data[0])
-    logging.debug("%s %r %r", gattc_read_uuid_rsp.__name__, rsp, value)
+    rsp, char_values = gatt_dec_read_uuid_rsp(tuple_data[0])
+    logging.debug("%s %r %r", gattc_read_uuid_rsp.__name__, rsp, char_values)
 
     if store_rsp or store_val:
         clear_verify_values()
@@ -1552,13 +1562,13 @@ def gattc_read_uuid_rsp(store_rsp=False, store_val=False):
         if store_rsp:
             add_to_verify_values(att_rsp_str[rsp])
 
-        if store_val:
-            n = len(value[0])
+        if not store_val:
+            return
 
-            value = (binascii.hexlify(value[0]).decode('utf-8')).upper()
-            if len(value) > 0:
-                chunks = [value[i:i+len(value)//n] for i in range(0, len(value), len(value)//n)]
-                extend_verify_values(chunks)
+        for char_handle, char_data in char_values:
+            char_data = binascii.hexlify(char_data).decode().upper()
+            add_to_verify_values('{0:0>4X}'.format(char_handle))
+            add_to_verify_values(char_data)
 
 
 def gattc_read_long_rsp(store_rsp=False, store_val=False):
@@ -1603,7 +1613,7 @@ def gattc_read_multiple_rsp(store_val=False, store_rsp=False):
             add_to_verify_values(att_rsp_str[rsp])
 
         if store_val:
-            add_to_verify_values((binascii.hexlify(values[0])).upper())
+            add_to_verify_values((binascii.hexlify(values[0])).decode().upper())
 
 
 def gattc_write_rsp(store_rsp=False, timeout=None):

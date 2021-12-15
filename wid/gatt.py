@@ -525,7 +525,7 @@ def hdl_wid_31(params: WIDParams):
 
 
 def hdl_wid_32(params: WIDParams):
-    return btp.verify_description(params.description)
+    return btp.verify_att_error(params.description)
 
 
 def hdl_wid_34(_: WIDParams):
@@ -533,35 +533,35 @@ def hdl_wid_34(_: WIDParams):
 
 
 def hdl_wid_40(params: WIDParams):
-    return btp.verify_description(params.description)
+    return btp.verify_att_error(params.description)
 
 
 def hdl_wid_41(params: WIDParams):
-    return btp.verify_description(params.description)
+    return btp.verify_att_error(params.description)
 
 
 def hdl_wid_42(params: WIDParams):
-    return btp.verify_description(params.description)
+    return btp.verify_att_error(params.description)
 
 
 def hdl_wid_43(params: WIDParams):
-    return btp.verify_description(params.description)
+    return btp.verify_att_error(params.description)
 
 
 def hdl_wid_44(params: WIDParams):
-    return btp.verify_description(params.description)
+    return btp.verify_att_error(params.description)
 
 
 def hdl_wid_45(params: WIDParams):
-    return btp.verify_description(params.description)
+    return btp.verify_att_error(params.description)
 
 
 def hdl_wid_46(params: WIDParams):
-    return btp.verify_description(params.description)
+    return btp.verify_att_error(params.description)
 
 
 def hdl_wid_47(params: WIDParams):
-    return btp.verify_description(params.description)
+    return btp.verify_att_error(params.description)
 
 
 def hdl_wid_48(params: WIDParams):
@@ -575,23 +575,23 @@ def hdl_wid_48(params: WIDParams):
         return False
 
     no_read_long_tests = [
-        "GATT/CL/GAR/BI-01-C",
-        "GATT/CL/GAR/BI-02-C",
-        "GATT/CL/GAR/BI-03-C",
-        "GATT/CL/GAR/BI-04-C",
-        "GATT/CL/GAR/BI-05-C",
-        "GATT/CL/GAR/BI-11-C",
-        "GATT/CL/GAR/BI-35-C",
         "GATT/CL/GAR/BV-01-C",
+        "GATT/CL/GAR/BV-04-C",
     ]
 
     no_btp_reply_tests = [
         "GATT/CL/GAT/BV-01-C",
     ]
 
+    if params.test_case_name.startswith('GATT/CL/GAR/BI'):
+        btp.gattc_read(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl)
+        btp.gattc_read_rsp(store_rsp=True, store_val=False)
+        return True
+
     if params.test_case_name in no_read_long_tests:
         btp.gattc_read(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl)
-        btp.gattc_read_rsp(False, True)
+        btp.gattc_read_rsp(store_rsp=False, store_val=True)
+        btp.add_to_verify_values(str(hdl))
         return True
 
     if params.test_case_name in no_btp_reply_tests:
@@ -601,6 +601,7 @@ def hdl_wid_48(params: WIDParams):
     btp.gattc_read_long(btp.pts_addr_type_get(), btp.pts_addr_get(),
                         hdl, 0, 1)
     btp.gattc_read_long_rsp(False, True)
+    btp.add_to_verify_values(str(hdl))
     return True
 
 
@@ -681,6 +682,7 @@ def hdl_wid_53(params: WIDParams):
                         read_hdl, offset, 1)
 
     btp.gattc_read_long_rsp(True, False)
+    btp.add_to_verify_values(str(read_hdl))
 
     return True
 
@@ -731,7 +733,10 @@ def hdl_wid_57(params: WIDParams):
     btp.gattc_read_multiple(btp.pts_addr_type_get(), btp.pts_addr_get(),
                             hdl1, hdl2)
 
-    btp.gattc_read_multiple_rsp(True, True)
+    if params.test_case_name.startswith("GATT/CL/GAR/BI"):
+        btp.gattc_read_multiple_rsp(store_rsp=True, store_val=False)
+    else:
+        btp.gattc_read_multiple_rsp(store_rsp=False, store_val=True)
 
     return True
 
@@ -747,42 +752,42 @@ def hdl_wid_58(params: WIDParams):
         return False
 
     btp.gattc_read(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl)
-
-    btp.gattc_read_rsp(True, True)
+    btp.gattc_read_rsp(False, True)
+    btp.add_to_verify_values(str(hdl))
 
     return True
 
 
 def hdl_wid_59(params: WIDParams):
-    return btp.verify_description(params.description)
+    return btp.verify_att_error(params.description)
 
 
 def hdl_wid_61(params: WIDParams):
-    return btp.verify_description(params.description)
+    return btp.verify_att_error(params.description)
 
 
 def hdl_wid_62(params: WIDParams):
-    return btp.verify_description(params.description)
+    return btp.verify_att_error(params.description)
 
 
 def hdl_wid_63(params: WIDParams):
-    return btp.verify_description(params.description)
+    return btp.verify_att_error(params.description)
 
 
 def hdl_wid_64(params: WIDParams):
-    return btp.verify_description(params.description)
+    return btp.verify_att_error(params.description)
 
 
 def hdl_wid_65(params: WIDParams):
-    return btp.verify_description(params.description)
+    return btp.verify_att_error(params.description)
 
 
 def hdl_wid_66(params: WIDParams):
-    return btp.verify_description(params.description)
+    return btp.verify_att_error(params.description)
 
 
 def hdl_wid_67(params: WIDParams):
-    return btp.verify_description(params.description)
+    return btp.verify_att_error(params.description)
 
 
 def hdl_wid_69(params: WIDParams):
