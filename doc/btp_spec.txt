@@ -1135,7 +1135,11 @@ Commands and responses:
 					UUID_Length (1 octet)
 					UUID (2 or 16 octets)
 		Response parameters:	ATT_Response (1 octet)s
-					Data_Length (2 octets)
+					Characteristic_Value_Count (1 octets)
+					Characteristic_Value list (variable)
+
+		Characteristic_Value:   Handle (2 octets)
+					Data_Length (1 octets)
 					Data (variable)
 
 		Valid UUID_Length parameter values:
