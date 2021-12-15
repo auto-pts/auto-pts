@@ -22,8 +22,9 @@ import re
 import struct
 
 from ptsprojects.stack import get_stack
+from ptsprojects.testcase import MMI
 from pybtp import defs
-from pybtp.types import BTPError
+from pybtp.types import BTPError, att_rsp_str
 
 #  get IUT global method from iutctl
 get_iut = None
@@ -89,6 +90,37 @@ def extend_verify_values(item):
     stack.gatt.verify_values.extend(item)
 
 
+def verify_att_error(description):
+    logging.debug("description=%r", description)
+
+    description_values = []
+
+    for err_code, err_string in att_rsp_str.items():
+        if err_string and err_string in description:
+            description_values.append(err_string)
+
+    verify_values = get_verify_values()
+    logging.debug("Verifying values: %r", verify_values)
+
+    logging.debug("Description values: %r", description_values)
+
+    for value in description_values:
+        logging.debug("Verifying: %r", value)
+
+        try:
+            if value not in verify_values:
+                logging.debug("Verification failed, value not in verify values")
+                return False
+        except TypeError:
+            logging.debug("Value under verification is not string")
+
+    logging.debug("All verifications passed")
+
+    clear_verify_values()
+
+    return True
+
+
 def verify_description(description):
     """A function to verify that values are in PTS MMI description
 
@@ -99,26 +131,37 @@ def verify_description(description):
     """
     logging.debug("description=%r", description)
 
-    description = description.upper()
+    description_values = re.findall(r"(?:'|=\s+)([0-9-xA-Fa-f]{2,})", description)
+    logging.debug("Description values: %r", description_values)
 
     verify_values = get_verify_values()
-
     logging.debug("Verifying values: %r", verify_values)
-
-    if not verify_values:
-        return True
 
     # verify_values shall not be a string: all its characters will be verified
     assert isinstance(verify_values, list), "verify_values should be a list!"
 
-    for value in verify_values:
+    converted_verify = []
+
+    # convert small values to int to simplify verification.
+    # Some values are displayed with leading zeros
+    for verify in verify_values:
+        verify = verify.upper()
+        if len(verify) < 8:
+            converted_verify.append(int(verify, 16))
+        else:
+            converted_verify.append(verify)
+
+    for value in description_values:
         logging.debug("Verifying: %r", value)
 
         value = value.upper()
 
+        if len(value) < 8:
+            value = int(value, 16)
+
         try:
-            if value not in description:
-                logging.debug("Verification failed, value not in description")
+            if value not in converted_verify:
+                logging.debug("Verification failed, value not in verify values")
                 return False
         except TypeError:
             logging.debug("Value under verification is not string")
@@ -142,14 +185,19 @@ def verify_multiple_read_description(description):
     """
     logging.debug("description=%r", description)
 
+    MMI.reset()
+    MMI.parse_description(description)
+    description_values = MMI.args
+    logging.debug("Description values: %r", description_values)
+
+    got_mtp_read = [''.join(description_values)]
+
     verify_values = get_verify_values()
     logging.debug("Verifying values: %r", verify_values)
 
-    if not verify_values:
-        return True
-
     # verify_values shall not be a string: all its characters will be verified
     assert isinstance(verify_values, list), "verify_values should be a list!"
+
     exp_mtp_read = ""
     for value in verify_values:
         try:
@@ -157,8 +205,6 @@ def verify_multiple_read_description(description):
         except TypeError:
             value = value.decode("utf-8")
             exp_mtp_read = exp_mtp_read.join(value)
-
-    got_mtp_read = "".join(re.findall(r"\b[0-9A-Fa-f]+\b", description))
 
     if exp_mtp_read not in got_mtp_read:
         logging.debug("Verification failed, value not in description")
