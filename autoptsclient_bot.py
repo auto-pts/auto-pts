@@ -127,6 +127,8 @@ def main():
 
 
 if __name__ == "__main__":
+    print('Dummy change')
+
     def sigint_handler(sig, frame):
         """Thread safe SIGINT interrupting"""
         set_end()
