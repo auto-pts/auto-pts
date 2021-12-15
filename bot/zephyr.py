@@ -25,7 +25,7 @@ import collections
 import serial
 import autoptsclient_common as autoptsclient
 import ptsprojects.zephyr as autoprojects
-from ptsprojects.boards import get_available_boards, get_free_device, tty_to_com, release_device
+from ptsprojects.boards import get_available_boards, get_debugger_snr, get_free_device, tty_to_com, release_device
 from ptsprojects.testcase_db import DATABASE_FILE
 from ptsprojects.zephyr.iutctl import get_iut, log
 from pathlib import Path
@@ -55,7 +55,7 @@ def build_and_flash(zephyr_wd, board, tty, conf_file=None):
 
     bot.common.check_call(cmd, cwd=tester_dir)
     bot.common.check_call(['west', 'flash', '--skip-rebuild',
-                           '--board-dir', tty], cwd=tester_dir)
+                           '--snr',  get_debugger_snr(tty)], cwd=tester_dir)
 
 
 def flush_serial(tty):
