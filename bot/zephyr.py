@@ -4,6 +4,7 @@
 # auto-pts - The Bluetooth PTS Automation Framework
 #
 # Copyright (c) 2018, Intel Corporation.
+# Copyright (c) 2021, Nordic Semiconductor ASA.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms and conditions of the GNU General Public License,
@@ -100,6 +101,7 @@ def apply_overlay(zephyr_wd, base_conf, cfg_name, overlay):
 autopts2board = {
     None: None,
     'nrf52': 'nrf52840dk_nrf52840',
+    'nrf53': 'nrf5340dk_nrf5340_cpuapp',
     'reel_board': 'reel_board'
 }
 
@@ -279,7 +281,7 @@ def main(cfg):
         time.sleep(1)
 
     if 'tty_file' not in args:
-        args['tty_file'], jlink_srn = get_free_device()
+        args['tty_file'], jlink_srn = get_free_device(args['board'])
         if args['tty_file'] is None:
             sys.exit('No free device found!')
 

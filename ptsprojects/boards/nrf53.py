@@ -1,8 +1,6 @@
 #
 # auto-pts - The Bluetooth PTS Automation Framework
 #
-# Copyright (c) 2021, Intel Corporation.
-# Copyright (c) 2021, Codecoup.
 # Copyright (c) 2021, Nordic Semiconductor ASA.
 #
 # This program is free software; you can redistribute it and/or modify it

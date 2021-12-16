@@ -15,4 +15,13 @@
 # more details.
 #
 
-from .nrf5x import *
+supported_projects = ['zephyr']
+
+
+def reset_cmd(iutctl):
+    """Return reset command for nRF5x DUT
+
+    Dependency: nRF5x command line tools
+    """
+
+    return f'nrfjprog -r -s {iutctl.debugger_snr}'
