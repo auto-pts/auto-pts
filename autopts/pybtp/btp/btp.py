@@ -38,6 +38,25 @@ LeAdv = namedtuple('LeAdv', 'addr_type addr rssi flags eir')
 
 CONTROLLER_INDEX = 0
 
+
+def read_supp_svcs():
+    logging.debug("%s", read_supp_svcs.__name__)
+    iutctl = get_iut()
+    stack = get_stack()
+
+    iutctl.btp_socket.send(*CORE['read_supp_svcs'])
+
+    # Expected result
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
+    btp_hdr_check(tuple_hdr,
+                  defs.BTP_SERVICE_ID_CORE,
+                  defs.CORE_READ_SUPPORTED_SERVICES)
+    logging.debug("%s received %r %r", read_supp_svcs.__name__,
+                  tuple_hdr, tuple_data)
+
+    stack.supported_svcs = int.from_bytes(tuple_data[0], 'little')
+
+
 CORE = {
     "gap_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GAP),
@@ -72,22 +91,37 @@ CORE = {
 
 def clear_verify_values():
     stack = get_stack()
-    stack.gatt.verify_values = []
+    if stack.gatt_cl:
+        stack.gatt_cl.verify_values = []
+    else:
+        stack.gatt.verify_values = []
 
 
 def add_to_verify_values(item):
     stack = get_stack()
-    stack.gatt.verify_values.append(item)
+
+    if stack.gatt_cl:
+        stack.gatt_cl.verify_values.append(item)
+    else:
+        stack.gatt.verify_values.append(item)
 
 
 def get_verify_values():
     stack = get_stack()
+
+    if stack.gatt_cl:
+        return stack.gatt_cl.verify_values
+
     return stack.gatt.verify_values
 
 
 def extend_verify_values(item):
     stack = get_stack()
-    stack.gatt.verify_values.extend(item)
+
+    if stack.gatt_cl:
+        stack.gatt_cl.verify_values.extend(item)
+    else:
+        stack.gatt.verify_values.extend(item)
 
 
 def verify_att_error(description):
@@ -460,6 +494,7 @@ from .gap import GAP_EV
 from .gatt import GATT_EV
 from .l2cap import L2CAP_EV
 from .mesh import MESH_EV
+from .gatt_cl import GATTC_EV
 from autopts.pybtp.iutctl_common import set_event_handler
 
 
@@ -493,6 +528,12 @@ def event_handler(hdr, data):
         if hdr.op in GATT_EV and stack.gatt:
             cb = GATT_EV[hdr.op]
             cb(stack.gatt, data[0], hdr.data_len)
+            return True
+
+    elif hdr.svc_id == defs.BTP_SERVICE_ID_GATTC:
+        if hdr.op in GATTC_EV and stack.gatt_cl:
+            cb = GATTC_EV[hdr.op]
+            cb(stack.gatt_cl, data[0], hdr.data_len)
             return True
 
     # TODO: Raise BTP error instead of logging

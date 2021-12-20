@@ -21,7 +21,7 @@ import os
 import sys
 import serial
 
-from autopts.pybtp import defs
+from autopts.pybtp import defs, btp
 from autopts.ptsprojects.boards import Board, get_debugger_snr, tty_to_com
 from autopts.pybtp.types import BTPError
 from autopts.pybtp.iutctl_common import BTPWorker, BTP_ADDRESS, RTT, BTMON
@@ -168,6 +168,9 @@ class MynewtCtl:
 
         self.rtt_logger_start()
         self.btmon_start()
+
+    def get_supported_svcs(self):
+        btp.read_supp_svcs()
 
     def stop(self):
         """Powers off the Mynewt OS"""

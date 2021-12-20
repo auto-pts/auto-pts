@@ -35,6 +35,7 @@ class ZTestCase(TestCaseLT1):
         # first command is to start QEMU or HW
         self.cmds.insert(0, TestFunc(self.mynewtctl.start, self))
         self.cmds.insert(1, TestFunc(self.mynewtctl.wait_iut_ready_event))
+        self.cmds.insert(2, TestFunc(self.mynewtctl.get_supported_svcs))
 
         self.cmds.append(TestFuncCleanUp(self.stack.cleanup))
         # last command is to stop QEMU or HW
