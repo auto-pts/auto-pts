@@ -964,17 +964,122 @@ class Gatt:
         self.notification_ev_received.clear()
 
 
+def wait_for_event(timeout, test, args=None):
+    if test(args):
+        return True
+
+    flag = Event()
+    flag.set()
+
+    t = Timer(timeout, timeout_cb, [flag])
+    t.start()
+
+    while flag.is_set():
+        if test(args):
+            t.cancel()
+            return True
+
+    return False
+
+
 class GattCl:
     def __init__(self):
         # if MTU exchanged tuple (addr, addr_type, status)
         self.mtu_exchanged = Property(None)
         self.verify_values = []
+        self.prim_svcs_cnt = None
         self.prim_svcs = []
+        self.incl_svcs_cnt = None
         self.incl_svcs = []
+        self.chrcs_cnt = None
         self.chrcs = []
+        self.dscs_cnt = None
         self.dscs = []
         self.notifications = []
         self.write_status = None
+
+    def is_mtu_exchanged(self, args):
+        return self.mtu_exchanged.data
+
+    def wait_for_mtu_exchange(self, timeout=30):
+        return wait_for_event(timeout, self.is_mtu_exchanged)
+
+    def is_prim_disc_complete(self, args):
+        if self.prim_svcs_cnt is not None:
+            if self.prim_svcs_cnt > 0:
+                rc = len(self.prim_svcs) == self.prim_svcs_cnt
+                if rc is True:
+                    self.prim_svcs_cnt = None
+                return rc
+            self.prim_svcs_cnt = None
+            return True
+        return False
+
+    def wait_for_prim_svcs(self, timeout=30):
+        return wait_for_event(timeout, self.is_prim_disc_complete)
+
+    def is_incl_disc_complete(self, args):
+        if self.incl_svcs_cnt is not None:
+            if self.incl_svcs_cnt > 0:
+                rc = len(self.incl_svcs_cnt) == self.incl_svcs_cnt
+                if rc is True:
+                    self.incl_svcs_cnt = None
+                return rc
+            self.incl_svcs_cnt = None
+            return True
+        return False
+
+    def wait_for_incl_svcs(self, timeout=30):
+        return wait_for_event(timeout, self.is_incl_disc_complete)
+
+    def is_chrcs_disc_complete(self, args):
+        if self.chrcs_cnt is not None:
+            if self.chrcs_cnt > 0:
+                rc = len(self.chrcs) == self.chrcs_cnt
+                if rc is True:
+                    self.chrcs_cnt = None
+                return rc
+            self.chrcs_cnt = None
+            return True
+        return False
+
+    def wait_for_chrcs(self, timeout=30):
+        return wait_for_event(timeout, self.is_chrcs_disc_complete)
+
+    def is_dscs_disc_complete(self, args):
+        if self.dscs_cnt is not None:
+            if self.dscs_cnt > 0:
+                rc = len(self.dscs) == self.dscs_cnt
+                if rc is True:
+                    self.dscs_cnt = None
+                return rc
+            self.dscs_cnt = None
+            return True
+        return False
+
+    def wait_for_descs(self, timeout=30):
+        return wait_for_event(timeout, self.is_dscs_disc_complete)
+
+    def is_read_complete(self, args):
+        return self.verify_values != []
+
+    def wait_for_read(self, timeout=30):
+        return wait_for_event(timeout, self.is_read_complete)
+
+    def is_notification_rxed(self, expected_count):
+        if expected_count > 0:
+            return len(self.notifications) == expected_count
+        return len(self.notifications) > 0
+
+    def wait_for_notifications(self, timeout=30, expected_count=0):
+        return wait_for_event(timeout,
+                              self.is_notification_rxed, expected_count)
+
+    def is_write_completed(self, args):
+        return self.write_status is not None
+
+    def wait_for_write_rsp(self, timeout=30):
+        return wait_for_event(timeout, self.is_write_completed)
 
 
 class Stack:

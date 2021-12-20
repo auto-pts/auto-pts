@@ -215,7 +215,7 @@ def gatt_cl_disc_all_prim_rsp_ev_(gatt_cl, data, data_len):
                   gatt_cl_disc_all_prim_rsp_ev_.__name__,
                   addr_type, addr, status, svc_cnt)
 
-    svcs_data = data[struct.calcsize(fmt)-1:]
+    svcs_data = data[struct.calcsize(fmt) - 1:]
 
     gatt_cl.prim_svcs = []
     gatt_cl.prim_svcs_cnt = svc_cnt
@@ -227,8 +227,6 @@ def gatt_cl_disc_all_prim_rsp_ev_(gatt_cl, data, data_len):
     svcs = gatt_cl_dec_disc_rsp(svcs_data, 'service')
 
     logging.debug("%s %r", gatt_cl_disc_all_prim_rsp_ev_.__name__, svcs)
-
-    gatt_cl.prim_svcs = []
 
     for svc in svcs:
         # Keep just UUID since PTS checks only UUID.
@@ -269,7 +267,6 @@ def gatt_cl_disc_prim_uuid_rsp_ev_(gatt_cl, data, data_len):
 
     logging.debug("%s %r", gatt_cl_disc_prim_uuid_rsp_ev_.__name__, svcs)
 
-    gatt_cl.prim_svcs = []
 
     for svc in svcs:
         start_handle = "%04X" % (svc[0],)
@@ -295,12 +292,18 @@ def gatt_cl_find_incld_rsp_ev_(gatt_cl, data, data_len):
                   gatt_cl_find_incld_rsp_ev_.__name__,
                   addr_type, addr, status, svc_cnt)
 
-    svcs_data = data[struct.calcsize(fmt):]
+    svcs_data = data[struct.calcsize(fmt) - 1:]
+
+    gatt_cl.incl_svcs = []
+    gatt_cl.incl_svcs_cnt = svc_cnt
+
+    if svc_cnt == 0:
+        logging.debug("No services in response")
+        return
     incl_tuples = gatt_cl_dec_disc_rsp(svcs_data, 'include')
 
     logging.debug("%s %r", gatt_cl_find_incld_rsp_ev_.__name__, incl_tuples)
 
-    gatt_cl.incl_svcs = []
 
     for incl in incl_tuples:
         att_handle = "%04X" % (incl[0][0],)
@@ -328,7 +331,15 @@ def gatt_cl_disc_all_chrc_rsp_ev_(gatt_cl, data, data_len):
                   gatt_cl_disc_all_chrc_rsp_ev_.__name__,
                   addr_type, addr, status, char_cnt)
 
-    svcs_data = data[struct.calcsize(fmt):]
+    svcs_data = data[struct.calcsize(fmt) - 1:]
+
+    gatt_cl.chrcs = []
+    gatt_cl.chrcs_cnt = char_cnt
+
+    if char_cnt == 0:
+        logging.debug("No characteristics in response")
+        return
+
     chrcs = gatt_cl_dec_disc_rsp(svcs_data, 'characteristic')
 
     logging.debug("%s %r", gatt_cl_disc_all_chrc_rsp_ev_.__name__, chrcs)
@@ -342,12 +353,8 @@ def gatt_cl_disc_all_chrc_rsp_ev_(gatt_cl, data, data_len):
                                         prop=prop,
                                         value_handle=value_handle))
 
-    gatt_cl.chrcs = []
-
     for attr in attrs:
         gatt_cl.chrcs.append((attr.value_handle, attr.uuid))
-
-    logging.debug("Set verify values to: %r", get_verify_values())
 
 
 def gatt_cl_disc_chrc_uuid_rsp_ev_(gatt_cl, data, data_len):
@@ -362,7 +369,15 @@ def gatt_cl_disc_chrc_uuid_rsp_ev_(gatt_cl, data, data_len):
                   gatt_cl_disc_chrc_uuid_rsp_ev_.__name__,
                   addr_type, addr, status, char_cnt)
 
-    svcs_data = data[struct.calcsize(fmt):]
+    svcs_data = data[struct.calcsize(fmt) - 1:]
+
+    gatt_cl.chrcs = []
+    gatt_cl.chrcs_cnt = char_cnt
+
+    if char_cnt == 0:
+        logging.debug("No characteristics in response")
+        return
+
     chrcs = gatt_cl_dec_disc_rsp(svcs_data, 'characteristic')
 
     logging.debug("%s %r", gatt_cl_disc_chrc_uuid_rsp_ev_.__name__, chrcs)
@@ -375,8 +390,6 @@ def gatt_cl_disc_chrc_uuid_rsp_ev_(gatt_cl, data, data_len):
                                         att_rsp=0,
                                         prop=prop,
                                         value_handle=value_handle))
-
-    gatt_cl.chrcs = []
 
     for attr in attrs:
         gatt_cl.chrcs.append((attr.value_handle, attr.uuid))
@@ -393,12 +406,21 @@ def gatt_cl_disc_all_desc_rsp_ev_(gatt_cl, data, data_len):
                   gatt_cl_disc_all_desc_rsp_ev_.__name__,
                   addr_type, addr, status, char_cnt)
 
-    svcs_data = data[struct.calcsize(fmt):]
+    svcs_data = data[struct.calcsize(fmt) - 1:]
+
+    gatt_cl.dscs = []
+    gatt_cl.dscs_cnt = char_cnt
+
+    if char_cnt == 0:
+        logging.debug("No descriptors in response")
+        return
+
     descs = gatt_cl_dec_disc_rsp(svcs_data, 'descriptor')
 
     logging.debug("%s %r", gatt_cl_disc_all_desc_rsp_ev_.__name__, descs)
 
     gatt_cl.dscs = []
+    gatt_cl.dscs_cnt = char_cnt
 
     for desc in descs:
         handle = "%04X" % (desc[0],)
@@ -417,13 +439,17 @@ def gatt_cl_read_rsp_ev_(gatt_cl, data, data_len):
                   gatt_cl_read_rsp_ev_.__name__,
                   addr_type, addr, status, data_length)
 
+    clear_verify_values()
+
+    if data_length == 0:
+        logging.debug("No data in response")
+        return
+
     rp_data = data[struct.calcsize(fmt):]
 
     (value,) = struct.unpack_from('%ds' % data_length, rp_data)
 
     logging.debug("%s %r %r", gatt_cl_read_rsp_ev_.__name__, status, value)
-
-    clear_verify_values()
 
     add_to_verify_values(att_rsp_str[status])
 
@@ -517,6 +543,10 @@ def gatt_cl_read_mult_rsp_ev_(gatt_cl, data, data_len):
 
     rp_data = data[struct.calcsize(fmt):]
 
+    if data_length == 0:
+        logging.debug("No data in response")
+        return
+
     (value, ) = struct.unpack_from('%ds' % data_length, rp_data, data_length)
 
     logging.debug("%s %r %r", gatt_cl_read_mult_rsp_ev_.__name__, status, value)
@@ -556,6 +586,10 @@ def gatt_cl_notification_rxed_ev_(gatt_cl, data, data_len):
                   "type=%r handle=%r data_length=%r",
                   gatt_cl_read_mult_rsp_ev_.__name__,
                   addr_type, addr, type, handle, data_length)
+
+    if data_length == 0:
+        logging.debug("No data in response")
+        return
 
     notification_data = binascii.hexlify(data[struct.calcsize(fmt):]).upper()
 
