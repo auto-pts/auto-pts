@@ -18,6 +18,7 @@
 from autopts.pybtp.btp.btp import *
 from autopts.pybtp.btp.gap import *
 from autopts.pybtp.btp.gatt import *
+from autopts.pybtp.btp.gatt_cl import *
 from autopts.pybtp.btp.l2cap import *
 from autopts.pybtp.btp.mesh import *
 from autopts.pybtp.btp.mmdl import *

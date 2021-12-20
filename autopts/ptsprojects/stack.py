@@ -964,6 +964,19 @@ class Gatt:
         self.notification_ev_received.clear()
 
 
+class GattCl:
+    def __init__(self):
+        # if MTU exchanged tuple (addr, addr_type, status)
+        self.mtu_exchanged = Property(None)
+        self.verify_values = []
+        self.prim_svcs = []
+        self.incl_svcs = []
+        self.chrcs = []
+        self.dscs = []
+        self.notifications = []
+        self.write_status = None
+
+
 class Stack:
     def __init__(self):
         self.gap = None
@@ -971,6 +984,8 @@ class Stack:
         self.l2cap = None
         self.synch = None
         self.gatt = None
+        self.gatt_cl = None
+        self.supported_svcs = 0
 
     def gap_init(self, name=None, manufacturer_data=None, appearance=None,
                  svc_data=None, flags=None, svcs=None, uri=None):
@@ -989,6 +1004,9 @@ class Stack:
     def gatt_init(self):
         self.gatt = Gatt()
 
+    def gatt_cl_init(self):
+        self.gatt_cl = GattCl()
+
     def synch_init(self, sync_callbacks):
         if not self.synch:
             self.synch = Synch(sync_callbacks)
@@ -1004,6 +1022,9 @@ class Stack:
 
         if self.gatt:
             self.gatt_init()
+
+        if self.gatt_cl:
+            self.gatt_cl_init()
 
         if self.synch:
             self.synch.cancel_synch()
