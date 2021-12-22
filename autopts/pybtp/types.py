@@ -260,7 +260,6 @@ class WIDParams(NamedTuple):
     description: str
     test_case_name: str
 
-
 att_rsp_str = {0: "",
                1: "Invalid handle error",
                2: "read is not permitted error",
@@ -274,3 +273,24 @@ att_rsp_str = {0: "",
                14: "unlikely error",
                128: "Application error",
                }
+
+class GATTErrorCodes:
+    invalid_handle = 0x01
+    read_not_permitted = 0x02
+    write_not_permitted = 0x03
+    invalid_pdu = 0x04
+    insufficient_authentication = 0x05
+    request_not_supported = 0x06
+    invalid_offset = 0x07
+    insufficient_authorization = 0x08
+    prepare_queue_full = 0x09
+    attribute_not_found = 0x0a
+    attribute_not_long = 0x0b
+    encryption_key_size_too_short = 0x0c
+    invalid_attribute_value_length = 0x0d
+    unlikely_error = 0x0e
+    insufficient_encryption = 0x0f
+    unsupported_group_type = 0x10
+    insufficient_resources = 0x11
+    database_out_of_sync = 0x12
+    value_not_allowed = 0x13
