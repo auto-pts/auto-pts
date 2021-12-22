@@ -1092,6 +1092,19 @@ class Stack:
         self.gatt_cl = None
         self.supported_svcs = 0
 
+    def is_svc_supported(self, svc):
+        # these are in little endian
+        services = {
+            "CORE":         0b0000001,
+            "GAP":          0b0000010,
+            "GATT":         0b0000100,
+            "L2CAP":        0b0001000,
+            "MESH":         0b0010000,
+            "MESH_MMDL":    0b0100000,
+            "GATT_CL":      0b1000000,
+        }
+        return self.supported_svcs & services[svc] > 0
+
     def gap_init(self, name=None, manufacturer_data=None, appearance=None,
                  svc_data=None, flags=None, svcs=None, uri=None):
         self.gap = Gap(name, manufacturer_data, appearance, svc_data, flags,

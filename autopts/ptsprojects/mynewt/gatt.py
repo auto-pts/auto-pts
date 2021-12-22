@@ -222,7 +222,8 @@ def test_cases_client(pts):
                              stack.gap.iut_addr_get_str())),
                          TestFunc(btp.core_reg_svc_gatt),
                          TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public),
-                         TestFunc(stack.gatt_init)]
+                         TestFunc(stack.gatt_init),
+                         TestFunc(stack.gatt_cl_init)]
 
     custom_test_cases = [
         ZTestCase("GATT", "GATT/CL/GAI/BI-01-C",

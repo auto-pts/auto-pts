@@ -23,11 +23,16 @@ from autopts.pybtp import btp
 from autopts.pybtp.types import Perm
 from autopts.wid.gatt import gatt_wid_hdl as gen_wid_hdl
 from autopts.ptsprojects.testcase import MMI
+from autopts.ptsprojects.stack import get_stack
+from autopts.wid.gatt_client import gatt_cl_wid_hdl
 
 log = logging.debug
 
 
 def gatt_wid_hdl(wid, description, test_case_name):
+    stack = get_stack()
+    if stack.is_svc_supported('GATT_CL') and 'GATT/CL' in test_case_name:
+        return gatt_cl_wid_hdl(wid, description, test_case_name)
     log("%s, %r, %r, %s", gatt_wid_hdl.__name__, wid, description,
         test_case_name)
     module = sys.modules[__name__]
