@@ -257,8 +257,10 @@ def main(cfg):
     finally:
         release_device(args['tty_file'])
 
+    pts_logs, xmls = bot.common.pull_server_logs(MynewtBotConfigArgs(args))
+
     report_file = bot.common.make_report_xlsx(results, summary, regressions,
-                                              descriptions)
+                                              descriptions, xmls)
     report_txt = bot.common.make_report_txt(results, repo_status)
     logs_folder = bot.common.archive_testcases("logs")
 
@@ -275,7 +277,6 @@ def main(cfg):
         drive.upload_folder(logs_folder)
         drive.upload(build_info_file)
         drive.upload(args['database_file'])
-        pts_logs = bot.common.pull_server_logs(MynewtBotConfigArgs(args))
         drive.upload_folder(pts_logs)
 
     if 'mail' in cfg:

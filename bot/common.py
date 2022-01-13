@@ -434,7 +434,7 @@ class Drive(GDrive):
 # ****************************************************************************
 # FIXME don't use statuses from status_dict, count it from results dict instead
 def make_report_xlsx(results_dict, status_dict, regressions_list,
-                     descriptions):
+                     descriptions, xmls):
     """Creates excel file containing test cases results and summary pie chart
     :param results_dict: dictionary with test cases results
     :param status_dict: status dictionary, where key is status and value is
@@ -442,6 +442,18 @@ def make_report_xlsx(results_dict, status_dict, regressions_list,
     :param regressions_list: list of regressions found
     :return:
     """
+
+    xml_list = os.scandir(xmls)
+    matched_xml = ''
+
+    def find_xml_by_case(case):
+        nonlocal matched_xml
+        matched_xml = ''
+        to_match = case.replace('/', '_').replace('-', '_')
+        for xml in xml_list:
+            if to_match in xml.name:
+                matched_xml = xml.name
+                break
 
     errata = {}
 
@@ -466,13 +478,16 @@ def make_report_xlsx(results_dict, status_dict, regressions_list,
 
     # Write data headers.
     worksheet.write('A1', header)
-    worksheet.write_row('A3', ['Test Case', 'Result'])
+    worksheet.write_row('A3', ['Test Case', 'Result', 'XML'])
 
     row = 3
     col = 0
 
     for k, v in list(results_dict.items()):
         worksheet.write(row, col, k)
+        if v[0] == 'PASS':
+            find_xml_by_case(k)
+            worksheet.write(row, col + 2, matched_xml)
         if v[0] == 'PASS' and int(v[1]) > 1:
             v = '{} ({})'.format(v[0], v[1])
         else:
@@ -481,9 +496,9 @@ def make_report_xlsx(results_dict, status_dict, regressions_list,
             v += ' - ERRATA ' + errata[k]
         worksheet.write(row, col + 1, v)
         if k in list(descriptions.keys()):
-            worksheet.write(row, col + 2, descriptions[k])
+            worksheet.write(row, col + 3, descriptions[k])
         if k in regressions_list:
-            worksheet.write(row, col + 3, "REGRESSION")
+            worksheet.write(row, col + 4, "REGRESSION")
         row += 1
 
     summary_row = 2
@@ -568,7 +583,7 @@ def make_report_txt(results_dict, zephyr_hash):
 # ****************************************************************************
 # .txt result file
 # ****************************************************************************
-def make_report_folder(iut_logs, pts_logs, report_xlsx, report_txt,
+def make_report_folder(iut_logs, pts_logs, xmls, report_xlsx, report_txt,
                        readme_file, database_file, tag=''):
     """Creates folder containing .txt and .xlsx reports, pulled logs
     from autoptsserver, iut logs and additional README.md.
@@ -602,9 +617,11 @@ def make_report_folder(iut_logs, pts_logs, report_xlsx, report_txt,
 
     iut_logs_new = os.path.join(report_dir, 'iut_logs')
     pts_logs_new = os.path.join(report_dir, 'pts_logs')
+    xmls_new = os.path.join(report_dir, 'XMLs/')
 
     get_deepest_dirs(iut_logs, iut_logs_new, 3)
     get_deepest_dirs(pts_logs, pts_logs_new, 3)
+    shutil.move(xmls, xmls_new)
 
     return os.path.join(os.getcwd(), report_dir)
 
@@ -702,8 +719,9 @@ def pull_server_logs(args):
     :param server_port: list of servers ports
     """
     logs_folder = 'tmp/' + args.workspace
-
+    xml_folder = 'tmp/XMLs'
     shutil.rmtree(logs_folder, ignore_errors=True)
+    shutil.rmtree(xml_folder, ignore_errors=True)
 
     if sys.platform == 'win32':
         return get_workspace(args.workspace)
@@ -724,6 +742,7 @@ def pull_server_logs(args):
             workspace_root = file_list.pop()
             while len(file_list) > 0:
                 file_path = file_list.pop(0)
+                xml_file_path = file_path
                 try:
                     file_bin = proxy.copy_file(file_path)
 
@@ -741,10 +760,23 @@ def pull_server_logs(args):
 
                     with open(file_path, 'wb') as handle:
                         handle.write(file_bin.data)
+
+                    if file_path.endswith('.xml') and not 'tc_log' in file_path\
+                            and b'Final Verdict:PASS' in file_bin.data:
+                        xml_file_path = \
+                            '/'.join([xml_folder,
+                                      xml_file_path[
+                                          xml_file_path.rfind('\\') + 1:]
+                                      .replace('\\', '/')])
+                        Path(os.path.dirname(xml_file_path)).mkdir(
+                            parents=True,
+                            exist_ok=True)
+                        with open(xml_file_path, 'wb') as handle:
+                            handle.write(file_bin.data)
                 except BaseException as e:
                     logging.exception(e)
 
-    return logs_folder
+    return logs_folder, xml_folder
 
 
 def get_workspace(workspace):

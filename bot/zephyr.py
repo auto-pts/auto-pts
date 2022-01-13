@@ -293,8 +293,11 @@ def main(cfg):
 
     results = collections.OrderedDict(sorted(results.items()))
 
+    args_ns = ZephyrBotConfigArgs(args)
+    pts_logs, xmls = bot.common.pull_server_logs(args_ns)
+
     report_file = bot.common.make_report_xlsx(results, summary, regressions,
-                                              descriptions)
+                                              descriptions, xmls)
     report_txt = bot.common.make_report_txt(results, repo_status)
 
     end_time = time.time()
@@ -304,12 +307,10 @@ def main(cfg):
     report_folder = None
 
     if 'githubdrive' in cfg or 'gdrive' in cfg:
-        args_ns = ZephyrBotConfigArgs(args)
-        pts_logs = bot.common.pull_server_logs(args_ns)
         iut_logs = 'logs/'
         readme_file = make_readme_md(start_time_stamp, end_time_stamp,
                                      repos_info, args['pts_ver'])
-        report_folder = bot.common.make_report_folder(iut_logs, pts_logs, report_file,
+        report_folder = bot.common.make_report_folder(iut_logs, pts_logs, xmls, report_file,
                                                       report_txt, readme_file,
                                                       args['database_file'],
                                                       '_iut_zephyr_' + start_time_stamp)
