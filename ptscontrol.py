@@ -788,27 +788,37 @@ class PyPTS:
 
     def get_bluetooth_address(self):
         """Returns PTS bluetooth address string"""
-        if self._device is not None:
-            device = self._pts.GetSelectedDevice()
-            if device != self._device:
-                device_to_connect = self._device.replace(r'InUse', r'Free')
-                rc = self._pts.SelectDevice(device_to_connect)
-                if rc < 0:
-                    raise Exception('Reconnection to dongle {} failed'.format(device_to_connect))
+        device = self._pts.GetSelectedDevice()
+        log(f"Remembered device {self._device}, selected device {device}")
+        device_to_connect = None
+        if self._device is not None and device != self._device:
+            log(f"Will select another device {device}")
+            device_to_connect = self._device.replace(r'InUse', r'Free')
+        else:
+            device_to_connect = device.replace(r'InUse', r'Free')
 
         try:
+            if device_to_connect is not None:
+                log(f"Will try to connect {device_to_connect}")
+                self._pts.SelectDevice(device_to_connect)
             address = self._pts.GetPTSBluetoothAddress()
         except Exception as e:
             logging.exception(e)
+            self.disconnect_dongle()
             address = ""
 
-        if address == "":
-            self.connect_to_dongle()
-            try:
-                address = self._pts.GetPTSBluetoothAddress()
-            except Exception as e:
-                log("Connecting to dongle failed.")
-                raise e
+        for i in range(3):
+            if address == "":
+                self.connect_to_dongle()
+                try:
+                    address = self._pts.GetPTSBluetoothAddress()
+                except Exception as e:
+                    log(f"Connecting to dongle failed {e}")
+                    self.disconnect_dongle()
+            else:
+                break
+        else:
+            raise Exception("Failed to connect dongle after 3 iterations")
 
         self._device = self._pts.GetSelectedDevice()
         return address
@@ -821,12 +831,18 @@ class PyPTS:
                 log("Connecting to dual-mode dongle")
                 device_to_connect = device
                 break
-            if 'COM' in device:
+            elif 'COM' in device:
                 log("Connecting to LE-only dongle")
                 device_to_connect = device
                 break
+
         if device_to_connect is not None:
             self._pts.SelectDevice(device_to_connect)
+
+    def disconnect_dongle(self):
+        self._pts.SelectDevice('')
+        if self._pts.GetSelectedDevice():
+            log("Failed to disconnect current dongle")
 
     def bd_addr(self):
         """Returns PTS Bluetooth address as a colon separated string"""
