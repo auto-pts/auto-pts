@@ -722,9 +722,7 @@ def pull_server_logs(args):
     xml_folder = 'tmp/XMLs'
     shutil.rmtree(logs_folder, ignore_errors=True)
     shutil.rmtree(xml_folder, ignore_errors=True)
-
-    if sys.platform == 'win32':
-        return get_workspace(args.workspace)
+    Path(xml_folder).mkdir(parents=True, exist_ok=True)
 
     server_addr = args.ip_addr
     server_port = args.srv_port
