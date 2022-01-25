@@ -1499,6 +1499,17 @@ def mesh_prov_node_added_ev(mesh, data, data_len):
     stack.mesh.node_added(net_idx, addr, uuid, num_elems)
 
 
+def mesh_model_recv_ev(mesh, data, data_len):
+    logging.debug("%s", mesh_model_recv_ev.__name__)
+
+    hdr_fmt = '<HHB'
+    (src, dst, len) = struct.unpack_from(hdr_fmt, data, 0)
+    data_fmt = '%ds' % len
+    (payload, ) = struct.unpack_from(data_fmt, data[struct.calcsize(hdr_fmt):])
+
+    logging.debug("%r %r %r", src, dst, payload)
+
+
 MESH_EV = {
     defs.MESH_EV_OUT_NUMBER_ACTION: mesh_out_number_action_ev,
     defs.MESH_EV_OUT_STRING_ACTION: mesh_out_string_action_ev,
@@ -1515,4 +1526,5 @@ MESH_EV = {
     defs.MESH_EV_LPN_TERMINATED: mesh_lpn_terminated_ev,
     defs.MESH_EV_LPN_POLLED: mesh_lpn_polled_ev,
     defs.MESH_EV_PROV_NODE_ADDED: mesh_prov_node_added_ev,
+    defs.MESH_EV_MODEL_RECV: mesh_model_recv_ev,
 }
