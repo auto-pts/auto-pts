@@ -491,17 +491,22 @@ def make_report_xlsx(results_dict, status_dict, regressions_list,
     :return:
     """
 
-    xml_list = os.scandir(xmls)
+    try:
+        xml_list = os.scandir(xmls)
+    except FileNotFoundError as e:
+        print("No XMLs found")
+        xml_list = None
     matched_xml = ''
 
     def find_xml_by_case(case):
-        nonlocal matched_xml
-        matched_xml = ''
-        to_match = case.replace('/', '_').replace('-', '_')
-        for xml in xml_list:
-            if to_match in xml.name:
-                matched_xml = xml.name
-                break
+        if xml_list is not None:
+            nonlocal matched_xml
+            matched_xml = ''
+            to_match = case.replace('/', '_').replace('-', '_')
+            for xml in xml_list:
+                if to_match in xml.name:
+                    matched_xml = xml.name
+                    break
 
     errata = {}
 
@@ -683,7 +688,10 @@ def make_report_folder(iut_logs, pts_logs, xmls, report_xlsx, report_txt,
 
     get_deepest_dirs(iut_logs, iut_logs_new, 3)
     get_deepest_dirs(pts_logs, pts_logs_new, 3)
-    shutil.move(xmls, xmls_new)
+    try:
+        shutil.move(xmls, xmls_new)
+    except FileNotFoundError:
+        print('XMLs directory doesn\'t exist')
 
     return os.path.join(os.getcwd(), report_dir)
 
