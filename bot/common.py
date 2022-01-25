@@ -492,21 +492,22 @@ def make_report_xlsx(results_dict, status_dict, regressions_list,
     """
 
     try:
-        xml_list = os.scandir(xmls)
+        xml_list = list(os.scandir(xmls))
     except FileNotFoundError as e:
         print("No XMLs found")
         xml_list = None
     matched_xml = ''
 
     def find_xml_by_case(case):
-        if xml_list is not None:
-            nonlocal matched_xml
-            matched_xml = ''
-            to_match = case.replace('/', '_').replace('-', '_')
-            for xml in xml_list:
-                if to_match in xml.name:
-                    matched_xml = xml.name
-                    break
+        if xml_list is None:
+            return
+        nonlocal matched_xml
+        matched_xml = ''
+        to_match = case.replace('/', '_').replace('-', '_')
+        for xml in xml_list:
+            if to_match in xml.name:
+                matched_xml = xml.name
+                break
 
     errata = {}
 
@@ -783,6 +784,13 @@ def archive_testcases(dir_path, depth=3):
     return dir_path
 
 
+def split_xml_filename(file_path):
+    file_name = os.path.basename(file_path)
+    file_name, _ = os.path.splitext(file_name)
+    test_name, timestamp = file_name.split("_C_")
+    return test_name, timestamp
+
+
 def pull_server_logs(args):
     """Copy Bluetooth Protocol Viewer logs from auto-pts servers.
     :param server_addr: list of servers addresses
@@ -800,6 +808,7 @@ def pull_server_logs(args):
     for i in range(len(server_addr)):
         if i != 0 and server_addr[i] in server_addr[0:i]:
             continue
+        last_xml = ('', '')
 
         with ServerProxy("http://{}:{}/".format(server_addr[i], server_port[i]),
                          allow_none=True, ) as proxy:
@@ -831,6 +840,11 @@ def pull_server_logs(args):
 
                     if file_path.endswith('.xml') and not 'tc_log' in file_path\
                             and b'Final Verdict:PASS' in file_bin.data:
+                        (test_name, timestamp) = split_xml_filename(file_path)
+                        if test_name in last_xml[0]:
+                            if timestamp <= last_xml[1]:
+                                continue
+                            os.remove(last_xml[0])
                         xml_file_path = \
                             '/'.join([xml_folder,
                                       xml_file_path[
@@ -841,6 +855,7 @@ def pull_server_logs(args):
                             exist_ok=True)
                         with open(xml_file_path, 'wb') as handle:
                             handle.write(file_bin.data)
+                        last_xml = (xml_file_path, timestamp)
                 except BaseException as e:
                     logging.exception(e)
 
