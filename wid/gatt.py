@@ -1000,9 +1000,15 @@ def hdl_wid_82(_: WIDParams):
 
 
 def hdl_wid_90(_: WIDParams):
-    btp.gattc_notification_ev(btp.pts_addr_get(),
-                              btp.pts_addr_type_get(), 1)
-    return True
+    stack = get_stack()
+    gatt = stack.gatt
+
+    gatt.wait_notification_ev(timeout=5)
+
+    assert gatt.notification_events
+    addr_type, addr, notif_type, _, _ = gatt.notification_events[0]
+
+    return (addr_type, addr, notif_type) == (btp.pts_addr_type_get(), btp.pts_addr_get(),  1)
 
 
 def hdl_wid_91(params: WIDParams):
@@ -1048,7 +1054,15 @@ def hdl_wid_92(params: WIDParams):
 
 
 def hdl_wid_95(_: WIDParams):
-    return True
+    stack = get_stack()
+    gatt = stack.gatt
+
+    gatt.wait_notification_ev(timeout=5)
+
+    assert gatt.notification_events
+    addr_type, addr, notif_type, _, _ = gatt.notification_events[0]
+
+    return (addr_type, addr, notif_type) == (btp.pts_addr_type_get(), btp.pts_addr_get(),  2)
 
 
 def hdl_wid_96(_: WIDParams):
@@ -1096,9 +1110,6 @@ def hdl_wid_99(params: WIDParams):
 
     btp.gattc_cfg_indicate(btp.pts_addr_type_get(), btp.pts_addr_get(),
                            1, handle)
-
-    btp.gattc_notification_ev(btp.pts_addr_get(),
-                              btp.pts_addr_type_get(), 2)
 
     return True
 

@@ -102,8 +102,17 @@ def gatt_attr_value_changed_ev_(gatt, data, data_len):
     gatt.attr_value_set_changed(handle)
 
 
+def gatt_notification_ev_(gatt, data, data_len):
+    (addr_type, addr, notification_type, handle, value) = gattc_dec_notification_ev_data(data)
+    logging.debug("%s %r %r %r %r %r", gatt_notification_ev_.__name__,
+                  addr_type, addr, notification_type, handle, value)
+
+    gatt.notification_ev_recv(addr_type, addr, notification_type, handle, value)
+
+
 GATT_EV = {
     defs.GATT_EV_ATTR_VALUE_CHANGED: gatt_attr_value_changed_ev_,
+    defs.GATT_EV_NOTIFICATION: gatt_notification_ev_,
 }
 
 
@@ -277,6 +286,22 @@ def gatts_set_enc_key_size(hdl, enc_key_size):
     iutctl.btp_socket.send(*GATTS['set_enc_key_size'], data=data_ba)
 
     gatt_command_rsp_succ()
+
+
+def gattc_dec_notification_ev_data(frame):
+    fmt = '<B6sBHH'
+    if len(frame) < struct.calcsize(fmt):
+        raise BTPError("Invalid data length")
+
+    addr_type, addr, notification_type, handle, data_len = struct.unpack_from(fmt, frame)
+    data = frame[struct.calcsize(fmt):]
+
+    if len(data) != data_len:
+        raise BTPError("Invalid data length")
+
+    addr = binascii.hexlify(addr[::-1]).lower().decode()
+
+    return addr_type, addr, notification_type, handle, data
 
 
 def gatts_dec_attr_value_changed_ev_data(frame):

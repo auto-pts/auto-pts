@@ -850,6 +850,8 @@ class Gatt:
         self.server_db = GattDB()
         self.last_unique_uuid = 0
         self.verify_values = []
+        self.notification_events = []
+        self.notification_ev_received = Event()
 
     def attr_value_set(self, handle, value):
         attr = self.server_db.attr_lookup_handle(handle)
@@ -894,6 +896,14 @@ class Gatt:
 
         logging.debug("timed out")
         return None
+
+    def notification_ev_recv(self, addr_type, addr, notif_type, handle, data):
+        self.notification_events.append((addr_type, addr, notif_type, handle, data))
+        self.notification_ev_received.set()
+
+    def wait_notification_ev(self, timeout=None):
+        self.notification_ev_received.wait(timeout)
+        self.notification_ev_received.clear()
 
 
 class Stack:
