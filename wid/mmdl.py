@@ -692,10 +692,8 @@ def sensor_desc_get(params):
 
 
 def sensor_desc_status(params):
-    params.description = params['Descriptor']
-
     stack = get_stack()
-    return [params.description] == stack.mesh.recv_status_data_get('Status')
+    return [params['Descriptor']] == stack.mesh.recv_status_data_get('Status')
 
 
 def sensor_get(params):
