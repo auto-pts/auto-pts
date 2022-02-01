@@ -624,6 +624,8 @@ class L2cap:
         self.psm = psm
         self.initial_mtu = initial_mtu
         self.channels = []
+        self.hold_credits = 0
+        self.num_channels = 2
 
     def chan_lookup_id(self, chan_id):
         for chan in self.channels:
@@ -645,6 +647,15 @@ class L2cap:
 
     def psm_set(self, psm):
         self.psm = psm
+
+    def num_channels_set(self, num_channels):
+        self.num_channels = num_channels
+
+    def hold_credits_set(self, hold_credits):
+        self.hold_credits = hold_credits
+
+    def initial_mtu_set(self, initial_mtu):
+        self.initial_mtu = initial_mtu
 
     def connected(self, chan_id, psm, peer_mtu, peer_mps, our_mtu, our_mps,
                   bd_addr_type, bd_addr):
