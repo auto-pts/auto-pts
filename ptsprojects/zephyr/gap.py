@@ -188,6 +188,14 @@ def test_cases(ptses):
             "GAP", "TSPX_advertising_data", ad_pixit)),
         TestFunc(lambda: pts.update_pixit_param(
             "GAP", "TSPX_delete_ltk", "TRUE")),
+        TestFunc(lambda: pts.update_pixit_param(
+            "GAP", "TSPX_iut_invalid_connection_interval_min", format(0x0c80, '04x'))),
+        TestFunc(lambda: pts.update_pixit_param(
+            "GAP", "TSPX_iut_invalid_connection_interval_max", format(0x0c80, '04x'))),
+        TestFunc(lambda: pts.update_pixit_param(
+            "GAP", "TSPX_iut_invalid_connection_latency", format(0x0000, '04x'))),
+        TestFunc(lambda: pts.update_pixit_param(
+            "GAP", "TSPX_iut_invalid_conn_update_supervision_timeout", format(0x0c80, '04x'))),
 
         # We do this on test case, because previous one could update
         # this if RPA was used by PTS
