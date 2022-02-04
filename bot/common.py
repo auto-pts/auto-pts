@@ -92,7 +92,7 @@ class BotConfigArgs(Namespace):
         self.stress_test = args.get('stress_test', False)
         self.ykush = args.get('ykush', None)
         self.recovery = args.get('recovery', False)
-        self.superguard = 60 * float(args.get('superguard', 0))
+        self.superguard = float(args.get('superguard', 0))
 
 
 class BotClient(Client):
