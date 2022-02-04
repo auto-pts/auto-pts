@@ -688,7 +688,7 @@ class PyPTS:
         log("%s %s %s", self.stop_test_case.__name__, project_name,
             test_case_name)
 
-        self._pts.StopTestCase(project_name, test_case_name)
+        self._pts.StopTestCase()
 
     def get_test_case_count_from_tss_file(self, project_name):
         """Returns the number of test cases that are available in the specified
