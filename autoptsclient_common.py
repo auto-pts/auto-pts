@@ -572,7 +572,8 @@ class TestCaseRunStats:
         elem.attrib["status"] = status
 
         regression = bool(elem.attrib["status"] != "PASS" and elem.attrib["status_previous"] == "PASS")
-        progress = bool(elem.attrib["status"] == "PASS" and elem.attrib["status_previous"] != "PASS")
+        progress = bool(elem.attrib["status"] == "PASS" and elem.attrib["status_previous"] != "PASS" \
+                        and elem.attrib["status_previous"] != "None")
 
         elem.attrib["regression"] = str(regression)
         elem.attrib["progress"] = str(progress)
