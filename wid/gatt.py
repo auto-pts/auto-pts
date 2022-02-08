@@ -577,6 +577,7 @@ def hdl_wid_48(params: WIDParams):
     no_read_long_tests = [
         "GATT/CL/GAR/BI-01-C",
         "GATT/CL/GAR/BI-02-C",
+        "GATT/CL/GAR/BI-03-C",
         "GATT/CL/GAR/BI-04-C",
         "GATT/CL/GAR/BI-05-C",
         "GATT/CL/GAR/BI-11-C",
