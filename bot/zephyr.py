@@ -56,7 +56,7 @@ def build_and_flash(zephyr_wd, board, tty, conf_file=None):
 
     bot.common.check_call(cmd, cwd=tester_dir)
     bot.common.check_call(['west', 'flash', '--skip-rebuild', '--recover',
-                           '--snr',  get_debugger_snr(tty)], cwd=tester_dir)
+                           '-i',  get_debugger_snr(tty)], cwd=tester_dir)
 
 
 def flush_serial(tty):
