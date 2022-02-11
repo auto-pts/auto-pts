@@ -134,9 +134,6 @@ iut_config = {
             'CONFIG_BT_CTLR_CONN_PARAM_REQ': 'n',
         },
         "test_cases": [
-            'GAP/CONN/CPUP/BV-01-C',
-            'GAP/CONN/CPUP/BV-02-C',
-            'GAP/CONN/CPUP/BV-03-C',
             'L2CAP/LE/CPU/BV-01-C',
         ]
     },
