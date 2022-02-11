@@ -32,8 +32,7 @@ class CHAR:
     name = (None, None, None, UUID.device_name)
 
 
-init_gatt_db = [TestFunc(btp.core_reg_svc_gatt),
-                TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
+init_gatt_db = [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                 TestFunc(btp.gatts_add_char, 0, Prop.read,
                          Perm.read | Perm.read_authn,
                          UUID.VND16_2),
@@ -196,6 +195,9 @@ def test_cases(ptses):
             "GAP", "TSPX_iut_invalid_connection_latency", format(0x0000, '04x'))),
         TestFunc(lambda: pts.update_pixit_param(
             "GAP", "TSPX_iut_invalid_conn_update_supervision_timeout", format(0x0c80, '04x'))),
+
+        TestFunc(btp.core_reg_svc_gatt),
+        TestFunc(stack.gatt_init),
 
         # We do this on test case, because previous one could update
         # this if RPA was used by PTS
