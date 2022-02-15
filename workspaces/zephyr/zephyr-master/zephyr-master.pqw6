@@ -1288,13 +1288,13 @@
           <Row>
             <Name>TSPC_GAP_25_11</Name>
             <Description>Unauthenticated Pairing (LE security mode 1 level 2) with LE Secure Connections Pairing only (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_25_12</Name>
             <Description>Authenticated Pairing (LE security mode 1 level 3) with LE Secure Connections Pairing only (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1654,13 +1654,13 @@
           <Row>
             <Name>TSPC_GAP_35_11</Name>
             <Description>Unauthenticated Pairing (LE security mode 1 level 2) with LE Secure Connections Pairing only (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_35_12</Name>
             <Description>Authenticated Pairing (LE security mode 1 level 3) with LE Secure Connections Pairing only (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1901,7 +1901,7 @@
             <Name>TSPX_bd_addr_iut</Name>
             <Description>The unique 48-bit Bluetooth device address (BD_ADDR) of the IUT. This was filled in during workspace creation.</Description>
             <Type>OCTETSTRING</Type>
-            <Value>112233445566</Value>
+            <Value>000000000000</Value>
           </Row>
           <Row>
             <Name>TSPX_bd_addr_PTS</Name>
@@ -2909,7 +2909,7 @@
             <Name>TSPX_bd_addr_iut</Name>
             <Description>The unique 48-bit Bluetooth device address (BD_ADDR) of the IUT. This was filled in during workspace creation.</Description>
             <Type>OCTETSTRING</Type>
-            <Value>112233445566</Value>
+            <Value>000000000000</Value>
           </Row>
           <Row>
             <Name>TSPX_iut_device_name_in_adv_packet_for_random_address</Name>
@@ -3453,7 +3453,7 @@
             <Name>TSPX_bd_addr_iut</Name>
             <Description>Not Used</Description>
             <Type>OCTETSTRING</Type>
-            <Value>112233445566</Value>
+            <Value>000000000000</Value>
           </Row>
           <Row>
             <Name>TSPX_class_of_device_pts</Name>
@@ -4012,7 +4012,7 @@
             <Name>TSPX_bd_addr_iut</Name>
             <Description>The unique 48-bit Bluetooth device address (BD_ADDR) of the IUT. This was filled in during workspace creation.</Description>
             <Type>OCTETSTRING</Type>
-            <Value>112233445566</Value>
+            <Value>000000000000</Value>
           </Row>
           <Row>
             <Name>TSPX_bd_addr_iut_le</Name>
@@ -4959,7 +4959,7 @@
             <Name>TSPX_bd_addr_iut</Name>
             <Description>The unique 48-bit Bluetooth device address (BD_ADDR) of the IUT. This was filled in during workspace creation.</Description>
             <Type>OCTETSTRING</Type>
-            <Value>112233445566</Value>
+            <Value>000000000000</Value>
           </Row>
           <Row>
             <Name>TSPX_bd_addr_additional_filter_accept_list</Name>
@@ -5393,7 +5393,7 @@
             <Name>TSPX_bd_addr_iut</Name>
             <Description>The unique 48-bit Bluetooth device address (BD_ADDR) of the IUT. This was filled in during workspace creation.</Description>
             <Type>OCTETSTRING</Type>
-            <Value>112233445566</Value>
+            <Value>000000000000</Value>
           </Row>
           <Row>
             <Name>TSPX_iut_device_name_in_adv_packet_for_random_address</Name>
