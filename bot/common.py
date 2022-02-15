@@ -146,7 +146,8 @@ class BotClient(Client):
                 else:
                     _args.pop(config)
                     log('No test cases for {} config, ignored.'.format(config))
-
+        _args[config_default].test_cases = autoptsclient.get_test_cases(
+            self.ptses[0], self.ptses[0].get_project_list(), _args[config_default].test_cases, excluded)
         if len(_args[config_default].test_cases) == 0:
             _args.pop(config_default)
             log('No test cases for {} config, ignored.'.format(config_default))
