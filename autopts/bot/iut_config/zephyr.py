@@ -146,6 +146,20 @@ iut_config = {
             'MESH'
         ]
     },
+
+    "mesh_rpr.conf": {
+        "overlay": {
+            'CONFIG_BT_MESH_ECDH_P256_HMAC_SHA256_AES_CCM': 'n',
+        },
+        "test_cases": [
+            'MESH/SR/RPR/PDU/BV-02-C',
+            'MESH/SR/RPR/PDU/BV-03-C',
+            'MESH/SR/RPR/PDU/BV-04-C',
+            'MESH/SR/RPR/LNK/BV-23-C',
+            'MESH/SR/RPR/LNK/BV-25-C',
+            'MESH/SR/RPR/LNK/BV-26-C'
+        ]
+    },
 }
 
 retry_config = {
