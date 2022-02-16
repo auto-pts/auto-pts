@@ -16,7 +16,7 @@ from typing import NamedTuple
 
 from .wid import generic_wid_hdl
 from .l2cap import l2cap_wid_hdl
-from .mesh import mesh_wid_hdl
+from .mesh import mesh_wid_hdl, mesh_wid_hdl_rpr_2ptses
 from .mmdl import mmdl_wid_hdl
 from .vcs import vcs_wid_hdl
 from .ias import ias_wid_hdl
