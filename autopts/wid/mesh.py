@@ -31,6 +31,14 @@ def mesh_wid_hdl(wid, description, test_case_name):
     return generic_wid_hdl(wid, description, test_case_name, [__name__])
 
 
+def mesh_wid_hdl_rpr_2ptses(wid, description, test_case_name):
+    if wid == 33:
+        log("%s, %r, %r, %s", mesh_wid_hdl_rpr_2ptses.__name__, wid, description,
+            test_case_name)
+        return True
+    return mesh_wid_hdl(wid, description, test_case_name)
+
+
 # wid handlers section begin
 def hdl_wid_6(params: WIDParams):
     """
@@ -2993,6 +3001,36 @@ def hdl_wid_652(_: WIDParams):
 
 def hdl_wid_674(_: WIDParams):
     return False
+
+
+def hdl_wid_712(desc):
+    """
+    Implements:
+    description:Please start another PTS and run Lower Tester 2 test case,
+    which is the remote unprovisioned device.
+
+    Please set the TSPX_device_uuid2 value to match the
+    TSPX_device_uuid1 of Lower Tester 2.
+
+    Click OK, when ready to proceed.
+    """
+    return True
+
+
+def hdl_wid_713(_: WIDParams):
+    """
+    description: Please instruct Lower Tester 2 to advertise with
+    Mesh Beacon packet. Then, click OK to continue.
+    """
+    return True
+
+
+def hdl_wid_714(desc):
+    """
+    When Lower Tester 1 instructs to do so,
+    click OK to advertise with Mesh Beacon packet.
+    """
+    return True
 
 
 def hdl_wid_942(_: WIDParams):
