@@ -15,5 +15,5 @@
 from typing import NamedTuple
 
 from .l2cap import l2cap_wid_hdl
-from .mesh import mesh_wid_hdl
+from .mesh import mesh_wid_hdl, mesh_wid_hdl_rpr_2ptses
 from .mmdl import mmdl_wid_hdl
