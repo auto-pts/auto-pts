@@ -39,6 +39,15 @@ def mesh_wid_hdl_rpr_2ptses(wid, description, test_case_name):
     return mesh_wid_hdl(wid, description, test_case_name)
 
 
+def mesh_wid_hdl_rpr_persistent_storage(wid, description, test_case_name):
+    if wid == 13:
+        log("%s, %r, %r, %s", mesh_wid_hdl_rpr_persistent_storage.__name__,
+            wid, description, test_case_name)
+        return hdl_wid_13_persistent_storage(WIDParams(wid, description,
+                                                       test_case_name))
+    return mesh_wid_hdl(wid, description, test_case_name)
+
+
 # wid handlers section begin
 def hdl_wid_6(params: WIDParams):
     """
@@ -151,7 +160,7 @@ def hdl_wid_12(_: WIDParams):
     return True
 
 
-def hdl_wid_13(_: WIDParams):
+def hdl_wid_13(params: WIDParams):
     """
     Implements: RE_PROVISIONING_PROVISIONER
     description: There is no shared security information. Please remove any
@@ -163,6 +172,37 @@ def hdl_wid_13(_: WIDParams):
     if not stack.mesh.is_initialized:
         btp.mesh_config_prov()
         btp.mesh_init()
+
+    return True
+
+
+def hdl_wid_13_persistent_storage(params: WIDParams):
+    """
+    Implements: RE_PROVISIONING_PROVISIONER
+    description: There is no shared security information. Please remove any
+                 security information if any. PTS is waiting for beacon to
+                 start provisioning from IUT with UUID value indicated in 'TSPX_device_uuid'
+    """
+    stack = get_stack()
+
+    if not stack.mesh.is_initialized:
+        btp.mesh_config_prov()
+        btp.mesh_init()
+
+    if stack.mesh.is_provisioned.data:
+        btp.mesh_reset()
+
+    btp.mesh_comp_change_prepare()
+
+    zephyrctl = btp.get_iut_method()
+
+    zephyrctl.wait_iut_ready_event()
+    btp.core_reg_svc_gap()
+    btp.core_reg_svc_mesh()
+    btp.gap_read_ctrl_info()
+
+    btp.mesh_config_prov()
+    btp.mesh_init()
 
     return True
 
