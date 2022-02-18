@@ -250,6 +250,9 @@ MESH = {
     "provision_adv": (defs.BTP_SERVICE_ID_MESH,
                       defs.MESH_PROVISION_ADV,
                       CONTROLLER_INDEX),
+    "comp_change_prepare": (defs.BTP_SERVICE_ID_MESH,
+                            defs.MESH_COMP_CHANGE_PREPARE,
+                            CONTROLLER_INDEX),
 }
 
 
@@ -1477,6 +1480,17 @@ def mesh_health_attention_set(addr, app_idx, attention, ack):
     if ack:
         (status,) = struct.unpack_from('<B', rsp)
         stack.mesh.model_data = status
+
+
+def mesh_comp_change_prepare():
+    logging.debug("%s", mesh_comp_change_prepare.__name__)
+
+    stack = get_stack()
+    iutctl = get_iut()
+
+    data = bytearray()
+
+    iutctl.btp_socket.send_wait_rsp(*MESH['comp_change_prepare'], data)
 
 
 def mesh_lpn_polled_ev(mesh, data, data_len):

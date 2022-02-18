@@ -22,7 +22,7 @@ from uuid import uuid4
 from pybtp import defs, btp
 from pybtp.types import MeshVals
 from autoptsclient_common import get_unique_name
-from wid import mesh_wid_hdl, mesh_wid_hdl_rpr_2ptses
+from wid import mesh_wid_hdl, mesh_wid_hdl_rpr_2ptses, mesh_wid_hdl_rpr_persistent_storage
 from ptsprojects.stack import get_stack, SynchPoint
 from ptsprojects.testcase import TestFunc
 from ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
@@ -568,7 +568,7 @@ def test_cases(ptses):
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/SR/RPR/PDU/BV-04-C",
                   cmds=pre_conditions,
-                  generic_wid_hdl=mesh_wid_hdl),
+                  generic_wid_hdl=mesh_wid_hdl_rpr_persistent_storage),
     ]
 
     test_cases_slaves = [
