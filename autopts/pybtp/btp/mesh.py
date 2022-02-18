@@ -283,6 +283,9 @@ MESH = {
     "opcodes_aggregator_send": (defs.BTP_SERVICE_ID_MESH,
                                 defs.MESH_OPCODES_AGGREGATOR_SEND,
                                 CONTROLLER_INDEX, ""),
+    "comp_change_prepare": (defs.BTP_SERVICE_ID_MESH,
+                            defs.MESH_COMP_CHANGE_PREPARE,
+                            CONTROLLER_INDEX),
 }
 
 
@@ -1684,6 +1687,17 @@ def mesh_proxy_connect(net_idx=None):
     data = bytearray(struct.pack("<H", net_idx))
 
     iutctl.btp_socket.send_wait_rsp(*MESH['proxy_connect'], data)
+
+
+def mesh_comp_change_prepare():
+    logging.debug("%s", mesh_comp_change_prepare.__name__)
+
+    stack = get_stack()
+    iutctl = get_iut()
+
+    data = bytearray()
+
+    iutctl.btp_socket.send_wait_rsp(*MESH['comp_change_prepare'], data)
 
 
 def mesh_lpn_polled_ev(mesh, data, data_len):

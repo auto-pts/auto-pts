@@ -23,7 +23,7 @@ from autopts.pybtp import defs
 from autopts.pybtp.types import Addr
 from autopts.pybtp.types import MeshVals
 from autopts.client import get_unique_name
-from autopts.wid import mesh_wid_hdl, mesh_wid_hdl_rpr_2ptses
+from autopts.wid import mesh_wid_hdl, mesh_wid_hdl_rpr_2ptses, mesh_wid_hdl_rpr_persistent_storage
 from autopts.ptsprojects.stack import get_stack, SynchPoint
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
@@ -520,7 +520,7 @@ def test_cases(ptses):
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/SR/RPR/PDU/BV-04-C",
                   cmds=pre_conditions,
-                  generic_wid_hdl=mesh_wid_hdl),
+                  generic_wid_hdl=mesh_wid_hdl_rpr_persistent_storage),
     ]
 
     test_cases_lt2 = [
