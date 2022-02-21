@@ -357,6 +357,12 @@ def gap_wait_for_pairing_fail(timeout=30):
     return stack.gap.gap_wait_for_pairing_fail(timeout)
 
 
+def gap_wait_for_lost_bond(timeout=30):
+    stack = get_stack()
+
+    return stack.gap.gap_wait_for_lost_bond(timeout)
+
+
 def gap_adv_ind_on(ad=None, sd=None, duration=AdDuration.forever, own_addr_type=OwnAddrType.le_identity_address):
     logging.debug("%s %r %r", gap_adv_ind_on.__name__, ad, sd)
 

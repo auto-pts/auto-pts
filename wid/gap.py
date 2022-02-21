@@ -384,6 +384,7 @@ def hdl_wid_76(_: WIDParams):
 
 def hdl_wid_77(_: WIDParams):
     try:
+        btp.gap_wait_for_connection(5)
         btp.gap_disconn()
     except types.BTPError:
         logging.debug("Ignoring expected error on disconnect")
@@ -680,6 +681,7 @@ def hdl_wid_142(_: WIDParams):
 
 
 def hdl_wid_143(_: WIDParams):
+    btp.gap_wait_for_lost_bond(5)
     return bool(get_stack().gap.bond_lost_ev_data.data)
 
 
