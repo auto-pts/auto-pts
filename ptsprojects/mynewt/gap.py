@@ -33,8 +33,7 @@ class CHAR:
     name = (None, None, None, UUID.device_name)
 
 
-init_gatt_db = [TestFunc(btp.core_reg_svc_gatt),
-                TestFunc(btp.gatts_add_svc, 0, gatt.PTS_DB.SVC),
+init_gatt_db = [TestFunc(btp.gatts_add_svc, 0, gatt.PTS_DB.SVC),
                 TestFunc(btp.gatts_add_char, 0, Prop.read,
                          Perm.read | Perm.read_authn,
                          gatt.PTS_DB.CHR_READ_WRITE_AUTHEN),
@@ -193,6 +192,8 @@ def test_cases(ptses):
             "TRUE" if stack.gap.iut_addr_is_random() else "FALSE")),
         TestFunc(lambda: pts.update_pixit_param(
             "GAP", "TSPX_delete_ltk", "TRUE")),
+
+        TestFunc(btp.core_reg_svc_gatt),
 
         # We do this on test case, because previous one could update
         # this if RPA was used by PTS
