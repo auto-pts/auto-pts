@@ -438,6 +438,14 @@ def hdl_wid_137(_: WIDParams):
     return True
 
 
+def hdl_wid_138(_: WIDParams):
+    """"description: Please make sure an encryption requirement exists for a channel
+    L2CAP. When receiving Credit Based Connection Request from PTS, please respond with
+    Result 0x0008 (Insufficient Encryption)
+    """
+    return True
+
+
 def hdl_wid_251(_: WIDParams):
     # TODO: Fix to actually verify result of 'Insufficient Encryption' 0x0008 error
     return get_stack().l2cap.wait_for_disconnection(0, 30)
@@ -567,6 +575,11 @@ def hdl_wid_271(_: WIDParams):
     disconnected = get_stack().l2cap.wait_for_disconnection(0, 30)
     disconnected &= get_stack().l2cap.wait_for_disconnection(1, 30)
     return disconnected
+
+
+def hdl_wid_272(_: WIDParams):
+    """"description: Please press ok to disconnect the link."""
+    return True
 
 
 def hdl_wid_20001(_: WIDParams):
