@@ -552,7 +552,6 @@ def hdl_wid_135(_: WIDParams):
 
 
 def hdl_wid_136(_: WIDParams):
-    btp.core_reg_svc_gatt()
     btp.gatts_add_svc(0, UUID.VND16_1)
     btp.gatts_add_char(0, Prop.read | Prop.auth_swrite,
                        Perm.read | Perm.write_authn, UUID.VND16_2)
