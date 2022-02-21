@@ -109,6 +109,7 @@ def hdl_wid_38(_: WIDParams):
     description: Upper Tester command IUT to send a nonsegmented LE data packet to the PTS with any values.
     """
     stack = get_stack()
+    stack.l2cap.wait_for_connection(0)
     channel = stack.l2cap.chan_lookup_id(0)
     if not channel:
         return False
@@ -171,6 +172,7 @@ def hdl_wid_43(_: WIDParams):
     """
     stack = get_stack()
     l2cap = stack.l2cap
+    l2cap.wait_for_connection(0)
     channel = l2cap.chan_lookup_id(0)
     if not channel:
         return False
@@ -271,6 +273,7 @@ def hdl_wid_56(_: WIDParams):
 def hdl_wid_57(_: WIDParams):
     stack = get_stack()
     l2cap = stack.l2cap
+    l2cap.wait_for_connection(0)
     channel = l2cap.chan_lookup_id(0)
     if not channel:
         return False

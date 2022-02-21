@@ -274,6 +274,21 @@ class Gap:
 
         return self.pairing_failed_rcvd.data
 
+    def gap_wait_for_lost_bond(self, timeout=5):
+        if self.bond_lost_ev_data.data is None:
+            flag = Event()
+            flag.set()
+
+            t = Timer(timeout, timeout_cb, [flag])
+            t.start()
+
+            while flag.is_set():
+                if self.bond_lost_ev_data.data:
+                    t.cancel()
+                    break
+
+        return self.bond_lost_ev_data.data
+
 
 class Mesh:
     def __init__(self, uuid, uuid_lt2=None):
@@ -700,6 +715,23 @@ class L2cap:
 
         while flag.is_set():
             if not self.is_connected(chan_id):
+                t.cancel()
+                return True
+
+        return False
+
+    def wait_for_connection(self, chan_id, timeout=5):
+        if self.is_connected(chan_id):
+            return True
+
+        flag = Event()
+        flag.set()
+
+        t = Timer(timeout, timeout_cb, [flag])
+        t.start()
+
+        while flag.is_set():
+            if self.is_connected(chan_id):
                 t.cancel()
                 return True
 
