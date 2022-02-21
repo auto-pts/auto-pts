@@ -1328,10 +1328,11 @@ class Client:
         self.test_cases = setup_test_cases(ptses)
 
     def run_test_cases(self):
-        test_cases_names = self.args.test_cases
-        included = []
+        included = self.args.test_cases
         excluded = self.args.excluded
-        self.args.test_cases = get_test_cases(self.ptses[0], test_cases_names, included, excluded)
+        self.args.test_cases = get_test_cases(self.ptses[0],
+                                              self.ptses[0].get_project_list(),
+                                              included, excluded)
         return run_test_cases(self.ptses, self.test_cases, self.args)
 
     def cleanup(self):
