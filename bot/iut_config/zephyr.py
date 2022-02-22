@@ -101,6 +101,10 @@ iut_config = {
             'GAP/SEC/SEM/BV-29-C',
             'GAP/SEC/SEM/BI-09-C',
             'GAP/SEC/SEM/BI-10-C',
+            'GAP/SEC/SEM/BI-20-C',
+            'GAP/SEC/SEM/BI-21-C',
+            'GAP/SEC/SEM/BI-22-C',
+            'GAP/SEC/SEM/BI-23-C',
         ]
     },
 
