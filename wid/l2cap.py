@@ -310,6 +310,11 @@ def hdl_wid_60(params: WIDParams):
     return False
 
 
+def hdl_wid_61(_: WIDParams):
+    """description: Please confirm the IUT does not send the L2CAP Data to the Upper Tester."""
+    return True
+
+
 def hdl_wid_100(_: WIDParams):
     l2cap = get_stack().l2cap
     for channel in l2cap.channels:
