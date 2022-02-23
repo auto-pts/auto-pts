@@ -40,7 +40,7 @@ def set_pixits(ptses):
     pts = ptses[0]
 
     pts.set_pixit("MESH", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
-    pts.set_pixit("MESH", "TSPX_bd_addr_additional_whitelist", "")
+    pts.set_pixit("MESH", "TSPX_bd_addr_additional_filter_accept_list", "")
     pts.set_pixit("MESH", "TSPX_time_guard", "300000")
     pts.set_pixit("MESH", "TSPX_use_implicit_send", "TRUE")
     pts.set_pixit("MESH", "TSPX_tester_database_file",
@@ -89,7 +89,7 @@ def set_pixits(ptses):
 
     # PTS2
     pts2.set_pixit("MESH", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
-    pts2.set_pixit("MESH", "TSPX_bd_addr_additional_whitelist", "")
+    pts2.set_pixit("MESH", "TSPX_bd_addr_additional_filter_accept_list", "")
     pts2.set_pixit("MESH", "TSPX_time_guard", "300000")
     pts2.set_pixit("MESH", "TSPX_use_implicit_send", "TRUE")
     pts2.set_pixit("MESH", "TSPX_tester_database_file",
