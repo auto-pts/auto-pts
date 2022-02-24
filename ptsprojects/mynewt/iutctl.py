@@ -103,7 +103,7 @@ class MynewtCtl:
             log_file = os.path.join(self.test_case.log_dir,
                                     self.test_case.name.replace('/', '_') +
                                     '_iutctl.log')
-            self.rtt_logger.start('Logger', log_file, self.debugger_snr)
+            self.rtt_logger.start('Terminal', log_file, self.debugger_snr)
 
     def rtt_logger_stop(self):
         if self.rtt_logger:
