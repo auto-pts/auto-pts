@@ -91,37 +91,22 @@ CORE = {
 
 def clear_verify_values():
     stack = get_stack()
-    if stack.gatt_cl:
-        stack.gatt_cl.verify_values = []
-    else:
-        stack.gatt.verify_values = []
+    stack.gatt_cl.verify_values = []
 
 
 def add_to_verify_values(item):
     stack = get_stack()
-
-    if stack.gatt_cl:
-        stack.gatt_cl.verify_values.append(item)
-    else:
-        stack.gatt.verify_values.append(item)
+    stack.gatt_cl.verify_values.append(item)
 
 
 def get_verify_values():
     stack = get_stack()
-
-    if stack.gatt_cl:
-        return stack.gatt_cl.verify_values
-
-    return stack.gatt.verify_values
+    return stack.gatt_cl.verify_values
 
 
 def extend_verify_values(item):
     stack = get_stack()
-
-    if stack.gatt_cl:
-        stack.gatt_cl.verify_values.extend(item)
-    else:
-        stack.gatt.verify_values.extend(item)
+    stack.gatt_cl.verify_values.extend(item)
 
 
 def verify_att_error(description):

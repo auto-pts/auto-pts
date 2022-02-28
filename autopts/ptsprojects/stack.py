@@ -1121,6 +1121,7 @@ class Stack:
 
     def gatt_init(self):
         self.gatt = Gatt()
+        self.gatt_cl = self.gatt
 
     def gatt_cl_init(self):
         self.gatt_cl = GattCl()
