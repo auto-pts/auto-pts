@@ -27,6 +27,20 @@ from ptsprojects.testcase_db import DATABASE_FILE
 from ptsprojects.boards import get_available_boards, get_free_device, release_device, get_build_and_flash
 
 
+def check_call(cmd, env=None, cwd=None, shell=True):
+    if sys.platform == 'win32':
+        cmd = subprocess.list2cmdline(cmd)
+        cmd = [os.path.expandvars('$MSYS2_BASH_PATH'), '-c', cmd]
+    return bot.common.check_call(cmd, env, cwd, shell)
+
+
+def check_output(cmd, cwd=None, shell=True, env=None):
+    if sys.platform == 'win32':
+        cmd = subprocess.list2cmdline(cmd)
+        cmd = [os.path.expandvars('$MSYS2_BASH_PATH'), '-c', cmd]
+    return subprocess.check_output(cmd, cwd=cwd, shell=shell, env=env)
+
+
 def get_tty_path(name):
     """Returns tty path (eg. /dev/ttyUSB0) of serial device with specified name
     :param name: device name
@@ -64,43 +78,43 @@ def build_and_flash(project_path, board, overlay=None):
     logging.debug("%s: %s %s %s", build_and_flash.__name__, project_path,
                   board, overlay)
 
-    bot.common.check_call('rm -rf bin/'.split(), cwd=project_path)
-    bot.common.check_call('rm -rf targets/{}_boot/'.format(board).split(),
+    check_call('rm -rf bin/'.split(), cwd=project_path)
+    check_call('rm -rf targets/{}_boot/'.format(board).split(),
                           cwd=project_path)
-    bot.common.check_call('rm -rf targets/bttester/'.split(), cwd=project_path)
+    check_call('rm -rf targets/bttester/'.split(), cwd=project_path)
 
-    bot.common.check_call('newt target create {}_boot'.format(board).split(),
+    check_call('newt target create {}_boot'.format(board).split(),
                           cwd=project_path)
-    bot.common.check_call('newt target create bttester'.split(), cwd=project_path)
+    check_call('newt target create bttester'.split(), cwd=project_path)
 
-    bot.common.check_call(
+    check_call(
         'newt target set {0}_boot bsp=@apache-mynewt-core/hw/bsp/{0}'.format(
             board).split(), cwd=project_path)
-    bot.common.check_call(
+    check_call(
         'newt target set {}_boot app=@mcuboot/boot/mynewt'.format(
             board).split(), cwd=project_path)
 
-    bot.common.check_call(
+    check_call(
         'newt target set bttester bsp=@apache-mynewt-core/hw/bsp/{}'.format(
             board).split(), cwd=project_path)
-    bot.common.check_call(
+    check_call(
         'newt target set bttester app=@apache-mynewt-nimble/apps/bttester'.split(),
         cwd=project_path)
 
     if overlay is not None:
         config = ':'.join(['{}={}'.format(k, v) for k, v in list(overlay.items())])
-        bot.common.check_call('newt target set bttester syscfg={}'.format(config).split(),
+        check_call('newt target set bttester syscfg={}'.format(config).split(),
                               cwd=project_path)
 
-    bot.common.check_call('newt build {}_boot'.format(board).split(), cwd=project_path)
-    bot.common.check_call('newt build bttester'.split(), cwd=project_path)
+    check_call('newt build {}_boot'.format(board).split(), cwd=project_path)
+    check_call('newt build bttester'.split(), cwd=project_path)
 
-    bot.common.check_call('newt create-image -2 {}_boot timestamp'.format(board).split(),
+    check_call('newt create-image -2 {}_boot timestamp'.format(board).split(),
                           cwd=project_path)
-    bot.common.check_call('newt create-image -2 bttester timestamp'.split(), cwd=project_path)
+    check_call('newt create-image -2 bttester timestamp'.split(), cwd=project_path)
 
-    bot.common.check_call('newt load {}_boot'.format(board).split(), cwd=project_path)
-    bot.common.check_call('newt load bttester'.split(), cwd=project_path)
+    check_call('newt load {}_boot'.format(board).split(), cwd=project_path)
+    check_call('newt load bttester'.split(), cwd=project_path)
 
 
 def get_target_description(project_path):
@@ -230,6 +244,13 @@ BotCliParser = MynewtBotCliParser
 
 def main(cfg):
     print("Mynewt bot start!")
+
+    if sys.platform == 'win32':
+        if 'MSYS2_BASH_PATH' not in os.environ:
+            print('Set environmental variable MSYS2_BASH_PATH.')
+            return 0
+        # In case wsl was configured and its bash has higher prio than msys2 bash
+        os.environ['PATH'] = '/usr/bin:' + os.environ['PATH']
 
     bot.common.pre_cleanup()
 
