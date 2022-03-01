@@ -33,25 +33,6 @@ class CHAR:
     name = (None, None, None, UUID.device_name)
 
 
-init_gatt_db = [TestFunc(btp.gatts_add_svc, 0, gatt.PTS_DB.SVC),
-                TestFunc(btp.gatts_add_char, 0, Prop.read,
-                         Perm.read | Perm.read_authn,
-                         gatt.PTS_DB.CHR_READ_WRITE_AUTHEN),
-                TestFunc(btp.gatts_set_val,
-                         gatt.PTS_DB.CHR_READ_WRITE_AUTHEN_ID, '01'),
-                TestFunc(btp.gatts_add_char, 0, Prop.read,
-                         Perm.read | Perm.read_enc,
-                         gatt.PTS_DB.CHR_READ_WRITE_ENC),
-                TestFunc(btp.gatts_set_val,
-                         gatt.PTS_DB.CHR_READ_WRITE_ENC_ID, '02'),
-                # TestFunc(btp.gatts_add_char, 0,
-                #          gatt.Prop.read | gatt.Prop.auth_swrite,
-                #          gatt.Perm.read | gatt.Perm.write,
-                #          gatt.UUID.VND16_3),
-                # TestFunc(btp.gatts_set_val, 0, '03'),
-                TestFunc(btp.gatts_start_server)]
-
-
 iut_manufacturer_data = 'ABCD'.encode('utf-8')
 iut_ad_uri = '000168747470733A2F2F7777772E626C7565746F'
 iut_appearance = '1111'
