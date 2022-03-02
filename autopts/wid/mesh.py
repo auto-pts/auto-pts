@@ -39,6 +39,19 @@ def mesh_wid_hdl_rpr_2ptses(wid, description, test_case_name):
     return mesh_wid_hdl(wid, description, test_case_name)
 
 
+def mesh_wid_hdl_rpr_2ptses_restart(wid, description, test_case_name):
+    if wid == 33:
+        log("%s, %r, %r, %s", mesh_wid_hdl_rpr_2ptses.__name__, wid, description,
+            test_case_name)
+        return True
+    if wid == 13:
+        log("%s, %r, %r, %s", mesh_wid_hdl_rpr_persistent_storage.__name__,
+            wid, description, test_case_name)
+        return hdl_wid_13_persistent_storage(WIDParams(wid, description,
+                                                       test_case_name))
+    return mesh_wid_hdl(wid, description, test_case_name)
+
+
 def mesh_wid_hdl_rpr_persistent_storage(wid, description, test_case_name):
     if wid == 13:
         log("%s, %r, %r, %s", mesh_wid_hdl_rpr_persistent_storage.__name__,
@@ -3070,6 +3083,19 @@ def hdl_wid_714(desc):
     When Lower Tester 1 instructs to do so,
     click OK to advertise with Mesh Beacon packet.
     """
+    return True
+
+
+def hdl_wid_715(desc):
+    """
+    Please reset the IUT to the Idle state. Then, click OK to continue.
+    """
+    zephyrctl = btp.get_iut_method()
+
+    zephyrctl.wait_iut_ready_event()
+    btp.core_reg_svc_gap()
+    btp.core_reg_svc_mesh()
+    btp.gap_read_ctrl_info()
     return True
 
 
