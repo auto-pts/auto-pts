@@ -28,6 +28,7 @@ log = logging.debug
 MYNEWT = None
 IUT_LOG_FO = None
 SERIAL_BAUDRATE = 115200
+CLI_SUPPORT = ['tty']
 
 
 class MynewtCtl:

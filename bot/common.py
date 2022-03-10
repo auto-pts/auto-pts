@@ -42,7 +42,8 @@ from oauth2client import file, client, tools
 
 import autoptsclient_common as autoptsclient
 import bot
-from autoptsclient_common import CliParser, Client
+from autoptsclient_common import Client
+from cliparser import CliParser
 from ptsprojects.testcase_db import DATABASE_FILE
 
 SCOPES = 'https://www.googleapis.com/auth/drive'
@@ -56,13 +57,14 @@ log = logging.debug
 
 
 class BotCliParser(CliParser):
-    def __init__(self, description='PTS automation client', board_names=None,
-                 add_help=True):
-        super().__init__(description=description, board_names=board_names,
-                         add_help=add_help)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
         self.add_argument('--nb', dest='no_build', action='store_true',
                           help='Skip build and flash in bot mode.', default=False)
+
+    def add_positional_args(self):
+        pass
 
 
 class BotConfigArgs(Namespace):
@@ -98,16 +100,13 @@ class BotConfigArgs(Namespace):
 
 
 class BotClient(Client):
-    def __init__(self, get_iut, project, hw_mode):
-        # Please implement this bot client
-        super().__init__(get_iut, project, hw_mode)
-        self.arg_parser = BotCliParser("PTS automation client", self.boards)
-        self.parse_config = BotConfigArgs
+    def __init__(self, get_iut, project, bot_config_class=BotConfigArgs,
+                 parser_class=BotCliParser):
+        # Please extend this bot client
+        super().__init__(get_iut, project, parser_class)
+        self.parse_config = bot_config_class
         self.config_default = "default.conf"
         self.iut_config = None
-
-    def add_positional_args(self):
-        pass
 
     def apply_config(self, args, config, value):
         pass

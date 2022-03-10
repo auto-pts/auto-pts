@@ -28,6 +28,7 @@ import autoptsclient_common as autoptsclient
 import ptsprojects.zephyr as autoprojects
 from ptsprojects.boards import get_available_boards, get_debugger_snr, get_free_device, tty_to_com, release_device
 from ptsprojects.testcase_db import DATABASE_FILE
+from ptsprojects.zephyr import iutctl
 from ptsprojects.zephyr.iutctl import get_iut, log
 from pathlib import Path
 import bot.common
@@ -218,17 +219,14 @@ class ZephyrBotConfigArgs(bot.common.BotConfigArgs):
 
 
 class ZephyrBotCliParser(bot.common.BotCliParser):
-    def __init__(self, add_help=True):
-        super().__init__(description="PTS automation client",
-                         board_names=get_available_boards('mynewt'),
-                         add_help=add_help)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
 
 class ZephyrBotClient(bot.common.BotClient):
     def __init__(self):
-        super().__init__(get_iut, 'zephyr', True)
-        self.arg_parser = ZephyrBotCliParser()
-        self.parse_config = ZephyrBotConfigArgs
+        super().__init__(get_iut, 'zephyr', ZephyrBotConfigArgs,
+                         ZephyrBotCliParser)
         self.config_default = "prj.conf"
 
     def apply_config(self, args, config, value):

@@ -34,6 +34,7 @@ ZEPHYR = None
 QEMU_BIN = "qemu-system-arm"
 
 SERIAL_BAUDRATE = 115200
+CLI_SUPPORT = ['tty', 'hci', 'qemu']
 
 
 def get_qemu_cmd(kernel_image):

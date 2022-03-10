@@ -98,7 +98,7 @@ def main():
         mod = importlib.import_module('bot.' + conf)
 
         if conf in project2main.keys():
-            parents.append(mod.BotCliParser(False))
+            parents.append(mod.BotCliParser(add_help=False))
         else:
             bot_projects += mod.BotProjects
     else:
