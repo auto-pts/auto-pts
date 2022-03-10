@@ -51,6 +51,7 @@ import winutils
 
 import ptscontrol
 from config import SERVER_PORT
+from utils import usb_power
 
 log = logging.debug
 PROJECT_DIR = dirname(abspath(__file__))
@@ -189,13 +190,7 @@ def delete_workspaces():
 
 
 def power_dongle(ykush_port, on=True):
-    ykushcmd = 'ykushcmd'
-
-    if sys.platform == "win32":
-        ykushcmd += '.exe'
-
-    p = subprocess.Popen([ykushcmd, '-u' if on else '-d', str(ykush_port)], stdout=subprocess.PIPE)
-    p.wait()
+    usb_power(ykush_port, on)
 
 
 def dongle_exists(serial_address):

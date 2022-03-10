@@ -16,7 +16,7 @@
 #
 
 """Common code for the auto PTS clients"""
-import argparse
+
 import datetime
 import errno
 import importlib
@@ -26,7 +26,6 @@ import queue
 import random
 import signal
 import socket
-import subprocess
 import sys
 import tempfile
 import threading
@@ -34,21 +33,20 @@ import time
 import traceback
 import xml.etree.ElementTree as ElementTree
 import xmlrpc.client
-from distutils.spawn import find_executable
 from xmlrpc.server import SimpleXMLRPCServer
 
 import _locale
 from termcolor import colored
 
 import ptsprojects.ptstypes as ptstypes
-from config import SERVER_PORT, CLIENT_PORT
+from cliparser import CliParser
 from ptsprojects import stack
-from ptsprojects.boards import com_to_tty, get_available_boards, tty_exists
+from ptsprojects.boards import get_available_boards
 from ptsprojects.testcase import PTSCallback, TestCaseLT1, TestCaseLT2
-from ptsprojects.testcase_db import TestCaseTable, DATABASE_FILE
+from ptsprojects.testcase_db import TestCaseTable
 from pybtp import btp
 from pybtp.types import BTPError, SynchError
-from utils import InterruptableThread
+from utils import InterruptableThread, usb_power
 from winutils import have_admin_rights
 
 log = logging.debug
@@ -1058,106 +1056,6 @@ def run_test_cases(ptses, test_case_instances, args):
     return stats.get_status_count(), stats.get_results(), stats.get_regressions(), stats.get_progresses()
 
 
-class CliParser(argparse.ArgumentParser):
-    def __init__(self, description, board_names=None, add_help=True):
-        super().__init__(description=description, add_help=add_help)
-
-        self.add_argument("-i", "--ip_addr", nargs="+",
-                          help="IP address of the PTS automation servers")
-
-        self.add_argument("-l", "--local_addr", nargs="+", default=None,
-                          help="Local IP address of PTS automation client")
-
-        self.add_argument("-a", "--bd-addr",
-                          help="Bluetooth device address of the IUT")
-
-        self.add_argument("-d", "--debug-logs", dest="enable_max_logs",
-                          action='store_true', default=False,
-                          help="Enable the PTS maximum logging. Equivalent "
-                               "to running test case in PTS GUI using "
-                               "'Run (Debug Logs)'")
-
-        self.add_argument("-c", "--test-cases", nargs='+', default=[],
-                          help="Names of test cases to run. Groups of "
-                               "test cases can be specified by profile names")
-
-        self.add_argument("-e", "--excluded", nargs='+', default=[],
-                          help="Names of test cases to exclude. Groups of "
-                               "test cases can be specified by profile names")
-
-        self.add_argument("-r", "--retry", type=int, default=0,
-                          help="Repeat test if failed. Parameter specifies "
-                               "maximum repeat count per test")
-
-        self.add_argument("--stress_test", action='store_true', default=False,
-                          help="Repeat every test even if previous result was PASS")
-
-        self.add_argument("-S", "--srv_port", type=int, nargs="+", default=[SERVER_PORT],
-                          help="Specify the server port number")
-
-        self.add_argument("-C", "--cli_port", type=int, nargs="+", default=[CLIENT_PORT],
-                          help="Specify the client port number")
-
-        self.add_argument("--recovery", action='store_true', default=False,
-                          help="Specify if autoptsclient should try to recover"
-                               " itself after wrong status.")
-
-        self.add_argument("--not_recover", nargs='+',
-                          default=['PASS', 'INCONC', 'FAIL', 'NOT_IMPLEMENTED'],
-                          help="Specify at which statuses autoptsclient should "
-                               "try to recover itself.")
-
-        self.add_argument("--superguard", default=0, metavar='MINUTES', type=float,
-                          help="Specify amount of time in minutes, after which"
-                               " super guard will blindly trigger recovery steps.")
-
-        self.add_argument("--ykush", metavar='YKUSH_PORT', help="Specify "
-                                                                "ykush downstream port number, so on BTP TIMEOUT "
-                                                                "the iut device could be powered off and on.")
-
-        # Hidden option to select qemu bin file
-        self.add_argument("--qemu_bin", help=argparse.SUPPRESS, default=None)
-
-        # Hidden option to save test cases data in TestCase.db
-        self.add_argument("-s", "--store", action="store_true",
-                          default=False, help=argparse.SUPPRESS)
-        self.add_argument("--database-file", type=str, default=DATABASE_FILE,
-                          help=argparse.SUPPRESS)
-
-        self.add_argument("--hci", type=int, default=None, help="Specify the number of the"
-                                                                " HCI controller(currently only used "
-                                                                "under native posix)")
-
-        if board_names:
-            self.add_argument("-t", "--tty-file",
-                              help="If TTY(or COM) is specified, BTP communication "
-                                   "with OS running on hardware will be done over "
-                                   "this TTY. Hence, QEMU will not be used.")
-
-            self.add_argument("-j", "--jlink", dest="debugger_snr", type=str, default=None,
-                              help="Specify jlink serial number manually.")
-
-            self.add_argument("-b", "--board", dest='board_name',
-                              help="Used DUT board. This option is used to "
-                                   "select DUT reset command that is run before "
-                                   "each test case. If board is not specified DUT "
-                                   "will not be reset. Supported boards: %s. " %
-                                   (", ".join(board_names, ),), choices=board_names)
-
-            self.add_argument("--btmon",
-                              help="Capture iut btsnoop logs from device over RTT"
-                              "and catch them with btmon. Requires rtt support"
-                              "on IUT.", action='store_true', default=False)
-
-            self.add_argument("--rtt-log",
-                              help="Capture iut logs from device over RTT. "
-                              "Requires rtt support on IUT.",
-                              action='store_true', default=False)
-        else:
-            self.add_argument("btpclient_path",
-                              help="Path to tool btpclient.")
-
-
 class Client:
     """AutoPTS Client abstract class.
 
@@ -1165,7 +1063,7 @@ class Client:
 
     """
 
-    def __init__(self, get_iut, project, hw_mode=False):
+    def __init__(self, get_iut, project, parser_class=CliParser):
         """
         param get_iut: function from autoptsprojects.<project>.iutctl
         param project: name of project
@@ -1176,11 +1074,10 @@ class Client:
         self.get_iut = get_iut
         self.store_tag = project + '_'
         setup_project_name(project)
-        self.boards = None if hw_mode else get_available_boards(project)
+        self.boards = get_available_boards(project)
         self.ptses = []
         self.args = None
-        self.arg_parser = CliParser("PTS automation client", self.boards)
-        self.add_positional_args()
+        self.arg_parser = parser_class(cli_support=autoprojects.iutctl.CLI_SUPPORT, board_names=self.boards)
         self.prev_sigint_handler = None
 
     def start(self, args=None):
@@ -1216,14 +1113,16 @@ class Client:
         # each time log() is called.
         _locale._getdefaultlocale = (lambda *arg: ['en_US', 'utf8'])
 
-        self.args = self.parse_args(_args)
+        self.args, errmsg = self.arg_parser.parse(_args)
+        if errmsg != '':
+            sys.exit(errmsg)
 
         # root privileges only needed for native mode.
-        if self.args.hci is not None:
-            if not have_admin_rights():
-                sys.exit("Please run this program as root.")
-        elif have_admin_rights():
-            sys.exit("Please do not run this program as root.")
+        if have_admin_rights():
+            if not self.args.sudo:
+                sys.exit("Please do not run this program as root.")
+        elif self.args.sudo:
+            sys.exit("Please run this program as root.")
 
         if self.args.store:
             tc_db_table_name = self.store_tag + str(self.args.board_name)
@@ -1251,72 +1150,6 @@ class Client:
         sys.stdout.flush()
 
         return stats
-
-    def parse_args(self, arg_ns=None):
-        """Parses command line arguments and options
-        param arg_ns: namespace with already parsed args
-        """
-        args = self.arg_parser.parse_args(None, arg_ns)
-
-        if args.hci is None:
-            args.qemu_bin = getattr(autoprojects.iutctl, 'QEMU_BIN', None)
-
-        self.check_args(args)
-
-        return args
-
-    def add_positional_args(self):
-        self.arg_parser.add_argument("workspace", nargs='?', default=None,
-                                     help="Path to PTS workspace file to use for "
-                                          "testing. It should have pqw6 extension. "
-                                          "The file should be located on the "
-                                          "machine, where automation server is running.")
-
-        self.arg_parser.add_argument("kernel_image", nargs='?', default=None,
-                                     help="OS kernel image to be used for testing,"
-                                          "e.g. elf file for qemu, exe for native.")
-
-    def check_args(self, args):
-        """Sanity check command line arguments"""
-
-        qemu_bin = args.qemu_bin
-
-        if not args.ip_addr:
-            args.ip_addr = ['127.0.0.1'] * len(args.srv_port)
-
-        if not args.local_addr:
-            args.local_addr = ['127.0.0.1'] * len(args.cli_port)
-
-        if args.ykush:
-            board_power(args.ykush, True)
-            time.sleep(1)
-
-        if 'tty_file' in args and args.tty_file:
-            if not tty_exists(args.tty_file):
-                sys.exit("%s serial port does not exist!" % repr(args.tty_file))
-
-            if args.tty_file.startswith("COM"):
-                try:
-                    args.tty_file = com_to_tty(args.tty_file)
-                except ValueError:
-                    sys.exit("Port {} is not a valid COM port!".format(args.tty_file))
-        elif 'btpclient_path' in args:
-            if not os.path.exists(args.btpclient_path):
-                sys.exit("Path %s of btpclient.py file does not exist!" % repr(args.btpclient_path))
-        elif qemu_bin:
-            if not find_executable(qemu_bin):
-                sys.exit("In QEMU mode %s is needed but not found!" % (qemu_bin,))
-
-            if args.kernel_image is None or not os.path.isfile(args.kernel_image):
-                sys.exit("kernel_image %s is not a file!" % repr(args.kernel_image))
-        else:
-            if args.hci is None:
-                sys.exit("No TTY, HCI, COM, QEMU_BIN or btpclient.py path has been specified!")
-
-            if args.kernel_image is None or not os.path.isfile(args.kernel_image):
-                sys.exit("kernel_image %s is not a file!" % repr(args.kernel_image))
-
-        args.superguard = 60 * args.superguard
 
     def init_iutctl(self, args):
         autoprojects.iutctl.init(args)
@@ -1448,11 +1281,4 @@ def setup_test_cases(ptses):
 
 
 def board_power(ykush_port, on=True):
-    ykushcmd = 'ykushcmd'
-    if sys.platform == "win32":
-        ykushcmd += '.exe'
-
-    if on:
-        subprocess.Popen([ykushcmd, '-u', str(ykush_port)])
-    else:
-        subprocess.Popen([ykushcmd, '-d', str(ykush_port)])
+    usb_power(ykush_port, on)

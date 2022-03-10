@@ -188,18 +188,14 @@ class MynewtBotConfigArgs(bot.common.BotConfigArgs):
 
 
 class MynewtBotCliParser(bot.common.BotCliParser):
-    def __init__(self, add_help=True):
-        super().__init__(description="PTS automation client",
-                         board_names=get_available_boards('mynewt'),
-                         add_help=add_help)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
 
 class MynewtBotClient(bot.common.BotClient):
     def __init__(self):
-        super().__init__(get_iut, 'mynewt', True)
-        self.arg_parser = MynewtBotCliParser()
-        self.parse_config = MynewtBotConfigArgs
-        self.config_default = "default.conf"
+        super().__init__(get_iut, 'mynewt', MynewtBotConfigArgs,
+                         MynewtBotCliParser)
 
     def apply_config(self, args, config, value):
         overlay = None
