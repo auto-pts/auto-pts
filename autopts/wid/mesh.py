@@ -3042,6 +3042,29 @@ def hdl_wid_650(params: WIDParams):
         return stack.mesh.status == 0x01
 
 
+def hdl_wid_672(_: WIDParams):
+    """
+    Please power reset the IUT. Click OK when IUT is powered up.
+    """
+
+    stack = get_stack()
+
+    if not stack.mesh.is_initialized:
+        btp.mesh_config_prov()
+        btp.mesh_init()
+
+    zephyrctl = btp.get_iut_method()
+
+    zephyrctl.wait_iut_ready_event()
+    btp.core_reg_svc_gap()
+    btp.core_reg_svc_mesh()
+    btp.gap_read_ctrl_info()
+
+    btp.mesh_init()
+
+    return True
+
+
 def hdl_wid_652(_: WIDParams):
     """
     Implements: CONFIRM_GENERIC

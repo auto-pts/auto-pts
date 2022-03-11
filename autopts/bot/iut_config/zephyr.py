@@ -173,6 +173,7 @@ iut_config = {
         "test_cases": [
             'MESH/SR/RPR/LNK/BI-05-C',
             'MESH/SR/RPR/PDU/BV-04-C',
+            'MESH/SR/RPR/LNK/BV-25-C',
         ]
     },
 }
