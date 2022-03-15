@@ -1537,6 +1537,7 @@ Commands and responses:
 					0x01 = Insufficient authentication
 					0x02 = Insufficient authorization
 					0x03 = Insufficient encryption key size
+					0x04 = Insufficient encryption
 
 		In case of an error, the error response will be returned.
 

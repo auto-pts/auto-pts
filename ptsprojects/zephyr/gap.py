@@ -32,8 +32,7 @@ class CHAR:
     name = (None, None, None, UUID.device_name)
 
 
-init_gatt_db = [TestFunc(btp.core_reg_svc_gatt),
-                TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
+init_gatt_db = [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                 TestFunc(btp.gatts_add_char, 0, Prop.read,
                          Perm.read | Perm.read_authn,
                          UUID.VND16_2),
@@ -108,8 +107,8 @@ def set_pixits(ptses):
     pts.set_pixit("GAP", "TSPX_iut_valid_connection_latency", "0006")
     pts.set_pixit("GAP", "TSPX_iut_valid_timeout_multiplier", "0962")
     pts.set_pixit("GAP", "TSPX_iut_connection_parameter_timeout", "30000")
-    pts.set_pixit("GAP", "TSPX_iut_invalid_connection_interval_min", "0000")
-    pts.set_pixit("GAP", "TSPX_iut_invalid_connection_interval_max", "0000")
+    pts.set_pixit("GAP", "TSPX_iut_invalid_connection_interval_min", "0008")
+    pts.set_pixit("GAP", "TSPX_iut_invalid_connection_interval_max", "00AA")
     pts.set_pixit("GAP", "TSPX_iut_invalid_connection_latency", "0000")
     pts.set_pixit("GAP", "TSPX_iut_invalid_conn_update_supervision_timeout", "0800")
     pts.set_pixit("GAP", "TSPX_LE_scan_interval", "0010")
@@ -188,6 +187,16 @@ def test_cases(ptses):
             "GAP", "TSPX_advertising_data", ad_pixit)),
         TestFunc(lambda: pts.update_pixit_param(
             "GAP", "TSPX_delete_ltk", "TRUE")),
+        TestFunc(lambda: pts.update_pixit_param(
+            "GAP", "TSPX_iut_invalid_connection_interval_min", format(0x0c80, '04x'))),
+        TestFunc(lambda: pts.update_pixit_param(
+            "GAP", "TSPX_iut_invalid_connection_interval_max", format(0x0c80, '04x'))),
+        TestFunc(lambda: pts.update_pixit_param(
+            "GAP", "TSPX_iut_invalid_connection_latency", format(0x0000, '04x'))),
+        TestFunc(lambda: pts.update_pixit_param(
+            "GAP", "TSPX_iut_invalid_conn_update_supervision_timeout", format(0x0c80, '04x'))),
+
+        TestFunc(btp.core_reg_svc_gatt),
 
         # We do this on test case, because previous one could update
         # this if RPA was used by PTS
@@ -241,11 +250,6 @@ def test_cases(ptses):
         ZTestCase("GAP", "GAP/SEC/AUT/BV-14-C",
                   cmds=pre_conditions + init_gatt_db +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=gap_wid_hdl),
-        ZTestCase("GAP", "GAP/SEC/AUT/BV-17-C",
-                  cmds=pre_conditions +
-                  [TestFunc(btp.core_reg_svc_gatt),
-                   TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/AUT/BV-18-C",
                   cmds=pre_conditions + init_gatt_db +

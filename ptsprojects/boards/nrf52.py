@@ -3,6 +3,7 @@
 #
 # Copyright (c) 2021, Intel Corporation.
 # Copyright (c) 2021, Codecoup.
+# Copyright (c) 2021, Nordic Semiconductor ASA.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms and conditions of the GNU General Public License,
@@ -14,17 +15,4 @@
 # more details.
 #
 
-supported_projects = ['zephyr']
-
-
-def reset_cmd(iutctl):
-    """Return reset command for nRF52 DUT
-
-    Dependency: nRF5x command line tools
-    """
-    with_srn = ''
-
-    if iutctl.debugger_snr:
-        with_srn = ' -s {}'.format(iutctl.debugger_snr)
-
-    return 'nrfjprog -f nrf52 -r {}'.format(with_srn)
+from .nrf5x import *

@@ -4,6 +4,7 @@
 # auto-pts - The Bluetooth PTS Automation Framework
 #
 # Copyright (c) 2018, Intel Corporation.
+# Copyright (c) 2021, Nordic Semiconductor ASA.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms and conditions of the GNU General Public License,
@@ -25,8 +26,9 @@ import collections
 import serial
 import autoptsclient_common as autoptsclient
 import ptsprojects.zephyr as autoprojects
-from ptsprojects.boards import get_available_boards, get_free_device, tty_to_com, release_device
+from ptsprojects.boards import get_available_boards, get_debugger_snr, get_free_device, tty_to_com, release_device
 from ptsprojects.testcase_db import DATABASE_FILE
+from ptsprojects.zephyr import iutctl
 from ptsprojects.zephyr.iutctl import get_iut, log
 from pathlib import Path
 import bot.common
@@ -54,8 +56,8 @@ def build_and_flash(zephyr_wd, board, tty, conf_file=None):
         cmd = ['bash.exe', '-c', '-i', cmd]  # bash.exe == wsl
 
     bot.common.check_call(cmd, cwd=tester_dir)
-    bot.common.check_call(['west', 'flash', '--skip-rebuild',
-                           '--board-dir', tty], cwd=tester_dir)
+    bot.common.check_call(['west', 'flash', '--skip-rebuild', '--recover',
+                           '-i',  get_debugger_snr(tty)], cwd=tester_dir)
 
 
 def flush_serial(tty):
@@ -100,6 +102,7 @@ def apply_overlay(zephyr_wd, base_conf, cfg_name, overlay):
 autopts2board = {
     None: None,
     'nrf52': 'nrf52840dk_nrf52840',
+    'nrf53': 'nrf5340dk_nrf5340_cpuapp',
     'reel_board': 'reel_board'
 }
 
@@ -188,13 +191,15 @@ def compose_mail(args, mail_cfg, mail_ctx):
     <p><b>Execution Time</b>: {}</p>
     {}
     {}
+    {}
     <h3>Logs</h3>
     {}
     <p>Sincerely,</p>
     <p> {}</p>
     '''.format(ww_dd_str, args["board"], mail_ctx["repos_info"], args['platform'],
                args['pts_ver'], mail_ctx["elapsed_time"], mail_ctx["summary"],
-               mail_ctx["regression"], mail_ctx["log_url"], mail_cfg['name'])
+               mail_ctx["regression"], mail_ctx["progresses"],
+               mail_ctx["log_url"], mail_cfg['name'])
 
     if 'subject' in mail_cfg:
         subject = mail_cfg['subject']
@@ -214,17 +219,14 @@ class ZephyrBotConfigArgs(bot.common.BotConfigArgs):
 
 
 class ZephyrBotCliParser(bot.common.BotCliParser):
-    def __init__(self, add_help=True):
-        super().__init__(description="PTS automation client",
-                         board_names=get_available_boards('mynewt'),
-                         add_help=add_help)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
 
 class ZephyrBotClient(bot.common.BotClient):
     def __init__(self):
-        super().__init__(get_iut, 'zephyr', True)
-        self.arg_parser = ZephyrBotCliParser()
-        self.parse_config = ZephyrBotConfigArgs
+        super().__init__(get_iut, 'zephyr', ZephyrBotConfigArgs,
+                         ZephyrBotCliParser)
         self.config_default = "prj.conf"
 
     def apply_config(self, args, config, value):
@@ -279,21 +281,25 @@ def main(cfg):
         time.sleep(1)
 
     if 'tty_file' not in args:
-        args['tty_file'], jlink_srn = get_free_device()
+        args['tty_file'], jlink_srn = get_free_device(args['board'])
         if args['tty_file'] is None:
             sys.exit('No free device found!')
 
     try:
-        summary, results, descriptions, regressions = \
+        summary, results, descriptions, regressions, progresses, args['pts_ver'], args['platform'] = \
             ZephyrBotClient().run_tests(args, cfg.get('iut_config', {}))
     finally:
         release_device(args['tty_file'])
 
     results = collections.OrderedDict(sorted(results.items()))
 
+    args_ns = ZephyrBotConfigArgs(args)
+    pts_logs, xmls = bot.common.pull_server_logs(args_ns)
+
     report_file = bot.common.make_report_xlsx(results, summary, regressions,
-                                              descriptions)
-    report_txt = bot.common.make_report_txt(results, repo_status)
+                                              progresses, descriptions, xmls)
+    report_txt = bot.common.make_report_txt(results, regressions,
+                                            progresses, repo_status)
 
     end_time = time.time()
     end_time_stamp = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
@@ -302,12 +308,10 @@ def main(cfg):
     report_folder = None
 
     if 'githubdrive' in cfg or 'gdrive' in cfg:
-        args_ns = ZephyrBotConfigArgs(args)
-        pts_logs = bot.common.pull_server_logs(args_ns)
         iut_logs = 'logs/'
         readme_file = make_readme_md(start_time_stamp, end_time_stamp,
                                      repos_info, args['pts_ver'])
-        report_folder = bot.common.make_report_folder(iut_logs, pts_logs, report_file,
+        report_folder = bot.common.make_report_folder(iut_logs, pts_logs, xmls, report_file,
                                                       report_txt, readme_file,
                                                       args['database_file'],
                                                       '_iut_zephyr_' + start_time_stamp)
@@ -345,7 +349,10 @@ def main(cfg):
         mail_ctx = {"summary": bot.common.status_dict2summary_html(summary),
                     "regression": bot.common.regressions2html(regressions,
                                                               descriptions),
-                    "repos_info": repo_status}
+                    "repos_info": repo_status,
+                    "progresses": bot.common.progresses2html(progresses,
+                                                             descriptions)
+                    }
 
         # Summary
 

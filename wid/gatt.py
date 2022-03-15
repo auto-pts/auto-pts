@@ -46,30 +46,6 @@ def gatt_wid_hdl(wid, description, test_case_name, logs=True):
         logging.exception(e)
 
 
-def gatt_wid_hdl_no_write_rsp_check(wid, description, test_case_name):
-    if wid == 76:
-        log("%s, %r, %r, %s", gatt_wid_hdl_no_write_rsp_check.__name__, wid, description,
-            test_case_name)
-        return hdl_wid_76_no_rsp_check(WIDParams(wid, description, test_case_name))
-    return gatt_wid_hdl(wid, description, test_case_name)
-
-
-def gatt_wid_hdl_no_long_read(wid, description, test_case_name):
-    if wid == 48:
-        log("%s, %r, %r, %s", gatt_wid_hdl_no_long_read.__name__, wid, description,
-            test_case_name)
-        return hdl_wid_48_no_long_read(WIDParams(wid, description, test_case_name))
-    return gatt_wid_hdl(wid, description, test_case_name)
-
-
-def gatt_wid_hdl_no_btp_reply(wid, description, test_case_name):
-    if wid == 48:
-        log("%s, %r, %r, %s", gatt_wid_hdl_no_btp_reply.__name__, wid, description,
-            test_case_name)
-        return hdl_wid_48_no_btp_reply(WIDParams(wid, description, test_case_name))
-    return gatt_wid_hdl(wid, description, test_case_name)
-
-
 def gattc_wid_hdl_multiple_indications(wid, description, test_case_name):
     global indication_subbed_already
     if wid == 99:
@@ -209,6 +185,9 @@ def hdl_wid_16(_: WIDParams):
 
 
 def hdl_wid_17(params: WIDParams):
+    if params.test_case_name.startswith('GATT/CL'):
+        return btp.verify_description(params.description)
+
     MMI.reset()
     MMI.parse_description(params.description)
     pts_services = MMI.args
@@ -392,6 +371,9 @@ def hdl_wid_23(params: WIDParams):
 
 
 def hdl_wid_24(params: WIDParams):
+    if params.test_case_name.startswith('GATT/CL'):
+        return btp.verify_description(params.description)
+
     MMI.reset()
     MMI.parse_description(params.description)
 
@@ -425,8 +407,7 @@ def hdl_wid_25(params: WIDParams):
     MMI.parse_description(params.description)
 
     pts_chrc_uuid = MMI.args[0]
-    pts_chrc_handles = [int(MMI.args[1], 16), int(MMI.args[2], 16),
-                        int(MMI.args[3], 16), int(MMI.args[4], 16)]
+    pts_chrc_handles = [int(MMI.args[i], 16) for i in range(1, len(MMI.args))]
 
     iut_start_handle = None
     iut_end_handle = None
@@ -597,7 +578,7 @@ def hdl_wid_48(params: WIDParams):
         "GATT/CL/GAR/BV-01-C",
         "GATT/CL/GAR/BV-04-C",
     ]
-
+  
     no_btp_reply_tests = [
         "GATT/CL/GAT/BV-01-C",
     ]
@@ -620,7 +601,6 @@ def hdl_wid_48(params: WIDParams):
 
     btp.gattc_read_long(btp.pts_addr_type_get(), btp.pts_addr_get(),
                         hdl, 0, 1)
-
     btp.gattc_read_long_rsp(False, True)
     btp.add_to_verify_values(str(hdl))
     return True
@@ -658,6 +638,9 @@ def hdl_wid_51(params: WIDParams):
 
 
 def hdl_wid_52(params: WIDParams):
+    if params.test_case_name.startswith('GATT/CL'):
+        return btp.verify_description(params.description)
+
     MMI.reset()
     MMI.parse_description(params.description)
 
@@ -907,34 +890,25 @@ def hdl_wid_75(params: WIDParams):
 
 def hdl_wid_76(params: WIDParams):
     pattern = re.compile("'([0-9a-fA-F]+)'")
-    params = pattern.findall(params.description)
-    if not params:
+    command_params = pattern.findall(params.description)
+    if not command_params:
         logging.error("parsing error")
         return False
 
-    handle = params[0]
-    off = int(params[1])
+    handle = command_params[0]
+    off = int(command_params[1])
 
     btp.gattc_write_long(btp.pts_addr_type_get(), btp.pts_addr_get(),
                          handle, off, '12', None)
+    no_rsp_check_tests = [
+        "GATT/CL/GAW/BV-10-C",
+        "GATT/CL/GAW/BI-37-C"
+    ]
+
+    if params.test_case_name in no_rsp_check_tests:
+        return True
+
     btp.gattc_write_long_rsp(True)
-
-    return True
-
-
-def hdl_wid_76_no_rsp_check(params):
-    pattern = re.compile("'([0-9a-fA-F]+)'")
-    params = pattern.findall(params.description)
-    if not params:
-        logging.error("parsing error")
-        return False
-
-    handle = params[0]
-    off = int(params[1])
-
-    btp.gattc_write_long(btp.pts_addr_type_get(), btp.pts_addr_get(),
-                         handle, off, '12', None)
-
     return True
 
 
@@ -1000,9 +974,15 @@ def hdl_wid_82(_: WIDParams):
 
 
 def hdl_wid_90(_: WIDParams):
-    btp.gattc_notification_ev(btp.pts_addr_get(),
-                              btp.pts_addr_type_get(), 1)
-    return True
+    stack = get_stack()
+    gatt = stack.gatt
+
+    gatt.wait_notification_ev(timeout=5)
+
+    assert gatt.notification_events
+    addr_type, addr, notif_type, _, _ = gatt.notification_events[0]
+
+    return (addr_type, addr, notif_type) == (btp.pts_addr_type_get(), btp.pts_addr_get(),  1)
 
 
 def hdl_wid_91(params: WIDParams):
@@ -1048,7 +1028,15 @@ def hdl_wid_92(params: WIDParams):
 
 
 def hdl_wid_95(_: WIDParams):
-    return True
+    stack = get_stack()
+    gatt = stack.gatt
+
+    gatt.wait_notification_ev(timeout=5)
+
+    assert gatt.notification_events
+    addr_type, addr, notif_type, _, _ = gatt.notification_events[0]
+
+    return (addr_type, addr, notif_type) == (btp.pts_addr_type_get(), btp.pts_addr_get(),  2)
 
 
 def hdl_wid_96(_: WIDParams):
@@ -1096,9 +1084,6 @@ def hdl_wid_99(params: WIDParams):
 
     btp.gattc_cfg_indicate(btp.pts_addr_type_get(), btp.pts_addr_get(),
                            1, handle)
-
-    btp.gattc_notification_ev(btp.pts_addr_get(),
-                              btp.pts_addr_type_get(), 2)
 
     return True
 
@@ -1690,7 +1675,7 @@ def hdl_wid_141(params: WIDParams):
 
     hdl1 = MMI.args[0]
     hdl2 = MMI.args[1]
-    btp.gattc_read_multiple(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl1, hdl2)
+    btp.gattc_read_multiple_var(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl1, hdl2)
     return '0000'
 
 
@@ -1706,6 +1691,9 @@ def hdl_wid_142(params: WIDParams):
 
     btp.gattc_write(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
                     hdl, '02', 1)
+
+    btp.gattc_write_rsp()
+
     return True
 
 
@@ -1714,6 +1702,40 @@ def hdl_wid_144(_: WIDParams):
     Please initiate one L2CAP channel disconnection to the PTS.
     """
     btp.l2cap_disconn_eatt_chans(None, None, 1)
+    return True
+
+
+def hdl_wid_147(params: WIDParams):
+    """
+    Please send two Read Multiple Variable Length characteristic requests using these handles: 'XXXX'O 'XXXX'O
+    Required Bearers are "ATT" and "EATT" bearer.
+
+    Description: Verify that the Implementation Under Test (IUT) can receive multiple characteristics.
+    """
+    MMI.reset()
+    MMI.parse_description(params.description)
+
+    hdl1 = MMI.args[0]
+    hdl2 = MMI.args[1]
+    btp.gattc_read_multiple_var(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl1, hdl2)
+    btp.gattc_read_multiple_var(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl1, hdl2)
+    return True
+
+
+def hdl_wid_148(params: WIDParams):
+    """
+    Please send two Read Multiple Variable Length characteristic requests using these handles: 'XXXX'O 'XXXX'O
+    Required Bearers are "EATT" bearers.
+
+    Description: Verify that the Implementation Under Test (IUT) can receive multiple characteristics.
+    """
+    MMI.reset()
+    MMI.parse_description(params.description)
+
+    hdl1 = MMI.args[0]
+    hdl2 = MMI.args[1]
+    btp.gattc_read_multiple_var(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl1, hdl2)
+    btp.gattc_read_multiple_var(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl1, hdl2)
     return True
 
 
@@ -1729,6 +1751,31 @@ def hdl_wid_139(params: WIDParams):
 
     read_val = btp.gatts_get_attr_val(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl)
     return bool(read_val == COMPARED_VALUE[0])
+
+
+def hdl_wid_150(params: WIDParams):
+    """
+    Please send an ATT_Write_Request to Client Support Features handle = 'XXXX'O to enable Multiple Handle Value Notifications.
+    Discover all characteristics if needed.
+    """
+    MMI.reset()
+    MMI.parse_description(params.description)
+
+    hdl = MMI.args[0]
+
+    # First read the existing value in Client Supported Features.
+    btp.gattc_read(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl)
+    btp.gattc_read_rsp(False, True)
+    client_support_features = int(btp.get_verify_values()[0])
+
+    # Set Multiple Handle Value Notifications bit in features.
+    multi_hvn_bit = 4
+    value = client_support_features | multi_hvn_bit
+
+    btp.gattc_write(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl, f'{value:02x}')
+    btp.gattc_write_rsp()
+
+    return True
 
 
 def hdl_wid_151(_: WIDParams):

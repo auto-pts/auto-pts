@@ -102,8 +102,17 @@ def gatt_attr_value_changed_ev_(gatt, data, data_len):
     gatt.attr_value_set_changed(handle)
 
 
+def gatt_notification_ev_(gatt, data, data_len):
+    (addr_type, addr, notification_type, handle, value) = gattc_dec_notification_ev_data(data)
+    logging.debug("%s %r %r %r %r %r", gatt_notification_ev_.__name__,
+                  addr_type, addr, notification_type, handle, value)
+
+    gatt.notification_ev_recv(addr_type, addr, notification_type, handle, value)
+
+
 GATT_EV = {
     defs.GATT_EV_ATTR_VALUE_CHANGED: gatt_attr_value_changed_ev_,
+    defs.GATT_EV_NOTIFICATION: gatt_notification_ev_,
 }
 
 
@@ -277,6 +286,22 @@ def gatts_set_enc_key_size(hdl, enc_key_size):
     iutctl.btp_socket.send(*GATTS['set_enc_key_size'], data=data_ba)
 
     gatt_command_rsp_succ()
+
+
+def gattc_dec_notification_ev_data(frame):
+    fmt = '<B6sBHH'
+    if len(frame) < struct.calcsize(fmt):
+        raise BTPError("Invalid data length")
+
+    addr_type, addr, notification_type, handle, data_len = struct.unpack_from(fmt, frame)
+    data = frame[struct.calcsize(fmt):]
+
+    if len(data) != data_len:
+        raise BTPError("Invalid data length")
+
+    addr = binascii.hexlify(addr[::-1]).lower().decode()
+
+    return addr_type, addr, notification_type, handle, data
 
 
 def gatts_dec_attr_value_changed_ev_data(frame):
@@ -829,13 +854,7 @@ def gattc_read_long(bd_addr_type, bd_addr, hdl, off, modif_off=None):
     iutctl.btp_socket.send(*GATTC['read_long'], data=data_ba)
 
 
-def gattc_read_multiple(bd_addr_type, bd_addr, *hdls):
-    logging.debug("%s %r %r %r", gattc_read_multiple.__name__, bd_addr_type,
-                  bd_addr, hdls)
-    iutctl = get_iut()
-
-    gap_wait_for_connection()
-
+def _create_read_multiple_req(bd_addr_type, bd_addr, *hdls):
     data_ba = bytearray()
 
     bd_addr_ba = addr2btp_ba(bd_addr)
@@ -849,7 +868,16 @@ def gattc_read_multiple(bd_addr_type, bd_addr, *hdls):
     data_ba.extend(bd_addr_ba)
     data_ba.extend(chr(len(hdls)).encode('utf-8'))
     data_ba.extend(hdls_ba)
+    return data_ba
 
+def gattc_read_multiple(bd_addr_type, bd_addr, *hdls):
+    logging.debug("%s %r %r %r", gattc_read_multiple.__name__, bd_addr_type,
+                  bd_addr, hdls)
+    iutctl = get_iut()
+
+    gap_wait_for_connection()
+
+    data_ba = _create_read_multiple_req(bd_addr_type, bd_addr, *hdls)
     iutctl.btp_socket.send(*GATTC['read_multiple'], data=data_ba)
 
 
@@ -860,20 +888,7 @@ def gattc_read_multiple_var(bd_addr_type, bd_addr, *hdls):
 
     gap_wait_for_connection()
 
-    data_ba = bytearray()
-
-    bd_addr_ba = addr2btp_ba(bd_addr)
-    hdls_j = ''.join(hdl for hdl in hdls)
-    hdls_byte_table = [hdls_j[i:i + 2] for i in range(0, len(hdls_j), 2)]
-    hdls_swp = ''.join([c[1] + c[0] for c in zip(hdls_byte_table[::2],
-                                                 hdls_byte_table[1::2])])
-    hdls_ba = binascii.unhexlify(bytearray(hdls_swp))
-
-    data_ba.extend(chr(bd_addr_type))
-    data_ba.extend(bd_addr_ba)
-    data_ba.extend(chr(len(hdls)))
-    data_ba.extend(hdls_ba)
-
+    data_ba = _create_read_multiple_req(bd_addr_type, bd_addr, *hdls)
     iutctl.btp_socket.send(*GATTC['read_multiple_var'], data=data_ba)
 
 

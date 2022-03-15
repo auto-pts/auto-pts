@@ -27,6 +27,7 @@ IUT = None
 
 # IUT log file object
 IUT_LOG_FO = None
+CLI_SUPPORT = ['btp_py']
 
 
 def get_iut_cmd(btpclient_path):

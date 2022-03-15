@@ -22,7 +22,7 @@ from time import sleep
 
 from ptsprojects.stack import get_stack
 from pybtp import btp, types
-from pybtp.types import Prop, Perm, UUID, AdType, bdaddr_reverse, WIDParams
+from pybtp.types import Prop, Perm, UUID, AdType, bdaddr_reverse, WIDParams, IOCap
 
 log = logging.debug
 
@@ -384,6 +384,7 @@ def hdl_wid_76(_: WIDParams):
 
 def hdl_wid_77(_: WIDParams):
     try:
+        btp.gap_wait_for_connection(5)
         btp.gap_disconn()
     except types.BTPError:
         logging.debug("Ignoring expected error on disconnect")
@@ -551,7 +552,6 @@ def hdl_wid_135(_: WIDParams):
 
 
 def hdl_wid_136(_: WIDParams):
-    btp.core_reg_svc_gatt()
     btp.gatts_add_svc(0, UUID.VND16_1)
     btp.gatts_add_char(0, Prop.read | Prop.auth_swrite,
                        Perm.read | Perm.write_authn, UUID.VND16_2)
@@ -680,6 +680,7 @@ def hdl_wid_142(_: WIDParams):
 
 
 def hdl_wid_143(_: WIDParams):
+    btp.gap_wait_for_lost_bond(5)
     return bool(get_stack().gap.bond_lost_ev_data.data)
 
 
@@ -930,11 +931,100 @@ def hdl_wid_227(_: WIDParams):
 
 def hdl_wid_232(_: WIDParams):
     stack = get_stack()
-
     stack.gap.ad[AdType.advertising_interval_long] = "000030"
-
     btp.gap_adv_ind_on(ad=stack.gap.ad)
 
+    return True
+
+def hdl_wid_234(params: WIDParams):
+    pattern = re.compile(r"0x([0-9a-fA-F]+)")
+    params = pattern.findall(params.description)
+    if not params:
+        logging.error("parsing error")
+        return False
+
+    handle = params[0]
+
+    btp.gattc_cfg_indicate(btp.pts_addr_type_get(), btp.pts_addr_get(),
+                           1, handle)
+
+    return True
+
+
+def hdl_wid_235(params: WIDParams):
+    pattern = re.compile(r"0x([0-9a-fA-F]+)")
+    params = pattern.findall(params.description)
+    if not params:
+        logging.error("parsing error")
+        return False
+
+    handle = params[0]
+
+    btp.gattc_cfg_notify(btp.pts_addr_type_get(), btp.pts_addr_get(),
+                           1, handle)
+
+    return True
+
+
+def hdl_wid_236(_: WIDParams):
+    # Please confirm that IUT does not send a GATT_HandleValueIndication to the Upper Tester
+    stack = get_stack()
+    gatt = stack.gatt
+
+    gatt.wait_notification_ev(timeout=5)
+
+    if gatt.notification_events:
+        return False
+
+    return True
+
+
+def hdl_wid_237(_: WIDParams):
+    # Please confirm that IUT send a GATT_HandleValueIndication to the Upper Tester
+    stack = get_stack()
+    gatt = stack.gatt
+
+    gatt.wait_notification_ev(timeout=5)
+
+    if gatt.notification_events:
+        return True
+
+    return False
+
+def hdl_wid_238(_: WIDParams):
+    # Please confirm that IUT does not send a GATT_HandleValueNotification  to the Upper Tester
+    stack = get_stack()
+    gatt = stack.gatt
+
+    gatt.wait_notification_ev(timeout=5)
+
+    if gatt.notification_events:
+        return False
+
+    return True
+
+
+def hdl_wid_239(_: WIDParams):
+    # Please confirm that IUT send a GATT_HandleValueNotification  to the Upper Tester
+    stack = get_stack()
+    gatt = stack.gatt
+
+    gatt.wait_notification_ev(timeout=5)
+
+    if gatt.notification_events:
+        return True
+
+    return False
+
+def hdl_wid_240(_: WIDParams):
+    # confirm IUT in sec mode 1 level 2
+    btp.gap_set_io_cap(IOCap.no_input_output)
+    return True
+
+
+def hdl_wid_241(_: WIDParams):
+    # confirm IUT in sec mode 1 level 3
+    btp.gap_set_io_cap(IOCap.keyboard_display)
     return True
 
 

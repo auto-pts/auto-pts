@@ -17,6 +17,8 @@
 """Utilities"""
 
 import ctypes
+import subprocess
+import sys
 import threading
 
 
@@ -55,3 +57,12 @@ class InterruptableThread(threading.Thread):
         if res > 1:
             ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id, 0)
             print('Exception raise failure')
+
+
+def usb_power(ykush_port, on=True):
+    ykushcmd = 'ykushcmd'
+
+    if sys.platform == "win32":
+        ykushcmd += '.exe'
+
+    subprocess.Popen([ykushcmd, '-u' if on else '-d', str(ykush_port)])

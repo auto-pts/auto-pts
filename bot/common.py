@@ -12,6 +12,7 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
+import copy
 import logging
 import os
 import re
@@ -41,7 +42,8 @@ from oauth2client import file, client, tools
 
 import autoptsclient_common as autoptsclient
 import bot
-from autoptsclient_common import CliParser, Client
+from autoptsclient_common import Client
+from cliparser import CliParser
 from ptsprojects.testcase_db import DATABASE_FILE
 
 SCOPES = 'https://www.googleapis.com/auth/drive'
@@ -51,16 +53,18 @@ REPORT_TXT = "report.txt"
 COMMASPACE = ', '
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+log = logging.debug
 
 
 class BotCliParser(CliParser):
-    def __init__(self, description='PTS automation client', board_names=None,
-                 add_help=True):
-        super().__init__(description=description, board_names=board_names,
-                         add_help=add_help)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
         self.add_argument('--nb', dest='no_build', action='store_true',
                           help='Skip build and flash in bot mode.', default=False)
+
+    def add_positional_args(self):
+        pass
 
 
 class BotConfigArgs(Namespace):
@@ -92,41 +96,36 @@ class BotConfigArgs(Namespace):
         self.stress_test = args.get('stress_test', False)
         self.ykush = args.get('ykush', None)
         self.recovery = args.get('recovery', False)
-        self.superguard = 60 * float(args.get('superguard', 0))
+        self.superguard = float(args.get('superguard', 0))
 
 
 class BotClient(Client):
-    def __init__(self, get_iut, project, hw_mode):
-        # Please implement this bot client
-        super().__init__(get_iut, project, hw_mode)
-        self.arg_parser = BotCliParser("PTS automation client", self.boards)
-        self.parse_config = BotConfigArgs
+    def __init__(self, get_iut, project, bot_config_class=BotConfigArgs,
+                 parser_class=BotCliParser):
+        # Please extend this bot client
+        super().__init__(get_iut, project, parser_class)
+        self.parse_config = bot_config_class
         self.config_default = "default.conf"
-
-    def add_positional_args(self):
-        pass
+        self.iut_config = None
 
     def apply_config(self, args, config, value):
         pass
 
-    def run_tests(self, args, iut_config):
-        """Run test cases
-            :param args: AutoPTS arguments
-            :param iut_config: IUT configuration
-            :return: tuple of (status, results) dictionaries
-            """
-
+    def run_test_cases(self):
         results = {}
         status = {}
         descriptions = {}
         total_regressions = []
+        total_progresses = []
         _args = {}
 
         config_default = self.config_default
-        _args[config_default] = self.parse_args(self.parse_config(args))
-        autoptsclient.init_logging('_' + '_'.join(str(x) for x in _args[config_default].cli_port))
+        _args[config_default] = self.args
 
-        for config, value in list(iut_config.items()):
+        excluded = _args[config_default].excluded
+        included = _args[config_default].test_cases
+
+        for config, value in list(self.iut_config.items()):
             if 'test_cases' not in value:
                 # Rename default config
                 _args[config] = _args.pop(config_default)
@@ -134,19 +133,35 @@ class BotClient(Client):
                 continue
 
             if config != config_default:
-                _args[config] = self.parse_args(self.parse_config(args))
+                _args[config] = copy.deepcopy(_args[config_default])
+                _args[config].excluded = excluded
 
-            _args[config].test_cases = value.get('test_cases', [])
+            _args[config].test_cases = autoptsclient.get_test_cases(
+                self.ptses[0], value.get('test_cases', []), included, excluded)
 
             if 'overlay' in value:
-                _args[config_default].excluded += _args[config].test_cases
+                if len(_args[config].test_cases) > 0:
+                    _args[config_default].excluded += _args[config].test_cases
+                else:
+                    _args.pop(config)
+                    log('No test cases for {} config, ignored.'.format(config))
+        _args[config_default].test_cases = autoptsclient.get_test_cases(
+            self.ptses[0], self.ptses[0].get_project_list(), _args[config_default].test_cases, excluded)
+        if len(_args[config_default].test_cases) == 0:
+            _args.pop(config_default)
+            log('No test cases for {} config, ignored.'.format(config_default))
 
-        for config, value in list(iut_config.items()):
-            self.apply_config(_args[config], config, value)
+        for config in _args.keys():
+            if config not in self.iut_config.keys():
+                continue
 
-            status_count, results_dict, regressions = self.start(_args[config])
+            self.apply_config(_args[config], config, self.iut_config[config])
+
+            status_count, results_dict, regressions, progresses = \
+                autoptsclient.run_test_cases(self.ptses, self.test_cases, _args[config])
 
             total_regressions += regressions
+            total_progresses += progresses
 
             for k, v in list(status_count.items()):
                 if k in list(status.keys()):
@@ -156,19 +171,26 @@ class BotClient(Client):
 
             results.update(results_dict)
 
-        with ServerProxy("http://{}:{}/".format(
-                _args[config_default].ip_addr[0],
-                _args[config_default].srv_port[0]), allow_none=True, ) as pts:
-            # Read PTS Version and keep it for later use
-            args['pts_ver'] = "%s" % pts.get_version()
-            args['platform'] = '{}'.format(pts.get_system_model())
-
             for test_case_name in list(results.keys()):
                 project_name = test_case_name.split('/')[0]
                 descriptions[test_case_name] = \
-                    pts.get_test_case_description(project_name, test_case_name)
+                    self.ptses[0].get_test_case_description(project_name, test_case_name)
 
-        return status, results, descriptions, total_regressions
+        pts_ver = '{}'.format(self.ptses[0].get_version())
+        platform = '{}'.format(self.ptses[0].get_system_model())
+
+        return status, results, descriptions, total_regressions, total_progresses, pts_ver, platform
+
+    def run_tests(self, args, iut_config):
+        """Run test cases
+            :param args: AutoPTS arguments
+            :param iut_config: IUT configuration
+            :return: tuple of (status, results) dictionaries
+            """
+
+        self.iut_config = iut_config
+
+        return self.start(self.parse_config(args))
 
 
 # ****************************************************************************
@@ -241,6 +263,27 @@ def regressions2html(regressions, descriptions):
             msg += "<p>{}</p>".format(name)
     else:
         msg += "<p>No regressions found</p>"
+
+    return msg
+
+
+def progresses2html(progresses, descriptions):
+    """Creates HTML formatted message with regressions
+    :param progresses: list of regressions found
+    :return: HTML formatted message
+    """
+    msg = "<h3>Progresses</h3>"
+
+    progresses_list = []
+    for name in progresses:
+        progresses_list.append(
+            name + " - " + descriptions.get(name, "no description"))
+
+    if progresses_list:
+        for name in progresses_list:
+            msg += "<p>{}</p>".format(name)
+    else:
+        msg += "<p>No progresses found</p>"
 
     return msg
 
@@ -434,14 +477,34 @@ class Drive(GDrive):
 # ****************************************************************************
 # FIXME don't use statuses from status_dict, count it from results dict instead
 def make_report_xlsx(results_dict, status_dict, regressions_list,
-                     descriptions):
+                     progresses_list, descriptions, xmls):
     """Creates excel file containing test cases results and summary pie chart
     :param results_dict: dictionary with test cases results
     :param status_dict: status dictionary, where key is status and value is
     status count
     :param regressions_list: list of regressions found
+    :param progresses_list: list of regressions found
+    :param descriptions: test cases
     :return:
     """
+
+    try:
+        xml_list = list(os.scandir(xmls))
+    except FileNotFoundError as e:
+        print("No XMLs found")
+        xml_list = None
+    matched_xml = ''
+
+    def find_xml_by_case(case):
+        if xml_list is None:
+            return
+        nonlocal matched_xml
+        matched_xml = ''
+        to_match = case.replace('/', '_').replace('-', '_')
+        for xml in xml_list:
+            if to_match in xml.name:
+                matched_xml = xml.name
+                break
 
     errata = {}
 
@@ -466,13 +529,16 @@ def make_report_xlsx(results_dict, status_dict, regressions_list,
 
     # Write data headers.
     worksheet.write('A1', header)
-    worksheet.write_row('A3', ['Test Case', 'Result'])
+    worksheet.write_row('A3', ['Test Case', 'Result', 'XML'])
 
     row = 3
     col = 0
 
     for k, v in list(results_dict.items()):
         worksheet.write(row, col, k)
+        if v[0] == 'PASS':
+            find_xml_by_case(k)
+            worksheet.write(row, col + 2, matched_xml)
         if v[0] == 'PASS' and int(v[1]) > 1:
             v = '{} ({})'.format(v[0], v[1])
         else:
@@ -481,9 +547,11 @@ def make_report_xlsx(results_dict, status_dict, regressions_list,
             v += ' - ERRATA ' + errata[k]
         worksheet.write(row, col + 1, v)
         if k in list(descriptions.keys()):
-            worksheet.write(row, col + 2, descriptions[k])
+            worksheet.write(row, col + 3, descriptions[k])
         if k in regressions_list:
-            worksheet.write(row, col + 3, "REGRESSION")
+            worksheet.write(row, col + 4, "REGRESSION")
+        if k in progresses_list:
+            worksheet.write(row, col + 4, "PROGRESS")
         row += 1
 
     summary_row = 2
@@ -527,9 +595,14 @@ def make_report_xlsx(results_dict, status_dict, regressions_list,
 # ****************************************************************************
 # .txt result file
 # ****************************************************************************
-def make_report_txt(results_dict, zephyr_hash):
+def make_report_txt(results_dict, regressions_list,
+                    progresses_list, repo_status):
     """Creates txt file containing test cases results
     :param results_dict: dictionary with test cases results
+    :param regressions_list: list of regressions found
+    :param progresses_list: list of regressions found
+    :param repo_status: information about current commit from all
+    configured repositories
     :return: txt file path
     """
 
@@ -547,12 +620,19 @@ def make_report_txt(results_dict, zephyr_hash):
     if errata is None:
         errata = {}
 
-    f.write("%s\n" % zephyr_hash)
+    f.write("%s\n" % repo_status)
     for tc, result in list(results_dict.items()):
-        if result[0] == 'PASS' and int(result[1]) > 1:
-            result = '{} ({})'.format(result[0], result[1])
-        else:
-            result = result[0]
+        res = result[0]
+        if result[0] == 'PASS':
+            if int(result[1]) > 1:
+                res = '{} ({})'.format(res, result[1])
+            if tc in progresses_list:
+                res = '{} - PROGRESS '.format(res)
+        elif tc in regressions_list:
+            res = '{} - REGRESSION '.format(res)
+
+        result = res
+
         if tc in errata:
             result += ' - ERRATA ' + errata[tc]
 
@@ -568,7 +648,7 @@ def make_report_txt(results_dict, zephyr_hash):
 # ****************************************************************************
 # .txt result file
 # ****************************************************************************
-def make_report_folder(iut_logs, pts_logs, report_xlsx, report_txt,
+def make_report_folder(iut_logs, pts_logs, xmls, report_xlsx, report_txt,
                        readme_file, database_file, tag=''):
     """Creates folder containing .txt and .xlsx reports, pulled logs
     from autoptsserver, iut logs and additional README.md.
@@ -602,9 +682,14 @@ def make_report_folder(iut_logs, pts_logs, report_xlsx, report_txt,
 
     iut_logs_new = os.path.join(report_dir, 'iut_logs')
     pts_logs_new = os.path.join(report_dir, 'pts_logs')
+    xmls_new = os.path.join(report_dir, 'XMLs/')
 
     get_deepest_dirs(iut_logs, iut_logs_new, 3)
     get_deepest_dirs(pts_logs, pts_logs_new, 3)
+    try:
+        shutil.move(xmls, xmls_new)
+    except FileNotFoundError:
+        print('XMLs directory doesn\'t exist')
 
     return os.path.join(os.getcwd(), report_dir)
 
@@ -616,7 +701,7 @@ def github_push_report(report_folder, log_git_conf, commit_msg):
     param: commit_msg ready commit message
     """
     update_sources(log_git_conf['path'], log_git_conf['remote'],
-                   log_git_conf['branch'], True, True)
+                   log_git_conf['branch'], True)
 
     dst_folder = os.path.join(log_git_conf['path'], log_git_conf['subdir'], os.path.basename(report_folder))
 
@@ -696,17 +781,23 @@ def archive_testcases(dir_path, depth=3):
     return dir_path
 
 
+def split_xml_filename(file_path):
+    file_name = os.path.basename(file_path)
+    file_name, _ = os.path.splitext(file_name)
+    test_name, timestamp = file_name.split("_C_")
+    return test_name, timestamp
+
+
 def pull_server_logs(args):
     """Copy Bluetooth Protocol Viewer logs from auto-pts servers.
     :param server_addr: list of servers addresses
     :param server_port: list of servers ports
     """
     logs_folder = 'tmp/' + args.workspace
-
+    xml_folder = 'tmp/XMLs'
     shutil.rmtree(logs_folder, ignore_errors=True)
-
-    if sys.platform == 'win32':
-        return get_workspace(args.workspace)
+    shutil.rmtree(xml_folder, ignore_errors=True)
+    Path(xml_folder).mkdir(parents=True, exist_ok=True)
 
     server_addr = args.ip_addr
     server_port = args.srv_port
@@ -714,6 +805,7 @@ def pull_server_logs(args):
     for i in range(len(server_addr)):
         if i != 0 and server_addr[i] in server_addr[0:i]:
             continue
+        last_xml = ('', '')
 
         with ServerProxy("http://{}:{}/".format(server_addr[i], server_port[i]),
                          allow_none=True, ) as proxy:
@@ -724,6 +816,7 @@ def pull_server_logs(args):
             workspace_root = file_list.pop()
             while len(file_list) > 0:
                 file_path = file_list.pop(0)
+                xml_file_path = file_path
                 try:
                     file_bin = proxy.copy_file(file_path)
 
@@ -741,10 +834,29 @@ def pull_server_logs(args):
 
                     with open(file_path, 'wb') as handle:
                         handle.write(file_bin.data)
+
+                    if file_path.endswith('.xml') and not 'tc_log' in file_path\
+                            and b'Final Verdict:PASS' in file_bin.data:
+                        (test_name, timestamp) = split_xml_filename(file_path)
+                        if test_name in last_xml[0]:
+                            if timestamp <= last_xml[1]:
+                                continue
+                            os.remove(last_xml[0])
+                        xml_file_path = \
+                            '/'.join([xml_folder,
+                                      xml_file_path[
+                                          xml_file_path.rfind('\\') + 1:]
+                                      .replace('\\', '/')])
+                        Path(os.path.dirname(xml_file_path)).mkdir(
+                            parents=True,
+                            exist_ok=True)
+                        with open(xml_file_path, 'wb') as handle:
+                            handle.write(file_bin.data)
+                        last_xml = (xml_file_path, timestamp)
                 except BaseException as e:
                     logging.exception(e)
 
-    return logs_folder
+    return logs_folder, xml_folder
 
 
 def get_workspace(workspace):

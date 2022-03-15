@@ -1,0 +1,72 @@
+#
+# auto-pts - The Bluetooth PTS Automation Framework
+#
+# Copyright (c) 2022, Codecoup.
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms and conditions of the GNU General Public License,
+# version 2, as published by the Free Software Foundation.
+#
+# This program is distributed in the hope it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
+#
+
+# Sample user_config file for bisect.
+# Apply your changes, remove .sample extension, move this file to bot/ and
+# set its name (without .py) in bisect parameter in cron_config.py like:
+# cyclical_jobs = [
+#    Namespace(func=zephyr_job, cfg='config_zephyr_cron_host',
+#              day='friday', hour='19:00', included='', excluded='MESH',
+#              bisect='config_zephyr_bisect'),]
+# where the file is named config_zephyr_bisect.py
+
+from bot.iut_config.zephyr import iut_config
+
+BotProjects = []
+
+z = zephyr_nrf52 = {
+    'name': 'zephyr'
+}
+
+# ****************************************************************************
+# AutoPTS configuration
+# ****************************************************************************
+z['auto_pts'] = {
+    # 'server_ip': ['192.168.3.2', '192.168.3.2'],
+    # 'local_ip': ['192.168.3.2', '192.168.3.2'],
+    'cli_port': [65001, 65003],
+    'srv_port': [65000, 65002],
+    'project_path': '/path/to/project',
+    'workspace': 'zephyr-master',
+    'store': False,
+    'board': 'nrf52',
+    'enable_max_logs': False,
+    'retry': 2,
+    'bd_addr': '',
+    # 'ykush': '3',  # 1|2|3|a
+    'recovery': True,
+    'superguard': 15,  # minutes
+}
+
+z['iut_config'] = iut_config
+
+z['bisect'] = {
+    'good_commit': '1234567890123456789012345678901234567890',
+    'mail': {
+        'sender': 'john.doe@example.com',
+        'smtp_host': 'smtp.example.com',
+        'smtp_port': 587,
+        'name': 'John',
+        'passwd': '<PASSWD>',
+        'start_tls': False,
+        'recipients': [
+            '1234@example.com',
+        ],
+    },
+    'time_limit': 4,  # Max hours num
+    'tc_limit': 4,  # Max test cases num
+}
+
+BotProjects.append(zephyr_nrf52)

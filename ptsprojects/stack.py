@@ -15,7 +15,7 @@
 
 import logging
 from threading import Lock, Timer, Event
-from pybtp.types import AdType, Addr
+from pybtp.types import AdType, Addr, IOCap
 
 STACK = None
 
@@ -160,6 +160,8 @@ class Gap:
 
         # bond_lost data (addr_type, addr)
         self.bond_lost_ev_data = Property(None)
+        # if no io_cap was set it means we use no_input_output
+        self.io_cap = IOCap.no_input_output
 
     def wait_for_connection(self, timeout):
         if self.is_connected():
@@ -271,6 +273,21 @@ class Gap:
                     break
 
         return self.pairing_failed_rcvd.data
+
+    def gap_wait_for_lost_bond(self, timeout=5):
+        if self.bond_lost_ev_data.data is None:
+            flag = Event()
+            flag.set()
+
+            t = Timer(timeout, timeout_cb, [flag])
+            t.start()
+
+            while flag.is_set():
+                if self.bond_lost_ev_data.data:
+                    t.cancel()
+                    break
+
+        return self.bond_lost_ev_data.data
 
 
 class Mesh:
@@ -624,6 +641,8 @@ class L2cap:
         self.psm = psm
         self.initial_mtu = initial_mtu
         self.channels = []
+        self.hold_credits = 0
+        self.num_channels = 2
 
     def chan_lookup_id(self, chan_id):
         for chan in self.channels:
@@ -645,6 +664,15 @@ class L2cap:
 
     def psm_set(self, psm):
         self.psm = psm
+
+    def num_channels_set(self, num_channels):
+        self.num_channels = num_channels
+
+    def hold_credits_set(self, hold_credits):
+        self.hold_credits = hold_credits
+
+    def initial_mtu_set(self, initial_mtu):
+        self.initial_mtu = initial_mtu
 
     def connected(self, chan_id, psm, peer_mtu, peer_mps, our_mtu, our_mps,
                   bd_addr_type, bd_addr):
@@ -687,6 +715,23 @@ class L2cap:
 
         while flag.is_set():
             if not self.is_connected(chan_id):
+                t.cancel()
+                return True
+
+        return False
+
+    def wait_for_connection(self, chan_id, timeout=5):
+        if self.is_connected(chan_id):
+            return True
+
+        flag = Event()
+        flag.set()
+
+        t = Timer(timeout, timeout_cb, [flag])
+        t.start()
+
+        while flag.is_set():
+            if self.is_connected(chan_id):
                 t.cancel()
                 return True
 
@@ -850,6 +895,8 @@ class Gatt:
         self.server_db = GattDB()
         self.last_unique_uuid = 0
         self.verify_values = []
+        self.notification_events = []
+        self.notification_ev_received = Event()
 
     def attr_value_set(self, handle, value):
         attr = self.server_db.attr_lookup_handle(handle)
@@ -894,6 +941,14 @@ class Gatt:
 
         logging.debug("timed out")
         return None
+
+    def notification_ev_recv(self, addr_type, addr, notif_type, handle, data):
+        self.notification_events.append((addr_type, addr, notif_type, handle, data))
+        self.notification_ev_received.set()
+
+    def wait_notification_ev(self, timeout=None):
+        self.notification_ev_received.wait(timeout)
+        self.notification_ev_received.clear()
 
 
 class Stack:

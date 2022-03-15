@@ -33,26 +33,6 @@ class CHAR:
     name = (None, None, None, UUID.device_name)
 
 
-init_gatt_db = [TestFunc(btp.core_reg_svc_gatt),
-                TestFunc(btp.gatts_add_svc, 0, gatt.PTS_DB.SVC),
-                TestFunc(btp.gatts_add_char, 0, Prop.read,
-                         Perm.read | Perm.read_authn,
-                         gatt.PTS_DB.CHR_READ_WRITE_AUTHEN),
-                TestFunc(btp.gatts_set_val,
-                         gatt.PTS_DB.CHR_READ_WRITE_AUTHEN_ID, '01'),
-                TestFunc(btp.gatts_add_char, 0, Prop.read,
-                         Perm.read | Perm.read_enc,
-                         gatt.PTS_DB.CHR_READ_WRITE_ENC),
-                TestFunc(btp.gatts_set_val,
-                         gatt.PTS_DB.CHR_READ_WRITE_ENC_ID, '02'),
-                # TestFunc(btp.gatts_add_char, 0,
-                #          gatt.Prop.read | gatt.Prop.auth_swrite,
-                #          gatt.Perm.read | gatt.Perm.write,
-                #          gatt.UUID.VND16_3),
-                # TestFunc(btp.gatts_set_val, 0, '03'),
-                TestFunc(btp.gatts_start_server)]
-
-
 iut_manufacturer_data = 'ABCD'.encode('utf-8')
 iut_ad_uri = '000168747470733A2F2F7777772E626C7565746F'
 iut_appearance = '1111'
@@ -194,6 +174,8 @@ def test_cases(ptses):
         TestFunc(lambda: pts.update_pixit_param(
             "GAP", "TSPX_delete_ltk", "TRUE")),
 
+        TestFunc(btp.core_reg_svc_gatt),
+
         # We do this on test case, because previous one could update
         # this if RPA was used by PTS
         # TODO: Get PTS address type
@@ -244,7 +226,8 @@ def test_cases(ptses):
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/AUT/BV-17-C",
                   cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output)],
+                  [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
+                   TestFunc(btp.gap_pair, post_wid=108)],
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/AUT/BV-18-C",
                   cmds=pre_conditions +
@@ -262,7 +245,8 @@ def test_cases(ptses):
         ZTestCase("GAP", "GAP/SEC/AUT/BV-21-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   TestFunc(btp.gap_pair, post_wid=108)],
+                   TestFunc(btp.gap_pair, post_wid=108),
+                   TestFunc(sleep, 1, post_wid=108)],
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/AUT/BV-22-C",
                   cmds=pre_conditions +
@@ -281,6 +265,11 @@ def test_cases(ptses):
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
                    TestFunc(sleep, 1, start_wid=108)],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/CONN/PRDA/BV-02-C",
+                  cmds=pre_conditions +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
+                   TestFunc(btp.gap_pair, post_wid=108)],
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/SEM/BV-21-C",
                   cmds=pre_conditions +

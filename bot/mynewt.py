@@ -27,6 +27,20 @@ from ptsprojects.testcase_db import DATABASE_FILE
 from ptsprojects.boards import get_available_boards, get_free_device, release_device, get_build_and_flash
 
 
+def check_call(cmd, env=None, cwd=None, shell=True):
+    if sys.platform == 'win32':
+        cmd = subprocess.list2cmdline(cmd)
+        cmd = [os.path.expandvars('$MSYS2_BASH_PATH'), '-c', cmd]
+    return bot.common.check_call(cmd, env, cwd, shell)
+
+
+def check_output(cmd, cwd=None, shell=True, env=None):
+    if sys.platform == 'win32':
+        cmd = subprocess.list2cmdline(cmd)
+        cmd = [os.path.expandvars('$MSYS2_BASH_PATH'), '-c', cmd]
+    return subprocess.check_output(cmd, cwd=cwd, shell=shell, env=env)
+
+
 def get_tty_path(name):
     """Returns tty path (eg. /dev/ttyUSB0) of serial device with specified name
     :param name: device name
@@ -64,43 +78,43 @@ def build_and_flash(project_path, board, overlay=None):
     logging.debug("%s: %s %s %s", build_and_flash.__name__, project_path,
                   board, overlay)
 
-    bot.common.check_call('rm -rf bin/'.split(), cwd=project_path)
-    bot.common.check_call('rm -rf targets/{}_boot/'.format(board).split(),
+    check_call('rm -rf bin/'.split(), cwd=project_path)
+    check_call('rm -rf targets/{}_boot/'.format(board).split(),
                           cwd=project_path)
-    bot.common.check_call('rm -rf targets/bttester/'.split(), cwd=project_path)
+    check_call('rm -rf targets/bttester/'.split(), cwd=project_path)
 
-    bot.common.check_call('newt target create {}_boot'.format(board).split(),
+    check_call('newt target create {}_boot'.format(board).split(),
                           cwd=project_path)
-    bot.common.check_call('newt target create bttester'.split(), cwd=project_path)
+    check_call('newt target create bttester'.split(), cwd=project_path)
 
-    bot.common.check_call(
+    check_call(
         'newt target set {0}_boot bsp=@apache-mynewt-core/hw/bsp/{0}'.format(
             board).split(), cwd=project_path)
-    bot.common.check_call(
+    check_call(
         'newt target set {}_boot app=@mcuboot/boot/mynewt'.format(
             board).split(), cwd=project_path)
 
-    bot.common.check_call(
+    check_call(
         'newt target set bttester bsp=@apache-mynewt-core/hw/bsp/{}'.format(
             board).split(), cwd=project_path)
-    bot.common.check_call(
+    check_call(
         'newt target set bttester app=@apache-mynewt-nimble/apps/bttester'.split(),
         cwd=project_path)
 
     if overlay is not None:
         config = ':'.join(['{}={}'.format(k, v) for k, v in list(overlay.items())])
-        bot.common.check_call('newt target set bttester syscfg={}'.format(config).split(),
+        check_call('newt target set bttester syscfg={}'.format(config).split(),
                               cwd=project_path)
 
-    bot.common.check_call('newt build {}_boot'.format(board).split(), cwd=project_path)
-    bot.common.check_call('newt build bttester'.split(), cwd=project_path)
+    check_call('newt build {}_boot'.format(board).split(), cwd=project_path)
+    check_call('newt build bttester'.split(), cwd=project_path)
 
-    bot.common.check_call('newt create-image -2 {}_boot timestamp'.format(board).split(),
+    check_call('newt create-image -2 {}_boot timestamp'.format(board).split(),
                           cwd=project_path)
-    bot.common.check_call('newt create-image -2 bttester timestamp'.split(), cwd=project_path)
+    check_call('newt create-image -2 bttester timestamp'.split(), cwd=project_path)
 
-    bot.common.check_call('newt load {}_boot'.format(board).split(), cwd=project_path)
-    bot.common.check_call('newt load bttester'.split(), cwd=project_path)
+    check_call('newt load {}_boot'.format(board).split(), cwd=project_path)
+    check_call('newt load bttester'.split(), cwd=project_path)
 
 
 def get_target_description(project_path):
@@ -188,18 +202,14 @@ class MynewtBotConfigArgs(bot.common.BotConfigArgs):
 
 
 class MynewtBotCliParser(bot.common.BotCliParser):
-    def __init__(self, add_help=True):
-        super().__init__(description="PTS automation client",
-                         board_names=get_available_boards('mynewt'),
-                         add_help=add_help)
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
 
 
 class MynewtBotClient(bot.common.BotClient):
     def __init__(self):
-        super().__init__(get_iut, 'mynewt', True)
-        self.arg_parser = MynewtBotCliParser()
-        self.parse_config = MynewtBotConfigArgs
-        self.config_default = "default.conf"
+        super().__init__(get_iut, 'mynewt', MynewtBotConfigArgs,
+                         MynewtBotCliParser)
 
     def apply_config(self, args, config, value):
         overlay = None
@@ -231,6 +241,13 @@ BotCliParser = MynewtBotCliParser
 def main(cfg):
     print("Mynewt bot start!")
 
+    if sys.platform == 'win32':
+        if 'MSYS2_BASH_PATH' not in os.environ:
+            print('Set environmental variable MSYS2_BASH_PATH.')
+            return 0
+        # In case wsl was configured and its bash has higher prio than msys2 bash
+        os.environ['PATH'] = '/usr/bin:' + os.environ['PATH']
+
     bot.common.pre_cleanup()
 
     start_time = time.time()
@@ -252,14 +269,17 @@ def main(cfg):
             sys.exit('No free device found!')
 
     try:
-        summary, results, descriptions, regressions = \
+        summary, results, descriptions, regressions, progresses, args['pts_ver'], args['platform'] = \
             MynewtBotClient().run_tests(args, cfg.get('iut_config', {}))
     finally:
         release_device(args['tty_file'])
 
+    pts_logs, xmls = bot.common.pull_server_logs(MynewtBotConfigArgs(args))
+
     report_file = bot.common.make_report_xlsx(results, summary, regressions,
-                                              descriptions)
-    report_txt = bot.common.make_report_txt(results, repo_status)
+                                              progresses, descriptions, xmls)
+    report_txt = bot.common.make_report_txt(results, regressions,
+                                            progresses, repo_status)
     logs_folder = bot.common.archive_testcases("logs")
 
     build_info_file = get_build_info_file(os.path.abspath(args['project_path']))
@@ -275,7 +295,6 @@ def main(cfg):
         drive.upload_folder(logs_folder)
         drive.upload(build_info_file)
         drive.upload(args['database_file'])
-        pts_logs = bot.common.pull_server_logs(MynewtBotConfigArgs(args))
         drive.upload_folder(pts_logs)
 
     if 'mail' in cfg:

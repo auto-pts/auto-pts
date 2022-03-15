@@ -67,6 +67,9 @@ GAP = {
     "passkey_entry_rsp": (defs.BTP_SERVICE_ID_GAP,
                           defs.GAP_PASSKEY_ENTRY,
                           CONTROLLER_INDEX),
+    "passkey_confirm_rsp": (defs.BTP_SERVICE_ID_GAP,
+                          defs.GAP_PASSKEY_CONFIRM,
+                          CONTROLLER_INDEX),
     "start_direct_adv": (defs.BTP_SERVICE_ID_GAP, defs.GAP_START_DIRECT_ADV,
                          CONTROLLER_INDEX),
     "conn_param_update": (defs.BTP_SERVICE_ID_GAP,
@@ -269,12 +272,45 @@ def gap_bond_lost_ev_(gap, data, data_len):
     gap.bond_lost_ev_data.data = (_addr_t, _addr)
 
 
+def gap_passkey_confirm_req_ev_(gap, data, data_len):
+    logging.debug("%s", gap_passkey_confirm_req_ev_.__name__)
+    iutctl = get_iut()
+
+    fmt = '<B6sI'
+
+    # Unpack and swap address
+
+    _addr_type, _addr, _passkey = struct.unpack(fmt, data)
+    _addr = binascii.hexlify(_addr[::-1]).lower().decode('utf-8')
+
+    passkey = str(_passkey).zfill(6)
+
+    logging.debug("passkey = %r", passkey)
+
+    gap.passkey.data = passkey
+
+
+def gap_passkey_entry_req_ev_(gap, data, data_len):
+    logging.debug("%s", gap_passkey_entry_req_ev_.__name__)
+    iutctl = get_iut()
+
+    fmt = '<B6s'
+
+    # Unpack and swap address
+    _addr_type, _addr = struct.unpack(fmt, data)
+    _addr = binascii.hexlify(_addr[::-1]).lower().decode('utf-8')
+
+    gap.passkey.data = randint(0, 999999)
+
+
 GAP_EV = {
     defs.GAP_EV_NEW_SETTINGS: gap_new_settings_ev_,
     defs.GAP_EV_DEVICE_FOUND: gap_device_found_ev_,
     defs.GAP_EV_DEVICE_CONNECTED: gap_connected_ev_,
     defs.GAP_EV_DEVICE_DISCONNECTED: gap_disconnected_ev_,
     defs.GAP_EV_PASSKEY_DISPLAY: gap_passkey_disp_ev_,
+    defs.GAP_EV_PASSKEY_ENTRY_REQ: gap_passkey_entry_req_ev_,
+    defs.GAP_EV_PASSKEY_CONFIRM_REQ: gap_passkey_confirm_req_ev_,
     defs.GAP_EV_IDENTITY_RESOLVED: gap_identity_resolved_ev_,
     defs.GAP_EV_CONN_PARAM_UPDATE: gap_conn_param_update_ev_,
     defs.GAP_EV_SEC_LEVEL_CHANGED: gap_sec_level_changed_ev_,
@@ -319,6 +355,12 @@ def gap_wait_for_pairing_fail(timeout=30):
     stack = get_stack()
 
     return stack.gap.gap_wait_for_pairing_fail(timeout)
+
+
+def gap_wait_for_lost_bond(timeout=30):
+    stack = get_stack()
+
+    return stack.gap.gap_wait_for_lost_bond(timeout)
 
 
 def gap_adv_ind_on(ad=None, sd=None, duration=AdDuration.forever, own_addr_type=OwnAddrType.le_identity_address):
@@ -532,6 +574,8 @@ def verify_not_connected(description):
 def gap_set_io_cap(io_cap):
     logging.debug("%s %r", gap_set_io_cap.__name__, io_cap)
     iutctl = get_iut()
+    stack = get_stack()
+    stack.gap.io_cap = io_cap
 
     iutctl.btp_socket.send(*GAP['set_io_cap'], data=chr(io_cap))
 
@@ -594,6 +638,29 @@ def gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey):
     gap_command_rsp_succ()
 
 
+def gap_passkey_confirm_rsp(bd_addr, bd_addr_type, passkey):
+    logging.debug("%s %r %r", gap_passkey_confirm_rsp.__name__, bd_addr,
+                  bd_addr_type)
+    iutctl = get_iut()
+
+    data_ba = bytearray()
+    bd_addr_ba = addr2btp_ba(bd_addr)
+
+    data_ba.extend(chr(bd_addr_type).encode('utf-8'))
+    data_ba.extend(bd_addr_ba)
+
+    if isinstance(passkey, str):
+        passkey = int(passkey)
+
+    match = int(passkey == int(get_stack().gap.get_passkey()))
+
+    data_ba.extend(chr(match).encode('utf-8'))
+
+    iutctl.btp_socket.send(*GAP['passkey_confirm_rsp'], data=data_ba)
+
+    gap_command_rsp_succ()
+
+
 def gap_reset():
     logging.debug("%s", gap_reset.__name__)
 
@@ -601,39 +668,6 @@ def gap_reset():
     iutctl.btp_socket.send(*GAP['reset'])
 
     gap_command_rsp_succ()
-
-
-def gap_passkey_entry_req_ev(bd_addr=None, bd_addr_type=None):
-    logging.debug("%s %r %r", gap_passkey_entry_req_ev.__name__, bd_addr,
-                  bd_addr_type)
-    iutctl = get_iut()
-
-    tuple_hdr, tuple_data = iutctl.btp_socket.read()
-    logging.debug("received %r %r", tuple_hdr, tuple_data)
-
-    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GAP,
-                  defs.GAP_EV_PASSKEY_ENTRY_REQ)
-
-    fmt = '<B6s'
-    if len(tuple_data[0]) != struct.calcsize(fmt):
-        raise BTPError("Invalid data length")
-
-    # Unpack and swap address
-    _addr_type, _addr = struct.unpack(fmt, tuple_data[0])
-    _addr = binascii.hexlify(_addr[::-1]).lower().decode('utf-8')
-
-    bd_addr = pts_addr_get(bd_addr)
-    bd_addr_type = pts_addr_type_get(bd_addr_type)
-
-    if _addr_type != bd_addr_type or _addr != bd_addr:
-        raise BTPError("Received data mismatch")
-
-    stack = get_stack()
-    if not stack.gap.passkey.data:
-        # Generate some passkey
-        stack.gap.passkey.data = randint(0, 999999)
-
-    gap_passkey_entry_rsp(bd_addr, bd_addr_type, stack.gap.passkey.data)
 
 
 def gap_set_conn():

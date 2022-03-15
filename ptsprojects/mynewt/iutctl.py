@@ -13,14 +13,16 @@
 # more details.
 #
 
+import socket
 import subprocess
 import logging
 import shlex
 import os
+import sys
 import serial
 
 from pybtp import defs
-from ptsprojects.boards import Board, get_debugger_snr
+from ptsprojects.boards import Board, get_debugger_snr, tty_to_com
 from pybtp.types import BTPError
 from pybtp.iutctl_common import BTPWorker, BTP_ADDRESS, RTT, BTMON
 
@@ -28,6 +30,7 @@ log = logging.debug
 MYNEWT = None
 IUT_LOG_FO = None
 SERIAL_BAUDRATE = 115200
+CLI_SUPPORT = ['tty']
 
 
 class MynewtCtl:
@@ -50,8 +53,12 @@ class MynewtCtl:
         self.test_case = None
         self.iut_log_file = None
 
-        self.rtt_logger = RTT() if args.rtt_log else None
-        self.btmon = BTMON() if args.btmon else None
+        if self.debugger_snr:
+            self.btp_address = BTP_ADDRESS + self.debugger_snr
+            self.rtt_logger = RTT() if args.rtt_log else None
+            self.btmon = BTMON() if args.btmon else None
+        else:
+            self.btp_address = BTP_ADDRESS
 
     def start(self, test_case):
         """Starts the Mynewt OS"""
@@ -64,10 +71,21 @@ class MynewtCtl:
         self.flush_serial()
 
         self.btp_socket = BTPWorker()
-        self.btp_socket.open()
+        self.btp_socket.open(self.btp_address)
 
-        socat_cmd = ("socat -x -v %s,rawer,b115200 UNIX-CONNECT:%s" %
-                     (self.tty_file, BTP_ADDRESS))
+        if sys.platform == "win32":
+            # On windows socat.exe does not support setting serial baud rate.
+            # Set it with 'mode' from cmd.exe
+            com = tty_to_com(self.tty_file)
+            mode_cmd = (">nul 2>nul cmd.exe /c \"mode " + com + "BAUD=115200 PARITY=n DATA=8 STOP=1\"")
+            os.system(mode_cmd)
+
+            socat_cmd = ("socat.exe -x -v tcp:" + socket.gethostbyname(socket.gethostname()) +
+                         ":%s,retry=100,interval=1 %s,raw,b115200" %
+                         (self.btp_socket.sock.getsockname()[1], self.tty_file))
+        else:
+            socat_cmd = ("socat -x -v %s,rawer,b115200 UNIX-CONNECT:%s" %
+                         (self.tty_file, self.btp_address))
 
         log("Starting socat process: %s", socat_cmd)
 
@@ -82,10 +100,18 @@ class MynewtCtl:
     def flush_serial(self):
         log("%s.%s", self.__class__, self.flush_serial.__name__)
         # Try to read data or timeout
-        ser = serial.Serial(port=self.tty_file,
-                            baudrate=SERIAL_BAUDRATE, timeout=1)
-        ser.read(99999)
-        ser.close()
+        try:
+            if sys.platform == 'win32':
+                tty = tty_to_com(self.tty_file)
+            else:
+                tty = self.tty_file
+
+            ser = serial.Serial(port=tty,
+                                baudrate=SERIAL_BAUDRATE, timeout=1)
+            ser.read(99999)
+            ser.close()
+        except serial.SerialException:
+            pass
 
     def btmon_start(self):
         if self.btmon:
@@ -103,7 +129,7 @@ class MynewtCtl:
             log_file = os.path.join(self.test_case.log_dir,
                                     self.test_case.name.replace('/', '_') +
                                     '_iutctl.log')
-            self.rtt_logger.start('Logger', log_file, self.debugger_snr)
+            self.rtt_logger.start('Terminal', log_file, self.debugger_snr)
 
     def rtt_logger_stop(self):
         if self.rtt_logger:

@@ -44,11 +44,14 @@ from os.path import dirname, abspath
 from time import sleep
 
 import pythoncom
+import win32com
+import win32com.client
 import wmi
 import winutils
 
 import ptscontrol
 from config import SERVER_PORT
+from utils import usb_power
 
 log = logging.debug
 PROJECT_DIR = dirname(abspath(__file__))
@@ -187,13 +190,23 @@ def delete_workspaces():
 
 
 def power_dongle(ykush_port, on=True):
-    ykushcmd = 'ykushcmd'
+    usb_power(ykush_port, on)
 
-    if sys.platform == "win32":
-        ykushcmd += '.exe'
 
-    p = subprocess.Popen([ykushcmd, '-u' if on else '-d', str(ykush_port)], stdout=subprocess.PIPE)
-    p.wait()
+def dongle_exists(serial_address):
+    wmi = win32com.client.GetObject("winmgmts:")
+
+    if 'USB' in serial_address:  # USB:InUse:X&XXXXXXXX&X&X
+        serial_address = serial_address.split(r':')[2]
+        usbs = wmi.InstancesOf("Win32_USBHub")
+    else:  # COMX
+        usbs = wmi.InstancesOf("Win32_SerialPort")
+
+    for usb in usbs:
+        if serial_address in usb.DeviceID:
+            return True
+
+    return False
 
 
 class SuperGuard(threading.Thread):
@@ -235,10 +248,13 @@ class Server(threading.Thread):
         self.server = None
         self._args = _args
         self.pts = None
+        self._device = None
         self.end = False
         self.recovery_request = False
         self.name = 'S-' + str(self._args.srv_port)
         self.is_ready = False
+        if self._args.ykush and type(self._args.ykush) is list:
+            self._args.ykush = ' '.join(self._args.ykush)
 
     def last_start(self):
         try:
@@ -265,6 +281,7 @@ class Server(threading.Thread):
                 logging.exception(e)
                 kill_all_processes('PTS.exe')
 
+            ptscontrol.set_stop_pts(False)
             self.is_ready = False
 
         return 0
@@ -284,10 +301,15 @@ class Server(threading.Thread):
 
         if self._args.ykush:
             power_dongle(self._args.ykush, False)
+            while self._device and dongle_exists(self._device):
+                pass
             power_dongle(self._args.ykush, True)
+            while self._device and not dongle_exists(self._device):
+                pass
 
         print("Starting PTS ...")
         self.pts = PyPTSWithXmlRpcCallback()
+        self._device = self.pts._device
         print("OK")
 
         print("Serving on port {} ...".format(self._args.srv_port))
@@ -314,6 +336,7 @@ class Server(threading.Thread):
     def request_recovery(self):
         self.is_ready = False
         self.recovery_request = True
+        ptscontrol.set_stop_pts(True)
 
     def terminate(self):
         self.is_ready = False

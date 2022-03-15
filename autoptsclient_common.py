@@ -16,7 +16,7 @@
 #
 
 """Common code for the auto PTS clients"""
-import argparse
+
 import datetime
 import errno
 import importlib
@@ -26,7 +26,6 @@ import queue
 import random
 import signal
 import socket
-import subprocess
 import sys
 import tempfile
 import threading
@@ -34,21 +33,20 @@ import time
 import traceback
 import xml.etree.ElementTree as ElementTree
 import xmlrpc.client
-from distutils.spawn import find_executable
 from xmlrpc.server import SimpleXMLRPCServer
 
 import _locale
 from termcolor import colored
 
 import ptsprojects.ptstypes as ptstypes
-from config import SERVER_PORT, CLIENT_PORT
+from cliparser import CliParser
 from ptsprojects import stack
-from ptsprojects.boards import com_to_tty, get_available_boards, tty_exists
+from ptsprojects.boards import get_available_boards
 from ptsprojects.testcase import PTSCallback, TestCaseLT1, TestCaseLT2
-from ptsprojects.testcase_db import TestCaseTable, DATABASE_FILE
+from ptsprojects.testcase_db import TestCaseTable
 from pybtp import btp
 from pybtp.types import BTPError, SynchError
-from utils import InterruptableThread
+from utils import InterruptableThread, usb_power
 from winutils import have_admin_rights
 
 log = logging.debug
@@ -58,6 +56,11 @@ TEST_CASE_DB = None
 
 autoprojects = None
 
+# The number of seconds to wait for autoptsserver restart.
+# - during normal recovery:
+MIN_SERVER_RESTART_TIME = 40
+# - during recovery of recovery
+MAX_SERVER_RESTART_TIME = 60
 
 # To test autopts client locally:
 # Envrinment variable AUTO_PTS_LOCAL must be set for FakeProxy to
@@ -567,13 +570,16 @@ class TestCaseRunStats:
         elem.attrib["status"] = status
 
         regression = bool(elem.attrib["status"] != "PASS" and elem.attrib["status_previous"] == "PASS")
+        progress = bool(elem.attrib["status"] == "PASS" and elem.attrib["status_previous"] != "PASS" \
+                        and elem.attrib["status_previous"] != "None")
 
         elem.attrib["regression"] = str(regression)
+        elem.attrib["progress"] = str(progress)
         elem.attrib["run_count"] = str(run_count + 1)
 
         tree.write(self.xml_results)
 
-        return regression
+        return regression, progress
 
     def get_results(self):
         tree = ElementTree.parse(self.xml_results)
@@ -591,6 +597,13 @@ class TestCaseRunStats:
         tree = ElementTree.parse(self.xml_results)
         root = tree.getroot()
         tcs_xml = root.findall("./test_case[@regression='True']")
+
+        return [tc_xml.attrib["name"] for tc_xml in tcs_xml]
+
+    def get_progresses(self):
+        tree = ElementTree.parse(self.xml_results)
+        root = tree.getroot()
+        tcs_xml = root.findall("./test_case[@progress='True']")
 
         return [tc_xml.attrib["name"] for tc_xml in tcs_xml]
 
@@ -612,53 +625,36 @@ class TestCaseRunStats:
         """Prints test case list status summary"""
         print("\nSummary:\n")
 
-        status_str = "Status"
-        status_str_len = len(status_str)
-        count_str_len = len("Count")
-        total_str_len = len("Total")
-        regressions_str = "Regressions"
-        regressions_str_len = len(regressions_str)
-        regressions_count = len(self.get_regressions())
-        regressions_count_str_len = len(str(regressions_count))
-        num_test_cases_str = str(self.num_test_cases)
-        num_test_cases_str_len = len(num_test_cases_str)
+        content = [['Status', 'Count'], '=']
         status_count = self.get_status_count()
-
-        status_just = max(status_str_len, total_str_len)
-        count_just = max(count_str_len, num_test_cases_str_len)
-
-        title_str = ''
-        border = ''
-
-        if regressions_count != 0:
-            status_just = max(status_just, regressions_str_len)
-            count_just = max(count_just, regressions_count_str_len)
-
         for status, count in list(status_count.items()):
-            status_just = max(status_just, len(status))
-            count_just = max(count_just, len(str(count)))
+            content.append([status, str(count)])
 
-            status_just += self.margin
-            title_str = status_str.ljust(status_just) + "Count".rjust(count_just)
-            border = "=" * (status_just + count_just)
+        content.append(['='])
+        content.append(['Total', str(self.num_test_cases)])
 
-        print(title_str)
-        print(border)
+        regressions = len(self.get_regressions())
+        if regressions != 0:
+            content.append(['='])
+            content.append(['Regressions', str(regressions)])
 
-        # print each status and count
-        for status in sorted(status_count.keys()):
-            count = status_count[status]
-            print(status.ljust(status_just) + str(count).rjust(count_just))
+        progresses = len(self.get_progresses())
+        if regressions != 0:
+            if (content[len(content) - 1]) != 1:
+                content.append(['='])
+            content.append(['Progresses', str(progresses)])
 
-        # print total
-        print(border)
-        print("Total".ljust(status_just) + num_test_cases_str.rjust(count_just))
+        max_len = 0
+        for line in content:
+            if len(line) == 2:
+                max_len = max(max_len, len(' '.join(line)))
 
-        if regressions_count != 0:
-            print(border)
-
-        print(regressions_str.ljust(status_just) +
-              str(regressions_count).rjust(count_just))
+        for line in content:
+            if len(line) == 1:
+                print(line[0] * max_len)
+            elif len(line) == 2:
+                spaces = ' ' * (max_len - len(line[0]) - len(line[1]))
+                print('{}{}{}'.format(line[0], spaces, line[1]))
 
 
 def run_test_case_wrapper(func):
@@ -686,7 +682,7 @@ def run_test_case_wrapper(func):
         status = func(*args)
         end_time = time.time() - start_time
 
-        regression = stats.update(test_case_name, end_time, status)
+        regression, progress = stats.update(test_case_name, end_time, status)
 
         retries_max = run_count_max - 1
         if run_count:
@@ -696,6 +692,8 @@ def run_test_case_wrapper(func):
 
         if regression and run_count == retries_max:
             regression_msg = "REGRESSION"
+        elif progress:
+            regression_msg = "PROGRESS"
         else:
             regression_msg = ""
 
@@ -926,27 +924,56 @@ test_case_blacklist = [
 ]
 
 
-def run_test_cases(ptses, test_case_instances, args):
-    """Runs a list of test cases"""
-
+def get_test_cases(pts, test_cases, included, excluded):
+    """
+    param: pts: proxy to initiated pts instance
+    param: test_cases: names (or prefixes) of test cases to run in
+    current configuration
+    param: included: test cases specified with -c option
+    param: excluded: test cases specified with -e option
+    """
     def run_or_not(test_case_name):
         for entry in test_case_blacklist:
             if entry in test_case_name:
                 return False
 
-        if args.excluded:
-            for n in args.excluded:
+        if excluded:
+            for n in excluded:
                 if test_case_name.startswith(n):
                     return False
 
-        if args.test_cases:
-            for n in args.test_cases:
+        if test_cases:
+            for n in test_cases:
                 if test_case_name.startswith(n):
                     return True
 
             return False
 
-        return True
+    if len(included) > 0:
+        _included = []
+
+        for inc in included:
+            for tc in test_cases:
+                if tc.startswith(inc):
+                    _included.append(tc)
+                elif inc.startswith(tc):
+                    _included.append(inc)
+
+        test_cases = _included
+
+    projects = pts.get_project_list()
+
+    _test_cases = []
+
+    for project in projects:
+        _test_case_list = pts.get_test_case_list(project)
+        _test_cases += [tc for tc in _test_case_list if run_or_not(tc)]
+
+    return _test_cases
+
+
+def run_test_cases(ptses, test_case_instances, args):
+    """Runs a list of test cases"""
 
     ports_str = '_'.join(str(x) for x in args.cli_port)
     now = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
@@ -957,13 +984,8 @@ def run_test_cases(ptses, test_case_instances, args):
         if e.errno != errno.EEXIST:
             raise
 
-    test_cases = []
-
+    test_cases = args.test_cases
     projects = ptses[0].get_project_list()
-
-    for project in projects:
-        _test_case_list = ptses[0].get_test_case_list(project)
-        test_cases += [tc for tc in _test_case_list if run_or_not(tc)]
 
     # Statistics
     stats = TestCaseRunStats(projects, test_cases, args.retry, TEST_CASE_DB)
@@ -1016,7 +1038,7 @@ def run_test_cases(ptses, test_case_instances, args):
                     print(exeption_msg)
 
             if timeout or args.recovery and \
-                    (exeption_msg != '' or status not in {'PASS', 'INCONC', 'FAIL', "NOT_IMPLEMENTED"}):
+                    (exeption_msg != '' or status not in args.not_recover):
                 run_recovery(args, ptses)
 
             if (status == 'PASS' and not args.stress_test) or stats.run_count == args.retry:
@@ -1031,102 +1053,7 @@ def run_test_cases(ptses, test_case_instances, args):
 
     stats.print_summary()
 
-    return stats.get_status_count(), stats.get_results(), stats.get_regressions()
-
-
-class CliParser(argparse.ArgumentParser):
-    def __init__(self, description, board_names=None, add_help=True):
-        super().__init__(description=description, add_help=add_help)
-
-        self.add_argument("-i", "--ip_addr", nargs="+",
-                          help="IP address of the PTS automation servers")
-
-        self.add_argument("-l", "--local_addr", nargs="+", default=None,
-                          help="Local IP address of PTS automation client")
-
-        self.add_argument("-a", "--bd-addr",
-                          help="Bluetooth device address of the IUT")
-
-        self.add_argument("-d", "--debug-logs", dest="enable_max_logs",
-                          action='store_true', default=False,
-                          help="Enable the PTS maximum logging. Equivalent "
-                               "to running test case in PTS GUI using "
-                               "'Run (Debug Logs)'")
-
-        self.add_argument("-c", "--test-cases", nargs='+', default=[],
-                          help="Names of test cases to run. Groups of "
-                               "test cases can be specified by profile names")
-
-        self.add_argument("-e", "--excluded", nargs='+', default=[],
-                          help="Names of test cases to exclude. Groups of "
-                               "test cases can be specified by profile names")
-
-        self.add_argument("-r", "--retry", type=int, default=0,
-                          help="Repeat test if failed. Parameter specifies "
-                               "maximum repeat count per test")
-
-        self.add_argument("--stress_test", action='store_true', default=False,
-                          help="Repeat every test even if previous result was PASS")
-
-        self.add_argument("-S", "--srv_port", type=int, nargs="+", default=[SERVER_PORT],
-                          help="Specify the server port number")
-
-        self.add_argument("-C", "--cli_port", type=int, nargs="+", default=[CLIENT_PORT],
-                          help="Specify the client port number")
-
-        self.add_argument("--recovery", action='store_true', default=False,
-                          help="Specify if autoptsserver should try to recover"
-                               " itself after exception.")
-
-        self.add_argument("--superguard", default=0, metavar='MINUTES', type=float,
-                          help="Specify amount of time in minutes, after which"
-                               " super guard will blindly trigger recovery steps.")
-
-        self.add_argument("--ykush", metavar='YKUSH_PORT', help="Specify "
-                                                                "ykush downstream port number, so on BTP TIMEOUT "
-                                                                "the iut device could be powered off and on.")
-
-        # Hidden option to select qemu bin file
-        self.add_argument("--qemu_bin", help=argparse.SUPPRESS, default=None)
-
-        # Hidden option to save test cases data in TestCase.db
-        self.add_argument("-s", "--store", action="store_true",
-                          default=False, help=argparse.SUPPRESS)
-        self.add_argument("--database-file", type=str, default=DATABASE_FILE,
-                          help=argparse.SUPPRESS)
-
-        self.add_argument("--hci", type=int, default=None, help="Specify the number of the"
-                                                                " HCI controller(currently only used "
-                                                                "under native posix)")
-
-        if board_names:
-            self.add_argument("-t", "--tty-file",
-                              help="If TTY(or COM) is specified, BTP communication "
-                                   "with OS running on hardware will be done over "
-                                   "this TTY. Hence, QEMU will not be used.")
-
-            self.add_argument("-j", "--jlink", dest="debugger_snr", type=str, default=None,
-                              help="Specify jlink serial number manually.")
-
-            self.add_argument("-b", "--board", dest='board_name',
-                              help="Used DUT board. This option is used to "
-                                   "select DUT reset command that is run before "
-                                   "each test case. If board is not specified DUT "
-                                   "will not be reset. Supported boards: %s. " %
-                                   (", ".join(board_names, ),), choices=board_names)
-
-            self.add_argument("--btmon",
-                              help="Capture iut btsnoop logs from device over RTT"
-                              "and catch them with btmon. Requires rtt support"
-                              "on IUT.", action='store_true', default=False)
-
-            self.add_argument("--rtt-log",
-                              help="Capture iut logs from device over RTT. "
-                              "Requires rtt support on IUT.",
-                              action='store_true', default=False)
-        else:
-            self.add_argument("btpclient_path",
-                              help="Path to tool btpclient.")
+    return stats.get_status_count(), stats.get_results(), stats.get_regressions(), stats.get_progresses()
 
 
 class Client:
@@ -1136,7 +1063,7 @@ class Client:
 
     """
 
-    def __init__(self, get_iut, project, hw_mode=False):
+    def __init__(self, get_iut, project, parser_class=CliParser):
         """
         param get_iut: function from autoptsprojects.<project>.iutctl
         param project: name of project
@@ -1147,11 +1074,10 @@ class Client:
         self.get_iut = get_iut
         self.store_tag = project + '_'
         setup_project_name(project)
-        self.boards = None if hw_mode else get_available_boards(project)
+        self.boards = get_available_boards(project)
         self.ptses = []
         self.args = None
-        self.arg_parser = CliParser("PTS automation client", self.boards)
-        self.add_positional_args()
+        self.arg_parser = parser_class(cli_support=autoprojects.iutctl.CLI_SUPPORT, board_names=self.boards)
         self.prev_sigint_handler = None
 
     def start(self, args=None):
@@ -1187,14 +1113,16 @@ class Client:
         # each time log() is called.
         _locale._getdefaultlocale = (lambda *arg: ['en_US', 'utf8'])
 
-        self.args = self.parse_args(_args)
+        self.args, errmsg = self.arg_parser.parse(_args)
+        if errmsg != '':
+            sys.exit(errmsg)
 
         # root privileges only needed for native mode.
-        if self.args.hci is not None:
-            if not have_admin_rights():
-                sys.exit("Please run this program as root.")
-        elif have_admin_rights():
-            sys.exit("Please do not run this program as root.")
+        if have_admin_rights():
+            if not self.args.sudo:
+                sys.exit("Please do not run this program as root.")
+        elif self.args.sudo:
+            sys.exit("Please run this program as root.")
 
         if self.args.store:
             tc_db_table_name = self.store_tag + str(self.args.board_name)
@@ -1213,7 +1141,7 @@ class Client:
         self.setup_project_pixits(self.ptses)
         self.setup_test_cases(self.ptses)
 
-        status_count, results_dict, regressions = run_test_cases(self.ptses, self.test_cases, self.args)
+        stats = self.run_test_cases()
 
         self.cleanup()
         shutdown_pts(self.ptses)
@@ -1221,73 +1149,7 @@ class Client:
         print("\nBye!")
         sys.stdout.flush()
 
-        return status_count, results_dict, regressions
-
-    def parse_args(self, arg_ns=None):
-        """Parses command line arguments and options
-        param arg_ns: namespace with already parsed args
-        """
-        args = self.arg_parser.parse_args(None, arg_ns)
-
-        if args.hci is None:
-            args.qemu_bin = getattr(autoprojects.iutctl, 'QEMU_BIN', None)
-
-        self.check_args(args)
-
-        return args
-
-    def add_positional_args(self):
-        self.arg_parser.add_argument("workspace", nargs='?', default=None,
-                                     help="Path to PTS workspace file to use for "
-                                          "testing. It should have pqw6 extension. "
-                                          "The file should be located on the "
-                                          "machine, where automation server is running.")
-
-        self.arg_parser.add_argument("kernel_image", nargs='?', default=None,
-                                     help="OS kernel image to be used for testing,"
-                                          "e.g. elf file for qemu, exe for native.")
-
-    def check_args(self, args):
-        """Sanity check command line arguments"""
-
-        qemu_bin = args.qemu_bin
-
-        if not args.ip_addr:
-            args.ip_addr = ['127.0.0.1'] * len(args.srv_port)
-
-        if not args.local_addr:
-            args.local_addr = ['127.0.0.1'] * len(args.cli_port)
-
-        if args.ykush:
-            board_power(args.ykush, True)
-            time.sleep(1)
-
-        if 'tty_file' in args and args.tty_file:
-            if not tty_exists(args.tty_file):
-                sys.exit("%s serial port does not exist!" % repr(args.tty_file))
-
-            if args.tty_file.startswith("COM"):
-                try:
-                    args.tty_file = com_to_tty(args.tty_file)
-                except ValueError:
-                    sys.exit("Port {} is not a valid COM port!".format(args.tty_file))
-        elif 'btpclient_path' in args:
-            if not os.path.exists(args.btpclient_path):
-                sys.exit("Path %s of btpclient.py file does not exist!" % repr(args.btpclient_path))
-        elif qemu_bin:
-            if not find_executable(qemu_bin):
-                sys.exit("In QEMU mode %s is needed but not found!" % (qemu_bin,))
-
-            if args.kernel_image is None or not os.path.isfile(args.kernel_image):
-                sys.exit("kernel_image %s is not a file!" % repr(args.kernel_image))
-        else:
-            if args.hci is None:
-                sys.exit("No TTY, HCI, COM, QEMU_BIN or btpclient.py path has been specified!")
-
-            if args.kernel_image is None or not os.path.isfile(args.kernel_image):
-                sys.exit("kernel_image %s is not a file!" % repr(args.kernel_image))
-
-        args.superguard = 60 * args.superguard
+        return stats
 
     def init_iutctl(self, args):
         autoprojects.iutctl.init(args)
@@ -1298,6 +1160,14 @@ class Client:
     def setup_test_cases(self, ptses):
         self.test_cases = setup_test_cases(ptses)
 
+    def run_test_cases(self):
+        included = self.args.test_cases
+        excluded = self.args.excluded
+        self.args.test_cases = get_test_cases(self.ptses[0],
+                                              self.ptses[0].get_project_list(),
+                                              included, excluded)
+        return run_test_cases(self.ptses, self.test_cases, self.args)
+
     def cleanup(self):
         autoprojects.iutctl.cleanup()
 
@@ -1307,14 +1177,47 @@ def set_end():
     RUN_END = True
 
 
+def recover_at_exception(func):
+    """The ultimate recovery of recovery, in case of server
+     jammed/crashed, but there is still a chance it will be recovered."""
+    def _recover_at_exception(*args, **kwargs):
+        restart_time = MAX_SERVER_RESTART_TIME
+
+        while True:
+            try:
+                return func(*args, **kwargs)
+            except Exception as e:
+                logging.exception(e)
+                traceback.print_exc()
+
+                if isinstance(e, RunEnd):
+                    # Stopped with SIGINT
+                    break
+
+                time.sleep(restart_time)
+
+                if args[0].superguard:
+                    # Wait longer next time. Hopefully the server
+                    # superguard will work and trigger the restart.
+                    restart_time = args[0].superguard
+
+    return _recover_at_exception
+
+
+@recover_at_exception
 def run_recovery(args, ptses):
     def wait_for_server_restart(pts):
-        for i in range(int(args.superguard) if args.superguard else 60):
+        i = MIN_SERVER_RESTART_TIME
+        for i in range(MIN_SERVER_RESTART_TIME):
             try:
                 if pts.ready():
                     break
             except Exception:
+                # Server is still resetting. Wait a little more.
                 time.sleep(1)
+
+        if i >= MIN_SERVER_RESTART_TIME:
+            log('Timeout at wait_for_server_restart()')
 
     log('Running recovery')
 
@@ -1378,11 +1281,4 @@ def setup_test_cases(ptses):
 
 
 def board_power(ykush_port, on=True):
-    ykushcmd = 'ykushcmd'
-    if sys.platform == "win32":
-        ykushcmd += '.exe'
-
-    if on:
-        subprocess.Popen([ykushcmd, '-u', str(ykush_port)])
-    else:
-        subprocess.Popen([ykushcmd, '-d', str(ykush_port)])
+    usb_power(ykush_port, on)

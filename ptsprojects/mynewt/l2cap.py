@@ -18,7 +18,7 @@
 from autoptsclient_common import get_unique_name
 from pybtp import btp
 from pybtp.types import Addr, L2CAPConnectionResponse
-from wid import l2cap_wid_hdl, l2cap_wid_hdl_hold_credit
+from wid import l2cap_wid_hdl
 from ptsprojects.stack import get_stack, L2cap
 from ptsprojects.testcase import TestFunc
 from ptsprojects.mynewt.ztestcase import ZTestCase
@@ -145,6 +145,9 @@ def test_cases(ptses):
                                        TestFunc(btp.l2cap_le_listen, psm_encryption_key_size_required)]
     pre_conditions_author = common + [TestFunc(stack.l2cap_init, psm_authorization_required, le_initial_mtu),
                                       TestFunc(btp.l2cap_le_listen, psm_authorization_required)]
+    pre_conditions_encryption = common + [TestFunc(stack.l2cap_init, le_psm, le_initial_mtu),
+                                          TestFunc(btp.l2cap_le_listen, le_psm, le_initial_mtu,
+                                                   L2CAPConnectionResponse.insufficient_encryption)]
 
     pre_conditions_1 = common + [
         TestFunc(stack.l2cap_init, le_psm_eatt, le_initial_mtu),
@@ -190,6 +193,9 @@ def test_cases(ptses):
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-15-C",
                   pre_conditions_keysize,
                   generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-25-C",
+                  pre_conditions_encryption,
+                  generic_wid_hdl=l2cap_wid_hdl),
         # Enhanced Credit Based Flow Control Channel
         ZTestCase("L2CAP", "L2CAP/ECFC/BV-11-C",
                   pre_conditions_eatt_authen,
@@ -205,6 +211,10 @@ def test_cases(ptses):
                   [TestFunc(btp.l2cap_le_listen, le_psm_eatt, le_initial_mtu,
                             L2cap.unacceptable_parameters)],
                   generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BV-29-C",
+                  pre_conditions_1 +
+                  [TestFunc(lambda: stack.l2cap.num_channels_set(1))],
+                  generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/COS/ECFC/BV-01-C",
                   pre_conditions_1,
                   generic_wid_hdl=l2cap_wid_hdl),
@@ -215,8 +225,9 @@ def test_cases(ptses):
                   pre_conditions_1,
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/ECFC/BI-02-C",
-                  pre_conditions_1,
-                  generic_wid_hdl=l2cap_wid_hdl_hold_credit),
+                  pre_conditions_1 +
+                  [TestFunc(lambda: stack.l2cap.hold_credits_set(1))],
+                  generic_wid_hdl=l2cap_wid_hdl),
     ]
 
     test_case_name_list = pts.get_test_case_list('L2CAP')
