@@ -266,6 +266,17 @@ def test_cases(ptses):
         TestFunc(lambda: stack.mesh.priv_key_set(priv_key))
     ]
 
+    pre_conditions_comp_change = pre_conditions + [
+        TestFunc(btp.mesh_init),
+        TestFunc(btp.mesh_reset),
+        TestFunc(btp.mesh_comp_change_prepare),
+        TestFunc(btp.get_iut_method().wait_iut_ready_event),
+        TestFunc(btp.mesh_comp_set_alt),
+        TestFunc(btp.core_reg_svc_gap),
+        TestFunc(btp.core_reg_svc_mesh),
+        TestFunc(stack.mesh.reset_state)
+    ]
+
     custom_test_cases = [
         ZTestCase("MESH", "MESH/NODE/CFG/CFGR/BV-01-C", cmds=pre_conditions +
                   [TestFunc(lambda: pts.update_pixit_param(
@@ -520,8 +531,8 @@ def test_cases(ptses):
                   cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/SR/RPR/PDU/BV-04-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=mesh_wid_hdl_rpr_persistent_storage),
+                  cmds=pre_conditions_comp_change,
+                  generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/SR/RPR/LNK/BV-25-C",
                   cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl_rpr_persistent_storage),
