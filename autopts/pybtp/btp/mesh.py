@@ -286,6 +286,9 @@ MESH = {
     "comp_change_prepare": (defs.BTP_SERVICE_ID_MESH,
                             defs.MESH_COMP_CHANGE_PREPARE,
                             CONTROLLER_INDEX),
+    "comp_set_alt": (defs.BTP_SERVICE_ID_MESH,
+                     defs.MESH_COMP_SET_ALT,
+                     CONTROLLER_INDEX),
 }
 
 
@@ -1698,6 +1701,17 @@ def mesh_comp_change_prepare():
     data = bytearray()
 
     iutctl.btp_socket.send_wait_rsp(*MESH['comp_change_prepare'], data)
+
+
+def mesh_comp_set_alt():
+    logging.debug("%s", mesh_comp_set_alt.__name__)
+
+    stack = get_stack()
+    iutctl = get_iut()
+
+    data = bytearray()
+
+    iutctl.btp_socket.send_wait_rsp(*MESH['comp_set_alt'], data)
 
 
 def mesh_lpn_polled_ev(mesh, data, data_len):
