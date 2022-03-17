@@ -536,6 +536,11 @@ class Mesh:
     def get_dev_uuid_lt2(self):
         return self.dev_uuid_lt2
 
+    def reset_state(self):
+        '''Used to set MESH status to uninitialised. It's used after
+        IUT restart when mesh was set to initialised before it'''
+        self.is_initialized = False
+
     def set_prov_data(self, oob, output_size, output_actions, input_size,
                       input_actions, crpl_size, auth_method):
         self.static_auth = oob
