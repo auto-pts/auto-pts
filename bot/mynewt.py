@@ -138,19 +138,19 @@ def get_build_info_file(project_path):
     build_info_str = ''
 
     build_info_str += 'newt info:\n'
-    build_info_str += bytes.hex(get_newt_info(project_path))
+    build_info_str += get_newt_info(project_path).decode()
     build_info_str += '\n'
 
     build_info_str += 'newt version:\n'
-    build_info_str += bytes.hex(get_newt_version(project_path))
+    build_info_str += get_newt_version(project_path).decode()
     build_info_str += '\n'
 
     build_info_str += 'newt target show:\n'
-    build_info_str += bytes.hex(get_target_description(project_path))
+    build_info_str += get_target_description(project_path).decode()
     build_info_str += '\n'
 
     build_info_str += 'newt target config:\n'
-    build_info_str += bytes.hex(get_target_config(project_path))
+    build_info_str += get_target_config(project_path).decode()
     build_info_str += '\n'
 
     with open(file_name, "w") as text_file:
