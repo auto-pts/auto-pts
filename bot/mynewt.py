@@ -118,23 +118,19 @@ def build_and_flash(project_path, board, overlay=None):
 
 
 def get_target_description(project_path):
-    return subprocess.check_output('newt target show bttester', shell=True,
-                                   cwd=project_path)
+    return check_output('newt target show bttester', shell=True, cwd=project_path)
 
 
 def get_target_config(project_path):
-    return subprocess.check_output('newt target config flat bttester',
-                                   shell=True, cwd=project_path)
+    return check_output('newt target config flat bttester', shell=True, cwd=project_path)
 
 
 def get_newt_info(project_path):
-    return subprocess.check_output('newt info',
-                                   shell=True, cwd=project_path)
+    return check_output('newt info', shell=True, cwd=project_path)
 
 
 def get_newt_version(project_path):
-    return subprocess.check_output('newt version',
-                                   shell=True, cwd=project_path)
+    return check_output('newt version', shell=True, cwd=project_path)
 
 
 def get_build_info_file(project_path):
