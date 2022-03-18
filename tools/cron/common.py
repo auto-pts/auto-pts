@@ -413,12 +413,16 @@ def pre_cleanup_files(autopts_repo, project_repo, test_case_db_path='TestCase.db
         os.path.join(autopts_repo, 'stdout_autoptsbot.log'),
         os.path.join(autopts_repo, 'stdout_autoptsserver.log'),
         r'~/Documents/Frontline Test Equipment',
-        os.path.join(project_repo, 'tests/bluetooth/tester/build/'),
         os.path.join(autopts_repo, 'tmp/'),
         os.path.join(autopts_repo, 'oldlogs/'),
         os.path.join(autopts_repo, 'logs/'),
     ]
-
+    if 'zephyr' in project_repo:
+        files_to_remove.append(os.path.join(project_repo,
+                                            'tests/bluetooth/tester/build/'))
+    elif 'mynewt' in project_repo:
+        files_to_remove.append(os.path.join(project_repo,
+                                            'bin/targets'))
     try:
         for file_path in files_to_remove:
             if os.path.exists(os.path.join(autopts_repo, file_path)):
@@ -635,7 +639,7 @@ def zephyr_job(cfg, included='', excluded='', bisect=None):
         shutil.copy(test_case_db_path, autopts_test_case_db)
 
     clear_workspace(os.path.join(AUTOPTS_REPO, 'workspaces/zephyr/zephyr-master'))
-    git_stash_clear(PROJECT_REPO)
+    git_stash_clear(os.path.join(PROJECT_REPO))
 
     # To prevent update of zephyr project repo by bot, set 'update_repo'
     # to False in zephyr['git'] of config.py
@@ -655,6 +659,37 @@ def zephyr_job(cfg, included='', excluded='', bisect=None):
         Bisect(bisect).run_bisect(report)
 
     print('Zephyr Job finished')
+
+
+@catch_exceptions(cancel_on_failure=True)
+def nimble_job(cfg, included='', excluded='', bisect=None):
+    print('Started NimBLE Job', cfg)
+
+    if included and not included.isspace():
+        included = ' -c {}'.format(included)
+
+    if excluded and not excluded.isspace():
+        excluded = ' -e {}'.format(excluded)
+
+    cfg_dict = load_config(cfg)
+    PROJECT_REPO = cfg_dict['auto_pts']['project_path']
+
+    test_case_db_name = 'TestCase.db'
+
+    pre_cleanup(AUTOPTS_REPO, PROJECT_REPO, test_case_db_name)
+
+    clear_workspace(os.path.join(AUTOPTS_REPO, 'workspaces/Mynewt Nimble Host'))
+    git_stash_clear(os.path.join(PROJECT_REPO, 'repos/apache-mynewt-nimble'))
+
+    # To prevent update of Mynewt project repo by bot, set 'update_repo'
+    # to False in mynewt['git'] of config.py
+
+    bot_options = '{cfg} --not_recover PASS {included} {excluded}'.format(
+        cfg=cfg, included=included, excluded=excluded)
+    server_options = '-S 65000 65002 --ykush 1 2 --superguard 14'
+    run_test(bot_options, server_options, AUTOPTS_REPO)
+
+    print('NimBLE Job finished')
 
 
 @catch_exceptions(cancel_on_failure=True)

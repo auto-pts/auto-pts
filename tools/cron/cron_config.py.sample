@@ -47,6 +47,8 @@ cyclical_jobs = [
               day='friday', hour='19:00', included='', excluded='MESH'),
     Namespace(func=zephyr_job, cfg='config_zephyr_cron_mesh',
               day='friday', hour='19:01', included='MESH', excluded=''),
+    Namespace(func=nimble_job, cfg='config_mynewt_cron_host',
+              day='sunday', hour='19:00', included='', excluded='MESH'),
 ]
 
 # Users with privileges to fire the bot with magic sentence
