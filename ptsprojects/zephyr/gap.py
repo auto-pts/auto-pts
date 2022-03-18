@@ -197,6 +197,7 @@ def test_cases(ptses):
             "GAP", "TSPX_iut_invalid_conn_update_supervision_timeout", format(0x0c80, '04x'))),
 
         TestFunc(btp.core_reg_svc_gatt),
+        TestFunc(stack.gatt_init),
 
         # We do this on test case, because previous one could update
         # this if RPA was used by PTS

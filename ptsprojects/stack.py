@@ -58,6 +58,7 @@ class GattCharacteristicDescriptor(GattAttribute):
     def __init__(self, handle, perm, uuid, att_rsp, value):
         GattAttribute.__init__(self, handle, perm, uuid, att_rsp)
         self.value = value
+        self.has_changed_cnt = 0
         self.has_changed = Event()
 
 
@@ -897,6 +898,7 @@ class Gatt:
         self.verify_values = []
         self.notification_events = []
         self.notification_ev_received = Event()
+        self.signed_write_handle = 0
 
     def attr_value_set(self, handle, value):
         attr = self.server_db.attr_lookup_handle(handle)
@@ -920,6 +922,7 @@ class Gatt:
             logging.error("No attribute with %r handle", handle)
             return
 
+        attr.has_changed_cnt += 1
         attr.has_changed.set()
 
     def attr_value_clr_changed(self, handle):
@@ -928,7 +931,16 @@ class Gatt:
             logging.error("No attribute with %r handle", handle)
             return
 
+        attr.has_changed_cnt = 0
         attr.has_changed.clear()
+
+    def attr_value_get_changed_cnt(self, handle):
+        attr = self.server_db.attr_lookup_handle(handle)
+        if attr is None:
+            logging.error("No attribute with %r handle", handle)
+            return 0
+
+        return attr.has_changed_cnt
 
     def wait_attr_value_changed(self, handle, timeout=None):
         attr = self.server_db.attr_lookup_handle(handle)
