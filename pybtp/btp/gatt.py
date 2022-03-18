@@ -340,29 +340,6 @@ def gatts_attr_value_changed_ev():
     return handle, data
 
 
-def gatts_verify_write_success(description):
-    """
-    This verifies if PTS initiated write operation succeeded
-    """
-    logging.debug("%s", gatts_verify_write_success.__name__)
-
-    # If write is successful, Attribute Value Changed Event will be received
-    try:
-        (handle, value) = gatts_attr_value_changed_ev()
-        logging.debug("%s Handle %r. Value %r has been successfully written",
-                      gatts_verify_write_success.__name__, handle, value)
-        return True
-    except BaseException as e:
-        logging.exception(e)
-        logging.debug("%s PTS failed to write attribute value",
-                      gatts_verify_write_success.__name__)
-        return False
-
-
-def gatts_verify_write_fail(description):
-    return not gatts_verify_write_success(description)
-
-
 def dec_gatts_get_attrs_rp(data, data_len):
     logging.debug("%s %r %r", dec_gatts_get_attrs_rp.__name__, data, data_len)
 

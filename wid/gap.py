@@ -543,7 +543,20 @@ def hdl_wid_127(params: WIDParams):
 
 
 def hdl_wid_130(params: WIDParams):
-    return btp.gatts_verify_write_fail(params.description)
+    stack = get_stack()
+    gatt = stack.gatt
+
+    # GAP/SEC/CSIGN/BI-02-C expects two successes and fail
+    # we don't know if any of those were already handled so just wait for up to
+    # 3 writes and then verify if only 2 occured.
+    if params.test_case_name == "GAP/SEC/CSIGN/BI-02-C":
+        for i in range(gatt.attr_value_get_changed_cnt(handle=gatt.signed_write_handle), 3):
+            gatt.wait_attr_value_changed(handle=gatt.signed_write_handle, timeout=5)
+
+        return gatt.attr_value_get_changed_cnt(handle=gatt.signed_write_handle) == 2
+
+    value = gatt.wait_attr_value_changed(handle=gatt.signed_write_handle, timeout=5)
+    return value is None
 
 
 def hdl_wid_135(_: WIDParams):
@@ -561,7 +574,11 @@ def hdl_wid_136(_: WIDParams):
 
 
 def hdl_wid_137(params: WIDParams):
-    return btp.gatts_verify_write_fail(params.description)
+    stack = get_stack()
+    gatt = stack.gatt
+
+    value = gatt.wait_attr_value_changed(handle=gatt.signed_write_handle, timeout=5)
+    return value is None
 
 
 def hdl_wid_138(_: WIDParams):
@@ -671,7 +688,11 @@ def hdl_wid_139_mode1_lvl4(_: WIDParams):
 
 
 def hdl_wid_141(params: WIDParams):
-    return btp.gatts_verify_write_success(params.description)
+    stack = get_stack()
+    gatt = stack.gatt
+
+    value = gatt.wait_attr_value_changed(handle=gatt.signed_write_handle, timeout=5)
+    return value is not None
 
 
 def hdl_wid_142(_: WIDParams):
@@ -837,6 +858,10 @@ def hdl_wid_161(params: WIDParams):
         return None
 
     (att_rsp, val_len, val) = value
+
+    stack = get_stack()
+    stack.gatt.signed_write_handle = handle
+
     return val_len
 
 
