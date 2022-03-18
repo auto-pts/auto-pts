@@ -890,12 +890,11 @@ def hdl_wid_204(_: WIDParams):
 
 
 def hdl_wid_206(params: WIDParams):
-    stack = get_stack()
-
     passkey = btp.parse_passkey_description(params.description)
-    stack.gap.passkey.data = passkey
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
 
-    btp.gap_passkey_entry_req_ev()
+    btp.gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey)
     return True
 
 
