@@ -36,7 +36,6 @@ def check_call(cmd, env=None, cwd=None, shell=True):
 
 def check_output(cmd, cwd=None, shell=True, env=None):
     if sys.platform == 'win32':
-        cmd = subprocess.list2cmdline(cmd)
         cmd = [os.path.expandvars('$MSYS2_BASH_PATH'), '-c', cmd]
     return subprocess.check_output(cmd, cwd=cwd, shell=shell, env=env)
 
