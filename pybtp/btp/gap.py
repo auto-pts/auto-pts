@@ -486,13 +486,13 @@ def gap_conn(bd_addr=None, bd_addr_type=None, own_addr_type=OwnAddrType.le_ident
 
 
 def set_filter_accept_list(address_list=None):
-    """ Send tuples (address, address_type) to IUT
+    """ Send tuples (address_type, address) to IUT
         and save them to the filter accept list.
-        If address_list=None PTS's (address,type) will be sent.
+        If address_list=None, PTS's (type, address) will be sent.
 
         Arguments:
-        address_list -- addrs and their types as tuples:
-            address_list = [('DB:F5:72:56:C9:EF', 0), ('DB:F5:72:56:C9:EF', 0)]
+        address_list -- address type and address as tuples:
+            address_list = [(0, 'DB:F5:72:56:C9:EF'), (0, 'DB:F5:72:56:C9:EF')]
     """
     logging.debug("%s %s", set_filter_accept_list.__name__, address_list)
     iutctl = get_iut()
@@ -500,14 +500,14 @@ def set_filter_accept_list(address_list=None):
     data_ba = bytearray()
 
     if not address_list:
-        address_list = [(pts_addr_get(None), pts_addr_type_get(None))]
+        address_list = [(pts_addr_type_get(None), pts_addr_get(None))]
 
     addr_cnt_ba = chr(len(address_list)).encode('utf-8')
     data_ba.extend(addr_cnt_ba)
 
-    for addr, type in address_list:
-        bd_addr_ba = addr2btp_ba(addr)
+    for type, addr in address_list:
         bd_addr_type_ba = chr(type).encode('utf-8')
+        bd_addr_ba = addr2btp_ba(addr)
         data_ba.extend(bd_addr_type_ba)
         data_ba.extend(bd_addr_ba)
 

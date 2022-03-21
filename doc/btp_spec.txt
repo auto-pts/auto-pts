@@ -573,11 +573,12 @@ Commands and responses:
 
 		Controller Index: <controller id>
 
-		Command parameters:
-			Address_Type #N (1 octet)
-			Address #N (6 octets)
-			for N from 1 to the number of addresses
-			in the filter accept list.
+		Command parameters:	Type_Addr_Count (1 octet)
+					[array] Type_Addr
+
+		Object Type_Addr is defined as:
+					Address_Type (1 octet)
+					Address (6 octets)
 
 		This command is used to set filter accept list.
 		When set, connect with address: '00:00:00:00:00:00'
