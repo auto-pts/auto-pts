@@ -138,7 +138,7 @@ def gap_connected_ev_(gap, data, data_len):
     addr = binascii.hexlify(addr[::-1])
 
     gap.connected.data = (addr, addr_type)
-    gap.set_conn_params(ConnParams(itvl, latency, timeout))
+    gap.set_conn_params(ConnParams(itvl, itvl, latency, timeout))
 
     set_pts_addr(addr, addr_type)
 
@@ -205,7 +205,7 @@ def gap_conn_param_update_ev_(gap, data, data_len):
 
     logging.debug("received %r", (_addr_t, _addr, _itvl, _latency, _timeout))
 
-    gap.set_conn_params(ConnParams(_itvl, _latency, _timeout))
+    gap.set_conn_params(ConnParams(_itvl, _itvl, _latency, _timeout))
 
 
 def gap_sec_level_changed_ev_(gap, data, data_len):

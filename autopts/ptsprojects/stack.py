@@ -94,8 +94,9 @@ def timeout_cb(flag):
 
 
 class ConnParams:
-    def __init__(self, conn_itvl, conn_latency, supervision_timeout):
-        self.conn_itvl = conn_itvl
+    def __init__(self, conn_itvl_min, conn_itvl_max, conn_latency, supervision_timeout):
+        self.conn_itvl_min = conn_itvl_min
+        self.conn_itvl_max = conn_itvl_max
         self.conn_latency = conn_latency
         self.supervision_timeout = supervision_timeout
 
