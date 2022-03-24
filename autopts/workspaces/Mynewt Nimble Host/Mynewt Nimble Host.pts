@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+﻿﻿<?xml version="1.0" encoding="utf-8"?>
 <project>
   <qdid>164784</qdid>
   <name>Mynewt Nimble</name>
@@ -58,6 +58,14 @@
         <row>3</row>
       </item>
       <item>
+        <table>11a</table>
+        <row>1</row>
+      </item>
+      <item>
+        <table>11a</table>
+        <row>2</row>
+      </item>
+      <item>
         <table>12</table>
         <row>1</row>
       </item>
@@ -100,6 +108,14 @@
       <item>
         <table>17</table>
         <row>4</row>
+      </item>
+      <item>
+        <table>17a</table>
+        <row>1</row>
+      </item>
+      <item>
+        <table>17a</table>
+        <row>2</row>
       </item>
       <item>
         <table>18</table>
@@ -354,6 +370,18 @@
         <row>7</row>
       </item>
       <item>
+        <table>27a</table>
+        <row>1</row>
+      </item>
+      <item>
+        <table>27a</table>
+        <row>2</row>
+      </item>
+      <item>
+        <table>27a</table>
+        <row>3</row>
+      </item>
+      <item>
         <table>28</table>
         <row>1</row>
       </item>
@@ -538,6 +566,18 @@
         <row>3</row>
       </item>
       <item>
+        <table>37a</table>
+        <row>1</row>
+      </item>
+      <item>
+        <table>37a</table>
+        <row>2</row>
+      </item>
+      <item>
+        <table>37a</table>
+        <row>3</row>
+      </item>
+      <item>
         <table>5</table>
         <row>1</row>
       </item>
@@ -588,6 +628,10 @@
       <item>
         <table>8a</table>
         <row>1</row>
+      </item>
+      <item>
+        <table>8a</table>
+        <row>10</row>
       </item>
       <item>
         <table>8a</table>
@@ -596,6 +640,10 @@
       <item>
         <table>8a</table>
         <row>14</row>
+      </item>
+      <item>
+        <table>8a</table>
+        <row>17</row>
       </item>
       <item>
         <table>8a</table>
@@ -620,6 +668,10 @@
     </profile>
     <profile>
       <name>L2CAP</name>
+      <item>
+        <table>2</table>
+        <row>48b</row>
+      </item>
       <item>
         <table>4</table>
         <row>3</row>
@@ -711,12 +763,12 @@
     <profile>
       <name>SUM ICS</name>
       <item>
-        <table>52</table>
-        <row>1</row>
+        <table>31</table>
+        <row>22</row>
       </item>
       <item>
-        <table>31</table>
-        <row>21</row>
+        <table>52</table>
+        <row>1</row>
       </item>
     </profile>
     <profile>
@@ -1482,6 +1534,21 @@
       </item>
       <item>
         <table>9</table>
+        <row>1</row>
+      </item>
+    </profile>
+    <profile>
+      <name>MMDL</name>
+      <item>
+        <table>0a</table>
+        <row>1</row>
+      </item>
+      <item>
+        <table>0b</table>
+        <row>1</row>
+      </item>
+      <item>
+        <table>1</table>
         <row>1</row>
       </item>
     </profile>

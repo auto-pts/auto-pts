@@ -1,4 +1,4 @@
-<WORKSPACE_INFORMATION NAME="Mynewt Nimble Host" CREATED_WITH="Profile Tuning Suite, 8.1.1, 9" BD_ADDR="000000000000" QDID="164784">
+<WORKSPACE_INFORMATION NAME="Mynewt Nimble Host" CREATED_WITH="Profile Tuning Suite, 8.2.0, 8" BD_ADDR="000000000000" QDID="164784">
   <PROJECTS_INFORMATION>
     <PROJECT_INFORMATION NAME="GAP" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
       <PICS>
@@ -73,7 +73,7 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_1_9</Name>
-            <Description>Synchronizable mode (C.4)</Description>
+            <Description>Synchronizable mode (C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -336,111 +336,111 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_8A_1</Name>
+            <Name>TSPC_GAP_8a_1</Name>
             <Description>Service UUID (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_8A_2</Name>
+            <Name>TSPC_GAP_8a_2</Name>
             <Description>Local Name (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_8A_3</Name>
+            <Name>TSPC_GAP_8a_3</Name>
             <Description>Flags (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_8A_4</Name>
+            <Name>TSPC_GAP_8a_4</Name>
             <Description>Manufacturer Specific Data (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_8A_5</Name>
+            <Name>TSPC_GAP_8a_5</Name>
             <Description>TX Power Level (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_8A_6</Name>
+            <Name>TSPC_GAP_8a_6</Name>
             <Description>Security Manager OOB (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_8A_7</Name>
+            <Name>TSPC_GAP_8a_7</Name>
             <Description>Security Manager TK Value (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_8A_8</Name>
+            <Name>TSPC_GAP_8a_8</Name>
             <Description>Peripheral Connection Interval Range (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_8A_9</Name>
+            <Name>TSPC_GAP_8a_9</Name>
             <Description>Service Solicitation (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_8A_10</Name>
+            <Name>TSPC_GAP_8a_10</Name>
             <Description>Service Data (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_8A_11</Name>
+            <Name>TSPC_GAP_8a_11</Name>
             <Description>Appearance (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_8A_12</Name>
+            <Name>TSPC_GAP_8a_12</Name>
             <Description>Public Target Address (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_8A_13</Name>
+            <Name>TSPC_GAP_8a_13</Name>
             <Description>Random Target Address (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_8A_14</Name>
+            <Name>TSPC_GAP_8a_14</Name>
             <Description>Advertising Interval (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_8A_14a</Name>
+            <Name>TSPC_GAP_8a_14a</Name>
             <Description>Advertising Interval – Long (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_8A_15</Name>
+            <Name>TSPC_GAP_8a_15</Name>
             <Description>LE Bluetooth Device Address (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_8A_16</Name>
+            <Name>TSPC_GAP_8a_16</Name>
             <Description>LE Role (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_8A_17</Name>
+            <Name>TSPC_GAP_8a_17</Name>
             <Description>Uniform Resource Identifier (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -500,13 +500,13 @@
           <Row>
             <Name>TSPC_GAP_11a_1</Name>
             <Description>Periodic Advertising Synchronizability mode (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_11a_2</Name>
             <Description>Periodic Advertising mode (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -626,13 +626,13 @@
           <Row>
             <Name>TSPC_GAP_17a_1</Name>
             <Description>Periodic Advertising Synchronization Establishment procedure without listening for periodic advertising (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_17a_2</Name>
             <Description>Periodic Advertising Synchronization Establishment procedure with listening for periodic advertising (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -732,109 +732,109 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_20A_1</Name>
+            <Name>TSPC_GAP_20a_1</Name>
             <Description>Service UUID (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_20A_2</Name>
+            <Name>TSPC_GAP_20a_2</Name>
             <Description>Local Name (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_20A_3</Name>
+            <Name>TSPC_GAP_20a_3</Name>
             <Description>Flags (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_20A_4</Name>
+            <Name>TSPC_GAP_20a_4</Name>
             <Description>Manufacturer Specific Data (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_20A_5</Name>
+            <Name>TSPC_GAP_20a_5</Name>
             <Description>TX Power Level (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_20A_6</Name>
+            <Name>TSPC_GAP_20a_6</Name>
             <Description>Security Manager OOB (C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_20A_7</Name>
+            <Name>TSPC_GAP_20a_7</Name>
             <Description>Security Manager TK Value (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_20A_8</Name>
+            <Name>TSPC_GAP_20a_8</Name>
             <Description>Peripheral Connection Interval Range (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_20A_9</Name>
+            <Name>TSPC_GAP_20a_9</Name>
             <Description>Service Solicitation (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_20A_10</Name>
+            <Name>TSPC_GAP_20a_10</Name>
             <Description>Service Data (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_20A_11</Name>
+            <Name>TSPC_GAP_20a_11</Name>
             <Description>Appearance (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_20A_12</Name>
+            <Name>TSPC_GAP_20a_12</Name>
             <Description>Public Target Address (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_20A_13</Name>
+            <Name>TSPC_GAP_20a_13</Name>
             <Description>Random Target Address (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_20A_14</Name>
+            <Name>TSPC_GAP_20a_14</Name>
             <Description>Advertising Interval (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_20A_14a</Name>
+            <Name>TSPC_GAP_20a_14a</Name>
             <Description>Advertising Interval – Long (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_20A_15</Name>
+            <Name>TSPC_GAP_20a_15</Name>
             <Description>LE Bluetooth Device Address (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_20A_16</Name>
+            <Name>TSPC_GAP_20a_16</Name>
             <Description>LE Role (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_20A_17</Name>
+            <Name>TSPC_GAP_20a_17</Name>
             <Description>Uniform Resource Identifier (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
@@ -1148,19 +1148,19 @@
           <Row>
             <Name>TSPC_GAP_27a_1</Name>
             <Description>Periodic Advertising Synchronization Transfer procedure (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_27a_2</Name>
             <Description>Periodic Advertising Synchronization Establishment procedure over an LE connection without listening for periodic advertising (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_27a_3</Name>
             <Description>Periodic Advertising Synchronization Establishment procedure over an LE connection with listening for periodic advertising (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1496,19 +1496,19 @@
           <Row>
             <Name>TSPC_GAP_37a_1</Name>
             <Description>Periodic Advertising Synchronization Transfer procedure (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_37a_2</Name>
             <Description>Periodic Advertising Synchronization Establishment procedure over an LE connection without listening for periodic advertising (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_37a_3</Name>
             <Description>Periodic Advertising Synchronization Establishment procedure over an LE connection with listening for periodic advertising (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1608,6 +1608,18 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_GATT_3_17</Name>
+            <Description>Notifications (C.7)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_3_18</Name>
+            <Description>Indications (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_SM_1_1</Name>
             <Description>Central Role (Initiator)</Description>
             <Value>TRUE</Value>
@@ -1640,6 +1652,18 @@
           <Row>
             <Name>TSPC_SUMICS_31_10a</Name>
             <Description>Core Specification Version 4.0 + HS, Adopted 30 June 2010 (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_L2CAP_2_11</Name>
+            <Description>Support flow control mode (C.17)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_L2CAP_2_37</Name>
+            <Description>Ability to transmit an encrypted packet over a Unicast connectionless L2CAP channel (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -2036,6 +2060,12 @@
               <ValueListItem>Central</ValueListItem>
               <ValueListItem>Peripheral</ValueListItem>
             </ValueList>
+          </Row>
+          <Row>
+            <Name>TSPX_Use_GATT</Name>
+            <Description>IUT support GATT. (Default: TRUE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>TRUE</Value>
           </Row>
         </Rows>
       </PIXIT>
@@ -2610,26 +2640,38 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_SUM_31_17</Name>
+            <Name>TSPC_SUM_ICS_31_17</Name>
             <Description>Core Spec Version 4.2, Adopted 02 December 2014 (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_SUM_31_18</Name>
+            <Name>TSPC_SUM_ICS_31_18</Name>
             <Description>Core Spec Version 4.2 + HS, Adopted 02 December 2014 (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_SUM_31_19</Name>
-            <Description>	Core Specification Version 5.0. Adopted 06 December 2016 (C.1)</Description>
+            <Name>TSPC_SUM_ICS_31_19</Name>
+            <Description>Core Specification Version 5.0. Adopted 06 December 2016 (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_SUM_31_20</Name>
+            <Name>TSPC_SUM_ICS_31_20</Name>
             <Description>Core Specification Version 5.1. Adopted 15 January 2019 (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SUM_ICS_31_21</Name>
+            <Description>Core Specification Version 5.2. Adopted 31 December 2019 (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SUM_ICS_31_22</Name>
+            <Description>Core Specification Version 5.3. Adopted 06 July 2021 (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -2747,6 +2789,26 @@
             <Type>OCTETSTRING</Type>
             <Value>0000</Value>
           </Row>
+          <Row>
+            <Name>TSPX_bearer_for_bredr</Name>
+            <Description>When both ATT and EATT bearers are supported, this specifies the bearer the controller creates for the BR/EDR  transport. Values: ATT or EATT. (Default: "ATT" )</Description>
+            <Type>IA5STRING</Type>
+            <Value>ATT</Value>
+            <ValueList>
+              <ValueListItem>ATT</ValueListItem>
+              <ValueListItem>EATT</ValueListItem>
+            </ValueList>
+          </Row>
+          <Row>
+            <Name>TSPX_bearer_for_le</Name>
+            <Description>When both ATT and EATT bearers are supported, this specifies the bearer the controller creates for the LE transport. Values: ATT or EATT. (Default: "ATT")</Description>
+            <Type>IA5STRING</Type>
+            <Value>ATT</Value>
+            <ValueList>
+              <ValueListItem>ATT</ValueListItem>
+              <ValueListItem>EATT</ValueListItem>
+            </ValueList>
+          </Row>
         </Rows>
       </PIXIT>
     </PROJECT_INFORMATION>
@@ -2810,67 +2872,67 @@
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_1</Name>
-            <Description>Support of L2CAP signaling channel (C.16)</Description>
+            <Description>L2CAP Signaling channel (C.16)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_2</Name>
-            <Description>Support of configuration process (C.16)</Description>
+            <Description>Configuration process (C.16)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_3</Name>
-            <Description>Support of connection oriented data channel (C.16)</Description>
+            <Description>Connection-oriented data channel (C.16)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_4</Name>
-            <Description>Support of command echo request (C.17)</Description>
+            <Description>Command echo request (C.17)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_5</Name>
-            <Description>Support of command echo response (C.16)</Description>
+            <Description>Command echo response (C.16)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_6</Name>
-            <Description>Support of command information request (C.17)</Description>
+            <Description>Command information request (C.17)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_7</Name>
-            <Description>Support of command information response (C.16)</Description>
+            <Description>Command information response (C.16)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_8</Name>
-            <Description>Support of a channel group (C.17)</Description>
+            <Description>Channel group (C.17)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_9</Name>
-            <Description>Support of packet for connectionless channel (C.17)</Description>
+            <Description>Packet for connectionless channel (C.17)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_10</Name>
-            <Description>Support retransmission mode (C.17)</Description>
+            <Description>Retransmission mode (C.17)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_11</Name>
-            <Description>Support flow control mode (C.17)</Description>
+            <Description>Flow Control mode (C.17)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -2954,43 +3016,43 @@
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_25</Name>
-            <Description>Supports performing L2CAP channel mode configuration fallback from Streaming Mode to ERTM (C.8)</Description>
+            <Description>Performing L2CAP channel mode configuration fallback from Streaming Mode to ERTM (C.8)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_26</Name>
-            <Description>Supports sending more than one unacknowledged I-Frame when operating in ERTM (C.9)</Description>
+            <Description>Sending more than one unacknowledged I-Frame when operating in ERTM (C.9)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_27</Name>
-            <Description>Supports sending more than three unacknowledged I-Frame when operating in ERTM (C.9)</Description>
+            <Description>Sending more than three unacknowledged I-Frame when operating in ERTM (C.9)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_28</Name>
-            <Description>Supports configuring the peer TxWindow greater than 1 (C.10)</Description>
+            <Description>Configuring the peer TxWindow greater than 1 (C.10)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_29</Name>
-            <Description>AMP Support (C.24)</Description>
+            <Description>AMP (C.24)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_30</Name>
-            <Description>Fixed Channel Support (C.11)</Description>
+            <Description>Fixed channel(s) (C.11)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_31</Name>
-            <Description>AMP Manager Support (C.18)</Description>
+            <Description>AMP Manager (C.18)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -3002,13 +3064,13 @@
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_33</Name>
-            <Description>Streaming Mode Source over AMP Support (C.12)</Description>
+            <Description>Streaming Mode Source over AMP (C.12)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_34</Name>
-            <Description>Streaming Mode Sink over AMP Support (C.12)</Description>
+            <Description>Streaming Mode Sink over AMP (C.12)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -3044,13 +3106,13 @@
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_40</Name>
-            <Description>Support of Low Energy signaling channel (C.13)</Description>
+            <Description>L2CAP LE Signaling channel (C.13)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_41</Name>
-            <Description>Support of command reject (C.13)</Description>
+            <Description>Command reject (C.13)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -3086,25 +3148,37 @@
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_46</Name>
-            <Description>Support LE Credit Based Flow Control Mode (C.19)</Description>
+            <Description>LE Credit Based Flow Control Mode (C.19)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_47</Name>
-            <Description>Support for LE Data Channel (C.20)</Description>
+            <Description>LE Data Channel (C.20)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_48</Name>
-            <Description>Support Enhanced Credit Based Flow Control Mode (C.23)</Description>
+            <Description>Enhanced Credit Based Flow Control Mode (C.23)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_L2CAP_2_48a</Name>
+            <Description>Enhanced Credit Based Flow Control Mode - BR/EDR (C.26)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_L2CAP_2_48b</Name>
+            <Description>Enhanced Credit Based Flow Control Mode - LE (C.27)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_3_1</Name>
-            <Description>Support of RTX timer (M)</Description>
+            <Description>Support of RTX timer  (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -3152,19 +3226,19 @@
           </Row>
           <Row>
             <Name>TSPC_L2CAP_3_9</Name>
-            <Description>Negotiate and support service type 'No traffic' (C.2)</Description>
+            <Description>Negotiate and support service type No traffic (C.2)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_3_10</Name>
-            <Description>Negotiate and support service type 'Best effort' (C.3)</Description>
+            <Description>Negotiate and support service type Best effort (C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_3_11</Name>
-            <Description>Negotiate and support service type 'Guaranteed' (C.2)</Description>
+            <Description>Negotiate and support service type Guaranteed (C.2)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -3176,19 +3250,19 @@
           </Row>
           <Row>
             <Name>TSPC_L2CAP_3_13</Name>
-            <Description>Negotiate and support service type 'No traffic' for Extended Flow Specification (C.7)</Description>
+            <Description>Negotiate and support service type No traffic for Extended Flow Specification (C.7)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_3_14</Name>
-            <Description>Negotiate and support service type 'Best Effort' for Extended Flow Specification (C.8)</Description>
+            <Description>Negotiate and support service type Best Effort for Extended Flow Specification (C.8)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_3_15</Name>
-            <Description>Negotiate and support service type 'Guaranteed' for Extended Flow Specification. (C.9)</Description>
+            <Description>Negotiate and support service type Guaranteed for Extended Flow Specification. (C.9)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -3200,74 +3274,31 @@
           </Row>
           <Row>
             <Name>TSPC_L2CAP_4_1</Name>
-            <Description>Authentication Procedure (C.1)</Description>
+            <Description>Authentication procedure (LE) (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_4_2</Name>
-            <Description>Authorization procedure (C.2)</Description>
+            <Description>Authorization procedure (LE) (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_4_3</Name>
-            <Description>Encryption procedure (C.3)</Description>
+            <Description>Encryption procedure (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_44_1</Name>
-            <Description>Central - Simultaneous BR/EDR and LE Transports â€“ BR/EDR Peripheral to the same device (C.1)</Description>
+            <Name>TSPC_L2CAP_5_1</Name>
+            <Description>Authentication procedure (BR/EDR) (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_44_2</Name>
-            <Description>Central - Simultaneous BR/EDR and LE Transports â€“ BR/EDR Central to the same device (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_45_1</Name>
-            <Description>Peripheral - Simultaneous BR/EDR and LE Transports - BR/EDR Peripheral to the same device (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_45_2</Name>
-            <Description>Peripheral - Simultaneous BR/EDR and LE Transports - BR/EDR Central to the same device (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GATT_1a_1</Name>
-            <Description>GATT Client over LE (C.1)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GATT_1a_2</Name>
-            <Description>GATT Client over BR/EDR (C.2)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GATT_1a_3</Name>
-            <Description>GATT Server over LE (C.3)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GATT_1a_4</Name>
-            <Description>GATT Server over BR/EDR (C.4)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GATT_2_3</Name>
-            <Description>
-        Enhanced ATT bearer Attribute Protocol Supported (L2CAP fixed EATT PSM supported) (C.3)</Description>
+            <Name>TSPC_L2CAP_5_2</Name>
+            <Description>Authorization procedure (BR/EDR) (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -3387,9 +3418,9 @@
           </Row>
           <Row>
             <Name>TSPX_spsm</Name>
-            <Description>LE PSM to be used by IUT and TESTER. (Default: 0025)</Description>
+            <Description>LE PSM to be used by IUT and TESTER. (Default: 0027)</Description>
             <Type>OCTETSTRING</Type>
-            <Value>0025</Value>
+            <Value>0027</Value>
           </Row>
           <Row>
             <Name>TSPX_psm</Name>
@@ -3420,6 +3451,12 @@
             <Description>PSM which require encryption key size differently so the error can produced. (Default: 00F4)</Description>
             <Type>OCTETSTRING</Type>
             <Value>00F4</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_psm_encryption_required</Name>
+            <Description>PSM which require an encryption so the error can produced. (Default: 00F5)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>00F5</Value>
           </Row>
           <Row>
             <Name>TSPX_time_guard</Name>
@@ -3614,6 +3651,12 @@
             <Value>0040</Value>
           </Row>
           <Row>
+            <Name>TSPX_l2ca_cbmtu_max</Name>
+            <Description>Maximum MTU size that the IUT is able to accept on L2CAP Credit Based channels. (Default: 0100)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>0100</Value>
+          </Row>
+          <Row>
             <Name>TSPX_Min_Encryption_Key_Length</Name>
             <Description>Minimum encryption key length parameters which defines the minimum size of the encryption key allowed in octets. (Default: 0x10)Range from 0x07 - 0x10</Description>
             <Type>OCTETSTRING</Type>
@@ -3624,12 +3667,6 @@
             <Description>Value for the number of concurrent Credit Based Connections. (Default: 5)</Description>
             <Type>INTEGER</Type>
             <Value>5</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_eatt_over_br_edr</Name>
-            <Description>Enhanced ATT bearer supported over BR/EDR. (Default: FALSE)</Description>
-            <Type>BOOLEAN</Type>
-            <Value>FALSE</Value>
           </Row>
         </Rows>
       </PIXIT>
@@ -3917,7 +3954,7 @@
           </Row>
           <Row>
             <Name>TSPC_MESH_12_2</Name>
-            <Description>GATT Server (C.2)</Description>
+            <Description>Generic Attribute Profile (GATT) Server (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -3941,7 +3978,7 @@
           </Row>
           <Row>
             <Name>TSPC_MESH_12_6</Name>
-            <Description>GATT Client (C.4)</Description>
+            <Description>Generic Attribute Profile (GATT) Client (C.4)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -4041,7 +4078,7 @@
           </Row>
           <Row>
             <Name>TSPC_MESH_16_4</Name>
-            <Description>Peripheral - Security Mode 1 (C.2)</Description>
+            <Description>Authorization Procedure (Peripheral) (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -4053,7 +4090,7 @@
           </Row>
           <Row>
             <Name>TSPC_MESH_16_6</Name>
-            <Description>Central-Security Mode 1(C.3)</Description>
+            <Description>Authorization Procedure (Central) (C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -4103,7 +4140,7 @@
           </Row>
           <Row>
             <Name>TSPC_MESH_18_6</Name>
-            <Description>GATT Client (C.2)</Description>
+            <Description>Generic Attribute Profile (GATT) Client (C.2)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -4202,7 +4239,7 @@
           </Row>
           <Row>
             <Name>TSPC_MESH_21_4</Name>
-            <Description>Central - Security Mode 1 (C.2)</Description>
+            <Description>Authorization Procedure (Central) (C.2)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -4454,7 +4491,7 @@
           </Row>
           <Row>
             <Name>TSPX_oob_certificates</Name>
-            <Description>List of certificates for PTS to use to provision the IUT. The public key certificate is listed first. The certificate authorities (CAs) are listed next, separated by semicolons. For example 'c:\certs\pubkey.cer;c:\certs\int-ca.cer;c:\serts\root-ca.cer' specifes the public key certificate, the intermediate CA, and the root CA.</Description>
+            <Description>List of certificates for PTS to use to provision the IUT. The public key certificate is listed first. The certificate authorities (CAs) are listed next, separated by semicolons. For example 'c:\certs\pubkey.cer;c:\certs\int-ca.cer;c:\certs\root-ca.cer' specifes the public key certificate, the intermediate CA, and the root CA.</Description>
             <Type>IA5STRING</Type>
             <Value />
           </Row>
