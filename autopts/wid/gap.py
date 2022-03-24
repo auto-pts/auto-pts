@@ -20,7 +20,7 @@ import struct
 import sys
 from time import sleep
 
-from autopts.ptsprojects.stack import get_stack
+from autopts.ptsprojects.stack import get_stack, ConnParams
 from autopts.pybtp import types
 from autopts.pybtp import btp
 from autopts.pybtp.types import Prop, Perm, UUID, AdType, bdaddr_reverse, WIDParams, IOCap
@@ -867,7 +867,28 @@ def hdl_wid_161(params: WIDParams):
 
 
 def hdl_wid_162(params: WIDParams):
-    return hdl_wid_46(params)
+    """
+    Please start a Connection Update procedure using invalid parameters.
+
+    Set TSPX_iut_invalid_connection_interval_min to 0x0008
+    Set TSPX_iut_invalid_connection_interval_max to 0x00AA
+    Set TSPX_iut_invalid_connection_latency to 0x0000
+    Set TSPX_iut_invalid_conn_update_supervision_timeout to 0x0800
+    """
+    btp.gap_wait_for_connection()
+
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
+    new_params = ConnParams(0x0008, 0x00AA, 0x0000, 0x0800)
+
+    btp.gap_conn_param_update(bd_addr, bd_addr_type,
+                              new_params.conn_itvl_min,
+                              new_params.conn_itvl_max,
+                              new_params.conn_latency,
+                              new_params.supervision_timeout)
+
+    return True
 
 
 def hdl_wid_169(_: WIDParams):
