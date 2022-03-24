@@ -33,6 +33,7 @@ iut_config = {
             'GAP/CONN/DCEP/BV-06-C',
             'GAP/CONN/GCEP/BV-05-C',
             'GAP/CONN/GCEP/BV-06-C',
+            'GAP/CONN/SCEP/BV-03-C',
             'GAP/CONN/UCON/BV-06-C',
             'GAP/DISC/GENM/BV-03-C',
             'GAP/PRIV/CONN/BV-10-C',
