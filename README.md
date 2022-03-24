@@ -98,7 +98,68 @@ The rest of the auto-pts client setup is platform/mode specific:
 
 Check out [Zephyr with AutoPTS step-by-step setup tutorial](#zephyr-with-autopts-step-by-step-setup-tutorial)
 
-### MyNewt NimBle (WIP)
+### MyNewt NimBle
+
+For building and flashing app image Newt tool is required. On Windows it should
+be installed as MSYS2 application.
+
+In MSYS2 MinGW x64 application:
+1. Install [MSYS2/MinGW](https://www.msys2.org) from installer and run
+    ```shell
+    $ pacman -Syu
+    $ pacman -Su
+    ```
+2. Install Git
+    ```shell
+    $ pacman -S git
+    ```
+3. Install Go
+   ```shell
+   $ pacman -S mingw-w64-x86_64-go
+   ```
+   If this command fails with error like:
+   ```shell
+   File /var/cache/pacman/pkg/mingw-w64-x86_64-libpng-1.6.12-1-any.pkg.tar.xz is corrupted (invalid or corrupted package (PGP signature)).
+   ```
+   keys need to be updated:
+   ```shell
+   $ pacman-key --init
+   $ pacman-key --populate msys2
+   $ pacman-key --refresh-keys
+   ```
+4. Install Newt tool. For testing Mynewt from master branch we often require
+   in-dev versions of Newt tool, from master branch. To install just latest
+   release:
+   ```shell
+   $ wget -P /tmp https://github.com/apache/mynewt-newt/archive/mynewt_1_8_0_tag.tar.gz
+   $ tar -xzf /tmp/mynewt_1_8_0_tag.tar.gz
+   $ cd mynewt-newt-mynewt_1_8_0_tag/mynewt-newt/newt
+   $ go get
+   $ go build
+   $ /home/user_name/mynewt-newt/newt/newt.exe
+   ```
+   To install Newt in-dev version:
+   ```shell
+   $ git clone https://github.com/apache/mynewt-newt.git
+   $ cd mynewt-newt/newt
+   $ go get
+   $ go build
+   $ mv /home/user_name/mynewt-newt/newt/newt.exe /usr/bin
+   ```
+   You can verify installation by calling `newt version`
+5. To install cross-compilation tools follow [this](https://github.com/apache/mynewt-documentation/blob/master/docs/get_started/native_install/cross_tools.rst)
+   guide
+6. Setup Mynewt Project using [this](https://github.com/apache/mynewt-documentation/blob/master/docs/get_started/project_create.rst)
+   guide
+7. Python functions must use environment we just setup, so functions calling
+   shell commands like `check_call` must use MSYS. In Windows we must setup
+   environment variable to specify this.
+   1. open Environment Variables settings by pressing <kbd>⊞ Win</kbd>+<kbd>R</kbd>
+      and typing `systempropertiesadvanced`.
+   2. Click “Environment Variables” button
+   3. In “Environment Variables” click `New`
+   4. As `Variable Name` set `MSYS2_BASH_PATH`
+   5. As `Variable Value` set `C:\msys64\usr\bin\bash.exe`
 
 # PTS Workspace Setup
 
