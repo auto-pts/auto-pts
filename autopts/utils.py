@@ -67,8 +67,13 @@ def usb_power(ykush_port, on=True):
     if sys.platform == "win32":
         ykushcmd += '.exe'
 
-    p = subprocess.Popen([ykushcmd, '-u' if on else '-d', str(ykush_port)])
-    p.wait()
+    p = subprocess.Popen([ykushcmd, '-u' if on else '-d', str(ykush_port)], stdout=subprocess.PIPE)
+    try:
+        p.wait(timeout=10)
+    except subprocess.TimeoutExpired:
+        # The subprocess could hang in case autopts client and server
+        # try to use ykush at the same time.
+        p.kill()
 
 
 def get_own_workspaces():

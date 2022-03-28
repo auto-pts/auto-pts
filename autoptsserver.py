@@ -299,6 +299,7 @@ class Server(threading.Thread):
             self.server = None
 
         if self._args.ykush:
+            log(f'Replugging device ({self._device}) under ykush:{self._args.ykush}')
             power_dongle(self._args.ykush, False)
             while self._device and dongle_exists(self._device):
                 pass
