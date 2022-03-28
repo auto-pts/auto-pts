@@ -108,6 +108,15 @@ iut_config = {
         ]
     },
 
+    "key_dist_no_csrk.conf": {
+        "overlay": {
+            'BLE_SM_OUR_KEY_DIST': '3',
+        },
+        "test_cases": [
+            'GAP/BOND/BON/BV-04-C',
+        ]
+    },
+
     "nrpa.conf": {
         "overlay": {
             'BTTESTER_PRIVACY_MODE': '1',
