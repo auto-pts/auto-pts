@@ -1073,7 +1073,7 @@ class Client:
         self.get_iut = get_iut
         self.store_tag = name + '_'
         setup_project_name(project)
-        self.boards = get_available_boards(project)
+        self.boards = get_available_boards(name)
         self.ptses = []
         self.args = None
         self.arg_parser = parser_class(cli_support=autoprojects.iutctl.CLI_SUPPORT, board_names=self.boards)
