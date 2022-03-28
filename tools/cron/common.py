@@ -579,7 +579,7 @@ def zephyr_pr_job(cron, cfg, pr_cfg):
         print('Copied database from {}'.format(test_case_db_path))
         shutil.copy(test_case_db_path, autopts_test_case_db)
 
-    clear_workspace(os.path.join(AUTOPTS_REPO, 'workspaces/zephyr/zephyr-master'))
+    clear_workspace(os.path.join(AUTOPTS_REPO, 'autopts/workspaces/zephyr/zephyr-master'))
     git_stash_clear(PROJECT_REPO)
     update_sources(PROJECT_REPO, 'origin', 'main', True)
     merge_pr_branch(pr_cfg['source_repo_owner'], pr_cfg['source_branch'],
@@ -638,7 +638,7 @@ def zephyr_job(cfg, included='', excluded='', bisect=None):
         print('Copied database from {}'.format(test_case_db_path))
         shutil.copy(test_case_db_path, autopts_test_case_db)
 
-    clear_workspace(os.path.join(AUTOPTS_REPO, 'workspaces/zephyr/zephyr-master'))
+    clear_workspace(os.path.join(AUTOPTS_REPO, 'autopts/workspaces/zephyr/zephyr-master'))
     git_stash_clear(os.path.join(PROJECT_REPO))
 
     # To prevent update of zephyr project repo by bot, set 'update_repo'
@@ -678,7 +678,7 @@ def nimble_job(cfg, included='', excluded='', bisect=None):
 
     pre_cleanup(AUTOPTS_REPO, PROJECT_REPO, test_case_db_name)
 
-    clear_workspace(os.path.join(AUTOPTS_REPO, 'workspaces/Mynewt Nimble Host'))
+    clear_workspace(os.path.join(AUTOPTS_REPO, 'autopts/workspaces/Mynewt Nimble Host'))
     git_stash_clear(os.path.join(PROJECT_REPO, 'repos/apache-mynewt-nimble'))
 
     # To prevent update of Mynewt project repo by bot, set 'update_repo'
