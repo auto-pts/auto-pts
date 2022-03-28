@@ -24,7 +24,7 @@ import serial
 from autopts.pybtp import defs
 from autopts.ptsprojects.boards import Board, get_debugger_snr, tty_to_com
 from autopts.pybtp.types import BTPError
-from autopts.pybtp.iutctl_common import BTPWorker, BTP_ADDRESS, RTT, BTMON
+from autopts.pybtp.iutctl_common import BTPWorker, BTP_ADDRESS, RTT, BTMON, BTPSocketSrv
 
 log = logging.debug
 MYNEWT = None
@@ -50,6 +50,7 @@ class MynewtCtl:
             if args.debugger_snr is None else args.debugger_snr
         self.board = Board(args.board_name, self)
         self.socat_process = None
+        self.socket_srv = None
         self.btp_socket = None
         self.test_case = None
         self.iut_log_file = None
@@ -71,8 +72,9 @@ class MynewtCtl:
 
         self.flush_serial()
 
-        self.btp_socket = BTPWorker()
-        self.btp_socket.open(self.btp_address)
+        self.socket_srv = BTPSocketSrv()
+        self.socket_srv.open(self.btp_address)
+        self.btp_socket = BTPWorker(self.socket_srv)
 
         if sys.platform == "win32":
             # On windows socat.exe does not support setting serial baud rate.
@@ -83,7 +85,7 @@ class MynewtCtl:
 
             socat_cmd = ("socat.exe -x -v tcp:" + socket.gethostbyname(socket.gethostname()) +
                          ":%s,retry=100,interval=1 %s,raw,b115200" %
-                         (self.btp_socket.sock.getsockname()[1], self.tty_file))
+                         (self.socket_srv.sock.getsockname()[1], self.tty_file))
         else:
             socat_cmd = ("socat -x -v %s,rawer,b115200 UNIX-CONNECT:%s" %
                          (self.tty_file, self.btp_address))
