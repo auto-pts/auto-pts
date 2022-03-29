@@ -653,6 +653,10 @@ def test_cases(ptses):
                   cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl_rpr_2ptses_restart,
                   lt2="MESH/SR/RPR/LNK/BI-05-C_LT2"),
+        ZTestCase("MESH", "MESH/SR/RPR/PDU/BV-01-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=mesh_wid_hdl,
+                  lt2="MESH/SR/RPR/PDU/BV-01-C_LT2"),
     ]
 
     test_cases_slaves = [
@@ -790,6 +794,9 @@ def test_cases(ptses):
                        cmds=pre_conditions_slave,
                        generic_wid_hdl=mesh_wid_hdl_rpr_2ptses),
         ZTestCaseSlave("MESH", "MESH/SR/RPR/LNK/BI-02-C_LT2",
+                       cmds=pre_conditions_slave,
+                       generic_wid_hdl=mesh_wid_hdl_rpr_2ptses),
+        ZTestCaseSlave("MESH", "MESH/SR/RPR/PDU/BV-01-C_LT2",
                        cmds=pre_conditions_slave,
                        generic_wid_hdl=mesh_wid_hdl_rpr_2ptses),
         ZTestCaseSlave("MESH", "MESH/SR/RPR/LNK/BI-05-C_LT2",
