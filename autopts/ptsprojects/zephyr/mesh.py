@@ -536,6 +536,9 @@ def test_cases(ptses):
         ZTestCase("MESH", "MESH/SR/RPR/LNK/BV-25-C",
                   cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl_rpr_persistent_storage),
+        ZTestCase("MESH", "MESH/SR/RPR/PDU/BI-03-C",
+                  cmds=pre_conditions,
+                  generic_wid_hdl=mesh_wid_hdl_rpr_persistent_storage),
     ]
 
     test_cases_lt2 = [
