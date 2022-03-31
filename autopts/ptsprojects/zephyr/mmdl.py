@@ -19,7 +19,7 @@ from binascii import hexlify
 from uuid import uuid4
 import random
 
-from autopts.client import get_unique_name
+from autopts.client import get_unique_name, get_test_data_path
 from autopts.pybtp import btp
 from autopts.pybtp import defs
 from autopts.wid import mmdl_wid_hdl
@@ -101,6 +101,7 @@ def test_cases(ptses):
     iut_device_name = get_unique_name(pts)
     timeout = 20
     FD_timeout = 80
+    sample_data_path = get_test_data_path(pts)
 
     pre_conditions = [
         TestFunc(btp.core_reg_svc_gap),
@@ -117,7 +118,13 @@ def test_cases(ptses):
             "MMDL", "TSPX_device_uuid2", stack.mesh.get_dev_uuid_lt2())),
         TestFunc(lambda: pts.update_pixit_param(
             "MMDL", "TSPX_bd_addr_iut",
-            stack.gap.iut_addr_get_str()))]
+            stack.gap.iut_addr_get_str())),
+        TestFunc(lambda: pts.update_pixit_param(
+            "MMDL", "TSPX_Client_BLOB_Data",
+            get_test_data_path(pts) + "sample_data_1.txt")),
+        TestFunc(lambda: pts.update_pixit_param(
+            "MMDL", "TSPX_New_Firmware_Image",
+            get_test_data_path(pts) + "sample_data_1.txt"))]
 
     custom_test_cases = [
         ZTestCase("MMDL", "MMDL/SR/BT/BV-02-C", cmds=pre_conditions + [

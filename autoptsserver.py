@@ -385,6 +385,8 @@ class Server(threading.Thread):
         self.server.register_function(self.ready, 'ready')
         self.server.register_function(self.get_system_model, 'get_system_model')
         self.server.register_function(self.shutdown_pts_bpv, 'shutdown_pts_bpv')
+        self.server.register_function(self.get_path, 'get_path')
+        self.server.register_instance(self.pts)
         self.server.register_introspection_functions()
         self.server.timeout = 1.0
 
@@ -441,6 +443,9 @@ class Server(threading.Thread):
                             return platform
                     return 'Real HW'
         return 'Unknown'
+
+    def get_path(self):
+        return os.path.dirname(os.path.realpath(__file__))
 
     def list_workspace_tree(self, workspace_dir):
         if Path(workspace_dir).is_absolute():
