@@ -177,6 +177,37 @@ iut_config = {
             'MESH/SR/RPR/PDU/BI-03-C'
         ]
     },
+
+    "mesh_dfd_srv.conf": {
+        "overlay": {
+            'CONFIG_BT_SETTINGS': 'y',
+            'CONFIG_FLASH': 'y',
+            'CONFIG_FLASH_PAGE_LAYOUT': 'y',
+            'CONFIG_FLASH_MAP': 'y',
+            'CONFIG_NVS': 'y',
+            'CONFIG_BT_MESH_DFU_SRV': 'n'
+        },
+        "test_cases": [
+            'MMDL/CL/FU',
+            'MMDL/CL/BT',
+            'MMDL/SR/FD',
+            'MMDL/SR/BT'
+        ]
+    },
+
+    "mesh_dfu_srv.conf": {
+        "overlay": {
+            'CONFIG_BT_SETTINGS': 'y',
+            'CONFIG_FLASH': 'y',
+            'CONFIG_FLASH_PAGE_LAYOUT': 'y',
+            'CONFIG_FLASH_MAP': 'y',
+            'CONFIG_NVS': 'y',
+            'CONFIG_BT_MESH_DFD_SRV': 'n'
+        },
+        "test_cases": [
+            'MMDL/SR/FU',
+        ]
+    },
 }
 
 retry_config = {
