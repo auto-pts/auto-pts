@@ -319,6 +319,11 @@ def get_unique_name(pts):
     return name.encode('utf-8')
 
 
+def get_test_data_path(pts):
+    autopts_dir = pts.get_path()
+    return autopts_dir + "\\autopts\\test_data\\"
+
+
 get_my_ip_address.cached_address = None
 
 
