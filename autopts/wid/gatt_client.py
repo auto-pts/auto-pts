@@ -23,10 +23,10 @@ import socket
 import struct
 import sys
 
-from pybtp import btp
-from pybtp.types import Prop, Perm, IOCap, UUID, WIDParams, GATTErrorCodes
-from ptsprojects.testcase import MMI
-from ptsprojects.stack import get_stack, GattPrimary, GattService, GattSecondary, GattServiceIncluded, \
+from autopts.pybtp import btp
+from autopts.pybtp.types import Prop, Perm, IOCap, UUID, WIDParams, GATTErrorCodes
+from autopts.ptsprojects.testcase import MMI
+from autopts.ptsprojects.stack import get_stack, GattPrimary, GattService, GattSecondary, GattServiceIncluded, \
     GattCharacteristic, GattCharacteristicDescriptor, GattDB
 
 log = logging.debug
