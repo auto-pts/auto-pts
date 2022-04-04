@@ -202,8 +202,8 @@ def hdl_wid_46(_: WIDParams):
     new_params.conn_latency += 1
 
     btp.gap_conn_param_update(bd_addr, bd_addr_type,
-                              new_params.conn_itvl,
-                              new_params.conn_itvl,
+                              new_params.conn_itvl_min,
+                              new_params.conn_itvl_max,
                               new_params.conn_latency,
                               new_params.supervision_timeout)
 
