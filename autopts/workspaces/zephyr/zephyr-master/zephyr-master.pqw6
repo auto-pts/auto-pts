@@ -3566,7 +3566,7 @@
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_1</Name>
-            <Description>L2CAP Signaling channel (C.16)</Description>
+            <Description>L2CAP Signaling channel over BR/EDR (C.16)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -3578,43 +3578,37 @@
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_3</Name>
-            <Description>Connection-oriented data channel (C.16)</Description>
+            <Description>Connection-oriented data channel over BR/EDR (C.16)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_4</Name>
-            <Description>Command echo request (C.17)</Description>
+            <Description>Send echo request (C.17)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_5</Name>
-            <Description>Command echo response (C.16)</Description>
+            <Description>Send echo response (C.16)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_6</Name>
-            <Description>Command information request (C.17)</Description>
+            <Description>Send information request (C.17)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_7</Name>
-            <Description>Command information response (C.16)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_L2CAP_2_8</Name>
-            <Description>Channel group (C.17)</Description>
+            <Description>Send information response (C.16)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_9</Name>
-            <Description>Packet for connectionless channel (C.17)</Description>
+            <Description>Connectionless channel packet (C.17)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -3728,7 +3722,7 @@
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_28</Name>
-            <Description>Configuring the peer TxWindow greater than 1 (C.10)</Description>
+            <Description>Peer TxWindow configuration greater than 1 (C.10)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -3872,43 +3866,43 @@
           </Row>
           <Row>
             <Name>TSPC_L2CAP_3_1</Name>
-            <Description>Support of RTX timer  (M)</Description>
+            <Description>RTX timer (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_3_2</Name>
-            <Description>Support of ERTX timer (C.4)</Description>
+            <Description>ERTX timer (C.4)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_3_3</Name>
-            <Description>Support minimum MTU size 48 octets (C.4)</Description>
+            <Description>Minimum MTU size of 48 octets (C.4)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_3_4</Name>
-            <Description>Support MTU size larger than 48 octets (C.5)</Description>
+            <Description>MTU size larger than 48 octets (C.5)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_3_5</Name>
-            <Description>Support of flush timeout value for reliable channel (C.4)</Description>
+            <Description>Flush timeout value for reliable channel (C.4)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_3_6</Name>
-            <Description>Support of flush timeout value for unreliable channel (C.5)</Description>
+            <Description>Flush timeout value for unreliable channel (C.5)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_3_7</Name>
-            <Description>Support of bi-directional quality of service (QoS) option field (C.1)</Description>
+            <Description>Bi-directional quality of service (QoS) option field (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -3938,7 +3932,7 @@
           </Row>
           <Row>
             <Name>TSPC_L2CAP_3_12</Name>
-            <Description>Support minimum MTU size 23 octets (C.6)</Description>
+            <Description>Minimum MTU size of 23 octets (C.6)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -3993,6 +3987,60 @@
           <Row>
             <Name>TSPC_L2CAP_5_2</Name>
             <Description>Authorization procedure (BR/EDR) (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_44_1</Name>
+            <Description>Simultaneous BR/EDR and LE Transports - BR/EDR Peripheral to the same device (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_44_2</Name>
+            <Description>Simultaneous BR/EDR and LE Transports - BR/EDR Central to the same device (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_45_1</Name>
+            <Description>Simultaneous BR/EDR and LE Transports - BR/EDR Peripheral to the same device (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_45_2</Name>
+            <Description>Simultaneous BR/EDR and LE Transports - BR/EDR Central to the same device (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_1a_1</Name>
+            <Description>GATT Client over LE (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_1a_2</Name>
+            <Description>GATT Client over BR/EDR (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_1a_3</Name>
+            <Description>GATT Server over LE (C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_1a_4</Name>
+            <Description>GATT Server over BR/EDR (C.4)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_2_3</Name>
+            <Description>Enhanced ATT bearer Attribute Protocol Supported (L2CAP fixed EATT PSM supported) (C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -5218,6 +5266,12 @@
             <Description>Label to generate virtual address. This is only used in Mesh Directed Forwarding related test case (Default: 112233445566778899AABBCCDDEEFFEE)</Description>
             <Type>OCTETSTRING</Type>
             <Value>112233445566778899AABBCCDDEEFFEE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_Server_model_element_address_opcode_status</Name>
+            <Description>Server model element address, item0 acknowledged message and status item1 and unacknowledged message(Default: 0004,8216020101,82180201,820301010101)</Description>
+            <Value>0004,8216020101,82180201,820301010101</Value>
+            <Type>IA5STRING</Type>
           </Row>
         </Rows>
       </PIXIT>
