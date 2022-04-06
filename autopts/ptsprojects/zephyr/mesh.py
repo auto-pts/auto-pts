@@ -569,7 +569,10 @@ def test_cases(ptses):
                   generic_wid_hdl=mesh_wid_hdl,
                   lt2="MESH/CFGCL/KR/BV-04-C-LT2"),
         ZTestCase("MESH", "MESH/SR/RPR/LNK/BV-01-C",
-                  cmds=pre_conditions,
+                  cmds=pre_conditions +
+                       [TestFunc(get_stack().synch.add_synch_element,
+                                 [SynchPoint("MESH/SR/RPR/LNK/BV-01-C", 713),
+                                  SynchPoint("MESH/SR/RPR/LNK/BV-01-C_LT2", 714)])],
                   generic_wid_hdl=mesh_wid_hdl,
                   lt2="MESH/SR/RPR/LNK/BV-01-C_LT2"),
         ZTestCase("MESH", "MESH/SR/RPR/LNK/BV-02-C",
@@ -577,7 +580,10 @@ def test_cases(ptses):
                   generic_wid_hdl=mesh_wid_hdl,
                   lt2="MESH/SR/RPR/LNK/BV-02-C_LT2"),
         ZTestCase("MESH", "MESH/SR/RPR/LNK/BV-03-C",
-                  cmds=pre_conditions,
+                  cmds=pre_conditions +
+                       [TestFunc(get_stack().synch.add_synch_element,
+                                 [SynchPoint("MESH/SR/RPR/LNK/BV-03-C", 713),
+                                  SynchPoint("MESH/SR/RPR/LNK/BV-03-C_LT2", 714)])],
                   generic_wid_hdl=mesh_wid_hdl,
                   lt2="MESH/SR/RPR/LNK/BV-03-C_LT2"),
         ZTestCase("MESH", "MESH/SR/RPR/LNK/BV-04-C",
