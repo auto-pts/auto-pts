@@ -66,12 +66,12 @@ if __name__ == '__main__':
     for cron in cron_config.github_crons:
         for tag in cron.tags:
             cfg = cron.tags[tag].cfg
-            if not os.path.exists(os.path.join(AUTOPTS_REPO, 'bot/{}.py'.format(cfg))):
+            if not os.path.exists(os.path.join(AUTOPTS_REPO, 'autopts/bot/{}.py'.format(cfg))):
                 raise Exception('{} config does not exists!'.format(cfg))
 
     for job in cron_config.cyclical_jobs:
         cfg = job.cfg
-        if not os.path.exists(os.path.join(AUTOPTS_REPO, 'bot/{}.py'.format(cfg))):
+        if not os.path.exists(os.path.join(AUTOPTS_REPO, 'autopts/bot/{}.py'.format(cfg))):
             raise Exception('{} config does not exists!'.format(cfg))
 
     prev_sigint_handler = signal.getsignal(signal.SIGINT)

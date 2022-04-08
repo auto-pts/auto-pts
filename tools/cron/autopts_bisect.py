@@ -105,7 +105,7 @@ def get_sha(cwd):
 
 def bisect(cfg, test_case, good_commit, bad_commit=''):
     """Performs bisect test for broken test.
-    :param cfg name of config file that exists in bot/
+    :param cfg name of config file that exists in autopts/bot/
     :param test_case name of the test case
     :param good_commit last commit sha that allowed to pass the test case
     :param bad_commit last commit sha that possibly breaks the test case
@@ -114,7 +114,7 @@ def bisect(cfg, test_case, good_commit, bad_commit=''):
     print('Bisect started testing of test_case={} cfg={}'.format(test_case, cfg))
     included = '-c {} '.format(test_case)
 
-    conf_path = os.path.join(AUTOPTS_REPO, 'bot/{}.py'.format(cfg))
+    conf_path = os.path.join(AUTOPTS_REPO, 'autopts/bot/{}.py'.format(cfg))
     if not os.path.isfile(conf_path):
         print('{} does not exists!'.format(conf_path))
         return None
@@ -188,11 +188,11 @@ class Bisect:
             f.truncate()
 
     def load_cfg(self, cfg):
-        cfg_path = os.path.join(AUTOPTS_REPO, 'bot/{}.py'.format(cfg))
+        cfg_path = os.path.join(AUTOPTS_REPO, 'autopts/bot/{}.py'.format(cfg))
         if not os.path.isfile(cfg_path):
             raise Exception('{} does not exists!'.format(cfg_path))
 
-        mod = importlib.import_module('bot.' + cfg)
+        mod = importlib.import_module('autopts.bot.' + cfg)
         return mod.BotProjects[0], cfg_path
 
     def send_mail(self, test_case, result):
