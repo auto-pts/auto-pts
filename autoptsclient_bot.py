@@ -61,13 +61,13 @@ optional positional arguments:
                         give the name of custom configuration file.
     mynewt              Run as autoptsclient-mynewt.py
     zephyr              Run as autoptsclient-zephyr.py
-    myconfig            Name of custom bot/myconfig.py file. ''', epilog='''
+    myconfig            Name of custom autopts/bot/myconfig.py file. ''', epilog='''
 Example usage:
-Run bot with the default bot/config.py:
+Run bot with the default autopts/bot/config.py:
 $ python autoptsclient_bot.py
 
 Run bot with a custom config py file. myconfig is an example name,
-but the file must be in bot/.:
+but the file must be in autopts/bot/.:
 $ python autoptsclient_bot.py myconfig
 
 Run bot as a simple client, e.g. for 'zephyr' project:
@@ -93,7 +93,7 @@ def main():
     parents = []
     mod = None
 
-    if len(sys.argv) > 1 and os.path.isfile('bot/' + sys.argv[1] + '.py'):
+    if len(sys.argv) > 1 and os.path.isfile('autopts/bot/' + sys.argv[1] + '.py'):
         conf = sys.argv.pop(1)
         mod = importlib.import_module('autopts.bot.' + conf)
 

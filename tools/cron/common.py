@@ -362,12 +362,12 @@ def check_call(cmd, env=None, cwd=None, shell=True):
 
 
 def load_config(cfg):
-    cfg_path = os.path.join(AUTOPTS_REPO, 'bot/{}.py'.format(cfg))
+    cfg_path = os.path.join(AUTOPTS_REPO, 'autopts/bot/{}.py'.format(cfg))
     if not os.path.isfile(cfg_path):
         print('{} does not exists!'.format(cfg_path))
         return None
 
-    mod = importlib.import_module('bot.' + cfg)
+    mod = importlib.import_module('autopts.bot.' + cfg)
     return mod.BotProjects[0]
 
 
