@@ -75,7 +75,7 @@ def build_and_flash(project_path, board, overlay=None):
         'newt target set bttester app=@apache-mynewt-nimble/apps/bttester'.split(),
         cwd=project_path)
 
-    if overlay is not None:
+    if overlay:
         config = ':'.join(['{}={}'.format(k, v) for k, v in list(overlay.items())])
         check_call('newt target set bttester syscfg={}'.format(config).split(),
                    cwd=project_path)
@@ -183,10 +183,15 @@ class MynewtBotClient(bot.common.BotClient):
                          MynewtBotCliParser)
 
     def apply_config(self, args, config, value):
-        overlay = None
+        overlay = {}
 
         if 'overlay' in value:
             overlay = value['overlay']
+
+        if args.rtt_log:
+            overlay['CONSOLE_RTT'] = '1'
+            overlay['BTTESTER_BTP_LOG'] = '1'
+            overlay['CONSOLE_UART_FLOW_CONTROL'] = 'UART_FLOW_CTL_RTS_CTS'
 
         log("TTY path: %s" % args.tty_file)
 
