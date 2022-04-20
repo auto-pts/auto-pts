@@ -109,6 +109,10 @@ def set_pixits(ptses):
     pts.set_pixit("GAP", "TSPX_conn_update_int_max", "0046")
     pts.set_pixit("GAP", "TSPX_conn_update_slave_latency", "0001")
     pts.set_pixit("GAP", "TSPX_conn_update_supervision_timeout", "01F4")
+    pts.set_pixit("GAP", "TSPX_iut_invalid_connection_interval_min", "0008")
+    pts.set_pixit("GAP", "TSPX_iut_invalid_connection_interval_max", "00AA")
+    pts.set_pixit("GAP", "TSPX_iut_invalid_connection_latency", "0000")
+    pts.set_pixit("GAP", "TSPX_iut_invalid_conn_update_supervision_timeout", "0800")
     pts.set_pixit("GAP", "TSPX_pairing_before_service_request", "FALSE")
     pts.set_pixit("GAP", "TSPX_iut_mandates_mitm", "FALSE")
     pts.set_pixit("GAP", "TSPX_encryption_before_service_request", "FALSE")
@@ -175,6 +179,14 @@ def test_cases(ptses):
             "TRUE" if stack.gap.iut_addr_is_random() else "FALSE")),
         TestFunc(lambda: pts.update_pixit_param(
             "GAP", "TSPX_delete_ltk", "TRUE")),
+        TestFunc(lambda: pts.update_pixit_param(
+            "GAP", "TSPX_iut_invalid_connection_interval_min", format(0x0c80, '04x'))),
+        TestFunc(lambda: pts.update_pixit_param(
+            "GAP", "TSPX_iut_invalid_connection_interval_max", format(0x0c80, '04x'))),
+        TestFunc(lambda: pts.update_pixit_param(
+            "GAP", "TSPX_iut_invalid_connection_latency", format(0x0000, '04x'))),
+        TestFunc(lambda: pts.update_pixit_param(
+            "GAP", "TSPX_iut_invalid_conn_update_supervision_timeout", format(0x0c80, '04x'))),
 
         TestFunc(btp.core_reg_svc_gatt),
 
