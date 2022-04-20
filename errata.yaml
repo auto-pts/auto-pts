@@ -14,6 +14,16 @@ GAP/SEC/SEM/BV-64-C: TSE18349
 GAP/SEC/SEM/BV-65-C: TSE18349
 GAP/SEC/SEM/BV-66-C: TSE18349
 GAP/SEC/SEM/BV-67-C: TSE18349
+GAP/PADV/PASM/BV-01-C: https://github:com/intel/auto-pts/issues/740
+GAP/PADV/PAM/BV-01-C: https://github:com/intel/auto-pts/issues/740
+GAP/PADV/PASE/BV-01-C: https://github:com/intel/auto-pts/issues/740
+GAP/PADV/PASE/BV-02-C: https://github:com/intel/auto-pts/issues/740
+GAP/PADV/PASE/BV-03-C: https://github:com/intel/auto-pts/issues/740
+GAP/PADV/PASE/BV-04-C: https://github:com/intel/auto-pts/issues/740
+GAP/PADV/PASE/BV-05-C: https://github:com/intel/auto-pts/issues/740
+GAP/PADV/PASE/BV-06-C: https://github:com/intel/auto-pts/issues/740
+GAP/PADV/PAST/BV-01-C: https://github:com/intel/auto-pts/issues/740
+GAP/PADV/PAST/BV-02-C: https://github:com/intel/auto-pts/issues/740
 GATT/SR/GAC/BI-01-C: CASE0072072
 L2CAP/LE/CPU/BV-01-C: TSE18295
 L2CAP/LE/CID/BV-01-C: CASE0072479
