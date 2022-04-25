@@ -487,7 +487,7 @@ def test_cases_server(ptses):
                   pre_conditions_1 + init_server_5,
                   generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAW/BV-13-C",
-                  pre_conditions_1 + init_server_5,
+                  pre_conditions_1 + init_server_6,
                   generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAW/BV-14-C",
                   pre_conditions_1 + init_server_6,
