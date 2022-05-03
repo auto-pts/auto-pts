@@ -1066,8 +1066,8 @@ class Client:
         """
         param get_iut: function from autoptsprojects.<project>.iutctl
         param project: name of project
-        param boards: name list of supported boards
-        param args: parsed argument namespace
+        param name: name of stack
+        param parser_class: argument parser
         """
         self.test_cases = None
         self.get_iut = get_iut
@@ -1076,7 +1076,7 @@ class Client:
         self.boards = get_available_boards(name)
         self.ptses = []
         self.args = None
-        self.arg_parser = parser_class(cli_support=autoprojects.iutctl.CLI_SUPPORT, board_names=self.boards)
+        self.arg_parser = parser_class(cli_support=autoprojects.iutctl.CLI_SUPPORT, board_names=self.boards, stack_name=name)
         self.prev_sigint_handler = None
 
     def start(self, args=None):

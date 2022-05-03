@@ -20,7 +20,7 @@ import socket
 
 from autopts.pybtp import defs
 from autopts.pybtp.types import BTPError
-from autopts.pybtp.iutctl_common import BTPWorker, BTP_ADDRESS
+from autopts.pybtp.iutctl_common import BTPSocketSrv, BTPWorker, BTP_ADDRESS
 
 log = logging.debug
 IUT = None
@@ -48,14 +48,17 @@ class IUTCtl:
 
         self.btpclient_path = args.btpclient_path
         self.btp_socket = None
+        self.btp_address = BTP_ADDRESS
+        self.socket_srv = None
         self.iut_process = None
 
     def start(self):
         """Starts the IUT"""
 
         log("%s.%s", self.__class__, self.start.__name__)
-        self.btp_socket = BTPWorker()
-        self.btp_socket.open()
+        self.socket_srv = BTPSocketSrv()
+        self.socket_srv.open(self.btp_address)
+        self.btp_socket = BTPWorker(self.socket_srv)
 
         iut_cmd = get_iut_cmd(self.btpclient_path)
 

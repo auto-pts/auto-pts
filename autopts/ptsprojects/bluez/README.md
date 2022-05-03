@@ -49,7 +49,8 @@ usage: autoptsclient-bluez.py [-h] [-i IP_ADDR [IP_ADDR ...]]
                               [-l LOCAL_ADDR [LOCAL_ADDR ...]] [-a BD_ADDR]
                               [-d] [-c TEST_CASES [TEST_CASES ...]]
                               [-e EXCLUDED [EXCLUDED ...]] [-r RETRY]
-                              workspace btpclient_path
+                              [--btpclient_path BTPCLIENT_PATH]
+                              workspace
 
 PTS automation client
 
@@ -78,6 +79,8 @@ optional arguments:
   -r RETRY, --retry RETRY
                         Repeat test if failed. Parameter specifies maximum
                         repeat count per test
+  --btpclient_path BTPCLIENT_PATH
+                        Path to btpclient.
 ```
 
 ### Example
@@ -86,7 +89,7 @@ optional arguments:
 # Run all GAP test cases.
 # AutoPTS Server IP: 192.168.0.18
 # Local IP Address:  192.168.0.15
-./autoptsclient-bluez.py "C:\Users\tester\Documents\Profile Tuning Suite\bluez\bluez.pqw6" /home/han1/work/bluez/tools/btpclient -i 192.168.0.18 -l 192.168.0.15 -c GAP
+./autoptsclient-bluez.py "C:\Users\tester\Documents\Profile Tuning Suite\bluez\bluez.pqw6" --btpclient_path=/home/han1/work/bluez/tools/btpclient -i 192.168.0.18 -l 192.168.0.15 -c GAP
 ```
 
 ### Logs
