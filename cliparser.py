@@ -26,7 +26,7 @@ from autopts.utils import usb_power
 
 
 class CliParser(argparse.ArgumentParser):
-    def __init__(self, cli_support=None, board_names=None, add_help=True):
+    def __init__(self, *, cli_support=None, board_names=None, add_help=True, stack_name=None):
         super().__init__(description='PTS automation client', add_help=add_help)
 
         self.add_argument("-i", "--ip_addr", nargs="+",
@@ -137,6 +137,10 @@ class CliParser(argparse.ArgumentParser):
                               help="IP for external btp client over TCP/IP.")
             self.add_argument("--btp-tcp-port", type=str, default=64000,
                               help="Port for external btp client over TCP/IP.")
+
+        if stack_name == "bluez":
+            self.add_argument("--btpclient_path", type=str, default=None,
+                              help="Path to btpclient.")
 
         self.add_positional_args()
 
