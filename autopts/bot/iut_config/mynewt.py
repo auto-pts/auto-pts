@@ -135,3 +135,17 @@ iut_config = {
             'L2CAP/LE/CPU/BV-01-C',
         ]},
 }
+
+# Overlays for RTT logs, used when rtt-log option used.
+rtt_log_config = {
+    'CONSOLE_RTT': '1',
+    'BTTESTER_BTP_LOG': '1',
+    'CONSOLE_UART_FLOW_CONTROL': 'UART_FLOW_CTL_RTS_CTS'  # Because the RTT buffer 0 (Terminal) collides with UART
+}
+
+# Overlays for btmon logs, used when btmon option used.
+btmon_log_config = {}
+# You can overwrite rtt_log_config and btmon_log_config in config.py like:
+# z['auto_pts'] = {...
+#     'btmon_log_config': {...},
+# }

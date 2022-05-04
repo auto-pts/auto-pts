@@ -144,3 +144,24 @@ iut_config = {
         ]
     },
 }
+
+# Overlays for btmon logs, used when btmon option used.
+btmon_log_config = {
+    'CONFIG_LOG': 'y',
+    'CONFIG_LOG_BACKEND_RTT': 'y',
+    # 'CONFIG_UART_CONSOLE_LOG_LEVEL_OFF': 'n',
+    'CONFIG_BT_DEBUG_LOG': 'y',
+    'CONFIG_UART_CONSOLE': 'n',
+    'CONFIG_RTT_CONSOLE': 'y',
+    'CONFIG_USE_SEGGER_RTT': 'y',
+    'CONFIG_BT_DEBUG_MONITOR_RTT': 'y',
+    'CONFIG_LOG_BACKEND_RTT_BUFFER': '1',  # plain logs
+    'CONFIG_BT_DEBUG_MONITOR_RTT_BUFFER': '2',  # btsnoops
+}
+
+# Overlays for RTT logs, used when rtt-log option used.
+rtt_log_config = btmon_log_config
+# You can overwrite rtt_log_config and btmon_log_config in config.py like:
+# z['auto_pts'] = {...
+#     'btmon_log_config': {...},
+# }

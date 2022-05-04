@@ -2583,7 +2583,7 @@ Commands and responses:
 
 		In case of an error, the error response will be returned.
 
-    Opcode 0x48 - Config Key Refesh Phase Get
+    Opcode 0x4B - Config Key Refresh Phase Get
 
 		Controller Index:       <controller id>
 		Command parameters:     Network index (2 octets)
@@ -2596,7 +2596,7 @@ Commands and responses:
 
 		In case of an error, the error response will be returned.
 
-    Opcode 0x49 - Key Refesh Phase Set
+    Opcode 0x4C - Key Refesh Phase Set
 
 		Controller Index:       <controller id>
 		Command parameters:     Network index (2 octets)

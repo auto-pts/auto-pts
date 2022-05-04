@@ -16,7 +16,7 @@
 # Sample user_config file
 # Apply your changes and rename it to config.py
 
-from autopts.bot.iut_config.mynewt import iut_config
+from autopts.bot.iut_config.mynewt import iut_config, rtt_log_config, btmon_log_config
 
 BotProjects = []
 
@@ -105,6 +105,8 @@ m['gdrive'] = {
 # ****************************************************************************
 
 m['iut_config'] = iut_config
+m['rtt_log_config'] = rtt_log_config
+m['btmon_log_config'] = btmon_log_config
 
 # ****************************************************************************
 # Scheduler configuration

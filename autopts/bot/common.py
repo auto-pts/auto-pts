@@ -87,6 +87,8 @@ class BotConfigArgs(Namespace):
         self.store = args.get('store', False)
         self.rtt_log = args.get('rtt_log', False)
         self.btmon = args.get('btmon', False)
+        self.rtt_log_config = args.get('rtt_log_config', {})
+        self.btmon_log_config = args.get('btmon_log_config', {})
         self.test_cases = []
         self.excluded = []
 

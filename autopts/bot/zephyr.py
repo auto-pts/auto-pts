@@ -29,6 +29,7 @@ from pathlib import Path
 import serial
 
 from autopts import bot
+from autopts.bot.iut_config.zephyr import rtt_log_config, btmon_log_config
 from autopts.ptsprojects.zephyr import ZEPHYR_PROJECT_URL
 from autopts import client as autoptsclient
 from autopts.bot.common import BotConfigArgs, BotClient
@@ -192,6 +193,11 @@ class ZephyrBotConfigArgs(BotConfigArgs):
         super().__init__(args)
         self.board_name = args['board']
         self.tty_file = args['tty_file']
+        if not self.rtt_log_config:
+            self.rtt_log_config = rtt_log_config
+
+        if not self.btmon_log_config:
+            self.btmon_log_config = btmon_log_config
 
 
 class ZephyrBotCliParser(bot.common.BotCliParser):
@@ -207,9 +213,21 @@ class ZephyrBotClient(BotClient):
         self.config_default = "prj.conf"
 
     def apply_config(self, args, config, value):
+        overlay = {}
+
         if 'overlay' in value:
-            apply_overlay(args.project_path, config,
-                          value['overlay'])
+            overlay = value['overlay']
+
+        if args.rtt_log:
+            config = 'rtt_logs.conf'
+            overlay.update(args.rtt_log_config)
+
+        if args.btmon:
+            config = 'btmon_logs.conf'
+            overlay.update(args.btmon_log_config)
+
+        if overlay:
+            apply_overlay(args.project_path, config, overlay)
 
         log("TTY path: %s" % args.tty_file)
 

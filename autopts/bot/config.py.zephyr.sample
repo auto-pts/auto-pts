@@ -16,7 +16,7 @@
 # Sample user_config file
 # Apply your changes and rename it to config.py
 
-from autopts.bot.iut_config.zephyr import iut_config
+from autopts.bot.iut_config.zephyr import iut_config, rtt_log_config, btmon_log_config
 
 BotProjects = []
 
@@ -108,6 +108,8 @@ z['gdrive'] = {
 # ****************************************************************************
 
 z['iut_config'] = iut_config
+z['rtt_log_config'] = rtt_log_config
+z['btmon_log_config'] = btmon_log_config
 
 # ****************************************************************************
 # Scheduler configuration

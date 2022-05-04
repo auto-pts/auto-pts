@@ -23,6 +23,7 @@ import sys
 import time
 
 from autopts import bot
+from autopts.bot.iut_config.mynewt import rtt_log_config, btmon_log_config
 from autopts.client import Client
 from autopts.ptsprojects.boards import get_free_device, release_device, get_build_and_flash
 from autopts.ptsprojects.mynewt.iutctl import get_iut, log
@@ -169,6 +170,11 @@ class MynewtBotConfigArgs(bot.common.BotConfigArgs):
         super().__init__(args)
         self.board_name = args['board']
         self.tty_file = args.get('tty_file', None)
+        if not self.rtt_log_config:
+            self.rtt_log_config = rtt_log_config
+
+        if not self.btmon_log_config:
+            self.btmon_log_config = btmon_log_config
 
 
 class MynewtBotCliParser(bot.common.BotCliParser):
@@ -189,9 +195,10 @@ class MynewtBotClient(bot.common.BotClient):
             overlay = value['overlay']
 
         if args.rtt_log:
-            overlay['CONSOLE_RTT'] = '1'
-            overlay['BTTESTER_BTP_LOG'] = '1'
-            overlay['CONSOLE_UART_FLOW_CONTROL'] = 'UART_FLOW_CTL_RTS_CTS'
+            overlay.update(args.rtt_log_config)
+
+        if args.btmon:
+            overlay.update(args.btmon_log_config)
 
         log("TTY path: %s" % args.tty_file)
 
