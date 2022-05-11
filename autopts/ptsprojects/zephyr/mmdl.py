@@ -67,7 +67,7 @@ def set_pixits(ptses):
     pts.set_pixit("MMDL", "TSPX_New_Firmware_Image", r"data2.txt")
     pts.set_pixit("MMDL", "TSPX_Update_Firmware_Image_Index", "0")
     pts.set_pixit("MMDL", "TSPX_Client_BLOB_ID", "1100000000000011")
-    pts.set_pixit("MMDL", "TSPX_Reception_Counter", "5")
+    pts.set_pixit("MMDL", "TSPX_Reception_Counter", "1")
 
 
 def test_cases(ptses):
