@@ -2075,12 +2075,12 @@ def mmdl_blob_srv_recv(id, timeout):
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['mmdl_blob_srv_recv'], data)
 
 
-def mmdl_blob_transfer_start(id, block_size, chunk_size, timeout, size, addr):
+def mmdl_blob_transfer_start(id, block_size, chunk_size, timeout, size):
     logging.debug("%s", mmdl_blob_transfer_start.__name__)
 
     iutctl = get_iut()
 
-    data = bytearray(struct.pack("<QHBHHH", id, size, block_size, chunk_size, timeout, addr))
+    data = bytearray(struct.pack("<QHBHH", id, size, block_size, chunk_size, timeout))
 
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['blob_transfer_start'], data)
 
