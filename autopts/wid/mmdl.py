@@ -2156,7 +2156,7 @@ def hdl_wid_850(_: WIDParams):
 
     stack = get_stack()
     timeout = stack.mesh.timeout_get()
-    addr = 0x0001
+    addr = ["0001"]
     id = 0x1100000000000011
     block_size = 6
     chunk_size = 8
@@ -2176,7 +2176,7 @@ def hdl_wid_851(_: WIDParams):
     Please initiate the transfer of the test object to the Lower Tester.
     """
     timeout = 20
-    addr = 0x0001
+    addr = ["0001"]
     id = 0x1100000000000011
     block_size = 6
     chunk_size = 65
@@ -2216,19 +2216,17 @@ def hdl_wid_855(_: WIDParams):
     return True
 
 
-def hdl_wid_856(_: WIDParams):
+def hdl_wid_856(params: WIDParams):
     stack = get_stack()
     timeout = stack.mesh.timeout_get()
-    addr1 = 0x0001
-    addr2 = 0x0065
+    addrs = re.findall(r'(0x[0-9a-fA-F]{1,2})', params.description)
+    addrs = [e[2:].rjust(4, '0') for e in addrs]
     id = 0x1100000000000011
     block_size = 18
     chunk_size = 11
     blob_data_size = 80
 
-    btp.mmdl_blob_info_get(addr1)
-    time.sleep(5)
-    btp.mmdl_blob_info_get(addr2)
+    btp.mmdl_blob_info_get(addrs)
     time.sleep(5)
     btp.mmdl_blob_transfer_start(id, block_size, chunk_size, timeout, blob_data_size)
 

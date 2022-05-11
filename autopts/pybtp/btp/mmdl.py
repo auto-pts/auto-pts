@@ -1996,12 +1996,15 @@ def mmdl_dfu_info_get(limit):
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['dfu_info_get'], data)
 
 
-def mmdl_blob_info_get(addr):
+def mmdl_blob_info_get(addrs):
     logging.debug("%s", mmdl_blob_info_get.__name__)
 
     iutctl = get_iut()
 
-    data = bytearray(struct.pack("<H", addr))
+    data = bytearray(struct.pack("<B", len(addrs)))
+
+    for a in addrs:
+        data.extend(binascii.unhexlify(a))
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['blob_info_get'], data)
 
 
