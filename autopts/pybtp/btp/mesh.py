@@ -1751,6 +1751,15 @@ def mesh_model_recv_ev(mesh, data, data_len):
 
     stack.mesh.model_recv_ev_data.data = (src, dst, payload)
 
+def mesh_blob_lost_target_ev(mesh, data, data_len):
+    logging.debug("%s %r %r", mesh_blob_lost_target_ev.__name__, data, data_len)
+
+    stack = get_stack()
+
+    if stack.mesh.blob_lost_target:
+        return
+
+    stack.mesh.blob_lost_target = True
 
 MESH_EV = {
     defs.MESH_EV_OUT_NUMBER_ACTION: mesh_out_number_action_ev,
@@ -1769,4 +1778,5 @@ MESH_EV = {
     defs.MESH_EV_LPN_POLLED: mesh_lpn_polled_ev,
     defs.MESH_EV_PROV_NODE_ADDED: mesh_prov_node_added_ev,
     defs.MESH_EV_MODEL_RECV: mesh_model_recv_ev,
+    defs.MESH_EV_BLOB_LOST_TARGET: mesh_blob_lost_target_ev,
 }
