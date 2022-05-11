@@ -12,7 +12,7 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
-
+import binascii
 import logging
 import copy
 from threading import Lock, Timer, Event
@@ -573,6 +573,27 @@ class Mesh:
         while flag.is_set():
             if uuid in self.nodes_added.data:
                 t.cancel()
+                return True
+
+        return False
+
+    def wait_for_model_added_op(self, timeout, op):
+        if self.model_recv_ev_data.data is not None and \
+               self.model_recv_ev_data.data[2][0:4] == op:
+            self.model_recv_ev_data.data = (0, 0, b'')
+            return True
+
+        flag = Event()
+        flag.set()
+
+        t = Timer(timeout, timeout_cb, [flag])
+        t.start()
+
+        while flag.is_set():
+            if self.model_recv_ev_data.data is not None and \
+                    self.model_recv_ev_data.data[2][0:4] == op:
+                t.cancel()
+                self.model_recv_ev_data.data = (0, 0, b'')
                 return True
 
         return False
