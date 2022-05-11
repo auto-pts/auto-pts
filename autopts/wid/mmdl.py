@@ -2166,7 +2166,7 @@ def hdl_wid_850(_: WIDParams):
 
     time.sleep(5)
 
-    btp.mmdl_blob_transfer_start(id, block_size, chunk_size, timeout, blob_data_size, addr)
+    btp.mmdl_blob_transfer_start(id, block_size, chunk_size, timeout, blob_data_size)
 
     return True
 
@@ -2186,7 +2186,7 @@ def hdl_wid_851(_: WIDParams):
 
     time.sleep(5)
 
-    btp.mmdl_blob_transfer_start(id, block_size, chunk_size, timeout, blob_data_size, addr)
+    btp.mmdl_blob_transfer_start(id, block_size, chunk_size, timeout, blob_data_size)
 
     return True
 
@@ -2230,7 +2230,7 @@ def hdl_wid_856(_: WIDParams):
     time.sleep(5)
     btp.mmdl_blob_info_get(addr2)
     time.sleep(5)
-    btp.mmdl_blob_transfer_start(id, block_size, chunk_size, timeout, blob_data_size, addr1)
+    btp.mmdl_blob_transfer_start(id, block_size, chunk_size, timeout, blob_data_size)
 
     return True
 
