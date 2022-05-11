@@ -2212,6 +2212,8 @@ def hdl_wid_855(_: WIDParams):
     """
     Please query the state of BLOB transfer by sending Lower Tester BLOB_TRANSFER_GET message.
     """
+    btp.mmdl_blob_info_get(["0001"])
+    time.sleep(5)
     btp.mmdl_blob_transfer_get()
     return True
 
