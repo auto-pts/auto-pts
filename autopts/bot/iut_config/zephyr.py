@@ -189,7 +189,6 @@ iut_config = {
         },
         "test_cases": [
             'MMDL/CL/FU',
-            'MMDL/CL/BT',
             'MMDL/SR/FD',
             'MMDL/SR/BT'
         ]
@@ -206,6 +205,7 @@ iut_config = {
         },
         "test_cases": [
             'MMDL/SR/FU',
+            'MMDL/CL/BT',
         ]
     },
 }
