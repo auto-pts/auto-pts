@@ -2250,7 +2250,8 @@ def hdl_wid_859(_: WIDParams):
     """
     Please confirm that the IUT has reported BLOB transfer procedure failure.
     """
-    return True
+    stack = get_stack()
+    return stack.mesh.wait_for_blob_target_lost(67)
 
 
 def hdl_wid_860(_: WIDParams):

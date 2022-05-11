@@ -446,6 +446,7 @@ class Mesh:
         self.is_initialized = False
         self.last_seen_prov_link_state = Property(None)
         self.prov_invalid_bearer_rcv = Property(False)
+        self.blob_lost_target = False
 
         # network data
         self.lt1_addr = 0x0001
@@ -705,6 +706,23 @@ class Mesh:
 
         while flag.is_set():
             if not self.lpn.data:
+                t.cancel()
+                return True
+
+        return False
+
+    def wait_for_blob_target_lost(self, timeout):
+        if self.blob_lost_target:
+            return True
+
+        flag = Event()
+        flag.set()
+
+        t = Timer(timeout, timeout_cb, [flag])
+        t.start()
+
+        while flag.is_set():
+            if self.blob_lost_target:
                 t.cancel()
                 return True
 
