@@ -2051,7 +2051,7 @@ def mmdl_dfu_update_firmware_cancel():
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['dfu_update_firmware_cancel'], "")
 
 
-def mmdl_dfu_update_firmware_start(addr, slot_idx, slot_size, block_size, chunk_size, fwid, metadata):
+def mmdl_dfu_update_firmware_start(addrs, slot_idx, slot_size, block_size, chunk_size, fwid, metadata):
     logging.debug("%s", mmdl_dfu_update_firmware_start.__name__)
 
     iutctl = get_iut()
@@ -2062,9 +2062,11 @@ def mmdl_dfu_update_firmware_start(addr, slot_idx, slot_size, block_size, chunk_
     payload_metadata = binascii.unhexlify(metadata)
     metadata_len = len(payload_metadata)
 
-    data = bytearray(struct.pack("<HBBBBBH", addr, slot_idx, slot_size, fwid_len, metadata_len, block_size, chunk_size))
+    data = bytearray(struct.pack("<BBBBBBH", len(addrs), slot_idx, slot_size, fwid_len, metadata_len, block_size, chunk_size))
 
     data.extend(payload_metadata)
+    for a in addrs:
+        data.extend(binascii.unhexlify(a))
 
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['dfu_update_firmware_start'], data)
 

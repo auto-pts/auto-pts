@@ -2284,10 +2284,10 @@ def hdl_wid_989(_: WIDParams):
     return True
 
 
-def hdl_wid_990(_: WIDParams):
-    addr_1 = 0x0001
-    addr_2 = 0x0100
-    addr_3 = 0x0123
+def hdl_wid_990(params: WIDParams):
+    stack = get_stack()
+    addrs = re.findall(r'(0x[0-9a-fA-F]{4})', params.description)
+    addrs = [e[2:] for e in addrs]
 
     slot_idx = 0x00
     slot_size = 80
@@ -2296,15 +2296,14 @@ def hdl_wid_990(_: WIDParams):
 
     fwid = "11000011"
     metadata = "1100000000000011"
+    btp.mesh_store_model_data()
 
-    btp.mmdl_dfu_update_firmware_start(addr_1, slot_idx, slot_size, block_size, chunk_size, fwid, metadata)
-    time.sleep(5)
-    btp.mmdl_dfu_update_firmware_start(addr_2, slot_idx, slot_size, block_size, chunk_size, fwid, metadata)
-    time.sleep(5)
-    btp.mmdl_dfu_update_firmware_start(addr_3, slot_idx, slot_size, block_size, chunk_size, fwid, metadata)
-    time.sleep(10)
+    btp.mmdl_dfu_update_firmware_start(addrs, slot_idx, slot_size, block_size, chunk_size, fwid, metadata)
+    # wait for Firmware Update Status for every address
+    for e in addrs:
+        stack.mesh.wait_for_model_added_op(5, b'b72b')
 
-    return False
+    return True
 
 
 def hdl_wid_992(_: WIDParams):
