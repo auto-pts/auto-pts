@@ -1665,7 +1665,13 @@ def hdl_wid_140(params: WIDParams):
     hdl1 = MMI.args[0]
     hdl2 = MMI.args[1]
     btp.gattc_read_multiple_var(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl1, hdl2)
-    return '0000'
+
+    if params.test_case_name.startswith("GATT/CL/GAR/BI"):
+        btp.gattc_read_multiple_var_rsp(store_rsp=True, store_val=False)
+    else:
+        btp.gattc_read_multiple_var_rsp(store_rsp=False, store_val=True)
+
+    return True
 
 
 def hdl_wid_141(params: WIDParams):
@@ -1675,7 +1681,12 @@ def hdl_wid_141(params: WIDParams):
     hdl1 = MMI.args[0]
     hdl2 = MMI.args[1]
     btp.gattc_read_multiple_var(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl1, hdl2)
-    return '0000'
+    if params.test_case_name.startswith("GATT/CL/GAR/BI"):
+        btp.gattc_read_multiple_var_rsp(store_rsp=True, store_val=False)
+    else:
+        btp.gattc_read_multiple_var_rsp(store_rsp=False, store_val=True)
+
+    return True
 
 
 def hdl_wid_142(params: WIDParams):
