@@ -95,7 +95,7 @@ def catch_connection_error(func):
 
 
 def report_to_review_msg(report_path):
-    failed_statuses = ['PASS', 'INCONC', 'FAIL', 'UNKNOWN VERDICT: NONE',
+    failed_statuses = ['INCONC', 'FAIL', 'UNKNOWN VERDICT: NONE',
                        'BTP ERROR', 'XML-RPC ERROR', 'BTP TIMEOUT']
     fails = []
     msg = 'AutoPTS Bot results:\n'
