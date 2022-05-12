@@ -115,7 +115,7 @@ def get_device_list():
 
     for dev in serial.tools.list_ports.comports():
         if dev.serial_number is not None:
-            device_list[dev.device] = dev.serial_number[3:]
+            device_list[dev.device] = dev.serial_number.lstrip("0")
 
     return device_list
 
@@ -151,6 +151,20 @@ def get_debugger_snr(tty):
             break
 
     return jlink
+
+
+def get_tty(debugger_snr):
+    """Return tty or COM of the device with given serial number.
+    """
+    tty = None
+    devices = get_device_list()
+
+    for dev in devices.keys():
+        if devices[dev] == debugger_snr:
+            tty = dev
+            break
+
+    return tty
 
 
 def release_device(tty):

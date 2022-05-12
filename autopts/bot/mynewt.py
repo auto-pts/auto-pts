@@ -24,7 +24,7 @@ import time
 
 from autopts import bot
 from autopts.client import Client
-from autopts.ptsprojects.boards import get_free_device, release_device, get_build_and_flash
+from autopts.ptsprojects.boards import get_free_device, release_device, get_build_and_flash, get_tty
 from autopts.ptsprojects.mynewt.iutctl import get_iut, log
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
 
@@ -42,11 +42,12 @@ def check_output(cmd, cwd=None, shell=True, env=None):
     return subprocess.check_output(cmd, cwd=cwd, shell=shell, env=env)
 
 
-def build_and_flash(project_path, board, overlay=None):
+def build_and_flash(project_path, board, overlay=None, debugger_snr=None):
     """Build and flash Mynewt binary
     :param project_path: Mynewt source path
     :param board: IUT
     :param overlay: configuration map to be used
+    :param debugger_snr: JLink serial number
     :return: TTY path
     """
     logging.debug("%s: %s %s %s", build_and_flash.__name__, project_path,
@@ -87,8 +88,15 @@ def build_and_flash(project_path, board, overlay=None):
                cwd=project_path)
     check_call('newt create-image -2 bttester timestamp'.split(), cwd=project_path)
 
-    check_call('newt load {}_boot'.format(board).split(), cwd=project_path)
-    check_call('newt load bttester'.split(), cwd=project_path)
+    load_boot_cmd = f'newt load {board}_boot'.split()
+    load_app_cmd = 'newt load bttester'.split()
+    if debugger_snr:
+        snr = ['--extrajtagcmd', f'-select usb={debugger_snr}']
+        load_boot_cmd.extend(snr)
+        load_app_cmd.extend(snr)
+
+    check_call(load_boot_cmd, cwd=project_path)
+    check_call(load_app_cmd, cwd=project_path)
 
 
 def get_target_description(project_path):
@@ -201,7 +209,8 @@ class MynewtBotClient(bot.common.BotClient):
             if build_and_flash_fun is None:
                 build_and_flash_fun = build_and_flash
 
-            build_and_flash_fun(args.project_path, args.board_name, overlay)
+            build_and_flash_fun(args.project_path, args.board_name, overlay,
+                                self.get_iut().debugger_snr)
             time.sleep(10)
 
 
@@ -240,7 +249,11 @@ def main(cfg):
         repo_status = ''
 
     if 'tty_file' not in args:
-        args['tty_file'], jlink_srn = get_free_device()
+        if 'debugger_snr' not in args:
+            args['tty_file'], args['debugger_snr'] = get_free_device(args['board'])
+        else:
+            args['tty_file'] = get_tty(args['debugger_snr'])
+
         if args['tty_file'] is None:
             sys.exit('No free device found!')
 
