@@ -2149,10 +2149,13 @@ def hdl_wid_671(_: WIDParams):
     return True
 
 
-def hdl_wid_850(_: WIDParams):
+def hdl_wid_850(params: WIDParams):
     """
     Please initiate the transfer of the test object to the Lower Tester.
     """
+    # Do not execute this wid, it's automatically send as part of FU procedure
+    if params.test_case_name == 'MMDL/CL/FU/BV-02-C':
+        return True
 
     stack = get_stack()
     timeout = stack.mesh.timeout_get()
@@ -2294,7 +2297,7 @@ def hdl_wid_990(params: WIDParams):
 
     slot_idx = 0x00
     slot_size = 80
-    block_size = 18
+    block_size = 6
     chunk_size = 8
 
     fwid = "11000011"
@@ -2308,6 +2311,16 @@ def hdl_wid_990(params: WIDParams):
 
     return True
 
+def hdl_wid_991(_: WIDParams):
+    """
+    Please send FIRMWARE_UPDATE_APPLY.
+    """
+    # Give some time so LT side can finish verifying image before calling apply
+    # as IUT has to receive Firmware Update Status with
+    # phase 0x04 Verification Succeeded first
+    time.sleep(20)
+    btp.mmdl_dfu_update_firmware_apply()
+    return True
 
 def hdl_wid_992(_: WIDParams):
     btp.mmdl_dfu_update_firmware_get()
