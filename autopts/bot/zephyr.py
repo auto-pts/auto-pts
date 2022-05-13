@@ -19,9 +19,7 @@
 import collections
 import datetime
 import importlib
-import logging
 import os
-import subprocess
 import sys
 import time
 from pathlib import Path
@@ -32,31 +30,10 @@ from autopts import bot
 from autopts.ptsprojects.zephyr import ZEPHYR_PROJECT_URL
 from autopts import client as autoptsclient
 from autopts.bot.common import BotConfigArgs, BotClient
-from autopts.ptsprojects.boards import get_free_device, tty_to_com, release_device, get_tty, get_debugger_snr
+from autopts.ptsprojects.boards import get_free_device, tty_to_com, release_device, get_tty, get_debugger_snr,\
+    get_build_and_flash, get_board_type
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
 from autopts.ptsprojects.zephyr.iutctl import get_iut, log
-
-
-def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None):
-    """Build and flash Zephyr binary
-    :param zephyr_wd: Zephyr source path
-    :param board: IUT
-    :param debugger_snr serial number
-    :param conf_file: configuration file to be used
-    """
-    logging.debug("%s: %s %s %s", build_and_flash.__name__, zephyr_wd,
-                  board, conf_file)
-    tester_dir = os.path.join(zephyr_wd, "tests", "bluetooth", "tester")
-
-    # autopts.bot.common.check_call('rm -rf build/'.split(), cwd=tester_dir)
-
-    cmd = ['west', 'build', '-p', 'auto', '-b', board]
-    if conf_file and conf_file != 'default' and conf_file != 'prj.conf':
-        cmd.extend(('--', '-DOVERLAY_CONFIG={}'.format(conf_file)))
-
-    bot.common.check_call(cmd, cwd=tester_dir)
-    bot.common.check_call(['west', 'flash', '--skip-rebuild', '--recover',
-                           '-i', debugger_snr], cwd=tester_dir)
 
 
 def flush_serial(tty):
@@ -95,14 +72,6 @@ def apply_overlay(zephyr_wd, cfg_name, overlay):
             config.write("{}={}\n".format(k, v))
 
     os.chdir(cwd)
-
-
-autopts2board = {
-    None: None,
-    'nrf52': 'nrf52840dk_nrf52840',
-    'nrf53': 'nrf5340dk_nrf5340_cpuapp',
-    'reel_board': 'reel_board'
-}
 
 
 def zephyr_hash_url(commit):
@@ -210,8 +179,9 @@ class ZephyrBotClient(BotClient):
         log("TTY path: %s" % args.tty_file)
 
         if not args.no_build:
-            build_and_flash(args.project_path, autopts2board[args.board_name],
-                            args.debugger_snr, config)
+            build_and_flash = get_build_and_flash(args.board_name)
+            board_type = get_board_type(args.board_name)
+            build_and_flash(args.project_path, board_type, args.debugger_snr, config)
 
             flush_serial(args.tty_file)
             time.sleep(10)

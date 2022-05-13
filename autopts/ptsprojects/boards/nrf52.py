@@ -16,3 +16,5 @@
 #
 
 from .nrf5x import *
+
+board_type = 'nrf52840dk_nrf52840'

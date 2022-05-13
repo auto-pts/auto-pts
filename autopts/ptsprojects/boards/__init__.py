@@ -78,6 +78,18 @@ def get_build_and_flash(board_name):
         return None
 
 
+def get_board_type(board_name):
+    board_mod = importlib.import_module(__package__ + '.' + board_name)
+
+    if board_mod is None:
+        raise Exception("Board name %s is not supported!" % board_name)
+
+    try:
+        return getattr(board_mod, 'board_type')
+    except AttributeError:
+        return None
+
+
 def get_available_boards(project):
     names = []
 
