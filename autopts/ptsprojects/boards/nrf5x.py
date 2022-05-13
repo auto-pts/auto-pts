@@ -14,6 +14,10 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
+import logging
+import os
+
+from autopts.bot.common import check_call
 
 supported_projects = ['zephyr']
 
@@ -25,3 +29,23 @@ def reset_cmd(iutctl):
     """
 
     return f'nrfjprog -r -s {iutctl.debugger_snr}'
+
+
+def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None):
+    """Build and flash Zephyr binary
+    :param zephyr_wd: Zephyr source path
+    :param board: IUT
+    :param debugger_snr serial number
+    :param conf_file: configuration file to be used
+    """
+    logging.debug("%s: %s %s %s", build_and_flash.__name__, zephyr_wd,
+                  board, conf_file)
+    tester_dir = os.path.join(zephyr_wd, "tests", "bluetooth", "tester")
+
+    cmd = ['west', 'build', '-p', 'auto', '-b', board]
+    if conf_file and conf_file != 'default' and conf_file != 'prj.conf':
+        cmd.extend(('--', '-DOVERLAY_CONFIG={}'.format(conf_file)))
+
+    check_call(cmd, cwd=tester_dir)
+    check_call(['west', 'flash', '--skip-rebuild', '--recover',
+                '-i', debugger_snr], cwd=tester_dir)

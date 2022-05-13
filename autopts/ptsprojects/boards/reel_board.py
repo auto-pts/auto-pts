@@ -17,6 +17,9 @@
 supported_projects = ['zephyr']
 
 
+board_type = 'reel_board'
+
+
 def reset_cmd(iutctl):
     """Return reset command for Reel_Board DUT
 
