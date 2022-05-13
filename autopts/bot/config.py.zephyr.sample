@@ -37,6 +37,8 @@ z['auto_pts'] = {
     # 'database_file': 'path/to/zephyrTestCase.db',
     # 'store': True,
     'board': 'nrf52',
+    # 'tty_file': 'COM1'
+    # 'debugger_snr': '123456789'
     'enable_max_logs': False,
     'retry': 2,
     'bd_addr': '',

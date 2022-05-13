@@ -32,16 +32,16 @@ from autopts import bot
 from autopts.ptsprojects.zephyr import ZEPHYR_PROJECT_URL
 from autopts import client as autoptsclient
 from autopts.bot.common import BotConfigArgs, BotClient
-from autopts.ptsprojects.boards import get_debugger_snr, get_free_device, tty_to_com, release_device
+from autopts.ptsprojects.boards import get_free_device, tty_to_com, release_device, get_tty, get_debugger_snr
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
 from autopts.ptsprojects.zephyr.iutctl import get_iut, log
 
 
-def build_and_flash(zephyr_wd, board, tty, conf_file=None):
+def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None):
     """Build and flash Zephyr binary
     :param zephyr_wd: Zephyr source path
     :param board: IUT
-    :param tty path
+    :param debugger_snr serial number
     :param conf_file: configuration file to be used
     """
     logging.debug("%s: %s %s %s", build_and_flash.__name__, zephyr_wd,
@@ -60,7 +60,7 @@ def build_and_flash(zephyr_wd, board, tty, conf_file=None):
 
     bot.common.check_call(cmd, cwd=tester_dir)
     bot.common.check_call(['west', 'flash', '--skip-rebuild', '--recover',
-                           '-i', get_debugger_snr(tty)], cwd=tester_dir)
+                           '-i', debugger_snr], cwd=tester_dir)
 
 
 def flush_serial(tty):
@@ -215,7 +215,7 @@ class ZephyrBotClient(BotClient):
 
         if not args.no_build:
             build_and_flash(args.project_path, autopts2board[args.board_name],
-                            args.tty_file, config)
+                            args.debugger_snr, config)
 
             flush_serial(args.tty_file)
             time.sleep(10)
@@ -257,9 +257,15 @@ def main(cfg):
         time.sleep(1)
 
     if 'tty_file' not in args:
-        args['tty_file'], jlink_srn = get_free_device(args['board'])
+        if 'debugger_snr' not in args:
+            args['tty_file'], args['debugger_snr'] = get_free_device(args['board'])
+        else:
+            args['tty_file'] = get_tty(args['debugger_snr'])
+
         if args['tty_file'] is None:
             sys.exit('No free device found!')
+    elif 'debugger_snr' not in args:
+        args['debugger_snr'] = get_debugger_snr(args['tty_file'])
 
     try:
         summary, results, descriptions, regressions, progresses, args['pts_ver'], args['platform'] = \

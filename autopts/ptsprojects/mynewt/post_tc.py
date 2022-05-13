@@ -24,33 +24,33 @@ CONFIG_PROC = None
 CONFIG_PATH = 'nrfjprog'
 
 
-def cleanup():
-    global CONFIG_PROC
-    if CONFIG_PROC:
-        CONFIG_PROC.terminate()
-        CONFIG_PROC.wait()
-        CONFIG_PROC = None
-
-
-def reset_controler():
-    global CONFIG_PROC
-
-    CONFIG_PROC = subprocess.Popen([CONFIG_PATH, "-r"], shell=False)
-    (stdoutdata, stderrdata) = CONFIG_PROC.communicate()
-    print(stdoutdata, stderrdata)
+# def cleanup():
+#     global CONFIG_PROC
+#     if CONFIG_PROC:
+#         CONFIG_PROC.terminate()
+#         CONFIG_PROC.wait()
+#         CONFIG_PROC = None
+#
+#
+# def reset_controler():
+#     global CONFIG_PROC
+#
+#     CONFIG_PROC = subprocess.Popen([CONFIG_PATH, "-r"], shell=False)
+#     (stdoutdata, stderrdata) = CONFIG_PROC.communicate()
+#     print(stdoutdata, stderrdata)
 
 
 def main():
     if not CONFIG_PATH:
         return
 
-    atexit.register(cleanup)
-    reset_controler()
+    # atexit.register(cleanup)
+    # reset_controler()
 
     while True:
         line = sys.stdin.readline()
         if line == "#close\n":
-            cleanup()
+            # cleanup()
             break
 
 
