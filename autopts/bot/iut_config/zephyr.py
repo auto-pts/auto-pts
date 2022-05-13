@@ -185,7 +185,8 @@ iut_config = {
             'CONFIG_FLASH_PAGE_LAYOUT': 'y',
             'CONFIG_FLASH_MAP': 'y',
             'CONFIG_NVS': 'y',
-            'CONFIG_BT_MESH_DFU_SRV': 'n'
+            'CONFIG_BT_MESH_DFU_SRV': 'n',
+            'CONFIG_BT_MESH_BLOB_SIZE_MAX': '5000'
         },
         "test_cases": [
             'MMDL/CL/FU',
