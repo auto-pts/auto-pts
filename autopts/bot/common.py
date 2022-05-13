@@ -745,7 +745,6 @@ def check_call(cmd, env=None, cwd=None, shell=True):
 
     if sys.platform == 'win32':
         executable = None
-        shell = False
 
     return subprocess.check_call(cmd, env=env, cwd=cwd, shell=shell, executable=executable)
 

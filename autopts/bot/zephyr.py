@@ -54,10 +54,6 @@ def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None):
     if conf_file and conf_file != 'default' and conf_file != 'prj.conf':
         cmd.extend(('--', '-DOVERLAY_CONFIG={}'.format(conf_file)))
 
-    if sys.platform == 'win32':
-        cmd = subprocess.list2cmdline(cmd)
-        cmd = ['bash.exe', '-c', '-i', cmd]  # bash.exe == wsl
-
     bot.common.check_call(cmd, cwd=tester_dir)
     bot.common.check_call(['west', 'flash', '--skip-rebuild', '--recover',
                            '-i', debugger_snr], cwd=tester_dir)
