@@ -138,7 +138,7 @@ def get_free_device(board=None):
 
     SNR_PREFIX_FOR_BOARD = defaultdict(str, {
         'nrf52': '68',
-        'nrf53': '96',
+        'nrf53': ('96', '105'),
     })
 
     for tty, snr in devices.items():
