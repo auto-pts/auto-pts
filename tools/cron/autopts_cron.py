@@ -32,6 +32,7 @@ import schedule
 import threading
 import cron_config
 from time import sleep
+from argparse import Namespace
 from os.path import dirname, abspath
 from autopts.winutils import have_admin_rights
 from common import kill_processes, set_end as set_end_common, set_cron_cfg
@@ -66,6 +67,11 @@ if __name__ == '__main__':
     for cron in cron_config.github_crons:
         for tag in cron.tags:
             cfg = cron.tags[tag].cfg
+
+            job_config = vars(cron_config.default_job).copy()
+            job_config.update(vars(cron.tags[tag]))
+            cron.tags[tag] = Namespace(**job_config)
+
             if not os.path.exists(os.path.join(AUTOPTS_REPO, 'autopts/bot/{}.py'.format(cfg))):
                 raise Exception('{} config does not exists!'.format(cfg))
 
@@ -78,10 +84,10 @@ if __name__ == '__main__':
     signal.signal(signal.SIGINT, sigint_handler)
 
     for job in cron_config.cyclical_jobs:
-        bisect = job.bisect if hasattr(job, 'bisect') else None
-        getattr(schedule.every(), job.day).at(job.hour).do(
-            job.func, cfg=job.cfg, included=job.included, excluded=job.excluded,
-            bisect=bisect)
+        job_dict = vars(cron_config.default_job).copy()
+        job_dict.update(vars(job))
+
+        getattr(schedule.every(), job_dict['day']).at(job_dict['hour']).do(job.func, **job_dict)
 
     set_cron_cfg(cron_config)
 

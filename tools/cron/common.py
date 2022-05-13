@@ -281,7 +281,7 @@ class GithubCron(Thread):
                 start_time = pr_choose_start_time() + timedelta(minutes=self.schedule_delay)
                 today_str = (start_time).strftime('%H:%M:%S')
                 getattr(schedule.every(), start_time.strftime('%A').lower()).at(today_str).do(
-                    tag_cfg.func, cron=self, cfg=tag_cfg.cfg, pr_cfg=pr_cfg)
+                    tag_cfg.func, cron=self, pr_cfg=pr_cfg, **vars(tag_cfg))
 
                 post_text = 'Scheduled PR #{} after {}.'.format(comment['html_url'], today_str)
                 self.post_pr_comment(github_pr_number, post_text)
@@ -350,7 +350,6 @@ def check_call(cmd, env=None, cwd=None, shell=True):
 
     if sys.platform == 'win32':
         executable = None
-        shell = False
 
     return subprocess.check_call(cmd, env=env, cwd=cwd, shell=shell, executable=executable)
 
@@ -428,8 +427,12 @@ def pre_cleanup_files(autopts_repo, project_repo, test_case_db_path='TestCase.db
         pass
 
 
-def update_zephyr_tools():
-    installer_file = './install_zephyr_tools.sh'
+def update_zephyr_tools(wsl=False):
+    if sys.platform == 'win32' and not wsl:
+        installer_file = 'install_zephyr_tools.bat'
+    else:
+        installer_file = './install_zephyr_tools.sh'
+
     script_dir = os.path.dirname(__file__)
 
     if not os.path.exists(os.path.join(script_dir, installer_file)):
@@ -456,9 +459,13 @@ def update_zephyr_tools():
     if version_tag is None:
         sys.exit('Parsing zephyr toolchain failed!')
 
-    cmd = ['bash.exe', '-c', '-i',
-           '{} {}'.format(installer_file, version_tag)]  # bash.exe == wsl
-    check_call(cmd, cwd=script_dir)
+    cmd = [installer_file, version_tag]
+
+    if sys.platform == 'win32' and wsl:
+        cmd = subprocess.list2cmdline(cmd)
+        cmd = ['bash.exe', '-c', '-i', cmd]  # bash.exe == wsl
+
+    check_call(cmd, cwd=script_dir, shell=not wsl)
 
 
 def git_stash_clear(cwd):
@@ -535,12 +542,14 @@ def run_test(bot_options, server_options, autopts_repo):
 
 
 @catch_exceptions(cancel_on_failure=True)
-def zephyr_pr_job(cron, cfg, pr_cfg):
+def zephyr_pr_job(cron, cfg, pr_cfg, server_options, update_tools=False, **kwargs):
     print('Started PR Job: repo_name={repo_name} PR={number} src_owner={source_repo_owner}'
           ' branch={source_branch} head_sha={head_sha} comment={comment_body} '
           'magic_tag={magic_tag} cfg={cfg}'.format(**pr_cfg, cfg=cfg))
 
-    update_zephyr_tools()
+    cfg_dict = load_config(cfg)
+    if update_tools:
+        update_zephyr_tools(wsl=cfg_dict['auto_pts'].get('wsl', False))
 
     included = re.sub(r'\s+', r' ', pr_cfg['comment_body'][len(pr_cfg['magic_tag']):]).strip()
     excluded = ''
@@ -555,7 +564,6 @@ def zephyr_pr_job(cron, cfg, pr_cfg):
     else:
         excluded = ''
 
-    cfg_dict = load_config(cfg)
     PROJECT_REPO = cfg_dict['auto_pts']['project_path']
     test_case_db_name = 'TestCase.db'
     autopts_test_case_db = os.path.join(AUTOPTS_REPO, test_case_db_name)
@@ -584,7 +592,6 @@ def zephyr_pr_job(cron, cfg, pr_cfg):
 
     bot_options = '{cfg} --not_recover PASS {included} {excluded}'.format(
         cfg=cfg, included=included, excluded=excluded)
-    server_options = '-S 65000 65002 --ykush 1 2 --superguard 14'
     run_test(bot_options, server_options, AUTOPTS_REPO)
 
     # report.txt is created at the very end of bot run, so
@@ -602,10 +609,12 @@ def zephyr_pr_job(cron, cfg, pr_cfg):
 
 
 @catch_exceptions(cancel_on_failure=True)
-def zephyr_job(cfg, included='', excluded='', bisect=None):
+def zephyr_job(cfg, server_options, included='', excluded='', bisect=None, update_tools=False, **kwargs):
     print('Started Zephyr Job', cfg)
 
-    update_zephyr_tools()
+    cfg_dict = load_config(cfg)
+    if update_tools:
+        update_zephyr_tools(wsl=cfg_dict['auto_pts'].get('wsl', False))
 
     if included and not included.isspace():
         included = ' -c {}'.format(included)
@@ -613,7 +622,6 @@ def zephyr_job(cfg, included='', excluded='', bisect=None):
     if excluded and not excluded.isspace():
         excluded = ' -e {}'.format(excluded)
 
-    cfg_dict = load_config(cfg)
     PROJECT_REPO = cfg_dict['auto_pts']['project_path']
 
     test_case_db_name = 'TestCase.db'
@@ -640,7 +648,6 @@ def zephyr_job(cfg, included='', excluded='', bisect=None):
 
     bot_options = '{cfg} --not_recover PASS {included} {excluded}'.format(
         cfg=cfg, included=included, excluded=excluded)
-    server_options = '-S 65000 65002 --ykush 1 2 --superguard 14'
     run_test(bot_options, server_options, AUTOPTS_REPO)
 
     # report.txt is created at the very end of bot run, so
@@ -656,7 +663,7 @@ def zephyr_job(cfg, included='', excluded='', bisect=None):
 
 
 @catch_exceptions(cancel_on_failure=True)
-def nimble_job(cfg, included='', excluded='', bisect=None):
+def nimble_job(cfg, server_options, included='', excluded='', **kwargs):
     print('Started NimBLE Job', cfg)
 
     if included and not included.isspace():
@@ -680,14 +687,13 @@ def nimble_job(cfg, included='', excluded='', bisect=None):
 
     bot_options = '{cfg} --not_recover PASS {included} {excluded}'.format(
         cfg=cfg, included=included, excluded=excluded)
-    server_options = '-S 65000 65002 --ykush 1 2 --superguard 14'
     run_test(bot_options, server_options, AUTOPTS_REPO)
 
     print('NimBLE Job finished')
 
 
 @catch_exceptions(cancel_on_failure=True)
-def vm_pr_job(cron, cfg, pr_cfg):
+def vm_pr_job(cron, cfg, pr_cfg, **kwargs):
     print('Started PR Job: repo_name={repo_name} PR={number} src_owner={source_repo_owner}'
           ' branch={source_branch} head_sha={head_sha} '
           'comment={comment_body} magic_tag={magic_tag} cfg={cfg}'.format(**pr_cfg, cfg=cfg))
