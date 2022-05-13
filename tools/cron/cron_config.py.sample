@@ -29,24 +29,40 @@ email = {  # Admin emails that will receive python exceptions and bot logs
     ],
 }
 
+
+def default_job_func():
+    raise Exception('Empty job')
+
+
+run_now = (datetime.now() + timedelta(seconds=10)).strftime('%H:%M:%S')
+default_job = Namespace(func=default_job_func,  # the function to run
+                        cfg='config',  # config.py used by autoptsclient_bot
+                        server_options = '-S 65000 65002 --ykush 1 2 --superguard 14',
+                        day=datetime.now().strftime("%A").lower(),  # scheduled day
+                        hour=run_now,  # scheduled hour
+                        included='',  # included tests (like -c option)
+                        excluded='MESH',  # excluded tests (like -e option)
+                        update_tools=True,  # update build tools, (if implemented)
+                        bisect=None)  # run git bisect after test
+
+
 # Jobs fired with magic sentence
 magic_tags = {
     '#AutoPTS run': Namespace(func=zephyr_pr_job, cfg='config_zephyr_cron_pull',
-                              bisect='config_zephyr_bisect'),
+                              update_tools=False),
 }
 
-run_now = (datetime.now() + timedelta(seconds=10)).strftime('%H:%M:%S')
 
 # Scheduled cyclical jobs
 cyclical_jobs = [
     Namespace(func=zephyr_job, cfg='config_zephyr_cron_testing',
               day='friday', hour=run_now, bisect='config_zephyr_bisect',
-              included='SM/CEN/JW/BV-05-C', excluded=''),
+              included='SM/CEN/JW/BV-05-C'),
 
     Namespace(func=zephyr_job, cfg='config_zephyr_cron_host',
-              day='friday', hour='19:00', included='', excluded='MESH'),
+              day='friday', hour='19:00'),
     Namespace(func=zephyr_job, cfg='config_zephyr_cron_mesh',
-              day='friday', hour='19:01', included='MESH', excluded=''),
+              day='friday', hour='19:01', included='MESH', update_tools=False),
     Namespace(func=nimble_job, cfg='config_mynewt_cron_host',
               day='sunday', hour='19:00', included='', excluded='MESH'),
 ]
