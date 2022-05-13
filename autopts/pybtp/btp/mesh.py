@@ -1749,6 +1749,10 @@ def mesh_model_recv_ev(mesh, data, data_len):
     (payload,) = struct.unpack_from('<%ds' % payload_len, data, hdr_len)
     payload = binascii.hexlify(payload)
 
+    if payload.startswith(b'7d'):
+        # do not count OP code and chunk number (1 + 2 = 3 bytes)
+        stack.mesh.blob_rxed_bytes += (len(payload)-6)//2
+
     stack.mesh.model_recv_ev_data.data = (src, dst, payload)
 
 def mesh_blob_lost_target_ev(mesh, data, data_len):

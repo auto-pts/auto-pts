@@ -520,6 +520,9 @@ class Mesh:
         # MMDL Blob transfer timeout
         self.timeout = 0
 
+        # MMDL Blob transfer server rxed data size
+        self.blob_rxed_bytes = 0
+
         # MMDL expected status data
         self.expect_status_data = Property({
             "Ack": True,
