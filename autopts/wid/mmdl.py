@@ -2194,11 +2194,24 @@ def hdl_wid_851(_: WIDParams):
     return True
 
 
+def hdl_wid_852(params: WIDParams):
+    """
+    'Please confirm IUT has received 0x1000 bytes of data.'
+    """
+    stack = get_stack()
+
+    to_rx = int(re.findall(r'0x([0-9A-F]{2,})', params.description)[0], 16)
+    # Give some time so last mesh_model_recv_ev's are processed
+    time.sleep(1)
+    return stack.mesh.blob_rxed_bytes == to_rx
+
+
 def hdl_wid_853(_: WIDParams):
     stack = get_stack()
     timeout = stack.mesh.timeout_get()
     id = 0x1100000000000011
 
+    btp.mesh_store_model_data()
     btp.mmdl_blob_srv_recv(id, timeout)
 
     return True
