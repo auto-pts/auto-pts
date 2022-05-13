@@ -186,6 +186,9 @@ class MynewtCtl:
             self.socat_process.terminate()
             self.socat_process.wait()
 
+        if self.board:
+            self.board.reset()
+
         if self.iut_log_file:
             self.iut_log_file.close()
             self.iut_log_file = None
