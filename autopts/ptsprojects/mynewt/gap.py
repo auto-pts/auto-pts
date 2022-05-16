@@ -153,6 +153,7 @@ def test_cases(ptses):
                  iut_manufacturer_data, iut_appearance, iut_svc_data, iut_flags,
                  iut_svcs, iut_ad_uri),
         TestFunc(stack.gatt_init),
+        TestFunc(stack.gatt_cl_init),
         TestFunc(btp.gap_read_ctrl_info),
         TestFunc(lambda: pts.update_pixit_param(
             "GAP", "TSPX_bd_addr_iut",

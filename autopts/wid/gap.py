@@ -991,6 +991,7 @@ def hdl_wid_232(_: WIDParams):
     return True
 
 def hdl_wid_234(params: WIDParams):
+    stack = get_stack()
     pattern = re.compile(r"0x([0-9a-fA-F]+)")
     params = pattern.findall(params.description)
     if not params:
@@ -998,6 +999,11 @@ def hdl_wid_234(params: WIDParams):
         return False
 
     handle = params[0]
+
+    if stack.is_svc_supported('GATT_CL'):
+        btp.gatt_cl_cfg_indicate(btp.pts_addr_type_get(), btp.pts_addr_get(),
+                                 1, handle)
+        return True
 
     btp.gattc_cfg_indicate(btp.pts_addr_type_get(), btp.pts_addr_get(),
                            1, handle)
@@ -1025,6 +1031,9 @@ def hdl_wid_236(_: WIDParams):
     stack = get_stack()
     gatt = stack.gatt
 
+    if stack.is_svc_supported('GATT_CL'):
+        return not stack.gatt_cl.wait_for_notifications(expected_count=1)
+
     gatt.wait_notification_ev(timeout=5)
 
     if gatt.notification_events:
@@ -1036,6 +1045,10 @@ def hdl_wid_236(_: WIDParams):
 def hdl_wid_237(_: WIDParams):
     # Please confirm that IUT send a GATT_HandleValueIndication to the Upper Tester
     stack = get_stack()
+
+    if stack.is_svc_supported('GATT_CL'):
+        return stack.gatt_cl.wait_for_notifications(expected_count=1)
+
     gatt = stack.gatt
 
     gatt.wait_notification_ev(timeout=5)
