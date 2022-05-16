@@ -75,6 +75,19 @@ iut_config = {
         ]
     },
 
+    "legacy_m1l2.conf": {
+        "overlay": {
+            'BLE_SM_LEGACY': '1',
+            'BLE_SM_SC': '1',
+            'BLE_SM_SC_ONLY': '0',
+            'BLE_SM_SC_LVL': '2',
+        },
+        "test_cases": [
+            'GAP/SEC/SEM/BV-56-C',
+            'GAP/SEC/SEM/BV-57-C'
+        ]
+    },
+
     "sc_m1l3.conf": {
         "overlay": {
             'BLE_SM_LEGACY': '0',
