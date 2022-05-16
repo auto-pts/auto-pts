@@ -74,6 +74,7 @@ iut_config = {
             'GAP/SEC/SEM/BV-59-C',
         ]
     },
+
     "sc_m1l3.conf": {
         "overlay": {
             'BLE_SM_LEGACY': '0',
