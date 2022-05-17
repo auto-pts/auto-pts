@@ -25,7 +25,6 @@ from autopts.ptsprojects.mynewt.ztestcase import ZTestCase
 
 
 le_psm = 128
-le_psm_eatt = 0x27
 psm_unsupported = 241
 psm_authentication_required = 242
 psm_authorization_required = 243
@@ -149,22 +148,12 @@ def test_cases(ptses):
                                           TestFunc(btp.l2cap_le_listen, le_psm, le_initial_mtu,
                                                    L2CAPConnectionResponse.insufficient_encryption)]
 
-    pre_conditions_1 = common + [
-        TestFunc(stack.l2cap_init, le_psm_eatt, le_initial_mtu),
-        TestFunc(btp.l2cap_le_listen, le_psm_eatt, mtu=le_initial_mtu)
-    ]
-
-    pre_conditions_2 = common + [
-        TestFunc(stack.l2cap_init, le_psm_eatt, le_initial_mtu),
-    ]
-
-    # EATT is not supported in NimBLE, but we need to listen on EATT PSM in ECFC tests
-    pre_conditions_eatt = common + [TestFunc(stack.l2cap_init, le_psm_eatt, le_initial_mtu)]
-    pre_conditions_eatt_authen = pre_conditions_eatt + [TestFunc(btp.l2cap_le_listen, le_psm_eatt, le_initial_mtu,
+    pre_conditions_security = common + [TestFunc(stack.l2cap_init, le_psm, le_initial_mtu)]
+    pre_conditions_eatt_authen = pre_conditions_security + [TestFunc(btp.l2cap_le_listen, le_psm, le_initial_mtu,
                                                                  L2CAPConnectionResponse.insufficient_authentication)]
-    pre_conditions_eatt_author = pre_conditions_eatt + [TestFunc(btp.l2cap_le_listen, le_psm_eatt, le_initial_mtu,
+    pre_conditions_eatt_author = pre_conditions_security + [TestFunc(btp.l2cap_le_listen, le_psm, le_initial_mtu,
                                                                  L2CAPConnectionResponse.insufficient_authorization)]
-    pre_conditions_eatt_keysize = pre_conditions_eatt + [TestFunc(btp.l2cap_le_listen, le_psm_eatt, le_initial_mtu,
+    pre_conditions_eatt_keysize = pre_conditions_security + [TestFunc(btp.l2cap_le_listen, le_psm, le_initial_mtu,
                                                                   L2CAPConnectionResponse.insufficient_encryption_key_size)]
     custom_test_cases = [
         # Connection Parameter Update
@@ -207,25 +196,25 @@ def test_cases(ptses):
                   pre_conditions_eatt_keysize,
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/ECFC/BV-27-C",
-                  pre_conditions_1 +
-                  [TestFunc(btp.l2cap_le_listen, le_psm_eatt, le_initial_mtu,
+                  pre_conditions +
+                  [TestFunc(btp.l2cap_le_listen, le_psm, le_initial_mtu,
                             L2cap.unacceptable_parameters)],
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/ECFC/BV-29-C",
-                  pre_conditions_1 +
+                  pre_conditions +
                   [TestFunc(lambda: stack.l2cap.num_channels_set(1))],
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/COS/ECFC/BV-01-C",
-                  pre_conditions_1,
+                  pre_conditions,
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/COS/ECFC/BV-02-C",
-                  pre_conditions_1,
+                  pre_conditions,
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/COS/ECFC/BV-03-C",
-                  pre_conditions_1,
+                  pre_conditions,
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/ECFC/BI-02-C",
-                  pre_conditions_1 +
+                  pre_conditions +
                   [TestFunc(lambda: stack.l2cap.hold_credits_set(1))],
                   generic_wid_hdl=l2cap_wid_hdl),
     ]
@@ -236,7 +225,7 @@ def test_cases(ptses):
     for tc_name in test_case_name_list:
         if tc_name.startswith('L2CAP/ECFC'):
             instance = ZTestCase('L2CAP', tc_name,
-                                 pre_conditions_1,
+                                 pre_conditions,
                                  generic_wid_hdl=l2cap_wid_hdl)
         else:
             instance = ZTestCase('L2CAP', tc_name,
