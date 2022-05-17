@@ -134,6 +134,8 @@ def test_cases(ptses):
                   else "FALSE")),
               TestFunc(lambda: pts.update_pixit_param(
                   "L2CAP", "TSPX_psm_encryption_required", format(le_psm, '04x'))),
+              TestFunc(lambda: pts.update_pixit_param(
+                  "L2CAP", "TSPX_l2ca_num_concurrent_credit_based_connections", "2")),
               TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public)]
 
     pre_conditions = common + [
