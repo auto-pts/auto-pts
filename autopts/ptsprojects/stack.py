@@ -982,17 +982,14 @@ def wait_for_event(timeout, test, args=None):
     return False
 
 
-def is_procedure_done(self, list, cnt):
+def is_procedure_done(list, cnt):
     if cnt is None:
         return False
-
-    count = cnt
-    cnt = None
 
     if cnt <= 0:
         return True
 
-    return len(list) == count
+    return len(list) == cnt
 
 
 class GattCl:
