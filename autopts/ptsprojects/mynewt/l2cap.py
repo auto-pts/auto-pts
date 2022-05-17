@@ -67,6 +67,7 @@ def set_pixits(ptses):
     pts.set_pixit("L2CAP", "TSPX_psm_authentication_required", "00F2")
     pts.set_pixit("L2CAP", "TSPX_psm_authorization_required", "00F3")
     pts.set_pixit("L2CAP", "TSPX_psm_encryption_key_size_required", "00F4")
+    pts.set_pixit("L2CAP", "TSPX_psm_encryption_required", "00F5")
     pts.set_pixit("L2CAP", "TSPX_time_guard", "180000")
     pts.set_pixit("L2CAP", "TSPX_timer_ertx", "120000")
     pts.set_pixit("L2CAP", "TSPX_timer_ertx_max", "300000")
@@ -131,6 +132,8 @@ def test_cases(ptses):
                   "L2CAP", "TSPX_iut_address_type_random",
                   "TRUE" if stack.gap.iut_addr_is_random()
                   else "FALSE")),
+              TestFunc(lambda: pts.update_pixit_param(
+                  "L2CAP", "TSPX_psm_encryption_required", format(le_psm, '04x'))),
               TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public)]
 
     pre_conditions = common + [
