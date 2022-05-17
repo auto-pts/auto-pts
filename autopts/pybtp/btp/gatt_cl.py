@@ -229,16 +229,13 @@ def gatt_cl_disc_all_prim_rsp_ev_(gatt_cl, data, data_len):
     logging.debug("%s %r", gatt_cl_disc_all_prim_rsp_ev_.__name__, svcs)
 
     for svc in svcs:
-        # Keep just UUID since PTS checks only UUID.
-        start_hdl = svc[0].upper()
-        end_hdl = svc[1].upper()
+        start_handle = "%04X" % (svc[0],)
+        end_handle = "%04X" % (svc[1],)
         uuid = svc[2].upper()
 
         # avoid repeated service uuid, it should be verified only once
         if uuid not in gatt_cl.prim_svcs:
-            gatt_cl.prim_svcs.append((start_hdl, end_hdl, uuid))
-
-    logging.debug("Set verify values to: %r", get_verify_values())
+            gatt_cl.prim_svcs.append((start_handle, end_handle, uuid))
 
 
 def gatt_cl_disc_prim_uuid_rsp_ev_(gatt_cl, data, data_len):
@@ -315,8 +312,6 @@ def gatt_cl_find_incld_rsp_ev_(gatt_cl, data, data_len):
                                 inc_svc_handle,
                                 end_grp_handle,
                                 uuid))
-
-    logging.debug("Set verify values to: %r", get_verify_values())
 
 
 def gatt_cl_disc_all_chrc_rsp_ev_(gatt_cl, data, data_len):
@@ -650,6 +645,10 @@ def gatt_cl_exchange_mtu(bd_addr_type, bd_addr):
 def gatt_cl_disc_all_prim(bd_addr_type, bd_addr):
     logging.debug("%s %r %r", gatt_cl_disc_all_prim.__name__, bd_addr_type,
                   bd_addr)
+    stack = get_stack()
+    stack.gatt_cl.prim_svcs_cnt = None
+    stack.gatt_cl.prim_svcs = []
+
     iutctl = get_iut()
 
     gap_wait_for_connection()
@@ -669,6 +668,10 @@ def gatt_cl_disc_all_prim(bd_addr_type, bd_addr):
 def gatt_cl_disc_prim_uuid(bd_addr_type, bd_addr, uuid):
     logging.debug("%s %r %r %r", gatt_cl_disc_prim_uuid.__name__, bd_addr_type,
                   bd_addr, uuid)
+    stack = get_stack()
+    stack.gatt_cl.prim_svcs_cnt = None
+    stack.gatt_cl.prim_svcs = []
+
     iutctl = get_iut()
 
     gap_wait_for_connection()
@@ -724,6 +727,10 @@ def gatt_cl_find_included(bd_addr_type, bd_addr, start_hdl, end_hdl):
 def gatt_cl_find_included(bd_addr_type, bd_addr, start_hdl, end_hdl):
     logging.debug("%s %r %r %r %r", gatt_cl_find_included.__name__,
                   bd_addr_type, bd_addr, start_hdl, end_hdl)
+    stack = get_stack()
+    stack.gatt_cl.incl_svcs_cnt = None
+    stack.gatt_cl.incl_svcs = []
+
     iutctl = get_iut()
 
     gap_wait_for_connection()
@@ -753,8 +760,11 @@ def gatt_cl_find_included(bd_addr_type, bd_addr, start_hdl, end_hdl):
 def gatt_cl_disc_all_chrc(bd_addr_type, bd_addr, start_hdl, stop_hdl, svc=None):
     logging.debug("%s %r %r %r %r %r", gatt_cl_disc_all_chrc.__name__,
                   bd_addr_type, bd_addr, start_hdl, stop_hdl, svc)
-    iutctl = get_iut()
     stack = get_stack()
+    stack.gatt_cl.chrcs_cnt = None
+    stack.gatt_cl.chrcs = []
+
+    iutctl = get_iut()
 
     gap_wait_for_connection()
 
@@ -803,6 +813,9 @@ def gatt_cl_disc_chrc_uuid(bd_addr_type, bd_addr, start_hdl, stop_hdl, uuid):
     logging.debug("%s %r %r %r %r %r", gatt_cl_disc_chrc_uuid.__name__,
                   bd_addr_type, bd_addr, start_hdl, stop_hdl, uuid)
     iutctl = get_iut()
+    stack = get_stack()
+    stack.gatt_cl.chrcs_cnt = None
+    stack.gatt_cl.chrcs = []
 
     gap_wait_for_connection()
 
@@ -839,6 +852,10 @@ def gatt_cl_disc_chrc_uuid(bd_addr_type, bd_addr, start_hdl, stop_hdl, uuid):
 def gatt_cl_disc_all_desc(bd_addr_type, bd_addr, start_hdl, stop_hdl):
     logging.debug("%s %r %r %r %r", gatt_cl_disc_all_desc.__name__,
                   bd_addr_type, bd_addr, start_hdl, stop_hdl)
+    stack = get_stack()
+    stack.gatt_cl.dscs_cnt = None
+    stack.gatt_cl.dscs = []
+
     iutctl = get_iut()
 
     gap_wait_for_connection()

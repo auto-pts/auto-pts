@@ -171,35 +171,16 @@ def hdl_wid_17(params: WIDParams):
     Discover all primary services in database."
     """
 
-    # MMI.reset()
-    # MMI.parse_description(params.description)
-    # pts_services = MMI.args
-    # if not pts_services:
-    #     logging.error("%s parsing error", hdl_wid_17.__name__)
-    #     return False
-    #
-    # iut_services = []
-    #
-    # # Get all primary services
-    # attrs = btp.gatts_get_attrs(type_uuid='2800')
-    # for attr in attrs:
-    #     handle, perm, type_uuid = attr
-    #     (_, uuid_len, uuid) = btp.gatts_get_attr_val(
-    #         btp.pts_addr_type_get(),
-    #         btp.pts_addr_get(), handle)
-    #     uuid = btp.btp2uuid(uuid_len, uuid)
-    #     iut_services.append(uuid)
-    #
-    # # Verification
-    # for service in pts_services:
-    #     if service in iut_services:
-    #         iut_services.remove(service)
-    #         logging.debug("Service %s found", service)
-    #         continue
-    #     logging.error("Service %s not found", service)
-    #     return False
-    # return True
+    stack = get_stack()
+    stack.gatt_cl.wait_for_prim_svcs()
 
+    handle_list = re.findall(r"\'(.*?)\'", params.description)
+    for h in handle_list:
+        check = [saved for saved in stack.gatt_cl.prim_svcs if saved[2] == h]
+        if len(check) == 0:
+            return False
+
+    return True
 
 def hdl_wid_18(params: WIDParams):
     """
