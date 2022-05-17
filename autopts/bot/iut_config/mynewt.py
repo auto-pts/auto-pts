@@ -136,10 +136,10 @@ iut_config = {
             'BTTESTER_PRIVACY_MODE': '1',
             'BTTESTER_USE_NRPA': '1',
         },
-        "test_cases": ['GAP/BROB/BCST/BV-04-C']},
+        "test_cases": ['GAP/BROB/BCST/BV-04-C']
+    },
 
     "l2cap_param_update.conf": {
-
         "overlay": {'BTTESTER_CONN_PARAM_UPDATE': '1'},
         "test_cases": [
             'GAP/CONN/CPUP/BV-01-C',
@@ -147,5 +147,13 @@ iut_config = {
             'GAP/CONN/CPUP/BV-03-C',
             'GAP/CONN/CPUP/BV-06-C',
             'L2CAP/LE/CPU/BV-01-C',
-        ]},
+        ]
+    },
+
+    "l2cap_mtu_eq_mps.conf": {
+        "overlay": {'BTTESTER_L2CAP_COC_MTU': '100'},
+        "test_cases": [
+            'L2CAP/COS/ECFC/BV-04-C',
+        ]
+    },
 }
