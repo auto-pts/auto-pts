@@ -406,8 +406,6 @@ def hdl_wid_30(params: WIDParams):
     sleep(1)
     stack.gatt_cl.wait_for_chrcs()
 
-    print(stack.gatt_cl.chrcs)
-
     if int(MMI.args[0], 16) == stack.gatt_cl.chrcs[0][0] and \
             MMI.args[1].replace('-', '') == stack.gatt_cl.chrcs[0][1]:
         return True
@@ -668,8 +666,6 @@ def hdl_wid_52(params: WIDParams):
 
     stack = get_stack()
     stack.gatt_cl.wait_for_read()
-
-    print(stack.gatt_cl.chrcs)
 
     for data in btp.get_verify_values():
         if isinstance(data, bytes):
