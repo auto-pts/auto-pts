@@ -609,8 +609,6 @@ def hdl_wid_50(params: WIDParams):
     """
     MMI.reset()
     MMI.parse_description(params.description)
-    if len(MMI.args) == 1:
-        return btp.verify_description(params.description)
     stack = get_stack()
     stack.gatt_cl.wait_for_read()
     MMI.args.pop(0) # get rid of parsing artifact
