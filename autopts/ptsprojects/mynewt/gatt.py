@@ -22,7 +22,6 @@ from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.mynewt.ztestcase import ZTestCase
 from autopts.ptsprojects.mynewt.gatt_wid import gatt_wid_hdl
-from autopts.wid.gatt import gattc_wid_hdl_multiple_indications
 
 
 class Value:
@@ -226,9 +225,6 @@ def test_cases_client(pts):
                          TestFunc(stack.gatt_cl_init)]
 
     custom_test_cases = [
-        ZTestCase("GATT", "GATT/CL/GAI/BI-01-C",
-                  cmds=pre_conditions_cl,
-                  generic_wid_hdl=gattc_wid_hdl_multiple_indications),
         # Not supported
         # PTS issue #15965
         # ZTestCase("GATT", "GATT/CL/GAW/BV-02-C",
