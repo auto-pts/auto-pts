@@ -542,7 +542,7 @@ def gatt_cl_read_mult_rsp_ev_(gatt_cl, data, data_len):
         logging.debug("No data in response")
         return
 
-    (value, ) = struct.unpack_from('%ds' % data_length, rp_data, data_length)
+    (value, ) = struct.unpack_from('%ds' % data_length, rp_data)
 
     logging.debug("%s %r %r", gatt_cl_read_mult_rsp_ev_.__name__, status, value)
 
