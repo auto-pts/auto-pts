@@ -760,6 +760,13 @@ def hdl_wid_58(params: WIDParams):
         logging.error("parsing error")
         return False
 
+    btp.clear_verify_values()
+
+    if params.test_case_name == "GATT/CL/GAR/BV-07-C":
+        btp.gatt_cl_read_long(btp.pts_addr_type_get(), btp.pts_addr_get(),
+                              hdl, 0, 0)
+        return True
+
     btp.gatt_cl_read(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl)
 
     return True
