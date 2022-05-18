@@ -65,7 +65,7 @@ m['git'] = {
     'mcuboot': {
         'path': 'repos/mcuboot',
         'remote': 'origin',
-        'branch': 'master',
+        'branch': 'main',
         'stash_changes': False,
     },
 }
