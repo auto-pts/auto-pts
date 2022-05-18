@@ -16,7 +16,6 @@ import datetime
 # more details.
 #
 import importlib
-import logging
 import os
 import subprocess
 import sys
@@ -24,7 +23,8 @@ import time
 
 from autopts import bot
 from autopts.client import Client
-from autopts.ptsprojects.boards import get_free_device, release_device, get_build_and_flash, get_tty, get_debugger_snr
+from autopts.ptsprojects.boards import get_free_device, release_device, get_build_and_flash, get_tty, get_debugger_snr, \
+    get_board_type
 from autopts.ptsprojects.mynewt.iutctl import get_iut, log
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
 
@@ -40,63 +40,6 @@ def check_output(cmd, cwd=None, shell=True, env=None):
     if sys.platform == 'win32':
         cmd = [os.path.expandvars('$MSYS2_BASH_PATH'), '-c', cmd]
     return subprocess.check_output(cmd, cwd=cwd, shell=shell, env=env)
-
-
-def build_and_flash(project_path, board, overlay=None, debugger_snr=None):
-    """Build and flash Mynewt binary
-    :param project_path: Mynewt source path
-    :param board: IUT
-    :param overlay: configuration map to be used
-    :param debugger_snr: JLink serial number
-    :return: TTY path
-    """
-    logging.debug("%s: %s %s %s", build_and_flash.__name__, project_path,
-                  board, overlay)
-
-    check_call('rm -rf bin/'.split(), cwd=project_path)
-    check_call('rm -rf targets/{}_boot/'.format(board).split(),
-               cwd=project_path)
-    check_call('rm -rf targets/bttester/'.split(), cwd=project_path)
-
-    check_call('newt target create {}_boot'.format(board).split(),
-               cwd=project_path)
-    check_call('newt target create bttester'.split(), cwd=project_path)
-
-    check_call(
-        'newt target set {0}_boot bsp=@apache-mynewt-core/hw/bsp/{0}'.format(
-            board).split(), cwd=project_path)
-    check_call(
-        'newt target set {}_boot app=@mcuboot/boot/mynewt'.format(
-            board).split(), cwd=project_path)
-
-    check_call(
-        'newt target set bttester bsp=@apache-mynewt-core/hw/bsp/{}'.format(
-            board).split(), cwd=project_path)
-    check_call(
-        'newt target set bttester app=@apache-mynewt-nimble/apps/bttester'.split(),
-        cwd=project_path)
-
-    if overlay:
-        config = ':'.join(['{}={}'.format(k, v) for k, v in list(overlay.items())])
-        check_call('newt target set bttester syscfg={}'.format(config).split(),
-                   cwd=project_path)
-
-    check_call('newt build {}_boot'.format(board).split(), cwd=project_path)
-    check_call('newt build bttester'.split(), cwd=project_path)
-
-    check_call('newt create-image -2 {}_boot timestamp'.format(board).split(),
-               cwd=project_path)
-    check_call('newt create-image -2 bttester timestamp'.split(), cwd=project_path)
-
-    load_boot_cmd = f'newt load {board}_boot'.split()
-    load_app_cmd = 'newt load bttester'.split()
-    if debugger_snr:
-        snr = ['--extrajtagcmd', f'-select usb={debugger_snr}']
-        load_boot_cmd.extend(snr)
-        load_app_cmd.extend(snr)
-
-    check_call(load_boot_cmd, cwd=project_path)
-    check_call(load_app_cmd, cwd=project_path)
 
 
 def get_target_description(project_path):
@@ -204,13 +147,10 @@ class MynewtBotClient(bot.common.BotClient):
         log("TTY path: %s" % args.tty_file)
 
         if not args.no_build:
-            build_and_flash_fun = get_build_and_flash(args.board_name)
+            build_and_flash = get_build_and_flash(args.board_name)
+            board_type = get_board_type(args.board_name)
+            build_and_flash(args.project_path, board_type, overlay, args.debugger_snr)
 
-            if build_and_flash_fun is None:
-                build_and_flash_fun = build_and_flash
-
-            build_and_flash_fun(args.project_path, args.board_name, overlay,
-                                args.debugger_snr)
             time.sleep(10)
 
 
