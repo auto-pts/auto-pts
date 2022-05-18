@@ -97,7 +97,8 @@ def set_pixits(ptses):
     pts.set_pixit("L2CAP", "TSPX_tester_min_CE_length", "0050")
     pts.set_pixit("L2CAP", "TSPX_tester_max_CE_length", "0C80")
     pts.set_pixit("L2CAP", "TSPX_generate_local_busy", "TRUE")
-
+    pts.set_pixit("L2CAP", "TSPX_l2ca_cbmps_min", "0064")
+    pts.set_pixit("L2CAP", "TSPX_l2ca_cbmps_max", "0064")
 
 def test_cases(ptses):
     """Returns a list of L2CAP test cases
