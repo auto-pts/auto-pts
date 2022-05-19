@@ -22,7 +22,8 @@ from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.mynewt import gatt
 from autopts.ptsprojects.mynewt.ztestcase import ZTestCase
-from autopts.ptsprojects.mynewt.gap_wid import gap_wid_hdl, gap_wid_hdl_failed_read, gap_wid_hdl_mode1_lvl2
+from autopts.ptsprojects.mynewt.gap_wid import gap_wid_hdl, gap_wid_hdl_failed_read, gap_wid_hdl_mode1_lvl2,\
+    gap_wid_hdl_mode1_lvl4
 from time import sleep
 
 class SVC:
@@ -301,7 +302,7 @@ def test_cases(ptses):
         ZTestCase("GAP", "GAP/SEC/SEM/BV-24-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=gap_wid_hdl),
+                  generic_wid_hdl=gap_wid_hdl_mode1_lvl4),
         ZTestCase("GAP", "GAP/SEC/SEM/BV-26-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
