@@ -54,8 +54,6 @@ iut_config = {
             'GAP/SEC/SEM/BV-24-C',
             'GAP/SEC/SEM/BV-26-C',
             'GAP/SEC/SEM/BV-27-C',
-            'GAP/SEC/SEM/BV-28-C',
-            'GAP/SEC/SEM/BV-29-C',
         ]
     },
     "sc_m1l2.conf": {
@@ -110,6 +108,7 @@ iut_config = {
             'BLE_SM_SC': '1',
             'BLE_SM_SC_ONLY': '1',
             'BLE_SM_SC_LVL': '4',
+            'BLE_SM_MITM': '1'
         },
         "test_cases": [
             'GAP/SEC/SEM/BI-09-C',
@@ -119,6 +118,10 @@ iut_config = {
             'GAP/SEC/SEM/BI-22-C',
             'GAP/SEC/SEM/BI-23-C',
             'GAP/SEC/SEM/BV-23-C',
+            'GAP/SEC/SEM/BV-28-C',
+            'GAP/SEC/SEM/BV-29-C',
+            'GAP/SEC/SEM/BV-58-C',
+            'GAP/SEC/SEM/BV-61-C'
         ]
     },
 
