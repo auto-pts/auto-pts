@@ -19,7 +19,7 @@ import socket
 from time import sleep
 
 from autopts.pybtp import btp
-from autopts.wid.gap import gap_wid_hdl as gen_wid_hdl, hdl_wid_139_mode1_lvl2
+from autopts.wid.gap import gap_wid_hdl as gen_wid_hdl, hdl_wid_139_mode1_lvl2, hdl_wid_139_mode1_lvl4
 from autopts.ptsprojects.stack import get_stack
 
 log = logging.debug
@@ -52,6 +52,15 @@ def gap_wid_hdl_mode1_lvl2(wid, description, test_case_name):
         log("%s, %r, %r, %s", gap_wid_hdl_mode1_lvl2.__name__, wid, description,
             test_case_name)
         return hdl_wid_139_mode1_lvl2(description)
+    return gap_wid_hdl(wid, description, test_case_name)
+
+
+# For tests in SC only, mode 1 level 4
+def gap_wid_hdl_mode1_lvl4(wid, description, test_case_name):
+    if wid == 139:
+        log("%s, %r, %r, %s", gap_wid_hdl_mode1_lvl2.__name__, wid, description,
+            test_case_name)
+        return hdl_wid_139_mode1_lvl4(description)
     return gap_wid_hdl(wid, description, test_case_name)
 
 
