@@ -98,6 +98,14 @@ def hdl_wid_204(desc):
     return btp.check_discov_results(addr_type=0x02)
 
 
+def hdl_wid_242(desc):
+    """
+    Please send a Security Request.
+    """
+    btp.gap_pair()
+    return True
+
+
 def hdl_wid_1002(desc):
     stack = get_stack()
     passkey = stack.gap.get_passkey()
