@@ -138,7 +138,7 @@ class CliParser(argparse.ArgumentParser):
             self.add_argument("--btp-tcp-port", type=str, default=64000,
                               help="Port for external btp client over TCP/IP.")
 
-        if stack_name == "bluez":
+        if 'btpclient_path' in self.cli_support:
             self.add_argument("--btpclient_path", type=str, default=None,
                               help="Path to btpclient.")
 
