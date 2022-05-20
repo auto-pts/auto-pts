@@ -671,6 +671,14 @@ def hdl_wid_51(params: WIDParams):
     return True
 
 
+def hdl_wid_56(params: WIDParams):
+    """
+    description: Please send Link Close message with the Reason field set to 0x02.
+    """
+    # Reason 0x02 is fail, which IUT will do on it's own
+    return True
+
+
 def hdl_wid_81(_: WIDParams):
     """
     Implements: IUT_ADVERTISE_UNPROVISIONED_STATE
