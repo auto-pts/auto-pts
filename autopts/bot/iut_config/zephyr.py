@@ -195,6 +195,23 @@ iut_config = {
         ]
     },
 
+    # It is faster to rebuild app that requires sending large amount of
+    # data than execute all tests like that.
+    "long_data_mesh_dfd_srv.conf": {
+        "overlay": {
+            'CONFIG_BT_SETTINGS': 'y',
+            'CONFIG_FLASH': 'y',
+            'CONFIG_FLASH_PAGE_LAYOUT': 'y',
+            'CONFIG_FLASH_MAP': 'y',
+            'CONFIG_NVS': 'y',
+            'CONFIG_BT_MESH_DFU_SRV': 'n',
+            'CONFIG_BT_MESH_BLOB_SIZE_MAX': '15000'
+        },
+        "test_cases": [
+            'MMDL/SR/BT/BV-38-C'
+        ]
+    },
+
     "mesh_dfu_srv.conf": {
         "overlay": {
             'CONFIG_BT_SETTINGS': 'y',
