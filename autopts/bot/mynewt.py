@@ -110,7 +110,10 @@ def compose_mail(args, mail_cfg, mail_ctx):
                args['pts_ver'], mail_ctx["elapsed_time"], mail_ctx["summary"],
                mail_ctx["regression"], mail_ctx["log_url"], mail_cfg['name'])
 
-    subject = "[Mynewt Nimble] AutoPTS test session results"
+    if 'subject' in mail_cfg:
+        subject = mail_cfg['subject']
+    else:
+        subject = "[Mynewt Nimble] AutoPTS test session results"
 
     return subject, body
 
