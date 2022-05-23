@@ -2275,6 +2275,13 @@ def hdl_wid_860(_: WIDParams):
     return True
 
 
+def hdl_wid_861(_: WIDParams):
+    """
+    Please send BLOB_PARTIAL_BLOCK_REPORT after 31 seconds timeout. Repeat up to max retry count.
+    """
+    return True
+
+
 def hdl_wid_970(_: WIDParams):
     """
        :param desc: Please updates firmware.Click Yes after update is complete and device is up and running.
