@@ -26,7 +26,7 @@ from autopts.utils import usb_power
 
 
 class CliParser(argparse.ArgumentParser):
-    def __init__(self, cli_support=None, board_names=None, add_help=True, stack_name=None):
+    def __init__(self, cli_support=None, board_names=None, add_help=True):
         super().__init__(description='PTS automation client', add_help=add_help)
 
         self.add_argument("-i", "--ip_addr", nargs="+",

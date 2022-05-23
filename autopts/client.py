@@ -1076,7 +1076,7 @@ class Client:
         self.boards = get_available_boards(name)
         self.ptses = []
         self.args = None
-        self.arg_parser = parser_class(cli_support=autoprojects.iutctl.CLI_SUPPORT, board_names=self.boards, stack_name=name)
+        self.arg_parser = parser_class(cli_support=autoprojects.iutctl.CLI_SUPPORT, board_names=self.boards)
         self.prev_sigint_handler = None
 
     def start(self, args=None):
