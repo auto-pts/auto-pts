@@ -689,6 +689,10 @@ def nimble_job(cfg, server_options, included='', excluded='', **kwargs):
         cfg=cfg, included=included, excluded=excluded)
     run_test(bot_options, server_options, AUTOPTS_REPO)
 
+    report = os.path.join(AUTOPTS_REPO, 'report.txt')
+    if not os.path.exists(report):
+        raise Exception('Bot failed before report creation')
+
     print('NimBLE Job finished')
 
 
