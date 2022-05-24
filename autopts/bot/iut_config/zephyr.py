@@ -143,4 +143,12 @@ iut_config = {
             'L2CAP/LE/CPU/BV-01-C',
         ]
     },
+    "eatt_two_channels.conf": {
+        "overlay": {
+            'CONFIG_BT_EATT_MAX': '2',
+        },
+        "test_cases": [
+            'L2CAP/TIM/BV-03-C',
+        ]
+    },
 }
