@@ -22,7 +22,7 @@ import struct
 from autopts.ptsprojects.stack import GattCharacteristic
 from autopts.pybtp import defs
 from autopts.pybtp.btp.btp import btp_hdr_check, CONTROLLER_INDEX, get_iut_method as get_iut, btp2uuid, \
-    clear_verify_values, add_to_verify_values, get_verify_values
+    clear_verify_values, add_to_verify_values, get_verify_values, pts_addr_get, pts_addr_type_get
 from autopts.pybtp.btp.gap import gap_wait_for_connection
 from autopts.pybtp.types import BTPError, addr2btp_ba
 from autopts.pybtp.types import Perm, att_rsp_str
@@ -89,6 +89,8 @@ GATTC = {
     "cfg_notify": (defs.BTP_SERVICE_ID_GATT, defs.GATT_CFG_NOTIFY,
                    CONTROLLER_INDEX),
     "cfg_indicate": (defs.BTP_SERVICE_ID_GATT, defs.GATT_CFG_INDICATE,
+                     CONTROLLER_INDEX),
+    'eatt_connect': (defs.BTP_SERVICE_ID_GATT, defs.GATT_EATT_CONNECT,
                      CONTROLLER_INDEX),
 }
 
@@ -1691,3 +1693,18 @@ def gattc_write_reliable_rsp(store_rsp=False):
     if store_rsp:
         clear_verify_values()
         add_to_verify_values(att_rsp_str[rsp])
+
+def eatt_conn(bd_addr, bd_addr_type, num=1):
+    logging.debug("%s %r %r", eatt_conn.__name__, bd_addr, bd_addr_type)
+    iutctl = get_iut()
+    gap_wait_for_connection()
+
+    bd_addr = pts_addr_get(bd_addr)
+    bd_addr_type = pts_addr_type_get(bd_addr_type)
+
+    bd_addr_ba = addr2btp_ba(bd_addr)
+    data_ba = bytearray(chr(bd_addr_type).encode('utf-8'))
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(struct.pack('B', num))
+
+    iutctl.btp_socket.send(*GATTC['eatt_connect'], data=data_ba)

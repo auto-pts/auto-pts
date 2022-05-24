@@ -1405,6 +1405,19 @@ Commands and responses:
 
 		In case of an error, the error response will be returned.
 
+	Opcode 0x1f - Connect EATT channels
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Number_Of_Channels (1 octet)
+		Response parameters:	<none>
+
+		This procedure is used to connect EATT channels.
+		BTP_STATUS_SUCCESS response indicates the procedure is finished.
+
+		In case of an error, the error response will be returned.
+
 Events:
 	Opcode 0x80 - Notification/Indication Received
 
