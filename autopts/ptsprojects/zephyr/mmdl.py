@@ -142,6 +142,11 @@ def test_cases(ptses):
                 "MMDL", "TSPX_Server_Timeout", 210)),
             TestFunc(lambda: stack.mesh.timeout_set(timeout))],
                   generic_wid_hdl=mmdl_wid_hdl),
+        ZTestCase("MMDL", "MMDL/SR/FD/BV-05-C", cmds=pre_conditions + [
+            TestFunc(lambda: pts.update_pixit_param(
+                "MMDL", "TSPX_New_Firmware_Image",
+                get_test_data_path(pts) + "sample_data_2.txt"))],
+                  generic_wid_hdl=mmdl_wid_hdl),
         ZTestCase("MMDL", "MMDL/SR/FD/BV-07-C", cmds=pre_conditions + [
             TestFunc(lambda: pts.update_pixit_param(
                 "MMDL", "TSPX_Server_Timeout", FD_timeout))],
