@@ -226,6 +226,20 @@ iut_config = {
             'MMDL/CL/BT',
         ]
     },
+
+    "mesh_dfd_dfu.conf": {
+        "overlay": {
+            'CONFIG_BT_SETTINGS': 'y',
+            'CONFIG_FLASH': 'y',
+            'CONFIG_FLASH_PAGE_LAYOUT': 'y',
+            'CONFIG_FLASH_MAP': 'y',
+            'CONFIG_NVS': 'y',
+            'CONFIG_BT_MESH_BLOB_SIZE_MAX': '5000'
+        },
+        "test_cases": [
+            'MMDL/SR/FD/BV-48-C',
+        ]
+    },
 }
 
 retry_config = {
