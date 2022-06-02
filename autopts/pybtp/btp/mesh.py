@@ -289,6 +289,33 @@ MESH = {
     "comp_set_alt": (defs.BTP_SERVICE_ID_MESH,
                      defs.MESH_COMP_SET_ALT,
                      CONTROLLER_INDEX),
+    "rpr_scan_start": (defs.BTP_SERVICE_ID_MESH,
+                       defs.MESH_RPR_SCAN_START,
+                       CONTROLLER_INDEX),
+    "rpr_ext_scan_start": (defs.BTP_SERVICE_ID_MESH,
+                           defs.MESH_RPR_EXT_SCAN_START,
+                           CONTROLLER_INDEX),
+    "rpr_scan_caps_get": (defs.BTP_SERVICE_ID_MESH,
+                          defs.MESH_RPR_SCAN_CAPS_GET,
+                          CONTROLLER_INDEX),
+    "rpr_scan_get": (defs.BTP_SERVICE_ID_MESH,
+                          defs.MESH_RPR_SCAN_GET,
+                          CONTROLLER_INDEX),
+    "rpr_scan_stop": (defs.BTP_SERVICE_ID_MESH,
+                      defs.MESH_RPR_SCAN_STOP,
+                      CONTROLLER_INDEX),
+    "rpr_link_get": (defs.BTP_SERVICE_ID_MESH,
+                     defs.MESH_RPR_LINK_GET,
+                     CONTROLLER_INDEX),
+    "rpr_link_close": (defs.BTP_SERVICE_ID_MESH,
+                       defs.MESH_RPR_LINK_CLOSE,
+                       CONTROLLER_INDEX),
+    "rpr_prov_remote": (defs.BTP_SERVICE_ID_MESH,
+                        defs.MESH_RPR_PROV_REMOTE,
+                        CONTROLLER_INDEX),
+    "rpr_reprov_remote": (defs.BTP_SERVICE_ID_MESH,
+                          defs.MESH_RPR_REPROV_REMOTE,
+                          CONTROLLER_INDEX),
 }
 
 
@@ -1712,6 +1739,98 @@ def mesh_comp_set_alt():
     data = bytearray()
 
     iutctl.btp_socket.send_wait_rsp(*MESH['comp_set_alt'], data)
+
+
+def mesh_rpr_scan_start(dst, timeout, uuid):
+    logging.debug("%s", mesh_rpr_scan_start.__name__)
+
+    iutctl = get_iut()
+
+    data = bytearray(struct.pack("<HB16s", dst, timeout, binascii.unhexlify(uuid)))
+
+    iutctl.btp_socket.send_wait_rsp(*MESH['rpr_scan_start'], data)
+
+
+def mesh_rpr_ext_scan_start(dst, timeout, uuid, ad_count, ad_types):
+    logging.debug("%s", mesh_rpr_ext_scan_start.__name__)
+
+    iutctl = get_iut()
+
+    data = bytearray(struct.pack("<HB16sB", dst, timeout, uuid, ad_count))
+    types = bytes.fromhex(ad_types)
+    data.extend(types)
+
+    iutctl.btp_socket.send_wait_rsp(*MESH['rpr_ext_scan_start'], data)
+
+
+def mesh_rpr_scan_caps_get(dst):
+    logging.debug("%s", mesh_rpr_scan_caps_get.__name__)
+
+    iutctl = get_iut()
+
+    data = bytearray(struct.pack("<H", dst))
+
+    iutctl.btp_socket.send_wait_rsp(*MESH['rpr_scan_caps_get'], data)
+
+
+def mesh_rpr_scan_get(dst):
+    logging.debug("%s", mesh_rpr_scan_get.__name__)
+
+    iutctl = get_iut()
+
+    data = bytearray(struct.pack("<H", dst))
+
+    iutctl.btp_socket.send_wait_rsp(*MESH['rpr_scan_get'], data)
+
+
+def mesh_rpr_scan_stop(dst):
+    logging.debug("%s", mesh_rpr_scan_stop.__name__)
+
+    iutctl = get_iut()
+
+    data = bytearray(struct.pack("<H", dst))
+
+    iutctl.btp_socket.send_wait_rsp(*MESH['rpr_scan_stop'], data)
+
+
+def mesh_rpr_link_get(dst):
+    logging.debug("%s", mesh_rpr_link_get.__name__)
+
+    iutctl = get_iut()
+
+    data = bytearray(struct.pack("<H", dst))
+
+    iutctl.btp_socket.send_wait_rsp(*MESH['rpr_link_get'], data)
+
+
+def mesh_rpr_link_close(dst):
+    logging.debug("%s", mesh_rpr_link_close.__name__)
+
+    iutctl = get_iut()
+
+    data = bytearray(struct.pack("<H", dst))
+
+    iutctl.btp_socket.send_wait_rsp(*MESH['rpr_link_close'], data)
+
+
+def mesh_rpr_prov_remote(dst, uuid, net_idx, addr):
+    logging.debug("%s", mesh_rpr_prov_remote.__name__)
+
+    iutctl = get_iut()
+
+    data = bytearray(struct.pack("<H16sHH", dst, uuid, net_idx, addr))
+
+    iutctl.btp_socket.send_wait_rsp(*MESH['rpr_prov_remote'], data)
+
+
+def mesh_rpr_reprov_remote(dst, addr, comp_change):
+    logging.debug("%s", mesh_rpr_reprov_remote.__name__)
+
+    iutctl = get_iut()
+
+    data = bytearray(struct.pack("<HH?", dst, addr, comp_change))
+
+    iutctl.btp_socket.send_wait_rsp(*MESH['rpr_reprov_remote'], data)
 
 
 def mesh_lpn_polled_ev(mesh, data, data_len):
