@@ -93,7 +93,11 @@ GAP = {
                      CONTROLLER_INDEX, 0),
     "reset": (defs.BTP_SERVICE_ID_GAP, defs.GAP_RESET, CONTROLLER_INDEX, ""),
     "set_filter_accept_list": (defs.BTP_SERVICE_ID_GAP,
-                               defs.GAP_SET_FILTER_ACCEPT_LIST, CONTROLLER_INDEX)
+                               defs.GAP_SET_FILTER_ACCEPT_LIST, CONTROLLER_INDEX),
+    "set_privacy_on": (defs.BTP_SERVICE_ID_GAP,
+                       defs.GAP_SET_PRIVACY, CONTROLLER_INDEX, 1),
+    "set_privacy_off": (defs.BTP_SERVICE_ID_GAP,
+                        defs.GAP_SET_PRIVACY, CONTROLLER_INDEX, 0),
 }
 
 
@@ -880,7 +884,8 @@ def gap_read_ctrl_info():
         Addr.le_public
 
     stack.gap.iut_addr_set(_addr, addr_type)
-    logging.debug("IUT address %r", stack.gap.iut_addr_get_str())
+    logging.debug("IUT address %r %r", stack.gap.iut_addr_get_str(),
+                  "random" if stack.gap.iut_addr_is_random() else "public")
 
     __gap_current_settings_update(_curr_set)
 
@@ -995,6 +1000,40 @@ def gap_set_mitm_off():
     iutctl.btp_socket.send(*GAP['set_mitm_off'])
 
     gap_command_rsp_succ()
+
+
+def gap_set_privacy_on():
+    logging.debug("%s", gap_set_privacy_on.__name__)
+
+    stack = get_stack()
+
+    if stack.gap.current_settings_get(
+            gap_settings_btp2txt[defs.GAP_SETTINGS_PRIVACY]):
+        return
+
+    iutctl = get_iut()
+
+    iutctl.btp_socket.send(*GAP['set_privacy_on'])
+
+    tuple_data = gap_command_rsp_succ()
+    __gap_current_settings_update(tuple_data)
+
+
+def gap_set_privacy_off():
+    logging.debug("%s", gap_set_privacy_off.__name__)
+
+    stack = get_stack()
+
+    if not stack.gap.current_settings_get(
+            gap_settings_btp2txt[defs.GAP_SETTINGS_PRIVACY]):
+        return
+
+    iutctl = get_iut()
+
+    iutctl.btp_socket.send(*GAP['set_privacy_off'])
+
+    tuple_data = gap_command_rsp_succ()
+    __gap_current_settings_update(tuple_data)
 
 
 def check_discov_results(addr_type=None, addr=None, discovered=True, eir=None):

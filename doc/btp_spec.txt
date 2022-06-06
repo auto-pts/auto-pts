@@ -598,6 +598,21 @@ Commands and responses:
 
 		In case of an error, the error response will be returned.
 
+	Opcode 0x1d - Set Privacy
+
+		Controller Index:	<controller id>
+		Command parameters:	 Privacy_Setting (1 octet)
+		Response parameters:	Current_Settings (4 Octets)
+
+		Valid Privacy_Setting values:	0x00 = Off
+						0x01 = On
+
+		This command is used to set Privacy setting. This command
+		is designed for systems that allow to change privacy setting
+		during runtime of the system.
+
+		In case of an error, the error response will be returned.
+
 Events:
 	Opcode 0x80 - New Settings event
 
