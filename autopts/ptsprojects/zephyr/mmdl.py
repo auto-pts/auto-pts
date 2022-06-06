@@ -132,7 +132,27 @@ def test_cases(ptses):
                 "MMDL", "TSPX_Server_Timeout", timeout)),
             TestFunc(lambda: stack.mesh.timeout_set(timeout))],
                   generic_wid_hdl=mmdl_wid_hdl),
+        ZTestCase("MMDL", "MMDL/SR/BT/BV-05-C", cmds=pre_conditions + [
+            TestFunc(lambda: pts.update_pixit_param(
+                "MMDL", "TSPX_Server_Timeout", timeout)),
+            TestFunc(lambda: stack.mesh.timeout_set(timeout))],
+                  generic_wid_hdl=mmdl_wid_hdl),
         ZTestCase("MMDL", "MMDL/SR/BT/BV-08-C", cmds=pre_conditions + [
+            TestFunc(lambda: pts.update_pixit_param(
+                "MMDL", "TSPX_Server_Timeout", timeout)),
+            TestFunc(lambda: stack.mesh.timeout_set(timeout))],
+                  generic_wid_hdl=mmdl_wid_hdl),
+        ZTestCase("MMDL", "MMDL/SR/BT/BV-13-C", cmds=pre_conditions + [
+            TestFunc(lambda: pts.update_pixit_param(
+                "MMDL", "TSPX_Server_Timeout", timeout)),
+            TestFunc(lambda: stack.mesh.timeout_set(timeout))],
+                  generic_wid_hdl=mmdl_wid_hdl),
+        ZTestCase("MMDL", "MMDL/SR/BT/BV-19-C", cmds=pre_conditions + [
+            TestFunc(lambda: pts.update_pixit_param(
+                "MMDL", "TSPX_Server_Timeout", timeout)),
+            TestFunc(lambda: stack.mesh.timeout_set(timeout))],
+                  generic_wid_hdl=mmdl_wid_hdl),
+        ZTestCase("MMDL", "MMDL/SR/BT/BV-25-C", cmds=pre_conditions + [
             TestFunc(lambda: pts.update_pixit_param(
                 "MMDL", "TSPX_Server_Timeout", timeout)),
             TestFunc(lambda: stack.mesh.timeout_set(timeout))],
