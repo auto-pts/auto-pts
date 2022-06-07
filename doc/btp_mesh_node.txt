@@ -969,6 +969,107 @@ Commands and responses:
 
 		In case of an error, the error response will be returned.
 
+    Opcode 0x57 - Composition Change Prepare
+
+		Controller Index:       <controller id>
+		Command parameters:     <none>
+
+		This command is used to prepare device for composition change. Success
+		means that device saved old composition data in persistant storage and
+		will swap it on next reboot.
+
+    Opcode 0x58 - Set Alternative Composition Data
+
+		Controller Index:       <controller id>
+		Command parameters:     <none>
+
+		This command is used to tell the device which composition data to set
+		on Mesh init, if alternative exists. Calling this means we expect device
+		to have 1 alternative composition data, and this data must differ from
+		default one.
+
+    Opcode 0x59 - Remote Provisioning Scan Start
+
+		Controller Index:       <controller id>
+		Command parameters:     Destination (2 octets)
+		                        Timeout (1 octets)
+		                        UUID (16 octets)
+
+		This command is used to tell device to tell the server to start scanning
+		for unprovisioned devices.
+
+    Opcode 0x5a - Remote Provisioning Extended Scan Start
+
+		Controller Index:       <controller id>
+		Command parameters:     Destination (2 octets)
+		                        Timeout (1 octets)
+		                        UUID (16 octets)
+		                        Ad Type Count (1 octets)
+		                        Ad Types (variable)
+
+		This command is used to tell device to tell the server to start scanning
+		for unprovisioned devices and gather additional data of given Ad Types.
+
+    Opcode 0x5b - Remote Provisioning Scan Capabilities Get
+
+		Controller Index:       <controller id>
+		Command parameters:     Destination (2 octets)
+
+		This command is used to get scanning capabilities of Remote Provisioning
+		Server, by Client.
+
+    Opcode 0x5c - Remote Provisioning Scan Get
+
+		Controller Index:       <controller id>
+		Command parameters:     Destination (2 octets)
+
+		This command is used to get current scanning state of Remote
+		Provisioning Server, by Client.
+
+    Opcode 0x5d - Remote Provisioning Scan Stop
+
+		Controller Index:       <controller id>
+		Command parameters:     Destination (2 octets)
+
+
+		This command is used to stop any ongoing scanning on Remote Provisioning
+		Server, by Client.
+
+    Opcode 0x5e - Remote Provisioning Link Get
+
+		Controller Index:       <controller id>
+		Command parameters:     Destination (2 octets)
+
+		This command is used to get current link status of Remote Provisioning
+		Server, by Client.
+
+    Opcode 0x5f - Remote Provisioning Link Close
+
+		Controller Index:       <controller id>
+		Command parameters:     Destination (2 octets)
+
+		This command is used to close any opened link of Remote Provisioning
+		Server, by Client.
+
+    Opcode 0x60 - Remote Provisioning Provision Remote
+
+		Controller Index:       <controller id>
+		Command parameters:     Destination (2 octets)
+		                        UUID (16 octets)
+		                        Network Index (2 octets)
+		                        Address (2 octets)
+
+		This command is used to provision a Mesh Node using a PB-Remote
+
+    Opcode 0x61 - Remote Provisioning Reprovision Remote
+
+		Controller Index:       <controller id>
+		Command parameters:     Destination (2 octets)
+		                        Address (2 octets)
+
+		This command can be used to change the device key,
+		unicast address and composition data of another device.
+
     Opcode 0x77 - Proxy Client Connect
 
 		Controller Index:       <controller id>
