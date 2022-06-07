@@ -2284,10 +2284,10 @@ def hdl_wid_861(_: WIDParams):
 
 def hdl_wid_970(_: WIDParams):
     """
-       :param desc: Please updates firmware.Click Yes after update is complete and device is up and running.
-       :return:
-       """
-
+   :param desc: Please updates firmware.Click Yes after update is complete and device is up and running.
+   :return:
+   """
+    btp.mmdl_dfu_srv_apply()
     return True
 
 

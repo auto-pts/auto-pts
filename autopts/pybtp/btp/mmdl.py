@@ -342,6 +342,9 @@ MMDL = {
     "dfu_update_firmware_apply": (defs.BTP_SERVICE_ID_MMDL,
                                   defs.MMDL_DFU_UPDATE_FIRMWARE_APPLY,
                                   CONTROLLER_INDEX),
+    "mmdl_dfu_srv_apply": (defs.BTP_SERVICE_ID_MMDL,
+                                  defs.MMDL_DFU_UPDATE_FIRMWARE_APPLY,
+                                  CONTROLLER_INDEX),
 }
 
 
@@ -2120,3 +2123,11 @@ def mmdl_dfu_update_firmware_apply():
     iutctl = get_iut()
 
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['dfu_update_firmware_apply'], "")
+
+
+def mmdl_dfu_srv_apply():
+    logging.debug("%s", mmdl_dfu_srv_apply.__name__)
+
+    iutctl = get_iut()
+
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['mmdl_dfu_srv_apply'], "")
