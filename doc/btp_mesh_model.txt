@@ -1019,3 +1019,118 @@ Commands and responses:
 		This command is used to recall the scene.
 
 		In case of an error, the error response will be returned.
+
+    Opcode 0x5f - DFU Information Get
+
+		Controller Index:		<controller id>
+		Command parameters: 		Limit (1 octet)
+
+		This command is used to perform DFU image list request. Limit sets
+		maximum number of images to get.
+
+	Opcode 0x60 - BLOB Information Get
+
+		Controller Index:		<controller id>
+		Command parameters: 		Address Count (1 octet)
+		                            Addresses (variable)
+
+		This command is used to get transfer capabilities for list of targets,
+		in address list.
+
+	Opcode 0x61 - DFU Update Firmware Check
+
+		Controller Index:		<controller id>
+		Command parameters: 		Index (1 octet)
+		                            Slot Index (1 octet)
+		                            Slot Size (1 octet)
+		                            Firmware ID Length (1 octet)
+		                            Metadata Length (1 octet)
+		                            Metadata (variable)
+
+		This command is used to perform metadata check for given DFU image slot.
+
+	Opcode 0x62 - DFU Update Firmware Get
+
+		Controller Index:		<controller id>
+		Command parameters: 		<none>
+
+		This command is used to get status of target node.
+
+	Opcode 0x63 - DFU Update Firmware Cancel
+
+		Controller Index:		<controller id>
+		Command parameters: 		<none>
+
+		This command is used to cancel ongoing DFU transfer.
+
+	Opcode 0x64 - DFU Update Firmware Start
+
+		Controller Index:		<controller id>
+		Command parameters: 		Address count (1 octet)
+		                            Slot Index (1 octet)
+		                            Slot Size (1 octet)
+		                            Firmware ID Length (1 octet)
+		                            Metadata Length (1 octet)
+		                            Block Size (1 octet)
+		                            Chunk Size (2 octet)
+		                            Metadata (variable)
+		                            Address (2 octets)
+
+		This command is used to start DFU distribution.
+
+	Opcode 0x65 - BLOB Server Receive
+
+		Controller Index:		<controller id>
+		Command parameters: 		ID (8 octet)
+		                            Timeout (1 octet)
+
+		This command is used to prepare BLOB Server for incoming transfer.
+
+	Opcode 0x66 - BLOB Transfer Start
+
+		Controller Index:		<controller id>
+		Command parameters: 		ID (8 octet)
+		                            Size (2 octet)
+		                            Block Size (1 octet)
+		                            Chunk Size (2 octet)
+		                            Timeout (2 octet)
+
+		This command is used to perform BLOB transfer.
+
+	Opcode 0x67 - BLOB Transfer Cancel
+
+		Controller Index:		<controller id>
+		Command parameters: 		<none>
+
+		This command is used to cancel ongoing transfer.
+
+	Opcode 0x68 - BLOB Transfer Get
+
+		Controller Index:		<controller id>
+		Command parameters: 		<none>
+
+		This command is used to get the current progress of the active transfer.
+
+	Opcode 0x69 - BLOB Server Cancel
+
+		Controller Index:		<controller id>
+		Command parameters: 		<none>
+
+		This command is used to tell Client to drop the server from list of
+		targets and abandon ongoing transfer.
+
+	Opcode 0x6a - BLOB DFU Firmware Update Apply
+
+		Controller Index:		<controller id>
+		Command parameters: 		<none>
+
+		This command is used to tell the device acting as DFU Client to apply
+		completed DFU transfer by Server.
+
+	Opcode 0x6b - BLOB DFU Server Apply
+
+		Controller Index:		<controller id>
+		Command parameters: 		<none>
+
+		This command is used to apply completed DFU transfer on device acting as
+		a Server.
