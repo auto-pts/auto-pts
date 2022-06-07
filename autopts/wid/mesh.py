@@ -3082,6 +3082,97 @@ def hdl_wid_674(_: WIDParams):
     return False
 
 
+def hdl_wid_701(_: WIDParams):
+    """
+    Implements:
+    Please send Remote Provisioning Scan Get.
+    """
+    stack = get_stack()
+
+    btp.mesh_rpr_scan_get(stack.mesh.address_lt1)
+    return True
+
+
+def hdl_wid_700(_: WIDParams):
+    """
+    Implements:
+    Please send Remote Provisioning Scan Capabilities Get.
+    """
+    stack = get_stack()
+
+    btp.mesh_rpr_scan_caps_get(stack.mesh.address_lt1)
+    return True
+
+
+def hdl_wid_702(_: WIDParams):
+    """
+    Implements:
+    Please send Remote Provisioning Scan Start.
+    """
+    stack = get_stack()
+
+    time.sleep(1)
+    btp.mesh_rpr_scan_start(stack.mesh.address_lt1, 5, stack.mesh.dev_uuid)
+    return True
+
+
+def hdl_wid_703(_: WIDParams):
+    """
+    Implements:
+    Please send Remote Provisioning Scan Start.
+    """
+    stack = get_stack()
+
+    btp.mesh_rpr_scan_stop(stack.mesh.address_lt1)
+    return True
+
+
+def hdl_wid_704(_: WIDParams):
+    """
+    Implements:
+    Please send Remote Provisioning Scan Start.
+    """
+    stack = get_stack()
+
+    btp.mesh_rpr_ext_scan_start(stack.mesh.address_lt1, 5, stack.mesh.dev_uuid, 1, '08')
+    return True
+
+
+def hdl_wid_705(_: WIDParams):
+    """
+    Implements:
+    Please send Remote Provisioning Link Get.
+    """
+    stack = get_stack()
+
+    time.sleep(5)
+
+    btp.mesh_rpr_link_get(stack.mesh.address_lt1)
+    return True
+
+
+def hdl_wid_706(_: WIDParams):
+    """
+    Implements:
+    Please send Remote Provisioning Link Open with UUID.
+    """
+    stack = get_stack()
+
+    btp.mesh_rpr_prov_remote(stack.mesh.address_lt1, stack.mesh.dev_uuid, 0, 0)
+    return True
+
+
+def hdl_wid_707(_: WIDParams):
+    """
+    Implements:
+    Please send Remote Provisioning Link Close.
+    """
+    stack = get_stack()
+
+    btp.mesh_rpr_link_close(stack.mesh.address_lt1)
+    return True
+
+
 def hdl_wid_712(desc):
     """
     Implements:
