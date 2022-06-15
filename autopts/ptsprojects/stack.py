@@ -246,6 +246,9 @@ class Gap:
         self.discoverying.data = True
         self.found_devices.data = []
 
+    def set_passkey(self, passkey):
+        self.passkey.data = passkey
+
     def get_passkey(self, timeout=5):
         if self.passkey.data is None:
             flag = Event()
