@@ -98,6 +98,10 @@ GAP = {
                        defs.GAP_SET_PRIVACY, CONTROLLER_INDEX, 1),
     "set_privacy_off": (defs.BTP_SERVICE_ID_GAP,
                         defs.GAP_SET_PRIVACY, CONTROLLER_INDEX, 0),
+    "set_sc_only_on": (defs.BTP_SERVICE_ID_GAP,
+                       defs.GAP_SET_SC_ONLY, CONTROLLER_INDEX, 1),
+    "set_sc_only_off": (defs.BTP_SERVICE_ID_GAP,
+                        defs.GAP_SET_SC_ONLY, CONTROLLER_INDEX, 0),
 }
 
 
@@ -1031,6 +1035,40 @@ def gap_set_privacy_off():
     iutctl = get_iut()
 
     iutctl.btp_socket.send(*GAP['set_privacy_off'])
+
+    tuple_data = gap_command_rsp_succ()
+    __gap_current_settings_update(tuple_data)
+
+
+def gap_set_sc_only_on():
+    logging.debug("%s", gap_set_sc_only_on.__name__)
+
+    stack = get_stack()
+
+    if stack.gap.current_settings_get(
+            gap_settings_btp2txt[defs.GAP_SETTINGS_SC_ONLY]):
+        return
+
+    iutctl = get_iut()
+
+    iutctl.btp_socket.send(*GAP['set_sc_only_on'])
+
+    tuple_data = gap_command_rsp_succ()
+    __gap_current_settings_update(tuple_data)
+
+
+def gap_set_sc_only_off():
+    logging.debug("%s", gap_set_sc_only_off.__name__)
+
+    stack = get_stack()
+
+    if not stack.gap.current_settings_get(
+            gap_settings_btp2txt[defs.GAP_SETTINGS_SC_ONLY]):
+        return
+
+    iutctl = get_iut()
+
+    iutctl.btp_socket.send(*GAP['set_sc_only_off'])
 
     tuple_data = gap_command_rsp_succ()
     __gap_current_settings_update(tuple_data)

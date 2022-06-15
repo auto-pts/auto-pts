@@ -35,6 +35,7 @@ gap_settings_btp2txt = {
     defs.GAP_SETTINGS_PRIVACY: "Privacy",
     defs.GAP_SETTINGS_CONTROLLER_CONFIG: "Controller Configuration",
     defs.GAP_SETTINGS_STATIC_ADDRESS: "Static Address",
+    defs.GAP_SETTINGS_SC_ONLY: "SC Only",
 }
 
 

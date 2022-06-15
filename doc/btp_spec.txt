@@ -613,6 +613,21 @@ Commands and responses:
 
 		In case of an error, the error response will be returned.
 
+	Opcode 0x1e - Set SC Only
+
+		Controller Index:	<controller id>
+		Command parameters:	 SC_Only_Setting (1 octet)
+		Response parameters:	Current_Settings (4 Octets)
+
+		Valid SC_Only_Setting values:	0x00 = Off
+						0x01 = On
+
+		This command is used to set SC Only setting. This command
+		is designed for systems that allow to change SC Only setting
+		during runtime of the system.
+
+		In case of an error, the error response will be returned.
+
 Events:
 	Opcode 0x80 - New Settings event
 
