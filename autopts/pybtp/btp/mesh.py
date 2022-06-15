@@ -316,6 +316,27 @@ MESH = {
     "rpr_reprov_remote": (defs.BTP_SERVICE_ID_MESH,
                           defs.MESH_RPR_REPROV_REMOTE,
                           CONTROLLER_INDEX),
+    "priv_beacon_get": (defs.BTP_SERVICE_ID_MESH,
+                        defs.MESH_PRIV_BEACON_GET,
+                        CONTROLLER_INDEX),
+    "priv_beacon_set": (defs.BTP_SERVICE_ID_MESH,
+                        defs.MESH_PRIV_BEACON_SET,
+                        CONTROLLER_INDEX),
+    "priv_gatt_proxy_get": (defs.BTP_SERVICE_ID_MESH,
+                            defs.MESH_PRIV_GATT_PROXY_GET,
+                            CONTROLLER_INDEX),
+    "priv_gatt_proxy_set": (defs.BTP_SERVICE_ID_MESH,
+                            defs.MESH_PRIV_GATT_PROXY_SET,
+                            CONTROLLER_INDEX),
+    "priv_node_id_get": (defs.BTP_SERVICE_ID_MESH,
+                         defs.MESH_PRIV_NODE_ID_GET,
+                         CONTROLLER_INDEX),
+    "priv_node_id_set": (defs.BTP_SERVICE_ID_MESH,
+                         defs.MESH_PRIV_NODE_ID_SET,
+                         CONTROLLER_INDEX),
+    "proxy_private_identity": (defs.BTP_SERVICE_ID_MESH,
+                               defs.MESH_PROXY_PRIVATE_IDENTITY,
+                               CONTROLLER_INDEX, ""),
 }
 
 
@@ -635,6 +656,13 @@ def mesh_proxy_identity():
 
     iutctl = get_iut()
     iutctl.btp_socket.send_wait_rsp(*MESH['proxy_identity'])
+
+
+def mesh_proxy_private_identity():
+    logging.debug("%s", mesh_proxy_private_identity.__name__)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*MESH['proxy_private_identity'])
 
 
 def mesh_sar_transmitter_get(dst):
@@ -1739,6 +1767,72 @@ def mesh_comp_set_alt():
     data = bytearray()
 
     iutctl.btp_socket.send_wait_rsp(*MESH['comp_set_alt'], data)
+
+
+def mesh_priv_beacon_get(dst):
+    logging.debug("%s", mesh_priv_beacon_get.__name__)
+
+    stack = get_stack()
+    iutctl = get_iut()
+
+    data = bytearray(struct.pack("<H", dst))
+
+    iutctl.btp_socket.send_wait_rsp(*MESH['priv_beacon_get'], data)
+
+
+def mesh_priv_beacon_set(dst, enabled, rand_interval):
+    logging.debug("%s", mesh_priv_beacon_set.__name__)
+
+    stack = get_stack()
+    iutctl = get_iut()
+
+    data = bytearray(struct.pack("<HBB", dst, enabled, rand_interval))
+
+    iutctl.btp_socket.send_wait_rsp(*MESH['priv_beacon_set'], data)
+
+
+def mesh_priv_gatt_proxy_get(dst):
+    logging.debug("%s", mesh_priv_gatt_proxy_get.__name__)
+
+    stack = get_stack()
+    iutctl = get_iut()
+
+    data = bytearray(struct.pack("<H", dst))
+
+    iutctl.btp_socket.send_wait_rsp(*MESH['priv_gatt_proxy_get'], data)
+
+
+def mesh_priv_gatt_proxy_set(dst, state):
+    logging.debug("%s", mesh_priv_gatt_proxy_set.__name__)
+
+    stack = get_stack()
+    iutctl = get_iut()
+
+    data = bytearray(struct.pack("<HB", dst, state))
+
+    iutctl.btp_socket.send_wait_rsp(*MESH['priv_gatt_proxy_set'], data)
+
+
+def mesh_priv_node_id_get(dst, key_net_idx):
+    logging.debug("%s", mesh_priv_node_id_get.__name__)
+
+    stack = get_stack()
+    iutctl = get_iut()
+
+    data = bytearray(struct.pack("<HH", dst, key_net_idx))
+
+    iutctl.btp_socket.send_wait_rsp(*MESH['priv_node_id_get'], data)
+
+
+def mesh_priv_node_id_set(dst, net_idx, state):
+    logging.debug("%s", mesh_priv_node_id_set.__name__)
+
+    stack = get_stack()
+    iutctl = get_iut()
+
+    data = bytearray(struct.pack("<HHB", dst, net_idx, state))
+
+    iutctl.btp_socket.send_wait_rsp(*MESH['priv_node_id_set'], data)
 
 
 def mesh_rpr_scan_start(dst, timeout, uuid):
