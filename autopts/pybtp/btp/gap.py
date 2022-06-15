@@ -909,7 +909,8 @@ def gap_command_rsp_succ(op=None):
 
 def gap_conn_param_update(bd_addr, bd_addr_type, conn_itvl_min,
                           conn_itvl_max, conn_latency, supervision_timeout):
-    logging.debug("%s %r %r", gap_conn_param_update.__name__, bd_addr, bd_addr_type)
+    logging.debug("%s %r %r 0x%04x 0x%04x 0x%04x 0x%04x", gap_conn_param_update.__name__,
+                  bd_addr, bd_addr_type, conn_itvl_min, conn_itvl_max, conn_latency, supervision_timeout)
     iutctl = get_iut()
 
     gap_wait_for_connection()
