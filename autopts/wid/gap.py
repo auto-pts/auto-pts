@@ -548,7 +548,36 @@ def hdl_wid_125(params: WIDParams):
 
 
 def hdl_wid_127(params: WIDParams):
-    return hdl_wid_46(params)
+    """
+    :params.desc: Please send a LL Connection Parameter Update request using valid parameters.
+                  With 0x0032 value set in TSPX_conn_update_int_min
+                  0x0046 value set in TSPX_conn_update_int_max
+                  0x0001 value set in TSPX_conn_update_peripheral_latency and
+                  0x01F4 value set in TSPX_conn_update_supervision_timeout
+    """
+    btp.gap_wait_for_connection()
+
+    pattern = re.compile(r"0x([0-9a-fA-F]+)")
+    params = pattern.findall(params.description)
+    if not params or len(params) < 4:
+        logging.error("parsing error")
+        return False
+
+    conn_itvl_min = int(params[0], 16)
+    conn_itvl_max = int(params[1], 16)
+    conn_latency = int(params[2], 16)
+    supervision_timeout = int(params[3], 16)
+
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
+    btp.gap_conn_param_update(bd_addr, bd_addr_type,
+                              conn_itvl_min,
+                              conn_itvl_max,
+                              conn_latency,
+                              supervision_timeout)
+
+    return True
 
 
 def hdl_wid_130(params: WIDParams):
