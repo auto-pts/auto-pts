@@ -1659,6 +1659,12 @@ def hdl_wid_138(params: WIDParams):
 
 
 def hdl_wid_140(params: WIDParams):
+    """
+    Please send Read Multiple Variable Length characteristic requests on the "ATT" using these handles:
+    'XXXX'O 'XXXX'O
+
+    Description: Verify that the Implementation Under Test (IUT) can receive multiple characteristics.
+    """
     MMI.reset()
     MMI.parse_description(params.description)
 
@@ -1668,24 +1674,39 @@ def hdl_wid_140(params: WIDParams):
 
     if params.test_case_name.startswith("GATT/CL/GAR/BI"):
         btp.gattc_read_multiple_var_rsp(store_rsp=True, store_val=False)
-    else:
-        btp.gattc_read_multiple_var_rsp(store_rsp=False, store_val=True)
+        return True
 
+    if params.test_case_name.startswith("GATT/CL/GAR/BV"):
+        btp.gattc_read_multiple_var_rsp(store_rsp=False, store_val=True)
+        return True
+
+    # No response expected
     return True
 
 
 def hdl_wid_141(params: WIDParams):
+    """
+    Please send Read Multiple Variable Length characteristic requests on the "EATT" last channel using these handles:
+    'XXXX'O 'XXXX'O
+
+    Description: Verify that the Implementation Under Test (IUT) can receive multiple characteristics.
+    """
     MMI.reset()
     MMI.parse_description(params.description)
 
     hdl1 = MMI.args[0]
     hdl2 = MMI.args[1]
     btp.gattc_read_multiple_var(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl1, hdl2)
+
     if params.test_case_name.startswith("GATT/CL/GAR/BI"):
         btp.gattc_read_multiple_var_rsp(store_rsp=True, store_val=False)
-    else:
-        btp.gattc_read_multiple_var_rsp(store_rsp=False, store_val=True)
+        return True
 
+    if params.test_case_name.startswith("GATT/CL/GAR/BV"):
+        btp.gattc_read_multiple_var_rsp(store_rsp=False, store_val=True)
+        return True
+
+    # No response expected
     return True
 
 
