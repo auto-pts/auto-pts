@@ -703,7 +703,6 @@ class L2cap:
     def is_connected(self, chan_id):
         chan = self.chan_lookup_id(chan_id)
         if chan is None:
-            logging.error("unknown channel")
             return False
 
         return chan.is_connected(10)
