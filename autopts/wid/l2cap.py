@@ -475,6 +475,7 @@ def hdl_wid_254(_: WIDParams):
 
 
 def hdl_wid_255(params: WIDParams):
+    """ description: Please send L2CAP Credit Based Connection REQ to PTS."""
     stack = get_stack()
 
     if params.test_case_name == "L2CAP/TIM/BV-03-C":
@@ -483,6 +484,10 @@ def hdl_wid_255(params: WIDParams):
     else:
         l2cap = stack.l2cap
         btp.l2cap_conn(None, None, l2cap.psm, l2cap.initial_mtu, l2cap.num_channels, 1, l2cap.hold_credits)
+
+        # Wait until all channels connected to avoid race condition between channel connection and new received wid
+        for channel_id in range(l2cap.num_channels):
+            l2cap.wait_for_connection(channel_id)
 
     return True
 
