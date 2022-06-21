@@ -15,6 +15,7 @@
 import copy
 import logging
 import os
+import pathlib
 import re
 import subprocess
 import sys
@@ -944,6 +945,12 @@ def update_repos(project_path, git_config):
 
         if conf.get('west_update', False):
             bot.common.check_call(['west', 'update'], cwd=repo_path)
+
+        if conf.get('rm_pycache', False):
+            for p in pathlib.Path(repo_path).rglob('*.py[co]'):
+                p.unlink()
+            for p in pathlib.Path(repo_path).rglob('__pycache__'):
+                p.rmdir()
 
     return repos_dict
 
