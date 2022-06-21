@@ -1,4 +1,4 @@
-<WORKSPACE_INFORMATION NAME="zephyr-master" CREATED_WITH="Profile Tuning Suite, 8.2.0, 8" BD_ADDR="000000000000" QDID="176842">
+<WORKSPACE_INFORMATION NAME="zephyr-master" CREATED_WITH="Profile Tuning Suite, 8.2.3, 10" BD_ADDR="000000000000" QDID="166000">
   <PROJECTS_INFORMATION>
     <PROJECT_INFORMATION NAME="DIS" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
       <PICS>
@@ -592,7 +592,7 @@
           <Row>
             <Name>TSPC_GAP_8a_7</Name>
             <Description>Security Manager TK Value (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -640,7 +640,7 @@
           <Row>
             <Name>TSPC_GAP_8a_14a</Name>
             <Description>Advertising Interval – Long (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -988,7 +988,7 @@
           <Row>
             <Name>TSPC_GAP_20a_7</Name>
             <Description>Security Manager TK Value (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1036,7 +1036,7 @@
           <Row>
             <Name>TSPC_GAP_20a_14a</Name>
             <Description>Advertising Interval – Long (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1162,7 +1162,7 @@
           <Row>
             <Name>TSPC_GAP_23_2</Name>
             <Description>Directed connectable mode (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1288,13 +1288,13 @@
           <Row>
             <Name>TSPC_GAP_25_11</Name>
             <Description>Unauthenticated Pairing (LE security mode 1 level 2) with LE Secure Connections Pairing only (C.3)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_25_12</Name>
             <Description>Authenticated Pairing (LE security mode 1 level 3) with LE Secure Connections Pairing only (C.3)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1654,13 +1654,13 @@
           <Row>
             <Name>TSPC_GAP_35_11</Name>
             <Description>Unauthenticated Pairing (LE security mode 1 level 2) with LE Secure Connections Pairing only (C.2)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_35_12</Name>
             <Description>Authenticated Pairing (LE security mode 1 level 3) with LE Secure Connections Pairing only (C.2)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -2285,6 +2285,18 @@
             <Type>BOOLEAN</Type>
             <Value>TRUE</Value>
           </Row>
+          <!--<Row>
+      <Name>TSPX_encrypted_data_key</Name>
+      <Description>Encrypted Data Key as BIG Endian. This IXIT is only used for SCN test case (16 bytes)</Description>
+      <Type>OCTETSTRING</Type>
+      <Value>57A9DA12D12E6E131E20612AD10A6A19</Value>
+    </Row>
+    <Row>
+      <Name>TSPX_initialization_vector</Name>
+      <Description>Encrypted Data IV as BIG Endian. This IXIT is only used for SCN test case  (8 bytes)</Description>
+      <Type>OCTETSTRING</Type>
+      <Value>46E77AB1EF007A9E</Value>
+    </Row>-->
         </Rows>
       </PIXIT>
     </PROJECT_INFORMATION>
@@ -2530,13 +2542,13 @@
           <Row>
             <Name>TSPC_GATT_3_29</Name>
             <Description>Read Multiple Variable Length Characteristic Values (C.9)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_3_30</Name>
             <Description>Multiple Variable Length Notifications (C.10)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -2716,13 +2728,13 @@
           <Row>
             <Name>TSPC_GATT_4_30</Name>
             <Description>Read Multiple Variable Length Characteristic Values (C.13)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_4_31</Name>
             <Description>Multiple Variable Length Notifications (C.13)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -3861,7 +3873,7 @@
           <Row>
             <Name>TSPC_L2CAP_2_48b</Name>
             <Description>Enhanced Credit Based Flow Control Mode - LE (C.27)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4017,7 +4029,7 @@
           <Row>
             <Name>TSPC_GATT_1a_1</Name>
             <Description>GATT Client over LE (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4029,7 +4041,7 @@
           <Row>
             <Name>TSPC_GATT_1a_3</Name>
             <Description>GATT Server over LE (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4041,7 +4053,7 @@
           <Row>
             <Name>TSPC_GATT_2_3</Name>
             <Description>Enhanced ATT bearer Attribute Protocol Supported (L2CAP fixed EATT PSM supported) (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4453,7 +4465,7 @@
           <Row>
             <Name>TSPC_MESH_2_2</Name>
             <Description>Provisioner (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <!-- Table 3: Node Capabilities - Bearers -->
@@ -4509,7 +4521,7 @@
           <Row>
             <Name>TSPC_MESH_4_7</Name>
             <Description>Provisioning Public Key OOB (C.5)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4527,13 +4539,13 @@
           <Row>
             <Name>TSPC_MESH_4_10</Name>
             <Description>Provisioning: Authentication Input OOB (C.6)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_4_11</Name>
             <Description>Provisioning: Authentication Static OOB (C.6)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4570,7 +4582,7 @@
           <Row>
             <Name>TSPC_MESH_5_4</Name>
             <Description>Multiple Subnet Support (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <!-- Table 6: Node Capabilities - Lower Transport Layer -->
@@ -4678,13 +4690,13 @@
           <Row>
             <Name>TSPC_MESH_11_3</Name>
             <Description>Configuration Client Model (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_11_4</Name>
             <Description>Health Client Model (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <!-- Table 12: Node Capabilities - Proxy -->
@@ -4840,7 +4852,7 @@
           <Row>
             <Name>TSPC_MESH_17_1</Name>
             <Description>Advertising Bearer (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4853,25 +4865,25 @@
           <Row>
             <Name>TSPC_MESH_18_1</Name>
             <Description>Receiving Unprovisioned Device Beacon (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_18_2</Name>
             <Description>PB-ADV (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_18_3</Name>
             <Description>Generic Provisioning Layer (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_18_4</Name>
             <Description>Provisioning Protocol(Provisioning Client) (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -4889,44 +4901,44 @@
           <Row>
             <Name>TSPC_MESH_18_7</Name>
             <Description>Provisioning: Public Key OOB (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_18_8</Name>
             <Description>Provisioning: Public Key No OOB (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_18_9</Name>
             <Description>Provisioning: Authentication Output OOB (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_18_10</Name>
             <Description>Provisioning: Authentication Input OOB (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_18_11</Name>
             <Description>Provisioning: Authentication Static or No OOB (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_18_12</Name>
             <Description>Provisioning algorithm: ECDH_P256 + CMAC_AES128 + CCM_AES128 (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <!-- Table 19: Provisioner - Mesh Management -->
           <Row>
             <Name>TSPC_MESH_19_1</Name>
             <Description>Receiving Secure Network Beacon (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <!-- Table 20: GATT Client Requirements -->
@@ -4964,13 +4976,13 @@
           <Row>
             <Name>TSPC_MESH_21_1</Name>
             <Description>Broadcaster (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_21_2</Name>
             <Description>Observer (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -5270,8 +5282,8 @@
           <Row>
             <Name>TSPX_Server_model_element_address_opcode_status</Name>
             <Description>Server model element address, item0 acknowledged message and status item1 and unacknowledged message(Default: 0004,8216020101,82180201,820301010101)</Description>
-            <Value>0004,8216020101,82180201,820301010101</Value>
             <Type>IA5STRING</Type>
+            <Value>0004,8216020101,82180201,820301010101</Value>
           </Row>
         </Rows>
       </PIXIT>
@@ -5373,7 +5385,7 @@
           </Row>
           <Row>
             <Name>TSPC_SM_5_5</Name>
-            <Description>Link Key Conversion Function h7 (C.4)</Description>
+            <Description>CT2 bit and Link Key Conversion Function h7 (C.4)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
