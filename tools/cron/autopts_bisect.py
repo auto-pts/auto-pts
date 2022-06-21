@@ -130,6 +130,9 @@ def bisect(cfg, test_case, good_commit, bad_commit=''):
     report = os.path.join(AUTOPTS_REPO, 'report.txt')
     res = None
 
+    if os.path.exists(report):
+        os.remove(report)
+
     try:
         if res := bisect_start(project_repo):
             raise Exception('bisect_start failed: {}'.format(res))
@@ -146,6 +149,7 @@ def bisect(cfg, test_case, good_commit, bad_commit=''):
                 raise Exception('Bot failed during bisect run')
             with open(report) as f:
                 content = f.read()
+            os.remove(report)
             if 'PASS' in content:
                 print(res := bisect_good(project_repo))
             else:
