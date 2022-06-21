@@ -1,4 +1,4 @@
-<WORKSPACE_INFORMATION NAME="zephyr-master" CREATED_WITH="Profile Tuning Suite, 8.2.0, 8" BD_ADDR="000000000000" QDID="176842">
+<WORKSPACE_INFORMATION NAME="zephyr-master" CREATED_WITH="Profile Tuning Suite, 8.2.3, 10" BD_ADDR="000000000000" QDID="176842">
   <PROJECTS_INFORMATION>
     <PROJECT_INFORMATION NAME="DIS" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
       <PICS>
@@ -2285,6 +2285,18 @@
             <Type>BOOLEAN</Type>
             <Value>TRUE</Value>
           </Row>
+          <!--<Row>
+      <Name>TSPX_encrypted_data_key</Name>
+      <Description>Encrypted Data Key as BIG Endian. This IXIT is only used for SCN test case (16 bytes)</Description>
+      <Type>OCTETSTRING</Type>
+      <Value>57A9DA12D12E6E131E20612AD10A6A19</Value>
+    </Row>
+    <Row>
+      <Name>TSPX_initialization_vector</Name>
+      <Description>Encrypted Data IV as BIG Endian. This IXIT is only used for SCN test case  (8 bytes)</Description>
+      <Type>OCTETSTRING</Type>
+      <Value>46E77AB1EF007A9E</Value>
+    </Row>-->
         </Rows>
       </PIXIT>
     </PROJECT_INFORMATION>
@@ -2530,13 +2542,13 @@
           <Row>
             <Name>TSPC_GATT_3_29</Name>
             <Description>Read Multiple Variable Length Characteristic Values (C.9)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_3_30</Name>
             <Description>Multiple Variable Length Notifications (C.10)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -2716,13 +2728,13 @@
           <Row>
             <Name>TSPC_GATT_4_30</Name>
             <Description>Read Multiple Variable Length Characteristic Values (C.13)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_4_31</Name>
             <Description>Multiple Variable Length Notifications (C.13)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4017,7 +4029,7 @@
           <Row>
             <Name>TSPC_GATT_1a_1</Name>
             <Description>GATT Client over LE (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4029,7 +4041,7 @@
           <Row>
             <Name>TSPC_GATT_1a_3</Name>
             <Description>GATT Server over LE (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4041,7 +4053,7 @@
           <Row>
             <Name>TSPC_GATT_2_3</Name>
             <Description>Enhanced ATT bearer Attribute Protocol Supported (L2CAP fixed EATT PSM supported) (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -5270,8 +5282,8 @@
           <Row>
             <Name>TSPX_Server_model_element_address_opcode_status</Name>
             <Description>Server model element address, item0 acknowledged message and status item1 and unacknowledged message(Default: 0004,8216020101,82180201,820301010101)</Description>
-            <Value>0004,8216020101,82180201,820301010101</Value>
             <Type>IA5STRING</Type>
+            <Value>0004,8216020101,82180201,820301010101</Value>
           </Row>
         </Rows>
       </PIXIT>
@@ -5373,7 +5385,7 @@
           </Row>
           <Row>
             <Name>TSPC_SM_5_5</Name>
-            <Description>Link Key Conversion Function h7 (C.4)</Description>
+            <Description>CT2 bit and Link Key Conversion Function h7 (C.4)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
