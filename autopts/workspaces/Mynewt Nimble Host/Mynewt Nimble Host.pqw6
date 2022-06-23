@@ -1,4 +1,4 @@
-<WORKSPACE_INFORMATION NAME="Mynewt Nimble Host" CREATED_WITH="Profile Tuning Suite, 8.2.2, 4" BD_ADDR="000000000000" QDID="164784">
+<WORKSPACE_INFORMATION NAME="Mynewt Nimble Host" CREATED_WITH="Profile Tuning Suite, 8.2.3, 10" BD_ADDR="000000000000" QDID="164784">
   <PROJECTS_INFORMATION>
     <PROJECT_INFORMATION NAME="GAP" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
       <PICS>
@@ -2069,13 +2069,13 @@
           </Row>
           <!--<Row>
       <Name>TSPX_encrypted_data_key</Name>
-      <Description>Encrypted Data Key (16 bytes)</Description>
+      <Description>Encrypted Data Key as BIG Endian. This IXIT is only used for SCN test case (16 bytes)</Description>
       <Type>OCTETSTRING</Type>
       <Value>57A9DA12D12E6E131E20612AD10A6A19</Value>
     </Row>
     <Row>
       <Name>TSPX_initialization_vector</Name>
-      <Description>Encrypted Data IV (8 bytes)</Description>
+      <Description>Encrypted Data IV as BIG Endian. This IXIT is only used for SCN test case  (8 bytes)</Description>
       <Type>OCTETSTRING</Type>
       <Value>46E77AB1EF007A9E</Value>
     </Row>-->
@@ -4691,7 +4691,7 @@
           </Row>
           <Row>
             <Name>TSPC_SM_5_5</Name>
-            <Description>Link Key Conversion Function h7 (C.4)</Description>
+            <Description>CT2 bit and Link Key Conversion Function h7 (C.4)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
