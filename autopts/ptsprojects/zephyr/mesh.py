@@ -16,6 +16,7 @@
 """MESH test cases"""
 from binascii import hexlify
 import random
+import time
 from uuid import uuid4
 
 from autopts.pybtp import btp
@@ -291,6 +292,12 @@ def test_cases(ptses):
         ZTestCase("MESH", "MESH/NODE/IVU/BV-05-C", cmds=pre_conditions +
                   [TestFunc(btp.mesh_iv_test_mode_autoinit)],
                   generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/NODE/IVU/BV-(XY+3)", cmds=pre_conditions +
+                  [TestFunc(btp.mesh_iv_test_mode_autoinit)],
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/NODE/IVU/BV-(XY+4)", cmds=pre_conditions +
+                  [TestFunc(btp.mesh_iv_test_mode_autoinit)],
+                  generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/FRND/FN/BV-04-C",
                   cmds=pre_conditions + [TestFunc(btp.mesh_iv_test_mode_autoinit)],
                   generic_wid_hdl=mesh_wid_hdl),
@@ -345,6 +352,8 @@ def test_cases(ptses):
         ZTestCase("MESH", "MESH/CFGCL/KR/BV-01-C", cmds=pre_conditions_prov,
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/CFGCL/KR/BV-02-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CFGCL/KR/BV-(XY+0)-C", cmds=pre_conditions_prov,
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/CFGCL/CFG/SNBP/BV-01-C", cmds=pre_conditions_prov,
                   generic_wid_hdl=mesh_wid_hdl),
@@ -495,6 +504,9 @@ def test_cases(ptses):
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/TNPT/BI-(XX+0)-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/NODE/KR/BI-(XY+0)-C", cmds=pre_conditions +
+                  [TestFunc(stack.mesh.set_iut_addr, 2)],
+                  generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/SR/SAR/BV-01-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/SR/SAR/BV-02-C", cmds=pre_conditions,
@@ -521,12 +533,19 @@ def test_cases(ptses):
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/CL/AGG/BV-01-C", cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl),
-
         ZTestCase("MESH", "MESH/CL/RPR/SCN/BV-01-C", cmds=pre_conditions_prov,
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/CL/RPR/LNK/BV-01-C", cmds=pre_conditions_prov,
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/CL/RPR/PDU/BV-01-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CL/PRB/PBS/BV-01-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CL/PRB/PGPXY/BV-01-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CL/PRB/PNID/BV-01-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CL/PROX/BV-XY-0-C", cmds=pre_conditions_prov,
                   generic_wid_hdl=mesh_wid_hdl),
 
         ZTestCase("MESH", "MESH/NODE/CFG/COMP/BV-01-C_NEW", cmds=pre_conditions,
@@ -546,6 +565,19 @@ def test_cases(ptses):
         ZTestCase("MESH", "MESH/SR/RPR/PDU/BI-03-C",
                   cmds=pre_conditions,
                   generic_wid_hdl=mesh_wid_hdl_rpr_persistent_storage),
+        ZTestCase("MESH", "MESH/NODE/FRND/FN/BV-(XY+0)-C",
+                  cmds=pre_conditions + [TestFunc(btp.mesh_iv_test_mode_autoinit)],
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/NODE/FRND/FN/BV-(XY+2)-C",
+                  cmds=pre_conditions + [TestFunc(btp.mesh_iv_test_mode_autoinit)],
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/SR/PROX/BV-XY-2-C",
+                  cmds=pre_conditions + [TestFunc(btp.mesh_iv_test_mode_autoinit)],
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/SR/PROX/BV-XY-4-C",
+                  cmds=pre_conditions +
+                       [TestFunc(btp.mesh_iv_test_mode_autoinit)],
+                  generic_wid_hdl=mesh_wid_hdl),
     ]
 
     test_cases_lt2 = [
@@ -575,6 +607,16 @@ def test_cases(ptses):
                              SynchPoint("MESH/CFGCL/KR/BV-04-C-LT2", 212)])],
                   generic_wid_hdl=mesh_wid_hdl,
                   lt2="MESH/CFGCL/KR/BV-04-C-LT2"),
+        ZTestCase("MESH", "MESH/CFGCL/KR/BV-(XY+1)-C",
+                  cmds=pre_conditions_prov +
+                  [TestFunc(btp.mesh_iv_test_mode_autoinit),
+                   TestFunc(lambda: stack.mesh.expect_node(
+                       stack.mesh.get_dev_uuid_lt2())),
+                   TestFunc(get_stack().synch.add_synch_element,
+                            [SynchPoint("MESH/CFGCL/KR/BV-(XY+1)-C", 276),
+                             SynchPoint("MESH/CFGCL/KR/BV-(XY+1)-C-LT2", 212)])],
+                  generic_wid_hdl=mesh_wid_hdl,
+                  lt2="MESH/CFGCL/KR/BV-(XY+1)-C-LT2"),
         ZTestCase("MESH", "MESH/SR/RPR/LNK/BV-01-C",
                   cmds=pre_conditions +
                        [TestFunc(get_stack().synch.add_synch_element,
@@ -680,6 +722,9 @@ def test_cases(ptses):
                        cmds=pre_conditions_slave,
                        generic_wid_hdl=mesh_wid_hdl),
         ZTestCaseSlave("MESH", "MESH/CFGCL/KR/BV-04-C-LT2",
+                       cmds=pre_conditions_slave,
+                       generic_wid_hdl=mesh_wid_hdl),
+        ZTestCaseSlave("MESH", "MESH/CFGCL/KR/BV-(XY+1)-C-LT2",
                        cmds=pre_conditions_slave,
                        generic_wid_hdl=mesh_wid_hdl),
 
