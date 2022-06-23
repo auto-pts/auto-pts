@@ -119,6 +119,31 @@ iut_config = {
         ]
     },
 
+    "privacy_default_timeout.conf": {
+        "overlay": {
+            'CONFIG_BT_PRIVACY': 'y',
+        },
+        "test_cases": [
+            'MESH/NODE/IVU/BV-(XY+0)-C',
+            'MESH/NODE/IVU/BV-(XY+1)-C',
+            'MESH/NODE/IVU/BV-(XY+0)-C',
+            'MESH/NODE/IVU/BV-(XY+1)',
+            'MESH/NODE/IVU/BV-(XY+2)',
+            'MESH/NODE/IVU/BV-(XY+3)',
+            'MESH/NODE/IVU/BV-(XY+4)',
+            'MESH/NODE/IVU/BI-(XY+0)-C',
+            'MESH/NODE/IVU/BI-(XY+1)-C',
+            'MESH/NODE/IVU/BI-(XY+2)-C',
+            'MESH/NODE/IVU/BI-(XY+3)-C',
+            'MESH/NODE/IVU/BI-(XY+4)-C',
+            'MESH/NODE/KR/BV-(XY+0)-C',
+            'MESH/NODE/KR/BV-(XY+1)-C',
+            'MESH/NODE/KR/BI-(XY+0)-C',
+            'MESH/CFGCL/KR/BV-(XY+0)-C',
+            'MESH/CFGCL/KR/BV-(XY+1)-C'
+        ]
+    },
+
     "eatt_two_channels.conf": {
         "overlay": {
             'CONFIG_BT_EATT_MAX': '2',
