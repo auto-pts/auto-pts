@@ -605,6 +605,9 @@ class Mesh:
     def set_iut_provisioner(self, _is_prov):
         self.iut_is_provisioner = _is_prov
 
+    def set_iut_addr(self, _addr):
+        self.address_iut = _addr
+
     def timeout_set(self, timeout):
         self.timeout = timeout
 

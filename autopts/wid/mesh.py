@@ -61,6 +61,20 @@ def mesh_wid_hdl_rpr_persistent_storage(wid, description, test_case_name):
     return mesh_wid_hdl(wid, description, test_case_name)
 
 
+def find_src_dst(description):
+    pattern = re.compile(r'(SRC|DST):\s+\[([0][xX][0-9a-fA-F]+)]')
+    params = pattern.findall(description)
+    if not params:
+        logging.error("%s parsing error", hdl_wid_35.__name__)
+        return False
+
+    params = dict(params)
+
+    src = int(params.get('SRC'), 16)
+    dst = int(params.get('DST'), 16)
+    return src, dst
+
+
 # wid handlers section begin
 def hdl_wid_6(params: WIDParams):
     """
@@ -833,6 +847,42 @@ def hdl_wid_94(_: WIDParams):
     return True
 
 
+def hdl_wid_95(_: WIDParams):
+    """
+    Please order IUT to send private beacon to the PTS. PTS will wait for 60 seconds
+    """
+    return True
+
+
+def hdl_wid_96(_: WIDParams):
+    """
+    Implements:
+    description: Click 'Yes' if IUT received secure network beacon. Otherwise click 'No'.
+    """
+    return True
+
+
+def hdl_wid_97(_: WIDParams):
+    """
+    Implements:
+    description: Click 'Yes' if IUT received private beacon. Otherwise click 'No'.
+    """
+    return True
+
+
+def hdl_wid_98(_: WIDParams):
+    """
+    Implements:
+    description: Please order IUT to send a private beacon with Key Refresh Flag
+                 set to 0 and IV Update Flag set to 0
+    """
+    stack = get_stack()
+
+    btp.mesh_priv_beacon_set(stack.mesh.address_iut, 1, 0)
+
+    return True
+
+
 def hdl_wid_103(_: WIDParams):
     """
     Implements: CONFIRM_INVALID_DATA
@@ -1057,6 +1107,115 @@ def hdl_wid_223(_: WIDParams):
     """
 
     btp.mesh_iv_update_test_mode(False)
+    return True
+
+
+def hdl_wid_224(_: WIDParams):
+    """
+    description: Order IUT to generate a non-connectable private beacon
+                 (Mesh Beacon with Beacon type = 0x02).
+    """
+    stack = get_stack()
+
+    return bool(stack.mesh.is_provisioned.data)
+
+
+def hdl_wid_225(_: WIDParams):
+    """
+    description: Order IUT to enter the 'IV Update in Progress' state and set
+                 the 'IV Update in progress' flag in the private beacon.
+                 Click OK when ready.
+    """
+    btp.mesh_iv_update_test_mode(True)
+    btp.mesh_iv_update_toggle()
+    return True
+
+
+def hdl_wid_226(_: WIDParams):
+    """
+    description: Order IUT to send a private beacon from the IUT showing
+                 it is in Normal Operation state with the IV Update flag set to
+                 0 and the IV Index set to the new IV Index (m).
+                 Click OK when ready
+    """
+
+    btp.mesh_iv_update_toggle()
+    return True
+
+
+def hdl_wid_227(_: WIDParams):
+    """
+    description: Order IUT to power up and accept private beacon with
+                 IV index = n+42 and the IV update flag set to 0,
+                 and to transmit private beacons with the received IV values.
+                 Click OK when IUT is ready.
+    """
+    return True
+
+
+def hdl_wid_228(_: WIDParams):
+    """
+    description: Please make sure IUT has performed an IV Update procedure less
+                 than 96 hours ago. PTS will verify IUT does not perform
+                 another update. Order IUT to generate non-connectable Secure
+                 Network beacons (Mesh Beacon with Beacon type = 0x01).
+    """
+
+    btp.mesh_iv_update_test_mode(False)
+
+    return True
+
+
+def hdl_wid_229(_: WIDParams):
+    """
+    description: Please make sure IUT has been in Normal Operation state for
+                 more than 96 hours. PTS will verify IUT can ignore Private
+                 beacons with an IV Index greater than last known IV Index plus
+                 42. Order IUT to generate Private beacons.
+    """
+    stack = get_stack()
+
+    if not stack.mesh.is_iv_test_mode_enabled.data:
+        btp.mesh_iv_update_test_mode(True)
+    return True
+
+
+def hdl_wid_230(_: WIDParams):
+    """
+    description: PTS will verify IUT, on a primary subnet, can ignore Private
+                 beacons from other subnets. Order IUT to generate
+                 Private beacons.
+    """
+    stack = get_stack()
+
+    if stack.mesh.is_provisioned.data:
+        return True
+    return False
+
+
+def hdl_wid_231(_: WIDParams):
+    """
+    description: The Lower Tester will advertise a new Private beacon with the
+                 IV Update Flag set to 1, IV Index incremented by 1
+                 (new IV Index m = n + 1). Click OK when IUT is ready
+    """
+    stack = get_stack()
+
+    if not stack.mesh.is_iv_test_mode_enabled.data:
+        btp.mesh_iv_update_test_mode(True)
+    return True
+
+
+def hdl_wid_232(_: WIDParams):
+    """
+    description: PTS will verify IUT can ignore Private beacons with IV Index
+                 values that cannot be accepted. Order IUT to generate
+                 Private beacons.
+    """
+    stack = get_stack()
+
+    if not stack.mesh.is_iv_test_mode_enabled.data:
+        btp.mesh_iv_update_test_mode(True)
     return True
 
 
@@ -1360,6 +1519,41 @@ def hdl_wid_287(params: WIDParams):
     btp.mesh_cfg_krp_set(stack.mesh.net_idx, stack.mesh.address_iut, net_key_index, phase)
 
     return stack.mesh.status == 0x00
+
+
+def hdl_wid_288(_: WIDParams):
+    """
+    Implements:
+    description: Waiting for Mesh Private Beacon with Key Refresh On and Iv Update Off.
+    """
+
+    stack = get_stack()
+    phase = 0x02
+    net_key_index = 0x0000
+    net_idx = 0x0000
+
+    btp.mesh_priv_beacon_set(stack.mesh.address_iut, 1, 0)
+
+    btp.mesh_cfg_krp_set(stack.mesh.net_idx, stack.mesh.address_lt1, stack.mesh.net_key_index, phase)
+    btp.mesh_cfg_krp_set(net_idx, stack.mesh.address_iut, net_key_index, phase)
+
+    return True
+
+
+def hdl_wid_289(_: WIDParams):
+    """
+    Implements:
+    description: Waiting for Mesh Private Beacon with Key Refresh Off and Iv Update Off.
+    """
+    stack = get_stack()
+    phase = 0x03
+    net_key_index = 0x0000
+    net_idx = 0x0000
+
+    btp.mesh_cfg_krp_set(stack.mesh.net_idx, stack.mesh.address_lt1, stack.mesh.net_key_index, phase)
+    btp.mesh_cfg_krp_set(net_idx, stack.mesh.address_iut, net_key_index, phase)
+
+    return True
 
 
 def hdl_wid_302(_: WIDParams):
@@ -1749,6 +1943,14 @@ def hdl_wid_368(_: WIDParams):
     """
     Implements:
     description: Please confirm that IUT received the mesh packet to LT1.
+    """
+    return True
+
+
+def hdl_wid_371(_: WIDParams):
+    """
+    Implements:
+    description: Press OK when IUT is ready to receive Beacon (IV Update flag set to 0)
     """
     return True
 
@@ -3213,6 +3415,210 @@ def hdl_wid_715(desc):
     btp.core_reg_svc_gap()
     btp.core_reg_svc_mesh()
     btp.gap_read_ctrl_info()
+    return True
+
+
+def hdl_wid_881(params: WIDParams):
+    """
+    Implements:
+    description: Please order IUT to begin advertising with Private Node Identity.
+    """
+    btp.mesh_proxy_private_identity()
+    return True
+
+
+def hdl_wid_882(params: WIDParams):
+    """
+    Implements:
+    description: Please order IUT to stop advertising with Private Node Identity, then click OK.
+    """
+
+    # Let the timer expire so PNID is no longer advertised and return True
+    time.sleep(60)
+    return True
+
+
+def hdl_wid_884(params: WIDParams):
+    """
+    Implements:
+    description: Please send PRIVATE_BEACON_GET:
+
+    MeshApplicationData::Network Header
+    Network Header:
+        NID: <WildCard: Exists>
+        IVI: <WildCard: Exists>
+        TTL: <WildCard: Exists>
+        CTL: <WildCard: Exists>
+        SEQ: <WildCard: Exists>
+        SRC: [0x0002]
+        DST: [0x0001]
+        TransportPDU: <WildCard: Exists>
+    MeshApplicationData::Application Data
+    Private Beacons Server:
+        Op Code: [0xB711] PRIVATE_BEACON_GET
+    """
+    _, dst = find_src_dst(params.description)
+
+    btp.mesh_priv_beacon_get(dst)
+    return True
+
+
+def hdl_wid_885(params: WIDParams):
+    """
+    Implements:
+    description: Please send PRIVATE_BEACON_SET:
+
+    MeshApplicationData::Network Header
+    Network Header:
+        NID: <WildCard: Exists>
+        IVI: <WildCard: Exists>
+        TTL: <WildCard: Exists>
+        CTL: <WildCard: Exists>
+        SEQ: <WildCard: Exists>
+        SRC: [0x0003]
+        DST: [0x0001]
+        TransportPDU: <WildCard: Exists>
+    MeshApplicationData::Application Data
+    Private Beacons Server:
+        Op Code: [0xB712] PRIVATE_BEACON_SET
+        Private_Beacon: [0 (0x00)] Disable
+    Random_Update_Interval_Steps_Reference:
+        Random_Update_Interval_Steps: [3 (0x03)]
+    """
+    _, dst = find_src_dst(params.description)
+
+    pattern = re.compile(r"\((0x[0-9a-fA-F]+)\)")
+    vals = pattern.findall(params.description)
+
+    enable = int(vals[0], 16)
+    if "Random_Update_Interval_Steps" in params.description:
+        rand_interval = int(vals[1], 16)
+    else:
+        rand_interval = 0
+
+    btp.mesh_priv_beacon_set(dst, enable, rand_interval)
+    return True
+
+
+def hdl_wid_886(params: WIDParams):
+    """
+    Implements:
+    description: Please send PRIVATE_GATT_PROXY_GET:
+
+    MeshApplicationData::Network Header
+    Network Header:
+        NID: <WildCard: Exists>
+        IVI: <WildCard: Exists>
+        TTL: <WildCard: Exists>
+        CTL: <WildCard: Exists>
+        SEQ: <WildCard: Exists>
+        SRC: [0x0003]
+        DST: [0x0001]
+        TransportPDU: <WildCard: Exists>
+    MeshApplicationData::Application Data
+    Private Beacons Server:
+        Op Code: [0xB714] PRIVATE_GATT_PROXY_GET
+    """
+    _, dst = find_src_dst(params.description)
+
+    btp.mesh_priv_gatt_proxy_get(dst)
+    return True
+
+
+def hdl_wid_887(params: WIDParams):
+    """
+    Implements:
+    description: Please send PRIVATE_GATT_PROXY_SET:
+
+    MeshApplicationData::Network Header
+    Network Header:
+        NID: <WildCard: Exists>
+        IVI: <WildCard: Exists>
+        TTL: <WildCard: Exists>
+        CTL: <WildCard: Exists>
+        SEQ: <WildCard: Exists>
+        SRC: [0x0003]
+        DST: [0x0001]
+        TransportPDU: <WildCard: Exists>
+    MeshApplicationData::Application Data
+    Private Beacons Server:
+        Op Code: [0xB715] PRIVATE_GATT_PROXY_SET
+        Private_GATT_Proxy: <WildCard: Exists>
+    """
+    _, dst = find_src_dst(params.description)
+
+    btp.mesh_priv_gatt_proxy_set(dst, 0x00)
+    return True
+
+
+def hdl_wid_888(params: WIDParams):
+    """
+    Implements:
+    description: Please send PRIVATE_NODE_IDENTITY_GET:
+
+    MeshApplicationData::Network Header
+    Network Header:
+        NID: <WildCard: Exists>
+        IVI: <WildCard: Exists>
+        TTL: <WildCard: Exists>
+        CTL: <WildCard: Exists>
+        SEQ: <WildCard: Exists>
+        SRC: [0x0003]
+        DST: [0x0001]
+        TransportPDU: <WildCard: Exists>
+    MeshApplicationData::Application Data
+    Private Beacons Server:
+        Op Code: [0xB718] PRIVATE_NODE_IDENTITY_GET
+        NetKeyIndex: [0 (0x0000)]
+    """
+    _, dst = find_src_dst(params.description)
+
+    pattern = re.compile(r"\((0x[0-9a-fA-F]+)\)")
+    netkey_idx = int(pattern.findall(params.description)[0], 16)
+
+    btp.mesh_priv_node_id_get(dst, netkey_idx)
+    return True
+
+
+def hdl_wid_889(params: WIDParams):
+    """
+    Implements:
+    description: Please send PRIVATE_NODE_IDENTITY_SET:
+
+    MeshApplicationData::Network Header
+    Network Header:
+        NID: <WildCard: Exists>
+        IVI: <WildCard: Exists>
+        TTL: <WildCard: Exists>
+        CTL: <WildCard: Exists>
+        SEQ: <WildCard: Exists>
+        SRC: [0x0002]
+        DST: [0x0001]
+        TransportPDU: <WildCard: Exists>
+    MeshApplicationData::Application Data
+    Private Beacons Server:
+        Op Code: [0xB719] PRIVATE_NODE_IDENTITY_SET
+        NetKeyIndex: [0 (0x0000)]
+        Private_Identity: [0 (0x00)] Disable
+    """
+    _, dst = find_src_dst(params.description)
+
+    pattern = re.compile(r"\((0x[0-9a-fA-F]+)\)")
+    vals = pattern.findall(params.description)
+
+    netkey_idx = int(vals[0], 16)
+    enable = int(vals[1], 16)
+
+    btp.mesh_priv_node_id_set(dst, netkey_idx, enable)
+    return True
+
+
+def hdl_wid_891(params: WIDParams):
+    """
+    Implements:
+    description: Click OK when IUT is sending beacon secured using the new key with Key Refresh Flag (Flags bit 0)
+                 set to 0 and the IV Update Flag (Flags bit 1) set to 0.
+    """
     return True
 
 
