@@ -776,4 +776,64 @@ def vm_pr_job(cron, cfg, pr_cfg, **kwargs):
     return schedule.CancelJob
 
 
+@catch_exceptions(cancel_on_failure=True)
+def win_autopts_pr_job(cron, cfg, pr_cfg, server_options, **kwargs):
+    print('Started PR Job: repo_name={repo_name} PR={number} src_owner={source_repo_owner}'
+          ' branch={source_branch} head_sha={head_sha} '
+          'comment={comment_body} magic_tag={magic_tag} cfg={cfg}'.format(**pr_cfg, cfg=cfg))
+
+    included = re.sub(r'\s+', r' ', pr_cfg['comment_body'][len(pr_cfg['magic_tag']):]).strip()
+    excluded = ''
+
+    if included and not included.isspace():
+        included = ' -c {}'.format(included)
+    else:
+        included = ''
+
+    if excluded and not excluded.isspace():
+        excluded = ' -e {}'.format(excluded)
+    else:
+        excluded = ''
+
+    cfg_dict = load_config(cfg)
+    PROJECT_REPO = cfg_dict['auto_pts']['project_path']
+    test_case_db_name = 'TestCase.db'
+    pre_cleanup_files(AUTOPTS_REPO, PROJECT_REPO, test_case_db_name)
+
+    if 'git' in cfg_dict:
+        update_repos(PROJECT_REPO, cfg_dict['git'])
+
+    try:
+        merge_pr_branch(pr_cfg['source_repo_owner'], pr_cfg['source_branch'],
+                        pr_cfg['repo_name'], AUTOPTS_REPO)
+    except:
+        git_rebase_abort(AUTOPTS_REPO)
+        cron.post_pr_comment(pr_cfg['number'], 'Failed to merge the branch')
+        return schedule.CancelJob
+
+    # To prevent update of the project repo by bot, set 'update_repo'
+    # to False in ['git'] of config.py
+
+    bot_options = '{cfg} --not_recover PASS {included} {excluded}'.format(
+        cfg=cfg, included=included, excluded=excluded)
+    run_test(bot_options, server_options, AUTOPTS_REPO)
+
+    # after-cleanup
+    git_checkout('-', AUTOPTS_REPO)
+
+    # report.txt is created at the very end of bot run, so
+    # it should exists if bot completed tests fully
+    report_path = os.path.join(AUTOPTS_REPO, 'report.txt')
+    if not os.path.exists(report_path):
+        raise Exception('Bot failed before report creation')
+
+    print('{} PR Job finished'.format(pr_cfg['repo_name']))
+
+    cron.post_pr_comment(
+        pr_cfg['number'], report_to_review_msg(report_path))
+
+    # To prevent scheduler from cyclical running of the job
+    return schedule.CancelJob
+
+
 set_run_test_fun(run_test)
