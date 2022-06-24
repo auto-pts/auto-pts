@@ -282,6 +282,12 @@ def test_cases(ptses):
                   [TestFunc(lambda: pts.update_pixit_param(
                       "GAP", "TSPX_encryption_before_service_request", "TRUE"))],
                   generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/AUT/BV-27-C",
+                  cmds=pre_conditions +
+                  [TestFunc(lambda: pts.update_pixit_param(
+                      "GAP", "TSPX_encryption_before_service_request", "TRUE")),
+                   TestFunc(lambda: btp.gap_set_mitm_on())],
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/CONN/PRDA/BV-02-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
