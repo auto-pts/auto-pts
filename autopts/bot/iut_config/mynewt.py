@@ -41,7 +41,8 @@ iut_config = {
             'GAP/PRIV/CONN/BI-01-C',
             'GAP/PRIV/CONN/BI-10-C',
         ]},
-    "sc_m1l4.conf": {
+
+    "sec_m1l4.conf": {
         "overlay": {
             'BLE_SM_LEGACY': '0',
             'BLE_SM_SC': '1',
@@ -56,9 +57,10 @@ iut_config = {
             'GAP/SEC/SEM/BV-27-C',
         ]
     },
-    "sc_m1l2.conf": {
+
+    "sec_m1l2.conf": {
         "overlay": {
-            'BLE_SM_LEGACY': '0',
+            'BLE_SM_LEGACY': '1',
             'BLE_SM_SC': '1',
             'BLE_SM_SC_ONLY': '0',
             'BLE_SM_SC_LVL': '2',
@@ -68,26 +70,15 @@ iut_config = {
             'GAP/SEC/SEM/BV-39-C',
             'GAP/SEC/SEM/BV-41-C',
             'GAP/SEC/SEM/BV-43-C',
-            'GAP/SEC/SEM/BV-59-C',
+            'GAP/SEC/SEM/BV-56-C',
+            'GAP/SEC/SEM/BV-57-C',
+            'GAP/SEC/SEM/BV-59-C'
         ]
     },
 
-    "legacy_m1l2.conf": {
+    "sec_m1l3.conf": {
         "overlay": {
             'BLE_SM_LEGACY': '1',
-            'BLE_SM_SC': '1',
-            'BLE_SM_SC_ONLY': '0',
-            'BLE_SM_SC_LVL': '2',
-        },
-        "test_cases": [
-            'GAP/SEC/SEM/BV-56-C',
-            'GAP/SEC/SEM/BV-57-C'
-        ]
-    },
-
-    "sc_m1l3.conf": {
-        "overlay": {
-            'BLE_SM_LEGACY': '0',
             'BLE_SM_SC': '1',
             'BLE_SM_SC_ONLY': '0',
             'BLE_SM_SC_LVL': '3',
@@ -100,6 +91,7 @@ iut_config = {
             'GAP/SEC/SEM/BV-60-C',
         ]
     },
+
     "sc_only.conf": {
         "overlay": {
             'BLE_SM_LEGACY': '0',
