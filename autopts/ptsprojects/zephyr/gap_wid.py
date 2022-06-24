@@ -16,7 +16,6 @@
 import logging
 import socket
 import sys
-import time
 
 from autopts.pybtp import btp
 from autopts.pybtp.types import UUID, AdType, UriScheme
@@ -76,18 +75,6 @@ def gap_wid_hdl_mode1_lvl4(wid, description, test_case_name):
         return hdl_wid_139_mode1_lvl4(description)
     return gap_wid_hdl(wid, description, test_case_name)
 
-
-def gap_wid_hdl_delayed_unpair(wid, description, test_case_name):
-    if wid == 135:
-        log("%s, %r, %r, %s", gap_wid_hdl_delayed_unpair.__name__, wid, description,
-            test_case_name)
-        return True
-    if wid == 77:
-        log("%s, %r, %r, %s", gap_wid_hdl_delayed_unpair.__name__, wid, description,
-            test_case_name)
-        btp.gap_unpair()
-        return True
-    return gap_wid_hdl(wid, description, test_case_name)
 
 def hdl_wid_73(desc):
     btp.gattc_read_uuid(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
