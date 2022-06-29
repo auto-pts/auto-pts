@@ -794,7 +794,16 @@ def pull_server_logs(args):
     """Copy Bluetooth Protocol Viewer logs from auto-pts servers.
     :param args: args
     """
-    logs_folder = 'tmp/' + args.workspace
+
+    workspace_name = os.path.basename(args.workspace)
+    pqw6_ext = '.pqw6'
+    if workspace_name.endswith(pqw6_ext):
+        workspace_name = workspace_name[:-len(pqw6_ext)]
+        workspace_dir = os.path.dirname(args.workspace)
+    else:
+        workspace_dir = workspace_name
+
+    logs_folder = 'tmp/' + workspace_name
     xml_folder = 'tmp/XMLs'
     shutil.rmtree(logs_folder, ignore_errors=True)
     shutil.rmtree(xml_folder, ignore_errors=True)
@@ -810,7 +819,7 @@ def pull_server_logs(args):
 
         with ServerProxy("http://{}:{}/".format(server_addr[i], server_port[i]),
                          allow_none=True, ) as proxy:
-            file_list = proxy.list_workspace_tree(args.workspace)
+            file_list = proxy.list_workspace_tree(workspace_dir)
             if len(file_list) == 0:
                 continue
 
