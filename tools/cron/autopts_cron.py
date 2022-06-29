@@ -35,7 +35,7 @@ from time import sleep
 from argparse import Namespace
 from os.path import dirname, abspath
 from autopts.winutils import have_admin_rights
-from common import kill_processes, set_end as set_end_common, set_cron_cfg
+from tools.cron.common import kill_processes, set_end as set_end_common, set_cron_cfg
 
 END = False
 AUTOPTS_REPO=dirname(dirname(dirname(abspath(__file__))))
