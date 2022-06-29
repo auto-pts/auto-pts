@@ -41,6 +41,7 @@ import traceback
 import xmlrpc.client
 import xmlrpc.server
 from os.path import dirname, abspath
+from pathlib import Path
 from time import sleep
 
 import pythoncom
@@ -364,7 +365,11 @@ class Server(threading.Thread):
         return 'Unknown'
 
     def list_workspace_tree(self, workspace_dir):
-        logs_root = get_workspace(workspace_dir)
+        if Path(workspace_dir).is_absolute():
+            logs_root = workspace_dir
+        else:
+            logs_root = get_workspace(workspace_dir)
+
         file_list = []
         for root, dirs, files in os.walk(logs_root,
                                          topdown=False):
