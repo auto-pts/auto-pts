@@ -53,6 +53,7 @@ REPORT_TXT = "report.txt"
 COMMASPACE = ', '
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ERRATA_YAML_PATH = os.path.join(os.path.dirname(PROJECT_DIR), 'errata.yaml')
 log = logging.debug
 
 
@@ -512,7 +513,7 @@ def make_report_xlsx(results_dict, status_dict, regressions_list,
     errata = {}
 
     try:
-        with open('errata.yaml', 'r') as stream:
+        with open(ERRATA_YAML_PATH, 'r') as stream:
             errata = yaml.safe_load(stream)
     except Exception as exc:
         print(exc)
@@ -615,7 +616,7 @@ def make_report_txt(results_dict, regressions_list,
     errata = {}
 
     try:
-        with open('errata.yaml', 'r') as stream:
+        with open(ERRATA_YAML_PATH, 'r') as stream:
             errata = yaml.safe_load(stream)
     except Exception as exc:
         print(exc)
