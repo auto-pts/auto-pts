@@ -1016,7 +1016,7 @@
           <Row>
             <Name>TSPC_GAP_25_2</Name>
             <Description>LE security mode 2 (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1382,7 +1382,7 @@
           <Row>
             <Name>TSPC_GAP_35_2</Name>
             <Description>LE security mode 2 (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
