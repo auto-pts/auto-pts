@@ -47,7 +47,7 @@ iut_config = {
             'BLE_SM_LEGACY': '0',
             'BLE_SM_SC': '1',
             'BLE_SM_SC_ONLY': '0',
-            'BLE_SM_SC_LVL': '4',
+            'BLE_SM_LVL': '4',
         },
         "test_cases": [
             'GAP/SEC/SEM/BV-21-C',
@@ -63,7 +63,7 @@ iut_config = {
             'BLE_SM_LEGACY': '1',
             'BLE_SM_SC': '1',
             'BLE_SM_SC_ONLY': '0',
-            'BLE_SM_SC_LVL': '2',
+            'BLE_SM_LVL': '2',
         },
         "test_cases": [
             'GAP/SEC/SEM/BV-37-C',
@@ -81,7 +81,7 @@ iut_config = {
             'BLE_SM_LEGACY': '1',
             'BLE_SM_SC': '1',
             'BLE_SM_SC_ONLY': '0',
-            'BLE_SM_SC_LVL': '3',
+            'BLE_SM_LVL': '3',
         },
         "test_cases": [
             'GAP/SEC/SEM/BV-38-C',
@@ -97,7 +97,7 @@ iut_config = {
             'BLE_SM_LEGACY': '0',
             'BLE_SM_SC': '1',
             'BLE_SM_SC_ONLY': '1',
-            'BLE_SM_SC_LVL': '4',
+            'BLE_SM_LVL': '4',
             'BLE_SM_MITM': '1'
         },
         "test_cases": [
