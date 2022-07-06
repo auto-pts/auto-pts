@@ -699,7 +699,7 @@ def run_test_case_wrapper(func):
         end_time_str = str(round(datetime.timedelta(
             seconds=end_time).total_seconds(), 3))
 
-        result = ("{}".format(status).ljust(16) +
+        result = ("{} ".format(status).ljust(15) +
                   end_time_str.rjust(len(end_time_str)) +
                   retries_msg.rjust(len("#{}".format(retries_max)) + margin) +
                   regression_msg.rjust(len("REGRESSION") + margin))
