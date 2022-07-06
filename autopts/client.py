@@ -830,16 +830,9 @@ def run_test_case_thread_entry(pts, test_case, exceptions):
         test_case)
 
 
-def run_test_case_thread_fun(results, ptses, test_case_instances, test_case_name, stats,
-                             session_log_dir, exceptions):
-    status, duration = run_test_case(ptses, test_case_instances, test_case_name, stats,
-                                     session_log_dir, exceptions)
-    results.append(status)
-    results.append(duration)
-
-
 @run_test_case_wrapper
-def run_test_case(ptses, test_case_instances, test_case_name, stats, session_log_dir, exceptions):
+def run_test_case(ptses, test_case_instances, test_case_name, stats,
+                  session_log_dir, exceptions, timeout):
     def test_case_lookup_name(name, test_case_class):
         """Return 'test_case_class' instance if found or None otherwise"""
         if test_case_instances is None:
@@ -856,6 +849,9 @@ def run_test_case(ptses, test_case_instances, test_case_name, stats, session_log
     format_template = ("%(asctime)s %(name)s %(levelname)s %(filename)-25s "
                        "%(lineno)-5s %(funcName)-25s : %(message)s")
     formatter = logging.Formatter(format_template)
+
+    if timeout == 0:
+        timeout = None
 
     # Lookup TestCase class instance
     test_case_lt1 = test_case_lookup_name(test_case_name, TestCaseLT1)
@@ -889,14 +885,14 @@ def run_test_case(ptses, test_case_instances, test_case_name, stats, session_log
         # Multi-instance related stuff
         pts_threads = []
 
-        pts_thread = threading.Thread(
+        pts_thread = InterruptableThread(
             target=run_test_case_thread_entry,
             args=(ptses[0], test_case_lt1, exceptions))
         pts_threads.append(pts_thread)
         pts_thread.start()
 
         if test_case_lt2:
-            pts_thread = threading.Thread(
+            pts_thread = InterruptableThread(
                 target=run_test_case_thread_entry,
                 args=(ptses[1], test_case_lt2, exceptions))
             pts_threads.append(pts_thread)
@@ -904,7 +900,10 @@ def run_test_case(ptses, test_case_instances, test_case_name, stats, session_log
 
         # Wait till every PTS instance finish executing test case
         for pts_thread in pts_threads:
-            pts_thread.join()
+            pts_thread.join(timeout=timeout)
+            if pts_thread.is_alive():
+                pts_thread.interrupt()
+                test_case_lt1.status = 'SUPERGUARD TIMEOUT'
 
         logger.removeHandler(file_handler)
 
@@ -995,33 +994,9 @@ def run_test_cases(ptses, test_case_instances, args):
         stats.run_count = 0
 
         while True:
-            timeout = False
-
-            if args.superguard:
-                results = []
-                guarded_thread = InterruptableThread(target=run_test_case_thread_fun,
-                                                     args=(results, ptses,
-                                                           test_case_instances,
-                                                           test_case, stats,
-                                                           session_log_dir,
-                                                           exceptions), daemon=True)
-
-                guarded_thread.start()
-                guarded_thread.join(timeout=args.superguard)
-
-                if guarded_thread.is_alive():
-                    exceptions.put(Exception('Superguard timeout'))
-                    guarded_thread.interrupt()
-                    status = 'SUPERGUARD TIMEOUT'
-                    duration = args.superguard
-                    timeout = True
-                else:
-                    status = results[0]
-                    duration = results[1]
-            else:
-                status, duration = run_test_case(ptses, test_case_instances,
-                                                 test_case, stats,
-                                                 session_log_dir, exceptions)
+            status, duration = run_test_case(ptses, test_case_instances,
+                                             test_case, stats, session_log_dir,
+                                             exceptions, args.superguard)
 
             if RUN_END:
                 raise RunEnd
@@ -1036,8 +1011,7 @@ def run_test_cases(ptses, test_case_instances, args):
                 finally:
                     print(exeption_msg)
 
-            if timeout or args.recovery and \
-                    (exeption_msg != '' or status not in args.not_recover):
+            if args.recovery and (exeption_msg != '' or status not in args.not_recover):
                 run_recovery(args, ptses)
 
             if (status == 'PASS' and not args.stress_test) or stats.run_count == args.retry:
