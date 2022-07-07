@@ -42,6 +42,8 @@ def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None):
                   board, conf_file)
     tester_dir = os.path.join(zephyr_wd, "tests", "bluetooth", "tester")
 
+    check_call('rm -rf build/'.split(), cwd=tester_dir)
+
     cmd = ['west', 'build', '-p', 'auto', '-b', board]
     if conf_file and conf_file != 'default' and conf_file != 'prj.conf':
         cmd.extend(('--', '-DOVERLAY_CONFIG={}'.format(conf_file)))
