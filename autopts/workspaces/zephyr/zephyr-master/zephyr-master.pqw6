@@ -1874,6 +1874,36 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_SUMICS_31_17</Name>
+            <Description>Core Spec Version 4.2, Adopted 02 December 2014 (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SUMICS_31_18</Name>
+            <Description>Core Spec Version 4.2 + HS, Adopted 02 December 2014 (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SUMICS_31_19</Name>
+            <Description>Core Specification Version 5.0. Adopted 06 December 2016 (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SUMICS_31_20</Name>
+            <Description>Core Specification Version 5.1. Adopted 15 January 2019 (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SUMICS_31_21</Name>
+            <Description>Core Specification Version 5.2. Adopted 31 December 2019 (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_L2CAP_2_11</Name>
             <Description>Support flow control mode (C.17)</Description>
             <Value>FALSE</Value>
@@ -2286,6 +2316,17 @@
             <Value>TRUE</Value>
           </Row>
           <!--<Row>
+      <Name>TSPX_ead_keys_sharing_method</Name>
+      <Type>IA5STRING</Type>
+      <Description>EAD test case key sharing method options. This is only used for EAD test cases. If KEYS_SHARED_VIA_IXIT is chosen, TSPX_encrypted_data_key and TSPX_initialization_vector will be used.</Description>
+      <Type>OCTETSTRING</Type>
+      <Value>KEYS_EXCHANGED_VIA_CONNECTION</Value>
+      <ValueList>
+        <ValueListItem>KEYS_EXCHANGED_VIA_CONNECTION</ValueListItem>
+        <ValueListItem>KEYS_SHARED_VIA_IXIT</ValueListItem>
+      </ValueList>
+    </Row>
+    <Row>
       <Name>TSPX_encrypted_data_key</Name>
       <Description>Encrypted Data Key as BIG Endian. This IXIT is only used for SCN test case (16 bytes)</Description>
       <Type>OCTETSTRING</Type>
@@ -2685,7 +2726,7 @@
           </Row>
           <Row>
             <Name>TSPC_GATT_4_23</Name>
-            <Description>Service Changed Characteristic (C.1)</Description>
+            <Description>Service Changed Characteristic (C.14)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -5440,6 +5481,42 @@
           <Row>
             <Name>TSPC_SM_8_3</Name>
             <Description>Derivation of BR/EDR Link Key from LE LTK (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SUM_ICS_31_17</Name>
+            <Description>Core Spec Version 4.2, Adopted 02 December 2014 (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SUM_ICS_31_18</Name>
+            <Description>Core Spec Version 4.2 + HS, Adopted 02 December 2014 (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SUM_ICS_31_19</Name>
+            <Description>Core Specification Version 5.0. Adopted 06 December 2016 (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SUM_ICS_31_20</Name>
+            <Description>Core Specification Version 5.1. Adopted 15 January 2019 (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SUM_ICS_31_21</Name>
+            <Description>Core Specification Version 5.2. Adopted 31 December 2019 (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SUM_ICS_31_22</Name>
+            <Description>Core Specification Version 5.3. Adopted 06 July 2021 (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
