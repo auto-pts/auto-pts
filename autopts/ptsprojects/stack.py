@@ -164,6 +164,7 @@ class Gap:
         self.bond_lost_ev_data = Property(None)
         # if no io_cap was set it means we use no_input_output
         self.io_cap = IOCap.no_input_output
+        self.sec_level = Property(None)
 
     def wait_for_connection(self, timeout):
         if self.is_connected():
@@ -293,6 +294,21 @@ class Gap:
                     break
 
         return self.bond_lost_ev_data.data
+
+    def gap_wait_for_sec_lvl_change(self, level, timeout=5):
+        if self.sec_level != level:
+            flag = Event()
+            flag.set()
+
+            t = Timer(timeout, timeout_cb, [flag])
+            t.start()
+
+            while flag.is_set():
+                if self.sec_level == level:
+                    t.cancel()
+                    break
+
+        return self.sec_level
 
 
 class Mesh:

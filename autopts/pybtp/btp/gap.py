@@ -154,6 +154,7 @@ def gap_connected_ev_(gap, data, data_len):
 def gap_disconnected_ev_(gap, data, data_len):
     logging.debug("%s %r", gap_disconnected_ev_.__name__, data)
 
+    gap.sec_level = 0
     gap.connected.data = None
 
 
@@ -227,6 +228,8 @@ def gap_sec_level_changed_ev_(gap, data, data_len):
 
     _addr_t, _addr, _level = struct.unpack_from(fmt, data)
     _addr = binascii.hexlify(_addr[::-1]).decode()
+
+    gap.sec_level = _level
 
     logging.debug("received %r", (_addr_t, _addr, _level))
 
@@ -369,6 +372,12 @@ def gap_wait_for_lost_bond(timeout=30):
     stack = get_stack()
 
     return stack.gap.gap_wait_for_lost_bond(timeout)
+
+
+def gap_wait_for_sec_lvl_change(level, timeout=30):
+    stack = get_stack()
+
+    return stack.gap.gap_wait_for_sec_lvl_change(level, timeout)
 
 
 def gap_adv_ind_on(ad=None, sd=None, duration=AdDuration.forever, own_addr_type=OwnAddrType.le_identity_address):

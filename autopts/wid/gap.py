@@ -511,6 +511,7 @@ def hdl_wid_114(params: WIDParams):
 
 
 def hdl_wid_118(_: WIDParams):
+    btp.gap_wait_for_sec_lvl_change(1)
     return True
 
 
