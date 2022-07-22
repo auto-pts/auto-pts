@@ -600,6 +600,15 @@ def hdl_wid_272(_: WIDParams):
     return True
 
 
+def hdl_wid_2000(_: WIDParams):
+    stack = get_stack()
+
+    passkey = stack.gap.get_passkey()
+    stack.gap.passkey.data = None
+
+    return passkey
+
+
 def hdl_wid_20001(_: WIDParams):
     stack = btp.get_stack()
     btp.gap_set_conn()

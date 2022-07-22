@@ -56,9 +56,8 @@ def hdl_wid_104(params: WIDParams):
     if stack.gap.io_cap == IOCap.keyboard_only:
         bd_addr = btp.pts_addr_get()
         bd_addr_type = btp.pts_addr_type_get()
-        if stack.gap.get_passkey() is None:
-            return False
-        btp.gap_passkey_entry_rsp(bd_addr, bd_addr_type, stack.gap.passkey.data)
+        passkey = stack.gap.get_passkey()
+        btp.gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey)
     return btp.var_store_get_passkey(params.description)
 
 
@@ -133,8 +132,12 @@ def hdl_wid_142(params: WIDParams):
         return False
 
     btp.gap_passkey_confirm_rsp(bd_addr, bd_addr_type, passkey)
+    match = stack.gap.passkey.data == passkey
 
-    return stack.gap.passkey.data == passkey
+    # clear passkey for repeated pairing attempts
+    stack.gap.passkey.data = None
+
+    return match
 
 
 def hdl_wid_143(params: WIDParams):
