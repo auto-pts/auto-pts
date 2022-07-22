@@ -679,7 +679,7 @@ def hdl_wid_53(params: WIDParams):
         return False
 
     btp.gattc_read_long(btp.pts_addr_type_get(), btp.pts_addr_get(),
-                        read_hdl, offset, 1)
+                        read_hdl, int(offset, 16) + 1, 1)
 
     btp.gattc_read_long_rsp(True, False)
     btp.add_to_verify_values(str(read_hdl))
@@ -895,10 +895,10 @@ def hdl_wid_76(params: WIDParams):
         return False
 
     handle = command_params[0]
-    off = int(command_params[1])
+    length = int(command_params[1])
 
     btp.gattc_write_long(btp.pts_addr_type_get(), btp.pts_addr_get(),
-                         handle, off, '12', None)
+                         handle, 0, '12', length)
     no_rsp_check_tests = [
         "GATT/CL/GAW/BV-10-C",
         "GATT/CL/GAW/BI-37-C"
@@ -1629,6 +1629,7 @@ def hdl_wid_135(params: WIDParams):
 
     btp.gattc_write(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
                     hdl, '01', 1)
+    btp.gattc_write_rsp()
     return True
 
 
@@ -1907,7 +1908,7 @@ def hdl_wid_502(_: WIDParams):
 def hdl_wid_2000(_: WIDParams):
     stack = get_stack()
 
-    passkey = stack.gap.passkey.data
+    passkey = stack.gap.get_passkey()
     stack.gap.passkey.data = None
 
     return passkey

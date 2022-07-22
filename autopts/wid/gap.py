@@ -490,11 +490,14 @@ def hdl_wid_106(_: WIDParams):
 
 
 def hdl_wid_108(params: WIDParams):
-    if params.description == 'Please start the Bonding Procedure in bondable mode.':
-        btp.gap_set_bondable_on()
-    else:
-        # Please configure the IUT into LE Security and start pairing process.
+    if params.test_case_name == 'GAP/SEC/AUT/BV-21-C':
         btp.gap_pair()
+    else:
+        if params.description == 'Please start the Bonding Procedure in bondable mode.':
+            btp.gap_set_bondable_on()
+        else:
+            # Please configure the IUT into LE Security and start pairing process.
+            btp.gap_pair()
     return True
 
 
@@ -635,7 +638,7 @@ def hdl_wid_138(_: WIDParams):
     return btp.check_discov_results()
 
 
-def hdl_wid_139(_: WIDParams):
+def hdl_wid_139(params: WIDParams):
     attrs = btp.gatts_get_attrs(type_uuid='2803')
     bd_addr = btp.pts_addr_get()
     bd_addr_type = btp.pts_addr_type_get()
@@ -661,8 +664,13 @@ def hdl_wid_139(_: WIDParams):
         if not chrc_value_attr:
             continue
 
+        if params.test_case_name == 'GAP/SEC/SEM/BV-43-C':
+            perm = Perm.read_enc
+        else:
+            perm = Perm.read_authn
+
         (handle, permission, type_uuid) = chrc_value_attr[0]
-        if permission & Perm.read_authn:
+        if permission & perm:
             return format(handle, 'x').zfill(4)
 
     return False
@@ -752,7 +760,7 @@ def hdl_wid_143(_: WIDParams):
     return bool(get_stack().gap.bond_lost_ev_data.data)
 
 
-def hdl_wid_144(_: WIDParams):
+def hdl_wid_144(params: WIDParams):
     attrs = btp.gatts_get_attrs(type_uuid='2803')
     bd_addr = btp.pts_addr_get()
     bd_addr_type = btp.pts_addr_type_get()
@@ -779,7 +787,11 @@ def hdl_wid_144(_: WIDParams):
             continue
 
         (handle, permission, type_uuid) = chrc_value_attr[0]
-        if permission & Perm.read_enc:
+        if params.test_case_name == 'GAP/SEC/AUT/BV-24-C':
+            perm = Perm.read_authn
+        else:
+            perm = Perm.read_enc
+        if permission & perm:
             return format(handle, 'x').zfill(4)
 
     return False
@@ -987,6 +999,9 @@ def hdl_wid_206(params: WIDParams):
     bd_addr = btp.pts_addr_get()
     bd_addr_type = btp.pts_addr_type_get()
 
+    stack = get_stack()
+    _ = stack.gap.get_passkey()
+
     btp.gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey)
     return True
 
@@ -1190,13 +1205,16 @@ def hdl_wid_406(_: WIDParams):
 
 def hdl_wid_1002(_: WIDParams):
     stack = get_stack()
-    return stack.gap.get_passkey()
+    passkey = stack.gap.get_passkey()
+    stack.gap.passkey.data = None
+
+    return passkey
 
 
 def hdl_wid_2000(_: WIDParams):
     stack = get_stack()
 
-    passkey = stack.gap.passkey.data
+    passkey = stack.gap.get_passkey()
     stack.gap.passkey.data = None
 
     return passkey
