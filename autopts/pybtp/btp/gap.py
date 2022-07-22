@@ -102,6 +102,12 @@ GAP = {
                        defs.GAP_SET_SC_ONLY, CONTROLLER_INDEX, 1),
     "set_sc_only_off": (defs.BTP_SERVICE_ID_GAP,
                         defs.GAP_SET_SC_ONLY, CONTROLLER_INDEX, 0),
+    "set_sc_on": (defs.BTP_SERVICE_ID_GAP,
+                  defs.GAP_SET_SC, CONTROLLER_INDEX, 1),
+    "set_sc_off": (defs.BTP_SERVICE_ID_GAP,
+                   defs.GAP_SET_SC, CONTROLLER_INDEX, 0),
+    "set_min_enc_key_size": (defs.BTP_SERVICE_ID_GAP,
+                             defs.GAP_SET_MIN_ENC_KEY_SIZE, CONTROLLER_INDEX),
 }
 
 
@@ -1079,6 +1085,54 @@ def gap_set_sc_only_off():
     iutctl = get_iut()
 
     iutctl.btp_socket.send(*GAP['set_sc_only_off'])
+
+    tuple_data = gap_command_rsp_succ()
+    __gap_current_settings_update(tuple_data)
+
+
+def gap_set_min_enc_key_size(enc_key_size):
+    logging.debug("%s %r", gap_set_min_enc_key_size.__name__,
+                  enc_key_size)
+
+    iutctl = get_iut()
+
+    data_ba = bytearray()
+    data_ba.extend(chr(enc_key_size).encode('utf-8'))
+
+    iutctl.btp_socket.send(*GAP['set_min_enc_key_size'], data=data_ba)
+
+    gap_command_rsp_succ()
+
+
+def gap_set_sc_on():
+    logging.debug("%s", gap_set_sc_on.__name__)
+
+    stack = get_stack()
+
+    if stack.gap.current_settings_get(
+            gap_settings_btp2txt[defs.GAP_SETTINGS_SC]):
+        return
+
+    iutctl = get_iut()
+
+    iutctl.btp_socket.send(*GAP['set_sc_on'])
+
+    tuple_data = gap_command_rsp_succ()
+    __gap_current_settings_update(tuple_data)
+
+
+def gap_set_sc_off():
+    logging.debug("%s", gap_set_sc_off.__name__)
+
+    stack = get_stack()
+
+    if not stack.gap.current_settings_get(
+            gap_settings_btp2txt[defs.GAP_SETTINGS_SC]):
+        return
+
+    iutctl = get_iut()
+
+    iutctl.btp_socket.send(*GAP['set_sc_off'])
 
     tuple_data = gap_command_rsp_succ()
     __gap_current_settings_update(tuple_data)

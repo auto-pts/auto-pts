@@ -228,6 +228,7 @@ Commands and responses:
 			13	Privacy
 			14	Controller Configuration
 			15	Static Address
+			16	Secure Connections Only
 
 		In case of an error, the error response will be returned.
 
@@ -571,7 +572,7 @@ Commands and responses:
 
 		In case of an error, the error response will be returned.
 
-	Opcode 0x1b - Set MITM
+	Opcode 0x1b - Set MITM command/response
 
 		Controller Index:	<controller id>
 		Command parameters:	 mitm (1 octet)
@@ -581,7 +582,7 @@ Commands and responses:
 
 		In case of an error, the error response will be returned.
 
-	Opcode 0x1c - Set filter accept list
+	Opcode 0x1c - Set filter accept list command/response
 
 		Controller Index: <controller id>
 
@@ -598,7 +599,7 @@ Commands and responses:
 
 		In case of an error, the error response will be returned.
 
-	Opcode 0x1d - Set Privacy
+	Opcode 0x1d - Set Privacy command/response
 
 		Controller Index:	<controller id>
 		Command parameters:	 Privacy_Setting (1 octet)
@@ -613,7 +614,7 @@ Commands and responses:
 
 		In case of an error, the error response will be returned.
 
-	Opcode 0x1e - Set SC Only
+	Opcode 0x1e - Set SC Only command/response
 
 		Controller Index:	<controller id>
 		Command parameters:	 SC_Only_Setting (1 octet)
@@ -625,6 +626,35 @@ Commands and responses:
 		This command is used to set SC Only setting. This command
 		is designed for systems that allow to change SC Only setting
 		during runtime of the system.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x1f - Set Secure Connections command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	 SC_Setting (1 octet)
+		Response parameters:	Current_Settings (4 Octets)
+
+		Valid SC_Only_Setting values:	0x00 = Disable
+						0x01 = Enable
+
+		This command is used to enable/disable Secure Connections setting.
+		This command is designed for systems that allow to change Secure
+		Connections setting during runtime of the system.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x20 - Set Minimum Encryption Key Size command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	Encryption_Key_Size (1 octet)
+		Response parameters:	<none>
+
+		This command is used to set minimum Encryption Key Size for
+		security procedure.
+
+		Possible values for Encryption_Key_Size parameter are:
+								<0x07, 0x0f>
 
 		In case of an error, the error response will be returned.
 
