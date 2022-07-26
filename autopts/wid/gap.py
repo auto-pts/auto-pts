@@ -490,7 +490,7 @@ def hdl_wid_106(_: WIDParams):
 
 
 def hdl_wid_108(params: WIDParams):
-    if params.test_case_name == 'GAP/SEC/AUT/BV-21-C':
+    if params.test_case_name in ['GAP/SEC/AUT/BV-21-C', 'GAP/SEC/AUT/BV-17-C', 'GAP/CONN/PRDA/BV-02-C']:
         btp.gap_pair()
     else:
         if params.description == 'Please start the Bonding Procedure in bondable mode.':
@@ -1136,6 +1136,7 @@ def hdl_wid_239(_: WIDParams):
 
     return False
 
+
 def hdl_wid_240(_: WIDParams):
     # confirm IUT in sec mode 1 level 2
     btp.gap_set_io_cap(IOCap.no_input_output)
@@ -1148,10 +1149,15 @@ def hdl_wid_241(_: WIDParams):
     return True
 
 
+def hdl_wid_265(_: WIDParams):
+    # Please initiate a link encryption with the Lower Tester.
+    btp.gap_pair()
+    return True
+
+
 def hdl_wid_267(_: WIDParams):
     # Click Yes if device support User Interaction to pair with the peer.
-    # As we are already paired, we can only enable security - return False
-    return False
+    return True
 
 
 def hdl_wid_400(_: WIDParams):
