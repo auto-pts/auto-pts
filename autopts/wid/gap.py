@@ -400,8 +400,13 @@ def hdl_wid_77(_: WIDParams):
     return True
 
 
-def hdl_wid_78(_: WIDParams):
-    btp.gap_conn()
+def hdl_wid_78(params: WIDParams):
+    if params.test_case_name.startswith("GAP/CONN/ACEP"):
+        # Use LE ANY addr to trigger auto connection establishment procedure
+        btp.gap_conn(b"00:00:00:00:00:00", 0)
+    else:
+        btp.gap_conn()
+
     return True
 
 
@@ -425,6 +430,9 @@ def hdl_wid_80(_: WIDParams):
 
 
 def hdl_wid_82(_: WIDParams):
+    """Please prepare IUT into the Auto Connection Establishment Procedure."""
+    btp.set_filter_accept_list()
+
     return True
 
 
