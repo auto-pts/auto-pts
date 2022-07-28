@@ -413,22 +413,24 @@ def hdl_wid_112(_: WIDParams):
         return False
 
     data_0 = channels[0]
-    if len(data_0) != 1:
-        return False
-
-    data_0 = data_0[0]
     data_1 = channels[1]
-    if len(data_1) != 1:
+
+    data_0_unfolded = []
+    for x in data_0:
+        data_0_unfolded.extend(x)
+
+
+    data_1_unfolded = []
+    for x in data_1:
+        data_1_unfolded.extend(x)
+
+
+    expected = [0xaa] * len(data_0_unfolded)
+    if not data_0_unfolded == expected:
         return False
 
-    data_1 = data_1[0]
-
-    expected = bytes.fromhex('aa' * len(data_0))
-    if not data_0 == expected:
-        return False
-
-    expected = bytes.fromhex('55' * len(data_1))
-    if not data_1 == expected:
+    expected = [0x55] * len(data_1_unfolded)
+    if not data_1_unfolded == expected:
         return False
 
     return True
