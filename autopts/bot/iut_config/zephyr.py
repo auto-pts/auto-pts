@@ -154,4 +154,13 @@ iut_config = {
             'L2CAP/TIM/BV-03-C',
         ]
     },
+
+    "no_att_sec_retry.conf": {
+        "overlay": {
+            'CONFIG_BT_ATT_RETRY_ON_SEC_ERR': 'n',
+        },
+        "test_cases": [
+            'GATT/CL/GAR/BI-42-C',
+        ]
+    },
 }
