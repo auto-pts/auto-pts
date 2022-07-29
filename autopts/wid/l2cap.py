@@ -140,7 +140,7 @@ def hdl_wid_40(_: WIDParams):
     return rx_data is not None
 
 
-def hdl_wid_41(_: WIDParams):
+def hdl_wid_41(params: WIDParams):
     """
     Implements: TSC_MMI_iut_send_le_credit_based_connection_request
     description: Using the Implementation Under Test (IUT), send a LE Credit based connection request to PTS.
@@ -148,7 +148,13 @@ def hdl_wid_41(_: WIDParams):
     stack = get_stack()
     l2cap = stack.l2cap
 
-    btp.l2cap_conn(None, None, stack.l2cap.psm, l2cap.initial_mtu)
+    if params.test_case_name in ['L2CAP/LE/CFC/BV-02-C']:
+        if not l2cap.is_connected(0):
+            btp.l2cap_conn(None, None, stack.l2cap.psm, l2cap.initial_mtu)
+        else:
+            pass # skip second wid call
+    else:
+        btp.l2cap_conn(None, None, stack.l2cap.psm, l2cap.initial_mtu)
 
     return True
 
@@ -199,6 +205,7 @@ def hdl_wid_51(_: WIDParams):
     Implements: TSC_MMI_iut_enable_le_connection
     description: Initiate or create LE ACL connection to the PTS.
     """
+    btp.gap_wait_for_disconnection(5)
     btp.gap_conn()
 
     return True
@@ -453,7 +460,7 @@ def hdl_wid_138(_: WIDParams):
     L2CAP. When receiving Credit Based Connection Request from PTS, please respond with
     Result 0x0008 (Insufficient Encryption)
     """
-    return True
+    return get_stack().gap.wait_for_connection(5)
 
 
 def hdl_wid_251(_: WIDParams):
