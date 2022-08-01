@@ -14,6 +14,7 @@
 #
 
 """GAP test cases"""
+import binascii
 
 from autopts.pybtp import btp
 from autopts.pybtp.types import Addr, IOCap, AdType, AdFlags, Prop, Perm, UUID
@@ -48,6 +49,9 @@ ad = [(AdType.uuid16_some, '1111'),
       (AdType.manufacturer_data, '11111111'),
       (AdType.uuid16_svc_data, '111111')]
 
+# Ad data for periodic advertising in format (type, data)
+# Value: shortened name
+periodic_data = (0x08, "PADV_Tester")
 
 def set_pixits(ptses):
     """Setup GAP profile PIXITS for workspace. Those values are used for test
@@ -126,6 +130,9 @@ def set_pixits(ptses):
                   "TSPX_iut_device_name_in_adv_packet_for_random_address", "")
     pts.set_pixit("GAP", "TSPX_Tgap_104", "60000")
     pts.set_pixit("GAP", "TSPX_URI", "000168747470733A2F2F7777772E626C7565746F")
+    pts.set_pixit("GAP", "TSPX_periodic_advertising_data",
+                  binascii.hexlify((chr(len(periodic_data[1]) + 1) + chr(periodic_data[0]) +
+                                    periodic_data[1]).encode()))
 
 
 def test_cases(ptses):
@@ -151,7 +158,7 @@ def test_cases(ptses):
         TestFunc(btp.core_reg_svc_gatt),
         TestFunc(stack.gap_init, iut_device_name,
                  iut_manufacturer_data, iut_appearance, iut_svc_data, iut_flags,
-                 iut_svcs, iut_ad_uri),
+                 iut_svcs, iut_ad_uri, periodic_data),
         TestFunc(stack.gatt_init),
         TestFunc(stack.gatt_cl_init),
         TestFunc(btp.gap_read_ctrl_info),

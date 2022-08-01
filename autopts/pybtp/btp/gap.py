@@ -112,6 +112,25 @@ GAP = {
                                   defs.GAP_SET_EXTENDED_ADVERTISING, CONTROLLER_INDEX, 1),
     "set_extend_advertising_off": (defs.BTP_SERVICE_ID_GAP,
                                    defs.GAP_SET_EXTENDED_ADVERTISING, CONTROLLER_INDEX, 0),
+    "padv_configure": (defs.BTP_SERVICE_ID_GAP,
+                       defs.GAP_PADV_CONFIGURE, CONTROLLER_INDEX),
+    "padv_start": (defs.BTP_SERVICE_ID_GAP,
+                   defs.GAP_PADV_START, CONTROLLER_INDEX),
+    "padv_stop": (defs.BTP_SERVICE_ID_GAP,
+                  defs.GAP_PADV_STOP, CONTROLLER_INDEX, ""),
+    "padv_set_data": (defs.BTP_SERVICE_ID_GAP,
+                      defs.GAP_PADV_SET_DATA, CONTROLLER_INDEX),
+    "padv_create_sync": (defs.BTP_SERVICE_ID_GAP,
+                         defs.GAP_PADV_CREATE_SYNC, CONTROLLER_INDEX),
+    "padv_sync_transfer_set_info": (defs.BTP_SERVICE_ID_GAP,
+                                    defs.GAP_PADV_SYNC_TRANSFER_SET_INFO,
+                                    CONTROLLER_INDEX),
+    "padv_sync_transfer_start": (defs.BTP_SERVICE_ID_GAP,
+                                 defs.GAP_PADV_SYNC_TRANSFER_START,
+                                 CONTROLLER_INDEX),
+    "padv_sync_transfer_recv": (defs.BTP_SERVICE_ID_GAP,
+                                defs.GAP_PADV_SYNC_TRANSFER_RECV,
+                                CONTROLLER_INDEX),
 }
 
 
@@ -294,6 +313,32 @@ def gap_bond_lost_ev_(gap, data, data_len):
     gap.bond_lost_ev_data.data = (_addr_t, _addr)
 
 
+def gap_padv_sync_established_ev_(gap, data, data_len):
+    logging.debug("%s", gap_padv_sync_established_ev_.__name__)
+    stack = get_stack()
+
+    stack.gap.periodic_sync_established_rxed = True
+
+
+def gap_padv_sync_lost_ev_(gap, data, data_len):
+    logging.debug("%s", gap_padv_sync_lost_ev_.__name__)
+    stack = get_stack()
+
+    stack.gap.periodic_sync_lost_rxed = True
+
+
+def gap_padv_report_ev_(gap, data, data_len):
+    logging.debug("%s", gap_padv_report_ev_.__name__)
+    stack = get_stack()
+    stack.gap.periodic_report_rxed = True
+
+
+def gap_padv_transfer_received_ev_(gap, data, data_len):
+    logging.debug("%s", gap_padv_transfer_received_ev_.__name__)
+    stack = get_stack()
+    stack.gap.periodic_transfer_received = True
+
+
 def gap_passkey_confirm_req_ev_(gap, data, data_len):
     logging.debug("%s", gap_passkey_confirm_req_ev_.__name__)
     iutctl = get_iut()
@@ -339,6 +384,10 @@ GAP_EV = {
     defs.GAP_EV_PAIRING_CONSENT_REQ: gap_pairing_consent_ev_,
     defs.GAP_EV_PAIRING_FAILED: gap_pairing_failed_ev_,
     defs.GAP_EV_BOND_LOST: gap_bond_lost_ev_,
+    defs.GAP_EV_PERIODIC_SYNC_ESTABLISHED: gap_padv_sync_established_ev_,
+    defs.GAP_EV_PERIODIC_SYNC_LOST: gap_padv_sync_lost_ev_,
+    defs.GAP_EV_PERIODIC_REPORT: gap_padv_report_ev_,
+    defs.GAP_EV_PERIODIC_TRANSFER_RECEIVED: gap_padv_transfer_received_ev_
 }
 
 
@@ -1249,3 +1298,112 @@ def check_scan_rep_and_rsp(report, response):
         if report in eir and response in eir:
             return True
     return False
+
+
+def gap_padv_configure(include_tx_power, intvl_min, intvl_max):
+    logging.debug("%s", gap_padv_configure.__name__)
+
+    iutctl = get_iut()
+    data_ba = bytearray(struct.pack("<BHH", include_tx_power,
+                                    intvl_min, intvl_max))
+
+    iutctl.btp_socket.send(*GAP['padv_configure'], data=data_ba)
+
+    tuple_data = gap_command_rsp_succ(defs.GAP_PADV_CONFIGURE)
+    __gap_current_settings_update(tuple_data)
+
+
+def gap_padv_start(flags=0):
+    logging.debug("%s", gap_padv_start.__name__)
+
+    iutctl = get_iut()
+    data_ba = bytearray(struct.pack('<B', flags))
+
+    iutctl.btp_socket.send(*GAP['padv_start'], data=data_ba)
+
+    tuple_data = gap_command_rsp_succ(defs.GAP_PADV_START)
+    __gap_current_settings_update(tuple_data)
+
+
+def gap_padv_set_data(data):
+    logging.debug("%s", gap_padv_set_data.__name__)
+
+    iutctl = get_iut()
+
+    if isinstance(data, str):
+        data = data.encode()
+
+    data_ba = bytearray(struct.pack("<H%ds" % len(data), len(data), data))
+
+    iutctl.btp_socket.send(*GAP['padv_set_data'], data=data_ba)
+
+    gap_command_rsp_succ()
+
+
+def gap_padv_create_sync(adv_sid, skip, sync_to, flags,
+                         addr_type=None, addr=None):
+    logging.debug("%s", gap_padv_create_sync.__name__)
+
+    if not addr_type or not addr:
+        addr_type = pts_addr_type_get(None)
+        addr = addr2btp_ba(pts_addr_get(None))
+
+    iutctl = get_iut()
+
+    data_ba = bytearray(struct.pack("<B6s", addr_type, addr))
+    data_ba.extend(bytearray(struct.pack("<BHHB", adv_sid, skip,
+                                         sync_to, flags)))
+
+    iutctl.btp_socket.send(*GAP['padv_create_sync'], data=data_ba)
+
+    gap_command_rsp_succ()
+
+
+def gap_padv_sync_transfer_set_info(svc_data, addr_type=None, addr=None):
+    logging.debug("%s", gap_padv_sync_transfer_set_info.__name__)
+
+    if not addr_type or not addr:
+        addr_type = pts_addr_type_get(None)
+        addr = addr2btp_ba(pts_addr_get(None))
+
+    iutctl = get_iut()
+
+    data_ba = bytearray(struct.pack("<B6s", addr_type, addr))
+    data_ba.extend(bytearray(struct.pack("<H", svc_data)))
+
+    iutctl.btp_socket.send(*GAP['padv_sync_transfer_set_info'], data=data_ba)
+
+    gap_command_rsp_succ()
+
+
+def gap_padv_sync_transfer_start(svc_data, addr_type=None, addr=None):
+    logging.debug("%s", gap_padv_sync_transfer_start.__name__)
+
+    if not addr_type or not addr:
+        addr_type = pts_addr_type_get(None)
+        addr = addr2btp_ba(pts_addr_get(None))
+
+    iutctl = get_iut()
+
+    data_ba = bytearray(struct.pack("<B6s", addr_type, addr))
+    data_ba.extend(bytearray(struct.pack("<H", svc_data)))
+
+    iutctl.btp_socket.send(*GAP['padv_sync_transfer_set_info'], data=data_ba)
+
+    gap_command_rsp_succ()
+
+
+def gap_padv_sync_transfer_recv(skip, sync_timeout, flags, addr_type=None, addr=None):
+    logging.debug("%s", gap_padv_sync_transfer_recv.__name__)
+
+    if not addr_type or not addr:
+        addr_type = pts_addr_type_get(None)
+        addr = addr2btp_ba(pts_addr_get(None))
+
+    iutctl = get_iut()
+
+    data_ba = bytearray(struct.pack("<B6sHHB", addr_type, addr, skip, sync_timeout, flags))
+
+    iutctl.btp_socket.send(*GAP['padv_sync_transfer_recv'], data=data_ba)
+
+    gap_command_rsp_succ()
