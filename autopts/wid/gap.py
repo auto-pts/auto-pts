@@ -391,7 +391,12 @@ def hdl_wid_76(_: WIDParams):
     return True
 
 
-def hdl_wid_77(_: WIDParams):
+def hdl_wid_77(params: WIDParams):
+    if params.test_case_name.startswith("GAP/BOND/BON/BV-04-C"):
+        # PTS sends WID before IUT finishes encryption
+        # This is a temporary workaround. Ultimately
+        # we should wait for an event here or submit a PTS Issue.
+        sleep(10)
     try:
         btp.gap_wait_for_connection(5)
         btp.gap_disconn()
