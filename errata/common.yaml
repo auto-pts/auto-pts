@@ -4,16 +4,6 @@
 
 GAP/DM/NAD/BV-02-C: TSE19171
 GAP/DM/LEP/BV-06-C: TSE19171
-GAP/PADV/PASM/BV-01-C: https://github:com/intel/auto-pts/issues/740
-GAP/PADV/PAM/BV-01-C: https://github:com/intel/auto-pts/issues/740
-GAP/PADV/PASE/BV-01-C: https://github:com/intel/auto-pts/issues/740
-GAP/PADV/PASE/BV-02-C: https://github:com/intel/auto-pts/issues/740
-GAP/PADV/PASE/BV-03-C: https://github:com/intel/auto-pts/issues/740
-GAP/PADV/PASE/BV-04-C: https://github:com/intel/auto-pts/issues/740
-GAP/PADV/PASE/BV-05-C: https://github:com/intel/auto-pts/issues/740
-GAP/PADV/PASE/BV-06-C: https://github:com/intel/auto-pts/issues/740
-GAP/PADV/PAST/BV-01-C: https://github:com/intel/auto-pts/issues/740
-GAP/PADV/PAST/BV-02-C: https://github:com/intel/auto-pts/issues/740
 L2CAP/ECFC/BV-43-C: TSE18351
 L2CAP/ECFC/BV-44-C: TSE18351
 L2CAP/ECFC/BV-68-C: TSE18297

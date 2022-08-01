@@ -1224,6 +1224,80 @@ def hdl_wid_267(_: WIDParams):
     stack = get_stack()
     return stack.gap.pair_user_interaction
 
+def hdl_wid_300(_: WIDParams):
+    # Please send non connectable advertise with periodic info.
+    stack = get_stack()
+    btp.gap_padv_configure(1, 150, 200)
+    if stack.gap.periodic_data:
+        btp.gap_padv_set_data((chr(len(stack.gap.periodic_data[1]) + 1) +
+                               chr(stack.gap.periodic_data[0]) +
+                               stack.gap.periodic_data[1]).encode())
+    btp.gap_padv_start()
+    return True
+
+def hdl_wid_301(_: WIDParams):
+    # Please click OK if IUT did not receive periodic advertising report.
+    stack = get_stack()
+    return stack.gap.wait_periodic_report(10)
+
+def hdl_wid_302(_: WIDParams):
+    # Perform Periodic Advertising Synchronization Establishment Procedure
+    # Listening for Periodic Advertising.
+    # Please click OK when IUT received
+    # Periodic Advertising Synchronization Information.
+    stack = get_stack()
+
+    btp.gap_padv_create_sync(0, 0, 10, 0)
+    return stack.gap.wait_periodic_established(10)
+
+def hdl_wid_303(_: WIDParams):
+    # Perform Periodic Advertising Synchronization Establishment Procedure
+    # Without Listening for Periodic Advertising.
+    # Please click OK when IUT received
+    # Periodic Advertising Synchronization Information.
+    stack = get_stack()
+
+    btp.gap_padv_create_sync(0, 0, 10, 1)
+    return stack.gap.wait_periodic_established(10)
+
+def hdl_wid_304(_: WIDParams):
+    # Please click OK if IUT did not receive periodic advertising report.
+    stack = get_stack()
+    return not stack.gap.wait_periodic_report(10)
+
+def hdl_wid_305(_: WIDParams):
+    # Please enter Periodic Advertising Synchronizability mode,
+    # and then perform Periodic Advertising Synchronization Transfer Procedure
+    stack = get_stack()
+    btp.gap_padv_configure(1, 150, 200)
+    if stack.gap.periodic_data:
+        btp.gap_padv_set_data((chr(len(stack.gap.periodic_data[1]) + 1) +
+                               chr(stack.gap.periodic_data[0]) +
+                               stack.gap.periodic_data[1]).encode())
+    btp.gap_padv_start()
+    btp.gap_padv_create_sync(0, 0, 10, 1)
+    btp.gap_padv_sync_transfer_set_info(0)
+    return stack.gap.wait_periodic_established(10)
+
+def hdl_wid_307(_: WIDParams):
+    # Click OK when IUT is ready to perform Periodic Advertising Synchronization
+    # Establishment Procedure without listening for periodic advertising events.
+
+    btp.gap_padv_sync_transfer_recv(0, 10, 1)
+    return True
+
+def hdl_wid_308(_: WIDParams):
+    # Click OK when IUT is ready to perform Periodic Advertising Synchronization
+    # Establishment Procedure with listening for periodic advertising events.
+
+    btp.gap_padv_sync_transfer_recv(0, 10, 0)
+    return True
+
+def hdl_wid_309(_: WIDParams):
+    # Click OK when IUT receives periodic advertising synchronization
+    # information.
+    stack = get_stack()
+    return stack.gap.wait_periodic_transfer_received(10)
 
 def hdl_wid_400(_: WIDParams):
     btp.set_filter_accept_list()

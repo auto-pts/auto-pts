@@ -150,7 +150,7 @@ class ConnParams:
 
 class Gap:
     def __init__(self, name, manufacturer_data, appearance, svc_data, flags,
-                 svcs, uri=None):
+                 svcs, uri=None, periodic_data=None):
 
         self.ad = {}
         self.sd = {}
@@ -171,6 +171,7 @@ class Gap:
         self.flags = flags
         self.svcs = svcs
         self.uri = uri
+        self.periodic_data = periodic_data
         self.oob_legacy = "0000000000000000FE12036E5A889F4D"
 
         # If disconnected - None
@@ -214,6 +215,9 @@ class Gap:
         self.sec_level = Property(None)
         # if IUT doesn't support it, it should be disabled in preconditions
         self.pair_user_interaction = True
+        self.periodic_report_rxed = False
+        self.periodic_sync_established_rxed = False
+        self.periodic_transfer_received = False
 
     def wait_for_connection(self, timeout, conn_count=0):
         if self.is_connected(conn_count):
@@ -254,7 +258,60 @@ class Gap:
             if self.connected.data is not None:
                 return len(self.connected.data) >= conn_count
             return False
-        return self.connected.data
+
+    def wait_periodic_report(self, timeout):
+        if self.periodic_report_rxed:
+            return True
+
+        flag = Event()
+        flag.set()
+
+        t = Timer(timeout, timeout_cb, [flag])
+        t.start()
+
+        while flag.is_set():
+            if self.periodic_report_rxed:
+                t.cancel()
+                self.periodic_report_rxed = False
+                return True
+
+        return False
+
+    def wait_periodic_established(self, timeout):
+        if self.periodic_sync_established_rxed:
+            return True
+
+        flag = Event()
+        flag.set()
+
+        t = Timer(timeout, timeout_cb, [flag])
+        t.start()
+
+        while flag.is_set():
+            if self.periodic_sync_established_rxed:
+                t.cancel()
+                self.periodic_sync_established_rxed = False
+                return True
+
+        return False
+
+    def wait_periodic_transfer_received(self, timeout):
+        if self.periodic_transfer_received:
+            return True
+
+        flag = Event()
+        flag.set()
+
+        t = Timer(timeout, timeout_cb, [flag])
+        t.start()
+
+        while flag.is_set():
+            if self.periodic_transfer_received:
+                t.cancel()
+                self.periodic_transfer_received = False
+                return True
+
+        return False
 
     def current_settings_set(self, key):
         if key in self.current_settings.data:
@@ -1331,9 +1388,9 @@ class Stack:
         return self.supported_svcs & services[svc] > 0
 
     def gap_init(self, name=None, manufacturer_data=None, appearance=None,
-                 svc_data=None, flags=None, svcs=None, uri=None):
+                 svc_data=None, flags=None, svcs=None, uri=None, periodic_data=None):
         self.gap = Gap(name, manufacturer_data, appearance, svc_data, flags,
-                       svcs, uri)
+                       svcs, uri, periodic_data)
 
     def mesh_init(self, uuid, uuid_lt2=None):
         if self.mesh:

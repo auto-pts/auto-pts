@@ -67,6 +67,7 @@ Commands and responses:
 			15	Static Address
 			16	Secure Connections Only
 			17	Extended Advertising
+			18	Periodic Advertising
 
 		In case of an error, the error response will be returned.
 
@@ -510,6 +511,132 @@ Commands and responses:
 
 		In case of an error, the error response will be returned.
 
+
+	Opcode 0x22 - Configure Periodic Advertising command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	 Flags (1 octet)
+							 Interval Min (2 octets)
+							 Interval Max (2 octets)
+		Return Parameters:	Current_Settings (4 Octets)
+
+		This command is used to configure Periodic Advertising instance.
+		IUT is expected to have 1 Periodic Advertising instance.
+
+		Possible values for the Flags parameter are a bit-wise OR
+		of the following bits:
+					0 = Include TX Power
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x23 - Periodic Advertising Start command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	Flags (1 octet)
+		Return Parameters:	Current_Settings (4 Octets)
+
+		This command is used to start advertising on Periodic Advertising
+		instance.
+
+		Flags are reserved for future use.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x24 - Periodic Advertising Stop command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	<none>
+		Return Parameters:	Current_Settings (4 Octets)
+
+		This command is used to stop advertising on Periodic Advertising
+		instance.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x25 - Periodic Advertising Set Advertising Data command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	Advertising data length (2 octets)
+					[array] Advertising data
+		Return Parameters:	<none>
+
+		This command is used to set advertising data for Periodic Advertising
+		instance. Data is an array of tuples in form of
+		(data length, Ad Type, data),
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x26 - Create Periodic Advertising Sync command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+							Address (6 octets)
+							Advertiser Set ID (1 octet)
+							Skip (2 octets)
+							Synchronization Timeout (2 octets)
+							Flags (1 octet)
+		Return Parameters:	<none>
+
+		This command is used to perform Synchronization procedure with
+		periodic advertiser. Skip determines maximum number of periodic
+		advertising events that controller can skip after a successful
+		reception. Synchronization Timeout is in 10 ms units. Reports Disabled
+		determines if sync creation will lead to IUT sending reports.
+
+		Possible values for the Flags parameter are a bit-wise OR
+		of the following bits:
+					0 = Reports Disabled
+					1 = Duplicate filtering enabled
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x27 - Periodic Advertising Set Transfer Info command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	Address Type (1 octet)
+							Address (6 octets)
+							Service Data (2 octets)
+		Return Parameters:	<none>
+
+		This command is used to initialize set info transfer procedure to peer
+		given by address.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x28 - Periodic Advertising Transfer Start command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	Sync Handle (2 octets)
+							Address Type (1 octet)
+							Address (6 octets)
+							Service Data (2 octets)
+		Return Parameters:	<none>
+
+		This command is used to initialize periodic transfer procedure to peer
+		given by address. It is used to transfer periodic sync information
+		to synchronization identified by handle.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x29 - Periodic Advertising Transfer Receive command/response
+
+		Controller Index:	<controller id>
+		Command parameters: Address Type (1 octet)
+							Address (6 octets)
+							Skip (2 octets)
+							Sync timeout (2 octets)
+							Flags (1 octet)
+		Return Parameters:	<none>
+
+		This command is used to enable reception of sync information on
+		specified connection.
+
+		Possible values for the Flags parameter are a bit-wise OR
+		of the following bits:
+					0 = Reports Disabled
+
+		In case of an error, the error response will be returned.
+
 Events:
 	Opcode 0x80 - New Settings event
 
@@ -649,3 +776,50 @@ Events:
 		This event can be sent when IUT pairing procedure fails with
 		specified reason.
 
+
+	Opcode 0x8d - Periodic Sync Established event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+							Address (6 octets)
+							Sync Handle (2 octets)
+							Status (1 octet)
+
+		This event can be sent when sync is established with Periodic Advertiser.
+		Address in event is address of a peer that sync was established with.
+
+	Opcode 0x8e - Periodic Sync Lost event
+
+		Controller Index:	<controller id>
+		Event parameters:	Sync Handle (2 octet)
+							Reason (1 octets)
+
+		This event can be sent lost sync with Periodic Advertiser
+
+	Opcode 0x8f - Periodic Report event
+
+		Controller Index:	<controller id>
+		Event parameters:	Sync Handle (2 octet)
+							TX_Power (1 octet)
+							RSSI (1 octet)
+							CTE Type (1 octet)
+							Data Status (1 octet)
+							Data Length (1 octet)
+							Data (variable)
+
+		This event can be sent after IUT received Periodic Advertising report
+		on established sync.
+
+	Opcode 0x90 - Periodic Transfer Received event
+
+		Controller Index:	<controller id>
+		Event parameters:	Sync Handle (2 octet)
+							TX_Power (1 octet)
+							RSSI (1 octet)
+							CTE Type (1 octet)
+							Data Status (1 octet)
+							Data Length (1 octet)
+							Data (variable)
+
+		This event can be sent after IUT received Periodic Advertising Sync
+		Transfer was received.

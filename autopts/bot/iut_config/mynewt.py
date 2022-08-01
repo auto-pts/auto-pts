@@ -22,6 +22,27 @@ iut_config = {
         ],
     },
 
+    "periodic_adv.conf": {
+        "overlay": {
+            'BLE_EXT_ADV': '1',
+            'BLE_PERIODIC_ADV': '1',
+            'BLE_MULTI_ADV_INSTANCES': '2',
+            'BLE_PERIODIC_ADV_SYNC_TRANSFER': '1',
+        },
+        "test_cases": [
+            'GAP/PADV/PASM/BV-01-C',
+            'GAP/PADV/PAM/BV-01-C',
+            'GAP/PADV/PASE/BV-01-C',
+            'GAP/PADV/PASE/BV-02-C',
+            'GAP/PADV/PASE/BV-03-C',
+            'GAP/PADV/PASE/BV-04-C',
+            'GAP/PADV/PASE/BV-05-C',
+            'GAP/PADV/PASE/BV-06-C',
+            'GAP/PADV/PAST/BV-01-C',
+            'GAP/PADV/PAST/BV-02-C',
+        ]
+    },
+
     "privacy.conf": {
         "overlay": {'BTTESTER_PRIVACY_MODE': '1'},
         "test_cases": [
