@@ -16,6 +16,7 @@
 """GATT test cases"""
 import logging
 
+from queue import Queue
 from autopts.pybtp import btp
 from autopts.pybtp.types import UUID, Addr, IOCap, Prop, Perm
 from autopts.client import get_unique_name
@@ -186,6 +187,11 @@ def test_cases_server(ptses):
     iut_device_name = get_unique_name(pts)
     stack = get_stack()
 
+    queue = Queue()
+
+    def set_addr(addr):
+        queue.put(addr)
+
     pre_conditions = [TestFunc(btp.core_reg_svc_gap),
                       TestFunc(stack.gap_init, iut_device_name),
                       TestFunc(btp.gap_read_ctrl_info),
@@ -207,6 +213,8 @@ def test_cases_server(ptses):
                         TestFunc(btp.gap_read_ctrl_info),
                         TestFunc(lambda: pts.update_pixit_param(
                             "GATT", "TSPX_bd_addr_iut",
+                            stack.gap.iut_addr_get_str())),
+                        TestFunc(lambda: set_addr(
                             stack.gap.iut_addr_get_str())),
                         TestFunc(lambda: pts.update_pixit_param(
                             "GATT", "TSPX_iut_use_dynamic_bd_addr",
@@ -607,8 +615,7 @@ def test_cases_server(ptses):
 
     pts2 = ptses[1]
     pre_conditions_lt2 = [TestFunc(lambda: pts2.update_pixit_param(
-        "GATT", "TSPX_bd_addr_iut",
-        stack.gap.iut_addr_get_str())),
+        "GATT", "TSPX_bd_addr_iut", queue.get())),
         TestFunc(lambda: pts2.update_pixit_param(
             "GATT", "TSPX_iut_use_dynamic_bd_addr",
             "TRUE" if stack.gap.iut_addr_is_random()
