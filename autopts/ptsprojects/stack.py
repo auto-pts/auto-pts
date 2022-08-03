@@ -166,8 +166,8 @@ class Gap:
         self.io_cap = IOCap.no_input_output
         self.sec_level = Property(None)
 
-    def wait_for_connection(self, timeout):
-        if self.is_connected():
+    def wait_for_connection(self, timeout, conn_count=0):
+        if self.is_connected(conn_count):
             return True
 
         flag = Event()
@@ -177,14 +177,14 @@ class Gap:
         t.start()
 
         while flag.is_set():
-            if self.is_connected():
+            if self.is_connected(conn_count):
                 t.cancel()
                 return True
 
         return False
 
     def wait_for_disconnection(self, timeout):
-        if not self.is_connected():
+        if not self.is_connected(0):
             return True
 
         flag = Event()
@@ -194,13 +194,17 @@ class Gap:
         t.start()
 
         while flag.is_set():
-            if not self.is_connected():
+            if not self.is_connected(0):
                 t.cancel()
                 return True
 
         return False
 
-    def is_connected(self):
+    def is_connected(self, conn_count):
+        if conn_count > 0:
+            if self.connected.data is not None:
+                return len(self.connected.data) >= conn_count
+            return False
         return self.connected.data
 
     def current_settings_set(self, key):
