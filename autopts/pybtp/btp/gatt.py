@@ -51,6 +51,8 @@ GATTS = {
                      defs.GATT_GET_ATTRIBUTE_VALUE, CONTROLLER_INDEX),
     "change_database": (defs.BTP_SERVICE_ID_GATT,
                         defs.GATT_CHANGE_DATABASE, CONTROLLER_INDEX),
+    "notify_mult": (defs.BTP_SERVICE_ID_GATT,
+                    defs.GATT_NOTIFY_MULTIPLE, CONTROLLER_INDEX),
 }
 
 GATTC = {
@@ -257,6 +259,25 @@ def gatts_change_database(start_hdl, end_hdl, vis):
     data_ba.extend(chr(vis).encode('utf-8'))
 
     iutctl.btp_socket.send(*GATTS['change_database'], data=data_ba)
+
+    gatt_command_rsp_succ()
+
+def gatts_notify_mult(bd_addr_type, bd_addr, cnt, handles):
+    logging.debug("%s %r %r", gatts_notify_mult.__name__, cnt, handles)
+
+    iutctl = get_iut()
+
+    data_ba = bytearray()
+
+    bd_addr_ba = addr2btp_ba(bd_addr)
+
+    data_ba.extend(chr(bd_addr_type).encode('utf-8'))
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(struct.pack('H', cnt))
+    for h in handles:
+        data_ba.extend(struct.pack('H', h))
+
+    iutctl.btp_socket.send(*GATTS['notify_mult'], data=data_ba)
 
     gatt_command_rsp_succ()
 
