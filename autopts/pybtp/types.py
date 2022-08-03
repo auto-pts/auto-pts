@@ -185,7 +185,7 @@ class Prop:
     read = 2 ** 1
     write_wo_resp = 2 ** 2
     write = 2 ** 3
-    nofity = 2 ** 4
+    notify = 2 ** 4
     indicate = 2 ** 5
     auth_swrite = 2 ** 6
     ext_prop = 2 ** 7
@@ -195,7 +195,7 @@ class Prop:
         read: "Read",
         write_wo_resp: "Write Without Response",
         write: "Write",
-        nofity: "Notify",
+        notify: "Notify",
         indicate: "Indicate",
         auth_swrite: "Authenticated Signed Writes",
         ext_prop: "Extended Properties",
