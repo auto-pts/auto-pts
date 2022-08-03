@@ -151,7 +151,10 @@ def gap_connected_ev_(gap, data, data_len):
     addr_type, addr, itvl, latency, timeout = struct.unpack_from(hdr_fmt, data)
     addr = binascii.hexlify(addr[::-1])
 
-    gap.connected.data = (addr, addr_type)
+    if gap.connected.data is None:
+        gap.connected.data = [(addr, addr_type)]
+    else:
+        gap.connected.data.append((addr, addr_type))
     gap.set_conn_params(ConnParams(itvl, itvl, latency, timeout))
 
     set_pts_addr(addr, addr_type)
@@ -571,7 +574,7 @@ def gap_disconn(bd_addr=None, bd_addr_type=None):
 
     stack = get_stack()
 
-    if not stack.gap.is_connected():
+    if not stack.gap.is_connected(0):
         return
 
     data_ba = bytearray()
@@ -591,7 +594,7 @@ def verify_not_connected(description):
 
     gap_wait_for_connection(5)
 
-    if stack.gap.is_connected():
+    if stack.gap.is_connected(0):
         return False
     return True
 

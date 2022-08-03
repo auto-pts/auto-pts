@@ -206,7 +206,7 @@ def hdl_wid_155(_: WIDParams):
 
 def hdl_wid_156(_: WIDParams):
     stack = get_stack()
-    return not stack.gap.is_connected()
+    return not stack.gap.is_connected(0)
 
 
 def hdl_wid_173(_: WIDParams):
