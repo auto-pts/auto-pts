@@ -2505,7 +2505,7 @@
           <Row>
             <Name>TSPC_GATT_3_16</Name>
             <Description>Characteristic Value Reliable Writes (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
