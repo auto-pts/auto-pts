@@ -158,58 +158,6 @@ def hdl_wid_52(desc):
     return bool(value_read == MMI.args[1])
 
 
-def hdl_wid_76(desc):
-    MMI.reset()
-    MMI.parse_description(desc)
-
-    hdl = MMI.args[0]
-
-    btp.gattc_write_reliable(btp.pts_addr_type_get(),
-                             btp.pts_addr_get(),
-                             hdl, 0, '12', 1)
-    btp.gattc_write_reliable_rsp(True)
-
-    return True
-
-
-def hdl_wid_77(desc):
-    MMI.reset()
-    MMI.parse_description(desc)
-
-    hdl = MMI.args[0]
-    offset = int(MMI.args[1])
-
-    if not hdl or not offset:
-        logging.error("parsing error")
-        return False
-
-    btp.gattc_write_long(btp.pts_addr_type_get(), btp.pts_addr_get(),
-                         hdl, offset, '12', offset + 2)
-
-    btp.gattc_write_long_rsp(True)
-
-    return True
-
-
-def hdl_wid_81(desc):
-    MMI.reset()
-    MMI.parse_description(desc)
-
-    hdl = int(MMI.args[0], 16)
-    val_mtp = int(MMI.args[1], 10) + 1
-
-    if not hdl or not val_mtp:
-        logging.error("parsing error")
-        return False
-
-    btp.gattc_write_long(btp.pts_addr_type_get(), btp.pts_addr_get(),
-                         hdl, 0, '11', val_mtp)
-
-    btp.gattc_write_long_rsp(True)
-
-    return True
-
-
 def hdl_wid_92(desc):
     time.sleep(2)
     return True
