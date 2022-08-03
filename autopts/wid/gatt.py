@@ -897,17 +897,23 @@ def hdl_wid_76(params: WIDParams):
     handle = command_params[0]
     length = int(command_params[1])
 
-    btp.gattc_write_long(btp.pts_addr_type_get(), btp.pts_addr_get(),
-                         handle, 0, '12', length)
-    no_rsp_check_tests = [
-        "GATT/CL/GAW/BV-10-C",
-        "GATT/CL/GAW/BI-37-C"
-    ]
+    if params.test_case_name in ['GATT/CL/GAW/BV-06-C', 'GATT/CL/GAW/BI-32-C']:
+        btp.gattc_write_reliable(btp.pts_addr_type_get(),
+                                 btp.pts_addr_get(),
+                                 handle, 0, '12', length)
+        btp.gattc_write_reliable_rsp(True)
+    else:
+        btp.gattc_write_long(btp.pts_addr_type_get(), btp.pts_addr_get(),
+                             handle, 0, '12', length)
+        no_rsp_check_tests = [
+            "GATT/CL/GAW/BV-10-C",
+            "GATT/CL/GAW/BI-37-C"
+        ]
 
-    if params.test_case_name in no_rsp_check_tests:
-        return True
+        if params.test_case_name in no_rsp_check_tests:
+            return True
 
-    btp.gattc_write_long_rsp(True)
+        btp.gattc_write_long_rsp(True)
     return True
 
 
@@ -916,16 +922,23 @@ def hdl_wid_77(params: WIDParams):
     MMI.parse_description(params.description)
 
     hdl = MMI.args[0]
-    offset = int(MMI.args[1])
+    length = int(MMI.args[1])
 
-    if not hdl or not offset:
+    if not hdl or not length:
         logging.error("parsing error")
         return False
 
-    btp.gattc_write_long(btp.pts_addr_type_get(), btp.pts_addr_get(),
-                         hdl, offset, '12', None)
+    if params.test_case_name in ['GATT/CL/GAW/BI-09-C']:
+        btp.gattc_write_reliable(btp.pts_addr_type_get(),
+                                 btp.pts_addr_get(),
+                                 hdl, length+1, '12', length+2)
+        btp.gattc_write_reliable_rsp(True)
+    else:
+        btp.gattc_write_long(btp.pts_addr_type_get(), btp.pts_addr_get(),
+                             hdl, 0, '12', length)
 
-    btp.gattc_write_long_rsp(True)
+        btp.gattc_write_long_rsp(True)
+
 
     return True
 
@@ -954,14 +967,14 @@ def hdl_wid_81(params: WIDParams):
     MMI.parse_description(params.description)
 
     hdl = MMI.args[0]
-    val_mtp = MMI.args[1]
+    val_mtp = int(MMI.args[1], 10) + 1
 
     if not hdl or not val_mtp:
         logging.error("parsing error")
         return False
 
     btp.gattc_write_long(btp.pts_addr_type_get(), btp.pts_addr_get(),
-                         hdl, 0, '1234', val_mtp)
+                         hdl, 0, '12', val_mtp)
 
     btp.gattc_write_long_rsp(True)
 
