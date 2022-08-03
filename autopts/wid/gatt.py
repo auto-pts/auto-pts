@@ -33,6 +33,25 @@ log = logging.debug
 indication_subbed_already = False
 
 
+def hdl_pending_gatt_wids(wid, test_case_name, description):
+    log("%s, %r, %r, %s", hdl_pending_gatt_wids.__name__, wid, description,
+        test_case_name)
+    stack = get_stack()
+    module = sys.modules[__name__]
+
+    actions = stack.synch.perform_synch(wid, test_case_name, description)
+    if not actions:
+        return "WAIT"
+
+    for action in actions:
+        handler = getattr(module, "hdl_wid_%d" % action.wid)
+        result = handler(WIDParams(wid, description, test_case_name))
+        stack.synch.prepare_pending_response(action.test_case,
+                                             result, action.delay)
+
+    return None
+
+
 def gatt_wid_hdl(wid, description, test_case_name, logs=True):
     if logs:
         log("%s, %r, %r, %s", gatt_wid_hdl.__name__, wid, description,
@@ -41,7 +60,20 @@ def gatt_wid_hdl(wid, description, test_case_name, logs=True):
 
     try:
         handler = getattr(module, "hdl_wid_%d" % wid)
-        return handler(WIDParams(wid, description, test_case_name))
+
+        stack = get_stack()
+        if not stack.synch or not stack.synch.is_required_synch(test_case_name, wid):
+            return handler(WIDParams(wid, description, test_case_name))
+
+        response = hdl_pending_gatt_wids(wid, test_case_name, description)
+
+        if response == "WAIT":
+            return response
+
+        stack.synch.set_pending_responses_if_any()
+
+        return "WAIT"
+
     except AttributeError as e:
         logging.exception(e)
 
@@ -1026,6 +1058,20 @@ def hdl_wid_92(params: WIDParams):
     return True
 
 
+def hdl_wid_93(params: WIDParams):
+    handles = []
+
+    db = gatt_server_fetch_db().db
+
+    for i in range(1, len(db) + 1):
+        if isinstance(db[i], GattCharacteristic) and db[i].prop & Prop.notify:
+            handles.append(db[i].handle)
+
+    btp.gatts_notify_mult(btp.pts_addr_type_get(), btp.pts_addr_get(), len(handles), handles)
+
+    return True
+
+
 def hdl_wid_95(_: WIDParams):
     stack = get_stack()
     gatt = stack.gatt
@@ -1771,6 +1817,14 @@ def hdl_wid_148(params: WIDParams):
     return True
 
 
+def hdl_wid_149(params: WIDParams):
+    """
+    Please start lower tester 2. Click OK after Lower Tester connected to IUT.
+    """
+    stack = get_stack()
+    return stack.gap.wait_for_connection(30, 2)
+
+
 def hdl_wid_139(params: WIDParams):
     MMI.reset()
     MMI.parse_description(params.description)
@@ -1895,6 +1949,19 @@ def hdl_wid_304(params: WIDParams):
     _, _, data = btp.gatts_get_attr_val(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl)
     data = hexlify(data).decode().upper()
     return bool(data in val)
+
+
+def hdl_wid_308(_: WIDParams):
+    handles = []
+
+    db = gatt_server_fetch_db().db
+
+    for i in range(1, len(db) + 1):
+        if isinstance(db[i], GattCharacteristic) and db[i].prop & Prop.notify:
+            handles.append(db[i].handle)
+
+    btp.gatts_notify_mult(btp.pts_addr_type_get(), btp.pts_addr_get(), len(handles), handles)
+    return True
 
 
 def hdl_wid_400(_: WIDParams):
