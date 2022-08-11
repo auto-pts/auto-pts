@@ -20,6 +20,7 @@ import os
 import subprocess
 import sys
 import time
+from pathlib import Path
 
 from autopts import bot
 from autopts.client import Client
@@ -27,6 +28,9 @@ from autopts.ptsprojects.boards import get_free_device, release_device, get_buil
     get_board_type
 from autopts.ptsprojects.mynewt.iutctl import get_iut, log
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
+
+
+PROJECT_NAME = Path(__file__).stem
 
 
 def check_call(cmd, env=None, cwd=None, shell=True):
@@ -211,9 +215,9 @@ def main(cfg):
     pts_logs, xmls = bot.common.pull_server_logs(MynewtBotConfigArgs(args))
 
     report_file = bot.common.make_report_xlsx(results, summary, regressions,
-                                              progresses, descriptions, xmls)
+                                              progresses, descriptions, xmls, PROJECT_NAME)
     report_txt = bot.common.make_report_txt(results, regressions,
-                                            progresses, repo_status)
+                                            progresses, repo_status, PROJECT_NAME)
     logs_folder = bot.common.archive_testcases("logs")
 
     build_info_file = get_build_info_file(os.path.abspath(args['project_path']))

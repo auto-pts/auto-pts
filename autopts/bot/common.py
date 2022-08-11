@@ -53,7 +53,7 @@ REPORT_TXT = "report.txt"
 COMMASPACE = ', '
 
 PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-ERRATA_YAML_PATH = os.path.join(os.path.dirname(PROJECT_DIR), 'errata.yaml')
+ERRATA_DIR_PATH = os.path.join(os.path.dirname(PROJECT_DIR), 'errata')
 log = logging.debug
 
 
@@ -476,12 +476,26 @@ class Drive(GDrive):
         recursive(folder)
 
 
+def get_errata(project_name):
+    errata_common = os.path.join(ERRATA_DIR_PATH, 'common.yaml')
+    errata_project = os.path.join(ERRATA_DIR_PATH, f'{project_name}.yaml')
+    errata = {}
+
+    for file in [errata_common, errata_project]:
+        if os.path.exists(file):
+            with open(file, 'r') as stream:
+                loaded_errata = yaml.safe_load(stream)
+                if loaded_errata:
+                    errata.update(loaded_errata)
+    return errata
+
+
 # ****************************************************************************
 # .xlsx spreadsheet file
 # ****************************************************************************
 # FIXME don't use statuses from status_dict, count it from results dict instead
 def make_report_xlsx(results_dict, status_dict, regressions_list,
-                     progresses_list, descriptions, xmls):
+                     progresses_list, descriptions, xmls, project_name=''):
     """Creates excel file containing test cases results and summary pie chart
     :param results_dict: dictionary with test cases results
     :param status_dict: status dictionary, where key is status and value is
@@ -510,16 +524,7 @@ def make_report_xlsx(results_dict, status_dict, regressions_list,
                 matched_xml = xml.name
                 break
 
-    errata = {}
-
-    try:
-        with open(ERRATA_YAML_PATH, 'r') as stream:
-            errata = yaml.safe_load(stream)
-    except Exception as exc:
-        print(exc)
-
-    if errata is None:
-        errata = {}
+    errata = get_errata(project_name)
 
     header = "AutoPTS Report: " \
              "{}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
@@ -600,7 +605,7 @@ def make_report_xlsx(results_dict, status_dict, regressions_list,
 # .txt result file
 # ****************************************************************************
 def make_report_txt(results_dict, regressions_list,
-                    progresses_list, repo_status):
+                    progresses_list, repo_status, project_name=''):
     """Creates txt file containing test cases results
     :param results_dict: dictionary with test cases results
     :param regressions_list: list of regressions found
@@ -613,16 +618,7 @@ def make_report_txt(results_dict, regressions_list,
     filename = os.path.join(os.getcwd(), REPORT_TXT)
     f = open(filename, "w")
 
-    errata = {}
-
-    try:
-        with open(ERRATA_YAML_PATH, 'r') as stream:
-            errata = yaml.safe_load(stream)
-    except Exception as exc:
-        print(exc)
-
-    if errata is None:
-        errata = {}
+    errata = get_errata(project_name)
 
     f.write("%s\n" % repo_status)
     for tc, result in list(results_dict.items()):

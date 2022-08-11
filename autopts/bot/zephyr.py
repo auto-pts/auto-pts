@@ -36,6 +36,9 @@ from autopts.ptsprojects.testcase_db import DATABASE_FILE
 from autopts.ptsprojects.zephyr.iutctl import get_iut, log
 
 
+PROJECT_NAME = Path(__file__).stem
+
+
 def flush_serial(tty):
     """Clear the serial port buffer
     :param tty: file path of the terminal
@@ -245,9 +248,9 @@ def main(cfg):
     pts_logs, xmls = bot.common.pull_server_logs(args_ns)
 
     report_file = bot.common.make_report_xlsx(results, summary, regressions,
-                                              progresses, descriptions, xmls)
+                                              progresses, descriptions, xmls, PROJECT_NAME)
     report_txt = bot.common.make_report_txt(results, regressions,
-                                            progresses, repo_status)
+                                            progresses, repo_status, PROJECT_NAME)
 
     end_time = time.time()
     end_time_stamp = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
