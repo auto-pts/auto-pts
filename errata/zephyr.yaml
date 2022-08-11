@@ -1,0 +1,7 @@
+# To add note to the reports about awaited errata, list them here e.g.:
+# GAP/CONN/NCON/BV-01-C: CASE00xxxxx
+# GAP/CONN/NCON/BV-02-C: CASE00xxxxx
+
+MMDL/SR/LLC/BV-04-C: CASE0071690 CASE0071677 - https://github.com/nrfconnect/sdk-nrf/pull/5585
+MMDL/SR/SCE/BV-03-C: CASE0071374 - https://github.com/nrfconnect/sdk-nrf/pull/5614
+MMDL/SR/LHSL/BV-08-C: https://github.com/nrfconnect/sdk-nrf/pull/5636
