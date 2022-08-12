@@ -624,7 +624,7 @@ def make_report_txt(results_dict, regressions_list,
     if errata is None:
         errata = {}
 
-    f.write("%s\n" % repo_status)
+    f.write(f"{repo_status}, autopts={get_autopts_version()}\n")
     for tc, result in list(results_dict.items()):
         res = result[0]
         if result[0] == 'PASS':
@@ -877,6 +877,16 @@ def get_workspace(workspace):
             if name == workspace:
                 return os.path.join(root, name)
     return None
+
+
+def get_autopts_version():
+    repo = git.Repo(os.path.dirname(PROJECT_DIR))
+    version = repo.git.show('-s', '--format=%H')
+
+    if repo.is_dirty():
+        version += '-dirty'
+
+    return version
 
 
 def describe_repo(repo_path):
