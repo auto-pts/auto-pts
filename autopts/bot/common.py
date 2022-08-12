@@ -831,7 +831,7 @@ def pull_server_logs(args):
                 try:
                     file_bin = proxy.copy_file(file_path)
 
-                    if not os.path.splitext(file_path)[1] in ['.pts', '.pqw6']:
+                    if not any(file_path.endswith(ext) for ext in ['.pts', '.pqw6', '.xlsx', '.gitignore']):
                         proxy.delete_file(file_path)
 
                     if file_bin is None:
