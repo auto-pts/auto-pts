@@ -47,7 +47,7 @@ def run_checks(py_files):
         try:
             subprocess.check_output(shlex.split(cmd), stderr=subprocess.STDOUT)
         except subprocess.CalledProcessError as exc:
-            print("\nCheck failed:\n", exc.output)
+            print("\nCheck failed:\n", exc.output.decode("utf-8"))
             sys.exit(1)
 
 
@@ -55,9 +55,8 @@ def main():
     top_level = subprocess.check_output(
         "git rev-parse --show-toplevel", shell=True).strip()
     os.chdir(top_level)
-    files = subprocess.check_output("git ls-files", shell=True)
-    py_files = [
-        fl for fl in files.splitlines() if os.path.splitext(fl)[1] == ".py"]
+    files = subprocess.check_output("git ls-files", shell=True).decode("utf-8")
+    py_files = [fl for fl in files.splitlines() if fl.endswith(".py")]
 
     run_checks(py_files)
 
