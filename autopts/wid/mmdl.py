@@ -799,7 +799,7 @@ def sensor_setting_status(_):
 
 
 def sensor_column_get(_):
-    sensor_id = 0x0042
+    sensor_id = 0x0069
     raw_value = '10'
     btp.mmdl_sensor_column_get(sensor_id, raw_value)
     return True
