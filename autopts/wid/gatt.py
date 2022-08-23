@@ -961,16 +961,14 @@ def hdl_wid_77(params: WIDParams):
         return False
 
     if params.test_case_name in ['GATT/CL/GAW/BI-09-C']:
+        btp.gattc_write_long(btp.pts_addr_type_get(), btp.pts_addr_get(),
+                             hdl, 0, '12', length)
+        btp.gattc_write_long_rsp(True)
+    else:
         btp.gattc_write_reliable(btp.pts_addr_type_get(),
                                  btp.pts_addr_get(),
                                  hdl, length+1, '12', length+2)
         btp.gattc_write_reliable_rsp(True)
-    else:
-        btp.gattc_write_long(btp.pts_addr_type_get(), btp.pts_addr_get(),
-                             hdl, 0, '12', length)
-
-        btp.gattc_write_long_rsp(True)
-
 
     return True
 
