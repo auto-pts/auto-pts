@@ -379,6 +379,8 @@ def hdl_wid_107(_: WIDParams):
 
 
 def hdl_wid_108(_: WIDParams):
+    """ desciption: Please configure the IUT into LE Security and start pairing process."""
+    btp.gap_pair()
     return True
 
 
