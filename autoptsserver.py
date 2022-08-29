@@ -322,6 +322,7 @@ class Server(threading.Thread):
         self.server.register_function(self.delete_file, 'delete_file')
         self.server.register_function(self.ready, 'ready')
         self.server.register_function(self.get_system_model, 'get_system_model')
+        self.server.register_function(self.shutdown_pts_bpv, 'shutdown_pts_bpv')
         self.server.register_instance(self.pts)
         self.server.register_introspection_functions()
         self.server.timeout = 1.0
@@ -392,6 +393,10 @@ class Server(threading.Thread):
             os.remove(file_path)
         elif os.path.isdir(file_path):
             shutil.rmtree(file_path, ignore_errors=True)
+
+    def shutdown_pts_bpv(self):
+        kill_all_processes('PTS.exe')
+        kill_all_processes('Fts.exe')
 
 
 def multi_main(_args, _superguard):

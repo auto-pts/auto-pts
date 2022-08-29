@@ -500,6 +500,7 @@ def shutdown_pts(ptses):
             'http://%s/' % pts.__getattribute__('_ServerProxy__host'),
             allow_none=True)
         proxy.unregister_xmlrpc_ptscallback()
+        proxy.shutdown_pts_bpv()
 
         if isinstance(pts.callback_thread, CallbackThread):
             pts.callback_thread.stop()
