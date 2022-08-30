@@ -37,7 +37,9 @@ import mimetypes
 import functools
 import traceback
 import subprocess
-from time import sleep
+from os import listdir
+from pathlib import Path
+from time import sleep, time
 from threading import Thread
 from os.path import dirname, abspath
 from datetime import datetime, timedelta, date
@@ -399,17 +401,20 @@ def pre_cleanup(autopts_repo, project_repo, test_case_db_path='TestCase.db'):
 
 
 def pre_cleanup_files(autopts_repo, project_repo, test_case_db_path='TestCase.db'):
-    files_to_remove = [
+    files_to_save = [
+        os.path.join(autopts_repo, 'tmp/'),
+        os.path.join(autopts_repo, 'logs/'),
         os.path.join(autopts_repo, 'report.txt'),
         os.path.join(autopts_repo, 'report.xlsx'),
         test_case_db_path,
         os.path.join(autopts_repo, 'stdout_autoptsbot.log'),
         os.path.join(autopts_repo, 'stdout_autoptsserver.log'),
-        r'~/Documents/Frontline Test Equipment',
-        os.path.join(autopts_repo, 'tmp/'),
-        os.path.join(autopts_repo, 'oldlogs/'),
-        os.path.join(autopts_repo, 'logs/'),
     ]
+
+    files_to_remove = [
+        r'~/Documents/Frontline Test Equipment',
+    ]
+
     if 'zephyr' in project_repo:
         files_to_remove.append(os.path.join(project_repo,
                                             'tests/bluetooth/tester/build/'))
@@ -417,12 +422,29 @@ def pre_cleanup_files(autopts_repo, project_repo, test_case_db_path='TestCase.db
         files_to_remove.append(os.path.join(project_repo,
                                             'bin/targets'))
     try:
-        for file_path in files_to_remove:
-            if os.path.exists(os.path.join(autopts_repo, file_path)):
+        now = time()
+        days_of_validity = 7
+        oldlogs_dir = os.path.join(autopts_repo, 'oldlogs/')
+        save_dir = os.path.join(oldlogs_dir, datetime.now().strftime("%Y_%m_%d_%H_%M"))
+        Path(save_dir).mkdir(parents=True, exist_ok=True)
+
+        for file in listdir(oldlogs_dir):
+            file_path = os.path.join(oldlogs_dir, file)
+            if os.stat(file_path).st_mtime < now - days_of_validity * 86400:
+                files_to_remove.append(file_path)
+
+        for file in files_to_remove:
+            file_path = os.path.join(autopts_repo, file)
+            if os.path.exists(file_path):
                 if os.path.isfile(file_path):
                     os.remove(file_path)
                 else:
                     shutil.rmtree(file_path, ignore_errors=True)
+
+        for file in files_to_save:
+            file_path = os.path.join(autopts_repo, file)
+            if os.path.exists(file_path):
+                shutil.move(file_path, os.path.join(save_dir, os.path.basename(file_path)))
     except:
         pass
 
