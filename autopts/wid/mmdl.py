@@ -815,8 +815,16 @@ def sensor_column_status(params):
 
 def sensor_series_get(params):
     sensor_id = params['PropertyId']
-    raw_value_x1 = hex(params['RawValueX1'])[2:]
-    raw_value_x2 = hex(params['RawValueX2'])[2:]
+    if params['RawValueX1'] is None:
+        raw_value_x1 = '10'
+    else:
+        raw_value_x1 = hex(params['RawValueX1'])[2:]
+
+    if params['RawValueX2'] is None:
+        raw_value_x2 = '20'
+    else:
+        raw_value_x2 = hex(params['RawValueX2'])[2:]
+
     btp.mmdl_sensor_series_get(sensor_id, raw_value_x1 + raw_value_x2)
     return True
 
