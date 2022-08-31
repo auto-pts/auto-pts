@@ -879,41 +879,39 @@ def run_test_case(ptses, test_case_instances, test_case_name, stats,
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
 
-    while True:
-        # Multiple PTS instances test cases may fill status already
-        if test_case_lt1.status != 'init':
-            continue
+    while test_case_lt1.status != 'init':
+        pass # Multiple PTS instances test cases may fill status already
 
-        # Multi-instance related stuff
-        pts_threads = []
+    # Multi-instance related stuff
+    pts_threads = []
 
+    pts_thread = InterruptableThread(
+        target=run_test_case_thread_entry,
+        args=(ptses[0], test_case_lt1, exceptions))
+    pts_threads.append(pts_thread)
+    pts_thread.start()
+
+    if test_case_lt2:
         pts_thread = InterruptableThread(
             target=run_test_case_thread_entry,
-            args=(ptses[0], test_case_lt1, exceptions))
+            args=(ptses[1], test_case_lt2, exceptions))
         pts_threads.append(pts_thread)
         pts_thread.start()
 
-        if test_case_lt2:
-            pts_thread = InterruptableThread(
-                target=run_test_case_thread_entry,
-                args=(ptses[1], test_case_lt2, exceptions))
-            pts_threads.append(pts_thread)
-            pts_thread.start()
+    # Wait till every PTS instance finish executing test case
+    for pts_thread in pts_threads:
+        pts_thread.join(timeout=timeout)
+        if pts_thread.is_alive():
+            pts_thread.interrupt()
+            test_case_lt1.status = 'SUPERGUARD TIMEOUT'
 
-        # Wait till every PTS instance finish executing test case
-        for pts_thread in pts_threads:
-            pts_thread.join(timeout=timeout)
-            if pts_thread.is_alive():
-                pts_thread.interrupt()
-                test_case_lt1.status = 'SUPERGUARD TIMEOUT'
+    logger.removeHandler(file_handler)
 
-        logger.removeHandler(file_handler)
+    if test_case_lt2 and test_case_lt2.status != "PASS" \
+            and test_case_lt1.status == "PASS":
+        return test_case_lt2.status
 
-        if test_case_lt2 and test_case_lt2.status != "PASS" \
-                and test_case_lt1.status == "PASS":
-            return test_case_lt2.status
-
-        return test_case_lt1.status
+    return test_case_lt1.status
 
 
 test_case_blacklist = [
