@@ -862,9 +862,6 @@ def run_test_case(ptses, test_case_instances, test_case_name, stats,
 
     test_case_lt1.reset()
     test_case_lt1.initialize_logging(session_log_dir)
-    file_handler = logging.FileHandler(test_case_lt1.log_filename)
-    file_handler.setFormatter(formatter)
-    logger.addHandler(file_handler)
 
     if test_case_lt1.name_lt2:
         if len(ptses) < 2:
@@ -877,6 +874,10 @@ def run_test_case(ptses, test_case_instances, test_case_name, stats,
             return 'NOT_IMPLEMENTED'
     else:
         test_case_lt2 = None
+
+    file_handler = logging.FileHandler(test_case_lt1.log_filename)
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
 
     while True:
         # Multiple PTS instances test cases may fill status already
