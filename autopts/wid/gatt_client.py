@@ -475,7 +475,9 @@ def hdl_wid_40(params: WIDParams):
     Description: Verify that the Implementation Under Test (IUT) indicate
     Invalid handle error when read a characteristic.
     """
-    return btp.verify_description(params.description)
+    stack = get_stack()
+    stack.gatt_cl.wait_for_rsp_event()
+    return btp.verify_att_error(params.description)
 
 
 def hdl_wid_41(params: WIDParams):
@@ -486,7 +488,9 @@ def hdl_wid_41(params: WIDParams):
     Description: Verify that the Implementation Under Test (IUT) indicate
     read is not permitted error when read a characteristic.
     """
-    return btp.verify_description(params.description)
+    stack = get_stack()
+    stack.gatt_cl.wait_for_rsp_event()
+    return btp.verify_att_error(params.description)
 
 
 def hdl_wid_42(params: WIDParams):
@@ -497,7 +501,9 @@ def hdl_wid_42(params: WIDParams):
     Description: Verify that the Implementation Under Test (IUT) indicate
     authorization error when read a characteristic.
     """
-    return btp.verify_description(params.description)
+    stack = get_stack()
+    stack.gatt_cl.wait_for_rsp_event()
+    return btp.verify_att_error(params.description)
 
 
 def hdl_wid_43(params: WIDParams):
@@ -508,7 +514,9 @@ def hdl_wid_43(params: WIDParams):
     Description: Verify that the Implementation Under Test (IUT) indicate
     authentication error when read a characteristic.
     """
-    return btp.verify_description(params.description)
+    stack = get_stack()
+    stack.gatt_cl.wait_for_rsp_event()
+    return btp.verify_att_error(params.description)
 
 
 def hdl_wid_44(params: WIDParams):
@@ -522,7 +530,9 @@ def hdl_wid_44(params: WIDParams):
     Description: Verify that the Implementation Under Test (IUT) indicate
     encryption key size error when read a characteristic.
     """
-    return btp.verify_description(params.description)
+    stack = get_stack()
+    stack.gatt_cl.wait_for_rsp_event()
+    return btp.verify_att_error(params.description)
 
 
 def hdl_wid_45(params: WIDParams):
@@ -533,7 +543,9 @@ def hdl_wid_45(params: WIDParams):
     Description: Verify that the Implementation Under Test (IUT) indicate
     attribute not found error when read a characteristic.
     """
-    return btp.verify_description(params.description)
+    stack = get_stack()
+    stack.gatt_cl.wait_for_rsp_event()
+    return btp.verify_att_error(params.description)
 
 
 def hdl_wid_46(params: WIDParams):
@@ -544,7 +556,9 @@ def hdl_wid_46(params: WIDParams):
     Description: Verify that the Implementation Under Test (IUT) indicate
     Invalid offset error when read a characteristic.
     """
-    return btp.verify_description(params.description)
+    stack = get_stack()
+    stack.gatt_cl.wait_for_rsp_event()
+    return btp.verify_att_error(params.description)
 
 
 def hdl_wid_47(params: WIDParams):
@@ -555,7 +569,9 @@ def hdl_wid_47(params: WIDParams):
     Description: Verify that the Implementation Under Test (IUT) indicate
     Application error when read a characteristic.
     """
-    return btp.verify_description(params.description)
+    stack = get_stack()
+    stack.gatt_cl.wait_for_rsp_event()
+    return btp.verify_att_error(params.description)
 
 
 def hdl_wid_48(params: WIDParams):
@@ -709,6 +725,9 @@ def hdl_wid_55(params: WIDParams):
 
     stack = get_stack()
     stack.gatt_cl.wait_for_read()
+
+    for saved_val in btp.get_verify_values():
+        logging.debug("received value: %s", saved_val[1].decode().upper())
 
     for value in MMI.args:
         check = False
@@ -1227,6 +1246,23 @@ def hdl_wid_109(params: WIDParams):
 
     btp.gatt_cl_read_uuid(btp.pts_addr_type_get(), btp.pts_addr_get(),
                           "0001", "FFFF", uuid)
+    return True
+
+
+def hdl_wid_140(params: WIDParams):
+    """
+    Please send Read Multiple Variable Length characteristic requests on the "ATT" using these handles:
+    'XXXX'O 'XXXX'O
+
+    Description: Verify that the Implementation Under Test (IUT) can receive multiple characteristics.
+    """
+    MMI.reset()
+    MMI.parse_description(params.description)
+
+    hdl1 = MMI.args[0]
+    hdl2 = MMI.args[1]
+    btp.gatt_cl_read_multiple_var(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl1, hdl2)
+
     return True
 
 

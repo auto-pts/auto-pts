@@ -1029,6 +1029,13 @@ class GattCl:
         self.dscs = []
         self.notifications = []
         self.write_status = None
+        self.event_to_await = None
+
+    def set_event_to_await(self, event):
+        self.event_to_await = event
+
+    def wait_for_rsp_event(self, timeout=30):
+        return wait_for_event(timeout, self.event_to_await)
 
     def is_mtu_exchanged(self, args):
         return self.mtu_exchanged.data

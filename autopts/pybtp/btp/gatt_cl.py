@@ -65,6 +65,8 @@ GATTC = {
                    CONTROLLER_INDEX),
     "cfg_indicate": (defs.BTP_SERVICE_ID_GATTC, defs.GATTC_CFG_INDICATE,
                      CONTROLLER_INDEX),
+    "read_multiple_var": (defs.BTP_SERVICE_ID_GATTC, defs.GATTC_READ_MULTIPLE_VAR,
+                          CONTROLLER_INDEX),
 }
 
 
@@ -557,15 +559,49 @@ def gatt_cl_read_mult_rsp_ev_(gatt_cl, data, data_len):
     logging.debug("Set verify values to: %r", get_verify_values())
 
 
+def gatt_cl_read_mult_var_rsp_ev_(gatt_cl, data, data_len):
+    logging.debug("%s %r", gatt_cl_read_mult_var_rsp_ev_.__name__, data)
+
+    fmt = '<B6sBH'
+
+    addr_type, addr, status, data_length = \
+        struct.unpack_from(fmt, data[:struct.calcsize(fmt)])
+    logging.debug("%s received addr_type=%r addr=%r status=%r data_len=%r",
+                  gatt_cl_read_mult_var_rsp_ev_.__name__,
+                  addr_type, addr, status, data_length)
+
+    rp_data = data[struct.calcsize(fmt):]
+
+    if data_length == 0:
+        logging.debug("No data in response")
+        add_to_verify_values(att_rsp_str[status])
+        logging.debug("Set verify values to: %r", get_verify_values())
+        return
+
+    (value, ) = struct.unpack_from('%ds' % data_length, rp_data)
+
+    logging.debug("%s %r %r", gatt_cl_read_mult_rsp_ev_.__name__, status, value)
+
+    if (len(get_verify_values()) > 0 and not
+    (isinstance(get_verify_values()[0][0], str) and
+     isinstance(get_verify_values()[0][1], bytes))):
+        clear_verify_values()
+
+    add_to_verify_values((att_rsp_str[status],
+                          (binascii.hexlify(value)).upper()))
+
+    logging.debug("Set verify values to: %r", get_verify_values())
+
+
 def gatt_cl_write_rsp_ev_(gatt_cl, data, data_len):
-    logging.debug("%s %r", gatt_cl_read_mult_rsp_ev_.__name__, data)
+    logging.debug("%s %r", gatt_cl_write_rsp_ev_.__name__, data)
 
     fmt = '<B6sB'
 
     addr_type, addr, status = \
         struct.unpack_from(fmt, data[:struct.calcsize(fmt)])
     logging.debug("%s received addr_type=%r addr=%r status=%r",
-                  gatt_cl_read_mult_rsp_ev_.__name__,
+                  gatt_cl_write_rsp_ev_.__name__,
                   addr_type, addr, status)
     gatt_cl.write_status = status
 
@@ -579,7 +615,7 @@ def gatt_cl_notification_rxed_ev_(gatt_cl, data, data_len):
         struct.unpack_from(fmt, data[:struct.calcsize(fmt)])
     logging.debug("%s received addr_type=%r addr=%r"
                   "type=%r handle=%r data_length=%r",
-                  gatt_cl_read_mult_rsp_ev_.__name__,
+                  gatt_cl_notification_rxed_ev_.__name__,
                   addr_type, addr, type, handle, data_length)
 
     if data_length == 0:
@@ -610,6 +646,7 @@ GATTC_EV = {
     defs.GATTC_CFG_NOTIFY_RP: gatt_cl_write_rsp_ev_,
     defs.GATTC_CFG_INDICATE_RP: gatt_cl_write_rsp_ev_,
     defs.GATTC_EV_NOTIFICATION_RXED: gatt_cl_notification_rxed_ev_,
+    defs.GATTC_READ_MULTIPLE_VAR_RP: gatt_cl_read_mult_var_rsp_ev_,
 }
 
 
@@ -902,6 +939,9 @@ def gatt_cl_read(bd_addr_type, bd_addr, hdl):
 
     iutctl.btp_socket.send(*GATTC['read'], data=data_ba)
 
+    stack = get_stack()
+    stack.gatt_cl.set_event_to_await(stack.gatt_cl.is_read_complete)
+
     gatt_cl_command_rsp_succ()
 
 
@@ -939,6 +979,9 @@ def gatt_cl_read_uuid(bd_addr_type, bd_addr, start_hdl, end_hdl, uuid):
 
     iutctl.btp_socket.send(*GATTC['read_uuid'], data=data_ba)
 
+    stack = get_stack()
+    stack.gatt_cl.set_event_to_await(stack.gatt_cl.is_read_complete)
+
     gatt_cl_command_rsp_succ()
 
 
@@ -969,6 +1012,9 @@ def gatt_cl_read_long(bd_addr_type, bd_addr, hdl, off, modif_off=None):
 
     iutctl.btp_socket.send(*GATTC['read_long'], data=data_ba)
 
+    stack = get_stack()
+    stack.gatt_cl.set_event_to_await(stack.gatt_cl.is_read_complete)
+
     gatt_cl_command_rsp_succ()
 
 
@@ -994,6 +1040,38 @@ def gatt_cl_read_multiple(bd_addr_type, bd_addr, *hdls):
     data_ba.extend(hdls_ba)
 
     iutctl.btp_socket.send(*GATTC['read_multiple'], data=data_ba)
+
+    stack = get_stack()
+    stack.gatt_cl.set_event_to_await(stack.gatt_cl.is_read_complete)
+
+    gatt_cl_command_rsp_succ()
+
+
+def gatt_cl_read_multiple_var(bd_addr_type, bd_addr, *hdls):
+    logging.debug("%s %r %r %r", gatt_cl_read_multiple_var.__name__, bd_addr_type,
+                  bd_addr, hdls)
+    iutctl = get_iut()
+
+    gap_wait_for_connection()
+
+    data_ba = bytearray()
+
+    bd_addr_ba = addr2btp_ba(bd_addr)
+    hdls_j = ''.join(hdl for hdl in hdls)
+    hdls_byte_table = [hdls_j[i:i + 2] for i in range(0, len(hdls_j), 2)]
+    hdls_swp = ''.join([c[1] + c[0] for c in zip(hdls_byte_table[::2],
+                                                 hdls_byte_table[1::2])])
+    hdls_ba = binascii.unhexlify(hdls_swp)
+
+    data_ba.extend(chr(bd_addr_type).encode('utf-8'))
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(chr(len(hdls)).encode('utf-8'))
+    data_ba.extend(hdls_ba)
+
+    iutctl.btp_socket.send(*GATTC['read_multiple_var'], data=data_ba)
+
+    stack = get_stack()
+    stack.gatt_cl.set_event_to_await(stack.gatt_cl.is_read_complete)
 
     gatt_cl_command_rsp_succ()
 
@@ -1062,6 +1140,9 @@ def gatt_cl_signed_write(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
 
     iutctl.btp_socket.send(*GATTC['signed_write'], data=data_ba)
 
+    stack = get_stack()
+    stack.gatt_cl.set_event_to_await(stack.gatt_cl.is_write_completed)
+
     gatt_cl_command_rsp_succ()
 
 
@@ -1092,6 +1173,9 @@ def gatt_cl_write(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
     data_ba.extend(val_ba)
 
     iutctl.btp_socket.send(*GATTC['write'], data=data_ba)
+
+    stack = get_stack()
+    stack.gatt_cl.set_event_to_await(stack.gatt_cl.is_write_completed)
 
     gatt_cl_command_rsp_succ()
 
@@ -1128,6 +1212,9 @@ def gatt_cl_write_long(bd_addr_type, bd_addr, hdl, off, val, length=None):
 
     iutctl.btp_socket.send(*GATTC['write_long'], data=data_ba)
 
+    stack = get_stack()
+    stack.gatt_cl.set_event_to_await(stack.gatt_cl.is_write_completed)
+
     gatt_cl_command_rsp_succ()
 
 
@@ -1161,6 +1248,9 @@ def gatt_cl_write_reliable(bd_addr_type, bd_addr, hdl, off, val, val_mtp=None):
     data_ba.extend(val_ba)
 
     iutctl.btp_socket.send(*GATTC['write_reliable'], data=data_ba)
+
+    stack = get_stack()
+    stack.gatt_cl.set_event_to_await(stack.gatt_cl.is_write_completed)
 
     gatt_cl_command_rsp_succ()
 
