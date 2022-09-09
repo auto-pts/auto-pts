@@ -30,6 +30,7 @@ GAP/PADV/PASE/BV-06-C: https://github:com/intel/auto-pts/issues/740
 GAP/PADV/PAST/BV-01-C: https://github:com/intel/auto-pts/issues/740
 GAP/PADV/PAST/BV-02-C: https://github:com/intel/auto-pts/issues/740
 GATT/SR/GAC/BI-01-C: CASE0072072
+GATT/SR/GAW/BI-11-C: Request ID 17732
 L2CAP/LE/CPU/BV-01-C: TSE18295
 L2CAP/LE/CID/BV-01-C: CASE0072479
 L2CAP/LE/CID/BV-02-C: CASE0072479
