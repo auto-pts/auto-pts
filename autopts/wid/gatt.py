@@ -1945,7 +1945,7 @@ def hdl_wid_152(_: WIDParams):
             continue
 
         _, val_len, _ = chrc_value_data
-        if val_len == 300:
+        if val_len > 300:
             return '{0:04x}'.format(handle)
 
     return False
