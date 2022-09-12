@@ -817,6 +817,8 @@ def pull_server_logs(args):
         with ServerProxy("http://{}:{}/".format(server_addr[i], server_port[i]),
                          allow_none=True, ) as proxy:
             file_list = proxy.list_workspace_tree(workspace_dir)
+            proxy.shutdown_pts_bpv()
+
             if len(file_list) == 0:
                 continue
 
