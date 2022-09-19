@@ -45,7 +45,7 @@ def hdl_pending_gatt_wids(wid, test_case_name, description):
 
     for action in actions:
         handler = getattr(module, "hdl_wid_%d" % action.wid)
-        result = handler(WIDParams(wid, description, test_case_name))
+        result = handler(WIDParams(wid, description, action.test_case))
         stack.synch.prepare_pending_response(action.test_case,
                                              result, action.delay)
 
@@ -173,13 +173,19 @@ def hdl_wid_1(_: WIDParams):
     return True
 
 
-def hdl_wid_2(_: WIDParams):
-    btp.gap_conn()
+def hdl_wid_2(params: WIDParams):
+    if 'LT2' in params.test_case_name:
+        btp.gap_conn(btp.lt2_addr_get(), btp.lt2_addr_type_get())
+    else:
+        btp.gap_conn(btp.pts_addr_get(), btp.pts_addr_type_get())
     return True
 
 
-def hdl_wid_3(_: WIDParams):
-    btp.gap_disconn(btp.pts_addr_get(), btp.pts_addr_type_get())
+def hdl_wid_3(params: WIDParams):
+    if 'LT2' in params.test_case_name:
+        btp.gap_disconn(btp.lt2_addr_get(), btp.lt2_addr_type_get())
+    else:
+        btp.gap_disconn(btp.pts_addr_get(), btp.pts_addr_type_get())
     return True
 
 
@@ -1073,16 +1079,21 @@ def hdl_wid_92(params: WIDParams):
 
 
 def hdl_wid_93(params: WIDParams):
+    # Please send an Handle Value MULTIPLE Notification to PTS.
+    # Description: Verify that the Implementation Under Test (IUT) can send
+    # handle value multiple notification to the PTS.
     handles = []
 
-    db = gatt_server_fetch_db().db
+    addr_type, addr = (btp.lt2_addr_type_get(), btp.lt2_addr_get()) \
+        if 'LT2' in params.test_case_name \
+        else (btp.pts_addr_type_get(), btp.pts_addr_get())
 
+    db = gatt_server_fetch_db().db
     for i in range(1, len(db) + 1):
         if isinstance(db[i], GattCharacteristic) and db[i].prop & Prop.notify:
-            handles.append(db[i].handle)
+            handles.append(db[i].handle + 1)
 
-    btp.gatts_notify_mult(btp.pts_addr_type_get(), btp.pts_addr_get(), len(handles), handles)
-
+    btp.gatts_notify_mult(addr_type, addr, len(handles), handles)
     return True
 
 
@@ -1835,8 +1846,8 @@ def hdl_wid_149(params: WIDParams):
     """
     Please start lower tester 2. Click OK after Lower Tester connected to IUT.
     """
-    stack = get_stack()
-    return stack.gap.wait_for_connection(30, 2)
+    # We need to handle this via SynchPoint anyway.
+    return True
 
 
 def hdl_wid_139(params: WIDParams):
@@ -1965,16 +1976,8 @@ def hdl_wid_304(params: WIDParams):
     return bool(data in val)
 
 
-def hdl_wid_308(_: WIDParams):
-    handles = []
-
-    db = gatt_server_fetch_db().db
-
-    for i in range(1, len(db) + 1):
-        if isinstance(db[i], GattCharacteristic) and db[i].prop & Prop.notify:
-            handles.append(db[i].handle)
-
-    btp.gatts_notify_mult(btp.pts_addr_type_get(), btp.pts_addr_get(), len(handles), handles)
+def hdl_wid_308(params: WIDParams):
+    # description: Please do not send an ATT_Handle_value_Multiple_notification to Lower tester until timeout(30s).
     return True
 
 
