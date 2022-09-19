@@ -24,8 +24,8 @@ from random import randint
 from autopts.ptsprojects.stack import get_stack, ConnParams
 from autopts.pybtp import defs
 from autopts.pybtp.types import BTPError, gap_settings_btp2txt, addr2btp_ba, Addr, OwnAddrType, AdDuration
-from autopts.pybtp.btp.btp import pts_addr_get, pts_addr_type_get, btp_hdr_check, CONTROLLER_INDEX, set_pts_addr, LeAdv, \
-    get_iut_method as get_iut
+from autopts.pybtp.btp.btp import pts_addr_get, pts_addr_type_get, lt2_addr_get, lt2_addr_type_get, btp_hdr_check, \
+    CONTROLLER_INDEX, set_pts_addr, set_lt2_addr,LeAdv, get_iut_method as get_iut
 
 GAP = {
     "start_adv": (defs.BTP_SERVICE_ID_GAP, defs.GAP_START_ADVERTISING,
@@ -157,8 +157,6 @@ def gap_connected_ev_(gap, data, data_len):
         gap.connected.data.append((addr, addr_type))
     gap.set_conn_params(ConnParams(itvl, itvl, latency, timeout))
 
-    set_pts_addr(addr, addr_type)
-
 
 def gap_disconnected_ev_(gap, data, data_len):
     logging.debug("%s %r", gap_disconnected_ev_.__name__, data)
@@ -198,11 +196,11 @@ def gap_identity_resolved_ev_(gap, data, data_len):
     _addr = binascii.hexlify(_addr[::-1]).lower()
     _id_addr = binascii.hexlify(_id_addr[::-1]).lower()
 
-    if _addr_t != pts_addr_type_get() or _addr.decode('utf-8') != pts_addr_get():
-        raise BTPError("Received data mismatch")
+    if _addr_t == pts_addr_type_get() and _addr.decode('utf-8') == pts_addr_get():
+        set_pts_addr(_id_addr, _id_addr_t)
 
-    # Update RPA with Identity Address
-    set_pts_addr(_id_addr, _id_addr_t)
+    if _addr_t == lt2_addr_type_get() and _addr.decode('utf-8') == lt2_addr_get():
+        set_lt2_addr(_id_addr, _id_addr_t)
 
 
 def gap_conn_param_update_ev_(gap, data, data_len):
@@ -506,9 +504,7 @@ def gap_conn(bd_addr=None, bd_addr_type=None, own_addr_type=OwnAddrType.le_ident
     data_ba.extend(bd_addr_ba)
     data_ba.extend(own_addr_type_ba)
 
-    iutctl.btp_socket.send(*GAP['conn'], data=data_ba)
-
-    gap_command_rsp_succ()
+    iutctl.btp_socket.send_wait_rsp(*GAP['conn'], data=data_ba)
 
 
 def set_filter_accept_list(address_list=None):
@@ -554,17 +550,16 @@ def gap_rpa_conn(description, own_addr_type=OwnAddrType.le_identity_address):
 
     bd_addr = re.search("[a-fA-F0-9]{12}", description).group(0)
     bd_addr_type = Addr.le_random
+    set_pts_addr(bd_addr, bd_addr_type)
 
     data_ba = bytearray()
-    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
+    bd_addr_ba = addr2btp_ba(bd_addr)
 
-    data_ba.extend(chr(pts_addr_type_get(bd_addr_type)).encode('utf-8'))
+    data_ba.extend(chr(bd_addr_type).encode('utf-8'))
     data_ba.extend(bd_addr_ba)
     data_ba.extend(chr(own_addr_type).encode('utf-8'))
 
-    iutctl.btp_socket.send(*GAP['conn'], data=data_ba)
-
-    gap_command_rsp_succ()
+    iutctl.btp_socket.send_wait_rsp(*GAP['conn'], data=data_ba)
     return True
 
 
@@ -574,18 +569,13 @@ def gap_disconn(bd_addr=None, bd_addr_type=None):
 
     stack = get_stack()
 
-    if not stack.gap.is_connected(0):
-        return
-
     data_ba = bytearray()
     bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
 
     data_ba.extend(chr(pts_addr_type_get(bd_addr_type)).encode('utf-8'))
     data_ba.extend(bd_addr_ba)
 
-    iutctl.btp_socket.send(*GAP['disconn'], data=data_ba)
-
-    gap_command_rsp_succ()
+    iutctl.btp_socket.send_wait_rsp(*GAP['disconn'], data=data_ba)
 
 
 def verify_not_connected(description):
