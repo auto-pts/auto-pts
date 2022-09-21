@@ -71,7 +71,6 @@ MESH/PVNR/PROV/BI-18-C: https://github.com/zephyrproject-rtos/zephyr/pull/38464
 MESH/NODE/PROV/BI-02-C: https://github.com/zephyrproject-rtos/zephyr/pull/38250
 MESH/NODE/CFG/MP/BI-03-C: https://github.com/zephyrproject-rtos/zephyr/pull/38360
 MESH/NODE/FRND/FN/BV-08-C: https://github.com/zephyrproject-rtos/zephyr/pull/38312
-MMDL/SR/LCTLT/BV-02-C: CASE0071445 https://www.bluetooth.org/tse/errata_view.cfm?errata_id=17080
 MMDL/CL/SNR/BV-07-C: CASE0071833
 MMDL/CL/SNR/BV-08-C: CASE0071833
 MMDL/CL/SNR/BV-09-C: CASE0071833
@@ -86,7 +85,5 @@ MMDL/SR/LHSLSA/BV-04-C: CASE0071690
 MMDL/SR/LLN/BV-15-C: CASE0071690
 MMDL/SR/LLN/BV-16-C: CASE0071690
 MMDL/SR/LXYL/BV-07-C: CASE0071690
-MMDL/SR/SNRS/BV-01-C: SE15886 TSE18008
-MMDL/SR/SNRS/BI-01-C: SE15886 TSE18008
 MMDL/SR/LLC/BV-06-C: Unstable - conversion issue in bound states.
 MMDL/SR/LLC/BV-07-C: Unstable - conversion issue in bound states.
