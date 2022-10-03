@@ -99,6 +99,7 @@ class BotConfigArgs(Namespace):
         self.ykush = args.get('ykush', None)
         self.recovery = args.get('recovery', False)
         self.superguard = float(args.get('superguard', 0))
+        self.cron_optim = args.get('cron_optim', False)
 
 
 class BotClient(Client):
@@ -817,7 +818,9 @@ def pull_server_logs(args):
         with ServerProxy("http://{}:{}/".format(server_addr[i], server_port[i]),
                          allow_none=True, ) as proxy:
             file_list = proxy.list_workspace_tree(workspace_dir)
-            proxy.shutdown_pts_bpv()
+
+            if args.cron_optim:
+                proxy.shutdown_pts_bpv()
 
             if len(file_list) == 0:
                 continue
