@@ -1916,6 +1916,12 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_L2CAP_2_48</Name>
+            <Description>Enhanced Credit Based Flow Control Mode (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_ALL</Name>
             <Description>Turns on all the test cases</Description>
             <Value>FALSE</Value>
@@ -2094,6 +2100,12 @@
             <Description>PSM to be used by PTS when establishing basic rate L2CAP connection without authentication. (Default: 2001)</Description>
             <Type>OCTETSTRING</Type>
             <Value>2001</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_spsm</Name>
+            <Description>PSM to be used by PTS when establishing credit based L2CAP connection(for K-frame). (Default: 0027)</Description>
+            <Value>0027</Value>
+            <Type>OCTETSTRING</Type>
           </Row>
           <Row>
             <Name>TSPX_iut_valid_connection_interval_min</Name>
@@ -4120,6 +4132,12 @@
             <Description>The unique 48-bit LE mode Bluetooth device address (BD_ADDR) of the IUT. This is manually filled by the tester.(Default: 000000000000)</Description>
             <Type>OCTETSTRING</Type>
             <Value>000000000000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_iut_device_name_in_adv_packet_for_random_address</Name>
+            <Description>IUT advertising this local name for the PTS to make connection to. Default is not using it with empty string. (Default: "")</Description>
+            <Value />
+            <Type>IA5STRING</Type>
           </Row>
           <Row>
             <Name>TSPX_client_class_of_device</Name>
