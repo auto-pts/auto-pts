@@ -569,6 +569,9 @@ def hdl_wid_32(params: WIDParams):
 def hdl_wid_34(_: WIDParams):
     return True
 
+def hdl_wid_35(params: WIDParams):
+    return btp.verify_description(params.description)
+
 
 def hdl_wid_40(params: WIDParams):
     return btp.verify_att_error(params.description)
