@@ -603,6 +603,7 @@ def hdl_wid_44(params: WIDParams):
     # This pattern is matching source and destination label addresses
     pattern = re.compile(
         r'(source\saddress|\(address)\s+([0][xX][0-9a-fA-F]+)')
+    value = value = re.findall(r'(destination\slabel)\s+([0-9a-fA-F]+)', params.description)[0][1]
     params = pattern.findall(params.description)
     if not params:
         logging.error("%s parsing error", hdl_wid_44.__name__)
@@ -612,7 +613,7 @@ def hdl_wid_44(params: WIDParams):
 
     btp.mesh_model_send(int(params.get('source address'), 16),
                         int(params.get('(address'), 16),
-                        'ff' * 16)
+                        value)
     return True
 
 
