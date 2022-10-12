@@ -193,6 +193,48 @@ def verify_description(description):
     return True
 
 
+def verify_description_truncated(description):
+    """A function to verify that truncated values are in PTS MMI description.
+
+    Verification is successful if the PTS MMI description contains a value
+    starting with the value under verification.
+
+    Returns True if verification is successful, False if not.
+
+    description -- MMI description
+
+    """
+    logging.debug("description=%r", description)
+
+    description_values = re.findall(r"(?:'|=\s+)([0-9-xA-Fa-f]{2,})", description)
+    logging.debug("Description values: %r", description_values)
+
+    verify_values = get_verify_values()
+    logging.debug("Verifying values: %r", verify_values)
+
+    # verify_values shall not be a string: all its characters will be verified
+    assert isinstance(verify_values, list), "verify_values should be a list!"
+
+    verify_values = list(map(str.upper, verify_values))
+    description_values = list(map(str.upper, description_values))
+
+    unverified_desc = [x for x in description_values if x not in verify_values]
+    if unverified_desc:
+        logging.debug("Verifying for partial matches: %r", unverified_desc)
+
+        for desc_value in unverified_desc:
+            matches = [x for x in verify_values if desc_value.startswith(x) and len(x) > 8]
+            if not matches:
+                logging.debug("Verification failed, %r not in verify values", desc_value)
+                return False
+
+    logging.debug("All verifications passed")
+
+    clear_verify_values()
+
+    return True
+
+
 def verify_multiple_read_description(description):
     """A function to verify that merged multiple read att values are in
 

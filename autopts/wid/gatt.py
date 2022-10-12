@@ -570,7 +570,8 @@ def hdl_wid_34(_: WIDParams):
     return True
 
 def hdl_wid_35(params: WIDParams):
-    return btp.verify_description(params.description)
+    # Partial matches are allowed for WID 35 as the verify values may be truncated to ATT_MTU
+    return btp.verify_description_truncated(params.description)
 
 
 def hdl_wid_40(params: WIDParams):
