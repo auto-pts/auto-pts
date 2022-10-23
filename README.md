@@ -297,11 +297,11 @@ Install required Python modules with:
 Check out the guide how to set up AutoPTS for Zephyr + nRF52 under:
 - Linux + Windows 10 virtual machine
 
-  https://github.com/zephyrproject-rtos/zephyr/blob/main/doc/guides/bluetooth/autopts/autopts-linux.rst
+  https://docs.zephyrproject.org/latest/connectivity/bluetooth/autopts/autopts-linux.html
 
 - Windows 10
 
-  https://github.com/zephyrproject-rtos/zephyr/blob/main/doc/guides/bluetooth/autopts/autopts-win10.rst
+  https://docs.zephyrproject.org/latest/connectivity/bluetooth/autopts/autopts-win10.html
 
 # More examples of run and tips
 
