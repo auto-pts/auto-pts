@@ -1441,6 +1441,7 @@ Commands and responses:
 					Address (6 octets)
 					Handle (2 octets)
 		Response parameters:	ATT_Response (1 octet)
+					MTU (2 octets)
 					Value_Length (2 octet)
 					Value (variable)
 
