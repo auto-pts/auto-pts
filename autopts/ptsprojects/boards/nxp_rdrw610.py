@@ -1,7 +1,9 @@
 #
 # auto-pts - The Bluetooth PTS Automation Framework
 #
-# Copyright (c) 2017, Intel Corporation.
+# Copyright (c) 2021, Intel Corporation.
+# Copyright (c) 2021, Codecoup.
+# Copyright (c) 2022, NXP.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms and conditions of the GNU General Public License,
@@ -13,15 +15,9 @@
 # more details.
 #
 
+supported_projects = ['zephyr']
 
-import autopts.ptsprojects.zephyr.dis
-import autopts.ptsprojects.zephyr.gap
-import autopts.ptsprojects.zephyr.gatt
-import autopts.ptsprojects.zephyr.l2cap
-import autopts.ptsprojects.zephyr.sm
-import autopts.ptsprojects.zephyr.mesh
-import autopts.ptsprojects.zephyr.mmdl
+board_type = 'rdrw610'
 
-# Constants
-ZEPHYR_PROJECT_URL = "https://github.com/zephyrproject-rtos/zephyr"
-SERIAL_BAUDRATE = 9600
+def reset_cmd(iutctl):
+    return 'JLink.exe -device RW610 -CommandFile ptsprojects/boards/nxprtx_reset.jlink'
