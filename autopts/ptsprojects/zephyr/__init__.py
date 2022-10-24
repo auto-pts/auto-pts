@@ -24,3 +24,4 @@ import autopts.ptsprojects.zephyr.mmdl
 
 # Constants
 ZEPHYR_PROJECT_URL = "https://github.com/zephyrproject-rtos/zephyr"
+SERIAL_BAUDRATE = 115200

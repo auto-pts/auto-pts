@@ -25,12 +25,11 @@ from autopts.pybtp import defs, btp
 from autopts.ptsprojects.boards import Board, get_debugger_snr, tty_to_com
 from autopts.pybtp.types import BTPError
 from autopts.pybtp.iutctl_common import BTPWorker, BTP_ADDRESS, RTT, BTMON, BTPSocketSrv
-
+from autopts.ptsprojects.zephyr import SERIAL_BAUDRATE
 log = logging.debug
 MYNEWT = None
 import importlib
 IUT_LOG_FO = None
-SERIAL_BAUDRATE = 115200
 CLI_SUPPORT = ['tty']
 
 
@@ -80,14 +79,14 @@ class MynewtCtl:
             # On windows socat.exe does not support setting serial baud rate.
             # Set it with 'mode' from cmd.exe
             com = tty_to_com(self.tty_file)
-            mode_cmd = (">nul 2>nul cmd.exe /c \"mode " + com + "BAUD=115200 PARITY=n DATA=8 STOP=1\"")
+            mode_cmd = (">nul 2>nul cmd.exe /c \"mode " + com + f"BAUD={SERIAL_BAUDRATE} PARITY=n DATA=8 STOP=1\"")
             os.system(mode_cmd)
 
             socat_cmd = ("socat.exe -x -v tcp:" + socket.gethostbyname(socket.gethostname()) +
-                         ":%s,retry=100,interval=1 %s,raw,b115200" %
+                         f":%s,retry=100,interval=1 %s,raw,b{SERIAL_BAUDRATE}" %
                          (self.socket_srv.sock.getsockname()[1], self.tty_file))
         else:
-            socat_cmd = ("socat -x -v %s,rawer,b115200 UNIX-CONNECT:%s" %
+            socat_cmd = (f"socat -x -v %s,rawer,b{SERIAL_BAUDRATE} UNIX-CONNECT:%s" %
                          (self.tty_file, self.btp_address))
 
         log("Starting socat process: %s", socat_cmd)

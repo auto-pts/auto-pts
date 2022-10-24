@@ -28,6 +28,7 @@ import serial
 
 from autopts import bot
 from autopts.ptsprojects.zephyr import ZEPHYR_PROJECT_URL
+from autopts.ptsprojects.zephyr import SERIAL_BAUDRATE
 from autopts import client as autoptsclient
 from autopts.bot.common import BotConfigArgs, BotClient
 from autopts.ptsprojects.boards import get_free_device, tty_to_com, release_device, get_tty, get_debugger_snr,\
@@ -49,7 +50,7 @@ def flush_serial(tty):
 
     if sys.platform == 'win32':
         com = tty_to_com(tty)
-        ser = serial.Serial(com, 115200, timeout=5)
+        ser = serial.Serial(com, SERIAL_BAUDRATE, timeout=5)
         ser.flushInput()
         ser.flushOutput()
     else:
