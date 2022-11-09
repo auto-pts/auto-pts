@@ -2154,7 +2154,7 @@ def hdl_wid_850(params: WIDParams):
     Please initiate the transfer of the test object to the Lower Tester.
     """
     # Do not execute this wid, it's automatically send as part of FU procedure
-    if params.test_case_name == 'MMDL/CL/FU/BV-02-C':
+    if params.test_case_name == 'DFU/CL/FU/BV-02-C':
         return True
 
     stack = get_stack()
