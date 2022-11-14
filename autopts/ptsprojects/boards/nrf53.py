@@ -47,7 +47,8 @@ def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None):
     hci_rpmsg_dir = os.path.join(zephyr_wd, "samples", "bluetooth", "hci_rpmsg")
 
     check_call('rm -rf build/'.split(), cwd=hci_rpmsg_dir)
+    check_call('echo CONFIG_BT_EXT_ADV=y > overlay.conf'.split(), cwd=hci_rpmsg_dir)
 
-    cmd = ['west', 'build', '-p', 'auto', '-b', 'nrf5340dk_nrf5340_cpunet']
+    cmd = ['west', 'build', '-p', 'auto', '-b', 'nrf5340dk_nrf5340_cpunet', '--', '-DOVERLAY_CONFIG=overlay.conf']
     check_call(cmd, cwd=hci_rpmsg_dir)
     check_call(['west', 'flash', '--skip-rebuild', '-i', debugger_snr], cwd=hci_rpmsg_dir)
