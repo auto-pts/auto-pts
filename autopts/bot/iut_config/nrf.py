@@ -34,3 +34,6 @@ iut_config_mesh = {
     #     "test_cases": ['MESH/NODE/CFG/NKL/BI-03-C']
     # },
 }
+
+retry_config = {
+}

@@ -45,6 +45,7 @@ from autopts import bot
 from autopts import client as autoptsclient
 from autopts.client import CliParser, Client
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
+from autopts.bot.iut_config.zephyr import retry_config
 
 SCOPES = 'https://www.googleapis.com/auth/drive'
 CLIENT_SECRET_FILE = 'client_secret.json'
@@ -161,7 +162,7 @@ class BotClient(Client):
             self.apply_config(_args[config], config, self.iut_config[config])
 
             status_count, results_dict, regressions, progresses = \
-                autoptsclient.run_test_cases(self.ptses, self.test_cases, _args[config])
+                autoptsclient.run_test_cases(self.ptses, self.test_cases, _args[config], retry_config)
 
             total_regressions += regressions
             total_progresses += progresses

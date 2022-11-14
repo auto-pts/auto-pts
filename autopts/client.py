@@ -969,7 +969,7 @@ def get_test_cases(pts, test_cases, included, excluded):
     return _test_cases
 
 
-def run_test_cases(ptses, test_case_instances, args):
+def run_test_cases(ptses, test_case_instances, args, retry_config=None):
     """Runs a list of test cases"""
 
     ports_str = '_'.join(str(x) for x in args.cli_port)
@@ -991,6 +991,11 @@ def run_test_cases(ptses, test_case_instances, args):
 
     for test_case in test_cases:
         stats.run_count = 0
+        test_retry_count = None
+
+        if retry_config is not None:
+            if test_case in retry_config:
+                test_retry_count = retry_config[test_case]
 
         while True:
             status, duration = run_test_case(ptses, test_case_instances,
@@ -1013,7 +1018,13 @@ def run_test_cases(ptses, test_case_instances, args):
             if args.recovery and (exeption_msg != '' or status not in args.not_recover):
                 run_recovery(args, ptses)
 
-            if (status == 'PASS' and not args.stress_test) or stats.run_count == args.retry:
+            if test_retry_count is not None:
+                retry_limit = test_retry_count
+            else:
+                retry_limit = args.retry
+
+            if (status == 'PASS' and not args.stress_test) or \
+                    stats.run_count == retry_limit:
                 if TEST_CASE_DB:
                     TEST_CASE_DB.update_statistics(test_case, duration, status)
 
@@ -1138,7 +1149,7 @@ class Client:
         self.args.test_cases = get_test_cases(self.ptses[0],
                                               self.ptses[0].get_project_list(),
                                               included, excluded)
-        return run_test_cases(self.ptses, self.test_cases, self.args)
+        return run_test_cases(self.ptses, self.test_cases, self.args, None)
 
     def cleanup(self):
         autoprojects.iutctl.cleanup()

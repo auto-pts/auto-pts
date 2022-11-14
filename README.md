@@ -219,6 +219,7 @@ configurations and reporting the results.
 - Fetching recent project sources
 - Applying changes to project configuration files via "iut_config"
 with "overlay" that need to be applied for "test_cases"
+- setting test-specific retry count via "retry_config"
 - Building ZephyrOS/MynewtOS image
 - Flashing board
 - Running all the test cases
@@ -280,6 +281,9 @@ specific changes in IUT configuration. It consists of dict of configuration
 names and related key: value pairs:
     - `overlay` - changes in config to be applied
     - `test_cases` - test cases to be ran with this config
+- `retry_config` - allows to set test-specific retry count. This value overrides
+default setting `retry`, allowing to both increase and decrease it. This setting
+is in form of dictionary of testcase names and retry counts (as `int`)
 * `scheduler` - Scheduler configuration (optional)
     - `weekday`: "time" dictionary.
 
