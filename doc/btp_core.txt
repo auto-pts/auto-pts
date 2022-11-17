@@ -1,0 +1,85 @@
+Core Service (ID 0)
+===================
+
+Commands and responses:
+
+	Opcode 0x00 - Error response
+
+	Opcode 0x01 - Read Supported Commands command/response
+
+		Controller Index:	<non-controller>
+		Command parameters:	<none>
+		Response parameters:	<supported commands> (variable)
+
+		Each bit in response is a flag indicating if command with
+		opcode matching bit number is supported. Bit set to 1 means
+		that command is supported. Bit 0 is reserved and shall always
+		be set to 0. If specific bit is not present in response (less
+		than required bytes received) it shall be assumed that command
+		is not supported.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x02 - Read Supported Services command/response
+
+		Controller Index:	<non-controller>
+		Command parameters:	<none>
+		Response parameters:	<supported services> (variable)
+
+		Each bit in response is a flag indicating if service with ID
+		matching bit number is supported. Bit set to 1 means that
+		service is supported. If specific bit is not present in response
+		(less than required bytes received) it shall be assumed that
+		service is not supported.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x03 - Register Service command/response
+
+		Controller Index:	<non-controller>
+		Command parameters:	Service ID (1 octet)
+		Response parameters:	<none>
+
+		In case a command is sent for an undeclared service ID, it will
+		be rejected. Also there will be no events for undeclared
+		service ID.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x04 - Unregister Service command/response
+
+		Controller Index:	<non-controller>
+		Command parameters:	Service ID (1 octet)
+		Response parameters:	<none>
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x05 - Log message at IUT
+
+		Controller Index:	<non-controller>
+		Command parameters:	Log_Message_Length (2 Octets)
+					Log_Message (variable)
+		Response parameters:	<none>
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x06 - Read BTP MTU
+
+		Controller Index:	<non-controller>
+		Command parameters:	<none>
+		Response parameters:	BTP_MTU (2 octets)
+
+		This allows to read BTP protocol MTU on OUT device. MTU is maximum
+		number of bytes that IUT can receive or send (including BTP header).
+
+		In case of an error, the error response will be returned.
+
+Events:
+	Opcode 0x80 - IUT ready event
+
+		Controller Index:	<non-controller>
+		Event parameters:	<none>
+
+		This event indicates that IUT has been initialized and is ready to
+		receive BTP commands.
+		Tester shall wait for this event before sending any command to the IUT.
