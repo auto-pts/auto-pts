@@ -343,7 +343,7 @@ MMDL = {
                                   defs.MMDL_DFU_UPDATE_FIRMWARE_APPLY,
                                   CONTROLLER_INDEX),
     "mmdl_dfu_srv_apply": (defs.BTP_SERVICE_ID_MMDL,
-                                  defs.MMDL_DFU_UPDATE_FIRMWARE_APPLY,
+                                  defs.MMDL_DFU_SRV_APPLY,
                                   CONTROLLER_INDEX),
 }
 
