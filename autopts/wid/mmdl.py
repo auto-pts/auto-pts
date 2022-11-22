@@ -2202,7 +2202,8 @@ def hdl_wid_852(params: WIDParams):
 
     to_rx = int(re.findall(r'0x([0-9A-F]{2,})', params.description)[0], 16)
     # Give some time so last mesh_model_recv_ev's are processed
-    time.sleep(1)
+    time.sleep(5)
+
     return stack.mesh.blob_rxed_bytes == to_rx
 
 
