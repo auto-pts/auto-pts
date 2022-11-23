@@ -876,9 +876,6 @@ def hdl_wid_98(_: WIDParams):
     description: Please order IUT to send a private beacon with Key Refresh Flag
                  set to 0 and IV Update Flag set to 0
     """
-    stack = get_stack()
-
-    btp.mesh_priv_beacon_set(stack.mesh.address_iut, 1, 0)
 
     return True
 
