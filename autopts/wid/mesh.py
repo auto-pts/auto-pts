@@ -39,19 +39,6 @@ def mesh_wid_hdl_rpr_2ptses(wid, description, test_case_name):
     return mesh_wid_hdl(wid, description, test_case_name)
 
 
-def mesh_wid_hdl_rpr_2ptses_restart(wid, description, test_case_name):
-    if wid == 33:
-        log("%s, %r, %r, %s", mesh_wid_hdl_rpr_2ptses.__name__, wid, description,
-            test_case_name)
-        return True
-    if wid == 13:
-        log("%s, %r, %r, %s", mesh_wid_hdl_rpr_persistent_storage.__name__,
-            wid, description, test_case_name)
-        return hdl_wid_13_persistent_storage(WIDParams(wid, description,
-                                                       test_case_name))
-    return mesh_wid_hdl(wid, description, test_case_name)
-
-
 def mesh_wid_hdl_rpr_persistent_storage(wid, description, test_case_name):
     if wid == 13:
         log("%s, %r, %r, %s", mesh_wid_hdl_rpr_persistent_storage.__name__,

@@ -25,7 +25,7 @@ from autopts.pybtp.types import Addr
 from autopts.pybtp.types import MeshVals
 from autopts.client import get_unique_name
 from autopts.wid import mesh_wid_hdl, mesh_wid_hdl_rpr_2ptses,\
-    mesh_wid_hdl_rpr_persistent_storage, mesh_wid_hdl_rpr_2ptses_restart
+    mesh_wid_hdl_rpr_persistent_storage
 from autopts.ptsprojects.stack import get_stack, SynchPoint
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
@@ -548,7 +548,7 @@ def test_cases(ptses):
         ZTestCase("MESH", "MESH/CL/PROX/BV-XY-0-C", cmds=pre_conditions_prov,
                   generic_wid_hdl=mesh_wid_hdl),
 
-        ZTestCase("MESH", "MESH/NODE/CFG/COMP/BV-01-C",
+        ZTestCase("MESH", "MESH/NODE/CFG/COMP/BV-01-C_NEW",
                   cmds=pre_conditions_comp_change,
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/SR/RPR/PDU/BV-02-C",
@@ -715,8 +715,9 @@ def test_cases(ptses):
                   generic_wid_hdl=mesh_wid_hdl,
                   lt2="MESH/SR/RPR/LNK/BI-02-C_LT2"),
         ZTestCase("MESH", "MESH/SR/RPR/LNK/BI-05-C",
-                  cmds=pre_conditions,
-                  generic_wid_hdl=mesh_wid_hdl_rpr_2ptses_restart,
+                  cmds=pre_conditions_comp_change +
+                  [TestFunc(btp.mesh_init, post_wid=715)],
+                  generic_wid_hdl=mesh_wid_hdl,
                   lt2="MESH/SR/RPR/LNK/BI-05-C_LT2"),
         ZTestCase("MESH", "MESH/SR/RPR/PDU/BV-01-C",
                   cmds=pre_conditions,
@@ -869,7 +870,7 @@ def test_cases(ptses):
                        generic_wid_hdl=mesh_wid_hdl_rpr_2ptses),
         ZTestCaseSlave("MESH", "MESH/SR/RPR/LNK/BI-05-C_LT2",
                        cmds=pre_conditions_slave,
-                       generic_wid_hdl=mesh_wid_hdl_rpr_2ptses_restart),
+                       generic_wid_hdl=mesh_wid_hdl_rpr_2ptses),
     ]
 
     test_case_name_list = pts.get_test_case_list('MESH')
