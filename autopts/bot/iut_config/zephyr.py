@@ -180,6 +180,7 @@ iut_config = {
         "test_cases": [
             'MESH/SR/RPR/PDU/BV-02-C',
             'MESH/SR/RPR/PDU/BV-03-C',
+            'MESH/SR/RPR/LNK/BI-03-C',
             'MESH/SR/RPR/LNK/BV-21-C',
             'MESH/SR/RPR/LNK/BV-23-C',
             'MESH/SR/RPR/LNK/BV-25-C',
@@ -200,6 +201,8 @@ iut_config = {
             'MESH/SR/RPR/LNK/BI-05-C',
             'MESH/SR/RPR/PDU/BV-04-C',
             'MESH/SR/RPR/LNK/BV-25-C',
+            'MESH/SR/RPR/PDU/BI-01-C',
+            'MESH/SR/RPR/PDU/BI-02-C',
             'MESH/SR/RPR/PDU/BI-03-C',
             'MESH/NODE/CFG/COMP/BV-01-C'
         ]
