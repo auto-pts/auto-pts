@@ -18,7 +18,7 @@ from .wid import generic_wid_hdl
 from .l2cap import l2cap_wid_hdl
 from .mesh import mesh_wid_hdl, mesh_wid_hdl_rpr_2ptses
 from .mesh import mesh_wid_hdl, mesh_wid_hdl_rpr_2ptses,\
-    mesh_wid_hdl_rpr_persistent_storage, mesh_wid_hdl_rpr_2ptses_restart
+    mesh_wid_hdl_rpr_persistent_storage
 from .mmdl import mmdl_wid_hdl
 from .vcs import vcs_wid_hdl
 from .ias import ias_wid_hdl
