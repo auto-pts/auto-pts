@@ -183,7 +183,6 @@ iut_config = {
             'MESH/SR/RPR/LNK/BI-03-C',
             'MESH/SR/RPR/LNK/BV-21-C',
             'MESH/SR/RPR/LNK/BV-23-C',
-            'MESH/SR/RPR/LNK/BV-25-C',
             'MESH/SR/RPR/LNK/BV-26-C'
         ]
     },
