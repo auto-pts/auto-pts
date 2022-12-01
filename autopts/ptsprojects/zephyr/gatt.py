@@ -241,10 +241,6 @@ def test_cases_server(ptses):
                               Prop.read | Prop.write | Prop.notify | Prop.indicate,
                               Perm.read | Perm.write, UUID.VND16_2),
                      TestFunc(btp.gatts_set_val, 0, Value.eight_bytes_1),
-                     TestFunc(btp.gatts_add_char, 0,
-                              Prop.read | Prop.write | Prop.notify | Prop.indicate,
-                              Perm.read | Perm.write, UUID.VND16_3),
-                     TestFunc(btp.gatts_set_val, 0, Value.eight_bytes_1),
                      TestFunc(btp.gatts_add_desc, 0,
                               Perm.read | Perm.write, UUID.CCC),
                      TestFunc(btp.gatts_add_char, 0,
@@ -366,6 +362,20 @@ def test_cases_server(ptses):
                      TestFunc(btp.gatts_set_val, 0, Value.long_1),
                      TestFunc(btp.gatts_set_enc_key_size, 0, 0x0f),
                      TestFunc(btp.gatts_start_server)]
+
+    init_server_9 = [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
+                     TestFunc(btp.gatts_add_char, 0,
+                              Prop.read | Prop.write | Prop.notify | Prop.indicate,
+                              Perm.read | Perm.write, UUID.VND16_2),
+                     TestFunc(btp.gatts_set_val, 0, Value.eight_bytes_1),
+                     TestFunc(btp.gatts_add_desc, 0,
+                              Perm.read | Perm.write, UUID.CCC),
+                     TestFunc(btp.gatts_add_char, 0,
+                              Prop.read | Prop.write | Prop.notify | Prop.indicate,
+                              Perm.read | Perm.write, UUID.VND16_3),
+                     TestFunc(btp.gatts_set_val, 0, Value.eight_bytes_1),
+                     TestFunc(btp.gatts_add_desc, 0,
+                              Perm.read | Perm.write, UUID.CCC)]
 
     custom_test_cases = [
         ZTestCase("GATT", "GATT/SR/GAC/BV-01-C",
@@ -519,7 +529,7 @@ def test_cases_server(ptses):
                   pre_conditions_1 + init_server_2,
                   generic_wid_hdl=gatt_wid_hdl),
         ZTestCase("GATT", "GATT/SR/GAN/BV-02-C",
-                  pre_conditions_1 + init_server_2,
+                  pre_conditions_1 + init_server_9,
                   generic_wid_hdl=gatt_wid_hdl,
                   lt2="GATT/SR/GAN/BV-02-C_LT2"),
         ZTestCase("GATT", "GATT/SR/GAI/BV-01-C",
