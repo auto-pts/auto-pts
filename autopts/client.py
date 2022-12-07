@@ -793,7 +793,7 @@ def run_test_case_thread_entry(pts, test_case, exceptions):
         test_case.status = "RUNNING"
         test_case.state = "RUNNING"
         pts.callback_thread.set_current_test_case(test_case.name)
-        synchronize_instances(test_case.state)
+        synchronize_instances(test_case.state, ["FINISHING"])
         error_code = pts.run_test_case(test_case.project_name, test_case.name)
 
         log("After run_test_case error_code=%r status=%r",
