@@ -232,11 +232,18 @@ def status_dict2summary_html(status_dict):
     summary += "</table>"
 
     if "PASS" in status_dict:
-        pass_rate = \
-            '{0:.2f}%'.format((status_dict["PASS"] / float(total_count) * 100))
+        pass_rate = status_dict["PASS"] / float(total_count) * 100
     else:
-        pass_rate = '{0:.2f}%'.format(0)
-    summary += "<p><b>PassRate = {}</b></p>".format(pass_rate)
+        pass_rate = 0
+
+    if pass_rate < 75:
+        rate_color = 'red'
+    elif pass_rate < 100:
+        rate_color = 'black'
+    else:
+        rate_color = 'green'
+
+    summary += f'<p style="color:{rate_color};"><b>PassRate = {pass_rate:.2f}%</b></p>'
 
     return summary
 
