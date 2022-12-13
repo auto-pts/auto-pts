@@ -562,6 +562,17 @@ class Mesh:
         return self.priv_key.data
 
 
+class VCS:
+    pass
+
+class AICS:
+    pass
+
+
+class VOCS:
+    pass
+
+
 class L2capChan:
     def __init__(self, chan_id, psm, peer_mtu, peer_mps, our_mtu, our_mps,
                  bd_addr_type, bd_addr):
@@ -1013,6 +1024,30 @@ def is_procedure_done(list, cnt):
 
     return len(list) == cnt
 
+class IAS:
+    def __init__(self):
+        self.alert_lvl = None
+
+    def is_mild_alert_set(self, args):
+        if self.alert_lvl == 1:
+            return True
+
+    def is_high_alert_set(self, args):
+        if self.alert_lvl == 2:
+            return True
+
+    def is_alert_stopped(self, args):
+        if self.alert_lvl == 0:
+            return True
+
+    def wait_for_mild_alert(self, timeout=30):
+        return wait_for_event(timeout, self.is_mild_alert_set)
+
+    def wait_for_high_alert(self, timeout=30):
+        return wait_for_event(timeout, self.is_high_alert_set)
+
+    def wait_for_stop_alert(self, timeout=30):
+        return wait_for_event(timeout, self.is_alert_stopped)
 
 class GattCl:
     def __init__(self):
@@ -1097,6 +1132,8 @@ class Stack:
         self.synch = None
         self.gatt = None
         self.gatt_cl = None
+        self.vcs = None
+        self.ias = None
         self.supported_svcs = 0
 
     def is_svc_supported(self, svc):
@@ -1109,6 +1146,10 @@ class Stack:
             "MESH":         0b0010000,
             "MESH_MMDL":    0b0100000,
             "GATT_CL":      0b1000000,
+            "VCS":          0b1000001,
+            "IAS":          0b1000010,
+            "AICS":         0b1000100,
+            "VOCS":         0b1001000,
         }
         return self.supported_svcs & services[svc] > 0
 
@@ -1130,6 +1171,18 @@ class Stack:
         self.gatt = Gatt()
         self.gatt_cl = self.gatt
 
+    def vcs_init(self):
+        self.vcs = VCS()
+
+    def aics_init(self):
+        self.aics = AICS()
+
+    def vocs_init(self):
+        self.vocs = VOCS()
+
+    def ias_init(self):
+        self.ias = IAS()
+
     def gatt_cl_init(self):
         self.gatt_cl = GattCl()
 
@@ -1145,6 +1198,12 @@ class Stack:
 
         if self.mesh:
             self.mesh = Mesh(self.mesh.get_dev_uuid(), self.mesh.get_dev_uuid_lt2())
+
+        if self.vcs:
+            self.vcs_init()
+
+        if self.ias:
+            self.ias_init()
 
         if self.gatt:
             self.gatt_init()

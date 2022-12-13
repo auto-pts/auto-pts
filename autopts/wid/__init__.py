@@ -17,3 +17,7 @@ from typing import NamedTuple
 from .l2cap import l2cap_wid_hdl
 from .mesh import mesh_wid_hdl
 from .mmdl import mmdl_wid_hdl
+from .vcs import vcs_wid_hdl
+from .ias import ias_wid_hdl
+from .vocs import vocs_wid_hdl
+from .aics import aics_wid_hdl

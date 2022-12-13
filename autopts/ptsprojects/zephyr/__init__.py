@@ -21,6 +21,10 @@ import autopts.ptsprojects.zephyr.l2cap
 import autopts.ptsprojects.zephyr.sm
 import autopts.ptsprojects.zephyr.mesh
 import autopts.ptsprojects.zephyr.mmdl
+import autopts.ptsprojects.zephyr.ias
+import autopts.ptsprojects.zephyr.vcs
+import autopts.ptsprojects.zephyr.vocs
+import autopts.ptsprojects.zephyr.aics
 
 # Constants
 ZEPHYR_PROJECT_URL = "https://github.com/zephyrproject-rtos/zephyr"
