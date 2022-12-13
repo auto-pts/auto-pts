@@ -566,6 +566,7 @@ class Mesh:
 class VCS:
     pass
 
+
 class AICS:
     pass
 
@@ -1026,20 +1027,21 @@ def is_procedure_done(list, cnt):
     return len(list) == cnt
 
 class IAS:
+    ALERT_LEVEL_NONE = 0
+    ALERT_LEVEL_MILD = 1
+    ALERT_LEVEL_HIGH = 2
+
     def __init__(self):
         self.alert_lvl = None
 
     def is_mild_alert_set(self, args):
-        if self.alert_lvl == 1:
-            return True
+        return self.alert_lvl == self.ALERT_LEVEL_MILD
 
     def is_high_alert_set(self, args):
-        if self.alert_lvl == 2:
-            return True
+        return self.alert_lvl == self.ALERT_LEVEL_HIGH
 
     def is_alert_stopped(self, args):
-        if self.alert_lvl == 0:
-            return True
+        return self.alert_lvl == self.ALERT_LEVEL_NONE
 
     def wait_for_mild_alert(self, timeout=30):
         return wait_for_event(timeout, self.is_mild_alert_set)
@@ -1135,22 +1137,24 @@ class Stack:
         self.gatt_cl = None
         self.vcs = None
         self.ias = None
+        self.vocs = None
+        self.aics = None
         self.supported_svcs = 0
 
     def is_svc_supported(self, svc):
         # these are in little endian
         services = {
-            "CORE":         0b0000001,
-            "GAP":          0b0000010,
-            "GATT":         0b0000100,
-            "L2CAP":        0b0001000,
-            "MESH":         0b0010000,
-            "MESH_MMDL":    0b0100000,
-            "GATT_CL":      0b1000000,
-            "VCS":          0b1000001,
-            "IAS":          0b1000010,
-            "AICS":         0b1000100,
-            "VOCS":         0b1001000,
+            "CORE":         0b0000000000000001,
+            "GAP":          0b0000000000000010,
+            "GATT":         0b0000000000000100,
+            "L2CAP":        0b0000000000001000,
+            "MESH":         0b0000000000010000,
+            "MESH_MMDL":    0b0000000000100000,
+            "GATT_CL":      0b0000000001000000,
+            "VCS":          0b0000000010000000,
+            "IAS":          0b0000000100000000,
+            "AICS":         0b0000001000000000,
+            "VOCS":         0b0000010000000000,
         }
         return self.supported_svcs & services[svc] > 0
 
@@ -1202,6 +1206,12 @@ class Stack:
 
         if self.vcs:
             self.vcs_init()
+
+        if self.aics:
+            self.aics_init()
+
+        if self.vocs:
+            self.vocs_init()
 
         if self.ias:
             self.ias_init()

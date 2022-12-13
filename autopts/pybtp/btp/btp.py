@@ -77,10 +77,16 @@ CORE = {
                    defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_MESH),
     "mmdl_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
                  defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_MMDL),
-    "vcp_init": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
-                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_VCS),
     "mmdl_unreg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_UNREGISTER_SERVICE,
                    defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_MMDL),
+    "vcs_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
+                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_VCS),
+    "vocs_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
+                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_VOCS),
+    "aics_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
+                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_AICS),
+    "ias_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
+                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_IAS),
     "read_supp_cmds": (defs.BTP_SERVICE_ID_CORE,
                        defs.CORE_READ_SUPPORTED_COMMANDS,
                        defs.BTP_INDEX_NONE, ""),
@@ -467,12 +473,29 @@ def core_unreg_svc_mmdl():
     iutctl = get_iut()
     iutctl.btp_socket.send_wait_rsp(*CORE['mmdl_unreg'])
 
-def core_reg_svc_vcp():
-    logging.debug("%s", core_reg_svc_vcp.__name__)
+def core_reg_svc_vcs():
+    logging.debug("%s", core_reg_svc_vcs.__name__)
 
     iutctl = get_iut()
-    iutctl.btp_socket.send_wait_rsp(*CORE['vcp_init'])
+    iutctl.btp_socket.send_wait_rsp(*CORE['vcs_reg'])
 
+def core_reg_svc_vocs():
+    logging.debug("%s", core_reg_svc_vocs.__name__)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*CORE['vocs_reg'])
+
+def core_reg_svc_aics():
+    logging.debug("%s", core_reg_svc_aics.__name__)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*CORE['aics_reg'])
+
+def core_reg_svc_ias():
+    logging.debug("%s", core_reg_svc_ias.__name__)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*CORE['ias_reg'])
 
 def core_reg_svc_rsp_succ():
     logging.debug("%s", core_reg_svc_rsp_succ.__name__)
@@ -553,6 +576,9 @@ from .gatt import GATT_EV
 from .l2cap import L2CAP_EV
 from .mesh import MESH_EV
 from .gatt_cl import GATTC_EV
+from .aics import AICS_EV
+from .vocs import VOCS_EV
+from .vcs import VCS_EV
 from .ias import IAS_EV
 from autopts.pybtp.iutctl_common import set_event_handler
 
@@ -598,6 +624,24 @@ def event_handler(hdr, data):
     elif hdr.svc_id == defs.BTP_SERVICE_ID_IAS:
         if hdr.op in IAS_EV and stack.ias:
             cb = IAS_EV[hdr.op]
+            cb(stack.ias, data[0], hdr.data_len)
+            return True
+
+    elif hdr.svc_id == defs.BTP_SERVICE_ID_VCS:
+        if hdr.op in VCS_EV and stack.vcs:
+            cb = VCS_EV[hdr.op]
+            cb(stack.ias, data[0], hdr.data_len)
+            return True
+
+    elif hdr.svc_id == defs.BTP_SERVICE_ID_AICS:
+        if hdr.op in AICS_EV and stack.aics:
+            cb = AICS_EV[hdr.op]
+            cb(stack.ias, data[0], hdr.data_len)
+            return True
+
+    elif hdr.svc_id == defs.BTP_SERVICE_ID_VOCS:
+        if hdr.op in VOCS_EV and stack.vocs:
+            cb = VOCS_EV[hdr.op]
             cb(stack.ias, data[0], hdr.data_len)
             return True
 

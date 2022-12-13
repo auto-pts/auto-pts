@@ -60,14 +60,18 @@ def hdl_wid_5(_: WIDParams):
     btp.aics_man_gain()
     return True
 
+def hdl_wid_9(_: WIDParams):
+    btp.aics_mute_disable()
+    return True
+
 def hdl_wid_10(_: WIDParams):
     btp.aics_auto_gain_only()
     return True
 
 def hdl_wid_12(_: WIDParams):
-    btp.aics_change_desc()
+    btp.aics_change_desc('description')
     return True
 
 def hdl_wid_13(_: WIDParams):
-    btp.aics_change_desc()
+    btp.aics_change_desc('description')
     return True

@@ -19,8 +19,7 @@ import logging
 import struct
 
 from autopts.pybtp import defs
-from autopts.ptsprojects.stack import get_stack
-from autopts.pybtp.btp.btp import CONTROLLER_INDEX, get_iut_method as get_iut
+from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, get_iut_method as get_iut
 
 VCS = {
     "set_vol":(defs.BTP_SERVICE_ID_VCS, defs.VCS_SET_VOL,
@@ -32,20 +31,24 @@ VCS = {
     "mute":(defs.BTP_SERVICE_ID_VCS, defs.VCS_MUTE,
                CONTROLLER_INDEX, ""),
     "unmute":(defs.BTP_SERVICE_ID_VCS, defs.VCS_UNMUTE,
-               CONTROLLER_INDEX, ""),
-    "init":(defs.BTP_SERVICE_ID_VCS, defs.VCS_INIT,
-               CONTROLLER_INDEX)
+               CONTROLLER_INDEX, "")
 }
 
-def vcs_init():
-    logging.debug("%s", vcs_init.__name__)
+VCS_EV = {
+    ### For future testing purposes ###
+}
+
+def vcs_command_rsp_succ(op=None):
+    logging.debug("%s", vcs_command_rsp_succ.__name__)
 
     iutctl = get_iut()
 
-    iutctl.btp_socket.send_wait_rsp(*VCS['init'])
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
+    logging.debug("received %r %r", tuple_hdr, tuple_data)
 
-    stack = get_stack()
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_VCS, op)
 
+    return tuple_data
 
 def vcs_set_vol(vol):
     logging.debug("%s %r", vcs_set_vol.__name__, vol)
@@ -57,14 +60,16 @@ def vcs_set_vol(vol):
 
     data = bytearray(struct.pack("<I", vol))
 
-    iutctl.btp_socket.send_wait_rsp(*VCS['set_vol'], data=data)
+    iutctl.btp_socket.send(*VCS['set_vol'], data=data)
+    vcs_command_rsp_succ()
 
 def vcs_mute():
     logging.debug("%s", vcs_mute.__name__)
 
     iutctl = get_iut()
 
-    iutctl.btp_socket.send_wait_rsp(*VCS['mute'])
+    iutctl.btp_socket.send(*VCS['mute'])
+    vcs_command_rsp_succ()
 
 def vcs_unmute():
     logging.debug("%s", vcs_unmute.__name__)
@@ -72,6 +77,7 @@ def vcs_unmute():
     iutctl = get_iut()
 
     iutctl.btp_socket.send(*VCS['unmute'])
+    vcs_command_rsp_succ()
 
 def vcs_vol_down():
     logging.debug("%s", vcs_vol_down.__name__)
@@ -79,6 +85,7 @@ def vcs_vol_down():
     iutctl = get_iut()
 
     iutctl.btp_socket.send(*VCS['vol_down'])
+    vcs_command_rsp_succ()
 
 def vcs_vol_up():
     logging.debug("%s", vcs_vol_up.__name__)
@@ -86,3 +93,4 @@ def vcs_vol_up():
     iutctl = get_iut()
 
     iutctl.btp_socket.send(*VCS['vol_up'])
+    vcs_command_rsp_succ()
