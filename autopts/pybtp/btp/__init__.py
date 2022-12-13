@@ -23,3 +23,6 @@ from autopts.pybtp.btp.l2cap import *
 from autopts.pybtp.btp.mesh import *
 from autopts.pybtp.btp.mmdl import *
 from autopts.pybtp.btp.sm import *
+from autopts.pybtp.btp.vcs import *
+from autopts.pybtp.btp.vocs import *
+from autopts.pybtp.btp.aics import *

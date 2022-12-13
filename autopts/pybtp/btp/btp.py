@@ -77,6 +77,8 @@ CORE = {
                    defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_MESH),
     "mmdl_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
                  defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_MMDL),
+    "vcp_init": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
+                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_VCS),
     "mmdl_unreg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_UNREGISTER_SERVICE,
                    defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_MMDL),
     "read_supp_cmds": (defs.BTP_SERVICE_ID_CORE,
@@ -465,6 +467,12 @@ def core_unreg_svc_mmdl():
     iutctl = get_iut()
     iutctl.btp_socket.send_wait_rsp(*CORE['mmdl_unreg'])
 
+def core_reg_svc_vcp():
+    logging.debug("%s", core_reg_svc_vcp.__name__)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*CORE['vcp_init'])
+
 
 def core_reg_svc_rsp_succ():
     logging.debug("%s", core_reg_svc_rsp_succ.__name__)
@@ -545,6 +553,7 @@ from .gatt import GATT_EV
 from .l2cap import L2CAP_EV
 from .mesh import MESH_EV
 from .gatt_cl import GATTC_EV
+from .ias import IAS_EV
 from autopts.pybtp.iutctl_common import set_event_handler
 
 
@@ -584,6 +593,12 @@ def event_handler(hdr, data):
         if hdr.op in GATTC_EV and stack.gatt_cl:
             cb = GATTC_EV[hdr.op]
             cb(stack.gatt_cl, data[0], hdr.data_len)
+            return True
+
+    elif hdr.svc_id == defs.BTP_SERVICE_ID_IAS:
+        if hdr.op in IAS_EV and stack.ias:
+            cb = IAS_EV[hdr.op]
+            cb(stack.ias, data[0], hdr.data_len)
             return True
 
     # TODO: Raise BTP error instead of logging
