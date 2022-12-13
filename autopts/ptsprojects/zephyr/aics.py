@@ -77,8 +77,8 @@ def test_cases(ptses):
                       TestFunc(btp.core_reg_svc_gatt),
                       TestFunc(btp.gap_set_conn),
                       TestFunc(btp.gap_set_gendiscov),
-                      TestFunc(btp.core_reg_svc_vcp),
-                      TestFunc(stack.gatt_init)]
+                      TestFunc(btp.core_reg_svc_aics),
+                      TestFunc(stack.aics_init)]
 
     test_case_name_list = pts.get_test_case_list('AICS')
     tc_list = []
