@@ -794,7 +794,12 @@ class PyPTS:
 
     def get_bluetooth_address(self):
         """Returns PTS bluetooth address string"""
-        device = self._pts.GetSelectedDevice()
+        args = parse_args()
+        if args.dongle:
+            device = args.dongle
+            log("slecte dongle :", device)
+        else:
+            device = self._pts.GetSelectedDevice()
         log(f"Remembered device {self._device}, selected device {device}")
         device_to_connect = None
         if self._device is not None and device != self._device:
@@ -830,7 +835,12 @@ class PyPTS:
         return address
 
     def connect_to_dongle(self):
-        device_to_connect = None
+        args = parse_args()
+        if args.dongle:
+            device_to_connect = args.dongle
+            log("connect dongle ", args.dongle)
+        else:
+            device_to_connect = None
         devices = self._pts.GetDeviceList()
         for device in devices:
             if 'USB:Free' in device:

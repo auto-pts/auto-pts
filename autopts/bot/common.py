@@ -64,6 +64,9 @@ class BotCliParser(CliParser):
         self.add_argument('--nb', dest='no_build', action='store_true',
                           help='Skip build and flash in bot mode.', default=False)
 
+        self.add_argument('--dongle',
+                          help='Select dongle com port on windows server', default=False)
+
     def add_positional_args(self):
         pass
 
