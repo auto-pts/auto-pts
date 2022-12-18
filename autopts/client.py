@@ -367,6 +367,9 @@ class FakeProxy:
     def unregister_xmlrpc_ptscallback(self):
         pass
 
+    def stop_pts(self):
+        pass
+
     def open_workspace(self, workspace_path):
         pass
 
@@ -500,6 +503,7 @@ def shutdown_pts(ptses):
             'http://%s/' % pts.__getattribute__('_ServerProxy__host'),
             allow_none=True)
         proxy.unregister_xmlrpc_ptscallback()
+        proxy.stop_pts()
 
         if isinstance(pts.callback_thread, CallbackThread):
             pts.callback_thread.stop()
