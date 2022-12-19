@@ -3643,7 +3643,7 @@ def hdl_wid_946(_: WIDParams):
     # TODO: Set IUT to provisioner for client test?
 
     btp.mesh_cfg_model_app_bind(
-        stack.mesh.net_idx, 2, 2, stack.mesh.app_idx, 0xbf55)
+        stack.mesh.net_idx, 2, 2, stack.mesh.app_idx, 0x0011)
 
     btp.mesh_opcodes_aggregator_init(
         stack.mesh.net_idx, stack.mesh.app_idx, stack.mesh.address_lt1, stack.mesh.address_lt1)
