@@ -74,3 +74,21 @@ Error response is common for all services and has fixed structure:
 					0x02 = Unknown Command
 					0x03 = Not ready
 					0x04 = Invalid Index
+
+
+BTP Services
+============
+
+Each service commands and events are defined in separate text file named
+btp_SERVICE_NAME.txt. Currently defined services are listed below. Core Service
+is mandatory to be supported by IUT.
+
+ID  Name
+ 0  Core Service
+ 1  GAP Service
+ 2  GATT Service (DEPRECATED)
+ 3  L2CAP Service
+ 4  Mesh Node Service
+ 5  Mesh Model Service
+ 6  GATT Client Service
+ 7  GATT Server Service
