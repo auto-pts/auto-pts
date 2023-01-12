@@ -184,7 +184,8 @@ class ZephyrBotClient(BotClient):
         if not args.no_build:
             build_and_flash = get_build_and_flash(args.board_name)
             board_type = get_board_type(args.board_name)
-            build_and_flash(args.project_path, board_type, args.debugger_snr, config)
+            build_and_flash(args.project_path, board_type, args.debugger_snr,
+                            config, args.project_repos)
 
             flush_serial(args.tty_file)
             time.sleep(10)
@@ -217,6 +218,7 @@ def main(cfg):
     if 'git' in cfg:
         repos_info = bot.common.update_repos(args['project_path'], cfg["git"])
         repo_status = bot.common.make_repo_status(repos_info)
+        args['repos'] = cfg['git']
     else:
         repos_info = {}
         repo_status = ''
