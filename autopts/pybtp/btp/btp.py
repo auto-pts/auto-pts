@@ -87,6 +87,8 @@ CORE = {
                  defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_AICS),
     "ias_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
                  defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_IAS),
+    "pacs_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
+                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_PACS),
     "read_supp_cmds": (defs.BTP_SERVICE_ID_CORE,
                        defs.CORE_READ_SUPPORTED_COMMANDS,
                        defs.BTP_INDEX_NONE, ""),
@@ -496,6 +498,14 @@ def core_reg_svc_ias():
 
     iutctl = get_iut()
     iutctl.btp_socket.send_wait_rsp(*CORE['ias_reg'])
+
+
+def core_reg_svc_pacs():
+    logging.debug("%s", core_reg_svc_pacs.__name__)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*CORE['pacs_reg'])
+
 
 def core_reg_svc_rsp_succ():
     logging.debug("%s", core_reg_svc_rsp_succ.__name__)

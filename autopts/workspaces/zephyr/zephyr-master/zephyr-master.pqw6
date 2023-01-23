@@ -6506,5 +6506,324 @@
         </Rows>
       </PIXIT>
     </PROJECT_INFORMATION>
+    <PROJECT_INFORMATION NAME="PACS" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
+      <PICS>
+        <Name>PACS</Name>
+        <Rows>
+          <Row>
+            <Name>TSPC_PACS_0_1</Name>
+            <Description>Published Audio Capabilities Service v1.0 (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_1_1</Name>
+            <Description>Published Audio Capabilities Service v1.0.1 (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_2_1</Name>
+            <Description>Service supported over BR/EDR (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_2_2</Name>
+            <Description>Service supported over LE (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_3_1</Name>
+            <Description>Sink PAC Characteristic (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_3_2</Name>
+            <Description>Sink Audio Locations Characteristic (C.2)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_3_3</Name>
+            <Description>Source PAC Characteristic (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_3_4</Name>
+            <Description>Source Audio Locations Characteristic (C.3)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_3_5</Name>
+            <Description>Available Audio Contexts Characteristic (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_3_6</Name>
+            <Description>Supported Audio Contexts Characteristic (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_4_1</Name>
+            <Description>Changeable Sink PAC Characteristic (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_4_2</Name>
+            <Description>Notifiable Sink PAC Characteristic (C.2)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_4_3</Name>
+            <Description>Changeable Sink Audio Locations Characteristic (C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_4_4</Name>
+            <Description>Autonomous Sink Audio Locations Changes (C.4)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_4_5</Name>
+            <Description>Writable Sink Audio Locations Characteristic (C.4)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_4_6</Name>
+            <Description>Notifiable Sink Audio Locations Characteristic (C.5)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_4_7</Name>
+            <Description>Changeable Source PAC Characteristic (C.6)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_4_8</Name>
+            <Description>Notifiable Source PAC Characteristic (C.7)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_4_9</Name>
+            <Description>Changeable Source Audio Locations Characteristic (C.8)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_4_10</Name>
+            <Description>Autonomous Source Audio Locations Changes (C.9)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_4_11</Name>
+            <Description>Writable Source Audio Locations Characteristic (C.9)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_4_12</Name>
+            <Description>Notifiable Source Audio Locations Characteristic (C.10)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_4_13</Name>
+            <Description>Changeable Available Audio Contexts Characteristic (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_4_14</Name>
+            <Description>Notifiable Available Audio Contexts Characteristic (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_4_15</Name>
+            <Description>Changeable Supported Audio Contexts Characteristic (C.11)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_4_16</Name>
+            <Description>Notifiable Supported Audio Contexts Characteristic (C.12)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_5_1</Name>
+            <Description>Bondable mode (LE) (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_5_2</Name>
+            <Description>Bondable mode (BR/EDR) (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_6_1</Name>
+            <Description>Read Characteristic Descriptors (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_6_2</Name>
+            <Description>Write Characteristic Descriptors (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_6_3</Name>
+            <Description>Notifications (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_6_4</Name>
+            <Description>Write Characteristic Value (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_6_5</Name>
+            <Description>Enhanced ATT bearer Attribute Protocol Supported (L2CAP fixed EATT PSM supported) (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_7_1</Name>
+            <Description>Support for Server role (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_7_2</Name>
+            <Description>ServiceClassIDList (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_7_3</Name>
+            <Description>ProtocolDescriptorList (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_7_4</Name>
+            <Description>AdditionalProtocolDescriptorList (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_7_5</Name>
+            <Description>BrowseGroupList (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_ALL</Name>
+            <Description>Enables all test cases when set.</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+        </Rows>
+      </PICS>
+      <PIXIT>
+        <Name>PACS</Name>
+        <Version />
+        <Rows>
+          <Row>
+            <Name>TSPX_bd_addr_iut</Name>
+            <Description>The unique 48-bit Bluetooth device address (BD_ADDR) of the IUT. This was filled in during workspace creation.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>39C58214CAC4</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_iut_device_name_in_adv_packet_for_random_address</Name>
+            <Description>IUT advertising this local name for the PTS to make connection to. Default is not using it with empty string. (Default: "")</Description>
+            <Type>IA5STRING</Type>
+            <Value />
+          </Row>
+          <Row>
+            <Name>TSPX_time_guard</Name>
+            <Description>The time in milliseconds, to break PTS from waiting for a required event, if time guard is used by the test case. (Default: 180000)</Description>
+            <Type>INTEGER</Type>
+            <Value>180000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_use_implicit_send</Name>
+            <Description>Whether to receive a message via Implicit Send when an action or attention is needed by test operator. (Default: TRUE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>TRUE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_tester_database_file</Name>
+            <Description>Location of SIG database file. (Default: C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_PACS_db.xml)</Description>
+            <Type>IA5STRING</Type>
+            <Value>C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_PACS_db.xml</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_mtu_size</Name>
+            <Description>MTU size. (Default: 64)</Description>
+            <Type>INTEGER</Type>
+            <Value>64</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_secure_simple_pairing_pass_key_confirmation</Name>
+            <Description>Whether to display secure simple pairing pass key confirmation or not. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_delete_link_key</Name>
+            <Description>Whether to delete link key or not. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_delete_ltk</Name>
+            <Description>Whether to delete Long Term Key or not. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_security_enabled</Name>
+            <Description>Whether to set security for the test suite. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_iut_ATT_transport</Name>
+            <Description>Select a transport which IUT wants to be connected for (Default: ATT Bearer on LE Transport)</Description>
+            <Type>IA5STRING</Type>
+            <Value>ATT Bearer on LE Transport</Value>
+            <ValueList>
+              <ValueListItem>ATT Bearer on LE Transport</ValueListItem>
+              <ValueListItem>ATT Bearer on BR/EDR Transport</ValueListItem>
+              <ValueListItem>EATT Bearer on LE Transport</ValueListItem>
+              <ValueListItem>EATT Bearer on BR/EDR Transport</ValueListItem>
+            </ValueList>
+          </Row>
+        </Rows>
+      </PIXIT>
+    </PROJECT_INFORMATION>
   </PROJECTS_INFORMATION>
 </WORKSPACE_INFORMATION>
