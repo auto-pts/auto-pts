@@ -23,7 +23,7 @@ from random import randint
 
 from autopts.ptsprojects.stack import get_stack, ConnParams
 from autopts.pybtp import defs
-from autopts.pybtp.types import BTPError, gap_settings_btp2txt, addr2btp_ba, Addr, OwnAddrType, AdDuration
+from autopts.pybtp.types import BTPError, gap_settings_btp2txt, addr2btp_ba, Addr, OwnAddrType, AdDuration, AdType
 from autopts.pybtp.btp.btp import pts_addr_get, pts_addr_type_get, lt2_addr_get, lt2_addr_type_get, btp_hdr_check, \
     CONTROLLER_INDEX, set_pts_addr, set_lt2_addr,LeAdv, get_iut_method as get_iut
 
@@ -1168,7 +1168,21 @@ def gap_set_extended_advertising_off():
     __gap_current_settings_update(tuple_data)
 
 
-def check_discov_results(addr_type=None, addr=None, discovered=True, eir=None):
+def parse_eir_data(eir):
+    data = {}
+
+    eir_len = len(eir)
+    i = 0
+    while i < eir_len:
+        data_len = eir[i]
+        data_type = eir[i+1]
+        data[data_type] = eir[i+2:i+data_len+1]
+        i += 1 + data_len
+
+    return data
+
+
+def check_discov_results(addr_type=None, addr=None, discovered=True, eir=None, uuids=None):
     addr = pts_addr_get(addr).encode('utf-8')
     addr_type = pts_addr_type_get(addr_type)
 
@@ -1188,6 +1202,17 @@ def check_discov_results(addr_type=None, addr=None, discovered=True, eir=None):
             continue
         if eir and eir != device.eir:
             continue
+
+        if device.eir:
+            data = parse_eir_data(device.eir)
+            if uuids and AdType.uuid16_some in data:
+                eir_uuids = [data[AdType.uuid16_some][i:i + 2]
+                             for i in range(0, len(data[AdType.uuid16_some]), 2)]
+
+                for uuid in uuids:
+                    uuid_ba = bytes.fromhex(uuid.replace("-", ""))[::-1]
+                    if uuid_ba not in eir_uuids:
+                        continue
 
         found = True
         break

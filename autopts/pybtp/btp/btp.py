@@ -89,6 +89,10 @@ CORE = {
                  defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_IAS),
     "pacs_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
                  defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_PACS),
+    "ascs_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
+                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_ASCS),
+    "bap_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
+                defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_BAP),
     "read_supp_cmds": (defs.BTP_SERVICE_ID_CORE,
                        defs.CORE_READ_SUPPORTED_COMMANDS,
                        defs.BTP_INDEX_NONE, ""),
@@ -507,6 +511,20 @@ def core_reg_svc_pacs():
     iutctl.btp_socket.send_wait_rsp(*CORE['pacs_reg'])
 
 
+def core_reg_svc_ascs():
+    logging.debug("%s", core_reg_svc_ascs.__name__)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*CORE['ascs_reg'])
+
+
+def core_reg_svc_bap():
+    logging.debug("%s", core_reg_svc_bap.__name__)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*CORE['bap_reg'])
+
+
 def core_reg_svc_rsp_succ():
     logging.debug("%s", core_reg_svc_rsp_succ.__name__)
     iutctl = get_iut()
@@ -590,6 +608,9 @@ from .aics import AICS_EV
 from .vocs import VOCS_EV
 from .vcs import VCS_EV
 from .ias import IAS_EV
+from .pacs import PACS_EV
+from .ascs import ASCS_EV
+from .bap import BAP_EV
 from autopts.pybtp.iutctl_common import set_event_handler
 
 
@@ -653,6 +674,24 @@ def event_handler(hdr, data):
         if hdr.op in VOCS_EV and stack.vocs:
             cb = VOCS_EV[hdr.op]
             cb(stack.ias, data[0], hdr.data_len)
+            return True
+
+    elif hdr.svc_id == defs.BTP_SERVICE_ID_PACS:
+        if hdr.op in PACS_EV and stack.pacs:
+            cb = PACS_EV[hdr.op]
+            cb(stack.pacs, data[0], hdr.data_len)
+            return True
+
+    elif hdr.svc_id == defs.BTP_SERVICE_ID_ASCS:
+        if hdr.op in ASCS_EV and stack.ascs:
+            cb = ASCS_EV[hdr.op]
+            cb(stack.ascs, data[0], hdr.data_len)
+            return True
+
+    elif hdr.svc_id == defs.BTP_SERVICE_ID_BAP:
+        if hdr.op in BAP_EV and stack.bap:
+            cb = BAP_EV[hdr.op]
+            cb(stack.bap, data[0], hdr.data_len)
             return True
 
     # TODO: Raise BTP error instead of logging

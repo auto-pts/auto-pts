@@ -59,3 +59,7 @@ def pacs_update_available_audio_contexts():
 
 def pacs_update_supported_audio_contexts():
     pacs_update_characteristic(defs.PACS_CHARACTERISTIC_SUPPORTED_AUDIO_CONTEXTS)
+
+
+PACS_EV = {
+}

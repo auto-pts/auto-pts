@@ -26,6 +26,8 @@ import autopts.ptsprojects.zephyr.vcs
 import autopts.ptsprojects.zephyr.vocs
 import autopts.ptsprojects.zephyr.aics
 import autopts.ptsprojects.zephyr.pacs
+import autopts.ptsprojects.zephyr.ascs
+import autopts.ptsprojects.zephyr.bap
 
 # Constants
 ZEPHYR_PROJECT_URL = "https://github.com/zephyrproject-rtos/zephyr"

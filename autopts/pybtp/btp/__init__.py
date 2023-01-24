@@ -27,3 +27,5 @@ from autopts.pybtp.btp.vcs import *
 from autopts.pybtp.btp.vocs import *
 from autopts.pybtp.btp.aics import *
 from autopts.pybtp.btp.pacs import *
+from autopts.pybtp.btp.ascs import *
+from autopts.pybtp.btp.bap import *

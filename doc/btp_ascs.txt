@@ -1,0 +1,220 @@
+ASCS Service (ID 13)
+=====================
+
+Commands and responses:
+
+	Opcode 0x00 - Error response
+
+	Opcode 0x01 - Read Supported Commands command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	<none>
+		Response parameters:	<supported commands> (variable)
+
+		Each bit in response is a flag indicating if command with
+		opcode matching bit number is supported. Bit set to 1 means
+		that command is supported. Bit 0 is reserved and shall always
+		be set to 0. If specific bit is not present in response (less
+		than required bytes received) it shall be assumed that command
+		is not supported.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x02: ASCS Configure Codec
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					ASE ID (1 octet)
+					Coding Format (1 octet)
+					Frequency (1 octet)
+					Frame Duration (1 octet)
+					Audio Locations (4 octets)
+					Octets Per Frame (2 octets)
+		Response parameters:    <None>
+
+        Valid Coding Format values:
+                    0x06 = LC3
+                    0x0ff = Vendor Specific
+
+        The values of the other parameters as defined in Assigned
+        Numbers (2023), 6.12.5 Codec_Specific_Configuration LTV
+        structures, i.e.:
+
+        Valid Frequency values:
+                    0x01 = 8000 Hz
+                    0x02 = 11025 Hz
+                    0x03 = 16000 Hz
+                    0x04 = 22050 Hz
+                    0x05 = 24000 Hz
+                    0x06 = 32000 Hz
+                    0x07 = 44100 Hz
+                    0x08 = 48000 Hz
+                    0x09 = 88200 Hz
+                    0x0a = 96000 Hz
+                    0x0b = 176400 Hz
+                    0x0c = 192000 Hz
+                    0x0d = 384000 Hz
+
+        Valid Frame Duration values:
+                    0x00 = Use 7.5 ms codec frames
+                    0x01 = Use 10 ms codec frames
+
+        Valid Audio Locations values:
+                    0x00 - 0x08000000 = 4 octet bitfield of Audio
+                    Location values
+
+        Valid Octets Per Frame value:
+                    0x0001 - 0xffff = Number of octets used per codec frame.
+
+		In case of an error, the error status response will be returned.
+		In case of a success, the IUT continues processing the command
+		asynchronously. At the end of the command processing, the ASCS
+		Operation Completed event will be sent.
+
+	Opcode 0x03: ASCS Configure QoS
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					ASE ID (1 octet)
+					CIG ID (1 octet)
+					CIS ID (1 octet)
+					Sdu Interval (2 octet)
+					Framing (1 octet)
+					Max Sdu Size (2 octets)
+					Retransmission Number (1 octets)
+					Max Transport Latency (1 octets)
+		Response parameters:    <None>
+
+        The values of the other parameters as defined in ASCS_v1.0.pdf
+        Table 5.3: Config QoS operation format, i.e.:
+
+        Valid SDU Interval values:
+                    0x0000ff - 0x0fffff
+
+        Valid Framing values:
+                    0x00 = Unframed
+                    0x01 = Framed
+
+        Valid Max Sdu Size values:
+                    0x00 - 0x0fff
+
+        Valid Retransmission Number values:
+                    0x00 - 0xff
+
+        Valid Max Transport Latency values:
+                    0x05 – 0xFF
+
+		In case of an error, the error status response will be returned.
+		In case of a success, the IUT continues processing the command
+		asynchronously. At the end of the command processing, the ASCS
+		Operation Completed event will be sent.
+
+	Opcode 0x04: ASCS Enable
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					ASE_ID (1 octet)
+		Response parameters:	<None>
+
+		In case of an error, the error status response will be returned.
+		In case of a success, the IUT continues processing the command
+		asynchronously. At the end of the command processing, the ASCS
+		Operation Completed event will be sent.
+
+	Opcode 0x05: ASCS Receiver Start Ready
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					ASE_ID (1 octet)
+		Response parameters:	<None>
+
+		In case of an error, the error status response will be returned.
+		In case of a success, the IUT continues processing the command
+		asynchronously. At the end of the command processing, the ASCS
+		Operation Completed event will be sent.
+
+	Opcode 0x06: ASCS Receiver Stop Ready
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					ASE_ID (1 octet)
+		Response parameters:	<None>
+
+		In case of an error, the error status response will be returned.
+		In case of a success, the IUT continues processing the command
+		asynchronously. At the end of the command processing, the ASCS
+		Operation Completed event will be sent.
+
+	Opcode 0x07: ASCS Disable
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					ASE_ID (1 octet)
+		Response parameters:	<None>
+
+		In case of an error, the error status response will be returned.
+		In case of a success, the IUT continues processing the command
+		asynchronously. At the end of the command processing, the ASCS
+		Operation Completed event will be sent.
+
+	Opcode 0x08: ASCS Release
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					ASE_ID (1 octet)
+		Response parameters:	<None>
+
+		In case of an error, the error status response will be returned.
+		In case of a success, the IUT continues processing the command
+		asynchronously. At the end of the command processing, the ASCS
+		Operation Completed event will be sent.
+
+	Opcode 0x09: ASCS Update Metadata
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					ASE_ID (1 octet)
+		Response parameters:	<None>
+
+		In case of an error, the error status response will be returned.
+		In case of a success, the IUT continues processing the command
+		asynchronously. At the end of the command processing, the ASCS
+		Operation Completed event will be sent.
+
+Events:
+	Opcode 0x80 - ASCS Operation Completed event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					ASE_ID (1 octet)
+					Opcode (1 octet)
+					Status (1 octet)
+					Flags (1 octet)
+
+		Valid Opcode values:
+		            0x01 = Config Codec
+		            0x02 = Config QoS
+		            0x03 = Enable
+		            0x04 = Receiver Start Ready
+		            0x05 = Disable
+		            0x06 = Receiver Stop Ready
+		            0x07 = Update Metadata
+		            0x08 = Release
+
+		Valid Status values:
+		            0x00 = success
+		            0x01 = error
+
+		Valid Flags values: RFU
+
+		This event indicates that the IUT has finished ASCS operation
+		initiated by ASCS client or server.

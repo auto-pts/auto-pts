@@ -29,7 +29,9 @@ class GattAttribute:
 
 
 class GattService(GattAttribute):
-    pass
+    def __init__(self, handle, perm, uuid, att_rsp, end_handle=None):
+        super().__init__(handle, perm, uuid, att_rsp)
+        self.end_handle = end_handle
 
 
 class GattPrimary(GattService):
@@ -87,6 +89,23 @@ class Property:
     def __set__(self, instance, value):
         with self._lock:
             setattr(instance, self.data, value)
+
+
+def wait_event_with_condition(timeout, self, condition_fun):
+    flag = Event()
+    flag.set()
+    result = None
+
+    t = Timer(timeout, timeout_cb, [flag])
+    t.start()
+
+    while flag.is_set():
+        result = condition_fun(self)
+        if result:
+            t.cancel()
+            break
+
+    return result
 
 
 def timeout_cb(flag):
@@ -147,6 +166,7 @@ class Gap:
             "Controller Configuration": False,
             "Static Address": False,
             "Extended Advertising": False,
+            "SC Only": False,
         })
         self.iut_bd_addr = Property({
             "address": None,
@@ -571,6 +591,106 @@ class AICS:
 
 class VOCS:
     pass
+
+
+class PACS:
+    pass
+
+
+class ASCS:
+    def __init__(self):
+        self.operation_complete_events = []
+
+    def ascs_operation_complete_ev_recv(self, data_tuple):
+        self.operation_complete_events.append(data_tuple)
+
+    def find_ascs_operation_complete_ev(self, addr_type, addr, ase_id):
+        for ev in self.operation_complete_events:
+            _addr_type, _addr, _ase_id, *_ = ev
+            # addr is a lower case string
+            if (addr_type, addr, ase_id) == (_addr_type, _addr, _ase_id):
+                return ev
+
+        return None
+
+    def wait_ascs_operation_complete_ev(self, addr_type, addr, ase_id, timeout, remove=True):
+        ev = wait_event_with_condition(timeout, self,
+            lambda _self: _self.find_ascs_operation_complete_ev(addr_type, addr, ase_id))
+
+        if ev and remove:
+            self.operation_complete_events.remove(ev)
+
+        return ev
+
+
+class BAP:
+    def __init__(self):
+        self.discovery_completed_events = []
+        self.codec_cap_found_events = []
+        self.ase_found_events = []
+
+    def discovery_completed_ev_recv(self, data_tuple):
+        self.discovery_completed_events.append(data_tuple)
+
+    def find_discovery_completed_ev(self, addr_type, addr):
+        for ev in self.discovery_completed_events:
+            _addr_type, _addr, *_ = ev
+            # addr is a lower case string
+            if (addr_type, addr) == (_addr_type, _addr):
+                return ev
+
+        return None
+
+    def wait_discovery_completed_ev(self, addr_type, addr, timeout, remove=True):
+        ev = wait_event_with_condition(timeout, self,
+            lambda _self: _self.find_discovery_completed_ev(addr_type, addr))
+
+        if ev and remove:
+            self.discovery_completed_events.remove(ev)
+
+        return ev
+
+    def codec_cap_found_ev_recv(self, data_tuple):
+        self.codec_cap_found_events.append(data_tuple)
+
+    def find_codec_cap_found_ev(self, addr_type, addr, pac_dir):
+        for ev in self.codec_cap_found_events:
+            _addr_type, _addr, _pac_dir, *_ = ev
+            # addr is a lower case string
+            if (addr_type, addr, pac_dir) == (_addr_type, _addr, _pac_dir):
+                return ev
+
+        return None
+
+    def wait_codec_cap_found_ev(self, addr_type, addr, dir, timeout, remove=True):
+        ev = wait_event_with_condition(timeout, self,
+            lambda _self: _self.find_codec_cap_found_ev(addr_type, addr, dir))
+
+        if ev and remove:
+            self.codec_cap_found_events.remove(ev)
+
+        return ev
+
+    def ase_found_ev_recv(self, data_tuple):
+        self.ase_found_events.append(data_tuple)
+
+    def find_ase_found_ev(self, addr_type, addr, ase_dir):
+        for ev in self.ase_found_events:
+            _addr_type, _addr, _ase_dir, *_ = ev
+            # addr is a lower case string
+            if (addr_type, addr, ase_dir) == (_addr_type, _addr, _ase_dir):
+                return ev
+
+        return None
+
+    def wait_ase_found_ev(self, addr_type, addr, ase_dir, timeout, remove=True):
+        ev = wait_event_with_condition(timeout, self,
+            lambda _self: _self.find_ase_found_ev(addr_type, addr, ase_dir))
+
+        if ev and remove:
+            self.ase_found_events.remove(ev)
+
+        return ev
 
 
 class L2capChan:
@@ -1024,6 +1144,7 @@ def is_procedure_done(list, cnt):
 
     return len(list) == cnt
 
+
 class IAS:
     ALERT_LEVEL_NONE = 0
     ALERT_LEVEL_MILD = 1
@@ -1049,6 +1170,7 @@ class IAS:
 
     def wait_for_stop_alert(self, timeout=30):
         return wait_for_event(timeout, self.is_alert_stopped)
+
 
 class GattCl:
     def __init__(self):
@@ -1137,6 +1259,9 @@ class Stack:
         self.ias = None
         self.vocs = None
         self.aics = None
+        self.pacs = None
+        self.ascs = None
+        self.bap = None
         self.supported_svcs = 0
 
     def is_svc_supported(self, svc):
@@ -1153,6 +1278,9 @@ class Stack:
             "IAS":          0b0000000100000000,
             "AICS":         0b0000001000000000,
             "VOCS":         0b0000010000000000,
+            "PACS":         0b0000100000000000,
+            "ASCS":         0b0001000000000000,
+            "BAP":          0b0010000000000000,
         }
         return self.supported_svcs & services[svc] > 0
 
@@ -1186,6 +1314,15 @@ class Stack:
     def ias_init(self):
         self.ias = IAS()
 
+    def pacs_init(self):
+        self.pacs = PACS()
+
+    def ascs_init(self):
+        self.ascs = ASCS()
+
+    def bap_init(self):
+        self.bap = BAP()
+
     def gatt_cl_init(self):
         self.gatt_cl = GattCl()
 
@@ -1213,6 +1350,15 @@ class Stack:
 
         if self.ias:
             self.ias_init()
+
+        if self.pacs:
+            self.pacs_init()
+
+        if self.ascs:
+            self.ascs_init()
+
+        if self.bap:
+            self.bap_init()
 
         if self.gatt:
             self.gatt_init()

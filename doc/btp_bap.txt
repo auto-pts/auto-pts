@@ -1,0 +1,77 @@
+BAP Service (ID 14)
+====================
+
+Commands and responses:
+
+	Opcode 0x00 - Error response
+
+	Opcode 0x01 - Read supported commands
+		Controller Index:    <controller id>
+		Command parameters:  <none>
+		Response parameters: <supported commands> (variable)
+
+		Each bit in response is a flag indicating if command with
+		opcode matching bit number is supported. Bit set to 1 means
+		that command is supported. Bit 0 is reserved and shall always
+		be set to 0. If specific bit is not present in response (less
+		than required bytes received) it shall be assumed that command
+		is not supported.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x02 - Discover
+		Controller Index:    <controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address  (6 octets)
+		Response parameters: <none>
+
+        This command is used to discover all remote PACS and ASCS
+        characteristics. In case of an error, the error status response
+        will be returned. In case of a success, the IUT continues processing
+        the command asynchronously. During discovery, the IUT may send events:
+                    Discovery Completed event
+                    Codec Capabilities Found event
+                    ASE Found event
+
+Events:
+	Opcode 0x80 - Discovery Completed event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status  (1 octet)
+
+        This event indicates that the IUT finished discovery of PACS and ASCS
+        characteristics.
+
+	Opcode 0x81 - Codec Capabilities Found event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					PAC dir (1 octet)
+					Coding Format (1 octet)
+					Frequencies (2 octets)
+					Frame Durations (1 octet)
+					Octets Per Frame (4 octets)
+
+        About parameters:
+            Frequencies: a bitfield as defined in Assigned Numbers,
+            6.12.4.1 Supported_Sampling_Frequencies.
+
+            Frame durations: as defined in Assigned Numbers, 6.12.4.2
+            Supported_Frame_Durations.
+
+            Octets Per Frame: as defined in Assigned Numbers 6.12.4.4
+            Supported_Octets_Per_Codec_Frame.
+
+		This event returns the found PACS capabilities record info.
+
+	Opcode 0x82 - ASE Found event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					ASE ID (1 octet)
+
+        This event returns the found ASE info.

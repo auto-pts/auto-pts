@@ -21,3 +21,6 @@ from .vcs import vcs_wid_hdl
 from .ias import ias_wid_hdl
 from .vocs import vocs_wid_hdl
 from .aics import aics_wid_hdl
+from .pacs import pacs_wid_hdl
+from .ascs import ascs_wid_hdl
+from .bap import bap_wid_hdl
