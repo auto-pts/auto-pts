@@ -92,3 +92,10 @@ ID  Name
  5  Mesh Model Service
  6  GATT Client Service
  7  GATT Server Service
+ 8  VCS Service
+ 9  IAS Service
+ 10 AICS Service
+ 11 VOCS Service
+ 12 PACS Service
+ 13 ASCS Service
+ 14 BAP Service
