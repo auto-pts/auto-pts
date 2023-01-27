@@ -146,6 +146,7 @@ class Gap:
             "Privacy": False,
             "Controller Configuration": False,
             "Static Address": False,
+            "Extended Advertising": False,
         })
         self.iut_bd_addr = Property({
             "address": None,

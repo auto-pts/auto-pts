@@ -108,6 +108,10 @@ GAP = {
                    defs.GAP_SET_SC, CONTROLLER_INDEX, 0),
     "set_min_enc_key_size": (defs.BTP_SERVICE_ID_GAP,
                              defs.GAP_SET_MIN_ENC_KEY_SIZE, CONTROLLER_INDEX),
+    "set_extend_advertising_on": (defs.BTP_SERVICE_ID_GAP,
+                                  defs.GAP_SET_EXTENDED_ADVERTISING, CONTROLLER_INDEX, 1),
+    "set_extend_advertising_off": (defs.BTP_SERVICE_ID_GAP,
+                                   defs.GAP_SET_EXTENDED_ADVERTISING, CONTROLLER_INDEX, 0),
 }
 
 
@@ -1126,6 +1130,39 @@ def gap_set_sc_off():
     iutctl = get_iut()
 
     iutctl.btp_socket.send(*GAP['set_sc_off'])
+
+    tuple_data = gap_command_rsp_succ()
+    __gap_current_settings_update(tuple_data)
+
+def gap_set_extended_advertising_on():
+    logging.debug("%s", gap_set_extended_advertising_on.__name__)
+
+    stack = get_stack()
+
+    if stack.gap.current_settings_get(
+            gap_settings_btp2txt[defs.GAP_SETTINGS_EXTENDED_ADVERTISING]):
+        return
+
+    iutctl = get_iut()
+
+    iutctl.btp_socket.send(*GAP['set_extend_advertising_on'])
+
+    tuple_data = gap_command_rsp_succ()
+    __gap_current_settings_update(tuple_data)
+
+
+def gap_set_extended_advertising_off():
+    logging.debug("%s", gap_set_sc_off.__name__)
+
+    stack = get_stack()
+
+    if not stack.gap.current_settings_get(
+            gap_settings_btp2txt[defs.GAP_SETTINGS_EXTENDED_ADVERTISING]):
+        return
+
+    iutctl = get_iut()
+
+    iutctl.btp_socket.send(*GAP['set_extend_advertising_off'])
 
     tuple_data = gap_command_rsp_succ()
     __gap_current_settings_update(tuple_data)
