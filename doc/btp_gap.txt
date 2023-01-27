@@ -66,6 +66,7 @@ Commands and responses:
 			14	Controller Configuration
 			15	Static Address
 			16	Secure Connections Only
+			17	Extended Advertising
 
 		In case of an error, the error response will be returned.
 
@@ -492,6 +493,20 @@ Commands and responses:
 
 		Possible values for Encryption_Key_Size parameter are:
 								<0x07, 0x0f>
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x21 - Set Extended Advertising command/response
+
+		Controller Index:	<controller id>
+		Command parameter:	Extended_Advertising_Setting (1 Octet)
+		Response parameters:	Current_Settings (4 Octets)
+
+		Valid Extended_Advertising_Setting: 	0x00 = Disable
+							0x01 = Enable
+
+		This command is used to enable/disable Extended Advertising when
+		Start/Stop Advertising is used.
 
 		In case of an error, the error response will be returned.
 
