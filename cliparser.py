@@ -132,6 +132,10 @@ class CliParser(argparse.ArgumentParser):
                               "Requires rtt support on IUT.",
                               action='store_true', default=False)
 
+            self.add_argument("--gdb",
+                              help="Skip board resets to avoid gdb server disconnection.",
+                              action='store_true', default=False)
+
         if 'btp_tcp' in self.cli_support:
             self.add_argument("--btp-tcp-ip", type=str, default='127.0.0.1',
                               help="IP for external btp client over TCP/IP.")

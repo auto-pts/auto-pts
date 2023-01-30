@@ -54,6 +54,7 @@ class MynewtCtl:
         self.btp_socket = None
         self.test_case = None
         self.iut_log_file = None
+        self.gdb = args.gdb
 
         if self.debugger_snr:
             self.btp_address = BTP_ADDRESS + self.debugger_snr
@@ -149,24 +150,26 @@ class MynewtCtl:
         self.rtt_logger_stop()
         self.btmon_stop()
 
-        self.board.reset()
+        if not self.gdb:
+            self.board.reset()
 
     def wait_iut_ready_event(self):
         """Wait until IUT sends ready event after power up"""
         self.reset()
 
-        tuple_hdr, tuple_data = self.btp_socket.read()
+        if not self.gdb:
+            tuple_hdr, tuple_data = self.btp_socket.read()
 
-        try:
-            if (tuple_hdr.svc_id != defs.BTP_SERVICE_ID_CORE or
-                    tuple_hdr.op != defs.CORE_EV_IUT_READY):
-                raise BTPError("Failed to get ready event")
-        except BTPError as err:
-            log("Unexpected event received (%s), expected IUT ready!", err)
-            self.stop()
-            raise err
-        else:
-            log("IUT ready event received OK")
+            try:
+                if (tuple_hdr.svc_id != defs.BTP_SERVICE_ID_CORE or
+                        tuple_hdr.op != defs.CORE_EV_IUT_READY):
+                    raise BTPError("Failed to get ready event")
+            except BTPError as err:
+                log("Unexpected event received (%s), expected IUT ready!", err)
+                self.stop()
+                raise err
+            else:
+                log("IUT ready event received OK")
 
         self.rtt_logger_start()
         self.btmon_start()
@@ -186,7 +189,7 @@ class MynewtCtl:
             self.socat_process.terminate()
             self.socat_process.wait()
 
-        if self.board:
+        if not self.gdb and self.board:
             self.board.reset()
 
         if self.iut_log_file:
