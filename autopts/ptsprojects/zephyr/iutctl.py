@@ -66,6 +66,7 @@ class ZephyrCtl:
         self.tty_file = args.tty_file
         self.hci = args.hci
         self.native = None
+        self.gdb = args.gdb
 
         if self.tty_file and args.board_name:  # DUT is a hardware board, not QEMU
             if self.debugger_snr is None:
@@ -206,23 +207,25 @@ class ZephyrCtl:
         self.rtt_logger_stop()
         self.btmon_stop()
 
-        self.board.reset()
+        if not self.gdb:
+            self.board.reset()
 
     def wait_iut_ready_event(self):
         """Wait until IUT sends ready event after power up"""
         self.reset()
 
-        tuple_hdr, tuple_data = self.btp_socket.read()
+        if not self.gdb:
+            tuple_hdr, tuple_data = self.btp_socket.read()
 
-        try:
-            if (tuple_hdr.svc_id != defs.BTP_SERVICE_ID_CORE or
-                    tuple_hdr.op != defs.CORE_EV_IUT_READY):
-                raise BTPError("Failed to get ready event")
-        except BTPError as err:
-            log("Unexpected event received (%s), expected IUT ready!", err)
-            self.stop()
-        else:
-            log("IUT ready event received OK")
+            try:
+                if (tuple_hdr.svc_id != defs.BTP_SERVICE_ID_CORE or
+                        tuple_hdr.op != defs.CORE_EV_IUT_READY):
+                    raise BTPError("Failed to get ready event")
+            except BTPError as err:
+                log("Unexpected event received (%s), expected IUT ready!", err)
+                self.stop()
+            else:
+                log("IUT ready event received OK")
 
         self.rtt_logger_start()
         self.btmon_start()
@@ -246,7 +249,7 @@ class ZephyrCtl:
             self.qemu_process.wait()  # do not let zombies take over
             self.qemu_process = None
 
-        if self.board:
+        if not self.gdb and self.board:
             self.board.reset()
 
         if self.iut_log_file:
