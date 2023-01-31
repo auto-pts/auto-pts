@@ -195,9 +195,9 @@ class CliParser(argparse.ArgumentParser):
 
         return ''
 
-    def check_args_btp_py(self, args):
+    def check_args_btpclient_path(self, args):
         if not os.path.exists(args.btpclient_path):
-            return 'btp_py mode: Path {} of btpclient.py file' \
+            return 'btpclient: Path {} of btp client ' \
                    ' does not exist!\n'.format(repr(args.btpclient_path))
 
         return ''
