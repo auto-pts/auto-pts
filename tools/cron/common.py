@@ -17,7 +17,7 @@
 
 Schedule cyclical jobs or trigger them with magic sentence in Pull Request comment.
 
-Copy this file to root dir of auto-pts repo and adjust to your preferences.
+You can create your own jobs in separate .py file and set them in cron_config.py.
 
 If your ssh private key has password, before running the cron,
 start ssh agent in the same console:
@@ -333,7 +333,7 @@ def clear_workspace(workspace_dir):
                     shutil.rmtree(f, ignore_errors=True)
                 else:
                     try:
-                        if not f.name.endswith(('.pqw6', '.pts')):
+                        if not f.name.endswith(('.pqw6', '.pts', '.gitignore', '.xlsx')):
                             os.remove(f)
                     except:
                         pass
@@ -393,6 +393,33 @@ def find_latest_db(test_case_db_name, logging_repo, branch='main',
     return newest_db
 
 
+def find_workspace_in_tree(tree_path, workspace, init_depth=4):
+    workspace_path = None
+
+    def recursive(directory, depth):
+        nonlocal workspace_path
+        depth -= 1
+        if workspace_path:
+            return
+
+        with os.scandir(directory) as iterator:
+            for f in iterator:
+                if f.is_dir():
+                    if f.name.endswith('.git'):
+                        continue
+
+                    if f.name == workspace:
+                        workspace_path = f.path
+                        return
+
+                    if depth > 0:
+                        recursive(f.path, depth)
+        return
+
+    recursive(tree_path, init_depth)
+    return workspace_path
+
+
 def pre_cleanup(autopts_repo, project_repo, test_case_db_path='TestCase.db'):
     kill_processes('PTS.exe')
     kill_processes('Fts.exe')
@@ -449,47 +476,6 @@ def pre_cleanup_files(autopts_repo, project_repo, test_case_db_path='TestCase.db
         pass
 
 
-def update_zephyr_tools(wsl=False):
-    if sys.platform == 'win32' and not wsl:
-        installer_file = 'install_zephyr_tools.bat'
-    else:
-        installer_file = './install_zephyr_tools.sh'
-
-    script_dir = os.path.dirname(__file__)
-
-    if not os.path.exists(os.path.join(script_dir, installer_file)):
-        print('Installer {} does not exists!'.format(installer_file))
-        return
-
-    zephyr_sdk_github = GithubCron(60, [], 'zephyrproject-rtos', 'sdk-ng', [])
-    tag_url = 'https://api.github.com/repos/zephyrproject-rtos/sdk-ng/tags'
-
-    params = {'accept': 'application/vnd.github.v3+json', }
-    resp = zephyr_sdk_github.get(tag_url, params)
-    try:
-        tags = resp.json()
-    except:
-        return
-
-    version_tag = None
-
-    for tag in tags:
-        if 'rc' not in tag['name'] and 'beta' not in tag['name']:
-            version_tag = tag['name']
-            break
-
-    if version_tag is None:
-        sys.exit('Parsing zephyr toolchain failed!')
-
-    cmd = [installer_file, version_tag]
-
-    if sys.platform == 'win32' and wsl:
-        cmd = subprocess.list2cmdline(cmd)
-        cmd = ['bash.exe', '-c', '-i', cmd]  # bash.exe == wsl
-
-    check_call(cmd, cwd=script_dir, shell=not wsl)
-
-
 def git_stash_clear(cwd):
     cmd = 'git stash clear'
     print('Running: ', cmd)
@@ -521,16 +507,20 @@ def merge_pr_branch(pr_source_repo_owner, pr_source_branch, repo_name, project_r
 
 
 def run_test(bot_options, server_options, autopts_repo):
-    # Start subprocess running autoptsserver
-    srv_cmd = 'python autoptsserver.py {} >> stdout_autoptsserver.log 2>&1'.format(server_options)
-    print('Running: ', srv_cmd)
-    srv_process = subprocess.Popen(srv_cmd.split(),
-                                   shell=True,
-                                   stdout=subprocess.PIPE,
-                                   stderr=subprocess.STDOUT,
-                                   cwd=autopts_repo)
+    if sys.platform == 'win32':
+        # Start subprocess running autoptsserver
+        srv_cmd = 'python autoptsserver.py {} >> stdout_autoptsserver.log 2>&1'.format(server_options)
+        print('Running: ', srv_cmd)
+        srv_process = subprocess.Popen(srv_cmd.split(),
+                                       shell=True,
+                                       stdout=subprocess.PIPE,
+                                       stderr=subprocess.STDOUT,
+                                       cwd=autopts_repo)
 
-    sleep(60)
+        sleep(60)
+    else:
+        # Assume that autoptsserver is available remotely on virtual machine
+        srv_process = None
 
     # Start subprocess of autoptsclient_bot
     bot_cmd = 'python autoptsclient_bot.py {}' \
@@ -545,10 +535,15 @@ def run_test(bot_options, server_options, autopts_repo):
     sleep(5)
     try:
         # Main thread waits for at least one of subprocesses to finish
-        while srv_process.poll() is None and bot_process.poll() is None:
+        while (srv_process is None or srv_process.poll() is None) and \
+                bot_process.poll() is None:
             sleep(5)
     except:
         pass
+
+    if srv_process is None:
+        # autoptsserver is running on virtual machine
+        return
 
     # Terminate the other subprocess if it is still running
     if srv_process.poll() is None:
@@ -563,16 +558,7 @@ def run_test(bot_options, server_options, autopts_repo):
     kill_processes('python.exe')
 
 
-@catch_exceptions(cancel_on_failure=True)
-def zephyr_pr_job(cron, cfg, pr_cfg, server_options, update_tools=False, **kwargs):
-    print('Started PR Job: repo_name={repo_name} PR={number} src_owner={source_repo_owner}'
-          ' branch={source_branch} head_sha={head_sha} comment={comment_body} '
-          'magic_tag={magic_tag} cfg={cfg}'.format(**pr_cfg, cfg=cfg))
-
-    cfg_dict = load_config(cfg)
-    if update_tools:
-        update_zephyr_tools(wsl=cfg_dict['auto_pts'].get('wsl', False))
-
+def parse_test_cases_from_comment(pr_cfg):
     included = re.sub(r'\s+', r' ', pr_cfg['comment_body'][len(pr_cfg['magic_tag']):]).strip()
     excluded = ''
 
@@ -586,57 +572,79 @@ def zephyr_pr_job(cron, cfg, pr_cfg, server_options, update_tools=False, **kwarg
     else:
         excluded = ''
 
+    return included, excluded
+
+
+@catch_exceptions(cancel_on_failure=True)
+def generic_pr_job(cron, cfg, pr_cfg, server_options, pr_repo_name_in_config,
+                   bot_options_append='', **kwargs):
+    print('Started PR Job: repo_name={repo_name} PR={number} src_owner={source_repo_owner}'
+          ' branch={source_branch} head_sha={head_sha} comment={comment_body} '
+          'magic_tag={magic_tag} cfg={cfg}'.format(**pr_cfg, cfg=cfg))
+
+    cfg_dict = load_config(cfg)
+
+    included, excluded = parse_test_cases_from_comment(pr_cfg)
+
+    # Path to the project
     PROJECT_REPO = cfg_dict['auto_pts']['project_path']
-    test_case_db_name = 'TestCase.db'
-    autopts_test_case_db = os.path.join(AUTOPTS_REPO, test_case_db_name)
 
-    pre_cleanup(AUTOPTS_REPO, PROJECT_REPO, test_case_db_name)
+    # Delete AutoPTS logs, tmp files, old bin directories, kill old PTS.exe, ...
+    pre_cleanup(AUTOPTS_REPO, PROJECT_REPO)
 
-    # Copy TestCase.db from previous build to catch regressions
-    if 'githubdrive' in cfg_dict:
-        database_repo = cfg_dict['githubdrive']['path']
-        test_case_db_path = find_latest_db(test_case_db_name, database_repo)
+    # Find PTS workspace path and delete PTS logs
+    workspace_path = find_workspace_in_tree(
+        os.path.join(AUTOPTS_REPO, 'autopts/workspaces'), cfg_dict['auto_pts']['workspace'])
+    clear_workspace(workspace_path)
 
-        if test_case_db_path is None:
-            raise Exception('Database file {} do not exists'.format(test_case_db_path))
+    # Update repo.
+    # To prevent update of the repo by bot, remember to set 'update_repo'
+    # to False in m['git']['repo_name']['update_repo'] of config.py
+    cfg_dict['git'][pr_repo_name_in_config]['update_repo'] = True
+    update_repos(PROJECT_REPO, cfg_dict['git'])
 
-        print('Copied database from {}'.format(test_case_db_path))
-        shutil.copy(test_case_db_path, autopts_test_case_db)
+    # Merge PR branch into local instance of tested repo
+    if not os.path.isabs(cfg_dict['git'][pr_repo_name_in_config]['path']):
+        repo_path = os.path.join(PROJECT_REPO, cfg_dict['git'][pr_repo_name_in_config]['path'])
+    else:
+        repo_path = os.path.abspath(cfg_dict['git'][pr_repo_name_in_config]['path'])
 
-    clear_workspace(os.path.join(AUTOPTS_REPO, 'autopts/workspaces/zephyr/zephyr-master'))
-    git_stash_clear(PROJECT_REPO)
-    update_sources(PROJECT_REPO, 'origin', 'main', True)
-    merge_pr_branch(pr_cfg['source_repo_owner'], pr_cfg['source_branch'],
-                    pr_cfg['repo_name'], PROJECT_REPO)
+    try:
+        merge_pr_branch(pr_cfg['source_repo_owner'], pr_cfg['source_branch'],
+                        pr_cfg['repo_name'], repo_path)
+    except:
+        git_rebase_abort(repo_path)
+        cron.post_pr_comment(pr_cfg['number'], 'Failed to merge the branch')
+        return schedule.CancelJob
 
-    # To prevent update of zephyr project repo by bot, set 'update_repo'
-    # to False in zephyr['git'] of config.py
-
-    bot_options = '{cfg} --not_recover PASS {included} {excluded}'.format(
-        cfg=cfg, included=included, excluded=excluded)
+    # Run AutoPTS server and bot
+    bot_options = f'{cfg} --not_recover PASS {included} {excluded} {bot_options_append}'
     run_test(bot_options, server_options, AUTOPTS_REPO)
+
+    git_checkout(cfg_dict['git'][pr_repo_name_in_config]['branch'], repo_path)
 
     # report.txt is created at the very end of bot run, so
     # it should exists if bot completed tests fully
-    if not os.path.exists(os.path.join(AUTOPTS_REPO, 'report.txt')):
+    report = os.path.join(AUTOPTS_REPO, 'report.txt')
+    if not os.path.exists(report):
         raise Exception('Bot failed before report creation')
 
-    print('Zephyr PR Job finished')
+    print(f'{pr_cfg["repo_name"]} PR Job finished')
 
+    # Post in PR comment with results
     cron.post_pr_comment(
-        pr_cfg['number'], report_to_review_msg('report.txt'))
+        pr_cfg['number'], report_to_review_msg(report))
 
     # To prevent scheduler from cyclical running of the job
     return schedule.CancelJob
 
 
 @catch_exceptions(cancel_on_failure=True)
-def zephyr_job(cfg, server_options, included='', excluded='', bisect=None, update_tools=False, **kwargs):
-    print('Started Zephyr Job', cfg)
+def generic_test_job(cfg, server_options, included='', excluded='',
+                     bisect=None, bot_options_append='', **kwargs):
+    print(f'Started {cfg} Job')
 
     cfg_dict = load_config(cfg)
-    if update_tools:
-        update_zephyr_tools(wsl=cfg_dict['auto_pts'].get('wsl', False))
 
     if included and not included.isspace():
         included = ' -c {}'.format(included)
@@ -662,14 +670,14 @@ def zephyr_job(cfg, server_options, included='', excluded='', bisect=None, updat
         print('Copied database from {}'.format(test_case_db_path))
         shutil.copy(test_case_db_path, autopts_test_case_db)
 
-    clear_workspace(os.path.join(AUTOPTS_REPO, 'autopts/workspaces/zephyr/zephyr-master'))
-    git_stash_clear(os.path.join(PROJECT_REPO))
+    workspace_path = find_workspace_in_tree(
+        os.path.join(AUTOPTS_REPO, 'autopts/workspaces'), cfg_dict['auto_pts']['workspace'])
+    clear_workspace(workspace_path)
 
-    # To prevent update of zephyr project repo by bot, set 'update_repo'
+    # To prevent update of the project repo by bot, set 'update_repo'
     # to False in zephyr['git'] of config.py
 
-    bot_options = '{cfg} --not_recover PASS {included} {excluded}'.format(
-        cfg=cfg, included=included, excluded=excluded)
+    bot_options = f'{cfg} --not_recover PASS {included} {excluded} {bot_options_append}'
     run_test(bot_options, server_options, AUTOPTS_REPO)
 
     # report.txt is created at the very end of bot run, so
@@ -681,181 +689,7 @@ def zephyr_job(cfg, server_options, included='', excluded='', bisect=None, updat
     if bisect:
         Bisect(bisect).run_bisect(report)
 
-    print('Zephyr Job finished')
-
-
-@catch_exceptions(cancel_on_failure=True)
-def nimble_job(cfg, server_options, included='', excluded='', **kwargs):
-    print('Started NimBLE Job', cfg)
-
-    if included and not included.isspace():
-        included = ' -c {}'.format(included)
-
-    if excluded and not excluded.isspace():
-        excluded = ' -e {}'.format(excluded)
-
-    cfg_dict = load_config(cfg)
-    PROJECT_REPO = cfg_dict['auto_pts']['project_path']
-
-    test_case_db_name = 'TestCase.db'
-
-    pre_cleanup(AUTOPTS_REPO, PROJECT_REPO, test_case_db_name)
-
-    clear_workspace(os.path.join(AUTOPTS_REPO, 'autopts/workspaces/Mynewt Nimble Host'))
-    git_stash_clear(os.path.join(PROJECT_REPO, 'repos/apache-mynewt-nimble'))
-
-    # To prevent update of Mynewt project repo by bot, set 'update_repo'
-    # to False in mynewt['git'] of config.py
-
-    bot_options = '{cfg} --not_recover PASS {included} {excluded}'.format(
-        cfg=cfg, included=included, excluded=excluded)
-    run_test(bot_options, server_options, AUTOPTS_REPO)
-
-    report = os.path.join(AUTOPTS_REPO, 'report.txt')
-    if not os.path.exists(report):
-        raise Exception('Bot failed before report creation')
-
-    print('NimBLE Job finished')
-
-
-@catch_exceptions(cancel_on_failure=True)
-def vm_pr_job(cron, cfg, pr_cfg, **kwargs):
-    print('Started PR Job: repo_name={repo_name} PR={number} src_owner={source_repo_owner}'
-          ' branch={source_branch} head_sha={head_sha} '
-          'comment={comment_body} magic_tag={magic_tag} cfg={cfg}'.format(**pr_cfg, cfg=cfg))
-
-    included = re.sub(r'\s+', r' ', pr_cfg['comment_body'][len(pr_cfg['magic_tag']):]).strip()
-    excluded = ''
-
-    if included and not included.isspace():
-        included = ' -c {}'.format(included)
-    else:
-        included = ''
-
-    if excluded and not excluded.isspace():
-        excluded = ' -e {}'.format(excluded)
-    else:
-        excluded = ''
-
-    cfg_dict = load_config(cfg)
-    PROJECT_REPO = cfg_dict['auto_pts']['project_path']
-    test_case_db_name = 'TestCase.db'
-    pre_cleanup_files(AUTOPTS_REPO, PROJECT_REPO, test_case_db_name)
-
-    if 'git' in cfg_dict:
-        update_repos(PROJECT_REPO, cfg_dict['git'])
-
-    try:
-        if pr_cfg.get('autopts_selftest', False):
-            merge_pr_branch(pr_cfg['source_repo_owner'], pr_cfg['source_branch'],
-                            pr_cfg['repo_name'], AUTOPTS_REPO)
-        else:
-            merge_pr_branch(pr_cfg['source_repo_owner'], pr_cfg['source_branch'],
-                            pr_cfg['repo_name'], PROJECT_REPO)
-    except:
-        git_rebase_abort(AUTOPTS_REPO)
-        cron.post_pr_comment(pr_cfg['number'], 'Failed to merge the branch')
-        return schedule.CancelJob
-
-    # To prevent update of the project repo by bot, set 'update_repo'
-    # to False in ['git'] of config.py
-
-    python_ver = '3' if sys.platform != 'win32' else ''
-
-    # Start subprocess of autoptsclient_bot
-    bot_options = '{cfg} --not_recover PASS {included} {excluded}'.format(
-        cfg=cfg, included=included, excluded=excluded)
-    bot_cmd = 'python{} autoptsclient_bot.py {}' \
-              ' >> stdout_autoptsbot.log 2>&1'.format(python_ver, bot_options)
-    print('Running: ', bot_cmd)
-    bot_process = subprocess.Popen(bot_cmd.split(),
-                                   shell=False,
-                                   cwd=AUTOPTS_REPO)
-
-    sleep(5)
-    try:
-        while bot_process.poll() is None:
-            sleep(5)
-    except:
-        pass
-
-    # after-cleanup
-    if pr_cfg.get('autopts_selftest', False):
-        git_checkout('-', AUTOPTS_REPO)
-
-    # report.txt is created at the very end of bot run, so
-    # it should exists if bot completed tests fully
-    report_path = os.path.join(AUTOPTS_REPO, 'report.txt')
-    if not os.path.exists(report_path):
-        raise Exception('Bot failed before report creation')
-
-    print('{} PR Job finished'.format(pr_cfg['repo_name']))
-
-    cron.post_pr_comment(
-        pr_cfg['number'], report_to_review_msg(report_path))
-
-    # To prevent scheduler from cyclical running of the job
-    return schedule.CancelJob
-
-
-@catch_exceptions(cancel_on_failure=True)
-def win_autopts_pr_job(cron, cfg, pr_cfg, server_options, **kwargs):
-    print('Started PR Job: repo_name={repo_name} PR={number} src_owner={source_repo_owner}'
-          ' branch={source_branch} head_sha={head_sha} '
-          'comment={comment_body} magic_tag={magic_tag} cfg={cfg}'.format(**pr_cfg, cfg=cfg))
-
-    included = re.sub(r'\s+', r' ', pr_cfg['comment_body'][len(pr_cfg['magic_tag']):]).strip()
-    excluded = ''
-
-    if included and not included.isspace():
-        included = ' -c {}'.format(included)
-    else:
-        included = ''
-
-    if excluded and not excluded.isspace():
-        excluded = ' -e {}'.format(excluded)
-    else:
-        excluded = ''
-
-    cfg_dict = load_config(cfg)
-    PROJECT_REPO = cfg_dict['auto_pts']['project_path']
-    test_case_db_name = 'TestCase.db'
-    pre_cleanup_files(AUTOPTS_REPO, PROJECT_REPO, test_case_db_name)
-
-    if 'git' in cfg_dict:
-        update_repos(PROJECT_REPO, cfg_dict['git'])
-
-    try:
-        merge_pr_branch(pr_cfg['source_repo_owner'], pr_cfg['source_branch'],
-                        pr_cfg['repo_name'], AUTOPTS_REPO)
-    except:
-        git_rebase_abort(AUTOPTS_REPO)
-        cron.post_pr_comment(pr_cfg['number'], 'Failed to merge the branch')
-        return schedule.CancelJob
-
-    # To prevent update of the project repo by bot, set 'update_repo'
-    # to False in ['git'] of config.py
-
-    bot_options = '{cfg} --not_recover PASS {included} {excluded}'.format(
-        cfg=cfg, included=included, excluded=excluded)
-    run_test(bot_options, server_options, AUTOPTS_REPO)
-
-    # after-cleanup
-    git_checkout('-', AUTOPTS_REPO)
-
-    # report.txt is created at the very end of bot run, so
-    # it should exists if bot completed tests fully
-    report_path = os.path.join(AUTOPTS_REPO, 'report.txt')
-    if not os.path.exists(report_path):
-        raise Exception('Bot failed before report creation')
-
-    print('{} PR Job finished'.format(pr_cfg['repo_name']))
-
-    cron.post_pr_comment(
-        pr_cfg['number'], report_to_review_msg(report_path))
-
-    # To prevent scheduler from cyclical running of the job
-    return schedule.CancelJob
+    print(f'{cfg} Job finished')
 
 
 set_run_test_fun(run_test)
