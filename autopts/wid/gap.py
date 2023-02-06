@@ -402,6 +402,8 @@ def hdl_wid_77(params: WIDParams):
         btp.gap_disconn()
     except types.BTPError:
         logging.debug("Ignoring expected error on disconnect")
+    else:
+        btp.gap_wait_for_disconnection(30)
     return True
 
 
