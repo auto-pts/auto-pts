@@ -492,8 +492,9 @@ def hdl_wid_104(_: WIDParams):
     return True
 
 
-def hdl_wid_106(_: WIDParams):
-    btp.gap_pair()
+def hdl_wid_106(params: WIDParams):
+    # description: Waiting for HCI_ENCRYPTION_CHANGE_EVENT...
+    # PTS seems to start pairing on its own here
     return True
 
 
