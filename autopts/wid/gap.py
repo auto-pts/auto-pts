@@ -480,6 +480,7 @@ def hdl_wid_91(_: WIDParams):
 
 
 def hdl_wid_100(_: WIDParams):
+    btp.gap_set_bondable_off()
     btp.gap_pair()
     return True
 
