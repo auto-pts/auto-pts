@@ -284,6 +284,11 @@ def test_cases(ptses):
                   cmds=pre_conditions + init_gatt_db +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/AUT/BV-27-C",
+                  cmds=pre_conditions +
+                  [TestFunc(btp.gattc_read_rsp, store_val=False,
+                            post_wid=112)],
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/CSIGN/BV-01-C",
                   cmds=pre_conditions + init_gatt_db +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
