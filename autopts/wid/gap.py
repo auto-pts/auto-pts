@@ -1038,11 +1038,19 @@ def hdl_wid_226(_: WIDParams):
 
 
 def hdl_wid_227(_: WIDParams):
-    try:
-        btp.l2cap_conn(None, None, 128)
-    except types.BTPError:
-        pass
-    return True
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
+    btp.gattc_disc_all_chrc(bd_addr_type, bd_addr, 0x0001, 0xffff)
+    attrs = btp.gattc_disc_all_chrc_rsp()
+
+    for attr in attrs:
+        if attr.prop & Prop.read:
+            btp.gattc_read(bd_addr_type, bd_addr, attr.value_handle)
+            btp.gattc_read_rsp()
+            return True
+
+    return False
 
 
 def hdl_wid_232(_: WIDParams):
