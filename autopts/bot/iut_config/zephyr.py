@@ -163,6 +163,17 @@ iut_config = {
             'GATT/CL/GAR/BI-42-C',
         ]
     },
+
+    "le_audio.conf": {
+        "overlay": {
+            'CONFIG_BT_AUDIO_UNICAST_SERVER': 'y',
+            'CONFIG_BT_ATT_ENFORCE_FLOW': 'n',
+            'CONFIG_BT_HCI_VS_EXT': 'n',
+        },
+        "test_cases": [
+            'PACS',
+        ]
+    },
 }
 
 retry_config = {
