@@ -1,0 +1,145 @@
+Audio Stream Control Service (ID tbd)
+=====================================
+
+Opcodes 0x02 and higher are use in server and client roles and require a Chan_ID.
+In Client role, ASCS Client Connect to peer is used to setup the GATT connection and return the Chan_ID. 
+In Server role, the lower test will query the ASCS Service and register for notifications. This is
+reported in the ASCS Server Peer Connected event to provide the Chan_ID to BTP.
+
+
+Commands and responses:
+
+	Opcode 0x00 - Error response
+
+	Opcode 0x01 - Read Supported Commands command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	<none>
+		Response parameters:	<supported commands> (variable)
+
+		Each bit in response is a flag indicating if command with
+		opcode matching bit number is supported. Bit set to 1 means
+		that command is supported. Bit 0 is reserved and shall always
+		be set to 0. If specific bit is not present in response (less
+		than required bytes received) it shall be assumed that command
+		is not supported.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x02 - ASCS Client Connect to peer
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:	Chan_ID (1 octet)
+					ASE_Count (1 octet)
+					ASE List (variable)
+
+		ASE:			ASE_ID (1 octet)
+					ASE_Type (1 octet)
+
+		Valid ASE_Type parameter values:
+					0x00 = Sink
+					0x01 = Source
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x03: ASCS Configure Codec
+
+		Controller Index:	<controller id>
+		Command parameters:	Chan_ID (1 octet)
+					ASE_ID (1 octet)
+					Coding_Format (1 octet)
+					Frequency_hz  (4 octets)
+					Frame_Duration_us (2 octets)
+					Audio Locations (4 octets)
+					Octets_Per_Frame (2 octets)
+		Response parameters:	Presentation_Delay_Min_us (3 octets)
+					Presentation_Delay_Max_us (3 octets)
+
+		Coding_Format: LC3 = 0x06, Vendor Specific = 0xff
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x04: ASCS Configure QoS
+
+		Controller Index:	<controller id>
+		Command parameters:	Chan_ID (1 octet)
+					ASE_ID (1 octet)
+					CIG_ID (1 octet)
+					CIS_ID (1 octet)
+					Sdu_Interval (2 octet)
+					Framing (1 octet)
+					Max_Sdu_Size (2 octets)
+					Retransmission_Number (1 octets)
+					Max_Transport_Latency (1 octets)
+		Response parameters:	<None>
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x05: ASCS Enable
+
+		Controller Index:	<controller id>
+		Command parameters:	Chan_ID (1 octet)
+					ASE_ID (1 octet)
+		Response parameters:	<None>
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x06: ASCS Receiver Start Ready
+
+		Controller Index:	<controller id>
+		Command parameters:	Chan_ID (1 octet)
+					ASE_ID (1 octet)
+		Response parameters:	<None>
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x07: ASCS Receiver Stop Ready
+
+		Controller Index:	<controller id>
+		Command parameters:	Chan_ID (1 octet)
+					ASE_ID (1 octet)
+		Response parameters:	<None>
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x08: ASCS Disable
+
+		Controller Index:	<controller id>
+		Command parameters:	Chan_ID (1 octet)
+					ASE_ID (1 octet)
+		Response parameters:	<None>
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x09: ASCS Release
+
+		Controller Index:	<controller id>
+		Command parameters:	Chan_ID (1 octet)
+					ASE_ID (1 octet)
+		Response parameters:	<None>
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0A: ASCS Update Metadata
+
+		Controller Index:	<controller id>
+		Command parameters:	Chan_ID (1 octet)
+					ASE_ID (1 octet)
+		Response parameters:	<None>
+
+		In case of an error, the error response will be returned.
+
+
+Events:
+
+	Opcode 0x80 - ASCS Server Peer Connected
+
+		Controller Index:	<controller id>
+		Event parameters:	Chan_ID (1 octet)
+
+		This event indicates that a lower tester has subscribed to 
+		one or more characteristics. The Chan_ID is needed to for
+		Opcodes 0x03 and higher in Server role.
+
