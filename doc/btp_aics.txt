@@ -84,7 +84,8 @@ Commands and responses:
 
 	Opcode 0x09 - Description
 		Controller Index:	<controller id>
-		Command parameters:	Description (string)
+		Command parameters:	Description Length (1 octet)
+                                        Description (0-255 octets)
 		Response parameters:	<none>
 
 		This command is used for setting description.
