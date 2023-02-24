@@ -46,14 +46,7 @@ def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None, repos=None, 
     check_call(cmd, cwd=tester_dir)
     check_call(['west', 'flash', '--skip-rebuild', '--recover', '-i', debugger_snr], cwd=tester_dir)
 
-    sdk_nrf_repo = os.path.join(repos['sdk-nrf']['path'], 'applications', 'nrf5340_audio', 'bin')
-
-    # Find the hex file, because *.hex does not work in Windows shell
-    for file in os.listdir(sdk_nrf_repo):
-        if file.endswith(".hex"):
-            hex_file = file
-            break
-
-    # Flashing LE Audio Controller Subsystem for nRF53 on the network core
-    cmd = ['nrfjprog', '--program', hex_file, '--chiperase', '--coprocessor', 'CP_NETWORK', '-r']
-    check_call(cmd, cwd=sdk_nrf_repo)
+    controler_dir = os.path.join(zephyr_wd, 'samples', 'bluetooth', 'hci_rpmsg')
+    cmd = ['west', 'build', '-p', 'auto', '-b', board, '--', f'-DOVERLAY_CONFIG=nrf5340_cpunet_iso-bt_ll_sw_split.conf']
+    check_call(cmd, cwd=controler_dir)
+    check_call(['west', 'flash', '--skip-rebuild', '-i', debugger_snr], cwd=controler_dir)
