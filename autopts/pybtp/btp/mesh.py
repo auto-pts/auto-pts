@@ -362,7 +362,7 @@ def mesh_input_string(string):
 
     iutctl = get_iut()
 
-    string_len = len(string)
+    string_len = len(string) + 1
 
     data = bytearray(struct.pack("<B", string_len))
     data.extend(string.encode('UTF-8'))
