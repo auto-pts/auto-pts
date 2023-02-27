@@ -25,7 +25,8 @@ import serial
 from autopts.pybtp import defs
 from autopts.ptsprojects.boards import Board, get_debugger_snr, tty_to_com
 from autopts.pybtp.types import BTPError
-from autopts.pybtp.iutctl_common import BTPSocketSrv, BTPWorker, BTP_ADDRESS, BTMON, RTT
+from autopts.pybtp.iutctl_common import BTPSocketSrv, BTPWorker, BTP_ADDRESS
+from autopts.rtt import RTTLogger, BTMON
 
 log = logging.debug
 ZEPHYR = None
@@ -61,6 +62,7 @@ class ZephyrCtl:
             self.__class__, self.__init__.__name__, args.kernel_image,
             args.tty_file, args.board_name)
 
+        self.device_core = args.device_core
         self.debugger_snr = args.debugger_snr
         self.kernel_image = args.kernel_image
         self.tty_file = args.tty_file
@@ -87,7 +89,7 @@ class ZephyrCtl:
 
         if self.debugger_snr:
             self.btp_address = BTP_ADDRESS + self.debugger_snr
-            self.rtt_logger = RTT() if args.rtt_log else None
+            self.rtt_logger = RTTLogger() if args.rtt_log else None
             self.btmon = BTMON() if args.btmon else None
         else:
             self.btp_address = BTP_ADDRESS
@@ -176,7 +178,7 @@ class ZephyrCtl:
             log_file = os.path.join(self.test_case.log_dir,
                                     self.test_case.name.replace('/', '_') +
                                     '_btmon.log')
-            self.btmon.start(log_file, self.debugger_snr)
+            self.btmon.start('btmonitor', log_file, self.device_core, self.debugger_snr)
 
     def btmon_stop(self):
         if self.btmon:
@@ -187,7 +189,7 @@ class ZephyrCtl:
             log_file = os.path.join(self.test_case.log_dir,
                                     self.test_case.name.replace('/', '_') +
                                     '_iutctl.log')
-            self.rtt_logger.start('Logger', log_file, self.debugger_snr)
+            self.rtt_logger.start('Logger', log_file, self.device_core, self.debugger_snr)
 
     def rtt_logger_stop(self):
         if self.rtt_logger:
