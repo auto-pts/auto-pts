@@ -90,6 +90,7 @@ class BotConfigArgs(Namespace):
         self.store = args.get('store', False)
         self.rtt_log = args.get('rtt_log', False)
         self.btmon = args.get('btmon', False)
+        self.device_core = args.get('device_core', 'NRF52840_XXAA')
         self.test_cases = []
         self.excluded = []
 

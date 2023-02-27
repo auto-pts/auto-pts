@@ -16,15 +16,11 @@
 import logging
 import os
 import queue
-import signal
 import socket
-import subprocess
 import sys
 import threading
-import time
-from abc import abstractmethod
 
-import pylink
+from abc import abstractmethod
 
 from autopts.pybtp import defs
 from autopts.pybtp.types import BTPError
@@ -292,99 +288,3 @@ class BTPWorker:
 
     def register_event_handler(self, event_handler):
         self.event_handler_cb = event_handler
-
-
-class RTT:
-    def __init__(self):
-        self.read_thread = None
-        self.stop_thread = threading.Event()
-        self.log_filename = None
-        self.log_file = None
-        self.jlink = None
-        pylink.logger.setLevel(logging.WARNING)
-
-    def _get_buffer_index(self, buffer_name):
-        timeout = time.time() + 10
-        num_up = 0
-        while True:
-            try:
-                num_up = self.jlink.rtt_get_num_up_buffers()
-                break
-            except pylink.errors.JLinkRTTException:
-                if time.time() > timeout:
-                    break
-                time.sleep(0.1)
-
-        for buf_index in range(num_up):
-            buf = self.jlink.rtt_get_buf_descriptor(buf_index, True)
-            if buf.name == buffer_name:
-                return buf_index
-
-    @staticmethod
-    def _read_from_buffer(jlink, buffer_index, stop_thread, file):
-        while not stop_thread.is_set() and jlink.connected():
-            byte_list = jlink.rtt_read(buffer_index, 1024)
-            try:
-                if len(byte_list) > 0:
-                    file.write(bytes(byte_list))
-                    file.flush()
-            except UnicodeDecodeError:
-                continue
-
-    def start(self, buffer_name, log_filename, debugger_snr=None):
-        log("%s.%s", self.__class__, self.start.__name__)
-        self.log_filename = log_filename
-        target_device = "NRF52840_XXAA"
-        self.jlink = pylink.JLink()
-        self.jlink.open(serial_no=debugger_snr)
-        self.jlink.set_tif(pylink.enums.JLinkInterfaces.SWD)
-        self.jlink.connect(target_device)
-        self.jlink.rtt_start()
-
-        buffer_index = self._get_buffer_index(buffer_name)
-        self.stop_thread.clear()
-        self.log_file = open(self.log_filename, 'ab')
-        self.read_thread = threading.Thread(target=self._read_from_buffer,
-                                            args=(self.jlink,
-                                                  buffer_index,
-                                                  self.stop_thread,
-                                                  self.log_file))
-        self.read_thread.start()
-
-    def stop(self):
-        log("%s.%s", self.__class__, self.stop.__name__)
-        self.stop_thread.set()
-
-        if self.read_thread:
-            self.read_thread.join()
-            self.read_thread = None
-            self.jlink.rtt_stop()
-            self.jlink.close()
-
-        if self.log_file:
-            self.log_file.close()
-            self.log_file = None
-
-
-class BTMON:
-    def __init__(self):
-        self.btmon_process = None
-        self.pty_name = None
-        self.log_file = None
-
-    def start(self, log_file, debugger_snr):
-        log("%s.%s", self.__class__, self.start.__name__)
-        self.log_file = log_file
-        cmd = ['btmon', '-J', 'NRF52,' + debugger_snr, '-w', self.log_file]
-
-        self.btmon_process = subprocess.Popen(cmd,
-                                              shell=False,
-                                              stdout=subprocess.PIPE,
-                                              stderr=subprocess.PIPE)
-
-    def stop(self):
-        log("%s.%s", self.__class__, self.stop.__name__)
-        if self.btmon_process and self.btmon_process.poll() is None:
-            self.btmon_process.send_signal(signal.SIGINT)
-            self.btmon_process.wait()
-            self.btmon_process = None

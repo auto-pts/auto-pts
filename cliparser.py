@@ -127,6 +127,10 @@ class CliParser(argparse.ArgumentParser):
                               "and catch them with btmon. Requires rtt support"
                               "on IUT.", action='store_true', default=False)
 
+            self.add_argument("--device_core", default='NRF52840_XXAA',
+                              help="Specify the device core for JLink related features, "
+                                   "e.g. BTMON or RTT logging.")
+
             self.add_argument("--rtt-log",
                               help="Capture iut logs from device over RTT. "
                               "Requires rtt support on IUT.",
