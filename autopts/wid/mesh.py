@@ -958,6 +958,13 @@ def hdl_wid_255(_: WIDParams):
     """
     return True
 
+def hdl_wid_234(_: WIDParams):
+    """
+    Implements:
+    description: Please confirms that the IUT receives the beacon with iv index
+                 set to 12
+    """
+    return True
 
 def hdl_wid_260(_: WIDParams):
     """
