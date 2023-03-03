@@ -111,7 +111,7 @@ def aics_set_gain(gain):
     if isinstance(gain, str):
         gain = int(gain)
 
-    data = bytearray(struct.pack("<I", gain))
+    data = bytearray(struct.pack("<b", gain))
 
     iutctl.btp_socket.send(*AICS['set_gain'], data=data)
     aics_command_rsp_succ()
