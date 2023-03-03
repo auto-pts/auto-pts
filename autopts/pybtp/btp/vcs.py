@@ -58,7 +58,7 @@ def vcs_set_vol(vol):
     if isinstance(vol, str):
         vol = int(vol)
 
-    data = bytearray(struct.pack("<I", vol))
+    data = bytearray(struct.pack("<B", vol))
 
     iutctl.btp_socket.send(*VCS['set_vol'], data=data)
     vcs_command_rsp_succ()
