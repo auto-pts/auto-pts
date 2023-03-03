@@ -47,7 +47,7 @@ def set_pixits(ptses):
     pts.set_pixit("PACS", "TSPX_delete_link_key", "FALSE")
     pts.set_pixit("PACS", "TSPX_pin_code", "0000")
     pts.set_pixit("PACS", "TSPX_use_dynamic_pin", "FALSE")
-    pts.set_pixit("PACS", "TSPX_delete_ltk", "FALSE")
+    pts.set_pixit("PACS", "TSPX_delete_ltk", "TRUE")
     pts.set_pixit("PACS", "TSPX_security_enabled", "FALSE")
     pts.set_pixit("PACS", "TSPX_iut_setup_att_over_br_edr", "FALSE")
     pts.set_pixit("PACS", "TSPX_tester_appearance", "0000")

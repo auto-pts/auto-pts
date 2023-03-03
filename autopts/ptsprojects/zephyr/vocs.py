@@ -47,7 +47,7 @@ def set_pixits(ptses):
     pts.set_pixit("VOCS", "TSPX_delete_link_key", "FALSE")
     pts.set_pixit("VOCS", "TSPX_pin_code", "0000")
     pts.set_pixit("VOCS", "TSPX_use_dynamic_pin", "FALSE")
-    pts.set_pixit("VOCS", "TSPX_delete_ltk", "FALSE")
+    pts.set_pixit("VOCS", "TSPX_delete_ltk", "TRUE")
     pts.set_pixit("VOCS", "TSPX_security_enabled", "FALSE")
     pts.set_pixit("VOCS", "TSPX_iut_setup_att_over_br_edr", "FALSE")
     pts.set_pixit("VOCS", "TSPX_tester_appearance", "0000")
