@@ -23,7 +23,7 @@ from time import sleep
 from autopts.ptsprojects.stack import get_stack, ConnParams
 from autopts.pybtp import types
 from autopts.pybtp import btp
-from autopts.pybtp.types import Prop, Perm, UUID, AdType, bdaddr_reverse, WIDParams, IOCap
+from autopts.pybtp.types import Prop, Perm, UUID, AdType, bdaddr_reverse, WIDParams, IOCap, OwnAddrType
 
 log = logging.debug
 
@@ -431,7 +431,7 @@ def hdl_wid_80(_: WIDParams):
     btp.gap_set_nonconn()
     btp.gap_set_nondiscov()
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_adv_ind_on(ad=stack.gap.ad, own_addr_type=OwnAddrType.le_resolvable_private_address)
 
     return True
 
@@ -466,7 +466,7 @@ def hdl_wid_90(_: WIDParams):
     btp.gap_set_conn()
     btp.gap_set_gendiscov()
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    btp.gap_adv_ind_on(ad=stack.gap.ad, own_addr_type=OwnAddrType.le_resolvable_private_address)
 
     return True
 
