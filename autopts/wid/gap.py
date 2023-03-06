@@ -495,7 +495,7 @@ def hdl_wid_104(_: WIDParams):
 def hdl_wid_106(params: WIDParams):
     # description: Waiting for HCI_ENCRYPTION_CHANGE_EVENT...
     # Depending on test, PTS seems to start pairing on its own here or not
-    if params.test_case_name == 'GAP/SEC/AUT/BV-19-C':
+    if params.test_case_name in ['GAP/SEC/AUT/BV-19-C', 'GAP/SEC/AUT/BV-25-C']:
         btp.gap_pair()
     return True
 
@@ -512,20 +512,17 @@ def hdl_wid_108(params: WIDParams):
     return True
 
 
-def hdl_wid_112(_: WIDParams):
+def hdl_wid_112(params: WIDParams):
     bd_addr = btp.pts_addr_get()
     bd_addr_type = btp.pts_addr_type_get()
 
-    btp.gattc_disc_all_chrc(bd_addr_type, bd_addr, 0x0001, 0xffff)
-    attrs = btp.gattc_disc_all_chrc_rsp()
+    handle = btp.parse_handle_description(params.description)
+    if not handle:
+        return False
 
-    for attr in attrs:
-        if attr.prop & Prop.read:
-            btp.gattc_read(bd_addr_type, bd_addr, attr.value_handle)
-            btp.gattc_read_rsp()
-            return True
-
-    return False
+    btp.gattc_read(bd_addr_type, bd_addr, handle)
+    btp.gattc_read_rsp()
+    return True
 
 
 def hdl_wid_114(params: WIDParams):
@@ -1039,20 +1036,17 @@ def hdl_wid_226(_: WIDParams):
     return True
 
 
-def hdl_wid_227(_: WIDParams):
+def hdl_wid_227(params: WIDParams):
     bd_addr = btp.pts_addr_get()
     bd_addr_type = btp.pts_addr_type_get()
 
-    btp.gattc_disc_all_chrc(bd_addr_type, bd_addr, 0x0001, 0xffff)
-    attrs = btp.gattc_disc_all_chrc_rsp()
+    handle = btp.parse_handle_description(params.description)
+    if not handle:
+        return False
 
-    for attr in attrs:
-        if attr.prop & Prop.read:
-            btp.gattc_read(bd_addr_type, bd_addr, attr.value_handle)
-            btp.gattc_read_rsp()
-            return True
-
-    return False
+    btp.gattc_read(bd_addr_type, bd_addr, handle)
+    btp.gattc_read_rsp()
+    return True
 
 
 def hdl_wid_232(_: WIDParams):

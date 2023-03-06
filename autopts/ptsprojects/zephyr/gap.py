@@ -261,12 +261,6 @@ def test_cases(ptses):
                   [TestFunc(lambda: pts.update_pixit_param(
                    "GAP", "TSPX_encryption_before_service_request", "TRUE"))],
                   generic_wid_hdl=gap_wid_hdl),
-        ZTestCase("GAP", "GAP/SEC/AUT/BV-20-C",
-                  cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   TestFunc(btp.gattc_read_rsp, store_val=False,
-                            post_wid=108, skip_call=(1,))],
-                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/AUT/BV-21-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
@@ -283,11 +277,6 @@ def test_cases(ptses):
         ZTestCase("GAP", "GAP/SEC/AUT/BV-24-C",
                   cmds=pre_conditions + init_gatt_db +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=gap_wid_hdl),
-        ZTestCase("GAP", "GAP/SEC/AUT/BV-27-C",
-                  cmds=pre_conditions +
-                  [TestFunc(btp.gattc_read_rsp, store_val=False,
-                            post_wid=112)],
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/CSIGN/BV-01-C",
                   cmds=pre_conditions + init_gatt_db +
