@@ -37,28 +37,6 @@ def gap_wid_hdl(wid, description, test_case_name):
         return gen_wid_hdl(wid, description, test_case_name, False)
 
 
-# For tests that expect "OK" response even if read operation is not successful
-def gap_wid_hdl_failed_read(wid, description, test_case_name):
-    log("%s, %r, %r, %s", gap_wid_hdl.__name__, wid, description,
-        test_case_name)
-
-    if wid == 112:
-        bd_addr = btp.pts_addr_get()
-        bd_addr_type = btp.pts_addr_type_get()
-
-        handle = btp.parse_handle_description(description)
-        if not handle:
-            return False
-
-        try:
-            btp.gattc_read(bd_addr_type, bd_addr, handle)
-            btp.gattc_read_rsp()
-        except socket.timeout:
-            pass
-        return True
-    return gap_wid_hdl(wid, description, test_case_name)
-
-
 # For tests in SC only, mode 1 level 3
 def gap_wid_hdl_mode1_lvl2(wid, description, test_case_name):
     if wid == 139:
@@ -83,20 +61,6 @@ def hdl_wid_73(desc):
 
 
 def hdl_wid_104(desc):
-    return True
-
-
-def hdl_wid_112(desc):
-    bd_addr = btp.pts_addr_get()
-    bd_addr_type = btp.pts_addr_type_get()
-
-    handle = btp.parse_handle_description(desc)
-    if not handle:
-        return False
-
-    btp.gattc_read(bd_addr_type, bd_addr, handle)
-    # PTS doesn't respond to read req if we do not respond to this WID
-    # btp.gattc_read_rsp()
     return True
 
 
