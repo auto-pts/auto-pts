@@ -35,7 +35,7 @@ from time import sleep
 from argparse import Namespace
 from os.path import dirname, abspath
 from autopts.winutils import have_admin_rights
-from tools.cron.common import kill_processes, set_end as set_end_common, set_cron_cfg
+from tools.cron.common import kill_processes, set_end as set_end_common
 
 END = False
 AUTOPTS_REPO=dirname(dirname(dirname(abspath(__file__))))
@@ -88,8 +88,6 @@ if __name__ == '__main__':
         job_dict.update(vars(job))
 
         getattr(schedule.every(), job_dict['day']).at(job_dict['hour']).do(job.func, **job_dict)
-
-    set_cron_cfg(cron_config)
 
     try:
         for cron in cron_config.github_crons:

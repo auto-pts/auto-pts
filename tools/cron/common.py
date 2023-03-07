@@ -55,7 +55,7 @@ if sys.platform == 'win32':
     import wmi
 
 END = False
-CRON_CFG = None
+CRON_CFG = {}
 mimetypes.add_type('text/plain', '.log')
 
 
@@ -77,9 +77,11 @@ def catch_exceptions(cancel_on_failure=False):
                 return job_func(*args, **kwargs)
             except:
                 print(traceback.format_exc())
-                if cancel_on_failure:
+                if 'email' in CRON_CFG:
                     magic_tag = kwargs['magic_tag'] if 'magic_tag' in kwargs else None
-                    send_mail_exception(kwargs['cfg'], traceback.format_exc(), magic_tag)
+                    send_mail_exception(kwargs['cfg'], CRON_CFG['email'], traceback.format_exc(), magic_tag)
+
+                if cancel_on_failure:
                     return schedule.CancelJob
         return __catch_exceptions
     return _catch_exceptions
@@ -120,7 +122,7 @@ def report_to_review_msg(report_path):
     return msg
 
 
-def send_mail_exception(conf_name, exception, magic_tag=None):
+def send_mail_exception(conf_name, email_cfg, exception, magic_tag=None):
     iso_cal = date.today().isocalendar()
     ww_dd_str = 'WW%s.%s' % (iso_cal[1], iso_cal[2])
 
@@ -137,7 +139,7 @@ def send_mail_exception(conf_name, exception, magic_tag=None):
     <p>Exception: {}</p>
     <p>Sincerely,</p>
     <p> {}</p>
-    '''.format(ww_dd_str, job_type_info, conf_name, exception, CRON_CFG.email['name'])
+    '''.format(ww_dd_str, job_type_info, conf_name, exception, email_cfg['name'])
 
     attachments = []
     for file in ['stdout_autoptsbot.log', 'stdout_autoptsserver.log']:
@@ -145,7 +147,7 @@ def send_mail_exception(conf_name, exception, magic_tag=None):
             attachments.append(file)
 
     subject = 'AutoPTS session FAILED - fail logs'
-    send_mail(CRON_CFG.email, subject, body, attachments)
+    send_mail(email_cfg, subject, body, attachments)
 
 
 class GithubCron(Thread):
