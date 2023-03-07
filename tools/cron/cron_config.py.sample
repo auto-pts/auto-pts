@@ -14,7 +14,7 @@
 #
 from argparse import Namespace
 from datetime import timedelta, datetime
-from common import generic_test_job, generic_pr_job, GithubCron
+from common import generic_test_job, generic_pr_job, GithubCron, set_cron_cfg
 
 email = {  # Admin emails that will receive python exceptions and bot logs
     "sender": "john.doe@example.com",
@@ -30,7 +30,10 @@ email = {  # Admin emails that will receive python exceptions and bot logs
 }
 
 
-def default_job_func():
+set_cron_cfg({'email': email})
+
+
+def default_job_func(*args, **kwargs):
     raise Exception('Empty job')
 
 
