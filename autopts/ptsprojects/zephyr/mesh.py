@@ -186,6 +186,7 @@ def test_cases(ptses):
 
     common_pre_conditions = [
         TestFunc(btp.core_reg_svc_gap),
+        TestFunc(btp.core_reg_svc_gatt),
         TestFunc(btp.core_reg_svc_mesh),
         TestFunc(btp.gap_read_ctrl_info),
         TestFunc(lambda: pts.update_pixit_param(
