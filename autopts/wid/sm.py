@@ -36,9 +36,14 @@ def sm_wid_hdl(wid, description, test_case_name, logs=True):
         logging.exception(e)
 
 
-def hdl_wid_100(_: WIDParams):
+def hdl_wid_100(params: WIDParams):
     btp.gap_conn()
-    return get_stack().gap.wait_for_connection(30)
+    get_stack().gap.wait_for_connection(30)
+
+    if params.test_case_name == "SM/CEN/EKS/BV-01-C":
+        btp.gap_pair()
+
+    return True
 
 
 def hdl_wid_101(_: WIDParams):
