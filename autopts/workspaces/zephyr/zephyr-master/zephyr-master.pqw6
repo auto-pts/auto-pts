@@ -1,9 +1,255 @@
-<WORKSPACE_INFORMATION NAME="zephyr-master" CREATED_WITH="Profile Tuning Suite, 8.3.3, 10" BD_ADDR="000000000000" QDID="176842">
+<WORKSPACE_INFORMATION NAME="zephyr-master" CREATED_WITH="Profile Tuning Suite, 8.4.0, 5" BD_ADDR="000000000000" QDID="176842">
   <PROJECTS_INFORMATION>
+    <PROJECT_INFORMATION NAME="AICS" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
+      <PICS>
+        <Name>AICS</Name>
+        <Rows>
+          <Row>
+            <Name>TSPC_AICS_0_1</Name>
+            <Description>Audio Input Control Service 1.0 (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_AICS_1_1</Name>
+            <Description>Service Supported over BR/EDR (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_AICS_1_2</Name>
+            <Description>Service Supported over LE (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_AICS_2_1</Name>
+            <Description>Audio Input State Characteristic (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_AICS_2_2</Name>
+            <Description>Gain Setting Properties Characteristic (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_AICS_2_3</Name>
+            <Description>Audio Input Type Characteristic (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_AICS_2_4</Name>
+            <Description>Audio Input Status Characteristic (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_AICS_2_5</Name>
+            <Description>Audio Input Control Point Characteristic (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_AICS_2_6</Name>
+            <Description>Audio Input Description Characteristic (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_AICS_2_7</Name>
+            <Description>Writeable Audio Input Description Characteristic (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_AICS_2_8</Name>
+            <Description>Notifiable Audio Input Description Characteristic (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_AICS_3_1</Name>
+            <Description>Set Gain Setting (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_AICS_3_2</Name>
+            <Description>Unmute (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_AICS_3_3</Name>
+            <Description>Mute (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_AICS_3_4</Name>
+            <Description>Set Manual Gain Mode (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_AICS_3_5</Name>
+            <Description>Set Automatic Gain Mode (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_AICS_4_1</Name>
+            <Description>Write Characteristic Value (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_AICS_4_2</Name>
+            <Description>Notifications (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_AICS_4_3</Name>
+            <Description>Read Characteristic Descriptors (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_AICS_4_4</Name>
+            <Description>Write Characteristic Descriptors (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_AICS_5_1</Name>
+            <Description>Support for Server Role (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_AICS_5_2</Name>
+            <Description>ServiceClassIDList (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_AICS_5_3</Name>
+            <Description>ProtocolDescriptorList (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_AICS_5_4</Name>
+            <Description>BrowseGroupList (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_ALL</Name>
+            <Description>Enables all test cases when set.</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+        </Rows>
+      </PICS>
+      <PIXIT>
+        <Name>AICS</Name>
+        <Version />
+        <Rows>
+          <Row>
+            <Name>TSPX_bd_addr_iut</Name>
+            <Description>The unique 48-bit Bluetooth device address (BD_ADDR) of the IUT. This was filled in during workspace creation.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>000000000000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_iut_device_name_in_adv_packet_for_random_address</Name>
+            <Description>IUT advertising this local name for the PTS to make connection to. Default is not using it with empty string. (Default: "")</Description>
+            <Type>IA5STRING</Type>
+            <Value />
+          </Row>
+          <Row>
+            <Name>TSPX_time_guard</Name>
+            <Description>The time in milliseconds, to break PTS from waiting for a required event, if time guard is used by the test case. (Default: 180000)</Description>
+            <Type>INTEGER</Type>
+            <Value>180000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_use_implicit_send</Name>
+            <Description>Whether to receive a message via Implicit Send when an action or attention is needed by test operator. (Default: TRUE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>TRUE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_tester_database_file</Name>
+            <Description>Location of SIG database file. (Default: C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_VCS_db.xml)</Description>
+            <Type>IA5STRING</Type>
+            <Value>C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_VCS_db.xml</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_mtu_size</Name>
+            <Description>MTU size. (Default: 23)</Description>
+            <Type>INTEGER</Type>
+            <Value>23</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_secure_simple_pairing_pass_key_confirmation</Name>
+            <Description>Whether to display secure simple pairing pass key confirmation or not. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_delete_link_key</Name>
+            <Description>Whether to delete link key or not. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_pin_code</Name>
+            <Description>Pin code to be used for legacy pairing. (Default: 0000)</Description>
+            <Type>IA5STRING</Type>
+            <Value>0000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_use_dynamic_pin</Name>
+            <Description>Whether to use dynamic pin code entry or not. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_delete_ltk</Name>
+            <Description>Whether to delete Long Term Key or not. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_security_enabled</Name>
+            <Description>Whether to set security for the test suite. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_iut_ATT_transport</Name>
+            <Description>Select a transport which IUT wants to be connected for (Default: ATT Bearer on LE Transport)</Description>
+            <Type>IA5STRING</Type>
+            <Value>ATT Bearer on LE Transport</Value>
+            <ValueList>
+              <ValueListItem>ATT Bearer on LE Transport</ValueListItem>
+              <ValueListItem>ATT Bearer on BR/EDR Transport</ValueListItem>
+              <ValueListItem>EATT Bearer on LE Transport</ValueListItem>
+              <ValueListItem>EATT Bearer on BR/EDR Transport</ValueListItem>
+            </ValueList>
+          </Row>
+        </Rows>
+      </PIXIT>
+    </PROJECT_INFORMATION>
     <PROJECT_INFORMATION NAME="DIS" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
       <PICS>
         <Name>DIS</Name>
-        <Version />
         <Rows>
           <Row>
             <Name>TSPC_DIS_0_1</Name>
@@ -25,7 +271,7 @@
           </Row>
           <Row>
             <Name>TSPC_DIS_1_3</Name>
-            <Description>Service supported over HS (C.1)</Description>
+            <Description>No longer used</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -97,25 +343,25 @@
           </Row>
           <Row>
             <Name>TSPC_DIS_3_1</Name>
-            <Description>Generic Attribute Profile Server (M)</Description>
+            <Description>No longer used</Description>
             <Value>FALSE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DIS_3_2</Name>
+            <Description>GATT Server over BR/EDR (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DIS_3_3</Name>
+            <Description>GATT Server over LE (C.2)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_DIS_4_1</Name>
-            <Description>Support for server role (M)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_DIS_4_2</Name>
-            <Description>ProtocolDescriptorList (M)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_DIS_4_3</Name>
-            <Description>BrowseGroupList (M)</Description>
+            <Description>SDP record present for DIS (M)</Description>
             <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -639,7 +885,7 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_8a_14a</Name>
-            <Description>Advertising Interval – Long (O)</Description>
+            <Description>Advertising Interval - Long (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -659,6 +905,24 @@
             <Name>TSPC_GAP_8a_17</Name>
             <Description>Uniform Resource Identifier (O)</Description>
             <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_8a_18</Name>
+            <Description>LE Supported features (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_8a_19</Name>
+            <Description>Encrypted Data (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_8a_20</Name>
+            <Description>Periodic Advertising Response Timing (O)</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -728,6 +992,18 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_GAP_11a_3</Name>
+            <Description>Periodic Advertising with Responses (C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_11a_4</Name>
+            <Description>Periodic Advertising Connection (C.4)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_GAP_11b_1</Name>
             <Description>LE security mode 3 (C.1)</Description>
             <Value>FALSE</Value>
@@ -785,6 +1061,132 @@
             <Name>TSPC_GAP_14_2</Name>
             <Description>Active scanning (O)</Description>
             <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_14a_1</Name>
+            <Description>Service UUID (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_14a_2</Name>
+            <Description>Local Name (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_14a_3</Name>
+            <Description>Flags (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_14a_4</Name>
+            <Description>Manufacturer Specific Data (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_14a_5</Name>
+            <Description>TX Power Level (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_14a_6</Name>
+            <Description>Security Manager OOB (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_14a_7</Name>
+            <Description>Security Manager TK Value (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_14a_8</Name>
+            <Description>Peripheral Connection Interval Range (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_14a_9</Name>
+            <Description>Service Solicitation (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_14a_10</Name>
+            <Description>Service Data (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_14a_11</Name>
+            <Description>Appearance (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_14a_12</Name>
+            <Description>Public Target Address (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_14a_13</Name>
+            <Description>Random Target Address (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_14a_14</Name>
+            <Description>Advertising Interval (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_14a_14a</Name>
+            <Description>Advertising Interval - Long (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_14a_15</Name>
+            <Description>LE Bluetooth Device Address (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_14a_16</Name>
+            <Description>LE Role (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_14a_17</Name>
+            <Description>Uniform Resource Identifier (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_14a_18</Name>
+            <Description>LE Supported features (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_14a_19</Name>
+            <Description>Encrypted Data (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_14a_20</Name>
+            <Description>Periodic Advertising Response Timing (O)</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -850,6 +1252,12 @@
           <Row>
             <Name>TSPC_GAP_17a_2</Name>
             <Description>Periodic Advertising Synchronization Establishment procedure with listening for periodic advertising (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_17a_3</Name>
+            <Description>Periodic Advertising Connection (C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -1035,7 +1443,7 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_20a_14a</Name>
-            <Description>Advertising Interval – Long (C.1)</Description>
+            <Description>Advertising Interval - Long (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -1055,6 +1463,24 @@
             <Name>TSPC_GAP_20a_17</Name>
             <Description>Uniform Resource Identifier (O)</Description>
             <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_20a_18</Name>
+            <Description>LE Supported features (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_20a_19</Name>
+            <Description>Encrypted Data (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_20a_20</Name>
+            <Description>Periodic Advertising Response Timing (C.4)</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1215,7 +1641,7 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_24_3</Name>
-            <Description>Bonding procedure (O)</Description>
+            <Description>Bonding procedure (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -1251,13 +1677,13 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_25_5</Name>
-            <Description>Connection data signing procedure (O)</Description>
+            <Description>Connection data signing procedure (C.6)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_25_6</Name>
-            <Description>Authenticate signed data procedure (O)</Description>
+            <Description>Authenticate signed data procedure (C.6)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -1275,7 +1701,7 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_25_9</Name>
-            <Description>LE security mode 1 level 4 (C.3)</Description>
+            <Description>LE security mode 1 level 4 (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -1364,6 +1790,18 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_GAP_27_10</Name>
+            <Description>Encrypted Data Key Material (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_27_11</Name>
+            <Description>LE GATT Security Levels (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_GAP_27a_1</Name>
             <Description>Periodic Advertising Synchronization Transfer procedure (C.1)</Description>
             <Value>FALSE</Value>
@@ -1379,6 +1817,54 @@
             <Name>TSPC_GAP_27a_3</Name>
             <Description>Periodic Advertising Synchronization Establishment procedure over an LE connection with listening for periodic advertising (C.3)</Description>
             <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_27b_1</Name>
+            <Description>Peripheral Role (Responder) (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_27b_2</Name>
+            <Description>Authenticated MITM protection (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_27b_3</Name>
+            <Description>Unauthenticated no MITM protection (C.2)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_27b_4</Name>
+            <Description>No security requirements (C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_27b_5</Name>
+            <Description>LE Secure Connections (C.4)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_27b_6</Name>
+            <Description>Encryption Key (C.5)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_27b_7</Name>
+            <Description>Identity Key (C.6)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_27b_8</Name>
+            <Description>Signing Key (C.7)</Description>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1427,6 +1913,132 @@
             <Name>TSPC_GAP_30_2</Name>
             <Description>Active scanning (C.1)</Description>
             <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_30a_1</Name>
+            <Description>Service UUID (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_30a_2</Name>
+            <Description>Local Name (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_30a_3</Name>
+            <Description>Flags (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_30a_4</Name>
+            <Description>Manufacturer Specific Data (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_30a_5</Name>
+            <Description>TX Power Level (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_30a_6</Name>
+            <Description>Security Manager OOB (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_30a_7</Name>
+            <Description>Security Manager TK Value (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_30a_8</Name>
+            <Description>Peripheral Connection Interval Range (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_30a_9</Name>
+            <Description>Service Solicitation (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_30a_10</Name>
+            <Description>Service Data (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_30a_11</Name>
+            <Description>Appearance (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_30a_12</Name>
+            <Description>Public Target Address (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_30a_13</Name>
+            <Description>Random Target Address (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_30a_14</Name>
+            <Description>Advertising Interval (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_30a_14a</Name>
+            <Description>Advertising Interval - Long (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_30a_15</Name>
+            <Description>LE Bluetooth Device Address (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_30a_16</Name>
+            <Description>LE Role (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_30a_17</Name>
+            <Description>Uniform Resource Identifier (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_30a_18</Name>
+            <Description>LE Supported features (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_30a_19</Name>
+            <Description>Encrypted Data (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_30a_20</Name>
+            <Description>Periodic Advertising Response Timing (O)</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1587,7 +2199,7 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_34_3</Name>
-            <Description>Bonding procedure (O)</Description>
+            <Description>Bonding procedure (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -1612,7 +2224,7 @@
           <Row>
             <Name>TSPC_GAP_35_4</Name>
             <Description>Authorization procedure (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1641,7 +2253,7 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_35_9</Name>
-            <Description>LE security mode 1 level 4 (C.2)</Description>
+            <Description>LE security mode 1 level 4 (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -1667,6 +2279,12 @@
             <Name>TSPC_GAP_35_13</Name>
             <Description>Minimum 128 Bit entropy key (C.4)</Description>
             <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_35_14</Name>
+            <Description>Encrypted Advertising Data Procedure (O)</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1712,6 +2330,12 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_GAP_37_4</Name>
+            <Description>LE GATT Security Levels (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_GAP_37a_1</Name>
             <Description>Periodic Advertising Synchronization Transfer procedure (C.1)</Description>
             <Value>FALSE</Value>
@@ -1727,6 +2351,54 @@
             <Name>TSPC_GAP_37a_3</Name>
             <Description>Periodic Advertising Synchronization Establishment procedure over an LE connection with listening for periodic advertising (C.3)</Description>
             <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_37b_1</Name>
+            <Description>Central Role (Initiator) (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_37b_2</Name>
+            <Description>Authenticated MITM protection (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_37b_3</Name>
+            <Description>Unauthenticated no MITM protection (C.2)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_37b_4</Name>
+            <Description>No security requirements (C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_37b_5</Name>
+            <Description>LE Secure Connections (C.4)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_37b_6</Name>
+            <Description>Encryption Key (C.5)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_37b_7</Name>
+            <Description>Identity Key (C.6)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_37b_8</Name>
+            <Description>Signing Key (C.7)</Description>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1761,13 +2433,13 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_41_2a</Name>
-            <Description>Derivation of BR/EDR Link Key from LE LTK (C.1)</Description>
+            <Description>Derivation of BR/EDR Link Key from LE LTK (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_41_2b</Name>
-            <Description>Derivation of LE LTK from BR/EDR Link Key (C.2)</Description>
+            <Description>Derivation of LE LTK from BR/EDR Link Key (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -1779,13 +2451,13 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_43_2a</Name>
-            <Description>Derivation of BR/EDR Link Key from LE LTK (C.1)</Description>
+            <Description>Derivation of BR/EDR Link Key from LE LTK (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_43_2b</Name>
-            <Description>Derivation of LE LTK from BR/EDR Link Key (C.2)</Description>
+            <Description>Derivation of LE LTK from BR/EDR Link Key (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -1916,9 +2588,9 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_L2CAP_2_48</Name>
-            <Description>Enhanced Credit Based Flow Control Mode (O)</Description>
-            <Value>TRUE</Value>
+            <Name>TSPC_L2CAP_2_48a</Name>
+            <Description>Enhanced Credit Based Flow Control Mode - BR/EDR (O)</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -2104,8 +2776,8 @@
           <Row>
             <Name>TSPX_spsm</Name>
             <Description>PSM to be used by PTS when establishing credit based L2CAP connection(for K-frame). (Default: 0027)</Description>
-            <Value>0027</Value>
             <Type>OCTETSTRING</Type>
+            <Value>0027</Value>
           </Row>
           <Row>
             <Name>TSPX_iut_valid_connection_interval_min</Name>
@@ -2324,8 +2996,8 @@
           <Row>
             <Name>TSPX_Use_IXIT_TSPX_spsm</Name>
             <Description>Determine whether to use TSPX_spsm or MMI prompt for SPSM. (Default: FALSE)</Description>
-            <Value>FALSE</Value>
             <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
           </Row>
           <Row>
             <Name>TSPX_Use_GATT</Name>
@@ -2333,29 +3005,29 @@
             <Type>BOOLEAN</Type>
             <Value>TRUE</Value>
           </Row>
-          <!--<Row>
-      <Name>TSPX_ead_keys_sharing_method</Name>
-      <Type>IA5STRING</Type>
-      <Description>EAD test case key sharing method options. This is only used for EAD test cases. If KEYS_SHARED_VIA_IXIT is chosen, TSPX_encrypted_data_key and TSPX_initialization_vector will be used.</Description>
-      <Type>OCTETSTRING</Type>
-      <Value>KEYS_EXCHANGED_VIA_CONNECTION</Value>
-      <ValueList>
-        <ValueListItem>KEYS_EXCHANGED_VIA_CONNECTION</ValueListItem>
-        <ValueListItem>KEYS_SHARED_VIA_IXIT</ValueListItem>
-      </ValueList>
-    </Row>
-    <Row>
-      <Name>TSPX_encrypted_data_key</Name>
-      <Description>Encrypted Data Key as BIG Endian. This IXIT is only used for SCN test case (16 bytes)</Description>
-      <Type>OCTETSTRING</Type>
-      <Value>57A9DA12D12E6E131E20612AD10A6A19</Value>
-    </Row>
-    <Row>
-      <Name>TSPX_initialization_vector</Name>
-      <Description>Encrypted Data IV as BIG Endian. This IXIT is only used for SCN test case  (8 bytes)</Description>
-      <Type>OCTETSTRING</Type>
-      <Value>46E77AB1EF007A9E</Value>
-    </Row>-->
+          <Row>
+            <Name>TSPX_ead_keys_sharing_method</Name>
+            <Type>IA5STRING</Type>
+            <Description>EAD test case key sharing method options. This is only used for EAD test cases. If KEYS_SHARED_VIA_IXIT is chosen, TSPX_encrypted_data_key and TSPX_initialization_vector will be used.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>KEYS_EXCHANGED_VIA_CONNECTION</Value>
+            <ValueList>
+              <ValueListItem>KEYS_EXCHANGED_VIA_CONNECTION</ValueListItem>
+              <ValueListItem>KEYS_SHARED_VIA_IXIT</ValueListItem>
+            </ValueList>
+          </Row>
+          <Row>
+            <Name>TSPX_encrypted_data_key</Name>
+            <Description>Encrypted Data Key as BIG Endian. This IXIT is only used for SCN test case (16 bytes)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>57A9DA12D12E6E131E20612AD10A6A19</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_initialization_vector</Name>
+            <Description>Encrypted Data IV as BIG Endian. This IXIT is only used for SCN test case  (8 bytes)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>46E77AB1EF007A9E</Value>
+          </Row>
         </Rows>
       </PIXIT>
     </PROJECT_INFORMATION>
@@ -2372,7 +3044,7 @@
           </Row>
           <Row>
             <Name>TSPC_GATT_1_2</Name>
-            <Description>Generic Attribute Profile (GATT) Server (C.2)</Description>
+            <Description>Generic Attribute Profile (GATT) Server (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -2384,50 +3056,62 @@
           </Row>
           <Row>
             <Name>TSPC_GATT_1a_2</Name>
-            <Description>GATT Client over BR/EDR (C.2)</Description>
+            <Description>GATT Client over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_1a_3</Name>
-            <Description>GATT Server over LE (C.3)</Description>
+            <Description>GATT Server over LE (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_1a_4</Name>
-            <Description>GATT Server over BR/EDR (C.4)</Description>
+            <Description>GATT Server over BR/EDR (C.2)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_2_1</Name>
-            <Description>Attribute Protocol Supported over BR/EDR (L2CAP fixed channel support) (C.1)</Description>
+            <Description>Unenhanced ATT bearer over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_2_2</Name>
-            <Description>Attribute Protocol Supported over LE (C.2)</Description>
+            <Description>Unenhanced ATT bearer over LE (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_2_3</Name>
-            <Description>Enhanced ATT bearer Attribute Protocol Supported (L2CAP fixed EATT PSM supported) (C.3)</Description>
-            <Value>TRUE</Value>
+            <Description>No longer used</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_2_3a</Name>
-            <Description>Enhanced ATT bearer supported over LE (C.4)</Description>
+            <Description>Enhanced ATT bearer over LE (C.4, C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_2_3b</Name>
-            <Description>Enhanced ATT bearer supported over BR/EDR (C.5)</Description>
+            <Description>Enhanced ATT bearer over BR/EDR (C.1, C.3)</Description>
             <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_2_4</Name>
+            <Description>Attribute Protocol Client (C.6)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_2_5</Name>
+            <Description>Attribute Protocol Server (C.7)</Description>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -2456,7 +3140,7 @@
           </Row>
           <Row>
             <Name>TSPC_GATT_3_5</Name>
-            <Description>Discover All characteristics of a Service (O)</Description>
+            <Description>Discover All Characteristics of a Service (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -2607,6 +3291,18 @@
           <Row>
             <Name>TSPC_GATT_3_30</Name>
             <Description>Multiple Variable Length Notifications (C.10)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_3a_1</Name>
+            <Description>Peripheral (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_3a_2</Name>
+            <Description>Central (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -2797,56 +3493,74 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_GATT_4a_1</Name>
+            <Description>Peripheral (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_4a_2</Name>
+            <Description>Central (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_GATT_6_2</Name>
-            <Description>Discover GATT Services using Service Discovery Profile (C.1)</Description>
+            <Description>Client (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_6_3</Name>
-            <Description>Publish SDP record for GATT services support via BR/EDR (C.2)</Description>
+            <Description>Server (C.2)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GATT_7_1</Name>
-            <Description>Security Mode 4 (C.1)</Description>
+            <Name>TSPC_GATT_6_4</Name>
+            <Description>ProtocolDescriptorList (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_6_5</Name>
+            <Description>BrowseGroupList (C.2)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_7_2</Name>
-            <Description>LE Security Mode 1 (C.5)</Description>
+            <Description>LE security Mode 1 (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_7_3</Name>
-            <Description>LE Security Mode 2 (C.6)</Description>
+            <Description>LE security Mode 2 (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_7_4</Name>
-            <Description>LE Authentication Procedure (C.4)</Description>
+            <Description>Authentication Procedure (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_7_5</Name>
-            <Description>LE connection data signing procedure (C.2)</Description>
+            <Description>Connection data signing procedure (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_7_6</Name>
-            <Description>LE Authenticate signed data procedure (C.2)</Description>
+            <Description>Authenticate signed data procedure (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_7_7</Name>
-            <Description>LE Authorization Procedure (C.3)</Description>
+            <Description>Authorization Procedure (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -2895,6 +3609,168 @@
           <Row>
             <Name>TSPC_GATT_8_8</Name>
             <Description>Support for multiple simultaneous active EATT bearers from same device – EATT over LE (C.7)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_9_1</Name>
+            <Description>Exchange MTU Request (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_9_2</Name>
+            <Description>Find Information Request (C.2)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_9_3</Name>
+            <Description>Find by Type Value Request (C.3)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_9_4</Name>
+            <Description>Read by Type Request (C.4)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_9_5</Name>
+            <Description>Read Request (C.5)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_9_6</Name>
+            <Description>Read Blob Request (C.6)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_9_7</Name>
+            <Description>Read Multiple Request (C.7)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_9_8</Name>
+            <Description>Write Request (C.8)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_9_9</Name>
+            <Description>Write Command (C.9)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_9_10</Name>
+            <Description>Signed Write Command (C.10)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_9_11</Name>
+            <Description>Prepare Write Request (C.11)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_9_12</Name>
+            <Description>Handle Value Notification (C.12)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_9_13</Name>
+            <Description>Handle-Value Indication (C.13)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_9_14</Name>
+            <Description>Read Multiple Variable Length Request (C.14)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_9_15</Name>
+            <Description>Handle Value Multiple Notification (C.15)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_10_1</Name>
+            <Description>Exchange MTU Request (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_10_2</Name>
+            <Description>Read Blob Request (C.2)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_10_3</Name>
+            <Description>Read Multiple Request (C.3)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_10_4</Name>
+            <Description>Write Request (C.4)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_10_5</Name>
+            <Description>Write Command (C.5)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_10_6</Name>
+            <Description>Signed Write Command (C.6)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_10_7</Name>
+            <Description>Prepare Write Request (C.7)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_10_8</Name>
+            <Description>Handle Value Notification (C.8)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_10_9</Name>
+            <Description>Handle-Value Indication (C.9)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_10_10</Name>
+            <Description>Execute Write Request with no pending prepared write values (C.10)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_10_11</Name>
+            <Description>Read Multiple Variable Length Request (C.11)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_10_12</Name>
+            <Description>Handle Value Multiple Notification (C.12)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -3097,6 +3973,181 @@
               <ValueListItem>ATT</ValueListItem>
               <ValueListItem>EATT</ValueListItem>
             </ValueList>
+          </Row>
+        </Rows>
+      </PIXIT>
+    </PROJECT_INFORMATION>
+    <PROJECT_INFORMATION NAME="IAS" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
+      <PICS>
+        <Name>IAS</Name>
+        <Rows>
+          <Row>
+            <Name>TSPC_ALL</Name>
+            <Description>Enables all test cases when set.</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IAS_0_1</Name>
+            <Description>IAS v1.0 (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IAS_1_1</Name>
+            <Description>Service supported over BR/EDR (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IAS_1_2</Name>
+            <Description>Service supported over LE (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IAS_2_1</Name>
+            <Description>Immediate Alert Service (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IAS_2_2</Name>
+            <Description>Alert Level Characteristic (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IAS_2_3</Name>
+            <Description>Alert Level Characteristic, Write without Response (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IAS_2_4</Name>
+            <Description>Writing Alert Level Behavior (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IAS_2_5</Name>
+            <Description>Item no longer used</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IAS_3_1</Name>
+            <Description>Generic Attribute Profile (GATT) Server (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IAS_3_2</Name>
+            <Description>Write without Response (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_5_3</Name>
+            <Description>Peripheral</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_5_4</Name>
+            <Description>Central</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+        </Rows>
+      </PICS>
+      <PIXIT>
+        <Name>IAS</Name>
+        <Version />
+        <Rows>
+          <Row>
+            <Name>TSPX_bd_addr_iut</Name>
+            <Description>The unique 48-bit Bluetooth device address (BD_ADDR) of the IUT. This was filled in during workspace creation.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>000000000000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_iut_device_name_in_adv_packet_for_random_address</Name>
+            <Description>IUT advertising this local name for the PTS to make connection to. Default is not using it with empty string. (Default: "")</Description>
+            <Type>IA5STRING</Type>
+            <Value />
+          </Row>
+          <Row>
+            <Name>TSPX_time_guard</Name>
+            <Description>The time in milliseconds, to break PTS from waiting for a required event, if time guard is used by the test case. (Default: 180000)</Description>
+            <Type>INTEGER</Type>
+            <Value>180000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_use_implicit_send</Name>
+            <Description>Whether to receive a message via Implicit Send when an action or attention is needed by test operator. (Default: TRUE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>TRUE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_tester_database_file</Name>
+            <Description>Location of SIG database file. (Default: C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_PXP_db.xml)</Description>
+            <Type>IA5STRING</Type>
+            <Value>C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_PXP_db.xml</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_mtu_size</Name>
+            <Description>MTU size</Description>
+            <Type>INTEGER</Type>
+            <Value>23</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_secure_simple_pairing_pass_key_confirmation</Name>
+            <Description>Whether to display secure simple pairing pass key confirmation or not. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_delete_link_key</Name>
+            <Description>Whether to delete link key or not. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_pin_code</Name>
+            <Description>Pin code to be used for legacy pairing. (Default: 0000)</Description>
+            <Type>IA5STRING</Type>
+            <Value>0000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_use_dynamic_pin</Name>
+            <Description>Whether to use dynamic pin code entry or not. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_delete_ltk</Name>
+            <Description>Whether to delete Long Term Key or not. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_security_enabled</Name>
+            <Description>Whether to set security for the test suite. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_iut_setup_att_over_br_edr</Name>
+            <Description>IUT can optionally test ATT over BR/EDR connection when this flag is set when applicable. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_tester_appearance</Name>
+            <Description>The 16-bit tester appearance value. PTS will advertise using this value when in peripheral role.(Default: 0000)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>0000</Value>
           </Row>
         </Rows>
       </PIXIT>
@@ -4112,7 +5163,19 @@
           <Row>
             <Name>TSPC_GATT_2_3</Name>
             <Description>Enhanced ATT bearer Attribute Protocol Supported (L2CAP fixed EATT PSM supported) (C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_2_3a</Name>
+            <Description>Enhanced ATT bearer over LE (C.4, C.3)</Description>
             <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_2_3b</Name>
+            <Description>Enhanced ATT bearer over BR/EDR (C.1, C.3)</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4142,8 +5205,8 @@
           <Row>
             <Name>TSPX_iut_device_name_in_adv_packet_for_random_address</Name>
             <Description>IUT advertising this local name for the PTS to make connection to. Default is not using it with empty string. (Default: "")</Description>
-            <Value />
             <Type>IA5STRING</Type>
+            <Value />
           </Row>
           <Row>
             <Name>TSPX_client_class_of_device</Name>
@@ -4453,27 +5516,27 @@
           </Row>
           <Row>
             <Name>TSPX_l2ca_cbmps_min</Name>
-            <Description>Minimum Credit Based MPS size. (Default: 0040)</Description>
+            <Description>Minimum Credit Based MPS size. (Default: 00C0)</Description>
             <Type>OCTETSTRING</Type>
-            <Value>0040</Value>
+            <Value>00C0</Value>
           </Row>
           <Row>
             <Name>TSPX_l2ca_cbmps_max</Name>
-            <Description>Maximum Credit Based MPS size. (Default: 0100)</Description>
+            <Description>Maximum Credit Based MPS size. (Default: 00C0)</Description>
             <Type>OCTETSTRING</Type>
-            <Value>0100</Value>
+            <Value>00C0</Value>
           </Row>
           <Row>
             <Name>TSPX_l2ca_cbmtu_min</Name>
-            <Description>Minimum MTU size that the IUT is able to accept on L2CAP Credit Based channels. (Default: 0040)</Description>
+            <Description>Minimum MTU size that the IUT is able to accept on L2CAP Credit Based channels. (Default: 00C0)</Description>
             <Type>OCTETSTRING</Type>
-            <Value>0040</Value>
+            <Value>00C0</Value>
           </Row>
           <Row>
             <Name>TSPX_l2ca_cbmtu_max</Name>
-            <Description>Maximum MTU size that the IUT is able to accept on L2CAP Credit Based channels. (Default: 0100)</Description>
+            <Description>Maximum MTU size that the IUT is able to accept on L2CAP Credit Based channels. (Default: 00C0)</Description>
             <Type>OCTETSTRING</Type>
-            <Value>0100</Value>
+            <Value>00C0</Value>
           </Row>
           <Row>
             <Name>TSPX_Min_Encryption_Key_Length</Name>
@@ -4792,13 +5855,13 @@
           <Row>
             <Name>TSPC_MESH_12_5</Name>
             <Description>Proxy Client (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_12_6</Name>
             <Description>Generic Attribute Profile (GATT) Client (C.4)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <!-- Table 13: Mesh GATT Services -->
@@ -4849,31 +5912,31 @@
           <Row>
             <Name>TSPC_MESH_15_1</Name>
             <Description>Discover All Primary Services (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_15_2</Name>
             <Description>Discover Primary Services by Service UUID (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_15_3</Name>
             <Description>Write without Response (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_15_4</Name>
             <Description>Notifications (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_15_5</Name>
             <Description>Write Characteristic Descriptors (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <!-- Table 16: GAP Requirements -->
@@ -4904,13 +5967,13 @@
           <Row>
             <Name>TSPC_MESH_16_5</Name>
             <Description>Central (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_16_6</Name>
             <Description>Authorization Procedure (Central) (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <!-- Table 17: Provisioner - Bearers -->
@@ -4923,7 +5986,7 @@
           <Row>
             <Name>TSPC_MESH_17_2</Name>
             <Description>GATT Bearer (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <!-- Table 18: Provisioner - Provisioning -->
@@ -4954,13 +6017,13 @@
           <Row>
             <Name>TSPC_MESH_18_5</Name>
             <Description>PB-GATT (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_18_6</Name>
             <Description>Generic Attribute Profile (GATT) Client (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -5010,31 +6073,31 @@
           <Row>
             <Name>TSPC_MESH_20_1</Name>
             <Description>Discover All Primary Services (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_20_2</Name>
             <Description>Discover Primary Services by Service UUID (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_20_3</Name>
             <Description>Write without Response (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_20_4</Name>
             <Description>Notifications (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_20_5</Name>
             <Description>Write Characteristic Descriptors (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <!-- Table 21: GAP Requirements -->
@@ -5053,13 +6116,13 @@
           <Row>
             <Name>TSPC_MESH_21_3</Name>
             <Description>Central (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_21_4</Name>
             <Description>Authorization Procedure (Central) (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -5192,13 +6255,13 @@
             <Name>TSPX_device_public_key</Name>
             <Description>IUT uses this public key for node. If the entry is invalid, an MMI will pop up to ask for a valid public key.(Default: F465E43FF23D3F1B9DC7DFC04DA8758184DBC966204796ECCF0D6CF5E16500CC0201D048BCBBD899EEEFC424164E33C201C2B010CA6B4D43A8A155CAD8ECB279)</Description>
             <Type>OCTETSTRING</Type>
-            <Value>F465E43FF23D3F1B9DC7DFC04DA8758184DBC966204796ECCF0D6CF5E16500CC0201D048BCBBD899EEEFC424164E33C201C2B010CA6B4D43A8A155CAD8ECB279</Value>
+            <Value>5B2AD8B034D80743536E7F1B2354FE0869F50E8F085BEA047119590F4E74AC67F0151EFBC531FBAB2673B1D1ADF78931F400D950E466D026FC2E7D090E2A1A0C</Value>
           </Row>
           <Row>
             <Name>TSPX_device_private_key</Name>
             <Description>IUT uses this private key for node. (Default: 529aa0670d72cd6497502ed473502b037e8803b5c60829a5a3caa219505530ba)</Description>
             <Type>OCTETSTRING</Type>
-            <Value>529aa0670d72cd6497502ed473502b037e8803b5c60829a5a3caa219505530ba</Value>
+            <Value>A60179DE5010F30CD8B8B173E2A7F945724D3AEF43A411909920FFF8108EED00</Value>
           </Row>
           <Row>
             <Name>TSPX_use_pb_gatt_bearer</Name>
@@ -5350,6 +6413,331 @@
             <Type>IA5STRING</Type>
             <Value>0004,8216020101,82180201,820301010101</Value>
           </Row>
+          <Row>
+            <Name>TSPX_Beacon_Observation_Period</Name>
+            <Description>Observation Period used to determine the Beacon Interval in seconds.(Default: 10)</Description>
+            <Type>INTEGER</Type>
+            <Value>10</Value>
+          </Row>
+        </Rows>
+      </PIXIT>
+    </PROJECT_INFORMATION>
+    <PROJECT_INFORMATION NAME="PACS" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
+      <PICS>
+        <Name>PACS</Name>
+        <Rows>
+          <Row>
+            <Name>TSPC_PACS_0_1</Name>
+            <Description>Published Audio Capabilities Service v1.0 (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_1_1</Name>
+            <Description>Published Audio Capabilities Service v1.0.1 (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_2_1</Name>
+            <Description>Service supported over BR/EDR (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_2_2</Name>
+            <Description>Service supported over LE (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_3_1</Name>
+            <Description>Sink PAC Characteristic (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_3_2</Name>
+            <Description>Sink Audio Locations Characteristic (C.2)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_3_3</Name>
+            <Description>Source PAC Characteristic (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_3_4</Name>
+            <Description>Source Audio Locations Characteristic (C.3)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_3_5</Name>
+            <Description>Available Audio Contexts Characteristic (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_3_6</Name>
+            <Description>Supported Audio Contexts Characteristic (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_4_1</Name>
+            <Description>Changeable Sink PAC Characteristic (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_4_2</Name>
+            <Description>Notifiable Sink PAC Characteristic (C.2)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_4_3</Name>
+            <Description>Changeable Sink Audio Locations Characteristic (C.3)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_4_4</Name>
+            <Description>Autonomous Sink Audio Locations Changes (C.4)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_4_5</Name>
+            <Description>Writable Sink Audio Locations Characteristic (C.4)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_4_6</Name>
+            <Description>Notifiable Sink Audio Locations Characteristic (C.5)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_4_7</Name>
+            <Description>Changeable Source PAC Characteristic (C.6)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_4_8</Name>
+            <Description>Notifiable Source PAC Characteristic (C.7)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_4_9</Name>
+            <Description>Changeable Source Audio Locations Characteristic (C.8)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_4_10</Name>
+            <Description>Autonomous Source Audio Locations Changes (C.9)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_4_11</Name>
+            <Description>Writable Source Audio Locations Characteristic (C.9)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_4_12</Name>
+            <Description>Notifiable Source Audio Locations Characteristic (C.10)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_4_13</Name>
+            <Description>Changeable Available Audio Contexts Characteristic (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_4_14</Name>
+            <Description>Notifiable Available Audio Contexts Characteristic (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_4_15</Name>
+            <Description>Changeable Supported Audio Contexts Characteristic (C.11)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_4_16</Name>
+            <Description>Notifiable Supported Audio Contexts Characteristic (C.12)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_5_1</Name>
+            <Description>Bondable mode (LE) (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_5_2</Name>
+            <Description>Bondable mode (BR/EDR) (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_6_1</Name>
+            <Description>Read Characteristic Descriptors (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_6_2</Name>
+            <Description>Write Characteristic Descriptors (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_6_3</Name>
+            <Description>Notifications (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_6_4</Name>
+            <Description>Write Characteristic Value (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_6_5</Name>
+            <Description>Enhanced ATT bearer Attribute Protocol Supported (L2CAP fixed EATT PSM supported) (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_7_1</Name>
+            <Description>Support for Server role (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_7_2</Name>
+            <Description>ServiceClassIDList (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_7_3</Name>
+            <Description>ProtocolDescriptorList (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_7_4</Name>
+            <Description>AdditionalProtocolDescriptorList (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_PACS_7_5</Name>
+            <Description>BrowseGroupList (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_ALL</Name>
+            <Description>Enables all test cases when set.</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+        </Rows>
+      </PICS>
+      <PIXIT>
+        <Name>PACS</Name>
+        <Version />
+        <Rows>
+          <Row>
+            <Name>TSPX_bd_addr_iut</Name>
+            <Description>The unique 48-bit Bluetooth device address (BD_ADDR) of the IUT. This was filled in during workspace creation.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>000000000000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_iut_device_name_in_adv_packet_for_random_address</Name>
+            <Description>IUT advertising this local name for the PTS to make connection to. Default is not using it with empty string. (Default: "")</Description>
+            <Type>IA5STRING</Type>
+            <Value />
+          </Row>
+          <Row>
+            <Name>TSPX_time_guard</Name>
+            <Description>The time in milliseconds, to break PTS from waiting for a required event, if time guard is used by the test case. (Default: 180000)</Description>
+            <Type>INTEGER</Type>
+            <Value>180000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_use_implicit_send</Name>
+            <Description>Whether to receive a message via Implicit Send when an action or attention is needed by test operator. (Default: TRUE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>TRUE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_tester_database_file</Name>
+            <Description>Location of SIG database file. (Default: C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_PACS_db.xml)</Description>
+            <Type>IA5STRING</Type>
+            <Value>C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_PACS_db.xml</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_mtu_size</Name>
+            <Description>MTU size. (Default: 64)</Description>
+            <Type>INTEGER</Type>
+            <Value>64</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_secure_simple_pairing_pass_key_confirmation</Name>
+            <Description>Whether to display secure simple pairing pass key confirmation or not. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_delete_link_key</Name>
+            <Description>Whether to delete link key or not. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_delete_ltk</Name>
+            <Description>Whether to delete Long Term Key or not. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_security_enabled</Name>
+            <Description>Whether to set security for the test suite. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_iut_ATT_transport</Name>
+            <Description>Select a transport which IUT wants to be connected for (Default: ATT Bearer on LE Transport)</Description>
+            <Type>IA5STRING</Type>
+            <Value>ATT Bearer on LE Transport</Value>
+            <ValueList>
+              <ValueListItem>ATT Bearer on LE Transport</ValueListItem>
+              <ValueListItem>ATT Bearer on BR/EDR Transport</ValueListItem>
+              <ValueListItem>EATT Bearer on LE Transport</ValueListItem>
+              <ValueListItem>EATT Bearer on BR/EDR Transport</ValueListItem>
+            </ValueList>
+          </Row>
         </Rows>
       </PIXIT>
     </PROJECT_INFORMATION>
@@ -5366,7 +6754,7 @@
           </Row>
           <Row>
             <Name>TSPC_SM_1_2</Name>
-            <Description>Role : Peripheral Role (Responder) (C.2)</Description>
+            <Description>Role : Peripheral Role (Responder) (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -5450,13 +6838,7 @@
           </Row>
           <Row>
             <Name>TSPC_SM_5_5</Name>
-            <Description>CT2 bit and Link Key Conversion Function h7 (C.4)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_SM_5_6</Name>
-            <Description>Link Key Conversion Function h6 (C.5)</Description>
+            <Description>CT2 bit (C.4)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -5473,37 +6855,73 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_SM_7_1</Name>
-            <Description>Encryption Key (C.1)</Description>
+            <Name>TSPC_SM_7a_1</Name>
+            <Description>Encryption Key (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_SM_7_2</Name>
-            <Description>Identity Key (C.2)</Description>
+            <Name>TSPC_SM_7a_2</Name>
+            <Description>Identity Key (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_SM_7_3</Name>
-            <Description>Signing Key (C.3)</Description>
+            <Name>TSPC_SM_7a_3</Name>
+            <Description>Signing Key (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_SM_8_1</Name>
+            <Name>TSPC_SM_7b_1</Name>
+            <Description>Encryption Key (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SM_7b_2</Name>
+            <Description>Identity Key (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SM_7b_3</Name>
+            <Description>Signing Key (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SM_8a_1</Name>
             <Description>Cross Transport Key Derivation Supported (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_SM_8_2</Name>
+            <Name>TSPC_SM_8a_2</Name>
             <Description>Derivation of LE LTK from BR/EDR Link Key (C.2)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_SM_8_3</Name>
+            <Name>TSPC_SM_8a_3</Name>
+            <Description>Derivation of BR/EDR Link Key from LE LTK (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SM_8b_1</Name>
+            <Description>Cross Transport Key Derivation Supported (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SM_8b_2</Name>
+            <Description>Derivation of LE LTK from BR/EDR Link Key (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SM_8b_3</Name>
             <Description>Derivation of BR/EDR Link Key from LE LTK (C.2)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
@@ -5668,7 +7086,7 @@
           <Row>
             <Name>TSPC_VCS_2_4</Name>
             <Description>Volume Flags Characteristic Notification (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -5740,25 +7158,25 @@
           <Row>
             <Name>TSPC_VCS_5_1</Name>
             <Description>Support for Server Role (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_VCS_5_2</Name>
             <Description>ServiceClassIDList (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_VCS_5_3</Name>
             <Description>ProtocolDescriptorList (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_VCS_5_4</Name>
             <Description>BrowseGroupList (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -5777,13 +7195,13 @@
             <Name>TSPX_bd_addr_iut</Name>
             <Description>The unique 48-bit Bluetooth device address (BD_ADDR) of the IUT. This was filled in during workspace creation.</Description>
             <Type>OCTETSTRING</Type>
-            <Value>39C58214CAC4</Value>
+            <Value>000000000000</Value>
           </Row>
           <Row>
             <Name>TSPX_iut_device_name_in_adv_packet_for_random_address</Name>
             <Description>IUT advertising this local name for the PTS to make connection to. Default is not using it with empty string. (Default: "")</Description>
             <Type>IA5STRING</Type>
-            <Value>tester</Value>
+            <Value />
           </Row>
           <Row>
             <Name>TSPX_time_guard</Name>
@@ -5864,423 +7282,6 @@
             <ValueListItem>EATT Bearer on BR/EDR Transport</ValueListItem>
           </ValueList>
         </Row>
-      </PIXIT>
-    </PROJECT_INFORMATION>
-    <PROJECT_INFORMATION NAME="IAS" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
-      <PICS>
-        <Name>IAS</Name>
-        <Version />
-        <Rows>
-          <Row>
-            <Name>TSPC_ALL</Name>
-            <Description>Enables all test cases when set.</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_IAS_0_1</Name>
-            <Description>IAS v1.0 (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_IAS_1_1</Name>
-            <Description>Service supported over -BR/EDR - (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_IAS_1_2</Name>
-            <Description>Service supported over LE (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_IAS_2_1</Name>
-            <Description>Immediate Alert Service (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_IAS_2_2</Name>
-            <Description>Alert Level Characteristic (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_IAS_2_3</Name>
-            <Description>Alert Level Characteristic, -Write without Response - (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_IAS_2_4</Name>
-            <Description>Writing Alert Level Behavior (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_IAS_3_1</Name>
-            <Description>Generic Attribute Profile -Server - (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_IAS_3_2</Name>
-            <Description>Write Without Response (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_5_3</Name>
-            <Description>Peripheral</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_5_4</Name>
-            <Description>Central</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-        </Rows>
-      </PICS>
-      <PIXIT>
-        <Name>IAS</Name>
-        <Version />
-        <Rows>
-          <Row>
-            <Name>TSPX_bd_addr_iut</Name>
-            <Description>The unique 48-bit Bluetooth device address (BD_ADDR) of the IUT. This was filled in during workspace creation.</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>39C58214CAC4</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_iut_device_name_in_adv_packet_for_random_address</Name>
-            <Description>IUT advertising this local name for the PTS to make connection to. Default is not using it with empty string. (Default: "")</Description>
-            <Type>IA5STRING</Type>
-            <Value />
-          </Row>
-          <Row>
-            <Name>TSPX_time_guard</Name>
-            <Description>The time in milliseconds, to break PTS from waiting for a required event, if time guard is used by the test case. (Default: 180000)</Description>
-            <Type>INTEGER</Type>
-            <Value>180000</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_use_implicit_send</Name>
-            <Description>Whether to receive a message via Implicit Send when an action or attention is needed by test operator. (Default: TRUE)</Description>
-            <Type>BOOLEAN</Type>
-            <Value>TRUE</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_tester_database_file</Name>
-            <Description>Location of SIG database file. (Default: C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_PXP_db.xml)</Description>
-            <Type>IA5STRING</Type>
-            <Value>C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_PXP_db.xml</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_mtu_size</Name>
-            <Description>MTU size</Description>
-            <Type>INTEGER</Type>
-            <Value>23</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_secure_simple_pairing_pass_key_confirmation</Name>
-            <Description>Whether to display secure simple pairing pass key confirmation or not. (Default: FALSE)</Description>
-            <Type>BOOLEAN</Type>
-            <Value>FALSE</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_delete_link_key</Name>
-            <Description>Whether to delete link key or not. (Default: FALSE)</Description>
-            <Type>BOOLEAN</Type>
-            <Value>FALSE</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_pin_code</Name>
-            <Description>Pin code to be used for legacy pairing. (Default: 0000)</Description>
-            <Type>IA5STRING</Type>
-            <Value>0000</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_use_dynamic_pin</Name>
-            <Description>Whether to use dynamic pin code entry or not. (Default: FALSE)</Description>
-            <Type>BOOLEAN</Type>
-            <Value>FALSE</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_delete_ltk</Name>
-            <Description>Whether to delete Long Term Key or not. (Default: FALSE)</Description>
-            <Type>BOOLEAN</Type>
-            <Value>FALSE</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_security_enabled</Name>
-            <Description>Whether to set security for the test suite. (Default: FALSE)</Description>
-            <Type>BOOLEAN</Type>
-            <Value>FALSE</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_iut_setup_att_over_br_edr</Name>
-            <Description>IUT can optionally test ATT over BR/EDR connection when this flag is set when applicable. (Default: FALSE)</Description>
-            <Type>BOOLEAN</Type>
-            <Value>FALSE</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_tester_appearance</Name>
-            <Description>The 16-bit tester appearance value. PTS will advertise using this value when in peripheral role.(Default: 0000)</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>0000</Value>
-          </Row>
-        </Rows>
-      </PIXIT>
-    </PROJECT_INFORMATION>
-    <PROJECT_INFORMATION NAME="AICS" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
-      <PICS>
-        <Name>AICS</Name>
-        <Rows>
-          <Row>
-            <Name>TSPC_AICS_0_1</Name>
-            <Description>Audio Input Control Service 1.0 (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_AICS_1_1</Name>
-            <Description>Service Supported over BR/EDR (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_AICS_1_2</Name>
-            <Description>Service Supported over LE (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_AICS_2_1</Name>
-            <Description>Audio Input State Characteristic (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_AICS_2_2</Name>
-            <Description>Gain Setting Properties Characteristic (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_AICS_2_3</Name>
-            <Description>Audio Input Type Characteristic (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_AICS_2_4</Name>
-            <Description>Audio Input Status Characteristic (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_AICS_2_5</Name>
-            <Description>Audio Input Control Point Characteristic (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_AICS_2_6</Name>
-            <Description>Audio Input Description Characteristic (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_AICS_2_7</Name>
-            <Description>Writeable Audio Input Description Characteristic (O)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_AICS_2_8</Name>
-            <Description>Notifiable Audio Input Description Characteristic (C.1)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_AICS_3_1</Name>
-            <Description>Set Gain Setting (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_AICS_3_2</Name>
-            <Description>Unmute (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_AICS_3_3</Name>
-            <Description>Mute (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_AICS_3_4</Name>
-            <Description>Set Manual Gain Mode (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_AICS_3_5</Name>
-            <Description>Set Automatic Gain Mode (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_AICS_4_1</Name>
-            <Description>Write Characteristic Value (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_AICS_4_2</Name>
-            <Description>Notifications (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_AICS_4_3</Name>
-            <Description>Read Characteristic Descriptors (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_AICS_4_4</Name>
-            <Description>Write Characteristic Descriptors (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_AICS_5_1</Name>
-            <Description>Support for Server Role (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_AICS_5_2</Name>
-            <Description>ServiceClassIDList (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_AICS_5_3</Name>
-            <Description>ProtocolDescriptorList (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_AICS_5_4</Name>
-            <Description>BrowseGroupList (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_ALL</Name>
-            <Description>Enables all test cases when set.</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-        </Rows>
-      </PICS>
-      <PIXIT>
-        <Name>AICS</Name>
-        <Version />
-        <Rows>
-          <Row>
-            <Name>TSPX_bd_addr_iut</Name>
-            <Description>The unique 48-bit Bluetooth device address (BD_ADDR) of the IUT. This was filled in during workspace creation.</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>39C58214CAC4</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_iut_device_name_in_adv_packet_for_random_address</Name>
-            <Description>IUT advertising this local name for the PTS to make connection to. Default is not using it with empty string. (Default: "")</Description>
-            <Type>IA5STRING</Type>
-            <Value />
-          </Row>
-          <Row>
-            <Name>TSPX_time_guard</Name>
-            <Description>The time in milliseconds, to break PTS from waiting for a required event, if time guard is used by the test case. (Default: 180000)</Description>
-            <Type>INTEGER</Type>
-            <Value>180000</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_use_implicit_send</Name>
-            <Description>Whether to receive a message via Implicit Send when an action or attention is needed by test operator. (Default: TRUE)</Description>
-            <Type>BOOLEAN</Type>
-            <Value>TRUE</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_tester_database_file</Name>
-            <Description>Location of SIG database file. (Default: C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_VCS_db.xml)</Description>
-            <Type>IA5STRING</Type>
-            <Value>C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_VCS_db.xml</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_mtu_size</Name>
-            <Description>MTU size. (Default: 23)</Description>
-            <Type>INTEGER</Type>
-            <Value>23</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_secure_simple_pairing_pass_key_confirmation</Name>
-            <Description>Whether to display secure simple pairing pass key confirmation or not. (Default: FALSE)</Description>
-            <Type>BOOLEAN</Type>
-            <Value>FALSE</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_delete_link_key</Name>
-            <Description>Whether to delete link key or not. (Default: FALSE)</Description>
-            <Type>BOOLEAN</Type>
-            <Value>FALSE</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_pin_code</Name>
-            <Description>Pin code to be used for legacy pairing. (Default: 0000)</Description>
-            <Type>IA5STRING</Type>
-            <Value>0000</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_use_dynamic_pin</Name>
-            <Description>Whether to use dynamic pin code entry or not. (Default: FALSE)</Description>
-            <Type>BOOLEAN</Type>
-            <Value>FALSE</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_delete_ltk</Name>
-            <Description>Whether to delete Long Term Key or not. (Default: FALSE)</Description>
-            <Type>BOOLEAN</Type>
-            <Value>FALSE</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_security_enabled</Name>
-            <Description>Whether to set security for the test suite. (Default: FALSE)</Description>
-            <Type>BOOLEAN</Type>
-            <Value>FALSE</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_iut_ATT_transport</Name>
-            <Description>Select a transport which IUT wants to be connected for (Default: ATT Bearer on LE Transport)</Description>
-            <Type>IA5STRING</Type>
-            <Value>ATT Bearer on LE Transport</Value>
-            <ValueList>
-              <ValueListItem>ATT Bearer on LE Transport</ValueListItem>
-              <ValueListItem>ATT Bearer on BR/EDR Transport</ValueListItem>
-              <ValueListItem>EATT Bearer on LE Transport</ValueListItem>
-              <ValueListItem>EATT Bearer on BR/EDR Transport</ValueListItem>
-            </ValueList>
-          </Row>
-        </Rows>
       </PIXIT>
     </PROJECT_INFORMATION>
     <PROJECT_INFORMATION NAME="VOCS" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
@@ -6380,25 +7381,25 @@
           <Row>
             <Name>TSPC_VOCS_4_1</Name>
             <Description>Support for Server Role (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_VOCS_4_2</Name>
             <Description>ServiceClassIDList (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_VOCS_4_3</Name>
             <Description>ProtocolDescriptorList (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_VOCS_4_4</Name>
             <Description>BrowseGroupList (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -6417,7 +7418,7 @@
             <Name>TSPX_bd_addr_iut</Name>
             <Description>The unique 48-bit Bluetooth device address (BD_ADDR) of the IUT. This was filled in during workspace creation.</Description>
             <Type>OCTETSTRING</Type>
-            <Value>39C58214CAC4</Value>
+            <Value>000000000000</Value>
           </Row>
           <Row>
             <Name>TSPX_iut_device_name_in_adv_packet_for_random_address</Name>
@@ -6488,325 +7489,6 @@
           <Row>
             <Name>TSPX_iut_setup_att_over_br_edr</Name>
             <Description>Device use ATT over BR EDR radio. (Default: FALSE)</Description>
-            <Type>BOOLEAN</Type>
-            <Value>FALSE</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_iut_ATT_transport</Name>
-            <Description>Select a transport which IUT wants to be connected for (Default: ATT Bearer on LE Transport)</Description>
-            <Type>IA5STRING</Type>
-            <Value>ATT Bearer on LE Transport</Value>
-            <ValueList>
-              <ValueListItem>ATT Bearer on LE Transport</ValueListItem>
-              <ValueListItem>ATT Bearer on BR/EDR Transport</ValueListItem>
-              <ValueListItem>EATT Bearer on LE Transport</ValueListItem>
-              <ValueListItem>EATT Bearer on BR/EDR Transport</ValueListItem>
-            </ValueList>
-          </Row>
-        </Rows>
-      </PIXIT>
-    </PROJECT_INFORMATION>
-    <PROJECT_INFORMATION NAME="PACS" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
-      <PICS>
-        <Name>PACS</Name>
-        <Rows>
-          <Row>
-            <Name>TSPC_PACS_0_1</Name>
-            <Description>Published Audio Capabilities Service v1.0 (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_1_1</Name>
-            <Description>Published Audio Capabilities Service v1.0.1 (O)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_2_1</Name>
-            <Description>Service supported over BR/EDR (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_2_2</Name>
-            <Description>Service supported over LE (C.1)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_3_1</Name>
-            <Description>Sink PAC Characteristic (C.1)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_3_2</Name>
-            <Description>Sink Audio Locations Characteristic (C.2)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_3_3</Name>
-            <Description>Source PAC Characteristic (C.1)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_3_4</Name>
-            <Description>Source Audio Locations Characteristic (C.3)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_3_5</Name>
-            <Description>Available Audio Contexts Characteristic (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_3_6</Name>
-            <Description>Supported Audio Contexts Characteristic (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_4_1</Name>
-            <Description>Changeable Sink PAC Characteristic (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_4_2</Name>
-            <Description>Notifiable Sink PAC Characteristic (C.2)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_4_3</Name>
-            <Description>Changeable Sink Audio Locations Characteristic (C.3)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_4_4</Name>
-            <Description>Autonomous Sink Audio Locations Changes (C.4)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_4_5</Name>
-            <Description>Writable Sink Audio Locations Characteristic (C.4)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_4_6</Name>
-            <Description>Notifiable Sink Audio Locations Characteristic (C.5)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_4_7</Name>
-            <Description>Changeable Source PAC Characteristic (C.6)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_4_8</Name>
-            <Description>Notifiable Source PAC Characteristic (C.7)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_4_9</Name>
-            <Description>Changeable Source Audio Locations Characteristic (C.8)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_4_10</Name>
-            <Description>Autonomous Source Audio Locations Changes (C.9)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_4_11</Name>
-            <Description>Writable Source Audio Locations Characteristic (C.9)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_4_12</Name>
-            <Description>Notifiable Source Audio Locations Characteristic (C.10)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_4_13</Name>
-            <Description>Changeable Available Audio Contexts Characteristic (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_4_14</Name>
-            <Description>Notifiable Available Audio Contexts Characteristic (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_4_15</Name>
-            <Description>Changeable Supported Audio Contexts Characteristic (C.11)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_4_16</Name>
-            <Description>Notifiable Supported Audio Contexts Characteristic (C.12)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_5_1</Name>
-            <Description>Bondable mode (LE) (C.1)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_5_2</Name>
-            <Description>Bondable mode (BR/EDR) (C.2)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_6_1</Name>
-            <Description>Read Characteristic Descriptors (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_6_2</Name>
-            <Description>Write Characteristic Descriptors (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_6_3</Name>
-            <Description>Notifications (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_6_4</Name>
-            <Description>Write Characteristic Value (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_6_5</Name>
-            <Description>Enhanced ATT bearer Attribute Protocol Supported (L2CAP fixed EATT PSM supported) (O)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_7_1</Name>
-            <Description>Support for Server role (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_7_2</Name>
-            <Description>ServiceClassIDList (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_7_3</Name>
-            <Description>ProtocolDescriptorList (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_7_4</Name>
-            <Description>AdditionalProtocolDescriptorList (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_7_5</Name>
-            <Description>BrowseGroupList (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_ALL</Name>
-            <Description>Enables all test cases when set.</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-        </Rows>
-      </PICS>
-      <PIXIT>
-        <Name>PACS</Name>
-        <Version />
-        <Rows>
-          <Row>
-            <Name>TSPX_bd_addr_iut</Name>
-            <Description>The unique 48-bit Bluetooth device address (BD_ADDR) of the IUT. This was filled in during workspace creation.</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>39C58214CAC4</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_iut_device_name_in_adv_packet_for_random_address</Name>
-            <Description>IUT advertising this local name for the PTS to make connection to. Default is not using it with empty string. (Default: "")</Description>
-            <Type>IA5STRING</Type>
-            <Value />
-          </Row>
-          <Row>
-            <Name>TSPX_time_guard</Name>
-            <Description>The time in milliseconds, to break PTS from waiting for a required event, if time guard is used by the test case. (Default: 180000)</Description>
-            <Type>INTEGER</Type>
-            <Value>180000</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_use_implicit_send</Name>
-            <Description>Whether to receive a message via Implicit Send when an action or attention is needed by test operator. (Default: TRUE)</Description>
-            <Type>BOOLEAN</Type>
-            <Value>TRUE</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_tester_database_file</Name>
-            <Description>Location of SIG database file. (Default: C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_PACS_db.xml)</Description>
-            <Type>IA5STRING</Type>
-            <Value>C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_PACS_db.xml</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_mtu_size</Name>
-            <Description>MTU size. (Default: 64)</Description>
-            <Type>INTEGER</Type>
-            <Value>64</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_secure_simple_pairing_pass_key_confirmation</Name>
-            <Description>Whether to display secure simple pairing pass key confirmation or not. (Default: FALSE)</Description>
-            <Type>BOOLEAN</Type>
-            <Value>FALSE</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_delete_link_key</Name>
-            <Description>Whether to delete link key or not. (Default: FALSE)</Description>
-            <Type>BOOLEAN</Type>
-            <Value>FALSE</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_delete_ltk</Name>
-            <Description>Whether to delete Long Term Key or not. (Default: FALSE)</Description>
-            <Type>BOOLEAN</Type>
-            <Value>FALSE</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_security_enabled</Name>
-            <Description>Whether to set security for the test suite. (Default: FALSE)</Description>
             <Type>BOOLEAN</Type>
             <Value>FALSE</Value>
           </Row>
