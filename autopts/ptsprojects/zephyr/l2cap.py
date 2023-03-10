@@ -138,9 +138,13 @@ def test_cases(ptses):
               TestFunc(lambda: pts.update_pixit_param(
                   "L2CAP", "TSPX_l2ca_num_concurrent_credit_based_connections", "2")),
               TestFunc(lambda: pts.update_pixit_param(
-                  "L2CAP", "TSPX_l2ca_cbmps_min", format(69, '04x'))),
+                  "L2CAP", "TSPX_l2ca_cbmps_min", format(64, '04x'))),
               TestFunc(lambda: pts.update_pixit_param(
-                  "L2CAP", "TSPX_l2ca_cbmps_max", format(69, '04x'))),
+                  "L2CAP", "TSPX_l2ca_cbmps_max", format(256, '04x'))),
+              TestFunc(lambda: pts.update_pixit_param(
+                  "L2CAP", "TSPX_l2ca_cbmtu_min", format(64, '04x'))),
+              TestFunc(lambda: pts.update_pixit_param(
+                  "L2CAP", "TSPX_l2ca_cbmtu_max", format(256, '04x'))),
               TestFunc(lambda: pts.update_pixit_param(
                   "L2CAP", "TSPX_iut_address_type_random",
                   "TRUE" if stack.gap.iut_addr_is_random()
