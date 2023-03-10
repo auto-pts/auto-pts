@@ -200,6 +200,9 @@ def test_cases(ptses):
                   pre_conditions_success +
                   [TestFunc(lambda: stack.l2cap.num_channels_set(1))],
                   generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ECFC/BV-32-C",
+                  pre_conditions_authen,
+                  generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/ECFC/BI-01-C",
                   pre_conditions_success +
                   [TestFunc(lambda: stack.l2cap.num_channels_set(1))],
