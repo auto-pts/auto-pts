@@ -1068,13 +1068,13 @@ def mesh_cfg_netkey_add(net_idx, addr, net_key, net_key_idx):
     stack.mesh.status = status
 
 
-def mesh_cfg_netkey_get(net_idx, addr):
+def mesh_cfg_netkey_get(net_idx, addr, net_key_idx):
     logging.debug("%s", mesh_cfg_netkey_get.__name__)
 
     stack = get_stack()
     iutctl = get_iut()
 
-    data = bytearray(struct.pack("<HH", net_idx, addr))
+    data = bytearray(struct.pack("<HHH", net_idx, addr, net_key_idx))
 
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MESH['cfg_netkey_get'], data)
 

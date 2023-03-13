@@ -424,6 +424,7 @@ Commands and responses:
 		Controller Index:       <controller id>
 		Command parameters:     Network index (2 octets)
 		                        Node address (2 octets)
+		                        Network key index (2 octets)
 		Response parameters: 	Model Netkey Status (1 octet)
 
 		This command is used to send the Config Model Network Key Get messages.
