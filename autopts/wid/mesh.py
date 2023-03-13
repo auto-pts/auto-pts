@@ -2899,7 +2899,8 @@ def hdl_wid_650(params: WIDParams):
         return stack.mesh.status == 0x00
 
     if "NetKey Get" in params.description:
-        btp.mesh_cfg_netkey_get(stack.mesh.net_idx, stack.mesh.address_lt1)
+        net_key_idx = 0x0001
+        btp.mesh_cfg_netkey_get(stack.mesh.net_idx, stack.mesh.address_lt1, net_key_idx)
 
         return True
 
