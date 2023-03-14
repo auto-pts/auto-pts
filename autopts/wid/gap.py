@@ -1200,13 +1200,7 @@ def hdl_wid_403(_: WIDParams):
     if not stack.gap.iut_has_privacy():
         return False
 
-    if stack.gap.peripheral.data:
-        bd_addr = btp.pts_addr_get()
-        bd_addr_type = btp.pts_addr_type_get()
-
-        btp.gap_direct_adv_on(bd_addr, bd_addr_type, 0, 1)
-    else:
-        btp.gap_conn()
+    btp.gap_conn()
 
     return True
 
@@ -1217,10 +1211,15 @@ def hdl_wid_406(_: WIDParams):
     # to peer RPA...when WID 403 is received
 
     stack = get_stack()
-    stack.gap.peripheral.data = True
+
+    if stack.gap.iut_has_privacy():
+        addr_type = OwnAddrType.le_resolvable_private_address
+    else:
+        addr_type = OwnAddrType.le_identity_address
+
+    btp.gap_adv_ind_on(ad=stack.gap.ad, own_addr_type=addr_type)
 
     return True
-
 
 def hdl_wid_1002(_: WIDParams):
     stack = get_stack()
