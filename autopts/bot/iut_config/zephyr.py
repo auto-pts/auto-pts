@@ -121,6 +121,7 @@ iut_config = {
             'GAP/CONN/DCEP/BV-05-C',
             'GAP/CONN/DCEP/BV-06-C',
             'GAP/CONN/DCON/BV-04-C',
+            'GAP/CONN/DCON/BV-05-C',
             'GAP/CONN/GCEP/BV-05-C',
             'GAP/CONN/GCEP/BV-06-C',
             'GAP/CONN/PRDA/BV-02-C',
