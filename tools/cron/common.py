@@ -299,7 +299,7 @@ class GithubCron(Thread):
 
 def pr_choose_start_time():
     start_time = datetime.today()
-    run_time = 10.0
+    run_time = 0.0  # TODO run time estimation and prioritising
     all_jobs = schedule.jobs[:]
 
     while True:
