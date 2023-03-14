@@ -1242,7 +1242,13 @@ def hdl_wid_2000(_: WIDParams):
 def hdl_wid_20001(_: WIDParams):
     stack = get_stack()
     btp.gap_set_conn()
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+
+    if stack.gap.iut_has_privacy():
+        addr_type = OwnAddrType.le_resolvable_private_address
+    else:
+        addr_type = OwnAddrType.le_identity_address
+
+    btp.gap_adv_ind_on(ad=stack.gap.ad, own_addr_type=addr_type)
     return True
 
 
