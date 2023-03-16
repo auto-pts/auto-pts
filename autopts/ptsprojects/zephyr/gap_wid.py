@@ -54,12 +54,6 @@ def gap_wid_hdl_mode1_lvl4(wid, description, test_case_name):
     return gap_wid_hdl(wid, description, test_case_name)
 
 
-def hdl_wid_73(desc):
-    btp.gattc_read_uuid(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
-                        '0001', 'FFFF', UUID.device_name)
-    return True
-
-
 def hdl_wid_104(desc):
     return True
 
