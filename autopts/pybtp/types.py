@@ -273,6 +273,7 @@ att_rsp_str = {0: "",
                12: "encryption key size error",
                13: "Invalid attribute value length error",
                14: "unlikely error",
+               15: "insufficient encryption",
                128: "Application error",
                }
 
