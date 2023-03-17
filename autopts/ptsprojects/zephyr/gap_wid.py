@@ -16,8 +16,7 @@
 import logging
 import sys
 
-from autopts.pybtp import btp
-from autopts.wid.gap import gap_wid_hdl as gen_wid_hdl, hdl_wid_139_mode1_lvl2, hdl_wid_139_mode1_lvl4
+from autopts.wid.gap import gap_wid_hdl as gen_wid_hdl
 
 log = logging.debug
 
@@ -34,34 +33,11 @@ def gap_wid_hdl(wid, description, test_case_name):
         return gen_wid_hdl(wid, description, test_case_name, False)
 
 
-# For tests in SC only, mode 1 level 3
-def gap_wid_hdl_mode1_lvl2(wid, description, test_case_name):
-    if wid == 139:
-        log("%s, %r, %r, %s", gap_wid_hdl_mode1_lvl2.__name__, wid, description,
-            test_case_name)
-        return hdl_wid_139_mode1_lvl2(description)
-    return gap_wid_hdl(wid, description, test_case_name)
-
-
-def gap_wid_hdl_mode1_lvl4(wid, description, test_case_name):
-    if wid == 139:
-        log("%s, %r, %r, %s", gap_wid_hdl.__name__, wid, description,
-            test_case_name)
-        return hdl_wid_139_mode1_lvl4(description)
-    return gap_wid_hdl(wid, description, test_case_name)
-
-
 def hdl_wid_104(desc):
     return True
 
 
 def hdl_wid_114(desc):
-    return True
-
-
-def hdl_wid_127(desc):
-    btp.gap_conn_param_update(btp.pts_addr_get(), btp.pts_addr_type_get(),
-                              720, 864, 0, 400)
     return True
 
 

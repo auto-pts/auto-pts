@@ -651,6 +651,19 @@ def hdl_wid_139(params: WIDParams):
     bd_addr = btp.pts_addr_get()
     bd_addr_type = btp.pts_addr_type_get()
 
+    if params.test_case_name in ['GAP/SEC/SEM/BV-39-C',
+                                 'GAP/SEC/SEM/BV-43-C',
+                                 'GAP/SEC/SEM/BV-24-C',
+                                 'GAP/SEC/SEM/BV-29-C']:
+        perm = Perm.write_enc
+    elif params.test_case_name in ['GAP/SEC/SEM/BV-27-C',
+                                   'GAP/SEC/SEM/BV-40-C',
+                                   'GAP/SEC/SEM/BV-44-C',
+                                   'GAP/SEC/SEM/BV-22-C']:
+        perm = Perm.write_authn
+    else:
+        perm = Perm.read_authn
+
     for attr in attrs:
         if not attr:
             continue
@@ -671,11 +684,6 @@ def hdl_wid_139(params: WIDParams):
                                               end_handle=handle)
         if not chrc_value_attr:
             continue
-
-        if params.test_case_name == 'GAP/SEC/SEM/BV-43-C':
-            perm = Perm.read_enc
-        else:
-            perm = Perm.read_authn
 
         (handle, permission, type_uuid) = chrc_value_attr[0]
         if permission & perm:
@@ -1016,7 +1024,14 @@ def hdl_wid_206(params: WIDParams):
     stack = get_stack()
     _ = stack.gap.get_passkey()
 
-    btp.gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey)
+    try:
+        btp.gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey)
+    except types.BTPError:
+        if (stack.gap.is_connected(0) == False):
+            logging.debug("Ignoring expected error on disconnected")
+        else:
+            return False
+
     return True
 
 
@@ -1050,8 +1065,15 @@ def hdl_wid_227(params: WIDParams):
     if not handle:
         return False
 
-    btp.gattc_read(bd_addr_type, bd_addr, handle)
-    btp.gattc_read_rsp()
+    btp.gattc_write(bd_addr_type, bd_addr, handle, '02', 1)
+    btp.gattc_write_rsp(store_rsp=True)
+
+    if (btp.verify_att_error("authentication error")):
+        btp.gap_pair()
+
+    if (btp.verify_att_error("insufficient encryption")):
+        btp.gap_pair()
+
     return True
 
 
