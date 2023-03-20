@@ -650,7 +650,7 @@ def gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey):
     data_ba.extend(bd_addr_ba)
 
     if isinstance(passkey, str):
-        passkey = int(passkey, 32)
+        passkey = int(passkey)
 
     passkey_ba = struct.pack('I', passkey)
     data_ba.extend(passkey_ba)
