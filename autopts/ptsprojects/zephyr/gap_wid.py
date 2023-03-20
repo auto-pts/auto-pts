@@ -14,13 +14,10 @@
 #
 
 import logging
-import socket
 import sys
 
 from autopts.pybtp import btp
-from autopts.pybtp.types import UUID, AdType, UriScheme
 from autopts.wid.gap import gap_wid_hdl as gen_wid_hdl, hdl_wid_139_mode1_lvl2, hdl_wid_139_mode1_lvl4
-from autopts.ptsprojects.stack import get_stack
 
 log = logging.debug
 
@@ -69,19 +66,6 @@ def hdl_wid_127(desc):
 
 
 def hdl_wid_162(desc):
-    return True
-
-
-def hdl_wid_173(desc):
-    stack = get_stack()
-
-    # Prepare space for URI
-    stack.gap.sd.clear()
-    stack.gap.sd[AdType.uri] = UriScheme.https + \
-        'github.com/intel/auto-pts'.encode()
-
-    btp.gap_adv_ind_on(sd=stack.gap.sd)
-
     return True
 
 
