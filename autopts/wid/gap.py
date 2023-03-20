@@ -965,11 +965,17 @@ def hdl_wid_169(_: WIDParams):
 def hdl_wid_173(_: WIDParams):
     stack = get_stack()
 
+    if stack.gap.uri == None:
+        return False
+
     # Prepare space for URI
     stack.gap.ad.clear()
     stack.gap.ad[AdType.uri] = stack.gap.uri
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    stack.gap.sd.clear()
+    stack.gap.sd[AdType.uri] = stack.gap.uri
+
+    btp.gap_adv_ind_on(ad=stack.gap.ad, sd=stack.gap.sd)
 
     return True
 
