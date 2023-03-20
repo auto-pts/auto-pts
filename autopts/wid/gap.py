@@ -1235,6 +1235,28 @@ def hdl_wid_1002(_: WIDParams):
     return passkey
 
 
+def hdl_wid_1003(params: WIDParams):
+    """
+    Please confirm the following number matches IUT: [passkey]
+    """
+    pattern = '[\d]{6}'
+    passkey = re.search(pattern, params.description)[0]
+    stack = get_stack()
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
+    if stack.gap.get_passkey() is None:
+        return False
+
+    btp.gap_passkey_confirm_rsp(bd_addr, bd_addr_type, passkey)
+    match = stack.gap.passkey.data == passkey
+
+    # clear passkey for repeated pairing attempts
+    stack.gap.passkey.data = None
+
+    return match
+
+
 def hdl_wid_2000(_: WIDParams):
     stack = get_stack()
 
@@ -1242,6 +1264,45 @@ def hdl_wid_2000(_: WIDParams):
     stack.gap.passkey.data = None
 
     return passkey
+
+
+def hdl_wid_2001(params: WIDParams):
+    """
+    The secureId is [passkey]
+    """
+    pattern = '[\d]{6}'
+    passkey = re.search(pattern, params.description)[0]
+    stack = get_stack()
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
+    if stack.gap.get_passkey() is None:
+        return False
+
+    btp.gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey)
+    return True
+
+
+def hdl_wid_2004(params: WIDParams):
+    """
+    Please confirm that 6 digit number is matched with [passkey].
+    """
+    pattern = '[\d]{6}'
+    passkey = re.search(pattern, params.description)[0]
+    stack = get_stack()
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
+    if stack.gap.get_passkey() is None:
+        return False
+
+    btp.gap_passkey_confirm_rsp(bd_addr, bd_addr_type, passkey)
+    match = stack.gap.passkey.data == passkey
+
+    # clear passkey for repeated pairing attempts
+    stack.gap.passkey.data = None
+
+    return match
 
 
 def hdl_wid_20001(_: WIDParams):
