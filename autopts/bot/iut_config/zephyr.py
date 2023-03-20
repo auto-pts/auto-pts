@@ -139,29 +139,12 @@ iut_config = {
         ]
     },
 
-    "l2cap_param_update.conf": {
-        "overlay": {
-            'CONFIG_BT_CTLR_CONN_PARAM_REQ': 'n',
-        },
-        "test_cases": [
-            'L2CAP/LE/CPU/BV-01-C',
-        ]
-    },
     "eatt_two_channels.conf": {
         "overlay": {
             'CONFIG_BT_EATT_MAX': '2',
         },
         "test_cases": [
             'L2CAP/TIM/BV-03-C',
-        ]
-    },
-
-    "no_att_sec_retry.conf": {
-        "overlay": {
-            'CONFIG_BT_ATT_RETRY_ON_SEC_ERR': 'n',
-        },
-        "test_cases": [
-            'GATT/CL/GAR/BI-42-C',
         ]
     },
 }
