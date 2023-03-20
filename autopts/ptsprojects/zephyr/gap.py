@@ -16,7 +16,7 @@
 """GAP test cases"""
 
 from autopts.pybtp import btp
-from autopts.pybtp.types import Addr, IOCap, AdType, AdFlags, Prop, Perm, UUID
+from autopts.pybtp.types import Addr, IOCap, AdType, AdFlags, Prop, Perm, UUID, UriScheme
 from autopts.client import get_unique_name
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
@@ -59,6 +59,7 @@ iut_appearance = '1111'
 iut_svc_data = '1111'
 iut_flags = '11'
 iut_svcs = '1111'
+iut_uri = UriScheme.https + 'github.com/auto-pts'.encode()
 
 
 def set_pixits(ptses):
@@ -135,7 +136,7 @@ def set_pixits(ptses):
     pts.set_pixit("GAP",
                   "TSPX_iut_device_name_in_adv_packet_for_random_address", "")
     pts.set_pixit("GAP", "TSPX_Tgap_104", "60000")
-    pts.set_pixit("GAP", "TSPX_URI", "176769746875622e636f6d2f696e74656c2f6175746f2d707473")
+    pts.set_pixit("GAP", "TSPX_URI", "176769746875622E636F6D2F6175746F2D707473")
     pts.set_pixit("GAP", "TSPX_periodic_advertising_data", "0201040503001801180D095054532D4741502D3036423803190000")
     pts.set_pixit("GAP", "TSPX_Min_Encryption_Key_Size", "07")
     pts.set_pixit("GAP", "TSPX_broadcast_code", "8ED03323D1205E2D58191BF6285C3182")
@@ -165,7 +166,7 @@ def test_cases(ptses):
         TestFunc(btp.core_reg_svc_gap),
         TestFunc(stack.gap_init, iut_device_name,
                  iut_manufacturer_data, iut_appearance, iut_svc_data, iut_flags,
-                 iut_svcs),
+                 iut_svcs, iut_uri),
         TestFunc(btp.gap_read_ctrl_info),
         TestFunc(lambda: pts.update_pixit_param(
             "GAP", "TSPX_bd_addr_iut",
