@@ -14,7 +14,6 @@
 #
 
 from binascii import hexlify
-from random import randint
 from time import sleep
 import logging
 import re
@@ -574,6 +573,52 @@ def hdl_wid_35(params: WIDParams):
     return btp.verify_description_truncated(params.description)
 
 
+def hdl_wid_36(params: WIDParams):
+    MMI.reset()
+    MMI.parse_description(params.description)
+
+    pts_services = [[int(MMI.args[0], 16), int(MMI.args[1], 16), int(MMI.args[2], 16), MMI.args[3]]]
+
+    if not pts_services:
+        logging.debug("parsing error")
+        return False
+
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
+    iut_services = []
+
+    # Get all included services
+    attrs = btp.gatts_get_attrs(type_uuid='2802')
+    for attr in attrs:
+        start_handle, perm, type_uuid = attr
+
+        attr_val = btp.gatts_get_attr_val(bd_addr_type, bd_addr, start_handle)
+        if not attr_val:
+            continue
+
+        att_rsp, val_len, val = attr_val
+
+        hdr = "<HH"
+        hdr_len = struct.calcsize(hdr)
+        uuid_len = val_len - hdr_len
+        incl_svc_hdl, end_grp_hdl, uuid = struct.unpack(hdr + "%ds" % uuid_len, val)
+        uuid = btp.btp2uuid(uuid_len, uuid)
+
+        iut_service = [start_handle, incl_svc_hdl, end_grp_hdl, uuid]
+        iut_services.append(iut_service)
+
+    # Verification
+    for service in pts_services:
+        if service in iut_services:
+            iut_services.remove(service)
+            logging.debug("Service %r found", service)
+            continue
+        logging.error("Service %r not found", service)
+        return False
+
+    return True
+
 def hdl_wid_40(params: WIDParams):
     return btp.verify_att_error(params.description)
 
@@ -703,8 +748,11 @@ def hdl_wid_52(params: WIDParams):
         value_read = hexlify(attr.value).upper()
 
     value_read = value_read.decode('utf-8')
+    # PTS may select characteristic with value bigger than MTU but asks to
+    # verify only MTU bytes of data
     if value_read != value:
-        return False
+        if not value_read.startswith(value):
+            return False
 
     return True
 
@@ -1077,7 +1125,10 @@ def hdl_wid_92(params: WIDParams):
     # delay, to let the PTS subscribe for notifications
     sleep(2)
 
-    btp.gatts_set_val(handle, hexlify(value))
+    if value_len == 0:
+        value = b'\x01'
+
+    btp.gatts_set_val(handle, hexlify(value[::-1]))
 
     return True
 
@@ -1623,7 +1674,7 @@ def hdl_wid_121(_: WIDParams):
         if not chrc_value_data:
             continue
 
-        # Check if returned ATT Insufficient Authorization error
+        # Check if returned ATT Insufficient Encryption Key Size error
         att_rsp, val_len, val = chrc_value_data
         if att_rsp != 0x0c:
             continue
@@ -1678,9 +1729,7 @@ def hdl_wid_130(_: WIDParams):
 
 
 def hdl_wid_132(_: WIDParams):
-    rnd = randint(1000, 9999)
-    btp.gatts_add_svc(0, str(rnd))
-    btp.gatts_start_server()
+    btp.gatts_change_database(0, 0, 0x02)
     return True
 
 
@@ -1919,13 +1968,16 @@ def hdl_wid_151(_: WIDParams):
         if not perm & Perm.read or not perm & Perm.write:
             continue
 
+        if perm & (Perm.read_enc | Perm.read_authn | Perm.write_enc | Perm.write_authn):
+            continue
+
         chrc_value_data = btp.gatts_get_attr_val(btp.pts_addr_type_get(),
                                                  btp.pts_addr_get(), handle)
         if not chrc_value_data:
             continue
 
         _, val_len, _ = chrc_value_data
-        if val_len == 1:
+        if val_len > 0:
             return '{0:04x}'.format(handle)
 
     return False
@@ -1963,7 +2015,7 @@ def hdl_wid_152(_: WIDParams):
             continue
 
         _, val_len, _ = chrc_value_data
-        if val_len > 300:
+        if val_len > 64:
             return '{0:04x}'.format(handle)
 
     return False

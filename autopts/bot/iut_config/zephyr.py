@@ -24,17 +24,6 @@ iut_config = {
 
     "prj.conf": {},  # Default config file name
 
-    "gatt_long_dev_name.conf": {
-        "overlay": {
-            'CONFIG_BT_CONN_DISABLE_SECURITY': 'y',
-            'CONFIG_BT_DEVICE_NAME_MAX': '64',
-            'CONFIG_BT_DEVICE_NAME': '\"' + 'T' * 63 + '\"',
-        },
-        "test_cases": [
-            'GATT/SR/GAW/BI-33',
-        ]
-    },
-
     "enforce_mitm.conf": {
         "overlay": {
             'CONFIG_BT_SMP_ENFORCE_MITM': 'y',
