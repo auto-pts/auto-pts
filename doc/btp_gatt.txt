@@ -656,13 +656,19 @@ Commands and responses:
 
 		Controller Index:	<controller id>
 		Command parameters:	Start Handle (2 octets)
-		            End Handle (2 octets)
-		            Visibility (1 octet)
+					End Handle (2 octets)
+					Operation (1 octet)
 		Response parameters:	<none>
 
-		This procedure is used to change the visibility of a portion
-		of a GATT database. BTP_STATUS_SUCCESS response indicates
-		the procedure is finished.
+		Valid Operation values:
+					0x00 = Remove
+					0x01 = Add
+					0x02 = Any
+
+		This procedure is used to change GATT database. If handles
+		provided are zero it is up to IUT to select range that will be
+		changed. If operation is "Any" IUT may add or remove items
+		from database.
 
 		In case of an error, the error response will be returned.
 
