@@ -175,7 +175,7 @@ class ZephyrBotClient(BotClient):
         self.config_default = "prj.conf"
 
     def apply_config(self, args, config, value):
-        if 'overlay' in value:
+        if 'overlay' in value and len(value['overlay']):
             apply_overlay(args.project_path, config,
                           value['overlay'])
 
