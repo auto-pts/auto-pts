@@ -144,6 +144,24 @@ iut_config = {
             'L2CAP/TIM/BV-03-C',
         ]
     },
+
+    "overlay-le-audio.conf": {
+        "overlay": {
+            # The overlay file exists in zephyr repo. Leave this empty.
+        },
+        "test_cases": [
+            'VOCS', 'VCS', 'AICS', 'IAS', 'PACS',
+        ]
+    },
+
+    "overlay-mesh.conf": {
+        "overlay": {
+            # The overlay file exists in zephyr repo. Leave this empty.
+        },
+        "test_cases": [
+            'MESH'
+        ]
+    },
 }
 
 retry_config = {
