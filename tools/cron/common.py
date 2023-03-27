@@ -27,6 +27,7 @@ $ ssh-add path/to/id_rsa
 
 import os
 import re
+import shlex
 import sys
 import json
 import shutil
@@ -513,7 +514,7 @@ def run_test(bot_options, server_options, autopts_repo):
         # Start subprocess running autoptsserver
         srv_cmd = 'python autoptsserver.py {} >> stdout_autoptsserver.log 2>&1'.format(server_options)
         print('Running: ', srv_cmd)
-        srv_process = subprocess.Popen(srv_cmd.split(),
+        srv_process = subprocess.Popen(shlex.split(srv_cmd),
                                        shell=True,
                                        stdout=subprocess.PIPE,
                                        stderr=subprocess.STDOUT,
@@ -528,7 +529,7 @@ def run_test(bot_options, server_options, autopts_repo):
     bot_cmd = 'python autoptsclient_bot.py {}' \
               ' >> stdout_autoptsbot.log 2>&1'.format(bot_options)
     print('Running: ', bot_cmd)
-    bot_process = subprocess.Popen(bot_cmd.split(),
+    bot_process = subprocess.Popen(shlex.split(bot_cmd),
                                    shell=True,
                                    stdout=subprocess.PIPE,
                                    stderr=subprocess.STDOUT,
@@ -620,13 +621,13 @@ def generic_pr_job(cron, cfg, pr_cfg, server_options, pr_repo_name_in_config,
         return schedule.CancelJob
 
     # Run AutoPTS server and bot
-    bot_options = f'{cfg} --not_recover PASS {included} {excluded} {bot_options_append}'
+    bot_options = f'{cfg} {included} {excluded} {bot_options_append}'
     run_test(bot_options, server_options, AUTOPTS_REPO)
 
     git_checkout(cfg_dict['git'][pr_repo_name_in_config]['branch'], repo_path)
 
     # report.txt is created at the very end of bot run, so
-    # it should exists if bot completed tests fully
+    # it should exist if bot completed tests fully
     report = os.path.join(AUTOPTS_REPO, 'report.txt')
     if not os.path.exists(report):
         raise Exception('Bot failed before report creation')
@@ -679,11 +680,11 @@ def generic_test_job(cfg, server_options, included='', excluded='',
     # To prevent update of the project repo by bot, set 'update_repo'
     # to False in zephyr['git'] of config.py
 
-    bot_options = f'{cfg} --not_recover PASS {included} {excluded} {bot_options_append}'
+    bot_options = f'{cfg} {included} {excluded} {bot_options_append}'
     run_test(bot_options, server_options, AUTOPTS_REPO)
 
     # report.txt is created at the very end of bot run, so
-    # it should exists if bot completed tests fully
+    # it should exist if bot completed tests fully
     report = os.path.join(AUTOPTS_REPO, 'report.txt')
     if not os.path.exists(report):
         raise Exception('Bot failed before report creation')
