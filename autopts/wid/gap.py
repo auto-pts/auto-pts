@@ -509,6 +509,7 @@ def hdl_wid_108(params: WIDParams):
         else:
             # Please configure the IUT into LE Security and start pairing process.
             btp.gap_pair()
+
     return True
 
 
@@ -661,6 +662,8 @@ def hdl_wid_139(params: WIDParams):
                                    'GAP/SEC/SEM/BV-44-C',
                                    'GAP/SEC/SEM/BV-22-C']:
         perm = Perm.write_authn
+    elif params.test_case_name in ['GAP/SEC/AUT/BV-11-C']:
+        perm = Perm.read_enc
     else:
         perm = Perm.read_authn
 
