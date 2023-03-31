@@ -27,8 +27,7 @@ from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
 le_psm = 128
 psm_unsupported = 241
 le_initial_mtu = 120
-le_initial_mtu_equal_mps = 69
-l2cap_mps = 69
+le_initial_mtu_equal_mps = 96
 
 
 def set_pixits(ptses):
