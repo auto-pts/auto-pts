@@ -81,7 +81,10 @@ def hdl_wid_107(params: WIDParams):
     return True
 
 
-def hdl_wid_108(_: WIDParams):
+def hdl_wid_108(params: WIDParams):
+    if params.test_case_name == "SM/CEN/EKS/BV-01-C":
+        return True
+
     btp.gap_pair()
     return True
 
