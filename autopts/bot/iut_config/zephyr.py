@@ -134,7 +134,7 @@ iut_config = {
         ]
     },
 
-    "overlay-le-audio.conf": {
+    "nrf5340_hci_rpmsg.conf;overlay-le-audio.conf": {
         "overlay": {
             # The overlay file exists in zephyr repo. Leave this empty.
         },
