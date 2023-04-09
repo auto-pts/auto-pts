@@ -128,37 +128,45 @@ class BotClient(Client):
         config_default = self.config_default
         _args[config_default] = self.args
 
-        excluded = _args[config_default].excluded
-        included = _args[config_default].test_cases
+        # These contain values passed with -c and -e options
+        included = sort_and_reduce_prefixes(_args[config_default].test_cases)
+        excluded = sort_and_reduce_prefixes(_args[config_default].excluded)
 
+        # Ask the PTS about test cases available in the workspace
+        filtered_test_cases = autoptsclient.get_test_cases(self.ptses[0], included, excluded)
+
+        # Distribute test cases among .conf files
         for config, value in list(self.iut_config.items()):
+            # Merge .confs without 'test_cases' into the default one
             if 'test_cases' not in value:
                 # Rename default config
                 _args[config] = _args.pop(config_default)
                 config_default = config
                 continue
 
-            if config != config_default:
-                _args[config] = copy.deepcopy(_args[config_default])
-                _args[config].excluded = excluded
+            _args[config] = copy.deepcopy(_args[config_default])
+            _args[config].excluded = []
+            _args[config].test_cases = []
 
-            _args[config].test_cases = autoptsclient.get_test_cases(
-                self.ptses[0], value.get('test_cases', []), included, excluded)
+            remaining_test_cases = []
+            for tc in filtered_test_cases:
+                for prefix in value['test_cases']:
+                    if tc.startswith(prefix):
+                        _args[config].test_cases.append(tc)
+                        tc = None
+                        break
 
-            if 'overlay' in value:
-                if len(_args[config].test_cases) > 0:
-                    _args[config_default].excluded += _args[config].test_cases
-                else:
-                    _args.pop(config)
-                    log('No test cases for {} config, ignored.'.format(config))
-        _args[config_default].test_cases = autoptsclient.get_test_cases(
-            self.ptses[0], self.ptses[0].get_project_list(), _args[config_default].test_cases, excluded)
-        if len(_args[config_default].test_cases) == 0:
-            _args.pop(config_default)
-            log('No test cases for {} config, ignored.'.format(config_default))
+                if tc is not None:
+                    remaining_test_cases.append(tc)
+
+            filtered_test_cases = remaining_test_cases
+
+        # Remaining test cases will be run with the default .conf file
+        _args[config_default].test_cases = filtered_test_cases
 
         for config in _args.keys():
-            if config not in self.iut_config.keys():
+            if len(_args[config].test_cases) == 0:
+                log(f'No test cases for {config} config, ignored.')
                 continue
 
             self.apply_config(_args[config], config, self.iut_config[config])
@@ -197,6 +205,24 @@ class BotClient(Client):
         self.iut_config = iut_config
 
         return self.start(self.parse_config(args))
+
+
+def sort_and_reduce_prefixes(prefixes):
+    sorted_prefixes = sorted(prefixes, key=len)
+    final_prefixes = []
+
+    for s in sorted_prefixes:
+        duplicated = False
+
+        for f in final_prefixes:
+            if s.startswith(f):
+                duplicated = True
+                break
+
+        if not duplicated:
+            final_prefixes.append(s)
+
+    return final_prefixes
 
 
 # ****************************************************************************
