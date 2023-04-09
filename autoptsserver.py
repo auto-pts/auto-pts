@@ -424,7 +424,6 @@ def multi_main(_args, _superguard):
 
 
 if __name__ == "__main__":
-    winutils.exit_if_admin()
     _args = SvrArgumentParser("PTS automation server").parse_args()
 
     script_name = os.path.basename(sys.argv[0])  # in case it is full path

@@ -103,6 +103,7 @@ class BotConfigArgs(Namespace):
         self.superguard = float(args.get('superguard', 0))
         self.cron_optim = args.get('cron_optim', False)
         self.project_repos = args.get('repos', None)
+        self.swap_ets = args.get('swap_ets', False)
 
 
 class BotClient(Client):

@@ -44,7 +44,7 @@ from autopts.ptsprojects.testcase import PTSCallback, TestCaseLT1, TestCaseLT2
 from autopts.ptsprojects.testcase_db import TestCaseTable
 from autopts.pybtp import btp
 from autopts.pybtp.types import BTPError, SynchError
-from autopts.utils import InterruptableThread, usb_power
+from autopts.utils import InterruptableThread, usb_power, swap_etses
 from autopts.winutils import have_admin_rights
 from cliparser import CliParser
 
@@ -984,9 +984,19 @@ def run_test_cases(ptses, test_case_instances, args, retry_config=None):
 
     exceptions = queue.Queue()
 
+    if args.swap_ets:
+        # Project level swapping, i.e. GAP.ets, GATT.ets ...
+        swap_etses(ptses, test_cases, False)
+
     for test_case in test_cases:
         stats.run_count = 0
         test_retry_count = None
+
+        test_case_lvl_swap = False
+        if args.swap_ets:
+            # Test case level swapping, i.e. GAP_CONN_ACEP_BV_01_C.ets
+            # will be swapped with original GAP.ets
+            test_case_lvl_swap = swap_etses(ptses, test_case, False)
 
         if retry_config is not None:
             if test_case in retry_config:
@@ -1028,6 +1038,16 @@ def run_test_cases(ptses, test_case_instances, args, retry_config=None):
             stats.run_count += 1
 
         stats.index += 1
+
+        if args.swap_ets and test_case_lvl_swap:
+            # Return to project level swap
+            swapped = swap_etses(ptses, [test_case], False)
+            if not swapped:
+                # Project level swap not available, revert to original
+                swap_etses(ptses, test_case, True)
+
+    if args.swap_ets:
+        swap_etses(ptses, test_cases, True)
 
     stats.print_summary()
 

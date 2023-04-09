@@ -42,8 +42,10 @@ import shutil
 import xmlrpc.client
 import ctypes
 import threading
+from os.path import dirname, abspath
 from pathlib import Path
 
+import psutil
 import win32com.client
 import win32com.server.connect
 import win32com.server.util
@@ -51,7 +53,7 @@ import pythoncom
 import wmi
 
 from autopts.ptsprojects import ptstypes
-from autopts.utils import PTS_WORKSPACE_FILE_EXT, get_own_workspaces
+from autopts.utils import PTS_WORKSPACE_FILE_EXT, get_own_workspaces, win32_is_file_in_use
 
 log = logging.debug
 
@@ -315,6 +317,10 @@ class PyPTS:
         # used
         self.restart_pts()
 
+        self.local_ets_dir = os.path.join(dirname(dirname(abspath(__file__))), 'ets')
+        pts_path = dirname(dirname(psutil.Process(self._pts_proc.ProcessId).exe()))
+        self.pts_ets_path = os.path.join(pts_path, 'bin/Bluetooth/Ets')
+
     def _init_attributes(self):
         """Initializes class attributes"""
         log("%s", self._init_attributes.__name__)
@@ -494,13 +500,16 @@ class PyPTS:
     def stop_pts(self):
         """Stops PTS"""
 
-        try:
-            log("About to stop PTS with pid: %d", self._pts_proc.ProcessId)
-            self._pts_proc.Terminate()
-            self._pts_proc = None
+        if self._pts_proc is not None:
+            try:
+                log("About to stop PTS with pid: %d", self._pts_proc.ProcessId)
+                self._pts_proc.Terminate()
+                self._pts_proc = None
 
-        except Exception as error:
-            logging.exception(repr(error))
+            except Exception as error:
+                logging.exception(repr(error))
+        else:
+            log("The PTS already stopped, so just clearing.")
 
         self._init_attributes()
 
@@ -884,6 +893,76 @@ class PyPTS:
         self._pts_sender.unset_callback()
 
         self.del_recov(self.register_ptscallback)
+
+    def swap_ets(self, test_case, revert=False):
+        """
+        Swap original .ets file with the one from local ets/ folder on
+        test case level, i.e. GAP_CONN_ACEP_BV_01_C.ets will be swapped
+        with original GAP.ets just for this test case.
+
+        Set revert=True to undo the swap.
+
+        For the swap to work the bot has to be run with admin rights.
+
+        Args:
+            test_case: name of test case(i.e. GAP/CONN/ACEP/BV-01-C)
+            revert: set True to undo the swap.
+
+        Returns: True if swapped successfully, False otherwise.
+        """
+        log(f'{self.swap_ets.__name__}')
+
+        errata_ets_name = test_case.replace('/', '_')
+        errata_ets_name = errata_ets_name.replace('-', '_')
+
+        errata_ets = os.path.join(self.local_ets_dir, errata_ets_name + '.ets')
+
+        if not os.path.exists(errata_ets):
+            return False
+
+        project_key, *_ = test_case.split('/')
+        original_ets = os.path.join(self.pts_ets_path, project_key + '.ets')
+        original_ets_save = original_ets + '.org'
+
+        self.stop_pts()
+
+        # Wait for the .ets descriptor to be released.
+        if os.path.exists(original_ets):
+            while win32_is_file_in_use(original_ets):
+                log('Swap: Waiting for the .ets descriptor to be released.')
+
+        if revert:
+            log(f'Reverting swap of {errata_ets} file')
+
+            ets_errata = original_ets
+            if os.path.exists(ets_errata):
+                os.remove(ets_errata)
+            else:
+                log(f'The {ets_errata} does not exists. Nothing to remove.')
+
+            if os.path.exists(original_ets_save):
+                os.rename(original_ets_save, original_ets)
+            else:
+                log(f'The {original_ets_save} does not exists. Nothing to revert.')
+
+            self.recover_pts()
+
+            return True
+
+        log(f'Found errata for {test_case}. Swapping with {errata_ets} file.')
+
+        if os.path.exists(original_ets_save):
+            log(f'The {original_ets_save} already exists. Saving skipped.')
+        elif not os.path.exists(original_ets):
+            log(f'The {original_ets} does not exists. Nothing to save.')
+        else:
+            os.rename(original_ets, original_ets_save)
+
+        shutil.copyfile(errata_ets, original_ets)
+
+        self.recover_pts()
+
+        return True
 
 
 def parse_args():
