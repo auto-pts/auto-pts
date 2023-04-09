@@ -16,12 +16,6 @@
 # Stable Zephyr IUT config
 
 iut_config = {
-    # "default": {  # Default west build without option -- -DCONF_FILE=<file.conf>
-    #     "test_cases": [
-    #         'MESH'
-    #     ],
-    # },
-
     "prj.conf": {},  # Default config file name
 
     "enforce_mitm.conf": {

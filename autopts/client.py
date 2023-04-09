@@ -924,12 +924,12 @@ test_case_blacklist = [
 ]
 
 
-def get_test_cases(pts, test_cases, included, excluded):
+def get_test_cases(pts, test_cases, excluded):
     """
     param: pts: proxy to initiated pts instance
-    param: test_cases: names (or prefixes) of test cases to run in
-    current configuration
-    param: included: test cases specified with -c option
+    param: test_cases: test cases specified with -c option or in iut_config.
+                       If empty, all test cases from workspace will be run
+                       (Except those specified in "excluded").
     param: excluded: test cases specified with -e option
     """
 
@@ -950,17 +950,8 @@ def get_test_cases(pts, test_cases, included, excluded):
 
             return False
 
-    if len(included) > 0:
-        _included = []
-
-        for inc in included:
-            for tc in test_cases:
-                if tc.startswith(inc):
-                    _included.append(tc)
-                elif inc.startswith(tc):
-                    _included.append(inc)
-
-        test_cases = _included
+        # Empty test_cases means "run them all"
+        return True
 
     projects = pts.get_project_list()
 
@@ -1148,11 +1139,9 @@ class Client:
         self.test_cases = setup_test_cases(ptses)
 
     def run_test_cases(self):
-        included = self.args.test_cases
-        excluded = self.args.excluded
         self.args.test_cases = get_test_cases(self.ptses[0],
-                                              self.ptses[0].get_project_list(),
-                                              included, excluded)
+                                              self.args.test_cases,
+                                              self.args.excluded)
         return run_test_cases(self.ptses, self.test_cases, self.args, None)
 
     def cleanup(self):
