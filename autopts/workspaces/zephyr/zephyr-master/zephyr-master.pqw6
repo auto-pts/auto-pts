@@ -9305,7 +9305,7 @@
           <Row>
             <Name>TSPC_BAP_33_8</Name>
             <Description>Releasing an ASE (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
