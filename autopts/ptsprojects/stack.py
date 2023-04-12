@@ -648,7 +648,7 @@ class BAP:
     def event_received(self, event_type, event_data_tuple):
         self.event_queues[event_type].append(event_data_tuple)
 
-    def wait_codec_cap_found_ev(self, addr_type, addr, pac_dir, timeout, remove=True):
+    def wait_codec_cap_found_ev(self, addr_type, addr, pac_dir, timeout, remove=False):
         return wait_event_with_condition(
             self.event_queues[defs.BAP_EV_CODEC_CAP_FOUND],
             lambda _addr_type, _addr, _pac_dir, *_:
@@ -662,7 +662,7 @@ class BAP:
                 (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
-    def wait_ase_found_ev(self, addr_type, addr, ase_dir, timeout, remove=True):
+    def wait_ase_found_ev(self, addr_type, addr, ase_dir, timeout, remove=False):
         return wait_event_with_condition(
             self.event_queues[defs.BAP_EV_ASE_FOUND],
             lambda _addr_type, _addr, _ase_dir, *_:

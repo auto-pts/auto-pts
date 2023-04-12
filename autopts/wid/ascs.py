@@ -20,6 +20,7 @@ import sys
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp
 from autopts.pybtp.types import WIDParams
+from autopts.wid.bap import create_lc3_ltvs_bytes
 
 log = logging.debug
 
@@ -54,9 +55,12 @@ def hdl_wid_201(params: WIDParams):
     frame_duration = 0x01
     audio_locations = 0x01
     octets_per_frame = 0x0028
+    frames_per_sdu = 0x01
 
-    btp.ascs_config_codec(ase_id, coding_format, sampling_freq, frame_duration,
-                          audio_locations, octets_per_frame)
+    codec_ltvs_bytes = create_lc3_ltvs_bytes(sampling_freq, frame_duration,
+                                             audio_locations, octets_per_frame,
+                                             frames_per_sdu)
+    btp.ascs_config_codec(ase_id, coding_format, 0x00, 0x00, codec_ltvs_bytes)
 
     return True
 

@@ -15,12 +15,13 @@
 
 import logging
 import re
+import struct
 import sys
 from time import sleep
 
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import MMI
-from autopts.pybtp import btp
+from autopts.pybtp import btp, defs
 from autopts.pybtp.btp import pts_addr_get, pts_addr_type_get
 from autopts.pybtp.types import WIDParams, UUID
 
@@ -145,7 +146,16 @@ class LC3_PAC_LTV_Type:
     FRAME_DURATION = 0x02
     CHANNELS = 0x03
     FRAME_LEN = 0x04
-    FRAME_BLKS_PER_SDU = 0x05
+    FRAMES_PER_SDU = 0x05
+
+
+# Assigned Numbers (2023), 6.12.5 Codec_Specific_Configuration LTV structures
+class LC3_LTV_Config_Type:
+    SAMPLING_FREQ = 0x01
+    FRAME_DURATION = 0x02
+    CHANNEL_ALLOCATION = 0x03
+    FRAME_LEN = 0x04
+    FRAMES_PER_SDU = 0x05
 
 
 SAMPLING_FREQ_STR_TO_CODE = {
@@ -252,6 +262,18 @@ def bytes_to_ltvs(data):
         ltv[ltv_type] = value
 
     return ltv
+
+
+def create_lc3_ltvs_bytes(sampling_freq, frame_duration, audio_locations,
+                          octets_per_frame, frames_per_sdu):
+    ltvs = bytearray()
+    ltvs += struct.pack('<BBB', 2, LC3_LTV_Config_Type.SAMPLING_FREQ, sampling_freq)
+    ltvs += struct.pack('<BBB', 2, LC3_LTV_Config_Type.FRAME_DURATION, frame_duration)
+    ltvs += struct.pack('<BBI', 5, LC3_LTV_Config_Type.CHANNEL_ALLOCATION, audio_locations)
+    ltvs += struct.pack('<BBH', 3, LC3_LTV_Config_Type.FRAME_LEN, octets_per_frame)
+    ltvs += struct.pack('<BBB', 2, LC3_LTV_Config_Type.FRAMES_PER_SDU, frames_per_sdu)
+
+    return ltvs
 
 
 def parse_pac_char_value(data):
@@ -399,7 +421,7 @@ def hdl_wid_302(params: WIDParams):
     sampling_freq = numbers[0]
     frame_duration = numbers[1]
 
-    if 'SINK ASE' in params.description:
+    if 'SINK' in params.description:
         audio_dir = AudioDir.SINK
     else:
         audio_dir = AudioDir.SOURCE
@@ -424,11 +446,14 @@ def hdl_wid_302(params: WIDParams):
 
     sampling_freq = SAMPLING_FREQ_STR_TO_CODE[sampling_freq]
     frame_duration = FRAME_DURATION_STR_TO_CODE[frame_duration]
-    min_frame_len = frame_lens & 0xffff
+    octets_per_frame = frame_lens & 0xffff
     audio_locations = 0x01
+    frames_per_sdu = 0x01
 
-    btp.ascs_config_codec(ase_id, coding_format, sampling_freq, frame_duration,
-                          audio_locations, min_frame_len)
+    codec_ltvs_bytes = create_lc3_ltvs_bytes(sampling_freq, frame_duration,
+                                             audio_locations, octets_per_frame,
+                                             frames_per_sdu)
+    btp.ascs_config_codec(ase_id, coding_format, 0x0000, 0x0000, codec_ltvs_bytes)
     stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
 
     return True
@@ -476,18 +501,276 @@ def hdl_wid_303(params: WIDParams):
 
         (sampling_freq, frame_duration, octets_per_frame) = CODEC_CONFIG_SETTINGS[codec_set_name]
         audio_locations = 0x01
+        frames_per_sdu = 0x01
 
         # Perform Codec Config operation
-        btp.ascs_config_codec(ase_id, coding_format, sampling_freq, frame_duration,
-                              audio_locations, octets_per_frame)
+        codec_ltvs_bytes = create_lc3_ltvs_bytes(sampling_freq, frame_duration,
+                                                 audio_locations, octets_per_frame,
+                                                 frames_per_sdu)
+        btp.ascs_config_codec(ase_id, coding_format, 0x0000, 0x0000, codec_ltvs_bytes)
         stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
 
     # Perform Config QOS operation
     cig_id = 0x01
     cis_id = 0x01
+    presentation_delay = 40000
     qos_config = QOS_CONFIG_SETTINGS[qos_set_name]
-    btp.ascs_config_qos(ase_id, cig_id, cis_id, *qos_config)
+    btp.ascs_config_qos(ase_id, cig_id, cis_id, *qos_config, presentation_delay)
     stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+
+    return True
+
+
+def hdl_wid_304(params: WIDParams):
+    """
+    Please configure ASE state to Enabling for SOURCE ASE, Freq: 16KHz and Frame Duration: 10ms
+    """
+    numbers = re.findall(r'\d+(?:\.\d+)?', params.description)
+    sampling_freq_str = numbers[0]
+    frame_duration_str = numbers[1]
+
+    if 'SINK' in params.description:
+        audio_dir = AudioDir.SINK
+    else:
+        audio_dir = AudioDir.SOURCE
+
+    addr = pts_addr_get()
+    addr_type = pts_addr_type_get()
+    stack = get_stack()
+
+    # Get supported capabilities
+    ev = stack.bap.wait_codec_cap_found_ev(addr_type, addr, audio_dir, 30)
+    if ev is None:
+        return False
+
+    _, _, _, coding_format, frequencies, frame_durations, frame_lens = ev
+
+    # Find ID of the ASE
+    ev = stack.bap.wait_ase_found_ev(addr_type, addr, audio_dir, 30)
+    if ev is None:
+        return False
+
+    _, _, _, ase_id = ev
+
+    sampling_freq = SAMPLING_FREQ_STR_TO_CODE[sampling_freq_str]
+    frame_duration = FRAME_DURATION_STR_TO_CODE[frame_duration_str]
+    octets_per_frame = frame_lens & 0xffff
+    audio_locations = 0x01
+    frames_per_sdu = 0x01
+
+    # Perform Codec Config operation
+    codec_ltvs_bytes = create_lc3_ltvs_bytes(sampling_freq, frame_duration,
+                                             audio_locations, octets_per_frame,
+                                             frames_per_sdu)
+    btp.ascs_config_codec(ase_id, coding_format, 0x0000, 0x0000, codec_ltvs_bytes)
+    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+
+    # Perform Config QOS operation
+    cig_id = 0x01
+    cis_id = 0x01
+    presentation_delay = 40000
+    qos_config = QOS_CONFIG_SETTINGS[f'{sampling_freq_str}_1_1']
+    btp.ascs_config_qos(ase_id, cig_id, cis_id, *qos_config, presentation_delay)
+    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+
+    # Enable streams
+    btp.ascs_enable(ase_id)
+    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+
+    return True
+
+
+def hdl_wid_305(params: WIDParams):
+    """
+    Please configure ASE state to Enabling for SOURCE ASE, Freq: 16KHz and Frame Duration: 10ms
+    """
+    numbers = re.findall(r'\d+(?:\.\d+)?', params.description)
+    sampling_freq_str = numbers[0]
+    frame_duration_str = numbers[1]
+
+    if 'SINK' in params.description:
+        audio_dir = AudioDir.SINK
+    else:
+        audio_dir = AudioDir.SOURCE
+
+    addr = pts_addr_get()
+    addr_type = pts_addr_type_get()
+    stack = get_stack()
+
+    # Get supported capabilities
+    ev = stack.bap.wait_codec_cap_found_ev(addr_type, addr, audio_dir, 30)
+    if ev is None:
+        return False
+
+    _, _, _, coding_format, frequencies, frame_durations, frame_lens = ev
+
+    # Find ID of the ASE
+    ev = stack.bap.wait_ase_found_ev(addr_type, addr, audio_dir, 30)
+    if ev is None:
+        return False
+
+    _, _, _, ase_id = ev
+
+    sampling_freq = SAMPLING_FREQ_STR_TO_CODE[sampling_freq_str]
+    frame_duration = FRAME_DURATION_STR_TO_CODE[frame_duration_str]
+    octets_per_frame = frame_lens & 0xffff
+    audio_locations = 0x01
+    frames_per_sdu = 0x01
+
+    # Perform Codec Config operation
+    codec_ltvs_bytes = create_lc3_ltvs_bytes(sampling_freq, frame_duration,
+                                             audio_locations, octets_per_frame,
+                                             frames_per_sdu)
+    btp.ascs_config_codec(ase_id, coding_format, 0x0000, 0x0000, codec_ltvs_bytes)
+    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+
+    # Perform Config QOS operation
+    cig_id = 0x01
+    cis_id = 0x01
+    presentation_delay = 40000
+    qos_config = QOS_CONFIG_SETTINGS[f'{sampling_freq_str}_1_1']
+    btp.ascs_config_qos(ase_id, cig_id, cis_id, *qos_config, presentation_delay)
+    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+
+    # Enable streams
+    btp.ascs_enable(ase_id)
+    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+
+    # For this test case the PTS should send MMI 308, but it does not. Errata request in progress
+    if params.test_case_name in ['BAP/UCL/SCC/BV-113-C']:
+        # Disable streams
+        btp.ascs_disable(ase_id)
+        stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+
+    return True
+
+
+def hdl_wid_306(params: WIDParams):
+    """
+    Please configure ASE state to Streaming for SINK ASE, Freq: 16KHz and Frame Duration: 10ms
+    """
+    numbers = re.findall(r'\d+(?:\.\d+)?', params.description)
+    sampling_freq_str = numbers[0]
+    frame_duration_str = numbers[1]
+
+    if 'SINK' in params.description:
+        audio_dir = AudioDir.SINK
+    else:
+        audio_dir = AudioDir.SOURCE
+
+    addr = pts_addr_get()
+    addr_type = pts_addr_type_get()
+    stack = get_stack()
+
+    # Get supported capabilities
+    ev = stack.bap.wait_codec_cap_found_ev(addr_type, addr, audio_dir, 30)
+    if ev is None:
+        return False
+
+    _, _, _, coding_format, frequencies, frame_durations, frame_lens = ev
+
+    # Find ID of the ASE
+    ev = stack.bap.wait_ase_found_ev(addr_type, addr, audio_dir, 30)
+    if ev is None:
+        return False
+
+    _, _, _, ase_id = ev
+
+    sampling_freq = SAMPLING_FREQ_STR_TO_CODE[sampling_freq_str]
+    frame_duration = FRAME_DURATION_STR_TO_CODE[frame_duration_str]
+    octets_per_frame = frame_lens & 0xffff
+    audio_locations = 0x01
+    frames_per_sdu = 0x01
+
+    # Perform Codec Config operation
+    codec_ltvs_bytes = create_lc3_ltvs_bytes(sampling_freq, frame_duration,
+                                             audio_locations, octets_per_frame,
+                                             frames_per_sdu)
+    btp.ascs_config_codec(ase_id, coding_format, 0x0000, 0x0000, codec_ltvs_bytes)
+    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+
+    # Perform Config QOS operation
+    cig_id = 0x01
+    cis_id = 0x01
+    presentation_delay = 40000
+    qos_config = QOS_CONFIG_SETTINGS[f'{sampling_freq_str}_1_1']
+    btp.ascs_config_qos(ase_id, cig_id, cis_id, *qos_config, presentation_delay)
+    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+
+    # Enable streams
+    btp.ascs_enable(ase_id)
+    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+
+    # Start streaming
+    btp.ascs_receiver_start_ready(ase_id)
+    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+
+    return True
+
+
+def hdl_wid_307(_: WIDParams):
+    """
+    Please configure ASE state to Disabling state. If server is Source, please initiate Receiver Stop Ready.
+    """
+
+    addr = pts_addr_get()
+    addr_type = pts_addr_type_get()
+    stack = get_stack()
+
+    # Find ID of the ASE
+    ev = stack.bap.event_queues[defs.BAP_EV_ASE_FOUND][0]
+    _, _, ase_dir, ase_id = ev
+
+    # Disable ASE
+    btp.ascs_disable(ase_id)
+    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+
+    if ase_dir == AudioDir.SOURCE:
+        # Initiate receiver Stop Ready
+        btp.ascs_receiver_stop_ready(ase_id)
+        stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+
+    return True
+
+
+def hdl_wid_308(_: WIDParams):
+    """
+    Please configure ASE state to Disabling state.
+    """
+
+    addr = pts_addr_get()
+    addr_type = pts_addr_type_get()
+    stack = get_stack()
+
+    # Find ID of the ASE
+    ev = stack.bap.event_queues[defs.BAP_EV_ASE_FOUND][0]
+    _, _, ase_dir, ase_id = ev
+
+    # Disable ASE
+    btp.ascs_disable(ase_id)
+    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+
+    return True
+
+
+def hdl_wid_309(_: WIDParams):
+    """
+    Please configure ASE state to Releasing state.
+    """
+
+    addr = pts_addr_get()
+    addr_type = pts_addr_type_get()
+    stack = get_stack()
+
+    # Find ID of the ASE
+    ev = stack.bap.event_queues[defs.BAP_EV_ASE_FOUND][0]
+    _, _, _, ase_id = ev
+
+    # Release streams
+    btp.ascs_release(ase_id)
+    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+
+    return True
 
 
 def hdl_wid_311(params: WIDParams):
@@ -519,15 +802,19 @@ def hdl_wid_311(params: WIDParams):
     (sampling_freq, frame_duration, octets_per_frame) = CODEC_CONFIG_SETTINGS[codec_set_name]
     audio_locations = 0x01
     coding_format = 0x06
-    btp.ascs_config_codec(ase_id, coding_format, sampling_freq, frame_duration,
-                          audio_locations, octets_per_frame)
+    frames_per_sdu = 0x01
+    codec_ltvs_bytes = create_lc3_ltvs_bytes(sampling_freq, frame_duration,
+                                             audio_locations, octets_per_frame,
+                                             frames_per_sdu)
+    btp.ascs_config_codec(ase_id, coding_format, 0x0000, 0x0000, codec_ltvs_bytes)
     stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
 
     # Perform Config QOS
     cig_id = 0x01
     cis_id = 0x01
+    presentation_delay = 40000
     qos_config = QOS_CONFIG_SETTINGS[qos_set_name]
-    btp.ascs_config_qos(ase_id, cig_id, cis_id, *qos_config)
+    btp.ascs_config_qos(ase_id, cig_id, cis_id, *qos_config, presentation_delay)
     stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
 
     # Enable streams
@@ -536,6 +823,64 @@ def hdl_wid_311(params: WIDParams):
 
     # Start streaming
     btp.ascs_receiver_start_ready(ase_id)
+    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+
+    return True
+
+
+def hdl_wid_310(_: WIDParams):
+    """
+    Please send Update Metadata Opcode with valid data.
+    """
+    addr = pts_addr_get()
+    addr_type = pts_addr_type_get()
+    stack = get_stack()
+
+    # Find ASE ID
+    ev = stack.bap.wait_ase_found_ev(addr_type, addr, AudioDir.SINK, 30)
+    if ev is None:
+        ev = stack.bap.wait_ase_found_ev(addr_type, addr, AudioDir.SOURCE, 5)
+
+    if ev is None:
+        return False
+
+    _, _, ase_dir, ase_id = ev
+
+    # # Get supported capabilities
+    # ev = stack.bap.wait_codec_cap_found_ev(addr_type, addr, audio_dir, 30)
+    # if ev is None:
+    #     return False
+    #
+    # _, _, _, coding_format, frequencies, frame_durations, frame_lens = ev
+    #
+    # # Perform Config Codec
+    # sampling_freq = first_1_bit(frequencies)
+    # frame_duration = first_1_bit(frame_durations)
+    # octets_per_frame = frame_lens & 0xffff
+    # audio_locations = 0x01
+    # coding_format = 0x06
+    # frames_per_sdu = 0x01
+    # codec_ltvs_bytes = create_lc3_ltvs_bytes(sampling_freq, frame_duration,
+    #                                          audio_locations, octets_per_frame,
+    #                                          frames_per_sdu)
+    # btp.ascs_config_codec(ase_id, coding_format, 0x0000, 0x0000, codec_ltvs_bytes)
+    # stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+    #
+    # # Perform Config QOS
+    # qos_set_name = f'{sampling_freq}_1_1'
+    # cig_id = 0x01
+    # cis_id = 0x01
+    # presentation_delay = 40000
+    # qos_config = QOS_CONFIG_SETTINGS[qos_set_name]
+    # btp.ascs_config_qos(ase_id, cig_id, cis_id, *qos_config, presentation_delay)
+    # stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+    #
+    # # Enable streams
+    # btp.ascs_enable(ase_id)
+    # stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+
+    # Update metadata
+    btp.ascs_update_metadata(ase_id)
     stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
 
     return True
@@ -575,11 +920,16 @@ def hdl_wid_314(params: WIDParams):
     octets_per_frame = frame_lens & 0xffff
     audio_locations = 0x01
     coding_format = 0xff
+    frames_per_sdu = 0x01
 
     # Perform Config Codec
-    btp.ascs_config_codec(ase_id, coding_format, sampling_freq, frame_duration,
-                          audio_locations, octets_per_frame)
+    codec_ltvs_bytes = create_lc3_ltvs_bytes(sampling_freq, frame_duration,
+                                             audio_locations, octets_per_frame,
+                                             frames_per_sdu)
+    btp.ascs_config_codec(ase_id, coding_format, 0xffff, 0xffff, codec_ltvs_bytes)
     stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+
+    return True
 
 
 def hdl_wid_315(params: WIDParams):
@@ -616,18 +966,26 @@ def hdl_wid_315(params: WIDParams):
         octets_per_frame = 0
         audio_locations = 0
         coding_format = 0xff
+        vid = 0xffff
+        cid = 0xffff
+        frames_per_sdu = 0x01
 
         # Perform Codec Config operation
-        btp.ascs_config_codec(ase_id, coding_format, sampling_freq, frame_duration,
-                              audio_locations, octets_per_frame)
+        codec_ltvs_bytes = create_lc3_ltvs_bytes(sampling_freq, frame_duration,
+                                                 audio_locations, octets_per_frame,
+                                                 frames_per_sdu)
+        btp.ascs_config_codec(ase_id, coding_format, vid, cid, codec_ltvs_bytes)
         stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
 
     # Perform Config QOS operation
     cig_id = 0x01
     cis_id = 0x01
+    presentation_delay = 40000
     qos_config = (7500, 0x00, 40, 2, 10)
-    btp.ascs_config_qos(ase_id, cig_id, cis_id, *qos_config)
+    btp.ascs_config_qos(ase_id, cig_id, cis_id, *qos_config, presentation_delay)
     stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+
+    return True
 
 
 def hdl_wid_20206(_: WIDParams):
