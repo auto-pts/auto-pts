@@ -15,6 +15,8 @@
 
 import logging
 from threading import Lock, Timer, Event
+
+from autopts.pybtp import defs
 from autopts.pybtp.types import AdType, Addr, IOCap
 
 STACK = None
@@ -91,21 +93,24 @@ class Property:
             setattr(instance, self.data, value)
 
 
-def wait_event_with_condition(timeout, self, condition_fun):
+def wait_event_with_condition(event_queue, condition_cb, timeout, remove):
     flag = Event()
     flag.set()
-    result = None
 
     t = Timer(timeout, timeout_cb, [flag])
     t.start()
 
     while flag.is_set():
-        result = condition_fun(self)
-        if result:
-            t.cancel()
-            break
+        for ev in event_queue:
+            result = condition_cb(*ev)
+            if result:
+                t.cancel()
+                if ev and remove:
+                    event_queue.remove(ev)
 
-    return result
+                return ev
+
+    return None
 
 
 def timeout_cb(flag):
@@ -594,103 +599,75 @@ class VOCS:
 
 
 class PACS:
-    pass
+    def __init__(self):
+        self.event_queues = {
+            defs.PACS_EV_CHARACTERISTIC_SUBSCRIBED: [],
+        }
+
+    def event_received(self, event_type, event_data_tuple):
+        self.event_queues[event_type].append(event_data_tuple)
+
+    def wait_pacs_characteristic_subscribed_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.PACS_EV_CHARACTERISTIC_SUBSCRIBED],
+            lambda _addr_type, _addr, *_: (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
 
 
 class ASCS:
     def __init__(self):
-        self.operation_complete_events = []
+        self.event_queues = {
+            defs.ASCS_EV_OPERATION_COMPLETED: [],
+            defs.ASCS_EV_CHARACTERISTIC_SUBSCRIBED: [],
+        }
 
-    def ascs_operation_complete_ev_recv(self, data_tuple):
-        self.operation_complete_events.append(data_tuple)
-
-    def find_ascs_operation_complete_ev(self, addr_type, addr, ase_id):
-        for ev in self.operation_complete_events:
-            _addr_type, _addr, _ase_id, *_ = ev
-            # addr is a lower case string
-            if (addr_type, addr, ase_id) == (_addr_type, _addr, _ase_id):
-                return ev
-
-        return None
+    def event_received(self, event_type, event_data_tuple):
+        self.event_queues[event_type].append(event_data_tuple)
 
     def wait_ascs_operation_complete_ev(self, addr_type, addr, ase_id, timeout, remove=True):
-        ev = wait_event_with_condition(timeout, self,
-            lambda _self: _self.find_ascs_operation_complete_ev(addr_type, addr, ase_id))
+        return wait_event_with_condition(
+            self.event_queues[defs.ASCS_EV_OPERATION_COMPLETED],
+            lambda _addr_type, _addr, _ase_id, *_: (addr_type, addr, ase_id) == (_addr_type, _addr, _ase_id),
+            timeout, remove)
 
-        if ev and remove:
-            self.operation_complete_events.remove(ev)
-
-        return ev
+    def wait_ascs_characteristic_subscribed_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.ASCS_EV_CHARACTERISTIC_SUBSCRIBED],
+            lambda _addr_type, _addr, *_: (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
 
 
 class BAP:
     def __init__(self):
-        self.discovery_completed_events = []
-        self.codec_cap_found_events = []
-        self.ase_found_events = []
+        self.event_queues = {
+            defs.BAP_EV_DISCOVERY_COMPLETED: [],
+            defs.BAP_EV_CODEC_CAP_FOUND: [],
+            defs.BAP_EV_ASE_FOUND: [],
+        }
 
-    def discovery_completed_ev_recv(self, data_tuple):
-        self.discovery_completed_events.append(data_tuple)
+    def event_received(self, event_type, event_data_tuple):
+        self.event_queues[event_type].append(event_data_tuple)
 
-    def find_discovery_completed_ev(self, addr_type, addr):
-        for ev in self.discovery_completed_events:
-            _addr_type, _addr, *_ = ev
-            # addr is a lower case string
-            if (addr_type, addr) == (_addr_type, _addr):
-                return ev
-
-        return None
+    def wait_codec_cap_found_ev(self, addr_type, addr, pac_dir, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.BAP_EV_CODEC_CAP_FOUND],
+            lambda _addr_type, _addr, _pac_dir, *_:
+                (addr_type, addr, pac_dir) == (_addr_type, _addr, _pac_dir),
+            timeout, remove)
 
     def wait_discovery_completed_ev(self, addr_type, addr, timeout, remove=True):
-        ev = wait_event_with_condition(timeout, self,
-            lambda _self: _self.find_discovery_completed_ev(addr_type, addr))
-
-        if ev and remove:
-            self.discovery_completed_events.remove(ev)
-
-        return ev
-
-    def codec_cap_found_ev_recv(self, data_tuple):
-        self.codec_cap_found_events.append(data_tuple)
-
-    def find_codec_cap_found_ev(self, addr_type, addr, pac_dir):
-        for ev in self.codec_cap_found_events:
-            _addr_type, _addr, _pac_dir, *_ = ev
-            # addr is a lower case string
-            if (addr_type, addr, pac_dir) == (_addr_type, _addr, _pac_dir):
-                return ev
-
-        return None
-
-    def wait_codec_cap_found_ev(self, addr_type, addr, dir, timeout, remove=True):
-        ev = wait_event_with_condition(timeout, self,
-            lambda _self: _self.find_codec_cap_found_ev(addr_type, addr, dir))
-
-        if ev and remove:
-            self.codec_cap_found_events.remove(ev)
-
-        return ev
-
-    def ase_found_ev_recv(self, data_tuple):
-        self.ase_found_events.append(data_tuple)
-
-    def find_ase_found_ev(self, addr_type, addr, ase_dir):
-        for ev in self.ase_found_events:
-            _addr_type, _addr, _ase_dir, *_ = ev
-            # addr is a lower case string
-            if (addr_type, addr, ase_dir) == (_addr_type, _addr, _ase_dir):
-                return ev
-
-        return None
+        return wait_event_with_condition(
+            self.event_queues[defs.BAP_EV_DISCOVERY_COMPLETED],
+            lambda _addr_type, _addr, *_:
+                (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
 
     def wait_ase_found_ev(self, addr_type, addr, ase_dir, timeout, remove=True):
-        ev = wait_event_with_condition(timeout, self,
-            lambda _self: _self.find_ase_found_ev(addr_type, addr, ase_dir))
-
-        if ev and remove:
-            self.ase_found_events.remove(ev)
-
-        return ev
+        return wait_event_with_condition(
+            self.event_queues[defs.BAP_EV_ASE_FOUND],
+            lambda _addr_type, _addr, _ase_dir, *_:
+                (addr_type, addr, ase_dir) == (_addr_type, _addr, _ase_dir),
+            timeout, remove)
 
 
 class L2capChan:
