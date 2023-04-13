@@ -79,7 +79,7 @@ def bap_ev_discovery_completed_(bap, data, data_len):
     logging.debug(f'BAP Discovery completed: addr {addr} addr_type '
                   f'{addr_type} status {status}')
 
-    bap.discovery_completed_ev_recv((addr_type, addr, status))
+    bap.event_received(defs.BAP_EV_DISCOVERY_COMPLETED, (addr_type, addr, status))
 
 
 def bap_ev_codec_cap_found_(bap, data, data_len):
@@ -99,8 +99,9 @@ def bap_ev_codec_cap_found_(bap, data, data_len):
                   f'freq {frequencies:#b} duration {frame_durations:#b} '
                   f'frame_len {octets_per_frame:#x}')
 
-    bap.codec_cap_found_ev_recv((addr_type, addr, pac_dir, coding_format, frequencies,
-                                 frame_durations, octets_per_frame))
+    bap.event_received(defs.BAP_EV_CODEC_CAP_FOUND,
+                       (addr_type, addr, pac_dir, coding_format, frequencies,
+                        frame_durations, octets_per_frame))
 
 
 def bap_ev_ase_found_(bap, data, data_len):
@@ -117,7 +118,7 @@ def bap_ev_ase_found_(bap, data, data_len):
     logging.debug(f'Found ASE: addr {addr} addr_type {addr_type}'
                   f' dir {ase_dir} ID {ase_id}')
 
-    bap.ase_found_ev_recv((addr_type, addr, ase_dir, ase_id))
+    bap.event_received(defs.BAP_EV_ASE_FOUND, (addr_type, addr, ase_dir, ase_id))
 
 
 BAP_EV = {

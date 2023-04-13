@@ -19,7 +19,7 @@ Commands and responses:
 
 		In case of an error, the error response will be returned.
 
-	Opcode 0x02 - Discover
+	Opcode 0x02 - Discover and Subscribe
 		Controller Index:    <controller id>
 		Command parameters:	Address_Type (1 octet)
 					Address  (6 octets)
@@ -29,12 +29,12 @@ Commands and responses:
         characteristics. In case of an error, the error status response
         will be returned. In case of a success, the IUT continues processing
         the command asynchronously. During discovery, the IUT may send events:
-                    Discovery Completed event
+                    Discover and Subscribe Completed event
                     Codec Capabilities Found event
                     ASE Found event
 
 Events:
-	Opcode 0x80 - Discovery Completed event
+	Opcode 0x80 - Discover and Subscribe Completed event
 
 		Controller Index:	<controller id>
 		Event parameters:	Address_Type (1 octet)
@@ -42,7 +42,7 @@ Events:
 					Status  (1 octet)
 
         This event indicates that the IUT finished discovery of PACS and ASCS
-        characteristics.
+        characteristics and subscribing to their notifications.
 
 	Opcode 0x81 - Codec Capabilities Found event
 

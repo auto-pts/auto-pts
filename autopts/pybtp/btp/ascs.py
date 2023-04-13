@@ -186,10 +186,29 @@ def ascs_ev_operation_completed_(ascs, data, data_len):
                   f'{addr_type} ase_id {ase_id} opcode {opcode} '
                   f'status {status} flags {flags}')
 
-    ascs.ascs_operation_complete_ev_recv((addr_type, addr, ase_id, opcode,
-                                          status, flags))
+    ascs.event_received(defs.ASCS_EV_OPERATION_COMPLETED,
+                        (addr_type, addr, ase_id, opcode, status, flags))
+
+
+def ascs_ev_characteristic_subscribed_(ascs, data, data_len):
+    logging.debug('%s %r', ascs_ev_characteristic_subscribed_.__name__, data)
+
+    fmt = '<B6sB'
+    header_size = struct.calcsize(fmt)
+    if len(data) < header_size:
+        raise BTPError('Invalid data length')
+
+    addr_type, addr, handle = struct.unpack_from(fmt, data)
+
+    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+
+    logging.debug(f'ASCS characteristic with handle {handle} subscribed')
+
+    ascs.event_received(defs.ASCS_EV_CHARACTERISTIC_SUBSCRIBED,
+                        (addr_type, addr, handle))
 
 
 ASCS_EV = {
     defs.ASCS_EV_OPERATION_COMPLETED: ascs_ev_operation_completed_,
+    defs.ASCS_EV_CHARACTERISTIC_SUBSCRIBED: ascs_ev_characteristic_subscribed_,
 }
