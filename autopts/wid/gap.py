@@ -522,7 +522,12 @@ def hdl_wid_112(params: WIDParams):
         return False
 
     btp.gattc_read(bd_addr_type, bd_addr, handle)
-    btp.gattc_read_rsp()
+    btp.gattc_read_rsp(store_rsp=True)
+
+    if params.test_case_name in ['GAP/SEC/AUT/BV-19-C']:
+        if (btp.verify_att_error("authentication error")):
+            btp.gap_pair()
+
     return True
 
 
