@@ -137,10 +137,6 @@ class BotClient(Client):
 
         # Distribute test cases among .conf files
         for config, value in list(self.iut_config.items()):
-            # Ignore default config here, it will receive all remaining test cases
-            if config == self.config_default:
-                continue
-
             # Merge .confs without 'test_cases' into the default one
             if 'test_cases' not in value:
                 # Rename default config
