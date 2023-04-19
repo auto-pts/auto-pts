@@ -135,8 +135,17 @@ class BotClient(Client):
         # Ask the PTS about test cases available in the workspace
         filtered_test_cases = autoptsclient.get_test_cases(self.ptses[0], included, excluded)
 
+        # Make sure that default config is processed last and gets from the reamaining test cases
+        iut_config_items = list(self.iut_config.items())
+        for i, value in enumerate(iut_config_items):
+            if value[0] == config_default:
+                iut_config_items.pop(i)
+                iut_config_items.append(value)
+                break
+
         # Distribute test cases among .conf files
-        for config, value in list(self.iut_config.items()):
+        remaining_test_cases = copy.deepcopy(filtered_test_cases)
+        for config, value in iut_config_items:
             # Merge .confs without 'test_cases' into the default one
             if 'test_cases' not in value:
                 # Rename default config
@@ -148,21 +157,18 @@ class BotClient(Client):
             _args[config].excluded = []
             _args[config].test_cases = []
 
-            remaining_test_cases = []
-            for tc in filtered_test_cases:
-                for prefix in value['test_cases']:
+            for prefix in value['test_cases']:
+                for tc in filtered_test_cases:
                     if tc.startswith(prefix):
                         _args[config].test_cases.append(tc)
-                        tc = None
-                        break
-
-                if tc is not None:
-                    remaining_test_cases.append(tc)
-
-            filtered_test_cases = remaining_test_cases
+                        remaining_test_cases.remove(tc)
+                
+            filtered_test_cases = copy.deepcopy(remaining_test_cases)
 
         # Remaining test cases will be run with the default .conf file
-        _args[config_default].test_cases = filtered_test_cases
+        # if default .conf doesn't have already defined test cases
+        if len(_args[config_default].test_cases) == 0:
+            _args[config_default].test_cases = filtered_test_cases
 
         for config in _args.keys():
             if len(_args[config].test_cases) == 0:
