@@ -135,17 +135,20 @@ class BotClient(Client):
         # Ask the PTS about test cases available in the workspace
         filtered_test_cases = autoptsclient.get_test_cases(self.ptses[0], included, excluded)
 
+        # Save the iut_config key run order.
+        run_order = list(self.iut_config.keys())
+
         # Make sure that default config is processed last and gets from the remaining test cases
-        iut_config_items = list(self.iut_config.items())
-        for i, value in enumerate(iut_config_items):
-            if value[0] == config_default:
-                iut_config_items.pop(i)
-                iut_config_items.append(value)
-                break
+        distribution_order = copy.deepcopy(run_order)
+        if config_default in run_order:
+            distribution_order.remove(config_default)
+            distribution_order.append(config_default)
 
         # Distribute test cases among .conf files
         remaining_test_cases = copy.deepcopy(filtered_test_cases)
-        for config, value in iut_config_items:
+        for config in distribution_order:
+            value = self.iut_config[config]
+
             # Merge .confs without 'test_cases' into the default one
             if 'test_cases' not in value:
                 # The 'test_cases' can be skipped only in the default config.
@@ -162,7 +165,7 @@ class BotClient(Client):
                     if tc.startswith(prefix):
                         _args[config].test_cases.append(tc)
                         remaining_test_cases.remove(tc)
-                
+
             filtered_test_cases = copy.deepcopy(remaining_test_cases)
 
         # Remaining test cases will be run with the default .conf file
@@ -170,8 +173,8 @@ class BotClient(Client):
         if len(_args[config_default].test_cases) == 0:
             _args[config_default].test_cases = filtered_test_cases
 
-        for config in _args.keys():
-            if len(_args[config].test_cases) == 0:
+        for config in run_order:
+            if _args.get(config) is None or len(_args[config].test_cases) == 0:
                 log(f'No test cases for {config} config, ignored.')
                 continue
 
