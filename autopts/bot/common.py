@@ -131,6 +131,8 @@ class BotClient(Client):
         # These contain values passed with -c and -e options
         included = sort_and_reduce_prefixes(_args[config_default].test_cases)
         excluded = sort_and_reduce_prefixes(_args[config_default].excluded)
+        _args[config_default].excluded = []
+        _args[config_default].test_cases = []
 
         # Ask the PTS about test cases available in the workspace
         filtered_test_cases = autoptsclient.get_test_cases(self.ptses[0], included, excluded)
@@ -157,8 +159,6 @@ class BotClient(Client):
                 continue
 
             _args[config] = copy.deepcopy(_args[config_default])
-            _args[config].excluded = []
-            _args[config].test_cases = []
 
             for prefix in value['test_cases']:
                 for tc in filtered_test_cases:
