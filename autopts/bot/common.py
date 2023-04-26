@@ -166,7 +166,7 @@ class BotClient(Client):
                         _args[config].test_cases.append(tc)
                         remaining_test_cases.remove(tc)
 
-            filtered_test_cases = copy.deepcopy(remaining_test_cases)
+                filtered_test_cases = copy.deepcopy(remaining_test_cases)
 
         # Remaining test cases will be run with the default .conf file
         # if default .conf doesn't have already defined test cases
