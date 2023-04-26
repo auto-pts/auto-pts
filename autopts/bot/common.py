@@ -135,7 +135,7 @@ class BotClient(Client):
         # Ask the PTS about test cases available in the workspace
         filtered_test_cases = autoptsclient.get_test_cases(self.ptses[0], included, excluded)
 
-        # Make sure that default config is processed last and gets from the reamaining test cases
+        # Make sure that default config is processed last and gets from the remaining test cases
         iut_config_items = list(self.iut_config.items())
         for i, value in enumerate(iut_config_items):
             if value[0] == config_default:
@@ -148,9 +148,9 @@ class BotClient(Client):
         for config, value in iut_config_items:
             # Merge .confs without 'test_cases' into the default one
             if 'test_cases' not in value:
-                # Rename default config
-                _args[config] = _args.pop(config_default)
-                config_default = config
+                # The 'test_cases' can be skipped only in the default config.
+                # It means: Run all remaining after distribution test cases
+                # with the default config.
                 continue
 
             _args[config] = copy.deepcopy(_args[config_default])
