@@ -22,14 +22,15 @@ from autopts.wid.aics import aics_wid_hdl as gen_wid_hdl
 
 log = logging.debug
 
+
 def aics_wid_hdl(wid, description, test_case_name):
     log("%s, %r, %r, %s", aics_wid_hdl.__name__, wid, description,
         test_case_name)
     module = sys.modules[__name__]
+    wid_str = f'hdl_wid_{wid}'
 
-    try:
-        handler = getattr(module, "hdl_wid_%d" % wid)
+    if hasattr(module, wid_str):
+        handler = getattr(module, wid_str)
         return handler(description)
-    except AttributeError:
+    else:
         return gen_wid_hdl(wid, description, test_case_name, False)
-
