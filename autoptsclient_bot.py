@@ -25,11 +25,13 @@ import schedule
 import importlib
 from argparse import ArgumentParser, RawTextHelpFormatter, SUPPRESS
 
-from autopts.client import set_end
+from autopts.client import set_end, init_logging
 from autopts.bot.config import BotProjects
 from autopts.bot.zephyr import main as zephyr
 from autopts.bot.mynewt import main as mynewt
 from autopts.winutils import have_admin_rights
+
+log = logging.debug
 
 # TODO Find more sophisticated way
 weekdays2schedule = {
@@ -88,6 +90,8 @@ def main():
     # which occurs under Windows with default encoding other than cp1252
     # each time log() is called.
     _locale._getdefaultlocale = (lambda *arg: ['en_US', 'utf8'])
+
+    init_logging('_startup')
 
     bot_projects = []
     parents = []

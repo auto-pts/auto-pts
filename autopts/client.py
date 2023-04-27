@@ -334,7 +334,8 @@ def init_logging(tag=""):
     logging.basicConfig(format=format_template,
                         filename=log_filename,
                         filemode='w',
-                        level=logging.DEBUG)
+                        level=logging.DEBUG,
+                        force=True)
 
 
 class FakeProxy:
