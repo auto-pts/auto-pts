@@ -175,9 +175,24 @@ class ZephyrBotClient(BotClient):
         self.config_default = "prj.conf"
 
     def apply_config(self, args, config, value):
-        if 'overlay' in value and len(value['overlay']):
-            apply_overlay(args.project_path, config,
-                          value['overlay'])
+        pre_overlay = value.get('pre_overlay', [])
+        if type(pre_overlay) == str:
+            pre_overlay = [pre_overlay]
+
+        post_overlay = value.get('post_overlay', [])
+        if type(post_overlay) == str:
+            post_overlay = [post_overlay]
+
+        # The order is used in the -DOVERLAY_CONFIG="<overlay1>;<...>" option
+        configs = pre_overlay + [config] + post_overlay
+
+        for name in configs:
+            if name in self.iut_config and 'overlay' in self.iut_config[name] \
+                    and len(self.iut_config[name]['overlay']):
+                apply_overlay(args.project_path, name,
+                              self.iut_config[name]['overlay'])
+
+        overlays = ';'.join(configs)
 
         log("TTY path: %s" % args.tty_file)
 
@@ -185,7 +200,7 @@ class ZephyrBotClient(BotClient):
             build_and_flash = get_build_and_flash(args.board_name)
             board_type = get_board_type(args.board_name)
             build_and_flash(args.project_path, board_type, args.debugger_snr,
-                            config, args.project_repos)
+                            overlays, args.project_repos)
 
             flush_serial(args.tty_file)
             time.sleep(10)
