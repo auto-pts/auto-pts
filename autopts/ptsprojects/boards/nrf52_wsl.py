@@ -49,7 +49,7 @@ def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None, *args):
 
     cmd = ['west', 'build', '-p', 'auto', '-b', board]
     if conf_file and conf_file != 'default' and conf_file != 'prj.conf':
-        cmd.extend(('--', '-DOVERLAY_CONFIG={}'.format(conf_file)))
+        cmd.extend(('--', '-DOVERLAY_CONFIG=\'{}\''.format(conf_file)))
 
     shell = True
     if sys.platform == 'win32':

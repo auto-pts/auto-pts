@@ -790,6 +790,8 @@ def check_call(cmd, env=None, cwd=None, shell=True):
     if sys.platform == 'win32':
         executable = None
 
+    logging.debug(f'Running cmd: {cmd}')
+
     return subprocess.check_call(cmd, env=env, cwd=cwd, shell=shell, executable=executable)
 
 
