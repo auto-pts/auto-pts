@@ -28,12 +28,13 @@ def gattc_wid_hdl(wid, description, test_case_name):
     log("%s, %r, %r, %s", gattc_wid_hdl.__name__, wid, description,
         test_case_name)
     module = sys.modules[__name__]
+    wid_str = f'hdl_wid_{wid}'
 
-    try:
-        handler = getattr(module, "hdl_wid_%d" % wid)
+    if hasattr(module, wid_str):
+        handler = getattr(module, wid_str)
         return handler(description)
-    except AttributeError:
-        return gatt_wid_hdl(wid, description, test_case_name)
+    else:
+        return gatt_wid_hdl(wid, description, test_case_name, False)
 
 
 def gattc_wid_hdl_no_read_long(wid, description, test_case_name):
