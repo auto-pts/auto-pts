@@ -56,14 +56,27 @@ class Board:
             logging.error("reset failed")
 
     def get_reset_cmd(self):
-        """Setup reset command"""
+        """Get and Return Board reset command, 
+        which will be executed in Board.reset() with subprocess.
 
-        board_mod = importlib.import_module(__package__ + '.' + self.name)
+        Returns:
+            return board_name.py.reset_cmd(self.iutctl) when board module exists.
+            else return Jlink(self.iutctl.debugger_snr, self.iutctl.device_core).reset_command as default.
+        """
 
-        if board_mod is None:
-            raise Exception("Board name %s is not supported!" % self.name)
+        module_name = __package__ + '.' + self.name
+        if importlib.util.find_spec(module_name):
+            board_mod = importlib.import_module(__package__ + '.' + self.name)
 
-        return board_mod.reset_cmd(self.iutctl)
+            if board_mod is None:
+                raise Exception("Board name %s is not supported!" % self.name)
+            return board_mod.reset_cmd(self.iutctl)
+        else:
+            try:
+                return Jlink(self.iutctl.debugger_snr, self.iutctl.device_core).reset_command
+            except Exception as e:
+                raise Exception("Board name %s is not supported! and failed to reset with Jlink." % self.name)
+
 
 
 def get_build_and_flash(board_name):
