@@ -18,32 +18,16 @@ import os
 import sys
 import logging
 
+
+from autopts.ptsprojects.boards import Jlink
+
 log = logging.debug
 
+DEVICE_NAME = 'kw45b41z83'
 supported_projects = ['zephyr']
 
 
 def reset_cmd(iutctl):
+    return Jlink(iutctl.debugger_snr, iutctl.device_core).reset_command
 
-    def _generate_reset_file():
-        reset_command = "si 1\n" \
-                        "speed 4000\n" \
-                        "h\n" \
-                        "r\n" \
-                        "g\n" \
-                        "q\n"
-        file_path = "reset.jlink"
-        if not os.path.exists(file_path):
-            with open(file_path, 'x') as f:
-                f.write(reset_command)
-                f.close()
-        return file_path
 
-    jlink = 'JLink' if sys.platform == "win32" else 'JLinkExe'
-
-    jlink_cmd = [jlink, '-CommandFile', _generate_reset_file()]
-    device_option = ['-device', iutctl.device_core]
-    debugger_option = ['-usb', iutctl.debugger_snr] if iutctl.debugger_snr else []
-    jlink_cmd += debugger_option + device_option
-
-    return ' '.join(jlink_cmd)

@@ -208,3 +208,52 @@ def tty_to_com(tty):
     elif tty.startswith('COM'):
         return tty
     return None
+
+
+class Jlink(object):
+    """
+    A wrapper for SEGGER-JLink.
+    """
+
+    def __init__(self, sn, device):
+        """Create an instance of the JLink debugger class.
+
+        Arguments:
+            sn {str} -- serial number of Jlink device.
+            device {str} -- device core name to be connected with jlink
+        """
+        super(Jlink, self).__init__()
+        self.sn = sn
+        self.device = device
+        self._reset_seqs =  "si 1\n" \
+                            "speed 4000\n" \
+                            "h\n" \
+                            "RSetType 2\n" \
+                            "r\n" \
+                            "g\n" \
+                            "q\n"
+
+    @property
+    def reset_command(self):
+        """Return Jlink reset command, executed on the console.
+
+        Example:
+            'JLink -CommandFile reset.jlink -usb 1062902236 -device kw45b41z83'
+        """
+        jlink = 'JLink' if sys.platform == "win32" else 'JLinkExe'
+        jlink_cmd = [jlink, '-CommandFile', self._generate_reset_file()]
+        device_option = ['-device', self.device]
+        debugger_option = ['-usb', self.sn] if self.sn else []
+        jlink_cmd += debugger_option + device_option
+        return ' '.join(jlink_cmd)
+
+    def update_reset_seqs(self, reset_seqs):
+        self._reset_seqs = reset_seqs
+
+    def _generate_reset_file(self):
+        file_path = "reset.jlink"
+        if not os.path.exists(file_path):
+            with open(file_path, 'x') as f:
+                f.write(self._reset_seqs)
+                f.close()
+        return file_path
