@@ -1,0 +1,454 @@
+Bot config file and command line options
+=========================================
+
+
+### Config file usage ###
+
+To run the AutoPTS Bot a config.py file is required.
+
+There are few example config.py files:
+autopts/bot/config.py.zephyr.sample
+autopts/bot/config.py.mynewt.sample
+autopts/bot/config.py.nrf.sample
+
+A short one might look like this:
+
+# Start of config.py
+z = {
+    'name': 'zephyr',
+    'iut_config': {"prj.conf": {}},
+    'auto_pts': {
+        'project_path': '/path/to/zephyrproject/zephyr',
+        'workspace': 'zephyr-master',
+        'board': 'nrf52',
+        'tty_file': 'COM1'
+    }
+}
+BotProjects.append(z)
+# End of config.py
+
+A config.py is an example name. There can be multiple config files with
+custom names. Only the .py extension is required, because the Bot treats
+the config.py file as a module and imports the BotProjects list from it.
+
+To pass the config.py to a Bot process the following ways are supported:
+
+1. Specify an absolute path to a custom_config.py:
+python ./autoptsclient_bot.py /path/to/custom_config.py
+
+2. If the autopts/bot/custom_config.py exists, specify just a name:
+python ./autoptsclient_bot.py custom_config
+
+3. or a name with a file extension:
+python ./autoptsclient_bot.py custom_config.py
+
+4. The config.py is the default name the Bot is looking for. If the
+   autopts/bot/config.py exists, no need to specify it:
+python ./autoptsclient_bot.py
+
+
+### Config file options ###
+
+In the BotConfigArgs class from autopts/bot/common.py you can find parsing
+of the common options for all projects. The options can be divided into
+Bot running options and additional feature options.
+
+The BotConfigArgs class can be inherited to implement additional project
+specific options.
+
+
+# Bot running options #
+
+Basic options needed to start bot.
+
+'workspace':
+description: The PTS workspace file to use for testing. Allowed values are
+    the absolute path to the .pqw6 file, or just the filename without
+    the extension if the file exists somewhere in autopts/workspaces/ tree.
+    The file should be located on the machine, where automation server is
+    running.
+value type: string
+default value: None
+
+'project_path':
+description: The absolute path to the local repository of the project. The
+    project should contain sources to build the tester app or ready to flash
+    image. Actual usage of the variable depends on implementation of
+    build_and_flash() function from autopts/ptsprojects/boards/<board>.py.
+value type: string
+default value: None
+
+'srv_port':
+description: The ports used by autoptsserver. Each autoptsserver instance
+    represents a different PTS instance. Allowed value range is <49152,65535>.
+    Note that one autoptsserver.py process can run multiple autoptsserver
+    instances (see -S option of autoptsserver.py).
+value type: list of integers
+default value: [65000]
+
+'cli_port':
+description: The ports used by autoptsclient. Each port is used for a callbacks
+    from different autoptsserver instance. Number of ports have to match
+    the number of ports in 'srv_port' parameter. Allowed value range is
+    <49152,65535>.
+value type: list of integers
+default value: [65001]
+
+'server_ip':
+description: The IP addresses of the autoptsserver instances. Number of
+    addresses have to match the number of ports in 'srv_port' parameter.
+    Note that one autoptsserver.py process can run multiple autoptsserver
+    instances (see -S option of autoptsserver.py).
+value type: list of strings
+default value: ['127.0.0.1']
+
+'local_ip':
+description: The IP addresses used by autoptsclient. Each address is used for
+    a callbacks from different autoptsserver instance. Number of addresses have
+    to match the number of ports in 'cli_port' parameter.
+value type: list of strings
+default value: ['127.0.0.1']
+
+'tty_file':
+description: The path to the TTY device under Linux or the COM device under
+    Windows. If this variable is specified, then autoptsclient works in real
+    hardware mode, with BTP communication over TTY/COM port. Hence, QEMU and
+    HCI modes will not be used and related parameters will be ignored.
+value type: string
+default value: None
+
+'board':
+description: The name of a file from autopts/ptsprojects/boards folder that
+implements board specific functions like build_and_flash or reset_cmd.
+value type: string
+default value: None
+
+'qemu_bin':
+description: The path to the qemu binary file. If this variable is specified,
+    then autoptsclient works in QEMU mode, with BTP communication over project
+    specific way, i.e. over virtual serial ports like /tmp/bt-stack-tester.
+    Hence, HCI mode will not be used and its parameters will be ignored.
+value type: string
+default value: None
+
+'hci':
+description: The ID of the HCI controller under native posix. If this variable
+    is specified, then autoptsclient works in HCI (native posix) mode. If
+    'tty_file' or 'qemu_bin' is specified then this mode will not be used and
+    related parameters will be ignored.
+value type: int
+default value: None
+
+'debugger_snr':
+description: The JLink serial number. If the autoptsclient runs in TTY mode,
+    then this parameter can be used to reset or flash the board. If the
+    parameter is left with the default None value, then the autoptsclient
+    will try to find the serial number with get_debugger_snr(tty) function.
+    Note that the function can fail if the 'tty_file' contains path to
+    a symlink or the board simply do not have a JLink. In that case the
+    build_and_flash() and the reset_cmd() of autopts/ptsprojects/boards/
+    <the_board>.py should be implemented without a need of a serial number
+    and the parameter 'debugger_snr' should contain any other value but None.
+    TODO: Fix this behavior to decide the need for a debugger serial number
+     based on the name of the board, configured in 'board' parameter.
+value type: string
+default value: None
+
+'kernel_image':
+description: The absolute path to an OS kernel image used for testing. Used in
+    QEMU and HCI mode. The file extension is project dependent and can differ
+    between modes e.g. an .elf file for qemu, an .exe for native.
+value type: string
+default value: None
+
+'repos':
+description: A dictionary of additional paths to external repos that may contain
+e.g. a binary to load into second core of a dual-core board.
+value type: dict
+default value: None
+
+'test_case_limit':
+description: The upper limit of test cases to run. All test cases above
+that limit will be skipped. This option can be used in test runs triggered
+with PR comment (magic tag) to avoid occupying the machine too long per PR.
+value type: dict
+default value: None
+
+'simple_mode':
+description: Start tests from Simple Client layer.
+In legacy times there were simple client launchers for each project.
+Those were unable to build and flash a board or upload result logs,
+but started tests a little bit faster comparing to Bot. After
+reunification the Simple Client became one of the Bot layers, so no
+redundant launchers are needed.
+value type: bool
+default value: False
+
+
+# Additional feature options #
+
+Features not required to run the bot. They are turned off by default and
+to use them you may need an additional configuration or external tools.
+Some of them are still experimental and their behavior may change over time.
+
+'database_file':
+description: The path to the database file. The AutoPTS uses SQLite database to
+    collect test results in cyclical test runs. This allows to track regressions
+    and progress of the project.
+value type: string
+default value: 'TestCase.db'
+
+'store':
+description: The parameter is related to the 'database_file' parameter. If set
+    to True, then the database will be updated with new test results.
+    TODO: Fix this option so that if 'database_file' is set and 'store' is False,
+     it still allows comparing test results without updating the database.
+value type: bool
+default value: False
+
+'rtt_log':
+description: Capture IUT logs from the device over JLink RTT. Requires RTT
+    support on IUT. Used only in TTY mode. If set to True, the capture is on
+    and the logs will be saved in
+    logs/cli_port_<cli_port>/<datetime>/<test_case><datetime>/<test_case>_iutctl.log
+value type: bool
+default value: False
+
+'btmon':
+description: Capture btmon logs from the device over JLink RTT. Requires RTT
+    support and btsnoop formatted logs on IUT. Used only in TTY mode. If set to
+    True, the capture is on and the logs will be saved in
+    logs/cli_port_<cli_port>/<datetime>/<test_case><datetime>/<test_case>_iutctl.log.
+    The btmon is a Linux tool, but after setup of WSL2 can be used under
+    Windows too, because AutoPTS client has implemented a tunnel for this
+    (see autopts/rtt.py).
+value type: bool
+default value: False
+
+'device_core':
+description: Parameter useful for implementing JLink related features. For now
+    used for logging via JLink RTT.
+    TODO: Device core name could be determined based on the name of the board,
+     configured in 'board' parameter.
+value type: string
+default value: 'NRF52840_XXAA'
+
+'bd_addr':
+description: IUT address. Parameter useful only if the IUT supports dynamic
+    setting of the address. In most projects the address is determined based on
+    the information received in BTP GAP_READ_CONTROLLER_INFO command.
+value type: string
+default value: 'DEADBEEFDEAD'
+
+'enable_max_logs':
+description: The boolean value is passed to EnableMaximumLogging() of PTS
+    Control API. If the maximum logging is disabled, only the logging messages
+    enabled in PTS.ini file will be sent (see
+    "C:/Users/<user>/AppData/Roaming/Bluetooth_SIG/ProfileTuningSuite_6/pts.ini").
+value type: bool
+default value: False
+
+'retry':
+description: Repeat the test case if it failed. The parameter defines the
+    maximum number of repetitions per test case.
+value type: int
+default value: 0
+
+'stress_test':
+description: Repeat every test case even if previous result was PASS. The repeat
+    counter will be set to 'retry' parameter value.
+value type: bool
+default value: False
+
+
+The following options are intended to make AutoPTS as automatic and operatorless
+as much as possible.
+
+'recovery':
+description: Specify if autoptsclient should try to recover itself after wrong
+    test case status. At recovery (see the run_recovery() function) the
+    autoptsclient tries to send a recovery request to the autoptsserver
+    instance and waits for its restart.
+
+    If the recovery request fails, it means that the XML-RPC server of the
+    autoptsserver client has jammed/crashed and will not respond soon. If the
+    autoptserver.py was started with --superguard option, it will blindly
+    restart itself after the given amount of time, without ever receiving
+    recovery request from autoptsclient. Then the XML-RPC server should be
+    available again, and the test run will continue. Unless the PTS dongle
+    falls into a state where it is not recoverable without replugging. Then
+    the autoptserver will never recover itself. Unless autoptsserver.py was
+    started with --ykush option. Combination of --superguard and --ykush gives
+    the best user experience, makes the autoptsserver.py almost unbreakable.
+    Unless most test cases are broken and Windows has run out of descriptors.
+    The issue is still under investigation.
+value type: string
+default value: False
+
+'ykush':
+description: Use YKUSH at recovery. The YKUSH is an active USB hub that allows
+    to replug connected IUT board or PTS dongles by switching the USB port off
+    and on. It is not uncommon in development process to trigger a such state
+    of a device, so it does not respond to reset command anymore and blocks
+    or breaks remaining test cases in the test run.
+value type: string
+default value: None
+
+'superguard':
+description: Specify amount of time in minutes, after which SuperGuard will
+    blindly trigger recovery steps. The ultimate timeout if PTS timeout or
+    test case timeout did not work.
+value type: float
+default value: 0
+
+'not_recover':
+description: Specify at which statuses autoptsclient should not recover itself.
+    Some wrong statuses are definitely not related to any jam/crash/bad state
+    issue, so this option can reduce the test run time.
+value type: list of strings
+default value: ['PASS', 'INCONC', 'FAIL', 'NOT_IMPLEMENTED']
+
+'cron_optim':
+description: For now this option just enables shutting down the Bluetooth
+    Protocol Viewer after a test run, to release its log file handler so
+    the file could be moved or deleted at final bot cleanup. While analyzing
+    and debugging test cases this is unwanted behavior, so it is turned off
+    by default. This option may be used for other cron optimizations in the
+    future.
+value type: bool
+default value: False
+
+
+### Command line options ###
+
+The CliParser class and its derivatives define the command line options. Most
+of those options are configurable in config.py too. The command line options
+have higher priority and can be used to overwrite config.py settings.
+
+
+'--nb':
+description: No-Build, skip build and flash.
+
+'--gdb':
+description: Skip board resets to avoid gdb server disconnection.
+
+'-i <IP address>' or '--ip_addr <IP address>':
+description: IP address of the PTS automation servers.
+example: -i 192.168.2.2
+
+'-l <IP address>' or '--local_addr <IP address>':
+description: Local IP address of PTS automation client.
+example: -l 192.168.2.2
+
+'-a <bluetooth address>' or '--bd-addr <bluetooth address>'
+description: Bluetooth device address of the IUT.
+example: -a 12:34:56:65:43:21
+
+'-d' or '--debug-logs'
+description: Enable the PTS maximum logging. Equivalent to running a test
+    case in PTS GUI using "Run (Debug Logs)".
+
+'-c <test case prefixes>':
+description: Names of test cases to run. Groups of test cases can be
+    specified by profile names.
+example: -c GAP/BROB/BCST/BV-01-C GAP/CONN
+
+'-e <test case prefixes>':
+description: Names of test cases to exclude. Groups of test cases can be
+    specified by profile names.
+example: -e GAP/BROB/BCST/BV-01-C GAP/CONN
+
+'-r <number>' or '--retry <number>'
+description: Repeat test if failed. Parameter specifies maximum repeat
+    count per test.
+example: -r 3
+
+'--stress_test':
+description: Repeat every test even if previous result was PASS.
+
+'-S <port number>' or '--srv_port <port number>':
+description: Specify the server port number/s. If the option is not used,
+    then the default port is 65000.
+example: -S 65006 65008
+
+'-C <port number>' or '--cli_port <port number':
+description: Specify the client port number/s. If the option is not used,
+    then the default port is 65001.
+example: -S 65007 65009
+
+'--recovery':
+description: Specify if autoptsclient should try to recover itself after
+    wrong status.
+
+'--not_recover <status list>':
+description: Specify at which statuses autoptsclient should try to recover
+    itself. By default, the following statuses are not recovered:
+    'PASS', 'INCONC', 'FAIL', 'NOT_IMPLEMENTED'.
+example: --not_recover "PASS" "BTP ERROR"
+
+'--superguard <miuntes>':
+description: Specify amount of time in minutes, after which the super guard
+    will blindly trigger recovery steps.
+example: --superguard 15
+
+'--ykush <ykush ports>':
+description: Specify ykush downstream port number/s that will be used during
+    recovery.
+example: --ykush 1 3
+
+'-s' or '--store':
+description: Enable saving results to database.
+
+'--sudo':
+description: Option to intentionally workaround admin rights check.
+    Not recommended because logs and pipes created in sudo mode can
+    be deleted only with sudo.
+
+'--database-file <file name>':
+description: Overwrite default database path.
+example: --database-file /path/to/ZephyrTestCase.db
+
+'--qemu_bin <path to qemu binary>':
+description: Specify a path to QEMU binary.
+    TODO: QEMU binary in zephyr module is hardcoded to qemu-system-arm
+        and does not use this variable. This option is still needed to enable
+        QEMU mode.
+example: --qemu_bin qemu-system-i386
+
+'--hci <number>':
+description: Specify the number of the HCI controller(currently only used
+    under native posix).
+
+'-t <serial device>' or '--tty-file <serial device>':
+description: If TTY(or COM) is specified, BTP communication with OS
+    running on hardware will be done over this TTY. Hence, QEMU will
+    not be used.
+
+'-j <jlink snr>' or '--jlink <jlink snr>':
+description: Specify jlink serial number manually.
+
+'-b' or '--board':
+description: A IUT board to use. This option is used to select a file
+    from autopts/ptsprojects/boards folder that implements board specific
+    functions like build_and_flash or reset_cmd.
+
+'--btmon':
+description: Capture IUT btsnoop logs from device over RTT and catch them
+    with btmon. Requires rtt support on IUT.
+
+'--device_core':
+description: Specify the device core for JLink related features e.g. BTMON
+    or RTT logging.
+
+'--rtt-log':
+description: Capture iut logs from device over RTT. Requires RTT support on
+    IUT.
+
+'--btp-tcp-ip <IP address>':
+description: An IP for external BTP client over TCP/IP.
+
+'--btp-tcp-port <port number':
+description: Port for external BTP client over TCP/IP.
+
+'--btpclient_path <path to file>':
+description: Path to a BTP client binary.
