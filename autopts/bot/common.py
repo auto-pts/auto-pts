@@ -209,7 +209,9 @@ class BotClient(Client):
 
         # Remaining test cases will be run with the default .conf file
         # if default .conf doesn't have already defined test cases
-        if len(_args[config_default].test_cases) == 0:
+        if len(_args[config_default].test_cases) == 0 and \
+                config_default in self.iut_config and \
+                len(self.iut_config[config_default].get('test_cases', [])) == 0:
             _args[config_default].test_cases = filtered_test_cases
 
         for config in run_order:
