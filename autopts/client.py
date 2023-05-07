@@ -1061,9 +1061,18 @@ class Client:
         setup_project_name(project)
         self.boards = get_available_boards(name)
         self.ptses = []
+        # Namespace with parsed command line arguments (and bot config)
         self.args = None
+        # Command line arguments parser
         self.arg_parser = parser_class(cli_support=autoprojects.iutctl.CLI_SUPPORT, board_names=self.boards)
         self.prev_sigint_handler = None
+
+    def parse_config_and_args(self, args_namespace=None):
+        if args_namespace is None:
+            args_namespace = self.args
+
+        self.args, errmsg = self.arg_parser.parse(args_namespace)
+        return errmsg
 
     def start(self, args=None):
         """Start main with exception handling."""
@@ -1090,15 +1099,11 @@ class Client:
             raise
 
     def main(self, _args=None):
-        """Main."""
-
-        # Workaround for logging error: "UnicodeEncodeError: 'charmap' codec can't
-        # encode character '\xe6' in position 138: character maps to <undefined>",
-        # which occurs under Windows with default encoding other than cp1252
-        # each time log() is called.
-        _locale._getdefaultlocale = (lambda *arg: ['en_US', 'utf8'])
-
-        self.args, errmsg = self.arg_parser.parse(_args)
+        """Main.
+        Args:
+            _args: namespace of predefined or parsed earlier args
+        """
+        errmsg = self.parse_config_and_args(_args)
         if errmsg != '':
             sys.exit(errmsg)
 
@@ -1146,6 +1151,12 @@ class Client:
         self.test_cases = setup_test_cases(ptses)
 
     def run_test_cases(self):
+        """Runs a list of test cases in simple client mode.
+
+        In bot client mode this method is overwritten to inject multiple
+        build-flash-run routines, so multiple reinitialization could
+        be skipped. See BotClient class in bot/common.py.
+        """
         self.args.test_cases = get_test_cases(self.ptses[0],
                                               self.args.test_cases,
                                               self.args.excluded)
