@@ -159,7 +159,7 @@ class ZephyrBotConfigArgs(BotConfigArgs):
     def __init__(self, args):
         super().__init__(args)
         self.board_name = args['board']
-        self.tty_file = args['tty_file']
+        self.tty_file = args.get('tty_file', None)
 
 
 class ZephyrBotCliParser(bot.common.BotCliParser):
@@ -205,22 +205,26 @@ class ZephyrBotClient(BotClient):
             flush_serial(args.tty_file)
             time.sleep(10)
 
+    def start(self, args=None):
+        main(self)
+
 
 class ZephyrClient(autoptsclient.Client):
     def __init__(self):
-        super().__init__(get_iut, 'zephyr', True)
+        super().__init__(get_iut, sys.modules['autopts.ptsprojects.zephyr'], 'zephyr')
 
 
 SimpleClient = ZephyrClient
-BotCliParser = ZephyrBotCliParser
+BotClient = ZephyrBotClient
 
 
-def main(cfg):
+def main(bot_client):
     bot.common.pre_cleanup()
 
     start_time = time.time()
     start_time_stamp = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
 
+    cfg = bot_client.bot_config
     args = cfg['auto_pts']
 
     if 'database_file' not in args:
@@ -242,27 +246,15 @@ def main(cfg):
         autoptsclient.board_power(args['ykush'], True)
         time.sleep(1)
 
-    if 'tty_file' not in args:
-        if 'debugger_snr' not in args:
-            args['tty_file'], args['debugger_snr'] = get_free_device(args['board'])
-        else:
-            args['tty_file'] = get_tty(args['debugger_snr'])
-
-        if args['tty_file'] is None:
-            sys.exit('No free device found!')
-    elif 'debugger_snr' not in args:
-        args['debugger_snr'] = get_debugger_snr(args['tty_file'])
-
     try:
-        summary, results, descriptions, regressions, progresses, args['pts_ver'], args['platform'] = \
-            ZephyrBotClient().run_tests(args, cfg.get('iut_config', {}))
+        summary, results, descriptions, regressions, progresses, \
+            args['pts_ver'], args['platform'] = bot_client.run_tests()
     finally:
-        release_device(args['tty_file'])
+        release_device(bot_client.args.tty_file)
 
     results = collections.OrderedDict(sorted(results.items()))
 
-    args_ns = ZephyrBotConfigArgs(args)
-    pts_logs, xmls = bot.common.pull_server_logs(args_ns)
+    pts_logs, xmls = bot.common.pull_server_logs(bot_client.args)
 
     report_file = bot.common.make_report_xlsx(results, summary, regressions,
                                               progresses, descriptions, xmls, PROJECT_NAME)

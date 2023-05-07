@@ -217,7 +217,17 @@ class CliParser(argparse.ArgumentParser):
         return ''
 
     def parse(self, arg_ns=None):
-        """Sanity check command line arguments"""
+        """Parsing and sanity check command line arguments
+        Args:
+            arg_ns: namespace of arguments and parameters to overwrite
+                    with the command line arguments parser
+
+        Returns: (args, errmsg)
+            where
+            args: namespace of parameters overwritten with parsed
+                  command line arguments
+            errmsg: an error message if parsing failed, otherwise empty string
+        """
         args = self.parse_args(None, arg_ns)
 
         args.superguard = 60 * args.superguard

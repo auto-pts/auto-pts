@@ -44,6 +44,7 @@ from oauth2client import file, client, tools
 from autopts import bot
 from autopts import client as autoptsclient
 from autopts.client import CliParser, Client, get_formatted_summary
+from autopts.ptsprojects.boards import get_free_device, get_tty, get_debugger_snr
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
 from autopts.bot.iut_config.zephyr import retry_config
 
@@ -65,8 +66,12 @@ class BotCliParser(CliParser):
         self.add_argument('--nb', dest='no_build', action='store_true',
                           help='Skip build and flash in bot mode.', default=False)
 
+        self.add_argument('--simple', action='store_true',
+                          help='Skip build and flash in bot mode.', default=False)
+
     def add_positional_args(self):
-        pass
+        self.add_argument("config_path", nargs='?', default='config.py',
+                          help="Path to config.py to use for testing.")
 
 
 class BotConfigArgs(Namespace):
@@ -104,6 +109,7 @@ class BotConfigArgs(Namespace):
         self.cron_optim = args.get('cron_optim', False)
         self.project_repos = args.get('repos', None)
         self.test_case_limit = args.get('test_case_limit', 0)
+        self.simple_mode = args.get('simple_mode', False)
 
 
 class BotClient(Client):
@@ -111,9 +117,40 @@ class BotClient(Client):
                  parser_class=BotCliParser):
         # Please extend this bot client
         super().__init__(get_iut, project, name, parser_class)
+        # Parser of the bot configuration dictionary loaded from config.py
         self.parse_config = bot_config_class
+        # The bot configuration dictionary. It will be parsed and overlayed
+        # with cli arguments into self.args namespace.
+        self.bot_config = None
+        # Name of the default .conf file in the iut_config.
         self.config_default = "default.conf"
+        # The iut_config dictionary loaded from config.py
         self.iut_config = None
+
+    def parse_or_find_tty(self, args):
+        if args.tty_file is None:
+            if args.debugger_snr is None:
+                args.tty_file, args.debugger_snr = get_free_device(args.board_name)
+            else:
+                args.tty_file = get_tty(args.debugger_snr)
+
+            if args.tty_file is None:
+                log('TTY mode: No free device found')
+        elif args.debugger_snr is None:
+            args.debugger_snr = get_debugger_snr(args.tty_file)
+
+    def parse_config_and_args(self, bot_config_dict=None):
+        if self.bot_config is not None:
+            # Do not parse a second time in the simple client layer
+            return ''
+
+        self.bot_config = bot_config_dict
+        self.iut_config = bot_config_dict.get('iut_config', {})
+        bot_config_namespace = self.parse_config(bot_config_dict['auto_pts'])
+        self.parse_or_find_tty(bot_config_namespace)
+        self.args, errmsg = self.arg_parser.parse(bot_config_namespace)
+
+        return errmsg
 
     def apply_config(self, args, config, value):
         pass
@@ -240,16 +277,14 @@ class BotClient(Client):
 
         return status, results, descriptions, total_regressions, total_progresses, pts_ver, platform
 
-    def run_tests(self, args, iut_config):
-        """Run test cases
-            :param args: AutoPTS arguments
-            :param iut_config: IUT configuration
-            :return: tuple of (status, results) dictionaries
-            """
+    def start(self, args=None):
+        # Extend this method in a derived class to handle sending
+        # logs, reports, etc.
+        self.run_tests()
 
-        self.iut_config = iut_config
-
-        return self.start(self.parse_config(args))
+    def run_tests(self):
+        # Entry point of the simple client layer
+        return super().start()
 
 
 def sort_and_reduce_prefixes(prefixes):
