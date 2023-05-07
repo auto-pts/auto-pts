@@ -186,7 +186,12 @@ def tty_exists(tty):
     if sys.platform == 'win32' and tty.startswith('/dev/ttyS'):
         tty = tty_to_com(tty)
 
-    return tty in [port.device for port in serial.tools.list_ports.comports()]
+    exists = tty in [port.device for port in serial.tools.list_ports.comports()]
+
+    if not exists:
+        exists = os.path.exists(tty)
+
+    return exists
 
 
 def com_to_tty(com):
