@@ -627,37 +627,43 @@ class TestCaseRunStats:
     def print_summary(self):
         """Prints test case list status summary"""
         print("\nSummary:\n")
+        print(get_formatted_summary(self.get_status_count(),
+                                    self.num_test_cases,
+                                    len(self.get_regressions()),
+                                    len(self.get_progresses())))
 
-        content = [['Status', 'Count'], '=']
-        status_count = self.get_status_count()
-        for status, count in list(status_count.items()):
-            content.append([status, str(count)])
 
+def get_formatted_summary(status_count, num_test_cases, regressions_count, progresses_count):
+    content = [['Status', 'Count'], '=']
+    for status, count in list(status_count.items()):
+        content.append([status, str(count)])
+
+    content.append(['='])
+    content.append(['Total', str(num_test_cases)])
+
+    if regressions_count != 0:
         content.append(['='])
-        content.append(['Total', str(self.num_test_cases)])
+        content.append(['Regressions', str(regressions_count)])
 
-        regressions = len(self.get_regressions())
-        if regressions != 0:
+    if progresses_count != 0:
+        if (content[len(content) - 1]) != 1:
             content.append(['='])
-            content.append(['Regressions', str(regressions)])
+        content.append(['Progresses', str(progresses_count)])
 
-        progresses = len(self.get_progresses())
-        if regressions != 0:
-            if (content[len(content) - 1]) != 1:
-                content.append(['='])
-            content.append(['Progresses', str(progresses)])
+    max_len = 0
+    for line in content:
+        if len(line) == 2:
+            max_len = max(max_len, len(' '.join(line)))
 
-        max_len = 0
-        for line in content:
-            if len(line) == 2:
-                max_len = max(max_len, len(' '.join(line)))
+    summary = []
+    for line in content:
+        if len(line) == 1:
+            summary.append(f'{line[0] * max_len}')
+        elif len(line) == 2:
+            spaces = ' ' * (max_len - len(line[0]) - len(line[1]))
+            summary.append(f'{line[0]}{spaces}{line[1]}')
 
-        for line in content:
-            if len(line) == 1:
-                print(line[0] * max_len)
-            elif len(line) == 2:
-                spaces = ' ' * (max_len - len(line[0]) - len(line[1]))
-                print('{}{}{}'.format(line[0], spaces, line[1]))
+    return '\n'.join(summary)
 
 
 def run_test_case_wrapper(func):
@@ -1031,7 +1037,7 @@ def run_test_cases(ptses, test_case_instances, args, retry_config=None):
 
     stats.print_summary()
 
-    return stats.get_status_count(), stats.get_results(), stats.get_regressions(), stats.get_progresses()
+    return stats
 
 
 class Client:

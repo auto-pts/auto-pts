@@ -43,7 +43,7 @@ from oauth2client import file, client, tools
 
 from autopts import bot
 from autopts import client as autoptsclient
-from autopts.client import CliParser, Client
+from autopts.client import CliParser, Client, get_formatted_summary
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
 from autopts.bot.iut_config.zephyr import retry_config
 
@@ -180,8 +180,12 @@ class BotClient(Client):
 
             self.apply_config(_args[config], config, self.iut_config[config])
 
-            status_count, results_dict, regressions, progresses = \
-                autoptsclient.run_test_cases(self.ptses, self.test_cases, _args[config], retry_config)
+            stats = autoptsclient.run_test_cases(self.ptses, self.test_cases, _args[config], retry_config)
+
+            status_count = stats.get_status_count()
+            results_dict = stats.get_results()
+            regressions = stats.get_regressions()
+            progresses = stats.get_progresses()
 
             total_regressions += regressions
             total_progresses += progresses
@@ -198,6 +202,19 @@ class BotClient(Client):
                 project_name = test_case_name.split('/')[0]
                 descriptions[test_case_name] = \
                     self.ptses[0].get_test_case_description(project_name, test_case_name)
+
+        total_regressions_len = len(total_regressions)
+        total_progresses_len = len(total_progresses)
+        print(f'\nFinal Bot Summary:\n')
+        print(get_formatted_summary(status, len(results), total_regressions_len, total_progresses_len))
+
+        if total_regressions_len:
+            print('\nRegressions:')
+            print('\n'.join(total_regressions))
+
+        if total_progresses_len:
+            print('\nProgresses:')
+            print('\n'.join(total_progresses))
 
         pts_ver = '{}'.format(self.ptses[0].get_version())
         platform = '{}'.format(self.ptses[0].get_system_model())
