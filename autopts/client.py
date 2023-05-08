@@ -971,7 +971,7 @@ def get_test_cases(pts, test_cases, excluded):
     return _test_cases
 
 
-def run_test_cases(ptses, test_case_instances, args, retry_config=None):
+def run_test_cases(ptses, test_case_instances, args):
     """Runs a list of test cases"""
 
     ports_str = '_'.join(str(x) for x in args.cli_port)
@@ -985,6 +985,7 @@ def run_test_cases(ptses, test_case_instances, args, retry_config=None):
 
     test_cases = args.test_cases
     projects = ptses[0].get_project_list()
+    retry_config = getattr(args, 'retry_config', None)
 
     # Statistics
     stats = TestCaseRunStats(projects, test_cases, args.retry, TEST_CASE_DB)
@@ -1160,7 +1161,7 @@ class Client:
         self.args.test_cases = get_test_cases(self.ptses[0],
                                               self.args.test_cases,
                                               self.args.excluded)
-        return run_test_cases(self.ptses, self.test_cases, self.args, None)
+        return run_test_cases(self.ptses, self.test_cases, self.args)
 
     def cleanup(self):
         autoprojects.iutctl.cleanup()
