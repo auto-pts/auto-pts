@@ -46,7 +46,6 @@ from autopts import client as autoptsclient
 from autopts.client import CliParser, Client, get_formatted_summary
 from autopts.ptsprojects.boards import get_free_device, get_tty, get_debugger_snr
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
-from autopts.bot.iut_config.zephyr import retry_config
 
 SCOPES = 'https://www.googleapis.com/auth/drive'
 CLIENT_SECRET_FILE = 'client_secret.json'
@@ -149,6 +148,7 @@ class BotClient(Client):
         bot_config_namespace = self.parse_config(bot_config_dict['auto_pts'])
         self.parse_or_find_tty(bot_config_namespace)
         self.args, errmsg = self.arg_parser.parse(bot_config_namespace)
+        self.args.retry_config = bot_config_dict.get('retry_config', None)
 
         return errmsg
 
@@ -238,7 +238,7 @@ class BotClient(Client):
 
             self.apply_config(_args[config], config, self.iut_config[config])
 
-            stats = autoptsclient.run_test_cases(self.ptses, self.test_cases, _args[config], retry_config)
+            stats = autoptsclient.run_test_cases(self.ptses, self.test_cases, _args[config])
 
             status_count = stats.get_status_count()
             results_dict = stats.get_results()

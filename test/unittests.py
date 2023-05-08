@@ -118,7 +118,7 @@ class MyTestCase(unittest.TestCase):
         def mock_get_test_case_list(project):
             return mock_workspace_test_cases[project]
 
-        def mock_run_test_cases(ptses, test_case_instances, args, retry_config=None):
+        def mock_run_test_cases(ptses, test_case_instances, args):
             return TestCaseRunStatsMock([], [], 0)
 
         for args in testargs:
