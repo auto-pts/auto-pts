@@ -16,58 +16,20 @@
 import logging
 import re
 import struct
-import sys
 import time
 
 from autopts.pybtp import btp
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp.types import WIDParams
+from autopts.wid import generic_wid_hdl
 
 # MMDL ATS ver. 1.0
 log = logging.debug
 
 
-def hdl_pending_mmdl_wids(wid, test_case_name, description):
-    log("%s, %r, %r, %s", hdl_pending_mmdl_wids.__name__, wid, description,
-        test_case_name)
-    stack = get_stack()
-    module = sys.modules[__name__]
-
-    actions = stack.synch.perform_synch(wid, test_case_name, description)
-    if not actions:
-        return "WAIT"
-
-    for action in actions:
-        handler = getattr(module, "hdl_wid_%d" % action.wid)
-        result = handler(WIDParams(wid, description, test_case_name))
-        stack.synch.prepare_pending_response(action.test_case,
-                                             result, action.delay)
-
-    return None
-
-
 def mmdl_wid_hdl(wid, description, test_case_name):
-    log("%s, %r, %r, %s", mmdl_wid_hdl.__name__, wid, description,
-        test_case_name)
-    module = sys.modules[__name__]
-
-    try:
-        handler = getattr(module, "hdl_wid_%d" % wid)
-
-        stack = get_stack()
-        if not stack.synch or not stack.synch.is_required_synch(test_case_name, wid):
-            return handler(WIDParams(wid, description, test_case_name))
-
-        response = hdl_pending_mmdl_wids(wid, test_case_name, description)
-
-        if response == "WAIT":
-            return response
-
-        stack.synch.set_pending_responses_if_any()
-        return "WAIT"
-
-    except AttributeError as e:
-        logging.exception(e)
+    log(f'{mmdl_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
+    return generic_wid_hdl(wid, description, test_case_name, [__name__])
 
 
 def iut_reset():

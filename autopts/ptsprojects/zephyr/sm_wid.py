@@ -14,26 +14,17 @@
 #
 
 import logging
-import sys
 
+from autopts.wid import generic_wid_hdl
 from autopts.pybtp import btp
-from autopts.wid.sm import sm_wid_hdl as gen_wid_hdl
 from autopts.ptsprojects.zephyr.iutctl import get_iut
 
 log = logging.debug
 
 
 def sm_wid_hdl(wid, description, test_case_name):
-    log("%s, %r, %r, %s", sm_wid_hdl.__name__, wid, description,
-        test_case_name)
-    module = sys.modules[__name__]
-    wid_str = f'hdl_wid_{wid}'
-
-    if hasattr(module, wid_str):
-        handler = getattr(module, wid_str)
-        return handler(description)
-    else:
-        return gen_wid_hdl(wid, description, test_case_name, False)
+    log(f'{sm_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
+    return generic_wid_hdl(wid, description, test_case_name, [__name__, 'autopts.wid.sm'])
 
 
 # wid handlers section begin

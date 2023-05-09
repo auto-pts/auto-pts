@@ -14,37 +14,29 @@
 #
 
 import logging
-import sys
 
-from autopts.wid.gap import gap_wid_hdl as gen_wid_hdl
+from autopts.wid import generic_wid_hdl
+from autopts.pybtp.types import WIDParams
 
 log = logging.debug
 
 
 def gap_wid_hdl(wid, description, test_case_name):
-    log("%s, %r, %r, %s", gap_wid_hdl.__name__, wid, description,
-        test_case_name)
-    module = sys.modules[__name__]
-    wid_str = f'hdl_wid_{wid}'
-
-    if hasattr(module, wid_str):
-        handler = getattr(module, wid_str)
-        return handler(description)
-    else:
-        return gen_wid_hdl(wid, description, test_case_name, False)
+    log(f'{gap_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
+    return generic_wid_hdl(wid, description, test_case_name, [__name__, 'autopts.wid.gap'])
 
 
-def hdl_wid_104(desc):
+def hdl_wid_104(_: WIDParams):
     return True
 
 
-def hdl_wid_114(desc):
+def hdl_wid_114(_: WIDParams):
     return True
 
 
-def hdl_wid_162(desc):
+def hdl_wid_162(_: WIDParams):
     return True
 
 
-def hdl_wid_224(desc):
+def hdl_wid_224(_: WIDParams):
     return True

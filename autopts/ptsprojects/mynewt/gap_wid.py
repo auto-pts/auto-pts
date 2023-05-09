@@ -14,28 +14,21 @@
 #
 
 import logging
-import sys
 import socket
 from time import sleep
 
+from autopts.wid import generic_wid_hdl
 from autopts.pybtp import btp
-from autopts.wid.gap import gap_wid_hdl as gen_wid_hdl, hdl_wid_139_mode1_lvl2, hdl_wid_139_mode1_lvl4
+from autopts.pybtp.types import WIDParams
+from autopts.wid.gap import hdl_wid_139_mode1_lvl2, hdl_wid_139_mode1_lvl4
 from autopts.ptsprojects.stack import get_stack
 
 log = logging.debug
 
 
 def gap_wid_hdl(wid, description, test_case_name):
-    log("%s, %r, %r, %s", gap_wid_hdl.__name__, wid, description,
-        test_case_name)
-    module = sys.modules[__name__]
-    wid_str = f'hdl_wid_{wid}'
-
-    if hasattr(module, wid_str):
-        handler = getattr(module, wid_str)
-        return handler(description)
-    else:
-        return gen_wid_hdl(wid, description, test_case_name, False)
+    log(f'{gap_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
+    return generic_wid_hdl(wid, description, test_case_name, [__name__, 'autopts.wid.gap'])
 
 
 # For tests that expect "OK" response even if read operation is not successful
@@ -65,15 +58,15 @@ def gap_wid_hdl_mode1_lvl4(wid, description, test_case_name):
     return gap_wid_hdl(wid, description, test_case_name)
 
 
-def hdl_wid_104(desc):
+def hdl_wid_104(_: WIDParams):
     return True
 
 
-def hdl_wid_112(desc):
+def hdl_wid_112(params: WIDParams):
     bd_addr = btp.pts_addr_get()
     bd_addr_type = btp.pts_addr_type_get()
 
-    handle = btp.parse_handle_description(desc)
+    handle = btp.parse_handle_description(params.description)
     if not handle:
         return False
 
@@ -85,11 +78,11 @@ def hdl_wid_112(desc):
     return True
 
 
-def hdl_wid_112_timeout(desc):
+def hdl_wid_112_timeout(params: WIDParams):
     bd_addr = btp.pts_addr_get()
     bd_addr_type = btp.pts_addr_type_get()
 
-    handle = btp.parse_handle_description(desc)
+    handle = btp.parse_handle_description(params.description)
     if not handle:
         return False
 
@@ -101,14 +94,14 @@ def hdl_wid_112_timeout(desc):
     return True
 
 
-def hdl_wid_204(desc):
+def hdl_wid_204(_: WIDParams):
     btp.gap_start_discov(discov_type='passive', mode='observe')
     sleep(10)
     btp.gap_stop_discov()
     return btp.check_discov_results(addr_type=0x02)
 
 
-def hdl_wid_242(desc):
+def hdl_wid_242(_: WIDParams):
     """
     Please send a Security Request.
     """
@@ -116,7 +109,7 @@ def hdl_wid_242(desc):
     return True
 
 
-def hdl_wid_1002(desc):
+def hdl_wid_1002(_: WIDParams):
     stack = get_stack()
     passkey = stack.gap.get_passkey()
     stack.gap.passkey.data = None

@@ -19,68 +19,28 @@ import logging
 import re
 import socket
 import struct
-import sys
 
 from autopts.pybtp import btp
 from autopts.pybtp.types import Prop, Perm, IOCap, UUID, WIDParams
 from autopts.ptsprojects.testcase import MMI
 from autopts.ptsprojects.stack import get_stack, GattPrimary, GattService, GattSecondary, GattServiceIncluded, \
     GattCharacteristic, GattCharacteristicDescriptor, GattDB
+from autopts.wid import generic_wid_hdl
 
 log = logging.debug
 
 indication_subbed_already = False
 
 
-def hdl_pending_gatt_wids(wid, test_case_name, description):
-    log("%s, %r, %r, %s", hdl_pending_gatt_wids.__name__, wid, description,
-        test_case_name)
-    stack = get_stack()
-    module = sys.modules[__name__]
-
-    actions = stack.synch.perform_synch(wid, test_case_name, description)
-    if not actions:
-        return "WAIT"
-
-    for action in actions:
-        handler = getattr(module, "hdl_wid_%d" % action.wid)
-        result = handler(WIDParams(wid, description, action.test_case))
-        stack.synch.prepare_pending_response(action.test_case,
-                                             result, action.delay)
-
-    return None
-
-
-def gatt_wid_hdl(wid, description, test_case_name, logs=True):
-    if logs:
-        log("%s, %r, %r, %s", gatt_wid_hdl.__name__, wid, description,
-            test_case_name)
-    module = sys.modules[__name__]
-
-    try:
-        handler = getattr(module, "hdl_wid_%d" % wid)
-
-        stack = get_stack()
-        if not stack.synch or not stack.synch.is_required_synch(test_case_name, wid):
-            return handler(WIDParams(wid, description, test_case_name))
-
-        response = hdl_pending_gatt_wids(wid, test_case_name, description)
-
-        if response == "WAIT":
-            return response
-
-        stack.synch.set_pending_responses_if_any()
-
-        return "WAIT"
-
-    except AttributeError as e:
-        logging.exception(e)
+def gatt_wid_hdl(wid, description, test_case_name):
+    log(f'{gatt_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
+    return generic_wid_hdl(wid, description, test_case_name, [__name__])
 
 
 def gattc_wid_hdl_multiple_indications(wid, description, test_case_name):
     global indication_subbed_already
     if wid == 99:
-        log("%s, %r, %r, %s", gatt_wid_hdl.__name__, wid, description,
+        log("%s, %r, %r, %s", gattc_wid_hdl_multiple_indications.__name__, wid, description,
             test_case_name)
         pattern = re.compile("'([0-9a-fA-F]+)'")
         params = pattern.findall(description)
@@ -102,13 +62,7 @@ def gattc_wid_hdl_multiple_indications(wid, description, test_case_name):
                                       btp.pts_addr_type_get(), 2)
         return True
 
-    module = sys.modules[__name__]
-
-    try:
-        handler = getattr(module, "hdl_wid_%d" % wid)
-        return handler(WIDParams(wid, description, test_case_name))
-    except AttributeError:
-        return gatt_wid_hdl(wid, description, test_case_name)
+    gatt_wid_hdl(wid, description, test_case_name)
 
 
 def gatt_server_fetch_db():

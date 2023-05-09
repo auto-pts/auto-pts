@@ -15,21 +15,12 @@
 #
 
 import logging
-import sys
 
-from autopts.wid.dis import dis_wid_hdl as gen_wid_hdl
+from autopts.wid import generic_wid_hdl
 
 log = logging.debug
 
 
 def dis_wid_hdl(wid, description, test_case_name):
-    log("%s, %r, %r, %s", dis_wid_hdl.__name__, wid, description,
-        test_case_name)
-    module = sys.modules[__name__]
-    wid_str = f'hdl_wid_{wid}'
-
-    if hasattr(module, wid_str):
-        handler = getattr(module, wid_str)
-        return handler(description)
-    else:
-        return gen_wid_hdl(wid, description, test_case_name, False)
+    log(f'{dis_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
+    return generic_wid_hdl(wid, description, test_case_name, [__name__, 'autopts.wid.dis'])

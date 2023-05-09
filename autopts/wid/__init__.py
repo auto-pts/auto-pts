@@ -14,6 +14,7 @@
 #
 from typing import NamedTuple
 
+from .wid import generic_wid_hdl
 from .l2cap import l2cap_wid_hdl
 from .mesh import mesh_wid_hdl
 from .mmdl import mmdl_wid_hdl
