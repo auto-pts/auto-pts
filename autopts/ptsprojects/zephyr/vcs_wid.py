@@ -14,23 +14,12 @@
 #
 
 import logging
-import sys
 
-from autopts.pybtp import btp
-from autopts.pybtp.types import UUID
-from autopts.wid.vcs import vcs_wid_hdl as gen_wid_hdl
+from autopts.wid import generic_wid_hdl
 
 log = logging.debug
 
 
 def vcs_wid_hdl(wid, description, test_case_name):
-    log("%s, %r, %r, %s", vcs_wid_hdl.__name__, wid, description,
-        test_case_name)
-    module = sys.modules[__name__]
-    wid_str = f'hdl_wid_{wid}'
-
-    if hasattr(module, wid_str):
-        handler = getattr(module, wid_str)
-        return handler(description)
-    else:
-        return gen_wid_hdl(wid, description, test_case_name, False)
+    log(f'{vcs_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
+    return generic_wid_hdl(wid, description, test_case_name, [__name__, 'autopts.wid.vcs'])

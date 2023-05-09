@@ -16,26 +16,20 @@ import binascii
 import logging
 import re
 import socket
-import sys
 import time
 
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp
 from autopts.pybtp.types import BTPError, WIDParams
+from autopts.wid import generic_wid_hdl
 
 log = logging.debug
 
 
 def l2cap_wid_hdl(wid, description, test_case_name):
-    log("%s, %r, %r, %s", l2cap_wid_hdl.__name__, wid, description,
-        test_case_name)
-    module = sys.modules[__name__]
+    log(f'{l2cap_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
+    return generic_wid_hdl(wid, description, test_case_name, [__name__])
 
-    try:
-        handler = getattr(module, "hdl_wid_%d" % wid)
-        return handler(WIDParams(wid, description, test_case_name))
-    except AttributeError as e:
-        logging.exception(e)
 
 # wid handlers section begin
 def hdl_wid_14(_: WIDParams):

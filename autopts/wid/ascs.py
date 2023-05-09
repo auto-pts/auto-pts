@@ -15,26 +15,19 @@
 
 import logging
 import re
-import sys
 
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp
 from autopts.pybtp.types import WIDParams
 from autopts.wid.bap import create_lc3_ltvs_bytes
+from autopts.wid import generic_wid_hdl
 
 log = logging.debug
 
 
-def ascs_wid_hdl(wid, description, test_case_name, logs=True):
-    if logs:
-        log(f'{ascs_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
-    module = sys.modules[__name__]
-
-    try:
-        handler = getattr(module, f'hdl_wid_{wid}')
-        return handler(WIDParams(wid, description, test_case_name))
-    except AttributeError as e:
-        logging.exception(e)
+def ascs_wid_hdl(wid, description, test_case_name):
+    log(f'{ascs_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
+    return generic_wid_hdl(wid, description, test_case_name, [__name__])
 
 
 # wid handlers section begin
