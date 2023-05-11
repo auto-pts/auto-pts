@@ -119,31 +119,6 @@ iut_config = {
         ]
     },
 
-    "privacy_default_timeout.conf": {
-        "overlay": {
-            'CONFIG_BT_PRIVACY': 'y',
-        },
-        "test_cases": [
-            'MESH/NODE/IVU/BV-(XY+0)-C',
-            'MESH/NODE/IVU/BV-(XY+1)-C',
-            'MESH/NODE/IVU/BV-(XY+0)-C',
-            'MESH/NODE/IVU/BV-(XY+1)',
-            'MESH/NODE/IVU/BV-(XY+2)',
-            'MESH/NODE/IVU/BV-(XY+3)',
-            'MESH/NODE/IVU/BV-(XY+4)',
-            'MESH/NODE/IVU/BI-(XY+0)-C',
-            'MESH/NODE/IVU/BI-(XY+1)-C',
-            'MESH/NODE/IVU/BI-(XY+2)-C',
-            'MESH/NODE/IVU/BI-(XY+3)-C',
-            'MESH/NODE/IVU/BI-(XY+4)-C',
-            'MESH/NODE/KR/BV-(XY+0)-C',
-            'MESH/NODE/KR/BV-(XY+1)-C',
-            'MESH/NODE/KR/BI-(XY+0)-C',
-            'MESH/CFGCL/KR/BV-(XY+0)-C',
-            'MESH/CFGCL/KR/BV-(XY+1)-C'
-        ]
-    },
-
     "eatt_two_channels.conf": {
         "overlay": {
             'CONFIG_BT_EATT_MAX': '2',
@@ -172,7 +147,34 @@ iut_config = {
         ]
     },
 
+    "privacy_default_timeout.conf": {
+        "pre_overlay": "overlay-mesh.conf",
+        "overlay": {
+            'CONFIG_BT_PRIVACY': 'y',
+        },
+        "test_cases": [
+            'MESH/NODE/IVU/BV-(XY+0)-C',
+            'MESH/NODE/IVU/BV-(XY+1)-C',
+            'MESH/NODE/IVU/BV-(XY+0)-C',
+            'MESH/NODE/IVU/BV-(XY+1)',
+            'MESH/NODE/IVU/BV-(XY+2)',
+            'MESH/NODE/IVU/BV-(XY+3)',
+            'MESH/NODE/IVU/BV-(XY+4)',
+            'MESH/NODE/IVU/BI-(XY+0)-C',
+            'MESH/NODE/IVU/BI-(XY+1)-C',
+            'MESH/NODE/IVU/BI-(XY+2)-C',
+            'MESH/NODE/IVU/BI-(XY+3)-C',
+            'MESH/NODE/IVU/BI-(XY+4)-C',
+            'MESH/NODE/KR/BV-(XY+0)-C',
+            'MESH/NODE/KR/BV-(XY+1)-C',
+            'MESH/NODE/KR/BI-(XY+0)-C',
+            'MESH/CFGCL/KR/BV-(XY+0)-C',
+            'MESH/CFGCL/KR/BV-(XY+1)-C'
+        ]
+    },
+
     "mesh_rpr.conf": {
+        "pre_overlay": "overlay-mesh.conf",
         "overlay": {
             'CONFIG_BT_MESH_ECDH_P256_HMAC_SHA256_AES_CCM': 'n',
         },
@@ -186,6 +188,7 @@ iut_config = {
         ]
     },
     "mesh_rpr_persistent_storage.conf": {
+        "pre_overlay": "overlay-mesh.conf",
         "overlay": {
             'CONFIG_BT_MESH_ECDH_P256_HMAC_SHA256_AES_CCM': 'n',
             'CONFIG_BT_SETTINGS': 'y',
@@ -208,6 +211,7 @@ iut_config = {
     },
 
     "mesh_dfd_srv.conf": {
+        "pre_overlay": "overlay-mesh.conf",
         "overlay": {
             'CONFIG_BT_SETTINGS': 'y',
             'CONFIG_FLASH': 'y',
@@ -317,6 +321,7 @@ iut_config = {
     # It is faster to rebuild app that requires sending large amount of
     # data than execute all tests like that.
     "long_data_mesh_dfd_srv.conf": {
+        "pre_overlay": "overlay-mesh.conf",
         "overlay": {
             'CONFIG_BT_SETTINGS': 'y',
             'CONFIG_FLASH': 'y',
@@ -332,6 +337,7 @@ iut_config = {
     },
 
     "mesh_dfu_srv.conf": {
+        "pre_overlay": "overlay-mesh.conf",
         "overlay": {
             'CONFIG_BT_SETTINGS': 'y',
             'CONFIG_FLASH': 'y',
@@ -378,6 +384,7 @@ iut_config = {
     },
 
     "mesh_dfd_dfu.conf": {
+        "pre_overlay": "overlay-mesh.conf",
         "overlay": {
             'CONFIG_BT_SETTINGS': 'y',
             'CONFIG_FLASH': 'y',
