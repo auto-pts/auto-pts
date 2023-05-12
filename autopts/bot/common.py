@@ -103,6 +103,7 @@ class BotConfigArgs(Namespace):
         self.superguard = float(args.get('superguard', 0))
         self.cron_optim = args.get('cron_optim', False)
         self.project_repos = args.get('repos', None)
+        self.test_case_limit = args.get('test_case_limit', 0)
 
 
 class BotClient(Client):
@@ -124,6 +125,7 @@ class BotClient(Client):
         total_regressions = []
         total_progresses = []
         _args = {}
+        limit_counter = 0
 
         config_default = self.config_default
         _args[config_default] = self.args
@@ -174,9 +176,23 @@ class BotClient(Client):
             _args[config_default].test_cases = filtered_test_cases
 
         for config in run_order:
-            if _args.get(config) is None or len(_args[config].test_cases) == 0:
+            test_case_number = len(_args[config].test_cases)
+
+            if _args.get(config) is None or test_case_number == 0:
                 log(f'No test cases for {config} config, ignored.')
                 continue
+
+            if self.args.test_case_limit:
+                limit = self.args.test_case_limit - limit_counter
+                if limit == 0:
+                    log(f'Limit of test cases reached. No more test cases will be run.')
+                    break
+
+                if test_case_number > limit:
+                    _args[config].test_cases = _args[config].test_cases[:limit]
+                    test_case_number = limit
+
+                limit_counter += test_case_number
 
             self.apply_config(_args[config], config, self.iut_config[config])
 
