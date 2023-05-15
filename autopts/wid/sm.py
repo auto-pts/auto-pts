@@ -40,9 +40,6 @@ def hdl_wid_100(params: WIDParams):
     btp.gap_conn()
     get_stack().gap.wait_for_connection(30)
 
-    if params.test_case_name == "SM/CEN/EKS/BV-01-C":
-        btp.gap_pair()
-
     return True
 
 
@@ -82,9 +79,6 @@ def hdl_wid_107(params: WIDParams):
 
 
 def hdl_wid_108(params: WIDParams):
-    if params.test_case_name == "SM/CEN/EKS/BV-01-C":
-        return True
-
     btp.gap_pair()
     return True
 
@@ -219,6 +213,11 @@ def hdl_wid_156(_: WIDParams):
 
 def hdl_wid_173(_: WIDParams):
     return btp.gap_wait_for_pairing_fail()
+
+
+def hdl_wid_174(_: WIDParams):
+    btp.gap_pair()
+    return True
 
 
 def hdl_wid_1009(params: WIDParams):
