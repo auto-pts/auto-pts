@@ -136,13 +136,8 @@ def get_free_device(board=None):
     """Returns tty path and jlink serial number of a free device."""
     devices = get_device_list()
 
-    SNR_PREFIX_FOR_BOARD = defaultdict(str, {
-        'nrf52': '68',
-        'nrf53': ('96', '105'),
-    })
-
     for tty, snr in devices.items():
-        if tty not in devices_in_use and snr.startswith(SNR_PREFIX_FOR_BOARD[board]):
+        if tty not in devices_in_use:
             devices_in_use.append(tty)
             return tty, snr
 
