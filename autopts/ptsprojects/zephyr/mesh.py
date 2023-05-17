@@ -268,11 +268,11 @@ def test_cases(ptses):
     ]
 
     pre_conditions_comp_change = pre_conditions + [
+        TestFunc(btp.mesh_comp_set_alt),
         TestFunc(btp.mesh_init),
         TestFunc(btp.mesh_reset),
         TestFunc(btp.mesh_comp_change_prepare),
         TestFunc(btp.get_iut_method().wait_iut_ready_event),
-        TestFunc(btp.mesh_comp_set_alt),
         TestFunc(btp.core_reg_svc_gap),
         TestFunc(btp.core_reg_svc_mesh),
         TestFunc(stack.mesh.reset_state)
