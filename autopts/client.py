@@ -1229,10 +1229,17 @@ def run_recovery(args, ptses):
 
     try:
         for pts in ptses:
-            pts.request_recovery()
+            pts.request_pts_recovery()
     except Exception as e:
         logging.exception(e)
         traceback.print_exc()
+
+        try:
+            for pts in ptses:
+                pts.request_server_recovery()
+        except Exception as e:
+            logging.exception(e)
+            traceback.print_exc()
 
     for pts in ptses:
         wait_for_server_restart(pts)

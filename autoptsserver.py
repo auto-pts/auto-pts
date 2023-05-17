@@ -44,6 +44,7 @@ from os.path import dirname, abspath
 from pathlib import Path
 from time import sleep
 
+import psutil
 import pythoncom
 import win32com
 import win32com.client
@@ -56,6 +57,7 @@ from autopts.utils import usb_power
 log = logging.debug
 PROJECT_DIR = dirname(abspath(__file__))
 PTS_START_LOCK = threading.RLock()
+autoptsservers = []
 
 
 def server_start_lock_wrapper(func):
@@ -68,6 +70,15 @@ def server_start_lock_wrapper(func):
         return ret
 
     return _server_start_lock_wrapper
+
+
+def count_script_instances():
+    script_name = 'autoptsserver.py'
+    count = 0
+    for proc in psutil.process_iter(['name', 'cmdline']):
+        if proc.info['name'].startswith('python') and script_name in ' '.join(proc.info['cmdline']):
+            count += 1
+    return count
 
 
 class PyPTSWithXmlRpcCallback(ptscontrol.PyPTS):
@@ -239,7 +250,7 @@ class SuperGuard(threading.Thread):
             if idle_num == len(self.servers) and idle_num != 0:
                 log('Superguard timeout, recovering')
                 for srv in self.servers:
-                    srv.request_recovery()
+                    srv.request_server_recovery()
                 self.was_timeout = True
             sleep(5)
 
@@ -262,7 +273,9 @@ class Server(threading.Thread):
         self.pts = None
         self._device = None
         self.end = False
-        self.recovery_request = False
+        self.finished = threading.Event()
+        self.server_recovery_request = False
+        self.pts_recovery_request = False
         self.name = 'S-' + str(self._args.srv_port)
         self.is_ready = False
         if self._args.ykush and type(self._args.ykush) is list:
@@ -283,74 +296,113 @@ class Server(threading.Thread):
             print("Local IP address: %s DNS %r" % (iface.IPAddress, iface.DNSDomain))
 
         while not self.end:
-            self.recovery_request = False
             try:
+                self.server_recovery_request = False
                 self.server_init()
                 self.is_ready = True
-                while not self.end and not self.recovery_request:
-                    self.server.handle_request()
-            except Exception as e:
-                logging.exception(e)
-                kill_all_processes('PTS.exe')
 
-            ptscontrol.set_stop_pts(False)
+                while not self.end and not self.server_recovery_request:
+                    self.server.handle_request()
+
+                    if self.pts_recovery_request:
+                        self._init_pts()
+                        self.pts_recovery_request = True
+                        self.is_ready = True
+
+            except KeyboardInterrupt:
+                # Ctrl-C termination for single instance mode
+                break
+
+            except BaseException as e:
+                logging.exception(e)
+                self._cleanup_pts()
+
             self.is_ready = False
+
+        self._cleanup_pts()
+        self.finished.set()
 
         return 0
 
-    @server_start_lock_wrapper
-    def server_init(self):
+    def _cleanup_pts(self):
         if self.pts:
             self.pts.stop_pts()
             self.pts.delete_temp_workspace()
             del self.pts
             self.pts = None
 
+    def _init_pts(self):
+        self._cleanup_pts()
+
+        if self._args.ykush:
+            log(f'Replugging device ({self._device}) under ykush:{self._args.ykush}')
+            if self._device:
+                while dongle_exists(self._device):
+                    power_dongle(self._args.ykush, False)
+
+                while not dongle_exists(self._device):
+                    power_dongle(self._args.ykush, True)
+            else:
+                # Cases where where ykush was down or the dongle was
+                # not enumerated for any other reason.
+                power_dongle(self._args.ykush, False)
+                sleep(3)
+                power_dongle(self._args.ykush, True)
+
+        print("Starting PTS ...")
+        self.pts = PyPTSWithXmlRpcCallback(self._args.dongle)
+        self._device = self.pts._device
+        self.server.register_instance(self.pts)
+        print("OK")
+
+    @server_start_lock_wrapper
+    def server_init(self):
         if self.server:
             self.server.server_close()
             del self.server
             self.server = None
 
-        if self._args.ykush:
-            log(f'Replugging device ({self._device}) under ykush:{self._args.ykush}')
-            power_dongle(self._args.ykush, False)
-            while self._device and dongle_exists(self._device):
-                pass
-            power_dongle(self._args.ykush, True)
-            while self._device and not dongle_exists(self._device):
-                pass
-
-        print("Starting PTS ...")
-        self.pts = PyPTSWithXmlRpcCallback(self._args.dongle)
-        self._device = self.pts._device
-        print("OK")
-
         print("Serving on port {} ...".format(self._args.srv_port))
 
         self.server = xmlrpc.server.SimpleXMLRPCServer(("", self._args.srv_port), allow_none=True)
-        self.server.register_function(self.request_recovery, 'request_recovery')
+        self.server.register_function(self.request_pts_recovery, 'request_pts_recovery')
         self.server.register_function(self.list_workspace_tree, 'list_workspace_tree')
         self.server.register_function(self.copy_file, 'copy_file')
         self.server.register_function(self.delete_file, 'delete_file')
         self.server.register_function(self.ready, 'ready')
         self.server.register_function(self.get_system_model, 'get_system_model')
         self.server.register_function(self.shutdown_pts_bpv, 'shutdown_pts_bpv')
-        self.server.register_instance(self.pts)
         self.server.register_introspection_functions()
         self.server.timeout = 1.0
+
+        while True:
+            try:
+                self._init_pts()
+                break
+            except Exception as e:
+                logging.exception(e)
+                # Kill all stale PTS.exe processes only if this is
+                # the only running instance of autoptsserver.py
+                if count_script_instances() == 1:
+                    kill_all_processes('PTS.exe')
 
     def run(self):
         try:
             self.main(self._args)
         except Exception as exc:
-            self.end = True
             logging.exception(exc)
-            print('Server ', str(self._args.srv_port), ' finished')
+        finally:
+            self.end = True
+            self.finished.set()
+            log(f'Server {str(self._args.srv_port)} finished')
 
-    def request_recovery(self):
+    def request_server_recovery(self):
         self.is_ready = False
-        self.recovery_request = True
-        ptscontrol.set_stop_pts(True)
+        self.server_recovery_request = True
+
+    def request_pts_recovery(self):
+        self.is_ready = False
+        self.pts_recovery_request = True
 
     def terminate(self):
         self.is_ready = False
@@ -414,26 +466,22 @@ class Server(threading.Thread):
 def multi_main(_args, _superguard):
     """Multi server main."""
 
-    servers = []
     for i in range(len(_args.srv_port)):
         args_copy = copy.deepcopy(_args)
         args_copy.srv_port = _args.srv_port[i]
         args_copy.ykush = _args.ykush[i] if _args.ykush else None
         args_copy.dongle = _args.dongle[i] if _args.dongle else None
         srv = Server(_args=args_copy)
-        servers.append(srv)
+        autoptsservers.append(srv)
         srv.start()
         superguard.add_server(srv)
 
     all_alive = True
     while all_alive:
-        for s in servers:
+        for s in autoptsservers:
             if not s.is_alive():
                 all_alive = False
         sleep(5)
-
-    for s in servers:
-        s.terminate()
 
 
 if __name__ == "__main__":
@@ -462,6 +510,7 @@ if __name__ == "__main__":
     try:
         if isinstance(_args.srv_port, int):
             server = Server(_args)
+            autoptsservers.append(server)
             superguard.add_server(server)
 
             server.main(_args)  # Run server in main process
@@ -469,7 +518,14 @@ if __name__ == "__main__":
             multi_main(_args, superguard)  # Run many servers in threads
 
     except KeyboardInterrupt:  # Ctrl-C
-        pass
+        # Termination for multi instance mode
+        # because the threads does not receive a signal from Ctrl-C
+        for s in autoptsservers:
+            s.terminate()
+
+        # Wait till PTS.exe shutdown.
+        for s in autoptsservers:
+            s.finished.wait()
 
     except Exception as e:
         logging.exception(e)

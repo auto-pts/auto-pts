@@ -48,10 +48,11 @@ import win32com.client
 import win32com.server.connect
 import win32com.server.util
 import pythoncom
-import wmi
+import psutil
 
 from autopts.ptsprojects import ptstypes
 from autopts.utils import PTS_WORKSPACE_FILE_EXT, get_own_workspaces
+from autopts.winutils import get_pid_by_window_title
 
 log = logging.debug
 
@@ -78,24 +79,8 @@ def pts_lock_wrapper(lock):
     return _pts_lock_wrapper
 
 
-STOP_PTS = False
-
-
-class StopPTS(Exception):
+class AlreadyClosedException:
     pass
-
-
-def set_stop_pts(stop=True):
-    global STOP_PTS
-    STOP_PTS = stop
-
-
-def force_pts_stop_wrapper(func):
-    def _force_pts_stop_wrapper(*args):
-        if STOP_PTS:
-            raise StopPTS
-        return func(*args)
-    return _force_pts_stop_wrapper
 
 
 class PTSLogger(win32com.server.connect.ConnectableServer):
@@ -105,6 +90,12 @@ class PTSLogger(win32com.server.connect.ConnectableServer):
     _reg_progid_ = "autopts.PTSLogger"
     _public_methods_ = ['Log'] + win32com.server.connect.ConnectableServer._public_methods_
 
+    def __getattribute__(self, name):
+        if super().__getattribute__('_end') and name in ['Log']:
+            raise AlreadyClosedException
+
+        return super().__getattribute__(name)
+
     def __init__(self):
         """"Constructor"""
         super().__init__()
@@ -112,6 +103,10 @@ class PTSLogger(win32com.server.connect.ConnectableServer):
         self._callback = None
         self._maximum_logging = False
         self._test_case_name = None
+        self._end = False
+
+    def close(self):
+        self._end = True
 
     def set_callback(self, callback):
         """Set the callback"""
@@ -161,11 +156,21 @@ class PTSSender(win32com.server.connect.ConnectableServer):
     _reg_progid_ = "autopts.PTSSender"
     _public_methods_ = ['OnImplicitSend'] + win32com.server.connect.ConnectableServer._public_methods_
 
+    def __getattribute__(self, name):
+        if super().__getattribute__('_end') and name in ['OnImplicitSend']:
+            raise AlreadyClosedException
+
+        return super().__getattribute__(name)
+
     def __init__(self):
         """"Constructor"""
         super().__init__()
 
         self._callback = None
+        self._end = False
+
+    def close(self):
+        self._end = True
 
     def set_callback(self, callback):
         """Sets the callback"""
@@ -175,7 +180,6 @@ class PTSSender(win32com.server.connect.ConnectableServer):
         """Unsets the callback"""
         self._callback = None
 
-    @force_pts_stop_wrapper
     def OnImplicitSend(self, project_name, wid, test_case, description, style):
         """Implements:
 
@@ -314,7 +318,11 @@ class PyPTS:
         # PTSCONTROL_E_IMPLICIT_SEND_CALLBACK_ALREADY_REGISTERED 0x849C004 in
         # RegisterImplicitSendCallbackEx if PTS from previous autoptsserver is
         # used
-        self.restart_pts()
+        try:
+            self.restart_pts()
+        except:
+            self.stop_pts()
+            raise
 
     def _init_attributes(self):
         """Initializes class attributes"""
@@ -435,9 +443,7 @@ class PyPTS:
 
         log("%s", self.restart_pts.__name__)
 
-        # Startup of ptscontrol doesn't have PTS pid yet set - no pts running
-        if self._pts_proc:
-            self.stop_pts()
+        self.stop_pts()
         time.sleep(1)  # otherwise there are COM errors occasionally
         self.start_pts()
 
@@ -449,29 +455,9 @@ class PyPTS:
 
         log("%s", self.start_pts.__name__)
 
-        # Get PTS process list before running new PTS daemon
-        c = wmi.WMI()
-        pts_ps_list_pre = []
-        pts_ps_list_post = []
-
-        for ps in c.Win32_Process(name="PTS.exe"):
-            pts_ps_list_pre.append(ps)
-
         self._pts = win32com.client.Dispatch('ProfileTuningSuite_6.PTSControlServer')
 
-        # Get PTS process list after running new PTS daemon to get PID of
-        # new instance
-        for ps in c.Win32_Process(name="PTS.exe"):
-            pts_ps_list_post.append(ps)
-
-        pts_ps_list = list(set(pts_ps_list_post) - set(pts_ps_list_pre))
-        if not pts_ps_list:
-            log("Error during pts startup!")
-            return
-
-        self._pts_proc = pts_ps_list[0]
-
-        log("Started new PTS daemon with pid: %d" % self._pts_proc.ProcessId)
+        log('Started new PTS daemon')
 
         self._pts_logger = PTSLogger()
         self._pts_sender = PTSSender()
@@ -489,19 +475,56 @@ class PyPTS:
         self._pts.RegisterImplicitSendCallbackEx(self._com_sender)
 
         log("PTS Version: %s", self.get_version())
-        log("PTS Bluetooth Address: %s", self.get_bluetooth_address())
+        log(f'PTS Bluetooth Address: {self.get_bluetooth_address()}')
         log("PTS BD_ADDR: %s" % self.bd_addr())
+        log(f'PTS daemon PID: {self._get_process_pid()}')
 
     def stop_pts(self):
         """Stops PTS"""
 
-        try:
-            log("About to stop PTS with pid: %d", self._pts_proc.ProcessId)
-            self._pts_proc.Terminate()
-            self._pts_proc = None
+        if self._pts_logger:
+            try:
+                log(f"Closing PTSLogger")
+                self._pts_logger.close()
+                self._pts_logger = None
+            except Exception as error:
+                logging.exception(repr(error))
 
-        except Exception as error:
-            logging.exception(repr(error))
+        if self._pts_sender:
+            try:
+                log(f"Closing PTSSender")
+                self._pts_sender.close()
+                self._pts_sender = None
+            except Exception as error:
+                logging.exception(repr(error))
+
+        if self._pts:
+            pid = self._get_process_pid()
+            log(f"About to stop PTS with pid: {pid}")
+
+            if pid and psutil.pid_exists(pid):
+                # If we have the pid, lets just terminate the process.
+                # This is faster that ExitPTS. Moreover, the ExitPTS
+                # can fail to close the PTS due to a broken COM server.
+                try:
+                    self._pts_proc.terminate()
+                except Exception as error:
+                    logging.exception(repr(error))
+                finally:
+                    self._pts_proc = None
+            else:
+                try:
+                    log(f"Terminating with ExitPTS command")
+                    self._pts.ExitPTS()
+                except Exception as e:
+                    # The COM timeout exception is a valid behavior here,
+                    # since the PTS closes itself within ExitPTS(). It takes
+                    # exactly 5 seconds to receive the exception, because
+                    # Windows do not delete the COM server right away, instead
+                    # it waits a little in case someone wants to reconnect to it.
+                    pass
+                finally:
+                    self._pts = None
 
         self._init_attributes()
 
@@ -793,66 +816,132 @@ class PyPTS:
         log("%s %s", self.save_test_history_log.__name__, save)
         self._pts.SaveTestHistoryLog(save)
 
+    def _get_process_pid(self, retry=10):
+        if self.__bd_addr is None:
+            return None
+
+        address = self.__bd_addr.replace(':', '')
+
+        if self._pts_proc:
+            return self._pts_proc.pid
+
+        pts_window_title = f'PTS - {address.upper()}'
+        pid = None
+
+        for i in range(retry):
+            pid = get_pid_by_window_title(pts_window_title)
+
+            if pid is None:
+                log(f'Failed to find PTS window with title: {pts_window_title}.')
+                return None
+
+        self._pts_proc = psutil.Process(pid)
+
+        return pid
+
+    def _get_connectable_dongle(self, port):
+        devices = self._pts.GetDeviceList()
+        log(f'GetDeviceList: {devices}')
+        if port:
+            # Selected device has to be visible by PTS
+            if port not in devices:
+                log(f'The port {port} is not available')
+                return None
+        else:
+            # Select random device
+            for device in devices:
+                if not device.startswith('USB:InUse'):
+                    port = device
+                    break
+
+        return port
+
     def get_bluetooth_address(self):
         """Returns PTS bluetooth address string"""
-        device = self._pts.GetSelectedDevice()
-        log(f"Remembered device {self._device}, selected device {device}")
-        device_to_connect = None
-        if self._preferred_device:
-            device_to_connect = self._preferred_device
-        elif self._device is not None and device != self._device:
-            log(f"Will select another device {device}")
-            device_to_connect = self._device.replace(r'InUse', r'Free')
-        else:
-            device_to_connect = device.replace(r'InUse', r'Free')
+        log(self.get_bluetooth_address.__name__)
 
-        try:
-            if device_to_connect is not None:
-                log(f"Will try to connect {device_to_connect}")
-                self._pts.SelectDevice(device_to_connect)
-            address = self._pts.GetPTSBluetoothAddress()
-        except Exception as e:
-            logging.exception(e)
-            self.disconnect_dongle()
-            address = ""
-
-        for i in range(3):
-            if address == "":
-                self.connect_to_dongle()
+        address = None
+        if self._device:
+            # The dongle already connected. Try to read the address.
+            for i in range(10):
                 try:
+                    # As described in the PTS CONTROL API documentation, the
+                    # GetPTSBluetoothAddress() may not be immediately available
+                    # after PTS is started.
                     address = self._pts.GetPTSBluetoothAddress()
+                    break
                 except Exception as e:
-                    log(f"Connecting to dongle failed {e}")
-                    self.disconnect_dongle()
-            else:
-                break
-        else:
-            raise Exception("Failed to connect dongle after 3 iterations")
+                    log(e)
 
-        self._device = self._pts.GetSelectedDevice()
+        if not address:
+            # First connect at init or reconnect after fail to read the address
+            address = self._connect_to_dongle()
+
         return address
 
-    def connect_to_dongle(self):
+    def _connect_to_dongle(self):
+        log(self._connect_to_dongle.__name__)
+
+        port = None
+        address = None
+        device_to_connect = ''
+        selected_device = self._pts.GetSelectedDevice()
+
+        log(f"Remembered device: {self._device}, selected device: {selected_device}, "
+            f"preferred device: {self._preferred_device}")
+
+        # Possible use cases:
+        # 1. Connect always to the preferred device(--dongle option).
+        # 2. Reconnect to the device connected at init.
+        # 3. PTS already connected to random dongle at its startup
+        # (happens only for BR/EDR/LE dongles).
+        # 4. First connection, no preferred device specified, BR/EDR/LE
+        # dongle not found by PTS at its startup, hence connecting randomly
+        # to LE only dongle or other available device.
         if self._preferred_device:
-            self._pts.SelectDevice(self._preferred_device)
-            return
+            log(f'Using device selected with --dongle option: {self._preferred_device}')
+            device_to_connect = self._preferred_device
+        elif self._device is not None:
+            log(f'Using the device selected at first init: {self._device}')
+            device_to_connect = self._device.strip().replace(r'InUse', r'Free')
+        elif selected_device:
+            log(f'Random dongle selected by PTS at startup: {selected_device}')
+            device_to_connect = selected_device.replace(r'InUse', r'Free')
+        else:
+            # The selected_device should be empty string here.
+            log(f'First random dongle selection')
 
-        device_to_connect = None
-        devices = self._pts.GetDeviceList()
-        for device in devices:
-            if 'USB:Free' in device:
-                log("Connecting to dual-mode dongle")
-                device_to_connect = device
+        if device_to_connect and device_to_connect == selected_device.replace(r'InUse', r'Free'):
+            log(f'PTS already connected to the right dongle: {device_to_connect}')
+            address = self._pts.GetPTSBluetoothAddress()
+            self._device = device_to_connect
+            return address
+
+        for i in range(4):
+            try:
+                port = self._get_connectable_dongle(device_to_connect)
+                if not port:
+                    self._disconnect_dongle()
+                    continue
+
+                log(f"Will try to connect {port}")
+                self._pts.SelectDevice(port)
+                address = self._pts.GetPTSBluetoothAddress()
+                self._device = self._pts.GetSelectedDevice()
+                log(f'Successfully connected to the dongle with address: {address}')
                 break
-            elif 'COM' in device:
-                log("Connecting to LE-only dongle")
-                device_to_connect = device
-                break
+            except Exception as e:
+                address = None
+                log(f"Connecting to dongle {port} failed")
+                logging.exception(e)
+                self._disconnect_dongle()
 
-        if device_to_connect is not None:
-            self._pts.SelectDevice(device_to_connect)
+        if not address:
+            raise Exception(f'Failed to connect dongle after 4 iterations')
 
-    def disconnect_dongle(self):
+        return address
+
+    def _disconnect_dongle(self):
         self._pts.SelectDevice('')
         if self._pts.GetSelectedDevice():
             log("Failed to disconnect current dongle")
@@ -891,19 +980,3 @@ class PyPTS:
         self._pts_sender.unset_callback()
 
         self.del_recov(self.register_ptscallback)
-
-
-def parse_args():
-    """Parses command line arguments and options"""
-
-    arg_parser = argparse.ArgumentParser(
-        description="PTS Control")
-
-    arg_parser.add_argument(
-        "workspace",
-        help="Path to PTS workspace to use for testing. It should have %s "
-        "extension" % (PTS_WORKSPACE_FILE_EXT,))
-
-    args = arg_parser.parse_args()
-
-    return args

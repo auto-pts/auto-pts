@@ -2,6 +2,7 @@
 # auto-pts - The Bluetooth PTS Automation Framework
 #
 # Copyright (c) 2017, Intel Corporation
+# Copyright (c) 2023, Codecoup
 #
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions are met:
@@ -34,6 +35,10 @@ import os
 import sys
 import ctypes
 
+if sys.platform == 'win32':
+    import win32gui
+    import win32process
+
 
 class AdminStateUnknownError(Exception):
     pass
@@ -50,6 +55,27 @@ def have_admin_rights():
         return ctypes.windll.shell32.IsUserAnAdmin() == 1
     except AttributeError:
         raise AdminStateUnknownError
+
+
+def get_pid_by_window_title(title):
+    def callback(hwnd, hwnd_list):
+        if win32gui.IsWindowVisible(hwnd):
+            window_title = win32gui.GetWindowText(hwnd)
+
+            if window_title.startswith(title):
+                try:
+                    _, pid = win32process.GetWindowThreadProcessId(hwnd)
+                    hwnd_list.append(pid)
+                except:
+                    pass
+
+    hwnd_list = []
+    win32gui.EnumWindows(callback, hwnd_list)
+
+    if hwnd_list:
+        return hwnd_list[0]
+    else:
+        return None
 
 
 def exit_if_admin():
