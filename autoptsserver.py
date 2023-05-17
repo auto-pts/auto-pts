@@ -160,6 +160,12 @@ class SvrArgumentParser(argparse.ArgumentParser):
     def check_args(arg):
         """Sanity check command line arguments"""
 
+        script_name = os.path.basename(sys.argv[0])  # in case it is full path
+        script_name_no_ext = os.path.splitext(script_name)[0]
+
+        tag = '_' + '_'.join(str(x) for x in list(arg.srv_port))
+        arg.log_filename = f'{script_name_no_ext}{tag}.log'
+
         for srv_port in arg.srv_port:
             if not 49152 <= srv_port <= 65535:
                 sys.exit("Invalid server port number=%s, expected range <49152,65535> " % (srv_port,))
@@ -488,14 +494,10 @@ if __name__ == "__main__":
     winutils.exit_if_admin()
     _args = SvrArgumentParser("PTS automation server").parse_args()
 
-    script_name = os.path.basename(sys.argv[0])  # in case it is full path
-    script_name_no_ext = os.path.splitext(script_name)[0]
-
-    log_filename = script_name_no_ext + '.log'
     format_template = '%(threadName)s %(asctime)s %(name)s %(levelname)s : %(message)s'
 
     logging.basicConfig(format=format_template,
-                        filename=log_filename,
+                        filename=_args.log_filename,
                         filemode='w',
                         level=logging.DEBUG)
 
