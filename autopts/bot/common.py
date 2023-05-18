@@ -176,9 +176,12 @@ class BotClient(Client):
             _args[config_default].test_cases = filtered_test_cases
 
         for config in run_order:
-            test_case_number = len(_args[config].test_cases)
+            if _args.get(config) is None:
+                test_case_number = 0
+            else:
+                test_case_number = len(_args[config].test_cases)
 
-            if _args.get(config) is None or test_case_number == 0:
+            if test_case_number == 0:
                 log(f'No test cases for {config} config, ignored.')
                 continue
 
