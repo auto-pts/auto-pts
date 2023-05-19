@@ -397,6 +397,26 @@ iut_config = {
             'DFU/SR/FD/BV-48-C',
         ]
     },
+
+    "mesh_proxy_sol.conf": {
+        "pre_overlay": "overlay-mesh.conf",
+        "overlay": {
+            'CONFIG_BT_MESH_PROXY_CLIENT': 'y',
+            'CONFIG_BT_MESH_PROXY_SOLICITATION': 'y',
+            'CONFIG_BT_MESH_OD_PRIV_PROXY_CLI': 'y',
+            'CONFIG_BT_MESH_OD_PRIV_PROXY_SRV': 'y',
+            'CONFIG_BT_MESH_SOL_PDU_RPL_CLI': 'y',
+        },
+        "test_cases": [
+            'MESH/SR/MPXS/BV-XX-C',
+            'MESH/SR/MPXS/BV-(XX+1)-C',
+            'MESH/SR/ODP/BV-01-C',
+            'MESH/CL/ODP/BV-01-C',
+            'MESH/SR/SRPL/BV-01-C',
+            'MESH/CL/SRPL/BV-01-C',
+            'MESH/CL/MPXS/BV-YY-C',
+        ]
+    },
 }
 
 retry_config = {
