@@ -795,6 +795,8 @@ def hdl_wid_83(_: WIDParams):
     """
     description: Please let PB-GATT client initiate a GATT connection to the PTS.
     """
+    #TODO: this will need to (probably) be changed for MESH/CL/MPXS/BV-YY-C
+    # (MESH/CL/MPXS/BV-09-C), to use btp.mesh_proxy_connect().
     btp.mesh_proxy_connect()
 
     return True
@@ -3606,6 +3608,28 @@ def hdl_wid_891(params: WIDParams):
     return True
 
 
+def hdl_wid_940(_: WIDParams):
+    """
+    Implements:
+    description: Please send ON_DEMAND_PRIVATE_PROXY_GET
+    """
+    stack = get_stack()
+
+    btp.mesh_od_priv_proxy_get(stack.mesh.lt1_addr)
+    return True
+
+
+def hdl_wid_941(_: WIDParams):
+    """
+    Implements:
+    description: Please send ON_DEMAND_PRIVATE_PROXY_GET
+    """
+    stack = get_stack()
+
+    btp.mesh_od_priv_proxy_set(stack.mesh.lt1_addr, 1)
+    return True
+
+
 def hdl_wid_942(_: WIDParams):
     stack = get_stack()
 
@@ -3694,6 +3718,30 @@ def hdl_wid_953(params: WIDParams):
         stack.mesh.net_key_idx, stack.mesh.lt1_addr, page, offset)
 
     return True
+
+
+def hdl_wid_954(_: WIDParams):
+    """
+    Implements:
+    description: Please send SOLICITATION_PDU_RPL_ITEM_CLEAR.
+    """
+    stack = get_stack()
+
+    btp.mesh_srpl_clear(stack.mesh.lt1_addr, 1, 5, 1)
+    return True
+
+
+def hdl_wid_955(_: WIDParams):
+
+    """
+    Implements:
+    description: Please send SOLICITATION_PDU_RPL_ITEM_CLEAR_UNACKNOWLEDGED.
+    """
+    stack = get_stack()
+
+    btp.mesh_srpl_clear(stack.mesh.lt1_addr, 1, 5, 0)
+    return True
+
 
 
 def hdl_wid_20101(_: WIDParams):

@@ -337,6 +337,21 @@ MESH = {
     "proxy_private_identity": (defs.BTP_SERVICE_ID_MESH,
                                defs.MESH_PROXY_PRIVATE_IDENTITY,
                                CONTROLLER_INDEX, ""),
+    "od_priv_proxy_get":  (defs.BTP_SERVICE_ID_MESH,
+                           defs.MESH_OD_PRIV_PROXY_GET,
+                           CONTROLLER_INDEX),
+    "od_priv_proxy_set":  (defs.BTP_SERVICE_ID_MESH,
+                           defs.MESH_OD_PRIV_PROXY_SET,
+                           CONTROLLER_INDEX),
+    "srpl_clear":  (defs.BTP_SERVICE_ID_MESH,
+                    defs.MESH_SRPL_CLEAR,
+                    CONTROLLER_INDEX),
+    "proxy_solicit":  (defs.BTP_SERVICE_ID_MESH,
+                       defs.MESH_PROXY_SOLICIT,
+                       CONTROLLER_INDEX),
+    "proxy_connect":  (defs.BTP_SERVICE_ID_MESH,
+                       defs.MESH_PROXY_CONNECT,
+                       CONTROLLER_INDEX),
 }
 
 
@@ -1925,6 +1940,66 @@ def mesh_rpr_reprov_remote(dst, addr, comp_change):
     data = bytearray(struct.pack("<HH?", dst, addr, comp_change))
 
     iutctl.btp_socket.send_wait_rsp(*MESH['rpr_reprov_remote'], data)
+
+
+def mesh_od_priv_proxy_get(dst):
+    logging.debug("%s", mesh_od_priv_proxy_get.__name__)
+
+    iutctl = get_iut()
+
+    data = bytearray(struct.pack("<H", dst))
+
+    iutctl.btp_socket.send_wait_rsp(*MESH['od_priv_proxy_get'], data)
+
+
+def mesh_od_priv_proxy_set(dst, val):
+    logging.debug("%s", mesh_od_priv_proxy_set.__name__)
+
+    iutctl = get_iut()
+
+    data = bytearray(struct.pack("<HB", dst, val))
+
+    iutctl.btp_socket.send_wait_rsp(*MESH['od_priv_proxy_set'], data)
+
+
+def mesh_srpl_clear(dst, range_start, range_len, acked):
+    logging.debug("%s", mesh_srpl_clear.__name__)
+
+    iutctl = get_iut()
+
+    data = bytearray(struct.pack("<HHBB", dst, range_start, range_len, acked))
+
+    iutctl.btp_socket.send_wait_rsp(*MESH['srpl_clear'], data)
+
+
+def mesh_proxy_solicit(net_idx=None):
+    logging.debug("%s", mesh_proxy_solicit.__name__)
+
+    stack = get_stack()
+
+    iutctl = get_iut()
+
+    if net_idx is None:
+        net_idx = stack.mesh.net_idx
+
+    data = bytearray(struct.pack("<H", net_idx))
+
+    iutctl.btp_socket.send_wait_rsp(*MESH['proxy_solicit'], data)
+
+
+def mesh_proxy_connect(net_idx=None):
+    logging.debug("%s", mesh_proxy_connect.__name__)
+
+    stack = get_stack()
+
+    iutctl = get_iut()
+
+    if net_idx is None:
+        net_idx = stack.mesh.net_idx
+
+    data = bytearray(struct.pack("<H", net_idx))
+
+    iutctl.btp_socket.send_wait_rsp(*MESH['proxy_connect'], data)
 
 
 def mesh_lpn_polled_ev(mesh, data, data_len):
