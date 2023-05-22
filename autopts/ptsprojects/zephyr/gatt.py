@@ -36,8 +36,8 @@ class Value:
     long_2 = eight_bytes_2 * 4
     long_3 = eight_bytes_2 * 7
     long_4 = one_byte_1 * 64
-    long_5 = one_byte_2 * 512
-    long_6 = eight_bytes_1 * 10
+    long_5 = eight_bytes_1 * 10
+    long_6 = one_byte_2 * 512
 
 
 def update_service_gatt_sr_gas_bv_01_c():
