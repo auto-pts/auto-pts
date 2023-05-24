@@ -1578,7 +1578,7 @@ def gattc_disc_all_desc_rsp(store_rsp=False):
         clear_verify_values()
 
         for desc in descs:
-            handle = f'{desc.handle:%04X}'
+            handle = f'{desc.handle:04X}'
             uuid = desc.uuid
             add_to_verify_values(handle)
             add_to_verify_values(uuid)
