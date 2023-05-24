@@ -12,8 +12,9 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
-
+import binascii
 import logging
+import random
 import re
 import struct
 from time import sleep
@@ -791,9 +792,16 @@ def hdl_wid_311(params: WIDParams):
 
     _, _, _, ase_id = ev
 
+    # TODO: Add value of Supported_Audio_Channel_Counts to Codec Capabilities Found event
+    if int(params.test_case_name.split(r'-')[1]) % 2 == 1:
+        # test cases with an odd number
+        audio_locations = 0x01
+    else:
+        # test cases with an even number
+        audio_locations = 0x03
+
     # Perform Config Codec
     (sampling_freq, frame_duration, octets_per_frame) = CODEC_CONFIG_SETTINGS[codec_set_name]
-    audio_locations = 0x01
     coding_format = 0x06
     frames_per_sdu = 0x01
     codec_ltvs_bytes = create_lc3_ltvs_bytes(sampling_freq, frame_duration,
@@ -817,6 +825,13 @@ def hdl_wid_311(params: WIDParams):
     # Start streaming
     btp.ascs_receiver_start_ready(ase_id)
     stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+
+    if audio_dir == AudioDir.SINK:
+        # TODO: Update this after fixing Zephyr issues
+        for i in range(100):
+            data = random.sample(range(0, 256), octets_per_frame)
+            data = bytearray(data)
+            btp.bap_send(ase_id, data)
 
     return True
 
@@ -977,6 +992,24 @@ def hdl_wid_315(params: WIDParams):
     qos_config = (7500, 0x00, 40, 2, 10)
     btp.ascs_config_qos(ase_id, cig_id, cis_id, *qos_config, presentation_delay)
     stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+
+    return True
+
+
+def hdl_wid_364(_: WIDParams):
+    """
+    After processed audio stream data, please click OK.
+    """
+    addr = pts_addr_get()
+    addr_type = pts_addr_type_get()
+    stack = get_stack()
+
+    # Find ID of the ASE
+    _, _, _, ase_id = stack.bap.event_queues[defs.BAP_EV_ASE_FOUND].pop(0)
+
+    ev = stack.bap.wait_stream_received_ev(addr_type, addr, ase_id, 10)
+    if ev is None:
+        return False
 
     return True
 

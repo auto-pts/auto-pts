@@ -29,6 +29,7 @@ BAP = {
                             CONTROLLER_INDEX),
     'discover': (defs.BTP_SERVICE_ID_BAP, defs.BAP_DISCOVER,
                  CONTROLLER_INDEX),
+    'send': (defs.BTP_SERVICE_ID_BAP, defs.BAP_SEND, CONTROLLER_INDEX),
 }
 
 
@@ -61,6 +62,20 @@ def bap_discover(bd_addr_type=None, bd_addr=None):
 
     iutctl = get_iut()
     iutctl.btp_socket.send(*BAP['discover'], data=data)
+
+    bap_command_rsp_succ()
+
+
+def bap_send(ase_id, data_ba, bd_addr_type=None, bd_addr=None):
+    logging.debug(f"{bap_send.__name__}")
+
+    data = address_to_ba(bd_addr_type, bd_addr)
+    data += struct.pack('B', ase_id)
+    data += struct.pack('B', len(data_ba))
+    data += data_ba
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*BAP['send'], data=data)
 
     bap_command_rsp_succ()
 
@@ -121,8 +136,28 @@ def bap_ev_ase_found_(bap, data, data_len):
     bap.event_received(defs.BAP_EV_ASE_FOUND, (addr_type, addr, ase_dir, ase_id))
 
 
+def bap_ev_stream_received_(bap, data, data_len):
+    logging.debug('%s %r', bap_ev_stream_received_.__name__, data)
+
+    fmt = '<B6sBB'
+    fmt_len = struct.calcsize(fmt)
+    if len(data) < fmt_len:
+        raise BTPError('Invalid data length')
+
+    addr_type, addr, ase_id, iso_data_len = struct.unpack_from(fmt, data[:fmt_len])
+
+    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    iso_data = data[fmt_len:]
+
+    logging.debug(f'Stream received: addr {addr} addr_type {addr_type}'
+                  f' ID {ase_id} data {iso_data}')
+
+    bap.event_received(defs.BAP_EV_STREAM_RECEIVED, (addr_type, addr, ase_id, iso_data))
+
+
 BAP_EV = {
     defs.BAP_EV_DISCOVERY_COMPLETED: bap_ev_discovery_completed_,
     defs.BAP_EV_CODEC_CAP_FOUND: bap_ev_codec_cap_found_,
     defs.BAP_EV_ASE_FOUND: bap_ev_ase_found_,
+    defs.BAP_EV_STREAM_RECEIVED: bap_ev_stream_received_,
 }

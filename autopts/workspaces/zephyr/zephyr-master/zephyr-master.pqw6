@@ -1713,13 +1713,13 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_25_11</Name>
-            <Description>Unauthenticated Pairing (LE security mode 1 level 2) with LE Secure Connections Pairing only (C.3)</Description>
+            <Description>Unauthenticated Pairing (LE security mode 1 level 2) with LE Secure Connections Pairing only (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_25_12</Name>
-            <Description>Authenticated Pairing (LE security mode 1 level 3) with LE Secure Connections Pairing only (C.3)</Description>
+            <Description>Authenticated Pairing (LE security mode 1 level 3) with LE Secure Connections Pairing only (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -2265,13 +2265,13 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_35_11</Name>
-            <Description>Unauthenticated Pairing (LE security mode 1 level 2) with LE Secure Connections Pairing only (C.2)</Description>
+            <Description>Unauthenticated Pairing (LE security mode 1 level 2) with LE Secure Connections Pairing only (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_35_12</Name>
-            <Description>Authenticated Pairing (LE security mode 1 level 3) with LE Secure Connections Pairing only (C.2)</Description>
+            <Description>Authenticated Pairing (LE security mode 1 level 3) with LE Secure Connections Pairing only (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -2508,6 +2508,12 @@
             <Description>Indications (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_3a_1</Name>
+            <Description>Peripheral (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_SM_1_1</Name>
@@ -3973,6 +3979,18 @@
               <ValueListItem>ATT</ValueListItem>
               <ValueListItem>EATT</ValueListItem>
             </ValueList>
+          </Row>
+          <Row>
+            <Name>TSPX_secure_simple_pairing_pass_key_confirmation</Name>
+            <Description>Whether to display secure simple pairing pass key confirmation or not. (Default: FALSE)</Description>
+            <Value>FALSE</Value>
+            <Type>BOOLEAN</Type>
+          </Row>
+          <Row>
+            <Name>TSPX_secure_connection</Name>
+            <Description>Enable secure connection. (Default: FALSE)</Description>
+            <Value>FALSE</Value>
+            <Type>BOOLEAN</Type>
           </Row>
         </Rows>
       </PIXIT>
@@ -9953,13 +9971,13 @@
           <Row>
             <Name>TSPC_BAP_44_1</Name>
             <Description>AC 1: 1 Server, 1 Sink ASE, 1 Channel/Sink, 1 CIS, 1 Audio Stream (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_44_2</Name>
             <Description>AC 2: 1 Server, 1 Source ASE, 1 Channel/Source, 1 CIS, 1 Audio Stream (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -9971,7 +9989,7 @@
           <Row>
             <Name>TSPC_BAP_44_4</Name>
             <Description>AC 4: 1 Server, 1 Sink ASE, 2 Channels/Sink, 1 CIS, 1 Audio Stream (C.4)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -10031,7 +10049,7 @@
           <Row>
             <Name>TSPC_BAP_44_14</Name>
             <Description>AC 10: 1 Server, 1 Source ASE, 2 Channels/Source, 1 CIS, 1 Audio Stream (C.6)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -12129,6 +12147,12 @@
             <Description>Octet 0: Coding format, Octet 1-2: Company Id, Octet 3-4: Vendor-specific codec Id Value (Default: 0600000000)</Description>
             <Type>OCTETSTRING</Type>
             <Value>0600000000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_VS_Codec_Specific_Capabilities</Name>
+            <Description>Vendor_Specific_Capability LTVs in PAC. Total vendor specific capability length will be calculated and automatically added. Data must be LTV structure with litte endian for multi-octet ex)length: 3, type: 4, value: 0x0028 =&gt; 03042800 (Default: 0301F50002020302030105041A00C800)</Description>
+            <Value>0301F50002020302030105041A00C800</Value>
+            <Type>OCTETSTRING</Type>
           </Row>
           <Row>
             <Name>TSPX_VS_Codec_Specific_Configuration</Name>
