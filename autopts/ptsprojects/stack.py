@@ -15,6 +15,7 @@
 
 import logging
 from threading import Lock, Timer, Event
+from time import sleep
 
 from autopts.pybtp import defs
 from autopts.pybtp.types import AdType, Addr, IOCap
@@ -109,6 +110,8 @@ def wait_event_with_condition(event_queue, condition_cb, timeout, remove):
                     event_queue.remove(ev)
 
                 return ev
+
+            sleep(0.5)
 
     return None
 
@@ -643,6 +646,7 @@ class BAP:
             defs.BAP_EV_DISCOVERY_COMPLETED: [],
             defs.BAP_EV_CODEC_CAP_FOUND: [],
             defs.BAP_EV_ASE_FOUND: [],
+            defs.BAP_EV_STREAM_RECEIVED: [],
         }
 
     def event_received(self, event_type, event_data_tuple):
@@ -667,6 +671,13 @@ class BAP:
             self.event_queues[defs.BAP_EV_ASE_FOUND],
             lambda _addr_type, _addr, _ase_dir, *_:
                 (addr_type, addr, ase_dir) == (_addr_type, _addr, _ase_dir),
+            timeout, remove)
+
+    def wait_stream_received_ev(self, addr_type, addr, ase_id, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.BAP_EV_STREAM_RECEIVED],
+            lambda _addr_type, _addr, _ase_id, *_:
+                (addr_type, addr, ase_id) == (_addr_type, _addr, _ase_id),
             timeout, remove)
 
 
