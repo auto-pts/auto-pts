@@ -1537,7 +1537,7 @@ def gattc_disc_chrc_uuid_rsp(store_rsp=False):
         clear_verify_values()
 
         for chrc in chrcs:
-            handle = "%04X" % (chrc.handle,)
+            handle = "%04X" % (chrc.value_handle,)
             uuid = chrc.uuid
 
             # add hyphens to long uuid: 0000-1157-0000-0000-0123-4567-89AB-CDEF
