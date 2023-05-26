@@ -133,7 +133,7 @@ iut_config = {
             # The overlay file exists in zephyr repo. Leave this empty.
         },
         "test_cases": [
-            'VOCS', 'VCS', 'AICS', 'IAS', 'PACS', 'ASCS', 'BAP'
+            'VOCS', 'VCS', 'AICS', 'IAS', 'PACS', 'ASCS', 'BAP', 'HAS'
         ]
     },
 
