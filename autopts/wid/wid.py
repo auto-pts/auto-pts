@@ -1,3 +1,4 @@
+import importlib
 import logging
 import sys
 from ..ptsprojects.stack import get_stack
@@ -11,7 +12,7 @@ def _generic_wid_hdl(wid, description, test_case_name, module_names):
     wid_str = f'hdl_wid_{wid}'
 
     for module_name in module_names:
-        module = sys.modules[module_name]
+        module = importlib.import_module(module_name)
         if hasattr(module, wid_str):
             wid_hdl = getattr(module, wid_str)
             break
