@@ -250,6 +250,9 @@ MESH = {
     "provision_adv": (defs.BTP_SERVICE_ID_MESH,
                       defs.MESH_PROVISION_ADV,
                       CONTROLLER_INDEX),
+    "proxy_connect": (defs.BTP_SERVICE_ID_MESH,
+                      defs.MESH_PROXY_CONNECT,
+                      CONTROLLER_INDEX),
 }
 
 
@@ -1477,6 +1480,21 @@ def mesh_health_attention_set(addr, app_idx, attention, ack):
     if ack:
         (status,) = struct.unpack_from('<B', rsp)
         stack.mesh.model_data = status
+
+
+def mesh_proxy_connect(net_idx=None):
+    logging.debug("%s", mesh_proxy_connect.__name__)
+
+    stack = get_stack()
+
+    iutctl = get_iut()
+
+    if net_idx is None:
+        net_idx = stack.mesh.net_idx
+
+    data = bytearray(struct.pack("<H", net_idx))
+
+    iutctl.btp_socket.send_wait_rsp(*MESH['proxy_connect'], data)
 
 
 def mesh_lpn_polled_ev(mesh, data, data_len):

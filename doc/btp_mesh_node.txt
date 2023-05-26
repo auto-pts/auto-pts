@@ -946,6 +946,17 @@ Commands and responses:
 
 		In case of an error, the error response will be returned.
 
+    Opcode 0x77 - Proxy Client Connect
+
+		Controller Index:       <controller id>
+		Command parameters:     Network index (2 octets)
+		Response parameters: 	Proxy Client Connect Status (1 octet)
+
+		This command is used to allow Proxy Client on IUT to auto connect
+		to a network of given index.
+
+		In case of an error, the error response will be returned.
+
 Events:
 	Opcode 0x80 - Output number action Event
 

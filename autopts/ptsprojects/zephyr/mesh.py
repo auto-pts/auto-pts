@@ -20,6 +20,7 @@ from uuid import uuid4
 
 from autopts.pybtp import btp
 from autopts.pybtp import defs
+from autopts.pybtp.types import Addr
 from autopts.pybtp.types import MeshVals
 from autopts.client import get_unique_name
 from autopts.wid import mesh_wid_hdl
@@ -439,6 +440,28 @@ def test_cases(ptses):
         ZTestCase("MESH", "MESH/PVNR/PBADV/BV-03-C", cmds=pre_conditions_prov,
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/PVNR/PBADV/BI-01-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CL/MPXS/BV-01-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CL/MPXS/BV-02-C", cmds=pre_conditions_prov +
+                  [TestFunc(stack.gatt_init),
+                   TestFunc(btp.set_pts_addr, pts.q_bd_addr, Addr.le_public)],
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CL/MPXS/BV-03-C", cmds=pre_conditions_prov +
+                  [TestFunc(stack.gatt_init),
+                   TestFunc(btp.set_pts_addr, pts.q_bd_addr, Addr.le_public)],
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CL/MPXS/BV-04-C", cmds=pre_conditions_prov +
+                  [TestFunc(stack.gatt_init),
+                   TestFunc(btp.set_pts_addr, pts.q_bd_addr, Addr.le_public)],
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CL/MPXS/BV-05-C", cmds=pre_conditions_prov +
+                  [TestFunc(stack.gatt_init),
+                   TestFunc(btp.set_pts_addr, pts.q_bd_addr, Addr.le_public)],
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CL/MPXS/BV-06-C", cmds=pre_conditions_prov +
+                  [TestFunc(stack.gatt_init),
+                   TestFunc(btp.set_pts_addr, pts.q_bd_addr, Addr.le_public)],
                   generic_wid_hdl=mesh_wid_hdl),
     ]
 

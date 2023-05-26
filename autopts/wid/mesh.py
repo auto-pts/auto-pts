@@ -18,7 +18,7 @@ import re
 import time
 
 from autopts.pybtp import btp
-from autopts.pybtp.types import Perm, MeshVals, WIDParams
+from autopts.pybtp.types import Perm, MeshVals, WIDParams, UUID
 from autopts.ptsprojects.stack import get_stack
 from autopts.wid import generic_wid_hdl
 
@@ -655,6 +655,25 @@ def hdl_wid_81(_: WIDParams):
     if not stack.mesh.is_initialized:
         btp.mesh_config_prov()
         btp.mesh_init()
+    return True
+
+
+def hdl_wid_83(_: WIDParams):
+    """
+    description: Please let PB-GATT client initiate a GATT connection to the PTS.
+    """
+    btp.mesh_proxy_connect()
+
+    return True
+
+
+def hdl_wid_84(_: WIDParams):
+    """
+    description: Please let PB-GATT client write to
+    Client Characteristic Configuration Descriptor of Mesh Proxy Data Out
+    characteristic to enable notification.
+    """
+    # this is done automatically by IUT
     return True
 
 
@@ -2898,3 +2917,82 @@ def hdl_wid_652(_: WIDParams):
 
     # TODO: Confirm composition data
     return True
+
+
+def hdl_wid_20101(_: WIDParams):
+    """
+    description: Please send discover primary services command to the PTS.
+                 Description: Verify that the Implementation Under Test (IUT)
+                 can send Discover All Primary Services or
+                 Discovery Primary Services by Service UUID command.
+    """
+    stack = get_stack()
+
+    btp.gattc_disc_all_prim(btp.pts_addr_type_get(),
+                            btp.pts_addr_get())
+    svcs = btp.gattc_disc_all_prim_rsp()
+
+    stack.gatt.verify_values = svcs
+
+    return True
+
+
+def hdl_wid_20103(_: WIDParams):
+    """
+    description: Please take action to discover the Mesh Proxy Data Out
+                 characteristic from the Mesh Proxy.
+                 Discover the primary service if needed.
+                 Description: Verify that the Implementation Under Test (IUT)
+                 can send Discover All Characteristics command.
+    """
+    stack = get_stack()
+
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
+    btp.gattc_disc_all_chrc(bd_addr_type, bd_addr, 0x0001, 0xffff)
+    attrs = btp.gattc_disc_all_chrc_rsp()
+
+    stack.gatt.verify_values = attrs
+
+    return True
+
+
+def hdl_wid_20200(params: WIDParams):
+    """
+    description: Please confirm the following handles for Mesh Proxy.
+                Start Handle: 0x00XX	 End Handle: 0x00YY
+    """
+    stack = get_stack()
+
+    start_handle = int(re.findall(r'0x([0-9A-F]{2,})',
+                                  params.description)[0], 16)
+    end_handle = int(re.findall(r'0x([0-9A-F]{2,})',
+                                params.description)[1], 16)
+
+    for svc in stack.gatt.verify_values:
+        if svc.uuid == '1828':
+            return svc.handle == start_handle and svc.end_handle == end_handle
+
+    return False
+
+
+def hdl_wid_20201(params: WIDParams):
+    """
+    description: Please verify that following attribute handle/UUID pair
+                 was returned containing the UUID for the
+                 Mesh Proxy Data Out Characteristic.
+                 Characteristic Handle = 0x00B4
+                 UUID = 0x2ADE
+    """
+    stack = get_stack()
+
+    handle = int(re.findall(r'0x([0-9A-F]{2,})',
+                                  params.description)[0], 16)
+    uuid = re.findall(r'0x([0-9A-F]{2,})', params.description)[1]
+
+    for attr in stack.gatt.verify_values:
+        if attr.uuid == uuid:
+            return attr.value_handle == handle
+
+    return False

@@ -116,6 +116,7 @@ class UUID:
     battery_level = '2A19'
     date_of_birth = '2A85'
     gender = '2A8C'
+    proxy_cli_data_in = '2ADD'
     SINK_ASE = '2BC4'
     SOURCE_ASE = '2BC5'
     SINK_PAC = '2BC9'
