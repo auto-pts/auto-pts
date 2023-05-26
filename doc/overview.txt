@@ -99,3 +99,4 @@ ID  Name
  12 PACS Service
  13 ASCS Service
  14 BAP Service
+ 15 HAS Service

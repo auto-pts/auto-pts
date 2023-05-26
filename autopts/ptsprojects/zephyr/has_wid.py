@@ -1,7 +1,7 @@
 #
 # auto-pts - The Bluetooth PTS Automation Framework
 #
-# Copyright (c) 2019, Intel Corporation.
+# Copyright (c) 2023, Oticon.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms and conditions of the GNU General Public License,
@@ -12,17 +12,14 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
-from typing import NamedTuple
 
-from .wid import generic_wid_hdl
-from .l2cap import l2cap_wid_hdl
-from .mesh import mesh_wid_hdl
-from .mmdl import mmdl_wid_hdl
-from .vcs import vcs_wid_hdl
-from .ias import ias_wid_hdl
-from .vocs import vocs_wid_hdl
-from .aics import aics_wid_hdl
-from .pacs import pacs_wid_hdl
-from .ascs import ascs_wid_hdl
-from .bap import bap_wid_hdl
-from .has import has_wid_hdl
+import logging
+
+from autopts.wid import generic_wid_hdl
+
+log = logging.debug
+
+
+def has_wid_hdl(wid, description, test_case_name):
+    log(f'{has_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
+    return generic_wid_hdl(wid, description, test_case_name, [__name__, 'autopts.wid.has'])

@@ -29,3 +29,4 @@ from autopts.pybtp.btp.aics import *
 from autopts.pybtp.btp.pacs import *
 from autopts.pybtp.btp.ascs import *
 from autopts.pybtp.btp.bap import *
+from autopts.pybtp.btp.has import *

@@ -1274,6 +1274,7 @@ class Stack:
             "PACS":         0b0000100000000000,
             "ASCS":         0b0001000000000000,
             "BAP":          0b0010000000000000,
+            "HAS":          0b0100000000000000
         }
         return self.supported_svcs & services[svc] > 0
 
