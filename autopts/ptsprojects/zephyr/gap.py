@@ -216,6 +216,36 @@ def test_cases(ptses):
         ZTestCase("GAP", "GAP/SEC/CSIGN/BI-04-C",
                   cmds=pre_conditions + init_gatt_db2,
                   generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-62-C",
+                  cmds=pre_conditions + init_gatt_db +
+                         [TestFunc(lambda: pts.update_pixit_param(
+                          "GAP", "TSPX_security_enabled", "TRUE"))],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-63-C",
+                  cmds=pre_conditions + init_gatt_db +
+                         [TestFunc(lambda: pts.update_pixit_param(
+                          "GAP", "TSPX_security_enabled", "TRUE"))],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-64-C",
+                  cmds=pre_conditions + init_gatt_db +
+                         [TestFunc(lambda: pts.update_pixit_param(
+                          "GAP", "TSPX_security_enabled", "TRUE"))],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-65-C",
+                  cmds=pre_conditions + init_gatt_db +
+                         [TestFunc(lambda: pts.update_pixit_param(
+                          "GAP", "TSPX_security_enabled", "TRUE"))],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-66-C",
+                  cmds=pre_conditions + init_gatt_db +
+                         [TestFunc(lambda: pts.update_pixit_param(
+                          "GAP", "TSPX_security_enabled", "TRUE"))],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-67-C",
+                  cmds=pre_conditions + init_gatt_db +
+                         [TestFunc(lambda: pts.update_pixit_param(
+                          "GAP", "TSPX_security_enabled", "TRUE"))],
+                  generic_wid_hdl=gap_wid_hdl),
     ]
 
     test_case_name_list = pts.get_test_case_list('GAP')
