@@ -64,6 +64,7 @@ class SynchError(Exception):
 class AdType:
     flags = 1
     uuid16_some = 2
+    uuid16_all = 3
     name_short = 8
     name_full = 9
     tx_power = 10

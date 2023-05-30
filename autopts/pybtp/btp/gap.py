@@ -1182,7 +1182,7 @@ def parse_eir_data(eir):
     return data
 
 
-def check_discov_results(addr_type=None, addr=None, discovered=True, eir=None, uuids=None):
+def check_discov_results(addr_type=None, addr=None, discovered=True, eir=None, uuids=None, svc_data=None):
     addr = pts_addr_get(addr).encode('utf-8')
     addr_type = pts_addr_type_get(addr_type)
 
@@ -1205,14 +1205,23 @@ def check_discov_results(addr_type=None, addr=None, discovered=True, eir=None, u
 
         if device.eir:
             data = parse_eir_data(device.eir)
-            if uuids and AdType.uuid16_some in data:
-                eir_uuids = [data[AdType.uuid16_some][i:i + 2]
-                             for i in range(0, len(data[AdType.uuid16_some]), 2)]
+            if uuids and ((AdType.uuid16_some in data) or
+                          (AdType.uuid16_all in data)):
+                uuid_list_type = AdType.uuid16_some if \
+                    (AdType.uuid16_some in data) else \
+                    AdType.uuid16_all
+                eir_uuids = [data[uuid_list_type][i:i + 2]
+                             for i in range(0, len(data[uuid_list_type]), 2)]
 
                 for uuid in uuids:
                     uuid_ba = bytes.fromhex(uuid.replace("-", ""))[::-1]
                     if uuid_ba not in eir_uuids:
                         continue
+
+            if svc_data and AdType.uuid16_svc_data in data:
+                eir_svc_data = data[AdType.uuid16_svc_data]
+                if svc_data not in eir_svc_data:
+                    continue
 
         found = True
         break
