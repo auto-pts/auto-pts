@@ -68,18 +68,21 @@ def address_to_ba(bd_addr_type=None, bd_addr=None):
     return data
 
 
-def ascs_config_codec(ase_id, coding_format, sampling_freq, frame_duration,
-                      audio_locations, octets_per_frame,
+def ascs_config_codec(ase_id, coding_format, vid, cid, codec_ltvs,
                       bd_addr_type=None, bd_addr=None):
     logging.debug(f"{ascs_config_codec.__name__}")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('B', ase_id)
     data += struct.pack('B', coding_format)
-    data += struct.pack('B', sampling_freq)
-    data += struct.pack('B', frame_duration)
-    data += struct.pack('<I', audio_locations)
-    data += struct.pack('<H', octets_per_frame)
+    data += struct.pack('<H', vid)
+    data += struct.pack('<H', cid)
+
+    codec_ltvs_len = len(codec_ltvs)
+    data += struct.pack('B', codec_ltvs_len)
+
+    if codec_ltvs_len:
+        data += codec_ltvs
 
     iutctl = get_iut()
     iutctl.btp_socket.send(*ASCS['config_codec'], data=data)
@@ -89,7 +92,7 @@ def ascs_config_codec(ase_id, coding_format, sampling_freq, frame_duration,
 
 def ascs_config_qos(ase_id, cig_id, cis_id, sdu_interval, framing, max_sdu,
                     retransmission_number, max_transport_latency,
-                    bd_addr_type=None, bd_addr=None):
+                    presentation_delay, bd_addr_type=None, bd_addr=None):
 
     logging.debug(f"{ascs_config_qos.__name__}")
 
@@ -97,11 +100,12 @@ def ascs_config_qos(ase_id, cig_id, cis_id, sdu_interval, framing, max_sdu,
     data += struct.pack('B', ase_id)
     data += struct.pack('B', cig_id)
     data += struct.pack('B', cis_id)
-    data += struct.pack('<H', sdu_interval)
+    data += int.to_bytes(sdu_interval, 3, 'little')
     data += struct.pack('B', framing)
     data += struct.pack('<H', max_sdu)
     data += struct.pack('B', retransmission_number)
-    data += struct.pack('B', max_transport_latency)
+    data += struct.pack('<H', max_transport_latency)
+    data += int.to_bytes(presentation_delay, 3, 'little')
 
     iutctl = get_iut()
     iutctl.btp_socket.send(*ASCS['config_qos'], data=data)
@@ -186,10 +190,29 @@ def ascs_ev_operation_completed_(ascs, data, data_len):
                   f'{addr_type} ase_id {ase_id} opcode {opcode} '
                   f'status {status} flags {flags}')
 
-    ascs.ascs_operation_complete_ev_recv((addr_type, addr, ase_id, opcode,
-                                          status, flags))
+    ascs.event_received(defs.ASCS_EV_OPERATION_COMPLETED,
+                        (addr_type, addr, ase_id, opcode, status, flags))
+
+
+def ascs_ev_characteristic_subscribed_(ascs, data, data_len):
+    logging.debug('%s %r', ascs_ev_characteristic_subscribed_.__name__, data)
+
+    fmt = '<B6sB'
+    header_size = struct.calcsize(fmt)
+    if len(data) < header_size:
+        raise BTPError('Invalid data length')
+
+    addr_type, addr, handle = struct.unpack_from(fmt, data)
+
+    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+
+    logging.debug(f'ASCS characteristic with handle {handle} subscribed')
+
+    ascs.event_received(defs.ASCS_EV_CHARACTERISTIC_SUBSCRIBED,
+                        (addr_type, addr, handle))
 
 
 ASCS_EV = {
     defs.ASCS_EV_OPERATION_COMPLETED: ascs_ev_operation_completed_,
+    defs.ASCS_EV_CHARACTERISTIC_SUBSCRIBED: ascs_ev_characteristic_subscribed_,
 }

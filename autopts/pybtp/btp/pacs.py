@@ -14,12 +14,13 @@
 #
 
 """Wrapper around btp messages. The functions are added as needed."""
-
+import binascii
 import logging
 import struct
 
 from autopts.pybtp import defs
 from autopts.pybtp.btp.btp import CONTROLLER_INDEX, get_iut_method as get_iut
+from autopts.pybtp.types import BTPError
 
 PACS = {
     'update_char': (defs.BTP_SERVICE_ID_PACS, defs.PACS_UPDATE_CHARACTERISTIC,
@@ -61,5 +62,24 @@ def pacs_update_supported_audio_contexts():
     pacs_update_characteristic(defs.PACS_CHARACTERISTIC_SUPPORTED_AUDIO_CONTEXTS)
 
 
+def pacs_ev_characteristic_subscribed_(pacs, data, data_len):
+    logging.debug('%s %r', pacs_ev_characteristic_subscribed_.__name__, data)
+
+    fmt = '<B6sB'
+    header_size = struct.calcsize(fmt)
+    if len(data) < header_size:
+        raise BTPError('Invalid data length')
+
+    addr_type, addr, handle = struct.unpack_from(fmt, data)
+
+    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+
+    logging.debug(f'PACS characteristic with handle {handle} subscribed')
+
+    pacs.event_received(defs.PACS_EV_CHARACTERISTIC_SUBSCRIBED,
+                        (addr_type, addr, handle))
+
+
 PACS_EV = {
+    defs.PACS_EV_CHARACTERISTIC_SUBSCRIBED: pacs_ev_characteristic_subscribed_,
 }

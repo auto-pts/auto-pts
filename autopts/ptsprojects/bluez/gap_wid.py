@@ -14,30 +14,22 @@
 #
 
 import logging
-import sys
 import time
 
+from autopts.wid import generic_wid_hdl
 from autopts.pybtp import btp
-from autopts.pybtp.types import Prop, AdType
+from autopts.pybtp.types import Prop, AdType, WIDParams
 from autopts.ptsprojects.stack import get_stack
-from autopts.wid.gap import gap_wid_hdl as gen_wid_hdl
 
 log = logging.debug
 
 
 def gap_wid_hdl(wid, description, test_case_name):
-    log("%s, %r, %r, %s", gap_wid_hdl.__name__, wid, description,
-        test_case_name)
-    module = sys.modules[__name__]
-
-    try:
-        handler = getattr(module, "hdl_wid_%d" % wid)
-        return handler(description)
-    except AttributeError:
-        return gen_wid_hdl(wid, description, test_case_name, False)
+    log(f'{gap_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
+    return generic_wid_hdl(wid, description, test_case_name, [__name__, 'autopts.wid.gap'])
 
 
-def hdl_wid_47(desc):
+def hdl_wid_47(_: WIDParams):
     stack = get_stack()
 
     btp.gap_set_nonconn()
@@ -51,23 +43,23 @@ def hdl_wid_47(desc):
     return True
 
 
-def hdl_wid_77(desc):
+def hdl_wid_77(_: WIDParams):
     time.sleep(2)
     btp.gap_disconn()
     return True
 
 
-def hdl_wid_78(desc):
+def hdl_wid_78(_: WIDParams):
     btp.gap_conn()
     btp.gap_wait_for_connection()
     return True
 
 
-def hdl_wid_79(desc):
-    return hdl_wid_80(desc)
+def hdl_wid_79(params: WIDParams):
+    return hdl_wid_80(params)
 
 
-def hdl_wid_80(desc):
+def hdl_wid_80(_: WIDParams):
     stack = get_stack()
 
     btp.gap_adv_off()
@@ -84,13 +76,13 @@ def hdl_wid_80(desc):
     return True
 
 
-def hdl_wid_108(desc):
+def hdl_wid_108(_: WIDParams):
     btp.gap_wait_for_connection()
     btp.gap_pair()
     return True
 
 
-def hdl_wid_112(desc):
+def hdl_wid_112(_: WIDParams):
     bd_addr = btp.pts_addr_get()
     bd_addr_type = btp.pts_addr_type_get()
 
@@ -106,7 +98,7 @@ def hdl_wid_112(desc):
     return False
 
 
-def hdl_wid_1002(desc):
+def hdl_wid_1002(_: WIDParams):
     stack = get_stack()
     passkey = stack.gap.passkey.data
     stack.gap.passkey.data = None

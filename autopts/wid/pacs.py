@@ -14,26 +14,19 @@
 #
 
 import logging
-import sys
 
 from autopts.pybtp import btp
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp.types import WIDParams
+from autopts.wid import generic_wid_hdl
 
 log = logging.debug
 pacs_update_fun = None
 
 
-def pacs_wid_hdl(wid, description, test_case_name, logs=True):
-    if logs:
-        log(f'{pacs_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
-    module = sys.modules[__name__]
-
-    try:
-        handler = getattr(module, f'hdl_wid_{wid}')
-        return handler(WIDParams(wid, description, test_case_name))
-    except AttributeError as e:
-        logging.exception(e)
+def pacs_wid_hdl(wid, description, test_case_name):
+    log(f'{pacs_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
+    return generic_wid_hdl(wid, description, test_case_name, [__name__])
 
 
 # wid handlers section begin

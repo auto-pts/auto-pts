@@ -35,12 +35,12 @@ def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None, *args):
     check_call('rm -rf build/'.split(), cwd=tester_dir)
     check_call('rm -rf build/'.split(), cwd=controller_dir)
 
-    bttester_overlay = 'nrf5340_hci_rpmsg.conf;./overlay-debug.conf'
+    bttester_overlay = 'nrf5340_hci_rpmsg.conf'
 
     if conf_file and conf_file != 'default' and conf_file != 'prj.conf':
         bttester_overlay += f';{conf_file}'
 
-    cmd = ['west', 'build', '-b', board, '--', f'-DOVERLAY_CONFIG={bttester_overlay}']
+    cmd = ['west', 'build', '-b', board, '--', f'-DOVERLAY_CONFIG=\'{bttester_overlay}\'']
     check_call(cmd, cwd=tester_dir)
     check_call(['west', 'flash', '--skip-rebuild', '--recover', '-i', debugger_snr], cwd=tester_dir)
 
@@ -49,6 +49,6 @@ def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None, *args):
                cwd=controller_dir)
 
     cmd = ['west', 'build', '-b', 'nrf5340dk_nrf5340_cpunet', '--',
-           f'-DOVERLAY_CONFIG=nrf5340_cpunet_iso-bt_ll_sw_split.conf;{controller_overlay}']
+           f'-DOVERLAY_CONFIG=\'nrf5340_cpunet_iso-bt_ll_sw_split.conf;{controller_overlay}\'']
     check_call(cmd, cwd=controller_dir)
     check_call(['west', 'flash', '--skip-rebuild', '-i', debugger_snr], cwd=controller_dir)

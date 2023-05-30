@@ -73,9 +73,9 @@ def server_start_lock_wrapper(func):
 class PyPTSWithXmlRpcCallback(ptscontrol.PyPTS):
     """A child class that adds support of xmlrpc PTS callbacks to PyPTS"""
 
-    def __init__(self):
+    def __init__(self, device):
         """Constructor"""
-        super().__init__()
+        super().__init__(device)
 
         log("%s", self.__init__.__name__)
 
@@ -136,6 +136,15 @@ class SvrArgumentParser(argparse.ArgumentParser):
                           help="Specify ykush hub downstream port number, so "
                           "during recovery steps PTS dongle could be replugged.")
 
+        self.add_argument("--dongle", nargs="+", default=None,
+                          help='Select the dongle port.'
+                               'COMx in case of LE only dongle. '
+                               r'For dual-mode dongle the port will have format'
+                               r' like "USB:FREE:5&A70BC4C&0&8 where"'
+                               r'the last part 5&A70BC4C&0&8 can be found in'
+                               r'"Device instance path" in device settings, e.g. '
+                               r'"USB\VID_0A12&PID_0001\5&A70BC4C&0&8"')
+
     @staticmethod
     def check_args(arg):
         """Sanity check command line arguments"""
@@ -146,6 +155,9 @@ class SvrArgumentParser(argparse.ArgumentParser):
 
         if len(arg.srv_port) == 1:
             arg.srv_port = arg.srv_port[0]
+
+            if arg.dongle:
+                arg.dongle = arg.dongle[0]
 
         arg.superguard = 60 * arg.superguard
 
@@ -309,7 +321,7 @@ class Server(threading.Thread):
                 pass
 
         print("Starting PTS ...")
-        self.pts = PyPTSWithXmlRpcCallback()
+        self.pts = PyPTSWithXmlRpcCallback(self._args.dongle)
         self._device = self.pts._device
         print("OK")
 
@@ -407,6 +419,7 @@ def multi_main(_args, _superguard):
         args_copy = copy.deepcopy(_args)
         args_copy.srv_port = _args.srv_port[i]
         args_copy.ykush = _args.ykush[i] if _args.ykush else None
+        args_copy.dongle = _args.dongle[i] if _args.dongle else None
         srv = Server(_args=args_copy)
         servers.append(srv)
         srv.start()

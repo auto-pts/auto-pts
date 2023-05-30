@@ -17,28 +17,20 @@ import copy
 import logging
 import re
 import struct
-import sys
 from time import sleep
 
 from autopts.ptsprojects.stack import get_stack, ConnParams
 from autopts.pybtp import types
 from autopts.pybtp import btp
 from autopts.pybtp.types import Prop, Perm, UUID, AdType, bdaddr_reverse, WIDParams, IOCap, OwnAddrType
+from autopts.wid import generic_wid_hdl
 
 log = logging.debug
 
 
-def gap_wid_hdl(wid, description, test_case_name, logs=True):
-    if logs:
-        log("%s, %r, %r, %s", gap_wid_hdl.__name__, wid, description,
-            test_case_name)
-    module = sys.modules[__name__]
-
-    try:
-        handler = getattr(module, "hdl_wid_%d" % wid)
-        return handler(WIDParams(wid, description, test_case_name))
-    except AttributeError as e:
-        logging.exception(e)
+def gap_wid_hdl(wid, description, test_case_name):
+    log(f'{gap_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
+    return generic_wid_hdl(wid, description, test_case_name, [__name__])
 
 
 # wid handlers section begin
@@ -522,7 +514,12 @@ def hdl_wid_112(params: WIDParams):
         return False
 
     btp.gattc_read(bd_addr_type, bd_addr, handle)
-    btp.gattc_read_rsp()
+    btp.gattc_read_rsp(store_rsp=True)
+
+    if params.test_case_name in ['GAP/SEC/AUT/BV-19-C']:
+        if (btp.verify_att_error("authentication error")):
+            btp.gap_pair()
+
     return True
 
 

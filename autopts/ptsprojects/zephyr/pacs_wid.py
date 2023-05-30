@@ -14,20 +14,12 @@
 #
 
 import logging
-import sys
 
-from autopts.wid.pacs import pacs_wid_hdl as gen_wid_hdl
+from autopts.wid import generic_wid_hdl
 
 log = logging.debug
 
 
 def pacs_wid_hdl(wid, description, test_case_name):
-    log("%s, %r, %r, %s", pacs_wid_hdl.__name__, wid, description,
-        test_case_name)
-    module = sys.modules[__name__]
-
-    try:
-        handler = getattr(module, "hdl_wid_%d" % wid)
-        return handler(description)
-    except AttributeError:
-        return gen_wid_hdl(wid, description, test_case_name, False)
+    log(f'{pacs_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
+    return generic_wid_hdl(wid, description, test_case_name, [__name__, 'autopts.wid.pacs'])

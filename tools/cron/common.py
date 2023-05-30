@@ -13,7 +13,7 @@
 # more details.
 #
 
-"""AutoPTS Cron with Github CI
+"""AutoPTS Cron with GitHub CI
 
 Schedule cyclical jobs or trigger them with magic sentence in Pull Request comment.
 
@@ -24,12 +24,11 @@ start ssh agent in the same console:
 $ eval `ssh-agent`
 $ ssh-add path/to/id_rsa
 """
-
+import logging
 import os
 import re
 import shlex
 import sys
-import json
 import shutil
 import schedule
 import requests
@@ -41,10 +40,8 @@ import subprocess
 from os import listdir
 from pathlib import Path
 from time import sleep, time
-from threading import Thread
 from os.path import dirname, abspath
-from datetime import datetime, timedelta, date
-from requests.structures import CaseInsensitiveDict
+from datetime import datetime, date
 from autopts_bisect import Bisect, set_run_test_fun
 from autopts.bot.common import update_sources, send_mail, update_repos
 
@@ -55,6 +52,7 @@ sys.path.insert(0, AUTOPTS_REPO)
 if sys.platform == 'win32':
     import wmi
 
+log = logging.info
 END = False
 CRON_CFG = {}
 mimetypes.add_type('text/plain', '.log')
@@ -70,6 +68,11 @@ def set_end():
     END = True
 
 
+def get_end():
+    global END
+    return END
+
+
 def catch_exceptions(cancel_on_failure=False):
     def _catch_exceptions(job_func):
         @functools.wraps(job_func)
@@ -77,7 +80,7 @@ def catch_exceptions(cancel_on_failure=False):
             try:
                 return job_func(*args, **kwargs)
             except:
-                print(traceback.format_exc())
+                log(traceback.format_exc())
                 if 'email' in CRON_CFG:
                     magic_tag = kwargs['magic_tag'] if 'magic_tag' in kwargs else None
                     send_mail_exception(kwargs['cfg'], CRON_CFG['email'], traceback.format_exc(), magic_tag)
@@ -94,7 +97,7 @@ def catch_connection_error(func):
             try:
                 return func(*args, **kwargs)
             except requests.exceptions.ConnectionError:
-                print('Internet connection error')
+                log('Internet connection error')
                 sleep(1)
     return _catch_exceptions
 
@@ -102,7 +105,8 @@ def catch_connection_error(func):
 def report_to_review_msg(report_path):
     failed_statuses = ['INCONC', 'FAIL', 'UNKNOWN VERDICT: NONE',
                        'BTP ERROR', 'XML-RPC ERROR', 'BTP TIMEOUT']
-    fails = []
+    failed = []
+    passed = []
     msg = 'AutoPTS Bot results:\n'
 
     with open(report_path, 'r') as f:
@@ -113,12 +117,17 @@ def report_to_review_msg(report_path):
                 break
 
             if any(status in line for status in failed_statuses):
-                fails.append(line.strip())
+                failed.append(line.strip())
+            elif 'PASS' in line:
+                passed.append(line.strip())
 
-    if len(fails) > 0:
-        msg += 'Failed tests:\n{}'.format('\n'.join(fails))
+    if len(failed) > 0:
+        msg += f'<details><summary>Failed tests</summary>{"<br>".join(failed)}</details>\n'
     else:
         msg += 'No failed test found.\n'
+
+    if len(passed) > 0:
+        msg += f'<details><summary>Successful tests</summary>{"<br>".join(passed)}</details>\n'
 
     return msg
 
@@ -151,171 +160,6 @@ def send_mail_exception(conf_name, email_cfg, exception, magic_tag=None):
     send_mail(email_cfg, subject, body, attachments)
 
 
-class GithubCron(Thread):
-    base_url = 'https://api.github.com'
-
-    def __init__(self, interval, magic_tags, repo_owner, repo_name, permitted_logins, access_token=None):
-        super().__init__()
-        self.config = {'base_url': self.base_url,
-                       'owner': repo_owner,
-                       'repo': repo_name,
-                       'access_token': access_token
-                       }
-        self.end = False
-        self.interval = interval
-        self.tags = magic_tags
-        self.last_comment_id = 0
-        self.permitted_logins = permitted_logins
-        self.since_offset = 15  # minutes before
-        self.schedule_delay = 1  # minutes after parsing GET response
-
-    def check_token(self):
-        if 'access_token' not in self.config or self.config['access_token'] is None:
-            raise Exception('Github token was not provided')
-
-    @catch_connection_error
-    def get(self, url, params):
-        headers = CaseInsensitiveDict()
-        if 'access_token' in self.config and self.config['access_token'] is not None:
-            headers['Authorization'] = 'token {access_token}'.format(**self.config)
-
-        resp = requests.get(url, params, headers=headers)
-
-        return resp
-
-    @catch_connection_error
-    def post(self, url, params):
-        headers = CaseInsensitiveDict()
-        if 'access_token' in self.config and self.config['access_token'] is not None:
-            headers['Authorization'] = 'token {access_token}'.format(**self.config)
-
-        resp = requests.post(url, data=json.dumps(params), headers=headers)
-
-        return resp
-
-    def post_pr_comment(self, pr_number, comment_body):
-        self.check_token()
-        url = '{base_url}/repos/{owner}/{repo}/issues/{pr_number}/comments'.format(
-            pr_number=pr_number, **self.config)
-
-        params = {
-            'body': comment_body,
-            'accept': 'application/vnd.github.v3+json',
-        }
-
-        rsp = self.post(url, params)
-
-        return rsp
-
-    def get_pr_comments_with_magic_tag(self):
-        tagged_comments = []
-
-        since = datetime.utcnow() - timedelta(minutes=self.since_offset)
-        url = '{base_url}/repos/{owner}/{repo}/issues/comments'.format(**self.config)
-
-        params = {
-            'since': since.strftime('%Y%m%dT%H%M%SZ'),
-            'accept': 'application/vnd.github.v3+json',
-            'per_page': 100,
-            'page': 1,
-            'sort': 'updated',
-            'direction': 'asc'
-        }
-
-        resp = self.get(url, params)
-        try:
-            comments = resp.json()
-        except:
-            comments = []
-
-        for comment in comments:
-            comment_id = comment['id']
-            if comment_id <= self.last_comment_id:
-                continue
-            self.last_comment_id = comment_id
-
-            if 'pull' not in comment['html_url']:
-                continue
-
-            login = comment['user']['login']
-            if not any(login == perm_login for perm_login in self.permitted_logins):
-                continue
-
-            body = comment['body']
-            for tag in self.tags:
-                if body.startswith(tag):
-                    comment['magic_tag'] = tag
-                    break
-
-            if 'magic_tag' not in comment:
-                continue
-
-            tagged_comments.append(comment)
-
-        return tagged_comments
-
-    def run(self):
-        while not self.end:
-            print('{} Github cron is running'.format(datetime.today().strftime('%Y-%m-%d %H:%M:%S ')))
-            tagged_comments = self.get_pr_comments_with_magic_tag()
-
-            for comment in tagged_comments:
-                github_pr_number = int(re.findall(r'(?<=pull\/)\d+?(?=#)', comment['html_url'])[0])
-                url = '{base_url}/repos/{owner}/{repo}/pulls/{issue_nr}'.format(**self.config,
-                                                                                issue_nr=github_pr_number)
-
-                params = {'accept': 'application/vnd.github.v3+json'}
-                resp = self.get(url, params)
-                try:
-                    pr = resp.json()
-                except:
-                    continue
-
-                tag_cfg = self.tags[comment['magic_tag']]
-                pr_cfg = {
-                    'number': github_pr_number,
-                    'source_repo_owner': pr['user']['login'],
-                    'repo_name': pr['head']['repo']['name'],
-                    'source_branch': pr['head']['ref'],
-                    'head_sha': pr['head']['sha'],
-                    'comment_body': comment['body'],
-                    'magic_tag': comment['magic_tag'],
-                    'autopts_selftest': tag_cfg.autopts_selftest if hasattr(tag_cfg, 'autopts_selftest') else False
-                }
-
-                start_time = pr_choose_start_time() + timedelta(minutes=self.schedule_delay)
-                today_str = (start_time).strftime('%H:%M:%S')
-                getattr(schedule.every(), start_time.strftime('%A').lower()).at(today_str).do(
-                    tag_cfg.func, cron=self, pr_cfg=pr_cfg, **vars(tag_cfg))
-
-                post_text = 'Scheduled PR #{} after {}.'.format(comment['html_url'], today_str)
-                self.post_pr_comment(github_pr_number, post_text)
-                print(post_text)
-
-            i = 0
-            while i < self.interval and not self.end:
-                sleep(1)
-                i += 1
-
-
-def pr_choose_start_time():
-    start_time = datetime.today()
-    run_time = 0.0  # TODO run time estimation and prioritising
-    all_jobs = schedule.jobs[:]
-
-    while True:
-        for job in [j for j in all_jobs]:
-            if job.next_run < start_time or \
-                    job.next_run > start_time + timedelta(hours=run_time):
-                all_jobs.remove(job)
-
-        if not len(all_jobs):
-            break
-
-        start_time = datetime.today() + timedelta(hours=run_time)
-    return start_time + timedelta(minutes=1)
-
-
 def kill_processes(name):
     c = wmi.WMI()
     own_id = os.getpid()
@@ -323,9 +167,9 @@ def kill_processes(name):
         try:
             if ps.ProcessId != own_id:
                 ps.Terminate()
-                print('{} process (PID {}) terminated successfully'.format(name, ps.ProcessId))
+                log('{} process (PID {}) terminated successfully'.format(name, ps.ProcessId))
         except:
-            print('There is no {} process running with id: {}'.format(name, ps.ProcessId))
+            log('There is no {} process running with id: {}'.format(name, ps.ProcessId))
 
 
 def clear_workspace(workspace_dir):
@@ -362,7 +206,7 @@ def check_call(cmd, env=None, cwd=None, shell=True):
 def load_config(cfg):
     cfg_path = os.path.join(AUTOPTS_REPO, 'autopts/bot/{}.py'.format(cfg))
     if not os.path.isfile(cfg_path):
-        print('{} does not exists!'.format(cfg_path))
+        log('{} does not exists!'.format(cfg_path))
         return None
 
     mod = importlib.import_module('autopts.bot.' + cfg)
@@ -481,31 +325,31 @@ def pre_cleanup_files(autopts_repo, project_repo, test_case_db_path='TestCase.db
 
 def git_stash_clear(cwd):
     cmd = 'git stash clear'
-    print('Running: ', cmd)
+    log(f'Running: {cmd}')
     check_call(cmd.split(), cwd=cwd)
 
 
 def git_checkout(branch, cwd):
     cmd = 'git checkout {}'.format(branch)
-    print('Running: ', cmd)
+    log(f'Running: {cmd}')
     check_call(cmd.split(), cwd=cwd)
 
 
 def git_rebase_abort(cwd):
     cmd = 'git rebase --abort'
-    print('Running: ', cmd)
+    log(f'Running: {cmd}')
     check_call(cmd.split(), cwd=cwd)
 
 
 def merge_pr_branch(pr_source_repo_owner, pr_source_branch, repo_name, project_repo):
     cmd = 'git fetch https://github.com/{}/{}.git'.format(
         pr_source_repo_owner, repo_name)
-    print('Running: ', cmd)
+    log(f'Running: {cmd}')
     check_call(cmd.split(), cwd=project_repo)
 
     cmd = 'git pull --rebase https://github.com/{}/{}.git {}'.format(
         pr_source_repo_owner, repo_name, pr_source_branch)
-    print('Running: ', cmd)
+    log(f'Running: {cmd}')
     check_call(cmd.split(), cwd=project_repo)
 
 
@@ -513,7 +357,7 @@ def run_test(bot_options, server_options, autopts_repo):
     if sys.platform == 'win32':
         # Start subprocess running autoptsserver
         srv_cmd = 'python autoptsserver.py {} >> stdout_autoptsserver.log 2>&1'.format(server_options)
-        print('Running: ', srv_cmd)
+        log(f'Running: {srv_cmd}')
         srv_process = subprocess.Popen(shlex.split(srv_cmd),
                                        shell=True,
                                        stdout=subprocess.PIPE,
@@ -528,7 +372,7 @@ def run_test(bot_options, server_options, autopts_repo):
     # Start subprocess of autoptsclient_bot
     bot_cmd = 'python autoptsclient_bot.py {}' \
               ' >> stdout_autoptsbot.log 2>&1'.format(bot_options)
-    print('Running: ', bot_cmd)
+    log(f'Running: {bot_cmd}')
     bot_process = subprocess.Popen(shlex.split(bot_cmd),
                                    shell=True,
                                    stdout=subprocess.PIPE,
@@ -581,9 +425,9 @@ def parse_test_cases_from_comment(pr_cfg):
 @catch_exceptions(cancel_on_failure=True)
 def generic_pr_job(cron, cfg, pr_cfg, server_options, pr_repo_name_in_config,
                    bot_options_append='', **kwargs):
-    print('Started PR Job: repo_name={repo_name} PR={number} src_owner={source_repo_owner}'
-          ' branch={source_branch} head_sha={head_sha} comment={comment_body} '
-          'magic_tag={magic_tag} cfg={cfg}'.format(**pr_cfg, cfg=cfg))
+    log('Started PR Job: repo_name={repo_name} PR={number} src_owner={source_repo_owner}'
+        ' branch={source_branch} head_sha={head_sha} comment={comment_body} '
+        'magic_tag={magic_tag} cfg={cfg}'.format(**pr_cfg, cfg=cfg))
 
     cfg_dict = load_config(cfg)
 
@@ -632,7 +476,7 @@ def generic_pr_job(cron, cfg, pr_cfg, server_options, pr_repo_name_in_config,
     if not os.path.exists(report):
         raise Exception('Bot failed before report creation')
 
-    print(f'{pr_cfg["repo_name"]} PR Job finished')
+    log(f'{pr_cfg["repo_name"]} PR Job finished')
 
     # Post in PR comment with results
     cron.post_pr_comment(
@@ -645,7 +489,7 @@ def generic_pr_job(cron, cfg, pr_cfg, server_options, pr_repo_name_in_config,
 @catch_exceptions(cancel_on_failure=True)
 def generic_test_job(cfg, server_options, included='', excluded='',
                      bisect=None, bot_options_append='', **kwargs):
-    print(f'Started {cfg} Job')
+    log(f'Started {cfg} Job')
 
     cfg_dict = load_config(cfg)
 
@@ -670,7 +514,7 @@ def generic_test_job(cfg, server_options, included='', excluded='',
         if test_case_db_path is None:
             raise Exception('Database file {} do not exists'.format(test_case_db_path))
 
-        print('Copied database from {}'.format(test_case_db_path))
+        log('Copied database from {}'.format(test_case_db_path))
         shutil.copy(test_case_db_path, autopts_test_case_db)
 
     workspace_path = find_workspace_in_tree(
@@ -692,7 +536,7 @@ def generic_test_job(cfg, server_options, included='', excluded='',
     if bisect:
         Bisect(bisect).run_bisect(report)
 
-    print(f'{cfg} Job finished')
+    log(f'{cfg} Job finished')
 
 
 set_run_test_fun(run_test)

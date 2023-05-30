@@ -282,7 +282,7 @@ class PyPTS:
 
     """
 
-    def __init__(self):
+    def __init__(self, device=None):
         """Constructor"""
         log("%s", self.__init__.__name__)
 
@@ -303,6 +303,7 @@ class PyPTS:
         self.__bd_addr = None
         self._com_logger = None
         self._com_sender = None
+        self._preferred_device = device
         self._device = None
 
         # This is done to have valid _pts in case client does not restart_pts
@@ -797,7 +798,9 @@ class PyPTS:
         device = self._pts.GetSelectedDevice()
         log(f"Remembered device {self._device}, selected device {device}")
         device_to_connect = None
-        if self._device is not None and device != self._device:
+        if self._preferred_device:
+            device_to_connect = self._preferred_device
+        elif self._device is not None and device != self._device:
             log(f"Will select another device {device}")
             device_to_connect = self._device.replace(r'InUse', r'Free')
         else:
@@ -830,6 +833,10 @@ class PyPTS:
         return address
 
     def connect_to_dongle(self):
+        if self._preferred_device:
+            self._pts.SelectDevice(self._preferred_device)
+            return
+
         device_to_connect = None
         devices = self._pts.GetDeviceList()
         for device in devices:

@@ -27,45 +27,14 @@ Commands and responses:
 					Address (6 octets)
 					ASE ID (1 octet)
 					Coding Format (1 octet)
-					Frequency (1 octet)
-					Frame Duration (1 octet)
-					Audio Locations (4 octets)
-					Octets Per Frame (2 octets)
+					VID (2 octets)
+					CID (2 octets)
+					Config LTVs len (1 octet)
+					Config LTVs (varies)
 		Response parameters:    <None>
 
-        Valid Coding Format values:
-                    0x06 = LC3
-                    0x0ff = Vendor Specific
-
-        The values of the other parameters as defined in Assigned
-        Numbers (2023), 6.12.5 Codec_Specific_Configuration LTV
-        structures, i.e.:
-
-        Valid Frequency values:
-                    0x01 = 8000 Hz
-                    0x02 = 11025 Hz
-                    0x03 = 16000 Hz
-                    0x04 = 22050 Hz
-                    0x05 = 24000 Hz
-                    0x06 = 32000 Hz
-                    0x07 = 44100 Hz
-                    0x08 = 48000 Hz
-                    0x09 = 88200 Hz
-                    0x0a = 96000 Hz
-                    0x0b = 176400 Hz
-                    0x0c = 192000 Hz
-                    0x0d = 384000 Hz
-
-        Valid Frame Duration values:
-                    0x00 = Use 7.5 ms codec frames
-                    0x01 = Use 10 ms codec frames
-
-        Valid Audio Locations values:
-                    0x00 - 0x08000000 = 4 octet bitfield of Audio
-                    Location values
-
-        Valid Octets Per Frame value:
-                    0x0001 - 0xffff = Number of octets used per codec frame.
+        The values for Config LTVs as defined in Assigned Numbers,
+        Codec_Specific_Configuration LTV.
 
 		In case of an error, the error status response will be returned.
 		In case of a success, the IUT continues processing the command
@@ -218,3 +187,13 @@ Events:
 
 		This event indicates that the IUT has finished ASCS operation
 		initiated by ASCS client or server.
+
+	Opcode 0x81 - Characteristic Subscribed
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Handle (2 octets)
+
+		This event indicates that a lower tester has subscribed to
+		an ASCS characteristic with a given handle.

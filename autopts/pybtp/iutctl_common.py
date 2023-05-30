@@ -19,6 +19,8 @@ import queue
 import socket
 import sys
 import threading
+import binascii
+
 
 from abc import abstractmethod
 
@@ -87,9 +89,10 @@ class BTPSocket:
             data_memview = data_memview[nbytes:]
             toread_data_len -= nbytes
 
-        tuple_data = bytes(str(dec_data(data)), 'utf-8').decode("unicode_escape").replace("b'", "'")
+        data_string = binascii.hexlify(data).decode('utf-8')
+        data_string = ' '.join(f'{data_string[i:i+2]}' for i in range(0, len(data_string), 2))
+        log(f"Received data: { {data_string} }, {data}")
 
-        log("Received data: %r, %r", tuple_data, data)
         self.conn.settimeout(None)
         return tuple_hdr, dec_data(data)
 

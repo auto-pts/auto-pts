@@ -15,25 +15,26 @@
 
 import logging
 import socket
-import sys
 
+from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp
 from autopts.ptsprojects.testcase import MMI
-from autopts.ptsprojects.mynewt.gatt_wid import gatt_wid_hdl
+from autopts.wid import generic_wid_hdl
 
 log = logging.debug
 
 
 def gattc_wid_hdl(wid, description, test_case_name):
-    log("%s, %r, %r, %s", gattc_wid_hdl.__name__, wid, description,
-        test_case_name)
-    module = sys.modules[__name__]
+    log(f'{gattc_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
+    stack = get_stack()
+    if stack.is_svc_supported('GATT_CL') and 'GATT/CL' in test_case_name:
+        return generic_wid_hdl(wid, description, test_case_name,
+                               [__name__, 'autopts.ptsprojects.mynewt.gatt_wid',
+                                'autopts.wid.gatt_client'])
 
-    try:
-        handler = getattr(module, "hdl_wid_%d" % wid)
-        return handler(description)
-    except AttributeError:
-        return gatt_wid_hdl(wid, description, test_case_name)
+    return generic_wid_hdl(wid, description, test_case_name,
+                           [__name__, 'autopts.ptsprojects.mynewt.gatt_wid',
+                            'autopts.wid.gatt'])
 
 
 def gattc_wid_hdl_no_read_long(wid, description, test_case_name):

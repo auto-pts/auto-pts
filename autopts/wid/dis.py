@@ -14,25 +14,17 @@
 #
 
 import logging
-import sys
 from autopts.pybtp import btp
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp.types import WIDParams
+from autopts.wid import generic_wid_hdl
 
 log = logging.debug
 
 
-def dis_wid_hdl(wid, description, test_case_name, logs=True):
-    if logs:
-        log("%s, %r, %r, %s", dis_wid_hdl.__name__, wid, description,
-            test_case_name)
-    module = sys.modules[__name__]
-
-    try:
-        handler = getattr(module, "hdl_wid_%d" % wid)
-        return handler(WIDParams(wid, description, test_case_name))
-    except AttributeError as e:
-        logging.exception(e)
+def dis_wid_hdl(wid, description, test_case_name):
+    log(f'{dis_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
+    return generic_wid_hdl(wid, description, test_case_name, [__name__])
 
 
 # wid handlers section begin

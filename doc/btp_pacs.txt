@@ -37,3 +37,14 @@ Commands and responses:
 		PACS characteristics.
 
 		In case of an error, the error response will be returned.
+
+Events:
+	Opcode 0x80 - Characteristic Subscribed
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Handle (2 octets)
+
+		This event indicates that a lower tester has subscribed to
+		a PACS characteristic with a given handle.

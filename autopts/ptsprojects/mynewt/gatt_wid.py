@@ -15,16 +15,14 @@
 
 import logging
 import struct
-import sys
 import time
 from binascii import hexlify
 
+from autopts.wid import generic_wid_hdl
 from autopts.pybtp import btp
-from autopts.pybtp.types import Perm
-from autopts.wid.gatt import gatt_wid_hdl as gen_wid_hdl
+from autopts.pybtp.types import Perm, WIDParams
 from autopts.ptsprojects.testcase import MMI
 from autopts.ptsprojects.stack import get_stack
-from autopts.wid.gatt_client import gatt_cl_wid_hdl
 
 log = logging.debug
 
@@ -32,39 +30,35 @@ log = logging.debug
 def gatt_wid_hdl(wid, description, test_case_name):
     stack = get_stack()
     if stack.is_svc_supported('GATT_CL') and 'GATT/CL' in test_case_name:
-        return gatt_cl_wid_hdl(wid, description, test_case_name)
-    log("%s, %r, %r, %s", gatt_wid_hdl.__name__, wid, description,
-        test_case_name)
-    module = sys.modules[__name__]
+        return generic_wid_hdl(wid, description, test_case_name,
+                               [__name__, 'autopts.wid.gatt_client'])
 
-    try:
-        handler = getattr(module, "hdl_wid_%d" % wid)
-        return handler(description)
-    except AttributeError:
-        return gen_wid_hdl(wid, description, test_case_name, False)
+    log(f'{gatt_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
+    return generic_wid_hdl(wid, description, test_case_name,
+                           [__name__, 'autopts.wid.gatt'])
 
 
-def hdl_wid_3(desc):
+def hdl_wid_3(_: WIDParams):
     time.sleep(2)
     btp.gap_disconn(btp.pts_addr_get(), btp.pts_addr_type_get())
     return True
 
 
-def hdl_wid_12(desc):
+def hdl_wid_12(_: WIDParams):
     btp.gattc_exchange_mtu(btp.pts_addr_type_get(), btp.pts_addr_get())
     time.sleep(10)
     return True
 
 
-def hdl_wid_15(desc):
+def hdl_wid_15(_: WIDParams):
     btp.gattc_find_included(btp.pts_addr_type_get(), btp.pts_addr_get(),
                             None, None)
     return True
 
 
-def hdl_wid_17(desc):
+def hdl_wid_17(params: WIDParams):
     MMI.reset()
-    MMI.parse_description(desc)
+    MMI.parse_description(params.description)
 
     iut_services = []
 
@@ -80,9 +74,9 @@ def hdl_wid_17(desc):
     return bool(iut_services == MMI.args)
 
 
-def hdl_wid_24(desc):
+def hdl_wid_24(params: WIDParams):
     MMI.reset()
-    MMI.parse_description(desc)
+    MMI.parse_description(params.description)
 
     # Include service in description should have 3 parameters:
     # Attribute Handle, Included Service Attribute Handle and End Group Handle
@@ -127,14 +121,14 @@ def hdl_wid_24(desc):
     return True
 
 
-def hdl_wid_49(desc):
+def hdl_wid_49(_: WIDParams):
     time.sleep(30)
     return True
 
 
-def hdl_wid_51(desc):
+def hdl_wid_51(params: WIDParams):
     MMI.reset()
-    MMI.parse_description(desc)
+    MMI.parse_description(params.description)
 
     btp.gattc_read_uuid(btp.pts_addr_type_get(), btp.pts_addr_get(),
                         MMI.args[1], MMI.args[2], MMI.args[0])
@@ -144,9 +138,9 @@ def hdl_wid_51(desc):
     return True
 
 
-def hdl_wid_52(desc):
+def hdl_wid_52(params: WIDParams):
     MMI.reset()
-    MMI.parse_description(desc)
+    MMI.parse_description(params.description)
 
     handle = int(MMI.args[0], 16)
 
@@ -158,19 +152,19 @@ def hdl_wid_52(desc):
     return bool(value_read == MMI.args[1])
 
 
-def hdl_wid_92(desc):
+def hdl_wid_92(_: WIDParams):
     time.sleep(2)
     return True
 
 
-def hdl_wid_98(desc):
+def hdl_wid_98(_: WIDParams):
     time.sleep(5)
     return True
 
 
-def hdl_wid_108(desc):
+def hdl_wid_108(params: WIDParams):
     MMI.reset()
-    MMI.parse_description(desc)
+    MMI.parse_description(params.description)
 
     btp.gattc_read_uuid(btp.pts_addr_type_get(), btp.pts_addr_get(),
                         0x0001, 0xffff, MMI.args[0])
@@ -180,11 +174,11 @@ def hdl_wid_108(desc):
     return True
 
 
-def hdl_wid_109(desc):
-    return hdl_wid_108(desc)
+def hdl_wid_109(params: WIDParams):
+    return hdl_wid_108(params)
 
 
-def hdl_wid_110(desc):
+def hdl_wid_110(_: WIDParams):
     # Lookup characteristic handle that does not permit reading
     chrcs = btp.gatts_get_attrs(type_uuid='2803')
     for chrc in chrcs:
@@ -214,11 +208,11 @@ def hdl_wid_110(desc):
     return '0000'
 
 
-def hdl_wid_118(desc):
+def hdl_wid_118(_: WIDParams):
     return '{0:04x}'.format(65000)
 
 
-def hdl_wid_121(desc):
+def hdl_wid_121(_: WIDParams):
     # Lookup characteristic UUID that returns Insufficient Encryption Key Size
     # TODO This needs reworking
     chrcs = btp.gatts_get_attrs(type_uuid='2803')
@@ -255,7 +249,7 @@ def hdl_wid_121(desc):
     return '0000'
 
 
-def hdl_wid_122(desc):
+def hdl_wid_122(_: WIDParams):
     # Lookup characteristic UUID that returns Insufficient Encryption Key Size
     # TODO This needs reworking
     chrcs = btp.gatts_get_attrs(type_uuid='2803')
@@ -293,16 +287,16 @@ def hdl_wid_122(desc):
     return '0000'
 
 
-def hdl_wid_142(desc):
+def hdl_wid_142(_: WIDParams):
     log("Mynewt sends EATT supported bit")
     return True
 
 
-def hdl_wid_400(desc):
+def hdl_wid_400(_: WIDParams):
     log("Mynewt sends EATT supported bit")
     return '0000'
 
 
-def hdl_wid_402(desc):
+def hdl_wid_402(_: WIDParams):
     log("Mynewt sends EATT supported bit")
     return '0000'

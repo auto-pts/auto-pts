@@ -16,12 +16,6 @@
 # Stable Zephyr IUT config
 
 iut_config = {
-    # "default": {  # Default west build without option -- -DCONF_FILE=<file.conf>
-    #     "test_cases": [
-    #         'MESH'
-    #     ],
-    # },
-
     "prj.conf": {},  # Default config file name
 
     "enforce_mitm.conf": {
@@ -134,7 +128,7 @@ iut_config = {
         ]
     },
 
-    "nrf5340_hci_rpmsg.conf;overlay-le-audio.conf": {
+    "overlay-le-audio.conf": {
         "overlay": {
             # The overlay file exists in zephyr repo. Leave this empty.
         },

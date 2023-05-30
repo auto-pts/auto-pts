@@ -43,7 +43,7 @@ from oauth2client import file, client, tools
 
 from autopts import bot
 from autopts import client as autoptsclient
-from autopts.client import CliParser, Client
+from autopts.client import CliParser, Client, get_formatted_summary
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
 from autopts.bot.iut_config.zephyr import retry_config
 
@@ -103,6 +103,7 @@ class BotConfigArgs(Namespace):
         self.superguard = float(args.get('superguard', 0))
         self.cron_optim = args.get('cron_optim', False)
         self.project_repos = args.get('repos', None)
+        self.test_case_limit = args.get('test_case_limit', 0)
 
 
 class BotClient(Client):
@@ -124,47 +125,86 @@ class BotClient(Client):
         total_regressions = []
         total_progresses = []
         _args = {}
+        limit_counter = 0
 
         config_default = self.config_default
         _args[config_default] = self.args
 
-        excluded = _args[config_default].excluded
-        included = _args[config_default].test_cases
+        # These contain values passed with -c and -e options
+        included = sort_and_reduce_prefixes(_args[config_default].test_cases)
+        excluded = sort_and_reduce_prefixes(_args[config_default].excluded)
+        _args[config_default].excluded = []
+        _args[config_default].test_cases = []
 
-        for config, value in list(self.iut_config.items()):
+        # Ask the PTS about test cases available in the workspace
+        filtered_test_cases = autoptsclient.get_test_cases(self.ptses[0], included, excluded)
+
+        # Save the iut_config key run order.
+        run_order = list(self.iut_config.keys())
+
+        # Make sure that default config is processed last and gets from the remaining test cases
+        distribution_order = copy.deepcopy(run_order)
+        if config_default in run_order:
+            distribution_order.remove(config_default)
+            distribution_order.append(config_default)
+
+        # Distribute test cases among .conf files
+        remaining_test_cases = copy.deepcopy(filtered_test_cases)
+        for config in distribution_order:
+            value = self.iut_config[config]
+
+            # Merge .confs without 'test_cases' into the default one
             if 'test_cases' not in value:
-                # Rename default config
-                _args[config] = _args.pop(config_default)
-                config_default = config
+                # The 'test_cases' can be skipped only in the default config.
+                # It means: Run all remaining after distribution test cases
+                # with the default config.
                 continue
 
-            if config != config_default:
-                _args[config] = copy.deepcopy(_args[config_default])
-                _args[config].excluded = excluded
+            _args[config] = copy.deepcopy(_args[config_default])
 
-            _args[config].test_cases = autoptsclient.get_test_cases(
-                self.ptses[0], value.get('test_cases', []), included, excluded)
+            for prefix in value['test_cases']:
+                for tc in filtered_test_cases:
+                    if tc.startswith(prefix):
+                        _args[config].test_cases.append(tc)
+                        remaining_test_cases.remove(tc)
 
-            if 'overlay' in value:
-                if len(_args[config].test_cases) > 0:
-                    _args[config_default].excluded += _args[config].test_cases
-                else:
-                    _args.pop(config)
-                    log('No test cases for {} config, ignored.'.format(config))
-        _args[config_default].test_cases = autoptsclient.get_test_cases(
-            self.ptses[0], self.ptses[0].get_project_list(), _args[config_default].test_cases, excluded)
+                filtered_test_cases = copy.deepcopy(remaining_test_cases)
+
+        # Remaining test cases will be run with the default .conf file
+        # if default .conf doesn't have already defined test cases
         if len(_args[config_default].test_cases) == 0:
-            _args.pop(config_default)
-            log('No test cases for {} config, ignored.'.format(config_default))
+            _args[config_default].test_cases = filtered_test_cases
 
-        for config in _args.keys():
-            if config not in self.iut_config.keys():
+        for config in run_order:
+            if _args.get(config) is None:
+                test_case_number = 0
+            else:
+                test_case_number = len(_args[config].test_cases)
+
+            if test_case_number == 0:
+                log(f'No test cases for {config} config, ignored.')
                 continue
+
+            if self.args.test_case_limit:
+                limit = self.args.test_case_limit - limit_counter
+                if limit == 0:
+                    log(f'Limit of test cases reached. No more test cases will be run.')
+                    break
+
+                if test_case_number > limit:
+                    _args[config].test_cases = _args[config].test_cases[:limit]
+                    test_case_number = limit
+
+                limit_counter += test_case_number
 
             self.apply_config(_args[config], config, self.iut_config[config])
 
-            status_count, results_dict, regressions, progresses = \
-                autoptsclient.run_test_cases(self.ptses, self.test_cases, _args[config], retry_config)
+            stats = autoptsclient.run_test_cases(self.ptses, self.test_cases, _args[config], retry_config)
+
+            status_count = stats.get_status_count()
+            results_dict = stats.get_results()
+            regressions = stats.get_regressions()
+            progresses = stats.get_progresses()
 
             total_regressions += regressions
             total_progresses += progresses
@@ -182,6 +222,19 @@ class BotClient(Client):
                 descriptions[test_case_name] = \
                     self.ptses[0].get_test_case_description(project_name, test_case_name)
 
+        total_regressions_len = len(total_regressions)
+        total_progresses_len = len(total_progresses)
+        print(f'\nFinal Bot Summary:\n')
+        print(get_formatted_summary(status, len(results), total_regressions_len, total_progresses_len))
+
+        if total_regressions_len:
+            print('\nRegressions:')
+            print('\n'.join(total_regressions))
+
+        if total_progresses_len:
+            print('\nProgresses:')
+            print('\n'.join(total_progresses))
+
         pts_ver = '{}'.format(self.ptses[0].get_version())
         platform = '{}'.format(self.ptses[0].get_system_model())
 
@@ -197,6 +250,24 @@ class BotClient(Client):
         self.iut_config = iut_config
 
         return self.start(self.parse_config(args))
+
+
+def sort_and_reduce_prefixes(prefixes):
+    sorted_prefixes = sorted(prefixes, key=len)
+    final_prefixes = []
+
+    for s in sorted_prefixes:
+        duplicated = False
+
+        for f in final_prefixes:
+            if s.startswith(f):
+                duplicated = True
+                break
+
+        if not duplicated:
+            final_prefixes.append(s)
+
+    return final_prefixes
 
 
 # ****************************************************************************
@@ -754,6 +825,8 @@ def check_call(cmd, env=None, cwd=None, shell=True):
 
     if sys.platform == 'win32':
         executable = None
+
+    logging.debug(f'Running cmd: {cmd}')
 
     return subprocess.check_call(cmd, env=env, cwd=cwd, shell=shell, executable=executable)
 

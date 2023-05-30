@@ -189,6 +189,9 @@ def main(cfg):
     if 'database_file' not in args:
         args['database_file'] = DATABASE_FILE
 
+    if args.get('newt_upgrade', False):
+        bot.common.check_call(['newt', 'upgrade', '-f', '--shallow=0'], cwd=args['project_path'])
+
     if 'git' in cfg:
         repos_info = bot.common.update_repos(args['project_path'], cfg["git"])
         repo_status = bot.common.make_repo_status(repos_info)

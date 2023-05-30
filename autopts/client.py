@@ -334,7 +334,8 @@ def init_logging(tag=""):
     logging.basicConfig(format=format_template,
                         filename=log_filename,
                         filemode='w',
-                        level=logging.DEBUG)
+                        level=logging.DEBUG,
+                        force=True)
 
 
 class FakeProxy:
@@ -627,37 +628,43 @@ class TestCaseRunStats:
     def print_summary(self):
         """Prints test case list status summary"""
         print("\nSummary:\n")
+        print(get_formatted_summary(self.get_status_count(),
+                                    self.num_test_cases,
+                                    len(self.get_regressions()),
+                                    len(self.get_progresses())))
 
-        content = [['Status', 'Count'], '=']
-        status_count = self.get_status_count()
-        for status, count in list(status_count.items()):
-            content.append([status, str(count)])
 
+def get_formatted_summary(status_count, num_test_cases, regressions_count, progresses_count):
+    content = [['Status', 'Count'], '=']
+    for status, count in list(status_count.items()):
+        content.append([status, str(count)])
+
+    content.append(['='])
+    content.append(['Total', str(num_test_cases)])
+
+    if regressions_count != 0:
         content.append(['='])
-        content.append(['Total', str(self.num_test_cases)])
+        content.append(['Regressions', str(regressions_count)])
 
-        regressions = len(self.get_regressions())
-        if regressions != 0:
+    if progresses_count != 0:
+        if (content[len(content) - 1]) != 1:
             content.append(['='])
-            content.append(['Regressions', str(regressions)])
+        content.append(['Progresses', str(progresses_count)])
 
-        progresses = len(self.get_progresses())
-        if regressions != 0:
-            if (content[len(content) - 1]) != 1:
-                content.append(['='])
-            content.append(['Progresses', str(progresses)])
+    max_len = 0
+    for line in content:
+        if len(line) == 2:
+            max_len = max(max_len, len(' '.join(line)))
 
-        max_len = 0
-        for line in content:
-            if len(line) == 2:
-                max_len = max(max_len, len(' '.join(line)))
+    summary = []
+    for line in content:
+        if len(line) == 1:
+            summary.append(f'{line[0] * max_len}')
+        elif len(line) == 2:
+            spaces = ' ' * (max_len - len(line[0]) - len(line[1]))
+            summary.append(f'{line[0]}{spaces}{line[1]}')
 
-        for line in content:
-            if len(line) == 1:
-                print(line[0] * max_len)
-            elif len(line) == 2:
-                spaces = ' ' * (max_len - len(line[0]) - len(line[1]))
-                print('{}{}{}'.format(line[0], spaces, line[1]))
+    return '\n'.join(summary)
 
 
 def run_test_case_wrapper(func):
@@ -924,12 +931,12 @@ test_case_blacklist = [
 ]
 
 
-def get_test_cases(pts, test_cases, included, excluded):
+def get_test_cases(pts, test_cases, excluded):
     """
     param: pts: proxy to initiated pts instance
-    param: test_cases: names (or prefixes) of test cases to run in
-    current configuration
-    param: included: test cases specified with -c option
+    param: test_cases: test cases specified with -c option or in iut_config.
+                       If empty, all test cases from workspace will be run
+                       (Except those specified in "excluded").
     param: excluded: test cases specified with -e option
     """
 
@@ -950,17 +957,8 @@ def get_test_cases(pts, test_cases, included, excluded):
 
             return False
 
-    if len(included) > 0:
-        _included = []
-
-        for inc in included:
-            for tc in test_cases:
-                if tc.startswith(inc):
-                    _included.append(tc)
-                elif inc.startswith(tc):
-                    _included.append(inc)
-
-        test_cases = _included
+        # Empty test_cases means "run them all"
+        return True
 
     projects = pts.get_project_list()
 
@@ -1040,7 +1038,7 @@ def run_test_cases(ptses, test_case_instances, args, retry_config=None):
 
     stats.print_summary()
 
-    return stats.get_status_count(), stats.get_results(), stats.get_regressions(), stats.get_progresses()
+    return stats
 
 
 class Client:
@@ -1148,11 +1146,9 @@ class Client:
         self.test_cases = setup_test_cases(ptses)
 
     def run_test_cases(self):
-        included = self.args.test_cases
-        excluded = self.args.excluded
         self.args.test_cases = get_test_cases(self.ptses[0],
-                                              self.ptses[0].get_project_list(),
-                                              included, excluded)
+                                              self.args.test_cases,
+                                              self.args.excluded)
         return run_test_cases(self.ptses, self.test_cases, self.args, None)
 
     def cleanup(self):

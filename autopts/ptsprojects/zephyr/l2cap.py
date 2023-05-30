@@ -225,7 +225,8 @@ def test_cases(ptses):
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/TIM/BV-03-C",
                   pre_conditions_success +
-                  [TestFunc(lambda: pts.update_pixit_param("L2CAP", "TSPX_iut_role_initiator", "False"))],
+                  [TestFunc(lambda: pts.update_pixit_param("L2CAP", "TSPX_iut_role_initiator", "False")),
+                   TestFunc(btp.core_reg_svc_gatt)],
                   generic_wid_hdl=l2cap_wid_hdl),
     ]
 
