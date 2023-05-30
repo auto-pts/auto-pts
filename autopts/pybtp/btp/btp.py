@@ -99,6 +99,8 @@ CORE = {
                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_BAP),
     "has_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_HAS),
+    "csis_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
+                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_CSIS),
     "read_supp_cmds": (defs.BTP_SERVICE_ID_CORE,
                        defs.CORE_READ_SUPPORTED_COMMANDS,
                        defs.BTP_INDEX_NONE, ""),
@@ -553,6 +555,13 @@ def core_reg_svc_bap():
 
     iutctl = get_iut()
     iutctl.btp_socket.send_wait_rsp(*CORE['bap_reg'])
+
+
+def core_reg_svc_csis():
+    logging.debug("%s", core_reg_svc_csis.__name__)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*CORE['csis_reg'])
 
 
 def core_reg_svc_rsp_succ():
