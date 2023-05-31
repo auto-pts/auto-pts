@@ -44,11 +44,8 @@ def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None, *args):
     check_call(cmd, cwd=tester_dir)
     check_call(['west', 'flash', '--skip-rebuild', '--recover', '-i', debugger_snr], cwd=tester_dir)
 
-    controller_overlay = 'bttester_hci_rpmsg_overlay.conf'
-    check_call(f'echo CONFIG_BT_CTLR_CONN_ISO_LOW_LATENCY_POLICY=y > {controller_overlay}'.split(),
-               cwd=controller_dir)
-
     cmd = ['west', 'build', '-b', 'nrf5340dk_nrf5340_cpunet', '--',
-           f'-DOVERLAY_CONFIG=\'nrf5340_cpunet_iso-bt_ll_sw_split.conf;{controller_overlay}\'']
+           f'-DOVERLAY_CONFIG=\'nrf5340_cpunet_iso-bt_ll_sw_split.conf;'
+           f'../../../tests/bluetooth/tester/nrf5340_hci_rpmsg_cpunet.conf\'']
     check_call(cmd, cwd=controller_dir)
     check_call(['west', 'flash', '--skip-rebuild', '-i', debugger_snr], cwd=controller_dir)
