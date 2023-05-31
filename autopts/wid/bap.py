@@ -576,7 +576,7 @@ def hdl_wid_304(params: WIDParams):
 
 def hdl_wid_305(params: WIDParams):
     """
-    Please configure ASE state to Enabling for SOURCE ASE, Freq: 16KHz and Frame Duration: 10ms
+    Please configure ASE state to Disabling for SOURCE ASE, Freq: 16KHz and Frame Duration: 10ms
     """
     numbers = re.findall(r'\d+(?:\.\d+)?', params.description)
     sampling_freq_str = numbers[0]
@@ -630,11 +630,9 @@ def hdl_wid_305(params: WIDParams):
     btp.ascs_enable(ase_id)
     stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
 
-    # For this test case the PTS should send MMI 308, but it does not. Errata request in progress
-    if params.test_case_name in ['BAP/UCL/SCC/BV-113-C']:
-        # Disable streams
-        btp.ascs_disable(ase_id)
-        stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+    # Disable streams
+    btp.ascs_disable(ase_id)
+    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
 
     return True
 
