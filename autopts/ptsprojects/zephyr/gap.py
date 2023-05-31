@@ -22,6 +22,7 @@ from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
 from autopts.ptsprojects.zephyr.gap_wid import gap_wid_hdl
+from time import sleep
 
 
 class SVC:
@@ -215,6 +216,9 @@ def test_cases(ptses):
     custom_test_cases = [
         ZTestCase("GAP", "GAP/SEC/CSIGN/BI-04-C",
                   cmds=pre_conditions + init_gatt_db2,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/AUT/BV-21-C",
+                  cmds=pre_conditions + [TestFunc(sleep, 1, post_wid=108)],
                   generic_wid_hdl=gap_wid_hdl),
     ]
 
