@@ -489,6 +489,8 @@ def hdl_wid_106(params: WIDParams):
     # Depending on test, PTS seems to start pairing on its own here or not
     if params.test_case_name in ['GAP/SEC/AUT/BV-19-C', 'GAP/SEC/AUT/BV-25-C']:
         btp.gap_pair()
+
+    btp.gap_wait_for_sec_lvl_change(1)
     return True
 
 
@@ -520,7 +522,6 @@ def hdl_wid_114(params: WIDParams):
 
 
 def hdl_wid_118(_: WIDParams):
-    btp.gap_wait_for_sec_lvl_change(1)
     return True
 
 
