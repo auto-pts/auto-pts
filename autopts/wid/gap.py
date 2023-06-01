@@ -493,15 +493,7 @@ def hdl_wid_106(params: WIDParams):
 
 
 def hdl_wid_108(params: WIDParams):
-    if params.test_case_name in ['GAP/SEC/AUT/BV-21-C', 'GAP/SEC/AUT/BV-17-C', 'GAP/CONN/PRDA/BV-02-C']:
-        btp.gap_pair()
-    else:
-        if params.description == 'Please start the Bonding Procedure in bondable mode.':
-            btp.gap_set_bondable_on()
-        else:
-            # Please configure the IUT into LE Security and start pairing process.
-            btp.gap_pair()
-
+    btp.gap_pair()
     return True
 
 
