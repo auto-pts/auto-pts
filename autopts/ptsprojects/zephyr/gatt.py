@@ -177,6 +177,7 @@ def test_cases_server(ptses):
                         "TRUE" if stack.gap.iut_addr_is_random()
                         else "FALSE")),
                     TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+                    TestFunc(btp.set_pts_addr, pts.q_bd_addr, Addr.le_public),
                     TestFunc(stack.gatt_init)
     ]
 
@@ -355,11 +356,6 @@ def test_cases_server(ptses):
     iut_device_name2 = get_unique_name(pts2)
 
     pre_conditions_lt2 = [
-                        TestFunc(btp.core_reg_svc_gap),
-                        TestFunc(stack.gap_init, iut_device_name2),
-                        TestFunc(btp.core_reg_svc_gatt),
-                        TestFunc(btp.gap_read_ctrl_info),
-                        TestFunc(stack.gatt_init),
                         TestFunc(lambda: pts2.update_pixit_param(
                                 "GATT", "TSPX_bd_addr_iut", queue.get())),
                         TestFunc(lambda: pts2.update_pixit_param(
@@ -369,10 +365,10 @@ def test_cases_server(ptses):
 
     test_cases_lt2 = [
         ZTestCaseSlave("GATT", "GATT/SR/GAS/BV-03-C_LT2",
-                       cmds=pre_conditions_lt2 + init_server,
+                       cmds=pre_conditions_lt2,
                        generic_wid_hdl=gatt_wid_hdl),
         ZTestCaseSlave("GATT", "GATT/SR/GAN/BV-02-C_LT2",
-                       cmds=pre_conditions_lt2 + init_server,
+                       cmds=pre_conditions_lt2,
                        generic_wid_hdl=gatt_wid_hdl),
     ]
 
