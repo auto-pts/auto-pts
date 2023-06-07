@@ -97,22 +97,6 @@ def hdl_wid_98(_: WIDParams):
     return True
 
 
-def hdl_wid_108(params: WIDParams):
-    MMI.reset()
-    MMI.parse_description(params.description)
-
-    btp.gattc_read_uuid(btp.pts_addr_type_get(), btp.pts_addr_get(),
-                        0x0001, 0xffff, MMI.args[0])
-
-    btp.gattc_read_uuid_rsp(True, True)
-
-    return True
-
-
-def hdl_wid_109(params: WIDParams):
-    return hdl_wid_108(params)
-
-
 def hdl_wid_110(_: WIDParams):
     # Lookup characteristic handle that does not permit reading
     chrcs = btp.gatts_get_attrs(type_uuid='2803')

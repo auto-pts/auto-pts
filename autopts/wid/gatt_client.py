@@ -459,6 +459,45 @@ def hdl_wid_34(_: WIDParams):
     return True
 
 
+def hdl_wid_35(params: WIDParams):
+    """
+    Please confirm IUT received Attribute Handle = '0062'O Value = '04'O
+    Attribute Handle = '0064'O Value = '04'O  in random selected adopted
+    database. ATT_READ_BLOB_REQ PDU can be used to read the remaining octets
+    of a long attribute value.
+    Click Yes if IUT received it, otherwise click No.
+    """
+    result = True
+    # Partial matches are allowed for WID 35 as the verify values may be
+    # truncated to ATT_MTU
+    pattern = re.compile("'([0-9a-fA-F]+)'")
+    params = pattern.findall(params.description)
+
+    to_verify = []
+
+    # handle values are stored in verify values as int;
+    # attr values are stored as bytes
+    for i in range(len(params)):
+        if i % 2 == 0:
+            params[i] = int(params[i], 16)
+        else:
+            # value checking is limited by ATT MTU (23 octets)
+            # allow partial check by limiting attribute value to 19 octets
+            params[i] = params[i].encode()[0:38]
+            to_verify.append((params[i-1], params[i]))
+
+    stack = get_stack()
+
+    stack.gatt_cl.wait_for_rsp_event()
+
+    for attr in to_verify:
+        if attr not in stack.gatt_cl.verify_values:
+            result = False
+
+    btp.clear_verify_values()
+    return result
+
+
 def hdl_wid_40(params: WIDParams):
     """
     Please confirm IUT received Invalid handle error. Click Yes if IUT received
