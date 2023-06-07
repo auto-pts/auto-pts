@@ -86,6 +86,9 @@ class BTPSocket:
         # Gather optional frame data
         while toread_data_len:
             nbytes = self.conn.recv_into(data_memview, toread_data_len)
+            logging.debug("Read %d bytes data", nbytes)
+            if nbytes == 0 and toread_data_len != 0:
+                raise socket.error
             data_memview = data_memview[nbytes:]
             toread_data_len -= nbytes
 
