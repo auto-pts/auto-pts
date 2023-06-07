@@ -61,18 +61,6 @@ def hdl_wid_49(_: WIDParams):
     return True
 
 
-def hdl_wid_51(params: WIDParams):
-    MMI.reset()
-    MMI.parse_description(params.description)
-
-    btp.gattc_read_uuid(btp.pts_addr_type_get(), btp.pts_addr_get(),
-                        MMI.args[1], MMI.args[2], MMI.args[0])
-
-    btp.gattc_read_uuid_rsp(True)
-
-    return True
-
-
 def hdl_wid_92(_: WIDParams):
     time.sleep(2)
     return True

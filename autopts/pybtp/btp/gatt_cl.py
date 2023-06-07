@@ -467,6 +467,10 @@ def gatt_cl_read_uuid_rsp_ev_(gatt_cl, data, data_len):
                   gatt_cl_read_uuid_rsp_ev_.__name__,
                   addr_type, addr, status, data_length, value_length)
 
+    if status != 0:
+        add_to_verify_values(att_rsp_str[status])
+        return
+
     data_fmt = '>H%ds' % value_length
     tuple_len = struct.calcsize(data_fmt)
     tuple_data = data[struct.calcsize(fmt):]
@@ -539,6 +543,10 @@ def gatt_cl_read_mult_rsp_ev_(gatt_cl, data, data_len):
     logging.debug("%s received addr_type=%r addr=%r status=%r data_len=%r",
                   gatt_cl_read_mult_rsp_ev_.__name__,
                   addr_type, addr, status, data_length)
+
+    if status != 0:
+        add_to_verify_values(att_rsp_str[status])
+        return
 
     rp_data = data[struct.calcsize(fmt):]
 
