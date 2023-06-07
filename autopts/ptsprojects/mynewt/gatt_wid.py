@@ -73,20 +73,6 @@ def hdl_wid_51(params: WIDParams):
     return True
 
 
-def hdl_wid_52(params: WIDParams):
-    MMI.reset()
-    MMI.parse_description(params.description)
-
-    handle = int(MMI.args[0], 16)
-
-    _, _, value = btp.gatts_get_attr_val(btp.pts_addr_type_get(),
-                                         btp.pts_addr_get(), handle)
-
-    value_read = hexlify(value).decode('utf-8')
-
-    return bool(value_read == MMI.args[1])
-
-
 def hdl_wid_92(_: WIDParams):
     time.sleep(2)
     return True
