@@ -22,7 +22,7 @@ from autopts.pybtp import defs
 from autopts.pybtp.types import addr2btp_ba, Perm
 from autopts.pybtp.btp.btp import btp_hdr_check, CONTROLLER_INDEX, \
     get_iut_method as get_iut, btp2uuid, clear_verify_values, \
-    add_to_verify_values, get_verify_values
+    add_to_verify_values, get_verify_values, extend_verify_values
 from autopts.pybtp.btp.gap import gap_wait_for_connection
 from autopts.ptsprojects.stack import get_stack, GattCharacteristic
 
@@ -472,6 +472,7 @@ def gatt_cl_read_uuid_rsp_ev_(gatt_cl, data, data_len):
     tuple_data = data[struct.calcsize(fmt):]
     chrc_count = data_length // tuple_len
 
+    attrs_to_save = []
     offset = 0
     if chrc_count > 1:
         # received several pairs of {handle, data}
@@ -482,7 +483,8 @@ def gatt_cl_read_uuid_rsp_ev_(gatt_cl, data, data_len):
                           gatt_cl_read_uuid_rsp_ev_.__name__,
                           handle, value)
             offset += tuple_len
-            add_to_verify_values((handle, binascii.hexlify(value).upper()))
+            attrs_to_save.append((handle, binascii.hexlify(value).upper()))
+        extend_verify_values(attrs_to_save)
     else:
         # this might be continuation - check if data in verify_values
         # fits the format
