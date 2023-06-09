@@ -17,6 +17,7 @@ import logging
 import random
 import re
 import struct
+from argparse import Namespace
 from time import sleep
 
 from autopts.ptsprojects.stack import get_stack
@@ -405,6 +406,17 @@ def first_1_bit(val):
     return None
 
 
+def last_1_bit(val):
+    i = 7
+    while val:
+        b = val & 0b10000000
+        if b:
+            return i
+        val <<= 0x01
+        i -= 1
+    return None
+
+
 def hdl_wid_302(params: WIDParams):
     """
     Please configure ASE state to CODEC configured with SINK/SOURCE ASE,
@@ -429,7 +441,7 @@ def hdl_wid_302(params: WIDParams):
     if ev is None:
         return False
 
-    _, _, _, coding_format, frequencies, frame_durations, frame_lens = ev
+    _, _, _, coding_format, frequencies, frame_durations, frame_lens, channel_counts = ev
 
     # Find ID of the ASE
     ev = stack.bap.wait_ase_found_ev(addr_type, addr, audio_dir, 30)
@@ -491,7 +503,7 @@ def hdl_wid_303(params: WIDParams):
         if ev is None:
             return False
 
-        _, _, _, coding_format, frequencies, frame_durations, frame_lens = ev
+        _, _, _, coding_format, frequencies, frame_durations, frame_lens, channel_counts = ev
 
         (sampling_freq, frame_duration, octets_per_frame) = CODEC_CONFIG_SETTINGS[codec_set_name]
         audio_locations = 0x01
@@ -537,7 +549,7 @@ def hdl_wid_304(params: WIDParams):
     if ev is None:
         return False
 
-    _, _, _, coding_format, frequencies, frame_durations, frame_lens = ev
+    _, _, _, coding_format, frequencies, frame_durations, frame_lens, channel_counts = ev
 
     # Find ID of the ASE
     ev = stack.bap.wait_ase_found_ev(addr_type, addr, audio_dir, 30)
@@ -596,7 +608,7 @@ def hdl_wid_305(params: WIDParams):
     if ev is None:
         return False
 
-    _, _, _, coding_format, frequencies, frame_durations, frame_lens = ev
+    _, _, _, coding_format, frequencies, frame_durations, frame_lens, channel_counts = ev
 
     # Find ID of the ASE
     ev = stack.bap.wait_ase_found_ev(addr_type, addr, audio_dir, 30)
@@ -659,7 +671,7 @@ def hdl_wid_306(params: WIDParams):
     if ev is None:
         return False
 
-    _, _, _, coding_format, frequencies, frame_durations, frame_lens = ev
+    _, _, _, coding_format, frequencies, frame_durations, frame_lens, channel_counts = ev
 
     # Find ID of the ASE
     ev = stack.bap.wait_ase_found_ev(addr_type, addr, audio_dir, 30)
@@ -790,13 +802,16 @@ def hdl_wid_311(params: WIDParams):
 
     _, _, _, ase_id = ev
 
-    # TODO: Add value of Supported_Audio_Channel_Counts to Codec Capabilities Found event
-    if int(params.test_case_name.split(r'-')[1]) % 2 == 1:
-        # test cases with an odd number
-        audio_locations = 0x01
-    else:
-        # test cases with an even number
-        audio_locations = 0x03
+    # Get supported capabilities
+    ev = stack.bap.wait_codec_cap_found_ev(addr_type, addr, audio_dir, 30)
+    if ev is None:
+        return False
+
+    channel_counts = last_1_bit(ev[7]) + 1
+
+    audio_locations = 0x00
+    for i in range(0, channel_counts):
+        audio_locations = (audio_locations << 1) + 0x01
 
     # Perform Config Codec
     (sampling_freq, frame_duration, octets_per_frame) = CODEC_CONFIG_SETTINGS[codec_set_name]
@@ -824,12 +839,17 @@ def hdl_wid_311(params: WIDParams):
     btp.ascs_receiver_start_ready(ase_id)
     stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
 
-    if audio_dir == AudioDir.SINK:
-        # TODO: Update this after fixing Zephyr issues
-        for i in range(100):
-            data = random.sample(range(0, 256), octets_per_frame)
-            data = bytearray(data)
-            btp.bap_send(ase_id, data)
+    if audio_dir == AudioDir.SOURCE:
+        return True
+
+    # Stream random data to the SINK ASE
+    data = [j for j in range(0, octets_per_frame)]
+    data = bytearray(data)
+
+    for i in range(1, 100):
+        btp.bap_send(ase_id, data)
+        # Skipping sleep(sdu_interval), because we have
+        # more than enough delays in this command already.
 
     return True
 
@@ -851,39 +871,6 @@ def hdl_wid_310(_: WIDParams):
         return False
 
     _, _, ase_dir, ase_id = ev
-
-    # # Get supported capabilities
-    # ev = stack.bap.wait_codec_cap_found_ev(addr_type, addr, audio_dir, 30)
-    # if ev is None:
-    #     return False
-    #
-    # _, _, _, coding_format, frequencies, frame_durations, frame_lens = ev
-    #
-    # # Perform Config Codec
-    # sampling_freq = first_1_bit(frequencies)
-    # frame_duration = first_1_bit(frame_durations)
-    # octets_per_frame = frame_lens & 0xffff
-    # audio_locations = 0x01
-    # coding_format = 0x06
-    # frames_per_sdu = 0x01
-    # codec_ltvs_bytes = create_lc3_ltvs_bytes(sampling_freq, frame_duration,
-    #                                          audio_locations, octets_per_frame,
-    #                                          frames_per_sdu)
-    # btp.ascs_config_codec(ase_id, coding_format, 0x0000, 0x0000, codec_ltvs_bytes)
-    # stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
-    #
-    # # Perform Config QOS
-    # qos_set_name = f'{sampling_freq}_1_1'
-    # cig_id = 0x01
-    # cis_id = 0x01
-    # presentation_delay = 40000
-    # qos_config = QOS_CONFIG_SETTINGS[qos_set_name]
-    # btp.ascs_config_qos(ase_id, cig_id, cis_id, *qos_config, presentation_delay)
-    # stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
-    #
-    # # Enable streams
-    # btp.ascs_enable(ase_id)
-    # stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
 
     # Update metadata
     btp.ascs_update_metadata(ase_id)
@@ -918,7 +905,7 @@ def hdl_wid_314(params: WIDParams):
     if ev is None:
         return False
 
-    _, _, _, coding_format, frequencies, frame_durations, frame_lens = ev
+    _, _, _, coding_format, frequencies, frame_durations, frame_lens, channel_counts = ev
 
     # Errata in progress, since the vendor codec does not appear in PAC records
     sampling_freq = first_1_bit(frequencies)
@@ -1003,11 +990,12 @@ def hdl_wid_364(_: WIDParams):
     stack = get_stack()
 
     # Find ID of the ASE
-    _, _, _, ase_id = stack.bap.event_queues[defs.BAP_EV_ASE_FOUND].pop(0)
+    _, _, ase_dir, ase_id = stack.bap.event_queues[defs.BAP_EV_ASE_FOUND].pop(0)
 
-    ev = stack.bap.wait_stream_received_ev(addr_type, addr, ase_id, 10)
-    if ev is None:
-        return False
+    if ase_dir == AudioDir.SOURCE:
+        ev = stack.bap.wait_stream_received_ev(addr_type, addr, ase_id, 10)
+        if ev is None:
+            return False
 
     return True
 

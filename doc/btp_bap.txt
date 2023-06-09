@@ -40,7 +40,7 @@ Commands and responses:
 					ASE ID (1 octet)
 					Data len (1 octet)
 					Data (varies)
-		Response parameters: <none>
+		Response parameters:	Number of buffered bytes of data (1 octet)
 
         This command is used to send a data packet stream to the given ASE.
         In case of an error, the error status response will be returned.
@@ -68,6 +68,7 @@ Events:
 					Frequencies (2 octets)
 					Frame Durations (1 octet)
 					Octets Per Frame (4 octets)
+					Supported Audio Channel Counts (1 octet)
 
         About parameters:
             Frequencies: a bitfield as defined in Assigned Numbers,
