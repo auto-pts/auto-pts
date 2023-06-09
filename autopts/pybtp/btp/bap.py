@@ -77,7 +77,10 @@ def bap_send(ase_id, data_ba, bd_addr_type=None, bd_addr=None):
     iutctl = get_iut()
     iutctl.btp_socket.send(*BAP['send'], data=data)
 
-    bap_command_rsp_succ()
+    tuple_data = bap_command_rsp_succ()
+    buffered_data_len = int.from_bytes(tuple_data[0], byteorder='little')
+
+    return buffered_data_len
 
 
 def bap_ev_discovery_completed_(bap, data, data_len):
@@ -100,23 +103,23 @@ def bap_ev_discovery_completed_(bap, data, data_len):
 def bap_ev_codec_cap_found_(bap, data, data_len):
     logging.debug('%s %r', bap_ev_codec_cap_found_.__name__, data)
 
-    fmt = '<B6sBBHBI'
+    fmt = '<B6sBBHBIB'
     if len(data) < struct.calcsize(fmt):
         raise BTPError('Invalid data length')
 
     addr_type, addr, pac_dir, coding_format, frequencies, frame_durations,\
-        octets_per_frame = struct.unpack_from(fmt, data)
+        octets_per_frame, channel_counts = struct.unpack_from(fmt, data)
 
     addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
 
     logging.debug(f'Found codec capabilities: addr {addr} addr_type '
                   f'{addr_type} pac_dir {pac_dir} coding {coding_format:#x} '
                   f'freq {frequencies:#b} duration {frame_durations:#b} '
-                  f'frame_len {octets_per_frame:#x}')
+                  f'frame_len {octets_per_frame:#x} channel_counts {channel_counts:#b}')
 
     bap.event_received(defs.BAP_EV_CODEC_CAP_FOUND,
                        (addr_type, addr, pac_dir, coding_format, frequencies,
-                        frame_durations, octets_per_frame))
+                        frame_durations, octets_per_frame, channel_counts))
 
 
 def bap_ev_ase_found_(bap, data, data_len):
