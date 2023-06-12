@@ -29,6 +29,7 @@ psm_unsupported = 241
 psm_authentication_required = 242
 psm_authorization_required = 243
 psm_encryption_key_size_required = 244
+psm_encryption_required = 245
 le_initial_mtu = 120
 le_mps = 100
 
@@ -136,8 +137,6 @@ def test_cases(ptses):
                   "TRUE" if stack.gap.iut_addr_is_random()
                   else "FALSE")),
               TestFunc(lambda: pts.update_pixit_param(
-                  "L2CAP", "TSPX_psm_encryption_required", format(le_psm, '04x'))),
-              TestFunc(lambda: pts.update_pixit_param(
                   "L2CAP", "TSPX_l2ca_num_concurrent_credit_based_connections", "2")),
               TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public)]
 
@@ -152,19 +151,8 @@ def test_cases(ptses):
                                        TestFunc(btp.l2cap_le_listen, psm_encryption_key_size_required)]
     pre_conditions_author = common + [TestFunc(stack.l2cap_init, psm_authorization_required, le_initial_mtu),
                                       TestFunc(btp.l2cap_le_listen, psm_authorization_required)]
-    pre_conditions_encryption = common + [TestFunc(stack.l2cap_init, le_psm, le_initial_mtu),
-                                          TestFunc(btp.l2cap_le_listen, le_psm, le_initial_mtu,
-                                                   L2CAPConnectionResponse.insufficient_encryption)]
-
-    pre_conditions_security = common + [TestFunc(stack.l2cap_init, le_psm, le_initial_mtu)]
-    pre_conditions_ecfc_authen = pre_conditions_security + [TestFunc(btp.l2cap_le_listen, le_psm, le_initial_mtu,
-                                                                 L2CAPConnectionResponse.insufficient_authentication)]
-    pre_conditions_ecfc_author = pre_conditions_security + [TestFunc(btp.l2cap_le_listen, le_psm, le_initial_mtu,
-                                                                 L2CAPConnectionResponse.insufficient_authorization)]
-    pre_conditions_ecfc_keysize = pre_conditions_security + [TestFunc(btp.l2cap_le_listen, le_psm, le_initial_mtu,
-                                                                  L2CAPConnectionResponse.insufficient_encryption_key_size)]
-    pre_conditions_ecfc_encryption = pre_conditions_security + [TestFunc(btp.l2cap_le_listen, le_psm, le_initial_mtu,
-                                                                  L2CAPConnectionResponse.insufficient_encryption)]
+    pre_conditions_encryption = common + [TestFunc(stack.l2cap_init, psm_encryption_required, le_initial_mtu),
+                                          TestFunc(btp.l2cap_le_listen, psm_encryption_required, le_initial_mtu)]
 
     custom_test_cases = [
         # Connection Parameter Update
@@ -198,13 +186,13 @@ def test_cases(ptses):
                   generic_wid_hdl=l2cap_wid_hdl),
         # Enhanced Credit Based Flow Control Channel
         ZTestCase("L2CAP", "L2CAP/ECFC/BV-11-C",
-                  pre_conditions_ecfc_authen,
+                  pre_conditions_auth,
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/ECFC/BV-13-C",
-                  pre_conditions_ecfc_author,
+                  pre_conditions_author,
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/ECFC/BV-15-C",
-                  pre_conditions_ecfc_keysize,
+                  pre_conditions_keysize,
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/ECFC/BV-27-C",
                   pre_conditions +
@@ -216,7 +204,7 @@ def test_cases(ptses):
                   [TestFunc(lambda: stack.l2cap.num_channels_set(1))],
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/ECFC/BV-32-C",
-                  pre_conditions_ecfc_encryption,
+                  pre_conditions_encryption,
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/COS/ECFC/BV-01-C",
                   pre_conditions,
