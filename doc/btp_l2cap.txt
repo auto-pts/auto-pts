@@ -106,7 +106,8 @@ Commands and responses:
 
 		Response parameter can be used to specify a response value used in
 		L2CAP Connection Response to send non-success responses like
-		Insufficient Authentication.
+		Insufficient Authentication. If device bases its security requirements
+		for creating L2CAP connection on PSM, this value should be 0x00.
 
 		Valid Response values:
 					0x00 = Success
