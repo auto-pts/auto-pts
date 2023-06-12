@@ -173,7 +173,10 @@ def hdl_wid_40(_: WIDParams):
     return True
 
 
-def hdl_wid_44(_: WIDParams):
+def hdl_wid_44(params: WIDParams):
+    if params.test_case_name in ['GAP/SEC/AUT/BV-21-C']:
+        btp.gap_wait_for_lost_bond(5)
+
     btp.gap_disconn()
     return True
 
