@@ -187,7 +187,10 @@ def hdl_wid_149(params: WIDParams):
 
 
 def hdl_wid_152(_: WIDParams):
-    return True
+    """
+    Lower tester expects IUT aborts pairing process. Click Yes to confirm pairing aborted.
+    """
+    return btp.gap_wait_for_pairing_fail()
 
 
 def hdl_wid_154(_: WIDParams):
