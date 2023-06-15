@@ -192,6 +192,8 @@ class Gap:
         # if no io_cap was set it means we use no_input_output
         self.io_cap = IOCap.no_input_output
         self.sec_level = Property(None)
+        # if IUT doesn't support it, it should be disabled in preconditions
+        self.pair_user_interaction = True
 
     def wait_for_connection(self, timeout, conn_count=0):
         if self.is_connected(conn_count):
@@ -340,6 +342,9 @@ class Gap:
                     break
 
         return self.sec_level
+
+    def gap_set_pair_user_interaction(self, user_interaction):
+        self.pair_user_interaction = user_interaction
 
 
 class Mesh:

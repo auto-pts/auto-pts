@@ -1102,6 +1102,8 @@ def hdl_wid_234(params: WIDParams):
 
 
 def hdl_wid_235(params: WIDParams):
+    stack = get_stack()
+
     pattern = re.compile(r"0x([0-9a-fA-F]+)")
     params = pattern.findall(params.description)
     if not params:
@@ -1109,6 +1111,11 @@ def hdl_wid_235(params: WIDParams):
         return False
 
     handle = params[0]
+
+    if stack.is_svc_supported('GATT_CL'):
+        btp.gatt_cl_cfg_notify(btp.pts_addr_type_get(), btp.pts_addr_get(),
+                               1, handle)
+        return True
 
     btp.gattc_cfg_notify(btp.pts_addr_type_get(), btp.pts_addr_get(),
                          1, handle)
@@ -1153,6 +1160,9 @@ def hdl_wid_238(_: WIDParams):
     stack = get_stack()
     gatt = stack.gatt
 
+    if stack.is_svc_supported('GATT_CL'):
+        return not stack.gatt_cl.wait_for_notifications(expected_count=0)
+
     gatt.wait_notification_ev(timeout=5)
 
     if gatt.notification_events:
@@ -1165,6 +1175,9 @@ def hdl_wid_239(_: WIDParams):
     # Please confirm that IUT send a GATT_HandleValueNotification  to the Upper Tester
     stack = get_stack()
     gatt = stack.gatt
+
+    if stack.is_svc_supported('GATT_CL'):
+        return stack.gatt_cl.wait_for_notifications(expected_count=1)
 
     gatt.wait_notification_ev(timeout=5)
 
@@ -1194,7 +1207,8 @@ def hdl_wid_265(_: WIDParams):
 
 def hdl_wid_267(_: WIDParams):
     # Click Yes if device support User Interaction to pair with the peer.
-    return True
+    stack = get_stack()
+    return stack.gap.pair_user_interaction
 
 
 def hdl_wid_400(_: WIDParams):
