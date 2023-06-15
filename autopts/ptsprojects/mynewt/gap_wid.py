@@ -31,15 +31,6 @@ def gap_wid_hdl(wid, description, test_case_name):
     return generic_wid_hdl(wid, description, test_case_name, [__name__, 'autopts.wid.gap'])
 
 
-# For tests that expect "OK" response even if read operation is not successful
-def gap_wid_hdl_failed_read(wid, description, test_case_name):
-    if wid == 112:
-        log("%s, %r, %r, %s", gap_wid_hdl_failed_read.__name__, wid, description,
-            test_case_name)
-        return hdl_wid_112_timeout(description)
-    return gap_wid_hdl(wid, description, test_case_name)
-
-
 # For tests in SC only, mode 1 level 3
 def gap_wid_hdl_mode1_lvl2(wid, description, test_case_name):
     if wid == 139:
@@ -75,22 +66,6 @@ def hdl_wid_112(params: WIDParams):
         btp.gattc_read_rsp()
     except socket.timeout:
         return False
-    return True
-
-
-def hdl_wid_112_timeout(params: WIDParams):
-    bd_addr = btp.pts_addr_get()
-    bd_addr_type = btp.pts_addr_type_get()
-
-    handle = btp.parse_handle_description(params.description)
-    if not handle:
-        return False
-
-    try:
-        btp.gattc_read(bd_addr_type, bd_addr, handle)
-        btp.gattc_read_rsp()
-    except socket.timeout:
-        pass
     return True
 
 
