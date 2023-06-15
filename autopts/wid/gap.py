@@ -1059,6 +1059,8 @@ def hdl_wid_226(_: WIDParams):
 
 
 def hdl_wid_227(params: WIDParams):
+    stack = get_stack()
+
     bd_addr = btp.pts_addr_get()
     bd_addr_type = btp.pts_addr_type_get()
 
@@ -1066,14 +1068,21 @@ def hdl_wid_227(params: WIDParams):
     if not handle:
         return False
 
-    btp.gattc_write(bd_addr_type, bd_addr, handle, '02', 1)
-    btp.gattc_write_rsp(store_rsp=True)
+    if stack.is_svc_supported('GATT_CL'):
+        btp.gatt_cl_write(bd_addr_type, bd_addr, handle, '02', 1)
 
-    if (btp.verify_att_error("authentication error")):
-        btp.gap_pair()
+        stack.gatt_cl.wait_for_write_rsp()
+        if stack.gatt_cl.write_status == 5 or stack.gatt_cl.write_status == 15:
+            btp.gap_pair()
+    else:
+        btp.gattc_write(bd_addr_type, bd_addr, handle, '02', 1)
+        btp.gattc_write_rsp(store_rsp=True)
 
-    if (btp.verify_att_error("insufficient encryption")):
-        btp.gap_pair()
+        if (btp.verify_att_error("authentication error")):
+            btp.gap_pair()
+
+        if (btp.verify_att_error("insufficient encryption")):
+            btp.gap_pair()
 
     return True
 
