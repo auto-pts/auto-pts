@@ -60,9 +60,7 @@ def set_pixits(ptses):
     pts.set_pixit("MMDL", "TSPX_use_pb_gatt_bearer", "FALSE")
     pts.set_pixit("MMDL", "TSPX_iut_comp_data_page", "0")
     pts.set_pixit("MMDL", "TSPX_OOB_state_change", "FALSE")
-    pts.set_pixit("MMDL", "TSPX_sensor_property_ids", "0069,0010,FFF0")
     pts.set_pixit("MMDL", "TSPX_enable_IUT_provisioner", "FALSE")
-    pts.set_pixit("MMDL", "TSPX_cadence_property_IDs", "0069,0010,FFF0")
 
 
 def test_cases(ptses):
