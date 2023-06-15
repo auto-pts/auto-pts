@@ -150,7 +150,7 @@ def get_free_device(board=None):
     devices = get_device_list()
 
     for tty, snr in devices.items():
-        if tty not in devices_in_use:
+        if tty not in devices_in_use and len(snr) >= 9 and snr.isnumeric():
             devices_in_use.append(tty)
             return tty, snr
 
