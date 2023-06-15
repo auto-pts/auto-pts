@@ -55,6 +55,7 @@ iut_config = {
             'GAP/SEC/SEM/BV-24-C',
             'GAP/SEC/SEM/BV-26-C',
             'GAP/SEC/SEM/BV-27-C',
+            'GAP/SEC/SEM/BV-45-C'
         ]
     },
 
@@ -72,7 +73,9 @@ iut_config = {
             'GAP/SEC/SEM/BV-43-C',
             'GAP/SEC/SEM/BV-56-C',
             'GAP/SEC/SEM/BV-57-C',
-            'GAP/SEC/SEM/BV-59-C'
+            'GAP/SEC/SEM/BV-59-C',
+            'GAP/SEC/SEM/BV-62-C',
+            'GAP/SEC/SEM/BV-65-C'
         ]
     },
 
@@ -89,6 +92,8 @@ iut_config = {
             'GAP/SEC/SEM/BV-42-C',
             'GAP/SEC/SEM/BV-44-C',
             'GAP/SEC/SEM/BV-60-C',
+            'GAP/SEC/SEM/BV-63-C',
+            'GAP/SEC/SEM/BV-66-C',
         ]
     },
 
@@ -111,7 +116,9 @@ iut_config = {
             'GAP/SEC/SEM/BV-28-C',
             'GAP/SEC/SEM/BV-29-C',
             'GAP/SEC/SEM/BV-58-C',
-            'GAP/SEC/SEM/BV-61-C'
+            'GAP/SEC/SEM/BV-61-C',
+            'GAP/SEC/SEM/BV-64-C',
+            'GAP/SEC/SEM/BV-67-C'
         ]
     },
 
