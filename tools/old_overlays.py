@@ -19,7 +19,7 @@ Run under Windows.
 
 Usage:
 $ python3 zephyr path\to\auto-pts\workspaces\zephyr\zephyr-master\zephyr-master.pqw6
-$ python3 mynewt "path\to\auto-pts\workspaces\Mynewt Nimble Host\Mynewt Nimble Host.pqw6"
+$ python3 mynewt "path\to\auto-pts\workspaces\nimble-master\nimble-master.pqw6"
 """
 
 import importlib

@@ -32,7 +32,7 @@ m['auto_pts'] = {
     'client_port': 6001,
     'local_ip' : ['192.168.0.100'],
     'project_path': '/path/to/project',
-    'workspace': 'Mynewt Nimble Host',
+    'workspace': 'nimble-master',
     'debugger_snr': 'xxxxxxxx',
     'tty_file': 'ttyUSB',  # fake tty file
     'database_file': 'path/to/mynewtTestCase.db',
