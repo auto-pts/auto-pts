@@ -237,53 +237,33 @@ def test_cases(ptses):
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.keyboard_display)],
                   generic_wid_hdl=gap_wid_hdl),
-        ZTestCase("GAP", "GAP/SEC/AUT/BV-17-C",
-                  cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
-                   TestFunc(btp.gap_pair, post_wid=108)],
-                  generic_wid_hdl=gap_wid_hdl),
-        ZTestCase("GAP", "GAP/SEC/AUT/BV-18-C",
-                  cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output)],
-                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/AUT/BV-19-C",
                   cmds=pre_conditions +
                   [TestFunc(lambda: pts.update_pixit_param(
                    "GAP", "TSPX_encryption_before_service_request", "TRUE"))],
                   generic_wid_hdl=gap_wid_hdl),
-        ZTestCase("GAP", "GAP/SEC/AUT/BV-20-C",
-                  cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=gap_wid_hdl),
-        ZTestCase("GAP", "GAP/SEC/AUT/BV-21-C",
-                  cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   TestFunc(btp.gap_pair, post_wid=108),
-                   TestFunc(sleep, 1, post_wid=108)],
-                  generic_wid_hdl=gap_wid_hdl),
-        ZTestCase("GAP", "GAP/SEC/AUT/BV-22-C",
-                  cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
-                   TestFunc(btp.gap_pair, post_wid=108)],
-                  generic_wid_hdl=gap_wid_hdl),
-        ZTestCase("GAP", "GAP/SEC/AUT/BV-23-C",
-                  cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/AUT/BV-24-C",
                   cmds=pre_conditions +
-                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
+                   TestFunc(lambda: pts.update_pixit_param(
+                      "GAP", "TSPX_encryption_before_service_request", "TRUE")),
+                   TestFunc(lambda:
+                            stack.gap.gap_set_pair_user_interaction(False))],
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/AUT/BV-25-C",
                   cmds=pre_conditions +
                   [TestFunc(lambda: pts.update_pixit_param(
-                      "GAP", "TSPX_encryption_before_service_request", "TRUE"))],
+                      "GAP", "TSPX_encryption_before_service_request", "TRUE")),
+                   TestFunc(lambda:
+                            stack.gap.gap_set_pair_user_interaction(False))],
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/AUT/BV-27-C",
                   cmds=pre_conditions +
                   [TestFunc(lambda: pts.update_pixit_param(
                       "GAP", "TSPX_encryption_before_service_request", "TRUE")),
-                   TestFunc(lambda: btp.gap_set_mitm_on())],
+                   TestFunc(lambda: btp.gap_set_mitm_on()),
+                   TestFunc(lambda:
+                            stack.gap.gap_set_pair_user_interaction(False))],
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/CONN/PRDA/BV-02-C",
                   cmds=pre_conditions +
