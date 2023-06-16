@@ -168,7 +168,7 @@ Before running any scripts you have to create a workspace in the PTS, add needed
 Alternatively, you can use auto-pts workspaces. Auto-pts provides ready PTS workspaces with readily configured PICS in the "workspaces" directory. The list of available workspaces:
 
   * bluez
-  * Mynewt Nimble Host
+  * nimble-master
   * zephyr-master
   * zephyr-v1.14
   * zephyr-v2.2.0
@@ -203,7 +203,7 @@ Then start the AutoPTS Client using e.g. own workspace file:
 
 **Testing Mynewt build on nRF52**:
 
-    ./autoptsclient-mynewt.py "Mynewt Nimble Host" -i SERVER_IP -l LOCAL_IP -t /dev/ttyACM0 -b nordic_pca10056
+    ./autoptsclient-mynewt.py nimble-master -i SERVER_IP -l LOCAL_IP -t /dev/ttyACM0 -b nordic_pca10056
 
 **Testing BlueZ on Linux**:
 
