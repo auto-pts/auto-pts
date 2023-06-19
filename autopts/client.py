@@ -239,9 +239,10 @@ class CallbackThread(threading.Thread):
 
     """
 
-    def __init__(self, port):
+    def __init__(self, port, name):
         log("%s.%s port=%r", self.__class__.__name__, self.__init__.__name__, port)
         super().__init__()
+        self.name = name
         self.server = None
         self.callback = ClientCallback()
         self.port = port
@@ -463,10 +464,10 @@ def init_pts(args, ptses, tc_db_table_name=None):
 
             proxy_list.append(proxy)
 
-        proxy.callback_thread = CallbackThread(local_port)
+        proxy.callback_thread = CallbackThread(local_port, f'LT{i+1}-callback')
         print("(%r) Starting PTS %s:%s ..." % (id(proxy), server_addr, server_port))
 
-        thread = threading.Thread(target=init_pts_thread_entry,
+        thread = threading.Thread(target=init_pts_thread_entry, name=f'LT{i+1}-server-{server_port}-init',
                                   args=(proxy, local_addr, local_port, args.workspace,
                                         args.bd_addr, args.enable_max_logs, exceptions))
 
@@ -896,6 +897,7 @@ def run_test_case(ptses, test_case_instances, test_case_name, stats,
     pts_threads = []
 
     pts_thread = InterruptableThread(
+        name=f'LT1-thread',
         target=run_test_case_thread_entry,
         args=(ptses[0], test_case_lt1, exceptions))
     pts_threads.append(pts_thread)
@@ -903,6 +905,7 @@ def run_test_case(ptses, test_case_instances, test_case_name, stats,
 
     if test_case_lt2:
         pts_thread = InterruptableThread(
+            name=f'LT2-thread',
             target=run_test_case_thread_entry,
             args=(ptses[1], test_case_lt2, exceptions))
         pts_threads.append(pts_thread)
