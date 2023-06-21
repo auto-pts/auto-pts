@@ -253,6 +253,12 @@ MESH = {
     "proxy_connect": (defs.BTP_SERVICE_ID_MESH,
                       defs.MESH_PROXY_CONNECT,
                       CONTROLLER_INDEX),
+    "va_add": (defs.BTP_SERVICE_ID_MESH,
+               defs.MESH_VA_ADD,
+               CONTROLLER_INDEX),
+    "va_del": (defs.BTP_SERVICE_ID_MESH,
+               defs.MESH_VA_DEL,
+               CONTROLLER_INDEX),
 }
 
 
@@ -427,6 +433,39 @@ def mesh_net_send(ttl, src, dst, payload):
 
     iutctl = get_iut()
     iutctl.btp_socket.send_wait_rsp(*MESH['net_send'], data=data)
+
+
+def mesh_va_add(label):
+    logging.debug("%s %r", mesh_va_add.__name__, label)
+
+    label = binascii.unhexlify(label)
+
+    if len(label) != 16:
+        raise BTPError("Label UUID length is invalid")
+
+    data = bytearray(struct.pack("<"))
+    data.extend(label)
+
+    iutctl = get_iut()
+    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MESH['va_add'], data=data)
+
+    (virtual_addr,) = struct.unpack_from('<H', rsp)
+    return int(virtual_addr)
+
+
+def mesh_va_del(label):
+    logging.debug("%s %r", mesh_va_del.__name__, label)
+
+    label = binascii.unhexlify(label)
+
+    if len(label) != 16:
+        raise BTPError("Label UUID length is invalid")
+
+    data = bytearray(struct.pack("<"))
+    data.extend(label)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*MESH['va_del'], data=data)
 
 
 def mesh_health_generate_faults():
