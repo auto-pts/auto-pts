@@ -919,6 +919,28 @@ Commands and responses:
 
 		In case of an error, the error response will be returned.
 
+    Opcode 0x4D - Virtual Address Add
+
+		Controller Index:       <controller id>
+		Command parameters:     Label UUID (16 octets)
+
+		This command is used to add a Label UUID to the stack. If
+		the Label UUID is already added, the reference will be
+		incremented.
+
+		In case of an error, the error response will be returned.
+
+    Opcode 0x4E - Virtual Address Delete
+
+		Controller Index:       <controller id>
+		Command parameters:     Label UUID (16 octets)
+
+		This command is used to delete a Label UUID from the stack.
+		If the Label UUID was added before, the reference will be
+		decremented.
+
+		In case of an error, the error response will be returned.
+
     Opcode 0x48 - Config Key Refesh Phase Get
 
 		Controller Index:       <controller id>

@@ -248,7 +248,12 @@ def hdl_wid_21(_: WIDParams):
     Implements: ENTER_VIRTUAL_ADDRESS
     description: Please enter a valid virtual address the IUT knows
     """
-    return '8000'
+
+    # Should generate virtual address 0x8000
+    addr = btp.mesh_va_add('f5f4ca5e1d710dc6f9fa1bd4c32ca61e')
+
+    logging.debug("Virtual address = %r", addr)
+    return f'{addr:x}'
 
 
 def hdl_wid_22(params: WIDParams):
@@ -573,9 +578,21 @@ def hdl_wid_44(params: WIDParams):
 
     params = dict(params)
 
+    # Add virtual address before sending a message. If it was added before, reference will be
+    # incremented.
+    addr = btp.mesh_va_add(value)
+    if (addr != int(params.get('(address'), 16)):
+        logging.error("%s Generated virtual address (%s) doesn't match the provided one (%s)",
+                      hdl_wid_44.__name__, addr, int(params.get('(address'), 16))
+        return False
+
     btp.mesh_model_send(int(params.get('source address'), 16),
                         int(params.get('(address'), 16),
                         value)
+
+    # Remove virtual address after sending a message. If it was added before, reference will be
+    # decremented.
+    btp.mesh_va_del(value)
     return True
 
 
