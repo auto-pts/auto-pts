@@ -253,9 +253,15 @@
         <Rows>
           <Row>
             <Name>TSPC_DIS_0_1</Name>
-            <Description>DIS v1.1 (M)</Description>
+            <Description>DIS v1.1 (C.1)</Description>
             <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DIS_0_2</Name>
+            <Description>DIS v1.2 (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_DIS_1_1</Name>
@@ -267,12 +273,6 @@
             <Name>TSPC_DIS_1_2</Name>
             <Description>Service supported over LE (C.1)</Description>
             <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_DIS_1_3</Name>
-            <Description>No longer used</Description>
-            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -342,6 +342,12 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_DIS_2_12</Name>
+            <Description>UDI for Medical Devices Characteristic (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_DIS_3_1</Name>
             <Description>No longer used</Description>
             <Value>FALSE</Value>
@@ -366,8 +372,20 @@
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_DIS_5_1</Name>
+            <Description>DIS as a Primary Service (C.1, C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DIS_5_2</Name>
+            <Description>DIS as a Secondary Service (C.2, C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_ALL</Name>
-            <Description>Enables all test cases when set.</Description>
+            <Description>Turn on all test cases (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -9983,7 +10001,7 @@
           <Row>
             <Name>TSPC_BAP_44_3</Name>
             <Description>AC 3: 1 Server, 1 Sink ASE, 1 Channel/Sink, 1 CIS, 2 Audio Streams (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -9995,13 +10013,13 @@
           <Row>
             <Name>TSPC_BAP_44_5</Name>
             <Description>AC 5: 1 Server, 1 Sink ASE, 1 Source ASE, 2 Channels/Sink, 1 Channel/Source, 1, CIS, 2 Audio Streams (C.7)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_44_6</Name>
             <Description>AC 6i: 1 Server, 2 Sink ASEs, 1 Channel/Sink, 2 CISes, 2 Audio Streams (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -10013,7 +10031,7 @@
           <Row>
             <Name>TSPC_BAP_44_8</Name>
             <Description>AC 7i: 1 Server, 1 Sink ASE, 1 Source ASE, 1 Channel/Sink, 1 Channel/Source, 2 CISes, 2 Audio Streams (C.5)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -10025,7 +10043,7 @@
           <Row>
             <Name>TSPC_BAP_44_10</Name>
             <Description>AC 8i: 1 Server, 2 Sink ASEs, 1 Source ASE, 1 Channel/Sink, 1 Channel/Source, 2 CISes, 3 Audio Streams (C.5, C.8)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -10037,7 +10055,7 @@
           <Row>
             <Name>TSPC_BAP_44_12</Name>
             <Description>AC 9i: 1 Server, 2 Source ASEs, 1 Channel/Source, 2 CISes, 2 Audio Streams (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -10055,7 +10073,7 @@
           <Row>
             <Name>TSPC_BAP_44_15</Name>
             <Description>AC 11i: 1 Server, 2 Sink ASEs, 2 Source ASEs, 1 Channel/Sink, 1 Channel/Source, 2 CISes, 4 Audio Streams (C.5, C.10)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
