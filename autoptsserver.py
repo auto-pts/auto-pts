@@ -151,7 +151,7 @@ class SvrArgumentParser(argparse.ArgumentParser):
                           help='Select the dongle port.'
                                'COMx in case of LE only dongle. '
                                r'For dual-mode dongle the port will have format'
-                               r' like "USB:FREE:5&A70BC4C&0&8 where"'
+                               r' like "USB:Free:5&A70BC4C&0&8 where"'
                                r'the last part 5&A70BC4C&0&8 can be found in'
                                r'"Device instance path" in device settings, e.g. '
                                r'"USB\VID_0A12&PID_0001\5&A70BC4C&0&8"')
