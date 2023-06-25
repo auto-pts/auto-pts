@@ -277,7 +277,7 @@ class Server(threading.Thread):
         self.server = None
         self._args = _args
         self.pts = None
-        self._device = None
+        self._device = self._args.dongle
         self.end = False
         self.finished = threading.Event()
         self.server_recovery_request = False
@@ -311,9 +311,13 @@ class Server(threading.Thread):
                     self.server.handle_request()
 
                     if self.pts_recovery_request:
+                        log('PTS recovery requested by client')
                         self._init_pts()
-                        self.pts_recovery_request = True
+                        self.pts_recovery_request = False
                         self.is_ready = True
+
+                if self.server_recovery_request:
+                    log('Server recovery requested by client')
 
             except KeyboardInterrupt:
                 # Ctrl-C termination for single instance mode
@@ -349,15 +353,18 @@ class Server(threading.Thread):
                 while not dongle_exists(self._device):
                     power_dongle(self._args.ykush, True)
             else:
-                # Cases where where ykush was down or the dongle was
+                # Cases where ykush was down or the dongle was
                 # not enumerated for any other reason.
                 power_dongle(self._args.ykush, False)
                 sleep(3)
                 power_dongle(self._args.ykush, True)
 
         print("Starting PTS ...")
-        self.pts = PyPTSWithXmlRpcCallback(self._args.dongle)
-        self._device = self.pts._device
+        self.pts = PyPTSWithXmlRpcCallback(self._device)
+
+        if self.pts._device:
+            self._device = self.pts._device
+
         self.server.register_instance(self.pts)
         print("OK")
 
