@@ -75,8 +75,6 @@ def set_pixits(ptses):
     pts.set_pixit("DIS", "TSPX_iut_device_name_in_adv_packet_for_random_address", "")
     pts.set_pixit("DIS", "TSPX_time_guard", "180000")
     pts.set_pixit("DIS", "TSPX_use_implicit_send", "TRUE")
-    pts.set_pixit("DIS", "TSPX_tester_database_file",
-                  r"C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PS_DIS.xml")
     pts.set_pixit("DIS", "TSPX_mtu_size", "23")
     pts.set_pixit("DIS", "TSPX_secure_simple_pairing_pass_key_confirmation", "FALSE")
     pts.set_pixit("DIS", "TSPX_delete_link_key", "TRUE")

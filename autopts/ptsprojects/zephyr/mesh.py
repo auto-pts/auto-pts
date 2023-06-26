@@ -43,8 +43,6 @@ def set_pixits(ptses):
     pts.set_pixit("MESH", "TSPX_bd_addr_additional_filter_accept_list", "")
     pts.set_pixit("MESH", "TSPX_time_guard", "300000")
     pts.set_pixit("MESH", "TSPX_use_implicit_send", "TRUE")
-    pts.set_pixit("MESH", "TSPX_tester_database_file",
-                  r"C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_SMPP_db.xml")
     pts.set_pixit("MESH", "TSPX_mtu_size", "23")
     pts.set_pixit("MESH", "TSPX_delete_link_key", "TRUE")
     pts.set_pixit("MESH", "TSPX_delete_ltk", "TRUE")
@@ -101,8 +99,6 @@ def set_pixits(ptses):
     pts2.set_pixit("MESH", "TSPX_bd_addr_additional_filter_accept_list", "")
     pts2.set_pixit("MESH", "TSPX_time_guard", "300000")
     pts2.set_pixit("MESH", "TSPX_use_implicit_send", "TRUE")
-    pts2.set_pixit("MESH", "TSPX_tester_database_file",
-                   r"C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_SMPP_db.xml")
     pts2.set_pixit("MESH", "TSPX_mtu_size", "23")
     pts2.set_pixit("MESH", "TSPX_delete_link_key", "TRUE")
     pts2.set_pixit("MESH", "TSPX_delete_ltk", "TRUE")
