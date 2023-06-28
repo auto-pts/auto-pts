@@ -48,6 +48,7 @@ iut_config = {
             'BLE_SM_SC': '1',
             'BLE_SM_SC_ONLY': '0',
             'BLE_SM_LVL': '4',
+            'BLE_SM_MITM': '1',
         },
         "test_cases": [
             'GAP/SEC/SEM/BV-21-C',
@@ -55,7 +56,9 @@ iut_config = {
             'GAP/SEC/SEM/BV-24-C',
             'GAP/SEC/SEM/BV-26-C',
             'GAP/SEC/SEM/BV-27-C',
-            'GAP/SEC/SEM/BV-45-C'
+            'GAP/SEC/SEM/BV-45-C',
+            'GAP/SEC/SEM/BV-58-C',
+            'GAP/SEC/SEM/BV-61-C',
         ]
     },
 
