@@ -27,6 +27,7 @@ from autopts.ptsprojects.boards import Board, get_debugger_snr, tty_to_com
 from autopts.pybtp.types import BTPError
 from autopts.pybtp.iutctl_common import BTPSocketSrv, BTPWorker, BTP_ADDRESS
 from autopts.rtt import RTTLogger, BTMON
+from autopts.ptsprojects.stack import get_stack
 
 log = logging.debug
 ZEPHYR = None
@@ -214,23 +215,17 @@ class ZephyrCtl:
 
     def wait_iut_ready_event(self):
         """Wait until IUT sends ready event after power up"""
+        stack = get_stack()
         self.reset()
 
         if not self.gdb:
-            tuple_hdr, tuple_data = self.btp_socket.read()
-
-            try:
-                if (tuple_hdr.svc_id != defs.BTP_SERVICE_ID_CORE or
-                        tuple_hdr.op != defs.CORE_EV_IUT_READY):
-                    raise BTPError("Failed to get ready event")
-            except BTPError as err:
-                log("Unexpected event received (%s), expected IUT ready!", err)
-                self.stop()
-            else:
+            ev = stack.core.wait_iut_ready_ev(30, False)
+            if ev:
                 log("IUT ready event received OK")
-
-        self.rtt_logger_start()
-        self.btmon_start()
+                self.rtt_logger_start()
+                self.btmon_start()
+            else:
+                self.stop()
 
     def stop(self):
         """Powers off the Zephyr OS"""

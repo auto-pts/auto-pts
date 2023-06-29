@@ -116,6 +116,26 @@ def wait_event_with_condition(event_queue, condition_cb, timeout, remove):
     return None
 
 
+def wait_for_event_iut(event_queue, timeout, remove):
+    flag = Event()
+    flag.set()
+
+    t = Timer(timeout, timeout_cb, [flag])
+    t.start()
+
+    while flag.is_set():
+        for ev in event_queue:
+            if ev:
+                t.cancel()
+                if ev and remove:
+                    event_queue.remove(ev)
+                return ev
+
+            sleep(0.5)
+
+    return None
+
+
 def timeout_cb(flag):
     flag.clear()
 
@@ -644,6 +664,21 @@ class ASCS:
             lambda _addr_type, _addr, *_: (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
+
+class CORE:
+
+    def __init__(self):
+        self.event_queues = {
+            defs.CORE_EV_IUT_READY: [],
+        }
+
+    def event_received(self, event_type, event_data_tuple):
+        self.event_queues[event_type].append(event_data_tuple)
+
+    def wait_iut_ready_ev(self, timeout, remove=False):
+        return wait_for_event_iut(
+            self.event_queues[defs.CORE_EV_IUT_READY],
+            timeout, remove)
 
 class BAP:
     def __init__(self):
@@ -1255,6 +1290,7 @@ class Stack:
         self.pacs = None
         self.ascs = None
         self.bap = None
+        self.core = None
         self.supported_svcs = 0
 
     def is_svc_supported(self, svc):
@@ -1317,6 +1353,9 @@ class Stack:
     def bap_init(self):
         self.bap = BAP()
 
+    def core_init(self):
+        self.core = CORE()
+
     def gatt_cl_init(self):
         self.gatt_cl = GattCl()
 
@@ -1362,6 +1401,9 @@ class Stack:
 
         if self.synch:
             self.synch.cancel_synch()
+
+        if self.core:
+            self.core_init()
 
 
 def init_stack():

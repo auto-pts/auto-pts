@@ -33,7 +33,8 @@ class ZTestCase(TestCaseLT1):
 
         # first command is to start QEMU or HW
         self.cmds.insert(0, TestFunc(self.zephyrctl.start, self))
-        self.cmds.insert(1, TestFunc(self.zephyrctl.wait_iut_ready_event))
+        self.cmds.insert(1, TestFunc(self.stack.core_init))
+        self.cmds.insert(2, TestFunc(self.zephyrctl.wait_iut_ready_event))
 
         self.cmds.append(TestFuncCleanUp(self.stack.cleanup))
         # last command is to stop QEMU or HW

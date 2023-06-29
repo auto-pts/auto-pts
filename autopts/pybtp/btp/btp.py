@@ -620,6 +620,7 @@ from .ias import IAS_EV
 from .pacs import PACS_EV
 from .ascs import ASCS_EV
 from .bap import BAP_EV
+from .core import CORE_EV
 from autopts.pybtp.iutctl_common import set_event_handler
 
 
@@ -701,6 +702,12 @@ def event_handler(hdr, data):
         if hdr.op in BAP_EV and stack.bap:
             cb = BAP_EV[hdr.op]
             cb(stack.bap, data[0], hdr.data_len)
+            return True
+
+    elif hdr.svc_id == defs.BTP_SERVICE_ID_CORE:
+        if hdr.op in CORE_EV and stack.core:
+            cb = CORE_EV[hdr.op]
+            cb(stack.core, data[0], hdr.data_len)
             return True
 
     # TODO: Raise BTP error instead of logging
