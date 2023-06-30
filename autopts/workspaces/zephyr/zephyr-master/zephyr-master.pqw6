@@ -998,6 +998,12 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_GAP_11_4</Name>
+            <Description>Resolvable private address resolution procedure (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_GAP_11a_1</Name>
             <Description>Periodic Advertising Synchronizability mode (C.1)</Description>
             <Value>FALSE</Value>
@@ -1748,6 +1754,12 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_GAP_25_14</Name>
+            <Description>Client security checks for GATT indications and notifications (C.7)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_GAP_26_1</Name>
             <Description>Privacy feature (O)</Description>
             <Value>TRUE</Value>
@@ -2302,6 +2314,12 @@
           <Row>
             <Name>TSPC_GAP_35_14</Name>
             <Description>Encrypted Advertising Data Procedure (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_35_15</Name>
+            <Description>Client security checks for GATT indications and notifications (C.5)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -3052,6 +3070,12 @@
             <Type>OCTETSTRING</Type>
             <Value>46E77AB1EF007A9E</Value>
           </Row>
+          <Row>
+            <Name>TSPX_initiate_encryption_after_reconnection</Name>
+            <Description>Whether or not the IUT Central initiates encryption after reconnection (Default: FALSE)</Description>
+            <Value>FALSE</Value>
+            <Type>BOOLEAN</Type>
+          </Row>
         </Rows>
       </PIXIT>
     </PROJECT_INFORMATION>
@@ -3063,13 +3087,13 @@
           <Row>
             <Name>TSPC_GATT_1_1</Name>
             <Description>Generic Attribute Profile (GATT) Client (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_1_2</Name>
             <Description>Generic Attribute Profile (GATT) Server (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -3237,7 +3261,7 @@
           <Row>
             <Name>TSPC_GATT_3_17</Name>
             <Description>Notifications (C.7)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -3289,6 +3313,12 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_GATT_3_25a</Name>
+            <Description>Enabling Robust Caching (C.12)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_GATT_3_26</Name>
             <Description>Database Hash Characteristic (C.4)</Description>
             <Value>TRUE</Value>
@@ -3321,7 +3351,7 @@
           <Row>
             <Name>TSPC_GATT_3a_1</Name>
             <Description>Peripheral (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -3801,31 +3831,31 @@
           <Row>
             <Name>TSPC_GAP_0_2</Name>
             <Description>LE (C.2)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_24_2</Name>
             <Description>Bondable Mode (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_24_3</Name>
             <Description>Bonding Procedure (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_34_2</Name>
             <Description>Bondable Mode (C.2)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_34_3</Name>
             <Description>Bonding Procedure (C.2)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -7995,6 +8025,12 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_BAP_5_3</Name>
+            <Description>Erratum 19096 (C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_BAP_6_1</Name>
             <Description>ASCS Supported over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
@@ -8067,6 +8103,18 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_BAP_7_9</Name>
+            <Description>General Announcement (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_7_10</Name>
+            <Description>Targeted Announcement (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_BAP_8_1</Name>
             <Description>Audio Sink (C.1)</Description>
             <Value>FALSE</Value>
@@ -8125,6 +8173,54 @@
             <Description>Multiple Source Audio Locations (C.4)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_9a_1</Name>
+            <Description>Sink ASE - Enabling, Source ASE - Enabling (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_9a_2</Name>
+            <Description>Sink ASE - Enabling, Source ASE - QoS Configured (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_9a_3</Name>
+            <Description>Sink ASE - Enabling, Source ASE - None (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_9a_4</Name>
+            <Description>Sink ASE - QoS Configured, Source ASE - Enabling (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_9a_5</Name>
+            <Description>Sink ASE - QoS Configured, Source ASE - QoS Configured (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_9a_6</Name>
+            <Description>Sink ASE - QoS Configured, Source ASE - None (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_9a_7</Name>
+            <Description>Sink ASE - None, Source ASE - Enabling (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_9a_8</Name>
+            <Description>Sink ASE - None, Source ASE - QoS Configured (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_10_1</Name>
@@ -9046,7 +9142,7 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_23_11</Name>
-            <Description>Derivation of BR/EDR Link Key from LE LTK (C.4)</Description>
+            <Description>Derivation of BR/EDR Link Key from LE LTK (C.2)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -9088,7 +9184,7 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_24_2</Name>
-            <Description>Cross Transport Key Derivation Supported (C.2)</Description>
+            <Description>Cross Transport Key Derivation Supported (Peripheral) (C.2)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -9136,7 +9232,13 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_27_3</Name>
-            <Description>Erratum 18556 (C.3)</Description>
+            <Description>Erratum 18556 (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_27_4</Name>
+            <Description>Erratum 19096 (C.2)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -9185,7 +9287,7 @@
           <Row>
             <Name>TSPC_BAP_30_2</Name>
             <Description>Multiple Audio Locations (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -9251,13 +9353,13 @@
           <Row>
             <Name>TSPC_BAP_32_3</Name>
             <Description>Source PAC characteristic (C.2)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_32_4</Name>
             <Description>Source Audio Locations characteristic (C.2)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -9345,6 +9447,54 @@
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_BAP_33a_1</Name>
+            <Description>Sink ASE - Enabling, Source ASE - Enabling (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_33a_2</Name>
+            <Description>Sink ASE - Enabling, Source ASE - QoS Configured (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_33a_3</Name>
+            <Description>Sink ASE - Enabling, Source ASE - None (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_33a_4</Name>
+            <Description>Sink ASE - QoS Configured, Source ASE - Enabling (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_33a_5</Name>
+            <Description>Sink ASE - QoS Configured, Source ASE - QoS Configured (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_33a_6</Name>
+            <Description>Sink ASE - QoS Configured, Source ASE - None (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_33a_7</Name>
+            <Description>Sink ASE - None, Source ASE - Enabling (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAP_33a_8</Name>
+            <Description>Sink ASE - None, Source ASE - QoS Configured (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_BAP_34_1</Name>
             <Description>Sampling_Frequency (M)</Description>
             <Value>TRUE</Value>
@@ -9388,13 +9538,13 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_36_1</Name>
-            <Description>8_1 LC3: 8kHz Sampling Frequency, 7.5 ms Frame Duration, 26 Octets (O)</Description>
+            <Description>8_1 LC3: 8 kHz Sampling Frequency, 7.5 ms Frame Duration, 26 Octets (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_36_2</Name>
-            <Description>8_2 LC3: 8kHz Sampling Frequency, 10 ms Frame Duration, 30 Octets (O)</Description>
+            <Description>8_2 LC3: 8 kHz Sampling Frequency, 10 ms Frame Duration, 30 Octets (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -9406,79 +9556,79 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_36_4</Name>
-            <Description>16_2 LC3: 16kHz Sampling Frequency, 10 ms Frame Duration, 40 Octets (M)</Description>
+            <Description>16_2 LC3: 16 kHz Sampling Frequency, 10 ms Frame Duration, 40 Octets (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_36_5</Name>
-            <Description>24_1 LC3: 24kHz Sampling Frequency, 7.5 ms Frame Duration, 45 Octets (O)</Description>
+            <Description>24_1 LC3: 24 kHz Sampling Frequency, 7.5 ms Frame Duration, 45 Octets (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_36_6</Name>
-            <Description>24_2 LC3: 24kHz Sampling Frequency, 10 ms Frame Duration, 60 Octets (M)</Description>
+            <Description>24_2 LC3: 24 kHz Sampling Frequency, 10 ms Frame Duration, 60 Octets (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_36_7</Name>
-            <Description>32_1 LC3: 32kHz Sampling Frequency, 7.5 ms Frame Duration, 60 Octets (O)</Description>
+            <Description>32_1 LC3: 32 kHz Sampling Frequency, 7.5 ms Frame Duration, 60 Octets (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_36_8</Name>
-            <Description>32_2 LC3: 32kHz Sampling Frequency, 10 ms Frame Duration, 80 Octets (O)</Description>
+            <Description>32_2 LC3: 32 kHz Sampling Frequency, 10 ms Frame Duration, 80 Octets (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_36_9</Name>
-            <Description>441_1 LC3: 44.1kHz Sampling Frequency, 8.163 ms Frame Duration, 97 Octets (O)</Description>
+            <Description>441_1 LC3: 44.1 kHz Sampling Frequency, 8.163 ms Frame Duration, 97 Octets (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_36_10</Name>
-            <Description>441_2 LC3: 44.1kHz Sampling Frequency, 10.884 ms Frame Duration, 130 Octets (O)</Description>
+            <Description>441_2 LC3: 44.1 kHz Sampling Frequency, 10.884 ms Frame Duration, 130 Octets (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_36_11</Name>
-            <Description>48_1 LC3: 48kHz Sampling Frequency, 7.5 ms Frame Duration, 75 Octets (O)</Description>
+            <Description>48_1 LC3: 48 kHz Sampling Frequency, 7.5 ms Frame Duration, 75 Octets (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_36_12</Name>
-            <Description>48_2 LC3: 48kHz Sampling Frequency, 10 ms Frame Duration, 100 Octets (O)</Description>
+            <Description>48_2 LC3: 48 kHz Sampling Frequency, 10 ms Frame Duration, 100 Octets (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_36_13</Name>
-            <Description>48_3 LC3: 48kHz Sampling Frequency, 7.5 ms Frame Duration, 90 Octets (O)</Description>
+            <Description>48_3 LC3: 48 kHz Sampling Frequency, 7.5 ms Frame Duration, 90 Octets (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_36_14</Name>
-            <Description>48_4 LC3: 48kHz Sampling Frequency, 10 ms Frame Duration, 120 Octets (O)</Description>
+            <Description>48_4 LC3: 48 kHz Sampling Frequency, 10 ms Frame Duration, 120 Octets (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_36_15</Name>
-            <Description>48_5 LC3: 48kHz Sampling Frequency, 7.5 ms Frame Duration, 117 Octets (O)</Description>
+            <Description>48_5 LC3: 48 kHz Sampling Frequency, 7.5 ms Frame Duration, 117 Octets (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_36_16</Name>
-            <Description>48_6 LC3: 48kHz Sampling Frequency, 10 ms Frame Duration, 155 Octets (O)</Description>
+            <Description>48_6 LC3: 48 kHz Sampling Frequency, 10 ms Frame Duration, 155 Octets (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -9490,13 +9640,13 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_37_1</Name>
-            <Description>8_1 LC3: 8kHz Sampling Frequency, 7.5 ms Frame Duration, 26 Octets (O)</Description>
+            <Description>8_1 LC3: 8 kHz Sampling Frequency, 7.5 ms Frame Duration, 26 Octets (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_37_2</Name>
-            <Description>8_2 LC3: 8kHz Sampling Frequency, 10 ms Frame Duration, 30 Octets (O)</Description>
+            <Description>8_2 LC3: 8 kHz Sampling Frequency, 10 ms Frame Duration, 30 Octets (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -9508,79 +9658,79 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_37_4</Name>
-            <Description>16_2 LC3: 16kHz Sampling Frequency, 10 ms Frame Duration, 40 Octets (M)</Description>
+            <Description>16_2 LC3: 16 kHz Sampling Frequency, 10 ms Frame Duration, 40 Octets (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_37_5</Name>
-            <Description>24_1 LC3: 24kHz Sampling Frequency, 7.5 ms Frame Duration, 45 Octets (O)</Description>
+            <Description>24_1 LC3: 24 kHz Sampling Frequency, 7.5 ms Frame Duration, 45 Octets (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_37_6</Name>
-            <Description>24_2 LC3: 24kHz Sampling Frequency, 10 ms Frame Duration, 60 Octets (O)</Description>
+            <Description>24_2 LC3: 24 kHz Sampling Frequency, 10 ms Frame Duration, 60 Octets (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_37_7</Name>
-            <Description>32_1 LC3: 32kHz Sampling Frequency, 7.5 ms Frame Duration, 60 Octets (O)</Description>
+            <Description>32_1 LC3: 32 kHz Sampling Frequency, 7.5 ms Frame Duration, 60 Octets (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_37_8</Name>
-            <Description>32_2 LC3: 32kHz Sampling Frequency, 10 ms Frame Duration, 80 Octets (O)</Description>
+            <Description>32_2 LC3: 32 kHz Sampling Frequency, 10 ms Frame Duration, 80 Octets (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_37_9</Name>
-            <Description>441_1 LC3: 44.1kHz Sampling Frequency, 8.163 ms Frame Duration, 97 Octets (O)</Description>
+            <Description>441_1 LC3: 44.1 kHz Sampling Frequency, 8.163 ms Frame Duration, 97 Octets (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_37_10</Name>
-            <Description>441_2 LC3: 44.1kHz Sampling Frequency, 10.884 ms Frame Duration, 130 Octets (O)</Description>
+            <Description>441_2 LC3: 44.1 kHz Sampling Frequency, 10.884 ms Frame Duration, 130 Octets (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_37_11</Name>
-            <Description>48_1 LC3: 48kHz Sampling Frequency, 7.5 ms Frame Duration, 75 Octets (O)</Description>
+            <Description>48_1 LC3: 48 kHz Sampling Frequency, 7.5 ms Frame Duration, 75 Octets (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_37_12</Name>
-            <Description>48_2 LC3: 48kHz Sampling Frequency, 10 ms Frame Duration, 100 Octets (O)</Description>
+            <Description>48_2 LC3: 48 kHz Sampling Frequency, 10 ms Frame Duration, 100 Octets (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_37_13</Name>
-            <Description>48_3 LC3: 48kHz Sampling Frequency, 7.5 ms Frame Duration, 90 Octets (O)</Description>
+            <Description>48_3 LC3: 48 kHz Sampling Frequency, 7.5 ms Frame Duration, 90 Octets (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_37_14</Name>
-            <Description>48_4 LC3: 48kHz Sampling Frequency, 10 ms Frame Duration, 120 Octets (O)</Description>
+            <Description>48_4 LC3: 48 kHz Sampling Frequency, 10 ms Frame Duration, 120 Octets (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_37_15</Name>
-            <Description>48_5 LC3: 48kHz Sampling Frequency, 7.5 ms Frame Duration, 117 Octets (O)</Description>
+            <Description>48_5 LC3: 48 kHz Sampling Frequency, 7.5 ms Frame Duration, 117 Octets (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_37_16</Name>
-            <Description>48_6 LC3: 48kHz Sampling Frequency, 10 ms Frame Duration, 155 Octets (O)</Description>
+            <Description>48_6 LC3: 48 kHz Sampling Frequency, 10 ms Frame Duration, 155 Octets (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -9802,9 +9952,9 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_40_4</Name>
-            <Description>16_2_2 LC3: 10000 SDU Interval, unframed, 40 Max SDU Size, 47 RTN, 60 Max_Transport_Latency (M)</Description>
+            <Description>16_2_2 LC3: 10000 SDU Interval, unframed, 40 Max SDU Size, 47 RTN, 60 Max_Transport_Latency (C.16)</Description>
             <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_40_5</Name>
@@ -9898,9 +10048,9 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_41_4</Name>
-            <Description>16_2_2 LC3: 10000 SDU Interval, unframed, 40 Max SDU Size, 47 RTN, 60 Max_Transport_Latency (M)</Description>
+            <Description>16_2_2 LC3: 10000 SDU Interval, unframed, 40 Max SDU Size, 47 RTN, 60 Max_Transport_Latency (C.15)</Description>
             <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_41_5</Name>
@@ -9910,9 +10060,9 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_41_6</Name>
-            <Description>24_2_2 LC3: 10000 SDU Interval, unframed, 60 Max SDU Size, 41 RTN, 60 Max_Transport_Latency (M)</Description>
+            <Description>24_2_2 LC3: 10000 SDU Interval, unframed, 60 Max SDU Size, 41 RTN, 60 Max_Transport_Latency (C.16)</Description>
             <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_41_7</Name>
@@ -10025,7 +10175,7 @@
           <Row>
             <Name>TSPC_BAP_44_7</Name>
             <Description>AC 6ii: 2 Servers, 2 Sink ASEs, 1 Channel/Sink, 2 CISes, 2 Audio Streams (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -10037,7 +10187,7 @@
           <Row>
             <Name>TSPC_BAP_44_9</Name>
             <Description>AC 7ii: 2 Servers, 1 Sink ASE, 1 Source ASE, 1 Channel/Sink, 1 Channel/Source, 2 CISes, 2 Audio Streams (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -10049,7 +10199,7 @@
           <Row>
             <Name>TSPC_BAP_44_11</Name>
             <Description>AC 8ii: 2 Servers, 2 Sink ASEs, 1 Source ASE, 1 Channel/Sink, 1 Channel/Source, 2 CISes, 3 Audio Streams (C.5, C.9)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -10061,7 +10211,7 @@
           <Row>
             <Name>TSPC_BAP_44_13</Name>
             <Description>AC 9ii: 2 Servers, 2 Source ASEs, 1 Channel/Source, 2 CISes, 2 Audio Streams (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -10079,7 +10229,7 @@
           <Row>
             <Name>TSPC_BAP_44_16</Name>
             <Description>AC 11ii: 2 Servers, 2 Sink ASEs, 2 Source ASEs, 1 Channel/Sink, 1 Channel/Source, 2 CISes, 4 Audio Streams (C.5, C.11)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -10102,7 +10252,7 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_45_4</Name>
-            <Description>Discover All characteristics of a Service (C.2)</Description>
+            <Description>Discover All Characteristics of a Service (C.2)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -10222,7 +10372,7 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_46_10</Name>
-            <Description>Derivation of BR/EDR Link Key from LE LTK (C.4)</Description>
+            <Description>Derivation of BR/EDR Link Key from LE LTK (C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -10246,7 +10396,7 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_47_2</Name>
-            <Description>Cross Transport Key Derivation Supported (C.2)</Description>
+            <Description>Cross Transport Key Derivation Supported (Central) (C.2)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -10672,7 +10822,7 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_58_2</Name>
-            <Description>AC13: 2 BISes, Multiple Audio Channels/BIS, 2 Audio Stream (M)</Description>
+            <Description>AC13: 2 BISes, Single Audio Channel/BIS, 2 Audio Streams (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -11218,7 +11368,7 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_72_2</Name>
-            <Description>AC13: 2 BISes, Multiple Audio Channels/BIS, 2 Audio Stream (C.1)</Description>
+            <Description>AC13: 2 BISes, Single Audio Channel/BIS, 2 Audio Streams (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -11392,7 +11542,7 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_74_16</Name>
-            <Description>Derivation of BR/EDR Link Key from LE LTK (C.7)</Description>
+            <Description>Derivation of BR/EDR Link Key from LE LTK (C.6)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -11554,7 +11704,7 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_80_11</Name>
-            <Description>Derivation of BR/EDR Link Key from LE LTK (C.4)</Description>
+            <Description>Derivation of BR/EDR Link Key from LE LTK (C.2)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -11800,7 +11950,7 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_89_4</Name>
-            <Description>Discover All characteristics of a Service (C.2)</Description>
+            <Description>Discover All Characteristics of a Service (C.2)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -11926,7 +12076,7 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_90_12</Name>
-            <Description>Derivation of BR/EDR Link Key from LE LTK (C.4)</Description>
+            <Description>Derivation of BR/EDR Link Key from LE LTK (C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -12162,15 +12312,15 @@
           </Row>
           <Row>
             <Name>TSPX_Codec_ID</Name>
-            <Description>Octet 0: Coding format, Octet 1-2: Company Id, Octet 3-4: Vendor-specific codec Id Value (Default: 0600000000)</Description>
+            <Description>Octet 0: Coding format. Please set TSPX_VS_Company_ID and TSPX_VS_Codec_ID accordingly (Default: 06)</Description>
             <Type>OCTETSTRING</Type>
-            <Value>0600000000</Value>
+            <Value>06</Value>
           </Row>
           <Row>
             <Name>TSPX_VS_Codec_Specific_Capabilities</Name>
             <Description>Vendor_Specific_Capability LTVs in PAC. Total vendor specific capability length will be calculated and automatically added. Data must be LTV structure with litte endian for multi-octet ex)length: 3, type: 4, value: 0x0028 =&gt; 03042800 (Default: 0301F50002020302030105041A00C800)</Description>
-            <Value>0301F50002020302030105041A00C800</Value>
             <Type>OCTETSTRING</Type>
+            <Value>0301F50002020302030105041A00C800</Value>
           </Row>
           <Row>
             <Name>TSPX_VS_Codec_Specific_Configuration</Name>
