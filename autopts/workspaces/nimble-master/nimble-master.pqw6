@@ -1,4 +1,4 @@
-<WORKSPACE_INFORMATION NAME="nimble-master" PATH="C:\Users\Szymon\Documents\nimble-master" CREATED_WITH="Profile Tuning Suite, 8.4.2, 4" BD_ADDR="112233445566" QDID="215184">
+<WORKSPACE_INFORMATION NAME="nimble-master" CREATED_WITH="Profile Tuning Suite, 8.5.0, 5" BD_ADDR="000000000000" QDID="215184">
   <PROJECTS_INFORMATION>
     <PROJECT_INFORMATION NAME="GAP" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
       <PICS>
@@ -513,6 +513,12 @@
             <Name>TSPC_GAP_11_3</Name>
             <Description>Non-resolvable private address generation procedure (C.2)</Description>
             <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_11_4</Name>
+            <Description>Resolvable private address resolution procedure (O)</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1266,6 +1272,12 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_GAP_25_14</Name>
+            <Description>Client security checks for GATT indications and notifications (C.7)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_GAP_26_1</Name>
             <Description>Privacy feature (O)</Description>
             <Value>TRUE</Value>
@@ -1824,6 +1836,12 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_GAP_35_15</Name>
+            <Description>Client security checks for GATT indications and notifications (C.5)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_GAP_36_1</Name>
             <Description>Privacy feature (O)</Description>
             <Value>TRUE</Value>
@@ -2151,7 +2169,7 @@
             <Name>TSPX_bd_addr_iut</Name>
             <Description>The unique 48-bit Bluetooth device address (BD_ADDR) of the IUT. This was filled in during workspace creation.</Description>
             <Type>OCTETSTRING</Type>
-            <Value>112233445566</Value>
+            <Value>000000000000</Value>
           </Row>
           <Row>
             <Name>TSPX_bd_addr_PTS</Name>
@@ -2570,6 +2588,12 @@
             <Type>OCTETSTRING</Type>
             <Value>46E77AB1EF007A9E</Value>
           </Row>
+          <Row>
+            <Name>TSPX_initiate_encryption_after_reconnection</Name>
+            <Description>Whether or not the IUT Central initiates encryption after reconnection (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
         </Rows>
       </PIXIT>
     </PROJECT_INFORMATION>
@@ -2803,6 +2827,12 @@
           <Row>
             <Name>TSPC_GATT_3_25</Name>
             <Description>Client Supported Features Characteristic (C.4)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_3_25a</Name>
+            <Description>Enabling Robust Caching (C.12)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -3398,7 +3428,7 @@
             <Name>TSPX_bd_addr_iut</Name>
             <Description>The unique 48-bit Bluetooth device address (BD_ADDR) of the IUT. This was filled in during workspace creation.</Description>
             <Type>OCTETSTRING</Type>
-            <Value>112233445566</Value>
+            <Value>000000000000</Value>
           </Row>
           <Row>
             <Name>TSPX_iut_device_name_in_adv_packet_for_random_address</Name>
@@ -3954,7 +3984,7 @@
             <Name>TSPX_bd_addr_iut</Name>
             <Description>Not Used</Description>
             <Type>OCTETSTRING</Type>
-            <Value>112233445566</Value>
+            <Value>000000000000</Value>
           </Row>
           <Row>
             <Name>TSPX_class_of_device_pts</Name>
@@ -4199,7 +4229,7 @@
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_24</Name>
-            <Description>Actively request Basic Mode for a PSM that supports the use of ERTM or Streaming Mode (C.7)</Description>
+            <Description>Actively request Basic Mode for a PSM that supports the use of ERTM or Streaming Mode (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -4211,19 +4241,19 @@
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_26</Name>
-            <Description>Sending more than one unacknowledged I-Frame when operating in ERTM (C.9)</Description>
+            <Description>Sending more than one unacknowledged I-Frame when operating in ERTM (C.5)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_27</Name>
-            <Description>Sending more than three unacknowledged I-Frame when operating in ERTM (C.9)</Description>
+            <Description>Sending more than three unacknowledged I-Frame when operating in ERTM (C.5)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_28</Name>
-            <Description>Peer TxWindow configuration greater than 1 (C.10)</Description>
+            <Description>Peer TxWindow configuration greater than 1 (C.5)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -4283,13 +4313,13 @@
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_38</Name>
-            <Description>Extended Flow Specification for BR/EDR (C.7)</Description>
+            <Description>Extended Flow Specification for BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_39</Name>
-            <Description>Extended Window Size (C.7)</Description>
+            <Description>Extended Window Size (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -4451,7 +4481,7 @@
           </Row>
           <Row>
             <Name>TSPC_L2CAP_3_15</Name>
-            <Description>Negotiate and support service type Guaranteed for Extended Flow Specification. (C.9)</Description>
+            <Description>Negotiate and support service type Guaranteed for Extended Flow Specification. (C.7)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -4573,7 +4603,7 @@
             <Name>TSPX_bd_addr_iut</Name>
             <Description>The unique 48-bit Bluetooth device address (BD_ADDR) of the IUT. This was filled in during workspace creation.</Description>
             <Type>OCTETSTRING</Type>
-            <Value>112233445566</Value>
+            <Value>000000000000</Value>
           </Row>
           <Row>
             <Name>TSPX_bd_addr_iut_le</Name>
@@ -4946,19 +4976,19 @@
           </Row>
           <Row>
             <Name>TSPC_MESH_0a_1</Name>
-            <Description>Erratum 10395 (C1)</Description>
+            <Description>Erratum 10395 (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_0a_2</Name>
-            <Description>Mesh v1.0.1 (C2)</Description>
+            <Description>Mesh v1.0.1 (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_0a_3</Name>
-            <Description>Erratum 16350 (C1)</Description>
+            <Description>Erratum 16350 (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -5526,7 +5556,7 @@
             <Name>TSPX_bd_addr_iut</Name>
             <Description>The unique 48-bit Bluetooth device address (BD_ADDR) of the IUT. This was filled in during workspace creation.</Description>
             <Type>OCTETSTRING</Type>
-            <Value>112233445566</Value>
+            <Value>000000000000</Value>
           </Row>
           <Row>
             <Name>TSPX_bd_addr_additional_filter_accept_list</Name>
@@ -7027,7 +7057,7 @@
             <Name>TSPX_bd_addr_iut</Name>
             <Description>The unique 48-bit Bluetooth device address (BD_ADDR) of the IUT. This was filled in during workspace creation.</Description>
             <Type>OCTETSTRING</Type>
-            <Value>112233445566</Value>
+            <Value>000000000000</Value>
           </Row>
           <Row>
             <Name>TSPX_time_guard</Name>
@@ -7443,7 +7473,7 @@
             <Name>TSPX_bd_addr_iut</Name>
             <Description>The unique 48-bit Bluetooth device address (BD_ADDR) of the IUT. This was filled in during workspace creation.</Description>
             <Type>OCTETSTRING</Type>
-            <Value>112233445566</Value>
+            <Value>000000000000</Value>
           </Row>
           <Row>
             <Name>TSPX_iut_device_name_in_adv_packet_for_random_address</Name>
