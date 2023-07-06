@@ -15,8 +15,10 @@
 
 import logging
 import socket
+import struct
 
 from autopts.ptsprojects.stack import get_stack
+from autopts.pybtp.types import Perm, WIDParams
 from autopts.pybtp import btp
 from autopts.ptsprojects.testcase import MMI
 from autopts.wid import generic_wid_hdl
@@ -123,3 +125,45 @@ def hdl_wid_58(desc):
         pass
 
     return True
+
+
+def hdl_wid_151(_: WIDParams):
+    chrcs = btp.gatts_get_attrs(type_uuid='2803')
+    for chrc in chrcs:
+        handle, perm, type_uuid = chrc
+
+        chrc_data = btp.gatts_get_attr_val(btp.pts_addr_type_get(),
+                                           btp.pts_addr_get(), handle)
+        if not chrc_data:
+            continue
+
+        att_rsp, val_len, val = chrc_data
+
+        hdr = '<BH'
+        hdr_len = struct.calcsize(hdr)
+        uuid_len = val_len - hdr_len
+
+        prop, handle, chrc_uuid = struct.unpack("<BH%ds" % uuid_len, val)
+        chrc_value_attr = btp.gatts_get_attrs(start_handle=handle,
+                                              end_handle=handle)
+        if not chrc_value_attr:
+            continue
+
+        handle, perm, type_uuid = chrc_value_attr[0]
+        if not perm & Perm.read or not perm & Perm.write:
+            continue
+
+        if perm & (Perm.read_enc | Perm.read_authn | Perm.write_enc | Perm.write_authn):
+            continue
+
+        chrc_value_data = btp.gatts_get_attr_val(btp.pts_addr_type_get(),
+                                                 btp.pts_addr_get(), handle)
+        if not chrc_value_data:
+            continue
+
+        _, val_len, _ = chrc_value_data
+        if val_len == 1:
+            return '{0:04x}'.format(handle)
+
+    return False
+
