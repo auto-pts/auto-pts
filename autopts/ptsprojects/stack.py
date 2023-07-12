@@ -647,6 +647,7 @@ class ASCS:
         self.event_queues = {
             defs.ASCS_EV_OPERATION_COMPLETED: [],
             defs.ASCS_EV_CHARACTERISTIC_SUBSCRIBED: [],
+            defs.ASCS_EV_ASE_STATE_CHANGED: [],
         }
 
     def event_received(self, event_type, event_data_tuple):
@@ -662,6 +663,13 @@ class ASCS:
         return wait_event_with_condition(
             self.event_queues[defs.ASCS_EV_CHARACTERISTIC_SUBSCRIBED],
             lambda _addr_type, _addr, *_: (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
+
+    def wait_ascs_ase_state_changed_ev(self, addr_type, addr, ase_id, state, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.ASCS_EV_ASE_STATE_CHANGED],
+            lambda _addr_type, _addr, _ase_id, _state, *_:
+            (addr_type, addr, ase_id, state) == (_addr_type, _addr, _ase_id, _state),
             timeout, remove)
 
 

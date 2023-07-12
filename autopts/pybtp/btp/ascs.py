@@ -43,6 +43,8 @@ ASCS = {
                 CONTROLLER_INDEX),
     'update_metadata': (defs.BTP_SERVICE_ID_ASCS, defs.ASCS_UPDATE_METADATA,
                         CONTROLLER_INDEX),
+    'add_ase_to_cis': (defs.BTP_SERVICE_ID_ASCS, defs.ASCS_ADD_ASE_TO_CIS,
+                       CONTROLLER_INDEX),
 }
 
 
@@ -86,6 +88,20 @@ def ascs_config_codec(ase_id, coding_format, vid, cid, codec_ltvs,
 
     iutctl = get_iut()
     iutctl.btp_socket.send(*ASCS['config_codec'], data=data)
+
+    ascs_command_rsp_succ()
+
+
+def ascs_add_ase_to_cis(ase_id, cis_id, cig_id, bd_addr_type=None, bd_addr=None):
+    logging.debug(f"{ascs_add_ase_to_cis.__name__}")
+
+    data = address_to_ba(bd_addr_type, bd_addr)
+    data += struct.pack('B', ase_id)
+    data += struct.pack('B', cig_id)
+    data += struct.pack('B', cis_id)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*ASCS['add_ase_to_cis'], data=data)
 
     ascs_command_rsp_succ()
 
@@ -212,7 +228,26 @@ def ascs_ev_characteristic_subscribed_(ascs, data, data_len):
                         (addr_type, addr, handle))
 
 
+def ascs_ev_ase_state_changed_(ascs, data, data_len):
+    logging.debug('%s %r', ascs_ev_ase_state_changed_.__name__, data)
+
+    fmt = '<B6sBB'
+    header_size = struct.calcsize(fmt)
+    if len(data) < header_size:
+        raise BTPError('Invalid data length')
+
+    addr_type, addr, ase_id, state = struct.unpack_from(fmt, data)
+
+    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+
+    logging.debug(f'ASE state: ase_id {ase_id}, state {state}')
+
+    ascs.event_received(defs.ASCS_EV_ASE_STATE_CHANGED,
+                        (addr_type, addr, ase_id, state))
+
+
 ASCS_EV = {
     defs.ASCS_EV_OPERATION_COMPLETED: ascs_ev_operation_completed_,
     defs.ASCS_EV_CHARACTERISTIC_SUBSCRIBED: ascs_ev_characteristic_subscribed_,
+    defs.ASCS_EV_ASE_STATE_CHANGED: ascs_ev_ase_state_changed_,
 }

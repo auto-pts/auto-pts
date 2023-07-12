@@ -23,7 +23,7 @@ from time import sleep
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import MMI
 from autopts.pybtp import btp, defs
-from autopts.pybtp.btp import pts_addr_get, pts_addr_type_get
+from autopts.pybtp.btp import pts_addr_get, pts_addr_type_get, ascs_add_ase_to_cis
 from autopts.pybtp.types import WIDParams, UUID
 from autopts.wid import generic_wid_hdl
 
@@ -395,26 +395,31 @@ def read_ase_params(handle, ase_uuid=UUID.SINK_ASE, attrs=None,
     return ase_params
 
 
-def first_1_bit(val):
-    i = 0
-    while val:
-        b = val & 0x01
-        if b:
-            return i
-        val >>= 0x01
-        i += 1
-    return None
+def first_1_bit_index(n):
+    if n == 0:
+        return -1
+
+    # Convert number to binary and remove the '0b' prefix
+    binary = bin(n)[2:]
+    index = len(binary) - 1 - binary.rindex('1')
+
+    return index
 
 
-def last_1_bit(val):
-    i = 7
-    while val:
-        b = val & 0b10000000
-        if b:
-            return i
-        val <<= 0x01
-        i -= 1
-    return None
+def last_1_bit_index(n):
+    if n == 0:
+        return -1
+
+    # Convert number to binary and remove the '0b' prefix
+    binary = bin(n)[2:]
+    index = len(binary) - 1
+
+    return index
+
+
+def count_1_bits(n):
+    binary = bin(n)[2:]  # Convert number to binary and remove the '0b' prefix
+    return binary.count('1')
 
 
 def hdl_wid_302(params: WIDParams):
@@ -517,8 +522,8 @@ def hdl_wid_303(params: WIDParams):
         stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
 
     # Perform Config QOS operation
-    cig_id = 0x01
-    cis_id = 0x01
+    cig_id = 0x00
+    cis_id = 0x00
     presentation_delay = 40000
     qos_config = QOS_CONFIG_SETTINGS[qos_set_name]
     btp.ascs_config_qos(ase_id, cig_id, cis_id, *qos_config, presentation_delay)
@@ -572,8 +577,8 @@ def hdl_wid_304(params: WIDParams):
     stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
 
     # Perform Config QOS operation
-    cig_id = 0x01
-    cis_id = 0x01
+    cig_id = 0x00
+    cis_id = 0x00
     presentation_delay = 40000
     qos_config = QOS_CONFIG_SETTINGS[f'{sampling_freq_str}_1_1']
     btp.ascs_config_qos(ase_id, cig_id, cis_id, *qos_config, presentation_delay)
@@ -631,8 +636,8 @@ def hdl_wid_305(params: WIDParams):
     stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
 
     # Perform Config QOS operation
-    cig_id = 0x01
-    cis_id = 0x01
+    cig_id = 0x00
+    cis_id = 0x00
     presentation_delay = 40000
     qos_config = QOS_CONFIG_SETTINGS[f'{sampling_freq_str}_1_1']
     btp.ascs_config_qos(ase_id, cig_id, cis_id, *qos_config, presentation_delay)
@@ -694,8 +699,8 @@ def hdl_wid_306(params: WIDParams):
     stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
 
     # Perform Config QOS operation
-    cig_id = 0x01
-    cis_id = 0x01
+    cig_id = 0x00
+    cis_id = 0x00
     presentation_delay = 40000
     qos_config = QOS_CONFIG_SETTINGS[f'{sampling_freq_str}_1_1']
     btp.ascs_config_qos(ase_id, cig_id, cis_id, *qos_config, presentation_delay)
@@ -811,8 +816,8 @@ def create_default_config():
                      coding_format=0x06,
                      frames_per_sdu=0x01,
                      audio_locations=0x01,
-                     cig_id=0x01,
-                     cis_id=0x01,
+                     cig_id=0x00,
+                     cis_id=0x00,
                      presentation_delay=40000,
                      qos_config=None,
                      codec_set_name=None)
@@ -849,6 +854,9 @@ def config_qos(config):
         (config.sdu_interval, config.framing, config.max_sdu_size,
          config.retransmission_number, config.max_transport_latency) = \
             QOS_CONFIG_SETTINGS[config.qos_set_name]
+
+        # Adjust max sdu size to the number of channels
+        config.max_sdu_size = config.max_sdu_size * count_1_bits(config.audio_locations)
 
     stack = get_stack()
     btp.ascs_config_qos(config.ase_id,
@@ -931,7 +939,7 @@ def get_audio_locations_from_pac(addr_type, addr, audio_dir):
     if ev is None:
         return False
 
-    channel_counts = last_1_bit(ev[7]) + 1
+    channel_counts = last_1_bit_index(ev[7]) + 1
 
     audio_locations = 0x00
     for i in range(0, channel_counts):
@@ -942,7 +950,7 @@ def get_audio_locations_from_pac(addr_type, addr, audio_dir):
 
 def hdl_wid_311(params: WIDParams):
     """
-    Please configure 1 SOURCE ASE with Config Setting: 8_1_1.
+    Please configure 1 SOURCE ASE with Config Setting: IXIT.
     After that, configure to streaming state.
     """
 
@@ -1003,20 +1011,37 @@ def hdl_wid_311(params: WIDParams):
     for config in ases:
         config_codec(config)
 
-    # TODO: Some tests need multiple unidirectional CISes and some others need
-    #  the bidirectional ones. There is no hint for this in the MMI description.
-    #  For now let's create as many bidirectional CISes as possible.
-    bidir_cises = list(zip(sinks, sources))
-    bidir_cises_num = len(bidir_cises)
+    # Most test cases use bidirectional CISes and/or one unidirectional CIS.
+    # Only a few tests need several unidirectional CISs.
+    if params.test_case_name in ['BAP/UCL/STR/BV-525-C', ]:
+        bidir_cises = []
+        bidir_cises_num = 0
+    else:
+        bidir_cises = list(zip(sinks, sources))
+        bidir_cises_num = len(bidir_cises)
+
+    cis_id = 0x00
+    for sink_config, source_config in bidir_cises:
+        sink_config.cis_id = cis_id
+        source_config.cis_id = cis_id
+        cis_id += 1
 
     unidir_cises = []
     for sink_config in sinks[bidir_cises_num:]:
+        sink_config.cis_id = cis_id
         unidir_cises.append((sink_config, None))
+        cis_id += 1
 
     for source_config in sources[bidir_cises_num:]:
+        source_config.cis_id = cis_id
         unidir_cises.append((None, source_config))
+        cis_id += 1
 
     cises = bidir_cises + unidir_cises
+
+    for config in ases:
+        config.cig_id = 0x00
+        ascs_add_ase_to_cis(config.ase_id, config.cis_id, config.cig_id)
 
     # Configure QoS for the CIG.
     # Zephyrs API configures QoS for all ASEs in group at once
@@ -1042,18 +1067,21 @@ def hdl_wid_311(params: WIDParams):
 
     for sink_config, source_config in cises:
         if source_config:
-            # Bidirectional CIS or unidirectional CIS with a SOURCE end point
-            start_streaming(source_config)
+            btp.ascs_receiver_start_ready(source_config.ase_id)
         elif sink_config:
-            # Unidirectional CIS with a SINK end point
+            # Called for Sink ASE just to trigger CIS establishment,
+            # but the Sink ASE will go to streaming state later,
+            # only when it is ready (all CISes are established).
             btp.ascs_receiver_start_ready(sink_config.ase_id)
 
-    # The ASCS notifications about change of a SINK ASE state to Streaming
-    # do not arrive until all CISes in a CIG are in streaming state.
-    for config in sinks:
-        ev = stack.ascs.wait_ascs_operation_complete_ev(config.addr_type,
-                                                        config.addr,
-                                                        config.ase_id, 30)
+    # PTS will change ASE states to streaming when all CISes are established
+    for config in ases:
+        # Wait for the ASE states to be changed to streaming
+        ev = stack.ascs.wait_ascs_ase_state_changed_ev(config.addr_type,
+                                                       config.addr,
+                                                       config.ase_id,
+                                                       ASCSState.STREAMING,
+                                                       30)
         if ev is None:
             return False
 
@@ -1104,7 +1132,7 @@ def hdl_wid_314(params: WIDParams):
     _, _, _, coding_format, frequencies, frame_durations, frame_lens, channel_counts = ev
 
     # Errata in progress, since the vendor codec does not appear in PAC records
-    sampling_freq = first_1_bit(frequencies)
+    sampling_freq = first_1_bit_index(frequencies)
     frame_duration = frame_durations
     octets_per_frame = frame_lens & 0xffff
     audio_locations = 0x01
@@ -1167,8 +1195,8 @@ def hdl_wid_315(params: WIDParams):
         stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
 
     # Perform Config QOS operation
-    cig_id = 0x01
-    cis_id = 0x01
+    cig_id = 0x00
+    cis_id = 0x00
     presentation_delay = 40000
     qos_config = (7500, 0x00, 40, 2, 10)
     btp.ascs_config_qos(ase_id, cig_id, cis_id, *qos_config, presentation_delay)
