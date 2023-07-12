@@ -158,6 +158,21 @@ Commands and responses:
 		asynchronously. At the end of the command processing, the ASCS
 		Operation Completed event will be sent.
 
+	Opcode 0x0a: Add CIS to CIG
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					ASE_ID (1 octet)
+					CIG ID (1 octet)
+					CIS ID (1 octet)
+		Response parameters:	<None>
+
+        This command is used to set up an unicast group in the IUT stack
+		before the ASCS Configure QoS operation for each ASE is called.
+
+		In case of an error, the error status response will be returned.
+
 Events:
 	Opcode 0x80 - ASCS Operation Completed event
 
@@ -197,3 +212,13 @@ Events:
 
 		This event indicates that a lower tester has subscribed to
 		an ASCS characteristic with a given handle.
+
+	Opcode 0x82 - ASE State changed
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					ASE_ID (1 octet)
+					State (1 octet)
+
+		This event indicates that ASE state has been changed.

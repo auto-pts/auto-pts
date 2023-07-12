@@ -15,12 +15,14 @@
 
 """BAP test cases"""
 
+from queue import Queue
+
 from autopts.pybtp import btp
 from autopts.client import get_unique_name
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.bap_wid import bap_wid_hdl
-from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
+from autopts.ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
 from autopts.pybtp.types import Addr
 
 
@@ -61,11 +63,18 @@ def test_cases(ptses):
     iut_device_name = get_unique_name(pts)
     stack = get_stack()
 
+    queue = Queue()
+
+    def set_addr(addr):
+        queue.put(addr)
+
     pre_conditions = [TestFunc(btp.core_reg_svc_gap),
                       TestFunc(stack.gap_init, iut_device_name),
                       TestFunc(btp.gap_read_ctrl_info),
                       TestFunc(lambda: pts.update_pixit_param(
                           "BAP", "TSPX_bd_addr_iut",
+                          stack.gap.iut_addr_get_str())),
+                      TestFunc(lambda: set_addr(
                           stack.gap.iut_addr_get_str())),
                       TestFunc(lambda: pts.update_pixit_param(
                           "BAP", "TSPX_iut_use_dynamic_bd_addr",
@@ -95,6 +104,9 @@ def test_cases(ptses):
                          [TestFunc(lambda: pts.update_pixit_param(
                           "BAP", "TSPX_Codec_ID", "ffffffffff"))],
                   generic_wid_hdl=bap_wid_hdl),
+        ZTestCase("BAP", "BAP/UCL/STR/BV-526-C", cmds=pre_conditions,
+                  generic_wid_hdl=bap_wid_hdl,
+                  lt2="BAP/UCL/STR/BV-526-C_LT2"),
     ]
 
     test_case_name_list = pts.get_test_case_list('BAP')
@@ -112,4 +124,23 @@ def test_cases(ptses):
 
         tc_list.append(instance)
 
-    return tc_list
+    if len(ptses) < 2:
+        return tc_list
+
+    pts2 = ptses[1]
+
+    pre_conditions_lt2 = [
+                        TestFunc(lambda: pts2.update_pixit_param(
+                                "BAP", "TSPX_bd_addr_iut", queue.get())),
+                        TestFunc(lambda: pts2.update_pixit_param(
+                                "BAP", "TSPX_iut_use_dynamic_bd_addr",
+                                "TRUE" if stack.gap.iut_addr_is_random() else "FALSE"))
+    ]
+
+    test_cases_lt2 = [
+        ZTestCaseSlave("BAP", "BAP/UCL/STR/BV-526-C_LT2",
+                       cmds=pre_conditions_lt2,
+                       generic_wid_hdl=bap_wid_hdl),
+    ]
+
+    return tc_list + test_cases_lt2
