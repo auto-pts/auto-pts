@@ -1,5 +1,5 @@
 <WORKSPACE_INFORMATION NAME="zephyr-master" CREATED_WITH="Profile Tuning Suite, 8.4.0, 5" BD_ADDR="000000000000" QDID="176842">
-  <PROJECTS_INFORMATION>
+<PROJECTS_INFORMATION>
     <PROJECT_INFORMATION NAME="AICS" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
       <PICS>
         <Name>AICS</Name>
@@ -7961,13 +7961,13 @@
           <Row>
             <Name>TSPC_BAP_1_1</Name>
             <Description>Unicast Server (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_1_2</Name>
             <Description>Unicast Client (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -7997,7 +7997,7 @@
           <Row>
             <Name>TSPC_BAP_3_1</Name>
             <Description>LE (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -8015,7 +8015,7 @@
           <Row>
             <Name>TSPC_BAP_5_1</Name>
             <Description>Basic Audio Profile v1.0.1 (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -8027,7 +8027,7 @@
           <Row>
             <Name>TSPC_BAP_5_3</Name>
             <Description>Erratum 19096 (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -8039,7 +8039,7 @@
           <Row>
             <Name>TSPC_BAP_6_2</Name>
             <Description>ASCS Supported over LE (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -8051,7 +8051,7 @@
           <Row>
             <Name>TSPC_BAP_6_4</Name>
             <Description>PACS Supported over LE (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -8063,49 +8063,49 @@
           <Row>
             <Name>TSPC_BAP_7_2</Name>
             <Description>Two Sink Audio Channels (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_7_3</Name>
             <Description>Two Source Audio Channels (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_7_4</Name>
             <Description>Autonomous Config Codec (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_7_5</Name>
             <Description>Autonomous Receiver Start Ready (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_7_6</Name>
             <Description>Autonomous Disable (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_7_7</Name>
             <Description>Autonomous Update Metadata (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_7_8</Name>
             <Description>Autonomous Release (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_7_9</Name>
             <Description>General Announcement (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -8117,37 +8117,37 @@
           <Row>
             <Name>TSPC_BAP_8_1</Name>
             <Description>Audio Sink (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_8_2</Name>
             <Description>Audio Source (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_9_1</Name>
             <Description>Sink PAC characteristic (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_9_2</Name>
             <Description>Sink Audio Locations characteristic (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_9_3</Name>
             <Description>Source PAC characteristic (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_9_4</Name>
             <Description>Source Audio Locations characteristic (C.4)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -8165,13 +8165,13 @@
           <Row>
             <Name>TSPC_BAP_9_7</Name>
             <Description>Multiple Sink Audio Locations (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_9_8</Name>
             <Description>Multiple Source Audio Locations (C.4)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -8243,19 +8243,19 @@
           <Row>
             <Name>TSPC_BAP_10_4</Name>
             <Description>Supported Audio Channel Counts (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_10_5</Name>
             <Description>Supported Max Codec Frames Per SDU (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_11_1</Name>
             <Description>Preferred_Audio_Contexts (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -8267,25 +8267,25 @@
           <Row>
             <Name>TSPC_BAP_11_3</Name>
             <Description>Vendor-specific Metadata (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_12_1</Name>
             <Description>8_1 LC3: 8 kHz Sampling Frequency, 7.5 ms Frame Duration, 26 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_12_2</Name>
             <Description>8_2 LC3: 8 kHz Sampling Frequency, 10 ms Frame Duration, 30 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_12_3</Name>
             <Description>16_1 LC3: 16 kHz Sampling Frequency, 7.5 ms Frame Duration, 30 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -8297,7 +8297,7 @@
           <Row>
             <Name>TSPC_BAP_12_5</Name>
             <Description>24_1 LC3: 24 kHz Sampling Frequency, 7.5 ms Frame Duration, 45 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -8309,85 +8309,85 @@
           <Row>
             <Name>TSPC_BAP_12_7</Name>
             <Description>32_1 LC3: 32 kHz Sampling Frequency, 7.5 ms Frame Duration, 60 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_12_8</Name>
             <Description>32_2 LC3: 32 kHz Sampling Frequency, 10 ms Frame Duration, 80 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_12_9</Name>
             <Description>441_1 LC3: 44.1 kHz Sampling Frequency, 8.163 ms Frame Duration, 97 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_12_10</Name>
             <Description>441_2 LC3: 44.1 kHz Sampling Frequency, 10.884 ms Frame Duration, 130 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_12_11</Name>
             <Description>48_1 LC3: 48 kHz Sampling Frequency, 7.5 ms Frame Duration, 75 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_12_12</Name>
             <Description>48_2 LC3: 48 kHz Sampling Frequency, 10 ms Frame Duration, 100 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_12_13</Name>
             <Description>48_3 LC3: 48 kHz Sampling Frequency, 7.5 ms Frame Duration, 90 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_12_14</Name>
             <Description>48_4 LC3: 48 kHz Sampling Frequency, 10 ms Frame Duration, 120 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_12_15</Name>
             <Description>48_5 LC3: 48 kHz Sampling Frequency, 7.5 ms Frame Duration, 117 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_12_16</Name>
             <Description>48_6 LC3: 48 kHz Sampling Frequency, 10 ms Frame Duration, 155 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_12_17</Name>
             <Description>Vendor-specific Codec Capability Setting (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_13_1</Name>
             <Description>8_1 LC3: 8 kHz Sampling Frequency, 7.5 ms Frame Duration, 26 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_13_2</Name>
             <Description>8_2 LC3: 8 kHz Sampling Frequency, 10 ms Frame Duration, 30 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_13_3</Name>
             <Description>16_1 LC3: 16 kHz Sampling Frequency, 7.5 ms Frame Duration, 30 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -8399,97 +8399,97 @@
           <Row>
             <Name>TSPC_BAP_13_5</Name>
             <Description>24_1 LC3: 24 kHz Sampling Frequency, 7.5 ms Frame Duration, 45 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_13_6</Name>
             <Description>24_2 LC3: 24 kHz Sampling Frequency, 10 ms Frame Duration, 60 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_13_7</Name>
             <Description>32_1 LC3: 32 kHz Sampling Frequency, 7.5 ms Frame Duration, 60 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_13_8</Name>
             <Description>32_2 LC3: 32 kHz Sampling Frequency, 10 ms Frame Duration, 80 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_13_9</Name>
             <Description>441_1 LC3: 44.1 kHz Sampling Frequency, 8.163 ms Frame Duration, 97 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_13_10</Name>
             <Description>441_2 LC3: 44.1 kHz Sampling Frequency, 10.884 ms Frame Duration, 130 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_13_11</Name>
             <Description>48_1 LC3: 48 kHz Sampling Frequency, 7.5 ms Frame Duration, 75 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_13_12</Name>
             <Description>48_2 LC3: 48 kHz Sampling Frequency, 10 ms Frame Duration, 100 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_13_13</Name>
             <Description>48_3 LC3: 48 kHz Sampling Frequency, 7.5 ms Frame Duration, 90 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_13_14</Name>
             <Description>48_4 LC3: 48 kHz Sampling Frequency, 10 ms Frame Duration, 120 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_13_15</Name>
             <Description>48_5 LC3: 48 kHz Sampling Frequency, 7.5 ms Frame Duration, 117 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_13_16</Name>
             <Description>48_6 LC3: 48 kHz Sampling Frequency, 10 ms Frame Duration, 155 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_13_17</Name>
             <Description>Vendor-specific Codec Capability Setting (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_14_1</Name>
             <Description>8_1_1 LC3: 7500 SDU Interval, unframed, 26 Max SDU Size, 2 RTN, 8 Max_Transport_Latency (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_14_2</Name>
             <Description>8_2_1 LC3: 10000 SDU Interval, unframed, 30 Max SDU Size, 2 RTN, 10 Max_Transport_Latency (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_14_3</Name>
             <Description>16_1_1 LC3: 7500 SDU Interval, unframed, 30 Max SDU Size, 2 RTN, 8 Max_Transport_Latency (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -8501,91 +8501,91 @@
           <Row>
             <Name>TSPC_BAP_14_5</Name>
             <Description>24_1_1 LC3: 7500 SDU Interval, unframed, 45 Max SDU Size, 2 RTN, 8 Max_Transport_Latency (C.4)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_14_6</Name>
             <Description>24_2_1 LC3: 10000 SDU Interval, unframed, 60 Max SDU Size, 2 RTN, 10 Max_Transport_Latency (C.5)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_14_7</Name>
             <Description>32_1_1 LC3: 7500 SDU Interval, unframed, 60 Max SDU Size, 2 RTN, 8 Max_Transport_Latency (C.6)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_14_8</Name>
             <Description>32_2_1 LC3: 10000 SDU Interval, unframed, 80 Max SDU Size, 2 RTN, 10 Max_Transport_Latency (C.7)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_14_9</Name>
             <Description>441_1_1 LC3: 8163 SDU Interval, framed, 97 Max SDU Size, 5 RTN, 24 Max_Transport_Latency (C.8)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_14_10</Name>
             <Description>441_2_1 LC3: 10884 SDU Interval, framed, 130 Max SDU Size, 5 RTN, 31 Max_Transport_Latency (C.9)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_14_11</Name>
             <Description>48_1_1 LC3: 7500 SDU Interval, unframed, 75 Max SDU Size, 5 RTN, 15 Max_Transport_Latency (C.10)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_14_12</Name>
             <Description>48_2_1 LC3: 10000 SDU Interval, unframed, 100 Max SDU Size, 5 RTN, 20 Max_Transport_Latency (C.11)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_14_13</Name>
             <Description>48_3_1 LC3: 7500 SDU Interval, unframed, 90 Max SDU Size, 5 RTN, 15 Max_Transport_Latency (C.12)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_14_14</Name>
             <Description>48_4_1 LC3: 10000 SDU Interval, unframed, 120 Max SDU Size, 5 RTN, 20 Max_Transport_Latency (C.13)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_14_15</Name>
             <Description>48_5_1 LC3: 7500 SDU Interval, unframed, 117 Max SDU Size, 5 RTN, 15 Max_Transport_Latency (C.14)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_14_16</Name>
             <Description>48_6_1 LC3: 10000 SDU Interval, unframed, 155 Max SDU Size, 5 RTN, 20 Max_Transport_Latency (C.15)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_15_1</Name>
             <Description>8_1_1 LC3: 7500 SDU Interval, unframed, 26 Max SDU Size, 2 RTN, 8 Max_Transport_Latency (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_15_2</Name>
             <Description>8_2_1 LC3: 10000 SDU Interval, unframed, 30 Max SDU Size, 2 RTN, 10 Max_Transport_Latency (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_15_3</Name>
             <Description>16_1_1 LC3: 7500 SDU Interval, unframed, 30 Max SDU Size, 2 RTN, 8 Max_Transport_Latency (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -8597,91 +8597,91 @@
           <Row>
             <Name>TSPC_BAP_15_5</Name>
             <Description>24_1_1 LC3: 7500 SDU Interval, unframed, 45 Max SDU Size, 2 RTN, 8 Max_Transport_Latency (C.4)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_15_6</Name>
             <Description>24_2_1 LC3: 10000 SDU Interval, unframed, 60 Max SDU Size, 2 RTN, 10 Max_Transport_Latency (C.5)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_15_7</Name>
             <Description>32_1_1 LC3: 7500 SDU Interval, unframed, 60 Max SDU Size, 2 RTN, 8 Max_Transport_Latency (C.6)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_15_8</Name>
             <Description>32_2_1 LC3: 10000 SDU Interval, unframed, 80 Max SDU Size, 2 RTN, 10 Max_Transport_Latency (C.7)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_15_9</Name>
             <Description>441_1_1 LC3: 8163 SDU Interval, framed, 97 Max SDU Size, 5 RTN, 24 Max_Transport_Latency (C.8)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_15_10</Name>
             <Description>441_2_1 LC3: 10884 SDU Interval, framed, 130 Max SDU Size, 5 RTN, 31 Max_Transport_Latency (C.9)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_15_11</Name>
             <Description>48_1_1 LC3: 7500 SDU Interval, unframed, 75 Max SDU Size, 5 RTN, 15 Max_Transport_Latency (C.10)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_15_12</Name>
             <Description>48_2_1 LC3: 10000 SDU Interval, unframed, 100 Max SDU Size, 5 RTN, 20 Max_Transport_Latency (C.11)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_15_13</Name>
             <Description>48_3_1 LC3: 7500 SDU Interval, unframed, 90 Max SDU Size, 5 RTN, 15 Max_Transport_Latency (C.12)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_15_14</Name>
             <Description>48_4_1 LC3: 10000 SDU Interval, unframed, 120 Max SDU Size, 5 RTN, 20 Max_Transport_Latency (C.13)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_15_15</Name>
             <Description>48_5_1 LC3: 7500 SDU Interval, unframed, 117 Max SDU Size, 5 RTN, 15 Max_Transport_Latency (C.14)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_15_16</Name>
             <Description>48_6_1 LC3: 10000 SDU Interval, unframed, 155 Max SDU Size, 5 RTN, 20 Max_Transport_Latency (C.15)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_16_1</Name>
             <Description>8_1_2 LC3: 7500 SDU Interval, unframed, 26 Max SDU Size, 13 RTN, 75 Max_Transport_Latency (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_16_2</Name>
             <Description>8_2_2 LC3: 10000 SDU Interval, unframed, 30 Max SDU Size, 13 RTN, 95 Max_Transport_Latency (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_16_3</Name>
             <Description>16_1_2 LC3: 7500 SDU Interval, unframed, 30 Max SDU Size, 13 RTN, 75 Max_Transport_Latency (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -8693,7 +8693,7 @@
           <Row>
             <Name>TSPC_BAP_16_5</Name>
             <Description>24_1_2 LC3: 7500 SDU Interval, unframed, 45 Max SDU Size, 13 RTN, 75 Max_Transport_Latency (C.4)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -8705,235 +8705,235 @@
           <Row>
             <Name>TSPC_BAP_16_7</Name>
             <Description>32_1_2 LC3: 7500 SDU Interval, unframed, 60 Max SDU Size, 13 RTN, 75 Max_Transport_Latency (C.5)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_16_8</Name>
             <Description>32_2_2 LC3: 10000 SDU Interval, unframed, 80 Max SDU Size, 13 RTN, 95 Max_Transport_Latency (C.6)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_16_9</Name>
             <Description>441_1_2 LC3: 8163 SDU Interval, framed, 97 Max SDU Size, 13 RTN, 80 Max_Transport_Latency (C.7)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_16_10</Name>
             <Description>441_2_2 LC3: 10884 SDU Interval, framed, 130 Max SDU Size, 13 RTN, 85 Max_Transport_Latency (C.8)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_16_11</Name>
             <Description>48_1_2 LC3: 7500 SDU Interval, unframed, 75 Max SDU Size, 13 RTN, 75 Max_Transport_Latency (C.9)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_16_12</Name>
             <Description>48_2_2 LC3: 10000 SDU Interval, unframed, 100 Max SDU Size, 13 RTN, 95 Max_Transport_Latency (C.10)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_16_13</Name>
             <Description>48_3_2 LC3: 7500 SDU Interval, unframed, 90 Max SDU Size, 13 RTN, 75 Max_Transport_Latency (C.11)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_16_14</Name>
             <Description>48_4_2 LC3: 10000 SDU Interval, unframed, 120 Max SDU Size, 13 RTN, 100 Max_Transport_Latency (C.12)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_16_15</Name>
             <Description>48_5_2 LC3: 7500 SDU Interval, unframed, 117 Max SDU Size, 13 RTN, 75 Max_Transport_Latency (C.13)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_16_16</Name>
             <Description>48_6_2 LC3: 10000 SDU Interval, unframed, 155 Max SDU Size, 13 RTN, 100 Max_Transport_Latency (C.14)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_17_1</Name>
             <Description>8_1_2 LC3: 7500 SDU Interval, unframed, 26 Max SDU Size, 13 RTN, 75 Max_Transport_Latency (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_17_2</Name>
             <Description>8_2_2 LC3: 10000 SDU Interval, unframed, 30 Max SDU Size, 13 RTN, 95 Max_Transport_Latency (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_17_3</Name>
             <Description>16_1_2 LC3: 7500 SDU Interval, unframed, 30 Max SDU Size, 13 RTN, 75 Max_Transport_Latency (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_17_4</Name>
             <Description>16_2_2 LC3: 10000 SDU Interval, unframed, 40 Max SDU Size, 13 RTN, 95 Max_Transport_Latency (C.4)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_17_5</Name>
             <Description>24_1_2 LC3: 7500 SDU Interval, unframed, 45 Max SDU Size, 13 RTN, 75 Max_Transport_Latency (C.5)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_17_6</Name>
             <Description>24_2_2 LC3: 10000 SDU Interval, unframed, 60 Max SDU Size, 13 RTN, 95 Max_Transport_Latency (C.6)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_17_7</Name>
             <Description>32_1_2 LC3: 7500 SDU Interval, unframed, 60 Max SDU Size, 13 RTN, 75 Max_Transport_Latency (C.7)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_17_8</Name>
             <Description>32_2_2 LC3: 10000 SDU Interval, unframed, 80 Max SDU Size, 13 RTN, 95 Max_Transport_Latency (C.8)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_17_9</Name>
             <Description>441_1_2 LC3: 8163 SDU Interval, framed, 97 Max SDU Size, 13 RTN, 80 Max_Transport_Latency (C.9)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_17_10</Name>
             <Description>441_2_2 LC3: 10884 SDU Interval, framed, 130 Max SDU Size, 13 RTN, 85 Max_Transport_Latency (C.10)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_17_11</Name>
             <Description>48_1_2 LC3: 7500 SDU Interval, unframed, 75 Max SDU Size, 13 RTN, 75 Max_Transport_Latency (C.11)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_17_12</Name>
             <Description>48_2_2 LC3: 10000 SDU Interval, unframed, 100 Max SDU Size, 13 RTN, 95 Max_Transport_Latency (C.12)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_17_13</Name>
             <Description>48_3_2 LC3: 7500 SDU Interval, unframed, 90 Max SDU Size, 13 RTN, 75 Max_Transport_Latency (C.13)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_17_14</Name>
             <Description>48_4_2 LC3: 10000 SDU Interval, unframed, 120 Max SDU Size, 13 RTN, 100 Max_Transport_Latency (C.14)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_17_15</Name>
             <Description>48_5_2 LC3: 7500 SDU Interval, unframed, 117 Max SDU Size, 13 RTN, 75 Max_Transport_Latency (C.15)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_17_16</Name>
             <Description>48_6_2 LC3: 10000 SDU Interval, unframed, 155 Max SDU Size, 13 RTN, 100 Max_Transport_Latency (C.16)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_18_1</Name>
             <Description>Vendor-specific QoS Config Setting: Unicast Server is Audio Sink (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_19_1</Name>
             <Description>Vendor-specific QoS Config Setting: Unicast Server is Audio Source (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_20_1</Name>
             <Description>AC 1: 1 Server, 1 Sink ASE, 1 Channel/Sink, 1 CIS, 1 Audio Stream (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_20_2</Name>
             <Description>AC 2: 1 Server, 1 Source ASE, 1 Channel/Source, 1 CIS, 1 Audio Stream (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_20_3</Name>
             <Description>AC 3: 1 Server, 1 Sink ASE, 1 Channel/Sink, 1 CIS, 2 Audio Streams (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_20_4</Name>
             <Description>AC 4: 1 Server, 1 Sink ASE, 2 Channels/Sink, 1 CIS, 1 Audio Stream (C.4)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_20_5</Name>
             <Description>AC 5: 1 Server, 1 Sink ASE, 1 Source ASE, 2 Channels/Sink, 1 Channel/Source, 1, CIS, 2 Audio Streams (C.8)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_20_6</Name>
             <Description>AC 6i: 1 Server, 2 Sink ASEs, 1 Channel/Sink, 2 CISes, 2 Audio Streams (C.6)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_20_7</Name>
             <Description>AC 7i: 1 Server, 1 Sink ASE, 1 Source ASE, 1 Channel/Sink, 1 Channel/Source, 2 CISes, 2 Audio Streams (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_20_8</Name>
             <Description>AC 8i: 1 Server, 2 Sink ASEs, 1 Source ASE, 1 Channel/Sink, 1 Channel/Source, 2 CISes, 3 Audio Streams (C.5)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_20_9</Name>
             <Description>AC 9i: 1 Server, 2 Source ASEs, 1 Channel/Source, 2 CISes, 2 Audio Streams (C.7)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_20_10</Name>
             <Description>AC 10: 1 Server, 1 Source ASE, 2 Channels/Source, 1 CIS, 1 Audio Stream (C.9)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_20_11</Name>
             <Description>AC 11i: 1 Server, 2 Sink ASEs, 2 Source ASEs, 1 Channel/Sink, 1 Channel/Source, 2 CISes, 4 Audio Streams (C.5)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -8945,67 +8945,67 @@
           <Row>
             <Name>TSPC_BAP_21_2</Name>
             <Description>Conversational (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_21_3</Name>
             <Description>Media (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_21_4</Name>
             <Description>Game (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_21_5</Name>
             <Description>Instructional (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_21_6</Name>
             <Description>Voice assistants (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_21_7</Name>
             <Description>Live (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_21_8</Name>
             <Description>Sound effects (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_21_9</Name>
             <Description>Notifications (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_21_10</Name>
             <Description>Ringtone (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_21_11</Name>
             <Description>Alerts (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_21_12</Name>
             <Description>Emergency Alarm (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -9017,67 +9017,67 @@
           <Row>
             <Name>TSPC_BAP_22_2</Name>
             <Description>Conversational (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_22_3</Name>
             <Description>Media (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_22_4</Name>
             <Description>Game  (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_22_5</Name>
             <Description>Instructional (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_22_6</Name>
             <Description>Voice assistants (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_22_7</Name>
             <Description>Live (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_22_8</Name>
             <Description>Sound effects (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_22_9</Name>
             <Description>Notifications (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_22_10</Name>
             <Description>Ringtone (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_22_11</Name>
             <Description>Alerts (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_22_12</Name>
             <Description>Emergency Alarm (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -9089,7 +9089,7 @@
           <Row>
             <Name>TSPC_BAP_23_2</Name>
             <Description>Bondable mode (LE) (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -9101,19 +9101,19 @@
           <Row>
             <Name>TSPC_BAP_23_4</Name>
             <Description>Bonding procedure (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_23_5</Name>
             <Description>LE security mode 1 (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_23_6</Name>
             <Description>Unauthenticated Pairing (LE security mode 1 level 2) with LE Secure Connections Pairing only (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -9137,7 +9137,7 @@
           <Row>
             <Name>TSPC_BAP_23_10</Name>
             <Description>Minimum 128 Bit entropy key (LE) (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -9179,7 +9179,7 @@
           <Row>
             <Name>TSPC_BAP_24_1</Name>
             <Description>LE Secure Connections (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -9227,7 +9227,7 @@
           <Row>
             <Name>TSPC_BAP_27_2</Name>
             <Description>Basic Audio Profile v1.0.1 (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -9239,7 +9239,7 @@
           <Row>
             <Name>TSPC_BAP_27_4</Name>
             <Description>Erratum 19096 (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -9287,13 +9287,13 @@
           <Row>
             <Name>TSPC_BAP_30_2</Name>
             <Description>Multiple Audio Locations (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_30_3</Name>
             <Description>Two Audio Channels (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -9353,13 +9353,13 @@
           <Row>
             <Name>TSPC_BAP_32_3</Name>
             <Description>Source PAC characteristic (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_32_4</Name>
             <Description>Source Audio Locations characteristic (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -9437,7 +9437,7 @@
           <Row>
             <Name>TSPC_BAP_33_7</Name>
             <Description>Receiver Stop Ready (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -9509,7 +9509,7 @@
           <Row>
             <Name>TSPC_BAP_34_3</Name>
             <Description>Audio_Channel_Allocation (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -9521,7 +9521,7 @@
           <Row>
             <Name>TSPC_BAP_34_5</Name>
             <Description>Codec_Frame_Blocks_Per_SDU (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -9533,7 +9533,7 @@
           <Row>
             <Name>TSPC_BAP_35_2</Name>
             <Description>Vendor-specific Metadata (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -10235,31 +10235,31 @@
           <Row>
             <Name>TSPC_BAP_45_1</Name>
             <Description>Discover All Primary Services (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_45_2</Name>
             <Description>Discover Primary Services by Service UUID (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_45_3</Name>
             <Description>Find Included Services (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_45_4</Name>
             <Description>Discover All Characteristics of a Service (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_45_5</Name>
             <Description>Discover Characteristics by UUID (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -10343,13 +10343,13 @@
           <Row>
             <Name>TSPC_BAP_46_5</Name>
             <Description>Unauthenticated Pairing (LE security mode 1 level 2) with LE Secure Connections Pairing only (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_46_6</Name>
             <Description>Authenticated Pairing (LE security mode 1 level 3) with LE Secure Connections Pairing only (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -10367,7 +10367,7 @@
           <Row>
             <Name>TSPC_BAP_46_9</Name>
             <Description>Minimum 128 Bit entropy key (LE) (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -10391,7 +10391,7 @@
           <Row>
             <Name>TSPC_BAP_47_1</Name>
             <Description>LE Secure Connections (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -10427,7 +10427,7 @@
           <Row>
             <Name>TSPC_BAP_49_1</Name>
             <Description>Basic Audio Profile v1.0 (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -10451,37 +10451,37 @@
           <Row>
             <Name>TSPC_BAP_51_3</Name>
             <Description>Broadcast Audio Stream Establishment (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_51_4</Name>
             <Description>Broadcast Audio Stream Disable (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_51_5</Name>
             <Description>Broadcast Audio Stream Release (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_51_6</Name>
             <Description>Broadcast Audio Announcement Service UUID (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_52_1</Name>
             <Description>Sampling_Frequency (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_52_2</Name>
             <Description>Frame_Duration (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -10493,7 +10493,7 @@
           <Row>
             <Name>TSPC_BAP_52_4</Name>
             <Description>Octets_Per_Codec_Frame (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -10505,7 +10505,7 @@
           <Row>
             <Name>TSPC_BAP_53_1</Name>
             <Description>Streaming_Audio_Contexts (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -10535,7 +10535,7 @@
           <Row>
             <Name>TSPC_BAP_54_4</Name>
             <Description>16_2 LC3: 16 kHz Sampling Frequency, 10 ms Frame Duration, 40 Octets (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -10637,7 +10637,7 @@
           <Row>
             <Name>TSPC_BAP_55_4</Name>
             <Description>16_2_1 LC3: 10000 SDU Interval, unframed, 40 Max SDU Size, 2 RTN, 10 Max_Transport_Latency (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -10733,7 +10733,7 @@
           <Row>
             <Name>TSPC_BAP_56_4</Name>
             <Description>16_2_2 LC3: 10000 SDU Interval, unframed, 40 Max SDU Size, 4 RTN, 60 Max_Transport_Latency (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -10745,7 +10745,7 @@
           <Row>
             <Name>TSPC_BAP_56_6</Name>
             <Description>24_2_2 LC3: 10000 SDU Interval, unframed, 60 Max SDU Size, 4 RTN, 60 Max_Transport_Latency (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -10817,13 +10817,13 @@
           <Row>
             <Name>TSPC_BAP_58_1</Name>
             <Description>AC12: 1 BIS, Single Audio Channel/BIS, 1 Audio Stream (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_58_2</Name>
             <Description>AC13: 2 BISes, Single Audio Channel/BIS, 2 Audio Streams (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -10835,7 +10835,7 @@
           <Row>
             <Name>TSPC_BAP_59_1</Name>
             <Description>Unspecified (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -10907,13 +10907,13 @@
           <Row>
             <Name>TSPC_BAP_60_1</Name>
             <Description>Broadcaster (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_60_2</Name>
             <Description>LE security mode 3 level 1 (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -10943,19 +10943,19 @@
           <Row>
             <Name>TSPC_BAP_61_2</Name>
             <Description>Extended Advertising (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_61_3</Name>
             <Description>Periodic Advertising (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_61_4</Name>
             <Description>Isochronous Broadcaster (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -10973,7 +10973,7 @@
           <Row>
             <Name>TSPC_BAP_62_1</Name>
             <Description>Basic Audio Profile v1.0 (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -11003,31 +11003,31 @@
           <Row>
             <Name>TSPC_BAP_65_1</Name>
             <Description>Supported Sampling Frequencies (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_65_2</Name>
             <Description>Supported Frame Durations (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_65_3</Name>
             <Description>Supported Octets per Codec Frame (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_65_4</Name>
             <Description>Supported Audio Channel Counts (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_65_5</Name>
             <Description>Supported Max Codec Frames Per SDU (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -11051,7 +11051,7 @@
           <Row>
             <Name>TSPC_BAP_67_2</Name>
             <Description>Streaming_Audio_Contexts (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -11081,7 +11081,7 @@
           <Row>
             <Name>TSPC_BAP_68_4</Name>
             <Description>16_2 LC3: 16 kHz Sampling Frequency, 10 ms Frame Duration, 40 Octets (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -11093,7 +11093,7 @@
           <Row>
             <Name>TSPC_BAP_68_6</Name>
             <Description>24_2 LC3: 24 kHz Sampling Frequency, 10 ms Frame Duration, 60 Octets (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -11183,7 +11183,7 @@
           <Row>
             <Name>TSPC_BAP_69_4</Name>
             <Description>16_2_1 LC3: 10000 SDU Interval, unframed, 40 Max SDU Size, 2 RTN, 10 Max_Transport_Latency (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -11195,7 +11195,7 @@
           <Row>
             <Name>TSPC_BAP_69_6</Name>
             <Description>24_2_1 LC3: 10000 SDU Interval, unframed, 60 Max SDU Size, 2 RTN, 10 Max_Transport_Latency (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -11279,7 +11279,7 @@
           <Row>
             <Name>TSPC_BAP_70_4</Name>
             <Description>16_2_2 LC3: 10000 SDU Interval, unframed, 40 Max SDU Size, 4 RTN, 60 Max_Transport_Latency (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -11291,7 +11291,7 @@
           <Row>
             <Name>TSPC_BAP_70_6</Name>
             <Description>24_2_2 LC3: 10000 SDU Interval, unframed, 60 Max SDU Size, 4 RTN, 60 Max_Transport_Latency (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -11363,7 +11363,7 @@
           <Row>
             <Name>TSPC_BAP_72_1</Name>
             <Description>AC12: 1 BIS, Single Audio Channel/BIS, 1 Audio Stream (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -11381,7 +11381,7 @@
           <Row>
             <Name>TSPC_BAP_73_1</Name>
             <Description>Unspecified (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -11453,7 +11453,7 @@
           <Row>
             <Name>TSPC_BAP_74_1</Name>
             <Description>Observer (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -11465,7 +11465,7 @@
           <Row>
             <Name>TSPC_BAP_74_3</Name>
             <Description>Peripheral (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -11591,31 +11591,31 @@
           <Row>
             <Name>TSPC_BAP_76_1</Name>
             <Description>LE Encryption (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_76_2</Name>
             <Description>Extended Advertising (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_76_3</Name>
             <Description>Periodic Advertising (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_76_4</Name>
             <Description>Synchronized Receiver (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_77_1</Name>
             <Description>Basic Audio Profile v1.0 (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -11645,7 +11645,7 @@
           <Row>
             <Name>TSPC_BAP_80_1</Name>
             <Description>Peripheral (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -11657,7 +11657,7 @@
           <Row>
             <Name>TSPC_BAP_80_3</Name>
             <Description>Bondable mode (LE) (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -11675,7 +11675,7 @@
           <Row>
             <Name>TSPC_BAP_80_6</Name>
             <Description>Unauthenticated Pairing (LE security mode 1 level 2) with LE Secure Connections Pairing only (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -11777,19 +11777,19 @@
           <Row>
             <Name>TSPC_BAP_82_1</Name>
             <Description>LE Encryption (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_82_2</Name>
             <Description>Extended Advertising (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_82_3</Name>
             <Description>Periodic Advertising (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -11801,7 +11801,7 @@
           <Row>
             <Name>TSPC_BAP_83_1</Name>
             <Description>Basic Audio Profile v1.0 (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -11843,25 +11843,25 @@
           <Row>
             <Name>TSPC_BAP_86_1</Name>
             <Description>Broadcast Audio Scan Control Point characteristic (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_86_2</Name>
             <Description>Broadcast Receive State characteristic (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_86_3</Name>
             <Description>Broadcast Audio Scan Service discovery (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_86_4</Name>
             <Description>Broadcast Audio Scan Service characteristic discovery (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -11921,7 +11921,7 @@
           <Row>
             <Name>TSPC_BAP_88_6</Name>
             <Description>Set Broadcast Code operation (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -11963,49 +11963,49 @@
           <Row>
             <Name>TSPC_BAP_89_6</Name>
             <Description>Discover All Characteristic Descriptors (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_89_7</Name>
             <Description>Read Characteristic Value (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_89_8</Name>
             <Description>Write Characteristic Value (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_89_9</Name>
             <Description>Write without Response (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_89_10</Name>
             <Description>Notifications (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_89_11</Name>
             <Description>Read Characteristic Descriptors (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_89_12</Name>
             <Description>Write Characteristic Descriptors (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_89_13</Name>
             <Description>Exchange MTU (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -12023,7 +12023,7 @@
           <Row>
             <Name>TSPC_BAP_90_3</Name>
             <Description>Central (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -12035,7 +12035,7 @@
           <Row>
             <Name>TSPC_BAP_90_5</Name>
             <Description>Bonding procedure (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -12047,7 +12047,7 @@
           <Row>
             <Name>TSPC_BAP_90_7</Name>
             <Description>Unauthenticated Pairing (LE security mode 1 level 2) with LE Secure Connections Pairing only (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -12137,19 +12137,19 @@
           <Row>
             <Name>TSPC_BAP_92_1</Name>
             <Description>LE Encryption (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_92_2</Name>
             <Description>Extended Advertising (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_92_3</Name>
             <Description>Periodic Advertising (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
