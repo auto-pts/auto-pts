@@ -24,7 +24,7 @@ from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import MMI
 from autopts.pybtp import btp, defs
 from autopts.pybtp.btp import pts_addr_get, pts_addr_type_get, ascs_add_ase_to_cis
-from autopts.pybtp.types import WIDParams, UUID
+from autopts.pybtp.types import WIDParams, UUID, gap_settings_btp2txt, AdType, AdFlags
 from autopts.wid import generic_wid_hdl
 
 log = logging.debug
@@ -90,6 +90,148 @@ def disc_full(svc_uuid=None, ch_uuid=None):
             attrs[svc][chars[i]] = descs
 
     return attrs
+
+
+def hdl_wid_201(params: WIDParams):
+    """Please configure the CODEC parameters on ASE ID 1 in Audio Stream
+       Endpoint Characteristic.
+     """
+
+    # No info in wid description, PTS errata
+    configurations = {
+        'BAP/USR/SCC/BV-035-C': '8_1',
+        'BAP/USR/SCC/BV-036-C': '8_2',
+        'BAP/USR/SCC/BV-037-C': '16_1',
+        'BAP/USR/SCC/BV-038-C': '16_2',
+        'BAP/USR/SCC/BV-039-C': '24_1',
+        'BAP/USR/SCC/BV-040-C': '24_2',
+        'BAP/USR/SCC/BV-041-C': '32_1',
+        'BAP/USR/SCC/BV-042-C': '32_2',
+        'BAP/USR/SCC/BV-043-C': '44.1_1',
+        'BAP/USR/SCC/BV-044-C': '44.1_2',
+        'BAP/USR/SCC/BV-045-C': '48_1',
+        'BAP/USR/SCC/BV-046-C': '48_2',
+        'BAP/USR/SCC/BV-047-C': '48_3',
+        'BAP/USR/SCC/BV-048-C': '48_4',
+        'BAP/USR/SCC/BV-049-C': '48_5',
+        'BAP/USR/SCC/BV-050-C': '48_6',
+        'BAP/USR/SCC/BV-051-C': '8_1',
+        'BAP/USR/SCC/BV-052-C': '8_2',
+        'BAP/USR/SCC/BV-053-C': '16_1',
+        'BAP/USR/SCC/BV-054-C': '16_2',
+        'BAP/USR/SCC/BV-055-C': '24_1',
+        'BAP/USR/SCC/BV-056-C': '24_2',
+        'BAP/USR/SCC/BV-057-C': '32_1',
+        'BAP/USR/SCC/BV-058-C': '32_2',
+        'BAP/USR/SCC/BV-059-C': '44.1_1',
+        'BAP/USR/SCC/BV-060-C': '44.1_2',
+        'BAP/USR/SCC/BV-061-C': '48_1',
+        'BAP/USR/SCC/BV-062-C': '48_2',
+        'BAP/USR/SCC/BV-063-C': '48_3',
+        'BAP/USR/SCC/BV-064-C': '48_4',
+        'BAP/USR/SCC/BV-065-C': '48_5',
+        'BAP/USR/SCC/BV-066-C': '48_6',
+    }
+
+    addr = pts_addr_get()
+    addr_type = pts_addr_type_get()
+    stack = get_stack()
+    numbers = re.findall(r'\d+(?:\.\d+)?', params.description)
+    ase_id = int(numbers[0])
+
+    if params.test_case_name in configurations:
+        config_name = configurations[params.test_case_name]
+        coding_format = 0x06
+        vid = 0x0000
+        cid = 0x0000
+    else:
+        config_name = '16_1'
+        coding_format = 0xff
+        vid = 0xffff
+        cid = 0xffff
+
+    (sampling_freq, frame_duration, octets_per_frame) = \
+        CODEC_CONFIG_SETTINGS[config_name]
+    audio_locations = 0x01
+    frames_per_sdu = 0x01
+
+    codec_ltvs_bytes = create_lc3_ltvs_bytes(sampling_freq, frame_duration,
+                                             audio_locations, octets_per_frame,
+                                             frames_per_sdu)
+    btp.ascs_config_codec(ase_id, coding_format, vid, cid, codec_ltvs_bytes)
+    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+
+    return True
+
+
+def hdl_wid_202(params: WIDParams):
+    """
+    Please start audio streaming, and set to Audio Stream Endpoint to STREAMING state for ASE ID 1.
+    """
+    # In some BAP/USR (server role) test cases the PTS sends the MMI 202
+    # to configure the Sink ASE to streaming state, in some others it does not.
+    # For now, let's autonomously send Receiver Start Ready at ASE Enabled.
+
+    return True
+
+
+def hdl_wid_204(params: WIDParams):
+    """
+    Please initiate Server initiated DISABLE operation on ASE ID 3 in Audio Stream Endpoint Characteristic.
+    """
+    addr = pts_addr_get()
+    addr_type = pts_addr_type_get()
+    stack = get_stack()
+    numbers = re.findall(r'\d+(?:\.\d+)?', params.description)
+    ase_id = int(numbers[0])
+
+    # Start streaming
+    btp.ascs_disable(ase_id)
+    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+
+    return True
+
+
+def hdl_wid_206(params: WIDParams):
+    """
+    Please initiate RELEASE operation on ASE ID 3 in Audio Stream Endpoint Characteristic.
+    """
+    addr = pts_addr_get()
+    addr_type = pts_addr_type_get()
+    stack = get_stack()
+    numbers = re.findall(r'\d+(?:\.\d+)?', params.description)
+    ase_id = int(numbers[0])
+
+    # Start streaming
+    btp.ascs_release(ase_id)
+    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+
+    return True
+
+
+def hdl_wid_207(params: WIDParams):
+    """
+    Please initiate META UPDATE operation on ASE ID 3 in Audio Stream Endpoint Characteristic.
+    """
+    addr = pts_addr_get()
+    addr_type = pts_addr_type_get()
+    stack = get_stack()
+    numbers = re.findall(r'\d+(?:\.\d+)?', params.description)
+    ase_id = int(numbers[0])
+
+    # Start streaming
+    btp.ascs_update_metadata(ase_id)
+    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+
+    return True
+
+
+def hdl_wid_208(_: WIDParams):
+    """
+    Lower tester is waiting RELEASED operation (IDLE or CODEC Configured state)
+    on ASE ID 3 in Audio Stream Endpoint Characteristic.
+    """
+    return True
 
 
 def hdl_wid_300(_: WIDParams):
@@ -1205,6 +1347,31 @@ def hdl_wid_315(params: WIDParams):
     return True
 
 
+def hdl_wid_363(params: WIDParams):
+    """Wait for an extended advertising packet containing Audio Control
+       Service UUID with announcement fields.
+    """
+    stack = get_stack()
+
+    if params.test_case_name in ['BAP/USR/ADV/BV-01-C']:
+        announcement_type = '00'  # General Announcement
+    else:  # BAP/USR/ADV/BV-04-C
+        announcement_type = '01'  # Targeted Announcement
+
+    ad = {
+        AdType.name_full: stack.gap.name[::1].hex(),
+        AdType.flags: format(AdFlags.br_edr_not_supp |
+                             AdFlags.le_gen_discov_mode, '02x'),
+        AdType.uuid16_all: bytes.fromhex(UUID.ASCS)[::-1].hex(),
+        AdType.uuid16_svc_data: f'4e18{announcement_type}ff0fff0f00',
+    }
+
+    btp.gap_set_extended_advertising_on()
+    btp.gap_adv_ind_on(ad=ad)
+
+    return True
+
+
 def hdl_wid_364(_: WIDParams):
     """
     After processed audio stream data, please click OK.
@@ -1220,6 +1387,111 @@ def hdl_wid_364(_: WIDParams):
             ev = stack.bap.wait_stream_received_ev(addr_type, addr, ase_id, 10)
             if ev is None:
                 return False
+
+    return True
+
+
+def hdl_wid_366(_: WIDParams):
+    """
+    Please click ok when IUT received and sent audio stream data.
+    """
+    addr = pts_addr_get()
+    addr_type = pts_addr_type_get()
+    stack = get_stack()
+
+    for ev in stack.bap.event_queues[defs.BAP_EV_ASE_FOUND]:
+        _, _, ase_dir, ase_id = ev
+
+        if ase_dir == AudioDir.SINK:
+            ev = stack.bap.wait_stream_received_ev(addr_type, addr, ase_id, 10)
+            if ev is None:
+                return False
+
+    return True
+
+
+def hdl_wid_367(_: WIDParams):
+    """
+    Lower tester is streaming audio data.
+    """
+    return True
+
+
+def hdl_wid_376(_: WIDParams):
+    """
+    Please confirm received streaming data.
+    """
+    addr = pts_addr_get()
+    addr_type = pts_addr_type_get()
+    stack = get_stack()
+
+    for ev in stack.bap.event_queues[defs.BAP_EV_ASE_FOUND]:
+        _, _, ase_dir, ase_id = ev
+
+        if ase_dir == AudioDir.SINK:
+            ev = stack.bap.wait_stream_received_ev(addr_type, addr, ase_id, 10)
+            if ev is None:
+                return False
+
+    return True
+
+
+def hdl_wid_377(_: WIDParams):
+    """
+    Please confirm sent streaming data.
+    """
+    stack = get_stack()
+
+    sources = []
+    for ev in stack.ascs.event_queues[defs.ASCS_EV_ASE_STATE_CHANGED]:
+        _, _, ase_id, state = ev
+
+        if state == ASCSState.STREAMING:
+            sources.append(ase_id)
+
+    data = bytearray([j for j in range(0, 41)])
+
+    for i in range(1, 10):
+        for ase_id in sources:
+            try:
+                btp.bap_send(ase_id, data)
+            except:
+                pass
+
+    return True
+
+
+def hdl_wid_382(_: WIDParams):
+    """
+    CIS connection is disconnected. Expect to receive QoS Configured state.
+    """
+    return True
+
+
+def hdl_wid_20001(_: WIDParams):
+    """Please prepare IUT into a connectable mode. Description: Verify
+       that the Implementation Under Test (IUT) can accept GATT connect
+        request from PTS.
+    """
+    stack = get_stack()
+
+    if stack.gap.current_settings_get(
+            gap_settings_btp2txt[defs.GAP_SETTINGS_ADVERTISING]):
+        return True
+
+    # The Unicast Server shall transmit connectable extended advertising PDUs
+    # that contain the Service Data AD data type, including additional
+    # service data defined in BAP_v1.0.1, 3.5.3, Table 3.7.
+    ad = {
+        AdType.name_full: stack.gap.name[::1].hex(),
+        AdType.flags: format(AdFlags.br_edr_not_supp |
+                             AdFlags.le_gen_discov_mode, '02x'),
+        AdType.uuid16_all: bytes.fromhex(UUID.ASCS)[::-1].hex(),
+        AdType.uuid16_svc_data: '4e1801ff0fff0f00',
+    }
+
+    btp.gap_set_extended_advertising_on()
+    btp.gap_adv_ind_on(ad=ad)
 
     return True
 

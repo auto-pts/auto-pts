@@ -23,7 +23,7 @@ from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.bap_wid import bap_wid_hdl
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
-from autopts.pybtp.types import Addr
+from autopts.pybtp.types import Addr, AdType, UUID, AdFlags
 
 
 def set_pixits(ptses):
@@ -63,6 +63,17 @@ def test_cases(ptses):
     iut_device_name = get_unique_name(pts)
     stack = get_stack()
 
+    # The Unicast Server shall transmit connectable extended advertising PDUs
+    # that contain the Service Data AD data type, including additional
+    # service data defined in BAP_v1.0.1, 3.5.3, Table 3.7.
+    ad = {
+        AdType.name_full: iut_device_name[::1].hex(),
+        AdType.flags: format(AdFlags.br_edr_not_supp |
+                             AdFlags.le_gen_discov_mode, '02x'),
+        AdType.uuid16_all: bytes.fromhex(UUID.ASCS)[::-1].hex(),
+        AdType.uuid16_svc_data: '4e1801ff0fff0f00',
+    }
+
     queue = Queue()
 
     def set_addr(addr):
@@ -91,6 +102,11 @@ def test_cases(ptses):
                       TestFunc(stack.ascs_init),
                       TestFunc(stack.bap_init), ]
 
+    pre_conditions_server = pre_conditions + [
+        TestFunc(btp.gap_set_extended_advertising_on),
+        TestFunc(lambda: btp.gap_adv_ind_on(ad=ad)),
+    ]
+
     custom_test_cases = [
         # Errata in progress since the PTS should use
         # TSPX_VS_Company_ID and TSPX_VS_Codec_ID instead.
@@ -104,6 +120,36 @@ def test_cases(ptses):
                          [TestFunc(lambda: pts.update_pixit_param(
                           "BAP", "TSPX_Codec_ID", "ffffffffff"))],
                   generic_wid_hdl=bap_wid_hdl),
+        ZTestCase("BAP", "BAP/USR/SCC/BV-033-C",
+                  cmds=pre_conditions_server +
+                         [TestFunc(lambda: pts.update_pixit_param(
+                          "BAP", "TSPX_Codec_ID", "ffffffffff"))],
+                  generic_wid_hdl=bap_wid_hdl),
+        ZTestCase("BAP", "BAP/USR/SCC/BV-034-C",
+                  cmds=pre_conditions_server +
+                         [TestFunc(lambda: pts.update_pixit_param(
+                          "BAP", "TSPX_Codec_ID", "ffffffffff"))],
+                  generic_wid_hdl=bap_wid_hdl),
+        ZTestCase("BAP", "BAP/USR/SCC/BV-067-C",
+                  cmds=pre_conditions_server +
+                         [TestFunc(lambda: pts.update_pixit_param(
+                          "BAP", "TSPX_Codec_ID", "ffffffffff"))],
+                  generic_wid_hdl=bap_wid_hdl),
+        ZTestCase("BAP", "BAP/USR/SCC/BV-068-C",
+                  cmds=pre_conditions_server +
+                         [TestFunc(lambda: pts.update_pixit_param(
+                          "BAP", "TSPX_Codec_ID", "ffffffffff"))],
+                  generic_wid_hdl=bap_wid_hdl),
+        ZTestCase("BAP", "BAP/USR/SCC/BV-133-C",
+                  cmds=pre_conditions_server +
+                         [TestFunc(lambda: pts.update_pixit_param(
+                          "BAP", "TSPX_Codec_ID", "ffffffffff"))],
+                  generic_wid_hdl=bap_wid_hdl),
+        ZTestCase("BAP", "BAP/USR/SCC/BV-134-C",
+                  cmds=pre_conditions_server +
+                         [TestFunc(lambda: pts.update_pixit_param(
+                          "BAP", "TSPX_Codec_ID", "ffffffffff"))],
+                  generic_wid_hdl=bap_wid_hdl),
         ZTestCase("BAP", "BAP/UCL/STR/BV-526-C", cmds=pre_conditions,
                   generic_wid_hdl=bap_wid_hdl,
                   lt2="BAP/UCL/STR/BV-526-C_LT2"),
@@ -113,8 +159,14 @@ def test_cases(ptses):
     tc_list = []
 
     for tc_name in test_case_name_list:
+        if tc_name.startswith('BAP/USR'):
+            # Missing MMI 20001, errata in progress
+            _pre_conditions = pre_conditions_server
+        else:
+            _pre_conditions = pre_conditions
+
         instance = ZTestCase("BAP", tc_name,
-                             cmds=pre_conditions,
+                             cmds=_pre_conditions,
                              generic_wid_hdl=bap_wid_hdl)
 
         for custom_tc in custom_test_cases:
