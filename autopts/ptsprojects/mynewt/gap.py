@@ -189,8 +189,6 @@ def test_cases(ptses):
         TestFunc(lambda: pts.update_pixit_param(
             "GAP", "TSPX_iut_invalid_conn_update_supervision_timeout", format(0x0c80, '04x'))),
 
-        TestFunc(btp.core_reg_svc_gatt),
-
         # We do this on test case, because previous one could update
         # this if RPA was used by PTS
         # TODO: Get PTS address type
