@@ -79,6 +79,10 @@ CORE = {
                  defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_MMDL),
     "mmdl_unreg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_UNREGISTER_SERVICE,
                    defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_MMDL),
+    "gatt_cl_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
+                    defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GATTC),
+    "gatt_cl_unreg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_UNREGISTER_SERVICE,
+                      defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GATTC),
     "vcs_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
                  defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_VCS),
     "vocs_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
@@ -480,6 +484,23 @@ def core_unreg_svc_mmdl():
 
     iutctl = get_iut()
     iutctl.btp_socket.send_wait_rsp(*CORE['mmdl_unreg'])
+
+
+def core_reg_svc_gatt_cl():
+    logging.debug("%s", core_reg_svc_gatt_cl.__name__)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*CORE['gatt_cl_reg'])
+
+    core_reg_svc_rsp_succ()
+
+
+def core_unreg_svc_gatt_cl():
+    logging.debug("%s", core_unreg_svc_gatt_cl.__name__)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*CORE['gatt_cl_unreg'])
+
 
 def core_reg_svc_vcs():
     logging.debug("%s", core_reg_svc_vcs.__name__)

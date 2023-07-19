@@ -216,6 +216,7 @@ def test_cases_client(pts):
                              "GATT", "TSPX_bd_addr_iut",
                              stack.gap.iut_addr_get_str())),
                          TestFunc(btp.core_reg_svc_gatt),
+                         TestFunc(btp.core_reg_svc_gatt_cl),
                          TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public),
                          TestFunc(stack.gatt_init),
                          TestFunc(stack.gatt_cl_init)]
