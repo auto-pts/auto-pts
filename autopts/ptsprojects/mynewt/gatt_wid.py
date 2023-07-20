@@ -43,19 +43,6 @@ def hdl_wid_3(_: WIDParams):
     btp.gap_disconn(btp.pts_addr_get(), btp.pts_addr_type_get())
     return True
 
-
-def hdl_wid_12(_: WIDParams):
-    btp.gattc_exchange_mtu(btp.pts_addr_type_get(), btp.pts_addr_get())
-    time.sleep(10)
-    return True
-
-
-def hdl_wid_15(_: WIDParams):
-    btp.gattc_find_included(btp.pts_addr_type_get(), btp.pts_addr_get(),
-                            None, None)
-    return True
-
-
 def hdl_wid_49(_: WIDParams):
     time.sleep(30)
     return True
