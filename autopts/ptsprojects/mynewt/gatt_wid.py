@@ -58,36 +58,6 @@ def hdl_wid_98(_: WIDParams):
     return True
 
 
-def hdl_wid_110(_: WIDParams):
-    # Lookup characteristic handle that does not permit reading
-    chrcs = btp.gatts_get_attrs(type_uuid='2803')
-    for chrc in chrcs:
-        handle, perm, type_uuid = chrc
-
-        chrc_val = btp.gatts_get_attr_val(btp.pts_addr_type_get(),
-                                          btp.pts_addr_get(), handle)
-        if not chrc_val:
-            continue
-
-        att_rsp, val_len, val = chrc_val
-
-        hdr = '<BH'
-        hdr_len = struct.calcsize(hdr)
-        uuid_len = val_len - hdr_len
-
-        prop, handle, chrc_uuid = struct.unpack("<BH%ds" % uuid_len, val)
-        chrc_value_attr = btp.gatts_get_attrs(start_handle=handle,
-                                              end_handle=handle)
-        if not chrc_value_attr:
-            continue
-
-        handle, perm, type_uuid = chrc_value_attr[0]
-        if not perm & Perm.read:
-            return '{0:04x}'.format(handle)
-
-    return '0000'
-
-
 def hdl_wid_118(_: WIDParams):
     return '{0:04x}'.format(65000)
 
@@ -164,19 +134,4 @@ def hdl_wid_122(_: WIDParams):
         if perm & Perm.read and perm & Perm.read_enc:
             return btp.btp2uuid(uuid_len, chrc_uuid)
 
-    return '0000'
-
-
-def hdl_wid_142(_: WIDParams):
-    log("Mynewt sends EATT supported bit")
-    return True
-
-
-def hdl_wid_400(_: WIDParams):
-    log("Mynewt sends EATT supported bit")
-    return '0000'
-
-
-def hdl_wid_402(_: WIDParams):
-    log("Mynewt sends EATT supported bit")
     return '0000'
