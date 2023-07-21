@@ -15,13 +15,15 @@
 
 """GATT test cases"""
 
+from queue import Queue
 from autopts.pybtp import btp
 from autopts.pybtp.types import Addr
 from autopts.client import get_unique_name
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
-from autopts.ptsprojects.mynewt.ztestcase import ZTestCase
+from autopts.ptsprojects.mynewt.ztestcase import ZTestCase, ZTestCaseSlave
 from autopts.ptsprojects.mynewt.gatt_wid import gatt_wid_hdl
+from autopts.ptsprojects.mynewt.gatt_client_wid import gattc_wid_hdl
 
 
 class Value:
@@ -133,10 +135,17 @@ def set_pixits(ptses):
     pts.set_pixit("GATT", "TSPX_tester_appearance", "0000")
 
 
-def test_cases_server(pts):
+def test_cases_server(ptses):
     """Returns a list of GATT Server test cases"""
 
     stack = get_stack()
+
+    queue = Queue()
+
+    def set_addr(addr):
+        queue.put(addr)
+
+    pts = ptses[0]
 
     pre_conditions_1 = [TestFunc(btp.core_reg_svc_gap),
                         TestFunc(btp.core_reg_svc_gatt),
@@ -156,6 +165,8 @@ def test_cases_server(pts):
                         TestFunc(lambda: pts.update_pixit_param(
                             "GATT", "TSPX_bd_addr_iut",
                             stack.gap.iut_addr_get_str())),
+                        TestFunc(lambda: set_addr(
+                            stack.gap.iut_addr_get_str())),
                         TestFunc(lambda: pts.update_pixit_param(
                             "GATT", "TSPX_iut_use_dynamic_bd_addr",
                             "TRUE" if stack.gap.iut_addr_is_random()
@@ -164,6 +175,10 @@ def test_cases_server(pts):
                         TestFunc(btp.gap_set_conn)]
 
     custom_test_cases = [
+        ZTestCase("GATT", "GATT/SR/GAN/BV-02-C",
+                  pre_conditions_2,
+                  generic_wid_hdl=gatt_wid_hdl,
+                  lt2="GATT/SR/GAN/BV-02-C_LT2"),
         ZTestCase("GATT", "GATT/SR/GAS/BV-01-C",
                   edit1_wids={2000: btp.var_store_get_passkey},
                   cmds=pre_conditions_2 +
@@ -197,7 +212,27 @@ def test_cases_server(pts):
 
         tc_list.append(instance)
 
-    return tc_list
+    if len(ptses) < 2:
+        return tc_list
+
+
+    pts2 = ptses[1]
+    iut_device_name2 = get_unique_name(pts2)
+
+    pre_conditions_lt2 = [
+                        TestFunc(lambda: pts2.update_pixit_param(
+                                "GATT", "TSPX_bd_addr_iut", queue.get())),
+                        TestFunc(lambda: pts2.update_pixit_param(
+                                "GATT", "TSPX_iut_use_dynamic_bd_addr",
+                                "TRUE" if stack.gap.iut_addr_is_random() else "FALSE"))
+    ]
+
+    test_cases_lt2 = [
+        ZTestCaseSlave("GATT", "GATT/SR/GAN/BV-02-C_LT2",
+                       cmds=pre_conditions_lt2,
+                       generic_wid_hdl=gatt_wid_hdl),
+    ]
+    return tc_list + test_cases_lt2
 
 
 def test_cases_client(pts):
@@ -235,7 +270,7 @@ def test_cases_client(pts):
             continue
         instance = ZTestCase("GATT", tc_name,
                              cmds=pre_conditions_cl,
-                             generic_wid_hdl=gatt_wid_hdl)
+                             generic_wid_hdl=gattc_wid_hdl)
 
         for custom_tc in custom_test_cases:
             if tc_name == custom_tc.name:
@@ -259,6 +294,6 @@ def test_cases(ptses):
     stack.gap_init(iut_device_name)
 
     tc_list = test_cases_client(pts)
-    tc_list += test_cases_server(pts)
+    tc_list += test_cases_server(ptses)
 
     return tc_list

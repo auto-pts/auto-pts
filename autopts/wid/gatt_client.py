@@ -1189,6 +1189,7 @@ def hdl_wid_91(params: WIDParams):
     Description: Verify that the Implementation Under Test (IUT) can receive
     notification sent from PTS.
     """
+    stack = get_stack()
     pattern = re.compile("'([0-9a-fA-F]+)'")
     params = pattern.findall(params.description)
     if not params:
@@ -1200,7 +1201,9 @@ def hdl_wid_91(params: WIDParams):
     btp.gatt_cl_cfg_notify(btp.pts_addr_type_get(), btp.pts_addr_get(),
                            1, handle)
 
-    return True
+    stack.gatt_cl.wait_for_write_rsp()
+
+    return stack.gatt_cl.write_status == 0
 
 
 def hdl_wid_95(_: WIDParams):
@@ -1294,6 +1297,50 @@ def hdl_wid_140(params: WIDParams):
     hdl2 = MMI.args[1]
     btp.gatt_cl_read_multiple_var(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl1, hdl2)
 
+    return True
+
+
+def hdl_wid_141(params: WIDParams):
+    """
+    Please send Read Multiple Variable Length characteristic requests on the "EATT" last channel using these handles:
+    'XXXX'O 'XXXX'O
+
+    Description: Verify that the Implementation Under Test (IUT) can receive multiple characteristics.
+    """
+    MMI.reset()
+    MMI.parse_description(params.description)
+
+    hdl1 = MMI.args[0]
+    hdl2 = MMI.args[1]
+    btp.gatt_cl_read_multiple_var(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl1, hdl2)
+
+    # No response expected
+    return True
+
+def hdl_wid_147(params: WIDParams):
+    """
+    Please send two Read Multiple Variable Length characteristic requests using these handles: 'XXXX'O 'XXXX'O
+    Required Bearers are "ATT" and "EATT" bearer.
+
+    Description: Verify that the Implementation Under Test (IUT) can receive multiple characteristics.
+    """
+    MMI.reset()
+    MMI.parse_description(params.description)
+
+    hdl1 = MMI.args[0]
+    hdl2 = MMI.args[1]
+
+    btp.gatt_cl_read_multiple_var(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl1, hdl2)
+    btp.gatt_cl_read_multiple_var(btp.pts_addr_type_get(), btp.pts_addr_get(), hdl1, hdl2)
+    return True
+
+
+def hdl_wid_150(params: WIDParams):
+    """
+    Please send an ATT_Write_Request to Client Support Features handle = 'XXXX'O to enable
+    Multiple Handle Value Notifications.
+    Discover all characteristics if needed.
+    """
     return True
 
 
