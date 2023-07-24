@@ -82,7 +82,6 @@ def import_bot_module(project):
 
 def get_client(module, project):
     bot_client_class = getattr(module, 'BotClient', None)
-    simple_client_class = getattr(module, 'SimpleClient', None)
 
     if bot_client_class:
         bot_client = bot_client_class()
@@ -93,12 +92,9 @@ def get_client(module, project):
 
         if bot_client.args.simple_mode:
             bot_client.start = super(bot_client.__class__, bot_client).start
-            # Use dedicated class of simple client
-            # simple_client = simple_client_class()
-            # simple_client.args = bot_client.args
-            # bot_client = simple_client
     else:
-        print(f'BotClient not implemented for project {project["name"]}')
+        print(f'BotClient not implemented for project {project["name"]}'
+              f"Please check the 'bot_module' variable from config.py for any errors.")
         return None
 
     return bot_client
@@ -117,6 +113,9 @@ def main():
         bot_module = import_bot_module(project)
 
         bot_client = get_client(bot_module, project)
+
+        if bot_client is None:
+            return 1
 
         if add_to_scheduler(bot_client):
             continue

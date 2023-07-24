@@ -57,7 +57,6 @@ class ExternalClient(autoptsclient.Client):
         super().__init__(get_iut, 'zephyr', True)
 
 
-SimpleClient = ExternalClient
 BotClient = ExternalBotClient
 
 
