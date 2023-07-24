@@ -537,4 +537,14 @@ def generic_test_job(cfg, server_options, included='', excluded='',
     log(f'{cfg} Job finished')
 
 
+def update_repos_job(cfg, **kwargs):
+    log(f'Started {cfg} Job')
+
+    cfg_dict = load_config(cfg)
+
+    update_repos('', cfg_dict['git'])
+
+    log(f'The {cfg} Job finished')
+
+
 set_run_test_fun(run_test)
