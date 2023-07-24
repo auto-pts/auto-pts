@@ -38,7 +38,7 @@ from os.path import dirname, abspath
 AUTOPTS_REPO = dirname(dirname(dirname(abspath(__file__))))
 sys.path.insert(0, AUTOPTS_REPO)
 
-from autopts.bot.common import send_mail
+from autopts.bot.common import send_mail, get_absolute_module_path
 
 mimetypes.add_type('text/plain', '.log')
 
@@ -114,7 +114,7 @@ def bisect(cfg, test_case, good_commit, bad_commit=''):
     print('Bisect started testing of test_case={} cfg={}'.format(test_case, cfg))
     included = '-c {} '.format(test_case)
 
-    conf_path = os.path.join(AUTOPTS_REPO, 'autopts/bot/{}.py'.format(cfg))
+    conf_path = get_absolute_module_path(cfg)
     if not os.path.isfile(conf_path):
         print('{} does not exists!'.format(conf_path))
         return None
@@ -192,7 +192,7 @@ class Bisect:
             f.truncate()
 
     def load_cfg(self, cfg):
-        cfg_path = os.path.join(AUTOPTS_REPO, 'autopts/bot/{}.py'.format(cfg))
+        cfg_path = get_absolute_module_path(cfg)
         if not os.path.isfile(cfg_path):
             raise Exception('{} does not exists!'.format(cfg_path))
 

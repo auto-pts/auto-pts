@@ -16,14 +16,13 @@
 # more details.
 #
 import logging
-import os
 import signal
 import sys
 import threading
 import time
 import schedule
-import importlib
-from pathlib import Path
+
+from autopts.bot.common import get_absolute_module_path, load_module_from_path
 from autopts.client import set_end, init_logging
 from autopts.winutils import have_admin_rights
 
@@ -55,26 +54,12 @@ def import_bot_projects():
         config_path = 'config'
 
     # Path to the config file can be specified as 'config',
-    # 'config.py' or 'path/to/conifg.py'.
-    if os.path.isfile(f'autopts/bot/{config_path}'):
-        module_name = Path(config_path).stem
-        module_path = f'autopts.bot.{module_name}'
-
-    elif os.path.isfile(f'autopts/bot/{config_path}.py'):
-        module_path = f'autopts.bot.{config_path}'
-
-    elif os.path.isfile(config_path):
-        config_dirname = os.path.dirname(config_path)
-        sys.path.insert(0, config_dirname)
-        module_name = Path(config_path).stem
-        module = importlib.import_module(module_name)
-        sys.path.remove(config_dirname)
-        return getattr(module, "BotProjects", None), config_path
-
-    else:
+    # 'config.py' or 'path/to/config.py'.
+    config_path = get_absolute_module_path(config_path)
+    if not config_path:
         return None, config_path
 
-    module = importlib.import_module(module_path)
+    module = load_module_from_path(config_path)
     return getattr(module, "BotProjects", None), config_path
 
 
@@ -88,25 +73,11 @@ def import_bot_module(project):
 
     # Path to the bot module can be specified as 'module',
     # 'module.py' or 'path/to/module.py'.
-    if os.path.isfile(f'autopts/bot/{module_name}'):
-        module_name = Path(module_name).stem
-        module_path = f'autopts.bot.{module_name}'
+    module_path = get_absolute_module_path(module_name)
+    if not module_path:
+        return None, module_path
 
-    elif os.path.isfile(f'autopts/bot/{module_name}.py'):
-        module_path = f'autopts.bot.{module_name}'
-
-    elif os.path.isfile(module_name):
-        config_dirname = os.path.dirname(module_name)
-        sys.path.insert(0, config_dirname)
-        module_name = Path(module_name).stem
-        module = importlib.import_module(module_name)
-        sys.path.remove(config_dirname)
-        return module
-
-    else:
-        return None
-
-    return importlib.import_module(module_path)
+    return load_module_from_path(module_path)
 
 
 def get_client(module, project):
