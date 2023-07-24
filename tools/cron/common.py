@@ -32,7 +32,6 @@ import sys
 import shutil
 import schedule
 import requests
-import importlib
 import mimetypes
 import functools
 import traceback
@@ -43,7 +42,8 @@ from time import sleep, time
 from os.path import dirname, abspath
 from datetime import datetime, date
 from autopts_bisect import Bisect, set_run_test_fun
-from autopts.bot.common import update_sources, send_mail, update_repos
+from autopts.bot.common import update_sources, send_mail, update_repos,\
+    load_module_from_path
 
 AUTOPTS_REPO=dirname(dirname(dirname(abspath(__file__))))
 sys.path.insert(0, AUTOPTS_REPO)
@@ -204,12 +204,10 @@ def check_call(cmd, env=None, cwd=None, shell=True):
 
 
 def load_config(cfg):
-    cfg_path = os.path.join(AUTOPTS_REPO, 'autopts/bot/{}.py'.format(cfg))
-    if not os.path.isfile(cfg_path):
-        log('{} does not exists!'.format(cfg_path))
-        return None
+    mod = load_module_from_path(cfg)
+    if not mod:
+        raise Exception(f'Could not load the config {cfg}')
 
-    mod = importlib.import_module('autopts.bot.' + cfg)
     return mod.BotProjects[0]
 
 

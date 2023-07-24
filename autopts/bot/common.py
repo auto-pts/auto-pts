@@ -13,6 +13,7 @@
 # more details.
 #
 import copy
+import importlib
 import logging
 import os
 import pathlib
@@ -53,8 +54,12 @@ REPORT_XLSX = "report.xlsx"
 REPORT_TXT = "report.txt"
 COMMASPACE = ', '
 
-PROJECT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-ERRATA_DIR_PATH = os.path.join(os.path.dirname(PROJECT_DIR), 'errata')
+PROJECT_DIR = os.path.dirname(  # auto-pts repo directory
+                os.path.dirname(  # autopts module directory
+                    os.path.dirname(  # bot module directory
+                        os.path.abspath(__file__))))  # this file directory
+
+ERRATA_DIR_PATH = os.path.join(PROJECT_DIR, 'errata')
 log = logging.debug
 
 
@@ -992,7 +997,7 @@ def pull_server_logs(args):
 
 
 def get_workspace(workspace):
-    for root, dirs, files in os.walk(os.path.join(PROJECT_DIR, 'workspaces'),
+    for root, dirs, files in os.walk(os.path.join(PROJECT_DIR, 'autopts/workspaces'),
                                      topdown=True):
         for name in dirs:
             if name == workspace:
@@ -1001,7 +1006,7 @@ def get_workspace(workspace):
 
 
 def get_autopts_version():
-    repo = git.Repo(os.path.dirname(PROJECT_DIR))
+    repo = git.Repo(PROJECT_DIR)
     version = repo.git.show('-s', '--format=%H')
 
     if repo.is_dirty():
@@ -1121,6 +1126,40 @@ def get_tty_path(name):
             return "/dev/{}".format(tty)
 
     return None
+
+
+def get_absolute_module_path(config_path):
+    # Path to the config file can be specified as 'config',
+    # 'config.py' or 'path/to/conifg.py'.
+
+    _path = os.path.abspath(config_path)
+    if os.path.isfile(_path):
+        return _path
+
+    _path = os.path.join(PROJECT_DIR, f'autopts/bot/{config_path}')
+    if os.path.isfile(_path):
+        return _path
+
+    _path = os.path.join(PROJECT_DIR, f'autopts/bot/{config_path}.py')
+    if os.path.isfile(_path):
+        return _path
+
+    return None
+
+
+def load_module_from_path(cfg):
+    config_path = get_absolute_module_path(cfg)
+    if not os.path.isfile(config_path):
+        log('{} does not exists!'.format(config_path))
+        return None
+
+    config_dirname = os.path.dirname(config_path)
+    sys.path.insert(0, config_dirname)
+    module_name = Path(config_path).stem
+    module = importlib.import_module(module_name)
+    sys.path.remove(config_dirname)
+
+    return module
 
 
 def pre_cleanup():

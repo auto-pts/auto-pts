@@ -37,6 +37,8 @@ from datetime import timedelta, datetime
 from time import sleep
 from argparse import Namespace
 from os.path import dirname, abspath
+
+from autopts.bot.common import get_absolute_module_path
 from autopts.winutils import have_admin_rights
 from tools.cron.common import kill_processes, set_end as set_end_common
 from tools.cron.cron_gui import CronGUI, RequestPuller
@@ -195,12 +197,12 @@ if __name__ == '__main__':
             job_config.update(vars(cron.tags[tag]))
             cron.tags[tag] = Namespace(**job_config)
 
-            if not os.path.exists(os.path.join(AUTOPTS_REPO, 'autopts/bot/{}.py'.format(cfg))):
+            if not get_absolute_module_path(cfg):
                 raise Exception('{} config does not exists!'.format(cfg))
 
     for job in cron_config.cyclical_jobs:
         cfg = job.cfg
-        if not os.path.exists(os.path.join(AUTOPTS_REPO, 'autopts/bot/{}.py'.format(cfg))):
+        if not get_absolute_module_path(cfg):
             raise Exception('{} config does not exists!'.format(cfg))
 
     prev_sigint_handler = signal.getsignal(signal.SIGINT)
