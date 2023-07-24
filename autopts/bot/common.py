@@ -1077,8 +1077,6 @@ def update_repos(project_path, git_config):
         else:
             repo_path = os.path.abspath(conf["path"])
 
-        project_path.join(repo_path)
-
         if conf.get('update_repo', False):
             desc, commit = update_sources(repo_path, conf["remote"],
                                           conf["branch"], conf["stash_changes"])
