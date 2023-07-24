@@ -169,7 +169,6 @@ class MynewtClient(Client):
         super().__init__(get_iut, sys.modules['autopts.ptsprojects.zephyr'], 'mynewt')
 
 
-SimpleClient = MynewtClient
 BotClient = MynewtBotClient
 
 

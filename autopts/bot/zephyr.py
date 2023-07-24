@@ -214,7 +214,6 @@ class ZephyrClient(autoptsclient.Client):
         super().__init__(get_iut, sys.modules['autopts.ptsprojects.zephyr'], 'zephyr')
 
 
-SimpleClient = ZephyrClient
 BotClient = ZephyrBotClient
 
 
