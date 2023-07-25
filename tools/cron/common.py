@@ -81,9 +81,9 @@ def catch_exceptions(cancel_on_failure=False):
                 return job_func(*args, **kwargs)
             except:
                 log(traceback.format_exc())
-                if 'email' in CRON_CFG:
+                if hasattr(CRON_CFG, 'email'):
                     magic_tag = kwargs['magic_tag'] if 'magic_tag' in kwargs else None
-                    send_mail_exception(kwargs['cfg'], CRON_CFG['email'], traceback.format_exc(), magic_tag)
+                    send_mail_exception(kwargs['cfg'], CRON_CFG.email, traceback.format_exc(), magic_tag)
 
                 if cancel_on_failure:
                     return schedule.CancelJob
