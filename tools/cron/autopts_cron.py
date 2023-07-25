@@ -26,25 +26,26 @@ $ ssh-add path/to/id_rsa
 """
 import argparse
 import logging
-import os
 import sys
 import signal
 import pythoncom
 import schedule
 import threading
-import cron_config
 from datetime import timedelta, datetime
 from time import sleep
 from argparse import Namespace
 from os.path import dirname, abspath
 
-from autopts.bot.common import get_absolute_module_path
+# Needed if autopts is not installed as a module
+AUTOPTS_REPO=dirname(dirname(dirname(abspath(__file__))))
+sys.path.extend([AUTOPTS_REPO])
+
+from autopts.bot.common import get_absolute_module_path, load_module_from_path
 from autopts.winutils import have_admin_rights
-from tools.cron.common import kill_processes, set_end as set_end_common
+from tools.cron.common import kill_processes, set_end as set_end_common, set_cron_cfg
 from tools.cron.cron_gui import CronGUI, RequestPuller
 
 END = False
-AUTOPTS_REPO=dirname(dirname(dirname(abspath(__file__))))
 pullers = {}
 cron_gui = None
 log = logging.info
@@ -59,6 +60,9 @@ def set_end():
 class CliParser(argparse.ArgumentParser):
     def __init__(self):
         super().__init__(description='AutoPTS cron', add_help=True)
+
+        self.add_argument("config_path", type=str,
+                          help="Path to cron config .py file.")
 
         self.add_argument('--gui', action='store_true', default=False,
                           help="Open cron window.")
@@ -175,6 +179,14 @@ if __name__ == '__main__':
             kill_processes('PTS.exe')
             kill_processes('Fts.exe')
 
+    args = CliParser().parse_args()
+
+    cron_config = load_module_from_path(args.config_path)
+
+    if not cron_config:
+        sys.exit(f'Could not load cron config from path {args.config_path}')
+
+    set_cron_cfg(cron_config)
 
     logging.basicConfig(
         format='%(asctime)s %(levelname)-8s %(message)s',
@@ -186,8 +198,6 @@ if __name__ == '__main__':
     if have_admin_rights():  # root privileges are not needed
         log('Please do not run this program as root.')
         sys.exit(1)
-
-    args = CliParser().parse_args()
 
     for cron in cron_config.github_crons:
         for tag in cron.tags:
