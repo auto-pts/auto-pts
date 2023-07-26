@@ -103,6 +103,9 @@ class ZephyrCtl:
         self.test_case = test_case
         self.iut_log_file = open(os.path.join(test_case.log_dir, "autopts-iutctl-zephyr.log"), "a")
 
+        # We will reset HW after BTP socket is open. If the board was
+        # reset before this happened, it is possible to receive none,
+        # partial or whole IUT ready event. Flush serial to ignore it.
         self.flush_serial()
 
         self.socket_srv = BTPSocketSrv()
@@ -167,6 +170,10 @@ class ZephyrCtl:
             else:
                 tty = self.tty_file
 
+            # The main reason why we do not use serial.Serial for
+            # boards is to have only one, generic implementation of
+            # BTPWorker/BTPSocket. Although we can still use it for
+            # flushing serial if the data does not matter.
             ser = serial.Serial(port=tty,
                                 baudrate=SERIAL_BAUDRATE, timeout=1)
             ser.read(99999)
@@ -196,40 +203,61 @@ class ZephyrCtl:
         if self.rtt_logger:
             self.rtt_logger.stop()
 
-    def reset(self):
-        """Restart IUT related processes and reset the IUT"""
-        log("%s.%s", self.__class__, self.reset.__name__)
-
-        self.stop()
-        self.start(self.test_case)
-        self.flush_serial()
-
-        if not self.board:
-            return
-
-        self.rtt_logger_stop()
-        self.btmon_stop()
-
-        if not self.gdb:
-            self.board.reset()
-
-    def wait_iut_ready_event(self):
+    def wait_iut_ready_event(self, reset=True):
         """Wait until IUT sends ready event after power up"""
         stack = get_stack()
-        self.reset()
 
-        if not self.gdb:
-            ev = stack.core.wait_iut_ready_ev(30, False)
+        if reset:
+            # For HW, the IUT ready event is triggered at board.reset()
+            self.stop()
+            # For QEMU, the IUT ready event is sent at startup of the process.
+            self.start(self.test_case)
+
+        elif not self.gdb:
+            ev = stack.core.wait_iut_ready_ev(30)
+
+            # If the board has reset unexpectedly in the middle of a test case,
+            # two IUT events may be received because of cleanup.
+            stack.core.event_queues[defs.CORE_EV_IUT_READY].clear()
+
             if ev:
                 log("IUT ready event received OK")
                 self.rtt_logger_start()
                 self.btmon_start()
             else:
                 self.stop()
+                raise Exception('IUT ready event NOT received!')
+
+    def hw_reset(self):
+        if not self.gdb and self.board:
+            stack = get_stack()
+
+            # For HW, the IUT ready event is triggered at its reset.
+            # Since the board.reset() is called at the end of each
+            # test case, to avoid double reset let's use 'hw_reset'
+            # only if it was not received, e.g. at the beginning of
+            # the first test case.
+            if len(stack.core.event_queues[defs.CORE_EV_IUT_READY]) == 0:
+                self.board.reset()
 
     def stop(self):
         """Powers off the Zephyr OS"""
         log("%s.%s", self.__class__, self.stop.__name__)
+
+        self.rtt_logger_stop()
+        self.btmon_stop()
+
+        if not self.gdb and self.board:
+            stack = get_stack()
+            stack.core.event_queues[defs.CORE_EV_IUT_READY].clear()
+            self.board.reset()
+
+            # We have to wait for IUT ready event before we close socket
+            ev = stack.core.wait_iut_ready_ev(30, False)
+            if ev:
+                log("IUT ready event received OK")
+            else:
+                log('IUT ready event NOT received!')
 
         if self.btp_socket:
             self.btp_socket.close()
@@ -246,15 +274,9 @@ class ZephyrCtl:
             self.qemu_process.wait()  # do not let zombies take over
             self.qemu_process = None
 
-        if not self.gdb and self.board:
-            self.board.reset()
-
         if self.iut_log_file:
             self.iut_log_file.close()
             self.iut_log_file = None
-
-        self.rtt_logger_stop()
-        self.btmon_stop()
 
         if self.socat_process:
             self.socat_process.terminate()
