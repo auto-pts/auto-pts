@@ -653,82 +653,27 @@ def event_handler(hdr, data):
         logging.info("Stack not initialized")
         return False
 
-    if hdr.svc_id == defs.BTP_SERVICE_ID_MESH:
-        if hdr.op in MESH_EV and stack.mesh:
-            cb = MESH_EV[hdr.op]
-            cb(stack.mesh, data[0], hdr.data_len)
-            return True
+    service_map = {
+        defs.BTP_SERVICE_ID_MESH: (MESH_EV, stack.mesh),
+        defs.BTP_SERVICE_ID_L2CAP: (L2CAP_EV, stack.l2cap),
+        defs.BTP_SERVICE_ID_GAP: (GAP_EV, stack.gap),
+        defs.BTP_SERVICE_ID_GATT: (GATT_EV, stack.gatt),
+        defs.BTP_SERVICE_ID_GATTC: (GATTC_EV, stack.gatt_cl),
+        defs.BTP_SERVICE_ID_IAS: (IAS_EV, stack.ias),
+        defs.BTP_SERVICE_ID_VCS: (VCS_EV, stack.vcs),
+        defs.BTP_SERVICE_ID_AICS: (AICS_EV, stack.aics),
+        defs.BTP_SERVICE_ID_VOCS: (VOCS_EV, stack.vocs),
+        defs.BTP_SERVICE_ID_PACS: (PACS_EV, stack.pacs),
+        defs.BTP_SERVICE_ID_ASCS: (ASCS_EV, stack.ascs),
+        defs.BTP_SERVICE_ID_BAP: (BAP_EV, stack.bap),
+        defs.BTP_SERVICE_ID_CORE: (CORE_EV, stack.core)
+    }
 
-    elif hdr.svc_id == defs.BTP_SERVICE_ID_L2CAP:
-        if hdr.op in L2CAP_EV and stack.l2cap:
-            cb = L2CAP_EV[hdr.op]
-            cb(stack.l2cap, data[0], hdr.data_len)
-            return True
-
-    elif hdr.svc_id == defs.BTP_SERVICE_ID_GAP:
-        if hdr.op in GAP_EV and stack.gap:
-            cb = GAP_EV[hdr.op]
-            cb(stack.gap, data[0], hdr.data_len)
-            return True
-
-    elif hdr.svc_id == defs.BTP_SERVICE_ID_GATT:
-        if hdr.op in GATT_EV and stack.gatt:
-            cb = GATT_EV[hdr.op]
-            cb(stack.gatt, data[0], hdr.data_len)
-            return True
-
-    elif hdr.svc_id == defs.BTP_SERVICE_ID_GATTC:
-        if hdr.op in GATTC_EV and stack.gatt_cl:
-            cb = GATTC_EV[hdr.op]
-            cb(stack.gatt_cl, data[0], hdr.data_len)
-            return True
-
-    elif hdr.svc_id == defs.BTP_SERVICE_ID_IAS:
-        if hdr.op in IAS_EV and stack.ias:
-            cb = IAS_EV[hdr.op]
-            cb(stack.ias, data[0], hdr.data_len)
-            return True
-
-    elif hdr.svc_id == defs.BTP_SERVICE_ID_VCS:
-        if hdr.op in VCS_EV and stack.vcs:
-            cb = VCS_EV[hdr.op]
-            cb(stack.ias, data[0], hdr.data_len)
-            return True
-
-    elif hdr.svc_id == defs.BTP_SERVICE_ID_AICS:
-        if hdr.op in AICS_EV and stack.aics:
-            cb = AICS_EV[hdr.op]
-            cb(stack.ias, data[0], hdr.data_len)
-            return True
-
-    elif hdr.svc_id == defs.BTP_SERVICE_ID_VOCS:
-        if hdr.op in VOCS_EV and stack.vocs:
-            cb = VOCS_EV[hdr.op]
-            cb(stack.ias, data[0], hdr.data_len)
-            return True
-
-    elif hdr.svc_id == defs.BTP_SERVICE_ID_PACS:
-        if hdr.op in PACS_EV and stack.pacs:
-            cb = PACS_EV[hdr.op]
-            cb(stack.pacs, data[0], hdr.data_len)
-            return True
-
-    elif hdr.svc_id == defs.BTP_SERVICE_ID_ASCS:
-        if hdr.op in ASCS_EV and stack.ascs:
-            cb = ASCS_EV[hdr.op]
-            cb(stack.ascs, data[0], hdr.data_len)
-            return True
-
-    elif hdr.svc_id == defs.BTP_SERVICE_ID_BAP:
-        if hdr.op in BAP_EV and stack.bap:
-            cb = BAP_EV[hdr.op]
-            cb(stack.bap, data[0], hdr.data_len)
-            return True
-
-    elif hdr.svc_id == defs.BTP_SERVICE_ID_CORE:
-        if hdr.op in CORE_EV and stack.core:
-            cb = CORE_EV[hdr.op]
-            cb(stack.core, data[0], hdr.data_len)
+    if hdr.svc_id in service_map:
+        event_dict, stack_obj = service_map[hdr.svc_id]
+        if hdr.op in event_dict and stack_obj:
+            cb = event_dict[hdr.op]
+            cb(stack_obj, data[0], hdr.data_len)
             return True
 
     # TODO: Raise BTP error instead of logging
