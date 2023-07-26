@@ -674,7 +674,6 @@ class ASCS:
 
 
 class CORE:
-
     def __init__(self):
         self.event_queues = {
             defs.CORE_EV_IUT_READY: [],
@@ -683,10 +682,19 @@ class CORE:
     def event_received(self, event_type, event_data_tuple):
         self.event_queues[event_type].append(event_data_tuple)
 
-    def wait_iut_ready_ev(self, timeout, remove=False):
+    def wait_iut_ready_ev(self, timeout, remove=True):
         return wait_for_event_iut(
             self.event_queues[defs.CORE_EV_IUT_READY],
             timeout, remove)
+
+    def cleanup(self):
+        for key in self.event_queues:
+            if key == defs.CORE_EV_IUT_READY:
+                # To pass IUT ready event between test cases
+                continue
+
+            self.event_queues[key].clear()
+
 
 class BAP:
     def __init__(self):
@@ -1362,7 +1370,10 @@ class Stack:
         self.bap = BAP()
 
     def core_init(self):
-        self.core = CORE()
+        if self.core:
+            self.core.cleanup()
+        else:
+            self.core = CORE()
 
     def gatt_cl_init(self):
         self.gatt_cl = GattCl()
