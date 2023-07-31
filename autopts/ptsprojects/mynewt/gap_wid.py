@@ -61,11 +61,7 @@ def hdl_wid_112(params: WIDParams):
     if not handle:
         return False
 
-    try:
-        btp.gattc_read(bd_addr_type, bd_addr, handle)
-        btp.gattc_read_rsp()
-    except socket.timeout:
-        return False
+    btp.gatt_cl_read(bd_addr_type, bd_addr, handle)
     return True
 
 
@@ -74,14 +70,6 @@ def hdl_wid_204(_: WIDParams):
     sleep(10)
     btp.gap_stop_discov()
     return btp.check_discov_results(addr_type=0x02)
-
-
-def hdl_wid_242(_: WIDParams):
-    """
-    Please send a Security Request.
-    """
-    btp.gap_pair()
-    return True
 
 
 def hdl_wid_1002(_: WIDParams):

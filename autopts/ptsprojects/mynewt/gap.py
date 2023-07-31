@@ -149,6 +149,7 @@ def test_cases(ptses):
     pre_conditions = [
         TestFunc(btp.core_reg_svc_gap),
         TestFunc(btp.core_reg_svc_gatt),
+        TestFunc(btp.core_reg_svc_gatt_cl),
         TestFunc(stack.gap_init, iut_device_name,
                  iut_manufacturer_data, iut_appearance, iut_svc_data, iut_flags,
                  iut_svcs, iut_ad_uri),
