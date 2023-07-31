@@ -1213,6 +1213,14 @@ def hdl_wid_241(_: WIDParams):
     return True
 
 
+def hdl_wid_242(_: WIDParams):
+    """
+    Please send a Security Request.
+    """
+    # This is done by PTS
+    return False
+
+
 def hdl_wid_265(_: WIDParams):
     # Please initiate a link encryption with the Lower Tester.
     btp.gap_pair()
