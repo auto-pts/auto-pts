@@ -94,53 +94,18 @@ def disc_full(svc_uuid=None, ch_uuid=None):
 
 def hdl_wid_201(params: WIDParams):
     """Please configure the CODEC parameters on ASE ID 1 in Audio Stream
-       Endpoint Characteristic.
+       Endpoint Characteristic. Codec Configuration: 8_1_1
      """
-
-    # No info in wid description, PTS errata
-    configurations = {
-        'BAP/USR/SCC/BV-035-C': '8_1',
-        'BAP/USR/SCC/BV-036-C': '8_2',
-        'BAP/USR/SCC/BV-037-C': '16_1',
-        'BAP/USR/SCC/BV-038-C': '16_2',
-        'BAP/USR/SCC/BV-039-C': '24_1',
-        'BAP/USR/SCC/BV-040-C': '24_2',
-        'BAP/USR/SCC/BV-041-C': '32_1',
-        'BAP/USR/SCC/BV-042-C': '32_2',
-        'BAP/USR/SCC/BV-043-C': '44.1_1',
-        'BAP/USR/SCC/BV-044-C': '44.1_2',
-        'BAP/USR/SCC/BV-045-C': '48_1',
-        'BAP/USR/SCC/BV-046-C': '48_2',
-        'BAP/USR/SCC/BV-047-C': '48_3',
-        'BAP/USR/SCC/BV-048-C': '48_4',
-        'BAP/USR/SCC/BV-049-C': '48_5',
-        'BAP/USR/SCC/BV-050-C': '48_6',
-        'BAP/USR/SCC/BV-051-C': '8_1',
-        'BAP/USR/SCC/BV-052-C': '8_2',
-        'BAP/USR/SCC/BV-053-C': '16_1',
-        'BAP/USR/SCC/BV-054-C': '16_2',
-        'BAP/USR/SCC/BV-055-C': '24_1',
-        'BAP/USR/SCC/BV-056-C': '24_2',
-        'BAP/USR/SCC/BV-057-C': '32_1',
-        'BAP/USR/SCC/BV-058-C': '32_2',
-        'BAP/USR/SCC/BV-059-C': '44.1_1',
-        'BAP/USR/SCC/BV-060-C': '44.1_2',
-        'BAP/USR/SCC/BV-061-C': '48_1',
-        'BAP/USR/SCC/BV-062-C': '48_2',
-        'BAP/USR/SCC/BV-063-C': '48_3',
-        'BAP/USR/SCC/BV-064-C': '48_4',
-        'BAP/USR/SCC/BV-065-C': '48_5',
-        'BAP/USR/SCC/BV-066-C': '48_6',
-    }
 
     addr = pts_addr_get()
     addr_type = pts_addr_type_get()
     stack = get_stack()
-    numbers = re.findall(r'\d+(?:\.\d+)?', params.description)
-    ase_id = int(numbers[0])
+    parsed = re.findall(r'\d+(?:_\d+)*', params.description)
+    ase_id = int(parsed[0])
 
-    if params.test_case_name in configurations:
-        config_name = configurations[params.test_case_name]
+    if len(parsed) > 1:
+        qos_set_name = parsed[1]
+        config_name = '_'.join(qos_set_name.split('_')[:-1])
         coding_format = 0x06
         vid = 0x0000
         cid = 0x0000
