@@ -1006,13 +1006,13 @@
           <Row>
             <Name>TSPC_GAP_11a_1</Name>
             <Description>Periodic Advertising Synchronizability mode (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_11a_2</Name>
             <Description>Periodic Advertising mode (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -8227,13 +8227,13 @@
           <Row>
             <Name>TSPC_BAP_1_3</Name>
             <Description>Broadcast Source (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_1_4</Name>
             <Description>Broadcast Sink (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -10771,295 +10771,295 @@
           <Row>
             <Name>TSPC_BAP_54_1</Name>
             <Description>8_1 LC3: 8 kHz Sampling Frequency, 7.5 ms Frame Duration, 26 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_54_2</Name>
             <Description>8_2 LC3: 8 kHz Sampling Frequency, 10 ms Frame Duration, 30 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_54_3</Name>
             <Description>16_1 LC3: 16 kHz Sampling Frequency, 7.5 ms Frame Duration, 30 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_54_4</Name>
             <Description>16_2 LC3: 16 kHz Sampling Frequency, 10 ms Frame Duration, 40 Octets (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_54_5</Name>
             <Description>24_1 LC3: 24 kHz Sampling Frequency, 7.5 ms Frame Duration, 45 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_54_6</Name>
             <Description>24_2 LC3: 24 kHz Sampling Frequency, 10 ms Frame Duration, 60 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_54_7</Name>
             <Description>32_1 LC3: 32 kHz Sampling Frequency, 7.5 ms Frame Duration, 60 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_54_8</Name>
             <Description>32_2 LC3: 32 kHz Sampling Frequency, 10 ms Frame Duration, 80 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_54_9</Name>
             <Description>441_1 LC3: 44.1 kHz Sampling Frequency, 8.163 ms Frame Duration, 97 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_54_10</Name>
             <Description>441_2 LC3: 44.1 kHz Sampling Frequency, 10.884 ms Frame Duration, 130 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_54_11</Name>
             <Description>48_1 LC3: 48 kHz Sampling Frequency, 7.5 ms Frame Duration, 75 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_54_12</Name>
             <Description>48_2 LC3: 48 kHz Sampling Frequency, 10 ms Frame Duration, 100 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_54_13</Name>
             <Description>48_3 LC3: 48 kHz Sampling Frequency, 7.5 ms Frame Duration, 90 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_54_14</Name>
             <Description>48_4 LC3: 48 kHz Sampling Frequency, 10 ms Frame Duration, 120 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_54_15</Name>
             <Description>48_5 LC3: 48 kHz Sampling Frequency, 7.5 ms Frame Duration, 117 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_54_16</Name>
             <Description>48_6 LC3: 48 kHz Sampling Frequency, 10 ms Frame Duration, 155 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_54_17</Name>
             <Description>Vendor-specific Codec Configuration Setting (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_55_1</Name>
             <Description>8_1_1 LC3: 7500 SDU Interval, unframed, 26 Max SDU Size, 2 RTN, 8 Max_Transport_Latency (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_55_2</Name>
             <Description>8_2_1 LC3: 10000 SDU Interval, unframed, 30 Max SDU Size, 2 RTN, 10 Max_Transport_Latency (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_55_3</Name>
             <Description>16_1_1 LC3: 7500 SDU Interval, unframed, 30 Max SDU Size, 2 RTN, 8 Max_Transport_Latency (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_55_4</Name>
             <Description>16_2_1 LC3: 10000 SDU Interval, unframed, 40 Max SDU Size, 2 RTN, 10 Max_Transport_Latency (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_55_5</Name>
             <Description>24_1_1 LC3: 7500 SDU Interval, unframed, 45 Max SDU Size, 2 RTN, 8 Max_Transport_Latency (C.4)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_55_6</Name>
             <Description>24_2_1 LC3: 10000 SDU Interval, unframed, 60 Max SDU Size, 2 RTN, 10 Max_Transport_Latency (C.5)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_55_7</Name>
             <Description>32_1_1 LC3: 7500 SDU Interval, unframed, 60 Max SDU Size, 2 RTN, 8 Max_Transport_Latency (C.6)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_55_8</Name>
             <Description>32_2_1 LC3: 10000 SDU Interval, unframed, 80 Max SDU Size, 2 RTN, 10 Max_Transport_Latency (C.7)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_55_9</Name>
             <Description>441_1_1 LC3: 8163 SDU Interval, framed, 97 Max SDU Size, 4 RTN, 24 Max_Transport_Latency (C.8)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_55_10</Name>
             <Description>441_2_1 LC3: 10884 SDU Interval, framed, 130 Max SDU Size, 4 RTN, 31 Max_Transport_Latency (C.9)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_55_11</Name>
             <Description>48_1_1 LC3: 7500 SDU Interval, unframed, 75 Max SDU Size, 4 RTN, 15 Max_Transport_Latency (C.10)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_55_12</Name>
             <Description>48_2_1 LC3: 10000 SDU Interval, unframed, 100 Max SDU Size, 4 RTN, 20 Max_Transport_Latency (C.11)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_55_13</Name>
             <Description>48_3_1 LC3: 7500 SDU Interval, unframed, 90 Max SDU Size, 4 RTN, 15 Max_Transport_Latency (C.12)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_55_14</Name>
             <Description>48_4_1 LC3: 10000 SDU Interval, unframed, 120 Max SDU Size, 4 RTN, 20 Max_Transport_Latency (C.13)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_55_15</Name>
             <Description>48_5_1 LC3: 7500 SDU Interval, unframed, 117 Max SDU Size, 4 RTN, 15 Max_Transport_Latency (C.14)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_55_16</Name>
             <Description>48_6_1 LC3: 10000 SDU Interval, unframed, 155 Max SDU Size, 4 RTN, 20 Max_Transport_Latency (C.15)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_56_1</Name>
             <Description>8_1_2 LC3: 7500 SDU Interval, unframed, 26 Max SDU Size, 4 RTN, 45 Max_Transport_Latency (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_56_2</Name>
             <Description>8_2_2 LC3: 10000 SDU Interval, unframed, 30 Max SDU Size, 4 RTN, 60 Max_Transport_Latency (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_56_3</Name>
             <Description>16_1_2 LC3: 7500 SDU Interval, unframed, 30 Max SDU Size, 4 RTN, 45 Max_Transport_Latency (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_56_4</Name>
             <Description>16_2_2 LC3: 10000 SDU Interval, unframed, 40 Max SDU Size, 4 RTN, 60 Max_Transport_Latency (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_56_5</Name>
             <Description>24_1_2 LC3: 7500 SDU Interval, unframed, 45 Max SDU Size, 4 RTN, 45 Max_Transport_Latency (C.4)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_56_6</Name>
             <Description>24_2_2 LC3: 10000 SDU Interval, unframed, 60 Max SDU Size, 4 RTN, 60 Max_Transport_Latency (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_56_7</Name>
             <Description>32_1_2 LC3: 7500 SDU Interval, unframed, 60 Max SDU Size, 4 RTN, 45 Max_Transport_Latency (C.5)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_56_8</Name>
             <Description>32_2_2 LC3: 10000 SDU Interval, unframed, 80 Max SDU Size, 4 RTN, 60 Max_Transport_Latency (C.6)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_56_9</Name>
             <Description>441_1_2 LC3: 8163 SDU Interval, framed, 97 Max SDU Size, 4 RTN, 54 Max_Transport_Latency (C.7)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_56_10</Name>
             <Description>441_2_2 LC3: 10884 SDU Interval, framed, 130 Max SDU Size, 4 RTN, 60 Max_Transport_Latency (C.8)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_56_11</Name>
             <Description>48_1_2 LC3: 7500 SDU Interval, unframed, 75 Max SDU Size, 4 RTN, 50 Max_Transport_Latency (C.9)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_56_12</Name>
             <Description>48_2_2 LC3: 10000 SDU Interval, unframed, 100 Max SDU Size, 4 RTN, 65 Max_Transport_Latency (C.10)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_56_13</Name>
             <Description>48_3_2 LC3: 7500 SDU Interval, unframed, 90 Max SDU Size, 4 RTN, 50 Max_Transport_Latency (C.11)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_56_14</Name>
             <Description>48_4_2 LC3: 10000 SDU Interval, unframed, 120 Max SDU Size, 4 RTN, 65 Max_Transport_Latency (C.12)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_56_15</Name>
             <Description>48_5_2 LC3: 7500 SDU Interval, unframed, 117 Max SDU Size, 4 RTN, 50 Max_Transport_Latency (C.13)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_56_16</Name>
             <Description>48_6_2 LC3: 10000 SDU Interval, unframed, 155 Max SDU Size, 4 RTN, 65 Max_Transport_Latency (C.14)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -11287,7 +11287,7 @@
           <Row>
             <Name>TSPC_BAP_66_1</Name>
             <Description>Multiple Audio Locations (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -11317,103 +11317,103 @@
           <Row>
             <Name>TSPC_BAP_68_1</Name>
             <Description>8_1 LC3: 8 kHz Sampling Frequency, 7.5 ms Frame Duration, 26 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_68_2</Name>
             <Description>8_2 LC3: 8 kHz Sampling Frequency, 10 ms Frame Duration, 30 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_68_3</Name>
             <Description>16_1 LC3: 16 kHz Sampling Frequency, 7.5 ms Frame Duration, 30 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_68_4</Name>
             <Description>16_2 LC3: 16 kHz Sampling Frequency, 10 ms Frame Duration, 40 Octets (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_68_5</Name>
             <Description>24_1 LC3: 24 kHz Sampling Frequency, 7.5 ms Frame Duration, 45 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_68_6</Name>
             <Description>24_2 LC3: 24 kHz Sampling Frequency, 10 ms Frame Duration, 60 Octets (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_68_7</Name>
             <Description>32_1 LC3: 32 kHz Sampling Frequency, 7.5 ms Frame Duration, 60 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_68_8</Name>
             <Description>32_2 LC3: 32 kHz Sampling Frequency, 10 ms Frame Duration, 80 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_68_9</Name>
             <Description>441_1 LC3: 44.1 kHz Sampling Frequency, 8.163 ms Frame Duration, 97 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_68_10</Name>
             <Description>441_2 LC3: 44.1 kHz Sampling Frequency, 10.884 ms Frame Duration, 130 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_68_11</Name>
             <Description>48_1 LC3: 48 kHz Sampling Frequency, 7.5 ms Frame Duration, 75 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_68_12</Name>
             <Description>48_2 LC3: 48 kHz Sampling Frequency, 10 ms Frame Duration, 100 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_68_13</Name>
             <Description>48_3 LC3: 48 kHz Sampling Frequency, 7.5 ms Frame Duration, 90 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_68_14</Name>
             <Description>48_4 LC3: 48 kHz Sampling Frequency, 10 ms Frame Duration, 120 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_68_15</Name>
             <Description>48_5 LC3: 48 kHz Sampling Frequency, 7.5 ms Frame Duration, 117 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_68_16</Name>
             <Description>48_6 LC3: 48 kHz Sampling Frequency, 10 ms Frame Duration, 155 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_68_17</Name>
             <Description>Vendor-specific Codec Capability Setting: Broadcast Sink (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -11515,97 +11515,97 @@
           <Row>
             <Name>TSPC_BAP_70_1</Name>
             <Description>8_1_2 LC3: 7500 SDU Interval, unframed, 26 Max SDU Size, 4 RTN, 45 Max_Transport_Latency (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_70_2</Name>
             <Description>8_2_2 LC3: 10000 SDU Interval, unframed, 30 Max SDU Size, 4 RTN, 60 Max_Transport_Latency (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_70_3</Name>
             <Description>16_1_2 LC3: 7500 SDU Interval, unframed, 30 Max SDU Size, 4 RTN, 45 Max_Transport_Latency (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_70_4</Name>
             <Description>16_2_2 LC3: 10000 SDU Interval, unframed, 40 Max SDU Size, 4 RTN, 60 Max_Transport_Latency (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_70_5</Name>
             <Description>24_1_2 LC3: 7500 SDU Interval, unframed, 45 Max SDU Size, 4 RTN, 45 Max_Transport_Latency (C.4)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_70_6</Name>
             <Description>24_2_2 LC3: 10000 SDU Interval, unframed, 60 Max SDU Size, 4 RTN, 60 Max_Transport_Latency (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_70_7</Name>
             <Description>32_1_2 LC3: 7500 SDU Interval, unframed, 60 Max SDU Size, 4 RTN, 45 Max_Transport_Latency (C.5)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_70_8</Name>
             <Description>32_2_2 LC3: 10000 SDU Interval, unframed, 80 Max SDU Size, 4 RTN, 60 Max_Transport_Latency (C.6)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_70_9</Name>
             <Description>441_1_2 LC3: 8163 SDU Interval, framed, 97 Max SDU Size, 4 RTN, 54 Max_Transport_Latency (C.7)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_70_10</Name>
             <Description>441_2_2 LC3: 10884 SDU Interval, framed, 130 Max SDU Size, 4 RTN, 60 Max_Transport_Latency (C.8)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_70_11</Name>
             <Description>48_1_2 LC3: 7500 SDU Interval, unframed, 75 Max SDU Size, 4 RTN, 50 Max_Transport_Latency (C.9)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_70_12</Name>
             <Description>48_2_2 LC3: 10000 SDU Interval, unframed, 100 Max SDU Size, 4 RTN, 65 Max_Transport_Latency (C.10)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_70_13</Name>
             <Description>48_3_2 LC3: 7500 SDU Interval, unframed, 90 Max SDU Size, 4 RTN, 50 Max_Transport_Latency (C.11)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_70_14</Name>
             <Description>48_4_2 LC3: 10000 SDU Interval, unframed, 120 Max SDU Size, 4 RTN, 65 Max_Transport_Latency (C.12)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_70_15</Name>
             <Description>48_5_2 LC3: 7500 SDU Interval, unframed, 117 Max SDU Size, 4 RTN, 50 Max_Transport_Latency (C.13)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_70_16</Name>
             <Description>48_6_2 LC3: 10000 SDU Interval, unframed, 155 Max SDU Size, 4 RTN, 65 Max_Transport_Latency (C.14)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>

@@ -104,7 +104,11 @@ def wait_event_with_condition(event_queue, condition_cb, timeout, remove):
 
     while flag.is_set():
         for ev in event_queue:
-            result = condition_cb(*ev)
+            if isinstance(ev, tuple):
+                result = condition_cb(*ev)
+            else:
+                result = condition_cb(ev)
+
             if result:
                 t.cancel()
                 if ev and remove:
@@ -112,6 +116,8 @@ def wait_event_with_condition(event_queue, condition_cb, timeout, remove):
 
                 return ev
 
+            # TODO: Use wait() and notify() from threading.Condition
+            #  instead of sleep()
             sleep(0.5)
 
     return None
@@ -1006,11 +1012,16 @@ class CORE:
 
 class BAP:
     def __init__(self):
+        self.broadcast_id = 0x1000000  # Invalid Broadcast ID
         self.event_queues = {
             defs.BAP_EV_DISCOVERY_COMPLETED: [],
             defs.BAP_EV_CODEC_CAP_FOUND: [],
             defs.BAP_EV_ASE_FOUND: [],
             defs.BAP_EV_STREAM_RECEIVED: [],
+            defs.BAP_EV_BAA_FOUND: [],
+            defs.BAP_EV_BIS_FOUND: [],
+            defs.BAP_EV_BIS_SYNCED: [],
+            defs.BAP_EV_BIS_STREAM_RECEIVED: [],
         }
 
     def event_received(self, event_type, event_data_tuple):
@@ -1042,6 +1053,30 @@ class BAP:
             self.event_queues[defs.BAP_EV_STREAM_RECEIVED],
             lambda _addr_type, _addr, _ase_id, *_:
                 (addr_type, addr, ase_id) == (_addr_type, _addr, _ase_id),
+            timeout, remove)
+
+    def wait_baa_found_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.BAP_EV_BAA_FOUND],
+            lambda ev: (addr_type, addr) == (ev['addr_type'], ev['addr']),
+            timeout, remove)
+
+    def wait_bis_found_ev(self, broadcast_id, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.BAP_EV_BIS_FOUND],
+            lambda ev: broadcast_id == ev['broadcast_id'],
+            timeout, remove)
+
+    def wait_bis_synced_ev(self, broadcast_id, bis_id, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.BAP_EV_BIS_SYNCED],
+            lambda ev: (broadcast_id, bis_id) == (ev['broadcast_id'], ev['bis_id']),
+            timeout, remove)
+
+    def wait_bis_stream_received_ev(self, broadcast_id, bis_id, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.BAP_EV_BIS_STREAM_RECEIVED],
+            lambda ev: (broadcast_id, bis_id) == (ev['broadcast_id'], ev['bis_id']),
             timeout, remove)
 
 
