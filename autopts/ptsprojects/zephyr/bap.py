@@ -179,9 +179,6 @@ def test_cases(ptses):
     pre_conditions_lt2 = [
                         TestFunc(lambda: pts2.update_pixit_param(
                                 "BAP", "TSPX_bd_addr_iut", queue.get())),
-                        TestFunc(lambda: pts2.update_pixit_param(
-                                "BAP", "TSPX_iut_use_dynamic_bd_addr",
-                                "TRUE" if stack.gap.iut_addr_is_random() else "FALSE"))
     ]
 
     test_cases_lt2 = [

@@ -92,6 +92,173 @@ def disc_full(svc_uuid=None, ch_uuid=None):
     return attrs
 
 
+def hdl_wid_100(params: WIDParams):
+    """
+    Please synchronize with Broadcast ISO request
+    """
+
+    addr = pts_addr_get()
+    addr_type = pts_addr_type_get()
+    stack = get_stack()
+
+    btp.bap_broadcast_sink_setup()
+    btp.bap_broadcast_scan_start()
+
+    ev = stack.bap.wait_baa_found_ev(addr_type, addr, 10, False)
+    if ev is None:
+        return False
+
+    btp.bap_broadcast_scan_stop()
+
+    log(f'Synchronizing to broadcast with ID {hex(ev["broadcast_id"])}')
+
+    btp.bap_broadcast_sink_sync(ev['broadcast_id'], ev['advertiser_sid'], 5, 100)
+
+    ev = stack.bap.wait_bis_found_ev(ev['broadcast_id'], 10, False)
+    if ev is None:
+        return False
+
+    # The BIS found event arrives enormous amount of times. Let's just
+    # check the test case number to know how many BISes to expect.
+    bis_ids = [1]
+    tc_num = int(re.findall(r'\d+', params.test_case_name)[0])
+    if tc_num >= 18:
+        bis_ids.append(2)
+
+    for bis_id in bis_ids:
+        ev = stack.bap.wait_bis_synced_ev(ev['broadcast_id'], bis_id, 10, False)
+        if ev is None:
+            return False
+
+    return True
+
+
+def hdl_wid_104(params: WIDParams):
+    """
+    Please send non connectable advertise with periodic info.
+    """
+    # Advertising started at hdl_wid_114
+
+    return True
+
+
+def hdl_wid_114(params: WIDParams):
+    """
+    Please advertise with Broadcast Audio Announcement (0x1852) service data
+    """
+    configurations = {
+        'BAP/BSRC/SCC/BV-01-C': '8_1_1',
+        'BAP/BSRC/SCC/BV-02-C': '8_2_1',
+        'BAP/BSRC/SCC/BV-03-C': '16_1_1',
+        'BAP/BSRC/SCC/BV-04-C': '16_2_1',
+        'BAP/BSRC/SCC/BV-05-C': '24_1_1',
+        'BAP/BSRC/SCC/BV-06-C': '24_2_1',
+        'BAP/BSRC/SCC/BV-07-C': '32_1_1',
+        'BAP/BSRC/SCC/BV-08-C': '32_2_1',
+        'BAP/BSRC/SCC/BV-09-C': '441_1_1',
+        'BAP/BSRC/SCC/BV-10-C': '441_2_1',
+        'BAP/BSRC/SCC/BV-11-C': '48_1_1',
+        'BAP/BSRC/SCC/BV-12-C': '48_2_1',
+        'BAP/BSRC/SCC/BV-13-C': '48_3_1',
+        'BAP/BSRC/SCC/BV-14-C': '48_4_1',
+        'BAP/BSRC/SCC/BV-15-C': '48_5_1',
+        'BAP/BSRC/SCC/BV-16-C': '48_6_1',
+        'BAP/BSRC/SCC/BV-17-C': '8_1_2',
+        'BAP/BSRC/SCC/BV-18-C': '8_2_2',
+        'BAP/BSRC/SCC/BV-19-C': '16_1_2',
+        'BAP/BSRC/SCC/BV-20-C': '16_2_2',
+        'BAP/BSRC/SCC/BV-21-C': '24_1_2',
+        'BAP/BSRC/SCC/BV-22-C': '24_2_2',
+        'BAP/BSRC/SCC/BV-23-C': '32_1_2',
+        'BAP/BSRC/SCC/BV-24-C': '32_2_2',
+        'BAP/BSRC/SCC/BV-25-C': '441_1_2',
+        'BAP/BSRC/SCC/BV-26-C': '441_2_2',
+        'BAP/BSRC/SCC/BV-27-C': '48_1_2',
+        'BAP/BSRC/SCC/BV-28-C': '48_2_2',
+        'BAP/BSRC/SCC/BV-29-C': '48_3_2',
+        'BAP/BSRC/SCC/BV-30-C': '48_4_2',
+        'BAP/BSRC/SCC/BV-31-C': '48_5_2',
+        'BAP/BSRC/SCC/BV-32-C': '48_6_2',
+        # Cases with 1 BIS:
+        'BAP/BSRC/STR/BV-01-C': '8_1_1',
+        'BAP/BSRC/STR/BV-02-C': '8_2_1',
+        'BAP/BSRC/STR/BV-03-C': '16_1_1',
+        'BAP/BSRC/STR/BV-04-C': '16_2_1',
+        'BAP/BSRC/STR/BV-05-C': '24_1_1',
+        'BAP/BSRC/STR/BV-06-C': '24_2_1',
+        'BAP/BSRC/STR/BV-07-C': '32_1_1',
+        'BAP/BSRC/STR/BV-08-C': '32_2_1',
+        'BAP/BSRC/STR/BV-09-C': '441_1_1',
+        'BAP/BSRC/STR/BV-10-C': '441_2_1',
+        'BAP/BSRC/STR/BV-11-C': '48_1_1',
+        'BAP/BSRC/STR/BV-12-C': '48_2_1',
+        'BAP/BSRC/STR/BV-13-C': '48_3_1',
+        'BAP/BSRC/STR/BV-14-C': '48_4_1',
+        'BAP/BSRC/STR/BV-15-C': '48_5_1',
+        'BAP/BSRC/STR/BV-16-C': '48_6_1',
+        # Cases with 2 BISes:
+        'BAP/BSRC/STR/BV-18-C': '8_1_1',
+        'BAP/BSRC/STR/BV-19-C': '8_2_1',
+        'BAP/BSRC/STR/BV-20-C': '16_1_1',
+        'BAP/BSRC/STR/BV-21-C': '16_2_1',
+        'BAP/BSRC/STR/BV-22-C': '24_1_1',
+        'BAP/BSRC/STR/BV-23-C': '24_2_1',
+        'BAP/BSRC/STR/BV-24-C': '32_1_1',
+        'BAP/BSRC/STR/BV-25-C': '32_2_1',
+        'BAP/BSRC/STR/BV-26-C': '441_1_1',
+        'BAP/BSRC/STR/BV-27-C': '441_2_1',
+        'BAP/BSRC/STR/BV-28-C': '48_1_1',
+        'BAP/BSRC/STR/BV-29-C': '48_2_1',
+        'BAP/BSRC/STR/BV-30-C': '48_3_1',
+        'BAP/BSRC/STR/BV-31-C': '48_4_1',
+        'BAP/BSRC/STR/BV-32-C': '48_5_1',
+        'BAP/BSRC/STR/BV-33-C': '48_6_1',
+    }
+
+    if params.test_case_name in configurations:
+        qos_set_name = configurations[params.test_case_name]
+        codec_set_name = '_'.join(qos_set_name.split('_')[:-1])
+        coding_format = 0x06
+        vid = 0x0000
+        cid = 0x0000
+    else:
+        qos_set_name = '8_1_1'
+        codec_set_name = '8_1'
+        coding_format = 0xff
+        vid = 0xffff
+        cid = 0xffff
+
+    (sampling_freq, frame_duration, octets_per_frame) = \
+        CODEC_CONFIG_SETTINGS[codec_set_name]
+    audio_locations = 0x01
+    frames_per_sdu = 0x01
+
+    codec_ltvs_bytes = create_lc3_ltvs_bytes(sampling_freq, frame_duration,
+                                             audio_locations, octets_per_frame,
+                                             frames_per_sdu)
+
+    streams_per_subgroup = 1
+    tc_num = int(re.findall(r'\d+', params.test_case_name)[0])
+    if tc_num >= 18:
+        streams_per_subgroup = 2
+
+    presentation_delay = 40000
+    subgroups = 1
+    qos_config = QOS_CONFIG_SETTINGS[qos_set_name]
+    broadcast_id = btp.bap_broadcast_source_setup(
+        streams_per_subgroup, subgroups, coding_format, vid, cid,
+        codec_ltvs_bytes, *qos_config, presentation_delay)
+
+    stack = get_stack()
+    stack.bap.broadcast_id = broadcast_id
+
+    btp.bap_broadcast_adv_start(broadcast_id)
+
+    btp.bap_broadcast_source_start(broadcast_id)
+
+    return True
+
+
 def hdl_wid_201(params: WIDParams):
     """Please configure the CODEC parameters on ASE ID 1 in Audio Stream
        Endpoint Characteristic. Codec Configuration: 8_1_1
@@ -1312,6 +1479,21 @@ def hdl_wid_315(params: WIDParams):
     return True
 
 
+def hdl_wid_353(_: WIDParams):
+    """Wait for Broadcast ISO request.
+    """
+    return True
+
+
+def hdl_wid_357(_: WIDParams):
+    """Wait for Broadcast ISO request.
+    """
+    stack = get_stack()
+    btp.bap_broadcast_source_stop(stack.bap.broadcast_id)
+
+    return True
+
+
 def hdl_wid_363(params: WIDParams):
     """Wait for an extended advertising packet containing Audio Control
        Service UUID with announcement fields.
@@ -1382,7 +1564,7 @@ def hdl_wid_367(_: WIDParams):
     return True
 
 
-def hdl_wid_376(_: WIDParams):
+def hdl_wid_376(params: WIDParams):
     """
     Please confirm received streaming data.
     """
@@ -1390,13 +1572,19 @@ def hdl_wid_376(_: WIDParams):
     addr_type = pts_addr_type_get()
     stack = get_stack()
 
-    for ev in stack.bap.event_queues[defs.BAP_EV_ASE_FOUND]:
-        _, _, ase_dir, ase_id = ev
-
-        if ase_dir == AudioDir.SINK:
-            ev = stack.bap.wait_stream_received_ev(addr_type, addr, ase_id, 10)
+    if params.test_case_name.startswith('BAP/BSNK'):
+        for ev in stack.bap.event_queues[defs.BAP_EV_BIS_SYNCED]:
+            ev = stack.bap.wait_bis_stream_received_ev(ev['broadcast_id'], ev['bis_id'], 10)
             if ev is None:
                 return False
+    else:
+        for ev in stack.bap.event_queues[defs.BAP_EV_ASE_FOUND]:
+            _, _, ase_dir, ase_id = ev
+
+            if ase_dir == AudioDir.SINK:
+                ev = stack.bap.wait_stream_received_ev(addr_type, addr, ase_id, 10)
+                if ev is None:
+                    return False
 
     return True
 
@@ -1426,10 +1614,89 @@ def hdl_wid_377(_: WIDParams):
     return True
 
 
+def hdl_wid_378(_: WIDParams):
+    """
+    Please confirm received BASE entry Basic Audio Announcements
+    """
+    addr = pts_addr_get()
+    addr_type = pts_addr_type_get()
+    stack = get_stack()
+
+    btp.bap_broadcast_sink_setup()
+    btp.bap_broadcast_scan_start()
+
+    ev = stack.bap.wait_baa_found_ev(addr_type, addr, 10)
+    if ev is None:
+        return False
+
+    return True
+
+
+def hdl_wid_379(_: WIDParams):
+    """
+    Please order the IUT to release the broadcast stream.
+    """
+    stack = get_stack()
+    broadcast_id = stack.bap.broadcast_id
+    btp.bap_broadcast_source_stop(broadcast_id)
+    btp.bap_broadcast_adv_stop(broadcast_id)
+    btp.bap_broadcast_source_release(broadcast_id)
+
+    return True
+
+
+def hdl_wid_380(_: WIDParams):
+    """
+    Please reconfigure BASE with different settings. Then click OK when
+    IUT is ready to advertise with Broadcast Audio Announcement (0x1852)
+    service data.
+    """
+    stack = get_stack()
+    btp.bap_broadcast_adv_stop(stack.bap.broadcast_id)
+    btp.bap_broadcast_source_stop(stack.bap.broadcast_id)
+
+    coding_format = 0x06
+    vid = 0x0000
+    cid = 0x0000
+    qos_set_name = '16_1_1'
+    codec_set_name = '16_1'
+
+    (sampling_freq, frame_duration, octets_per_frame) = \
+        CODEC_CONFIG_SETTINGS[codec_set_name]
+    audio_locations = 0x01
+    frames_per_sdu = 0x01
+
+    codec_ltvs_bytes = create_lc3_ltvs_bytes(sampling_freq, frame_duration,
+                                             audio_locations, octets_per_frame,
+                                             frames_per_sdu)
+
+    presentation_delay = 40000
+    streams_per_subgroup = 2
+    subgroups = 1
+    qos_config = QOS_CONFIG_SETTINGS[qos_set_name]
+    broadcast_id = btp.bap_broadcast_source_setup(
+        streams_per_subgroup, subgroups, coding_format, vid, cid,
+        codec_ltvs_bytes, *qos_config, presentation_delay)
+
+    stack.bap.broadcast_id = broadcast_id
+
+    btp.bap_broadcast_adv_start(broadcast_id)
+
+    return True
+
+
 def hdl_wid_382(_: WIDParams):
     """
     CIS connection is disconnected. Expect to receive QoS Configured state.
     """
+    return True
+
+
+def hdl_wid_384(_: WIDParams):
+    """
+    Click OK will start transmitting audio streaming data.
+    """
+
     return True
 
 
