@@ -259,6 +259,8 @@ class Gap:
                 return len(self.connected.data) >= conn_count
             return False
 
+        return self.connected.data
+
     def wait_periodic_report(self, timeout):
         if self.periodic_report_rxed:
             return True
