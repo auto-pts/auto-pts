@@ -1,0 +1,77 @@
+Microphone Control Service(ID 18)
+=================================
+
+Commands and responses:
+
+	Opcode 0x00 - Error response
+
+	Opcode 0x01 - Read supported commands
+		Controller Index:       <controller id>
+		Command parameters:     <none>
+		Response parameters:    <supported commands> (variable)
+
+		Each bit in response is a flag indicating if command with
+		opcode matching bit number is supported. Bit set to 1 means
+		that command is supported. Bit 0 is reserved and shall always
+		be set to 0. If specific bit is not present in response (less
+		than required bytes received) it shall be assumed that command
+		is not supported.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x02 - Mute disable
+		Controller Index:	<controller id>
+		Command parameters:     <none>
+		Response parameters:	<none>
+
+		This command is used to disable Mute functionality. During
+		operation, the IUT may send event:
+				Mute State event
+
+		In case of an error, the error reponse will be returned.
+
+	Opcode 0x03 - Mute read
+		Controller Index:	<controller id>
+		Command parameters:     <none>
+		Response parameters:	<none>
+
+		This command is used to read Mute state. During operation,
+		the IUT may send event:
+				Mute State event
+
+		In case of an error, the error reponse will be returned.
+
+	Opcode 0x04 - Mute
+		Controller Index:	<controller id>
+		Command parameters:     <none>
+		Response parameters:	<none>
+
+		This command is used to request Mute operation. During
+		operation, the IUT may send event:
+				Mute State event
+
+		In case of an error, the error reponse will be returned.
+
+	Opcode 0x05 - Unmute
+		Controller Index:	<controller id>
+		Command parameters:     <none>
+		Response parameters:	<none>
+
+		This command is used to request Unmute operation. During
+		operation, the IUT may send event:
+				Mute State event
+
+		In case of an error, the error reponse will be returned.
+
+
+Events:
+	Opcode 0x80 - Mute State event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Mute state (1 octet)
+
+		This event returns Mute state (from primary service).
+
+

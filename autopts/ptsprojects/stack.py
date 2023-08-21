@@ -771,6 +771,22 @@ class MICP:
             timeout, remove)
 
 
+class MICS:
+    def __init__(self):
+        self.mute_state = None
+        self.event_queues = {
+            defs.MICS_MUTE_STATE_EV: [],
+        }
+
+    def event_received(self, event_type, event_data_tuple):
+        self.event_queues[event_type].append(event_data_tuple)
+
+    def wait_mute_state_ev(self, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.MICS_MUTE_STATE_EV],
+            lambda *_: True, timeout, remove)
+
+
 class ASCS:
     def __init__(self):
         self.event_queues = {
@@ -1437,6 +1453,7 @@ class Stack:
         self.bap = None
         self.core = None
         self.micp = None
+        self.mics = None
         self.supported_svcs = 0
 
     def is_svc_supported(self, svc):
@@ -1459,6 +1476,7 @@ class Stack:
             "MICP": 1 << defs.BTP_SERVICE_ID_MICP,
             "HAS": 1 << defs.BTP_SERVICE_ID_HAS,
             "CSIS": 1 << defs.BTP_SERVICE_ID_CSIS,
+            "MICS": 1 << defs.BTP_SERVICE_ID_MICS,
         }
         return self.supported_svcs & services[svc] > 0
 
@@ -1510,6 +1528,9 @@ class Stack:
     def micp_init(self):
         self.micp = MICP()
 
+    def mics_init(self):
+        self.mics = MICS()
+
     def gatt_cl_init(self):
         self.gatt_cl = GattCl()
 
@@ -1549,6 +1570,9 @@ class Stack:
 
         if self.micp:
             self.micp_init()
+
+        if self.mics:
+            self.mics_init()
 
         if self.gatt:
             self.gatt_init()

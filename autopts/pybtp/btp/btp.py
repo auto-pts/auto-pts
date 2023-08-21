@@ -103,6 +103,8 @@ CORE = {
                  defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_CSIS),
     "micp_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
                  defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_MICP),
+    "mics_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
+                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_MICS),
     "read_supp_cmds": (defs.BTP_SERVICE_ID_CORE,
                        defs.CORE_READ_SUPPORTED_COMMANDS,
                        defs.BTP_INDEX_NONE, ""),
@@ -565,11 +567,19 @@ def core_reg_svc_csis():
     iutctl = get_iut()
     iutctl.btp_socket.send_wait_rsp(*CORE['csis_reg'])
 
+
 def core_reg_svc_micp():
     logging.debug("%s", core_reg_svc_micp.__name__)
 
     iutctl = get_iut()
     iutctl.btp_socket.send_wait_rsp(*CORE['micp_reg'])
+
+
+def core_reg_svc_mics():
+    logging.debug("%s", core_reg_svc_mics.__name__)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*CORE['mics_reg'])
 
 
 def core_reg_svc_rsp_succ():
@@ -660,6 +670,7 @@ from .ascs import ASCS_EV
 from .bap import BAP_EV
 from .core import CORE_EV
 from .micp import MICP_EV
+from .mics import MICS_EV
 from autopts.pybtp.iutctl_common import set_event_handler
 
 
@@ -685,7 +696,8 @@ def event_handler(hdr, data):
         defs.BTP_SERVICE_ID_ASCS: (ASCS_EV, stack.ascs),
         defs.BTP_SERVICE_ID_BAP: (BAP_EV, stack.bap),
         defs.BTP_SERVICE_ID_CORE: (CORE_EV, stack.core),
-        defs.BTP_SERVICE_ID_MICP: (MICP_EV, stack.micp)
+        defs.BTP_SERVICE_ID_MICP: (MICP_EV, stack.micp),
+        defs.BTP_SERVICE_ID_MICS: (MICS_EV, stack.mics)
     }
     if hdr.svc_id in service_map:
         event_dict, stack_obj = service_map[hdr.svc_id]
