@@ -27,3 +27,4 @@ from .ascs import ascs_wid_hdl
 from .bap import bap_wid_hdl
 from .has import has_wid_hdl
 from .csis import csis_wid_hdl
+from .micp import micp_wid_hdl

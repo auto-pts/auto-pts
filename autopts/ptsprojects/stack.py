@@ -677,12 +677,57 @@ class VCS:
     pass
 
 
-class AICS:
-    pass
-
-
 class VOCS:
     pass
+
+
+class AICS:
+    def __init__(self):
+        self.event_queues = {
+            defs.AICS_STATE_EV: [],
+            defs.AICS_GAIN_SETTING_PROP_EV: [],
+            defs.AICS_INPUT_TYPE_EV: [],
+            defs.AICS_STATUS_EV: [],
+            defs.AICS_DESCRIPTION_EV: []
+        }
+
+    def event_received(self, event_type, event_data_tuple):
+        self.event_queues[event_type].append(event_data_tuple)
+
+    def wait_aics_state_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.AICS_STATE_EV],
+            lambda _addr_type, _addr, *_:
+            (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
+
+    def wait_aics_gain_setting_prop_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.AICS_GAIN_SETTING_PROP_EV],
+            lambda _addr_type, _addr, *_:
+            (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
+
+    def wait_aics_input_type_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.AICS_INPUT_TYPE_EV],
+            lambda _addr_type, _addr, *_:
+            (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
+
+    def wait_aics_status_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.AICS_STATUS_EV],
+            lambda _addr_type, _addr, *_:
+            (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
+
+    def wait_aics_description_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.AICS_DESCRIPTION_EV],
+            lambda _addr_type, _addr, *_:
+            (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
 
 
 class PACS:
@@ -698,6 +743,31 @@ class PACS:
         return wait_event_with_condition(
             self.event_queues[defs.PACS_EV_CHARACTERISTIC_SUBSCRIBED],
             lambda _addr_type, _addr, *_: (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
+
+
+class MICP:
+    def __init__(self):
+        self.event_queues = {
+            defs.MICP_DISCOVERED_EV: [],
+            defs.MICP_MUTE_STATE_EV: [],
+        }
+
+    def event_received(self, event_type, event_data_tuple):
+        self.event_queues[event_type].append(event_data_tuple)
+
+    def wait_discovery_completed_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.MICP_DISCOVERED_EV],
+            lambda _addr_type, _addr, *_:
+            (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
+
+    def wait_mute_state_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.MICP_MUTE_STATE_EV],
+            lambda _addr_type, _addr, *_:
+                (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
 
@@ -1366,26 +1436,29 @@ class Stack:
         self.ascs = None
         self.bap = None
         self.core = None
+        self.micp = None
         self.supported_svcs = 0
 
     def is_svc_supported(self, svc):
         # these are in little endian
         services = {
-            "CORE":         0b0000000000000001,
-            "GAP":          0b0000000000000010,
-            "GATT":         0b0000000000000100,
-            "L2CAP":        0b0000000000001000,
-            "MESH":         0b0000000000010000,
-            "MESH_MMDL":    0b0000000000100000,
-            "GATT_CL":      0b0000000001000000,
-            "VCS":          0b0000000010000000,
-            "IAS":          0b0000000100000000,
-            "AICS":         0b0000001000000000,
-            "VOCS":         0b0000010000000000,
-            "PACS":         0b0000100000000000,
-            "ASCS":         0b0001000000000000,
-            "BAP":          0b0010000000000000,
-            "HAS":          0b0100000000000000
+            "CORE": 1 << defs.BTP_SERVICE_ID_CORE,
+            "GAP": 1 << defs.BTP_SERVICE_ID_GAP,
+            "GATT": 1 << defs.BTP_SERVICE_ID_GATT,
+            "L2CAP": 1 << defs.BTP_SERVICE_ID_L2CAP,
+            "MESH": 1 << defs.BTP_SERVICE_ID_MESH,
+            "MESH_MMDL": 1 << defs.BTP_SERVICE_ID_MMDL,
+            "GATT_CL": 1 << defs.BTP_SERVICE_ID_GATTC,
+            "VCS": 1 << defs.BTP_SERVICE_ID_VCS,
+            "IAS": 1 << defs.BTP_SERVICE_ID_IAS,
+            "AICS": 1 << defs.BTP_SERVICE_ID_AICS,
+            "VOCS": 1 << defs.BTP_SERVICE_ID_VOCS,
+            "PACS": 1 << defs.BTP_SERVICE_ID_PACS,
+            "ASCS": 1 << defs.BTP_SERVICE_ID_ASCS,
+            "BAP": 1 << defs.BTP_SERVICE_ID_BAP,
+            "MICP": 1 << defs.BTP_SERVICE_ID_MICP,
+            "HAS": 1 << defs.BTP_SERVICE_ID_HAS,
+            "CSIS": 1 << defs.BTP_SERVICE_ID_CSIS,
         }
         return self.supported_svcs & services[svc] > 0
 
@@ -1434,6 +1507,9 @@ class Stack:
         else:
             self.core = CORE()
 
+    def micp_init(self):
+        self.micp = MICP()
+
     def gatt_cl_init(self):
         self.gatt_cl = GattCl()
 
@@ -1470,6 +1546,9 @@ class Stack:
 
         if self.bap:
             self.bap_init()
+
+        if self.micp:
+            self.micp_init()
 
         if self.gatt:
             self.gatt_init()
