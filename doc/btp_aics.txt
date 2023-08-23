@@ -6,6 +6,7 @@ Commands and responses:
 	Opcode 0x00 - Error response
 
 	Opcode 0x01 - Read supported commands
+
 		Controller Index:	<controller id>
 		Command parameters:	<none>
 		Response parameters:	<supported commands> (variable)
@@ -19,75 +20,252 @@ Commands and responses:
 
 		In case of an error, the error response will be returned.
 
-	Opcode 0x02 - Set gain
+	Opcode 0x02 - Set Gain
+
 		Controller Index:	<controller id>
-		Command parameters:	Gain (1 octet)
+		Command parameters:     Gain Value (1 octet)
+					Address_Type (1 octet)
+					Address (6 octets)
 		Response parameters:	<none>
 
-		This command is used for setting gain value.
+		This command can be used either by server or client and is used for
+		setting gain value. During operation, the IUT may send event:
+				AICS State event
 
-		In case of an error, the error reposnse will be returned.
+		In case of an error, the error response will be returned.
 
 	Opcode 0x03 - Mute
+
 		Controller Index:	<controller id>
-		Command parameters:	<none>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
 		Response parameters:	<none>
 
-		This command is used for setting mute value to "mute".
+		This command can be used either by server or client and is used to
+		request Audio Input Control Point Mute operation.
+		During operation, the IUT may send event:
+				AICS State event
 
-		In case of an error, the error reponse will be returned.
+		In case of an error, the error response will be returned.
 
 	Opcode 0x04 - Unmute
+
 		Controller Index:	<controller id>
-		Command parameters:	<none>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
 		Response parameters:	<none>
 
-		This command is used for setting mute value to "unmute".
+		This command can be used either by server or client and is used to
+		request Audio Input Control Point Unmute operation.
+		During operation, the IUT may send event:
+				AICS State event
 
-		In case of an error, the error reponse will be returned.
+		In case of an error, the error response will be returned.
 
-	Opcode 0x05 - Manual gain
+	Opcode 0x05 - Set manual gain
+
 		Controller Index:	<controller id>
-		Command parameters:	<none>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
 		Response parameters:	<none>
 
-		This command is used for setting manual gain.
+		This command can be used either by server or client and is used to
+		request Audio Input Control Point to set gain mode to manual.
+		During operation, the IUT may send event:
+				AICS State event
 
-		In case of an error, the error reponse will be returned.
+		In case of an error, the error response will be returned.
 
-	Opcode 0x06 - Automatic gain
+	Opcode 0x06 - Set automatic gain
+
 		Controller Index:	<controller id>
-		Command parameters:	<none>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
 		Response parameters:	<none>
 
-		This command is used for setting automatic gain.
+		This command can be used either by server or client and is used to
+		request Audio Input Control Point to set gain mode to automatic.
+		During operation, the IUT may send event:
+				AICS State event
 
-		In case of an error, the error reponse will be returned.
+		In case of an error, the error response will be returned.
 
-	Opcode 0x07 - Manual gain only
+	Opcode 0x07 - Set manual gain only
+
 		Controller Index:	<controller id>
-		Command parameters:	<none>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
 		Response parameters:	<none>
 
-		This command is used for setting manual gain only.
+		This command can be used by server and is used to request Audio Input
+		Control Point to set gain mode to manual gain only.
 
-		In case of an error, the error reponse will be returned.
+		In case of an error, the error response will be returned.
 
-	Opcode 0x08 - Automati gain only
+	Opcode 0x08 - Set automatic gain only
+
 		Controller Index:	<controller id>
-		Command parameters:	<none>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
 		Response parameters:	<none>
 
-		This command is used for setting automatic gain only.
+		This command can be used by server and is used to request Audio Input
+		Control Point to set gain mode to automatic gain only.
 
-		In case of an error, the error reponse will be returned.
+		In case of an error, the error response will be returned.
 
-	Opcode 0x09 - Description
+	Opcode 0x09 - Description set
+
 		Controller Index:	<controller id>
 		Command parameters:	Description Length (1 octet)
-                                        Description (0-255 octets)
+					Description (0-255 octets)
 		Response parameters:	<none>
 
-		This command is used for setting description.
+		This command can be used either by server or client and is used for
+		setting Audio Input Control Point description.
+		During operation, the IUT may send an event:
+				AICS Description Event
 
-		In case of an error, the error reponse will be returned.
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0a - Mute Disable
+
+		Controller Index:       <controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:	<none>
+
+		This command can be used by server and is used for disabling Mute operation.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0b - Gain setting properties get
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:	<none>
+
+		This command can be used either by server or client and is used for
+		reading Gain Setting Properties characteristic.
+		During operation, the IUT may send event:
+				AICS Gain Setting Properties event.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0c - Audio Input Type get
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:	<none>
+
+		This command can be used either by server or client and is used for
+		reading Audio Input Type characteristic.
+		During operation, the IUT may send event:
+				AICS Input Type event.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0d - Audio Input Status get
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:	<none>
+
+		This command can be used either by server or client and is used for
+		reading Audio Input Status characteristic.
+		During operation, the IUT may send event:
+				AICS Status event.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0e - Audio Input State get
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:	<none>
+
+		This command can be used either by server or client and is used for
+		reading Audio Input State characteristic.
+		During operation, the IUT may send event:
+				AICS State event.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0f - Audio Input Description get
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:	<none>
+
+		This command can be used either by server or client and is used for
+		reading Audio Input Control Point description.
+		During operation, the IUT may send event:
+				AICS Description Event.
+
+		In case of an error, the error response will be returned.
+
+Events:
+	Opcode 0x80 - AICS State event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Gain (1 octet)
+					Mute (1 octet)
+					Mode (1 octet)
+
+		This event returns Audio Input State information regarding gain value,
+		mute state and gain mode.
+
+	Opcode 0x81 - AICS Gain Setting Properties event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Units (1 octet)
+					Minimum (1 octet)
+					Maximum (1 octet)
+
+		This event returns Gain Setting Properties information - units,
+		minimum and maximum value.
+
+	Opcode 0x82 - AICS Input Type Event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Type (1 octet)
+
+		This event returns Audio Input Type information.
+		0 - Unspecified
+		1 - Bluetooth
+		2 - Microphone
+		3 - Analog
+		4 - Digital
+		5 - Radio
+		6 - Streaming
+
+	Opcode 0x83 - AICS Status Event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status (1 octet)
+
+		This event returns Audio Input Status information.
+		0 - Inactive, 1 - Active.
+
+	Opcode 0x84 - AICS Description Event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Description length (1 octet)
+					Description (1 octet)
+
+		This event returns Audio Input Description information.

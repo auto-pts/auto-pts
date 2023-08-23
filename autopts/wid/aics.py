@@ -21,6 +21,9 @@ from autopts.wid import generic_wid_hdl
 
 log = logging.debug
 
+addr_type = 0
+addr = "000000000000"
+
 
 def aics_wid_hdl(wid, description, test_case_name):
     log(f'{aics_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
@@ -34,41 +37,46 @@ def hdl_wid_20001(_: WIDParams):
     btp.gap_adv_ind_on(ad=stack.gap.ad)
     return True
 
+
 def hdl_wid_2(_: WIDParams):
-    btp.aics_mute()
+    btp.aics_mute(addr_type, addr)
     return True
 
-def hdl_wid_3(_: WIDParams):
-    btp.aics_unmute()
-    return True
 
 def hdl_wid_3(_: WIDParams):
-    btp.aics_auto_gain()
+    btp.aics_unmute(addr_type, addr)
     return True
+
 
 def hdl_wid_4(_: WIDParams):
-    btp.aics_auto_gain()
+    btp.aics_auto_gain_set(addr_type, addr)
     return True
 
+
 def hdl_wid_5(_: WIDParams):
-    btp.aics_man_gain()
+    btp.aics_man_gain_set(addr_type, addr)
     return True
+
 
 def hdl_wid_9(_: WIDParams):
     btp.aics_mute_disable()
     return True
 
+
 def hdl_wid_10(_: WIDParams):
     btp.aics_auto_gain_only()
     return True
+
 
 def hdl_wid_11(_: WIDParams):
     btp.aics_man_gain_only()
     return True
 
+
 def hdl_wid_12(_: WIDParams):
     btp.aics_change_desc('description')
     return True
+
 
 def hdl_wid_13(_: WIDParams):
     btp.aics_change_desc('description')

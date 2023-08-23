@@ -3,33 +3,58 @@ import logging
 import struct
 
 from autopts.pybtp import defs
-from autopts.ptsprojects.stack import get_stack
-from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, get_iut_method as get_iut
+from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, get_iut_method as get_iut, pts_addr_get, \
+    pts_addr_type_get
+from autopts.pybtp.types import addr2btp_ba, BTPError
 
 AICS = {
-    "set_gain":(defs.BTP_SERVICE_ID_AICS, defs.AICS_SET_GAIN,
-               CONTROLLER_INDEX),
-    "mute":(defs.BTP_SERVICE_ID_AICS, defs.AICS_MUTE,
-               CONTROLLER_INDEX, ""),
-    "unmute":(defs.BTP_SERVICE_ID_AICS, defs.AICS_UNMUTE,
-               CONTROLLER_INDEX, ""),
-    "auto_gain":(defs.BTP_SERVICE_ID_AICS, defs.AICS_AUTO_GAIN,
-               CONTROLLER_INDEX, ""),
-    "man_gain":(defs.BTP_SERVICE_ID_AICS, defs.AICS_MAN_GAIN,
-               CONTROLLER_INDEX, ""),
-    "man_gain_only":(defs.BTP_SERVICE_ID_AICS, defs.AICS_MAN_GAIN_ONLY,
-               CONTROLLER_INDEX, ""),
-    "auto_gain_only":(defs.BTP_SERVICE_ID_AICS, defs.AICS_AUTO_GAIN_ONLY,
-               CONTROLLER_INDEX, ""),
-    "desc":(defs.BTP_SERVICE_ID_AICS, defs.AICS_DESC,
-               CONTROLLER_INDEX),
-    "mute_disable":(defs.BTP_SERVICE_ID_AICS, defs.AICS_MUTE_DISABLE,
-               CONTROLLER_INDEX, ""),
+    "read_supported_cmds": (defs.BTP_SERVICE_ID_AICS,
+                            defs.AICS_READ_SUPPORTED_COMMANDS,
+                            CONTROLLER_INDEX, ""),
+    "set_gain":            (defs.BTP_SERVICE_ID_AICS,
+                            defs.AICS_SET_GAIN,
+                            CONTROLLER_INDEX),
+    "mute":                (defs.BTP_SERVICE_ID_AICS,
+                            defs.AICS_MUTE,
+                            CONTROLLER_INDEX),
+    "unmute":              (defs.BTP_SERVICE_ID_AICS,
+                            defs.AICS_UNMUTE,
+                            CONTROLLER_INDEX),
+    "auto_gain":           (defs.BTP_SERVICE_ID_AICS,
+                            defs.AICS_AUTO_GAIN_SET,
+                            CONTROLLER_INDEX),
+    "man_gain":            (defs.BTP_SERVICE_ID_AICS,
+                            defs.AICS_MAN_GAIN_SET,
+                            CONTROLLER_INDEX),
+    "man_gain_only":       (defs.BTP_SERVICE_ID_AICS,
+                            defs.AICS_SET_MAN_GAIN_ONLY,
+                            CONTROLLER_INDEX, ""),
+    "auto_gain_only":      (defs.BTP_SERVICE_ID_AICS,
+                            defs.AICS_SET_AUTO_GAIN_ONLY,
+                            CONTROLLER_INDEX, ""),
+    "desc_set":            (defs.BTP_SERVICE_ID_AICS,
+                            defs.AICS_AUDIO_DESC_SET,
+                            CONTROLLER_INDEX),
+    "mute_disable":        (defs.BTP_SERVICE_ID_AICS,
+                            defs.AICS_MUTE_DISABLE,
+                            CONTROLLER_INDEX, ""),
+    "aics_state":          (defs.BTP_SERVICE_ID_AICS,
+                            defs.AICS_STATE_GET,
+                            CONTROLLER_INDEX),
+    "status":              (defs.BTP_SERVICE_ID_AICS,
+                            defs.AICS_STATUS_GET,
+                            CONTROLLER_INDEX),
+    "type":                (defs.BTP_SERVICE_ID_AICS,
+                            defs.AICS_TYPE_GET,
+                            CONTROLLER_INDEX),
+    "gain_setting_prop":   (defs.BTP_SERVICE_ID_AICS,
+                            defs.AICS_GAIN_SETTING_PROP_GET,
+                            CONTROLLER_INDEX),
+    "description":         (defs.BTP_SERVICE_ID_AICS,
+                            defs.AICS_DESCRIPTION_GET,
+                            CONTROLLER_INDEX)
 }
 
-AICS_EV = {
-    ### For future testing purposes ###
-}
 
 def aics_command_rsp_succ(op=None):
     logging.debug("%s", aics_command_rsp_succ.__name__)
@@ -43,37 +68,47 @@ def aics_command_rsp_succ(op=None):
 
     return tuple_data
 
-def aics_mute():
+
+def aics_mute(bd_addr_type=None, bd_addr=None):
     logging.debug("%s", aics_mute.__name__)
 
+    data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
 
-    iutctl.btp_socket.send(*AICS['mute'])
+    iutctl.btp_socket.send(*AICS['mute'], data=data)
+
     aics_command_rsp_succ()
 
-def aics_unmute():
+
+def aics_unmute(bd_addr_type=None, bd_addr=None):
     logging.debug("%s", aics_unmute.__name__)
 
+    data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
 
-    iutctl.btp_socket.send(*AICS['unmute'])
+    iutctl.btp_socket.send(*AICS['unmute'], data=data)
     aics_command_rsp_succ()
 
-def aics_auto_gain():
-    logging.debug("%s", aics_auto_gain.__name__)
 
+def aics_auto_gain_set(bd_addr_type=None, bd_addr=None):
+    logging.debug("%s", aics_auto_gain_set.__name__)
+
+    data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
 
-    iutctl.btp_socket.send(*AICS['auto_gain'])
+    iutctl.btp_socket.send(*AICS['auto_gain'], data=data)
     aics_command_rsp_succ()
 
-def aics_man_gain():
-    logging.debug("%s", aics_man_gain.__name__)
 
+def aics_man_gain_set(bd_addr_type=None, bd_addr=None):
+    logging.debug("%s", aics_man_gain_set.__name__)
+
+    data = address_to_ba(bd_addr_type, bd_addr)
     iutctl = get_iut()
 
-    iutctl.btp_socket.send(*AICS['man_gain'])
+    iutctl.btp_socket.send(*AICS['man_gain'], data=data)
     aics_command_rsp_succ()
+
 
 def aics_man_gain_only():
     logging.debug("%s", aics_man_gain_only.__name__)
@@ -83,13 +118,16 @@ def aics_man_gain_only():
     iutctl.btp_socket.send(*AICS['man_gain_only'])
     aics_command_rsp_succ()
 
+
 def aics_auto_gain_only():
     logging.debug("%s", aics_auto_gain_only.__name__)
 
+    data_ba = bytearray()
     iutctl = get_iut()
 
     iutctl.btp_socket.send(*AICS['auto_gain_only'])
     aics_command_rsp_succ()
+
 
 def aics_change_desc(string):
     logging.debug("%s", aics_change_desc.__name__)
@@ -100,26 +138,189 @@ def aics_change_desc(string):
     data = bytearray(struct.pack("<B", string_len))
     data.extend(string.encode('UTF-8'))
 
-    iutctl.btp_socket.send(*AICS['desc'], data = data)
+    iutctl.btp_socket.send(*AICS['desc_set'], data=data)
     aics_command_rsp_succ()
 
-def aics_set_gain(gain):
+
+def aics_state_get(bd_addr_type=None, bd_addr=None):
+    logging.debug("%s", aics_state_get.__name__)
+
+    data = address_to_ba(bd_addr_type, bd_addr)
+    iutctl = get_iut()
+
+    iutctl.btp_socket.send(*AICS['aics_state'], data=data)
+
+    aics_command_rsp_succ()
+
+
+def aics_status_get(bd_addr_type=None, bd_addr=None):
+    logging.debug("%s", aics_status_get.__name__)
+
+    data = address_to_ba(bd_addr_type, bd_addr)
+    iutctl = get_iut()
+
+    iutctl.btp_socket.send(*AICS['status'], data=data)
+
+    aics_command_rsp_succ()
+
+
+def aics_type_get(bd_addr_type=None, bd_addr=None):
+    logging.debug("%s", aics_type_get.__name__)
+
+    data = address_to_ba(bd_addr_type, bd_addr)
+    iutctl = get_iut()
+
+    iutctl.btp_socket.send(*AICS['type'], data=data)
+
+    aics_command_rsp_succ()
+
+
+def aics_gain_setting_prop_get(bd_addr_type=None, bd_addr=None):
+    logging.debug("%s", aics_gain_setting_prop_get.__name__)
+
+    data = address_to_ba(bd_addr_type, bd_addr)
+    iutctl = get_iut()
+
+    iutctl.btp_socket.send(*AICS['gain_setting_prop'], data=data)
+
+    aics_command_rsp_succ()
+
+
+def address_to_ba(bd_addr_type=None, bd_addr=None):
+    data = bytearray()
+    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
+    bd_addr_type_ba = chr(pts_addr_type_get(bd_addr_type)).encode('utf-8')
+    data.extend(bd_addr_type_ba)
+    data.extend(bd_addr_ba)
+    return data
+
+
+def aics_set_gain(gain, bd_addr_type=None, bd_addr=None):
     logging.debug("%s %r", aics_set_gain.__name__, gain)
 
     iutctl = get_iut()
 
     if isinstance(gain, str):
         gain = int(gain)
-
-    data = bytearray(struct.pack("<b", gain))
+    data = address_to_ba(bd_addr_type, bd_addr)
+    data.extend(struct.pack("<b", gain))
 
     iutctl.btp_socket.send(*AICS['set_gain'], data=data)
     aics_command_rsp_succ()
 
+
 def aics_mute_disable():
-    logging.debug("%s", aics_mute.__name__)
+    logging.debug("%s", aics_mute_disable.__name__)
 
     iutctl = get_iut()
 
     iutctl.btp_socket.send(*AICS['mute_disable'])
     aics_command_rsp_succ()
+
+
+def aics_description_get(bd_addr_type=None, bd_addr=None):
+    logging.debug("%s", aics_description_get.__name__)
+
+    data = address_to_ba(bd_addr_type, bd_addr)
+    iutctl = get_iut()
+
+    iutctl.btp_socket.send(*AICS['description'], data=data)
+    aics_command_rsp_succ()
+
+
+def aics_state_ev(aics, data, data_len):
+    logging.debug('%s %r', aics_state_ev.__name__, data)
+
+    fmt = '<B6sBbb'
+    if len(data) < struct.calcsize(fmt):
+        raise BTPError('Invalid data length')
+
+    addr_type, addr, gain, mute, mode = struct.unpack_from(fmt, data)
+
+    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+
+    logging.debug(f'Audio Input Control State: addr {addr} addr_type '
+                  f'{addr_type}, gain {gain}, mute {mute}, mode {mode}')
+
+    aics.event_received(defs.AICS_STATE_EV, (addr_type, addr, gain, mute, mode))
+
+
+def aics_gain_setting_prop_ev(aics, data, data_len):
+    logging.debug('%s %r', aics_gain_setting_prop_ev.__name__, data)
+
+    fmt = '<B6sbBB'
+    if len(data) < struct.calcsize(fmt):
+        raise BTPError('Invalid data length')
+
+    addr_type, addr, units, minimum, maximum = struct.unpack_from(fmt, data)
+
+    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+
+    logging.debug(f'AICS Gain Setting Properties: addr {addr} addr_type '
+                  f'{addr_type}, units {units}, minimum {minimum}, maximum {maximum}')
+
+    aics.event_received(defs.AICS_GAIN_SETTING_PROP_EV, (addr_type, addr, units,
+                                                         minimum, maximum))
+
+
+def aics_input_type_ev(aics, data, data_len):
+    logging.debug('%s %r', aics_input_type_ev.__name__, data)
+
+    fmt = '<B6sb'
+    if len(data) < struct.calcsize(fmt):
+        raise BTPError('Invalid data length')
+
+    addr_type, addr, input_type = struct.unpack_from(fmt, data)
+
+    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+
+    logging.debug(f'AICS Input type ev: addr {addr} addr_type '
+                  f'{addr_type}, input type {input_type}')
+
+    aics.event_received(defs.AICS_INPUT_TYPE_EV, (addr_type, addr, input_type))
+
+
+def aics_status_ev(aics, data, data_len):
+    logging.debug('%s %r', aics_status_ev.__name__, data)
+
+    fmt = '<B6sb'
+    if len(data) < struct.calcsize(fmt):
+        raise BTPError('Invalid data length')
+
+    addr_type, addr, status = struct.unpack_from(fmt, data)
+
+    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+
+    logging.debug(f'AICS Status ev: addr {addr} addr_type '
+                  f'{addr_type}, status {status}')
+
+    aics.event_received(defs.AICS_STATUS_EV, (addr_type, addr, status))
+
+
+def aics_description_ev(aics, data, data_len):
+    logging.debug('%s %r', aics_description_ev.__name__, data)
+
+    fmt = '<B6s'
+
+    if len(data) < struct.calcsize(fmt):
+        raise BTPError('Invalid data length')
+
+    addr_type, addr = struct.unpack_from(fmt, data)
+    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+
+    description = struct.unpack_from(f'<{len(data) - struct.calcsize(fmt) - 1}s', data, offset=struct.calcsize(fmt))
+    description = binascii.hexlify(description[0]).decode('utf-8')
+
+    logging.debug(f'AICS Description ev: addr {addr} addr_type '
+                  f'{addr_type}, description {description}')
+
+    aics.event_received(defs.AICS_DESCRIPTION_EV, (addr_type, addr, description))
+
+
+AICS_EV = {
+    defs.AICS_STATE_EV: aics_state_ev,
+    defs.AICS_GAIN_SETTING_PROP_EV: aics_gain_setting_prop_ev,
+    defs.AICS_INPUT_TYPE_EV: aics_input_type_ev,
+    defs.AICS_STATUS_EV: aics_status_ev,
+    defs.AICS_DESCRIPTION_EV: aics_description_ev
+}

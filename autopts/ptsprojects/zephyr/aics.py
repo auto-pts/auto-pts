@@ -56,6 +56,7 @@ def test_cases(ptses):
 
     pts = ptses[0]
 
+    pts_bd_addr = pts.q_bd_addr
     iut_device_name = get_unique_name(pts)
     stack = get_stack()
     stack.aics_init()
@@ -74,6 +75,7 @@ def test_cases(ptses):
                       TestFunc(btp.gap_set_conn),
                       TestFunc(btp.gap_set_gendiscov),
                       TestFunc(btp.core_reg_svc_aics),
+                      TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public),
                       TestFunc(stack.aics_init)]
 
     test_case_name_list = pts.get_test_case_list('AICS')
