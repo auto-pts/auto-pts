@@ -247,8 +247,8 @@ class ZephyrCtl:
         self.rtt_logger_stop()
         self.btmon_stop()
 
-        if not self.gdb and self.board:
-            stack = get_stack()
+        stack = get_stack()
+        if not self.gdb and self.board and stack.core:
             stack.core.event_queues[defs.CORE_EV_IUT_READY].clear()
             self.board.reset()
 
