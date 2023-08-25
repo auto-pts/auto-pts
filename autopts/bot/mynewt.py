@@ -23,9 +23,9 @@ import time
 from pathlib import Path
 
 from autopts import bot
+from autopts.bot.common import make_error_txt
 from autopts.client import Client
-from autopts.ptsprojects.boards import get_free_device, release_device, get_build_and_flash, get_tty, get_debugger_snr, \
-    get_board_type
+from autopts.ptsprojects.boards import release_device, get_build_and_flash, get_board_type
 from autopts.ptsprojects.mynewt.iutctl import get_iut, log
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
 
@@ -156,7 +156,12 @@ class MynewtBotClient(bot.common.BotClient):
         if not args.no_build:
             build_and_flash = get_build_and_flash(args.board_name)
             board_type = get_board_type(args.board_name)
-            build_and_flash(args.project_path, board_type, overlay, args.debugger_snr)
+
+            try:
+                build_and_flash(args.project_path, board_type, overlay, args.debugger_snr)
+            except:
+                make_error_txt('Build and flash step failed')
+                raise
 
             time.sleep(10)
 

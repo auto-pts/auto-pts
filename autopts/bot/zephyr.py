@@ -29,9 +29,9 @@ import serial
 from autopts import bot
 from autopts.ptsprojects.zephyr import ZEPHYR_PROJECT_URL
 from autopts import client as autoptsclient
-from autopts.bot.common import BotConfigArgs, BotClient, make_report_diff
-from autopts.ptsprojects.boards import get_free_device, tty_to_com, release_device, get_tty, get_debugger_snr,\
-    get_build_and_flash, get_board_type
+
+from autopts.bot.common import BotConfigArgs, BotClient, make_report_diff, make_error_txt
+from autopts.ptsprojects.boards import tty_to_com, release_device, get_build_and_flash, get_board_type
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
 from autopts.ptsprojects.zephyr.iutctl import get_iut, log
 
@@ -194,10 +194,16 @@ class ZephyrBotClient(BotClient):
         if not args.no_build:
             build_and_flash = get_build_and_flash(args.board_name)
             board_type = get_board_type(args.board_name)
-            build_and_flash(args.project_path, board_type, args.debugger_snr,
-                            overlays, args.project_repos)
 
-            flush_serial(args.tty_file)
+            try:
+                build_and_flash(args.project_path, board_type, args.debugger_snr,
+                                overlays, args.project_repos)
+
+                flush_serial(args.tty_file)
+            except:
+                make_error_txt('Build and flash step failed')
+                raise
+
             time.sleep(10)
 
     def start(self, args=None):

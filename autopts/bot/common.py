@@ -53,6 +53,7 @@ CLIENT_SECRET_FILE = 'client_secret.json'
 REPORT_XLSX = "report.xlsx"
 REPORT_TXT = "report.txt"
 REPORT_DIFF_TXT = "report-diff.txt"
+ERROR_TXT = 'error.txt'
 COMMASPACE = ', '
 
 PROJECT_DIR = os.path.dirname(  # auto-pts repo directory
@@ -875,6 +876,12 @@ def make_report_diff(log_git_conf, results, regressions,
     f.close()
 
     return filename, deleted_cases
+
+
+def make_error_txt(msg):
+    filename = os.path.join(os.getcwd(), ERROR_TXT)
+    with open(filename, "w") as f:
+        f.write(msg)
 
 
 def github_push_report(report_folder, log_git_conf, commit_msg):

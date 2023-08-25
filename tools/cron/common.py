@@ -132,6 +132,26 @@ def report_to_review_msg(report_path):
     return msg
 
 
+def error_to_review_msg():
+    error_txt_path = os.path.join(AUTOPTS_REPO, 'error.txt')
+    msg = 'AutoPTS Bot failed:\n'
+
+    if not os.path.exists(error_txt_path):
+        msg += 'Reason unknown'
+        return msg
+
+    with open(error_txt_path, 'r') as f:
+        while True:
+            line = f.readline()
+
+            if not line:
+                break
+
+            msg += line
+
+    return msg
+
+
 def send_mail_exception(conf_name, email_cfg, exception, magic_tag=None):
     iso_cal = date.today().isocalendar()
     ww_dd_str = 'WW%s.%s' % (iso_cal[1], iso_cal[2])
@@ -472,7 +492,10 @@ def generic_pr_job(cron, cfg, pr_cfg, server_options, pr_repo_name_in_config,
     # it should exist if bot completed tests fully
     report = os.path.join(AUTOPTS_REPO, 'report.txt')
     if not os.path.exists(report):
-        raise Exception('Bot failed before report creation')
+        error_msg = error_to_review_msg()
+        cron.post_pr_comment(pr_cfg['number'], error_msg)
+
+        raise Exception(error_msg)
 
     log(f'{pr_cfg["repo_name"]} PR Job finished')
 
