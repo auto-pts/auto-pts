@@ -17,7 +17,6 @@
 
 """Common code for the auto PTS clients"""
 
-import _locale
 import datetime
 import errno
 import logging
@@ -523,7 +522,8 @@ def get_result_color(status):
 
 class TestCaseRunStats:
     def __init__(self, projects, test_cases, retry_count, db=None):
-
+        self.pts_ver = ''
+        self.platform = ''
         self.run_count_max = retry_count + 1  # Run test at least once
         self.run_count = 0  # Run count of current test case
         self.num_test_cases = len(test_cases)
@@ -550,23 +550,57 @@ class TestCaseRunStats:
         else:
             self.est_duration = 0
 
-    def update(self, test_case_name, duration, status):
+    def __del__(self):
+        try:
+            os.remove(self.xml_results)
+        except Exception as e:
+            print(e)
+
+    @staticmethod
+    def merge(stats1, stats2):
+        merged_stats = TestCaseRunStats([], [], 0, stats1.db)
+        merged_stats.num_test_cases = stats1.num_test_cases + stats2.num_test_cases
+        merged_stats.num_test_cases_width = max(stats1.num_test_cases_width, stats2.num_test_cases_width)
+        merged_stats.max_project_name = max(stats1.max_project_name, stats2.max_project_name)
+        merged_stats.max_test_case_name = max(stats1.max_test_case_name, stats2.max_test_case_name)
+        merged_stats.est_duration = stats1.est_duration + stats2.est_duration
+
+        merged_stats_tree = ElementTree.parse(merged_stats.xml_results)
+        merged_stats_root = merged_stats_tree.getroot()
+
+        stats1_tree = ElementTree.parse(stats1.xml_results)
+        root1 = stats1_tree.getroot()
+
+        stats2_tree = ElementTree.parse(stats2.xml_results)
+        root2 = stats2_tree.getroot()
+
+        merged_stats_root.extend(root1)
+        merged_stats_root.extend(root2)
+        merged_stats_tree.write(merged_stats.xml_results)
+
+        return merged_stats
+
+    def update(self, test_case_name, duration, status, description=''):
         tree = ElementTree.parse(self.xml_results)
         root = tree.getroot()
 
         elem = root.find("./test_case[@name='%s']" % test_case_name)
         if elem is None:
             elem = ElementTree.SubElement(root, 'test_case')
+            elem.attrib["new"] = '0'
 
             status_previous = None
             if self.db:
                 status_previous = self.db.get_result(test_case_name)
+                if status_previous is None:
+                    elem.attrib["new"] = '1'
 
             elem.attrib["project"] = test_case_name.split('/')[0]
             elem.attrib["name"] = test_case_name
             elem.attrib["duration"] = str(duration)
             elem.attrib["status"] = ""
             elem.attrib["status_previous"] = str(status_previous)
+            elem.attrib["description"] = description
 
             run_count = 0
         else:
@@ -585,6 +619,30 @@ class TestCaseRunStats:
         tree.write(self.xml_results)
 
         return regression, progress
+
+    def update_descriptions(self, descriptions):
+        tree = ElementTree.parse(self.xml_results)
+        root = tree.getroot()
+
+        for tc in descriptions.keys():
+            elem = root.find("./test_case[@name='%s']" % tc)
+            if elem is None:
+                continue
+
+            elem.attrib["description"] = descriptions[tc]
+
+        tree.write(self.xml_results)
+
+    def get_descriptions(self):
+        tree = ElementTree.parse(self.xml_results)
+        root = tree.getroot()
+
+        descriptions = {}
+
+        for tc_xml in root.findall("./test_case"):
+            descriptions[tc_xml.attrib["name"]] = tc_xml.attrib["description"]
+
+        return descriptions
 
     def get_results(self):
         tree = ElementTree.parse(self.xml_results)
@@ -612,6 +670,13 @@ class TestCaseRunStats:
 
         return [tc_xml.attrib["name"] for tc_xml in tcs_xml]
 
+    def get_new_cases(self):
+        tree = ElementTree.parse(self.xml_results)
+        root = tree.getroot()
+        tcs_xml = root.findall("./test_case[@new='1']")
+
+        return [tc_xml.attrib["name"] for tc_xml in tcs_xml]
+
     def get_status_count(self):
         tree = ElementTree.parse(self.xml_results)
         root = tree.getroot()
@@ -626,13 +691,22 @@ class TestCaseRunStats:
 
         return status_dict
 
-    def print_summary(self):
+    def print_summary(self, detailed=False):
         """Prints test case list status summary"""
         print("\nSummary:\n")
         print(get_formatted_summary(self.get_status_count(),
                                     self.num_test_cases,
                                     len(self.get_regressions()),
                                     len(self.get_progresses())))
+        if not detailed:
+            return
+
+        print('\nRegressions:')
+        print('\n'.join(self.get_regressions()))
+        print('\nProgresses:')
+        print('\n'.join(self.get_progresses()))
+        print('\nNew cases:')
+        print('\n'.join(self.get_new_cases()))
 
 
 def get_formatted_summary(status_count, num_test_cases, regressions_count, progresses_count):
