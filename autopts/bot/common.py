@@ -44,7 +44,7 @@ from oauth2client import file, client, tools
 
 from autopts import bot
 from autopts import client as autoptsclient
-from autopts.client import CliParser, Client, get_formatted_summary
+from autopts.client import CliParser, Client, get_formatted_summary, TestCaseRunStats
 from autopts.ptsprojects.boards import get_free_device, get_tty, get_debugger_snr
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
 
@@ -52,6 +52,7 @@ SCOPES = 'https://www.googleapis.com/auth/drive'
 CLIENT_SECRET_FILE = 'client_secret.json'
 REPORT_XLSX = "report.xlsx"
 REPORT_TXT = "report.txt"
+REPORT_DIFF_TXT = "report-diff.txt"
 COMMASPACE = ', '
 
 PROJECT_DIR = os.path.dirname(  # auto-pts repo directory
@@ -161,13 +162,9 @@ class BotClient(Client):
         pass
 
     def run_test_cases(self):
-        results = {}
-        status = {}
-        descriptions = {}
-        total_regressions = []
-        total_progresses = []
         _args = {}
         limit_counter = 0
+        all_stats = None
 
         config_default = self.config_default
         _args[config_default] = self.args
@@ -245,44 +242,36 @@ class BotClient(Client):
 
             stats = autoptsclient.run_test_cases(self.ptses, self.test_cases, _args[config])
 
-            status_count = stats.get_status_count()
-            results_dict = stats.get_results()
-            regressions = stats.get_regressions()
-            progresses = stats.get_progresses()
+            if all_stats is None:
+                all_stats = stats
+            else:
+                all_stats = all_stats.merge(all_stats, stats)
 
-            total_regressions += regressions
-            total_progresses += progresses
+        # End of bot run - all test cases completed
 
-            for k, v in list(status_count.items()):
-                if k in list(status.keys()):
-                    status[k] += v
-                else:
-                    status[k] = v
+        if all_stats is None:
+            print(f'\nNo test cases were run. Please verify your config.\n')
+            return TestCaseRunStats([], [], 0, None)
 
-            results.update(results_dict)
+        all_stats.print_summary()
 
+        print(f'\nFinal Bot Summary:\n')
+
+        try:
+            results = all_stats.get_results()
+            descriptions = {}
             for test_case_name in list(results.keys()):
                 project_name = test_case_name.split('/')[0]
                 descriptions[test_case_name] = \
                     self.ptses[0].get_test_case_description(project_name, test_case_name)
 
-        total_regressions_len = len(total_regressions)
-        total_progresses_len = len(total_progresses)
-        print(f'\nFinal Bot Summary:\n')
-        print(get_formatted_summary(status, len(results), total_regressions_len, total_progresses_len))
+            all_stats.update_descriptions(descriptions)
+            all_stats.pts_ver = '{}'.format(self.ptses[0].get_version())
+            all_stats.platform = '{}'.format(self.ptses[0].get_system_model())
+        except:
+            log('Failed to generate some stats.')
 
-        if total_regressions_len:
-            print('\nRegressions:')
-            print('\n'.join(total_regressions))
-
-        if total_progresses_len:
-            print('\nProgresses:')
-            print('\n'.join(total_progresses))
-
-        pts_ver = '{}'.format(self.ptses[0].get_version())
-        platform = '{}'.format(self.ptses[0].get_system_model())
-
-        return status, results, descriptions, total_regressions, total_progresses, pts_ver, platform
+        return all_stats
 
     def start(self, args=None):
         # Extend this method in a derived class to handle sending
@@ -372,37 +361,18 @@ def url2html(url, msg):
     return "<a href={}>{}</a>".format(url, msg)
 
 
-def regressions2html(regressions, descriptions):
-    """Creates HTML formatted message with regressions
-    :param regressions: list of regressions found
-    :param descriptions: dictionary of descriptions for regressions
+def test_cases2html(title, not_found_msg, test_cases, descriptions):
+    """Creates HTML formatted message with test cases
+    :param title: Title of email subsection
+    :param not_found_msg: Text to use if no test cases
+    :param test_cases: A list of test cases
+    :param descriptions: A list of test case descriptions
     :return: HTML formatted message
     """
-    msg = "<h3>Regressions</h3>"
-
-    regressions_list = []
-    for name in regressions:
-        regressions_list.append(
-            name + " - " + descriptions.get(name, "no description"))
-
-    if regressions_list:
-        for name in regressions_list:
-            msg += "<p>{}</p>".format(name)
-    else:
-        msg += "<p>No regressions found</p>"
-
-    return msg
-
-
-def progresses2html(progresses, descriptions):
-    """Creates HTML formatted message with regressions
-    :param progresses: list of regressions found
-    :return: HTML formatted message
-    """
-    msg = "<h3>Progresses</h3>"
+    msg = f"<h3>{title}</h3>"
 
     progresses_list = []
-    for name in progresses:
+    for name in test_cases:
         progresses_list.append(
             name + " - " + descriptions.get(name, "no description"))
 
@@ -410,9 +380,29 @@ def progresses2html(progresses, descriptions):
         for name in progresses_list:
             msg += "<p>{}</p>".format(name)
     else:
-        msg += "<p>No progresses found</p>"
+        msg += f"<p>{not_found_msg}</p>"
 
     return msg
+
+
+def regressions2html(regressions, descriptions):
+    return test_cases2html('Regressions', 'No regressions found',
+                           regressions, descriptions)
+
+
+def progresses2html(progresses, descriptions):
+    return test_cases2html('Progresses', 'No progresses found',
+                           progresses, descriptions)
+
+
+def new_cases2html(new_cases, descriptions):
+    return test_cases2html('New cases', 'No new cases found',
+                           new_cases, descriptions)
+
+
+def deleted_cases2html(deleted_cases, descriptions):
+    return test_cases2html('Deleted cases', 'No deleted cases found',
+                           deleted_cases, descriptions)
 
 
 def send_mail(cfg, subject, body, attachments=None):
@@ -770,10 +760,10 @@ def make_report_txt(results_dict, regressions_list,
 
 
 # ****************************************************************************
-# .txt result file
+# autopts_report result folder
 # ****************************************************************************
 def make_report_folder(iut_logs, pts_logs, xmls, report_xlsx, report_txt,
-                       readme_file, database_file, tag=''):
+                       report_diff_txt, readme_file, database_file, tag=''):
     """Creates folder containing .txt and .xlsx reports, pulled logs
     from autoptsserver, iut logs and additional README.md.
     """
@@ -791,7 +781,10 @@ def make_report_folder(iut_logs, pts_logs, xmls, report_xlsx, report_txt,
                         try:
                             shutil.move(file.path, dst_file)
                         except:  # skip waiting for BPV to release the file
-                            shutil.copy(file.path, dst_file)
+                            try:
+                                shutil.copy(file.path, dst_file)
+                            except:
+                                pass
 
         recursive(logs_tree, max_depth)
 
@@ -799,6 +792,8 @@ def make_report_folder(iut_logs, pts_logs, xmls, report_xlsx, report_txt,
     shutil.rmtree(report_dir, ignore_errors=True)
     Path(report_dir).mkdir(parents=True, exist_ok=True)
 
+    shutil.copy(report_diff_txt, os.path.join(report_dir, 'report-diff.txt'))
+    shutil.copy(report_txt, os.path.join(report_dir, 'report.txt'))
     shutil.copy(report_txt, os.path.join(report_dir, 'report{}.txt'.format(tag)))
     shutil.copy(report_xlsx, os.path.join(report_dir, 'report{}.xlsx'.format(tag)))
     shutil.copy(readme_file, os.path.join(report_dir, 'README.md'))
@@ -816,6 +811,70 @@ def make_report_folder(iut_logs, pts_logs, xmls, report_xlsx, report_txt,
         print('XMLs directory doesn\'t exist')
 
     return os.path.join(os.getcwd(), report_dir)
+
+
+def report_parse_test_cases(report):
+    if not os.path.exists(report):
+        return None
+
+    test_cases = []
+
+    with open(report, 'r') as f:
+        while True:
+            line = f.readline()
+
+            if not line:
+                break
+
+            tc = re.sub(' +', ' ', line).split(r' ')[1]
+            test_cases.append(tc)
+
+    # Ignore the first line filled with sha of sources
+    return test_cases[1:]
+
+
+def make_report_diff(log_git_conf, results, regressions,
+                     progresses, new_cases):
+
+    old_report_txt = os.path.join(log_git_conf['path'],
+                                  log_git_conf['subdir'],
+                                  'autopts_report',
+                                  REPORT_TXT)
+
+    if not os.path.exists(old_report_txt):
+        return None
+
+    filename = os.path.join(os.getcwd(), REPORT_DIFF_TXT)
+    f = open(filename, "w")
+
+    old_test_cases = report_parse_test_cases(old_report_txt)
+
+    deleted_cases = []
+    test_cases = list(results.keys())
+
+    for tc in old_test_cases:
+        if tc not in test_cases:
+            deleted_cases.append(tc)
+
+    f.write(f"Regressions:\n")
+    for tc in regressions:
+        f.write(f"{tc}\n")
+
+    f.write(f"\nProgresses:\n")
+    for tc in progresses:
+        f.write(f"{tc}\n")
+
+    f.write(f"\nNew cases:\n")
+    for tc in new_cases:
+        f.write(f"{tc}\n")
+
+    f.write(f"\nDeleted cases:\n")
+    for tc in deleted_cases:
+        f.write(f"{tc}\n")
+
+    f.close()
+
+    return filename, deleted_cases
 
 
 def github_push_report(report_folder, log_git_conf, commit_msg):

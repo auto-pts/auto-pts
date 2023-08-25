@@ -29,7 +29,7 @@ import serial
 from autopts import bot
 from autopts.ptsprojects.zephyr import ZEPHYR_PROJECT_URL
 from autopts import client as autoptsclient
-from autopts.bot.common import BotConfigArgs, BotClient
+from autopts.bot.common import BotConfigArgs, BotClient, make_report_diff
 from autopts.ptsprojects.boards import get_free_device, tty_to_com, release_device, get_tty, get_debugger_snr,\
     get_build_and_flash, get_board_type
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
@@ -120,30 +120,25 @@ def compose_mail(args, mail_cfg, mail_ctx):
     iso_cal = datetime.date.today().isocalendar()
     ww_dd_str = "WW%s.%s" % (iso_cal[1], iso_cal[2])
 
-    body = '''
+    body = f'''
     <p>This is automated email and do not reply.</p>
-    <h1>Bluetooth test session - {} </h1>
+    <h1>Bluetooth test session - {ww_dd_str} </h1>
     <h2>1. IUT Setup</h2>
     <p><b> Type:</b> Zephyr <br>
-    <b> Board:</b> {} <br>
-    <b> Source:</b> {} </p>
+    <b> Board:</b> {args['board']} <br>
+    <b> Source:</b> {mail_ctx['repos_info']} </p>
     <h2>2. PTS Setup</h2>
     <p><b> OS:</b> Windows 10 <br>
-    <b> Platform:</b> {} <br>
-    <b> Version:</b> {} </p>
+    <b> Platform:</b> {args['platform']} <br>
+    <b> Version:</b> {args['pts_ver']} </p>
     <h2>3. Test Results</h2>
-    <p><b>Execution Time</b>: {}</p>
-    {}
-    {}
-    {}
+    <p><b>Execution Time</b>: {mail_ctx['elapsed_time']}</p>
+    {mail_ctx['summary']}
     <h3>Logs</h3>
-    {}
+    {mail_ctx['log_url']}
     <p>Sincerely,</p>
-    <p> {}</p>
-    '''.format(ww_dd_str, args["board"], mail_ctx["repos_info"], args['platform'],
-               args['pts_ver'], mail_ctx["elapsed_time"], mail_ctx["summary"],
-               mail_ctx["regression"], mail_ctx["progresses"],
-               mail_ctx["log_url"], mail_cfg['name'])
+    <p>{mail_cfg['name']}</p>
+'''
 
     if 'subject' in mail_cfg:
         subject = mail_cfg['subject']
@@ -246,10 +241,19 @@ def main(bot_client):
         time.sleep(1)
 
     try:
-        summary, results, descriptions, regressions, progresses, \
-            args['pts_ver'], args['platform'] = bot_client.run_tests()
+        stats = bot_client.run_tests()
     finally:
         release_device(bot_client.args.tty_file)
+
+    summary = stats.get_status_count()
+    results = stats.get_results()
+    descriptions = stats.get_descriptions()
+    regressions = stats.get_regressions()
+    progresses = stats.get_progresses()
+    new_cases = stats.get_new_cases()
+    deleted_cases = []
+    args['pts_ver'] = stats.pts_ver
+    args['platform'] = stats.platform
 
     results = collections.OrderedDict(sorted(results.items()))
 
@@ -270,8 +274,12 @@ def main(bot_client):
         iut_logs = 'logs/'
         readme_file = make_readme_md(start_time_stamp, end_time_stamp,
                                      repos_info, args['pts_ver'])
+
+        report_diff_txt, deleted_cases = make_report_diff(cfg['githubdrive'], results,
+                                           regressions, progresses, new_cases)
+
         report_folder = bot.common.make_report_folder(iut_logs, pts_logs, xmls, report_file,
-                                                      report_txt, readme_file,
+                                                      report_txt, report_diff_txt, readme_file,
                                                       args['database_file'],
                                                       '_iut_zephyr_' + start_time_stamp)
 
@@ -305,12 +313,12 @@ def main(bot_client):
         print("Sending email ...")
 
         # keep mail related context to simplify the code
-        mail_ctx = {"summary": bot.common.status_dict2summary_html(summary),
-                    "regression": bot.common.regressions2html(regressions,
-                                                              descriptions),
-                    "repos_info": repo_status,
-                    "progresses": bot.common.progresses2html(progresses,
-                                                             descriptions)
+        mail_ctx = {'repos_info': repo_status,
+                    'summary': f'''{bot.common.status_dict2summary_html(summary)}
+{bot.common.regressions2html(regressions, descriptions)}
+{bot.common.progresses2html(progresses, descriptions)}
+{bot.common.new_cases2html(new_cases, descriptions)}
+{bot.common.deleted_cases2html(deleted_cases, descriptions)}''',
                     }
 
         # Summary

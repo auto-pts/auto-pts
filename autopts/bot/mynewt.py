@@ -1,6 +1,4 @@
 #!/usr/bin/env python
-
-import datetime
 #
 # auto-pts - The Bluetooth PTS Automation Framework
 #
@@ -15,6 +13,8 @@ import datetime
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
+import collections
+import datetime
 import importlib
 import os
 import subprocess
@@ -202,10 +202,19 @@ def main(bot_client):
         repo_status = ''
 
     try:
-        summary, results, descriptions, regressions, progresses, \
-            args['pts_ver'], args['platform'] = bot_client.run_tests()
+        stats = bot_client.run_tests()
     finally:
         release_device(bot_client.args.tty_file)
+
+    summary = stats.get_status_count()
+    results = stats.get_results()
+    descriptions = stats.get_descriptions()
+    regressions = stats.get_regressions()
+    progresses = stats.get_progresses()
+    args['pts_ver'] = stats.pts_ver
+    args['platform'] = stats.platform
+
+    results = collections.OrderedDict(sorted(results.items()))
 
     pts_logs, xmls = bot.common.pull_server_logs(bot_client.args)
 
