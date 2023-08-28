@@ -12,7 +12,7 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
-
+import threading
 from binascii import hexlify
 from time import sleep
 import logging
@@ -115,9 +115,27 @@ def gatt_server_fetch_db():
 
 
 COMPARED_VALUE = []
+BTP_LOCK = threading.RLock()
+
+
+def lock_wrapper(lock):
+    def _lock_wrapper(func):
+        def __lock_wrapper(*args):
+            try:
+                lock.acquire()
+                ret = func(*args)
+            finally:
+                lock.release()
+            return ret
+
+        return __lock_wrapper
+
+    return _lock_wrapper
 
 
 # wid handlers section begin
+
+@lock_wrapper(BTP_LOCK)
 def hdl_wid_1(_: WIDParams):
     stack = get_stack()
     btp.gap_set_conn()
@@ -1087,6 +1105,7 @@ def hdl_wid_92(params: WIDParams):
     return True
 
 
+@lock_wrapper(BTP_LOCK)
 def hdl_wid_93(params: WIDParams):
     # Please send an Handle Value MULTIPLE Notification to PTS.
     # Description: Verify that the Implementation Under Test (IUT) can send
@@ -1987,6 +2006,7 @@ def hdl_wid_304(params: WIDParams):
     return bool(data in val)
 
 
+@lock_wrapper(BTP_LOCK)
 def hdl_wid_308(params: WIDParams):
     # description: Please do not send an ATT_Handle_value_Multiple_notification to Lower tester until timeout(30s).
 
