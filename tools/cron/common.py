@@ -180,7 +180,7 @@ def clear_workspace(workspace_dir):
                     shutil.rmtree(f, ignore_errors=True)
                 else:
                     try:
-                        if not f.name.endswith(('.pqw6', '.pts', '.gitignore', '.xlsx')):
+                        if not f.name.endswith(('.pqw6', '.pts', '.gitignore', '.xlsx', '.bls')):
                             os.remove(f)
                     except:
                         pass
