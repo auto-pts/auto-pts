@@ -70,6 +70,7 @@ class ZephyrCtl:
         self.hci = args.hci
         self.native = None
         self.gdb = args.gdb
+        self.is_running = False
 
         if self.tty_file and args.board_name:  # DUT is a hardware board, not QEMU
             if self.debugger_snr is None:
@@ -100,6 +101,7 @@ class ZephyrCtl:
 
         log("%s.%s", self.__class__, self.start.__name__)
 
+        self.is_running = True
         self.test_case = test_case
         self.iut_log_file = open(os.path.join(test_case.log_dir, "autopts-iutctl-zephyr.log"), "a")
 
@@ -244,6 +246,9 @@ class ZephyrCtl:
         """Powers off the Zephyr OS"""
         log("%s.%s", self.__class__, self.stop.__name__)
 
+        if not self.is_running:
+            return
+
         self.rtt_logger_stop()
         self.btmon_stop()
 
@@ -282,6 +287,8 @@ class ZephyrCtl:
             self.socat_process.terminate()
             self.socat_process.wait()
             self.socat_process = None
+
+        self.is_running = False
 
 
 class ZephyrCtlStub:
