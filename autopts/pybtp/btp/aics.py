@@ -303,13 +303,14 @@ def aics_description_ev(aics, data, data_len):
 
     fmt = '<B6sb'
 
-    if len(data) < struct.calcsize(fmt):
+    fmt_size = struct.calcsize(fmt)
+    if len(data) < fmt_size:
         raise BTPError('Invalid data length')
 
     addr_type, addr, att_status = struct.unpack_from(fmt, data)
     addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
 
-    description = struct.unpack_from(f'<{len(data) - struct.calcsize(fmt) - 1}s', data, offset=struct.calcsize(fmt))
+    description = struct.unpack_from(f'<{len(data) - fmt_size - 1}s', data, offset=fmt_size)
     description = binascii.hexlify(description[0]).decode('utf-8')
 
     logging.debug(f'AICS Description ev: addr {addr} addr_type '

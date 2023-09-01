@@ -678,12 +678,83 @@ class Mesh:
         return self.priv_key.data
 
 
+class VCP:
+    def __init__(self):
+        self.wid_counter = 0
+        self.event_queues = {
+            defs.VCP_DISCOVERED_EV: [],
+            defs.VCP_STATE_EV: [],
+            defs.VCP_FLAGS_EV: [],
+            defs.VCP_PROCEDURE_EV: [],
+        }
+
+    def event_received(self, event_type, event_data_tuple):
+        self.event_queues[event_type].append(event_data_tuple)
+
+    def wait_discovery_completed_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.VCP_DISCOVERED_EV],
+            lambda _addr_type, _addr, *_:
+            (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
+
+    def wait_vcp_state_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.VCP_STATE_EV],
+            lambda _addr_type, _addr, *_:
+            (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
+
+    def wait_vcp_flags_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.VCP_FLAGS_EV],
+            lambda _addr_type, _addr, *_:
+            (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
+
+    def wait_vcp_procedure_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.VCP_PROCEDURE_EV],
+            lambda _addr_type, _addr, *_:
+            (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
+
+
 class VCS:
     pass
 
 
 class VOCS:
-    pass
+    def __init__(self):
+        self.event_queues = {
+            defs.VOCS_OFFSET_EV: [],
+            defs.VOCS_AUDIO_LOC_EV: [],
+            defs.VOCS_PROCEDURE_EV: []
+        }
+
+    def event_received(self, event_type, event_data_tuple):
+        self.event_queues[event_type].append(event_data_tuple)
+
+    def wait_vocs_state_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.VOCS_OFFSET_EV],
+            lambda _addr_type, _addr, *_:
+            (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
+
+    def wait_vocs_location_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.VOCS_AUDIO_LOC_EV],
+            lambda _addr_type, _addr, *_:
+            (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
+
+    def wait_vocs_procedure_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.VOCS_PROCEDURE_EV],
+            lambda _addr_type, _addr, *_:
+            (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
 
 
 class AICS:
@@ -1481,6 +1552,7 @@ class Stack:
         self.micp = None
         self.mics = None
         self.ccp = None
+        self.vcp = None
         self.supported_svcs = 0
 
     def is_svc_supported(self, svc):
@@ -1504,7 +1576,8 @@ class Stack:
             "HAS": 1 << defs.BTP_SERVICE_ID_HAS,
             "CSIS": 1 << defs.BTP_SERVICE_ID_CSIS,
             "MICS": 1 << defs.BTP_SERVICE_ID_MICS,
-            "CCP": 1 << defs.BTP_SERVICE_ID_CCP
+            "CCP": 1 << defs.BTP_SERVICE_ID_CCP,
+            "VCP": 1 << defs.BTP_SERVICE_ID_VCP,
         }
         return self.supported_svcs & services[svc] > 0
 
@@ -1571,6 +1644,9 @@ class Stack:
         else:
             self.synch.reinit(sync_callbacks)
 
+    def vcp_init(self):
+        self.vcp = VCP()
+
     def cleanup(self):
         if self.gap:
             self.gap = Gap(self.gap.name, self.gap.manufacturer_data, None, None, None, None, None)
@@ -1619,6 +1695,9 @@ class Stack:
 
         if self.core:
             self.core_init()
+
+        if self.vcp:
+            self.vcp_init()
 
 
 def init_stack():
