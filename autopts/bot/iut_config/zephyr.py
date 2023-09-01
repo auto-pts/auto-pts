@@ -134,7 +134,7 @@ iut_config = {
         },
         "test_cases": [
             'VOCS', 'VCS', 'AICS', 'IAS', 'PACS', 'ASCS', 'BAP', 'HAS', 'CSIS', 'MICP',
-            'MICS'
+            'MICS', 'VCP'
         ]
     },
 

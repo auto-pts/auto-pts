@@ -33,6 +33,7 @@ import autopts.ptsprojects.zephyr.csis
 import autopts.ptsprojects.zephyr.micp
 import autopts.ptsprojects.zephyr.mics
 import autopts.ptsprojects.zephyr.ccp
+import autopts.ptsprojects.zephyr.vcp
 
 # Constants
 ZEPHYR_PROJECT_URL = "https://github.com/zephyrproject-rtos/zephyr"

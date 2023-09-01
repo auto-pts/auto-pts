@@ -80,7 +80,7 @@ BTP Services
 ============
 
 Each service commands and events are defined in separate text file named
-btp_SERVICE_NAME.txt. Currently defined services are listed below. Core Service
+btp_SERVICE_NAME.txt. The currently defined services are listed below. Core Service
 is mandatory to be supported by IUT.
 
 ID  Name
@@ -104,3 +104,4 @@ ID  Name
  17 CSIS Service
  18 MICS Service
  19 CCP Service
+ 20 VCP Service

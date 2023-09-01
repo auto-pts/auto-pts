@@ -5624,28 +5624,35 @@
         <Name>MESH</Name>
         <Version />
         <Rows>
-          <!-- Table 0: Versions -->
+          <!-- Table 0: X.Y Versions -->
           <Row>
             <Name>TSPC_MESH_0_1</Name>
-            <Description>Mesh v1.0 (M)</Description>
+            <Description>Mesh v1.0 (C.1)</Description>
             <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_MESH_0_2</Name>
+            <Description>Mesh v1.1 (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <!-- Table 0a: X.Y.Z. Versions -->
+          <Row>
             <Name>TSPC_MESH_0a_1</Name>
-            <Description>Erratum 10395 (C1)</Description>
+            <Description>Erratum 10395 (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_0a_2</Name>
-            <Description>Mesh v1.0.1 (C2)</Description>
+            <Description>Mesh v1.0.1 (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_0a_3</Name>
-            <Description>Erratum 16350 (C1)</Description>
+            <Description>Erratum 16350 (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -5661,6 +5668,25 @@
             <Description>Provisioner (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_2_3</Name>
+            <Description>Unprovisioned device (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <!-- Table 1a: Transport Requirements -->
+          <Row>
+            <Name>TSPC_MESH_1a_1</Name>
+            <Description>Profile supported over BR/EDR (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_1a_2</Name>
+            <Description>Profile supported over LE (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
           </Row>
           <!-- Table 3: Node Capabilities - Bearers -->
           <Row>
@@ -5678,81 +5704,129 @@
           <!-- Table 4: Node Capabilities - Provisioning -->
           <Row>
             <Name>TSPC_MESH_4_1</Name>
-            <Description>PB-ADV (C.1)</Description>
+            <Description>PB-ADV Server (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_4_2</Name>
-            <Description>PB-GATT (C.2)</Description>
+            <Description>PB-GATT Server (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_4_3</Name>
-            <Description>Device UUID (C.3)</Description>
+            <Description>Device UUID (M)</Description>
             <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
+            <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_4_4</Name>
-            <Description>Sending Unprovisioned Device Beacon (C.4)</Description>
+            <Description>Sending Unprovisioned Device Beacon (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_4_5</Name>
-            <Description>Generic Provisioning Layer (C.3)</Description>
+            <Description>Generic Provisioning Layer (M)</Description>
             <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
+            <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_4_6</Name>
-            <Description>Provisioning Protocol(Provisioning Server) (C.3)</Description>
+            <Description>Provisioning Protocol (Provisioning Server) (M)</Description>
             <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
+            <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_4_7</Name>
-            <Description>Provisioning Public Key OOB (C.5)</Description>
+            <Description>Provisioning: Public Key OOB (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_4_8</Name>
-            <Description>Provisioning: Public Key No OOB (C.5)</Description>
+            <Description>Provisioning: Public Key No OOB (M)</Description>
             <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
+            <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_4_9</Name>
-            <Description>Provisioning: Authentication Output OOB (C.6)</Description>
+            <Description>Provisioning: Authentication Output OOB (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_4_10</Name>
-            <Description>Provisioning: Authentication Input OOB (C.6)</Description>
+            <Description>Provisioning: Authentication Input OOB (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_4_11</Name>
-            <Description>Provisioning: Authentication Static OOB (C.6)</Description>
+            <Description>Provisioning: Authentication Static OOB (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_4_12</Name>
-            <Description>Provisioning: Authentication No OOB (C.3)</Description>
+            <Description>Provisioning: Authentication No OOB (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_4_13</Name>
+            <Description>Provisioning algorithm: ECDH_P256 + CMAC_AES128 + CCM_AES128 (C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_MESH_4_13</Name>
-            <Description>Provisioning algorithm: ECDH_P256 + CMAC_AES128 + CCM_AES128 (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Name>TSPC_MESH_4_14</Name>
+            <Description>Provisioning algorithm: ECDH_P256 + HMAC_SHA256 + CCM_AES128 (C.4)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_4_15</Name>
+            <Description>Node Provisioning Protocol Interface (C.5)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_4_16</Name>
+            <Description>Node Address Refresh Procedure (C.5)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_4_17</Name>
+            <Description>Node Composition Refresh Procedure (C.5)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_4_18</Name>
+            <Description>Certificate-based Provisioning (C.6)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_4_19</Name>
+            <Description>Provisioning Records (C.7)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_4_20</Name>
+            <Description>Provisioning: Certificates available over HTTPS (C.8)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_4_21</Name>
+            <Description>Provisioning: Certificates available in-band (C.8)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <!-- Table 5: Node Capabilities - Network Layer -->
           <Row>
@@ -5868,6 +5942,12 @@
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
+          <Row>
+            <Name>TSPC_MESH_10_5</Name>
+            <Description>Private Beacon (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
           <!-- Table 11: Node Capabilities - Foundation Mesh Models -->
           <Row>
             <Name>TSPC_MESH_11_1</Name>
@@ -5893,6 +5973,126 @@
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
+          <Row>
+            <Name>TSPC_MESH_11_5</Name>
+            <Description>Private Beacon Server Model (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_6</Name>
+            <Description>Private Beacon Client Model (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_7</Name>
+            <Description>Bridge Configuration Server Model (C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_8</Name>
+            <Description>Bridge Configuration Client Model (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_9</Name>
+            <Description>Directed Forwarding Configuration Server Model (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_10</Name>
+            <Description>Directed Forwarding Configuration Client Model (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_11</Name>
+            <Description>Remote Provisioning Server Model (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_12</Name>
+            <Description>Remote Provisioning Client Model (C.4)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_13</Name>
+            <Description>Composition Data Page 1 (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_14</Name>
+            <Description>On-demand Private Proxy Server Model (C.5)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_15</Name>
+            <Description>On-demand Private Proxy Client Model (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_16</Name>
+            <Description>Solicitation PDU RPL Configuration Server Model (C.6)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_17</Name>
+            <Description>Solicitation PDU RPL Configuration Client Model (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_18</Name>
+            <Description>SAR Configuration Server Model (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_19</Name>
+            <Description>SAR Configuration Client Model (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_20</Name>
+            <Description>Opcodes Aggregator Server Model (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_21</Name>
+            <Description>Opcodes Aggregator Client Model (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_22</Name>
+            <Description>Large Composition Data Server Model (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_23</Name>
+            <Description>Large Composition Data Client Model (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_24</Name>
+            <Description>Composition Data Page 2 (C.7)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
           <!-- Table 12: Node Capabilities - Proxy -->
           <Row>
             <Name>TSPC_MESH_12_1</Name>
@@ -5908,26 +6108,69 @@
           </Row>
           <Row>
             <Name>TSPC_MESH_12_3</Name>
-            <Description>Advertising with Network ID (C.2)</Description>
+            <Description>Advertising with Network ID (C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_12_4</Name>
-            <Description>Advertising with Node Identity (C.2)</Description>
+            <Description>Advertising with Node Identity (C.4)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_12_5</Name>
-            <Description>Proxy Client (C.3)</Description>
+            <Description>Proxy Client (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_12_6</Name>
-            <Description>Generic Attribute Profile (GATT) Client (C.4)</Description>
+            <Description>Generic Attribute Profile (GATT) Client (C.5)</Description>
             <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_12_7</Name>
+            <Description>Advertising with Private Network Identity (C.6)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_12_8</Name>
+            <Description>Advertising with Private Node Identity (C.7)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_12_9</Name>
+            <Description>Directed Proxy Server (C.8)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_12_10</Name>
+            <Description>Directed Proxy Client (C.9)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_12_11</Name>
+            <Description>Sending Proxy Solicitation (C.10)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_12_12</Name>
+            <Description>Proxy Feature (C.11)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <!-- Table 12a: Node Capabilities - Directed Forwarding -->
+          <Row>
+            <Name>TSPC_MESH_12a_1</Name>
+            <Description>Directed Relay (C.1)</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <!-- Table 13: Mesh GATT Services -->
@@ -6026,7 +6269,7 @@
           </Row>
           <Row>
             <Name>TSPC_MESH_16_4</Name>
-            <Description>Authorization Procedure (Peripheral) (C.2)</Description>
+            <Description>Authorization procedure (Peripheral) (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -6038,20 +6281,7 @@
           </Row>
           <Row>
             <Name>TSPC_MESH_16_6</Name>
-            <Description>Authorization Procedure (Central) (C.3)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <!-- Table 17: Provisioner - Bearers -->
-          <Row>
-            <Name>TSPC_MESH_17_1</Name>
-            <Description>Advertising Bearer (C.1)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_MESH_17_2</Name>
-            <Description>GATT Bearer (C.1)</Description>
+            <Description>Authorization procedure (Central) (C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -6064,7 +6294,7 @@
           </Row>
           <Row>
             <Name>TSPC_MESH_18_2</Name>
-            <Description>PB-ADV (C.1)</Description>
+            <Description>PB-ADV Client (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -6082,13 +6312,13 @@
           </Row>
           <Row>
             <Name>TSPC_MESH_18_5</Name>
-            <Description>PB-GATT (C.2)</Description>
+            <Description>PB-GATT Client (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_18_6</Name>
-            <Description>Generic Attribute Profile (GATT) Client (C.2)</Description>
+            <Description>Generic Attribute Profile (GATT) Client (C.6)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -6127,6 +6357,24 @@
             <Description>Provisioning algorithm: ECDH_P256 + CMAC_AES128 + CCM_AES128 (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_18_13</Name>
+            <Description>Provisioning algorithm: ECDH_P256 + HMAC_SHA256 + CCM_AES128 (C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_18_14</Name>
+            <Description>Provisioning: X.509 Certificates (C.4)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_18_15</Name>
+            <Description>Provisioning Records (C.5)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <!-- Table 19: Provisioner - Mesh Management -->
           <Row>
@@ -6187,7 +6435,7 @@
           </Row>
           <Row>
             <Name>TSPC_MESH_21_4</Name>
-            <Description>Authorization Procedure (Central) (C.2)</Description>
+            <Description>Authorization procedure (Central) (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -6412,6 +6660,12 @@
             <Description>Maximum number of supported subnets.(Default: 1)</Description>
             <Type>INTEGER</Type>
             <Value>1</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_iut_maximum_models_metadata</Name>
+            <Description>The maximum page number for Models Metadata (Default: 0)</Description>
+            <Value>0</Value>
+            <Type>INTEGER</Type>
           </Row>
           <Row>
             <Name>TSPX_pt_addr</Name>
@@ -13893,6 +14147,726 @@
             <Description>Location of SIG database file. (Default: C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_MICP_db.json)</Description>
             <Type>IA5STRING</Type>
             <Value>C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_MICP_db.json</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_mtu_size</Name>
+            <Description>MTU size. (Default: 23)</Description>
+            <Type>INTEGER</Type>
+            <Value>23</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_secure_simple_pairing_pass_key_confirmation</Name>
+            <Description>Whether to display secure simple pairing pass key confirmation or not. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_delete_link_key</Name>
+            <Description>Whether to delete link key or not. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_pin_code</Name>
+            <Description>Pin code to be used for legacy pairing. (Default: 0000)</Description>
+            <Type>IA5STRING</Type>
+            <Value>0000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_use_dynamic_pin</Name>
+            <Description>Whether to use dynamic pin code entry or not. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_delete_ltk</Name>
+            <Description>Whether to delete Long Term Key or not. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_security_enabled</Name>
+            <Description>Whether to set security for the test suite. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_iut_ATT_transport</Name>
+            <Description>Select a transport which IUT wants to be connected for (Default: ATT Bearer on LE Transport)</Description>
+            <Type>IA5STRING</Type>
+            <Value>ATT Bearer on LE Transport</Value>
+            <ValueList>
+              <ValueListItem>ATT Bearer on LE Transport</ValueListItem>
+              <ValueListItem>ATT Bearer on BR/EDR Transport</ValueListItem>
+              <ValueListItem>EATT Bearer on LE Transport</ValueListItem>
+              <ValueListItem>EATT Bearer on BR/EDR Transport</ValueListItem>
+            </ValueList>
+          </Row>
+        </Rows>
+      </PIXIT>
+    </PROJECT_INFORMATION>
+    <PROJECT_INFORMATION NAME="VCP" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
+      <PICS>
+        <Name>VCP</Name>
+        <Rows>
+          <Row>
+            <Name>TSPC_VCP_1_1</Name>
+            <Description>Volume Renderer (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_1_2</Name>
+            <Description>Volume Controller (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_2_1</Name>
+            <Description>Profile Supported over BR/EDR (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_2_2</Name>
+            <Description>Profile Supported over LE (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_3_1</Name>
+            <Description>Volume Control Profile 1.0 (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_5_1</Name>
+            <Description>Volume Control Service (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_5_2</Name>
+            <Description>Volume Offset Control Service (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_5_3</Name>
+            <Description>Audio Input Control Service (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_5_4</Name>
+            <Description>Extended Advertising (M)</Description>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_6_1</Name>
+            <Description>LE Security Mode 1 (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_6_2</Name>
+            <Description>Unauthenticated Pairing (LE Security Mode 1 Level 2) with LE Secure Connections Pairing only (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_6_3</Name>
+            <Description>Authenticated Pairing (LE Security Mode 1 Level 3) with LE Secure Connections Pairing  only (C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_6_4</Name>
+            <Description>Derivation of LE LTK from BR/EDR Link Key (C.4)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_6_5</Name>
+            <Description>Security Mode 4 Level 2 (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_6_6</Name>
+            <Description>128-bit encryption key size capable (BR/EDR) (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_6_7</Name>
+            <Description>Derivation of BR/EDR Link Key from LE LTK (C.5)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_6_8</Name>
+            <Description>Minimum 128 Bit entropy key (LE) (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_7_1</Name>
+            <Description>LE Secure Connections (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_7_2</Name>
+            <Description>Cross Transport Key Derivation Supported (Peripheral) (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_7_3</Name>
+            <Description>OOB Supported (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_8_1</Name>
+            <Description>Volume Control Profile 1.0 (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_10_1</Name>
+            <Description>Volume Control Service (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_10_2</Name>
+            <Description>Volume Offset Control Service (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_10_3</Name>
+            <Description>Audio Input Control Service (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_11_1</Name>
+            <Description>Volume State (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_11_2</Name>
+            <Description>Volume Control Point (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_11_3</Name>
+            <Description>Volume Flags (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_12_1</Name>
+            <Description>Configure Volume State Notifications  (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_12_2</Name>
+            <Description>Read Volume State (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_12_3</Name>
+            <Description>Configure Volume Flags Notifications (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_12_4</Name>
+            <Description>Read Volume Flags (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_12_5</Name>
+            <Description>Set Initial Volume (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_12_6</Name>
+            <Description>Set Absolute Volume (C.2)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_12_7</Name>
+            <Description>Relative Volume Down (C.3)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_12_8</Name>
+            <Description>Relative Volume Up (C.3)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_12_9</Name>
+            <Description>Unmute/ Relative Volume Down (C.4)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_12_10</Name>
+            <Description>Unmute/ Relative Volume Up (C.4)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_12_11</Name>
+            <Description>Mute (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_12_12</Name>
+            <Description>Unmute (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_13_1</Name>
+            <Description>Volume Offset State (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_13_2</Name>
+            <Description>Audio Location (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_13_3</Name>
+            <Description>Volume Offset Control Point (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_13_4</Name>
+            <Description>Audio Output Description (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_14_1</Name>
+            <Description>Configure Offset State Notifications (C.1, C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_14_2</Name>
+            <Description>Read Volume Offset State (C.1, C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_14_3</Name>
+            <Description>Configure Audio Location Notifications (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_14_4</Name>
+            <Description>Read Audio Location (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_14_5</Name>
+            <Description>Set Audio Location (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_14_6</Name>
+            <Description>Set Volume Offset (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_14_7</Name>
+            <Description>Configure Audio Output Description Notifications (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_14_8</Name>
+            <Description>Read Audio Output Description (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_14_9</Name>
+            <Description>Set Audio Output Description (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_15_1</Name>
+            <Description>Audio Input State (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_15_2</Name>
+            <Description>Gain Setting Properties (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_15_3</Name>
+            <Description>Audio Input Type (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_15_4</Name>
+            <Description>Audio Input Status (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_15_5</Name>
+            <Description>Audio Input Control Point (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_15_6</Name>
+            <Description>Audio Input Description (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_16_1</Name>
+            <Description>Configure Audio Input State Notifications (C.1, C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_16_2</Name>
+            <Description>Read Audio Input State (C.1, C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_16_3</Name>
+            <Description>Read Gain Setting Properties (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_16_4</Name>
+            <Description>Read Audio Input Type (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_16_5</Name>
+            <Description>Configure Audio Input Status Notifications (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_16_6</Name>
+            <Description>Read Audio Input Status (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_16_7</Name>
+            <Description>Set Gain Setting (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_16_8</Name>
+            <Description>Mute (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_16_9</Name>
+            <Description>Unmute (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_16_10</Name>
+            <Description>Set Manual Gain Mode (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_16_11</Name>
+            <Description>Set Automatic Gain Mode (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_16_12</Name>
+            <Description>Configure Audio Input Description Notifications (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_16_13</Name>
+            <Description>Read Audio Input Description (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_16_14</Name>
+            <Description>Set Audio Input Description (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_17_1</Name>
+            <Description>Discover All Primary Services (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_17_2</Name>
+            <Description>Discover Primary Services by Service UUID (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_17_3</Name>
+            <Description>Find Included Services (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_17_4</Name>
+            <Description>Discover All Characteristics of a Service (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_17_5</Name>
+            <Description>Discover Characteristics by UUID (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_17_6</Name>
+            <Description>Discover All Characteristic Descriptors (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_17_7</Name>
+            <Description>Read Characteristic Value (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_17_8</Name>
+            <Description>Write Characteristic Value (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_17_9</Name>
+            <Description>Notifications (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_17_10</Name>
+            <Description>Read Characteristic Descriptors (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_17_11</Name>
+            <Description>Write Characteristic Descriptors (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_18_1</Name>
+            <Description>Central (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_18_2</Name>
+            <Description>LE Security Mode 1 (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_18_3</Name>
+            <Description>Bondable Mode (LE) (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_18_4</Name>
+            <Description>Bonding Procedure (C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_18_5</Name>
+            <Description>Initiation of dedicated bonding (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_18_6</Name>
+            <Description>Unauthenticated Pairing (LE Security Mode 1 Level 2) with LE Secure Connections Pairing only (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_18_7</Name>
+            <Description>Authenticated Pairing (LE Security Mode 1 Level 3) with LE Secure Connections Pairing only (C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_18_8</Name>
+            <Description>Derivation of LE LTK from BR/EDR Link Key (C.5)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_18_9</Name>
+            <Description>Security Mode 4 Level 2 (C.4)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_18_10</Name>
+            <Description>128-bit encryption key size capable (BR/EDR) (C.4)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_18_11</Name>
+            <Description>Derivation of BR/EDR Link Key from LE LTK (C.6)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_18_12</Name>
+            <Description>Minimum 128 Bit entropy key (LE) (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_19_1</Name>
+            <Description>LE Secure Connections (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_19_2</Name>
+            <Description>Cross Transport Key Derivation Supported (Central) (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_19_3</Name>
+            <Description>OOB Supported (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_1a_2</Name>
+            <Description>GATT Client over BR/EDR (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_22_2</Name>
+            <Description>Limited Discoverable Mode (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_22_3</Name>
+            <Description>General Discoverable Mode (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_32_1</Name>
+            <Description>Limited Discovery Procedure (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_32_2</Name>
+            <Description>General Discovery Procedure (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_ALL</Name>
+            <Description>Enables all test cases when set.</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+        </Rows>
+      </PICS>
+      <PIXIT>
+        <Name>VCP</Name>
+        <Version />
+        <Rows>
+          <Row>
+            <Name>TSPX_bd_addr_iut</Name>
+            <Description>The unique 48-bit Bluetooth device address (BD_ADDR) of the IUT. This was filled in during workspace creation.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>000000000000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_iut_device_name_in_adv_packet_for_random_address</Name>
+            <Description>IUT advertising this local name for the PTS to make connection to. Default is not using it with empty string. (Default: "")</Description>
+            <Type>IA5STRING</Type>
+            <Value />
+          </Row>
+          <Row>
+            <Name>TSPX_time_guard</Name>
+            <Description>The time in milliseconds, to break PTS from waiting for a required event, if time guard is used by the test case. (Default: 180000)</Description>
+            <Type>INTEGER</Type>
+            <Value>180000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_use_implicit_send</Name>
+            <Description>Whether to receive a message via Implicit Send when an action or attention is needed by test operator. (Default: TRUE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>TRUE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_tester_database_file</Name>
+            <Description>Location of SIG database file. (Default: C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_VCS_db.xml)</Description>
+            <Type>IA5STRING</Type>
+            <Value>C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_VCS_db.xml</Value>
           </Row>
           <Row>
             <Name>TSPX_mtu_size</Name>
