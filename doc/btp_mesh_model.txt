@@ -1083,6 +1083,7 @@ Commands and responses:
 		Controller Index:		<controller id>
 		Command parameters: 		ID (8 octet)
 		                            Timeout (1 octet)
+									TTL (1 octet)
 
 		This command is used to prepare BLOB Server for incoming transfer.
 
@@ -1094,6 +1095,7 @@ Commands and responses:
 		                            Block Size (1 octet)
 		                            Chunk Size (2 octet)
 		                            Timeout (2 octet)
+									TTL (1 octet)
 
 		This command is used to perform BLOB transfer.
 

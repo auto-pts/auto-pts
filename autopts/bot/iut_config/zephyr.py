@@ -217,7 +217,9 @@ iut_config = {
             'CONFIG_FLASH_MAP': 'y',
             'CONFIG_NVS': 'y',
             'CONFIG_BT_MESH_DFU_SRV': 'n',
-            'CONFIG_BT_MESH_BLOB_SIZE_MAX': '5000'
+            'CONFIG_BT_MESH_BLOB_SIZE_MAX': '5000',
+            'CONFIG_BT_MESH_BLOB_BLOCK_SIZE_MIN': '1024',
+            'CONFIG_BT_MESH_BLOB_BLOCK_SIZE_MAX': '1024'
         },
         "test_cases": [
             'DFU/CL/FU/BV-01-C',
@@ -311,26 +313,9 @@ iut_config = {
             'MBT/SR/BT/BV-35-C',
             'MBT/SR/BT/BV-36-C',
             'MBT/SR/BT/BV-37-C',
+            'MBT/SR/BT/BV-38-C',
             'MBT/SR/BT/BI-01-C',
             'MBT/SR/BT/BI-02-C',
-        ]
-    },
-
-    # It is faster to rebuild app that requires sending large amount of
-    # data than execute all tests like that.
-    "long_data_mesh_dfd_srv.conf": {
-        "pre_overlay": "overlay-mesh.conf",
-        "overlay": {
-            'CONFIG_BT_SETTINGS': 'y',
-            'CONFIG_FLASH': 'y',
-            'CONFIG_FLASH_PAGE_LAYOUT': 'y',
-            'CONFIG_FLASH_MAP': 'y',
-            'CONFIG_NVS': 'y',
-            'CONFIG_BT_MESH_DFU_SRV': 'n',
-            'CONFIG_BT_MESH_BLOB_SIZE_MAX': '15000'
-        },
-        "test_cases": [
-            'MBT/SR/BT/BV-38-C'
         ]
     },
 

@@ -67,7 +67,8 @@ def set_pixits(ptses):
     pts.set_pixit("MBT", "TSPX_Client_BLOB_Data", r"data.txt")
     pts.set_pixit("MBT", "TSPX_TTL", "2")
     pts.set_pixit("MBT", "TSPX_Reception_Counter", "1")
-    pts.set_pixit("MBT", "TSPX_Server_Timeout", "10")
+    pts.set_pixit("MBT", "TSPX_Server_Timeout", "20")
+    pts.set_pixit("MBT", "TSPX_Transfer_TTL", "3")
     pts.set_pixit("MBT", "TSPX_Firmware_ID", "11000011")
     pts.set_pixit("MBT", "TSPX_Firmware_Metadata", "1100000000000011")
     pts.set_pixit("MBT", "TSPX_Firmware_Update_URI", "http://www.dummy.com")
@@ -105,6 +106,8 @@ def test_cases(ptses):
     auth_method = 0x00
     iut_device_name = get_unique_name(pts)
     timeout = 20
+    timeout_base = (timeout // 10) - 1
+    transfer_ttl = 3
     FD_timeout = 80
 
     pre_conditions = [
@@ -128,45 +131,15 @@ def test_cases(ptses):
             get_test_data_path(pts) + "sample_data_1.txt")),
         TestFunc(lambda: pts.update_pixit_param(
             "MBT", "TSPX_New_Firmware_Image",
-            get_test_data_path(pts) + "sample_data_1.txt"))]
+            get_test_data_path(pts) + "sample_data_1.txt")),
+        TestFunc(lambda: pts.update_pixit_param(
+            "MBT", "TSPX_Server_Timeout", timeout)),
+        TestFunc(lambda: stack.mesh.timeout_set(timeout_base)),
+        TestFunc(lambda: pts.update_pixit_param(
+            "MBT", "TSPX_Transfer_TTL", transfer_ttl)),
+        TestFunc(lambda: stack.mesh.transfer_ttl_set(transfer_ttl))]
 
-    custom_test_cases = [
-        ZTestCase("MBT", "MBT/SR/BT/BV-02-C", cmds=pre_conditions + [
-            TestFunc(lambda: pts.update_pixit_param(
-                "MBT", "TSPX_Server_Timeout", timeout)),
-            TestFunc(lambda: stack.mesh.timeout_set(timeout))],
-                  generic_wid_hdl=mmdl_wid_hdl),
-        ZTestCase("MBT", "MBT/SR/BT/BV-05-C", cmds=pre_conditions + [
-            TestFunc(lambda: pts.update_pixit_param(
-                "MBT", "TSPX_Server_Timeout", timeout)),
-            TestFunc(lambda: stack.mesh.timeout_set(timeout))],
-                  generic_wid_hdl=mmdl_wid_hdl),
-        ZTestCase("MBT", "MBT/SR/BT/BV-08-C", cmds=pre_conditions + [
-            TestFunc(lambda: pts.update_pixit_param(
-                "MBT", "TSPX_Server_Timeout", timeout)),
-            TestFunc(lambda: stack.mesh.timeout_set(timeout))],
-                  generic_wid_hdl=mmdl_wid_hdl),
-        ZTestCase("MBT", "MBT/SR/BT/BV-13-C", cmds=pre_conditions + [
-            TestFunc(lambda: pts.update_pixit_param(
-                "MBT", "TSPX_Server_Timeout", timeout)),
-            TestFunc(lambda: stack.mesh.timeout_set(timeout))],
-                  generic_wid_hdl=mmdl_wid_hdl),
-        ZTestCase("MBT", "MBT/SR/BT/BV-19-C", cmds=pre_conditions + [
-            TestFunc(lambda: pts.update_pixit_param(
-                "MBT", "TSPX_Server_Timeout", timeout)),
-            TestFunc(lambda: stack.mesh.timeout_set(timeout))],
-                  generic_wid_hdl=mmdl_wid_hdl),
-        ZTestCase("MBT", "MBT/SR/BT/BV-25-C", cmds=pre_conditions + [
-            TestFunc(lambda: pts.update_pixit_param(
-                "MBT", "TSPX_Server_Timeout", timeout)),
-            TestFunc(lambda: stack.mesh.timeout_set(timeout))],
-                  generic_wid_hdl=mmdl_wid_hdl),
-        ZTestCase("MBT", "MBT/SR/BT/BV-38-C", cmds=pre_conditions + [
-            TestFunc(lambda: pts.update_pixit_param(
-                "MBT", "TSPX_Server_Timeout", 210)),
-            TestFunc(lambda: stack.mesh.timeout_set(timeout))],
-                  generic_wid_hdl=mmdl_wid_hdl),
-    ]
+    custom_test_cases = []
 
     test_case_name_list = pts.get_test_case_list('MBT')
     tc_list = []
