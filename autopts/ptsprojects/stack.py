@@ -519,6 +519,9 @@ class Mesh:
         # MMDL Blob transfer timeout
         self.timeout = 0
 
+        # MMDL Blob transfer TTL
+        self.transfer_ttl = 2
+
         # MMDL Blob transfer server rxed data size
         self.blob_rxed_bytes = 0
 
@@ -612,6 +615,12 @@ class Mesh:
 
     def timeout_get(self):
         return self.timeout
+
+    def transfer_ttl_set(self, ttl):
+        self.transfer_ttl = ttl
+
+    def transfer_ttl_get(self):
+        return self.transfer_ttl
 
     def recv_status_data_set(self, key, data):
         if key in self.recv_status_data.data:
