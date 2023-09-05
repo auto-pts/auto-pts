@@ -2074,21 +2074,21 @@ def mmdl_dfu_update_firmware_start(addrs, slot_idx, slot_size, block_size, chunk
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['dfu_update_firmware_start'], data)
 
 
-def mmdl_blob_srv_recv(id, timeout):
+def mmdl_blob_srv_recv(id, timeout, ttl):
     logging.debug("%s", mmdl_blob_srv_recv.__name__)
     iutctl = get_iut()
 
-    data = bytearray(struct.pack("<QH", id, timeout))
+    data = bytearray(struct.pack("<QHB", id, timeout, ttl))
 
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['mmdl_blob_srv_recv'], data)
 
 
-def mmdl_blob_transfer_start(id, block_size, chunk_size, timeout, size):
+def mmdl_blob_transfer_start(id, block_size, chunk_size, timeout, ttl, size):
     logging.debug("%s", mmdl_blob_transfer_start.__name__)
 
     iutctl = get_iut()
 
-    data = bytearray(struct.pack("<QHBHH", id, size, block_size, chunk_size, timeout))
+    data = bytearray(struct.pack("<QHBHHB", id, size, block_size, chunk_size, timeout, ttl))
 
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MMDL['blob_transfer_start'], data)
 
