@@ -340,6 +340,30 @@ def test_cases(ptses):
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/PROV/BV-08-C", cmds=pre_conditions_pub_priv_key,
                   generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/NODE/PROV/BV-13-C",
+                  cmds=pre_conditions +
+                  [TestFunc(lambda: stack.mesh.set_prov_data(oob,
+                            random.randint(1, 2), random.choice(out_actions),
+                            in_size, rand_in_actions, crpl_size, auth_metod))],
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/NODE/PROV/BV-14-C", cmds=pre_conditions +
+                  [TestFunc(lambda: stack.mesh.set_prov_data(oob, out_size, rand_out_actions,
+                            random.randint(1, 2), random.choice(in_actions), crpl_size, auth_metod))],
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/NODE/PROV/BV-16-C", cmds=pre_conditions_pub_priv_key +
+                  [TestFunc(lambda: stack.mesh.set_prov_data(oob,
+                                                             1, defs.MESH_OUT_DISPLAY_NUMBER,
+                                                             in_size, rand_in_actions, crpl_size, auth_metod))],
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/NODE/PROV/BV-17-C", cmds=pre_conditions_pub_priv_key +
+                  [TestFunc(lambda: stack.mesh.set_prov_data(oob,
+                            out_size, rand_out_actions,
+                            random.randint(1, 2), random.choice(in_actions), crpl_size, auth_metod))],
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/NODE/PROV/BV-18-C", cmds=pre_conditions_pub_priv_key,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/NODE/PROV/BV-20-C", cmds=pre_conditions_pub_priv_key,
+                  generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/NODE/TNPT/BV-06-C", cmds=pre_conditions +
                   [TestFunc(btp.mesh_store_net_data)],
                   generic_wid_hdl=mesh_wid_hdl),
@@ -441,6 +465,43 @@ def test_cases(ptses):
                             in_size, rand_in_actions, crpl_size, auth_metod))],
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/PVNR/PROV/BV-08-C", cmds=pre_conditions_prov_pub_key +
+                  [TestFunc(lambda: stack.mesh.set_prov_data(oob, out_size, rand_out_actions,
+                                                             in_size, rand_in_actions, crpl_size, auth_metod))],
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/PVNR/PROV/BV-11-C", cmds=pre_conditions_prov +
+                  [TestFunc(lambda: stack.mesh.set_prov_data(oob, 1, defs.MESH_OUT_DISPLAY_NUMBER,
+                                                             random.randint(1, 2), defs.MESH_INPUT_NUMBER,
+                                                             crpl_size, defs.MESH_OUTPUT_OOB))],
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/PVNR/PROV/BV-12-C", cmds=pre_conditions_prov +
+                  [TestFunc(lambda: stack.mesh.set_prov_data(oob, 8, defs.MESH_OUT_DISPLAY_NUMBER,
+                                                             8, defs.MESH_IN_TWIST, crpl_size,
+                                                             defs.MESH_INPUT_OOB))],
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/PVNR/PROV/BV-13-C", cmds=pre_conditions_prov +
+                  [TestFunc(lambda: stack.mesh.set_prov_data(2 * oob, out_size, rand_out_actions,
+                                                             in_size, rand_in_actions, crpl_size,
+                                                             defs.MESH_STATIC_OOB))],
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/PVNR/PROV/BV-14-C", cmds=pre_conditions_prov_pub_key +
+                  [TestFunc(lambda: stack.mesh.set_prov_data(oob, 1, defs.MESH_OUT_DISPLAY_NUMBER,
+                                                             random.randint(
+                                                                 1, 2), defs.MESH_INPUT_NUMBER,
+                                                             crpl_size, defs.MESH_OUTPUT_OOB))],
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/PVNR/PROV/BV-15-C", cmds=pre_conditions_prov_pub_key +
+                  [TestFunc(lambda: stack.mesh.set_prov_data(oob, 8, defs.MESH_OUT_DISPLAY_STRING,
+                                                             8, defs.MESH_IN_ENTER_STRING, crpl_size, defs.MESH_INPUT_OOB))],
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/PVNR/PROV/BV-16-C", cmds=pre_conditions_prov_pub_key +
+                  [TestFunc(lambda: stack.mesh.set_prov_data(2 * oob, out_size, rand_out_actions,
+                                                             in_size, rand_in_actions, crpl_size, defs.MESH_STATIC_OOB))],
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/PVNR/PROV/BV-17-C", cmds=pre_conditions_prov +
+                  [TestFunc(lambda: stack.mesh.set_prov_data(oob, out_size, rand_out_actions,
+                            in_size, rand_in_actions, crpl_size, auth_metod))],
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/PVNR/PROV/BV-18-C", cmds=pre_conditions_prov_pub_key +
                   [TestFunc(lambda: stack.mesh.set_prov_data(oob, out_size, rand_out_actions,
                                                              in_size, rand_in_actions, crpl_size, auth_metod))],
                   generic_wid_hdl=mesh_wid_hdl),
