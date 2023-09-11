@@ -3360,6 +3360,52 @@ def hdl_wid_707(_: WIDParams):
     btp.mesh_rpr_link_close(stack.mesh.address_lt1)
     return True
 
+def hdl_wid_708(_: WIDParams):
+    """
+    Implements:
+    Please send Remote Provisioning PDU Send.
+    """
+    stack = get_stack()
+
+    link_stat, bearer = stack.mesh.last_seen_prov_link_state.data
+
+    if link_stat == 'open' and bearer == 4:
+        return True
+
+    return False
+
+def hdl_wid_709(_: WIDParams):
+    """
+    Implements:
+    Please send Remote Provisioning Link Open with DKRI set to Device Key Refresh.
+    """
+
+    stack = get_stack()
+
+    btp.mesh_rpr_reprov_remote(stack.mesh.address_lt1, stack.mesh.address_lt1, False)
+    return True
+
+def hdl_wid_710(_: WIDParams):
+    """
+    Implements:
+    Please send Remote Provisioning Link Open with DKRI set to Node Address Refresh.
+    """
+
+    stack = get_stack()
+
+    btp.mesh_rpr_reprov_remote(stack.mesh.address_lt1, 0x0300, False)
+    return True
+
+def hdl_wid_711(_: WIDParams):
+    """
+    Implemets:
+    Please send Remote Provisioning Link Open with DKRI set to Node Composition Refresh.
+    """
+
+    stack = get_stack()
+
+    btp.mesh_rpr_reprov_remote(stack.mesh.address_lt1, stack.mesh.address_lt1, True)
+    return True
 
 def hdl_wid_712(desc):
     """
