@@ -1,0 +1,194 @@
+CCP Service (ID 19)
+===================
+
+Commands and responses:
+
+	Opcode 0x00 - Error response
+
+	Opcode 0x01 - Read Supported Commands command/response
+
+		Controller Index:	<non-controller>
+		Command parameters:	<none>
+		Response parameters:	<supported commands> (variable)
+
+		Each bit in response is a flag indicating if command with
+		opcode matching bit number is supported. Bit set to 1 means
+		that command is supported. Bit 0 is reserved and shall always
+		be set to 0. If specific bit is not present in response (less
+		than required bytes received) it shall be assumed that command
+		is not supported.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x02: CCP Discover TBS
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:	<None>
+
+		Address Type is a byte; Address type of the PTS address.
+		Address is a 6 octet address; Address of the PTS.
+		This command is used to discover the GTBS and any TBS instances and all 
+		their characteristics. It will also enable notifications/indications for all 
+		characteristics that support it.
+
+		Note: A Discovery Complete Event will be issued when discovery has completed.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x03: CCP Accept Call
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Index (1 octet)
+					Call Identifier (1 octet)
+		Response parameters:	<None>
+
+		Address Type is a byte; Address type of the PTS address.
+		Address is a 6 octet address; Address of the PTS.
+		Index is a byte; It holds the index of the TBS to address.
+		Note: To address the GTBS use an index value of BT_TBS_GTBS_INDEX(0xff).
+		To address an ordinary TBS use an index value in the range [0, TBS_COUNT[, 
+		where TBS_COUNT is the number of TBS instances returned by the Discovery 
+		Complete Event.
+
+		Call Identifier is a byte; A unique Call Identifier assigned by the Server.
+
+		This command is used to Accept a Call.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x04: CCP Terminate Call
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Index (1 octet)
+					Call Identifier (1 octet)
+		Response parameters:	<None>
+
+		Address Type is a byte; Address type of the PTS address.
+		Address is a 6 octet address; Address of the PTS.
+		Index is a byte; It holds the index of the TBS to address.
+		Note: To address the GTBS use an index value of BT_TBS_GTBS_INDEX(0xff).
+		To address an ordinary TBS use an index value in the range [0, TBS_COUNT[, 
+		where TBS_COUNT is the number of TBS instances returned by the Discovery 
+		Complete Event.
+
+		Call Identifier is a byte; A unique Call Identifier assigned by the Server.
+
+		This command is used to add Terminate a Call.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x05: CCP Originate Call
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Index (1 octet)
+					Call URI Length (1 octet)
+					Call URI (N octets)
+		Response parameters:	<None>
+
+		Address Type is a byte; Address type of the PTS address.
+		Address is a 6 octet address; Address of the PTS.
+		Index is a byte; It holds the index of the TBS to address.
+		Note: To address the GTBS use an index value of BT_TBS_GTBS_INDEX(0xff).
+		To address an ordinary TBS use an index value in the range [0, TBS_COUNT[, 
+		where TBS_COUNT is the number of TBS instances returned by the Discovery 
+		Complete Event.
+
+		Call URI Length is a byte; Length in bytes of the Call URI.
+
+		Call URI is a zero-terminated UTF-8 string; Call URI expressed as <URI scheme>:
+		<Caller ID>, where <URI Scheme> must be one of the supported URI Schemes.
+
+		This command is used to Originate a Call.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x06: CCP Read Call States
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Index (1 octet)
+		Response parameters:	<None>
+
+		Address Type is a byte; Address type of the PTS address.
+		Address is a 6 octet address; Address of the PTS.
+		Index is a byte; It holds the index of the TBS to address.
+		Note: To address the GTBS use an index value of BT_TBS_GTBS_INDEX(0xff).
+		To address an ordinary TBS use an index value in the range [0, TBS_COUNT[, 
+		where TBS_COUNT is the number of TBS instances returned by the Discovery 
+		Complete Event.
+
+		This command is used to read the current Call states.
+
+		Note: A Read Call States Event will be issued when the Call States have 
+		been read.
+
+		In case of an error, the error response will be returned.
+
+Events:
+	Opcode 0x80 - Discover Completed event
+
+		Controller Index:	<controller id>
+		Event parameters:	Status (4 octets)
+					TBS Count (1 octet)
+					GTBS Found (1 octet)
+
+		Status is an integer; A Status of 0 indicates success, any other value indicates an error.
+		TBS Count is byte; Returning the number of TBS instances found.
+		GTBS Found is a boolean; True if an instance of GTBS was found; False otherwise.
+
+        	This event indicates that the IUT finished discovery of GTBS and TBS instances,
+        	their characteristics and optionally subscribing to their notifications/indications.
+
+	Opcode 0x81 - Read Call States event
+
+		Controller Index:	<controller id>
+		Event parameters:	Status (4 octets)
+					Index (1 octet)
+					Call Count (1 octet)
+					<repeated for each call>
+						Call Index (1 octet)
+						State (1 octet)
+						Flags (1 octet)
+
+		Status is an integer; A Status of 0 indicates success, any other value indicates an error.
+
+		Index is a byte; It holds the index of the TBS to address.
+		Note: To address the GTBS use an index value of BT_TBS_GTBS_INDEX(0xff).
+		To address an ordinary TBS use an index value in the range [0, TBS_COUNT[, 
+		where TBS_COUNT is the number of TBS instances returned by the Discovery 
+		Complete Event.
+
+		Call Count is byte; It holds the number of active calls.
+
+		Call Index is a byte; It holds the Server assigned Call Identifier.
+
+		State is a byte; It holds the call state (see below).
+
+		Flags is a byte: It holds additional information about the call (see below)
+
+		State is an enum with the following values:
+			0 - Incoming
+			1 - Dialling
+			2 - Alerting
+			3 - Active
+			4 - Locally Held
+			5 - Remotely Held
+			6 - Locally and Remotely Held
+
+		Flags is bitfield with the following values:
+			Bit 0 - Incoming/Outgoing
+			Bit 1 - Not Withheld/Withheld
+			Bit 2 - Provided by Network/Withheld by Network
+			
+        	This event indicates that the IUT finished reading the call states.
+		If there are any active calls, Call Count > 0, Call State (3 octets) will 
+		be returned for each active call.

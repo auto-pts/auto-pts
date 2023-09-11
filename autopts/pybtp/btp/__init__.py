@@ -34,3 +34,4 @@ from autopts.pybtp.btp.core import *
 from autopts.pybtp.btp.csis import *
 from autopts.pybtp.btp.micp import *
 from autopts.pybtp.btp.mics import *
+from autopts.pybtp.btp.ccp import *

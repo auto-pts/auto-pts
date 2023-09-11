@@ -14,6 +14,7 @@
 #
 
 import logging
+import copy
 from threading import Lock, Timer, Event
 from time import sleep
 
@@ -882,6 +883,19 @@ class BAP:
             timeout, remove)
 
 
+class CCP:
+    def __init__(self):
+        self.events = {
+            defs.CCP_EV_DISCOVERED:  { 'count': 0, 'status': 0, 'tbs_count': 0, 'gtbs': False },
+            defs.CCP_EV_CALL_STATES: { 'count': 0, 'status': 0, 'index': 0, 'call_count': 0, 'states': [] }
+        }
+
+    def event_received(self, event_type, event_dict):
+        count = self.events[event_type]['count']
+        self.events[event_type] = copy.deepcopy(event_dict)
+        self.events[event_type]['count'] = count+1
+
+
 class L2capChan:
     def __init__(self, chan_id, psm, peer_mtu, peer_mps, our_mtu, our_mps,
                  bd_addr_type, bd_addr):
@@ -1454,6 +1468,7 @@ class Stack:
         self.core = None
         self.micp = None
         self.mics = None
+        self.ccp = None
         self.supported_svcs = 0
 
     def is_svc_supported(self, svc):
@@ -1477,6 +1492,7 @@ class Stack:
             "HAS": 1 << defs.BTP_SERVICE_ID_HAS,
             "CSIS": 1 << defs.BTP_SERVICE_ID_CSIS,
             "MICS": 1 << defs.BTP_SERVICE_ID_MICS,
+            "CCP": 1 << defs.BTP_SERVICE_ID_CCP
         }
         return self.supported_svcs & services[svc] > 0
 
@@ -1518,6 +1534,9 @@ class Stack:
 
     def bap_init(self):
         self.bap = BAP()
+
+    def ccp_init(self):
+        self.ccp = CCP()
 
     def core_init(self):
         if self.core:
@@ -1570,6 +1589,9 @@ class Stack:
 
         if self.micp:
             self.micp_init()
+            
+        if self.ccp:
+            self.ccp_init()
 
         if self.mics:
             self.mics_init()
