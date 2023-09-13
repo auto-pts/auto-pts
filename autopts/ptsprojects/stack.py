@@ -98,6 +98,11 @@ class Property:
             setattr(instance, self.data, value)
 
 
+class WildCard:
+    def __eq__(self, other):
+        return True
+
+
 def wait_event_with_condition(event_queue, condition_cb, timeout, remove):
     flag = Event()
     flag.set()
@@ -1228,6 +1233,7 @@ class CORE:
 class BAP:
     def __init__(self):
         self.broadcast_id = 0x1000000  # Invalid Broadcast ID
+        self.broadcast_code = ''
         self.event_queues = {
             defs.BAP_EV_DISCOVERY_COMPLETED: [],
             defs.BAP_EV_CODEC_CAP_FOUND: [],
@@ -1237,7 +1243,13 @@ class BAP:
             defs.BAP_EV_BIS_FOUND: [],
             defs.BAP_EV_BIS_SYNCED: [],
             defs.BAP_EV_BIS_STREAM_RECEIVED: [],
+            defs.BAP_EV_SCAN_DELEGATOR_FOUND: [],
+            defs.BAP_EV_BROADCAST_RECEIVE_STATE: [],
+            defs.BAP_EV_PA_SYNC_REQ: [],
         }
+
+    def set_broadcast_code(self, broadcast_code):
+        self.broadcast_code = broadcast_code
 
     def event_received(self, event_type, event_data_tuple):
         self.event_queues[event_type].append(event_data_tuple)
@@ -1292,6 +1304,31 @@ class BAP:
         return wait_event_with_condition(
             self.event_queues[defs.BAP_EV_BIS_STREAM_RECEIVED],
             lambda ev: (broadcast_id, bis_id) == (ev['broadcast_id'], ev['bis_id']),
+            timeout, remove)
+
+    def wait_scan_delegator_found_ev(self, addr_type, addr, timeout, remove=False):
+        return wait_event_with_condition(
+            self.event_queues[defs.BAP_EV_SCAN_DELEGATOR_FOUND],
+            lambda ev: (addr_type, addr) == (ev["addr_type"], ev["addr"]),
+            timeout, remove)
+
+    def wait_broadcast_receive_state_ev(self, broadcast_id, peer_addr_type, peer_addr,
+                                        broadcaster_addr_type, broadcaster_addr,
+                                        pa_sync_state, timeout, remove=False):
+        return wait_event_with_condition(
+            self.event_queues[defs.BAP_EV_BROADCAST_RECEIVE_STATE],
+            lambda ev: (broadcast_id, peer_addr_type, peer_addr,
+                        broadcaster_addr_type, broadcaster_addr,
+                        pa_sync_state) ==
+                       (ev["broadcast_id"], ev["addr_type"], ev["addr"],
+                        ev["broadcaster_addr_type"], ev["broadcaster_addr"],
+                        ev['pa_sync_state']),
+            timeout, remove)
+
+    def wait_pa_sync_req_ev(self, addr_type, addr, timeout, remove=False):
+        return wait_event_with_condition(
+            self.event_queues[defs.BAP_EV_PA_SYNC_REQ],
+            lambda ev: (addr_type, addr) == (ev["addr_type"], ev["addr"]),
             timeout, remove)
 
 

@@ -17,12 +17,14 @@
 
 from autopts.pybtp import btp
 from autopts.client import get_unique_name
-from autopts.ptsprojects.stack import get_stack
+from autopts.ptsprojects.stack import get_stack, SynchPoint
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.bap_wid import bap_wid_hdl
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
 from autopts.pybtp.types import Addr, AdType, UUID, AdFlags
 from autopts.utils import ResultWithFlag
+
+broadcast_code = '0102680553F1415AA265BBAFC6EA03B8'
 
 
 def set_pixits(ptses):
@@ -50,6 +52,27 @@ def set_pixits(ptses):
     pts.set_pixit("BAP", "TSPX_iut_ATT_transport", "ATT Bearer on LE Transport")
     pts.set_pixit("BAP", "TSPX_VS_Codec_ID", "ffff")
     pts.set_pixit("BAP", "TSPX_VS_Company_ID", "ffff")
+    pts.set_pixit("BAP", "TSPX_broadcast_code", broadcast_code)
+
+    if len(ptses) < 2:
+        return
+
+    pts2 = ptses[1]
+    pts2.set_pixit("BAP", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
+    pts2.set_pixit("BAP", "TSPX_iut_device_name_in_adv_packet_for_random_address", "")
+    pts2.set_pixit("BAP", "TSPX_time_guard", "180000")
+    pts2.set_pixit("BAP", "TSPX_use_implicit_send", "TRUE")
+    pts2.set_pixit("BAP", "TSPX_mtu_size", "64")
+    pts2.set_pixit("BAP", "TSPX_secure_simple_pairing_pass_key_confirmation", "FALSE")
+    pts2.set_pixit("BAP", "TSPX_delete_link_key", "FALSE")
+    pts2.set_pixit("BAP", "TSPX_pin_code", "0000")
+    pts2.set_pixit("BAP", "TSPX_use_dynamic_pin", "FALSE")
+    pts2.set_pixit("BAP", "TSPX_delete_ltk", "TRUE")
+    pts2.set_pixit("BAP", "TSPX_security_enabled", "FALSE")
+    pts2.set_pixit("BAP", "TSPX_iut_ATT_transport", "ATT Bearer on LE Transport")
+    pts2.set_pixit("BAP", "TSPX_VS_Codec_ID", "ffff")
+    pts2.set_pixit("BAP", "TSPX_VS_Company_ID", "ffff")
+    pts2.set_pixit("BAP", "TSPX_broadcast_code", broadcast_code)
 
 
 def test_cases(ptses):
@@ -77,13 +100,19 @@ def test_cases(ptses):
     def set_addr(addr):
         iut_addr.set(addr)
 
+    ad_bass = {
+        AdType.name_full: iut_device_name[::1].hex(),
+        AdType.flags: format(AdFlags.br_edr_not_supp |
+                             AdFlags.le_gen_discov_mode, '02x'),
+        AdType.uuid16_all: bytes.fromhex(UUID.BASS)[::-1].hex(),
+        AdType.uuid16_svc_data: '4f18',
+    }
+
     pre_conditions = [TestFunc(btp.core_reg_svc_gap),
                       TestFunc(stack.gap_init, iut_device_name),
                       TestFunc(btp.gap_read_ctrl_info),
                       TestFunc(lambda: pts.update_pixit_param(
                           "BAP", "TSPX_bd_addr_iut",
-                          stack.gap.iut_addr_get_str())),
-                      TestFunc(lambda: set_addr(
                           stack.gap.iut_addr_get_str())),
                       TestFunc(btp.core_reg_svc_gatt),
                       TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public),
@@ -94,11 +123,20 @@ def test_cases(ptses):
                       TestFunc(btp.core_reg_svc_ascs),
                       TestFunc(btp.core_reg_svc_bap),
                       TestFunc(stack.ascs_init),
-                      TestFunc(stack.bap_init), ]
+                      TestFunc(stack.bap_init),
+                      TestFunc(lambda: stack.bap.set_broadcast_code(broadcast_code)),
+                      TestFunc(lambda: set_addr(
+                          stack.gap.iut_addr_get_str())),
+                      ]
 
     pre_conditions_server = pre_conditions + [
         TestFunc(btp.gap_set_extended_advertising_on),
         TestFunc(lambda: btp.gap_adv_ind_on(ad=ad)),
+    ]
+
+    scan_delegator_pre_conditions = pre_conditions + [
+        TestFunc(btp.gap_set_extended_advertising_on),
+        TestFunc(lambda: btp.gap_adv_ind_on(ad=ad_bass)),
     ]
 
     custom_test_cases = [
@@ -147,6 +185,59 @@ def test_cases(ptses):
         ZTestCase("BAP", "BAP/UCL/STR/BV-526-C", cmds=pre_conditions,
                   generic_wid_hdl=bap_wid_hdl,
                   lt2="BAP/UCL/STR/BV-526-C_LT2"),
+        ZTestCase("BAP", "BAP/BA/BASS/BV-04-C", cmds=pre_conditions +
+                  [  # Sync to avoid BTP collision
+                      TestFunc(get_stack().synch.add_synch_element,
+                               [SynchPoint("BAP/BA/BASS/BV-04-C", 20100),
+                                SynchPoint("BAP/BA/BASS/BV-04-C_LT2", 100)]),
+                      TestFunc(get_stack().synch.add_synch_element,
+                               [SynchPoint("BAP/BA/BASS/BV-04-C", 345),
+                                SynchPoint("BAP/BA/BASS/BV-04-C_LT2", 384)])],
+                  generic_wid_hdl=bap_wid_hdl,
+                  lt2="BAP/BA/BASS/BV-04-C_LT2"),
+        ZTestCase("BAP", "BAP/BA/BASS/BV-05-C", cmds=pre_conditions +
+                  [  # Sync to avoid BTP collision
+                      TestFunc(get_stack().synch.add_synch_element,
+                               [SynchPoint("BAP/BA/BASS/BV-05-C", 20100),
+                                SynchPoint("BAP/BA/BASS/BV-05-C_LT2", 100)]),
+                      TestFunc(get_stack().synch.add_synch_element,
+                               [SynchPoint("BAP/BA/BASS/BV-05-C", 346),
+                                SynchPoint("BAP/BA/BASS/BV-05-C_LT2", 384)])],  # 376
+                  generic_wid_hdl=bap_wid_hdl,
+                  lt2="BAP/BA/BASS/BV-05-C_LT2"),
+        ZTestCase("BAP", "BAP/BA/BASS/BV-06-C", cmds=pre_conditions +
+                  [  # Sync to avoid BTP collision
+                      TestFunc(get_stack().synch.add_synch_element,
+                               [SynchPoint("BAP/BA/BASS/BV-06-C", 20100),
+                                SynchPoint("BAP/BA/BASS/BV-06-C_LT2", 100)]),
+                      TestFunc(get_stack().synch.add_synch_element,
+                               [SynchPoint("BAP/BA/BASS/BV-06-C", 347),
+                                SynchPoint("BAP/BA/BASS/BV-06-C_LT2", 384)])],
+                  generic_wid_hdl=bap_wid_hdl,
+                  lt2="BAP/BA/BASS/BV-06-C_LT2"),
+        ZTestCase("BAP", "BAP/BA/BASS/BV-07-C", cmds=pre_conditions +
+                  [  # Sync to avoid BTP collision
+                      TestFunc(get_stack().synch.add_synch_element,
+                               [SynchPoint("BAP/BA/BASS/BV-07-C", 20100),
+                                SynchPoint("BAP/BA/BASS/BV-07-C_LT2", 100)]),
+                      TestFunc(get_stack().synch.add_synch_element,
+                               [SynchPoint("BAP/BA/BASS/BV-07-C", 348),
+                                SynchPoint("BAP/BA/BASS/BV-07-C_LT2", 384)])],
+                  generic_wid_hdl=bap_wid_hdl,
+                  lt2="BAP/BA/BASS/BV-07-C_LT2"),
+        ZTestCase("BAP", "BAP/BA/BASS/BV-08-C", cmds=pre_conditions +
+                  [  # Sync to avoid BTP collision
+                      TestFunc(get_stack().synch.add_synch_element,
+                               [SynchPoint("BAP/BA/BASS/BV-08-C", 20100),
+                                SynchPoint("BAP/BA/BASS/BV-08-C_LT2", 100)]),
+                      TestFunc(get_stack().synch.add_synch_element,
+                               [SynchPoint("BAP/BA/BASS/BV-08-C", 349),
+                                SynchPoint("BAP/BA/BASS/BV-08-C_LT2", 384)])],
+                  generic_wid_hdl=bap_wid_hdl,
+                  lt2="BAP/BA/BASS/BV-08-C_LT2"),
+        ZTestCase("BAP", "BAP/SDE/BASS/BV-01-C",
+                  cmds=scan_delegator_pre_conditions,
+                  generic_wid_hdl=bap_wid_hdl),
     ]
 
     test_case_name_list = pts.get_test_case_list('BAP')
@@ -176,12 +267,28 @@ def test_cases(ptses):
     pts2 = ptses[1]
 
     pre_conditions_lt2 = [
-                        TestFunc(lambda: pts2.update_pixit_param(
-                                "BAP", "TSPX_bd_addr_iut", iut_addr.get(timeout=90, clear=True))),
+        TestFunc(lambda: pts2.update_pixit_param(
+            "BAP", "TSPX_bd_addr_iut", iut_addr.get(timeout=90, clear=True))),
+        TestFunc(btp.set_lt2_addr, pts2.q_bd_addr, Addr.le_public),
     ]
 
     test_cases_lt2 = [
         ZTestCaseSlave("BAP", "BAP/UCL/STR/BV-526-C_LT2",
+                       cmds=pre_conditions_lt2,
+                       generic_wid_hdl=bap_wid_hdl),
+        ZTestCaseSlave("BAP", "BAP/BA/BASS/BV-04-C_LT2",
+                       cmds=pre_conditions_lt2,
+                       generic_wid_hdl=bap_wid_hdl),
+        ZTestCaseSlave("BAP", "BAP/BA/BASS/BV-05-C_LT2",
+                       cmds=pre_conditions_lt2,
+                       generic_wid_hdl=bap_wid_hdl),
+        ZTestCaseSlave("BAP", "BAP/BA/BASS/BV-06-C_LT2",
+                       cmds=pre_conditions_lt2,
+                       generic_wid_hdl=bap_wid_hdl),
+        ZTestCaseSlave("BAP", "BAP/BA/BASS/BV-07-C_LT2",
+                       cmds=pre_conditions_lt2,
+                       generic_wid_hdl=bap_wid_hdl),
+        ZTestCaseSlave("BAP", "BAP/BA/BASS/BV-08-C_LT2",
                        cmds=pre_conditions_lt2,
                        generic_wid_hdl=bap_wid_hdl),
     ]

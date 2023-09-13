@@ -104,6 +104,7 @@ class UUID:
     gap_svc = '1800'
     gatt_svc = '1801'
     ASCS = '184E'
+    BASS = '184F'
     PACS = '1850'
     ASE_CP = '2BC6'
     CEP = '2900'
