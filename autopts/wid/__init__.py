@@ -35,3 +35,4 @@ from .mics import mics_wid_hdl
 from .ccp import ccp_wid_hdl
 from .vcp import vcp_wid_hdl
 from .mcp import mcp_wid_hdl
+from .bass import bass_wid_hdl
