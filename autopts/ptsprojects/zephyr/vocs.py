@@ -73,7 +73,9 @@ def test_cases(ptses):
                       TestFunc(btp.gap_set_conn),
                       TestFunc(btp.gap_set_gendiscov),
                       TestFunc(btp.core_reg_svc_vocs),
-                      TestFunc(stack.vocs_init)]
+                      TestFunc(btp.core_reg_svc_vcs),
+                      TestFunc(stack.vocs_init),
+                      TestFunc(stack.vcs_init)]
 
     test_case_name_list = pts.get_test_case_list('VOCS')
     tc_list = []
