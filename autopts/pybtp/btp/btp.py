@@ -113,6 +113,8 @@ CORE = {
                  defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_CAS),
     "mcp_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_MCP),
+    "gmcs_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
+                defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GMCS),
     "read_supp_cmds": (defs.BTP_SERVICE_ID_CORE,
                        defs.CORE_READ_SUPPORTED_COMMANDS,
                        defs.BTP_INDEX_NONE, ""),
@@ -619,6 +621,13 @@ def core_reg_svc_mcp():
     iutctl.btp_socket.send_wait_rsp(*CORE['mcp_reg'])
 
 
+def core_reg_svc_gmcs():
+    logging.debug("%s", core_reg_svc_gmcs.__name__)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*CORE['gmcs_reg'])
+
+
 def core_reg_svc_rsp_succ():
     logging.debug("%s", core_reg_svc_rsp_succ.__name__)
     iutctl = get_iut()
@@ -711,6 +720,7 @@ from .mics import MICS_EV
 from .ccp import CCP_EV
 from .vcp import VCP_EV
 from .mcp import MCP_EV
+from .gmcs import GMCS_EV
 from autopts.pybtp.iutctl_common import set_event_handler
 
 
@@ -741,6 +751,7 @@ def event_handler(hdr, data):
         defs.BTP_SERVICE_ID_CCP: (CCP_EV, stack.ccp),
         defs.BTP_SERVICE_ID_VCP: (VCP_EV, stack.vcp),
         defs.BTP_SERVICE_ID_MCP: (MCP_EV, stack.mcp),
+        defs.BTP_SERVICE_ID_GMCS: (GMCS_EV, stack.gmcs),
     }
     if hdr.svc_id in service_map:
         event_dict, stack_obj = service_map[hdr.svc_id]

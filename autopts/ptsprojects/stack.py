@@ -1176,6 +1176,15 @@ class MCP:
             timeout, remove)
 
 
+class GMCS:
+    def __init__(self):
+        self.track_obj_id = None
+        self.event_queues = {}
+
+    def event_received(self, event_type, event_data_tuple):
+        self.event_queues[event_type].append(event_data_tuple)
+
+
 class ASCS:
     def __init__(self):
         self.event_queues = {
@@ -1975,6 +1984,8 @@ class Stack:
         self.ccp = None
         self.vcp = None
         self.mcp = None
+        self.gmcs = None
+
         self.supported_svcs = 0
 
     def is_svc_supported(self, svc):
@@ -2001,6 +2012,7 @@ class Stack:
             "CCP": 1 << defs.BTP_SERVICE_ID_CCP,
             "VCP": 1 << defs.BTP_SERVICE_ID_VCP,
             "MCP": 1 << defs.BTP_SERVICE_ID_MCP,
+            "GMCS": 1 << defs.BTP_SERVICE_ID_GMCS,
         }
         return self.supported_svcs & services[svc] > 0
 
@@ -2061,6 +2073,9 @@ class Stack:
     def mcp_init(self):
         self.mcp = MCP()
 
+    def gmcs_init(self):
+        self.gmcs = GMCS()
+
     def gatt_cl_init(self):
         self.gatt_cl = GattCl()
 
@@ -2109,6 +2124,9 @@ class Stack:
 
         if self.mics:
             self.mics_init()
+
+        if self.gmcs:
+            self.gmcs_init()
 
         if self.gatt:
             self.gatt_init()
