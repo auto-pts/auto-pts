@@ -1,5 +1,5 @@
 Published Audio Capabilities Service (ID 12)
-=============================
+============================================
 
 Commands and responses:
 
@@ -36,6 +36,104 @@ Commands and responses:
 		This command is used to trigger the IUT to update the selected
 		PACS characteristics.
 
+		In case of an error, the error response will be returned.
+
+	Opcode 0x03: Set Audio Locations
+
+		Controller Index:	<controller id>
+		Command parameters:	Direction (1 octet)
+					Locations (4 octets)
+		Response parameters:	<None>
+
+		Direction is a byte; Audio Sink or Source.
+		Locations is a 4 byte bit-field; Locations supported.
+
+		Possible values for Direction is:
+		1 = Audio Sink
+		2 = Audio Source
+
+		Possible values for Locations are a combination of the
+		following bit definitions:
+
+		Bit:	Definition:
+		 0	Front Left
+		 1	Front Right
+		 2	Front Center
+		 3	LF Effects 1
+		 4	Back Left
+		 5	Back Right
+		 6	Front Left Of Center
+		 7	Front Right Of Center
+		 8	Back Center
+		 9	LF Effects 2
+		10	Side Left
+		11	Side Right
+		12	Top Front Left
+		13	Top Front Right
+		14	Top Front Center
+		15	Top Center
+		16	Top Back Left
+		17	Top Back Right
+		18	Top Side Left
+		19	Top Side Right
+		20	Top Back Center
+		21	Bottom Front Center
+		22	Bottom Front Left
+		23	Bottom Front Right
+		24	Front Left Wide
+		25	Front Right Wide
+		26	Left Surround
+		27	Right Surround
+		
+		This command is used to set supported Audio Locations. 
+		
+		In case of an error, the error response will be returned.
+
+	Opcode 0x04: Set Available Audio Contexts
+
+		Controller Index:	<controller id>
+		Command parameters:	Sink Contexts (2 octet)
+					Source Contexts (2 octets)
+		Response parameters:	<None>
+
+		Sink Contexts is a two octet bit-field; Available Audio Sink Contexts.
+		Source Contexts is a two octet bit-field; Available Audio Source Contexts.
+
+		Possible values for Contexts are a combination of the
+		following bit definitions:
+
+		Bit:	Definition:
+		 0	Unspecified
+		 1	Conversational
+		 2	Media
+		 3	Game
+		 4	Instructional
+		 5	Voice Assistants
+		 6	Live
+		 7	Sound Effects
+		 8	Notifications
+		 9	Ringtone
+		10	Alerts
+		11	Emergency Alarm
+
+		This command is used to set the available audio Contexts. 
+		
+		In case of an error, the error response will be returned.
+
+	Opcode 0x05: Set Supported Audio Contexts
+
+		Controller Index:	<controller id>
+		Command parameters:	Sink Contexts (2 octet)
+					Source Contexts (2 octets)
+		Response parameters:	<None>
+
+		Sink Contexts is a two octet bit-field; Supported Audio Sink Contexts.
+		Source Contexts is a two octet bit-field; Supported Audio Source Contexts.
+
+		For a definition of the bit-field Contexts - please see above.
+
+		This command is used to set the supported audio Contexts. 
+		
 		In case of an error, the error response will be returned.
 
 Events:

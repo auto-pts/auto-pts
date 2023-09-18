@@ -13,6 +13,7 @@
 # more details.
 #
 
+from enum import IntEnum, IntFlag
 from binascii import unhexlify
 from typing import NamedTuple
 
@@ -80,7 +81,8 @@ class AdType:
     le_bt_device_addr = 0x1b
     le_role = 0x1c
     uri = 0x24
-
+    rsi = 0x2e
+    
 
 class AdFlags:
     le_limit_discov_mode = 0x01
@@ -313,3 +315,31 @@ class GATTErrorCodes:
     insufficient_resources = 0x11
     database_out_of_sync = 0x12
     value_not_allowed = 0x13
+
+
+class ASCSState(IntEnum):
+    IDLE                = 0x00
+    CODEC_CONFIGURED    = 0x01
+    QOS_CONFIGURED      = 0x02
+    ENABLING            = 0x03
+    STREAMING           = 0x04
+    DISABLING           = 0x05
+    RELEASING           = 0x06
+
+
+class Context(IntFlag):
+    PROHIBITED          = 0x0000
+    UNSPECIFIED         = 0x0001
+    CONVERSATIONAL      = 0x0002
+    MEDIA               = 0x0004
+    GAME                = 0x0008
+    INSTRUCTIONAL       = 0x0010
+    VOICE_ASSISTANTS    = 0x0020
+    LIVE                = 0x0040
+    SOUND_EFFECTS       = 0x0080
+    NOTIFICATIONS       = 0x0100
+    RINGTONE            = 0x0200
+    ALERTS              = 0x0400
+    EMERGENCY_ALARM     = 0x0800
+    ANY_CONTEXT         = 0x0FFF
+    

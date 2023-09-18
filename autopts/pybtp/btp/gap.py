@@ -461,15 +461,23 @@ def gap_adv_ind_on(ad=None, sd=None, duration=AdDuration.forever, own_addr_type=
     sd_ba = bytearray()
     data = bytearray()
 
-    for ad_type, ad_data in list(ad.items()):
-        if isinstance(ad_data, str):
-            data = bytes.fromhex(ad_data)
-        elif isinstance(ad_data, bytes):
-            data = ad_data
 
-        ad_ba.extend(bytes([ad_type]))
-        ad_ba.extend(chr(len(data)).encode('utf-8'))
-        ad_ba.extend(data)
+    for ad_type, ad_data in list(ad.items()):
+        if isinstance(ad_data, list):
+            for item in ad_data:
+                data = item
+                ad_ba.extend(bytes([ad_type]))
+                ad_ba.extend(chr(len(data)).encode('utf-8'))
+                ad_ba.extend(data)
+        else:
+            if isinstance(ad_data, str):
+                data = bytes.fromhex(ad_data)
+            elif isinstance(ad_data, bytes):
+                data = ad_data
+
+            ad_ba.extend(bytes([ad_type]))
+            ad_ba.extend(chr(len(data)).encode('utf-8'))
+            ad_ba.extend(data)
 
     for sd_type, sd_data in list(sd.items()):
         if not isinstance(sd_data, bytes):
