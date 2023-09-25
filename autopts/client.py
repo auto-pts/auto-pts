@@ -33,26 +33,27 @@ import traceback
 import xml.etree.ElementTree as ElementTree
 import xmlrpc.client
 from xmlrpc.server import SimpleXMLRPCServer
-
 from termcolor import colored
 
 from autopts.ptsprojects import ptstypes
 from autopts.ptsprojects import stack
-from autopts.ptsprojects.boards import get_available_boards
+from autopts.ptsprojects.boards import get_available_boards, tty_to_com
+from autopts.ptsprojects.ptstypes import E_FATAL_ERROR
 from autopts.ptsprojects.testcase import PTSCallback, TestCaseLT1, TestCaseLT2
 from autopts.ptsprojects.testcase_db import TestCaseTable
-from autopts.pybtp import btp
+from autopts.pybtp import btp, defs
 from autopts.pybtp.types import BTPError, SynchError
-from autopts.utils import InterruptableThread, usb_power
-from autopts.winutils import have_admin_rights
+from autopts.utils import InterruptableThread, usb_power, ResultWithFlag, CounterWithFlag, set_global_end, \
+    raise_on_global_end, RunEnd, get_global_end, have_admin_rights, device_exists
 from cliparser import CliParser
 
 log = logging.debug
 
 RUNNING_TEST_CASE = {}
 TEST_CASE_DB = None
-
 autoprojects = None
+TEST_CASE_TIMEOUT_MS = 300000  # milliseconds
+RESTART_PTS_TIMEOUT_S = 60  # seconds
 
 # The number of seconds to wait for autoptsserver restart.
 # - during normal recovery:
@@ -65,32 +66,124 @@ MAX_SERVER_RESTART_TIME = 60
 # be used. When FakeProxy is used autoptsserver on Windows will
 # not be contacted.
 AUTO_PTS_LOCAL = "AUTO_PTS_LOCAL" in os.environ
-RUN_END = False
-
-
-class RunEnd(KeyboardInterrupt):
-    pass
 
 
 class PtsServerProxy(xmlrpc.client.ServerProxy):
-    def __init__(self, uri, transport=None, encoding=None, verbose=False,
-                 allow_none=False, use_datetime=False, use_builtin_types=False,
-                 *, headers=(), context=None):
-        super().__init__(uri, transport, encoding, verbose, allow_none, use_datetime,
-                         use_builtin_types, headers=headers, context=context)
+    """Client to remote autoptsserver"""
+    def __init__(self, server_address, server_port):
+        super().__init__(uri=f"http://{server_address}:{server_port}/",
+                         allow_none=True, transport=None,
+                         encoding=None, verbose=False,
+                         use_datetime=False, use_builtin_types=False,
+                         headers=(), context=None)
+        self.info = f"{server_address}:{server_port}"
+        self.callback_thread = None
+        self.callback = None
 
-    def __getattr__(self, name):
-        if RUN_END:
-            raise RunEnd
+    @staticmethod
+    def factory_get_instance(_id, server_address, server_port, client_address, client_port):
+        proxy = proxy = PtsServerProxy(server_address, server_port)
+        result = ResultWithFlag(False)
+        print(f"{id(proxy)} Starting PTS: {proxy.info} ...")
 
-        return super().__getattr__(name)
+        def wait_for():
+            try:
+                proxy.ready()
+                result.set(True)
+            except BaseException:
+                log('autoptsserver not responding, retrying...')
+            # Continue waiting
+            return True
+
+        result.wait(timeout=RESTART_PTS_TIMEOUT_S, predicate=wait_for)
+
+        log("Server methods: %s", proxy.system.listMethods())
+        proxy.callback_thread = ClientCallbackServer(client_port, f'LT{_id}-callback')
+        proxy.callback = proxy.callback_thread.callback
+        proxy.callback_thread.start()
+        proxy.register_client_callback({'xmlrpc_address': client_address, 'xmlrpc_port': client_port})
+        log("Client IP Address: %s", client_address)
+        print(f"({id(proxy)}) OK")
+
+        return proxy
+
+
+class FakeProxy:
+    """Fake PTS XML-RPC proxy client.
+
+    Usefull when testing code locally and auto-pts server is not needed"""
+
+    def __init__(self):
+        self.info = f"mock"
+
+    def __getattr__(self, item):
+        return '_generic'
+
+    def _generic(self, *args, **kwargs):
+        return True
+
+    def get_version(self):
+        return 0x65
+
+    def bd_addr(self):
+        return "00:01:02:03:04:05"
+
+
+if sys.platform == "win32":
+    from autoptsserver import Server
+else:
+    # Client is running under Linux and will not
+    # be able to import some Windows-only modules
+    Server = FakeProxy
+
+
+class PtsServer(Server):
+    """Builtin instance of autoptsserver for one process mode"""
+
+    # Counter of closed autoptsservers
+    finish_count = CounterWithFlag(init_count=0)
+
+    def __init__(self, _args=None):
+        super().__init__(PtsServer.finish_count, _args=_args)
+        self.info = f'builtin {_args.srv_port}'
+
+    @staticmethod
+    def factory_get_instance(args):
+        proxy = PtsServer(args)
+        proxy.start()
+
+        result = ResultWithFlag(False)
+
+        def wait_for():
+            if proxy.ready():
+                result.set(True)
+                return False
+            # Continue waiting
+            return True
+
+        try:
+            result.wait(timeout=RESTART_PTS_TIMEOUT_S, predicate=wait_for)
+            if not result.get_nowait():
+                raise Exception('Failed to start autoptsserver')
+        except BaseException:
+            proxy.terminate()
+            raise
+
+        proxy.callback = ClientCallback()
+        proxy.register_client_callback({'client_callback': proxy.callback})
+
+        return proxy
 
 
 class ClientCallback(PTSCallback):
     def __init__(self):
         super().__init__()
         self.exception = queue.Queue()
-        self._pending_responses = {}
+        self._result_lock = threading.RLock()
+        self.results = {}
+        # Long methods run asynchronously
+        for method in ['start_pts', 'restart_pts', 'recover_pts', 'run_test_case']:
+            self.results[method] = ResultWithFlag()
 
     def error_code(self):
         """Return error code or None if there are no errors
@@ -135,18 +228,6 @@ class ClientCallback(PTSCallback):
                     logtype_string, log_time, test_case_name,
                     log_message)
 
-        try:
-            if test_case_name in RUNNING_TEST_CASE:
-                RUNNING_TEST_CASE[test_case_name].log(log_type, logtype_string,
-                                                      log_time, log_message, test_case_name)
-
-        except Exception as e:
-            logging.exception(e)
-            self.exception.put(sys.exc_info()[1])
-
-            # exit does not work, cause app is blocked in PTS.RunTestCase?
-            sys.exit("Exception in Log")
-
     def on_implicit_send(self, project_name, wid, test_case_name, description,
                          style):
         """Implements:
@@ -167,13 +248,14 @@ class ClientCallback(PTSCallback):
         logger = logging.getLogger("{}.{}".format(
             self.__class__.__name__, self.on_implicit_send.__name__))
 
-        logger.info("*" * 20)
-        logger.info("BEGIN OnImplicitSend:")
-        logger.info("project_name: %s", project_name)
-        logger.info("wid: %s", wid)
-        logger.info("test_case_name: %s", test_case_name)
-        logger.info("description: %s", description)
-        logger.info("style: %s 0x%x", ptstypes.MMI_STYLE_STRING[style], style)
+        logger.info(f"""
+    {"*" * 20}
+    BEGIN OnImplicitSend:
+    project_name: {project_name}
+    wid: {wid}
+    test_case_name: {test_case_name}
+    description: {description}
+    style: {ptstypes.MMI_STYLE_STRING[style]} 0x{style:x}""")
 
         try:
             # XXX: 361 WID MESH sends tc name with leading white spaces
@@ -181,57 +263,57 @@ class ClientCallback(PTSCallback):
 
             logger.info("Calling test cases on_implicit_send")
 
-            testcase_response = RUNNING_TEST_CASE[test_case_name].on_implicit_send(project_name, wid, test_case_name,
-                                                                                   description, style)
+            RUNNING_TEST_CASE[test_case_name].on_implicit_send(project_name, wid, test_case_name,
+                                                               description, style)
 
-            logger.info("test case returned on_implicit_send, response: %s",
-                        testcase_response)
+            # Make the PTS wait for response without blocking xmlrpc server
+            testcase_response = "WAIT"
 
         except Exception as e:
+            testcase_response = "Cancel"
             logging.exception("OnImplicitSend caught exception %s", e)
             self.exception.put(sys.exc_info()[1])
 
-            # exit does not work, cause app is blocked in PTS.RunTestCase?
-            sys.exit("Exception in OnImplicitSend")
-
-        logger.info("END OnImplicitSend:")
-        logger.info("*" * 20)
+        logger.info(f"""
+    on_implicit_send returned response: {testcase_response}
+    END OnImplicitSend
+    {'*' * 20}""")
 
         return testcase_response
 
-    def get_pending_response(self, test_case_name):
-        log("%s.%s, %s", self.__class__.__name__,
-            self.get_pending_response.__name__, test_case_name)
-        if not self._pending_responses:
-            return None
+    def set_result(self, method_name, result):
+        """
+        Result of a ptscontrol method that was called asynchronously
+        and has to be awaited.
+        """
+        log(f"{self.__class__.__name__}, {self.set_result.__name__},"
+            f" {method_name}, {result}")
+        with self._result_lock:
+            method_result = self.results[method_name]
+        method_result.set(result)
 
-        rsp = self._pending_responses.pop(test_case_name, None)
-        if not rsp:
-            return rsp
-
-        if rsp["delay"]:
-            time.sleep(rsp["delay"])
-        return rsp["value"]
-
-    def set_pending_response(self, pending_response):
-        tc_name = pending_response[0]
-        response = pending_response[1]
-        delay = pending_response[2]
-
-        self._pending_responses[tc_name] = {"value": response, "delay": delay}
-
-    def clear_pending_responses(self):
-        self._pending_responses = {}
+    def get_result(self, method_name, timeout=None, predicate=None):
+        """
+        Result of a ptscontrol method that was called asynchronously
+        and has to be awaited.
+        """
+        log(f"{self.__class__.__name__}.{self.get_result.__name__} {method_name}")
+        with self._result_lock:
+            method_result = self.results[method_name]
+        result = method_result.get(timeout=timeout, predicate=predicate)
+        method_result.clear()
+        return result
 
     def cleanup(self):
-        self.clear_pending_responses()
-
         while not self.exception.empty():
             self.exception.get_nowait()
             self.exception.task_done()
 
+        for key in self.results:
+            self.results[key].clear()
 
-class CallbackThread(threading.Thread):
+
+class ClientCallbackServer(threading.Thread):
     """Thread for XML-RPC callback server
 
     To prevent SimpleXMLRPCServer blocking whole app it is started in a thread
@@ -252,7 +334,7 @@ class CallbackThread(threading.Thread):
         """Starts the xmlrpc callback server"""
         log("%s.%s", self.__class__.__name__, self.run.__name__)
 
-        log("Serving on port %s ...", self.port)
+        log("Client callback serving on port %s ...", self.port)
 
         self.server = SimpleXMLRPCServer(("", self.port),
                                          allow_none=True, logRequests=False)
@@ -260,39 +342,20 @@ class CallbackThread(threading.Thread):
         self.server.register_introspection_functions()
         self.server.timeout = 1.0
 
-        while not self.end:
-            self.server.handle_request()
-
-        self.server.server_close()
+        try:
+            while not self.end and not get_global_end():
+                try:
+                    self.server.handle_request()
+                except Exception as e:
+                    logging.exception(e)
+        except BaseException as e2:
+            logging.exception(e2)
+        finally:
+            log("Client callback finishing...")
+            self.server.server_close()
 
     def stop(self):
         self.end = True
-
-    def set_current_test_case(self, name):
-        log("%s.%s %s", self.__class__.__name__, self.set_current_test_case.__name__, name)
-        self.current_test_case = name
-
-    def get_current_test_case(self):
-        log("%s.%s %s", self.__class__.__name__, self.get_current_test_case.__name__, self.current_test_case)
-        return self.current_test_case
-
-    def error_code(self):
-        log("%s.%s", self.__class__.__name__, self.error_code.__name__)
-        return self.callback.error_code()
-
-    def set_pending_response(self, pending_response):
-        log("%s.%s, %r", self.__class__.__name__,
-            self.set_pending_response.__name__, pending_response)
-        return self.callback.set_pending_response(pending_response)
-
-    def clear_pending_responses(self):
-        log("%s.%s", self.__class__.__name__,
-            self.clear_pending_responses.__name__)
-        return self.callback.clear_pending_responses()
-
-    def cleanup(self):
-        log("%s.%s", self.__class__.__name__, self.cleanup.__name__)
-        return self.callback.cleanup()
 
 
 def get_my_ip_address():
@@ -329,6 +392,11 @@ get_my_ip_address.cached_address = None
 
 def init_logging(tag=""):
     """Initialize logging"""
+    root_logger = logging.getLogger('root')
+    if root_logger.handlers:
+        # Already inited
+        return
+
     script_name = os.path.basename(sys.argv[0])  # in case it is full path
     script_name_no_ext = os.path.splitext(script_name)[0]
 
@@ -343,91 +411,43 @@ def init_logging(tag=""):
                         force=True)
 
 
-class FakeProxy:
-    """Fake PTS XML-RPC proxy client.
-
-    Usefull when testing code locally and auto-pts server is not needed"""
-
-    class System:
-        def listMethods(self):
-            pass
-
-    def __init__(self):
-        self.system = FakeProxy.System()
-
-    def restart_pts(self):
-        pass
-
-    def set_call_timeout(self, timeout):
-        pass
-
-    def get_version(self):
-        return 0x65
-
-    def bd_addr(self):
-        return "00:01:02:03:04:05"
-
-    def register_xmlrpc_ptscallback(self, client_address, client_port):
-        pass
-
-    def unregister_xmlrpc_ptscallback(self):
-        pass
-
-    def stop_pts(self):
-        pass
-
-    def open_workspace(self, workspace_path):
-        pass
-
-    def enable_maximum_logging(self, enable):
-        pass
-
-    def update_pixit_param(self, project_name, param_name, new_param_value):
-        pass
-
-    def run_test_case(self, project_name, test_case_name):
-        pass
-
-
 def init_pts_thread_entry_wrapper(func):
     def wrapper(*args):
-        exeptions = args[6]
+        exceptions = args[4]
+        counter = args[5]
         try:
             func(*args)
         except Exception as exc:
             logging.exception(exc)
-            exeptions.put(exc)
+            exceptions.put(exc)
+        finally:
+            counter.add(1)
 
     return wrapper
 
 
 @init_pts_thread_entry_wrapper
-def init_pts_thread_entry(proxy, local_address, local_port, workspace_path,
-                          bd_addr, enable_max_logs, exceptions):
+def init_pts_thread_entry(proxy, workspace_path, bd_addr,
+                          enable_max_logs, exceptions, finish_count):
     """PTS instance initialization thread function entry"""
 
     sys.stdout.flush()
-    proxy.restart_pts()
-    print("(%r) OK" % (id(proxy),))
+    proxy.cleanup_caches()
+    err = proxy.restart_pts()
+    if err != "WAIT":
+        raise Exception("Failed to restart PTS!")
 
-    proxy.callback_thread.start()
+    err = proxy.callback.get_result('restart_pts', timeout=RESTART_PTS_TIMEOUT_S)
+    if err != True:
+        raise Exception(f"Failed to restart PTS, err {err}")
 
-    proxy.set_call_timeout(300000)  # milliseconds
+    proxy.set_call_timeout(TEST_CASE_TIMEOUT_MS)  # milliseconds
 
-    log("Server methods: %s", proxy.system.listMethods())
     log("PTS Version: %s", proxy.get_version())
 
     # cache locally for quick access (avoid contacting server)
     proxy.q_bd_addr = proxy.bd_addr()
     log("PTS BD_ADDR: %s", proxy.q_bd_addr)
-
-    client_ip_address = local_address
-    if client_ip_address is None:
-        client_ip_address = get_my_ip_address()
-
-    log("Client IP Address: %s", client_ip_address)
-
-    proxy.register_xmlrpc_ptscallback(client_ip_address, local_port)
 
     log("Opening workspace: %s", workspace_path)
     proxy.open_workspace(workspace_path)
@@ -447,48 +467,51 @@ def init_pts(args, ptses, tc_db_table_name=None):
     proxy_list = ptses
     thread_list = []
     exceptions = queue.Queue()
-    i = 0
+    thread_count = len(args.cli_port)
+    finish_count = CounterWithFlag(init_count=0)
 
     init_logging('_' + '_'.join(str(x) for x in args.cli_port))
 
-    for server_addr, local_addr, server_port, local_port \
-            in zip(args.ip_addr, args.local_addr, args.srv_port, args.cli_port):
-
+    # PtsServer.finish_count.clear()
+    for i in range(0, args.server_count):
         if i < len(proxy_list):
             proxy = proxy_list[i]
-            if isinstance(proxy.callback_thread, CallbackThread):
-                proxy.callback_thread.stop()
         else:
             if AUTO_PTS_LOCAL:
                 proxy = FakeProxy()
+            elif args.server_args:
+                proxy = PtsServer.factory_get_instance(args.server_args[i])
             else:
-                proxy = PtsServerProxy(
-                    "http://{}:{}/".format(server_addr, server_port),
-                    allow_none=True, )
+                proxy = PtsServerProxy.factory_get_instance(
+                    i+1, args.ip_addr[i], args.srv_port[i],
+                    args.local_addr[i], args.cli_port[i])
 
             proxy_list.append(proxy)
 
-        proxy.callback_thread = CallbackThread(local_port, f'LT{i+1}-callback')
-        print("(%r) Starting PTS %s:%s ..." % (id(proxy), server_addr, server_port))
-
-        thread = threading.Thread(target=init_pts_thread_entry, name=f'LT{i+1}-server-{server_port}-init',
-                                  args=(proxy, local_addr, local_port, args.workspace,
-                                        args.bd_addr, args.enable_max_logs, exceptions))
+        thread = InterruptableThread(target=init_pts_thread_entry,
+                                     name=f'LT{i+1}-server-init',
+                                     args=(proxy, args.workspace, args.bd_addr,
+                                           args.enable_max_logs, exceptions, finish_count))
 
         thread_list.append(thread)
         thread.start()
-        i += 1
 
     if tc_db_table_name:
         global TEST_CASE_DB
         TEST_CASE_DB = TestCaseTable(tc_db_table_name, args.database_file)
 
-    for index, thread in enumerate(thread_list):
-        thread.join(timeout=180.0)
-
-        # check init completed
-        if thread.is_alive():
-            raise Exception("(%r) init failed" % (id(proxy_list[index]),))
+    # Wait till every PTS instance finish executing its test case
+    try:
+        finish_count.wait_for(thread_count, timeout=180.0)
+    except Exception as e:
+        logging.exception(e)
+        set_global_end()
+        raise
+    finally:
+        for i, thread in enumerate(thread_list):
+            if thread.is_alive():
+                thread.interrupt()
+                log(f"({id(proxy_list[i])}) init failed")
 
     exeption_msg = ''
     while not exceptions.empty():
@@ -501,18 +524,6 @@ def init_pts(args, ptses, tc_db_table_name=None):
         raise Exception(exeption_msg)
 
     return proxy_list
-
-
-def shutdown_pts(ptses):
-    for pts in ptses:
-        proxy = xmlrpc.client.ServerProxy(
-            'http://%s/' % pts.__getattribute__('_ServerProxy__host'),
-            allow_none=True)
-        proxy.unregister_xmlrpc_ptscallback()
-        proxy.stop_pts()
-
-        if isinstance(pts.callback_thread, CallbackThread):
-            pts.callback_thread.stop()
 
 
 def get_result_color(status):
@@ -828,38 +839,50 @@ def get_error_code(exc):
     return error_code
 
 
-def synchronize_instances(state, break_state=None):
+def synchronize_instances(state, break_state=None, end_flag=None):
     """Synchronize instances to be in one state before executing further"""
-    while True:
-        time.sleep(1)
-        match = True
+    match = ResultWithFlag()
+
+    def wait_for():
+        if get_global_end():
+            return False
 
         for tc in RUNNING_TEST_CASE.values():
             if tc.state != state:
                 if break_state and tc.state in break_state:
-                    raise SynchError
+                    log(f'SynchError: {tc.name} in an invalid state {tc.state} ')
+                    return False
 
-                match = False
-                continue
+                if end_flag and end_flag.is_set():
+                    log(f'SynchError: timeout: {tc.name} in an invalid state {tc.state} ')
+                    return False
 
-        if match:
-            return
+                return True
+
+        # Instances are in sync
+        match.set(True)
+        return False
+
+    return match.get(predicate=wait_for)
 
 
 def run_test_case_thread_entry_wrapper(func):
     def wrapper(*args):
         exeptions = args[2]
+        finish_count = args[3]
         try:
             func(*args)
         except Exception as exc:
             logging.exception(exc)
             exeptions.put(exc)
+        finally:
+            finish_count.add(1)
 
     return wrapper
 
 
 @run_test_case_thread_entry_wrapper
-def run_test_case_thread_entry(pts, test_case, exceptions):
+def run_test_case_thread_entry(pts, test_case, exceptions, finish_count):
     """Runs the test case specified by a TestCase instance.
 
     [1] xmlrpclib.Fault normally happens due to unhandled exception in the
@@ -876,6 +899,7 @@ def run_test_case_thread_entry(pts, test_case, exceptions):
         return
 
     error_code = None
+    pts.callback.cleanup()
 
     try:
         RUNNING_TEST_CASE[test_case.name] = test_case
@@ -883,16 +907,54 @@ def run_test_case_thread_entry(pts, test_case, exceptions):
         test_case.pre_run()
         test_case.status = "RUNNING"
         test_case.state = "RUNNING"
-        pts.callback_thread.set_current_test_case(test_case.name)
-        synchronize_instances(test_case.state, ["FINISHING"])
-        error_code = pts.run_test_case(test_case.project_name, test_case.name)
+
+        if not synchronize_instances(test_case.state, ["FINISHED"], end_flag=finish_count):
+            raise SynchError
+
+        result = pts.run_test_case(test_case.project_name, test_case.name)
+        if result != "WAIT":
+            raise Exception(f"Failed to start the test case {test_case.name}")
+
+        def wait_if_no_step():
+            return test_case.steps_queue.empty()
+
+        try:
+            while not finish_count.is_set():
+                # Wait for the test case result
+                if test_case.state == "RUNNING":
+                    status = pts.callback.get_result(
+                        'run_test_case', predicate=wait_if_no_step)
+
+                    if status:
+                        test_case.status = status
+                        test_case.state = "FINISHING"
+                elif test_case.steps_queue.empty():
+                    break
+
+                # or perform next step (WID or other)
+                response = test_case.run_next_step()
+                if response is None:
+                    continue
+
+                pts.set_wid_response(response)
+
+        except BaseException as test_case_error:
+            logging.exception(test_case_error)
+            error_code = get_error_code(test_case_error)
+            exceptions.put(test_case_error)
+            pts.set_wid_response("Cancel")
+            pts.stop_test_case(test_case.project_name, test_case.name)
+
+        if finish_count.is_set():
+            test_case.state = E_FATAL_ERROR
+            log('Test case stopped externally')
 
         log("After run_test_case error_code=%r status=%r",
             error_code, test_case.status)
 
         # raise exception discovered by thread
-        thread_error = pts.callback_thread.error_code()
-        pts.callback_thread.cleanup()
+        thread_error = pts.callback.error_code()
+        pts.callback.cleanup()
 
         if thread_error:
             error_code = thread_error
@@ -906,14 +968,10 @@ def run_test_case_thread_entry(pts, test_case, exceptions):
         error_code = get_error_code(None)
 
     finally:
-        try:
-            if error_code == ptstypes.E_XML_RPC_ERROR:
-                pts.recover_pts()
-        except Exception as error:
-            logging.exception(error)
-            exceptions.put(error)
-        test_case.state = "FINISHING"
-        synchronize_instances(test_case.state)
+        stack_inst = stack.get_stack()
+        stack_inst.synch.cancel_synch()
+        test_case.state = "FINISHED"
+        synchronize_instances(test_case.state, end_flag=finish_count)
         test_case.post_run(error_code)  # stop qemu and other commands
         del RUNNING_TEST_CASE[test_case.name]
 
@@ -937,73 +995,73 @@ def run_test_case(ptses, test_case_instances, test_case_name, stats,
 
     logger = logging.getLogger()
 
-    format_template = ("%(asctime)s %(name)s %(levelname)s %(filename)-25s "
+    format_template = ("%(asctime)s %(threadName)s %(name)s %(levelname)s %(filename)-25s "
                        "%(lineno)-5s %(funcName)-25s : %(message)s")
     formatter = logging.Formatter(format_template)
 
-    if timeout == 0:
-        timeout = None
+    # Lookup TestCase class instances
+    test_case_lts = []
+    tc_name = test_case_name
+    for i, tc_class in enumerate([TestCaseLT1, TestCaseLT2], 2):
 
-    # Lookup TestCase class instance
-    test_case_lt1 = test_case_lookup_name(test_case_name, TestCaseLT1)
-    if test_case_lt1 is None:
-        # FIXME
-        return 'NOT_IMPLEMENTED'
-
-    test_case_lt1.reset()
-    test_case_lt1.initialize_logging(session_log_dir)
-
-    if test_case_lt1.name_lt2:
-        if len(ptses) < 2:
-            return 'LT2_NOT_AVAILABLE'
-
-        test_case_lt2 = test_case_lookup_name(test_case_lt1.name_lt2,
-                                              TestCaseLT2)
-        if test_case_lt2 is None:
-            # FIXME
+        test_case_lt = test_case_lookup_name(tc_name, tc_class)
+        if test_case_lt is None:
+            log(f'The {tc_name} test case enabled in workspace, but the profile not implemented!')
             return 'NOT_IMPLEMENTED'
-    else:
-        test_case_lt2 = None
 
-    file_handler = logging.FileHandler(test_case_lt1.log_filename)
+        test_case_lt.reset()
+        test_case_lts.append(test_case_lt)
+
+        tc_name = getattr(test_case_lts[0], f'name_lt{i}', None)
+        if tc_name is None:
+            break
+
+        if len(ptses) < i:
+            log(f'Not enough PTS instances configured. At least {i}'
+                f'instances are required for this test case!')
+            return f'LT{i}_NOT_AVAILABLE'
+
+    test_case_lts[0].initialize_logging(session_log_dir)
+    file_handler = logging.FileHandler(test_case_lts[0].log_filename)
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
 
-    while test_case_lt1.status != 'init':
-        pass # Multiple PTS instances test cases may fill status already
-
     # Multi-instance related stuff
-    pts_threads = []
+    finish_count = CounterWithFlag(init_count=0)
+    thread_count = 0
+    thread_list = []
 
-    pts_thread = InterruptableThread(
-        name=f'LT1-thread',
-        target=run_test_case_thread_entry,
-        args=(ptses[0], test_case_lt1, exceptions))
-    pts_threads.append(pts_thread)
-    pts_thread.start()
-
-    if test_case_lt2:
-        pts_thread = InterruptableThread(
-            name=f'LT2-thread',
+    for thread_count, (test_case_lt, pts) in enumerate(zip(test_case_lts, ptses), 1):
+        thread = InterruptableThread(
+            name=f'LT{thread_count}-thread',
             target=run_test_case_thread_entry,
-            args=(ptses[1], test_case_lt2, exceptions))
-        pts_threads.append(pts_thread)
-        pts_thread.start()
+            args=(pts, test_case_lt, exceptions, finish_count))
+        thread_list.append(thread)
+        thread.start()
 
-    # Wait till every PTS instance finish executing test case
-    for pts_thread in pts_threads:
-        pts_thread.join(timeout=timeout)
-        if pts_thread.is_alive():
-            pts_thread.interrupt()
-            test_case_lt1.status = 'SUPERGUARD TIMEOUT'
+    # Wait until each PTS instance has finished executing its test case
+    try:
+        finish_count.wait_for(thread_count, timeout=timeout)
+    except TimeoutError:
+        test_case_lts[0].status = 'SUPERGUARD TIMEOUT'
+        log('Superguard timeout')
+    except RunEnd:
+        log('Test case interrupted with SIGINT')
+        raise
+    finally:
+        finish_count.set_flag()
+        for i, thread in enumerate(thread_list):
+            if thread.is_alive():
+                thread.interrupt()
+                log(f"Interrupting {test_case_lts[i]} test case of thread {thread.name} ")
 
     logger.removeHandler(file_handler)
 
-    if test_case_lt2 and test_case_lt2.status != "PASS" \
-            and test_case_lt1.status == "PASS":
-        return test_case_lt2.status
+    for test_case_lt in test_case_lts:
+        if test_case_lt.status != "PASS":
+            return test_case_lt.status
 
-    return test_case_lt1.status
+    return test_case_lts[0].status
 
 
 test_case_blacklist = [
@@ -1087,8 +1145,7 @@ def run_test_cases(ptses, test_case_instances, args):
                                              test_case, stats, session_log_dir,
                                              exceptions, args.superguard)
 
-            if RUN_END:
-                raise RunEnd
+            raise_on_global_end()
 
             exeption_msg = ''
             while not exceptions.empty():
@@ -1098,7 +1155,7 @@ def run_test_cases(ptses, test_case_instances, args):
                     logging.exception(e)
                     traceback.print_exc()
                 finally:
-                    print(exeption_msg)
+                    log(f'exception_msg: {exeption_msg}')
 
             if args.recovery and (exeption_msg != '' or status not in args.not_recover):
                 run_recovery(args, ptses)
@@ -1162,7 +1219,7 @@ class Client:
 
         def sigint_handler(sig, frame):
             """Thread safe SIGINT interrupting"""
-            set_end()
+            set_global_end()
 
             if sys.platform != "win32":
                 signal.signal(signal.SIGINT, self.prev_sigint_handler)
@@ -1176,8 +1233,7 @@ class Client:
         except BaseException as e:  # Ctrl-C
             if not isinstance(e, KeyboardInterrupt):
                 logging.exception(e)
-            set_end()
-            shutdown_pts(self.ptses)
+            set_global_end()
             self.cleanup()
             raise
 
@@ -1209,7 +1265,7 @@ class Client:
 
         stack.init_stack()
         stack_inst = stack.get_stack()
-        stack_inst.synch_init([pts.callback_thread for pts in self.ptses])
+        stack_inst.synch_init()
 
         self.setup_project_pixits(self.ptses)
         self.setup_test_cases(self.ptses)
@@ -1217,7 +1273,6 @@ class Client:
         stats = self.run_test_cases()
 
         self.cleanup()
-        shutdown_pts(self.ptses)
 
         print("\nBye!")
         sys.stdout.flush()
@@ -1247,11 +1302,21 @@ class Client:
 
     def cleanup(self):
         autoprojects.iutctl.cleanup()
+        self.shutdown_pts()
 
+    def shutdown_pts(self):
+        for pts in self.ptses:
+            pts.stop_pts()
+            pts.cleanup_caches()
+            pts.unregister_client_callback()
 
-def set_end():
-    global RUN_END
-    RUN_END = True
+            if getattr(pts, 'callback_thread', None):
+                pts.callback_thread.stop()
+
+            if isinstance(pts, PtsServer):
+                pts.terminate()
+
+        self.ptses.clear()
 
 
 def recover_at_exception(func):
@@ -1299,40 +1364,31 @@ def run_recovery(args, ptses):
 
     log('Running recovery')
 
+    if sys.platform == 'win32':
+        tty = tty_to_com(args.tty_file)
+    else:
+        tty = args.tty_file
+
     ykush = args.ykush
     if ykush:
-        board_power(ykush, False)
+        while device_exists(tty):
+            raise_on_global_end()
+            usb_power(ykush, False)
 
     for pts in ptses:
         wait_for_server_restart(pts)
-
-    try:
-        for pts in ptses:
-            pts.request_pts_recovery()
-    except Exception as e:
-        logging.exception(e)
-        traceback.print_exc()
-
-        try:
-            for pts in ptses:
-                pts.request_server_recovery()
-        except Exception as e:
-            logging.exception(e)
-            traceback.print_exc()
-
-    for pts in ptses:
-        wait_for_server_restart(pts)
-
-    if ykush:
-        board_power(ykush, True)
 
     init_pts(args, ptses)
-
     stack_inst = stack.get_stack()
     stack_inst.cleanup()
-    stack_inst.synch_init([pts.callback_thread for pts in ptses])
+    stack_inst.synch_init()
 
-    setup_project_pixits(ptses)
+    if ykush:
+        while not device_exists(tty):
+            raise_on_global_end()
+            usb_power(ykush, True)
+        stack_inst.core.event_received(defs.CORE_EV_IUT_READY, True)
+
     log('Recovery finished')
 
 

@@ -28,6 +28,7 @@ from autopts.pybtp.types import BTPError
 from autopts.pybtp.iutctl_common import BTPSocketSrv, BTPWorker, BTP_ADDRESS
 from autopts.rtt import RTTLogger, BTMON
 from autopts.ptsprojects.stack import get_stack
+from autopts.utils import get_global_end
 
 log = logging.debug
 ZEPHYR = None
@@ -253,7 +254,9 @@ class ZephyrCtl:
         self.btmon_stop()
 
         stack = get_stack()
-        if not self.gdb and self.board and stack.core:
+        if not self.gdb and self.board and \
+                stack.core and not get_global_end():
+
             stack.core.event_queues[defs.CORE_EV_IUT_READY].clear()
             self.board.reset()
 

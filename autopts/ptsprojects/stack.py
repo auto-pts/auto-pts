@@ -15,13 +15,16 @@
 import binascii
 import logging
 import copy
+import threading
 from threading import Lock, Timer, Event
 from time import sleep
 
 from autopts.pybtp import defs
 from autopts.pybtp.types import AdType, Addr, IOCap
+from autopts.utils import raise_on_global_end
 
 STACK = None
+log = logging.debug
 
 
 class GattAttribute:
@@ -103,6 +106,8 @@ def wait_event_with_condition(event_queue, condition_cb, timeout, remove):
     t.start()
 
     while flag.is_set():
+        raise_on_global_end()
+
         for ev in event_queue:
             if isinstance(ev, tuple):
                 result = condition_cb(*ev)
@@ -131,6 +136,8 @@ def wait_for_event_iut(event_queue, timeout, remove):
     t.start()
 
     while flag.is_set():
+        raise_on_global_end()
+
         for ev in event_queue:
             if ev:
                 t.cancel()
@@ -237,6 +244,8 @@ class Gap:
         t.start()
 
         while flag.is_set():
+            raise_on_global_end()
+
             if self.is_connected(conn_count):
                 t.cancel()
                 return True
@@ -254,6 +263,8 @@ class Gap:
         t.start()
 
         while flag.is_set():
+            raise_on_global_end()
+
             if not self.is_connected(0):
                 t.cancel()
                 return True
@@ -279,6 +290,8 @@ class Gap:
         t.start()
 
         while flag.is_set():
+            raise_on_global_end()
+
             if self.periodic_report_rxed:
                 t.cancel()
                 self.periodic_report_rxed = False
@@ -297,6 +310,8 @@ class Gap:
         t.start()
 
         while flag.is_set():
+            raise_on_global_end()
+
             if self.periodic_sync_established_rxed:
                 t.cancel()
                 self.periodic_sync_established_rxed = False
@@ -315,6 +330,8 @@ class Gap:
         t.start()
 
         while flag.is_set():
+            raise_on_global_end()
+
             if self.periodic_transfer_received:
                 t.cancel()
                 self.periodic_transfer_received = False
@@ -378,6 +395,8 @@ class Gap:
             t.start()
 
             while flag.is_set():
+                raise_on_global_end()
+
                 if self.passkey.data:
                     t.cancel()
                     break
@@ -393,6 +412,8 @@ class Gap:
             t.start()
 
             while flag.is_set():
+                raise_on_global_end()
+
                 if self.pairing_failed_rcvd.data:
                     t.cancel()
                     break
@@ -408,6 +429,8 @@ class Gap:
             t.start()
 
             while flag.is_set():
+                raise_on_global_end()
+
                 if self.bond_lost_ev_data.data:
                     t.cancel()
                     break
@@ -423,6 +446,8 @@ class Gap:
             t.start()
 
             while flag.is_set():
+                raise_on_global_end()
+
                 if self.sec_level == level:
                     t.cancel()
                     break
@@ -584,6 +609,8 @@ class Mesh:
         t.start()
 
         while flag.is_set():
+            raise_on_global_end()
+
             if uuid in self.nodes_added.data:
                 t.cancel()
                 return True
@@ -671,6 +698,8 @@ class Mesh:
         t.start()
 
         while flag.is_set():
+            raise_on_global_end()
+
             if self.incomp_timer_exp.data:
                 t.cancel()
                 return True
@@ -692,6 +721,8 @@ class Mesh:
         t.start()
 
         while flag.is_set():
+            raise_on_global_end()
+
             state, _ = self.last_seen_prov_link_state.data
             if state == 'closed':
                 t.cancel()
@@ -710,6 +741,8 @@ class Mesh:
         t.start()
 
         while flag.is_set():
+            raise_on_global_end()
+
             if self.lpn.data:
                 t.cancel()
                 return True
@@ -727,6 +760,8 @@ class Mesh:
         t.start()
 
         while flag.is_set():
+            raise_on_global_end()
+
             if not self.lpn.data:
                 t.cancel()
                 return True
@@ -1122,6 +1157,8 @@ class L2capChan:
         t.start()
 
         while flag.is_set():
+            raise_on_global_end()
+
             if self.state and self.state != "init":
                 t.cancel()
                 break
@@ -1169,6 +1206,8 @@ class L2capChan:
         t.start()
 
         while flag.is_set():
+            raise_on_global_end()
+
             if len(self.data_rx) != 0:
                 t.cancel()
                 return self.data_rx
@@ -1269,6 +1308,8 @@ class L2cap:
         t.start()
 
         while flag.is_set():
+            raise_on_global_end()
+
             if not self.is_connected(chan_id):
                 t.cancel()
                 return True
@@ -1286,6 +1327,8 @@ class L2cap:
         t.start()
 
         while flag.is_set():
+            raise_on_global_end()
+
             if self.is_connected(chan_id):
                 t.cancel()
                 return True
@@ -1346,21 +1389,25 @@ class SynchPoint:
         self.test_case = test_case
         self.wid = wid
         self.delay = delay
-        self.description = None
+        self.done = threading.Event()
 
-    def is_waiting(self):
-        return self.description is not None
+    def set_done(self):
+        self.done.set()
 
-    def set_waiting(self, description):
-        self.description = description
+    def clear(self):
+        self.done.clear()
 
-    def clear_waiting(self):
-        self.description = None
+    def wait(self):
+        self.done.wait()
 
 
 class SynchElem:
     def __init__(self, sync_points):
         self.sync_points = sync_points
+        self.active_synch_point = None
+        count = len(sync_points)
+        self._start_barrier = threading.Barrier(count, self.clear_flags)
+        self._end_barrier = threading.Barrier(count, self.clear_flags)
 
     def find_matching(self, test_case, wid):
         matching_items = [item for item in self.sync_points if
@@ -1369,80 +1416,116 @@ class SynchElem:
             return matching_items[0]
         return None
 
-    def is_ready(self):
-        return all([item.is_waiting() for item in self.sync_points])
+    def clear_flags(self):
+        for point in self.sync_points:
+            point.clear()
 
-    def clear(self, clear_element):
-        for clear_item in clear_element.sync_points:
-            match = self.find_matching(clear_item.test_case,
-                                       clear_item.wid)
-            if match:
-                match.clear_waiting()
+    def wait_for_start(self):
+        # While debugging, do not step over Barrier.wait() or other
+        # waits from threading module. This may cause the GIL deadlock.
+        self._start_barrier.wait()
+        if self._start_barrier.broken:
+            return False
+        return True
+
+    def wait_for_end(self):
+        self._end_barrier.wait()
+        if self._end_barrier.broken:
+            return False
+        return True
+
+    def wait_for_your_turn(self, synch_point):
+        for point in self.sync_points:
+            if point == synch_point:
+                self.active_synch_point = synch_point
+                return True
+
+            point.wait()
+
+            if self._start_barrier.broken or self._end_barrier.broken:
+                return False
+
+        return False
+
+    def cancel_synch(self):
+        self._end_barrier.abort()
+        self._start_barrier.abort()
+
+        for point in self.sync_points:
+            point.set_done()
 
 
 class Synch:
-    def __init__(self, sync_callbacks):
+    def __init__(self):
         self._synch_table = []
-        self._pending_responses = []
-        self._sync_callbacks = sync_callbacks
+        self._synch_condition = threading.Condition()
 
-    def reinit(self, sync_callbacks):
+    def reinit(self):
         self._synch_table.clear()
-        self._pending_responses.clear()
-        self._sync_callbacks.clear()
-        for cb in sync_callbacks:
-            self._sync_callbacks.append(cb)
 
     def add_synch_element(self, elem):
         self._synch_table.append(SynchElem(elem))
 
-    def perform_synch(self, wid, tc_name, description):
-        found_element = None
-        # Clean the remaining element descriptions with the same e_wid
+    def wait_for_start(self, wid, tc_name):
+        synch_point = None
+        elem = None
 
         for i, elem in enumerate(self._synch_table):
-            tc_item = elem.find_matching(tc_name, wid)
-            if not tc_item:
-                continue
+            synch_point = elem.find_matching(tc_name, wid)
+            if synch_point:
+                # Found a sync point matching the test case and wid
+                break
 
-            tc_item.set_waiting(description)
-            if not elem.is_ready():
-                # Wait for other wids
-                return None
+        if not synch_point:
+            # No synch point found
+            return None
 
-            found_element = i
-            break
+        log(f'SYNCH: Waiting at barrier for start, tc {tc_name} wid {wid}')
+        if not elem.wait_for_start():
+            log(f'SYNCH: Cancelled waiting at barrier for start, tc {tc_name} wid {wid}')
+            return None
 
-        synch_element = self._synch_table.pop(found_element)
+        log(f'SYNCH: Waiting for turn to start, tc {tc_name} wid {wid}')
 
-        # Clean the remaining element descriptions with the same e_wid
-        for element in self._synch_table:
-            element.clear(synch_element)
+        if not elem.wait_for_your_turn(synch_point):
+            log(f'SYNCH: Cancelled waiting for turn to start, tc {tc_name} wid {wid}')
+            return None
 
-        return synch_element.sync_points
+        log(f'SYNCH: Started tc {tc_name} wid {wid}')
 
-    def is_required_synch(self, tc_name, wid):
-        for elem in self._synch_table:
-            if elem.find_matching(tc_name, wid):
-                return True
-        return False
+        return elem
 
-    def prepare_pending_response(self, test_case_name, response, delay):
-        self._pending_responses.append((test_case_name, response, delay))
+    def wait_for_end(self, synch_elem):
+        synch_point = synch_elem.active_synch_point
 
-    def set_pending_responses_if_any(self):
-        for name, rsp, delay in self._pending_responses:
-            for cb in self._sync_callbacks:
-                if cb.get_current_test_case() == name:
-                    cb.set_pending_response((name, rsp, delay))
+        if synch_point.delay:
+            sleep(synch_point.delay)
 
-        self._pending_responses = []
+        # Let other LT-threads know that this one completed the wid
+        synch_point.set_done()
+        tc_name = synch_point.test_case
+        wid = synch_point.wid
+
+        log(f'SYNCH: Waiting at end barrier, tc {tc_name} wid {wid}')
+        if not synch_elem.wait_for_end():
+            log(f'SYNCH: Cancelled waiting at end barrier, tc {tc_name} wid {wid}')
+            return None
+
+        log(f'SYNCH: Finished waiting at end barrier, tc {tc_name} wid {wid}')
+
+        # Remove the synch element
+        try:
+            self._synch_table.remove(synch_elem)
+        except:
+            # Already cleaned up by other thread
+            pass
+
+        return None
 
     def cancel_synch(self):
+        for elem in self._synch_table:
+            elem.cancel_synch()
         self._synch_table = []
-        self._pending_responses = []
-        for cb in self._sync_callbacks:
-            cb.clear_pending_responses()
 
 
 class Gatt:
@@ -1528,6 +1611,8 @@ def wait_for_event(timeout, test, args=None):
     t.start()
 
     while flag.is_set():
+        raise_on_global_end()
+
         if test(args):
             t.cancel()
             return True
@@ -1752,11 +1837,11 @@ class Stack:
     def gatt_cl_init(self):
         self.gatt_cl = GattCl()
 
-    def synch_init(self, sync_callbacks):
+    def synch_init(self):
         if not self.synch:
-            self.synch = Synch(sync_callbacks)
+            self.synch = Synch()
         else:
-            self.synch.reinit(sync_callbacks)
+            self.synch.reinit()
 
     def vcp_init(self):
         self.vcp = VCP()

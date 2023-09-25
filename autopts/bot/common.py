@@ -23,7 +23,7 @@ import shutil
 from pathlib import Path
 from argparse import Namespace
 from autopts import client as autoptsclient
-from autopts.client import CliParser, Client, TestCaseRunStats
+from autopts.client import CliParser, Client, TestCaseRunStats, init_logging
 from autopts.ptsprojects.boards import get_free_device, get_tty, get_debugger_snr
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
 
@@ -64,6 +64,7 @@ class BotConfigArgs(Namespace):
         self.cli_port = args.get('cli_port', [65001])
         self.ip_addr = args.get('server_ip', ['127.0.0.1'] * len(self.srv_port))
         self.local_addr = args.get('local_ip', ['127.0.0.1'] * len(self.cli_port))
+        self.server_count = args.get('server_count', len(self.cli_port))
         self.tty_file = args.get('tty_file', None)
         self.debugger_snr = args.get('debugger_snr', None)
         self.kernel_image = args.get('kernel_image', None)
@@ -86,6 +87,20 @@ class BotConfigArgs(Namespace):
         self.project_repos = args.get('repos', None)
         self.test_case_limit = args.get('test_case_limit', 0)
         self.simple_mode = args.get('simple_mode', False)
+        self.server_args = args.get('server_args', None)
+
+        if self.server_args is not None:
+            from autoptsserver import SvrArgumentParser
+            _server_args = SvrArgumentParser(
+                "PTS automation server").parse_args(self.server_args.split())
+            _server_args.builtin_server = True
+            self.server_args = []
+            for i in range(len(_server_args.srv_port)):
+                args_copy = copy.deepcopy(_server_args)
+                args_copy.srv_port = _server_args.srv_port[i]
+                args_copy.ykush = _server_args.ykush[i] if _server_args.ykush else None
+                args_copy.dongle = _server_args.dongle[i] if _server_args.dongle else None
+                self.server_args.append(args_copy)
 
 
 class BotClient(Client):
@@ -126,6 +141,9 @@ class BotClient(Client):
         self.parse_or_find_tty(bot_config_namespace)
         self.args, errmsg = self.arg_parser.parse(bot_config_namespace)
         self.args.retry_config = bot_config_dict.get('retry_config', None)
+
+        if not errmsg:
+            init_logging('_' + '_'.join(str(x) for x in self.args.cli_port))
 
         return errmsg
 

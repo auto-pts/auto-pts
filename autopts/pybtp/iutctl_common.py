@@ -27,6 +27,7 @@ from abc import abstractmethod
 from autopts.pybtp import defs
 from autopts.pybtp.types import BTPError
 from autopts.pybtp.parser import enc_frame, dec_hdr, dec_data, HDR_LEN
+from autopts.utils import get_global_end, raise_on_global_end
 
 log = logging.debug
 
@@ -187,12 +188,13 @@ class BTPWorker:
         self._running = threading.Event()
         self._lock = threading.Lock()
 
-        self._rx_worker = threading.Thread(target=self._rx_task)
+        self._rx_worker = threading.Thread(target=self._rx_task,
+                                           name='BTPWorker')
 
         self.event_handler_cb = None
 
     def _rx_task(self):
-        while self._running.is_set():
+        while self._running.is_set() and not get_global_end():
             try:
                 data = self._socket.read(timeout=1.0)
 
@@ -209,6 +211,8 @@ class BTPWorker:
             except Exception as e:
                 logging.error("%r", e)
 
+        log('BTPWorker finishing...')
+
     @staticmethod
     def _read_timeout(flag):
         flag.clear()
@@ -223,6 +227,8 @@ class BTPWorker:
         t.start()
 
         while flag.is_set():
+            raise_on_global_end()
+
             if self._rx_queue.empty():
                 continue
 

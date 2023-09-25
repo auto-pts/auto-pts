@@ -30,7 +30,7 @@
 
 import argparse
 import copy
-import logging
+import logging as root_logging
 import os
 import shutil
 import subprocess
@@ -40,95 +40,249 @@ import time
 import traceback
 import xmlrpc.client
 import xmlrpc.server
+
+from functools import partial
 from os.path import dirname, abspath
 from pathlib import Path
+from queue import Queue, Empty
 from time import sleep
 
-import psutil
 import pythoncom
-import win32com
-import win32com.client
 import wmi
-from autopts import winutils, ptscontrol
 
+from autopts import ptscontrol
 from autopts.config import SERVER_PORT
-from autopts.utils import usb_power
+from autopts.ptsprojects.ptstypes import E_FATAL_ERROR
+from autopts.utils import usb_power, CounterWithFlag, get_global_end, device_exists, exit_if_admin
+from autopts.winutils import kill_all_processes
 
-log = logging.debug
+logging = root_logging.getLogger('server')
+log = root_logging.debug
+log_inited = False
 PROJECT_DIR = dirname(abspath(__file__))
-PTS_START_LOCK = threading.RLock()
-autoptsservers = []
 
 
-def server_start_lock_wrapper(func):
-    def _server_start_lock_wrapper(*args):
-        try:
-            PTS_START_LOCK.acquire()
-            ret = func(*args)
-        finally:
-            PTS_START_LOCK.release()
-        return ret
+def init_logging(_args):
+    """Initialize server logging"""
+    global logging, log, log_inited
+    if log_inited:
+        return
 
-    return _server_start_lock_wrapper
+    log_inited = True
+    logger = root_logging.getLogger('server')
+    format_template = '%(asctime)s %(threadName)s %(name)s %(levelname)s : %(message)s'
+    formatter = root_logging.Formatter(format_template)
+    file_handler = root_logging.FileHandler(_args.log_filename, mode='w')
+    file_handler.setFormatter(formatter)
+    logger.addHandler(file_handler)
+    logger.setLevel(root_logging.DEBUG)
+    logging.propagate = False
+    log = logging.debug
+
+    # Init root logger if server is run as a separate process
+    root_logger = root_logging.getLogger('root')
+    if __name__ == "__main__":
+        root_logger.setLevel(root_logging.DEBUG)
+        root_logger.addHandler(file_handler)
 
 
-def count_script_instances():
-    script_name = 'autoptsserver.py'
-    count = 0
-    for proc in psutil.process_iter(['name', 'cmdline']):
-        if proc.info['name'].startswith('python') and script_name in ' '.join(proc.info['cmdline']):
-            count += 1
-    return count
+class PtsClientProxy(xmlrpc.client.ServerProxy):
+    """TCP/IP socket for sending callbacks to the auto-pts client.
+    Args:
+        client_address: IP address of the auto-pts client that started
+         its own xmlrpc server to receive callback messages
 
+        client_port: TCP port
+    """
+    def __init__(self, client_address, client_port):
+        super().__init__(uri=f"http://{client_address}:{client_port}/",
+                         allow_none=True, transport=None,
+                         encoding=None, verbose=False,
+                         use_datetime=False, use_builtin_types=False,
+                         headers=(), context=None)
 
-class PyPTSWithXmlRpcCallback(ptscontrol.PyPTS):
-    """A child class that adds support of xmlrpc PTS callbacks to PyPTS"""
-
-    def __init__(self, device):
-        """Constructor"""
-        super().__init__(device)
-
-        log("%s", self.__init__.__name__)
-
-        # address of the auto-pts client that started it's own xmlrpc server to
-        # receive callback messages
-        self.client_address = None
-        self.client_port = None
-        self.client_xmlrpc_proxy = None
-
-    def register_xmlrpc_ptscallback(self, client_address, client_port):
-        """Registers client callback. xmlrpc proxy/client calls this method
-        to register its callback
-
-        client_address -- IP address
-        client_port -- TCP port
-        """
-
-        log("%s %s %d", self.register_xmlrpc_ptscallback.__name__,
-            client_address, client_port)
+        log(f"{self.__init__.__name__}, uri={self.uri}")
 
         self.client_address = client_address
         self.client_port = client_port
 
-        self.client_xmlrpc_proxy = xmlrpc.client.ServerProxy(
-            "http://{}:{}/".format(self.client_address, self.client_port),
-            allow_none=True)
 
-        log("Created XMR RPC auto-pts client proxy, provides methods: %s" %
-            self.client_xmlrpc_proxy.system.listMethods())
+class PyPTSWithCallback(ptscontrol.PyPTS, threading.Thread):
+    """A child class that adds support of xmlrpc PTS callbacks to PyPTS"""
 
-        self.register_ptscallback(self.client_xmlrpc_proxy)
+    def __init__(self, args, name):
+        log(f"{self.__init__.__name__}")
+        ptscontrol.PyPTS.__init__(self, args.dongle)
+        threading.Thread.__init__(self, target=self._pts_thread_work,
+                                  name=name)
+        self.args = args
+        self.client_callback = None
+        self.pts_thread = None
+        self.pts_thread_id = None
+        self.ptscontrol_request_queue = Queue()
+        self.ptscontrol_response_queue = Queue()
 
-    def unregister_xmlrpc_ptscallback(self):
+    def register_client_callback(self, kwargs):
+        """Registers client callback. xmlrpc proxy/client calls this method
+        to register its callback
+        """
+
+        log(f"{self.register_client_callback.__name__}")
+
+        if 'xmlrpc_address' in kwargs:
+            # auto-pts client and server as a separate processes
+            self.client_callback = PtsClientProxy(kwargs['xmlrpc_address'], kwargs['xmlrpc_port'])
+        else:
+            # One process mode
+            self.client_callback = kwargs['client_callback']
+
+        self.register_ptscallback(self.client_callback)
+
+    def unregister_client_callback(self):
         """Unregisters the client callback"""
 
-        log("%s", self.unregister_xmlrpc_ptscallback.__name__)
+        log(f"{self.unregister_client_callback.__name__},"
+            f"{self.client_callback}")
 
         self.unregister_ptscallback()
+        self.client_callback = None
 
-        self.client_address = None
-        self.client_port = None
-        self.client_xmlrpc_proxy = None
+    def _replug_dongle(self):
+        ykush_port = self.args.ykush
+        if not ykush_port:
+            return
+
+        device = self._device
+        log(f'Replugging device ({device}) under ykush:{ykush_port}')
+        if device:
+            while device_exists(device) and not self._end.is_set():
+                usb_power(ykush_port, False)
+
+            while not device_exists(device) and not self._end.is_set():
+                usb_power(ykush_port, True)
+        else:
+            # Cases where ykush was down or the dongle was
+            # not enumerated for any other reason.
+            usb_power(ykush_port, False)
+            sleep(3)
+            usb_power(ykush_port, True)
+
+    def _dispatch(self, method_name, param_tuple):
+        """Dispatcher that is used by xmlrpc server"""
+        try:
+            if method_name in ['start_pts', 'restart_pts',
+                               'recover_pts', 'run_test_case']:
+                # Methods that have to be called in the same context
+                # as the PTS instance was created, but the pts client
+                # callback has been already initialized, so it is better
+                # to await them outside the XMLRPC context.
+                result = self._dispatch_nonblocking(method_name, *param_tuple)
+
+            elif method_name in ['unregister_client_callback', 'ready',
+                                 'stop_test_case', 'set_wid_response']:
+                # Short nonblocking calls
+                method = getattr(self, method_name)
+                result = method(*param_tuple)
+
+            else:
+                # Methods that have to be called in the same context
+                # as the PTS instance was created, but are short enough
+                # to run them in a blocking manner.
+                result = self._dispatch_blocking(method_name, *param_tuple)
+        except BaseException as e:
+            logging.exception(e)
+            return "FATAL ERROR"
+
+        if isinstance(result, BaseException):
+            logging.exception(result)
+            raise result
+
+        return result
+
+    def _dispatch_nonblocking(self, method_name, *args):
+        self.ptscontrol_request_queue.put((method_name, False, args))
+        return "WAIT"
+
+    def _dispatch_blocking(self, method_name, *args):
+        self.ptscontrol_request_queue.put((method_name, True, args))
+        result = None
+        while not self._end.is_set():
+            try:
+                result = self.ptscontrol_response_queue.get(block=True, timeout=1)
+                self.ptscontrol_response_queue.task_done()
+                return result
+            except Empty:
+                pass
+
+        return result
+
+    def _pts_thread_work(self):
+        """Main"""
+        # Some ptscontrol methods have to be executed in the same
+        # thread context as PTS was inited Otherwise, PTSSender
+        # and PTSLogger are not reachable by PTS, hence the
+        # OnImplicitSend will not arrive.
+        #
+        # Since the RunTestCase() is blocking, other functions like e.g.
+        # StopTestCase(), those have to be called outside of this thread.
+        try:
+            pythoncom.CoInitialize()
+            log(f'pythoncom._GetInterfaceCount(): {pythoncom._GetInterfaceCount()}')
+
+            self.pts_thread_id = threading.get_ident()
+
+            print(f"({id(self)}) Starting PTS {self.args.srv_port} ...")
+            self.restart_pts(replug=True)
+            print(f"({id(self)}) OK")
+
+            while not self._end.is_set() and not get_global_end():
+                self._handle_ptscontrol_request(timeout=1)
+
+            self.stop_pts()
+            self.delete_temp_workspace()
+            self.unregister_ptscallback()
+        except Exception as e:
+            logging.exception(e)
+        finally:
+            pythoncom.CoUninitialize()
+            log(f'pythoncom._GetInterfaceCount(): {pythoncom._GetInterfaceCount()}')
+
+        log("_pts_thread_work finished")
+
+    def _handle_ptscontrol_request(self, timeout=None):
+        # Wait for request to call a ptscontrol method
+        try:
+            item = self.ptscontrol_request_queue.get(block=True, timeout=timeout)
+            self.ptscontrol_request_queue.task_done()
+            method_name, blocking, args = item
+        except BaseException:
+            return
+
+        # Call ptscontrol method
+        try:
+            if self.args.superguard:
+                timeout = self.args.superguard
+                timer = threading.Timer(timeout, self.stop_pts)
+                timer.start()
+
+            method = getattr(self, method_name)
+            result = method(*args)
+        except BaseException as e:
+            logging.exception(e)
+            result = e
+
+        # Send response with method result to client
+        try:
+            if blocking:
+                log(f'Setting result {result} for blocking method {method_name}')
+                self.ptscontrol_response_queue.put(result)
+            elif self._callback:
+                log(f'Setting result {result} for non-blocking method {method_name}')
+                self._callback.set_result(method_name, result)
+            else:
+                log(f'Dropping PTS result {result}')
+        except BaseException as e:
+            logging.exception(e)
 
 
 class SvrArgumentParser(argparse.ArgumentParser):
@@ -160,26 +314,17 @@ class SvrArgumentParser(argparse.ArgumentParser):
     def check_args(arg):
         """Sanity check command line arguments"""
 
-        script_name = os.path.basename(sys.argv[0])  # in case it is full path
-        script_name_no_ext = os.path.splitext(script_name)[0]
-
-        tag = '_' + '_'.join(str(x) for x in list(arg.srv_port))
-        arg.log_filename = f'{script_name_no_ext}{tag}.log'
+        tag = '_'.join(str(x) for x in list(arg.srv_port))
+        arg.log_filename = f'autoptsserver_{tag}.log'
 
         for srv_port in arg.srv_port:
             if not 49152 <= srv_port <= 65535:
                 sys.exit("Invalid server port number=%s, expected range <49152,65535> " % (srv_port,))
 
-        if len(arg.srv_port) == 1:
-            arg.srv_port = arg.srv_port[0]
-
-            if arg.dongle:
-                arg.dongle = arg.dongle[0]
-
         arg.superguard = 60 * arg.superguard
 
     def parse_args(self, args=None, namespace=None):
-        arg = super().parse_args()
+        arg = super().parse_args(args, namespace)
         self.check_args(arg)
         return arg
 
@@ -191,17 +336,6 @@ def get_workspace(workspace):
             if name == workspace:
                 return os.path.join(root, name)
     return None
-
-
-def kill_all_processes(name):
-    c = wmi.WMI()
-    for ps in c.Win32_Process(name=name):
-        try:
-            ps.Terminate()
-            log("%s process (PID %d) terminated successfully" % (name, ps.ProcessId))
-        except BaseException as exc:
-            logging.exception(exc)
-            log("There is no %s process running with id: %d" % (name, ps.ProcessId))
 
 
 def delete_workspaces():
@@ -218,106 +352,78 @@ def delete_workspaces():
     recursive(os.path.join(PROJECT_DIR, 'autopts/workspaces'), init_depth)
 
 
-def power_dongle(ykush_port, on=True):
-    usb_power(ykush_port, on)
-
-
-def dongle_exists(serial_address):
-    wmi = win32com.client.GetObject("winmgmts:")
-
-    if 'USB' in serial_address:  # USB:InUse:X&XXXXXXXX&X&X
-        serial_address = serial_address.split(r':')[2]
-        usbs = wmi.InstancesOf("Win32_USBHub")
-    else:  # COMX
-        usbs = wmi.InstancesOf("Win32_SerialPort")
-
-    for usb in usbs:
-        if serial_address in usb.DeviceID:
-            return True
-
-    return False
-
-
-class SuperGuard(threading.Thread):
-    def __init__(self, timeout):
-        threading.Thread.__init__(self, daemon=True)
-        self.servers = []
-        self.timeout = timeout
-        self.end = False
-        self.was_timeout = False
-
-    def run(self):
-        while not self.end:
-            idle_num = 0
-            for srv in self.servers:
-                if time.time() - srv.last_start() > self.timeout:
-                    idle_num += 1
-
-            if idle_num == len(self.servers) and idle_num != 0:
-                log('Superguard timeout, recovering')
-                for srv in self.servers:
-                    srv.request_server_recovery()
-                self.was_timeout = True
-            sleep(5)
-
-    def clear(self):
-        self.servers.clear()
-        self.was_timeout = False
-
-    def add_server(self, srv):
-        self.servers.append(srv)
-
-    def terminate(self):
-        self.end = True
-
-
 class Server(threading.Thread):
-    def __init__(self, _args=None):
+    def __init__(self, finish_count, _args=None):
+        init_logging(_args)
         threading.Thread.__init__(self, daemon=True)
         self.server = None
         self._args = _args
-        self.pts = None
-        self._device = self._args.dongle
-        self.end = False
-        self.finished = threading.Event()
-        self.server_recovery_request = False
-        self.pts_recovery_request = False
+        self.builtin_server = getattr(_args, 'builtin_server', False)
         self.name = 'S-' + str(self._args.srv_port)
-        self.is_ready = False
+        self.pts = PyPTSWithCallback(self._args,
+                                     name=f'{self.name}-PTS')
+
+        # Flag for ending sub-threads
+        self.end = finish_count
+
         if self._args.ykush and type(self._args.ykush) is list:
             self._args.ykush = ' '.join(self._args.ykush)
 
-    def last_start(self):
-        try:
-            return self.pts.last_start_time
-        except:
-            return time.time()
+        if self.builtin_server:
+            # Register ptscontrol methods
+            for method_name in dir(PyPTSWithCallback):
+                method = getattr(self.pts, method_name)
+                if not hasattr(self, method_name) and \
+                        callable(method) and not method_name.startswith('_'):
+                    self.__setattr__(method_name, partial(
+                        self._dispatch_to_pts, method_name))
+
+    def _dispatch_to_pts(self, method_name, *args, **kwargs):
+        return self.pts._dispatch(method_name, (*args, *kwargs))
 
     def main(self, _args):
         """Main."""
+        try:
+            if self.builtin_server:
+                self.pts.run()
+            else:
+                self.pts.start()
+                self._xmlrpc_thread_work()
+        finally:
+            self.pts.terminate()
+            self.terminate()
+
+        return 0
+
+    def _xmlrpc_thread_work(self):
+        """
+        This thread accepts and queues the client calls to
+        the PyPTSWithCallback, does not process them.
+
+        The PyPTSWithCallback methods should be processed in the
+        same context as its instance was initialized.
+        """
+
         pythoncom.CoInitialize()
+        log(f'pythoncom._GetInterfaceCount(): {pythoncom._GetInterfaceCount()}')
 
         c = wmi.WMI()
         for iface in c.Win32_NetworkAdapterConfiguration(IPEnabled=True):
             print("Local IP address: %s DNS %r" % (iface.IPAddress, iface.DNSDomain))
 
-        while not self.end:
+        self.server_init()
+
+        while not self.end.is_set() and not self.pts._end.is_set() \
+                and not get_global_end():
             try:
-                self.server_recovery_request = False
-                self.server_init()
-                self.is_ready = True
+                # Init
+                if self._args.superguard and self._args.superguard < \
+                        time.time() - self.pts.last_start_time:
+                    log('Superguard timeout, reinitializing XMLRPC')
+                    self.server_init()
 
-                while not self.end and not self.server_recovery_request:
-                    self.server.handle_request()
-
-                    if self.pts_recovery_request:
-                        log('PTS recovery requested by client')
-                        self._init_pts()
-                        self.pts_recovery_request = False
-                        self.is_ready = True
-
-                if self.server_recovery_request:
-                    log('Server recovery requested by client')
+                # Main work
+                self.server.handle_request()
 
             except KeyboardInterrupt:
                 # Ctrl-C termination for single instance mode
@@ -325,50 +431,10 @@ class Server(threading.Thread):
 
             except BaseException as e:
                 logging.exception(e)
-                self._cleanup_pts()
 
-            self.is_ready = False
+        pythoncom.CoUninitialize()
+        log(f'pythoncom._GetInterfaceCount(): {pythoncom._GetInterfaceCount()}')
 
-        self._cleanup_pts()
-        self.finished.set()
-
-        return 0
-
-    def _cleanup_pts(self):
-        if self.pts:
-            self.pts.stop_pts()
-            self.pts.delete_temp_workspace()
-            del self.pts
-            self.pts = None
-
-    def _init_pts(self):
-        self._cleanup_pts()
-
-        if self._args.ykush:
-            log(f'Replugging device ({self._device}) under ykush:{self._args.ykush}')
-            if self._device:
-                while dongle_exists(self._device):
-                    power_dongle(self._args.ykush, False)
-
-                while not dongle_exists(self._device):
-                    power_dongle(self._args.ykush, True)
-            else:
-                # Cases where ykush was down or the dongle was
-                # not enumerated for any other reason.
-                power_dongle(self._args.ykush, False)
-                sleep(3)
-                power_dongle(self._args.ykush, True)
-
-        print("Starting PTS ...")
-        self.pts = PyPTSWithXmlRpcCallback(self._device)
-
-        if self.pts._device:
-            self._device = self.pts._device
-
-        self.server.register_instance(self.pts)
-        print("OK")
-
-    @server_start_lock_wrapper
     def server_init(self):
         if self.server:
             self.server.server_close()
@@ -378,11 +444,10 @@ class Server(threading.Thread):
         print("Serving on port {} ...".format(self._args.srv_port))
 
         self.server = xmlrpc.server.SimpleXMLRPCServer(("", self._args.srv_port), allow_none=True)
-        self.server.register_function(self.request_pts_recovery, 'request_pts_recovery')
+        # These methods will be run in the XMLRPC context
         self.server.register_function(self.list_workspace_tree, 'list_workspace_tree')
         self.server.register_function(self.copy_file, 'copy_file')
         self.server.register_function(self.delete_file, 'delete_file')
-        self.server.register_function(self.ready, 'ready')
         self.server.register_function(self.get_system_model, 'get_system_model')
         self.server.register_function(self.shutdown_pts_bpv, 'shutdown_pts_bpv')
         self.server.register_function(self.get_path, 'get_path')
@@ -390,16 +455,10 @@ class Server(threading.Thread):
         self.server.register_introspection_functions()
         self.server.timeout = 1.0
 
-        while True:
-            try:
-                self._init_pts()
-                break
-            except Exception as e:
-                logging.exception(e)
-                # Kill all stale PTS.exe processes only if this is
-                # the only running instance of autoptsserver.py
-                if count_script_instances() == 1:
-                    kill_all_processes('PTS.exe')
+        # Some of PyPTS methods have to be run in the same context as
+        # PTS init was performed, instead of the XMLRPC context.
+        # To handle this, the special _dispatch method was implemented.
+        self.server.register_instance(self.pts)
 
     def run(self):
         try:
@@ -407,26 +466,15 @@ class Server(threading.Thread):
         except Exception as exc:
             logging.exception(exc)
         finally:
-            self.end = True
-            self.finished.set()
+            self.terminate()
+            self.end.add(1)
             log(f'Server {str(self._args.srv_port)} finished')
 
-    def request_server_recovery(self):
-        self.is_ready = False
-        self.server_recovery_request = True
-
-    def request_pts_recovery(self):
-        self.is_ready = False
-        self.pts_recovery_request = True
-
     def terminate(self):
-        self.is_ready = False
-        self.end = True
+        self.end.set_flag()
 
-    def ready(self):
-        return self.is_ready
-
-    def get_system_model(self):
+    @staticmethod
+    def get_system_model():
         proc = subprocess.Popen(['systeminfo'],
                                 shell=False,
                                 stdout=subprocess.PIPE,
@@ -442,12 +490,13 @@ class Server(threading.Thread):
                         if platform in line:
                             return platform
                     return 'Real HW'
-        return 'Unknown'
+        return 'PotatOS'
 
     def get_path(self):
-        return os.path.dirname(os.path.realpath(__file__))
+        return os.path.dirname(os.path.abspath(__file__))
 
-    def list_workspace_tree(self, workspace_dir):
+    @staticmethod
+    def list_workspace_tree(workspace_dir):
         if Path(workspace_dir).is_absolute():
             logs_root = workspace_dir
         else:
@@ -463,73 +512,55 @@ class Server(threading.Thread):
 
         return file_list
 
-    def copy_file(self, file_path):
+    @staticmethod
+    def copy_file(file_path):
         file_bin = None
         if os.path.isfile(file_path):
             with open(file_path, 'rb') as handle:
                 file_bin = xmlrpc.client.Binary(handle.read())
         return file_bin
 
-    def delete_file(self, file_path):
+    @staticmethod
+    def delete_file(file_path):
         if os.path.isfile(file_path):
             os.remove(file_path)
         elif os.path.isdir(file_path):
             shutil.rmtree(file_path, ignore_errors=True)
 
-    def shutdown_pts_bpv(self):
+    @staticmethod
+    def shutdown_pts_bpv():
         kill_all_processes('PTS.exe')
         kill_all_processes('Fts.exe')
 
 
-def multi_main(_args, _superguard):
-    """Multi server main."""
-
-    for i in range(len(_args.srv_port)):
-        args_copy = copy.deepcopy(_args)
-        args_copy.srv_port = _args.srv_port[i]
-        args_copy.ykush = _args.ykush[i] if _args.ykush else None
-        args_copy.dongle = _args.dongle[i] if _args.dongle else None
-        srv = Server(_args=args_copy)
-        autoptsservers.append(srv)
-        srv.start()
-        superguard.add_server(srv)
-
-    all_alive = True
-    while all_alive:
-        for s in autoptsservers:
-            if not s.is_alive():
-                all_alive = False
-        sleep(5)
-
-
 if __name__ == "__main__":
-    winutils.exit_if_admin()
+    exit_if_admin()
     _args = SvrArgumentParser("PTS automation server").parse_args()
 
-    format_template = '%(threadName)s %(asctime)s %(name)s %(levelname)s : %(message)s'
-
-    logging.basicConfig(format=format_template,
-                        filename=_args.log_filename,
-                        filemode='w',
-                        level=logging.DEBUG)
-
-    superguard = SuperGuard(float(_args.superguard))
-    if _args.superguard:
-        superguard.start()
+    init_logging(_args)
 
     if _args.ykush:
         for port in _args.ykush:
-            power_dongle(port, False)
+            usb_power(port, False)
 
+    autoptsservers = []
+    server_count = len(_args.srv_port)
+    finish_count = CounterWithFlag(init_count=0)
     try:
-        if isinstance(_args.srv_port, int):
-            server = Server(_args)
-            autoptsservers.append(server)
-            superguard.add_server(server)
+        for i in range(server_count):
+            args_copy = copy.deepcopy(_args)
+            args_copy.srv_port = _args.srv_port[i]
+            args_copy.ykush = _args.ykush[i] if _args.ykush else None
+            args_copy.dongle = _args.dongle[i] if _args.dongle else None
+            srv = Server(finish_count, args_copy)
+            autoptsservers.append(srv)
 
-            server.main(_args)  # Run server in main process
-        else:
-            multi_main(_args, superguard)  # Run many servers in threads
+            if server_count > 1:
+                srv.start()
+            else:
+                srv.run()
+
+        finish_count.wait_for(value=server_count)
 
     except KeyboardInterrupt:  # Ctrl-C
         # Termination for multi instance mode
@@ -538,8 +569,7 @@ if __name__ == "__main__":
             s.terminate()
 
         # Wait till PTS.exe shutdown.
-        for s in autoptsservers:
-            s.finished.wait()
+        finish_count.wait_for(value=server_count)
 
     except Exception as e:
         logging.exception(e)

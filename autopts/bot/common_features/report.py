@@ -28,6 +28,7 @@ import xlsxwriter
 
 from autopts.bot.common_features import github
 from autopts.bot import common
+from autopts.client import PtsServer
 
 REPORT_XLSX = "report.xlsx"
 REPORT_TXT = "report.txt"
@@ -437,65 +438,83 @@ def pull_server_logs(args):
     shutil.rmtree(xml_folder, ignore_errors=True)
     Path(xml_folder).mkdir(parents=True, exist_ok=True)
 
-    server_addr = args.ip_addr
-    server_port = args.srv_port
-
-    for i in range(len(server_addr)):
-        if i != 0 and server_addr[i] in server_addr[0:i]:
-            continue
+    def _pull_logs(_pts):
         last_xml = ('', '')
+        file_list = _pts.list_workspace_tree(workspace_dir)
 
-        with ServerProxy("http://{}:{}/".format(server_addr[i], server_port[i]),
-                         allow_none=True, ) as proxy:
-            file_list = proxy.list_workspace_tree(workspace_dir)
+        if args.cron_optim:
+            _pts.shutdown_pts_bpv()
 
-            if args.cron_optim:
-                proxy.shutdown_pts_bpv()
+        if len(file_list) == 0:
+            return
 
-            if len(file_list) == 0:
-                continue
+        # Last path will be workspace directory
+        workspace_root = file_list.pop()
 
-            workspace_root = file_list.pop()
-            while len(file_list) > 0:
-                file_path = file_list.pop(0)
-                xml_file_path = file_path
-                try:
-                    file_bin = proxy.copy_file(file_path)
+        while len(file_list) > 0:
+            file_path = file_list.pop(0)
+            xml_file_path = file_path
+            try:
+                file_bin = _pts.copy_file(file_path)
 
-                    if not any(file_path.endswith(ext) for ext in ['.pts', '.pqw6', '.xlsx', '.gitignore', '.bls']):
-                        proxy.delete_file(file_path)
+                if not any(file_path.endswith(ext) for ext in
+                           ['.pts', '.pqw6', '.xlsx', '.gitignore']):
+                    _pts.delete_file(file_path)
 
-                    if file_bin is None:
-                        continue
+                if file_bin is None:
+                    continue
 
-                    file_path = '/'.join([logs_folder,
-                                          file_path[len(workspace_root) + 1:]
-                                         .replace('\\', '/')])
-                    Path(os.path.dirname(file_path)).mkdir(parents=True,
-                                                           exist_ok=True)
-
-                    with open(file_path, 'wb') as handle:
-                        handle.write(file_bin.data)
-
-                    if file_path.endswith('.xml') and not 'tc_log' in file_path \
-                            and b'Final Verdict:PASS' in file_bin.data:
-                        (test_name, timestamp) = split_xml_filename(file_path)
-                        if test_name in last_xml[0]:
-                            if timestamp <= last_xml[1]:
-                                continue
-                            os.remove(last_xml[0])
-                        xml_file_path = \
-                            '/'.join([xml_folder,
-                                      xml_file_path[
-                                      xml_file_path.rfind('\\') + 1:]
+                file_path = '/'.join([logs_folder,
+                                      file_path[len(workspace_root) + 1:]
                                      .replace('\\', '/')])
-                        Path(os.path.dirname(xml_file_path)).mkdir(
-                            parents=True,
-                            exist_ok=True)
-                        with open(xml_file_path, 'wb') as handle:
-                            handle.write(file_bin.data)
-                        last_xml = (xml_file_path, timestamp)
-                except BaseException as e:
-                    logging.exception(e)
+                Path(os.path.dirname(file_path)).mkdir(parents=True,
+                                                       exist_ok=True)
+
+                with open(file_path, 'wb') as handle:
+                    handle.write(file_bin.data)
+
+                # Include PTS .xml logs of test cases with PASS verdict
+                # into a separate "XMLs" folder. Those will have reference
+                # entries in report.xlsx
+                if file_path.endswith('.xml') and not 'tc_log' in file_path \
+                        and b'Final Verdict:PASS' in file_bin.data:
+                    (test_name, timestamp) = split_xml_filename(file_path)
+                    if test_name in last_xml[0]:
+                        # When single test passes multiple times
+                        # (e.g. when 'stress-test' parameter is used)
+                        # include only the latest one in report.
+                        if timestamp <= last_xml[1]:
+                            continue
+                        os.remove(last_xml[0])
+                    xml_file_path = \
+                        '/'.join([xml_folder,
+                                  xml_file_path[
+                                  xml_file_path.rfind('\\') + 1:]
+                                 .replace('\\', '/')])
+                    Path(os.path.dirname(xml_file_path)).mkdir(
+                        parents=True,
+                        exist_ok=True)
+                    with open(xml_file_path, 'wb') as handle:
+                        handle.write(file_bin.data)
+                    last_xml = (xml_file_path, timestamp)
+            except BaseException as e:
+                logging.exception(e)
+
+    if args.server_args:
+        # Logs available locally
+        _pull_logs(PtsServer)
+    else:
+        # Use xmlrpc proxy to pull logs
+        server_addr = args.ip_addr
+        server_port = args.srv_port
+        for i in range(len(server_addr)):
+            if i != 0 and server_addr[i] in server_addr[0:i]:
+                # Skip pulling from other sever instances if those
+                # are at the same address as the first one,
+                # we have pulled their logs already.
+                continue
+            with ServerProxy(f"http://{server_addr[i]}:{server_port[i]}/",
+                             allow_none=True) as proxy:
+                _pull_logs(proxy)
 
     return logs_folder, xml_folder
