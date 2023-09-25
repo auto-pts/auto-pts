@@ -231,90 +231,108 @@ def aics_description_get(bd_addr_type=None, bd_addr=None):
 def aics_state_ev(aics, data, data_len):
     logging.debug('%s %r', aics_state_ev.__name__, data)
 
-    fmt = '<B6sBbb'
+    fmt = '<B6sbBbb'
     if len(data) < struct.calcsize(fmt):
         raise BTPError('Invalid data length')
 
-    addr_type, addr, gain, mute, mode = struct.unpack_from(fmt, data)
+    addr_type, addr, att_status, gain, mute, mode = struct.unpack_from(fmt, data)
 
     addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
 
     logging.debug(f'Audio Input Control State: addr {addr} addr_type '
-                  f'{addr_type}, gain {gain}, mute {mute}, mode {mode}')
+                  f'{addr_type}, att_status {att_status}, gain {gain}, mute {mute}, mode {mode}')
 
-    aics.event_received(defs.AICS_STATE_EV, (addr_type, addr, gain, mute, mode))
+    aics.event_received(defs.AICS_STATE_EV, (addr_type, addr, att_status, gain, mute, mode))
 
 
 def aics_gain_setting_prop_ev(aics, data, data_len):
     logging.debug('%s %r', aics_gain_setting_prop_ev.__name__, data)
 
-    fmt = '<B6sbBB'
+    fmt = '<B6sbbBB'
     if len(data) < struct.calcsize(fmt):
         raise BTPError('Invalid data length')
 
-    addr_type, addr, units, minimum, maximum = struct.unpack_from(fmt, data)
+    addr_type, addr, att_status, units, minimum, maximum = struct.unpack_from(fmt, data)
 
     addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
 
     logging.debug(f'AICS Gain Setting Properties: addr {addr} addr_type '
-                  f'{addr_type}, units {units}, minimum {minimum}, maximum {maximum}')
+                  f'{addr_type}, units {units}, minimum {minimum}, maximum {maximum},'
+                  f' att_status {att_status}')
 
     aics.event_received(defs.AICS_GAIN_SETTING_PROP_EV, (addr_type, addr, units,
-                                                         minimum, maximum))
+                                                         minimum, maximum, att_status))
 
 
 def aics_input_type_ev(aics, data, data_len):
     logging.debug('%s %r', aics_input_type_ev.__name__, data)
 
-    fmt = '<B6sb'
+    fmt = '<B6sbb'
     if len(data) < struct.calcsize(fmt):
         raise BTPError('Invalid data length')
 
-    addr_type, addr, input_type = struct.unpack_from(fmt, data)
+    addr_type, addr, input_type, att_status = struct.unpack_from(fmt, data)
 
     addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
 
     logging.debug(f'AICS Input type ev: addr {addr} addr_type '
-                  f'{addr_type}, input type {input_type}')
+                  f'{addr_type}, input type {input_type}, att_status {att_status}')
 
-    aics.event_received(defs.AICS_INPUT_TYPE_EV, (addr_type, addr, input_type))
+    aics.event_received(defs.AICS_INPUT_TYPE_EV, (addr_type, addr, input_type, att_status))
 
 
 def aics_status_ev(aics, data, data_len):
     logging.debug('%s %r', aics_status_ev.__name__, data)
 
-    fmt = '<B6sb'
+    fmt = '<B6sbb'
     if len(data) < struct.calcsize(fmt):
         raise BTPError('Invalid data length')
 
-    addr_type, addr, status = struct.unpack_from(fmt, data)
+    addr_type, addr, status, att_status = struct.unpack_from(fmt, data)
 
     addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
 
     logging.debug(f'AICS Status ev: addr {addr} addr_type '
-                  f'{addr_type}, status {status}')
+                  f'{addr_type}, status {status}, att_status {att_status}')
 
-    aics.event_received(defs.AICS_STATUS_EV, (addr_type, addr, status))
+    aics.event_received(defs.AICS_STATUS_EV, (addr_type, addr, status, att_status))
 
 
 def aics_description_ev(aics, data, data_len):
     logging.debug('%s %r', aics_description_ev.__name__, data)
 
-    fmt = '<B6s'
+    fmt = '<B6sb'
 
     if len(data) < struct.calcsize(fmt):
         raise BTPError('Invalid data length')
 
-    addr_type, addr = struct.unpack_from(fmt, data)
+    addr_type, addr, att_status = struct.unpack_from(fmt, data)
     addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
 
     description = struct.unpack_from(f'<{len(data) - struct.calcsize(fmt) - 1}s', data, offset=struct.calcsize(fmt))
     description = binascii.hexlify(description[0]).decode('utf-8')
 
     logging.debug(f'AICS Description ev: addr {addr} addr_type '
-                  f'{addr_type}, description {description}')
+                  f'{addr_type}, att_status {att_status}, description {description}')
 
-    aics.event_received(defs.AICS_DESCRIPTION_EV, (addr_type, addr, description))
+    aics.event_received(defs.AICS_DESCRIPTION_EV, (addr_type, addr, att_status, description))
+
+
+def aics_procedure_ev(aics, data, data_len):
+    logging.debug('%s %r', aics_procedure_ev.__name__, data)
+
+    fmt = '<B6sbb'
+    if len(data) < struct.calcsize(fmt):
+        raise BTPError('Invalid data length')
+
+    addr_type, addr, att_status, opcode = struct.unpack_from(fmt, data)
+
+    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+
+    logging.debug(f'AICS Procedure ev: addr {addr} addr_type '
+                  f'{addr_type}, att status {att_status}, opcode {opcode}')
+
+    aics.event_received(defs.AICS_PROCEDURE_EV, (addr_type, addr, att_status, opcode))
 
 
 AICS_EV = {
@@ -322,5 +340,6 @@ AICS_EV = {
     defs.AICS_GAIN_SETTING_PROP_EV: aics_gain_setting_prop_ev,
     defs.AICS_INPUT_TYPE_EV: aics_input_type_ev,
     defs.AICS_STATUS_EV: aics_status_ev,
-    defs.AICS_DESCRIPTION_EV: aics_description_ev
+    defs.AICS_DESCRIPTION_EV: aics_description_ev,
+    defs.AICS_PROCEDURE_EV: aics_procedure_ev,
 }
