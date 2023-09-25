@@ -68,10 +68,10 @@ def hdl_wid_5(params: WIDParams):
     stack = get_stack()
     gain = random.randrange(101, 127, 1)
     btp.aics_set_gain(gain, addr_type, addr)
-    ev = stack.aics.wait_aics_state_ev(addr_type, addr, 30)
-    # TODO: Should return False if ev is None
+    ev = stack.aics.wait_aics_procedure_ev(addr_type, addr, 10)
 
-    return True
+    # opcode 0x02: set gain
+    return ev[3] == 2
 
 
 def hdl_wid_6(params: WIDParams):
@@ -85,10 +85,10 @@ def hdl_wid_6(params: WIDParams):
     stack = get_stack()
     gain = random.randrange(-128, -101, 1)
     btp.aics_set_gain(gain, addr_type, addr)
-    ev = stack.aics.wait_aics_state_ev(addr_type, addr, 30)
-    # TODO: Should return False if ev is None
+    ev = stack.aics.wait_aics_procedure_ev(addr_type, addr, 10)
 
-    return True
+    # opcode 0x02: set gain
+    return ev[3] == 2
 
 
 def hdl_wid_7(params:WIDParams):
@@ -99,10 +99,10 @@ def hdl_wid_7(params:WIDParams):
     addr_type = btp.pts_addr_type_get()
     addr = btp.pts_addr_get()
     btp.aics_mute(addr_type, addr)
-    ev = stack.aics.wait_aics_state_ev(addr_type, addr, 30)
-    # TODO: Should return False if ev is None
+    ev = stack.aics.wait_aics_procedure_ev(addr_type, addr, 10)
 
-    return True
+    # opcode 0x03: mute
+    return ev[3] == 3
 
 
 def hdl_wid_8(params: WIDParams):
@@ -113,10 +113,10 @@ def hdl_wid_8(params: WIDParams):
     addr_type = btp.pts_addr_type_get()
     addr = btp.pts_addr_get()
     btp.aics_unmute(addr_type, addr)
-    ev = stack.aics.wait_aics_state_ev(addr_type, addr, 30)
-    # TODO: Should return False if ev is None
+    ev = stack.aics.wait_aics_procedure_ev(addr_type, addr, 10)
 
-    return True
+    # opcode 0x04: unmute
+    return ev[3] == 4
 
 
 def hdl_wid_9(params: WIDParams):
@@ -127,10 +127,10 @@ def hdl_wid_9(params: WIDParams):
     addr_type = btp.pts_addr_type_get()
     addr = btp.pts_addr_get()
     btp.aics_man_gain_set(addr_type, addr)
-    ev = stack.aics.wait_aics_state_ev(addr_type, addr, 30)
-    # TODO: Should return False if ev is None
+    ev = stack.aics.wait_aics_procedure_ev(addr_type, addr, 10)
 
-    return True
+    # opcode 0x05: set manual gain
+    return ev[3] == 5
 
 
 def hdl_wid_10(params: WIDParams):
@@ -141,10 +141,10 @@ def hdl_wid_10(params: WIDParams):
     addr_type = btp.pts_addr_type_get()
     addr = btp.pts_addr_get()
     btp.aics_auto_gain_set(addr_type, addr)
-    ev = stack.aics.wait_aics_state_ev(addr_type, addr, 30)
-    # TODO: Should return False if ev is None
+    ev = stack.aics.wait_aics_procedure_ev(addr_type, addr, 30)
 
-    return True
+    # opcode 0x06: set automatic gain
+    return ev[3] == 6
 
 
 def hdl_wid_20100(params: WIDParams):
@@ -254,40 +254,46 @@ def hdl_wid_20110(params: WIDParams):
     Change Counter: <WildCard: Exists>
     Gain Setting: <WildCard: Exists>
     """
-    test_case_names = [
-        "MICP/CL/SPE/BI-02-C",
-        "MICP/CL/SPE/BI-03-C",
-        "MICP/CL/SPE/BI-04-C",
-        "MICP/CL/SPE/BI-05-C",
-        "MICP/CL/SPE/BI-06-C",
-        "MICP/CL/SPE/BI-08-C",
-    ]
     stack = get_stack()
     addr_type = btp.pts_addr_type_get()
     addr = btp.pts_addr_get()
 
     if "Set Gain" in params.description:
         btp.aics_set_gain(2, addr_type, addr)
-    elif "Unmute" in params.description:
-        btp.aics_mute(addr_type, addr)
-        stack.aics.wait_aics_state_ev(addr_type, addr, 30)
-        btp.aics_unmute(addr_type, addr)
-        # Performing opposite operation before the one that is demanded is
-        # necessary because PTS is already set to a value that is required
-        # in test case description.
+        if params.test_case_name == "MICP/CL/SPE/BI-02-C":
+            ev = stack.aics.wait_aics_procedure_ev(addr_type, addr, 10, remove=False)
+            # opcode 0x02: set gain
+            return ev[3] == 2
     elif "Mute" in params.description:
         btp.aics_mute(addr_type, addr)
+        if params.test_case_name == "MICP/CL/SPE/BI-04-C":
+            ev = stack.aics.wait_aics_procedure_ev(addr_type, addr, 10, remove=False)
+            # opcode 0x03: mute
+            return ev[3] == 3
+    elif "Unmute" in params.description:
+        btp.aics_unmute(addr_type, addr)
+        if params.test_case_name == "MICP/CL/SPE/BI-03-C":
+            ev = stack.aics.wait_aics_procedure_ev(addr_type, addr, 10, remove=False)
+            # opcode 0x04: unmute
+            return ev[3] == 4
     elif "Set Manual" in params.description:
-        btp.aics_auto_gain_set(addr_type, addr)
-        stack.aics.wait_aics_state_ev(addr_type, addr, 30)
         btp.aics_man_gain_set(addr_type, addr)
-        # Performing opposite operation before the one that is demanded is
-        # necessary because PTS is already set to a value that is required
-        # in test case description.
+        if params.test_case_name == "MICP/CL/SPE/BI-05-C":
+            ev = stack.aics.wait_aics_procedure_ev(addr_type, addr, 10, remove=False)
+            # opcode 0x05: set manual gain
+            return ev[3] == 5
     elif "Set Automatic" in params.description:
         btp.aics_auto_gain_set(addr_type, addr)
+        if params.test_case_name == "MICP/CL/SPE/BI-06-C":
+            ev = stack.aics.wait_aics_procedure_ev(addr_type, addr, 10, remove=False)
+            # opcode 0x06: set automatic gain
+            return ev[3] == 6
     elif "Op Code: <WildCard: Exists>" in params.description:
         btp.aics_auto_gain_set(addr_type, addr)
+        if params.test_case_name == "MICP/CL/SPE/BI-08-C":
+            ev = stack.aics.wait_aics_procedure_ev(addr_type, addr, 10, remove=False)
+            # opcode 0x06: set automatic gain
+            return ev[3] == 6
     elif "0x00A3" in params.description:
         btp.micp_mute(addr_type, addr)
         ev = stack.micp.wait_mute_state_ev(addr_type, addr, 30)
@@ -296,10 +302,6 @@ def hdl_wid_20110(params: WIDParams):
         return True
     else:
         return False
-
-    if params.test_case_name in test_case_names:
-        stack.aics.wait_aics_state_ev(addr_type, addr, 30)
-        return True
 
     ev = stack.aics.wait_aics_state_ev(addr_type, addr, 30)
     if ev is None:
@@ -329,10 +331,10 @@ def hdl_wid_20206(params: WIDParams):
     stack = get_stack()
 
     if params.test_case_name == "MICP/CL/CGGIT/SER/BV-01-C":
-        chars = (stack.micp.event_queues[defs.MICP_DISCOVERED_EV][0][2])
+        chars = (stack.micp.event_queues[defs.MICP_DISCOVERED_EV][0][3])
         chrc_list = ['{:04X}'.format(chars).upper()]
     else:
-        chars = (stack.micp.event_queues[defs.MICP_DISCOVERED_EV][0][3:])
+        chars = (stack.micp.event_queues[defs.MICP_DISCOVERED_EV][0][4:])
         chrc_list = ['{:04X}'.format(chrc).upper() for chrc in chars]
 
     pattern = re.compile(r"0x([0-9a-fA-F]+)")

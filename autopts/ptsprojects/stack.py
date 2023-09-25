@@ -689,7 +689,8 @@ class AICS:
             defs.AICS_GAIN_SETTING_PROP_EV: [],
             defs.AICS_INPUT_TYPE_EV: [],
             defs.AICS_STATUS_EV: [],
-            defs.AICS_DESCRIPTION_EV: []
+            defs.AICS_DESCRIPTION_EV: [],
+            defs.AICS_PROCEDURE_EV: [],
         }
 
     def event_received(self, event_type, event_data_tuple):
@@ -726,6 +727,13 @@ class AICS:
     def wait_aics_description_ev(self, addr_type, addr, timeout, remove=True):
         return wait_event_with_condition(
             self.event_queues[defs.AICS_DESCRIPTION_EV],
+            lambda _addr_type, _addr, *_:
+            (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
+
+    def wait_aics_procedure_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.AICS_PROCEDURE_EV],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)

@@ -31,6 +31,7 @@ Commands and responses:
 		This command can be used either by server or client and is used for
 		setting gain value. During operation, the IUT may send event:
 				AICS State event
+				AICS Procedure Event
 
 		In case of an error, the error response will be returned.
 
@@ -45,6 +46,7 @@ Commands and responses:
 		request Audio Input Control Point Mute operation.
 		During operation, the IUT may send event:
 				AICS State event
+				AICS Procedure Event
 
 		In case of an error, the error response will be returned.
 
@@ -59,6 +61,7 @@ Commands and responses:
 		request Audio Input Control Point Unmute operation.
 		During operation, the IUT may send event:
 				AICS State event
+				AICS Procedure Event
 
 		In case of an error, the error response will be returned.
 
@@ -73,6 +76,7 @@ Commands and responses:
 		request Audio Input Control Point to set gain mode to manual.
 		During operation, the IUT may send event:
 				AICS State event
+				AICS Procedure Event
 
 		In case of an error, the error response will be returned.
 
@@ -87,6 +91,7 @@ Commands and responses:
 		request Audio Input Control Point to set gain mode to automatic.
 		During operation, the IUT may send event:
 				AICS State event
+				AICS Procedure Event
 
 		In case of an error, the error response will be returned.
 
@@ -215,6 +220,7 @@ Events:
 		Controller Index:	<controller id>
 		Event parameters:	Address_Type (1 octet)
 					Address (6 octets)
+					ATT status (1 octet)
 					Gain (1 octet)
 					Mute (1 octet)
 					Mode (1 octet)
@@ -227,6 +233,7 @@ Events:
 		Controller Index:	<controller id>
 		Event parameters:	Address_Type (1 octet)
 					Address (6 octets)
+					ATT status (1 octet)
 					Units (1 octet)
 					Minimum (1 octet)
 					Maximum (1 octet)
@@ -239,6 +246,7 @@ Events:
 		Controller Index:	<controller id>
 		Event parameters:	Address_Type (1 octet)
 					Address (6 octets)
+					ATT status (1 octet)
 					Type (1 octet)
 
 		This event returns Audio Input Type information.
@@ -255,6 +263,7 @@ Events:
 		Controller Index:	<controller id>
 		Event parameters:	Address_Type (1 octet)
 					Address (6 octets)
+					ATT status (1 octet)
 					Status (1 octet)
 
 		This event returns Audio Input Status information.
@@ -265,7 +274,18 @@ Events:
 		Controller Index:	<controller id>
 		Event parameters:	Address_Type (1 octet)
 					Address (6 octets)
+					ATT status (1 octet)
 					Description length (1 octet)
 					Description (1 octet)
 
 		This event returns Audio Input Description information.
+
+	Opcode 0x85 - AICS Procedure Event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					ATT status (1 octet)
+					Opcode (1 octet)
+
+		This event returns AICS operation opcode information.

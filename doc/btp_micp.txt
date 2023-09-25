@@ -67,6 +67,7 @@ Events:
 		Controller Index:	<controller id>
 		Event parameters:	Address_Type (1 octet)
 					Address (6 octets)
+					ATT status (1 octet)
 					MICP Mute handle (2 octets)
 					AICS State handle (2 octets)
 					AICS Gain handle (2 octets)
@@ -83,6 +84,7 @@ Events:
 		Controller Index:	<controller id>
 		Event parameters:	Address_Type (1 octet)
 					Address (6 octets)
+					ATT status (1 octet)
 					Mute state (1 octet)
 
 		This event returns Mute state (from primary service).
