@@ -23,8 +23,7 @@ import time
 import schedule
 
 from autopts.bot.common import get_absolute_module_path, load_module_from_path
-from autopts.client import set_end, init_logging
-from autopts.winutils import have_admin_rights
+from autopts.utils import log_running_threads, have_admin_rights, set_global_end
 
 log = logging.debug
 
@@ -101,8 +100,6 @@ def get_client(module, project):
 
 
 def main():
-    init_logging('_startup')
-
     bot_projects, config_path = import_bot_projects()
     if not bot_projects:
         print(f'Could not load any BotProjects. Please check your {config_path} file.')
@@ -133,7 +130,7 @@ def main():
 if __name__ == "__main__":
     def sigint_handler(sig, frame):
         """Thread safe SIGINT interrupting"""
-        set_end()
+        set_global_end()
 
         if sys.platform != "win32":
             signal.signal(signal.SIGINT, prev_sigint_handler)
@@ -160,6 +157,7 @@ if __name__ == "__main__":
 
         traceback.print_exc()
         rc = 16
-
-    set_end()
-    sys.exit(rc)
+    finally:
+        set_global_end()
+        log_running_threads()
+        sys.exit(rc)

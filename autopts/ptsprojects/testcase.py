@@ -22,13 +22,14 @@ import re
 import sys
 import time
 import logging
-from threading import Thread
 import datetime
 import errno
 import queue
 
+from .stack import get_stack
 from .utils import exec_iut_cmd
 from . import ptstypes
+from ..utils import get_global_end, ResultWithFlag
 
 log = logging.debug
 
@@ -375,6 +376,7 @@ class TestCase(PTSCallback):
         self.name = test_case_name
         # a.k.a. final verdict
         self.status = "init"
+        # For instances synchronization
         self.state = None
 
         if isinstance(cmds, list):
@@ -401,9 +403,8 @@ class TestCase(PTSCallback):
         self.verify_wids = verify_wids
         self.ok_cancel_wids = ok_cancel_wids
         self.generic_wid_hdl = generic_wid_hdl
+        self.steps_queue = queue.Queue()
         self.post_wid_queue = []
-        self.post_wid_thread = None
-        self.thread_exception = queue.Queue()
         self.ptsproject_name = ptsproject_name
         self.tc_subproc = None
         self.lf_subproc = None
@@ -433,35 +434,6 @@ class TestCase(PTSCallback):
 
         self.log_dir = test_log_dir
         self.log_filename = os.path.join(test_log_dir, timestamp_name + ".log")
-
-    def log(self, log_type, logtype_string, log_time, log_message, test_case_name):
-        """Overrides PTSCallback method. Handles
-        PTSControl.IPTSControlClientLogger.Log"""
-
-        new_status = None
-
-        # mark test case as started
-        if log_type == ptstypes.PTS_LOGTYPE_START_TEST:
-            new_status = "Started"
-
-        # mark the final verdict of the test case
-        # check for "final verdict" to avoid "Encrypted Verdict"
-        # it could be 'Final verdict' or 'Final Verdict'
-        elif log_type == ptstypes.PTS_LOGTYPE_FINAL_VERDICT and \
-                logtype_string.lower() == "final verdict":
-
-            if "PASS" in log_message:
-                new_status = "PASS"
-            elif "INCONC" in log_message:
-                new_status = "INCONC"
-            elif "FAIL" in log_message:
-                new_status = "FAIL"
-            else:
-                new_status = "UNKNOWN VERDICT: %s" % log_message.strip()
-
-        if new_status:
-            self.status = new_status
-            log("New status %s - %s", str(self), new_status)
 
     def handle_mmi_style_yes_no1(self, wid, description):
         """Implements implicit send handling for MMI_Style_Yes_No1"""
@@ -597,7 +569,7 @@ class TestCase(PTSCallback):
                 cmd.stop()
 
     def run_post_wid_cmds(self):
-        """Run post wid commands in a thread"""
+        """Run post wid commands"""
         log("%s %s", self, self.run_post_wid_cmds.__name__)
 
         for index, cmd in enumerate(self.post_wid_queue):
@@ -608,38 +580,22 @@ class TestCase(PTSCallback):
                 cmd.start()
             except Exception as e:
                 logging.exception(e)
-                self.thread_exception.put(sys.exc_info()[1])
-                log("Caught exception in post_wid_thread %r", e)
                 break
 
         del self.post_wid_queue[:]
 
-    def join_post_wid_thread(self):
-        """Join post_wid_thread. Re-raise exceptions it discovered."""
-        log("%s %s", self, self.join_post_wid_thread.__name__)
-
-        log("self.post_wid_thread %r", self.post_wid_thread)
-        if self.post_wid_thread:
-            log("self.post_wid_thread.is_alive() %r",
-                self.post_wid_thread.is_alive())
-
-        # raise exception discovered by thread
-        try:
-            exc = self.thread_exception.get_nowait()
-        except queue.Empty:
-            pass
-        else:
-            log("Re-raising exception sent from thread %r", exc)
-            self.thread_exception.task_done()
-            raise exc
-
-        # wait post_wid functions to finish
-        if self.post_wid_thread and self.post_wid_thread.is_alive():
-            log("Waiting post wid thread to finish...")
-            self.post_wid_thread.join()
+        # No PTS response
+        return None
 
     def handle_mmi_generic(self, wid, description, style, test_case_name):
         response = self.generic_wid_hdl(wid, description, test_case_name)
+
+        if isinstance(response, tuple):
+            response, *next_steps = response
+            # next_steps should be a list of tuples,
+            # e.g. [(func1, arg1, arg2, ...), ...]
+            for step in next_steps:
+                self.add_next_step(*step)
 
         if response == "WAIT":
             return response
@@ -670,21 +626,40 @@ class TestCase(PTSCallback):
 
     def on_implicit_send(self, project_name, wid, test_case_name, description,
                          style):
-        """Overrides PTSCallback method. Handles
-        PTSControl.IPTSImplicitSendCallbackEx.OnImplicitSend"""
+        """Callback called by PTS via xmlrpc proxy"""
+
+        self.add_next_step(self.run_wid, project_name, wid,
+                           test_case_name, description, style)
+
+    def add_next_step(self, func, *args):
+        """Queue WID or post-WID, that has to be run after sending
+         a WID response to PTS, or other special step.
+
+        :param func: function to queue in the steps queue"""
+        self.steps_queue.put((func, *args))
+
+    def run_next_step(self):
+        try:
+            item = self.steps_queue.get(block=False)
+        except queue.Empty:
+            return None
+
+        step, *args = item
+        response = step(*args)
+
+        return response
+
+    def run_wid(self, project_name, wid, test_case_name, description, style):
+        """Handles MMI requested with
+         PTSControl.IPTSImplicitSendCallbackEx.OnImplicitSend"""
         log("%s %s", self, self.on_implicit_send.__name__)
 
-        self.join_post_wid_thread()
+        synch_elem = None
+        stack = get_stack()
 
-        # this should never happen, pts does not run tests in parallel
-        # TODO - This is a temporary solution for PTS bug #14711
-        # assert project_name == self.project_name, \
-        #   "Unexpected project name %r should be %r" % \
-        #    (project_name, self.project_name)
-
-        # assert test_case_name == self.name, \
-        #     "Unexpected test case name %r should be %r" % \
-        #     (test_case_name, self.name)
+        # Wait for other LT-threads if synch points configured for the test case
+        if stack.synch:
+            synch_elem = stack.synch.wait_for_start(wid, test_case_name)
 
         # start/stop command if triggered by wid
         self.start_stop_cmds_by_wid(wid, description)
@@ -703,12 +678,15 @@ class TestCase(PTSCallback):
             else:
                 my_response = self.handle_mmi_style_ok_cancel(wid, description)
 
-        # if there are post wid TestFunc waiting run those in separate
-        # thread
+        # If there are post wid TestFunc waiting, run those after this one
         if self.post_wid_queue:
+            self.add_next_step(self.run_post_wid_cmds)
             log("Running post_wid test functions")
-            self.post_wid_thread = Thread(None, self.run_post_wid_cmds)
-            self.post_wid_thread.start()
+
+        # Let other LT-threads know that this one completed the wid
+        if synch_elem:
+            def wait_for_end(): return stack.synch.wait_for_end(synch_elem)
+            self.add_next_step(wait_for_end)
 
         log("Sending response %r to wid %d test case %s", my_response, wid, test_case_name)
         return my_response
@@ -727,7 +705,7 @@ class TestCase(PTSCallback):
         subproc_path = subproc_dir + "pre_tc.py"
 
         if os.path.exists(subproc_path):
-            log("%s, run pre test case script" % self.post_run.__name__)
+            log("%s, run pre test case script" % self.pre_run.__name__)
             self.lf_subproc = open(subproc_dir + "sp_pre_stdout.log", "w")
 
             if sys.platform == "win32":
@@ -773,14 +751,15 @@ class TestCase(PTSCallback):
         # // Allow device to settle down
         # Sleep(3000);
         # otherwise 4th test case just blocks eternally
-        time.sleep(3)
+        if not get_global_end():
+            time.sleep(3)
 
         for cmd in self.cmds:
             cmd.stop()
 
         # Cleanup pre created subproc
         if self.tc_subproc is not None:
-            log("%s, cleanup running pre test case script" %
+            log("%s, cleanup running post test case script" %
                 self.post_run.__name__)
             self.tc_subproc.communicate(input=b'#close\n')
             self.lf_subproc.close()

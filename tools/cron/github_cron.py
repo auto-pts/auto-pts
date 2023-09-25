@@ -24,7 +24,7 @@ from threading import Thread
 from time import sleep
 from requests.structures import CaseInsensitiveDict
 
-from tools.cron.common import get_end
+from autopts.utils import get_global_end
 
 log = logging.info
 
@@ -32,7 +32,7 @@ log = logging.info
 def catch_connection_error(func):
     """Reruns REST API request in case of ConnectionError"""
     def _catch_exceptions(*args, **kwargs):
-        while not get_end():
+        while not get_global_end():
             try:
                 return func(*args, **kwargs)
             except requests.exceptions.ConnectionError:

@@ -25,6 +25,7 @@ import sys
 import socket
 
 from autopts.config import BTMON_PORT
+from autopts.utils import get_global_end
 
 log = logging.debug
 
@@ -59,7 +60,7 @@ class RTT:
     @staticmethod
     def _read_from_buffer(jlink, buffer_index, stop_thread, user_callback, user_data):
         try:
-            while not stop_thread.is_set() and jlink.connected():
+            while not stop_thread.is_set() and jlink.connected() and not get_global_end():
                 byte_list = jlink.rtt_read(buffer_index, 1024)
                 if len(byte_list) > 0:
                     user_callback(bytes(byte_list), user_data)

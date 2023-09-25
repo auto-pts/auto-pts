@@ -40,21 +40,14 @@ from os.path import dirname, abspath
 AUTOPTS_REPO=dirname(dirname(dirname(abspath(__file__))))
 sys.path.extend([AUTOPTS_REPO])
 
+from autopts.utils import get_global_end, set_global_end, have_admin_rights
 from autopts.bot.common import get_absolute_module_path, load_module_from_path
-from autopts.winutils import have_admin_rights
-from tools.cron.common import kill_processes, set_end as set_end_common, set_cron_cfg
+from tools.cron.common import kill_processes, set_cron_cfg
 from tools.cron.cron_gui import CronGUI, RequestPuller
 
-END = False
 pullers = {}
 cron_gui = None
 log = logging.info
-
-
-def set_end():
-    global END
-    END = True
-    set_end_common()
 
 
 class CliParser(argparse.ArgumentParser):
@@ -71,9 +64,11 @@ class CliParser(argparse.ArgumentParser):
 def run_pending_thread_func():
     pythoncom.CoInitialize()
 
-    while not END:
+    while not get_global_end():
         schedule.run_pending()
         sleep(1)
+
+    pythoncom.CoUninitialize()
 
 
 def cron_puller_toggled(*args):
@@ -170,7 +165,7 @@ def run_cron_gui():
 
 if __name__ == '__main__':
     def sigint_handler(sig, frame):
-        set_end()
+        get_global_end()
         if sys.platform != 'win32':
             signal.signal(signal.SIGINT, prev_sigint_handler)
             threading.Thread(target=signal.raise_signal(signal.SIGINT)).start()
@@ -243,6 +238,6 @@ if __name__ == '__main__':
     finally:
         for cron in cron_config.github_crons:
             cron.end = True
-        set_end()
+        set_global_end()
 
     log('Cron finished')

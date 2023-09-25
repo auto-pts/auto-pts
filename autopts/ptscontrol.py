@@ -34,27 +34,27 @@ Cause of tight coupling with PTS, this module is Windows specific
 """
 
 import os
-import sys
 import time
-import logging
-import argparse
 import shutil
 import xmlrpc.client
 import ctypes
 import threading
-from pathlib import Path
-
 import win32com.client
 import win32com.server.connect
 import win32com.server.util
 import pythoncom
 import psutil
+import logging as root_logging
 
+from pathlib import Path
 from autopts.ptsprojects import ptstypes
-from autopts.utils import PTS_WORKSPACE_FILE_EXT, get_own_workspaces
-from autopts.winutils import get_pid_by_window_title
+from autopts.ptsprojects.ptstypes import E_FATAL_ERROR
+from autopts.utils import PTS_WORKSPACE_FILE_EXT, get_own_workspaces, count_script_instances, ResultWithFlag
+from autopts.winutils import get_pid_by_window_title, kill_all_processes
 
+logging = root_logging.getLogger('server')
 log = logging.debug
+
 
 logtype_whitelist = [ptstypes.PTS_LOGTYPE_START_TEST,
                      ptstypes.PTS_LOGTYPE_END_TEST,
@@ -66,10 +66,10 @@ PTS_START_LOCK = threading.RLock()
 
 def pts_lock_wrapper(lock):
     def _pts_lock_wrapper(func):
-        def __pts_lock_wrapper(*args):
+        def __pts_lock_wrapper(*args, **kwargs):
             try:
                 lock.acquire()
-                ret = func(*args)
+                ret = func(*args, **kwargs)
             finally:
                 lock.release()
             return ret
@@ -79,7 +79,11 @@ def pts_lock_wrapper(lock):
     return _pts_lock_wrapper
 
 
-class AlreadyClosedException:
+class AlreadyClosedException(Exception):
+    pass
+
+
+class BadPixitException(Exception):
     pass
 
 
@@ -104,9 +108,15 @@ class PTSLogger(win32com.server.connect.ConnectableServer):
         self._maximum_logging = False
         self._test_case_name = None
         self._end = False
+        self._tc_status = ResultWithFlag()
 
     def close(self):
         self._end = True
+
+    def reopen(self):
+        self._end = False
+        self._test_case_name = None
+        self._tc_status.clear()
 
     def set_callback(self, callback):
         """Set the callback"""
@@ -135,7 +145,7 @@ class PTSLogger(win32com.server.connect.ConnectableServer):
         };
         """
 
-        logger = logging.getLogger(self.__class__.__name__)
+        logger = logging.getChild(self.__class__.__name__)
 
         logger.info("%d %s %s %s", log_type, logtype_string, log_time, log_message)
 
@@ -144,9 +154,31 @@ class PTSLogger(win32com.server.connect.ConnectableServer):
                 if self._maximum_logging or log_type in logtype_whitelist:
                     self._callback.log(log_type, logtype_string, log_time,
                                        log_message, self._test_case_name)
+
+                    # PTS uses PTSLogger.Log only after the RunTestCase
+                    # has been finished, so consider only the final verdict
+                    # of the test case.
+                    # Check for "final verdict" to avoid "Encrypted Verdict".
+                    # It could be 'Final verdict' or 'Final Verdict'.
+                    if log_type == ptstypes.PTS_LOGTYPE_FINAL_VERDICT and \
+                            logtype_string.lower() == "final verdict":
+
+                        if "PASS" in log_message:
+                            new_status = "PASS"
+                        elif "INCONC" in log_message:
+                            new_status = "INCONC"
+                        elif "FAIL" in log_message:
+                            new_status = "FAIL"
+                        else:
+                            new_status = "UNKNOWN VERDICT: %s" % log_message.strip()
+
+                        self._tc_status.set(new_status)
+                        log(f"Final verdict found: {self._test_case_name} {new_status}")
         except Exception as e:
-            logging.exception(repr(e))
-            sys.exit("Exception in Log")
+            logging.exception(e)
+
+    def get_test_case_status(self):
+        return self._tc_status.get(predicate=lambda: not self._end)
 
 
 class PTSSender(win32com.server.connect.ConnectableServer):
@@ -168,9 +200,15 @@ class PTSSender(win32com.server.connect.ConnectableServer):
 
         self._callback = None
         self._end = False
+        self._response = ResultWithFlag()
 
     def close(self):
         self._end = True
+        self._response.set(None)
+
+    def reopen(self):
+        self._end = False
+        self._response.clear()
 
     def set_callback(self, callback):
         """Sets the callback"""
@@ -179,6 +217,10 @@ class PTSSender(win32com.server.connect.ConnectableServer):
     def unset_callback(self):
         """Unsets the callback"""
         self._callback = None
+
+    def set_wid_response(self, response):
+        """Sets response for pending OnImplicitSend"""
+        self._response.set(response)
 
     def OnImplicitSend(self, project_name, wid, test_case, description, style):
         """Implements:
@@ -191,8 +233,7 @@ class PTSSender(win32com.server.connect.ConnectableServer):
                         [in] unsigned long style);
         };
         """
-        logger = logging.getLogger(self.__class__.__name__)
-        timer = 0
+        logger = logging.getChild(self.__class__.__name__)
 
         # Remove whitespaces from project and test case name
         project_name = project_name.replace(" ", "")
@@ -206,55 +247,46 @@ class PTSSender(win32com.server.connect.ConnectableServer):
         logger.info("description: %s %s", description, type(description))
         logger.info("style: %s 0x%x", ptstypes.MMI_STYLE_STRING[style], style)
 
-        rsp = ""
+        rsp = "Cancel"
 
         try:
-            if self._callback is not None:
-                logger.info("Calling callback.on_implicit_send")
-                rsp = self._callback.on_implicit_send(project_name, wid,
-                                                      test_case, description,
-                                                      style)
+            if self._callback and not self._end:
+                logger.info(f"Calling callback.on_implicit_send, wid {wid}")
+                result = self._callback.on_implicit_send(project_name, wid,
+                                                         test_case, description,
+                                                         style)
 
                 # Don't block xml-rpc
-                if rsp == "WAIT":
-                    rsp = self._callback.get_pending_response(
-                        test_case)
-                    while not rsp:
-                        # XXX: Ask for response every second
-                        timer = timer + 1
-                        # XXX: Timeout 90 seconds
-                        if timer > 90:
-                            rsp = "Cancel"
-                            break
+                if result == "WAIT":
+                    def wait_until():
+                        logger.debug(f"Waiting for response from callback.on_implicit_send, wid {wid}")
+                        return not self._end
 
-                        logger.info("Rechecking response...")
-                        time.sleep(1)
-                        rsp = self._callback.get_pending_response(test_case)
+                    result = self._response.get(timeout=90, predicate=wait_until)
 
-                logger.info("callback returned on_implicit_send, respose: %r", rsp)
+                if result is not None:
+                    rsp = result
 
+                logger.info(f"Response for on_implicit_send (wid {wid}): {rsp}")
         except xmlrpc.client.Fault as err:
             logger.info("A fault occurred, code = %d, string = %s",
                         err.faultCode, err.faultString)
 
         except Exception as e:
-            logger.info("Caught exception")
-            logger.info(e)
-            # exit does not work, cause app is blocked in PTS.RunTestCase?
-            sys.exit("Exception in OnImplicitSend")
+            logger.exception(e)
 
-        if rsp:
-            is_present = 1
-        else:
-            is_present = 0
+        finally:
+            self._response.clear()
+            if rsp == 'Cancel':
+                self.close()
 
         # Stringify response
         rsp = str(rsp)
         rsp_len = str(len(rsp))
-        is_present = str(is_present)
+        is_present = str(1)
 
-        log("END OnImplicitSend:")
-        log("*" * 20)
+        logger.info("END OnImplicitSend")
+        logger.info("*" * 20)
 
         return win32com.client.VARIANT(pythoncom.VT_ARRAY | pythoncom.VT_BSTR,
                                        [rsp, rsp_len, is_present])
@@ -262,6 +294,7 @@ class PTSSender(win32com.server.connect.ConnectableServer):
 
 def parse_ptscontrol_error(err):
     try:
+        # Decode HRESULT code from PTS exception
         _, source, description, _, _, hresult = err.excepinfo
 
         ptscontrol_e = ctypes.c_uint32(hresult).value
@@ -271,8 +304,11 @@ def parse_ptscontrol_error(err):
 
         return ptscontrol_e_string
 
-    except Exception:
-        raise Exception() from err
+    except Exception as e:
+        logging.exception(e)
+        # No HRESULT in excepinfo means that the call to COM Object
+        # method failed, perhaps the PTS COM Object has been closed.
+        return None
 
 
 class PyPTS:
@@ -291,44 +327,35 @@ class PyPTS:
         log("%s", self.__init__.__name__)
 
         self._init_attributes()
+        self._end = threading.Event()
 
         # list of tuples of methods and arguments to recover after PTS restart
         self._recov = []
         self._temp_changes = []
         self._recov_in_progress = False
+        self._ready = False
 
         self._temp_workspace_path = None
         self.last_start_time = time.time()
 
         self._pts = None
+        self._pts_dispatch_id = None
         self._pts_proc = None
         self._pts_logger = None
         self._pts_sender = None
+        self._callback = None
         self.__bd_addr = None
         self._com_logger = None
         self._com_sender = None
         self._preferred_device = device
         self._device = None
 
-        # This is done to have valid _pts in case client does not restart_pts
-        # and uses other methods. Normally though, the client should
-        # restart_pts, see its docstring for the details
-        #
-        # Another reason: PTS starting from version 6.2 returns
-        # PTSCONTROL_E_IMPLICIT_SEND_CALLBACK_ALREADY_REGISTERED 0x849C004 in
-        # RegisterImplicitSendCallbackEx if PTS from previous autoptsserver is
-        # used
-        try:
-            self.restart_pts()
-        except:
-            self.stop_pts()
-            raise
-
     def _init_attributes(self):
         """Initializes class attributes"""
         log("%s", self._init_attributes.__name__)
 
         self._pts = None
+        self._pts_dispatch_id = None
         self._pts_proc = None
 
         self._pts_logger = None
@@ -341,6 +368,21 @@ class PyPTS:
         self.__bd_addr = None
 
         self._pts_projects = {}
+
+    def cleanup_caches(self):
+        self._recov.clear()
+        self._recov_in_progress = False
+
+    def ready(self):
+        return self._ready
+
+    def terminate(self):
+        self._end.set()
+        if self._pts_sender:
+            self._pts_sender.close()
+
+        if self._pts_logger:
+            self._pts_logger.close()
 
     def add_recov(self, func, *args, **kwds):
         """Add function to recovery list"""
@@ -404,6 +446,9 @@ class PyPTS:
 
         func(*args, **kwds)
 
+    def _replug_dongle(self):
+        pass
+
     @pts_lock_wrapper(PTS_START_LOCK)
     def recover_pts(self):
         """Recovers PTS from errors occured during RunTestCase call.
@@ -426,41 +471,71 @@ class PyPTS:
 
         self._recov_in_progress = True
 
-        self.restart_pts()
+        self.restart_pts(replug=True)
 
         for item in self._recov:
             self._recover_item(item)
 
         self._recov_in_progress = False
 
+        return True
+
     @pts_lock_wrapper(PTS_START_LOCK)
-    def restart_pts(self):
+    def restart_pts(self, replug=False):
         """Restarts PTS
 
-        This function will block for couple of seconds while PTS starts
+        This function will block for a couple of seconds while PTS starts
+
+        :param replug: If True, then self._replug_dongle function will be used.
 
         """
 
         log("%s", self.restart_pts.__name__)
 
-        self.stop_pts()
-        time.sleep(1)  # otherwise there are COM errors occasionally
-        self.start_pts()
+        while not self._end.is_set():
+            try:
+                self.stop_pts()
+
+                if replug:
+                    self._replug_dongle()
+                # else:
+                #     time.sleep(1)  # otherwise there are COM errors occasionally
+
+                self.start_pts()
+
+                break
+            except Exception as e:
+                logging.exception(e)
+                self.stop_pts()
+                # Kill all stale PTS.exe processes only if this is
+                # the only running instance of autoptsserver.py
+                if count_script_instances('autoptsserver.py') <= 1:
+                    kill_all_processes('PTS.exe')
+
+        return True
 
     @pts_lock_wrapper(PTS_START_LOCK)
     def start_pts(self):
         """Starts PTS
 
-        This function will block for couple of seconds while PTS starts"""
+        This function will block for a couple of seconds while PTS starts"""
 
         log("%s", self.start_pts.__name__)
 
         self._pts = win32com.client.Dispatch('ProfileTuningSuite_6.PTSControlServer')
 
+        # The dispatched COM object cannot be passed between threads directly
+        self._pts_dispatch_id = pythoncom.CoMarshalInterThreadInterfaceInStream(
+            pythoncom.IID_IDispatch, self._pts)
+
         log('Started new PTS daemon')
 
         self._pts_logger = PTSLogger()
         self._pts_sender = PTSSender()
+
+        if self._callback:
+            self._pts_logger.set_callback(self._callback)
+            self._pts_sender.set_callback(self._callback)
 
         # cached frequently used PTS attributes: due to optimisation reasons it
         # is avoided to contact PTS. These attributes should not change anyway.
@@ -479,8 +554,13 @@ class PyPTS:
         log("PTS BD_ADDR: %s" % self.bd_addr())
         log(f'PTS daemon PID: {self._get_process_pid()}')
 
+        self._ready = True
+
+        return True
+
     def stop_pts(self):
         """Stops PTS"""
+        self._ready = False
 
         if self._pts_logger:
             try:
@@ -523,10 +603,11 @@ class PyPTS:
                     # Windows do not delete the COM server right away, instead
                     # it waits a little in case someone wants to reconnect to it.
                     pass
-                finally:
-                    self._pts = None
 
         self._init_attributes()
+
+    def set_wid_response(self, response):
+        self._pts_sender.set_wid_response(response)
 
     def create_workspace(self, bd_addr, pts_file_path, workspace_name,
                          workspace_path):
@@ -671,33 +752,53 @@ class PyPTS:
 
         self.last_start_time = time.time()
 
-        self._pts_logger.set_test_case_name(test_case_name)
-
-        error_code = ""
+        err = None
 
         try:
+            self._pts_logger.reopen()
+            self._pts_logger.set_test_case_name(test_case_name)
+            self._pts_sender.reopen()
+
             self._pts.RunTestCase(project_name, test_case_name)
 
-            self._revert_temp_changes()
+            err = self._pts_logger.get_test_case_status()
 
-        except pythoncom.com_error as e:
-            error_code = parse_ptscontrol_error(e)
+            self._revert_temp_changes()
+        except Exception as e:
+            # PTS exception or COM Object exception
+            if isinstance(e, pythoncom.com_error):
+                err = parse_ptscontrol_error(e)
+                # If successfully parsed, it was PTS exception
+
             self.stop_test_case(project_name, test_case_name)
             self.recover_pts()
 
-        log("Done %s %s %s out: %s", self.run_test_case.__name__,
-            project_name, test_case_name, error_code)
+        if not err:
+            # Nonblocking methods will not throw exceptions
+            err = E_FATAL_ERROR
 
-        return error_code
+        log("Done %s %s %s out: %s", self.run_test_case.__name__,
+            project_name, test_case_name, err)
+
+        return err
 
     def stop_test_case(self, project_name, test_case_name):
-        """NOTE: According to documentation 'StopTestCase() is not currently
-        implemented'"""
-
         log("%s %s %s", self.stop_test_case.__name__, project_name,
             test_case_name)
 
-        self._pts.StopTestCase()
+        # After close, the sender will send 'Cancel' as WID response
+        self._pts_sender.close()
+
+        # NOTE: According to documentation 'StopTestCase() is not
+        # currently implemented'. If by any chance this changes in
+        # the future, try the code below to use unmarshalling, because
+        # a dispatched COM Object cannot be shared directly between threads:
+        # pythoncom.CoInitialize()
+        # # Get dispatched PTS interface from the id
+        # pts = win32com.client.Dispatch(
+        #     pythoncom.CoGetInterfaceAndReleaseStream(self._pts_dispatch_id, pythoncom.IID_IDispatch))
+        # pts.StopTestCase()
+        # pythoncom.CoUninitialize()
 
     def get_test_case_count_from_tss_file(self, project_name):
         """Returns the number of test cases that are available in the specified
@@ -733,8 +834,9 @@ class PyPTS:
             self.add_recov(self.set_pics, project_name, entry_name,
                            bool_value)
 
-        except pythoncom.com_error as e:
-            parse_ptscontrol_error(e)
+        except BaseException as e:
+            if not parse_ptscontrol_error(e):
+                raise Exception(e) from e
 
     def set_pixit(self, project_name, param_name, param_value):
         """Set PIXIT
@@ -759,8 +861,15 @@ class PyPTS:
             self.add_recov(self.set_pixit, project_name, param_name,
                            param_value)
 
-        except pythoncom.com_error as e:
-            parse_ptscontrol_error(e)
+        except Exception as e:
+            if isinstance(e, (pythoncom.com_error, TypeError)):
+                err = parse_ptscontrol_error(e)
+                if not err:
+                    err = str(e)
+
+                raise BadPixitException(f'{project_name} {param_name} {param_value}:\n{err}') from e
+
+            raise Exception(e) from e
 
     def update_pixit_param(self, project_name, param_name, new_param_value):
         """Updates PIXIT
@@ -783,9 +892,15 @@ class PyPTS:
                 project_name, param_name, new_param_value)
             self._add_temp_change(self.update_pixit_param, project_name,
                                   param_name)
+        except Exception as e:
+            if isinstance(e, (pythoncom.com_error, TypeError)):
+                err = parse_ptscontrol_error(e)
+                if not err:
+                    err = str(e)
 
-        except pythoncom.com_error as e:
-            parse_ptscontrol_error(e)
+                raise BadPixitException(f'{project_name} {param_name} value={new_param_value} :\n{err}') from e
+
+            raise Exception(e) from e
 
     def enable_maximum_logging(self, enable):
         """Enables/disables the maximum logging."""
@@ -966,17 +1081,23 @@ class PyPTS:
 
         log("%s %s", self.register_ptscallback.__name__, callback)
 
+        self._callback = callback
+
+        if not self._ready:
+            return
+
         self._pts_logger.set_callback(callback)
         self._pts_sender.set_callback(callback)
-
-        self.add_recov(self.register_ptscallback, callback)
 
     def unregister_ptscallback(self):
         """Unregisters the testcase.PTSCallback callback"""
 
         log("%s", self.unregister_ptscallback.__name__)
 
+        self._callback = None
+
+        if not self._ready:
+            return
+
         self._pts_logger.unset_callback()
         self._pts_sender.unset_callback()
-
-        self.del_recov(self.register_ptscallback)

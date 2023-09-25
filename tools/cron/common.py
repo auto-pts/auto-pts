@@ -41,6 +41,8 @@ from pathlib import Path
 from time import sleep, time
 from os.path import dirname, abspath
 from datetime import datetime, date
+
+from autopts.utils import get_global_end
 from autopts_bisect import Bisect, set_run_test_fun
 from autopts.bot.common import load_module_from_path
 from autopts.bot.common_features.github import update_sources, update_repos
@@ -54,7 +56,6 @@ if sys.platform == 'win32':
     import wmi
 
 log = logging.info
-END = False
 CRON_CFG = {}
 mimetypes.add_type('text/plain', '.log')
 
@@ -62,16 +63,6 @@ mimetypes.add_type('text/plain', '.log')
 def set_cron_cfg(cfg):
     global CRON_CFG
     CRON_CFG = cfg
-
-
-def set_end():
-    global END
-    END = True
-
-
-def get_end():
-    global END
-    return END
 
 
 def catch_exceptions(cancel_on_failure=False):
@@ -94,7 +85,7 @@ def catch_exceptions(cancel_on_failure=False):
 
 def catch_connection_error(func):
     def _catch_exceptions(*args, **kwargs):
-        while not END:
+        while not get_global_end():
             try:
                 return func(*args, **kwargs)
             except requests.exceptions.ConnectionError:

@@ -30,31 +30,13 @@
 #
 
 """Windows utilities"""
-
+import logging
 import os
 import sys
 import ctypes
-
-if sys.platform == 'win32':
-    import win32gui
-    import win32process
-
-
-class AdminStateUnknownError(Exception):
-    pass
-
-
-def have_admin_rights():
-    """"Check if the process has Administrator rights"""
-    try:
-        return os.getuid() == 0
-    except AttributeError:
-        pass
-
-    try:
-        return ctypes.windll.shell32.IsUserAnAdmin() == 1
-    except AttributeError:
-        raise AdminStateUnknownError
+import wmi
+import win32gui
+import win32process
 
 
 def get_pid_by_window_title(title):
@@ -78,24 +60,12 @@ def get_pid_by_window_title(title):
         return None
 
 
-def exit_if_admin():
-    """Exit program if running as Administrator"""
-    if have_admin_rights():
-        sys.exit("Administrator rights are not required to run this script!")
-
-
-def main():
-    """Main."""
-
-    is_admin = have_admin_rights()
-
-    if is_admin:
-        print("Running as administrator")
-    else:
-        print("Not running as administrator")
-
-    exit_if_admin()
-
-
-if __name__ == "__main__":
-    main()
+def kill_all_processes(name):
+    c = wmi.WMI()
+    for ps in c.Win32_Process(name=name):
+        try:
+            ps.Terminate()
+            logging.debug("%s process (PID %d) terminated successfully" % (name, ps.ProcessId))
+        except BaseException as exc:
+            logging.exception(exc)
+            logging.debug("There is no %s process running with id: %d" % (name, ps.ProcessId))
