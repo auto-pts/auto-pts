@@ -369,7 +369,7 @@ def mesh_config_prov():
     input_size = stack.mesh.input_size
     input_actions = stack.mesh.input_actions
     auth_method = stack.mesh.auth_metod
-    pack_format = f"<16s{len(stack.mesh.static_auth) // 2}sBHBHB"
+    pack_format = f"<16s32sBHBHB"
     data = bytearray(struct.pack(pack_format, uuid, static_auth, output_size,
                                  output_actions, input_size, input_actions, auth_method))
 
