@@ -1,4 +1,4 @@
-<WORKSPACE_INFORMATION NAME="nimble-master" CREATED_WITH="Profile Tuning Suite, 8.5.0, 5" BD_ADDR="000000000000" QDID="215184">
+<WORKSPACE_INFORMATION NAME="nimble-master" PATH="C:\Users\Krzysiek\Desktop\nimble-master" CREATED_WITH="Profile Tuning Suite, 8.5.1, 10" BD_ADDR="000000000000" QDID="224034">
   <PROJECTS_INFORMATION>
     <PROJECT_INFORMATION NAME="GAP" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
       <PICS>
@@ -2659,7 +2659,7 @@
           <Row>
             <Name>TSPC_GATT_2_3a</Name>
             <Description>Enhanced ATT bearer over LE (C.4, C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -2857,13 +2857,13 @@
           <Row>
             <Name>TSPC_GATT_3_29</Name>
             <Description>Read Multiple Variable Length Characteristic Values (C.9)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_3_30</Name>
             <Description>Multiple Variable Length Notifications (C.10)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -3055,13 +3055,13 @@
           <Row>
             <Name>TSPC_GATT_4_30</Name>
             <Description>Read Multiple Variable Length Characteristic Values (C.13)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_4_31</Name>
             <Description>Multiple Variable Length Notifications (C.13)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -3145,7 +3145,7 @@
           <Row>
             <Name>TSPC_GATT_8_2</Name>
             <Description>Support for multiple simultaneous active ATT bearers from same device – ATT over LE and EATT over LE (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -3265,13 +3265,13 @@
           <Row>
             <Name>TSPC_GATT_9_14</Name>
             <Description>Read Multiple Variable Length Request (C.14)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_9_15</Name>
             <Description>Handle Value Multiple Notification (C.15)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -3337,13 +3337,13 @@
           <Row>
             <Name>TSPC_GATT_10_11</Name>
             <Description>Read Multiple Variable Length Request (C.11)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_10_12</Name>
             <Description>Handle Value Multiple Notification (C.12)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4578,7 +4578,7 @@
           <Row>
             <Name>TSPC_GATT_2_3a</Name>
             <Description>Enhanced ATT bearer over LE (C.4, C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4967,13 +4967,20 @@
         <Name>MESH</Name>
         <Version />
         <Rows>
-          <!-- Table 0: Versions -->
+          <!-- Table 0: X.Y Versions -->
           <Row>
             <Name>TSPC_MESH_0_1</Name>
-            <Description>Mesh v1.0 (M)</Description>
+            <Description>Mesh v1.0 (C.1)</Description>
             <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
           </Row>
+          <Row>
+            <Name>TSPC_MESH_0_2</Name>
+            <Description>Mesh v1.1 (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <!-- Table 0a: X.Y.Z. Versions -->
           <Row>
             <Name>TSPC_MESH_0a_1</Name>
             <Description>Erratum 10395 (C.1)</Description>
@@ -5005,6 +5012,25 @@
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
+          <Row>
+            <Name>TSPC_MESH_2_3</Name>
+            <Description>Unprovisioned device (C.2)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <!-- Table 1a: Transport Requirements -->
+          <Row>
+            <Name>TSPC_MESH_1a_1</Name>
+            <Description>Profile supported over BR/EDR (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_1a_2</Name>
+            <Description>Profile supported over LE (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
           <!-- Table 3: Node Capabilities - Bearers -->
           <Row>
             <Name>TSPC_MESH_3_1</Name>
@@ -5021,81 +5047,129 @@
           <!-- Table 4: Node Capabilities - Provisioning -->
           <Row>
             <Name>TSPC_MESH_4_1</Name>
-            <Description>PB-ADV (C.1)</Description>
+            <Description>PB-ADV Server (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_4_2</Name>
-            <Description>PB-GATT (C.2)</Description>
+            <Description>PB-GATT Server (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_4_3</Name>
-            <Description>Device UUID (C.3)</Description>
+            <Description>Device UUID (M)</Description>
             <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
+            <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_4_4</Name>
-            <Description>Sending Unprovisioned Device Beacon (C.4)</Description>
+            <Description>Sending Unprovisioned Device Beacon (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_4_5</Name>
-            <Description>Generic Provisioning Layer (C.3)</Description>
+            <Description>Generic Provisioning Layer (M)</Description>
             <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
+            <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_4_6</Name>
-            <Description>Provisioning Protocol(Provisioning Server) (C.3)</Description>
+            <Description>Provisioning Protocol (Provisioning Server) (M)</Description>
             <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
+            <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_4_7</Name>
-            <Description>Provisioning Public Key OOB (C.5)</Description>
+            <Description>Provisioning: Public Key OOB (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_4_8</Name>
-            <Description>Provisioning: Public Key No OOB (C.5)</Description>
+            <Description>Provisioning: Public Key No OOB (M)</Description>
             <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
+            <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_4_9</Name>
-            <Description>Provisioning: Authentication Output OOB (C.6)</Description>
+            <Description>Provisioning: Authentication Output OOB (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_4_10</Name>
-            <Description>Provisioning: Authentication Input OOB (C.6)</Description>
+            <Description>Provisioning: Authentication Input OOB (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_4_11</Name>
-            <Description>Provisioning: Authentication Static OOB (C.6)</Description>
+            <Description>Provisioning: Authentication Static OOB (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_4_12</Name>
-            <Description>Provisioning: Authentication No OOB (C.3)</Description>
+            <Description>Provisioning: Authentication No OOB (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_4_13</Name>
+            <Description>Provisioning algorithm: ECDH_P256 + CMAC_AES128 + CCM_AES128 (C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_MESH_4_13</Name>
-            <Description>Provisioning algorithm: ECDH_P256 + CMAC_AES128 + CCM_AES128 (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Name>TSPC_MESH_4_14</Name>
+            <Description>Provisioning algorithm: ECDH_P256 + HMAC_SHA256 + CCM_AES128 (C.4)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_4_15</Name>
+            <Description>Node Provisioning Protocol Interface (C.5)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_4_16</Name>
+            <Description>Node Address Refresh Procedure (C.5)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_4_17</Name>
+            <Description>Node Composition Refresh Procedure (C.5)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_4_18</Name>
+            <Description>Certificate-based Provisioning (C.6)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_4_19</Name>
+            <Description>Provisioning Records (C.7)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_4_20</Name>
+            <Description>Provisioning: Certificates available over HTTPS (C.8)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_4_21</Name>
+            <Description>Provisioning: Certificates available in-band (C.8)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <!-- Table 5: Node Capabilities - Network Layer -->
           <Row>
@@ -5211,6 +5285,12 @@
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
+          <Row>
+            <Name>TSPC_MESH_10_5</Name>
+            <Description>Private Beacon (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
           <!-- Table 11: Node Capabilities - Foundation Mesh Models -->
           <Row>
             <Name>TSPC_MESH_11_1</Name>
@@ -5236,6 +5316,126 @@
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
+          <Row>
+            <Name>TSPC_MESH_11_5</Name>
+            <Description>Private Beacon Server Model (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_6</Name>
+            <Description>Private Beacon Client Model (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_7</Name>
+            <Description>Bridge Configuration Server Model (C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_8</Name>
+            <Description>Bridge Configuration Client Model (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_9</Name>
+            <Description>Directed Forwarding Configuration Server Model (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_10</Name>
+            <Description>Directed Forwarding Configuration Client Model (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_11</Name>
+            <Description>Remote Provisioning Server Model (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_12</Name>
+            <Description>Remote Provisioning Client Model (C.4)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_13</Name>
+            <Description>Composition Data Page 1 (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_14</Name>
+            <Description>On-demand Private Proxy Server Model (C.5)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_15</Name>
+            <Description>On-demand Private Proxy Client Model (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_16</Name>
+            <Description>Solicitation PDU RPL Configuration Server Model (C.6)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_17</Name>
+            <Description>Solicitation PDU RPL Configuration Client Model (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_18</Name>
+            <Description>SAR Configuration Server Model (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_19</Name>
+            <Description>SAR Configuration Client Model (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_20</Name>
+            <Description>Opcodes Aggregator Server Model (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_21</Name>
+            <Description>Opcodes Aggregator Client Model (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_22</Name>
+            <Description>Large Composition Data Server Model (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_23</Name>
+            <Description>Large Composition Data Client Model (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_11_24</Name>
+            <Description>Composition Data Page 2 (C.7)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
           <!-- Table 12: Node Capabilities - Proxy -->
           <Row>
             <Name>TSPC_MESH_12_1</Name>
@@ -5251,25 +5451,68 @@
           </Row>
           <Row>
             <Name>TSPC_MESH_12_3</Name>
-            <Description>Advertising with Network ID (C.2)</Description>
+            <Description>Advertising with Network ID (C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_12_4</Name>
-            <Description>Advertising with Node Identity (C.2)</Description>
+            <Description>Advertising with Node Identity (C.4)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_12_5</Name>
-            <Description>Proxy Client (C.3)</Description>
+            <Description>Proxy Client (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_12_6</Name>
-            <Description>Generic Attribute Profile (GATT) Client (C.4)</Description>
+            <Description>Generic Attribute Profile (GATT) Client (C.5)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_12_7</Name>
+            <Description>Advertising with Private Network Identity (C.6)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_12_8</Name>
+            <Description>Advertising with Private Node Identity (C.7)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_12_9</Name>
+            <Description>Directed Proxy Server (C.8)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_12_10</Name>
+            <Description>Directed Proxy Client (C.9)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_12_11</Name>
+            <Description>Sending Proxy Solicitation (C.10)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_12_12</Name>
+            <Description>Proxy Feature (C.11)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <!-- Table 12a: Node Capabilities - Directed Forwarding -->
+          <Row>
+            <Name>TSPC_MESH_12a_1</Name>
+            <Description>Directed Relay (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -5369,7 +5612,7 @@
           </Row>
           <Row>
             <Name>TSPC_MESH_16_4</Name>
-            <Description>Authorization Procedure (Peripheral) (C.2)</Description>
+            <Description>Authorization procedure (Peripheral) (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -5381,20 +5624,7 @@
           </Row>
           <Row>
             <Name>TSPC_MESH_16_6</Name>
-            <Description>Authorization Procedure (Central) (C.3)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <!-- Table 17: Provisioner - Bearers -->
-          <Row>
-            <Name>TSPC_MESH_17_1</Name>
-            <Description>Advertising Bearer (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_MESH_17_2</Name>
-            <Description>GATT Bearer (C.1)</Description>
+            <Description>Authorization procedure (Central) (C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -5407,7 +5637,7 @@
           </Row>
           <Row>
             <Name>TSPC_MESH_18_2</Name>
-            <Description>PB-ADV (C.1)</Description>
+            <Description>PB-ADV Client (C.2)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -5425,13 +5655,13 @@
           </Row>
           <Row>
             <Name>TSPC_MESH_18_5</Name>
-            <Description>PB-GATT (C.2)</Description>
+            <Description>PB-GATT Client (C.2)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_18_6</Name>
-            <Description>Generic Attribute Profile (GATT) Client (C.2)</Description>
+            <Description>Generic Attribute Profile (GATT) Client (C.6)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -5470,6 +5700,24 @@
             <Description>Provisioning algorithm: ECDH_P256 + CMAC_AES128 + CCM_AES128 (M)</Description>
             <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_18_13</Name>
+            <Description>Provisioning algorithm: ECDH_P256 + HMAC_SHA256 + CCM_AES128 (C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_18_14</Name>
+            <Description>Provisioning: X.509 Certificates (C.4)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MESH_18_15</Name>
+            <Description>Provisioning Records (C.5)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <!-- Table 19: Provisioner - Mesh Management -->
           <Row>
@@ -5530,7 +5778,7 @@
           </Row>
           <Row>
             <Name>TSPC_MESH_21_4</Name>
-            <Description>Authorization Procedure (Central) (C.2)</Description>
+            <Description>Authorization procedure (Central) (C.2)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -5686,7 +5934,7 @@
           </Row>
           <Row>
             <Name>TSPX_OOB_code</Name>
-            <Description>used for provisioning OOB device's Qr, Bar, NFC or printed code. (Default: 001BDC0810210B0E0A0C000B0E0A0C00)</Description>
+            <Description>used for provisioning OOB device's Qr, Bar, NFC or printed code. (Default: 00000000000000000102030405060708)</Description>
             <Type>OCTETSTRING</Type>
             <Value>00000000000000000102030405060708</Value>
           </Row>
@@ -5755,6 +6003,12 @@
             <Description>Maximum number of supported subnets.(Default: 1)</Description>
             <Type>INTEGER</Type>
             <Value>1</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_iut_maximum_models_metadata</Name>
+            <Description>The maximum page number for Models Metadata (Default: 0)</Description>
+            <Type>INTEGER</Type>
+            <Value>0</Value>
           </Row>
           <Row>
             <Name>TSPX_pt_addr</Name>
@@ -5836,33 +6090,45 @@
         <Name>MMDL</Name>
         <Version />
         <Rows>
-          <!-- Table 0a:Mesh Specification Versions -->
+          <!-- Table 1a: Transport Requirements -->
           <Row>
-            <Name>TSPC_MMDL_0a_1</Name>
-            <Description>Mesh Specification v1.0 (M)</Description>
+            <Name>TSPC_MMDL_1a_1</Name>
+            <Description>Profile supported over BR/EDR (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MMDL_1a_2</Name>
+            <Description>Profile supported over LE (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
-          <!-- Table 0b:Mesh Model Specification Versions -->
+          <!-- Table 0b: X.Y Versions -->
           <Row>
             <Name>TSPC_MMDL_0b_1</Name>
-            <Description>Mesh Model Specification v1.0 (M)</Description>
+            <Description>Mesh Model Specification v1.0 (C.1)</Description>
             <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
           </Row>
-          <!-- Table 0c:Mesh Model Specification Versions -->
+          <Row>
+            <Name>TSPC_MMDL_0b_2</Name>
+            <Description>Mesh Model Specification v1.1 (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <!-- Table 0c: X.Y.Z Versions -->
           <Row>
             <Name>TSPC_MMDL_0c_1</Name>
             <Description>Mesh Model Specification v1.0.1 (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
-          <!-- Table 1: Bluetooth Core Specification v4.0 or Later -->
+          <!-- Table 0d: Target X.Y or Later Versions -->
           <Row>
-            <Name>TSPC_MMDL_1_1</Name>
-            <Description>Core Specification 4.0 or later (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Name>TSPC_MMDL_0d_1</Name>
+            <Description>Mesh Model Specification v1.1 or later (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <!-- Table 2: Generic Server Models -->
           <Row>
