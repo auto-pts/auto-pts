@@ -30,11 +30,11 @@ from autopts import bot
 from autopts.ptsprojects.zephyr import ZEPHYR_PROJECT_URL
 from autopts import client as autoptsclient
 
-from autopts.bot.common import BotConfigArgs, BotClient, make_report_diff, make_error_txt
+from autopts.bot.common import BotConfigArgs, BotClient
 from autopts.ptsprojects.boards import tty_to_com, release_device, get_build_and_flash, get_board_type
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
 from autopts.ptsprojects.zephyr.iutctl import get_iut, log
-
+from autopts.bot.common_features import github, report, mail, google_drive
 
 PROJECT_NAME = Path(__file__).stem
 
@@ -201,7 +201,7 @@ class ZephyrBotClient(BotClient):
 
                 flush_serial(args.tty_file)
             except:
-                make_error_txt('Build and flash step failed')
+                report.make_error_txt('Build and flash step failed')
                 raise
 
             time.sleep(10)
@@ -235,8 +235,8 @@ def main(bot_client):
                                         'zephyr', 'zephyr.elf')
 
     if 'git' in cfg:
-        repos_info = bot.common.update_repos(args['project_path'], cfg["git"])
-        repo_status = bot.common.make_repo_status(repos_info)
+        repos_info = github.update_repos(args['project_path'], cfg["git"])
+        repo_status = report.make_repo_status(repos_info)
         args['repos'] = cfg['git']
     else:
         repos_info = {}
@@ -263,12 +263,12 @@ def main(bot_client):
 
     results = collections.OrderedDict(sorted(results.items()))
 
-    pts_logs, xmls = bot.common.pull_server_logs(bot_client.args)
+    pts_logs, xmls = report.pull_server_logs(bot_client.args)
 
-    report_file = bot.common.make_report_xlsx(results, summary, regressions,
-                                              progresses, descriptions, xmls, PROJECT_NAME)
-    report_txt = bot.common.make_report_txt(results, regressions,
-                                            progresses, repo_status, PROJECT_NAME)
+    report_file = report.make_report_xlsx(results, summary, regressions,
+                                          progresses, descriptions, xmls, PROJECT_NAME)
+    report_txt = report.make_report_txt(results, regressions,
+                                        progresses, repo_status, PROJECT_NAME)
 
     end_time = time.time()
     end_time_stamp = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
@@ -281,13 +281,13 @@ def main(bot_client):
         readme_file = make_readme_md(start_time_stamp, end_time_stamp,
                                      repos_info, args['pts_ver'])
 
-        report_diff_txt, deleted_cases = make_report_diff(cfg['githubdrive'], results,
-                                           regressions, progresses, new_cases)
+        report_diff_txt, deleted_cases = report.make_report_diff(cfg['githubdrive'], results,
+                                                                 regressions, progresses, new_cases)
 
-        report_folder = bot.common.make_report_folder(iut_logs, pts_logs, xmls, report_file,
-                                                      report_txt, report_diff_txt, readme_file,
-                                                      args['database_file'],
-                                                      '_iut_zephyr_' + start_time_stamp)
+        report_folder = report.make_report_folder(iut_logs, pts_logs, xmls, report_file,
+                                                  report_txt, report_diff_txt, readme_file,
+                                                  args['database_file'],
+                                                  '_iut_zephyr_' + start_time_stamp)
 
     if 'githubdrive' in cfg:
         print("Uploading to Github ...")
@@ -305,13 +305,13 @@ def main(bot_client):
 
         commit_msg = commit_msg_pattern.format(
             timestamp=start_time_stamp, branch=branch, commit_sha=commit_sha)
-        github_link, report_folder = bot.common.github_push_report(
+        github_link, report_folder = report.github_push_report(
             report_folder, cfg['githubdrive'], commit_msg)
 
     if 'gdrive' in cfg:
         print("Uploading to GDrive ...")
-        bot.common.archive_testcases(report_folder, depth=2)
-        drive = bot.common.Drive(cfg['gdrive'])
+        report.archive_testcases(report_folder, depth=2)
+        drive = google_drive.Drive(cfg['gdrive'])
         url = drive.new_workdir(args['board'])
         drive.upload_folder(report_folder)
 
@@ -320,11 +320,11 @@ def main(bot_client):
 
         # keep mail related context to simplify the code
         mail_ctx = {'repos_info': repo_status,
-                    'summary': f'''{bot.common.status_dict2summary_html(summary)}
-{bot.common.regressions2html(regressions, descriptions)}
-{bot.common.progresses2html(progresses, descriptions)}
-{bot.common.new_cases2html(new_cases, descriptions)}
-{bot.common.deleted_cases2html(deleted_cases, descriptions)}''',
+                    'summary': f'''{mail.status_dict2summary_html(summary)}
+{mail.regressions2html(regressions, descriptions)}
+{mail.progresses2html(progresses, descriptions)}
+{mail.new_cases2html(new_cases, descriptions)}
+{mail.deleted_cases2html(deleted_cases, descriptions)}''',
                     }
 
         # Summary
@@ -333,14 +333,14 @@ def main(bot_client):
 
         # Log in Google drive in HTML format
         if 'gdrive' in cfg and url:
-            mail_ctx["log_url"] = bot.common.url2html(url, "Results on Google Drive")
+            mail_ctx["log_url"] = mail.url2html(url, "Results on Google Drive")
 
         if 'githubdrive' in cfg and github_link:
             if 'log_url' in mail_ctx:
                 mail_ctx["log_url"] += '<br>'
             else:
                 mail_ctx["log_url"] = ''
-            mail_ctx['log_url'] += bot.common.url2html(github_link, 'Results on Github')
+            mail_ctx['log_url'] += mail.url2html(github_link, 'Results on Github')
 
         if 'log_url' not in mail_ctx:
             mail_ctx['log_url'] = 'Not Available'
@@ -351,8 +351,8 @@ def main(bot_client):
 
         subject, body = compose_mail(args, cfg['mail'], mail_ctx)
 
-        bot.common.send_mail(cfg['mail'], subject, body,
-                             [report_file, report_txt])
+        mail.send_mail(cfg['mail'], subject, body,
+                       [report_file, report_txt])
 
         print("Done")
 
