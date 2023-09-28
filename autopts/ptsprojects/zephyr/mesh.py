@@ -726,16 +726,16 @@ def test_cases(ptses):
                              SynchPoint("MESH/CFGCL/KR/BV-04-C-LT2", 212)])],
                   generic_wid_hdl=mesh_wid_hdl,
                   lt2="MESH/CFGCL/KR/BV-04-C-LT2"),
-        ZTestCase("MESH", "MESH/NODE/KR/BV-05-C",
+        ZTestCase("MESH", "MESH/CFGCL/KR/BV-06-C",
                   cmds=pre_conditions_prov +
                   [TestFunc(btp.mesh_iv_test_mode_autoinit),
                    TestFunc(lambda: stack.mesh.expect_node(
                        stack.mesh.get_dev_uuid_lt2())),
                    TestFunc(get_stack().synch.add_synch_element,
-                            [SynchPoint("MESH/NODE/KR/BV-05-C", 276),
-                             SynchPoint("MESH/NODE/KR/BV-05-C-LT2", 212)])],
+                            [SynchPoint("MESH/CFGCL/KR/BV-06-C", 276),
+                             SynchPoint("MESH/CFGCL/KR/BV-06-C-LT2", 212)])],
                   generic_wid_hdl=mesh_wid_hdl,
-                  lt2="MESH/NODE/KR/BV-05-C-LT2"),
+                  lt2="MESH/CFGCL/KR/BV-06-C-LT2"),
         ZTestCase("MESH", "MESH/SR/RPR/LNK/BV-01-C",
                   cmds=pre_conditions +
                        [TestFunc(get_stack().synch.add_synch_element,
@@ -844,7 +844,7 @@ def test_cases(ptses):
         ZTestCaseSlave("MESH", "MESH/CFGCL/KR/BV-04-C-LT2",
                        cmds=pre_conditions_slave,
                        generic_wid_hdl=mesh_wid_hdl),
-        ZTestCaseSlave("MESH", "MESH/NODE/KR/BV-05-C-LT2",
+        ZTestCaseSlave("MESH", "MESH/CFGCL/KR/BV-06-C-LT2",
                        cmds=pre_conditions_slave,
                        generic_wid_hdl=mesh_wid_hdl),
 
