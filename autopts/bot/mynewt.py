@@ -23,11 +23,11 @@ import time
 from pathlib import Path
 
 from autopts import bot
-from autopts.bot.common import make_error_txt
 from autopts.client import Client
 from autopts.ptsprojects.boards import release_device, get_build_and_flash, get_board_type
 from autopts.ptsprojects.mynewt.iutctl import get_iut, log
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
+from autopts.bot.common_features import github, report, mail, google_drive
 
 
 PROJECT_NAME = Path(__file__).stem
@@ -160,7 +160,7 @@ class MynewtBotClient(bot.common.BotClient):
             try:
                 build_and_flash(args.project_path, board_type, overlay, args.debugger_snr)
             except:
-                make_error_txt('Build and flash step failed')
+                report.make_error_txt('Build and flash step failed')
                 raise
 
             time.sleep(10)
@@ -201,8 +201,8 @@ def main(bot_client):
         bot.common.check_call(['newt', 'upgrade', '-f', '--shallow=0'], cwd=args['project_path'])
 
     if 'git' in cfg:
-        repos_info = bot.common.update_repos(args['project_path'], cfg["git"])
-        repo_status = bot.common.make_repo_status(repos_info)
+        repos_info = github.update_repos(args['project_path'], cfg["git"])
+        repo_status = report.make_repo_status(repos_info)
     else:
         repo_status = ''
 
@@ -221,13 +221,13 @@ def main(bot_client):
 
     results = collections.OrderedDict(sorted(results.items()))
 
-    pts_logs, xmls = bot.common.pull_server_logs(bot_client.args)
+    pts_logs, xmls = report.pull_server_logs(bot_client.args)
 
-    report_file = bot.common.make_report_xlsx(results, summary, regressions,
-                                              progresses, descriptions, xmls, PROJECT_NAME)
-    report_txt = bot.common.make_report_txt(results, regressions,
-                                            progresses, repo_status, PROJECT_NAME)
-    logs_folder = bot.common.archive_testcases("logs")
+    report_file = report.make_report_xlsx(results, summary, regressions,
+                                          progresses, descriptions, xmls, PROJECT_NAME)
+    report_txt = report.make_report_txt(results, regressions,
+                                        progresses, repo_status, PROJECT_NAME)
+    logs_folder = report.archive_testcases("logs")
 
     build_info_file = get_build_info_file(os.path.abspath(args['project_path']))
 
@@ -235,7 +235,7 @@ def main(bot_client):
     url = None
 
     if 'gdrive' in cfg:
-        drive = bot.common.Drive(cfg['gdrive'])
+        drive = google_drive.Drive(cfg['gdrive'])
         url = drive.new_workdir(args['board'])
         drive.upload(report_file)
         drive.upload(report_txt)
@@ -248,9 +248,9 @@ def main(bot_client):
         print("Sending email ...")
 
         # keep mail related context to simplify the code
-        mail_ctx = {"summary": bot.common.status_dict2summary_html(summary),
-                    "regression": bot.common.regressions2html(regressions,
-                                                              descriptions),
+        mail_ctx = {"summary": mail.status_dict2summary_html(summary),
+                    "regression": mail.regressions2html(regressions,
+                                                        descriptions),
                     "mynewt_repo_status": repo_status}
 
         # Summary
@@ -259,8 +259,8 @@ def main(bot_client):
 
         # Log in Google drive in HTML format
         if 'gdrive' in cfg and url:
-            mail_ctx["log_url"] = bot.common.url2html(url,
-                                                      "Results on Google Drive")
+            mail_ctx["log_url"] = mail.url2html(url,
+                                                "Results on Google Drive")
         else:
             mail_ctx["log_url"] = "Not Available"
 
@@ -270,8 +270,8 @@ def main(bot_client):
 
         subject, body = compose_mail(args, cfg['mail'], mail_ctx)
 
-        bot.common.send_mail(cfg['mail'], subject, body,
-                             [report_file, report_txt])
+        mail.send_mail(cfg['mail'], subject, body,
+                       [report_file, report_txt])
 
         print("Done")
 

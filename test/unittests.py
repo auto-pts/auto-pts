@@ -6,12 +6,12 @@ from os.path import dirname, abspath
 from pathlib import Path
 from unittest.mock import patch
 
-from autopts import bot
 from autopts.bot.zephyr import make_readme_md
 from autopts.client import FakeProxy, TestCaseRunStats
 from autopts.ptsprojects.testcase_db import TestCaseTable
 from autoptsclient_bot import import_bot_projects, import_bot_module
 from test.mocks.mocked_test_cases import mock_workspace_test_cases, test_case_list_generation_samples
+from autopts.bot.common_features import report
 
 
 DATABASE_FILE = 'test/mocks/zephyr_database.db'
@@ -211,7 +211,7 @@ class MyTestCase(unittest.TestCase):
             'subdir': 'host/',
         }
 
-        report_txt = bot.common.make_report_txt(
+        report_txt = report.make_report_txt(
             results, regressions, progresses, '', 'zephyr')
         files['first_report_txt'] = report_txt
         assert os.path.exists(report_txt)
@@ -260,13 +260,13 @@ class MyTestCase(unittest.TestCase):
         files['pts_logs'] = pts_logs
         files['xmls'] = xmls
 
-        report_file = bot.common.make_report_xlsx(
+        report_file = report.make_report_xlsx(
             results, summary, regressions, progresses, descriptions,
             xmls, 'zephyr')
         files['report_file'] = report_file
         assert os.path.exists(report_file)
 
-        report_txt = bot.common.make_report_txt(
+        report_txt = report.make_report_txt(
             results, regressions, progresses, '', 'zephyr')
         files['report_txt'] = report_txt
         assert os.path.exists(report_txt)
@@ -276,12 +276,12 @@ class MyTestCase(unittest.TestCase):
         files['readme_file'] = readme_file
         assert os.path.exists(readme_file)
 
-        report_diff_txt, deleted_cases = bot.common.make_report_diff(
+        report_diff_txt, deleted_cases = report.make_report_diff(
             githubdrive, results, regressions, progresses, new_cases)
         files['report_diff_txt'] = report_diff_txt
         assert os.path.exists(report_diff_txt)
 
-        report_folder = bot.common.make_report_folder(
+        report_folder = report.make_report_folder(
             iut_logs, pts_logs, xmls, report_file, report_txt, report_diff_txt,
             readme_file, database_file, '_iut_zephyr_' + start_timestamp)
         files['report_folder'] = report_folder

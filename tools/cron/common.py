@@ -42,8 +42,9 @@ from time import sleep, time
 from os.path import dirname, abspath
 from datetime import datetime, date
 from autopts_bisect import Bisect, set_run_test_fun
-from autopts.bot.common import update_sources, send_mail, update_repos,\
-    load_module_from_path
+from autopts.bot.common import load_module_from_path
+from autopts.bot.common_features.github import update_sources, update_repos
+from autopts.bot.common_features.mail import send_mail
 
 AUTOPTS_REPO=dirname(dirname(dirname(abspath(__file__))))
 sys.path.insert(0, AUTOPTS_REPO)
