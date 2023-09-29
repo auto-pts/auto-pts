@@ -171,24 +171,9 @@ iut_config = {
         ]
     },
 
-    "mesh_rpr.conf": {
-        "pre_overlay": "overlay-mesh.conf",
-        "overlay": {
-            'CONFIG_BT_MESH_ECDH_P256_HMAC_SHA256_AES_CCM': 'n',
-        },
-        "test_cases": [
-            'MESH/SR/RPR/PDU/BV-02-C',
-            'MESH/SR/RPR/PDU/BV-03-C',
-            'MESH/SR/RPR/LNK/BI-03-C',
-            'MESH/SR/RPR/LNK/BV-21-C',
-            'MESH/SR/RPR/LNK/BV-23-C',
-            'MESH/SR/RPR/LNK/BV-26-C'
-        ]
-    },
     "mesh_rpr_persistent_storage.conf": {
         "pre_overlay": "overlay-mesh.conf",
         "overlay": {
-            'CONFIG_BT_MESH_ECDH_P256_HMAC_SHA256_AES_CCM': 'n',
             'CONFIG_BT_SETTINGS': 'y',
             'CONFIG_FLASH_PAGE_LAYOUT': 'y',
             'CONFIG_FLASH': 'y',
