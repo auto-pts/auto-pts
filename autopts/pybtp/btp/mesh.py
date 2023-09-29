@@ -363,14 +363,20 @@ def mesh_config_prov():
     stack = get_stack()
 
     uuid = binascii.unhexlify(stack.mesh.dev_uuid)
-    static_auth = binascii.unhexlify(stack.mesh.static_auth)
+
+    # pad static auth 64chars(32octet) with zeros
+    s_auth_padded = f'{stack.mesh.static_auth:0<64}'
+    # octet length as hex number
+    static_auth_length = len(stack.mesh.static_auth) // 2
+
+    static_auth = binascii.unhexlify(s_auth_padded)
     output_size = stack.mesh.output_size
     output_actions = stack.mesh.output_actions
     input_size = stack.mesh.input_size
     input_actions = stack.mesh.input_actions
     auth_method = stack.mesh.auth_metod
-    pack_format = f"<16s32sBHBHB"
-    data = bytearray(struct.pack(pack_format, uuid, static_auth, output_size,
+    pack_format = f"<16s32sBBHBHB"
+    data = bytearray(struct.pack(pack_format, uuid, static_auth, static_auth_length, output_size,
                                  output_actions, input_size, input_actions, auth_method))
 
     pub_key = stack.mesh.pub_key_get()
