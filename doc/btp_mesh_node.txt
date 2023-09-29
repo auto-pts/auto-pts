@@ -1126,3 +1126,13 @@ Events:
 					Number of elements (1 octet)
 
 		This event indicates that the IUT has provisioned a new node.
+
+	Opcode 0x8f - Access Layer Message Received
+
+		Controller Index:	<controller id>
+		Event parameters:	SRC (2 octets)
+					DST (2 octets)
+					Payload_Len (1 octet)
+					Payload (variable)
+
+		This event indicates that the IUT has received an Access layer message.
