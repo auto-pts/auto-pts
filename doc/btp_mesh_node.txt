@@ -176,7 +176,8 @@ Commands and responses:
 
 	Opcode 0x0f - Model Send
 		Controller Index:	<controller id>
-		Command parameters:	SRC (2 octets)
+		Command parameters:	TTL (2 octets)
+					SRC (2 octets)
 					DST (2 octets)
 					Payload_Len (1 octet)
 					Payload (variable)
