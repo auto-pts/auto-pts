@@ -23,7 +23,8 @@ Commands and responses:
 	Opcode 0x02 - Configure Provisioning command/response
 		Controller Index:	<controller id>
 		Command parameters:	UUID (16 octets)
-					Static Auth (16 octets)
+					Static Auth (32 octets)
+					Static Auth Length (1 octet)
 					Output Size (1 octet)
 					Output Actions (2 octets)
 					Input Size (1 octet)
