@@ -147,30 +147,6 @@ iut_config = {
         ]
     },
 
-    "privacy_default_timeout.conf": {
-        "pre_overlay": "overlay-mesh.conf",
-        "overlay": {
-            'CONFIG_BT_PRIVACY': 'y',
-        },
-        "test_cases": [
-            'MESH/NODE/IVU/BV-06-C',
-            'MESH/NODE/IVU/BV-07-C',
-            'MESH/NODE/IVU/BV-08-C',
-            'MESH/NODE/IVU/BV-09-C',
-            'MESH/NODE/IVU/BV-10-C',
-            'MESH/NODE/IVU/BI-07-C',
-            'MESH/NODE/IVU/BI-08-C',
-            'MESH/NODE/IVU/BI-09-C',
-            'MESH/NODE/IVU/BI-10-C',
-            'MESH/NODE/IVU/BI-11-C',
-            'MESH/NODE/KR/BV-04-C',
-            'MESH/NODE/KR/BV-05-C',
-            'MESH/NODE/KR/BI-06-C',
-            'MESH/CFGCL/KR/BV-05-C',
-            'MESH/CFGCL/KR/BV-06-C'
-        ]
-    },
-
     "mesh_rpr_persistent_storage.conf": {
         "pre_overlay": "overlay-mesh.conf",
         "overlay": {
