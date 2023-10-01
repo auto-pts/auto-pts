@@ -147,6 +147,11 @@ def test_cases(ptses):
             TestFunc(lambda: pts.update_pixit_param(
                 "DFU", "TSPX_Firmware_ID", "010000000100000000000000"))],
                   generic_wid_hdl=mmdl_wid_hdl),
+        ZTestCase("DFU", "DFU/SR/FU/BV-24-C", cmds=pre_conditions + [
+            TestFunc(lambda: pts.update_pixit_param(
+                "DFU", "TSPX_New_Firmware_Image",
+                get_test_data_path(pts) + "sample_data_2.txt"))],
+                  generic_wid_hdl=mmdl_wid_hdl),
         ZTestCase("DFU", "DFU/SR/FU/BV-27-C", cmds=pre_conditions + [
             TestFunc(lambda: pts.update_pixit_param(
                 "DFU", "TSPX_New_Firmware_Image",
