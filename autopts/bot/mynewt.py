@@ -23,6 +23,7 @@ import time
 from pathlib import Path
 
 from autopts import bot
+from autopts.bot.common_features.github import update_sources
 from autopts.client import Client
 from autopts.ptsprojects.boards import release_device, get_build_and_flash, get_board_type
 from autopts.ptsprojects.mynewt.iutctl import get_iut, log
@@ -196,6 +197,11 @@ def main(bot_client):
 
     if 'database_file' not in args:
         args['database_file'] = DATABASE_FILE
+
+    if 'githubdrive' in cfg:
+        update_sources(cfg['githubdrive']['path'],
+                       cfg['githubdrive']['remote'],
+                       cfg['githubdrive']['branch'], True)
 
     if args.get('newt_upgrade', False):
         bot.common.check_call(['newt', 'upgrade', '-f', '--shallow=0'], cwd=args['project_path'])
