@@ -1,0 +1,548 @@
+Microphone Control Service(ID 22)
+=================================
+
+Commands and responses:
+
+	Opcode 0x00 - Error response
+
+	Opcode 0x01 - Read supported commands
+		Controller Index:       <controller id>
+		Command parameters:     <none>
+		Response parameters:    <supported commands> (variable)
+
+		Each bit in response is a flag indicating if command with
+		opcode matching bit number is supported. Bit set to 1 means
+		that command is supported. Bit 0 is reserved and shall always
+		be set to 0. If specific bit is not present in response (less
+		than required bytes received) it shall be assumed that command
+		is not supported.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x02 - Discovery
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters: <none>
+
+		This command is used to discover primary service, included
+		service(s) and all characteristics related to them. During
+		discovery, the IUT may send events:
+				MCP Discovered Event
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x03 - Track Duration Read
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:    <none>
+
+		This command is used to read Track Duration characteristic.
+		During read operation, the IUT may send event:
+				Track Duration Event
+
+	Opcode 0x04 - Track Position Read
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:    <none>
+
+		This command is used to read Track Position characteristic.
+		During read operation, the IUT may send event:
+				Track Position Event
+
+	Opcode 0x05 - Track Position Set
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+					Position (4 octets)
+		Response parameters:    <none>
+
+		This command is used to set Track Position characteristic.
+		During operation, the IUT may send event:
+				Track Position Event
+
+	Opcode 0x06 - Playback Speed Read
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:    <none>
+
+		This command is used to read Playback Speed characteristic.
+		During operation, the IUT may send event:
+				Playback Speed Event
+
+	Opcode 0x07 - Playback Speed Set
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+					Speed (1 octet)
+		Response parameters:    <none>
+
+		This command is used to set Playback Speed.
+		During operation, the IUT may send event:
+				Playback Speed Event
+
+	Opcode 0x08 - Seeking Speed Read
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:    <none>
+
+		This command is used to read Seeking characteristic.
+		During operation, the IUT may send event:
+				Seeking Speed Event
+
+	Opcode 0x09 - Icon Object ID Read
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:    <none>
+
+		This command is used to read Icon Object ID characteristic.
+		During operation, the IUT may send event:
+				Icon Object ID event
+
+	Opcode 0x0a - Next Track Object ID Read
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:    <none>
+
+		This command is used to read Next Track Object ID characteristic.
+		During operation, the IUT may send event:
+				Next Track Object ID event
+
+	Opcode 0x0b - Next Track Object ID Set
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+					ID (8 octets)
+		Response parameters:    <none>
+
+		This command is used to set Next Track Object ID.
+		During operation, the IUT may send event:
+				Next Track Object ID event
+
+	Opcode 0x0c - Parent Group ID Read
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:    <none>
+
+		This command is used to read Parent Group Object ID characteristic.
+		During operation, the IUT may send event:
+				Parent Group Object ID event
+
+	Opcode 0x0d - Current Group ID Read
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:    <none>
+
+		This command is used to read Current Group Object ID characteristic.
+		During operation, the IUT may send event:
+				Current Group Object ID event
+
+	Opcode 0x0e - Current Group ID Set
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+					ID (8 octets)
+		Response parameters:    <none>
+
+		This command is used to set Current Group Object ID.
+		During operation, the IUT may send event:
+				Current Group Object ID event
+
+	Opcode 0x0f - Playing Order Read
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:    <none>
+
+		This command is used to read Playing Order characteristic.
+		During operation, the IUT may send event:
+				Playing Order event
+
+	Opcode 0x10 - Playing Order Set
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+					Order (1 octets)
+		Response parameters:    <none>
+
+		This command is used to set Playing Order.
+		During operation, the IUT may send event:
+				Playing Order event
+
+	Opcode 0x11 - Playing Orders Supported Read
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:    <none>
+
+		This command is used to read Playing Orders Supported characteristic.
+		During operation, the IUT may send event:
+				Playing Orders Supported event
+
+	Opcode 0x12 - Media State Read
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:    <none>
+
+		This command is used to read Media State characteristic.
+		During operation, the IUT may send event:
+				Media State event
+
+	Opcode 0x13 - Opcodes Supported Read
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:    <none>
+
+		This command is used to read Media Control Point Opcodes
+		Supported characteristic. During operation, the IUT may send event:
+				Opcodes Supported event
+
+	Opcode 0x14 - Content Control ID Read
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:    <none>
+
+		This command is used to read Content Control ID characteristic.
+		During operation, the IUT may send event:
+				Content Control ID event
+
+	Opcode 0x15 - Segments Object ID Read
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:    <none>
+
+		This command is used to read Segments Control ID characteristic.
+		During operation, the IUT may send event:
+				Segments Object ID event
+
+	Opcode 0x16 - Current Track Object ID Read
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:    <none>
+
+		This command is used to read Current Track Object ID characteristic.
+		During operation, the IUT may send event:
+				Current Track Object ID event
+
+	Opcode 0x17 - Current Track Object ID Set
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+					ID (8 octets)
+		Response parameters:    <none>
+
+		This command is used to set Current Track Object ID.
+		During operation, the IUT may send event:
+				Current Track Object ID event
+
+	Opcode 0x18 - Command Send
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+					Opcode (1 octets)
+					Use Param (1 octet)
+					Param (4 octets)
+		Response parameters:    <none>
+
+		This command is used to write to Media Control Point characteristic
+		to perform operation defined by opcode.
+
+		Opcodes: 0x01 - Play
+			 0x02 - Pause
+			 0x03 - Fast Rewind
+			 0x04 - Fast Forward
+			 0x05 - Stop
+			 0x10 - Move Relative (uses Param)
+			 0x20 - Previous Segment
+			 0x21 - Next Segment
+			 0x22 - First Segment
+			 0x23 - Last Segment
+			 0x24 - Goto Segment (uses Param)
+			 0x30 - Previous Track
+			 0x30 - Previous Track
+			 0x31 - Next Track
+			 0x32 - First Track
+			 0x33 - Last Track
+			 0x34 - Goto Track (uses Param)
+			 0x40 - Previous Group
+			 0x41 - Next Group
+			 0x42 - First Group
+			 0x43 - Last Group
+			 0x44 - Goto Group (uses Param)
+
+		During operation, the IUT may send event:
+				MCP Command event
+
+	Opcode 0x19 - Search Command Send
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+					Search type (1 octet)
+					Param Length (1 octet)
+					Param (Varies)
+		Response parameters:    <none>
+
+		This command is used to write to Search Control Point characteristic
+		to perform search operation defined search type opcode.
+
+		Search Types: 0x01 - Track Name
+			      0x02 - Artist Name
+			      0x03 - Album Name
+			      0x04 - Group Name
+			      0x05 - Earliest Year
+			      0x06 - Latest Year
+			      0x07 - Genre
+			      0x08 - Only Tracks (no Param)
+			      0x09 - Only Groups (no Param)
+
+		During operation, the IUT may send event:
+				MCP Search event
+
+
+Events:
+	Opcode 0x80 - Discovered Event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status (1 octet)
+
+		This event indicates that the IUT finished discovery of MCS
+		characteristics and subscribing to their notifications.
+
+	Opcode 0x81 - Track Duration event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status (1 octet)
+					Track Duration (4 octets)
+
+		This event returns Track Duration information.
+
+	Opcode 0x82 - Track Position event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status (1 octet)
+					Track Position (4 octets)
+
+		This event returns Track Position information.
+
+	Opcode 0x83 - Playback Speed event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status (1 octet)
+					Playback Speed (1 octets)
+
+		This event returns Playback Speed information.
+
+	Opcode 0x84 - Seeking Speed event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status (1 octet)
+					Seeking Speed (1 octets)
+
+		This event returns Seeking Speed information.
+
+	Opcode 0x85 - Icon Object ID event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status (1 octet)
+					Icon Object ID (8 octets)
+
+		This event returns Icon Object ID information.
+
+	Opcode 0x86 - Next Track Object ID event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status (1 octet)
+					Next Track Object ID (8 octets)
+
+		This event returns Next Track Object ID information.
+
+	Opcode 0x87 - Parent Group Object ID event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status (1 octet)
+					Parent Group Object ID (8 octets)
+
+		This event returns Parent Group Object ID information.
+
+	Opcode 0x88 - Current Group Object ID event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status (1 octet)
+					Current Group Object ID (8 octets)
+
+		This event returns Current Group Object ID information.
+
+	Opcode 0x89 - Playing Order event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status (1 octet)
+					Playing Order (1 octets)
+
+		This event returns Playing Order information.
+
+	Opcode 0x8a - Playing Orders Supported event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status (1 octet)
+					Playing Orders Supported (1 octet)
+
+		This event returns Playing Orders Supported information.
+
+	Opcode 0x8b - Media State event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status (1 octet)
+					Media State (1 octet)
+
+		This event returns Media State information.
+
+	Opcode 0x8c - Opcodes Supported event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status (1 octet)
+					Opcodes Supported (4 octets)
+
+		This event returns Media Control Point Opcodes Supported information.
+
+	Opcode 0x8d - Content Control ID event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status (1 octet)
+					Content Control ID (1 octets)
+
+		This event returns Content Control ID information.
+
+	Opcode 0x8e - Segments Object ID event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status (1 octet)
+					Segments Object ID (8 octets)
+
+		This event returns Track Segments Object ID information.
+
+	Opcode 0x8f - Current Track Object ID event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status (1 octet)
+					Current Track Object ID (8 octets)
+
+		This event returns Current Track Object ID information
+
+	Opcode 0x90 - Command event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status (1 octet)
+					Opcode (1 octet)
+					Use Param (1 octet)
+					Param (4 octets)
+
+		This event returns Media Control Point Command information.
+
+	Opcode 0x91 - Search event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status (1 octet)
+					Param len (1 octet)
+					Search Type (1 octet)
+					Param (varies)
+
+		This event returns Search Control Point command information.
+
+	Opcode 0x92 - Command Notifications event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status (1 octet)
+					Requested Opcode (1 octet)
+					Result Opcode (1 octet)
+
+		This event returns notification information for Media Control
+		Point command.
+
+
+	Opcode 0x93 - Search Notifications event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status (1 octet)
+					Result Code (1 octet)
+
+		This event returns notification information for Search Control
+		Point command.
+
+
