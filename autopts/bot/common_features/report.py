@@ -306,16 +306,15 @@ def make_report_diff(log_git_conf, results, regressions,
                                   'autopts_report',
                                   REPORT_TXT)
 
-    if not os.path.exists(old_report_txt):
-        return None
-
     filename = os.path.join(os.getcwd(), REPORT_DIFF_TXT)
     f = open(filename, "w")
 
-    old_test_cases = report_parse_test_cases(old_report_txt)
-
     deleted_cases = []
+    old_test_cases = []
     test_cases = list(results.keys())
+
+    if os.path.exists(old_report_txt):
+        old_test_cases = report_parse_test_cases(old_report_txt)
 
     for tc in old_test_cases:
         if tc not in test_cases:
