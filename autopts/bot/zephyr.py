@@ -27,6 +27,7 @@ from pathlib import Path
 import serial
 
 from autopts import bot
+from autopts.bot.common_features.github import update_sources
 from autopts.ptsprojects.zephyr import ZEPHYR_PROJECT_URL
 from autopts import client as autoptsclient
 
@@ -229,6 +230,11 @@ def main(bot_client):
 
     if 'database_file' not in args:
         args['database_file'] = DATABASE_FILE
+
+    if 'githubdrive' in cfg:
+        update_sources(cfg['githubdrive']['path'],
+                       cfg['githubdrive']['remote'],
+                       cfg['githubdrive']['branch'], True)
 
     args['kernel_image'] = os.path.join(args['project_path'], 'tests',
                                         'bluetooth', 'tester', 'outdir',

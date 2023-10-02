@@ -232,33 +232,6 @@ def load_config(cfg):
     return mod.BotProjects[0]
 
 
-def find_latest_db(test_case_db_name, logging_repo, branch='main',
-                   remote='origin', init_depth=4):
-    newest_db = None
-    newest_db_modify_date = None
-
-    def recursive(directory, depth):
-        nonlocal newest_db, newest_db_modify_date
-        depth -= 1
-
-        with os.scandir(directory) as iterator:
-            for f in iterator:
-                if f.is_dir() and depth > 0:
-                    if f.name.endswith('.git'):
-                        continue
-                    recursive(f.path, depth)
-                elif f.name.endswith(test_case_db_name):
-                    modify_date = os.path.getmtime(f.path)
-                    if newest_db is None or modify_date > newest_db_modify_date:
-                        newest_db = f.path
-                        newest_db_modify_date = os.path.getmtime(f.path)
-        return newest_db
-
-    update_sources(logging_repo, remote, branch, True)
-    recursive(logging_repo, init_depth)
-    return newest_db
-
-
 def find_workspace_in_tree(tree_path, workspace, init_depth=4):
     workspace_path = None
 
@@ -286,20 +259,20 @@ def find_workspace_in_tree(tree_path, workspace, init_depth=4):
     return workspace_path
 
 
-def pre_cleanup(autopts_repo, project_repo, test_case_db_path='TestCase.db'):
+def pre_cleanup(autopts_repo, project_repo):
     kill_processes('PTS.exe')
     kill_processes('Fts.exe')
     kill_processes('python.exe')
-    pre_cleanup_files(autopts_repo, project_repo, test_case_db_path)
+    pre_cleanup_files(autopts_repo, project_repo)
 
 
-def pre_cleanup_files(autopts_repo, project_repo, test_case_db_path='TestCase.db'):
+def pre_cleanup_files(autopts_repo, project_repo):
     files_to_save = [
         os.path.join(autopts_repo, 'tmp/'),
         os.path.join(autopts_repo, 'logs/'),
         os.path.join(autopts_repo, 'report.txt'),
         os.path.join(autopts_repo, 'report.xlsx'),
-        test_case_db_path,
+        os.path.join(AUTOPTS_REPO, 'TestCase.db'),
         os.path.join(autopts_repo, 'stdout_autoptsbot.log'),
         os.path.join(autopts_repo, 'stdout_autoptsserver.log'),
     ]
@@ -523,21 +496,7 @@ def generic_test_job(cfg, server_options, included='', excluded='',
 
     PROJECT_REPO = cfg_dict['auto_pts']['project_path']
 
-    test_case_db_name = 'TestCase.db'
-    autopts_test_case_db = os.path.join(AUTOPTS_REPO, test_case_db_name)
-
-    pre_cleanup(AUTOPTS_REPO, PROJECT_REPO, test_case_db_name)
-
-    # Copy TestCase.db from previous build to catch regressions
-    if 'githubdrive' in cfg_dict:
-        database_repo = cfg_dict['githubdrive']['path']
-        test_case_db_path = find_latest_db(test_case_db_name, database_repo)
-
-        if test_case_db_path is None:
-            raise Exception('Database file {} do not exists'.format(test_case_db_path))
-
-        log('Copied database from {}'.format(test_case_db_path))
-        shutil.copy(test_case_db_path, autopts_test_case_db)
+    pre_cleanup(AUTOPTS_REPO, PROJECT_REPO)
 
     workspace_path = find_workspace_in_tree(
         os.path.join(AUTOPTS_REPO, 'autopts/workspaces'), cfg_dict['auto_pts']['workspace'])
