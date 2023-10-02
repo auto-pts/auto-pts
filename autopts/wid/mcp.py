@@ -1,0 +1,471 @@
+#
+# auto-pts - The Bluetooth PTS Automation Framework
+#
+# Copyright (c) 2023, Codecoup.
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms and conditions of the GNU General Public License,
+# version 2, as published by the Free Software Foundation.
+#
+# This program is distributed in the hope it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
+#
+
+import logging
+import random
+import re
+import time
+
+from autopts.ptsprojects.stack import get_stack
+from autopts.pybtp import btp
+from autopts.pybtp import defs
+from autopts.pybtp.types import WIDParams
+from autopts.wid import generic_wid_hdl
+
+log = logging.debug
+
+
+def mcp_wid_hdl(wid, description, test_case_name):
+    log(f'{mcp_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
+    return generic_wid_hdl(wid, description, test_case_name, [__name__])
+
+
+class SearchTypes:
+    TRACK_NAME = 0x01
+    ARTIST_NAME = 0x02
+    ALBUM_NAME = 0x03
+    GROUP_NAME = 0x04
+    EARLIEST_YEAR = 0x05
+    LATEST_YEAR = 0x06
+    GENRE = 0x07
+    ONLY_TRACKS = 0x08
+    ONLY_GORUPS = 0x09
+
+
+def hdl_wid_15(params: WIDParams):
+    """Please confirm IUT received all error Result Codes -
+    OPCODE NOT SUPPORTED(0x02), MEDIA PLAYER INACTIVE(0x03)
+    and COMMAND CANNOT BE COMPLETED(0x04) on Media Control Point Notification"""
+
+    stack = get_stack()
+
+    if stack.mcp.error_opcodes != [2, 3, 4]:
+        return False
+
+    return True
+
+
+def hdl_wid_16(params: WIDParams):
+    """Please confirm IUT received Result Code 0x02(FAILURE) on Search Result
+       Control Point Notification."""
+
+    stack = get_stack()
+
+    if stack.mcp.error_opcodes != [2]:
+        return False
+
+    return True
+
+
+def hdl_wid_33(params: WIDParams):
+    """Please write Search Control Point with Track Name."""
+    addr_type = btp.pts_addr_type_get()
+    addr = btp.pts_addr_get()
+    stack = get_stack()
+
+    btp.mcp_search_control_point_cmd(SearchTypes.TRACK_NAME, 'Track Name',
+                                     addr_type, addr)
+    ev = stack.mcp.wait_search_control_point_ev(addr_type, addr, 10)
+    if ev is None:
+        return False
+
+    return True
+
+
+def hdl_wid_34(params: WIDParams):
+    """Please write Search Control Point with Artist Name."""
+    addr_type = btp.pts_addr_type_get()
+    addr = btp.pts_addr_get()
+    stack = get_stack()
+
+    btp.mcp_search_control_point_cmd(SearchTypes.ARTIST_NAME, 'Artist Name',
+                                     addr_type, addr)
+    ev = stack.mcp.wait_search_control_point_ev(addr_type, addr, 10)
+    if ev is None:
+        return False
+
+    return True
+
+
+def hdl_wid_35(params: WIDParams):
+    """Please write Search Control Point with Album Name."""
+    addr_type = btp.pts_addr_type_get()
+    addr = btp.pts_addr_get()
+    stack = get_stack()
+
+    btp.mcp_search_control_point_cmd(SearchTypes.ALBUM_NAME, 'Album name',
+                                     addr_type, addr)
+    ev = stack.mcp.wait_search_control_point_ev(addr_type, addr, 10)
+    if ev is None:
+        return False
+
+    return True
+
+
+def hdl_wid_36(params: WIDParams):
+    """Please write Search Control Point with Group Name."""
+    addr_type = btp.pts_addr_type_get()
+    addr = btp.pts_addr_get()
+    stack = get_stack()
+
+    btp.mcp_search_control_point_cmd(SearchTypes.GROUP_NAME, 'Group Name',
+                                     addr_type, addr)
+    ev = stack.mcp.wait_search_control_point_ev(addr_type, addr, 10)
+    if ev is None:
+        return False
+
+    return True
+
+
+def hdl_wid_37(params: WIDParams):
+    """Please write Search Control Point with Earliest Year."""
+    addr_type = btp.pts_addr_type_get()
+    addr = btp.pts_addr_get()
+    stack = get_stack()
+
+    btp.mcp_search_control_point_cmd(SearchTypes.EARLIEST_YEAR, '1999',
+                                     addr_type, addr)
+    ev = stack.mcp.wait_search_control_point_ev(addr_type, addr, 10)
+    if ev is None:
+        return False
+
+    return True
+
+
+def hdl_wid_38(params: WIDParams):
+    """Please write Search Control Point with Latest Year."""
+    addr_type = btp.pts_addr_type_get()
+    addr = btp.pts_addr_get()
+    stack = get_stack()
+
+    btp.mcp_search_control_point_cmd(SearchTypes.LATEST_YEAR, '2999',
+                                     addr_type, addr)
+    ev = stack.mcp.wait_search_control_point_ev(addr_type, addr, 10)
+    if ev is None:
+        return False
+
+    return True
+
+
+def hdl_wid_39(params: WIDParams):
+    """Please write Search Control Point with Genre."""
+    addr_type = btp.pts_addr_type_get()
+    addr = btp.pts_addr_get()
+    stack = get_stack()
+
+    btp.mcp_search_control_point_cmd(SearchTypes.GENRE, 'Genre', addr_type, addr)
+    ev = stack.mcp.wait_search_control_point_ev(addr_type, addr, 10)
+    if ev is None:
+        return False
+
+    return True
+
+
+def hdl_wid_40(params: WIDParams):
+    """Please write Search Control Point with Only Tracks."""
+    addr_type = btp.pts_addr_type_get()
+    addr = btp.pts_addr_get()
+    stack = get_stack()
+
+    btp.mcp_search_control_point_cmd(SearchTypes.ONLY_TRACKS, "0", addr_type, addr)
+    ev = stack.mcp.wait_search_control_point_ev(addr_type, addr, 10)
+    if ev is None:
+        return False
+
+    return True
+
+
+def hdl_wid_41(params: WIDParams):
+    """Please write Search Control Point with Only Groups."""
+    addr_type = btp.pts_addr_type_get()
+    addr = btp.pts_addr_get()
+    stack = get_stack()
+
+    btp.mcp_search_control_point_cmd(SearchTypes.ONLY_GORUPS, "0", addr_type, addr)
+    ev = stack.mcp.wait_search_control_point_ev(addr_type, addr, 10)
+    if ev is None:
+        return False
+
+    return True
+
+
+def hdl_wid_20100(params: WIDParams):
+    """
+    Please initiate a GATT connection to the PTS. Verify that the Implementation
+    Under Test (IUT) can initiate a GATT connect request to the PTS.
+    """
+    addr_type = btp.pts_addr_type_get()
+    addr = btp.pts_addr_get()
+    stack = get_stack()
+    btp.gap_conn()
+    stack.gap.gap_wait_for_sec_lvl_change(30)
+    btp.mcp_discover(addr_type, addr)
+    ev = stack.mcp.wait_discovery_completed_ev(addr_type, addr, 20, remove=False)
+    if ev is None:
+        return False
+
+    return True
+
+
+def hdl_wid_20103(params: WIDParams):
+    """
+    Please take action to discover the xxxx from the xxxx.
+    Discover the primary service if needed. Verify that the Implementation Under
+    Test (IUT) can send Discover All Characteristics command.
+    """
+
+    # Discover and subscribe at hdl_wid_20100
+
+    return True
+
+
+def hdl_wid_20106(params: WIDParams):
+    """
+    Please write to Client Characteristic Configuration Descriptor of Audio Input State
+    characteristic to enable notification.Descriptor handle value: 0x00B3
+    """
+
+    # Discover and subscribe at hdl_wid_20100
+
+    return True
+
+
+def hdl_wid_20107(params: WIDParams):
+    """
+    Please send Read Request to read xxxx characteristic with handle = 0xXXXX.
+    """
+    addr_type = btp.pts_addr_type_get()
+    addr = btp.pts_addr_get()
+    stack = get_stack()
+
+    if "Track Duration" in params.description:
+        btp.mcp_track_duration_get(addr_type, addr)
+        ev = stack.mcp.wait_track_duration_ev(addr_type, addr, 10)
+
+    elif "Track Position" in params.description:
+        btp.mcp_track_position_get(addr_type, addr)
+        ev = stack.mcp.wait_track_position_ev(addr_type, addr, 10)
+
+    elif "Playback Speed" in params.description:
+        btp.mcp_playback_speed_get(addr_type, addr)
+        ev = stack.mcp.wait_playback_speed_ev(addr_type, addr, 10)
+
+    elif "Seeking Speed" in params.description:
+        btp.mcp_seeking_speed_get(addr_type, addr)
+        ev = stack.mcp.wait_seeking_speed_ev(addr_type, addr, 10)
+
+    elif "Icon Object" in params.description:
+        btp.mcp_icon_obj_id_read(addr_type, addr)
+        ev = stack.mcp.wait_icon_obj_id_ev(addr_type, addr, 10)
+
+    elif "Next Track" in params.description:
+        btp.mcp_next_track_obj_id_read(addr_type, addr)
+        ev = stack.mcp.wait_next_track_obj_id_ev(addr_type, addr, 10)
+
+    elif "Current Track Object" in params.description:
+        btp.mcp_current_track_obj_id_read(addr_type, addr)
+        ev = stack.mcp.wait_current_track_obj_id_ev(addr_type, addr, 10)
+
+    elif "Parent Group" in params.description:
+        btp.mcp_parent_group_obj_id_read(addr_type, addr)
+        ev = stack.mcp.wait_parent_group_obj_id_ev(addr_type, addr, 10)
+
+    elif "Current Track Segments" in params.description:
+        btp.mcp_segments_obj_id_read(addr_type, addr)
+        ev = stack.mcp.wait_segments_obj_id_ev(addr_type, addr, 10)
+
+    elif "Current Group" in params.description:
+        btp.mcp_current_group_obj_id_read(addr_type, addr)
+        ev = stack.mcp.wait_current_group_obj_id_ev(addr_type, addr, 10)
+
+    elif "Playing Order Supported" in params.description:
+        btp.mcp_playing_orders_supported_read(addr_type, addr)
+        ev = stack.mcp.wait_playing_orders_supported_ev(addr_type, addr, 10)
+
+    elif "Playing Order" in params. description:
+        btp.mcp_playing_order_read(addr_type, addr)
+        ev = stack.mcp.wait_playing_order_ev(addr_type, addr, 10)
+
+    elif "Media State" in params.description:
+        btp.mcp_media_state_read(addr_type, addr)
+        ev = stack.mcp.wait_media_state_ev(addr_type, addr, 10)
+
+    elif "Opcodes Supported" in params.description:
+        btp.mcp_opcodes_supported_read(addr_type, addr)
+        ev = stack.mcp.wait_opcodes_supported_ev(addr_type, addr, 10)
+
+    elif "Content Control" in params.description:
+        btp.mcp_content_control_id_read(addr_type, addr)
+        ev = stack.mcp.wait_content_control_id_ev(addr_type, addr, 10)
+
+    if ev is None:
+        return False
+
+    return True
+
+
+def hdl_wid_20110(params: WIDParams):
+    """
+    Please send write request to handle 0xXXXX with following value.
+    Audio Input Control Point:
+    Op Code: [1 (0xxx)] x
+    Change Counter: <WildCard: Exists>
+    Gain Setting: <WildCard: Exists>
+    """
+
+    # This WID appears randomly instead of hdl_wid_20121
+
+    stack = get_stack()
+    addr_type = btp.pts_addr_type_get()
+    addr = btp.pts_addr_get()
+
+    if "0x0101" in params.description:
+        btp.mcp_next_track_obj_id_set(100, addr_type, addr)
+        ev = stack.mcp.wait_next_track_obj_id_ev(addr_type, addr, 10)
+
+    if ev is None:
+        return False
+
+    return True
+
+
+def hdl_wid_20116(params: WIDParams):
+    """Please send command to the PTS to discover all mandatory characteristics
+     of the Microphone Control supported by the IUT. Discover primary service if needed.
+     """
+
+    # Discover and subscribe at hdl_wid_20100
+
+    return True
+
+
+def hdl_wid_20121(params: WIDParams):
+    """Please write value with write command (without response) to handle 0x00F3
+     with following value. Any attribute value"""
+
+    stack = get_stack()
+    addr_type = btp.pts_addr_type_get()
+    addr = btp.pts_addr_get()
+
+    if "0x00F3" in params.description:
+        btp.mcp_track_position_set(100, addr_type, addr)
+        ev = stack.mcp.wait_track_position_ev(addr_type, addr, 10)
+    elif "0x00F6" in params.description:
+        btp.mcp_playback_speed_set(64, addr_type, addr)
+        ev = stack.mcp.wait_playback_speed_ev(addr_type, addr, 10)
+    elif "0x0101" in params.description:
+        btp.mcp_next_track_obj_id_set(16777477, addr_type, addr)
+        ev = stack.mcp.wait_next_track_obj_id_ev(addr_type, addr, 10)
+    elif "0x0104" in params.description:
+        btp.mcp_current_group_obj_id_set(16777498, addr_type, addr)
+        ev = stack.mcp.wait_current_group_obj_id_ev(addr_type, addr, 10)
+    elif "0x0107" in params.description:
+        btp.mcp_playing_order_set(2, addr_type, addr)
+        ev = stack.mcp.wait_playing_order_ev(addr_type, addr, 10)
+    elif "0x00FE" in params.description:
+        btp.mcp_current_track_obj_id_set(16777499, addr_type, addr)
+        ev = stack.mcp.wait_current_track_obj_id_ev(addr_type, addr, 10)
+
+    if ev is None:
+        return False
+
+    # Testcases MCP/CL/CGGIT/CHA/BV-07-C
+    # MCP/CL/CGGIT/CHA/BV-08-C
+    # MCP/CL/CGGIT/CHA/BV-11-C
+    # MCP/CL/CGGIT/CHA/BV-12-C
+    # MCP/CL/CGGIT/CHA/BV-14-C
+    # MCP/CL/CGGIT/CHA/BV-15-C
+    # PTS expects write w/o response, which is why test verdict is inconclusive
+
+    return True
+
+
+def hdl_wid_20136(params: WIDParams):
+    """Please write value with Write Request or Write Without Response to handle
+       0x010F with following value.
+       Media Control Point:
+       Opcode: [1 (0x01)] Play"""
+
+    stack = get_stack()
+    addr_type = btp.pts_addr_type_get()
+    addr = btp.pts_addr_get()
+
+    pattern = r'\[(\d+)'
+    if 'MCP/CL/SPE' in params.test_case_name:
+        # Error handling tests
+        if "Search Control Point" in params.description:
+            btp.mcp_search_control_point_cmd(1, 'WildCard', addr_type, addr)
+            ev = stack.mcp.wait_search_notification_ev(addr_type, addr, 10)
+            stack.mcp.error_opcodes.append(ev[3])
+            if ev is None:
+                return False
+            return True
+        if "Media Control Point" in params.description:
+            btp.mcp_control_point_cmd(1, 0, 0, addr_type, addr)
+            ev = stack.mcp.wait_cmd_notification_ev(addr_type, addr, 10)
+            stack.mcp.error_opcodes.append(ev[4])
+            if ev is None:
+                return False
+            return True
+
+    opcode = int(re.search(pattern, params.description).group(1))
+    if 'Parameter' in params.description:
+        use_param, param = 1, 100
+    else:
+        use_param, param = 0, 0
+
+    btp.mcp_control_point_cmd(opcode, use_param, param, addr_type, addr)
+
+    ev = stack.mcp.wait_control_point_ev(addr_type, addr, 10)
+
+    if ev is None:
+        return False
+
+    return True
+
+
+def hdl_wid_20206(params: WIDParams):
+    """Please verify that for each supported characteristic, attribute handle/UUID
+     pair(s) is returned to the upper tester.
+     Mute: Attribute Handle = 0x00A2
+     Characteristic Properties = 0x1A
+     Handle = 0x00A3
+     UUID = 0x2BC3
+     """
+
+    # There is no way to do that with current API.
+
+    return True
+
+
+def hdl_wid_20144(params:WIDParams):
+    """Please click Yes if IUT support Write Command(without response), otherwise click No."""
+
+    return False
+
+
+def hdl_wid_20145(params: WIDParams):
+    """
+    Please click Yes if IUT support Write Request, otherwise click No.
+    """
+
+    return True
+
+
+def hdl_wid_20146(params: WIDParams):
+    """Please click Yes if IUT support Write Long characteristic
+       (Prepare Write and Execute Write), otherwise click No."""
+
+    return False

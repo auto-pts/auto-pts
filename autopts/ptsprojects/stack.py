@@ -1001,6 +1001,176 @@ class MICS:
             lambda *_: True, timeout, remove)
 
 
+class MCP:
+    def __init__(self):
+        self.event_queues = {
+            defs.MCP_DISCOVERED_EV: [],
+            defs.MCP_TRACK_DURATION_EV: [],
+            defs.MCP_TRACK_POSITION_EV: [],
+            defs.MCP_PLAYBACK_SPEED_EV: [],
+            defs.MCP_SEEKING_SPEED_EV: [],
+            defs.MCP_ICON_OBJ_ID_EV: [],
+            defs.MCP_NEXT_TRACK_OBJ_ID_EV: [],
+            defs.MCP_PARENT_GROUP_OBJ_ID_EV: [],
+            defs.MCP_CURRENT_GROUP_OBJ_ID_EV: [],
+            defs.MCP_PLAYING_ORDER_EV: [],
+            defs.MCP_PLAYING_ORDERS_SUPPORTED_EV: [],
+            defs.MCP_MEDIA_STATE_EV: [],
+            defs.MCP_OPCODES_SUPPORTED_EV: [],
+            defs.MCP_CONTENT_CONTROL_ID_EV: [],
+            defs.MCP_SEGMENTS_OBJ_ID_EV: [],
+            defs.MCP_CURRENT_TRACK_OBJ_ID_EV: [],
+            defs.MCP_COMMAND_EV: [],
+            defs.MCP_SEARCH_EV: [],
+            defs.MCP_CMD_NTF_EV: [],
+            defs.MCP_SEARCH_NTF_EV: []
+        }
+        self.error_opcodes = []
+
+    def event_received(self, event_type, event_data_tuple):
+        self.event_queues[event_type].append(event_data_tuple)
+
+    def wait_discovery_completed_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.MCP_DISCOVERED_EV],
+            lambda _addr_type, _addr, *_:
+            (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
+
+    def wait_track_duration_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.MCP_TRACK_DURATION_EV],
+            lambda _addr_type, _addr, *_:
+            (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
+
+    def wait_track_position_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.MCP_TRACK_POSITION_EV],
+            lambda _addr_type, _addr, *_:
+            (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
+
+    def wait_playback_speed_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.MCP_PLAYBACK_SPEED_EV],
+            lambda _addr_type, _addr, *_:
+            (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
+
+    def wait_seeking_speed_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.MCP_SEEKING_SPEED_EV],
+            lambda _addr_type, _addr, *_:
+            (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
+
+    def wait_icon_obj_id_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.MCP_ICON_OBJ_ID_EV],
+            lambda _addr_type, _addr, *_:
+            (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
+
+    def wait_next_track_obj_id_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.MCP_NEXT_TRACK_OBJ_ID_EV],
+            lambda _addr_type, _addr, *_:
+            (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
+
+    def wait_parent_group_obj_id_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.MCP_PARENT_GROUP_OBJ_ID_EV],
+            lambda _addr_type, _addr, *_:
+            (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
+
+    def wait_current_group_obj_id_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.MCP_CURRENT_GROUP_OBJ_ID_EV],
+            lambda _addr_type, _addr, *_:
+            (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
+
+    def wait_playing_order_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.MCP_PLAYING_ORDER_EV],
+            lambda _addr_type, _addr, *_:
+            (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
+
+    def wait_playing_orders_supported_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.MCP_PLAYING_ORDERS_SUPPORTED_EV],
+            lambda _addr_type, _addr, *_:
+            (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
+
+    def wait_media_state_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.MCP_MEDIA_STATE_EV],
+            lambda _addr_type, _addr, *_:
+            (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
+
+    def wait_opcodes_supported_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.MCP_OPCODES_SUPPORTED_EV],
+            lambda _addr_type, _addr, *_:
+            (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
+
+    def wait_content_control_id_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.MCP_CONTENT_CONTROL_ID_EV],
+            lambda _addr_type, _addr, *_:
+            (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
+
+    def wait_segments_obj_id_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.MCP_SEGMENTS_OBJ_ID_EV],
+            lambda _addr_type, _addr, *_:
+            (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
+
+    def wait_current_track_obj_id_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.MCP_CURRENT_TRACK_OBJ_ID_EV],
+            lambda _addr_type, _addr, *_:
+            (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
+
+    def wait_control_point_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.MCP_COMMAND_EV],
+            lambda _addr_type, _addr, *_:
+            (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
+
+    def wait_search_control_point_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.MCP_SEARCH_EV],
+            lambda _addr_type, _addr, *_:
+            (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
+
+    def wait_cmd_notification_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.MCP_CMD_NTF_EV],
+            lambda _addr_type, _addr, *_:
+            (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
+
+    def wait_search_notification_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.MCP_SEARCH_NTF_EV],
+            lambda _addr_type, _addr, *_:
+            (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
+
+
 class ASCS:
     def __init__(self):
         self.event_queues = {
@@ -1762,6 +1932,7 @@ class Stack:
         self.mics = None
         self.ccp = None
         self.vcp = None
+        self.mcp = None
         self.supported_svcs = 0
 
     def is_svc_supported(self, svc):
@@ -1787,6 +1958,7 @@ class Stack:
             "MICS": 1 << defs.BTP_SERVICE_ID_MICS,
             "CCP": 1 << defs.BTP_SERVICE_ID_CCP,
             "VCP": 1 << defs.BTP_SERVICE_ID_VCP,
+            "MCP": 1 << defs.BTP_SERVICE_ID_MCP,
         }
         return self.supported_svcs & services[svc] > 0
 
@@ -1843,6 +2015,9 @@ class Stack:
 
     def mics_init(self):
         self.mics = MICS()
+
+    def mcp_init(self):
+        self.mcp = MCP()
 
     def gatt_cl_init(self):
         self.gatt_cl = GattCl()
@@ -1907,6 +2082,9 @@ class Stack:
 
         if self.vcp:
             self.vcp_init()
+
+        if self.mcp:
+            self.mcp_init()
 
 
 def init_stack():
