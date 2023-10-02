@@ -722,7 +722,7 @@ class TestCase(PTSCallback):
         for index, cmd in enumerate(self.cmds):
             log("%d) %s", index, cmd)
 
-        subproc_dir = (os.path.dirname(os.path.realpath(__file__)) + "/" +
+        subproc_dir = (os.path.dirname(os.path.abspath(__file__)) + "/" +
                        self.ptsproject_name + "/")
         subproc_path = subproc_dir + "pre_tc.py"
 
@@ -785,7 +785,7 @@ class TestCase(PTSCallback):
             self.tc_subproc.communicate(input=b'#close\n')
             self.lf_subproc.close()
 
-        subproc_dir = (os.path.dirname(os.path.realpath(__file__)) + "/" +
+        subproc_dir = (os.path.dirname(os.path.abspath(__file__)) + "/" +
                        self.ptsproject_name + "/")
         subproc_path = subproc_dir + "post_tc.py"
 

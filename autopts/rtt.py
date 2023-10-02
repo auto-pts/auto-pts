@@ -141,7 +141,7 @@ class BTMON:
     def start(self, buffer_name, log_file, device_core, debugger_snr):
         log("%s.%s", self.__class__, self.start.__name__)
 
-        log_filecwd = os.path.dirname(os.path.realpath(log_file))
+        log_filecwd = os.path.dirname(os.path.abspath(log_file))
         log_filename = os.path.basename(log_file)
 
         if sys.platform == 'win32':
