@@ -78,7 +78,7 @@ def usb_power(ykush_port, on=True):
 
 def get_own_workspaces():
     """Get auto-pts own workspaces"""
-    script_path = os.path.split(os.path.realpath(__file__))[0]
+    script_path = os.path.split(os.path.abspath(__file__))[0]
     workspaces = {}
 
     for root, dirs, files in os.walk(os.path.join(script_path, "workspaces")):
