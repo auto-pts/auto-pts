@@ -48,6 +48,17 @@ def mesh_wid_hdl_rpr_persistent_storage(wid, description, test_case_name):
     return mesh_wid_hdl(wid, description, test_case_name)
 
 
+def mesh_wid_hdl_rpr_persistent_storage_alt(wid, description, test_case_name):
+    if wid == 13:
+        log("%s, %r, %r, %s", mesh_wid_hdl_rpr_persistent_storage_alt.__name__,
+            wid, description, test_case_name)
+        return hdl_wid_13_persistent_storage(WIDParams(wid, description,
+                                                       test_case_name),
+                                             comp=1)
+
+    return mesh_wid_hdl(wid, description, test_case_name)
+
+
 def find_src_dst(description):
     pattern = re.compile(r'(SRC|DST):\s+\[([0][xX][0-9a-fA-F]+)]')
     params = pattern.findall(description)
@@ -193,33 +204,16 @@ def hdl_wid_13(params: WIDParams):
     return True
 
 
-def hdl_wid_13_persistent_storage(params: WIDParams):
+def hdl_wid_13_persistent_storage(params: WIDParams, comp=0):
     """
     Implements: RE_PROVISIONING_PROVISIONER
     description: There is no shared security information. Please remove any
                  security information if any. PTS is waiting for beacon to
                  start provisioning from IUT with UUID value indicated in 'TSPX_device_uuid'
     """
-    stack = get_stack()
-
-    if not stack.mesh.is_initialized:
-        btp.mesh_config_prov()
-        btp.mesh_init()
-
-    if stack.mesh.is_provisioned.data:
-        btp.mesh_reset()
-
-    btp.mesh_comp_change_prepare()
-
-    zephyrctl = btp.get_iut_method()
-
-    zephyrctl.wait_iut_ready_event()
-    btp.core_reg_svc_gap()
-    btp.core_reg_svc_mesh()
-    btp.gap_read_ctrl_info()
 
     btp.mesh_config_prov()
-    btp.mesh_init()
+    btp.mesh_init(comp)
 
     return True
 
