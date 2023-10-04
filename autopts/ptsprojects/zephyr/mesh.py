@@ -303,7 +303,6 @@ def test_cases(ptses):
     ]
 
     pre_conditions_comp_change = pre_conditions + [
-        TestFunc(btp.mesh_comp_set_alt),
         TestFunc(btp.mesh_init),
         TestFunc(btp.mesh_reset),
         TestFunc(btp.mesh_comp_change_prepare),
