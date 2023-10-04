@@ -38,7 +38,8 @@ from os.path import dirname, abspath
 AUTOPTS_REPO = dirname(dirname(dirname(abspath(__file__))))
 sys.path.insert(0, AUTOPTS_REPO)
 
-from autopts.bot.common import send_mail, get_absolute_module_path
+from autopts.bot.common_features.mail import send_mail
+from autopts.bot.common import get_absolute_module_path
 
 mimetypes.add_type('text/plain', '.log')
 
