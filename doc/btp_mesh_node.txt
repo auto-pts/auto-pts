@@ -64,11 +64,11 @@ Commands and responses:
 
 	Opcode 0x04 - Init command/response
 		Controller Index:	<controller id>
-		Command parameters:	<none>
+		Command parameters:	Composition Data (1 octet)
 
-		This command is used to start advertising either as
-		unprovisioned beacon or network node. Action depends on previous
-		configuration.
+		This command is used to initialize the stack and start
+		advertising either as unprovisioned beacon or network node.
+		Action depends on previous configuration.
 
 		In case of an error, the error response will be returned.
 

@@ -36,7 +36,7 @@ MESH = {
                   CONTROLLER_INDEX),
     "init": (defs.BTP_SERVICE_ID_MESH,
              defs.MESH_INIT,
-             CONTROLLER_INDEX, ""),
+             CONTROLLER_INDEX),
     "reset": (defs.BTP_SERVICE_ID_MESH,
               defs.MESH_RESET,
               CONTROLLER_INDEX, ""),
@@ -422,12 +422,14 @@ def mesh_provision_adv(uuid, addr, attention_duration):
     stack.mesh.provisioning_in_progress.data = True
 
 
-def mesh_init():
-    logging.debug("%s", mesh_init.__name__)
+def mesh_init(comp=0):
+    logging.debug("%s %r", mesh_init.__name__, comp)
 
     iutctl = get_iut()
 
-    iutctl.btp_socket.send_wait_rsp(*MESH['init'])
+    data = bytearray(struct.pack("<B", comp))
+
+    iutctl.btp_socket.send_wait_rsp(*MESH['init'], data=data)
 
     stack = get_stack()
 
