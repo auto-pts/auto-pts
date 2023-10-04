@@ -45,9 +45,6 @@ def set_pixits(ptses):
     pts.set_pixit("ASCS", "TSPX_use_dynamic_pin", "FALSE")
     pts.set_pixit("ASCS", "TSPX_delete_ltk", "TRUE")
     pts.set_pixit("ASCS", "TSPX_security_enabled", "FALSE")
-    pts.set_pixit("ASCS", "TSPX_iut_setup_att_over_br_edr", "FALSE")
-    pts.set_pixit("ASCS", "TSPX_tester_appearance", "0000")
-    pts.set_pixit("ASCS", "TSPX_Step_Size", "1")
     pts.set_pixit("ASCS", "TSPX_iut_ATT_transport", "ATT Bearer on LE Transport")
 
 

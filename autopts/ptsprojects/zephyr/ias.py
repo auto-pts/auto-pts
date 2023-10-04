@@ -47,8 +47,7 @@ def set_pixits(ptses):
     pts.set_pixit("IAS", "TSPX_security_enabled", "FALSE")
     pts.set_pixit("IAS", "TSPX_iut_setup_att_over_br_edr", "FALSE")
     pts.set_pixit("IAS", "TSPX_tester_appearance", "0000")
-    pts.set_pixit("IAS", "TSPX_Step_Size", "1")
-    pts.set_pixit("IAS", "TSPX_iut_ATT_trnasport", "ATT Bearer on LE Transport")
+
 
 def test_cases(ptses):
     """Returns a list of IAS Server test cases"""
