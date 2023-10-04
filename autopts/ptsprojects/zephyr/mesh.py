@@ -25,7 +25,8 @@ from autopts.pybtp.types import Addr
 from autopts.pybtp.types import MeshVals
 from autopts.client import get_unique_name
 from autopts.wid import mesh_wid_hdl, mesh_wid_hdl_rpr_2ptses,\
-    mesh_wid_hdl_rpr_persistent_storage
+    mesh_wid_hdl_rpr_persistent_storage,\
+    mesh_wid_hdl_rpr_persistent_storage_alt
 from autopts.ptsprojects.stack import get_stack, SynchPoint
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
@@ -306,6 +307,7 @@ def test_cases(ptses):
         TestFunc(btp.mesh_init),
         TestFunc(btp.mesh_reset),
         TestFunc(btp.mesh_comp_change_prepare),
+        TestFunc(time.sleep, 5),
         TestFunc(btp.get_iut_method().wait_iut_ready_event),
         TestFunc(btp.core_reg_svc_gap),
         TestFunc(btp.core_reg_svc_mesh),
@@ -654,24 +656,24 @@ def test_cases(ptses):
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/SR/RPR/PDU/BV-02-C",
                   cmds=pre_conditions_comp_change,
-                  generic_wid_hdl=mesh_wid_hdl),
+                  generic_wid_hdl=mesh_wid_hdl_rpr_persistent_storage_alt),
         ZTestCase("MESH", "MESH/SR/RPR/PDU/BV-03-C",
                   cmds=pre_conditions_comp_change,
-                  generic_wid_hdl=mesh_wid_hdl),
+                  generic_wid_hdl=mesh_wid_hdl_rpr_persistent_storage_alt),
         ZTestCase("MESH", "MESH/SR/RPR/PDU/BV-04-C",
                   cmds=pre_conditions_comp_change,
-                  generic_wid_hdl=mesh_wid_hdl),
+                  generic_wid_hdl=mesh_wid_hdl_rpr_persistent_storage_alt),
         ZTestCase("MESH", "MESH/SR/RPR/LNK/BV-25-C",
                   cmds=pre_conditions_comp_change,
-                  generic_wid_hdl=mesh_wid_hdl),
+                  generic_wid_hdl=mesh_wid_hdl_rpr_persistent_storage_alt),
         ZTestCase("MESH", "MESH/SR/RPR/PDU/BI-01-C",
-                  cmds=pre_conditions,
+                  cmds=pre_conditions_comp_change,
                   generic_wid_hdl=mesh_wid_hdl_rpr_persistent_storage),
         ZTestCase("MESH", "MESH/SR/RPR/PDU/BI-02-C",
-                  cmds=pre_conditions,
+                  cmds=pre_conditions_comp_change,
                   generic_wid_hdl=mesh_wid_hdl_rpr_persistent_storage),
         ZTestCase("MESH", "MESH/SR/RPR/PDU/BI-03-C",
-                  cmds=pre_conditions,
+                  cmds=pre_conditions_comp_change,
                   generic_wid_hdl=mesh_wid_hdl_rpr_persistent_storage),
         ZTestCase("MESH", "MESH/NODE/FRND/FN/BV-24-C",
                   cmds=pre_conditions + [TestFunc(btp.mesh_iv_test_mode_autoinit)],
