@@ -53,9 +53,6 @@ def set_pixits(ptses):
     pts.set_pixit("VCP", "TSPX_use_dynamic_pin", "FALSE")
     pts.set_pixit("VCP", "TSPX_delete_ltk", "FALSE")
     pts.set_pixit("VCP", "TSPX_security_enabled", "FALSE")
-    pts.set_pixit("VCP", "TSPX_iut_setup_att_over_br_edr", "FALSE")
-    pts.set_pixit("VCP", "TSPX_tester_appearance", "0000")
-    pts.set_pixit("VCP", "TSPX_Step_Size", "1")
 
 
 def test_cases(ptses):

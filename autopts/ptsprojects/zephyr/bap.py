@@ -48,7 +48,6 @@ def set_pixits(ptses):
     pts.set_pixit("BAP", "TSPX_use_dynamic_pin", "FALSE")
     pts.set_pixit("BAP", "TSPX_delete_ltk", "TRUE")
     pts.set_pixit("BAP", "TSPX_security_enabled", "FALSE")
-    pts.set_pixit("BAP", "TSPX_Step_Size", "1")
     pts.set_pixit("BAP", "TSPX_iut_ATT_transport", "ATT Bearer on LE Transport")
     pts.set_pixit("BAP", "TSPX_VS_Codec_ID", "ffff")
     pts.set_pixit("BAP", "TSPX_VS_Company_ID", "ffff")
@@ -87,10 +86,6 @@ def test_cases(ptses):
                           stack.gap.iut_addr_get_str())),
                       TestFunc(lambda: set_addr(
                           stack.gap.iut_addr_get_str())),
-                      TestFunc(lambda: pts.update_pixit_param(
-                          "BAP", "TSPX_iut_use_dynamic_bd_addr",
-                          "TRUE" if stack.gap.iut_addr_is_random()
-                          else "FALSE")),
                       TestFunc(btp.core_reg_svc_gatt),
                       TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public),
                       TestFunc(stack.gatt_init),

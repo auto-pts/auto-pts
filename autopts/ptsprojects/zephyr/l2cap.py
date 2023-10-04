@@ -95,7 +95,6 @@ def set_pixits(ptses):
     pts.set_pixit("L2CAP", "TSPX_generate_local_busy", "TRUE")
     pts.set_pixit("L2CAP", "TSPX_l2ca_cbmps_min", "0040")
     pts.set_pixit("L2CAP", "TSPX_l2ca_cbmps_max", "0100")
-    pts.set_pixit("L2CAP", "TSPX_eatt_over_br_edr", "FALSE")
 
 
 def test_cases(ptses):
