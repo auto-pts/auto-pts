@@ -104,8 +104,6 @@ def catch_connection_error(func):
 
 
 def report_to_review_msg(report_path):
-    failed_statuses = ['INCONC', 'FAIL', 'UNKNOWN VERDICT: NONE',
-                       'BTP ERROR', 'XML-RPC ERROR', 'BTP TIMEOUT']
     failed = []
     passed = []
     msg = 'AutoPTS Bot results:\n'
@@ -117,10 +115,10 @@ def report_to_review_msg(report_path):
             if not line:
                 break
 
-            if any(status in line for status in failed_statuses):
-                failed.append(line.strip())
-            elif 'PASS' in line:
+            if 'PASS' in line:
                 passed.append(line.strip())
+            else:
+                failed.append(line.strip())
 
     if len(failed) > 0:
         msg += f'<details><summary>Failed tests</summary>{"<br>".join(failed)}</details>\n'
