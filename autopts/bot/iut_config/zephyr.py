@@ -154,7 +154,8 @@ iut_config = {
             'CONFIG_FLASH_PAGE_LAYOUT': 'y',
             'CONFIG_FLASH': 'y',
             'CONFIG_FLASH_MAP': 'y',
-            'CONFIG_FCB': 'y',
+            'CONFIG_NVS': 'y',
+            'CONFIG_SETTINGS_NVS': 'y',
         },
         "test_cases": [
             'MESH/SR/RPR/PDU/BV-02-C',
