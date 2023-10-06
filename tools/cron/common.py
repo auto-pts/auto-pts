@@ -109,6 +109,8 @@ def report_to_review_msg(report_path):
     msg = 'AutoPTS Bot results:\n'
 
     with open(report_path, 'r') as f:
+        f.readline()
+
         while True:
             line = f.readline()
 
