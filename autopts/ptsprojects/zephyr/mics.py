@@ -74,10 +74,6 @@ def test_cases(ptses):
             stack.gap.iut_addr_get_str())),
         TestFunc(lambda: set_addr(
             stack.gap.iut_addr_get_str())),
-        TestFunc(lambda: pts.update_pixit_param(
-            "MICS", "TSPX_iut_use_dynamic_bd_addr",
-            "TRUE" if stack.gap.iut_addr_is_random()
-            else "FALSE")),
         TestFunc(btp.gap_set_io_cap, IOCap.display_only),
         TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public),
         TestFunc(stack.gatt_init),
