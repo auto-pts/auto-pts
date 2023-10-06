@@ -450,6 +450,8 @@ def mesh_reset():
 
     stack.mesh.is_provisioned.data = False
     stack.mesh.is_initialized = True
+    if stack.mesh.iv_test_mode_autoinit:
+        mesh_iv_update_test_mode(True)
 
 
 def mesh_input_number(number):
