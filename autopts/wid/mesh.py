@@ -53,8 +53,7 @@ def mesh_wid_hdl_rpr_persistent_storage_alt(wid, description, test_case_name):
         log("%s, %r, %r, %s", mesh_wid_hdl_rpr_persistent_storage_alt.__name__,
             wid, description, test_case_name)
         return hdl_wid_13_persistent_storage(WIDParams(wid, description,
-                                                       test_case_name),
-                                             comp=1)
+                                                       test_case_name))
 
     return mesh_wid_hdl(wid, description, test_case_name)
 
@@ -86,7 +85,7 @@ def hdl_wid_6(params: WIDParams):
 
     if not stack.mesh.is_initialized:
         btp.mesh_config_prov()
-        btp.mesh_init()
+        btp.mesh_start()
 
         if stack.mesh.iut_is_provisioner:
             btp.mesh_prov_node()
@@ -177,7 +176,7 @@ def hdl_wid_12(_: WIDParams):
 
     if not stack.mesh.is_initialized:
         btp.mesh_config_prov()
-        btp.mesh_init()
+        btp.mesh_start()
 
         if stack.mesh.iut_is_provisioner:
             btp.mesh_prov_node()
@@ -196,7 +195,7 @@ def hdl_wid_13(params: WIDParams):
 
     if not stack.mesh.is_initialized:
         btp.mesh_config_prov()
-        btp.mesh_init()
+        btp.mesh_start()
 
     if stack.mesh.is_provisioned.data:
         btp.mesh_reset()
@@ -213,7 +212,7 @@ def hdl_wid_13_persistent_storage(params: WIDParams, comp=0):
     """
 
     btp.mesh_config_prov()
-    btp.mesh_init(comp)
+    btp.mesh_start()
 
     return True
 
@@ -474,7 +473,7 @@ def hdl_wid_33(_: WIDParams):
 
     if not stack.mesh.is_initialized:
         btp.mesh_config_prov()
-        btp.mesh_init()
+        btp.mesh_start()
 
         if stack.mesh.iut_is_provisioner:
             btp.mesh_prov_node()
@@ -685,7 +684,7 @@ def hdl_wid_46(_: WIDParams):
 
     if not stack.mesh.is_initialized:
         btp.mesh_config_prov()
-        btp.mesh_init()
+        btp.mesh_start()
     return True
 
 
@@ -781,7 +780,7 @@ def hdl_wid_81(_: WIDParams):
 
     if not stack.mesh.is_initialized:
         btp.mesh_config_prov()
-        btp.mesh_init()
+        btp.mesh_start()
     return True
 
 
@@ -968,7 +967,7 @@ def hdl_wid_210(_: WIDParams):
 
     if stack.mesh.is_provisioned.data is False:
         btp.mesh_config_prov()
-        btp.mesh_init()
+        btp.mesh_start()
         return True
     return False
 
@@ -3236,16 +3235,17 @@ def hdl_wid_672(_: WIDParams):
 
     if not stack.mesh.is_initialized:
         btp.mesh_config_prov()
-        btp.mesh_init()
+        btp.mesh_start()
 
     zephyrctl = btp.get_iut_method()
 
     zephyrctl.wait_iut_ready_event()
     btp.core_reg_svc_gap()
     btp.core_reg_svc_mesh()
+    btp.mesh_init()
     btp.gap_read_ctrl_info()
 
-    btp.mesh_init()
+    btp.mesh_start()
 
     return True
 
@@ -3440,6 +3440,7 @@ def hdl_wid_715(desc):
     zephyrctl.wait_iut_ready_event()
     btp.core_reg_svc_gap()
     btp.core_reg_svc_mesh()
+    btp.mesh_init()
     btp.gap_read_ctrl_info()
     return True
 

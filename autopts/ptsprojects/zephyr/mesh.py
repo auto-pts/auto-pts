@@ -187,6 +187,7 @@ def test_cases(ptses):
         TestFunc(btp.core_reg_svc_gap),
         TestFunc(btp.core_reg_svc_gatt),
         TestFunc(btp.core_reg_svc_mesh),
+        TestFunc(btp.mesh_init),
         TestFunc(btp.gap_read_ctrl_info),
         TestFunc(lambda: pts.update_pixit_param(
             "MESH", "TSPX_bd_addr_iut",
@@ -304,13 +305,26 @@ def test_cases(ptses):
     ]
 
     pre_conditions_comp_change = pre_conditions + [
-        TestFunc(btp.mesh_init),
+        TestFunc(btp.mesh_start),
         TestFunc(btp.mesh_reset),
         TestFunc(btp.mesh_comp_change_prepare),
         TestFunc(time.sleep, 5),
         TestFunc(btp.get_iut_method().wait_iut_ready_event),
         TestFunc(btp.core_reg_svc_gap),
         TestFunc(btp.core_reg_svc_mesh),
+        TestFunc(btp.mesh_init),
+        TestFunc(stack.mesh.reset_state)
+    ]
+
+    pre_conditions_comp_change_alt = pre_conditions + [
+        TestFunc(btp.mesh_start),
+        TestFunc(btp.mesh_reset),
+        TestFunc(btp.mesh_comp_change_prepare),
+        TestFunc(time.sleep, 5),
+        TestFunc(btp.get_iut_method().wait_iut_ready_event),
+        TestFunc(btp.core_reg_svc_gap),
+        TestFunc(btp.core_reg_svc_mesh),
+        TestFunc(btp.mesh_init, comp=1),
         TestFunc(stack.mesh.reset_state)
     ]
 
@@ -655,13 +669,13 @@ def test_cases(ptses):
                   cmds=pre_conditions_comp_change,
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/SR/RPR/PDU/BV-02-C",
-                  cmds=pre_conditions_comp_change,
+                  cmds=pre_conditions_comp_change_alt,
                   generic_wid_hdl=mesh_wid_hdl_rpr_persistent_storage_alt),
         ZTestCase("MESH", "MESH/SR/RPR/PDU/BV-03-C",
-                  cmds=pre_conditions_comp_change,
+                  cmds=pre_conditions_comp_change_alt,
                   generic_wid_hdl=mesh_wid_hdl_rpr_persistent_storage_alt),
         ZTestCase("MESH", "MESH/SR/RPR/PDU/BV-04-C",
-                  cmds=pre_conditions_comp_change,
+                  cmds=pre_conditions_comp_change_alt,
                   generic_wid_hdl=mesh_wid_hdl_rpr_persistent_storage_alt),
         ZTestCase("MESH", "MESH/SR/RPR/LNK/BV-25-C",
                   cmds=pre_conditions_comp_change,
@@ -827,7 +841,7 @@ def test_cases(ptses):
                   lt2="MESH/SR/RPR/LNK/BI-02-C_LT2"),
         ZTestCase("MESH", "MESH/SR/RPR/LNK/BI-05-C",
                   cmds=pre_conditions_comp_change +
-                  [TestFunc(btp.mesh_init, post_wid=715)],
+                  [TestFunc(btp.mesh_start, post_wid=715)],
                   generic_wid_hdl=mesh_wid_hdl,
                   lt2="MESH/SR/RPR/LNK/BI-05-C_LT2"),
         ZTestCase("MESH", "MESH/SR/RPR/PDU/BV-01-C",
