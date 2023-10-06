@@ -66,9 +66,7 @@ Commands and responses:
 		Controller Index:	<controller id>
 		Command parameters:	Composition Data (1 octet)
 
-		This command is used to initialize the stack and start
-		advertising either as unprovisioned beacon or network node.
-		Action depends on previous configuration.
+		This command is used to initialize the stack.
 
 		In case of an error, the error response will be returned.
 
@@ -1237,7 +1235,7 @@ Commands and responses:
 
 		This command is used to schedule advertising of Solicitation PDUs on Proxy Client (IUT).
 
-    Opcode 0x77 - Proxy Client Connect
+	Opcode 0x77 - Proxy Client Connect
 
 		Controller Index:       <controller id>
 		Command parameters:     Network index (2 octets)
@@ -1245,6 +1243,16 @@ Commands and responses:
 
 		This command is used to allow Proxy Client on IUT to auto connect
 		to a network of given index.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x78 - Start command/response
+		Controller Index:	<controller id>
+		Command parameters:	<none>
+
+		This command is used to start advertising either as
+		unprovisioned beacon or network node. Action depends on
+		previous configuration.
 
 		In case of an error, the error response will be returned.
 

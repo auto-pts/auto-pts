@@ -41,8 +41,9 @@ def iut_reset():
     zephyrctl.wait_iut_ready_event()
     btp.core_reg_svc_gap()
     btp.core_reg_svc_mesh()
-    btp.gap_read_ctrl_info()
     btp.mesh_init()
+    btp.gap_read_ctrl_info()
+    btp.mesh_start()
 
 
 def hdl_wid_13(_: WIDParams):
@@ -56,7 +57,7 @@ def hdl_wid_13(_: WIDParams):
 
     if not stack.mesh.is_initialized:
         btp.mesh_config_prov()
-        btp.mesh_init()
+        btp.mesh_start()
 
     if stack.mesh.is_provisioned.data:
         btp.mesh_reset()

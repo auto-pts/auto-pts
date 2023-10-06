@@ -37,6 +37,9 @@ MESH = {
     "init": (defs.BTP_SERVICE_ID_MESH,
              defs.MESH_INIT,
              CONTROLLER_INDEX),
+    "start": (defs.BTP_SERVICE_ID_MESH,
+              defs.MESH_START,
+              CONTROLLER_INDEX, ""),
     "reset": (defs.BTP_SERVICE_ID_MESH,
               defs.MESH_RESET,
               CONTROLLER_INDEX, ""),
@@ -430,6 +433,14 @@ def mesh_init(comp=0):
     data = bytearray(struct.pack("<B", comp))
 
     iutctl.btp_socket.send_wait_rsp(*MESH['init'], data=data)
+
+
+def mesh_start():
+    logging.debug("%s", mesh_start.__name__)
+
+    iutctl = get_iut()
+
+    iutctl.btp_socket.send_wait_rsp(*MESH['start'])
 
     stack = get_stack()
 
