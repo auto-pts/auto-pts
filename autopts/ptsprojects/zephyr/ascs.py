@@ -63,10 +63,6 @@ def test_cases(ptses):
                       TestFunc(lambda: pts.update_pixit_param(
                           "ASCS", "TSPX_bd_addr_iut",
                           stack.gap.iut_addr_get_str())),
-                      TestFunc(lambda: pts.update_pixit_param(
-                          "ASCS", "TSPX_iut_use_dynamic_bd_addr",
-                          "TRUE" if stack.gap.iut_addr_is_random()
-                          else "FALSE")),
                       TestFunc(btp.core_reg_svc_gatt),
                       TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public),
                       TestFunc(btp.gap_set_conn),
