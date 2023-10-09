@@ -770,7 +770,7 @@ def sensor_setting_status(_):
 
 
 def sensor_column_get(_):
-    sensor_id = 0x0069
+    sensor_id = 0x0042
     raw_value = '10'
     btp.mmdl_sensor_column_get(sensor_id, raw_value)
     return True
@@ -778,23 +778,26 @@ def sensor_column_get(_):
 
 def sensor_column_status(params):
     sensor_id = params['PropertyId']
-    column_data = hex(params['ColumnData'])[2:]
+    column_data = 0
+    if 'ColumnData' in params:
+        column_data = params['ColumnData']
 
     stack = get_stack()
-    return [sensor_id, column_data] == stack.mesh.recv_status_data_get('Status')
+    status = stack.mesh.recv_status_data_get('Status')
+    return [sensor_id, column_data] == status
 
 
 def sensor_series_get(params):
     sensor_id = params['PropertyId']
-    if params['RawValueX1'] is None:
+    if params['RawValueA1'] is None:
         raw_value_x1 = '10'
     else:
-        raw_value_x1 = hex(params['RawValueX1'])[2:]
+        raw_value_x1 = hex(params['RawValueA1'])[2:]
 
-    if params['RawValueX2'] is None:
+    if params['RawValueA2'] is None:
         raw_value_x2 = '20'
     else:
-        raw_value_x2 = hex(params['RawValueX2'])[2:]
+        raw_value_x2 = hex(params['RawValueA2'])[2:]
 
     btp.mmdl_sensor_series_get(sensor_id, raw_value_x1 + raw_value_x2)
     return True
@@ -805,7 +808,8 @@ def sensor_series_status(params):
     column_data = params['ColumnData']
 
     stack = get_stack()
-    return [sensor_id, column_data] == stack.mesh.recv_status_data_get('Status')
+    status = stack.mesh.recv_status_data_get('Status')
+    return [sensor_id, column_data] == status
 
 
 ZONE_CHANGE_ZERO_POINT = 0x40

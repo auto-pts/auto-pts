@@ -949,7 +949,7 @@ def mmdl_sensor_column_get(sensor_id, raw_value):
 
     hdr_fmt = '<H%ds' % (len(rsp) - 2)
     (prop_id, column_data) = struct.unpack_from(hdr_fmt, rsp)
-    column_data = binascii.hexlify(column_data).decode('UTF-8')
+    column_data = int.from_bytes(column_data, byteorder='big')
     stack = get_stack()
     stack.mesh.recv_status_data_set('Status', [prop_id, column_data])
     logging.debug('Status: Property ID = 0x%x Column data = %r',
@@ -968,12 +968,12 @@ def mmdl_sensor_series_get(sensor_id, raw_values):
 
     (rsp,) = iutctl.btp_socket.send_wait_rsp(
         *MMDL['sensor_series_get'], data=data)
-    hdr_fmt = '<9sH'
+    hdr_fmt = '<%dsH' % (len(rsp) - 2)
     (column_data, prop_id) = struct.unpack_from(hdr_fmt, rsp)
-    column_data = int(binascii.hexlify(column_data), 16)
+    column_data = int.from_bytes(column_data, byteorder='big')
     stack = get_stack()
     stack.mesh.recv_status_data_set('Status', [prop_id, column_data])
-    logging.debug('Status: Property ID = 0x%x Column data = 0x%x',
+    logging.debug('Status: Property ID = 0x%x Column data = 0x%r',
                   prop_id, column_data)
 
 
