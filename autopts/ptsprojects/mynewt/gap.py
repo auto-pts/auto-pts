@@ -132,7 +132,7 @@ def set_pixits(ptses):
     pts.set_pixit("GAP", "TSPX_URI", "000168747470733A2F2F7777772E626C7565746F")
     pts.set_pixit("GAP", "TSPX_periodic_advertising_data",
                   binascii.hexlify((chr(len(periodic_data[1]) + 1) + chr(periodic_data[0]) +
-                                    periodic_data[1]).encode()))
+                                    periodic_data[1]).encode()).decode())
 
 
 def test_cases(ptses):

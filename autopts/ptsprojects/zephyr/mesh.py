@@ -144,7 +144,6 @@ def set_pixits(ptses):
     pts.set_pixit("MESH", "TSPX_po_addr", "0200")
     pts.set_pixit("MESH", "TSPX_po2_addr", "0210")
     pts.set_pixit("MESH", "TSPX_oob_certificates", "")
-    pts.set_pixit("MESH", "TSPX_number_of_intermediate_certificates_on_iut", "")
     pts.set_pixit("MESH", "TSPX_Max_Number_Of_Paths", "1")
     pts.set_pixit("MESH", "Max_Number_Of_Dependent_Nodes_Per_Path", "1")
     pts.set_pixit("MESH", "TSPX_iut_model_id_publish_not_supported", "0000")
