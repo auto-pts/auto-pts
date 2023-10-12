@@ -521,6 +521,9 @@ class Mesh:
         self.friendship = Property(False)
         self.lpn = Property(False)
 
+        # Lower tester composition data
+        self.tester_comp_data = Property({})
+
         # LPN
         self.lpn_subscriptions = []
 
@@ -655,6 +658,13 @@ class Mesh:
 
     def transfer_ttl_get(self):
         return self.transfer_ttl
+
+    def set_tester_comp_data(self, page, comp):
+        self.tester_comp_data.data[page] = comp
+
+    def get_tester_comp_data(self, page):
+        if page in self.tester_comp_data.data:
+            return self.tester_comp_data.data[page]
 
     def recv_status_data_set(self, key, data):
         if key in self.recv_status_data.data:
