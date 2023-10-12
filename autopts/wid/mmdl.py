@@ -65,6 +65,35 @@ def hdl_wid_13(_: WIDParams):
     return True
 
 
+def hdl_wid_303(_: WIDParams):
+    """
+    Implements:
+    description: Please send Friend Request to initiate the Friendship Establishment procedure.
+    """
+
+    btp.mesh_lpn(True)
+    return True
+
+
+def hdl_wid_304(_: WIDParams):
+    """
+    Implements:
+    description: Please click OK to send Friend Poll message.
+    """
+
+    btp.mesh_lpn_poll()
+    return True
+
+
+def hdl_wid_346(_: WIDParams):
+    """
+    Implements:
+    description: Please send Friend Subscription List Add message to Lower Tester.
+    """
+
+    return True
+
+
 def hdl_wid_515(_: WIDParams):
     """
     MMDL/SR/SCH/BV-01-C
