@@ -1008,11 +1008,18 @@ def mesh_composition_data_get(net_idx, addr, page):
     stack = get_stack()
     iutctl = get_iut()
 
-    data = bytearray(struct.pack("<HHB", net_idx, addr, page))
+    req_page = page
 
-    (rsp,) = iutctl.btp_socket.send_wait_rsp(*MESH['composition_data_get'], data)
-
-    (status,) = struct.unpack_from('<B', rsp)
+    while req_page >= 0:
+        data = bytearray(struct.pack("<HHB", net_idx, addr, req_page))
+        (rsp,) = iutctl.btp_socket.send_wait_rsp(*MESH['composition_data_get'], data)
+        frmt = f'<B{len(rsp) - 1}s'
+        (rec_page, comp_data) = struct.unpack_from(frmt, rsp)
+        stack.mesh.set_tester_comp_data(f'page{rec_page}', comp_data)
+        if rec_page:
+            req_page = rec_page - 1
+        else:
+            break
 
 
 def mesh_cfg_krp_get(net_idx, addr, net_key_idx):

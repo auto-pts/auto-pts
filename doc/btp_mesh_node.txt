@@ -226,6 +226,8 @@ Commands and responses:
 		Command parameters:     Network index (2 octets)
 		                        Node address (2 octets)
 		                        Page (1 octet)
+		Response parameters:    Received Page (1 octet)
+		                        Composition Data (variable length)
 
 		This command is used to get the Config Composition Data.
 

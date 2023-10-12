@@ -1965,7 +1965,7 @@ def hdl_wid_500(params: WIDParams):
     description: Waiting for Composition Data Get Request.
     """
     stack = get_stack()
-    page = 0x00
+    page = 0xFF
 
     if not stack.mesh.iut_is_provisioner:
         return True
