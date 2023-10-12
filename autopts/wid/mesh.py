@@ -117,7 +117,7 @@ def hdl_wid_7(params: WIDParams):
         ret = stack.mesh.oob_data.data
     else:
         params = dict(params)
-        stack.mesh.oob_data.data = int(params.get('the number'), 16)
+        stack.mesh.oob_data.data = int(params.get('the number'))
         btp.mesh_input_number(stack.mesh.oob_data.data)
         ret = True
 
