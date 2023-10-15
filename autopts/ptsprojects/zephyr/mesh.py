@@ -844,7 +844,7 @@ def test_cases(ptses):
                   generic_wid_hdl=mesh_wid_hdl,
                   lt2="MESH/SR/RPR/LNK/BI-02-C_LT2"),
         ZTestCase("MESH", "MESH/SR/RPR/LNK/BI-05-C",
-                  cmds=pre_conditions_comp_change +
+                  cmds=pre_conditions +
                   [TestFunc(btp.mesh_start, post_wid=715)],
                   generic_wid_hdl=mesh_wid_hdl,
                   lt2="MESH/SR/RPR/LNK/BI-05-C_LT2"),
