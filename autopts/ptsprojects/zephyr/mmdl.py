@@ -56,7 +56,6 @@ def set_pixits(ptses):
     pts.set_pixit("MMDL", "TSPX_device_uuid", "00000000000000000000000000000000")
     pts.set_pixit("MMDL", "TSPX_device_uuid2", "001BDC0810210B0E0A0C000B0E0A0C00")
     pts.set_pixit("MMDL", "TSPX_use_pb_gatt_bearer", "FALSE")
-    pts.set_pixit("MMDL", "TSPX_iut_comp_data_page", "0")
     pts.set_pixit("MMDL", "TSPX_OOB_state_change", "FALSE")
     pts.set_pixit("MMDL", "TSPX_sensor_property_ids", "1,0069,0010,FFF0")
     pts.set_pixit("MMDL", "TSPX_enable_IUT_provisioner", "FALSE")
