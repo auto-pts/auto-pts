@@ -143,7 +143,11 @@ class BTMON:
         log("%s.%s", self.__class__, self.start.__name__)
 
         log_filecwd = os.path.dirname(os.path.abspath(log_file))
+        # btsnoop file
         log_filename = os.path.basename(log_file)
+        # readable log file from btmon output
+        plain_log_filename, *extension = os.path.splitext(log_filename)
+        plain_log_filename += '_text' + ''.join(extension)
 
         if sys.platform == 'win32':
             self._wsl_call('killall btmon')
@@ -168,7 +172,7 @@ class BTMON:
                 self.stop()
                 return
 
-            cmd = ['btmon', '-d', pty, '-w', log_filename]
+            cmd = ['btmon', '-d', pty, '-w', log_filename, '>', plain_log_filename]
             self.btmon_process = self._wsl_popen(subprocess.list2cmdline(cmd), log_filecwd)
             if not self.btmon_process or self.btmon_process.poll():
                 log('BTMON failed to start')
@@ -181,7 +185,8 @@ class BTMON:
 
             self.rtt_reader.start(buffer_name, device_core, debugger_snr, self._on_line_read_callback, (sock,))
         else:
-            cmd = ['btmon', '-J', f'{device_core},{debugger_snr}', '-w', log_filename]
+            cmd = ['btmon', '-J', f'{device_core},{debugger_snr}',
+                   '-w', log_filename, '>', plain_log_filename]
             self.btmon_process = subprocess.Popen(cmd, cwd=log_filecwd,
                                                   shell=False,
                                                   stdout=subprocess.PIPE,
