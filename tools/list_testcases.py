@@ -23,6 +23,21 @@ import os
 import win32com.client
 
 
+test_case_blacklist = [
+    "_HELPER",
+    "LT2",
+    "LT3",
+    "TWO_NODES_PROVISIONER",
+]
+
+
+def tc_filter(test_case_name):
+    for entry in test_case_blacklist:
+        if entry in test_case_name:
+            return False
+    return True
+
+
 if __name__ == '__main__':
 
     if len(sys.argv) < 2:
@@ -41,4 +56,6 @@ if __name__ == '__main__':
 
         for j in range(0, pts.GetTestCaseCount(project_name)):
             test_case_name = pts.GetTestCaseName(project_name, j)
-            print(test_case_name)
+            if pts.IsActiveTestCase(project_name, test_case_name) and \
+                    tc_filter(test_case_name):
+                print(test_case_name)
