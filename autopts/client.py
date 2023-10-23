@@ -355,6 +355,7 @@ class ClientCallbackServer(threading.Thread):
             self.server.server_close()
 
     def stop(self):
+        log("%s.%s", self.__class__.__name__, self.stop.__name__)
         self.end = True
 
 
@@ -505,7 +506,6 @@ def init_pts(args, ptses, tc_db_table_name=None):
         finish_count.wait_for(thread_count, timeout=180.0)
     except Exception as e:
         logging.exception(e)
-        set_global_end()
         raise
     finally:
         for i, thread in enumerate(thread_list):
@@ -929,6 +929,7 @@ def run_test_case_thread_entry(pts, test_case, exceptions, finish_count):
                         test_case.status = status
                         test_case.state = "FINISHING"
                 elif test_case.steps_queue.empty():
+                    error_code = 0
                     break
 
                 # or perform next step (WID or other)
@@ -1301,10 +1302,12 @@ class Client:
         return run_test_cases(self.ptses, self.test_cases, self.args)
 
     def cleanup(self):
+        log(f'{self.__class__.__name__}.{self.cleanup.__name__}')
         autoprojects.iutctl.cleanup()
         self.shutdown_pts()
 
     def shutdown_pts(self):
+        log(f'{self.__class__.__name__}.{self.shutdown_pts.__name__}')
         for pts in self.ptses:
             pts.stop_pts()
             pts.cleanup_caches()
@@ -1326,7 +1329,7 @@ def recover_at_exception(func):
     def _recover_at_exception(*args, **kwargs):
         restart_time = MAX_SERVER_RESTART_TIME
 
-        while True:
+        while not get_global_end():
             try:
                 return func(*args, **kwargs)
             except Exception as e:
@@ -1349,19 +1352,6 @@ def recover_at_exception(func):
 
 @recover_at_exception
 def run_recovery(args, ptses):
-    def wait_for_server_restart(pts):
-        i = MIN_SERVER_RESTART_TIME
-        for i in range(MIN_SERVER_RESTART_TIME):
-            try:
-                if pts.ready():
-                    break
-            except Exception:
-                # Server is still resetting. Wait a little more.
-                time.sleep(1)
-
-        if i >= MIN_SERVER_RESTART_TIME:
-            log('Timeout at wait_for_server_restart()')
-
     log('Running recovery')
 
     if sys.platform == 'win32':
@@ -1371,19 +1361,29 @@ def run_recovery(args, ptses):
 
     ykush = args.ykush
     if ykush:
+        log(f'Power down device ({tty}) under ykush:{ykush}')
         while device_exists(tty):
             raise_on_global_end()
             usb_power(ykush, False)
 
     for pts in ptses:
-        wait_for_server_restart(pts)
+        while not get_global_end():
+            try:
+                log(f'Recovering PTS ...')
+                pts.recover_pts()
+                err = pts.callback.get_result('recover_pts', timeout=RESTART_PTS_TIMEOUT_S)
+                if err == True:
+                    break
+            except Exception:
+                # Server is still resetting. Wait a little more.
+                time.sleep(1)
 
-    init_pts(args, ptses)
     stack_inst = stack.get_stack()
     stack_inst.cleanup()
     stack_inst.synch_init()
 
     if ykush:
+        log(f'Power up device ({tty}) under ykush:{ykush}')
         while not device_exists(tty):
             raise_on_global_end()
             usb_power(ykush, True)
