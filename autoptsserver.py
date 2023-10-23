@@ -122,6 +122,10 @@ class PyPTSWithCallback(ptscontrol.PyPTS, threading.Thread):
         self.ptscontrol_request_queue = Queue()
         self.ptscontrol_response_queue = Queue()
 
+    def _update_request_time(self):
+        # Overwritten in a derived class
+        pass
+
     def register_client_callback(self, kwargs):
         """Registers client callback. xmlrpc proxy/client calls this method
         to register its callback
@@ -153,7 +157,7 @@ class PyPTSWithCallback(ptscontrol.PyPTS, threading.Thread):
             return
 
         device = self._device
-        log(f'Replugging device ({device}) under ykush:{ykush_port}')
+        log(f'Replugging device ({device}) under ykush:{ykush_port} ...')
         if device:
             while device_exists(device) and not self._end.is_set():
                 usb_power(ykush_port, False)
@@ -166,10 +170,13 @@ class PyPTSWithCallback(ptscontrol.PyPTS, threading.Thread):
             usb_power(ykush_port, False)
             sleep(3)
             usb_power(ykush_port, True)
+        log(f'Done replugging device ({device}) under ykush:{ykush_port}')
 
     def _dispatch(self, method_name, param_tuple):
         """Dispatcher that is used by xmlrpc server"""
         try:
+            self._update_request_time()
+
             if method_name in ['start_pts', 'restart_pts',
                                'recover_pts', 'run_test_case']:
                 # Methods that have to be called in the same context
@@ -219,7 +226,7 @@ class PyPTSWithCallback(ptscontrol.PyPTS, threading.Thread):
     def _pts_thread_work(self):
         """Main"""
         # Some ptscontrol methods have to be executed in the same
-        # thread context as PTS was inited Otherwise, PTSSender
+        # thread context as PTS was inited. Otherwise, PTSSender
         # and PTSLogger are not reachable by PTS, hence the
         # OnImplicitSend will not arrive.
         #
@@ -232,7 +239,7 @@ class PyPTSWithCallback(ptscontrol.PyPTS, threading.Thread):
             self.pts_thread_id = threading.get_ident()
 
             print(f"({id(self)}) Starting PTS {self.args.srv_port} ...")
-            self.restart_pts(replug=True)
+            self.restart_pts()
             print(f"({id(self)}) OK")
 
             while not self._end.is_set() and not get_global_end():
@@ -258,11 +265,14 @@ class PyPTSWithCallback(ptscontrol.PyPTS, threading.Thread):
         except BaseException:
             return
 
+        timer = None
+
         # Call ptscontrol method
         try:
             if self.args.superguard:
                 timeout = self.args.superguard
                 timer = threading.Timer(timeout, self.stop_pts)
+                timer.name = f'SuperguardTimer{timer.name}'
                 timer.start()
 
             method = getattr(self, method_name)
@@ -270,6 +280,9 @@ class PyPTSWithCallback(ptscontrol.PyPTS, threading.Thread):
         except BaseException as e:
             logging.exception(e)
             result = e
+
+        if timer:
+            timer.cancel()
 
         # Send response with method result to client
         try:
@@ -362,6 +375,8 @@ class Server(threading.Thread):
         self.name = 'S-' + str(self._args.srv_port)
         self.pts = PyPTSWithCallback(self._args,
                                      name=f'{self.name}-PTS')
+        self.last_request_time = time.time()
+        self.pts._update_request_time = self._update_request_time
 
         # Flag for ending sub-threads
         self.end = finish_count
@@ -417,8 +432,8 @@ class Server(threading.Thread):
                 and not get_global_end():
             try:
                 # Init
-                if self._args.superguard and self._args.superguard < \
-                        time.time() - self.pts.last_start_time:
+                if self._args.superguard and \
+                        self._args.superguard < time.time() - self.last_request_time:
                     log('Superguard timeout, reinitializing XMLRPC')
                     self.server_init()
 
@@ -459,6 +474,7 @@ class Server(threading.Thread):
         # PTS init was performed, instead of the XMLRPC context.
         # To handle this, the special _dispatch method was implemented.
         self.server.register_instance(self.pts)
+        self._update_request_time()
 
     def run(self):
         try:
@@ -473,8 +489,11 @@ class Server(threading.Thread):
     def terminate(self):
         self.end.set_flag()
 
-    @staticmethod
-    def get_system_model():
+    def _update_request_time(self):
+        self.last_request_time = time.time()
+
+    def get_system_model(self):
+        self._update_request_time()
         proc = subprocess.Popen(['systeminfo'],
                                 shell=False,
                                 stdout=subprocess.PIPE,
@@ -493,10 +512,11 @@ class Server(threading.Thread):
         return 'PotatOS'
 
     def get_path(self):
+        self._update_request_time()
         return os.path.dirname(os.path.abspath(__file__))
 
-    @staticmethod
-    def list_workspace_tree(workspace_dir):
+    def list_workspace_tree(self, workspace_dir):
+        self._update_request_time()
         if Path(workspace_dir).is_absolute():
             logs_root = workspace_dir
         else:
@@ -512,23 +532,23 @@ class Server(threading.Thread):
 
         return file_list
 
-    @staticmethod
-    def copy_file(file_path):
+    def copy_file(self, file_path):
+        self._update_request_time()
         file_bin = None
         if os.path.isfile(file_path):
             with open(file_path, 'rb') as handle:
                 file_bin = xmlrpc.client.Binary(handle.read())
         return file_bin
 
-    @staticmethod
-    def delete_file(file_path):
+    def delete_file(self, file_path):
+        self._update_request_time()
         if os.path.isfile(file_path):
             os.remove(file_path)
         elif os.path.isdir(file_path):
             shutil.rmtree(file_path, ignore_errors=True)
 
-    @staticmethod
-    def shutdown_pts_bpv():
+    def shutdown_pts_bpv(self):
+        self._update_request_time()
         kill_all_processes('PTS.exe')
         kill_all_processes('Fts.exe')
 

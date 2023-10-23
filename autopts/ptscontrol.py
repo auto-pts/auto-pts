@@ -175,10 +175,12 @@ class PTSLogger(win32com.server.connect.ConnectableServer):
                         self._tc_status.set(new_status)
                         log(f"Final verdict found: {self._test_case_name} {new_status}")
         except Exception as e:
+            if not self._tc_status.is_set():
+                self._tc_status.set(None)
             logging.exception(e)
 
-    def get_test_case_status(self):
-        return self._tc_status.get(predicate=lambda: not self._end)
+    def get_test_case_status(self, timeout):
+        return self._tc_status.get(timeout=timeout, predicate=lambda: not self._end)
 
 
 class PTSSender(win32com.server.connect.ConnectableServer):
@@ -336,7 +338,6 @@ class PyPTS:
         self._ready = False
 
         self._temp_workspace_path = None
-        self.last_start_time = time.time()
 
         self._pts = None
         self._pts_dispatch_id = None
@@ -466,12 +467,12 @@ class PyPTS:
 
         """
 
-        log("%s", self.recover_pts.__name__)
+        log("recover_pts")
         log("recov=%s", self._recov)
 
         self._recov_in_progress = True
 
-        self.restart_pts(replug=True)
+        self.restart_pts()
 
         for item in self._recov:
             self._recover_item(item)
@@ -481,25 +482,20 @@ class PyPTS:
         return True
 
     @pts_lock_wrapper(PTS_START_LOCK)
-    def restart_pts(self, replug=False):
+    def restart_pts(self):
         """Restarts PTS
 
         This function will block for a couple of seconds while PTS starts
-
-        :param replug: If True, then self._replug_dongle function will be used.
-
         """
 
-        log("%s", self.restart_pts.__name__)
+        log("restart_pts")
 
         while not self._end.is_set():
             try:
                 self.stop_pts()
 
-                if replug:
-                    self._replug_dongle()
-                # else:
-                #     time.sleep(1)  # otherwise there are COM errors occasionally
+                # Only if ykush available
+                self._replug_dongle()
 
                 self.start_pts()
 
@@ -520,7 +516,7 @@ class PyPTS:
 
         This function will block for a couple of seconds while PTS starts"""
 
-        log("%s", self.start_pts.__name__)
+        log("start_pts")
 
         self._pts = win32com.client.Dispatch('ProfileTuningSuite_6.PTSControlServer')
 
@@ -560,6 +556,7 @@ class PyPTS:
 
     def stop_pts(self):
         """Stops PTS"""
+        log(f"{self.stop_pts.__name__}")
         self._ready = False
 
         if self._pts_logger:
@@ -627,7 +624,7 @@ class PyPTS:
     def open_workspace(self, workspace_path):
         """Opens existing workspace"""
 
-        log("%s %s", self.open_workspace.__name__, workspace_path)
+        log(f"open_workspace {workspace_path}")
 
         # auto-pts own workspaces
         autopts_workspaces = get_own_workspaces()
@@ -750,8 +747,6 @@ class PyPTS:
         log("Starting %s %s %s", self.run_test_case.__name__, project_name,
             test_case_name)
 
-        self.last_start_time = time.time()
-
         err = None
 
         try:
@@ -761,7 +756,7 @@ class PyPTS:
 
             self._pts.RunTestCase(project_name, test_case_name)
 
-            err = self._pts_logger.get_test_case_status()
+            err = self._pts_logger.get_test_case_status(timeout=30)
 
             self._revert_temp_changes()
         except Exception as e:
