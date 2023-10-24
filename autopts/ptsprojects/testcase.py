@@ -34,6 +34,12 @@ from ..utils import get_global_end, ResultWithFlag
 log = logging.debug
 
 
+class ResponseWithPostWID:
+    def __init__(self, response, next_steps):
+        self.response = response
+        self.next_steps = next_steps
+
+
 class MmiParser:
     """"Interface to parsing arguments from description of MMI
 
@@ -590,8 +596,10 @@ class TestCase(PTSCallback):
     def handle_mmi_generic(self, wid, description, style, test_case_name):
         response = self.generic_wid_hdl(wid, description, test_case_name)
 
-        if isinstance(response, tuple):
-            response, *next_steps = response
+        if isinstance(response, ResponseWithPostWID):
+            next_steps = response.next_steps
+            response = response.response
+
             # next_steps should be a list of tuples,
             # e.g. [(func1, arg1, arg2, ...), ...]
             for step in next_steps:
