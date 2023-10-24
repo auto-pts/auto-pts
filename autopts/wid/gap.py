@@ -1045,6 +1045,10 @@ def hdl_wid_209(_: WIDParams):
     return True
 
 
+def hdl_wid_210(_: WIDParams):
+    return True
+
+
 def hdl_wid_224(_: WIDParams):
     btp.gap_set_mitm_off()
     return True
