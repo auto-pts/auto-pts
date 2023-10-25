@@ -605,7 +605,7 @@ class TestCase(PTSCallback):
             for step in next_steps:
                 self.add_next_step(*step)
 
-        if response == "WAIT":
+        if response in ["WAIT", "END_TEST_CASE"]:
             return response
 
         if style in (ptstypes.MMI_Style_Edit1, ptstypes.MMI_Style_Edit2):
