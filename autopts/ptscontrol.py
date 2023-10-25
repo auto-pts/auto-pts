@@ -269,18 +269,23 @@ class PTSSender(win32com.server.connect.ConnectableServer):
                 if result is not None:
                     rsp = result
 
+                if rsp == "END_TEST_CASE":
+                    # Client failed, skip next MMIs
+                    self.close()
+                    rsp = "Cancel"
+
                 logger.info(f"Response for on_implicit_send (wid {wid}): {rsp}")
         except xmlrpc.client.Fault as err:
             logger.info("A fault occurred, code = %d, string = %s",
                         err.faultCode, err.faultString)
+            self.close()
 
         except Exception as e:
             logger.exception(e)
+            self.close()
 
         finally:
             self._response.clear()
-            if rsp == 'Cancel':
-                self.close()
 
         # Stringify response
         rsp = str(rsp)
