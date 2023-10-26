@@ -481,7 +481,7 @@ def init_pts(args, ptses, tc_db_table_name=None):
         else:
             if AUTO_PTS_LOCAL:
                 proxy = FakeProxy()
-            elif hasattr(args, 'server_args'):
+            elif getattr(args, 'server_args', False):
                 proxy = PtsServer.factory_get_instance(args.server_args[i])
             else:
                 proxy = PtsServerProxy.factory_get_instance(
