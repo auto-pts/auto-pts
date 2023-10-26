@@ -111,7 +111,7 @@ def set_pixits(ptses):
     pts.set_pixit("GAP", "TSPX_maximum_ce_length", "0000")
     pts.set_pixit("GAP", "TSPX_conn_update_int_min", "0032")
     pts.set_pixit("GAP", "TSPX_conn_update_int_max", "0046")
-    pts.set_pixit("GAP", "TSPX_conn_update_slave_latency", "0001")
+    pts.set_pixit("GAP", "TSPX_conn_update_peripheral_latency", "0001")
     pts.set_pixit("GAP", "TSPX_conn_update_supervision_timeout", "01F4")
     pts.set_pixit("GAP", "TSPX_iut_invalid_connection_interval_min", "0008")
     pts.set_pixit("GAP", "TSPX_iut_invalid_connection_interval_max", "00AA")
@@ -121,7 +121,6 @@ def set_pixits(ptses):
     pts.set_pixit("GAP", "TSPX_iut_mandates_mitm", "FALSE")
     pts.set_pixit("GAP", "TSPX_encryption_before_service_request", "FALSE")
     pts.set_pixit("GAP", "TSPX_tester_appearance", "0000")
-    pts.set_pixit("GAP", "TSPX_advertising_data", "")
     pts.set_pixit("GAP", "TSPX_iut_device_IRK_for_resolvable_privacy_address_generation_procedure",
                   "00000000000000000000000000000000")
     pts.set_pixit("GAP", "TSPX_tester_device_IRK_for_resolvable_privacy_address_generation_procedure",
