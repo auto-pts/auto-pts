@@ -472,15 +472,16 @@ def init_pts(args, ptses, tc_db_table_name=None):
     finish_count = CounterWithFlag(init_count=0)
 
     init_logging('_' + '_'.join(str(x) for x in args.cli_port))
+    server_count = getattr(args, 'server_count',  len(args.cli_port))
 
     # PtsServer.finish_count.clear()
-    for i in range(0, args.server_count):
+    for i in range(0, server_count):
         if i < len(proxy_list):
             proxy = proxy_list[i]
         else:
             if AUTO_PTS_LOCAL:
                 proxy = FakeProxy()
-            elif args.server_args:
+            elif hasattr(args, 'server_args'):
                 proxy = PtsServer.factory_get_instance(args.server_args[i])
             else:
                 proxy = PtsServerProxy.factory_get_instance(
