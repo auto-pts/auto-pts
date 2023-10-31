@@ -159,6 +159,7 @@ class InterruptableThread(threading.Thread):
                                   kwargs=kwargs, daemon=daemon)
         self.queue = queue
         self.final_fun = final_fun
+        self.interrupt_lock = threading.RLock()
 
     def run(self):
         try:
@@ -184,8 +185,9 @@ class InterruptableThread(threading.Thread):
         thread_id = self.get_id()
         # Inject raise KeyboardInterrupt into a thread. Under Windows will not
         # work if a thread stacked on wait() or get() from the 'threading' module.
-        res = ctypes.pythonapi.PyThreadState_SetAsyncExc(
-            thread_id, ctypes.py_object(KeyboardInterrupt))
+        with self.interrupt_lock:
+            res = ctypes.pythonapi.PyThreadState_SetAsyncExc(
+                thread_id, ctypes.py_object(KeyboardInterrupt))
         if res > 1:
             ctypes.pythonapi.PyThreadState_SetAsyncExc(thread_id, 0)
             logging.debug(f'Failed to inject an KeyboardInterrupt into a thread {self.name}')

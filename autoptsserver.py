@@ -152,6 +152,7 @@ class PyPTSWithCallback(ptscontrol.PyPTS, threading.Thread):
         self.client_callback = None
 
     def _replug_dongle(self):
+        log(f"{self._replug_dongle.__name__}")
         ykush_port = self.args.ykush
         if not ykush_port:
             return
