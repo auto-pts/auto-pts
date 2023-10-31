@@ -453,6 +453,7 @@ class PyPTS:
         func(*args, **kwds)
 
     def _replug_dongle(self):
+        log(f"{self._replug_dongle.__name__} not implemented")
         pass
 
     @pts_lock_wrapper(PTS_START_LOCK)
@@ -609,7 +610,8 @@ class PyPTS:
         self._init_attributes()
 
     def set_wid_response(self, response):
-        self._pts_sender.set_wid_response(response)
+        if self._pts_sender:
+            self._pts_sender.set_wid_response(response)
 
     def create_workspace(self, bd_addr, pts_file_path, workspace_name,
                          workspace_path):
@@ -787,7 +789,8 @@ class PyPTS:
             test_case_name)
 
         # After close, the sender will send 'Cancel' as WID response
-        self._pts_sender.close()
+        if self._pts_sender:
+            self._pts_sender.close()
 
         # NOTE: According to documentation 'StopTestCase() is not
         # currently implemented'. If by any chance this changes in

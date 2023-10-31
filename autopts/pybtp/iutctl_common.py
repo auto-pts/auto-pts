@@ -70,9 +70,10 @@ class BTPSocket:
         # Gather frame header
         while toread_hdr_len:
             nbytes = self.conn.recv_into(hdr_memview, toread_hdr_len)
-            logging.debug("Read %d bytes", nbytes)
             if nbytes == 0 and toread_hdr_len != 0:
+                # The connection is closed and the BTPSocket should be reinited
                 raise socket.error
+            logging.debug("Read %d bytes", nbytes)
             hdr_memview = hdr_memview[nbytes:]
             toread_hdr_len -= nbytes
 
@@ -188,12 +189,14 @@ class BTPWorker:
         self._running = threading.Event()
         self._lock = threading.Lock()
 
-        self._rx_worker = threading.Thread(target=self._rx_task,
-                                           name='BTPWorker')
+        self._rx_worker = threading.Thread(target=self._rx_task)
+        self._rx_worker.name = f'BTPWorker{self._rx_worker.name}'
 
         self.event_handler_cb = None
 
     def _rx_task(self):
+        log(f'{threading.current_thread().name} started')
+        socket_ok = True
         while self._running.is_set() and not get_global_end():
             try:
                 data = self._socket.read(timeout=1.0)
@@ -206,12 +209,18 @@ class BTPWorker:
                         continue
 
                 self._rx_queue.put(data)
-            except (socket.timeout, socket.error):
-                pass  # these are expected so ignore
+                socket_ok = True
+            except socket.timeout:
+                # this one is expected so ignore
+                pass
+            except socket.error:
+                if socket_ok:
+                    socket_ok = False
+                    log('socket.error: BTPSocket is closed')
             except Exception as e:
                 logging.error("%r", e)
 
-        log('BTPWorker finishing...')
+        log(f'{threading.current_thread().name} finishing...')
 
     @staticmethod
     def _read_timeout(flag):
@@ -289,10 +298,14 @@ class BTPWorker:
         self._rx_worker.start()
 
     def close(self):
-        self._running.clear()
+        if self._running.is_set():
+            self._running.clear()
 
-        if self._rx_worker.is_alive():
-            self._rx_worker.join()
+            # is_alive returns True if a thread has not been started
+            # and may result in deadlock here.
+            while self._rx_worker.is_alive() and not get_global_end():
+                log('Waiting for _rx_worker to finish ...')
+                self._rx_worker.join(timeout=1)
 
         self._reset_rx_queue()
 

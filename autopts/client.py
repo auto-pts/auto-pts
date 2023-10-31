@@ -288,9 +288,10 @@ class ClientCallback(PTSCallback):
         """
         log(f"{self.__class__.__name__}, {self.set_result.__name__},"
             f" {method_name}, {result}")
-        with self._result_lock:
+        if self._result_lock.acquire(timeout=5):
             method_result = self.results[method_name]
-        method_result.set(result)
+            method_result.set(result)
+            self._result_lock.release()
 
     def get_result(self, method_name, timeout=None, predicate=None):
         """
@@ -309,8 +310,13 @@ class ClientCallback(PTSCallback):
             self.exception.get_nowait()
             self.exception.task_done()
 
+        # Reinit everything in case a KeyboardInterrupt exception triggered
+        # by a superguard timeout breaks the lock states.
+        self.exception = queue.Queue()
+        self._result_lock = threading.RLock()
+
         for key in self.results:
-            self.results[key].clear()
+            self.results[key] = ResultWithFlag()
 
 
 class ClientCallbackServer(threading.Thread):
@@ -867,118 +873,114 @@ def synchronize_instances(state, break_state=None, end_flag=None):
     return match.get(predicate=wait_for)
 
 
-def run_test_case_thread_entry_wrapper(func):
-    def wrapper(*args):
-        exeptions = args[2]
-        finish_count = args[3]
+class LTThread(InterruptableThread):
+    def __init__(self, name=None, args=()):
+        super().__init__(name=name)
+        self._args = args
+
+    def run(self):
+        exceptions = self._args[2]
+        finish_count = self._args[3]
         try:
-            func(*args)
+            self._run_test_case(*self._args)
         except Exception as exc:
             logging.exception(exc)
-            exeptions.put(exc)
+            exceptions.put(exc)
         finally:
             finish_count.add(1)
 
-    return wrapper
+    def _run_test_case(self, pts, test_case, exceptions, finish_count):
+        """Runs the test case specified by a TestCase instance."""
+        log("Starting TestCase %s %s", self._run_test_case.__name__,
+            test_case)
 
+        if AUTO_PTS_LOCAL:  # set fake status and return
+            statuses = ["PASS", "INCONC", "FAIL", "UNKNOWN VERDICT: NONE",
+                        "BTP ERROR", "XML-RPC ERROR", "BTP TIMEOUT"]
+            test_case.status = random.choice(statuses)
+            return
 
-@run_test_case_thread_entry_wrapper
-def run_test_case_thread_entry(pts, test_case, exceptions, finish_count):
-    """Runs the test case specified by a TestCase instance.
-
-    [1] xmlrpclib.Fault normally happens due to unhandled exception in the
-        autoptsserver on Windows
-
-    """
-    log("Starting TestCase %s %s", run_test_case_thread_entry.__name__,
-        test_case)
-
-    if AUTO_PTS_LOCAL:  # set fake status and return
-        statuses = ["PASS", "INCONC", "FAIL", "UNKNOWN VERDICT: NONE",
-                    "BTP ERROR", "XML-RPC ERROR", "BTP TIMEOUT"]
-        test_case.status = random.choice(statuses)
-        return
-
-    error_code = None
-    pts.callback.cleanup()
-
-    try:
-        RUNNING_TEST_CASE[test_case.name] = test_case
-        test_case.state = "PRE_RUN"
-        test_case.pre_run()
-        test_case.status = "RUNNING"
-        test_case.state = "RUNNING"
-
-        if not synchronize_instances(test_case.state, ["FINISHED"], end_flag=finish_count):
-            raise SynchError
-
-        result = pts.run_test_case(test_case.project_name, test_case.name)
-        if result != "WAIT":
-            raise Exception(f"Failed to start the test case {test_case.name}")
-
-        def wait_if_no_step():
-            return test_case.steps_queue.empty()
-
-        try:
-            while not finish_count.is_set():
-                # Wait for the test case result
-                if test_case.state == "RUNNING":
-                    status = pts.callback.get_result(
-                        'run_test_case', predicate=wait_if_no_step)
-
-                    if status:
-                        test_case.status = status
-                        test_case.state = "FINISHING"
-                elif test_case.steps_queue.empty():
-                    error_code = 0
-                    break
-
-                # or perform next step (WID or other)
-                response = test_case.run_next_step()
-                if response is None:
-                    continue
-
-                pts.set_wid_response(response)
-
-        except BaseException as test_case_error:
-            logging.exception(test_case_error)
-            error_code = get_error_code(test_case_error)
-            exceptions.put(test_case_error)
-            pts.set_wid_response("Cancel")
-            pts.stop_test_case(test_case.project_name, test_case.name)
-
-        if finish_count.is_set():
-            test_case.state = E_FATAL_ERROR
-            log('Test case stopped externally')
-
-        log("After run_test_case error_code=%r status=%r",
-            error_code, test_case.status)
-
-        # raise exception discovered by thread
-        thread_error = pts.callback.error_code()
+        error_code = None
         pts.callback.cleanup()
 
-        if thread_error:
-            error_code = thread_error
+        try:
+            with self.interrupt_lock:
+                RUNNING_TEST_CASE[test_case.name] = test_case
+                test_case.state = "PRE_RUN"
+                test_case.pre_run()
+                test_case.status = "RUNNING"
+                test_case.state = "RUNNING"
 
-    except Exception as error:
-        logging.exception(error)
-        error_code = get_error_code(error)
+            if not synchronize_instances(test_case.state, ["FINISHED"], end_flag=finish_count):
+                raise SynchError
 
-    except BaseException as ex:
-        logging.exception(ex)
-        error_code = get_error_code(None)
+            result = pts.run_test_case(test_case.project_name, test_case.name)
+            if result != "WAIT":
+                raise Exception(f"Failed to start the test case {test_case.name}")
 
-    finally:
-        stack_inst = stack.get_stack()
-        stack_inst.synch.cancel_synch()
-        test_case.state = "FINISHED"
-        synchronize_instances(test_case.state, end_flag=finish_count)
-        test_case.post_run(error_code)  # stop qemu and other commands
-        del RUNNING_TEST_CASE[test_case.name]
+            def wait_if_no_step():
+                return test_case.steps_queue.empty()
 
-    log("Done TestCase %s %s", run_test_case_thread_entry.__name__,
-        test_case)
+            try:
+                while not finish_count.is_set():
+                    # Wait for the test case result
+                    if test_case.state == "RUNNING":
+                        status = pts.callback.get_result(
+                            'run_test_case', predicate=wait_if_no_step)
+
+                        if status:
+                            test_case.status = status
+                            test_case.state = "FINISHING"
+                    elif test_case.steps_queue.empty():
+                        error_code = 0
+                        break
+
+                    # or perform next step (WID or other)
+                    response = test_case.run_next_step()
+                    if response is None:
+                        continue
+
+                    pts.set_wid_response(response)
+
+            except BaseException as test_case_error:
+                logging.exception(test_case_error)
+                error_code = get_error_code(test_case_error)
+                exceptions.put(test_case_error)
+                pts.set_wid_response("Cancel")
+                pts.stop_test_case(test_case.project_name, test_case.name)
+
+            if finish_count.is_set():
+                test_case.state = E_FATAL_ERROR
+                log('Test case stopped externally')
+
+            log("After run_test_case error_code=%r status=%r",
+                error_code, test_case.status)
+
+            # raise exception discovered by thread
+            thread_error = pts.callback.error_code()
+            pts.callback.cleanup()
+
+            if thread_error:
+                error_code = thread_error
+
+        except Exception as error:
+            logging.exception(error)
+            error_code = get_error_code(error)
+
+        except BaseException as ex:
+            logging.exception(ex)
+            error_code = get_error_code(None)
+
+        finally:
+            with self.interrupt_lock:
+                stack_inst = stack.get_stack()
+                stack_inst.synch.cancel_synch()
+                test_case.state = "FINISHED"
+                synchronize_instances(test_case.state, end_flag=finish_count)
+                test_case.post_run(error_code)  # stop qemu and other commands
+                del RUNNING_TEST_CASE[test_case.name]
+
+                log("Done TestCase %s %s", self._run_test_case.__name__, test_case)
 
 
 @run_test_case_wrapper
@@ -1034,18 +1036,18 @@ def run_test_case(ptses, test_case_instances, test_case_name, stats,
     thread_list = []
 
     for thread_count, (test_case_lt, pts) in enumerate(zip(test_case_lts, ptses), 1):
-        thread = InterruptableThread(
+        thread = LTThread(
             name=f'LT{thread_count}-thread',
-            target=run_test_case_thread_entry,
             args=(pts, test_case_lt, exceptions, finish_count))
         thread_list.append(thread)
         thread.start()
 
-    # Wait until each PTS instance has finished executing its test case
+    superguard_timeout = False
     try:
+        # Wait until each PTS instance has finished executing its test case
         finish_count.wait_for(thread_count, timeout=timeout)
     except TimeoutError:
-        test_case_lts[0].status = 'SUPERGUARD TIMEOUT'
+        superguard_timeout = True
         log('Superguard timeout')
     except RunEnd:
         log('Test case interrupted with SIGINT')
@@ -1054,8 +1056,24 @@ def run_test_case(ptses, test_case_instances, test_case_name, stats,
         finish_count.set_flag()
         for i, thread in enumerate(thread_list):
             if thread.is_alive():
+                log(f"Interrupting {test_case_lts[i]} test case of thread {thread.name}")
                 thread.interrupt()
-                log(f"Interrupting {test_case_lts[i]} test case of thread {thread.name} ")
+
+        while True:
+            alive_threads = []
+            for i, thread in enumerate(thread_list):
+                if thread.is_alive():
+                    alive_threads.append(thread)
+
+            if len(alive_threads) == 0:
+                break
+
+            log(f"Waiting for {alive_threads} to finish ...")
+            thread_list = alive_threads
+            time.sleep(1)
+
+        if superguard_timeout:
+            test_case_lts[0].status = 'SUPERGUARD TIMEOUT'
 
     logger.removeHandler(file_handler)
 
@@ -1310,9 +1328,12 @@ class Client:
     def shutdown_pts(self):
         log(f'{self.__class__.__name__}.{self.shutdown_pts.__name__}')
         for pts in self.ptses:
-            pts.stop_pts()
-            pts.cleanup_caches()
-            pts.unregister_client_callback()
+            try:
+                pts.stop_pts()
+                pts.cleanup_caches()
+                pts.unregister_client_callback()
+            except Exception as e:
+                logging.exception(e)
 
             if getattr(pts, 'callback_thread', None):
                 pts.callback_thread.stop()
@@ -1355,6 +1376,9 @@ def recover_at_exception(func):
 def run_recovery(args, ptses):
     log('Running recovery')
 
+    iut = autoprojects.iutctl.get_iut()
+    iut.stop()
+
     if sys.platform == 'win32':
         tty = tty_to_com(args.tty_file)
     else:
@@ -1368,15 +1392,19 @@ def run_recovery(args, ptses):
             usb_power(ykush, False)
 
     for pts in ptses:
+        req_sent = False
         while not get_global_end():
             try:
-                log(f'Recovering PTS ...')
-                pts.recover_pts()
+                if not req_sent:
+                    log(f'Recovering PTS {pts} ...')
+                    pts.recover_pts()
+                    req_sent = True
+
                 err = pts.callback.get_result('recover_pts', timeout=RESTART_PTS_TIMEOUT_S)
                 if err == True:
                     break
             except Exception:
-                # Server is still resetting. Wait a little more.
+                log('Server is still resetting. Wait a little more.')
                 time.sleep(1)
 
     stack_inst = stack.get_stack()
@@ -1388,7 +1416,11 @@ def run_recovery(args, ptses):
         while not device_exists(tty):
             raise_on_global_end()
             usb_power(ykush, True)
-        stack_inst.core.event_received(defs.CORE_EV_IUT_READY, True)
+
+        # mynewt project has not been refactored yet to reduce the number of
+        # IUT board resets.
+        if stack_inst.core:
+            stack_inst.core.event_received(defs.CORE_EV_IUT_READY, True)
 
     log('Recovery finished')
 
