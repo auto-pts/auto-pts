@@ -15,8 +15,6 @@
 
 """BAP test cases"""
 
-from queue import Queue
-
 from autopts.pybtp import btp
 from autopts.client import get_unique_name
 from autopts.ptsprojects.stack import get_stack
@@ -24,6 +22,7 @@ from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.bap_wid import bap_wid_hdl
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
 from autopts.pybtp.types import Addr, AdType, UUID, AdFlags
+from autopts.utils import ResultWithFlag
 
 
 def set_pixits(ptses):
@@ -73,10 +72,10 @@ def test_cases(ptses):
         AdType.uuid16_svc_data: '4e1801ff0fff0f00',
     }
 
-    queue = Queue()
+    iut_addr = ResultWithFlag()
 
     def set_addr(addr):
-        queue.put(addr)
+        iut_addr.set(addr)
 
     pre_conditions = [TestFunc(btp.core_reg_svc_gap),
                       TestFunc(stack.gap_init, iut_device_name),
@@ -178,7 +177,7 @@ def test_cases(ptses):
 
     pre_conditions_lt2 = [
                         TestFunc(lambda: pts2.update_pixit_param(
-                                "BAP", "TSPX_bd_addr_iut", queue.get())),
+                                "BAP", "TSPX_bd_addr_iut", iut_addr.get(timeout=90, clear=True))),
     ]
 
     test_cases_lt2 = [

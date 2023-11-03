@@ -22,13 +22,7 @@ from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.micp_wid import micp_wid_hdl
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
 from autopts.pybtp.types import IOCap, Addr
-from queue import Queue
-
-queue = Queue()
-
-
-def set_addr(addr):
-    queue.put(addr)
+from autopts.utils import ResultWithFlag
 
 
 def set_pixits(ptses):
@@ -63,6 +57,11 @@ def test_cases(ptses):
     pts_bd_addr = pts.q_bd_addr
     iut_device_name = get_unique_name(pts)
     stack = get_stack()
+
+    iut_addr = ResultWithFlag()
+
+    def set_addr(addr):
+        iut_addr.set(addr)
 
     pre_conditions = [
         TestFunc(btp.core_reg_svc_gap),

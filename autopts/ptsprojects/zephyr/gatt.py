@@ -16,10 +16,10 @@
 """GATT test cases"""
 import logging
 
-from queue import Queue
 from autopts.pybtp import btp
 from autopts.pybtp.types import UUID, Addr, IOCap, Prop, Perm
 from autopts.client import get_unique_name
+from autopts.utils import ResultWithFlag
 from autopts.wid.gatt import gattc_wid_hdl_multiple_indications
 from autopts.ptsprojects.stack import get_stack, SynchPoint
 from autopts.ptsprojects.testcase import TestFunc
@@ -149,10 +149,10 @@ def test_cases_server(ptses):
     iut_device_name = get_unique_name(pts)
     stack = get_stack()
 
-    queue = Queue()
+    iut_addr = ResultWithFlag()
 
     def set_addr(addr):
-        queue.put(addr)
+        iut_addr.set(addr)
 
     pre_conditions = [
                     TestFunc(btp.core_reg_svc_gap),
@@ -350,7 +350,7 @@ def test_cases_server(ptses):
 
     pre_conditions_lt2 = [
                         TestFunc(lambda: pts2.update_pixit_param(
-                                "GATT", "TSPX_bd_addr_iut", queue.get())),
+                                "GATT", "TSPX_bd_addr_iut", iut_addr.get(timeout=90, clear=True))),
                         TestFunc(lambda: pts2.update_pixit_param(
                                 "GATT", "TSPX_iut_use_dynamic_bd_addr",
                                 "TRUE" if stack.gap.iut_addr_is_random() else "FALSE"))
