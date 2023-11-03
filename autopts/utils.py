@@ -73,16 +73,21 @@ class ResultWithFlag:
             self.result = value
             self.event.set()
 
-    def get(self, timeout=None, predicate=None):
+    def get(self, timeout=None, predicate=None, clear=False):
         """
         Args:
             timeout: timeout in seconds
             predicate: a function that will check other additional
              waiting conditions
+            clear: clear result and flag so the result will not be reused
         """
         self.wait(timeout=timeout, predicate=predicate)
         with self.lock:
-            return self.result
+            result = self.result
+            if clear:
+                self.result = None
+                self.event.clear()
+            return result
 
     def wait(self, timeout=None, predicate=lambda: True):
         """
