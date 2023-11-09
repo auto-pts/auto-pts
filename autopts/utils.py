@@ -18,9 +18,10 @@
 import ctypes
 import logging
 import os
-import subprocess
 import sys
 import threading
+from time import sleep
+
 import psutil
 
 PTS_WORKSPACE_FILE_EXT = ".pqw6"
@@ -198,19 +199,26 @@ class InterruptableThread(threading.Thread):
             logging.debug(f'Failed to inject an KeyboardInterrupt into a thread {self.name}')
 
 
-def usb_power(ykush_port, on=True):
-    ykushcmd = 'ykushcmd'
+pykush_installed = False
+try:
+    import pykush.pykush as pykush
+    pykush_installed = True
+except:
+    pass
 
-    if sys.platform == "win32":
-        ykushcmd += '.exe'
 
-    p = subprocess.Popen([ykushcmd, '-u' if on else '-d', str(ykush_port)], stdout=subprocess.PIPE)
-    try:
-        p.wait(timeout=10)
-    except subprocess.TimeoutExpired:
-        # The subprocess could hang in case autopts client and server
-        # try to use ykush at the same time.
-        p.kill()
+def usb_power(ykush_port, on=True, ykush_srn=None):
+    if not pykush_installed:
+        print('pykush not installed')
+        return
+
+    ykush_port = int(ykush_port)
+    yk = pykush.YKUSH(serial=ykush_srn)
+    state = pykush.YKUSH_PORT_STATE_UP if on else pykush.YKUSH_PORT_STATE_DOWN
+    yk.set_port_state(ykush_port, state)
+    if yk.get_port_state(ykush_port) != state:
+        ykush_name = ykush_srn if ykush_srn else ''
+        raise Exception(f'YKUSH {ykush_name} failed to change state {state} of port {ykush_port}')
 
 
 def get_own_workspaces():
@@ -245,6 +253,9 @@ if sys.platform == 'win32':
     import win32com.client
 
     def device_exists(serial_address):
+        if not serial_address:
+            return False
+
         wmi = win32com.client.GetObject("winmgmts:")
 
         if 'USB' in serial_address:  # USB:InUse:X&XXXXXXXX&X&X
@@ -291,6 +302,60 @@ else:
             return os.getuid() == 0
         except AttributeError:
             raise AdminStateUnknownError
+
+
+def ykush_replug_usb(ykush_config, device_id=None, delay=0, end_flag=None):
+    if isinstance(ykush_config, str):
+        ykush_port = ykush_config
+        ykush_srn = None
+    elif isinstance(ykush_config, dict):
+        ykush_port = ykush_config['ports']
+        ykush_srn = ykush_config['ykush_srn']
+    else:
+        logging.debug('Invalid format of ykush config')
+        return
+
+    if device_id is None:
+        usb_power(ykush_port, False, ykush_srn)
+        sleep(delay)
+        usb_power(ykush_port, True, ykush_srn)
+        return
+
+    i = 0
+    while device_exists(device_id):
+        raise_on_global_end()
+        if end_flag and end_flag.is_set():
+            return
+
+        if i == 0:
+            logging.debug(f'Power down device ({device_id}) under ykush_port:{ykush_port}')
+            usb_power(ykush_port, False, ykush_srn)
+            i = 20
+        else:
+            i -= 1
+        sleep(0.1)
+
+    sleep(delay)
+    logging.debug(f'Power up device ({device_id}) under ykush_port:{ykush_port}')
+    usb_power(ykush_port, True, ykush_srn)
+
+    i = 0
+    while not device_exists(device_id):
+        raise_on_global_end()
+        if end_flag and end_flag.is_set():
+            return
+
+        if i == 20:
+            # Sometimes JLink falls into a bad state and cannot
+            # be enumerated correctly at first time
+            usb_power(ykush_port, False, ykush_srn)
+            sleep(delay)
+            usb_power(ykush_port, True, ykush_srn)
+            i = 0
+        else:
+            i += 1
+
+        sleep(0.1)
 
 
 def exit_if_admin():

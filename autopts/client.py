@@ -43,8 +43,8 @@ from autopts.ptsprojects.testcase import PTSCallback, TestCaseLT1, TestCaseLT2
 from autopts.ptsprojects.testcase_db import TestCaseTable
 from autopts.pybtp import btp, defs
 from autopts.pybtp.types import BTPError, SynchError
-from autopts.utils import InterruptableThread, usb_power, ResultWithFlag, CounterWithFlag, set_global_end, \
-    raise_on_global_end, RunEnd, get_global_end, have_admin_rights, device_exists
+from autopts.utils import InterruptableThread, ResultWithFlag, CounterWithFlag, set_global_end, \
+    raise_on_global_end, RunEnd, get_global_end, have_admin_rights, ykush_replug_usb
 from cliparser import CliParser
 
 log = logging.debug
@@ -1379,17 +1379,13 @@ def run_recovery(args, ptses):
     iut = autoprojects.iutctl.get_iut()
     iut.stop()
 
-    if sys.platform == 'win32':
-        tty = tty_to_com(args.tty_file)
-    else:
-        tty = args.tty_file
+    if args.ykush:
+        if sys.platform == 'win32':
+            device_id = tty_to_com(args.tty_file)
+        else:
+            device_id = args.tty_file
 
-    ykush = args.ykush
-    if ykush:
-        log(f'Power down device ({tty}) under ykush:{ykush}')
-        while device_exists(tty):
-            raise_on_global_end()
-            usb_power(ykush, False)
+        ykush_replug_usb(args.ykush, device_id=device_id)
 
     for pts in ptses:
         req_sent = False
@@ -1411,12 +1407,7 @@ def run_recovery(args, ptses):
     stack_inst.cleanup()
     stack_inst.synch_init()
 
-    if ykush:
-        log(f'Power up device ({tty}) under ykush:{ykush}')
-        while not device_exists(tty):
-            raise_on_global_end()
-            usb_power(ykush, True)
-
+    if args.ykush:
         # mynewt project has not been refactored yet to reduce the number of
         # IUT board resets.
         if stack_inst.core:
@@ -1452,7 +1443,3 @@ def setup_test_cases(ptses):
             test_cases += mod.test_cases(ptses)
 
     return test_cases
-
-
-def board_power(ykush_port, on=True):
-    usb_power(ykush_port, on)

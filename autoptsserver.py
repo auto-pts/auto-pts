@@ -52,8 +52,7 @@ import wmi
 
 from autopts import ptscontrol
 from autopts.config import SERVER_PORT
-from autopts.ptsprojects.ptstypes import E_FATAL_ERROR
-from autopts.utils import usb_power, CounterWithFlag, get_global_end, device_exists, exit_if_admin
+from autopts.utils import CounterWithFlag, get_global_end, exit_if_admin, ykush_replug_usb
 from autopts.winutils import kill_all_processes
 
 logging = root_logging.getLogger('server')
@@ -160,17 +159,11 @@ class PyPTSWithCallback(ptscontrol.PyPTS, threading.Thread):
         device = self._device
         log(f'Replugging device ({device}) under ykush:{ykush_port} ...')
         if device:
-            while device_exists(device) and not self._end.is_set():
-                usb_power(ykush_port, False)
-
-            while not device_exists(device) and not self._end.is_set():
-                usb_power(ykush_port, True)
+            ykush_replug_usb(self.args.ykush, device_id=device, delay=0, end_flag=self._end)
         else:
             # Cases where ykush was down or the dongle was
             # not enumerated for any other reason.
-            usb_power(ykush_port, False)
-            sleep(3)
-            usb_power(ykush_port, True)
+            ykush_replug_usb(self.args.ykush, device_id=None, delay=3, end_flag=self._end)
         log(f'Done replugging device ({device}) under ykush:{ykush_port}')
 
     def _dispatch(self, method_name, param_tuple):
@@ -561,8 +554,8 @@ if __name__ == "__main__":
     init_logging(_args)
 
     if _args.ykush:
-        for port in _args.ykush:
-            usb_power(port, False)
+        for ykush_config in _args.ykush:
+            ykush_replug_usb(ykush_config, device_id=None, delay=3)
 
     autoptsservers = []
     server_count = len(_args.srv_port)

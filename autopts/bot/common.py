@@ -143,6 +143,8 @@ class BotClient(Client):
         self.args.retry_config = bot_config_dict.get('retry_config', None)
 
         if not errmsg:
+            # Remove default root handler that was created at first logging.debug
+            logging.getLogger().handlers.clear()
             init_logging('_' + '_'.join(str(x) for x in self.args.cli_port))
 
         return errmsg
