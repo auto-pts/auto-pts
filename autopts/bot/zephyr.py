@@ -36,7 +36,6 @@ from autopts.ptsprojects.boards import tty_to_com, release_device, get_build_and
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
 from autopts.ptsprojects.zephyr.iutctl import get_iut, log
 from autopts.bot.common_features import github, report, mail, google_drive
-from autopts.utils import usb_power
 
 PROJECT_NAME = Path(__file__).stem
 
@@ -248,10 +247,6 @@ def main(bot_client):
     else:
         repos_info = {}
         repo_status = ''
-
-    if 'ykush' in args:
-        usb_power(args['ykush'], True)
-        time.sleep(1)
 
     try:
         stats = bot_client.run_tests()

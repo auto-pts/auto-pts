@@ -22,7 +22,7 @@ from distutils.spawn import find_executable
 from autopts.config import SERVER_PORT, CLIENT_PORT
 from autopts.ptsprojects.boards import tty_exists, com_to_tty
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
-from autopts.utils import usb_power
+from autopts.utils import ykush_replug_usb
 
 
 class CliParser(argparse.ArgumentParser):
@@ -166,8 +166,7 @@ class CliParser(argparse.ArgumentParser):
     def check_args_tty(self, args):
         if args.ykush:
             # If ykush is used, the board could be unplugged right now
-            usb_power(args.ykush, True)
-            time.sleep(1)
+            ykush_replug_usb(args.ykush, device_id=args.tty_file, delay=2)
 
         if not tty_exists(args.tty_file):
             return 'TTY mode: {} serial port does not exist!\n'.format(repr(args.tty_file))
