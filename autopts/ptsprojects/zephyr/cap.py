@@ -63,7 +63,7 @@ def set_pixits(ptses):
     pts.set_pixit("CAP", "TSPX_TARGET_LATENCY", "TARGET_BALANCED_LATENCY_RELIABILITY")
     pts.set_pixit("CAP", "TSPX_TARGET_PHY", "LE_2M_PHY")
     pts.set_pixit("CAP", "TSPX_Codec_ID", "0600000000")
-    pts.set_pixit("CAP", "TSPX_VS_Codec_Specific_configuration", "0001")
+    pts.set_pixit("CAP", "TSPX_VS_Codec_Specific_Configuration", "0001")
     pts.set_pixit("CAP", "TSPX_VS_QoS_Framing", "UNFRAMING")
     pts.set_pixit("CAP", "TSPX_VS_QoS_PHY", "2M_PHY")
     pts.set_pixit("CAP", "TSPX_VS_QoS_SDU_Interval", "64")
