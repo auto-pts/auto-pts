@@ -83,6 +83,7 @@ class Stack:
         self.csip = None
         self.tbs = None
         self.gtbs = None
+        self.ots = None
         # GENERATOR append 2
 
     def is_svc_supported(self, svc):
@@ -176,6 +177,9 @@ class Stack:
     def gtbs_init(self):
         self.gtbs = GTBS()
 
+    def ots_init(self):
+        self.ots = OTS()
+
     # GENERATOR append 3
 
     def cleanup(self):
@@ -250,6 +254,9 @@ class Stack:
 
         if self.gtbs:
             self.gtbs_init()
+
+        if self.ots:
+            self.ots_init()
 
         # GENERATOR append 4
 

@@ -14,29 +14,7 @@
 # more details.
 #
 
-from .aics import *
-from .ascs import *
-from .bap import *
-from .ccp import *
-from .core import *
-from .gap import *
-from .gatt import *
-from .gattcl import *
-from .gmcs import *
-from .hap import *
-from .ias import *
-from .l2cap import *
-from .mcp import *
-from .mesh import *
-from .micp import *
-from .mics import *
-from .pacs import *
-from .vcp import *
-from .vcs import *
-from .vocs import *
-from .cap import *
-from .csip import *
-from .tbs import *
-from .gtbs import *
-from .ots import *
-# GENERATOR append 1
+class OTS:
+    def __init__(self):
+        self.event_queues = {
+        }
