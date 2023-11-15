@@ -688,6 +688,13 @@ def core_reg_svc_tbs():
 
 # GENERATOR append 1
 
+def core_reg_svc_ots():
+    logging.debug("%s", core_reg_svc_ots.__name__)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*CORE['ots_reg'])
+
+
 def core_reg_svc_rsp_succ():
     logging.debug("%s", core_reg_svc_rsp_succ.__name__)
     iutctl = get_iut()
