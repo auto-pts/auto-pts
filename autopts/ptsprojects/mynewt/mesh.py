@@ -165,6 +165,7 @@ def test_cases(ptses):
         TestFunc(btp.core_reg_svc_gap),
         TestFunc(btp.core_reg_svc_mesh),
         TestFunc(btp.gap_read_ctrl_info),
+        TestFunc(btp.mesh_init),
         TestFunc(lambda: pts.update_pixit_param(
             "MESH", "TSPX_bd_addr_iut",
             stack.gap.iut_addr_get_str())),
