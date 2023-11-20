@@ -21,7 +21,7 @@ from time import sleep
 
 from autopts.pybtp import defs
 from autopts.pybtp.types import AdType, Addr, IOCap
-from autopts.utils import raise_on_global_end
+from autopts.utils import raise_on_global_end, ResultWithFlag
 
 STACK = None
 log = logging.debug
@@ -1606,10 +1606,10 @@ class SynchPoint:
         self.test_case = test_case
         self.wid = wid
         self.delay = delay
-        self.done = threading.Event()
+        self.done = None
 
     def set_done(self):
-        self.done.set()
+        self.done.set(True)
 
     def clear(self):
         self.done.clear()
@@ -1681,6 +1681,11 @@ class Synch:
         self._synch_table.clear()
 
     def add_synch_element(self, elem):
+        for sync_point in elem:
+            # If a test case has to be repeated, its SyncPoints will be reused.
+            # Reinit done-flags to renew potentially broken locks.
+            sync_point.done = ResultWithFlag()
+
         self._synch_table.append(SynchElem(elem))
 
     def wait_for_start(self, wid, tc_name):

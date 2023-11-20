@@ -409,8 +409,8 @@ class TestCase(PTSCallback):
         self.verify_wids = verify_wids
         self.ok_cancel_wids = ok_cancel_wids
         self.generic_wid_hdl = generic_wid_hdl
-        self.steps_queue = queue.Queue()
-        self.post_wid_queue = []
+        self.steps_queue = None
+        self.post_wid_queue = None
         self.ptsproject_name = ptsproject_name
         self.tc_subproc = None
         self.lf_subproc = None
@@ -418,8 +418,11 @@ class TestCase(PTSCallback):
         self.log_dir = log_dir
 
     def reset(self):
+        # Fields that have to be reinit before retrying a test case
         self.status = "init"
         self.state = None
+        self.steps_queue = queue.Queue()
+        self.post_wid_queue = []
 
     def __str__(self):
         """Returns string representation"""

@@ -889,6 +889,10 @@ class LTThread(InterruptableThread):
         finally:
             finish_count.add(1)
 
+    def interrupt(self):
+        stack.get_stack().synch.cancel_synch()
+        super().interrupt()
+
     def _run_test_case(self, pts, test_case, exceptions, finish_count):
         """Runs the test case specified by a TestCase instance."""
         log("Starting TestCase %s %s", self._run_test_case.__name__,
