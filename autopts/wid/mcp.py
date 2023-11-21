@@ -201,6 +201,15 @@ def hdl_wid_41(params: WIDParams):
     return True
 
 
+def hdl_wid_20001(_: WIDParams):
+    """Please prepare IUT into a connectable mode. Verify that the
+    Implementation Under Test (IUT) can accept GATT connect request from PTS."""
+    stack = get_stack()
+    btp.gap_set_conn()
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    return True
+
+
 def hdl_wid_20100(params: WIDParams):
     """
     Please initiate a GATT connection to the PTS. Verify that the Implementation
@@ -331,9 +340,24 @@ def hdl_wid_20110(params: WIDParams):
     addr_type = btp.pts_addr_type_get()
     addr = btp.pts_addr_get()
 
-    if "0x0101" in params.description:
-        btp.mcp_next_track_obj_id_set(100, addr_type, addr)
+    if "0x00F3" in params.description:
+        btp.mcp_track_position_set(100, addr_type, addr)
+        ev = stack.mcp.wait_track_position_ev(addr_type, addr, 10)
+    elif "0x00F6" in params.description:
+        btp.mcp_playback_speed_set(64, addr_type, addr)
+        ev = stack.mcp.wait_playback_speed_ev(addr_type, addr, 10)
+    elif "0x0101" in params.description:
+        btp.mcp_next_track_obj_id_set(16777477, addr_type, addr)
         ev = stack.mcp.wait_next_track_obj_id_ev(addr_type, addr, 10)
+    elif "0x0104" in params.description:
+        btp.mcp_current_group_obj_id_set(16777498, addr_type, addr)
+        ev = stack.mcp.wait_current_group_obj_id_ev(addr_type, addr, 10)
+    elif "0x0107" in params.description:
+        btp.mcp_playing_order_set(2, addr_type, addr)
+        ev = stack.mcp.wait_playing_order_ev(addr_type, addr, 10)
+    elif "0x00FE" in params.description:
+        btp.mcp_current_track_obj_id_set(16777499, addr_type, addr)
+        ev = stack.mcp.wait_current_track_obj_id_ev(addr_type, addr, 10)
 
     if ev is None:
         return False

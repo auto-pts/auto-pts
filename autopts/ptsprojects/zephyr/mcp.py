@@ -89,10 +89,19 @@ def test_cases(ptses):
     test_case_name_list = pts.get_test_case_list('MCP')
     tc_list = []
 
+    pre_conditions_server = pre_conditions.copy()
+    pre_conditions_server[11] = TestFunc(btp.core_reg_svc_gmcs)
+    pre_conditions_server[13] = TestFunc(stack.gmcs_init)
+
     for tc_name in test_case_name_list:
-        instance = ZTestCase("MCP", tc_name,
-                             cmds=pre_conditions,
-                             generic_wid_hdl=mcp_wid_hdl)
+        if tc_name == 'MCP/SR/SP/BV-01-C':
+            instance = ZTestCase("MCP", tc_name,
+                                 cmds=pre_conditions_server,
+                                 generic_wid_hdl=mcp_wid_hdl)
+        else:
+            instance = ZTestCase("MCP", tc_name,
+                                 cmds=pre_conditions,
+                                 generic_wid_hdl=mcp_wid_hdl)
         tc_list.append(instance)
 
     return tc_list
