@@ -507,8 +507,6 @@ def mcp_icon_obj_id_ev(mcp, data, data_len):
     obj_id_bytes = data[-6:]
     obj_id = int.from_bytes(obj_id_bytes, byteorder='little', signed=False)
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
-
     logging.debug(f'MCP Icon Object ID: addr {addr} addr_type {addr_type},'
                   f' Status {status}, Icon Object ID {obj_id}')
 
@@ -547,8 +545,6 @@ def mcp_parent_group_obj_id_ev(mcp, data, data_len):
     obj_id_bytes = data[-6:]
     obj_id = int.from_bytes(obj_id_bytes, byteorder='little', signed=False)
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
-
     logging.debug(f'MCP Parent Group Object ID: addr {addr} addr_type {addr_type},'
                   f' Status {status}, Parent Group Object ID {obj_id}')
 
@@ -568,10 +564,8 @@ def mcp_current_group_obj_id_ev(mcp, data, data_len):
     obj_id_bytes = data[-6:]
     obj_id = int.from_bytes(obj_id_bytes, byteorder='little', signed=False)
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
-
     logging.debug(f'MCP Current Group Object ID: addr {addr} addr_type {addr_type},'
-                  f' Status {status}, Parent Group Object ID {obj_id}')
+                  f' Status {status}, Current Group Object ID {obj_id}')
 
     mcp.event_received(defs.MCP_CURRENT_GROUP_OBJ_ID_EV, (addr_type, addr, status,
                                                           obj_id))
@@ -678,8 +672,6 @@ def mcp_segments_obj_id_ev(mcp, data, data_len):
     addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
     obj_id_bytes = data[-6:]
     obj_id = int.from_bytes(obj_id_bytes, byteorder='little', signed=False)
-
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
 
     logging.debug(f'MCP Track Segments Object ID: addr {addr} addr_type {addr_type},'
                   f' Status {status}, Track Segments Object ID {obj_id}')
