@@ -36,6 +36,7 @@ class TestCaseTable:
                 "INSERT INTO {} VALUES(?, ?, ?, ?);".format(self.name),
                 (test_case_name, duration, 1, result))
             self.conn.commit()
+            self._close()
             return
 
         (mean, count) = row[0]
@@ -62,10 +63,11 @@ class TestCaseTable:
             "SELECT duration FROM {} "
             "WHERE name=:name;".format(self.name), {"name": test_case_name})
         row = self.cursor.fetchone()
+        self._close()
+
         if row is not None:
             return row[0]
 
-        self._close()
         return None
 
     def get_result(self, test_case_name):
@@ -75,10 +77,11 @@ class TestCaseTable:
             "SELECT result FROM {} "
             "WHERE name=:name".format(self.name), {"name": test_case_name})
         row = self.cursor.fetchone()
+        self._close()
+
         if row is not None:
             return row[0]
 
-        self._close()
         return None
 
     def estimate_session_duration(self, test_cases_names, run_count_max):
