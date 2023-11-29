@@ -599,6 +599,10 @@ HAS_SET_PRESET_NAME = 0x03
 HAS_REMOVE_PRESET = 0x04
 HAS_ADD_PRESET = 0x05
 HAS_SET_PROPERTIES = 0x06
+HAS_TSPX_available_presets_indices = [1,2,4]
+HAS_TSPX_unavailable_presets_indices = [3]
+HAS_TSPX_writable_preset_indices = [1,2]
+HAS_TSPX_unwritable_preset_indices = [4]
 
 CSIS_READ_SUPPORTED_COMMANDS = 0x01
 CSIS_SET_MEMBER_LOCK = 0x02
