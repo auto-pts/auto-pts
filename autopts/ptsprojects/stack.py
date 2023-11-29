@@ -169,7 +169,7 @@ class ConnParams:
 
 class Gap:
     def __init__(self, name, manufacturer_data, appearance, svc_data, flags,
-                 svcs, uri=None, periodic_data=None):
+                 svcs, uri=None, periodic_data=None, le_supp_feat=None):
 
         self.ad = {}
         self.sd = {}
@@ -190,6 +190,7 @@ class Gap:
         self.flags = flags
         self.svcs = svcs
         self.uri = uri
+        self.le_supp_feat = le_supp_feat
         self.periodic_data = periodic_data
         self.oob_legacy = "0000000000000000FE12036E5A889F4D"
 
@@ -2017,9 +2018,10 @@ class Stack:
         return self.supported_svcs & services[svc] > 0
 
     def gap_init(self, name=None, manufacturer_data=None, appearance=None,
-                 svc_data=None, flags=None, svcs=None, uri=None, periodic_data=None):
+                 svc_data=None, flags=None, svcs=None, uri=None, periodic_data=None,
+                 le_supp_feat=None):
         self.gap = Gap(name, manufacturer_data, appearance, svc_data, flags,
-                       svcs, uri, periodic_data)
+                       svcs, uri, periodic_data, le_supp_feat)
 
     def mesh_init(self, uuid, uuid_lt2=None):
         if self.mesh:

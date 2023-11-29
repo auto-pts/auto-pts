@@ -81,6 +81,7 @@ class AdType:
     le_bt_device_addr = 0x1b
     le_role = 0x1c
     uri = 0x24
+    le_supp_feat = 0x27
     rsi = 0x2e
     
 

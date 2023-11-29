@@ -1240,6 +1240,27 @@ def hdl_wid_242(_: WIDParams):
     return False
 
 
+def hdl_wid_243(_: WIDParams):
+    """
+    Please prepare IUT to send an advertising report with LE Supported Features type.
+    """
+    stack = get_stack()
+
+    if stack.gap.le_supp_feat == None:
+        return False
+
+    # Prepare space for LE Supported Features
+    stack.gap.ad.clear()
+    stack.gap.ad[AdType.le_supp_feat] = stack.gap.le_supp_feat
+
+    stack.gap.sd.clear()
+    stack.gap.sd[AdType.le_supp_feat] = stack.gap.le_supp_feat
+
+    btp.gap_adv_ind_on(ad=stack.gap.ad, sd=stack.gap.sd)
+
+    return True
+
+
 def hdl_wid_265(_: WIDParams):
     # Please initiate a link encryption with the Lower Tester.
     btp.gap_pair()
