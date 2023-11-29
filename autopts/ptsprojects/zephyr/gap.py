@@ -67,6 +67,7 @@ iut_svc_data = '1111'
 iut_flags = '11'
 iut_svcs = '1111'
 iut_uri = UriScheme.https + 'github.com/auto-pts'.encode()
+iut_le_supp_feat = 'FF'
 
 # Ad data for periodic advertising in format (type, data)
 # Value: shortened name
@@ -178,7 +179,7 @@ def test_cases(ptses):
         TestFunc(btp.core_reg_svc_gap),
         TestFunc(stack.gap_init, iut_device_name,
                  iut_manufacturer_data, iut_appearance, iut_svc_data, iut_flags,
-                 iut_svcs, iut_uri, periodic_data),
+                 iut_svcs, iut_uri, periodic_data, iut_le_supp_feat),
         TestFunc(btp.gap_read_ctrl_info),
         TestFunc(lambda: pts.update_pixit_param(
             "GAP", "TSPX_bd_addr_iut",
