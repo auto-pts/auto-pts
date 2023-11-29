@@ -109,6 +109,7 @@ iut_config = {
             'GAP/CONN/UCON/BV-06-C',
             'GAP/BROB/BCST/BV-03-C',
             'GAP/BROB/BCST/BV-04-C',
+            'GAP/BROB/BCST/BV-05-C',
             'GAP/BROB/OBSV/BV-06-C',
             'GAP/DISC/RPA/BV-01-C',
             'SM/CEN/KDU/BV-05-C',
