@@ -429,7 +429,7 @@ def hdl_wid_80(params: WIDParams):
     if params.test_case_name in ['GAP/BROB/BCST/BV-05-C']:
         """ make sure we add non-pts address to allow list, alter first bytes of address """
         non_pts_addr = btp.pts_addr_get()
-        non_pts_addr = str(f'{(bytes.fromhex(non_pts_addr)[0] + 1) % 256:x}') + non_pts_addr[2:12:1]
+        non_pts_addr = f'{(bytes.fromhex(non_pts_addr)[0] + 1) % 256:x}' + non_pts_addr[2:]
         address_list = [(btp.pts_addr_type_get(), non_pts_addr)]
         btp.set_filter_accept_list(address_list)
 
@@ -1373,6 +1373,18 @@ def hdl_wid_406(_: WIDParams):
     btp.gap_adv_ind_on(ad=stack.gap.ad, own_addr_type=addr_type)
 
     return True
+
+
+def hdl_wid_1000(params: WIDParams):
+    # Please have IUT enter GAP Discoverable Mode and generate Advertising Packets.
+    # Note: need to advertise with RPAs
+    stack = get_stack()
+
+    btp.gap_adv_off()
+    btp.gap_set_gendiscov()
+    btp.gap_adv_ind_on(ad=stack.gap.ad, sd=stack.gap.sd, own_addr_type=OwnAddrType.le_resolvable_private_address)
+    return True
+
 
 def hdl_wid_1002(_: WIDParams):
     stack = get_stack()
