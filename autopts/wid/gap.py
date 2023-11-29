@@ -903,6 +903,14 @@ def hdl_wid_158(_: WIDParams):
 
 
 def hdl_wid_159(_: WIDParams):
+    # Order IUT to add the lower tester's identity address in the filter accept list and continue
+    # advertising using the gernerated resolvable private address. Press Ok when it is ready,
+    # otherwise press cancel.
+    stack = get_stack()
+
+    btp.gap_adv_off()
+    btp.set_filter_accept_list()
+    btp.gap_adv_ind_on(ad=stack.gap.ad, sd=stack.gap.sd, own_addr_type=OwnAddrType.le_resolvable_private_address)
     return True
 
 
