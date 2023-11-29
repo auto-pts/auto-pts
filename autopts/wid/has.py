@@ -15,17 +15,18 @@
 
 import logging
 import re
+import sys
 
 from enum import IntFlag
-from autopts.wid import generic_wid_hdl
-from autopts.pybtp import btp
+from autopts.pybtp import btp, defs
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp.types import WIDParams
+from autopts.wid import generic_wid_hdl
 
 class PresetProperty(IntFlag):
-    BT_HAS_PROP_NONE      = 0x00
-    BT_HAS_PROP_WRITABLE  = 0x01
-    BT_HAS_PROP_AVAILABLE = 0x02
+    BT_HAS_PROP_NONE      = 0
+    BT_HAS_PROP_WRITABLE  = 1<<0
+    BT_HAS_PROP_AVAILABLE = 1<<1
 
 log = logging.debug
 
@@ -41,7 +42,7 @@ def hdl_wid_450(_: WIDParams):
     """
         Please add a new Preset Record.
     """
-    n, properties = 4, PresetProperty.BT_HAS_PROP_AVAILABLE | PresetProperty.BT_HAS_PROP_WRITABLE
+    n, properties = 5, PresetProperty.BT_HAS_PROP_AVAILABLE | PresetProperty.BT_HAS_PROP_WRITABLE
     btp.has_add_preset(n, properties, 'PRESET_' + str(n))
     return True
 
@@ -66,7 +67,7 @@ def hdl_wid_452(_: WIDParams):
 
 def hdl_wid_453(_: WIDParams):
     """
-        Please sets the Preset record with Index n as available.
+        Please set the Preset record with Index n as available.
     """
     n = int(re.findall(r'\d', _.description)[0])
     properties = PresetProperty.BT_HAS_PROP_WRITABLE | PresetProperty.BT_HAS_PROP_AVAILABLE
@@ -112,12 +113,14 @@ def hdl_wid_494(_: WIDParams):
             5. Change the name of TSPX_writable_preset_index[1] to "New Name item"
             6. Remove Preset Record 4.
     """
-    btp.has_set_preset_name(1, 'RANDOM_1')
+    n = defs.HAS_TSPX_writable_preset_indices[0]
+    btp.has_set_preset_name(n, 'RANDOM_' + str(n))
     properties = PresetProperty.BT_HAS_PROP_AVAILABLE | PresetProperty.BT_HAS_PROP_WRITABLE
     btp.has_add_preset(8, properties, 'PRESET_8')
-    btp.has_add_preset(5, properties, 'PRESET_5')
+    btp.has_add_preset(6, properties, 'PRESET_6')
     btp.has_set_active_index(8)
-    btp.has_set_preset_name(2, 'New Name Item')
+    btp.has_set_preset_name(defs.HAS_TSPX_writable_preset_indices[1], 'New Name Item')
+    btp.has_remove_preset(4)
     return True
 
 

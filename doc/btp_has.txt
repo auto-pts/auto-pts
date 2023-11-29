@@ -7,9 +7,9 @@ Commands and responses:
 
 	Opcode 0x01 - Read Supported Commands command/response
 
-		Controller Index:    <controller id>
-		Command parameters:  <none>
-		Response parameters: <supported commands> (variable)
+		Controller Index:	<controller id>
+		Command parameters:	<none>
+		Response parameters:	<supported commands> (variable)
 
 		Each bit in response is a flag indicating if command with
 		opcode matching bit number is supported. Bit set to 1 means
@@ -22,11 +22,11 @@ Commands and responses:
 
 	Opcode 0x02: HAS Set Active Preset Index
 
-		Controller Index:    <controller id>
-		Command parameters:  Address_Type (1 octet)
-				     Address (6 octets)
-				     Preset Index (1 octet)
-		Response parameters: <None>
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Preset Index (1 octet)
+		Response parameters:	<None>
 
 		This command is used to set the Active Preset. 
 		If called with a Preset Index of 0, it will de-select the Active Preset.
@@ -35,16 +35,16 @@ Commands and responses:
 
 	Opcode 0x03: HAS Set Preset Name
 
-		Controller Index:    <controller id>
-		Command parameters:  Address_Type (1 octet)
-				     Address (6 octets)
-				     Preset Index (1 octet)
-				     Name Length (1 octet)
-				     Name (<Name Length> octets)
-		Response parameters: <None>
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Preset Index (1 octet)
+					Name Length (1 octet)
+					Name (<Name Length> octets)
+		Response parameters:	<None>
 
-        Name shall be a UTF-8 encoded string (nul-termination not needed). 
-		Name Length holds the number of bytes in the UTF-8 encoded name.
+        Name shall be a UTF-8 encoded string. 
+		Name Length holds the number of bytes in the UTF-8 encoded name. 
 
 		This command is used to change the Name of a Preset.
 
@@ -52,11 +52,11 @@ Commands and responses:
 
 	Opcode 0x04: HAS Remove Preset
 
-		Controller Index:    <controller id>
-		Command parameters:  Address_Type (1 octet)
-				     Address (6 octets)
-				     Preset Index (1 octet)
-		Response parameters: <None>
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Preset Index (1 octet)
+		Response parameters:	<None>
 
 		Passing Preset Index := 0 will remove all active Presets.
 
@@ -66,14 +66,14 @@ Commands and responses:
 
 	Opcode 0x05: HAS Add Preset
 
-		Controller Index:    <controller id>
-		Command parameters:  Address_Type (1 octet)
-				     Address (6 octets)
-				     Preset Index (1 octet)
-				     Preset Properties (1 octet)
-				     Name Length (1 octet)
-				     Name (<Name Length> octets)
-		Response parameters: <None>
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Preset Index (1 octet)
+					Preset Properties (1 octet)
+					Name Length (1 octet)
+					Name (<Name Length> octets)
+		Response parameters:	<None>
 
 		Preset Properties is a bit-field, with the following interpretation: 
 		Preset Properties:
@@ -89,12 +89,12 @@ Commands and responses:
 
 	Opcode 0x06: HAS Set Preset Properties (available/unavailable)
 
-		Controller Index:    <controller id>
-		Command parameters:  Address_Type (1 octet)
-				     Address (6 octets)
-				     Preset Index (1 octet)
-				     Preset Properties (1 octet)
-		Response parameters: <None>
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Preset Index (1 octet)
+					Preset Properties (1 octet)
+		Response parameters:	<None>
 
 		Preset Properties is a bit-field, with the following interpretation: 
 		Preset Properties:
