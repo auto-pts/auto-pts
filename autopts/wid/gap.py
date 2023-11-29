@@ -419,14 +419,21 @@ def hdl_wid_79(_: WIDParams):
     return True
 
 
-def hdl_wid_80(_: WIDParams):
+def hdl_wid_80(params: WIDParams):
     stack = get_stack()
 
     btp.gap_adv_off()
     btp.gap_set_nonconn()
     btp.gap_set_nondiscov()
 
-    btp.gap_adv_ind_on(ad=stack.gap.ad, own_addr_type=OwnAddrType.le_resolvable_private_address)
+    if params.test_case_name in ['GAP/BROB/BCST/BV-05-C']:
+        """ make sure we add non-pts address to allow list, alter first bytes of address """
+        non_pts_addr = btp.pts_addr_get()
+        non_pts_addr = str(f'{(bytes.fromhex(non_pts_addr)[0] + 1) % 256:x}') + non_pts_addr[2:12:1]
+        address_list = [(btp.pts_addr_type_get(), non_pts_addr)]
+        btp.set_filter_accept_list(address_list)
+
+    btp.gap_adv_ind_on(ad=stack.gap.ad, sd=stack.gap.sd, own_addr_type=OwnAddrType.le_resolvable_private_address)
 
     return True
 
