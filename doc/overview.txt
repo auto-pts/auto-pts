@@ -109,4 +109,6 @@ ID  Name
  22 MCP Service
  23 GMCS Service
  24 HAP Service
+ 25 CSIP Service
+ 26 CAP Service
  # GENERATOR append 1

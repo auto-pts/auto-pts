@@ -47,6 +47,8 @@ services = {
     "MCP": 1 << defs.BTP_SERVICE_ID_MCP,
     "GMCS": 1 << defs.BTP_SERVICE_ID_GMCS,
     "HAP": 1 << defs.BTP_SERVICE_ID_HAP,
+    "CAP": 1 << defs.BTP_SERVICE_ID_CAP,
+    "CSIP": 1 << defs.BTP_SERVICE_ID_CSIP,
     # GENERATOR append 1
 }
 
@@ -76,6 +78,8 @@ class Stack:
         self.mcp = None
         self.gmcs = None
         self.hap = None
+        self.cap = None
+        self.csip = None
         # GENERATOR append 2
 
     def is_svc_supported(self, svc):
@@ -157,6 +161,12 @@ class Stack:
     def hap_init(self):
         self.hap = HAP()
 
+    def cap_init(self):
+        self.cap = CAP()
+
+    def csip_init(self):
+        self.csip = CSIP()
+
     # GENERATOR append 3
 
     def cleanup(self):
@@ -219,6 +229,12 @@ class Stack:
 
         if self.hap:
             self.hap_init()
+
+        if self.cap:
+            self.cap_init()
+
+        if self.csip:
+            self.csip_init()
 
         # GENERATOR append 4
 

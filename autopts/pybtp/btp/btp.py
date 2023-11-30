@@ -110,13 +110,17 @@ CORE = {
     "vcp_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_VCP),
     "cas_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
-                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_CAS),
+                defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_CAS),
     "mcp_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_MCP),
     "gmcs_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GMCS),
     "hap_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_HAP),
+    "cap_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
+                defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_CAP),
+    "csip_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
+                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_CSIP),
     # GENERATOR append 4
     "read_supp_cmds": (defs.BTP_SERVICE_ID_CORE,
                        defs.CORE_READ_SUPPORTED_COMMANDS,
@@ -595,7 +599,6 @@ def core_reg_svc_mics():
     iutctl.btp_socket.send_wait_rsp(*CORE['mics_reg'])
 
 
-
 def core_reg_svc_ccp():
     logging.debug("%s", core_reg_svc_ccp.__name__)
 
@@ -635,6 +638,20 @@ def core_reg_svc_hap():
 
     iutctl = get_iut()
     iutctl.btp_socket.send_wait_rsp(*CORE['hap_reg'])
+
+
+def core_reg_svc_cap():
+    logging.debug("%s", core_reg_svc_cap.__name__)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*CORE['cap_reg'])
+
+
+def core_reg_svc_csip():
+    logging.debug("%s", core_reg_svc_csip.__name__)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*CORE['csip_reg'])
 
 
 # GENERATOR append 1
@@ -733,6 +750,8 @@ from .vcp import VCP_EV
 from .mcp import MCP_EV
 from .gmcs import GMCS_EV
 from .hap import HAP_EV
+from .cap import CAP_EV
+from .csip import CSIP_EV
 # GENERATOR append 2
 
 from autopts.pybtp.iutctl_common import set_event_handler
@@ -767,6 +786,8 @@ def event_handler(hdr, data):
         defs.BTP_SERVICE_ID_MCP: (MCP_EV, stack.mcp),
         defs.BTP_SERVICE_ID_GMCS: (GMCS_EV, stack.gmcs),
         defs.BTP_SERVICE_ID_HAP: (HAP_EV, stack.hap),
+        defs.BTP_SERVICE_ID_CAP: (CAP_EV, stack.cap),
+        defs.BTP_SERVICE_ID_CSIP: (CSIP_EV, stack.csip),
         # GENERATOR append 3
     }
 
