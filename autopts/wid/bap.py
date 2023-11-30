@@ -1025,7 +1025,9 @@ def create_default_config():
                      cis_id=0x00,
                      presentation_delay=40000,
                      qos_config=None,
-                     codec_set_name=None)
+                     codec_set_name=None,
+                     codec_ltvs=None,
+                     metadata_ltvs=None)
 
 
 def config_codec(config):
@@ -1047,7 +1049,9 @@ def config_codec(config):
                           config.coding_format,
                           config.vid,
                           config.cid,
-                          codec_ltvs_bytes)
+                          codec_ltvs_bytes,
+                          config.addr_type,
+                          config.addr)
     stack.ascs.wait_ascs_operation_complete_ev(config.addr_type,
                                                config.addr,
                                                config.ase_id, 30)
@@ -1072,7 +1076,8 @@ def config_qos(config):
                         config.max_sdu_size,
                         config.retransmission_number,
                         config.max_transport_latency,
-                        config.presentation_delay)
+                        config.presentation_delay,
+                        config.addr_type, config.addr)
     stack.ascs.wait_ascs_operation_complete_ev(config.addr_type,
                                                config.addr,
                                                config.ase_id, 30)
@@ -1081,7 +1086,7 @@ def config_qos(config):
 
 def enable(config):
     stack = get_stack()
-    btp.ascs_enable(config.ase_id)
+    btp.ascs_enable(config.ase_id, config.addr_type, config.addr)
     stack.ascs.wait_ascs_operation_complete_ev(config.addr_type,
                                                config.addr,
                                                config.ase_id, 30)
@@ -1090,7 +1095,7 @@ def enable(config):
 
 def start_streaming(config):
     stack = get_stack()
-    btp.ascs_receiver_start_ready(config.ase_id)
+    btp.ascs_receiver_start_ready(config.ase_id, config.addr_type, config.addr)
     stack.ascs.wait_ascs_operation_complete_ev(config.addr_type,
                                                config.addr,
                                                config.ase_id, 30)
@@ -1099,7 +1104,7 @@ def start_streaming(config):
 
 def stop_streaming(config):
     stack = get_stack()
-    btp.ascs_receiver_stop_ready(config.ase_id)
+    btp.ascs_receiver_stop_ready(config.ase_id, config.addr_type, config.addr)
     stack.ascs.wait_ascs_operation_complete_ev(config.addr_type,
                                                config.addr,
                                                config.ase_id, 30)
@@ -1109,7 +1114,7 @@ def stop_streaming(config):
 def source_disable(config):
     """Disable ASE streams"""
     stack = get_stack()
-    btp.ascs_disable(config.ase_id)
+    btp.ascs_disable(config.ase_id, config.addr_type, config.addr)
     stack.ascs.wait_ascs_operation_complete_ev(config.addr_type,
                                                config.addr,
                                                config.ase_id, 30)
@@ -1119,7 +1124,7 @@ def source_disable(config):
 def sink_disable(config):
     """Disable ASE streams"""
     stack = get_stack()
-    btp.ascs_disable(config.ase_id)
+    btp.ascs_disable(config.ase_id, config.addr_type, config.addr)
     stack.ascs.wait_ascs_operation_complete_ev(config.addr_type,
                                                config.addr,
                                                config.ase_id, 30)
@@ -1129,7 +1134,7 @@ def sink_disable(config):
 def release(config):
     """Release ASE streams"""
     stack = get_stack()
-    btp.ascs_release(config.ase_id)
+    btp.ascs_release(config.ase_id, config.addr_type, config.addr)
     stack.ascs.wait_ascs_operation_complete_ev(config.addr_type,
                                                config.addr,
                                                config.ase_id, 30)
@@ -1142,7 +1147,7 @@ def get_audio_locations_from_pac(addr_type, addr, audio_dir):
     stack = get_stack()
     ev = stack.bap.wait_codec_cap_found_ev(addr_type, addr, audio_dir, 30)
     if ev is None:
-        return False
+        return None
 
     channel_counts = last_1_bit_index(ev[7]) + 1
 
@@ -1721,8 +1726,7 @@ def hdl_wid_353(_: WIDParams):
 
 
 def hdl_wid_357(_: WIDParams):
-    """Wait for Broadcast ISO request.
-    """
+    """Please terminate BIG."""
     stack = get_stack()
     btp.bap_broadcast_source_stop(stack.bap.broadcast_id)
 
