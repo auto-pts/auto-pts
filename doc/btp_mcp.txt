@@ -343,9 +343,37 @@ Events:
 		Event parameters:	Address_Type (1 octet)
 					Address (6 octets)
 					Status (1 octet)
+					Player Name handle (2 octets)
+					Icon Object ID handle (2 octets)
+					Icon Url handle (2 octets)
+					Track Changed handle (2 octets)
+					Track Title handle (2 octets)
+					Track Duration handle (2 octets)
+					Track Position handle (2 octets)
+					Playback Speed handle (2 octets)
+					Seeking Speed handle (2 octets)
+					Segments Object ID handle (2 octets)
+					Current Track Object ID handle (2 octets)
+					Next Track Object ID handle (2 octets)
+					Current Group Object ID handle (2 octets)
+					Parent Group Object ID handle (2 octets)
+					Playing Order handle (2 octets)
+					Playing Orders Supported handle (2 octets)
+					Media State handle (2 octets)
+					Control Point handle (2 octets)
+					Opcodes Supported handle (2 octets)
+					Search Control Point handle (2 octets)
+					Search Result Object ID handle (2 octets)
+					Content Control ID handle (2 octets)
+					OTS Feature handle (2 octets)
+					Object Name handle (2 octets)
+					Object Type handle (2 octets)
+					Object Modified handle (2 octets)
+					Object ID handle (2 octets)
+					Object Action Control Point handle (2 octets)
+					Object List Control Point handle (2 octets)
 
-		This event indicates that the IUT finished discovery of MCS
-		characteristics and subscribing to their notifications.
+		This event returns handles of GMCS and OTS characteristics.
 
 	Opcode 0x81 - Track Duration event
 
