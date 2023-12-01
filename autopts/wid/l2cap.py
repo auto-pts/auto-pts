@@ -550,6 +550,9 @@ def hdl_wid_261(_: WIDParams):
     chan = stack.l2cap.chan_lookup_id(0)
     rx_data = stack.l2cap.rx_data_get(0, 10)
 
+    if rx_data is None:
+        return False
+
     size = [len(d) for d in rx_data]
     return size == 2 * [chan.our_mtu]
 
