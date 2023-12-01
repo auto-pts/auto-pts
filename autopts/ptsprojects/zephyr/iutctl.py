@@ -98,7 +98,7 @@ class ZephyrCtl:
 
         if self.debugger_snr:
             self.btp_address = BTP_ADDRESS + self.debugger_snr
-            self.rtt_logger = RTTLogger() if args.rtt_log else None
+            self.rtt_logger = RTTLogger(args.rtt_log_syncto) if args.rtt_log else None
             self.btmon = BTMON() if args.btmon else None
         else:
             self.btp_address = BTP_ADDRESS
