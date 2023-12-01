@@ -29,6 +29,7 @@ import autopts.ptsprojects.zephyr.pacs
 import autopts.ptsprojects.zephyr.ascs
 import autopts.ptsprojects.zephyr.bap
 import autopts.ptsprojects.zephyr.has
+import autopts.ptsprojects.zephyr.hap
 import autopts.ptsprojects.zephyr.csis
 import autopts.ptsprojects.zephyr.csip
 import autopts.ptsprojects.zephyr.micp
