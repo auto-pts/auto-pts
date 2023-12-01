@@ -120,6 +120,16 @@ iut_config = {
         ]
     },
 
+    "csip_privacy.conf": {
+        "overlay": {
+            'CONFIG_BT_PRIVACY': 'y',
+            'CONFIG_BT_RPA_TIMEOUT': '120',
+        },
+        "test_cases": [
+            'CSIP'
+        ]
+    },
+
     "eatt_two_channels.conf": {
         "overlay": {
             'CONFIG_BT_EATT_MAX': '2',
