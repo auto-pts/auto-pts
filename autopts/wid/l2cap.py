@@ -346,6 +346,7 @@ def hdl_wid_102(_: WIDParams):
 
 def hdl_wid_103(_: WIDParams):
     stack = get_stack()
+    stack.l2cap.clear_data()
     chan = stack.l2cap.chan_lookup_id(0)
     time.sleep(10)
     btp.l2cap_reconfigure(None, None, chan.our_mtu + 1,
@@ -354,8 +355,6 @@ def hdl_wid_103(_: WIDParams):
 
 
 def hdl_wid_104(_: WIDParams):
-    stack = get_stack()
-    stack.l2cap.clear_data()
     return True
 
 
