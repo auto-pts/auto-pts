@@ -54,6 +54,10 @@ class CliParser(argparse.ArgumentParser):
                                "test cases can be specified by profile names."
                                 "Option can be used multiple times.")
 
+        self.add_argument("--test-cases-file", type=argparse.FileType('r'),
+                          help="A file with names of test cases to run. "
+                                "One test case per line. Use instead of -c option.")
+
         self.add_argument("-e", "--excluded", nargs='+', default=[],
                           help="Names of test cases to exclude. Groups of "
                                "test cases can be specified by profile names")

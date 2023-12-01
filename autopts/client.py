@@ -1445,6 +1445,11 @@ class Client:
 
         self.load_test_case_database()
 
+        if self.args.test_cases_file:
+            tests = [_line for line in self.args.test_cases_file.readlines()
+                if (_line := line.strip()) and not _line.startswith("#")]
+            self.args.test_cases.extend(tests)
+
         init_pts(self.args, self.ptses)
 
         btp.init(self.get_iut)
