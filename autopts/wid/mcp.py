@@ -463,15 +463,50 @@ def hdl_wid_20136(params: WIDParams):
 def hdl_wid_20206(params: WIDParams):
     """Please verify that for each supported characteristic, attribute handle/UUID
      pair(s) is returned to the upper tester.
-     Mute: Attribute Handle = 0x00A2
-     Characteristic Properties = 0x1A
-     Handle = 0x00A3
-     UUID = 0x2BC3
+     Media Player Name: Attribute Handle = 0x00E2
+     Characteristic Properties = 0x12
+     Handle = 0x00E3
+     UUID = 0x2B93
+
+     Media Player Icon Object: Attribute Handle = 0x00E5
+     Characteristic Properties = 0x02
+     Handle = 0x00E6
+     UUID = 0x2B94
+     ...
      """
 
-    # There is no way to do that with current API.
+    stack = get_stack()
 
-    return True
+    if params.test_case_name == "MCP/CL/CGGIT/SER/BV-02-C":
+        chars = stack.mcp.event_queues[defs.MCP_DISCOVERED_EV][0][3:25]
+        chrc_list = [f'{chrc:04X}' for chrc in chars]
+    elif params.test_case_name == "MCP/CL/CGGIT/SER/BV-03-C":
+        chars = stack.mcp.event_queues[defs.MCP_DISCOVERED_EV][0][25:]
+        chrc_list = [f'{chrc:04X}' for chrc in chars]
+        # Object First-Created and Object Last-Modified Characteristic are omitted
+        # because Server doest not have access to real time clock (data is set to 0)
+        while '0000' in chrc_list:
+            chrc_list.remove('0000')
+
+    pattern = re.compile(r"0x([0-9a-fA-F]+)")
+    desc_params = pattern.findall(params.description)
+    if not desc_params:
+        logging.error("parsing error")
+        return False
+
+    desc_params_list = desc_params[2::4]
+
+    if params.test_case_name == "MCP/CL/CGGIT/SER/BV-03-C":
+        # Also Object List Filter characteristic isn't supported.
+        unsupported_chrc = ['012A', '012C', '0138', '013D', '013F', '013A']
+        for handle in unsupported_chrc:
+            while handle in desc_params_list:
+                desc_params_list.remove(handle)
+
+    if desc_params_list == chrc_list:
+        return True
+
+    return False
 
 
 def hdl_wid_20144(params:WIDParams):
