@@ -1439,7 +1439,9 @@ class Client:
 
         os.makedirs(self.file_paths["TMP_DIR"], exist_ok=True)
 
-        self.load_test_case_database()
+        if self.args.test_cases_file:
+            tests = [line.strip() for line in self.args.test_cases_file.readlines() if line.strip() and not line.strip().startswith("#")]
+            self.args.test_cases.extend(tests)
 
         init_pts(self.args, self.ptses)
 
