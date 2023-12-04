@@ -2093,6 +2093,30 @@ def hdl_wid_384(_: WIDParams):
     return True
 
 
+def hdl_wid_387(_: WIDParams):
+    """Please send valid streaming data."""
+    stack = get_stack()
+
+    sources = []
+    for ev in stack.ascs.event_queues[defs.ASCS_EV_ASE_STATE_CHANGED]:
+        _, _, ase_id, state = ev
+
+        if state == ASCSState.STREAMING:
+            sources.append(ase_id)
+
+    data = bytearray([j for j in range(0, 41)])
+
+    for i in range(1, 10):
+        for ase_id in sources:
+            try:
+                btp.bap_send(ase_id, data)
+            except BTPError:
+                # Buffer full
+                pass
+
+    return True
+
+
 def hdl_wid_20001(_: WIDParams):
     """Please prepare IUT into a connectable mode. Description: Verify
        that the Implementation Under Test (IUT) can accept GATT connect
