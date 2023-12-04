@@ -1402,7 +1402,6 @@ def hdl_wid_1000(params: WIDParams):
     stack = get_stack()
 
     btp.gap_adv_off()
-    btp.gap_set_gendiscov()
     btp.gap_adv_ind_on(ad=stack.gap.ad, sd=stack.gap.sd, own_addr_type=OwnAddrType.le_resolvable_private_address)
     return True
 
