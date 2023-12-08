@@ -121,6 +121,7 @@ iut_config = {
     },
 
     "csip_privacy.conf": {
+        "pre_overlay": "overlay-le-audio.conf",
         "overlay": {
             'CONFIG_BT_PRIVACY': 'y',
             'CONFIG_BT_RPA_TIMEOUT': '120',
