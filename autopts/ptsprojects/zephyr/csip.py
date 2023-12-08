@@ -51,7 +51,7 @@ def set_pixits(ptses):
     pts.set_pixit("CSIP", "TSPX_target_service", "5F03")
     pts.set_pixit("CSIP", "TSPX_set_size", "1")
     pts.set_pixit("CSIP", "TSPX_sirk", "838E680553F1415AA265BBAFC6EA03B8")
-    pts.set_pixit("CSIP", "TSPX_private_addr_int", "120000")
+    pts.set_pixit("CSIP", "TSPX_private_addr_int", "30000")
     pts.set_pixit("CSIP", "TSPX_iut_ATT_transport", "ATT Bearer on LE Transport")
 
 
