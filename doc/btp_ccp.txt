@@ -34,6 +34,7 @@ Commands and responses:
 		characteristics that support it.
 
 		Note: A Discovery Complete Event will be issued when discovery has completed.
+		Also, the IUT may send Characteristic Handles Event.
 
 		In case of an error, the error response will be returned.
 
@@ -133,6 +134,228 @@ Commands and responses:
 
 		In case of an error, the error response will be returned.
 
+	Opcode 0x07 - Read Bearer Name
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+					Index (1 octets)
+		Response parameters:    <none>
+
+		This command is used to read bearer provider name of a TBS instance.
+		During operation, the IUT may send event:
+				Characteristic String Value Event
+
+	Opcode 0x08 - Read Bearer UCI
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+					Index (1 octets)
+		Response parameters:    <none>
+
+		This command is used to read UCI of a TBS instance.
+		During operation, the IUT may send event:
+				Characteristic String Value Event
+
+	Opcode 0x09 - Read Bearer Technology
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+					Index (1 octets)
+		Response parameters:    <none>
+
+		This command is used to read technology of a TBS instance.
+		0x01 - 3G
+		0x02 - 4G
+		0x03 - LTE
+		0x04 - Wi-Fi
+		0x05 - 5G
+		0x06 - GSM
+		0x07 - CDMA
+		0x08 - 2G
+		0x09 - WCDMA
+
+		During operation, the IUT may send event:
+				Characteristic String Value Event
+
+	Opcode 0x0a - Read URI List
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+					Index (1 octets)
+		Response parameters:    <none>
+
+		This command is used to read URI schemes list of a TBS instance.
+		During operation, the IUT may send event:
+				Characteristic String Value Event
+
+	Opcode 0x0b - Read Signal Strength
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+					Index (1 octets)
+		Response parameters:    <none>
+
+		This command is used to read current signal strength list of a TBS instance.
+		During operation, the IUT may send event:
+				Characteristic Value Event
+
+	Opcode 0x0c - Read Signal Interval
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+					Index (1 octets)
+		Response parameters:    <none>
+
+		This command is used to read current signal strength reporting
+		interval of a TBS instance.
+		During operation, the IUT may send event:
+				Characteristic Value Event
+
+	Opcode 0x0d - Read Current Calls
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+					Index (1 octets)
+		Response parameters:    <none>
+
+		This command is used to read list of current calls of a TBS instance.
+
+	Opcode 0x0e - Read CCID
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+					Index (1 octets)
+		Response parameters:    <none>
+
+		This command is used to read content ID of a TBS instance.
+		During operation, the IUT may send event:
+				Characteristic Value Event
+
+	Opcode 0x0f - Read Call URI
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+					Index (1 octets)
+		Response parameters:    <none>
+
+		This command is used to read call target URI of a TBS instance.
+		During operation, the IUT may send event:
+				Read String Value event
+
+	Opcode 0x10 - Read Status Flags
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+					Index (1 octets)
+		Response parameters:    <none>
+
+		This command is used to read the feature and status value
+		of a TBS instance.
+		During operation, the IUT may send event:
+				Characteristic Value Event
+
+	Opcode 0x11 - Read Optional Opcodes
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+					Index (1 octets)
+		Response parameters:    <none>
+
+		This command is used to read supported opcodes of a TBS instance.
+		During operation, the IUT may send event:
+				Characteristic Value Event
+
+	Opcode 0x12 - Read Friendly Name
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+					Index (1 octets)
+		Response parameters:    <none>
+
+		This command is used to read the friendly name of a call
+		for a TBS instance.
+		During operation, the IUT may send event:
+				Characteristic String Value Event
+
+	Opcode 0x13 - Read Remote URI
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+					Index (1 octets)
+		Response parameters:    <none>
+
+		This command is used to read the remote URI of a TBS instance.
+		During operation, the IUT may send event:
+				Characteristic String Value Event
+
+	Opcode 0x14 - Set Signal Interval
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+					Index (1 octets)
+					Interval (1 octets)
+		Response parameters:    <none>
+
+		This command is used to Set the signal strength reporting interval
+		for a TBS instance.
+		During operation, the IUT may send event:
+				Characteristic Value Event
+
+	Opcode 0x15 - Hold Call
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+					Index (1 octets)
+					Call ID (1 octets)
+		Response parameters:    <none>
+
+		This command is used to request to hold a call.
+		During operation, the IUT may send event:
+				Call Control Point event
+
+	Opcode 0x16 - Retrieve Call
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+					Index (1 octets)
+					Call ID (1 octets)
+		Response parameters:    <none>
+
+		This command is used to retrieve call from (local) hold.
+		During operation, the IUT may send event:
+				Call Control Point event
+
+	Opcode 0x17 - Join Calls
+
+		Controller Index:	<controller id>
+		Command parameters:     Address_Type (1 octet)
+					Address (6 octets)
+					Index (1 octets)
+					Count (1 octet)
+					Call IDs (varies)
+		Response parameters:    <none>
+
+		This command is used to join multiple calls. Call IDs is an array
+		of 1 octet Call IDs.
+		During operation, the IUT may send event:
+				Call Control Point event
+
 Events:
 	Opcode 0x80 - Discover Completed event
 
@@ -192,3 +415,57 @@ Events:
         	This event indicates that the IUT finished reading the call states.
 		If there are any active calls, Call Count > 0, Call State (3 octets) will 
 		be returned for each active call.
+
+	Opcode 0x82 - Characteristics Handles Event
+
+		Controller Index:	<controller id>
+		Event parameters:	Bearer Provider Name Handle (2 octets)
+					Bearer UCI Handle (2 octets)
+					Bearer Technology Handle (2 octets)
+					URI List Handle (2 octets)
+					Signal Strength Handle (2 octets)
+					Signal Interval Handle (2 octets)
+					Current Calls Handle (2 octets)
+					CCID Handle (2 octets)
+					Status Flags Handle (2 octets)
+					Bearer URI Handle (2 octets)
+					Call State Handle (2 octets)
+					Call Control Point Handle (2 octets)
+					Optional Opcodes Handle (2 octets)
+					Termination Reasons Handle (2 octets)
+					Incoming Call Handle (2 octets)
+					Friendly Name Handle (2 octets)
+
+		This event returns handles of TBS characteristics.
+
+	Opcode 0x83 - Characteristic Value Event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status (1 octet)
+					Instance Index (4 octets)
+					Value (1 octet)
+
+		This event returns integer value of characteristic.
+
+	Opcode 0x84 - Characteristic String Value Event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status (1 octet)
+					Instance Index (4 octets)
+					Data Length (1 octet)
+					String Data (varies)
+
+		This event returns string value of characteristic.
+
+	Opcode 0x85 - Call Control Point Event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status (1 octet)
+
+		This event returns status value for call control functions.
