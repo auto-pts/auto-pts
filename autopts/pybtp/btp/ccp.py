@@ -24,8 +24,7 @@ from time import sleep
 from autopts.pybtp import defs
 from autopts.pybtp.btp.btp import CONTROLLER_INDEX, get_iut_method as get_iut, btp_hdr_check, pts_addr_get, pts_addr_type_get
 from autopts.ptsprojects.stack import get_stack
-from autopts.pybtp.types import addr2btp_ba
-
+from autopts.pybtp.types import addr2btp_ba, BTPError
 
 CCP = {
     'read_supported_cmds': ( defs.BTP_SERVICE_ID_CCP,
@@ -45,7 +44,58 @@ CCP = {
                              CONTROLLER_INDEX),
     'read_call_state':     ( defs.BTP_SERVICE_ID_CCP,
                              defs.CCP_READ_CALL_STATE,
-                             CONTROLLER_INDEX)
+                             CONTROLLER_INDEX),
+    'read_bearer_name':    (defs.BTP_SERVICE_ID_CCP,
+                            defs.CCP_READ_BEARER_NAME,
+                            CONTROLLER_INDEX),
+    'read_bearer_uci':     (defs.BTP_SERVICE_ID_CCP,
+                            defs.CCP_READ_BEARER_UCI,
+                            CONTROLLER_INDEX),
+    'read_bearer_tech':    (defs.BTP_SERVICE_ID_CCP,
+                            defs.CCP_READ_BEARER_TECH,
+                            CONTROLLER_INDEX),
+    'read_uri_list':       (defs.BTP_SERVICE_ID_CCP,
+                            defs.CCP_READ_URI_LIST,
+                            CONTROLLER_INDEX),
+    'read_signal_strength': (defs.BTP_SERVICE_ID_CCP,
+                             defs.CCP_READ_SIGNAL_STRENGTH,
+                             CONTROLLER_INDEX),
+    'read_signal_interval': (defs.BTP_SERVICE_ID_CCP,
+                             defs.CCP_READ_SIGNAL_INTERVAL,
+                             CONTROLLER_INDEX),
+    'read_current_calls':   (defs.BTP_SERVICE_ID_CCP,
+                             defs.CCP_READ_CURRENT_CALLS,
+                             CONTROLLER_INDEX),
+    'read_ccid':            (defs.BTP_SERVICE_ID_CCP,
+                             defs.CCP_READ_CCID,
+                             CONTROLLER_INDEX),
+    'read_call_uri':        (defs.BTP_SERVICE_ID_CCP,
+                             defs.CCP_READ_CALL_URI,
+                             CONTROLLER_INDEX),
+    'read_status_flags':    (defs.BTP_SERVICE_ID_CCP,
+                             defs.CCP_READ_STATUS_FLAGS,
+                             CONTROLLER_INDEX),
+    'read_optional_opcodes':(defs.BTP_SERVICE_ID_CCP,
+                             defs.CCP_READ_OPTIONAL_OPCODES,
+                             CONTROLLER_INDEX),
+    'read_friendly_name':   (defs.BTP_SERVICE_ID_CCP,
+                             defs.CCP_READ_FRIENDLY_NAME,
+                             CONTROLLER_INDEX),
+    'read_remote_uri':      (defs.BTP_SERVICE_ID_CCP,
+                             defs.CCP_READ_REMOTE_URI,
+                             CONTROLLER_INDEX),
+    'set_signal_interval':  (defs.BTP_SERVICE_ID_CCP,
+                             defs.CCP_SET_SIGNAL_INTERVAL,
+                             CONTROLLER_INDEX),
+    'hold_call':            (defs.BTP_SERVICE_ID_CCP,
+                             defs.CCP_HOLD_CALL,
+                             CONTROLLER_INDEX),
+    'retrieve_call':        (defs.BTP_SERVICE_ID_CCP,
+                             defs.CCP_RETRIEVE_CALL,
+                             CONTROLLER_INDEX),
+    'join_calls':           (defs.BTP_SERVICE_ID_CCP,
+                             defs.CCP_JOIN_CALLS,
+                             CONTROLLER_INDEX),
 }
 
 class CallState(IntEnum):
@@ -153,6 +203,216 @@ def ccp_read_call_state(index, bd_addr_type=None, bd_addr=None):
     ccp_command_rsp_succ()
 
 
+def ccp_read_bearer_name(index, bd_addr_type=None, bd_addr=None):
+    logging.debug(f"{ccp_read_bearer_name.__name__}")
+
+    data = address_to_ba(bd_addr_type, bd_addr)
+    data += struct.pack('<B', index)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*CCP['read_bearer_name'], data=data)
+
+    ccp_command_rsp_succ()
+
+
+def ccp_read_bearer_uci(index, bd_addr_type=None, bd_addr=None):
+    logging.debug(f"{ccp_read_bearer_uci.__name__}")
+
+    data = address_to_ba(bd_addr_type, bd_addr)
+    data += struct.pack('<B', index)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*CCP['read_bearer_uci'], data=data)
+
+    ccp_command_rsp_succ()
+
+
+def ccp_read_bearer_tech(index, bd_addr_type=None, bd_addr=None):
+    logging.debug(f"{ccp_read_bearer_tech.__name__}")
+
+    data = address_to_ba(bd_addr_type, bd_addr)
+    data += struct.pack('<B', index)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*CCP['read_bearer_tech'], data=data)
+
+    ccp_command_rsp_succ()
+
+
+def ccp_read_uri_list(index, bd_addr_type=None, bd_addr=None):
+    logging.debug(f"{ccp_read_uri_list.__name__}")
+
+    data = address_to_ba(bd_addr_type, bd_addr)
+    data += struct.pack('<B', index)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*CCP['read_uri_list'], data=data)
+
+    ccp_command_rsp_succ()
+
+
+def ccp_read_signal_strength(index, bd_addr_type=None, bd_addr=None):
+    logging.debug(f"{ccp_read_signal_strength.__name__}")
+
+    data = address_to_ba(bd_addr_type, bd_addr)
+    data += struct.pack('<B', index)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*CCP['read_signal_strength'], data=data)
+
+    ccp_command_rsp_succ()
+
+
+def ccp_read_signal_interval(index, bd_addr_type=None, bd_addr=None):
+    logging.debug(f"{ccp_read_signal_interval.__name__}")
+
+    data = address_to_ba(bd_addr_type, bd_addr)
+    data += struct.pack('<B', index)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*CCP['read_signal_interval'], data=data)
+
+    ccp_command_rsp_succ()
+
+
+def ccp_read_current_calls(index, bd_addr_type=None, bd_addr=None):
+    logging.debug(f"{ccp_read_current_calls.__name__}")
+
+    data = address_to_ba(bd_addr_type, bd_addr)
+    data += struct.pack('<B', index)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*CCP['read_current_calls'], data=data)
+
+    ccp_command_rsp_succ()
+
+
+def ccp_read_ccid(index, bd_addr_type=None, bd_addr=None):
+    logging.debug(f"{ccp_read_ccid.__name__}")
+
+    data = address_to_ba(bd_addr_type, bd_addr)
+    data += struct.pack('<B', index)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*CCP['read_ccid'], data=data)
+
+    ccp_command_rsp_succ()
+
+
+def ccp_read_call_uri(index, bd_addr_type=None, bd_addr=None):
+    logging.debug(f"{ccp_read_call_uri.__name__}")
+
+    data = address_to_ba(bd_addr_type, bd_addr)
+    data += struct.pack('<B', index)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*CCP['read_call_uri'], data=data)
+
+    ccp_command_rsp_succ()
+
+
+def ccp_read_status_flags(index, bd_addr_type=None, bd_addr=None):
+    logging.debug(f"{ccp_read_status_flags.__name__}")
+
+    data = address_to_ba(bd_addr_type, bd_addr)
+    data += struct.pack('<B', index)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*CCP['read_status_flags'], data=data)
+
+    ccp_command_rsp_succ()
+
+
+def ccp_read_optional_opcodes(index, bd_addr_type=None, bd_addr=None):
+    logging.debug(f"{ccp_read_optional_opcodes.__name__}")
+
+    data = address_to_ba(bd_addr_type, bd_addr)
+    data += struct.pack('<B', index)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*CCP['read_optional_opcodes'], data=data)
+
+    ccp_command_rsp_succ()
+
+
+def ccp_read_friendly_name(index, bd_addr_type=None, bd_addr=None):
+    logging.debug(f"{ccp_read_friendly_name.__name__}")
+
+    data = address_to_ba(bd_addr_type, bd_addr)
+    data += struct.pack('<B', index)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*CCP['read_friendly_name'], data=data)
+
+    ccp_command_rsp_succ()
+
+
+def ccp_read_remote_uri(index, bd_addr_type=None, bd_addr=None):
+    logging.debug(f"{ccp_read_remote_uri.__name__}")
+
+    data = address_to_ba(bd_addr_type, bd_addr)
+    data += struct.pack('<B', index)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*CCP['read_remote_uri'], data=data)
+
+    ccp_command_rsp_succ()
+
+
+def ccp_set_signal_interval(index, interval, bd_addr_type=None, bd_addr=None):
+    logging.debug(f"{ccp_set_signal_interval.__name__}")
+
+    data = address_to_ba(bd_addr_type, bd_addr)
+    data += struct.pack('<BB', index, interval)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*CCP['set_signal_interval'], data=data)
+
+    ccp_command_rsp_succ()
+
+
+def ccp_hold_call(index, call_id, bd_addr_type=None, bd_addr=None):
+    logging.debug(f"{ccp_hold_call.__name__}")
+
+    data = address_to_ba(bd_addr_type, bd_addr)
+    data += struct.pack('<BB', index, call_id)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*CCP['hold_call'], data=data)
+
+    ccp_command_rsp_succ()
+
+
+def ccp_retrieve_call(index, call_id, bd_addr_type=None, bd_addr=None):
+    logging.debug(f"{ccp_retrieve_call.__name__}")
+
+    data = address_to_ba(bd_addr_type, bd_addr)
+    data += struct.pack('<BB', index, call_id)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*CCP['retrieve_call'], data=data)
+
+    ccp_command_rsp_succ()
+
+
+def ccp_join_calls(index, count, call_index: [], bd_addr_type=None, bd_addr=None):
+    logging.debug(f"{ccp_join_calls.__name__}")
+
+    data = address_to_ba(bd_addr_type, bd_addr)
+    data.extend(struct.pack('<B', index))
+    data.extend(struct.pack('<B', count))
+    if count > 1:
+        for i in range(count):
+            data.extend(struct.pack('<B', int(call_index[i])))
+    else:
+        data.extend(struct.pack('<B', int(call_index[0])))
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*CCP['join_calls'], data=data)
+
+    ccp_command_rsp_succ()
+
+
 def ccp_timeout(flag):
     flag.clear()
 
@@ -198,6 +458,111 @@ def ccp_ev_discovered(ccp, data, data_len):
         'gtbs': gtbs_found
     }
     ccp.event_received(defs.CCP_EV_DISCOVERED, event_dict)
+
+
+def ccp_ev_chrc_handles(ccp, data, data_len):
+    logging.debug('%s %r', ccp_ev_chrc_handles.__name__, data)
+
+    fmt = '<HHHHHHHHHHHHHHHH'
+    if len(data) < struct.calcsize(fmt):
+        raise BTPError('Invalid data length')
+
+    provider_name, bearer_uci, bearer_technology, uri_list, signal_strength, signal_interval,\
+        current_calls, ccid, status_flags, bearer_uri, call_state, control_point,\
+        optional_opcodes, termination_reasons, incoming_call,\
+        friendly_name = struct.unpack_from(fmt, data)
+
+    logging.debug(f'CCP Characteristics Handles: Bearer Provider Name {provider_name},'
+                  f' Bearer UCI Handle {bearer_uci}, Bearer Technology {bearer_technology}, '
+                  f'URI List Handle {uri_list}, Signal Strength {signal_strength},'
+                  f' Signal Interval Handle {signal_interval}, Current Calls {current_calls},'
+                  f'CCID Handle {ccid}, Status Flags {status_flags}, Bearer URI {bearer_uri}, '
+                  f'Call State {call_state}, Call Control Point {control_point}, '
+                  f'Optional Opcodes Handle {optional_opcodes},'
+                  f'Termination Reasons {termination_reasons}, Incoming Call {incoming_call},'
+                  f'Friendly Name {friendly_name}')
+
+    ccp.event_received_2(defs.CCP_EV_CHRC_HANDLES, (provider_name, bearer_uci, bearer_technology,
+                                                    uri_list, signal_strength, signal_interval,
+                                                    current_calls, ccid, status_flags, bearer_uri,
+                                                    call_state, control_point, optional_opcodes,
+                                                    termination_reasons, incoming_call,
+                                                    friendly_name))
+
+
+def ccp_ev_chrc_val(ccp, data, data_len):
+    logging.debug('%s %r', ccp_ev_chrc_val.__name__, data)
+
+    fmt = '<B6sbBB'
+    if len(data) < struct.calcsize(fmt):
+        raise BTPError('Invalid data length')
+
+    addr_type, addr, status, inst_index, value = struct.unpack_from(fmt, data)
+
+    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+
+    logging.debug(f'CCP Characteristic Read: addr {addr} addr_type '
+                  f'{addr_type}, status {status}, Instance index {inst_index},'
+                  f' Value {value}')
+
+    ccp.event_received_2(defs.CCP_EV_CHRC_VAL, (addr_type, addr, status, inst_index,
+                                                value))
+
+
+def ccp_ev_chrc_str(ccp, data, data_len):
+    logging.debug('%s %r', ccp_ev_chrc_str.__name__, data)
+
+    fmt = '<B6sbBB'
+
+    fmt_size = struct.calcsize(fmt)
+    if len(data) < fmt_size:
+        raise BTPError('Invalid data length')
+
+    addr_type, addr, status, inst_index, data_len = struct.unpack_from(fmt, data)
+    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+
+    str_data = struct.unpack_from(f'<{data_len}s', data, offset=fmt_size)[0].decode('utf-8')
+
+    logging.debug(f'CCP Characteristic String data: addr {addr} addr_type '
+                  f'{addr_type}, status {status}, String Data: {str_data}')
+
+    ccp.event_received_2(defs.CCP_EV_CHRC_STR, (addr_type, addr, status, inst_index, str_data))
+
+
+def ccp_ev_cp(ccp, data, data_len):
+    logging.debug('%s %r', ccp_ev_cp.__name__, data)
+
+    fmt = '<B6sb'
+
+    fmt_size = struct.calcsize(fmt)
+    if len(data) < fmt_size:
+        raise BTPError('Invalid data length')
+
+    addr_type, addr, status = struct.unpack_from(fmt, data)
+    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+
+    logging.debug(f'CCP Control Point event: addr {addr} addr_type '
+                  f'{addr_type}, status {status}')
+
+    ccp.event_received_2(defs.CCP_EV_CP, (addr_type, addr, status))
+
+
+def ccp_ev_current_calls(ccp, data, data_len):
+    logging.debug('%s %r', ccp_ev_current_calls.__name__, data)
+
+    fmt = '<B6sb'
+
+    fmt_size = struct.calcsize(fmt)
+    if len(data) < fmt_size:
+        raise BTPError('Invalid data length')
+
+    addr_type, addr, status = struct.unpack_from(fmt, data)
+    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+
+    logging.debug(f'CCP Current Calls event: addr {addr} addr_type '
+                  f'{addr_type}, status {status}')
+
+    ccp.event_received_2(defs.CCP_EV_CURRENT_CALLS, (addr_type, addr, status))
 
 
 def ccp_await_call_state(timeout=1000):
@@ -257,5 +622,10 @@ def ccp_ev_call_states(ccp, data, data_len):
 
 CCP_EV = {
     defs.CCP_EV_DISCOVERED: ccp_ev_discovered,
-    defs.CCP_EV_CALL_STATES: ccp_ev_call_states
+    defs.CCP_EV_CALL_STATES: ccp_ev_call_states,
+    defs.CCP_EV_CHRC_HANDLES: ccp_ev_chrc_handles,
+    defs.CCP_EV_CHRC_VAL: ccp_ev_chrc_val,
+    defs.CCP_EV_CHRC_STR: ccp_ev_chrc_str,
+    defs.CCP_EV_CP: ccp_ev_cp,
+    defs.CCP_EV_CURRENT_CALLS: ccp_ev_current_calls,
 }

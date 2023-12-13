@@ -18,9 +18,10 @@ import logging
 import sys
 import re
 import struct
+import time
 
 from enum import IntEnum, IntFlag
-from autopts.pybtp import btp
+from autopts.pybtp import btp, defs
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp.types import WIDParams
 from autopts.wid import generic_wid_hdl
@@ -68,6 +69,7 @@ class Uuid(IntEnum):
     CALLCPC                 = 0x2bbe # Call Control Point Characteristic
 
 BT_TBS_GTBS_INDEX = 0xff
+# 0x00 is TBS Service index instance
 
 global __gtbs_ccpc_handle, __round
 
@@ -151,63 +153,139 @@ def dump_services(attrs):
                 print("\t\tDescriptor: %s handle %d" % (desc.uuid, desc.handle))
     
 
-def hdl_wid_104(_: WIDParams):
+def hdl_wid_104(params: WIDParams):
     """
-        Please Write(WRITE_REQ) Call Control Point Op Code:(0x00) and Call ID(1)
-        Description: Accept the incoming call with Call_Index 1
-        ........................................................................
-        Please Write(WRITE_REQ) Call Control Point Op Code:(0x01) and Call ID(1)
-        Description: Terminate the call with Call_Index 1
+    Please Write(WRITE_REQ) Call Control Point Op Code:(0x00) and Call ID(1)
+    Description: Accept the incoming call with Call_Index 1
     """
-    result = re.search(r'Op Code:\((0x[0-9A-F]{2})\) and Call ID\((\d)\)', _.description)
+    stack = get_stack()
+    addr_type = btp.pts_addr_type_get()
+    addr = btp.pts_addr_get()
+
+    tbs_testcases = ["CCP/CL/CP/BV-01-C",
+                     "CCP/CL/CP/BV-02-C",
+                     "CCP/CL/CP/BV-03-C",
+                     "CCP/CL/CP/BV-04-C",
+                     "CCP/CL/CP/BV-05-C",
+                     "CCP/CL/CP/BV-06-C",
+                     "CCP/CL/CP/BV-07-C",
+                     "CCP/CL/SPE/BI-05-C"]
+
+    if params.test_case_name in tbs_testcases:
+        inst_index = 0x00
+    else:
+        inst_index = BT_TBS_GTBS_INDEX
+
+    result = re.search(r'Op Code:\((0x[0-9A-F]{2})\) and Call ID\((\d)\)', params.description)
+
     if result:
         opCode, callID = int(result.group(1), 16), int(result.group(2))
         if opCode == 0:
-            btp.ccp_accept_call(BT_TBS_GTBS_INDEX, callID)
+            btp.ccp_accept_call(inst_index, callID)
         elif opCode == 1:
-            btp.ccp_terminate_call(BT_TBS_GTBS_INDEX, callID)
-        return opCode in [0,1]
-    return False
+            btp.ccp_terminate_call(inst_index, callID)
+        elif opCode == 2:
+            btp.ccp_hold_call(inst_index, callID)
+        elif opCode == 3:
+            btp.ccp_retrieve_call(inst_index, callID)
+        elif opCode == 4:
+            btp.ccp_originate_call(inst_index, 'skype:test')
 
-
-def hdl_wid_114(_: WIDParams):
-    """
-        Please send Write(WRITE_REQ) or Write Without Response to Call Control Point with any Op Code and Call ID with any value'
-        It is not possible to sent an invalid Op Code with the current tbs_client API.  This must be done manually.
-    """
-    global __gtbs_ccpc_handle, __round
-
-    __round = 1 if not __round else __round + 1
-
-    if __round == 1:
-        data = binascii.hexlify(struct.pack('<BB', OpCode.ILLEGAL, 1)).decode()
-        btp.gattc_write_without_rsp(btp.pts_addr_type_get(), btp.pts_addr_get(), __gtbs_ccpc_handle, data)
-    elif __round == 2:
-        btp.ccp_terminate_call(BT_TBS_GTBS_INDEX, 5)
-    elif __round == 3:
-        btp.ccp_terminate_call(BT_TBS_GTBS_INDEX, 6)
-    else:
-        btp.ccp_originate_call(BT_TBS_GTBS_INDEX, 'skype:killroy')
-
-    if __round > 1:
-        stack = get_stack()
-        stack.gatt.wait_notification_ev(0.5)
-        if stack.gatt.notification_events:
-            handle, data = stack.gatt.notification_events[-1][-2:]
-            opcode, index, reason = struct.unpack('<BBB', data)
-            return (__round, opcode, reason) == (2, OpCode.TERMINATE, ResultCode.OPCODE_NOT_SUPPORTED) or \
-                   (__round, opcode, reason) == (3, OpCode.TERMINATE, ResultCode.INVALID_CALL_INDEX) or \
-                   (__round, opcode, reason) == (4, OpCode.ORIGINATE, ResultCode.STATE_MISMATCH) or \
-                   (__round, opcode, reason) == (5, OpCode.ORIGINATE, ResultCode.LACK_OF_RESOURCES)
+    ev = stack.ccp.wait_cp_ev(addr_type, addr, 30, remove=False)
+    if ev[2] != 0:
+        if params.test_case_name == 'CCP/CL/SPE/BI-06-C':
+            # Invalid opcode should be returned
+            return True
         return False
-    
+
     return True
 
 
-def hdl_wid_115(_: WIDParams):
+def hdl_wid_112(params: WIDParams):
     """
-        Please execute the GATT Read Characteristic Value sub-procedure for any characteristic.
-        We choose to read the call state.
+    Please Write(WRITE_REQ) Call Control Point with Originate Op Code:
+    (0x04) with a valid formatted URI.
+    """
+    stack = get_stack()
+    addr_type = btp.pts_addr_type_get()
+    addr = btp.pts_addr_get()
+
+    if params.test_case_name == "CCP/CL/CP/BV-06-C":
+        # TBS testcase
+        inst_index = 0x00
+    else:
+        inst_index = BT_TBS_GTBS_INDEX
+
+    btp.ccp_originate_call(inst_index, 'skype:test')
+
+    ev = stack.ccp.wait_cp_ev(addr_type, addr, 10)
+    if ev[2] != 0:
+        return False
+
+    return True
+
+
+def hdl_wid_113(params: WIDParams):
+    """
+    Please Write(WRITE_REQ) Call Control Point with Join Op Code:
+    (0x05) with Call ID(1) and Call ID(2)
+    """
+    stack = get_stack()
+    addr_type = btp.pts_addr_type_get()
+    addr = btp.pts_addr_get()
+
+    call_index = re.findall(r'Call ID\((\d+)\)', params.description)
+    count = len(call_index)
+
+    tbs_testcases = ["CCP/CL/CP/BV-06-C",
+                     "CCP/CL/CP/BV-07-C"]
+
+    if params.test_case_name in tbs_testcases:
+        inst_index = 0x00
+    else:
+        inst_index = BT_TBS_GTBS_INDEX
+
+    btp.ccp_join_calls(inst_index, count, call_index, addr_type, addr)
+    ev = stack.ccp.wait_cp_ev(addr_type, addr, 30, remove=False)
+
+    if ev[2] != 0:
+        if params.test_case_name == 'CCP/CL/SPE/BI-03-C' or \
+                params.test_case_name == 'CCP/CL/SPE/BI-04-C':
+            # Invalid opcode should be returned
+            return True
+        return False
+
+    return True
+
+
+def hdl_wid_114(params: WIDParams):
+    """
+    Please send Write(WRITE_REQ) or Write Without Response to Call Control Point
+    with any Op Code and Call ID with any value.
+    """
+    stack = get_stack()
+    addr_type = btp.pts_addr_type_get()
+    addr = btp.pts_addr_get()
+
+    if params.test_case_name == "CCP/CL/SPE/BI-01-C":
+        # TBS testcase
+        inst_index = 0x00
+    else:
+        inst_index = BT_TBS_GTBS_INDEX
+
+    btp.ccp_terminate_call(inst_index, 1)
+    ev = stack.ccp.wait_cp_ev(addr_type, addr, 20, remove=True)
+    if ev[2] != 0:
+        # Invalid opcode should be returned
+        return True
+
+    return False
+
+
+def hdl_wid_115(params: WIDParams):
+    """
+    Please execute the GATT Read Characteristic Value sub-procedure for any characteristic.
+    We choose to read the call state.
     """
     btp.ccp_read_call_state(BT_TBS_GTBS_INDEX)
     success, status, index, call_count, states = btp.ccp_await_call_state()
@@ -216,8 +294,8 @@ def hdl_wid_115(_: WIDParams):
 
 def hdl_wid_20001(_: WIDParams):
     """
-        Please prepare IUT into a connectable mode.
-        Description: Verify that the Implementation Under Test (IUT) can accept GATT connect request from PTS.
+    Please prepare IUT into a connectable mode.
+    Description: Verify that the Implementation Under Test (IUT) can accept GATT connect request from PTS.
     """
     hdl_wid_20106.count = 0
     stack = get_stack()
@@ -228,62 +306,188 @@ def hdl_wid_20001(_: WIDParams):
 
 def hdl_wid_20103(_: WIDParams):
     """
-        Please take action to discover the Call State characteristic from the Generic Telephone Bearer. 
-        Discover the primary service if needed.
-        Description: Verify that the Implementation Under Test (IUT) can send Discover All Characteristics command.
+    Please take action to discover the Call State characteristic from the Generic Telephone Bearer.
+    Discover the primary service if needed.
+    Description: Verify that the Implementation Under Test (IUT) can send Discover All Characteristics command.
     """
+    stack = get_stack()
+    addr_type = btp.pts_addr_type_get()
+    addr = btp.pts_addr_get()
+
     btp.ccp_discover_tbs()
     success, status, tbs_count, gtbs = btp.ccp_await_discovered()
-    return success and (status == 0) and gtbs
+    ev = stack.ccp.wait_chrc_handles_ev(addr_type, addr, 10, remove=True)
+    if status != 0 and ev is None:
+        return False
+
+    return True
 
 
 def hdl_wid_20106(_: WIDParams):
-    global __gtbs_ccpc_handle
     """
-        Please write to Client Characteristic Configuration Descriptor of Call Control Point characteristic to enable notification.
-        Not possible to do with the current tbs_client API. Only way it to discover all characteristics and enable all notifications.
-        NOTE: PTS does not accept the discover and enable notifications that occur in parallel.
-              It gets confused and call this function three or more times before it gives up.
-              This is the reason behind the manual enabling of notifications for the Call Control Point and the counter.
+    Please write to Client Characteristic Configuration Descriptor of Call Control Point
+    characteristic to enable notification.
     """
+    if hdl_wid_20106.count > 0:
+        return True
+
     if not hdl_wid_20106.count:
         hdl_wid_20106.count += 1
-        btp.ccp_discover_tbs()
-        success, status, tbs_count, gtbs = btp.ccp_await_discovered()
-        if (success, status, tbs_count, gtbs) == (True, 0, 0, True):
-            attrs = disc_full("%04X" % Uuid.GTBS, "%04X" % Uuid.CALLCPC)
-            __gtbs_ccpc_handle = characteristic_handle(attrs, Uuid.GTBS, Uuid.CALLCPC)
-            handle = descriptor_handle(attrs, Uuid.GTBS, Uuid.CALLCPC, Uuid.CCC)
-            btp.gattc_cfg_notify(btp.pts_addr_type_get(), btp.pts_addr_get(), 1, handle)
-            return True
+    btp.ccp_discover_tbs()
+    success, status, tbs_count, gtbs = btp.ccp_await_discovered()
+    if status != 0:
         return False
-    return True
 
-def hdl_wid_20107(_: WIDParams):
+    return True
+    # This is done automatically by Zephyr during service discovery.
+
+
+def hdl_wid_20107(params: WIDParams):
     """
-        Please send Read Request to read Call State characteristic with handle = 0x00ED.
+    Please send Read Request to read Call State characteristic with handle = 0x00ED.
     """
-    btp.ccp_read_call_state(BT_TBS_GTBS_INDEX)
-    success, status, index, call_count, states = btp.ccp_await_call_state()
-    return success and (status == 0)
+    stack = get_stack()
+    addr_type = btp.pts_addr_type_get()
+    addr = btp.pts_addr_get()
+
+    if "0x00A2" in params.description or "0x00D2" in params.description:
+        inst_index = (0x00 if "0x00A2" in params.description else BT_TBS_GTBS_INDEX)
+        btp.ccp_read_bearer_name(inst_index, addr_type, addr)
+        ev = stack.ccp.wait_characteristic_str_ev(addr_type, addr, 30)
+    elif "0x00A5" in params.description or "0x00D5" in params.description:
+        inst_index = (0x00 if "0x00A5" in params.description else BT_TBS_GTBS_INDEX)
+        btp.ccp_read_bearer_uci(inst_index, addr_type, addr)
+        ev = stack.ccp.wait_characteristic_str_ev(addr_type, addr, 30)
+    elif "00A7" in params.description or "0x00D7" in params.description:
+        inst_index = (0x00 if "00A7" in params.description else BT_TBS_GTBS_INDEX)
+        btp.ccp_read_bearer_tech(inst_index, addr_type, addr)
+        ev = stack.ccp.wait_characteristic_value_ev(addr_type, addr, 30)
+    elif "0x00AA" in params.description or "0x00DA" in params.description:
+        inst_index = (0x00 if "0x00AA" in params.description else BT_TBS_GTBS_INDEX)
+        btp.ccp_read_uri_list(inst_index, addr_type, addr)
+        ev = stack.ccp.wait_characteristic_str_ev(addr_type, addr, 30)
+    elif "0x00AD" in params.description or "0x00DD" in params.description:
+        inst_index = (0x00 if "0x00AD" in params.description else BT_TBS_GTBS_INDEX)
+        btp.ccp_read_signal_strength(inst_index, addr_type, addr)
+        ev = stack.ccp.wait_characteristic_value_ev(addr_type, addr, 30)
+    elif "0x00B0" in params.description or "0x00E0" in params.description:
+        inst_index = (0x00 if "0x00B0" in params.description else BT_TBS_GTBS_INDEX)
+        btp.ccp_read_signal_interval(inst_index, addr_type, addr)
+        ev = stack.ccp.wait_characteristic_value_ev(addr_type, addr, 30)
+    elif "0x00B2" in params.description or "0x00E2" in params.description:
+        inst_index = (0x00 if "0x00B2" in params.description else BT_TBS_GTBS_INDEX)
+        btp.ccp_read_current_calls(inst_index, addr_type, addr)
+        ev = stack.ccp.wait_current_ev(addr_type, addr, 30)
+    elif "0x00B5" in params.description or "0x00E5" in params.description:
+        # CCID is read by a client during service discovery. This is needed for
+        # sending characteristic handles BTP event.
+        # Testcase CCP/CL/CGGIT/CHA/BV-24-C ends in hdl_wid_20103
+        return True
+    elif "0x00B7" in params.description or "0x00E7" in params.description:
+        inst_index = (0x00 if "0x00B7" in params.description else BT_TBS_GTBS_INDEX)
+        btp.ccp_read_call_uri(inst_index, addr_type, addr)
+        ev = stack.ccp.wait_characteristic_str_ev(addr_type, addr, 30)
+    elif "0x00BA" in params.description or "0x00EA" in params.description:
+        inst_index = (0x00 if "0x00BA" in params.description else BT_TBS_GTBS_INDEX)
+        btp.ccp_read_status_flags(inst_index, addr_type, addr)
+        ev = stack.ccp.wait_characteristic_value_ev(addr_type, addr, 30)
+    elif "0x00CC" in params.description or "0x00FC" in params.description:
+        inst_index = (0x00 if "0x00CC" in params.description else BT_TBS_GTBS_INDEX)
+        btp.ccp_read_optional_opcodes(inst_index, addr_type, addr)
+        # Optional Opcodes (TBS) not implemented on PTS
+        ev = stack.ccp.wait_characteristic_value_ev(addr_type, addr, 30)
+    elif "0x00C6" in params.description or "0x00F6" in params.description:
+        inst_index = (0x00 if "0x00C6" in params.description else BT_TBS_GTBS_INDEX)
+        btp.ccp_read_remote_uri(inst_index, addr_type, addr)
+        ev = stack.ccp.wait_characteristic_str_ev(addr_type, addr, 30)
+    elif "0x00C9" in params.description or "0x00F9" in params.description:
+        inst_index = (0x00 if "0x00C9" in params.description else BT_TBS_GTBS_INDEX)
+        btp.ccp_read_friendly_name(inst_index, addr_type, addr)
+        ev = stack.ccp.wait_characteristic_str_ev(addr_type, addr, 30)
+    elif "0x00BD" in params.description or "0x00ED" in params.description:
+        inst_index = (0x00 if "0x00BD" in params.description else BT_TBS_GTBS_INDEX)
+        btp.ccp_read_call_state(inst_index)
+        success, status, index, call_count, states = btp.ccp_await_call_state()
+        return success and (status == 0)
+
+    if ev is None:
+        return False
+
+    return True
 
 
 def hdl_wid_20116(_: WIDParams):
     """
-        Please send command to the PTS to discover all mandatory characteristics of the Generic Telephone Bearer supported by the IUT. 
-        Discover primary service if needed.
+    Please send command to the PTS to discover all mandatory characteristics of the
+    Generic Telephone Bearer supported by the IUT. Discover primary service if needed.
     """
+    addr_type = btp.pts_addr_type_get()
+    addr = btp.pts_addr_get()
+    stack = get_stack()
+
     btp.ccp_discover_tbs()
+
     success, status, tbs_count, gtbs = btp.ccp_await_discovered()
-    return success and (status == 0) and gtbs
+    ev = stack.ccp.wait_chrc_handles_ev(addr_type, addr, 10, remove=True)
+    if status != 0 and ev is None:
+        return False
 
-
-def hdl_wid_20206(_: WIDParams):
-    """
-        Please verify that for each supported characteristic, attribute handle/UUID pair(s) is returned to the upper tester.
-        There is currently NO WAY to do that with the current API. If discovery was successfull, we must assume that we got
-        all characteristics.
-    """
     return True
+
+
+def hdl_wid_20121(params: WIDParams):
+    """Please write value with write command (without response) to handle 0x00F3
+     with following value. Any attribute value"""
+    addr_type = btp.pts_addr_type_get()
+    addr = btp.pts_addr_get()
+
+    if params.test_case_name == "CCP/CL/CGGIT/CHA/BV-06-C":
+        # TBS testcase
+        inst_index = 0x00
+    else:
+        inst_index = BT_TBS_GTBS_INDEX
+
+    btp.ccp_set_signal_interval(inst_index, 254, addr_type, addr)
+
+    # TODO: find a way to confirm that operation was successful. Currently there
+    #   is no proper callback in Zephyr.
+
+    return True
+
+
+def hdl_wid_20144(params: WIDParams):
+    """Please click Yes if IUT support Write Command(without response), otherwise click No."""
+
+    return True
+
+
+def hdl_wid_20145(params: WIDParams):
+    """Please click Yes if IUT support Write Request, otherwise click No."""
+
+    return False
+
+
+def hdl_wid_20206(params: WIDParams):
+    """
+    Please verify that for each supported characteristic, attribute handle/UUID pair(s)
+    is returned to the upper tester.
+    """
+    stack = get_stack()
+
+    chars = stack.ccp.events[defs.CCP_EV_CHRC_HANDLES][0]
+    chrc_list = [f'{chrc:04X}' for chrc in chars]
+
+    pattern = re.compile(r"0x([0-9a-fA-F]+)")
+    desc_params = pattern.findall(params.description)
+    if not desc_params:
+        logging.error("parsing error")
+        return False
+
+    desc_params_list = desc_params[2::4]
+
+    if desc_params_list == chrc_list:
+        return True
+
+    return False
 
 hdl_wid_20106.count = 0
