@@ -39,3 +39,4 @@ from autopts.pybtp.btp.vcp import *
 from autopts.pybtp.btp.cas import *
 from autopts.pybtp.btp.mcp import *
 from autopts.pybtp.btp.gmcs import *
+from autopts.pybtp.btp.hap import *
