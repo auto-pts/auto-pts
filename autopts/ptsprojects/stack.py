@@ -1241,7 +1241,12 @@ class CORE:
 
 
 class BAP:
+    class Peer:
+        def __init__(self):
+            self.discovery_completed = False
+
     def __init__(self):
+        self.peers = {}
         self.broadcast_id = 0x1000000  # Invalid Broadcast ID
         self.broadcast_code = ''
         self.event_queues = {
@@ -1257,11 +1262,25 @@ class BAP:
             defs.BAP_EV_BROADCAST_RECEIVE_STATE: [],
             defs.BAP_EV_PA_SYNC_REQ: [],
         }
+        self.event_handlers = {
+            defs.BAP_EV_DISCOVERY_COMPLETED: self._ev_discovery_completed,
+        }
+
+    def get_peer(self, addr_type, addr):
+        key = (addr_type, addr)
+        try:
+            return self.peers[key]
+        except KeyError:
+            self.peers[key] = self.Peer()
+            return self.peers[key]
 
     def set_broadcast_code(self, broadcast_code):
         self.broadcast_code = broadcast_code
 
     def event_received(self, event_type, event_data_tuple):
+        if event_type in self.event_handlers:
+            self.event_handlers[event_type](*event_data_tuple)
+
         self.event_queues[event_type].append(event_data_tuple)
 
     def wait_codec_cap_found_ev(self, addr_type, addr, pac_dir, timeout, remove=False):
@@ -1340,6 +1359,10 @@ class BAP:
             self.event_queues[defs.BAP_EV_PA_SYNC_REQ],
             lambda ev: (addr_type, addr) == (ev["addr_type"], ev["addr"]),
             timeout, remove)
+
+    def _ev_discovery_completed(self, addr_type, addr, status):
+        peer = self.get_peer(addr_type, addr)
+        peer.discovery_completed = (status == defs.BTP_STATUS_SUCCESS)
 
 
 class CCP:
@@ -1964,6 +1987,64 @@ class GattCl:
         return wait_for_event(timeout, self.is_write_completed)
 
 
+class HAP:
+    class Peer:
+        def __init__(self):
+            self.hearing_aid_features_handle = None
+            self.hearing_aid_control_point_handle = None
+            self.active_preset_index_handle = None
+
+    def __init__(self):
+        self.peers = {}
+        self.event_queues = {
+            defs.HAP_EV_IAC_DISCOVERY_COMPLETE: [],
+            defs.HAP_EV_HAUC_DISCOVERY_COMPLETE: [],
+        }
+        self.event_handlers = {
+            defs.HAP_EV_HAUC_DISCOVERY_COMPLETE: self._ev_hauc_discovery_complete,
+        }
+
+    def get_peer(self, addr_type, addr):
+        key = (addr_type, addr)
+        try:
+            return self.peers[key]
+        except KeyError:
+            self.peers[key] = self.Peer()
+            return self.peers[key]
+
+    def event_received(self, event_type, event_data_tuple):
+        if event_type in self.event_handlers:
+            self.event_handlers[event_type](*event_data_tuple)
+
+        self.event_queues[event_type].append(event_data_tuple)
+
+    def wait_iac_discovery_complete_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.HAP_EV_IAC_DISCOVERY_COMPLETE],
+            lambda _addr_type, _addr, *_:
+                (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
+
+    def wait_hauc_discovery_complete_ev(self, addr_type, addr, timeout, remove=True):
+        return wait_event_with_condition(
+            self.event_queues[defs.HAP_EV_HAUC_DISCOVERY_COMPLETE],
+            lambda _addr_type, _addr, *_:
+                (addr_type, addr) == (_addr_type, _addr),
+            timeout, remove)
+
+    def _ev_hauc_discovery_complete(self, addr_type, addr, status,
+                                    hearing_aid_features_handle,
+                                    hearing_aid_control_point_handle,
+                                    active_preset_index_handle):
+        if status != defs.BTP_STATUS_SUCCESS:
+            return
+
+        peer = self.get_peer(addr_type, addr)
+        peer.hearing_aid_features_handle = hearing_aid_features_handle
+        peer.hearing_aid_control_point_handle = hearing_aid_control_point_handle
+        peer.active_preset_index_handle = active_preset_index_handle
+
+
 class Stack:
     def __init__(self):
         self.gap = None
@@ -1986,6 +2067,7 @@ class Stack:
         self.vcp = None
         self.mcp = None
         self.gmcs = None
+        self.hap = None
 
         self.supported_svcs = 0
 
@@ -2014,6 +2096,7 @@ class Stack:
             "VCP": 1 << defs.BTP_SERVICE_ID_VCP,
             "MCP": 1 << defs.BTP_SERVICE_ID_MCP,
             "GMCS": 1 << defs.BTP_SERVICE_ID_GMCS,
+            "HAP": 1 << defs.BTP_SERVICE_ID_HAP,
         }
         return self.supported_svcs & services[svc] > 0
 
@@ -2090,6 +2173,9 @@ class Stack:
     def vcp_init(self):
         self.vcp = VCP()
 
+    def hap_init(self):
+        self.hap = HAP()
+
     def cleanup(self):
         if self.gap:
             self.gap = Gap(self.gap.name, self.gap.manufacturer_data, None, None, None, None, None)
@@ -2147,6 +2233,9 @@ class Stack:
 
         if self.mcp:
             self.mcp_init()
+
+        if self.hap:
+            self.hap_init()
 
 
 def init_stack():

@@ -24,9 +24,15 @@ from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.hap_wid import hap_wid_hdl
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
 from autopts.pybtp.types import Addr, AdType, Context
-from autopts.pybtp.defs import PACS_AUDIO_DIR_SINK, PACS_AUDIO_LOCATION_FRONT_LEFT, \
-                               HAS_TSPX_available_presets_indices, \
+from autopts.pybtp.defs import HAS_TSPX_available_presets_indices, \
                                HAS_TSPX_unavailable_presets_indices
+
+# Options aligned with the overlay-le-audio.conf options
+BTP_HAP_HA_OPTS_DEFAULT = (btp.defs.HAP_HA_OPT_PRESETS_DYNAMIC |
+                           btp.defs.HAP_HA_OPT_PRESETS_WRITABLE)
+BTP_HAP_HA_OPTS_BINAURAL = (btp.defs.HAP_HA_OPT_PRESETS_INDEPENDENT |
+                            btp.defs.HAP_HA_OPT_PRESETS_DYNAMIC |
+                            btp.defs.HAP_HA_OPT_PRESETS_WRITABLE)
 
 class Uuid(IntEnum):
     ASCS = 0x184E
@@ -95,6 +101,16 @@ def announcements(advData, targeted):
     advData[AdType.rsi] = struct.pack('<6B', *rsi)
 
 
+test_cases_binaural = [
+    'HAP/HA/DISC/BV-01-C',
+    'HAP/HA/DISC/BV-05-C',
+]
+
+test_cases_banded = [
+    'HAP/HA/DISC/BV-02-C',
+    'HAP/HA/DISC/BV-06-C',
+]
+
 def test_cases(ptses):
     """Returns a list of HAP Server test cases"""
 
@@ -122,14 +138,20 @@ def test_cases(ptses):
         TestFunc(stack.pacs_init),
         TestFunc(btp.core_reg_svc_ascs),
         TestFunc(stack.ascs_init),
-        TestFunc(btp.core_reg_svc_has),
         TestFunc(btp.core_reg_svc_cas),
         TestFunc(btp.core_reg_svc_ias),
         TestFunc(stack.ias_init),
         TestFunc(btp.core_reg_svc_bap),
         TestFunc(stack.bap_init),
-        TestFunc(btp.pacs_set_location, PACS_AUDIO_DIR_SINK, PACS_AUDIO_LOCATION_FRONT_LEFT)
+        TestFunc(btp.core_reg_svc_hap),
+        # TODO: This list is getting quite long. Consider some refactor.
+        TestFunc(stack.hap_init),
     ]
+
+    pre_conditions_ha = pre_conditions + [
+        TestFunc(btp.hap_ha_setup),
+    ]
+
     adv_conditions = [
         TestFunc(announcements, advData, True),
         TestFunc(btp.gap_set_extended_advertising_on),
@@ -137,18 +159,81 @@ def test_cases(ptses):
         TestFunc(lambda: pts.update_pixit_param("HAP", "TSPX_bd_addr_iut", stack.gap.iut_addr_get_str())),
     ]
 
+    pre_conditions_ha_binaural = pre_conditions + adv_conditions + [
+        TestFunc(btp.hap_ha_init,
+                 btp.defs.HAP_HA_TYPE_BINAURAL,
+                 BTP_HAP_HA_OPTS_BINAURAL),
+    ]
+
+    pre_conditions_ha_banded = pre_conditions + [
+        TestFunc(btp.hap_ha_init,
+                 btp.defs.HAP_HA_TYPE_BANDED,
+                 BTP_HAP_HA_OPTS_DEFAULT),
+    ]
+
+    pre_conditions_harc = pre_conditions + [
+        TestFunc(btp.hap_harc_init),
+    ]
+
+    pre_conditions_hauc = [
+        TestFunc(btp.core_reg_svc_gap),
+        TestFunc(stack.gap_init, iut_device_name),
+        TestFunc(btp.gap_read_ctrl_info),
+        TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public),
+        TestFunc(btp.core_reg_svc_pacs),
+        TestFunc(stack.pacs_init),
+        TestFunc(btp.core_reg_svc_ascs),
+        TestFunc(stack.ascs_init),
+        TestFunc(btp.core_reg_svc_bap),
+        TestFunc(stack.bap_init),
+        TestFunc(btp.core_reg_svc_hap),
+        TestFunc(stack.hap_init),
+        TestFunc(lambda: pts.update_pixit_param("HAP", "TSPX_bd_addr_iut", stack.gap.iut_addr_get_str())),
+        TestFunc(btp.hap_hauc_init),
+    ]
+
+    pre_conditions_iac = pre_conditions + [
+        TestFunc(btp.hap_iac_init),
+    ]
+
     test_case_name_list = pts.get_test_case_list('HAP')
     tc_list = []
 
     for tc_name in test_case_name_list:
-        if tc_name == 'HAP/HA/STR/BV-02-C':
+        if tc_name.startswith('HAP/HA/'):
+            if tc_name == 'HAP/HA/STR/BV-02-C':
+                instance = ZTestCase("HAP", tc_name,
+                                     cmds=pre_conditions + [
+                                         TestFunc(btp.hap_ha_init,
+                                                  btp.defs.HAP_HA_TYPE_BINAURAL,
+                                                  BTP_HAP_HA_OPTS_BINAURAL),
+                                     ],
+                                     generic_wid_hdl=hap_wid_hdl)
+            elif tc_name in test_cases_banded:
+                instance = ZTestCase("HAP", tc_name,
+                                     cmds=pre_conditions_ha_banded,
+                                     generic_wid_hdl=hap_wid_hdl)
+            else:
+                # fallback to binaural
+                instance = ZTestCase("HAP", tc_name,
+                                     cmds=pre_conditions_ha_binaural,
+                                     generic_wid_hdl=hap_wid_hdl)
+        elif tc_name.startswith('HAP/HARC/'):
             instance = ZTestCase("HAP", tc_name,
-                                 cmds=pre_conditions,
+                                 cmds=pre_conditions_harc,
+                                 generic_wid_hdl=hap_wid_hdl)
+        elif tc_name.startswith('HAP/HAUC/'):
+            instance = ZTestCase("HAP", tc_name,
+                                 cmds=pre_conditions_hauc,
+                                 generic_wid_hdl=hap_wid_hdl)
+        elif tc_name.startswith('HAP/IAC/'):
+            instance = ZTestCase("HAP", tc_name,
+                                 cmds=pre_conditions_iac,
                                  generic_wid_hdl=hap_wid_hdl)
         else:
             instance = ZTestCase("HAP", tc_name,
-                        cmds=pre_conditions + adv_conditions,
-                        generic_wid_hdl=hap_wid_hdl)
+                                 cmds=pre_conditions,
+                                 generic_wid_hdl=hap_wid_hdl)
 
         tc_list.append(instance)
 

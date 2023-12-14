@@ -1,0 +1,135 @@
+HAP Service (ID 24)
+===================
+
+Commands and responses:
+
+	Opcode 0x00 - Error response
+
+	Opcode 0x01 - Read Supported Commands command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	<none>
+		Response parameters:	<supported commands> (variable)
+
+		Each bit in response is a flag indicating if command with
+		opcode matching bit number is supported. Bit set to 1 means
+		that command is supported. Bit 0 is reserved and shall always
+		be set to 0. If specific bit is not present in response (less
+		than required bytes received) it shall be assumed that command
+		is not supported.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x02: Hearing Aid (HA) role init
+
+		Controller Index:	<controller id>
+		Command parameters:	Type (1 octet)
+					Options (2 octets)
+		Response parameters:	<none>
+
+		Valid Type values:	0x00 = Binaural Hearing Aid
+					0x01 = Monaural Hearing Aid
+					0x02 = Banded Hearing Aid
+
+		Options and is a bitmask with currently the following available
+		bits:
+			0	Preset Synchronization Support
+			1	Independent Presets
+			2	Dynamic Presets
+			3	Writable Presets Support
+			4-15	RFU
+
+		This command is used to set up Hearing Aid.
+		In case of an error, the error status response will be returned.
+
+	Opcode 0x03: Hearing Aid Remote Controller (HARC) role init
+
+		Controller Index:	<controller id>
+		Command parameters:	<none>
+		Response parameters:	<none>
+
+		This command is used to set up Hearing Aid Remote Controller.
+		In case of an error, the error status response will be returned.
+
+	Opcode 0x04: Hearing Aid Unicast Client (HAUC) role init
+
+		Controller Index:	<controller id>
+		Command parameters:	<none>
+		Response parameters:	<none>
+
+		This command is used to set up Hearing Aid Unicast Client.
+		In case of an error, the error status response will be returned.
+
+	Opcode 0x05: Immediate Alert Client (IAC) role init
+
+		Controller Index:	<controller id>
+		Command parameters:	<none>
+		Response parameters:	<none>
+
+		This command is used to set up Immediate Alert Client.
+		In case of an error, the error status response will be returned.
+
+	Opcode 0x06: Immediate Alert Client (IAC) discover
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:	<none>
+
+		This command is used to discover Immediate Alert Service
+		on a server.
+		Discovery status is returned in the Immediate Alert Client (IAC)
+		discovery result event.
+		In case of an error, the error response will be returned.
+
+	Opcode 0x07: Immediate Alert Client (IAC) set alert
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Level (1 octet)
+		Response parameters:	<none>
+
+		Valid Level values:	0x00 = No Alert
+					0x01 = Medium Alert
+					0x02 = High Alert
+
+		This command is used to set Immediate Alert Level on remote
+		server.
+		In case of an error, the error response will be returned.
+
+	Opcode 0x08: Hearing Aid Unicast Client (HAUC) discover
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:	<none>
+
+		This command is used to discover all the Hearing Access related
+		services and characteristics on a server.
+		Discovery status is returned in the Hearing Aid Unicast Client
+		(HAUC) discovery result event.
+		In case of an error, the error response will be returned.
+
+Events:
+	Opcode 0x80 - Immediate Alert Client (IAC) discovery result
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					ATT_Error (1 octet)
+
+	Opcode 0x81 - Hearing Aid Unicast Client (HAUC) discovery result
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status (1 octet)
+					Type (1 octet)
+					HAS_Hearing_Aid_Features_Handle (2 octets)
+					HAS_Control_Point_Handle (2 octets)
+					HAS_Active_Preset_Index_Handle (2 octets)
+
+		Valid Type values:	0x00 = Binaural Hearing Aid
+					0x01 = Monaural Hearing Aid
+					0x02 = Banded Hearing Aid
