@@ -10648,13 +10648,13 @@
           <Row>
             <Name>TSPC_GAP_27_10</Name>
             <Description>Encrypted Data Key Material (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_27_11</Name>
             <Description>LE GATT Security Levels (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
