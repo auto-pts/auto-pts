@@ -147,17 +147,13 @@ def test_cases(ptses):
         TestFunc(btp.core_reg_svc_hap),
         # TODO: This list is getting quite long. Consider some refactor.
         TestFunc(stack.hap_init),
-    ]
-
-    pre_conditions_ha = pre_conditions + [
-        TestFunc(btp.hap_ha_setup),
+        TestFunc(lambda: pts.update_pixit_param("HAP", "TSPX_bd_addr_iut", stack.gap.iut_addr_get_str())),
     ]
 
     adv_conditions = [
         TestFunc(announcements, advData, True),
         TestFunc(btp.gap_set_extended_advertising_on),
         TestFunc(btp.gap_adv_ind_on, ad=advData),
-        TestFunc(lambda: pts.update_pixit_param("HAP", "TSPX_bd_addr_iut", stack.gap.iut_addr_get_str())),
     ]
 
     pre_conditions_ha_binaural = pre_conditions + adv_conditions + [
