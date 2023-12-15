@@ -31,6 +31,16 @@ def hap_wid_hdl(wid, description, test_case_name):
 
 
 # wid handlers section begin
+def hdl_wid_477(_: WIDParams):
+    """
+        Please verify that the IUT starts alerting with a High Alert.
+    """
+    stack = get_stack()
+
+    stack.ias.wait_for_high_alert()
+
+    return stack.ias.alert_lvl == 2
+
 
 def hdl_wid_482(_: WIDParams):
     """
