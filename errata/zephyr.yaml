@@ -1,3 +1,23 @@
 # To add note to the reports about awaited errata, list them here e.g.:
 # GAP/CONN/NCON/BV-01-C: CASE00xxxxx
 # GAP/CONN/NCON/BV-02-C: CASE00xxxxx
+
+GMCS/SR/MCP/BV-59-C: TSE24634
+GMCS/SR/MCP/BV-60-C: TSE24634
+GMCS/SR/MCP/BV-61-C: TSE24634
+GMCS/SR/MCP/BV-63-C: TSE24634
+GMCS/SR/MCP/BV-64-C: TSE24634
+GMCS/SR/MCP/BV-65-C: TSE24634
+GMCS/SR/SPN/BV-01-C: https://github.com/zephyrproject-rtos/zephyr/issues/65062
+GMCS/SR/SPN/BV-02-C: https://github.com/zephyrproject-rtos/zephyr/issues/65062
+GMCS/SR/MCP/BV-05-C: https://github.com/zephyrproject-rtos/zephyr/issues/64378
+GMCS/SR/MCP/BV-06-C: https://github.com/zephyrproject-rtos/zephyr/issues/64378
+GMCS/SR/MCP/BV-72-C: https://github.com/zephyrproject-rtos/zephyr/issues/64378
+GMCS/SR/MCP/BV-07-C: https://github.com/zephyrproject-rtos/zephyr/issues/64378
+GMCS/SR/MCP/BV-08-C: https://github.com/zephyrproject-rtos/zephyr/issues/64378
+GMCS/SR/MCP/BV-73-C: https://github.com/zephyrproject-rtos/zephyr/issues/64378
+MCP/CL/CGGIT/CHA/BV-07-C: Request ID 28478
+MCP/CL/CGGIT/CHA/BV-08-C: Request ID 28478
+MCP/CL/CGGIT/CHA/BV-12-C: Request ID 28478
+MCP/CL/CGGIT/CHA/BV-14-C: Request ID 28478
+MCP/CL/CGGIT/CHA/BV-15-C: Request ID 28478
