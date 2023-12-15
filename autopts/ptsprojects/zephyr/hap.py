@@ -138,6 +138,7 @@ def test_cases(ptses):
         TestFunc(stack.pacs_init),
         TestFunc(btp.core_reg_svc_ascs),
         TestFunc(stack.ascs_init),
+        TestFunc(btp.core_reg_svc_vcs),
         TestFunc(btp.core_reg_svc_cas),
         TestFunc(btp.core_reg_svc_ias),
         TestFunc(stack.ias_init),
