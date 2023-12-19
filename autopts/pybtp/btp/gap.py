@@ -172,20 +172,21 @@ def gap_connected_ev_(gap, data, data_len):
     hdr_fmt = '<B6sHHH'
 
     addr_type, addr, itvl, latency, timeout = struct.unpack_from(hdr_fmt, data)
-    addr = binascii.hexlify(addr[::-1])
+    addr = binascii.hexlify(addr[::-1]).decode()
 
-    if gap.connected.data is None:
-        gap.connected.data = [(addr, addr_type)]
-    else:
-        gap.connected.data.append((addr, addr_type))
+    gap.add_connection(addr, addr_type)
+
     gap.set_conn_params(ConnParams(itvl, itvl, latency, timeout))
 
 
 def gap_disconnected_ev_(gap, data, data_len):
     logging.debug("%s %r", gap_disconnected_ev_.__name__, data)
 
-    gap.sec_level = 0
-    gap.connected.data = None
+    hdr_fmt = '<B6s'
+    addr_type, addr = struct.unpack_from(hdr_fmt, data)
+    addr = binascii.hexlify(addr[::-1]).decode()
+
+    gap.remove_connection(addr)
 
 
 def gap_passkey_disp_ev_(gap, data, data_len):
@@ -259,7 +260,7 @@ def gap_sec_level_changed_ev_(gap, data, data_len):
     _addr_t, _addr, _level = struct.unpack_from(fmt, data)
     _addr = binascii.hexlify(_addr[::-1]).decode()
 
-    gap.sec_level = _level
+    gap.set_connection_sec_level(_addr, _level)
 
     logging.debug("received %r", (_addr_t, _addr, _level))
 
@@ -645,7 +646,7 @@ def verify_not_connected(description):
 
     gap_wait_for_connection(5)
 
-    if stack.gap.is_connected(0):
+    if stack.gap.is_connected():
         return False
     return True
 

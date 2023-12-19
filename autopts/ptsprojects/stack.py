@@ -167,6 +167,13 @@ class ConnParams:
         self.supervision_timeout = supervision_timeout
 
 
+class GapConnection:
+    def __init__(self, addr, addr_type):
+        self.addr = addr
+        self.addr_type = addr_type
+        self.sec_level = 0
+
+
 class Gap:
     def __init__(self, name, manufacturer_data, appearance, svc_data, flags,
                  svcs, uri=None, periodic_data=None, le_supp_feat=None):
@@ -196,7 +203,8 @@ class Gap:
 
         # If disconnected - None
         # If connected - remote address tuple (addr, addr_type)
-        self.connected = Property(None)
+        # GapConnection
+        self.connections = {}
         self.current_settings = Property({
             "Powered": False,
             "Connectable": False,
@@ -232,15 +240,22 @@ class Gap:
         self.bond_lost_ev_data = Property(None)
         # if no io_cap was set it means we use no_input_output
         self.io_cap = IOCap.no_input_output
-        self.sec_level = Property(None)
+
         # if IUT doesn't support it, it should be disabled in preconditions
         self.pair_user_interaction = True
         self.periodic_report_rxed = False
         self.periodic_sync_established_rxed = False
         self.periodic_transfer_received = False
 
-    def wait_for_connection(self, timeout, conn_count=0):
-        if self.is_connected(conn_count):
+    def add_connection(self, addr, addr_type):
+        self.connections[addr] = GapConnection(addr=addr,
+                                               addr_type=addr_type)
+
+    def remove_connection(self, addr):
+        return self.connections.pop(addr)
+
+    def wait_for_connection(self, timeout, conn_count=1, addr=None):
+        if self.is_connected(conn_count=conn_count, addr=addr):
             return True
 
         flag = Event()
@@ -252,14 +267,14 @@ class Gap:
         while flag.is_set():
             raise_on_global_end()
 
-            if self.is_connected(conn_count):
+            if self.is_connected(conn_count=conn_count, addr=addr):
                 t.cancel()
                 return True
 
         return False
 
-    def wait_for_disconnection(self, timeout):
-        if not self.is_connected(0):
+    def wait_for_disconnection(self, timeout, addr=None):
+        if not self.is_connected(addr=addr):
             return True
 
         flag = Event()
@@ -271,19 +286,17 @@ class Gap:
         while flag.is_set():
             raise_on_global_end()
 
-            if not self.is_connected(0):
+            if not self.is_connected(addr=addr):
                 t.cancel()
                 return True
 
         return False
 
-    def is_connected(self, conn_count):
-        if conn_count > 0:
-            if self.connected.data is not None:
-                return len(self.connected.data) >= conn_count
-            return False
+    def is_connected(self, conn_count=1, addr=None):
+        if addr:
+            return addr in self.connections
 
-        return self.connected.data
+        return len(self.connections) >= conn_count
 
     def wait_periodic_report(self, timeout):
         if self.periodic_report_rxed:
@@ -443,8 +456,19 @@ class Gap:
 
         return self.bond_lost_ev_data.data
 
-    def gap_wait_for_sec_lvl_change(self, level, timeout=5):
-        if self.sec_level != level:
+    def set_connection_sec_level(self, addr, level):
+        self.connections[addr].sec_level = level
+
+    def gap_wait_for_sec_lvl_change(self, level, timeout=5, addr=None):
+        if not self.is_connected(addr=addr):
+            raise Exception("Not connected")
+
+        if addr:
+            conn = self.connections[addr]
+        else:
+            addr, conn = list(self.connections.items())[0]
+
+        if conn.sec_level != level:
             flag = Event()
             flag.set()
 
@@ -454,11 +478,11 @@ class Gap:
             while flag.is_set():
                 raise_on_global_end()
 
-                if self.sec_level == level:
+                if conn.sec_level == level:
                     t.cancel()
                     break
 
-        return self.sec_level
+        return conn.sec_level
 
     def gap_set_pair_user_interaction(self, user_interaction):
         self.pair_user_interaction = user_interaction

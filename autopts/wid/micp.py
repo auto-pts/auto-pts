@@ -156,7 +156,8 @@ def hdl_wid_20100(params: WIDParams):
     addr = btp.pts_addr_get()
     stack = get_stack()
     btp.gap_conn()
-    stack.gap.gap_wait_for_sec_lvl_change(30)
+    stack.gap.wait_for_connection(timeout=5, addr=addr)
+    stack.gap.gap_wait_for_sec_lvl_change(level=2, timeout=30)
     btp.micp_discover(addr_type, addr)
     ev = stack.micp.wait_discovery_completed_ev(addr_type, addr, 30, remove=False)
     if ev is None:

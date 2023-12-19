@@ -1043,7 +1043,7 @@ def hdl_wid_206(params: WIDParams):
     try:
         btp.gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey)
     except types.BTPError:
-        if (stack.gap.is_connected(0) == False):
+        if (stack.gap.is_connected() == False):
             logging.debug("Ignoring expected error on disconnected")
         else:
             return False
