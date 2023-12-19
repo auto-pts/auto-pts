@@ -1651,28 +1651,20 @@ class SynchElem:
         # While debugging, do not step over Barrier.wait() or other
         # waits from threading module. This may cause the GIL deadlock.
         self._start_barrier.wait()
-        if self._start_barrier.broken:
-            return False
-        return True
 
     def wait_for_end(self):
         self._end_barrier.wait()
-        if self._end_barrier.broken:
-            return False
-        return True
 
     def wait_for_your_turn(self, synch_point):
         for point in self.sync_points:
             if point == synch_point:
                 self.active_synch_point = synch_point
-                return True
+                return
 
             point.wait()
 
             if self._start_barrier.broken or self._end_barrier.broken:
-                return False
-
-        return False
+                raise threading.BrokenBarrierError
 
     def cancel_synch(self):
         self._end_barrier.abort()
@@ -1713,16 +1705,10 @@ class Synch:
             return None
 
         log(f'SYNCH: Waiting at barrier for start, tc {tc_name} wid {wid}')
-        if not elem.wait_for_start():
-            log(f'SYNCH: Cancelled waiting at barrier for start, tc {tc_name} wid {wid}')
-            return None
-
+        elem.wait_for_start()
         log(f'SYNCH: Waiting for turn to start, tc {tc_name} wid {wid}')
 
-        if not elem.wait_for_your_turn(synch_point):
-            log(f'SYNCH: Cancelled waiting for turn to start, tc {tc_name} wid {wid}')
-            return None
-
+        elem.wait_for_your_turn(synch_point)
         log(f'SYNCH: Started tc {tc_name} wid {wid}')
 
         return elem
@@ -1739,10 +1725,7 @@ class Synch:
         wid = synch_point.wid
 
         log(f'SYNCH: Waiting at end barrier, tc {tc_name} wid {wid}')
-        if not synch_elem.wait_for_end():
-            log(f'SYNCH: Cancelled waiting at end barrier, tc {tc_name} wid {wid}')
-            return None
-
+        synch_elem.wait_for_end()
         log(f'SYNCH: Finished waiting at end barrier, tc {tc_name} wid {wid}')
 
         # Remove the synch element

@@ -179,11 +179,12 @@ class ClientCallback(PTSCallback):
     def __init__(self):
         super().__init__()
         self.exception = queue.Queue()
-        self._result_lock = threading.RLock()
-        self.results = {}
+        self._results = {}
+        self._callbacks = {}
         # Long methods run asynchronously
         for method in ['start_pts', 'restart_pts', 'recover_pts', 'run_test_case']:
-            self.results[method] = ResultWithFlag()
+            self._results[method] = ResultWithFlag()
+            self._callbacks[method] = None
 
     def error_code(self):
         """Return error code or None if there are no errors
@@ -288,10 +289,13 @@ class ClientCallback(PTSCallback):
         """
         log(f"{self.__class__.__name__}, {self.set_result.__name__},"
             f" {method_name}, {result}")
-        if self._result_lock.acquire(timeout=5):
-            method_result = self.results[method_name]
-            method_result.set(result)
-            self._result_lock.release()
+
+        method_result = self._results[method_name]
+        callback = self._callbacks[method_name]
+
+        method_result.set(result)
+        if callable(callback):
+            callback(result)
 
     def get_result(self, method_name, timeout=None, predicate=None):
         """
@@ -299,10 +303,11 @@ class ClientCallback(PTSCallback):
         and has to be awaited.
         """
         log(f"{self.__class__.__name__}.{self.get_result.__name__} {method_name}")
-        with self._result_lock:
-            method_result = self.results[method_name]
+
+        method_result = self._results[method_name]
         result = method_result.get(timeout=timeout, predicate=predicate)
         method_result.clear()
+
         return result
 
     def cleanup(self):
@@ -313,10 +318,9 @@ class ClientCallback(PTSCallback):
         # Reinit everything in case a KeyboardInterrupt exception triggered
         # by a superguard timeout breaks the lock states.
         self.exception = queue.Queue()
-        self._result_lock = threading.RLock()
 
-        for key in self.results:
-            self.results[key] = ResultWithFlag()
+        for key in self._results:
+            self._results[key] = ResultWithFlag()
 
 
 class ClientCallbackServer(threading.Thread):
@@ -877,20 +881,28 @@ class LTThread(InterruptableThread):
     def __init__(self, name=None, args=()):
         super().__init__(name=name)
         self._args = args
+        self.locked = False
 
     def run(self):
         exceptions = self._args[2]
         finish_count = self._args[3]
         try:
+            self.locked = self.interrupt_lock.acquire()
             self._run_test_case(*self._args)
         except Exception as exc:
             logging.exception(exc)
             exceptions.put(exc)
         finally:
             finish_count.add(1)
+            if self.locked:
+                self.interrupt_lock.release()
+
+    def cancel_sync_points(self):
+        stack_inst = stack.get_stack()
+        stack_inst.synch.cancel_synch()
 
     def interrupt(self):
-        stack.get_stack().synch.cancel_synch()
+        self.cancel_sync_points()
         super().interrupt()
 
     def _run_test_case(self, pts, test_case, exceptions, finish_count):
@@ -908,12 +920,14 @@ class LTThread(InterruptableThread):
         pts.callback.cleanup()
 
         try:
-            with self.interrupt_lock:
-                RUNNING_TEST_CASE[test_case.name] = test_case
-                test_case.state = "PRE_RUN"
-                test_case.pre_run()
-                test_case.status = "RUNNING"
-                test_case.state = "RUNNING"
+            pts.callback._callbacks['run_test_case'] = self.set_test_case_result
+            RUNNING_TEST_CASE[test_case.name] = test_case
+            test_case.state = "PRE_RUN"
+            test_case.pre_run()
+            test_case.status = "RUNNING"
+            test_case.state = "RUNNING"
+            self.interrupt_lock.release()
+            self.locked = False
 
             if not synchronize_instances(test_case.state, ["FINISHED"], end_flag=finish_count):
                 raise SynchError
@@ -947,11 +961,25 @@ class LTThread(InterruptableThread):
                     pts.set_wid_response(response)
 
             except BaseException as test_case_error:
-                logging.exception(test_case_error)
+                try:
+                    self.locked = self.interrupt_lock.acquire(blocking=False)
+                except:
+                    # In case KeyboardInterrupt was injected
+                    pass
+
+                if isinstance(test_case_error, threading.BrokenBarrierError):
+                    log(f'SYNCH: Cancelled waiting at a barrier, tc {test_case.name}')
+                else:
+                    logging.exception(test_case_error)
+
                 error_code = get_error_code(test_case_error)
                 exceptions.put(test_case_error)
                 pts.set_wid_response("Cancel")
                 pts.stop_test_case(test_case.project_name, test_case.name)
+
+            finally:
+                if not self.locked:
+                    self.locked = self.interrupt_lock.acquire(blocking=False)
 
             if finish_count.is_set():
                 test_case.state = E_FATAL_ERROR
@@ -976,15 +1004,23 @@ class LTThread(InterruptableThread):
             error_code = get_error_code(None)
 
         finally:
-            with self.interrupt_lock:
-                stack_inst = stack.get_stack()
-                stack_inst.synch.cancel_synch()
-                test_case.state = "FINISHED"
-                synchronize_instances(test_case.state, end_flag=finish_count)
-                test_case.post_run(error_code)  # stop qemu and other commands
-                del RUNNING_TEST_CASE[test_case.name]
+            test_case.state = "FINISHED"
 
-                log("Done TestCase %s %s", self._run_test_case.__name__, test_case)
+            if test_case.status != "PASS":
+                finish_count.set_flag()
+                self.cancel_sync_points()
+            else:
+                synchronize_instances(test_case.state, end_flag=finish_count)
+
+            test_case.post_run(error_code)  # stop qemu and other commands
+            del RUNNING_TEST_CASE[test_case.name]
+
+            log("Done TestCase %s %s", self._run_test_case.__name__, test_case)
+
+    def set_test_case_result(self, status):
+        if status != 'PASS':
+            # No point in waiting longer at the thread barrier
+            self.cancel_sync_points()
 
 
 @run_test_case_wrapper
