@@ -172,7 +172,7 @@ class BTMON:
                 self.stop()
                 return
 
-            cmd = ['btmon', '-C', 130, '-d', pty, '-w', log_filename, '>', plain_log_filename]
+            cmd = ['btmon', '-C', str(130), '-d', pty, '-w', log_filename, '>', plain_log_filename]
             self.btmon_process = self._wsl_popen(subprocess.list2cmdline(cmd), log_filecwd)
             if not self.btmon_process or self.btmon_process.poll():
                 log('BTMON failed to start')
@@ -185,7 +185,7 @@ class BTMON:
 
             self.rtt_reader.start(buffer_name, device_core, debugger_snr, self._on_line_read_callback, (sock,))
         else:
-            cmd = ['btmon', '-C', 130, '-J', f'{device_core},{debugger_snr}',
+            cmd = ['btmon', '-C', str(130), '-J', f'{device_core},{debugger_snr}',
                    '-w', log_filename, '>', plain_log_filename]
             self.btmon_process = subprocess.Popen(cmd, cwd=log_filecwd,
                                                   shell=False,
