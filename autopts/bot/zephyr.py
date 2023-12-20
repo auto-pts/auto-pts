@@ -62,10 +62,12 @@ def apply_overlay(zephyr_wd, cfg_name, overlay):
     :param overlay: defines changes to be applied
     :return: None
     """
-    tester_app_dir = os.path.join(zephyr_wd, "tests", "bluetooth", "tester")
+    tester_app_dir = os.getenv("AUTOPTS_SOURCE_DIR_APP")
+    if tester_app_dir is None:
+        tester_app_dir = os.path.join("tests", "bluetooth", "tester")
     cwd = os.getcwd()
 
-    os.chdir(tester_app_dir)
+    os.chdir(os.path.join(zephyr_wd, tester_app_dir))
 
     with open(cfg_name, 'w') as config:
         for k, v in list(overlay.items()):
@@ -114,7 +116,7 @@ class ZephyrBotClient(BotClient):
         configs = []
         for name in pre_overlay + [config] + post_overlay:
             if name in self.iut_config and 'overlay' in self.iut_config[name] \
-                    and len(self.iut_config[name]['overlay']):
+                    and len(self.iut_config[name]['overlay']) and name != 'prj.conf':
                 apply_overlay(args.project_path, name,
                               self.iut_config[name]['overlay'])
             elif not os.path.exists(os.path.join(args.project_path, "tests", "bluetooth", "tester", name)):
