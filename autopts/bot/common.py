@@ -136,7 +136,7 @@ class BotClient(Client):
             if args.debugger_snr is None:
                 args.tty_file, args.debugger_snr = get_free_device(args.board_name)
             else:
-                args.tty_file = get_tty(args.debugger_snr)
+                args.tty_file = get_tty(args.debugger_snr, args.board_name)
 
             if args.tty_file is None:
                 log('TTY mode: No free device found')

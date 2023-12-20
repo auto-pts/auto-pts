@@ -171,12 +171,22 @@ def get_free_device(board=None):
     """Returns tty path and jlink serial number of a free device."""
     devices = get_device_list()
 
+    ret_snr = None
+    ret_tty = None
+
     for tty, snr in devices.items():
         if tty not in devices_in_use and len(snr) >= 9 and snr.isnumeric():
-            devices_in_use.append(tty)
-            return tty, snr
+            ret_snr = snr
+            ret_tty = tty
+            # Opposite enumeration-order for TTY to coproccessor cores on nRF5340 Audio devkit.
+            if board != 'nrf53_audio':
+                break
 
-    return None, None
+    if ret_tty is not None:
+        devices_in_use.append(ret_tty)
+
+    log("Got free rtt for device {}: {}".format(ret_snr, ret_tty))
+    return ret_tty, ret_snr
 
 
 def get_debugger_snr(tty):
@@ -195,7 +205,7 @@ def get_debugger_snr(tty):
     return jlink
 
 
-def get_tty(debugger_snr):
+def get_tty(debugger_snr, board=None):
     """Return tty or COM of the device with given serial number.
     """
     tty = None
@@ -204,8 +214,11 @@ def get_tty(debugger_snr):
     for dev in devices.keys():
         if devices[dev] == debugger_snr:
             tty = dev
-            break
+            # Opposite enumeration-order for TTY to coproccessor cores on nRF5340 Audio devkit.
+            if board != 'nrf53_audio':
+                break
 
+    log("Got tty for device {}: {}".format(debugger_snr, tty))
     return tty
 
 
