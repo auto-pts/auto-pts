@@ -216,20 +216,19 @@ class ZephyrCtl:
             # For QEMU, the IUT ready event is sent at startup of the process.
             self.start(self.test_case)
 
-        elif not self.gdb:
-            ev = stack.core.wait_iut_ready_ev(30)
+        else:
+            if not self.gdb:
+                ev = stack.core.wait_iut_ready_ev(30)
+                # If the board has reset unexpectedly in the middle of a test case,
+                # two IUT events may be received because of cleanup.
+                stack.core.event_queues[defs.CORE_EV_IUT_READY].clear()
+                if not ev:
+                    self.stop()
+                    raise Exception('IUT ready event NOT received!')
 
-            # If the board has reset unexpectedly in the middle of a test case,
-            # two IUT events may be received because of cleanup.
-            stack.core.event_queues[defs.CORE_EV_IUT_READY].clear()
-
-            if ev:
-                log("IUT ready event received OK")
-                self.rtt_logger_start()
-                self.btmon_start()
-            else:
-                self.stop()
-                raise Exception('IUT ready event NOT received!')
+            log("IUT ready event received OK")
+            self.rtt_logger_start()
+            self.btmon_start()
 
     def hw_reset(self):
         if not self.gdb and self.board:
