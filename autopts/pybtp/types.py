@@ -13,6 +13,8 @@
 # more details.
 #
 
+import struct
+
 from enum import IntEnum, IntFlag
 from binascii import unhexlify
 from typing import NamedTuple
@@ -344,4 +346,143 @@ class Context(IntFlag):
     ALERTS              = 0x0400
     EMERGENCY_ALARM     = 0x0800
     ANY_CONTEXT         = 0x0FFF
-    
+
+
+
+class AudioDir:
+    SINK = 0x01
+    SOURCE = 0x02
+
+
+class ASCSOperation:
+    CONFIG_CODEC = 0x01
+    CONFIG_QOS = 0x02
+    ENABLE = 0x03
+    RECEIVER_START_READY = 0x04
+    DISABLE = 0x05
+    RECEIVER_STOP_READY = 0x06
+    UPDATE_METADATA = 0x07
+    RELEASE = 0x08
+
+
+# Assigned Numbers (2023), 6.12.4 Codec_Specific_Capabilities LTV Structures
+class LC3_PAC_LTV_Type:
+    SAMPLING_FREQ = 0x01
+    FRAME_DURATION = 0x02
+    CHANNELS = 0x03
+    FRAME_LEN = 0x04
+    FRAMES_PER_SDU = 0x05
+
+
+# Assigned Numbers (2023), 6.12.5 Codec_Specific_Configuration LTV structures
+class LC3_LTV_Config_Type:
+    SAMPLING_FREQ = 0x01
+    FRAME_DURATION = 0x02
+    CHANNEL_ALLOCATION = 0x03
+    FRAME_LEN = 0x04
+    FRAMES_PER_SDU = 0x05
+
+
+SAMPLING_FREQ_STR_TO_CODE = {
+    '8': 0x01,  # 8000 Hz
+    '11.025': 0x02,  # 11025 Hz
+    '16': 0x03,  # 16000 Hz
+    '22.05': 0x04,  # 22050 Hz
+    '24': 0x05,  # 24000 Hz
+    '32': 0x06,  # 32000 Hz
+    '44.1': 0x07,  # 44100 Hz
+    '48': 0x08,  # 48000 Hz
+    '88.2': 0x09,  # 88200 Hz
+    '96': 0x0a,  # 96000 Hz
+    '176.4': 0x0b,  # 1764000 Hz
+    '192': 0x0c,  # 192000 Hz
+    '384': 0x0d,  # 384000 Hz
+}
+
+FRAME_DURATION_STR_TO_CODE = {
+    '7.5': 0x00,  # 7.5 ms
+    '10': 0x01,  # 10 ms
+}
+
+CODEC_CONFIG_SETTINGS = {
+    # Set_Name: (Sampling_Frequency, Frame_Duration, Octets_Per_Codec_Frame)
+    '8_1': (0x01, 0x00, 26),
+    '8_2': (0x01, 0x01, 30),
+    '16_1': (0x03, 0x00, 30),
+    '16_2': (0x03, 0x01, 40),
+    '24_1': (0x05, 0x00, 45),
+    '24_2': (0x05, 0x01, 60),
+    '32_1': (0x06, 0x00, 60),
+    '32_2': (0x06, 0x01, 80),
+    '441_1': (0x07, 0x00, 97),
+    '441_2': (0x07, 0x01, 130),
+    '48_1': (0x08, 0x00, 75),
+    '48_2': (0x08, 0x01, 100),
+    '48_3': (0x08, 0x00, 90),
+    '48_4': (0x08, 0x01, 120),
+    '48_5': (0x08, 0x00, 117),
+    '48_6': (0x08, 0x01, 155),
+}
+
+QOS_CONFIG_SETTINGS = {
+    # Set_Name: (SDU_interval, Framing, Maximum_SDU_Size, Retransmission_Number, Max_Transport_Latency)
+    '8_1_1': (7500, 0x00, 26, 2, 8),
+    '8_2_1': (10000, 0x00, 30, 2, 10),
+    '16_1_1': (7500, 0x00, 30, 2, 8),
+    '16_2_1': (10000, 0x00, 40, 2, 10),
+    '24_1_1': (7500, 0x00, 45, 2, 8),
+    '24_2_1': (10000, 0x00, 60, 2, 10),
+    '32_1_1': (7500, 0x00, 60, 2, 8),
+    '32_2_1': (10000, 0x00, 80, 2, 10),
+    '441_1_1': (8163, 0x01, 97, 5, 24),
+    '441_2_1': (10884, 0x01, 130, 5, 31),
+    '48_1_1': (7500, 0x00, 75, 5, 15),
+    '48_2_1': (10000, 0x00, 100, 5, 20),
+    '48_3_1': (7500, 0x00, 90, 5, 15),
+    '48_4_1': (10000, 0x00, 120, 5, 20),
+    '48_5_1': (7500, 0x00, 117, 5, 15),
+    '48_6_1': (10000, 0x00, 155, 5, 20),
+    '8_1_2': (7500, 0x00, 26, 13, 75),
+    '8_2_2': (10000, 0x00, 30, 13, 95),
+    '16_1_2': (7500, 0x00, 30, 13, 75),
+    '16_2_2': (10000, 0x00, 40, 13, 95),
+    '24_1_2': (7500, 0x00, 45, 13, 75),
+    '24_2_2': (10000, 0x00, 60, 13, 95),
+    '32_1_2': (7500, 0x00, 60, 13, 75),
+    '32_2_2': (10000, 0x00, 80, 13, 95),
+    '441_1_2': (8163, 0x01, 97, 13, 80),
+    '441_2_2': (10884, 0x01, 130, 13, 85),
+    '48_1_2': (7500, 0x00, 75, 13, 75),
+    '48_2_2': (10000, 0x00, 100, 13, 95),
+    '48_3_2': (7500, 0x00, 90, 13, 75),
+    '48_4_2': (10000, 0x00, 120, 13, 100),
+    '48_5_2': (7500, 0x00, 117, 13, 75),
+    '48_6_2': (10000, 0x00, 155, 13, 100),
+}
+
+
+def create_lc3_ltvs_bytes(sampling_freq, frame_duration, audio_locations,
+                          octets_per_frame, frames_per_sdu):
+    ltvs = bytearray()
+    ltvs += struct.pack('<BBB', 2, LC3_LTV_Config_Type.SAMPLING_FREQ, sampling_freq)
+    ltvs += struct.pack('<BBB', 2, LC3_LTV_Config_Type.FRAME_DURATION, frame_duration)
+    ltvs += struct.pack('<BBI', 5, LC3_LTV_Config_Type.CHANNEL_ALLOCATION, audio_locations)
+    ltvs += struct.pack('<BBH', 3, LC3_LTV_Config_Type.FRAME_LEN, octets_per_frame)
+    ltvs += struct.pack('<BBB', 2, LC3_LTV_Config_Type.FRAMES_PER_SDU, frames_per_sdu)
+
+    return ltvs
+
+
+class PaSyncState:
+    NOT_SYNCED     = 0x00
+    SYNC_INFO_REQ  = 0x01
+    SYNCED         = 0x02
+    FAILED_TO_SYNC = 0x03
+    NO_PAST        = 0x04
+
+
+class BIGEncryption:
+    NOT_ENCRYPTED           = 0x00
+    BROADCAST_CODE_REQUIRED = 0x01
+    DECRYPTING              = 0x02
+    BAD_CODE                = 0x03
