@@ -45,6 +45,8 @@ ASCS = {
                         CONTROLLER_INDEX),
     'add_ase_to_cis': (defs.BTP_SERVICE_ID_ASCS, defs.ASCS_ADD_ASE_TO_CIS,
                        CONTROLLER_INDEX),
+    'preconfig_qos': (defs.BTP_SERVICE_ID_ASCS, defs.ASCS_PRECONFIG_QOS,
+                      CONTROLLER_INDEX),
 }
 
 
@@ -187,6 +189,27 @@ def ascs_update_metadata(ase_id, bd_addr_type=None, bd_addr=None):
 
     iutctl = get_iut()
     iutctl.btp_socket.send_wait_rsp(*ASCS['update_metadata'], data=data)
+
+
+def ascs_preconfig_qos(cig_id, cis_id, sdu_interval, framing, max_sdu,
+                       retransmission_number, max_transport_latency,
+                       presentation_delay):
+    logging.debug(f"{ascs_config_qos.__name__}")
+
+    data = bytearray()
+    data += struct.pack('B', cig_id)
+    data += struct.pack('B', cis_id)
+    data += int.to_bytes(sdu_interval, 3, 'little')
+    data += struct.pack('B', framing)
+    data += struct.pack('<H', max_sdu)
+    data += struct.pack('B', retransmission_number)
+    data += struct.pack('<H', max_transport_latency)
+    data += int.to_bytes(presentation_delay, 3, 'little')
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*ASCS['preconfig_qos'], data=data)
+
+    ascs_command_rsp_succ()
 
 
 def ascs_ev_operation_completed_(ascs, data, data_len):

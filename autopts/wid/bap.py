@@ -14,13 +14,12 @@
 #
 import logging
 import re
-import struct
 from argparse import Namespace
 from time import sleep
 
 from autopts.ptsprojects.stack import get_stack, WildCard
 from autopts.ptsprojects.testcase import MMI
-from autopts.pybtp import btp, defs
+from autopts.pybtp import btp
 from autopts.pybtp.btp import pts_addr_get, pts_addr_type_get, ascs_add_ase_to_cis, lt2_addr_get, lt2_addr_type_get
 from autopts.pybtp.types import *
 from autopts.wid import generic_wid_hdl
@@ -35,19 +34,24 @@ def bap_wid_hdl(wid, description, test_case_name):
 
 # wid handlers section begin
 def hdl_wid_20100(params: WIDParams):
-    addr = pts_addr_get()
-    addr_type = pts_addr_type_get()
+    if params.test_case_name.endswith('LT2'):
+        addr = lt2_addr_get()
+        addr_type = lt2_addr_type_get()
+    else:
+        addr = pts_addr_get()
+        addr_type = pts_addr_type_get()
+
     stack = get_stack()
 
-    btp.gap_conn()
-    stack.gap.wait_for_connection(timeout=5, addr=addr)
-    stack.gap.gap_wait_for_sec_lvl_change(level=2, timeout=30)
+    btp.gap_conn(addr, addr_type)
+    stack.gap.wait_for_connection(timeout=10, addr=addr)
+    stack.gap.gap_wait_for_sec_lvl_change(level=2, timeout=30, addr=addr)
 
     btp.bap_discover(addr_type, addr)
     stack.bap.wait_discovery_completed_ev(addr_type, addr, 30)
 
     if params.test_case_name.startswith('BAP/BA/BASS'):
-        btp.bap_discover_scan_delegator()
+        btp.bap_discover_scan_delegator(addr_type, addr)
 
     return True
 
@@ -672,6 +676,14 @@ def hdl_wid_302(params: WIDParams):
     btp.ascs_config_codec(ase_id, coding_format, 0x0000, 0x0000, codec_ltvs_bytes)
     stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
 
+    config = create_default_config()
+    config.addr = addr
+    config.addr_type = addr_type
+    config.ase_id = ase_id
+    config.audio_dir = audio_dir
+    stack.bap.ase_configs.clear()
+    stack.bap.ase_configs.append(config)
+
     return True
 
 
@@ -731,8 +743,20 @@ def hdl_wid_303(params: WIDParams):
     cis_id = 0x00
     presentation_delay = 40000
     qos_config = QOS_CONFIG_SETTINGS[qos_set_name]
+
+    ascs_add_ase_to_cis(ase_id, cis_id, cig_id, addr_type, addr)
+    btp.ascs_preconfig_qos(cig_id, cis_id, *qos_config, presentation_delay)
+
     btp.ascs_config_qos(ase_id, cig_id, cis_id, *qos_config, presentation_delay)
     stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+
+    config = create_default_config()
+    config.addr = addr
+    config.addr_type = addr_type
+    config.ase_id = ase_id
+    config.audio_dir = audio_dir
+    stack.bap.ase_configs.clear()
+    stack.bap.ase_configs.append(config)
 
     return True
 
@@ -786,12 +810,24 @@ def hdl_wid_304(params: WIDParams):
     cis_id = 0x00
     presentation_delay = 40000
     qos_config = QOS_CONFIG_SETTINGS[f'{sampling_freq_str}_1_1']
+
+    ascs_add_ase_to_cis(ase_id, cis_id, cig_id, addr_type, addr)
+    btp.ascs_preconfig_qos(cig_id, cis_id, *qos_config, presentation_delay)
+
     btp.ascs_config_qos(ase_id, cig_id, cis_id, *qos_config, presentation_delay)
     stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
 
     # Enable streams
     btp.ascs_enable(ase_id)
     stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+
+    config = create_default_config()
+    config.addr = addr
+    config.addr_type = addr_type
+    config.ase_id = ase_id
+    config.audio_dir = audio_dir
+    stack.bap.ase_configs.clear()
+    stack.bap.ase_configs.append(config)
 
     return True
 
@@ -845,6 +881,10 @@ def hdl_wid_305(params: WIDParams):
     cis_id = 0x00
     presentation_delay = 40000
     qos_config = QOS_CONFIG_SETTINGS[f'{sampling_freq_str}_1_1']
+
+    ascs_add_ase_to_cis(ase_id, cis_id, cig_id, addr_type, addr)
+    btp.ascs_preconfig_qos(cig_id, cis_id, *qos_config, presentation_delay)
+
     btp.ascs_config_qos(ase_id, cig_id, cis_id, *qos_config, presentation_delay)
     stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
 
@@ -855,6 +895,14 @@ def hdl_wid_305(params: WIDParams):
     # Disable streams
     btp.ascs_disable(ase_id)
     stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+
+    config = create_default_config()
+    config.addr = addr
+    config.addr_type = addr_type
+    config.ase_id = ase_id
+    config.audio_dir = audio_dir
+    stack.bap.ase_configs.clear()
+    stack.bap.ase_configs.append(config)
 
     return True
 
@@ -908,6 +956,10 @@ def hdl_wid_306(params: WIDParams):
     cis_id = 0x00
     presentation_delay = 40000
     qos_config = QOS_CONFIG_SETTINGS[f'{sampling_freq_str}_1_1']
+
+    ascs_add_ase_to_cis(ase_id, cis_id, cig_id, addr_type, addr)
+    btp.ascs_preconfig_qos(cig_id, cis_id, *qos_config, presentation_delay)
+
     btp.ascs_config_qos(ase_id, cig_id, cis_id, *qos_config, presentation_delay)
     stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
 
@@ -919,6 +971,14 @@ def hdl_wid_306(params: WIDParams):
     btp.ascs_receiver_start_ready(ase_id)
     stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
 
+    config = create_default_config()
+    config.addr = addr
+    config.addr_type = addr_type
+    config.ase_id = ase_id
+    config.audio_dir = audio_dir
+    stack.bap.ase_configs.clear()
+    stack.bap.ase_configs.append(config)
+
     return True
 
 
@@ -926,23 +986,22 @@ def hdl_wid_307(_: WIDParams):
     """
     Please configure ASE state to Disabling state. If server is Source, please initiate Receiver Stop Ready.
     """
-
-    addr = pts_addr_get()
-    addr_type = pts_addr_type_get()
     stack = get_stack()
+    if len(stack.bap.ase_configs) == 0:
+        # This should never happen as this wid comes after WID 304 or 306.
+        log('ASE has not been configured!')
+        return False
 
-    # Find ID of the ASE
-    ev = stack.bap.event_queues[defs.BAP_EV_ASE_FOUND][0]
-    _, _, ase_dir, ase_id = ev
+    config = stack.bap.ase_configs[0]
 
     # Disable ASE
-    btp.ascs_disable(ase_id)
-    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+    btp.ascs_disable(config.ase_id)
+    stack.ascs.wait_ascs_operation_complete_ev(config.addr_type, config.addr, config.ase_id, 30)
 
-    if ase_dir == AudioDir.SOURCE:
+    if config.audio_dir == AudioDir.SOURCE:
         # Initiate receiver Stop Ready
-        btp.ascs_receiver_stop_ready(ase_id)
-        stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+        btp.ascs_receiver_stop_ready(config.ase_id)
+        stack.ascs.wait_ascs_operation_complete_ev(config.addr_type, config.addr, config.ase_id, 30)
 
     return True
 
@@ -951,18 +1010,17 @@ def hdl_wid_308(_: WIDParams):
     """
     Please configure ASE state to Disabling state.
     """
-
-    addr = pts_addr_get()
-    addr_type = pts_addr_type_get()
     stack = get_stack()
+    if len(stack.bap.ase_configs) == 0:
+        # This should never happen as this wid comes after WID 304 or 306.
+        log('ASE has not been configured!')
+        return False
 
-    # Find ID of the ASE
-    ev = stack.bap.event_queues[defs.BAP_EV_ASE_FOUND][0]
-    _, _, ase_dir, ase_id = ev
+    config = stack.bap.ase_configs[0]
 
     # Disable ASE
-    btp.ascs_disable(ase_id)
-    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+    btp.ascs_disable(config.ase_id)
+    stack.ascs.wait_ascs_operation_complete_ev(config.addr_type, config.addr, config.ase_id, 30)
 
     return True
 
@@ -971,18 +1029,17 @@ def hdl_wid_309(_: WIDParams):
     """
     Please configure ASE state to Releasing state.
     """
-
-    addr = pts_addr_get()
-    addr_type = pts_addr_type_get()
     stack = get_stack()
+    if len(stack.bap.ase_configs) == 0:
+        # This should never happen as this wid comes after WID 302, 303, 304, 305 or 306.
+        log('ASE has not been configured!')
+        return False
 
-    # Find ID of the ASE
-    ev = stack.bap.event_queues[defs.BAP_EV_ASE_FOUND][0]
-    _, _, _, ase_id = ev
+    config = stack.bap.ase_configs[0]
 
     # Release streams
-    btp.ascs_release(ase_id)
-    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+    btp.ascs_release(config.ase_id)
+    stack.ascs.wait_ascs_operation_complete_ev(config.addr_type, config.addr, config.ase_id, 30)
 
     return True
 
@@ -991,23 +1048,17 @@ def hdl_wid_310(_: WIDParams):
     """
     Please send Update Metadata Opcode with valid data.
     """
-    addr = pts_addr_get()
-    addr_type = pts_addr_type_get()
     stack = get_stack()
-
-    # Find ASE ID
-    ev = stack.bap.wait_ase_found_ev(addr_type, addr, AudioDir.SINK, 30)
-    if ev is None:
-        ev = stack.bap.wait_ase_found_ev(addr_type, addr, AudioDir.SOURCE, 5)
-
-    if ev is None:
+    if len(stack.bap.ase_configs) == 0:
+        # This should never happen as this wid comes after WID 304 or 306.
+        log('ASE has not been configured!')
         return False
 
-    _, _, ase_dir, ase_id = ev
+    config = stack.bap.ase_configs[0]
 
     # Update metadata
-    btp.ascs_update_metadata(ase_id)
-    stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
+    btp.ascs_update_metadata(config.ase_id)
+    stack.ascs.wait_ascs_operation_complete_ev(config.addr_type, config.addr, config.ase_id, 30)
 
     return True
 
@@ -1015,7 +1066,6 @@ def hdl_wid_310(_: WIDParams):
 def create_default_config():
     return Namespace(addr=pts_addr_get(),
                      addr_type=pts_addr_type_get(),
-                     current_state=ASCSState.IDLE,
                      vid=0x0000,
                      cid=0x0000,
                      coding_format=0x06,
@@ -1027,7 +1077,8 @@ def create_default_config():
                      qos_config=None,
                      codec_set_name=None,
                      codec_ltvs=None,
-                     metadata_ltvs=None)
+                     metadata_ltvs=None,
+                     mono=None)
 
 
 def config_codec(config):
@@ -1039,9 +1090,17 @@ def config_codec(config):
             CODEC_CONFIG_SETTINGS[config.codec_set_name]
 
     stack = get_stack()
+
+    if config.mono:
+        # In test cases with Mono the PTS does not like the Audio Channel
+        # Allocations in Codec Specific Configuration
+        audio_locations = None
+    else:
+        audio_locations = config.audio_locations
+
     codec_ltvs_bytes = create_lc3_ltvs_bytes(config.sampling_freq,
                                              config.frame_duration,
-                                             config.audio_locations,
+                                             audio_locations,
                                              config.octets_per_frame,
                                              config.frames_per_sdu)
 
@@ -1052,13 +1111,13 @@ def config_codec(config):
                           codec_ltvs_bytes,
                           config.addr_type,
                           config.addr)
+
     stack.ascs.wait_ascs_operation_complete_ev(config.addr_type,
                                                config.addr,
                                                config.ase_id, 30)
-    config.current_state = ASCSState.CODEC_CONFIGURED
 
 
-def config_qos(config):
+def preconfig_qos(config):
     if config.qos_set_name is not None:
         (config.sdu_interval, config.framing, config.max_sdu_size,
          config.retransmission_number, config.max_transport_latency) = \
@@ -1067,7 +1126,20 @@ def config_qos(config):
         # Adjust max sdu size to the number of channels
         config.max_sdu_size = config.max_sdu_size * count_1_bits(config.audio_locations)
 
-    stack = get_stack()
+    ascs_add_ase_to_cis(config.ase_id, config.cis_id, config.cig_id,
+                        config.addr_type, config.addr)
+
+    btp.ascs_preconfig_qos(config.cig_id,
+                           config.cis_id,
+                           config.sdu_interval,
+                           config.framing,
+                           config.max_sdu_size,
+                           config.retransmission_number,
+                           config.max_transport_latency,
+                           config.presentation_delay)
+
+
+def config_qos(config):
     btp.ascs_config_qos(config.ase_id,
                         config.cig_id,
                         config.cis_id,
@@ -1078,10 +1150,6 @@ def config_qos(config):
                         config.max_transport_latency,
                         config.presentation_delay,
                         config.addr_type, config.addr)
-    stack.ascs.wait_ascs_operation_complete_ev(config.addr_type,
-                                               config.addr,
-                                               config.ase_id, 30)
-    config.current_state = ASCSState.QOS_CONFIGURED
 
 
 def enable(config):
@@ -1090,7 +1158,6 @@ def enable(config):
     stack.ascs.wait_ascs_operation_complete_ev(config.addr_type,
                                                config.addr,
                                                config.ase_id, 30)
-    config.current_state = ASCSState.ENABLING
 
 
 def start_streaming(config):
@@ -1099,7 +1166,6 @@ def start_streaming(config):
     stack.ascs.wait_ascs_operation_complete_ev(config.addr_type,
                                                config.addr,
                                                config.ase_id, 30)
-    config.current_state = ASCSState.STREAMING
 
 
 def stop_streaming(config):
@@ -1108,7 +1174,6 @@ def stop_streaming(config):
     stack.ascs.wait_ascs_operation_complete_ev(config.addr_type,
                                                config.addr,
                                                config.ase_id, 30)
-    config.current_state = ASCSState.QOS_CONFIGURED
 
 
 def source_disable(config):
@@ -1118,7 +1183,6 @@ def source_disable(config):
     stack.ascs.wait_ascs_operation_complete_ev(config.addr_type,
                                                config.addr,
                                                config.ase_id, 30)
-    config.current_state = ASCSState.DISABLING
 
 
 def sink_disable(config):
@@ -1128,7 +1192,6 @@ def sink_disable(config):
     stack.ascs.wait_ascs_operation_complete_ev(config.addr_type,
                                                config.addr,
                                                config.ase_id, 30)
-    config.current_state = ASCSState.QOS_CONFIGURED
 
 
 def release(config):
@@ -1138,8 +1201,6 @@ def release(config):
     stack.ascs.wait_ascs_operation_complete_ev(config.addr_type,
                                                config.addr,
                                                config.ase_id, 30)
-    # No caching
-    config.current_state = ASCSState.IDLE
 
 
 def get_audio_locations_from_pac(addr_type, addr, audio_dir):
@@ -1158,108 +1219,147 @@ def get_audio_locations_from_pac(addr_type, addr, audio_dir):
     return audio_locations
 
 
+ac_configs = {
+    # test_case_name: ([CIS_1, CIS_2, ...], num_of_servers)
+    # where CIS_x is a tuple like (sink_available, source_available)
+    # In Enabling state, 1 CIS
+    'BAP/UCL/STR/BV-523-C':     ([(1, 1)], 1),          # AC 3
+    'BAP/UCL/STR/BV-524-C':     ([(1, 1)], 1),          # AC 5, (2 channels)
+
+    # In Enabling state, 2 CISes
+    'BAP/UCL/STR/BV-525-C':     ([(1, 0), (0, 1)], 1),  # AC 7(i)
+    'BAP/UCL/STR/BV-526-C':     ([(1, 0),], 2),         # AC 7(ii)
+    'BAP/UCL/STR/BV-526-C_LT2': ([(0, 1),], 2),
+    'BAP/UCL/STR/BV-527-C':     ([(1, 0), (1, 0)], 1),  # AC 6(i)
+    'BAP/UCL/STR/BV-528-C':     ([(1, 0)], 2),          # AC 6(ii)
+    'BAP/UCL/STR/BV-528-C_LT2': ([(1, 0)], 2),
+    'BAP/UCL/STR/BV-529-C':     ([(0, 1), (0, 1)], 1),  # AC 9(i)
+    'BAP/UCL/STR/BV-530-C':     ([(0, 1)], 2),          # AC 9(ii)
+    'BAP/UCL/STR/BV-530-C_LT2': ([(0, 1)], 2),
+    'BAP/UCL/STR/BV-531-C':     ([(1, 0), (1, 1)], 1),  # AC 8(i)
+    'BAP/UCL/STR/BV-532-C':     ([(1, 1)], 2),          # AC 8(ii)
+    'BAP/UCL/STR/BV-532-C_LT2': ([(1, 0)], 2),
+    'BAP/UCL/STR/BV-533-C':     ([(1, 1), (1, 1)], 1),  # AC 11(i)
+    'BAP/UCL/STR/BV-534-C':     ([(1, 1)], 2),          # AC 11(ii)
+    'BAP/UCL/STR/BV-534-C_LT2': ([(1, 1)], 2),
+
+    # In Enabling state, 1 CIS
+    'BAP/UCL/STR/BV-535-C':     ([(0, 1)], 1),          # AC 2
+    'BAP/UCL/STR/BV-536-C':     ([(0, 1)], 1),          # AC 10, (2 channels)
+    'BAP/UCL/STR/BV-537-C':     ([(1, 0)], 1),          # AC 1
+    'BAP/UCL/STR/BV-538-C':     ([(1, 0)], 1),          # AC 4, (2 channels)
+
+    # In QoS Configured state (optional, not supported yet)
+    'BAP/UCL/STR/BV-539-C':     ([(0, 1)], 1),          # AC 2
+    'BAP/UCL/STR/BV-540-C':     ([(0, 1)], 1),          # AC 10
+    'BAP/UCL/STR/BV-541-C':     ([(1, 0)], 1),          # AC 1
+    'BAP/UCL/STR/BV-542-C':     ([(1, 0)], 1),          # AC 4
+    'BAP/UCL/STR/BV-543-C':     ([(1, 1)], 1),          # AC 3
+    'BAP/UCL/STR/BV-544-C':     ([(1, 1)], 1),          # AC 5
+    'BAP/UCL/STR/BV-545-C':     ([(1, 0), (0, 1)], 1),  # AC 7(i)
+    'BAP/UCL/STR/BV-546-C':     ([(1, 1)], 1),          # AC 3
+    'BAP/UCL/STR/BV-547-C':     ([(1, 1)], 1),          # AC 5
+    'BAP/UCL/STR/BV-548-C':     ([(1, 0), (0, 1)], 1),  # AC 7(i)
+    'BAP/UCL/STR/BV-549-C':     ([(1, 1)], 1),          # AC 3
+    'BAP/UCL/STR/BV-550-C':     ([(1, 1)], 1),          # AC 5
+    'BAP/UCL/STR/BV-551-C':     ([(1, 0), (0, 1)], 1),  # AC 7(i)
+
+    # Mono
+    # test_case_name: ([CIS_1, CIS_2, ...], num_of_servers, if_mono)
+    'BAP/UCL/STR/BV-552-C':     ([(0, 1)], 1, True),          # AC 2, Mono
+    'BAP/UCL/STR/BV-553-C':     ([(0, 1)], 1, True),          # AC 2, Mono, Default Ch Count
+    'BAP/UCL/STR/BV-554-C':     ([(0, 1)], 1, True),          # AC 2, Mono, No PACS
+    'BAP/UCL/STR/BV-555-C':     ([(0, 1)], 1, True),          # AC 2, Mono, No PACS, Default Ch Count
+    'BAP/UCL/STR/BV-556-C':     ([(1, 0)], 1, True),          # AC 10, Mono
+    'BAP/UCL/STR/BV-557-C':     ([(1, 0)], 1, True),          # AC 10, Mono, Default Ch Count
+    'BAP/UCL/STR/BV-558-C':     ([(1, 0)], 1, True),          # AC 10, Mono, No PACS
+    'BAP/UCL/STR/BV-559-C':     ([(1, 0)], 1, True),          # AC 10, Mono, No PACS, Default Ch Count
+}
+
+
 def hdl_wid_311(params: WIDParams):
     """
     Please configure 1 SOURCE ASE with Config Setting: IXIT.
     After that, configure to streaming state.
     """
-
     stack = get_stack()
+    cig_id = 0x00
+
+    if params.test_case_name.endswith('LT2'):
+        addr = lt2_addr_get()
+        addr_type = lt2_addr_type_get()
+        # This WID 311 for LT2 is synchronized to arrived as a second one.
+        # All CISes in a CIG shall have different CIS_ID, so let's keep
+        # the increasing order to assure this.
+        cis_id = stack.bap.ase_configs[-1].cis_id + 1
+    else:
+        cis_id = 0x00
+        addr = pts_addr_get()
+        addr_type = pts_addr_type_get()
+
     default_config = create_default_config()
+    default_config.addr = addr
+    default_config.addr_type = addr_type
 
     parsed = re.findall(r'\d+(?:_\d+)*', params.description)
 
     default_config.qos_set_name = '16_2_1'
-    sink_num = source_num = n = 0
-
-    if 'SINK' in params.description:
-        sink_num = int(parsed[n])
-        n += 1
-
-    if 'SOURCE' in params.description:
-        source_num = int(parsed[n])
-        n += 1
 
     if 'IXIT' not in params.description:
-        default_config.qos_set_name = parsed[n]
+        default_config.qos_set_name = parsed[-1]
 
     default_config.codec_set_name = '_'.join(default_config.qos_set_name.split('_')[:-1])
+    default_config.qos_config = QOS_CONFIG_SETTINGS[default_config.qos_set_name]
 
-    sinks = []
-    for i in range(0, sink_num):
-        config = Namespace(**vars(default_config))
-        config.audio_dir = AudioDir.SINK
-        config.audio_locations = get_audio_locations_from_pac(
-            default_config.addr_type, default_config.addr, config.audio_dir)
-        sinks.append(config)
+    ase_configs = []
+    ac, lt_count, *mono = ac_configs[params.test_case_name]
+    for sink, source in ac:
+        for ase, audio_dir in [(sink, AudioDir.SINK), (source, AudioDir.SOURCE)]:
+            if not ase:
+                continue
 
-    sources = []
-    for i in range(0, source_num):
-        config = Namespace(**vars(default_config))
-        config.audio_dir = AudioDir.SOURCE
-        config.audio_locations = get_audio_locations_from_pac(
-            default_config.addr_type, default_config.addr, config.audio_dir)
-        sources.append(config)
+            config = Namespace(**vars(default_config))
+            config.audio_dir = audio_dir
+            config.audio_locations = get_audio_locations_from_pac(
+                default_config.addr_type, default_config.addr, audio_dir)
 
-    ase_found_ev_cache = []
-    ases = sinks + sources
-    for config in ases:
-        ev = stack.bap.wait_ase_found_ev(default_config.addr_type,
-                                         default_config.addr,
-                                         config.audio_dir, 30, remove=True)
-        if ev is None:
-            return False
+            ev = stack.bap.wait_ase_found_ev(default_config.addr_type,
+                                             default_config.addr,
+                                             audio_dir, 30, remove=True)
+            if ev is None:
+                return False
 
-        ase_found_ev_cache.append(ev)
+            _, _, audio_dir, ase_id = ev
+            config.ase_id = ase_id
+            config.cig_id = cig_id
+            config.cis_id = cis_id
+            ase_configs.append(config)
 
-        _, _, audio_dir, ase_id = ev
-        config.ase_id = ase_id
+            if mono:
+                config.mono = True
 
-    # Restore removed events, so other wids could use them
-    stack.bap.event_queues[defs.BAP_EV_ASE_FOUND].extend(ase_found_ev_cache)
+            config_codec(config)
 
-    for config in ases:
-        config_codec(config)
+            preconfig_qos(config)
 
-    # Most test cases use bidirectional CISes and/or one unidirectional CIS.
-    # Only a few tests need several unidirectional CISs.
-    if params.test_case_name in ['BAP/UCL/STR/BV-525-C', ]:
-        bidir_cises = []
-        bidir_cises_num = 0
-    else:
-        bidir_cises = list(zip(sinks, sources))
-        bidir_cises_num = len(bidir_cises)
-
-    cis_id = 0x00
-    for sink_config, source_config in bidir_cises:
-        sink_config.cis_id = cis_id
-        source_config.cis_id = cis_id
         cis_id += 1
 
-    unidir_cises = []
-    for sink_config in sinks[bidir_cises_num:]:
-        sink_config.cis_id = cis_id
-        unidir_cises.append((sink_config, None))
-        cis_id += 1
+    stack.bap.ase_configs.extend(ase_configs)
 
-    for source_config in sources[bidir_cises_num:]:
-        source_config.cis_id = cis_id
-        unidir_cises.append((None, source_config))
-        cis_id += 1
-
-    cises = bidir_cises + unidir_cises
-
-    for config in ases:
-        config.cig_id = 0x00
-        ascs_add_ase_to_cis(config.ase_id, config.cis_id, config.cig_id)
+    if lt_count == 2 and not params.test_case_name.endswith('LT2'):
+        return True
 
     # Configure QoS for the CIG.
-    # Zephyrs API configures QoS for all ASEs in group at once
-    config = Namespace(**vars(ases[0]))
-    config_qos(config)
+    # Zephyrs API configures QoS for CISes of a connection in group at once
+    btp.ascs_config_qos(0, cig_id, 0, 0, 0, 0, 0, 0, 0,
+                        pts_addr_type_get(), pts_addr_get())
+
+    if lt_count == 2:
+        btp.ascs_config_qos(0, cig_id, 0, 0, 0, 0, 0, 0, 0,
+                            lt2_addr_type_get(), lt2_addr_get())
 
     # An ASCS operation completed event will arrive for each end point
-    for config in ases[1:]:
+    for config in stack.bap.ase_configs:
         ev = stack.ascs.wait_ascs_operation_complete_ev(config.addr_type,
                                                         config.addr,
                                                         config.ase_id, 30)
@@ -1268,24 +1368,19 @@ def hdl_wid_311(params: WIDParams):
 
     # Generate random data to stream to the SINK ASE
     stream_data = {}
-    for config in sinks:
+    for config in stack.bap.ase_configs:
         data = [j for j in range(0, config.octets_per_frame)]
         stream_data[config.ase_id] = bytearray(data)
 
-    for config in ases:
+    for config in stack.bap.ase_configs:
         enable(config)
 
-    for sink_config, source_config in cises:
-        if source_config:
-            btp.ascs_receiver_start_ready(source_config.ase_id)
-        elif sink_config:
-            # Called for Sink ASE just to trigger CIS establishment,
-            # but the Sink ASE will go to streaming state later,
-            # only when it is ready (all CISes are established).
-            btp.ascs_receiver_start_ready(sink_config.ase_id)
+    for config in stack.bap.ase_configs:
+        # Start streaming
+        btp.ascs_receiver_start_ready(config.ase_id, config.addr_type, config.addr)
 
     # PTS will change ASE states to streaming when all CISes are established
-    for config in ases:
+    for config in stack.bap.ase_configs:
         # Wait for the ASE states to be changed to streaming
         ev = stack.ascs.wait_ascs_ase_state_changed_ev(config.addr_type,
                                                        config.addr,
@@ -1295,13 +1390,16 @@ def hdl_wid_311(params: WIDParams):
         if ev is None:
             return False
 
-    for i in range(1, 100):
-        for config in sinks:
-            try:
-                btp.bap_send(config.ase_id, stream_data[config.ase_id])
-            except BTPError:
-                # Buffer full
-                pass
+    # PTS does not send an explicit message, but for each
+    # configured SINK it expects to receive any ISO data.
+    for i in range(1, 10):
+        for config in stack.bap.ase_configs:
+            if config.audio_dir == AudioDir.SINK:
+                try:
+                    btp.bap_send(config.ase_id, stream_data[config.ase_id])
+                except BTPError:
+                    # Buffer full
+                    pass
 
     return True
 
@@ -1410,6 +1508,10 @@ def hdl_wid_315(params: WIDParams):
     cis_id = 0x00
     presentation_delay = 40000
     qos_config = (7500, 0x00, 40, 2, 10)
+
+    ascs_add_ase_to_cis(ase_id, cis_id, cig_id, addr_type, addr)
+    btp.ascs_preconfig_qos(cig_id, cis_id, *qos_config, presentation_delay)
+
     btp.ascs_config_qos(ase_id, cig_id, cis_id, *qos_config, presentation_delay)
     stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
 
@@ -1701,7 +1803,7 @@ def hdl_wid_349(params: WIDParams):
     padv_interval = ev['padv_interval']
     num_subgroups = 1
     padv_sync = 0x01
-    bis_sync = 1
+    bis_sync = 0
     metadata_len = 0
     subgroups = struct.pack('<IB', bis_sync, metadata_len)
     btp.bap_add_broadcast_src(advertiser_sid, broadcast_id, padv_sync,
@@ -1762,15 +1864,14 @@ def hdl_wid_364(_: WIDParams):
     """
     After processed audio stream data, please click OK.
     """
-    addr = pts_addr_get()
-    addr_type = pts_addr_type_get()
     stack = get_stack()
 
-    for ev in stack.bap.event_queues[defs.BAP_EV_ASE_FOUND]:
-        _, _, ase_dir, ase_id = ev
-
-        if ase_dir == AudioDir.SOURCE:
-            ev = stack.bap.wait_stream_received_ev(addr_type, addr, ase_id, 10)
+    for config in stack.bap.ase_configs:
+        if config.audio_dir == AudioDir.SOURCE:
+            ev = stack.bap.wait_stream_received_ev(config.addr_type,
+                                                   config.addr,
+                                                   config.ase_id,
+                                                   10)
             if ev is None:
                 return False
 
@@ -1781,15 +1882,14 @@ def hdl_wid_366(_: WIDParams):
     """
     Please click ok when IUT received and sent audio stream data.
     """
-    addr = pts_addr_get()
-    addr_type = pts_addr_type_get()
     stack = get_stack()
 
-    for ev in stack.bap.event_queues[defs.BAP_EV_ASE_FOUND]:
-        _, _, ase_dir, ase_id = ev
-
-        if ase_dir == AudioDir.SINK:
-            ev = stack.bap.wait_stream_received_ev(addr_type, addr, ase_id, 10)
+    for config in stack.bap.ase_configs:
+        if config.audio_dir == AudioDir.SINK:
+            ev = stack.bap.wait_stream_received_ev(config.addr_type,
+                                                   config.addr,
+                                                   config.ase_id,
+                                                   10)
             if ev is None:
                 return False
 
@@ -1808,8 +1908,6 @@ def hdl_wid_376(params: WIDParams):
     Please confirm received streaming data.
     """
 
-    addr = pts_addr_get()
-    addr_type = pts_addr_type_get()
     stack = get_stack()
 
     if params.test_case_name in ['BAP/BA/BASS/BV-04-C_LT2',
@@ -1829,11 +1927,12 @@ def hdl_wid_376(params: WIDParams):
             if ev is None:
                 return False
     else:
-        for ev in stack.bap.event_queues[defs.BAP_EV_ASE_FOUND]:
-            _, _, ase_dir, ase_id = ev
-
-            if ase_dir == AudioDir.SINK:
-                ev = stack.bap.wait_stream_received_ev(addr_type, addr, ase_id, 10)
+        for config in stack.bap.ase_configs:
+            if config.audio_dir == AudioDir.SINK:
+                ev = stack.bap.wait_stream_received_ev(config.addr_type,
+                                                       config.addr,
+                                                       config.ase_id,
+                                                       10)
                 if ev is None:
                     return False
 

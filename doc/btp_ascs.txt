@@ -49,11 +49,12 @@ Commands and responses:
 					ASE ID (1 octet)
 					CIG ID (1 octet)
 					CIS ID (1 octet)
-					Sdu Interval (2 octet)
+					Sdu Interval (3 octet)
 					Framing (1 octet)
 					Max Sdu Size (2 octets)
 					Retransmission Number (1 octets)
-					Max Transport Latency (1 octets)
+					Max Transport Latency (2 octets)
+					Presentation Delay (3 octets)
 		Response parameters:    <None>
 
         The values of the other parameters as defined in ASCS_v1.0.pdf
@@ -73,7 +74,7 @@ Commands and responses:
                     0x00 - 0xff
 
         Valid Max Transport Latency values:
-                    0x05 – 0xFF
+                    0x0005 – 0x0FA0
 
 		In case of an error, the error status response will be returned.
 		In case of a success, the IUT continues processing the command
@@ -170,6 +171,24 @@ Commands and responses:
 
         This command is used to set up an unicast group in the IUT stack
 		before the ASCS Configure QoS operation for each ASE is called.
+
+		In case of an error, the error status response will be returned.
+
+	Opcode 0x0b: Preconfigure QoS
+
+		Controller Index:	<controller id>
+		Command parameters:	CIG ID (1 octet)
+					CIS ID (1 octet)
+					Sdu Interval (3 octet)
+					Framing (1 octet)
+					Max Sdu Size (2 octets)
+					Retransmission Number (1 octets)
+					Max Transport Latency (2 octets)
+					Presentation Delay (3 octets)
+		Response parameters:	<None>
+
+        This command is used to configure a QoS of an unicast group before
+        the ASCS Configure QoS operation for each ASE is executed.
 
 		In case of an error, the error status response will be returned.
 

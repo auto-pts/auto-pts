@@ -182,9 +182,66 @@ def test_cases(ptses):
                          [TestFunc(lambda: pts.update_pixit_param(
                           "BAP", "TSPX_Codec_ID", "ffffffffff"))],
                   generic_wid_hdl=bap_wid_hdl),
-        ZTestCase("BAP", "BAP/UCL/STR/BV-526-C", cmds=pre_conditions,
+        ZTestCase("BAP", "BAP/UCL/STR/BV-526-C", cmds=pre_conditions +
+                  [
+                      TestFunc(get_stack().synch.add_synch_element,
+                               [SynchPoint("BAP/UCL/STR/BV-526-C", 20100),
+                                SynchPoint("BAP/UCL/STR/BV-526-C_LT2", 20100)]),
+                      TestFunc(get_stack().synch.add_synch_element,
+                               [SynchPoint("BAP/UCL/STR/BV-526-C", 311),
+                                SynchPoint("BAP/UCL/STR/BV-526-C_LT2", 311)]),
+                      # More SyncPoint will be needed, but for now Zephyr does not reach the next wid
+                  ],
                   generic_wid_hdl=bap_wid_hdl,
                   lt2="BAP/UCL/STR/BV-526-C_LT2"),
+        ZTestCase("BAP", "BAP/UCL/STR/BV-528-C", cmds=pre_conditions +
+                  [
+                      TestFunc(get_stack().synch.add_synch_element,
+                               [SynchPoint("BAP/UCL/STR/BV-528-C", 20100),
+                                SynchPoint("BAP/UCL/STR/BV-528-C_LT2", 20100)]),
+                      TestFunc(get_stack().synch.add_synch_element,
+                               [SynchPoint("BAP/UCL/STR/BV-528-C", 311),
+                                SynchPoint("BAP/UCL/STR/BV-528-C_LT2", 311)]),
+                      # More SyncPoint will be needed, but for now Zephyr does not reach the next wid
+                  ],
+                  generic_wid_hdl=bap_wid_hdl,
+                  lt2="BAP/UCL/STR/BV-528-C_LT2"),
+        ZTestCase("BAP", "BAP/UCL/STR/BV-530-C", cmds=pre_conditions +
+                  [
+                      TestFunc(get_stack().synch.add_synch_element,
+                               [SynchPoint("BAP/UCL/STR/BV-530-C", 20100),
+                                SynchPoint("BAP/UCL/STR/BV-530-C_LT2", 20100)]),
+                      TestFunc(get_stack().synch.add_synch_element,
+                               [SynchPoint("BAP/UCL/STR/BV-530-C", 311),
+                                SynchPoint("BAP/UCL/STR/BV-530-C_LT2", 311)]),
+                      # More SyncPoint will be needed, but for now Zephyr does not reach the next wid
+                  ],
+                  generic_wid_hdl=bap_wid_hdl,
+                  lt2="BAP/UCL/STR/BV-530-C_LT2"),
+        ZTestCase("BAP", "BAP/UCL/STR/BV-532-C", cmds=pre_conditions +
+                  [
+                      TestFunc(get_stack().synch.add_synch_element,
+                               [SynchPoint("BAP/UCL/STR/BV-532-C", 20100),
+                                SynchPoint("BAP/UCL/STR/BV-532-C_LT2", 20100)]),
+                      TestFunc(get_stack().synch.add_synch_element,
+                               [SynchPoint("BAP/UCL/STR/BV-532-C", 311),
+                                SynchPoint("BAP/UCL/STR/BV-532-C_LT2", 311)]),
+                      # More SyncPoint will be needed, but for now Zephyr does not reach the next wid
+                  ],
+                  generic_wid_hdl=bap_wid_hdl,
+                  lt2="BAP/UCL/STR/BV-532-C_LT2"),
+        ZTestCase("BAP", "BAP/UCL/STR/BV-534-C", cmds=pre_conditions +
+                  [
+                      TestFunc(get_stack().synch.add_synch_element,
+                               [SynchPoint("BAP/UCL/STR/BV-534-C", 20100),
+                                SynchPoint("BAP/UCL/STR/BV-534-C_LT2", 20100)]),
+                      TestFunc(get_stack().synch.add_synch_element,
+                               [SynchPoint("BAP/UCL/STR/BV-534-C", 311),
+                                SynchPoint("BAP/UCL/STR/BV-534-C_LT2", 311)]),
+                      # More SyncPoint will be needed, but for now Zephyr does not reach the next wid
+                  ],
+                  generic_wid_hdl=bap_wid_hdl,
+                  lt2="BAP/UCL/STR/BV-534-C_LT2"),
         ZTestCase("BAP", "BAP/BA/BASS/BV-04-C", cmds=pre_conditions +
                   [  # Sync to avoid BTP collision
                       TestFunc(get_stack().synch.add_synch_element,
@@ -274,6 +331,18 @@ def test_cases(ptses):
 
     test_cases_lt2 = [
         ZTestCaseSlave("BAP", "BAP/UCL/STR/BV-526-C_LT2",
+                       cmds=pre_conditions_lt2,
+                       generic_wid_hdl=bap_wid_hdl),
+        ZTestCaseSlave("BAP", "BAP/UCL/STR/BV-528-C_LT2",
+                       cmds=pre_conditions_lt2,
+                       generic_wid_hdl=bap_wid_hdl),
+        ZTestCaseSlave("BAP", "BAP/UCL/STR/BV-530-C_LT2",
+                       cmds=pre_conditions_lt2,
+                       generic_wid_hdl=bap_wid_hdl),
+        ZTestCaseSlave("BAP", "BAP/UCL/STR/BV-532-C_LT2",
+                       cmds=pre_conditions_lt2,
+                       generic_wid_hdl=bap_wid_hdl),
+        ZTestCaseSlave("BAP", "BAP/UCL/STR/BV-534-C_LT2",
                        cmds=pre_conditions_lt2,
                        generic_wid_hdl=bap_wid_hdl),
         ZTestCaseSlave("BAP", "BAP/BA/BASS/BV-04-C_LT2",

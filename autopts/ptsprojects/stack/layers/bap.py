@@ -24,6 +24,7 @@ class BAP:
 
     def __init__(self):
         self.peers = {}
+        self.ase_configs = []
         self.broadcast_id = 0x1000000  # Invalid Broadcast ID
         self.broadcast_code = ''
         self.event_queues = {
