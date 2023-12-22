@@ -2129,7 +2129,7 @@
           <Row>
             <Name>TSPC_BAP_33a_2</Name>
             <Description>Sink ASE - Enabling, Source ASE - QoS Configured (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -2141,19 +2141,19 @@
           <Row>
             <Name>TSPC_BAP_33a_4</Name>
             <Description>Sink ASE - QoS Configured, Source ASE - Enabling (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_33a_5</Name>
             <Description>Sink ASE - QoS Configured, Source ASE - QoS Configured (C.3)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_33a_6</Name>
             <Description>Sink ASE - QoS Configured, Source ASE - None (C.4)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -2165,7 +2165,7 @@
           <Row>
             <Name>TSPC_BAP_33a_8</Name>
             <Description>Sink ASE - None, Source ASE - QoS Configured (C.6)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
