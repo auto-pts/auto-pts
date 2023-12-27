@@ -312,6 +312,15 @@ def hdl_wid_114(params: WIDParams):
 
     btp.bap_broadcast_source_start(broadcast_id)
 
+    data = bytearray([j for j in range(0, 41)])
+
+    for i in range(1, 100):
+        try:
+            btp.bap_send(0, data)
+        except BTPError:
+            # Buffer full
+            pass
+
     return True
 
 
