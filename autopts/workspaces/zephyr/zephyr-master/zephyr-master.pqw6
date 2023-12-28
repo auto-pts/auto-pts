@@ -4589,7 +4589,7 @@
           <Row>
             <Name>TSPC_BAP_88_5</Name>
             <Description>SyncInfo Transfer (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
