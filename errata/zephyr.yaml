@@ -16,3 +16,116 @@ MCP/CL/CGGIT/CHA/BV-08-C: Request ID 28478
 MCP/CL/CGGIT/CHA/BV-12-C: Request ID 28478
 MCP/CL/CGGIT/CHA/BV-14-C: Request ID 28478
 MCP/CL/CGGIT/CHA/BV-15-C: Request ID 28478
+
+BAP/BSRC/STR/BV-09-C: https://github.com/zephyrproject-rtos/zephyr/issues/67050 The 441_1 config rejected
+BAP/BSRC/STR/BV-10-C: https://github.com/zephyrproject-rtos/zephyr/issues/67050 The 441_2 config rejected
+BAP/BSRC/STR/BV-26-C: https://github.com/zephyrproject-rtos/zephyr/issues/67050 The 441_1 config rejected
+BAP/BSRC/STR/BV-27-C: https://github.com/zephyrproject-rtos/zephyr/issues/67050 The 441_2 config rejected
+BAP/BSRC/STR/BV-28-C: https://github.com/zephyrproject-rtos/zephyr/issues/67050 The 48_1 config rejected
+BAP/BSRC/STR/BV-29-C: https://github.com/zephyrproject-rtos/zephyr/issues/67050 The 48_2 config rejected
+BAP/BSRC/STR/BV-30-C: https://github.com/zephyrproject-rtos/zephyr/issues/67050 The 48_3 config rejected
+BAP/BSRC/STR/BV-31-C: https://github.com/zephyrproject-rtos/zephyr/issues/67050 The 48_4 config rejected
+BAP/BSRC/STR/BV-32-C: https://github.com/zephyrproject-rtos/zephyr/issues/67050 The 48_5 config rejected
+BAP/BSRC/STR/BV-33-C: https://github.com/zephyrproject-rtos/zephyr/issues/67050 The 48_6 config rejected
+BAP/UCL/STR/BV-525-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 2th CIS not established
+BAP/UCL/STR/BV-526-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 2th CIS not established
+BAP/UCL/STR/BV-527-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 2th CIS not established
+BAP/UCL/STR/BV-528-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 2th CIS not established
+BAP/UCL/STR/BV-529-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 2th CIS not established
+BAP/UCL/STR/BV-530-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 2th CIS not established
+BAP/UCL/STR/BV-531-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 2th CIS not established
+BAP/UCL/STR/BV-532-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 2th CIS not established
+BAP/UCL/STR/BV-533-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 2th CIS not established
+BAP/UCL/STR/BV-534-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 2th CIS not established
+BAP/UCL/STR/BV-537-C: ISO disconnection https://github.com/zephyrproject-rtos/zephyr/issues/60132 2th CIS not established
+BAP/UCL/STR/BV-538-C: ISO disconnection https://github.com/zephyrproject-rtos/zephyr/issues/60132 2th CIS not established
+BAP/UCL/STR/BV-556-C: ISO disconnection https://github.com/zephyrproject-rtos/zephyr/issues/60132 2th CIS not established
+BAP/UCL/STR/BV-557-C: ISO disconnection https://github.com/zephyrproject-rtos/zephyr/issues/60132 2th CIS not established
+BAP/UCL/STR/BV-558-C: ISO disconnection https://github.com/zephyrproject-rtos/zephyr/issues/60132 2th CIS not established
+BAP/UCL/STR/BV-559-C: ISO disconnection https://github.com/zephyrproject-rtos/zephyr/issues/60132 2th CIS not established
+BAP/USR/STR/BV-362-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 2th CIS not established
+BAP/USR/STR/BV-365-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 2th CIS not established
+BAP/USR/STR/BV-366-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 2th CIS not established
+BAP/USR/STR/BV-369-C: ISO disconnection https://github.com/zephyrproject-rtos/zephyr/issues/60132 2th CIS not established
+BAP/USR/STR/BV-370-C: ISO disconnection https://github.com/zephyrproject-rtos/zephyr/issues/60132 2th CIS not established
+BAP/USR/STR/BV-373-C: ISO disconnection https://github.com/zephyrproject-rtos/zephyr/issues/60132 2th CIS not established
+BAP/USR/STR/BV-374-C: ISO disconnection https://github.com/zephyrproject-rtos/zephyr/issues/60132 2th CIS not established
+BAP/USR/STR/BV-377-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 2th CIS not established
+BAP/USR/STR/BV-380-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 2th CIS not established
+BAP/USR/STR/BV-383-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 2th CIS not established
+BASS/SR/CP/BV-04-C: https://github.com/zephyrproject-rtos/zephyr/issues/64449 Missing notifications
+BASS/SR/CP/BV-05-C: https://github.com/zephyrproject-rtos/zephyr/issues/64449 Missing notifications
+BASS/SR/CP/BV-06-C: https://github.com/zephyrproject-rtos/zephyr/issues/64449 Missing notifications and https://bluetooth.atlassian.net/browse/ES-24765
+BASS/SR/CP/BV-07-C: https://github.com/zephyrproject-rtos/zephyr/issues/64449 Missing notifications
+BASS/SR/CP/BV-12-C: https://github.com/zephyrproject-rtos/zephyr/issues/64449 Missing notifications
+BASS/SR/CP/BV-13-C: https://github.com/zephyrproject-rtos/zephyr/issues/64449 Missing notifications
+BASS/SR/CP/BV-14-C: https://github.com/zephyrproject-rtos/zephyr/issues/64449 Missing notifications
+BASS/SR/CP/BV-15-C: https://github.com/zephyrproject-rtos/zephyr/issues/64449 Missing notifications
+BASS/SR/CP/BV-17-C: https://github.com/zephyrproject-rtos/zephyr/issues/64449 Missing notifications
+BASS/SR/CP/BV-18-C: https://github.com/zephyrproject-rtos/zephyr/issues/64449 Missing notifications
+BASS/SR/CP/BV-19-C: https://github.com/zephyrproject-rtos/zephyr/issues/64449 Missing notifications
+BASS/SR/CP/BV-20-C: https://github.com/zephyrproject-rtos/zephyr/issues/64449 Missing notifications
+BASS/SR/CP/BV-21-C: https://github.com/zephyrproject-rtos/zephyr/issues/64183 and https://github.com/zephyrproject-rtos/zephyr/issues/64871 No API to request the Broadcast Code without sync
+BASS/SR/SPE/BI-05-C: https://github.com/zephyrproject-rtos/zephyr/issues/64449 Missing notifications
+BASS/SR/SPE/BI-06-C: https://github.com/zephyrproject-rtos/zephyr/issues/64449 Missing notifications
+
+CAP/CL/CGGIT/SER/BV-01-C: https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/CL/CGGIT/SER/BV-02-C: https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/BST/BV-01-C: https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/BST/BV-02-C: https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/BST/BV-03-C: https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/BST/BV-04-C: https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/BST/BV-05-C: https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/BST/BV-06-C: https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/BST/BV-07-C: https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/BST/BV-08-C: https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/BST/BV-09-C: https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/BST/BV-10-C: https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/BST/BV-11-C: https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/BST/BV-12-C: https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/BST/BV-13-C: https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/BST/BV-14-C: https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/BST/BV-15-C: https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/BST/BV-16-C: https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/BST/BV-17-C: https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/ERR/BI-01-C: https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-01-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-02-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-03-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-04-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-05-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-06-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-07-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-08-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-09-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-10-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-11-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-12-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-13-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-14-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-15-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-16-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-17-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-18-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-19-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-20-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-21-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-22-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-23-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-24-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-25-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-26-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-27-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-28-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-29-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-30-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-31-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-32-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-33-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-34-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-35-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-36-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-37-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-40-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-41-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
+CAP/INI/UST/BV-42-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 and https://github.com/zephyrproject-rtos/zephyr/pull/66657
