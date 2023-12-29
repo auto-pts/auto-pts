@@ -417,6 +417,11 @@ class TestCase(PTSCallback):
         self.log_filename = log_filename
         self.log_dir = log_dir
 
+        # pre_tc.py and post_tc.py are for starting/ending external tools like
+        # btmon. For test cases with multiple LTs it is enough to start
+        # the subprocess just for the first LT instance, the TestCaseLT1.
+        self.run_pre_and_post_sp = True
+
     def reset(self):
         # Fields that have to be reinit before retrying a test case
         self.status = "init"
@@ -715,7 +720,7 @@ class TestCase(PTSCallback):
                        self.ptsproject_name + "/")
         subproc_path = subproc_dir + "pre_tc.py"
 
-        if os.path.exists(subproc_path):
+        if self.run_pre_and_post_sp and os.path.exists(subproc_path):
             log("%s, run pre test case script" % self.pre_run.__name__)
             self.lf_subproc = open(subproc_dir + "sp_pre_stdout.log", "w")
 
@@ -768,6 +773,9 @@ class TestCase(PTSCallback):
         for cmd in self.cmds:
             cmd.stop()
 
+        if not self.run_pre_and_post_sp:
+            return
+
         # Cleanup pre created subproc
         if self.tc_subproc is not None:
             log("%s, cleanup running post test case script" %
@@ -813,10 +821,13 @@ class TestCaseLT1(TestCase):
         name_lt2 = kwargs.pop('lt2', None)
         super().__init__(*args, **kwargs)
         self.name_lt2 = name_lt2
+        self.run_pre_and_post_sp = True
 
 
 class TestCaseLT2(TestCase):
-    pass
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.run_pre_and_post_sp = False
 
 
 def get_max_test_case_desc(test_cases):
