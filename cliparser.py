@@ -115,12 +115,11 @@ class CliParser(argparse.ArgumentParser):
             self.add_argument("-j", "--jlink", dest="debugger_snr", type=str, default=None,
                               help="Specify jlink serial number manually.")
 
-            self.add_argument("-b", "--board", dest='board_name',
+            self.add_argument("-b", "--board", dest='board_name', type=str, choices=board_names,
                               help="Used DUT board. This option is used to "
                                    "select DUT reset command that is run before "
                                    "each test case. If board is not specified DUT "
-                                   "will not be reset. Supported boards: %s. "
-                              .format((", ".join(board_names, ),), choices=board_names))
+                                   "will not be reset.")
 
             self.add_argument("--btmon",
                               help="Capture iut btsnoop logs from device over RTT"
