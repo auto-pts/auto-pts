@@ -8,6 +8,7 @@
    * [Running in Client/Server Mode](#running-in-clientserver-mode)
    * [Running AutoPTSClientBot](#running-autoptsclientbot)
    * [Zephyr with AutoPTS step-by-step setup tutorial](#zephyr-with-autopts-step-by-step-setup-tutorial)
+   * [Tutorials](#tutorials)
    * [More examples of run and tips](#more-examples-of-run-and-tips)
    * [Slack Channel](#slack-channel)
 
@@ -306,6 +307,11 @@ Check out the guide how to set up AutoPTS for Zephyr + nRF52 under:
 - Windows 10
 
   https://docs.zephyrproject.org/latest/connectivity/bluetooth/autopts/autopts-win10.html
+
+# Tutorials
+
+- [How to create PTS workspace](doc/tutorials/create_workspace.md)
+- [How to add support for a PTS profile](doc/tutorials/add_test_case.md)
 
 # More examples of run and tips
 
