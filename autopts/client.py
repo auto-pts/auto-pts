@@ -903,7 +903,22 @@ class LTThread(InterruptableThread):
 
     def interrupt(self):
         self.cancel_sync_points()
-        super().interrupt()
+
+        while not get_global_end():
+            try:
+                # Acquire the logger lock to prevent breaking the lock or other
+                # logger handles at interrupt.
+                if not logging._lock.acquire(True, timeout=1):
+                    continue
+
+                try:
+                    super().interrupt()
+                    return
+                finally:
+                    logging._lock.release()
+            except BaseException as e:
+                logging.exception(e)
+                traceback.print_exc()
 
     def _run_test_case(self, pts, test_case, exceptions, finish_count):
         """Runs the test case specified by a TestCase instance."""
