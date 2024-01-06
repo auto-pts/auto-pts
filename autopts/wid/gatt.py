@@ -115,32 +115,21 @@ def gatt_server_fetch_db():
 
 
 COMPARED_VALUE = []
-BTP_LOCK = threading.RLock()
-
-
-def lock_wrapper(lock):
-    def _lock_wrapper(func):
-        def __lock_wrapper(*args):
-            try:
-                lock.acquire()
-                ret = func(*args)
-            finally:
-                lock.release()
-            return ret
-
-        return __lock_wrapper
-
-    return _lock_wrapper
 
 
 # wid handlers section begin
 
-@lock_wrapper(BTP_LOCK)
-def hdl_wid_1(_: WIDParams):
+def hdl_wid_1(params: WIDParams):
+    if 'LT2' in params.test_case_name:
+        addr = btp.lt2_addr_get()
+    else:
+        addr = btp.pts_addr_get()
+
     stack = get_stack()
     btp.gap_set_conn()
     btp.gap_set_gendiscov()
     btp.gap_adv_ind_on(ad=stack.gap.ad)
+    stack.gap.wait_for_connection(timeout=10, addr=addr)
     return True
 
 
@@ -1105,7 +1094,6 @@ def hdl_wid_92(params: WIDParams):
     return True
 
 
-@lock_wrapper(BTP_LOCK)
 def hdl_wid_93(params: WIDParams):
     # Please send an Handle Value MULTIPLE Notification to PTS.
     # Description: Verify that the Implementation Under Test (IUT) can send
@@ -2006,7 +1994,6 @@ def hdl_wid_304(params: WIDParams):
     return bool(data in val)
 
 
-@lock_wrapper(BTP_LOCK)
 def hdl_wid_308(params: WIDParams):
     # description: Please do not send an ATT_Handle_value_Multiple_notification to Lower tester until timeout(30s).
 
@@ -2033,7 +2020,22 @@ def hdl_wid_308(params: WIDParams):
     return True
 
 
-def hdl_wid_400(_: WIDParams):
+def hdl_wid_400(params: WIDParams):
+    """
+    Please prepare IUT into an L2CAP Credit Based Connection connectable
+    mode using LE signaling channel.
+    """
+
+    if 'LT2' in params.test_case_name:
+        addr = btp.lt2_addr_get()
+    else:
+        addr = btp.pts_addr_get()
+
+    stack = get_stack()
+    gap_ev = stack.gap.gap_wait_for_sec_lvl_change(level=2, timeout=30, addr=addr)
+    if gap_ev is None:
+        return False
+
     return True
 
 
