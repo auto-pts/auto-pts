@@ -1,0 +1,130 @@
+Telephone Bearer Service(ID 25)
+=================================
+
+Commands and responses:
+
+	Opcode 0x00 - Error response
+
+	Opcode 0x01 - Read supported commands
+
+		Controller Index:       <controller id>
+		Command parameters:     <none>
+		Response parameters:    <supported commands> (variable)
+
+		Each bit in response is a flag indicating if command with
+		opcode matching bit number is supported. Bit set to 1 means
+		that command is supported. Bit 0 is reserved and shall always
+		be set to 0. If specific bit is not present in response (less
+		than required bytes received) it shall be assumed that command
+		is not supported.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x02 - Remote Incoming
+
+		Controller Index:	<controller id>
+		Command parameters:     Index (1 octet)
+					Receiver URI len (1 octet)
+					Caller URI len (1 octet)
+					Friendly Name len (1 octet)
+					URI String (Varies)
+		Response parameters:	<none>
+
+		This command is used to generate incoming call from the server.
+		URI String variable is Receiver URI, Caller URI Friendly Name
+		concatenated.
+
+		In case of an error, the error reponse will be returned.
+
+	Opcode 0x03 - Hold Call
+
+		Controller Index:	<controller id>
+		Command parameters:     Index (1 octet)
+		Response parameters:	<none>
+
+		This command is used to hold a call.
+
+		In case of an error, the error reponse will be returned.
+
+	Opcode 0x04 - Set Bearer Name
+
+		Controller Index:	<controller id>
+		Command parameters:     Index (1 octet)
+					Name len (1 octet)
+					Name (varies)
+		Response parameters:	<none>
+
+		This command is used to set bearer provider name.
+
+		In case of an error, the error reponse will be returned.
+
+	Opcode 0x05 - Set Technology
+
+		Controller Index:	<controller id>
+		Command parameters:     Index (1 octet)
+					Technology (1 octet)
+		Response parameters:	<none>
+
+		This command is used to set a new bearer technology.
+
+		In case of an error, the error reponse will be returned.
+
+	Opcode 0x06 - Set URI Schemes List
+
+		Controller Index:	<controller id>
+		Command parameters:     Index (1 octet)
+					URI len (1 octet)
+					URI count (1 octet)
+					URI (Varies)
+		Response parameters:	<none>
+
+		This command is used to set a new URI scheme list of a bearer.
+		For now, URI list with one element is supported.
+
+		In case of an error, the error reponse will be returned.
+
+	Opcode 0x07 - Set Status Flags
+
+		Controller Index:	<controller id>
+		Command parameters:     Index (1 octet)
+					Status Flags (2 octets)
+		Response parameters:	<none>
+
+		This command is used to set the feature and status value.
+
+		In case of an error, the error reponse will be returned.
+
+	Opcode 0x08 - Remote Hold
+
+		Controller Index:	<controller id>
+		Command parameters:     Index (1 octet)
+		Response parameters:	<none>
+
+		This command is used to notify the server that the remote
+		party held the call.
+
+		In case of an error, the error reponse will be returned.
+
+	Opcode 0x09 - Originate Call
+
+		Controller Index:	<controller id>
+		Command parameters:     Index (1 octet)
+					URI len (1 octet)
+					URI (varies)
+		Response parameters:	<none>
+
+		This command is used to originate call.
+
+		In case of an error, the error reponse will be returned.
+
+	Opcode 0x0a - Set Signal Strength
+
+		Controller Index:	<controller id>
+		Command parameters:     Index (1 octet)
+					Strength (1 octet)
+		Response parameters:	<none>
+
+		This command is used to update signal strength reported by the
+		server.
+
+		In case of an error, the error reponse will be returned.

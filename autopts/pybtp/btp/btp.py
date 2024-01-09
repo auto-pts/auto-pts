@@ -121,6 +121,8 @@ CORE = {
                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_CAP),
     "csip_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
                  defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_CSIP),
+    "tbs_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
+                defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_TBS),
     # GENERATOR append 4
     "read_supp_cmds": (defs.BTP_SERVICE_ID_CORE,
                        defs.CORE_READ_SUPPORTED_COMMANDS,
@@ -654,6 +656,13 @@ def core_reg_svc_csip():
     iutctl.btp_socket.send_wait_rsp(*CORE['csip_reg'])
 
 
+def core_reg_svc_tbs():
+    logging.debug("%s", core_reg_svc_tbs.__name__)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*CORE['tbs_reg'])
+
+
 # GENERATOR append 1
 
 def core_reg_svc_rsp_succ():
@@ -752,6 +761,7 @@ from .gmcs import GMCS_EV
 from .hap import HAP_EV
 from .cap import CAP_EV
 from .csip import CSIP_EV
+from .tbs import TBS_EV
 # GENERATOR append 2
 
 from autopts.pybtp.iutctl_common import set_event_handler
@@ -788,6 +798,7 @@ def event_handler(hdr, data):
         defs.BTP_SERVICE_ID_HAP: (HAP_EV, stack.hap),
         defs.BTP_SERVICE_ID_CAP: (CAP_EV, stack.cap),
         defs.BTP_SERVICE_ID_CSIP: (CSIP_EV, stack.csip),
+        defs.BTP_SERVICE_ID_TBS: (TBS_EV, stack.tbs),
         # GENERATOR append 3
     }
 

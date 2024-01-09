@@ -41,3 +41,31 @@ BAP/USR/STR/BV-377-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 
 BAP/USR/STR/BV-380-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 2th CIS not established
 BAP/USR/STR/BV-383-C: https://github.com/zephyrproject-rtos/zephyr/issues/60132 2th CIS not established
 BASS/SR/CP/BV-21-C:  https://github.com/zephyrproject-rtos/zephyr/issues/64871 No API to request the Broadcast Code without sync
+TBS/SR/SGGIT/CHA/BV-05-C: Request ID 31633
+TBS/SR/SGGIT/CHA/BV-06-C: Request ID 31633
+TBS/SR/SGGIT/CHA/BV-08-C: Request ID 31633
+TBS/SR/SGGIT/CHA/BV-09-C: Request ID 31633
+TBS/SR/SGGIT/CHA/BV-13-C: Request ID 31633
+TBS/SR/SPN/BV-05-C: Request ID 31633
+TBS/SR/SPN/BV-06-C: Request ID 31633
+TBS/SR/SPN/BV-07-C: Request ID 31633
+TBS/SR/SPN/BV-08-C: Request ID 31633
+TBS/SR/SPN/BV-09-C: Request ID 31633
+TBS/SR/SPN/BV-10-C: Request ID 31633
+TBS/SR/SPN/BV-11-C: Request ID 31633
+TBS/SR/SPN/BV-11-C: Request ID 31633
+TBS/SR/CP/BV-10-C: https://github.com/zephyrproject-rtos/zephyr/issues/41738 Disallow Join not possible at runtime
+TBS/SR/SPE/BI-05-C: TSE24847
+GTBS/SR/CP/BV-10-C: https://github.com/zephyrproject-rtos/zephyr/issues/41738 Disallow Join not possible at runtime
+GTBS/SR/SGGIT/CHA/BV-05-C: Request ID 31633
+GTBS/SR/SGGIT/CHA/BV-06-C: Request ID 31633
+GTBS/SR/SGGIT/CHA/BV-08-C: Request ID 31633
+GTBS/SR/SGGIT/CHA/BV-09-C: Request ID 31633
+GTBS/SR/SGGIT/CHA/BV-13-C: Request ID 31633
+GTBS/SR/SPN/BV-05-C: Request ID 31633
+GTBS/SR/SPN/BV-06-C: Request ID 31633
+GTBS/SR/SPN/BV-07-C: Request ID 31633
+GTBS/SR/SPN/BV-08-C: Request ID 31633
+GTBS/SR/SPN/BV-09-C: Request ID 31633
+GTBS/SR/SPN/BV-10-C: Request ID 31633
+GTBS/SR/SPN/BV-11-C: Request ID 31633
