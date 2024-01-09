@@ -111,4 +111,5 @@ ID  Name
  24 HAP Service
  25 CSIP Service
  26 CAP Service
+ 27 TBS Service
  # GENERATOR append 1
