@@ -4,6 +4,7 @@
 # auto-pts - The Bluetooth PTS Automation Framework
 #
 # Copyright (c) 2017, Intel Corporation.
+# Copyright (c) 2024, Codecoup.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms and conditions of the GNU General Public License,
@@ -1340,7 +1341,6 @@ class Client:
 
         stack.init_stack()
         stack_inst = stack.get_stack()
-        stack_inst.synch_init()
 
         self.setup_project_pixits(self.ptses)
         self.setup_test_cases(self.ptses)
@@ -1460,7 +1460,6 @@ def run_recovery(args, ptses):
 
     stack_inst = stack.get_stack()
     stack_inst.cleanup()
-    stack_inst.synch_init()
 
     if args.ykush:
         # mynewt project has not been refactored yet to reduce the number of
