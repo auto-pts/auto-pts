@@ -47,7 +47,7 @@ services = {
     "MCP": 1 << defs.BTP_SERVICE_ID_MCP,
     "GMCS": 1 << defs.BTP_SERVICE_ID_GMCS,
     "HAP": 1 << defs.BTP_SERVICE_ID_HAP,
-    #
+    # GENERATOR append 1
 }
 
 
@@ -76,6 +76,7 @@ class Stack:
         self.mcp = None
         self.gmcs = None
         self.hap = None
+        # GENERATOR append 2
 
     def is_svc_supported(self, svc):
         return self.supported_svcs & services[svc] > 0
@@ -156,6 +157,8 @@ class Stack:
     def hap_init(self):
         self.hap = HAP()
 
+    # GENERATOR append 3
+
     def cleanup(self):
         if self.gap:
             self.gap = Gap(self.gap.name, self.gap.manufacturer_data, None, None, None, None, None)
@@ -216,6 +219,8 @@ class Stack:
 
         if self.hap:
             self.hap_init()
+
+        # GENERATOR append 4
 
 
 def init_stack():

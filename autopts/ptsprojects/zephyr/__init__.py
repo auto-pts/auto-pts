@@ -43,6 +43,7 @@ import autopts.ptsprojects.zephyr.cap
 import autopts.ptsprojects.zephyr.mcp
 import autopts.ptsprojects.zephyr.bass
 import autopts.ptsprojects.zephyr.gmcs
+# GENERATOR append 1
 
 # Constants
 ZEPHYR_PROJECT_URL = "https://github.com/zephyrproject-rtos/zephyr"
