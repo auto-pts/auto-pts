@@ -635,6 +635,9 @@ def core_reg_svc_hap():
     iutctl = get_iut()
     iutctl.btp_socket.send_wait_rsp(*CORE['hap_reg'])
 
+
+# GENERATOR append 1
+
 def core_reg_svc_rsp_succ():
     logging.debug("%s", core_reg_svc_rsp_succ.__name__)
     iutctl = get_iut()
@@ -729,6 +732,8 @@ from .vcp import VCP_EV
 from .mcp import MCP_EV
 from .gmcs import GMCS_EV
 from .hap import HAP_EV
+# GENERATOR append 2
+
 from autopts.pybtp.iutctl_common import set_event_handler
 
 
@@ -761,7 +766,9 @@ def event_handler(hdr, data):
         defs.BTP_SERVICE_ID_MCP: (MCP_EV, stack.mcp),
         defs.BTP_SERVICE_ID_GMCS: (GMCS_EV, stack.gmcs),
         defs.BTP_SERVICE_ID_HAP: (HAP_EV, stack.hap),
+        # GENERATOR append 3
     }
+
     if hdr.svc_id in service_map:
         event_dict, stack_obj = service_map[hdr.svc_id]
         if hdr.op in event_dict and stack_obj:
