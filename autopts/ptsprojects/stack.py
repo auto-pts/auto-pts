@@ -1203,6 +1203,7 @@ class MCP:
 
 class GMCS:
     def __init__(self):
+        self.current_track_obj_id = None
         self.track_obj_id = None
         self.event_queues = {}
 
