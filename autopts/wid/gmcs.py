@@ -35,18 +35,37 @@ def gmcs_wid_hdl(wid, description, test_case_name):
 
 def hdl_wid_4(params: WIDParams):
     """Please configure an initial state to Inactive state"""
+    stack = get_stack()
 
     media_pl_state = btp.gmcs_inactive_state_set()
 
     if media_pl_state != 0:
         return False
 
-    if params.test_case_name == 'GMCS/SR/MCP/BV-37-C':
-        stack = get_stack()
+    elif params.test_case_name == 'GMCS/SR/MCP/BV-37-C':
         next_track_id = btp.gmcs_next_track_obj_id_get()
-
         stack.gmcs.track_obj_id = next_track_id
         # This is validated in hdl_wid_32
+    elif params.test_case_name == 'GMCS/SR/MCP/BV-41-C':
+        # Initial condition from Test Spec
+        MEDIA_PROXY_OP_NEXT_TRACK = 0x31
+        btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_NEXT_TRACK, 0)
+    elif params.test_case_name == 'GMCS/SR/MCP/BV-33-C':
+        # This is validated in hdl_wid_32
+        current_track_id = btp.gmcs_current_track_obj_id_get()
+        stack.gmcs.current_track_obj_id = current_track_id
+        # Initial condition from Test Spec
+        MEDIA_PROXY_OP_NEXT_TRACK = 0x31
+        btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_NEXT_TRACK, 0)
+    elif params.test_case_name == 'GMCS/SR/MCP/BV-53-C':
+        # Initial condition from Test Spec
+        MEDIA_PROXY_OP_NEXT_GROUP = 0x41
+        btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_NEXT_GROUP, 0)
+    elif params.test_case_name == 'GMCS/SR/MCP/BV-61-C':
+        # Initial condition from Test Spec
+        MEDIA_PROXY_OP_NEXT_GROUP = 0x41
+        btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_NEXT_GROUP, 0)
+
 
     return True
 
@@ -152,8 +171,12 @@ def hdl_wid_32(params: WIDParams):
 
     current_track_obj_id = btp.gmcs_current_track_obj_id_get()
 
-    if current_track_obj_id != stack.gmcs.track_obj_id:
-        return False
+    if params.test_case_name == 'GMCS/SR/MCP/BV-33-C':
+        if stack.gmcs.current_track_obj_id != current_track_obj_id:
+            return False
+    elif params.test_case_name == 'GMCS/SR/MCP/BV-37-C':
+        if current_track_obj_id != stack.gmcs.track_obj_id:
+            return False
 
     return True
 
@@ -163,6 +186,14 @@ def hdl_wid_20001(params: WIDParams):
     Implementation Under Test (IUT) can accept GATT connect request from PTS."""
 
     stack = get_stack()
+
+    if params.test_case_name in ['GMCS/SR/MCP/BV-05-C', 'GMCS/SR/MCP/BV-06-C']:
+        MEDIA_PROXY_OP_NEXT_SEGMENT = 0x21
+        btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_NEXT_SEGMENT, 0)
+    elif params.test_case_name == 'GMCS/SR/MCP/BV-09-C':
+        MEDIA_PROXY_OP_PLAY = 0x01
+        btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_PLAY, 0)
+
     btp.gap_set_conn()
     btp.gap_adv_ind_on(ad=stack.gap.ad)
 
