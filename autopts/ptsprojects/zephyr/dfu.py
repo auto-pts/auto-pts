@@ -60,7 +60,7 @@ def set_pixits(ptses):
     pts.set_pixit("DFU", "TSPX_device_uuid2", "001BDC0810210B0E0A0C000B0E0A0C00")
     pts.set_pixit("DFU", "TSPX_use_pb_gatt_bearer", "FALSE")
     pts.set_pixit("DFU", "TSPX_iut_comp_data_page", "0")
-    pts.set_pixit("DFU", "TSPX_OOB_state_change", "FALSE")
+    pts.set_pixit("DFU", "TSPX_oob_state_change", "FALSE")
     pts.set_pixit("DFU", "TSPX_enable_IUT_provisioner", "FALSE")
     pts.set_pixit("DFU", "TSPX_Procedure_Timeout", "60")
     pts.set_pixit("DFU", "TSPX_Client_BLOB_ID", "1100000000000011")

@@ -56,17 +56,10 @@ def set_pixits(ptses):
     pts.set_pixit("MMDL", "TSPX_device_uuid", "00000000000000000000000000000000")
     pts.set_pixit("MMDL", "TSPX_device_uuid2", "001BDC0810210B0E0A0C000B0E0A0C00")
     pts.set_pixit("MMDL", "TSPX_use_pb_gatt_bearer", "FALSE")
-    pts.set_pixit("MMDL", "TSPX_OOB_state_change", "FALSE")
+    pts.set_pixit("MMDL", "TSPX_oob_state_change", "FALSE")
     pts.set_pixit("MMDL", "TSPX_sensor_property_ids", "1,0069,0010,FFF0")
     pts.set_pixit("MMDL", "TSPX_enable_IUT_provisioner", "FALSE")
     pts.set_pixit("MMDL", "TSPX_cadence_property_IDs", "1,0069,0010,FFF0")
-    pts.set_pixit("MMDL", "TSPX_Procedure_Timeout", "60")
-    pts.set_pixit("MMDL", "TSPX_Server_Timeout", "10")
-    pts.set_pixit("MMDL", "TSPX_Client_BLOB_Data", r"data.txt")
-    pts.set_pixit("MMDL", "TSPX_New_Firmware_Image", r"data2.txt")
-    pts.set_pixit("MMDL", "TSPX_Update_Firmware_Image_Index", "0")
-    pts.set_pixit("MMDL", "TSPX_Client_BLOB_ID", "1100000000000011")
-    pts.set_pixit("MMDL", "TSPX_Reception_Counter", "1")
 
 
 def test_cases(ptses):
@@ -118,13 +111,7 @@ def test_cases(ptses):
             "MMDL", "TSPX_device_uuid2", stack.mesh.get_dev_uuid_lt2())),
         TestFunc(lambda: pts.update_pixit_param(
             "MMDL", "TSPX_bd_addr_iut",
-            stack.gap.iut_addr_get_str())),
-        TestFunc(lambda: pts.update_pixit_param(
-            "MMDL", "TSPX_Client_BLOB_Data",
-            get_test_data_path(pts) + "sample_data_1.txt")),
-        TestFunc(lambda: pts.update_pixit_param(
-            "MMDL", "TSPX_New_Firmware_Image",
-            get_test_data_path(pts) + "sample_data_1.txt"))]
+            stack.gap.iut_addr_get_str()))]
 
     test_case_name_list = pts.get_test_case_list('MMDL')
     tc_list = []

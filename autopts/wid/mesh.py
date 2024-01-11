@@ -1958,6 +1958,12 @@ def hdl_wid_394(_: WIDParams):
     btp.mesh_proxy_identity()
     return True
 
+def hdl_wid_423(_: WIDParams):
+    """
+    Implements:
+    description: PTS expects IUT not to send DIRECTED_PROXY_CAPABILITIES_STATUS message.
+    """
+    return True
 
 def hdl_wid_500(params: WIDParams):
     """
@@ -2475,7 +2481,6 @@ def hdl_wid_515(params: WIDParams):
         app_key_up = int(params.get('AppKey'), 16)
 
         return [net_key_index, app_key_idx, app_key_up] == stack.mesh.model_data
-
 
 def parse_command_parameters(desc):
     field_dict = {}
@@ -3225,6 +3230,29 @@ def hdl_wid_650(params: WIDParams):
 
         return stack.mesh.status == 0x01
 
+def hdl_wid_661(params: WIDParams):
+    """
+    Implements:
+    Description: Please reset the IUT. Click OK when IUT is powered up after reset.
+    """
+
+    stack = get_stack()
+
+    if not stack.mesh.is_initialized:
+        btp.mesh_config_prov()
+        btp.mesh_start()
+
+    zephyrctl = btp.get_iut_method()
+
+    zephyrctl.wait_iut_ready_event()
+    btp.core_reg_svc_gap()
+    btp.core_reg_svc_mesh()
+    btp.mesh_init()
+    btp.gap_read_ctrl_info()
+
+    btp.mesh_start()
+
+    return True
 
 def hdl_wid_672(_: WIDParams):
     """
