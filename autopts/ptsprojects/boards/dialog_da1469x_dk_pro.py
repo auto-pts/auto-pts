@@ -17,6 +17,7 @@ import logging
 import os
 import sys
 from autopts.bot.common import check_call
+from autopts.pybtp.parser import HDR_LEN, dec_data
 
 supported_projects = ['mynewt']
 
@@ -140,3 +141,38 @@ def build_and_flash(project_path, board, overlay=None):
     check_call('newt load da1469x_flash_loader'.split(), cwd=project_path)
     check_call('newt load da1469x_boot'.split(), cwd=project_path)
     check_call('newt load da1469x_bttester'.split(), cwd=project_path)
+
+
+def startup_bytes_handler(socket):
+    """
+    Dialog board sends 0 after reset. Handle it to prevent
+    BTP protocol communication
+
+    param socket: BTPSocketSrv
+    """
+    try:
+        logging.debug("Clear buffer after board reset")
+
+        read_len = HDR_LEN
+        read_b = bytearray(read_len)
+        read_b_memview = memoryview(read_b)
+        socket.conn.settimeout(2)
+
+        nbytes = socket.conn.recv_into(read_b_memview, read_len,
+                                       socket.MSG_PEEK | socket.MSG_TRUNC)
+
+        while nbytes > HDR_LEN or nbytes == 1:
+            nbytes = socket.conn.recv_into(read_b_memview, 1,
+                                           socket.MSG_TRUNC)
+            logging.debug("Read 1 byte from %r byte(s) long buffer: %r",
+                          nbytes, dec_data(read_b_memview))
+            nbytes = nbytes - 1
+            new_bytes = socket.conn.recv_into(read_b_memview,
+                                              read_len, socket.MSG_PEEK | socket.MSG_TRUNC)
+            logging.debug("Buffer length after operation: %r bytes",
+                          new_bytes)
+
+    except (socket.timeout, socket.error):
+        pass  # these are expected so ignore
+    except Exception as e:
+        logging.error("%r", e)

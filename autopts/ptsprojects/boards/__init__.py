@@ -78,6 +78,17 @@ class Board:
                 raise Exception("Board name %s is not supported! and failed to reset with Jlink." % self.name)
 
 
+def get_startup_bytes_handler(board_name):
+    board_mod = importlib.import_module(__package__ + '.' + board_name)
+
+    if board_mod is None:
+        raise Exception("Board name %s is not supported!" % board_name)
+
+    try:
+        return getattr(board_mod, 'startup_bytes_handler')
+    except AttributeError:
+        return None
+
 
 def get_build_and_flash(board_name):
     board_mod = importlib.import_module(__package__ + '.' + board_name)

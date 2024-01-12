@@ -181,7 +181,7 @@ class BTPSocketCli(BTPSocket):
 
 
 class BTPWorker:
-    def __init__(self, sock):
+    def __init__(self, sock, startup_bytes_handler=None):
         super().__init__()
 
         self._socket = sock
@@ -193,9 +193,14 @@ class BTPWorker:
         self._rx_worker.name = f'BTPWorker{self._rx_worker.name}'
 
         self.event_handler_cb = None
+        self.startup_bytes_handler = startup_bytes_handler
 
     def _rx_task(self):
         log(f'{threading.current_thread().name} started')
+
+        if self.startup_bytes_handler:
+            self.startup_bytes_handler(self._socket)
+
         socket_ok = True
         while self._running.is_set() and not get_global_end():
             try:
