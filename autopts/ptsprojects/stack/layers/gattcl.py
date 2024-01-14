@@ -50,37 +50,37 @@ class GattCl:
     def wait_for_rsp_event(self, timeout=30):
         return wait_for_event(timeout, self.event_to_await)
 
-    def is_mtu_exchanged(self, args):
+    def is_mtu_exchanged(self, *args):
         return self.mtu_exchanged.data
 
     def wait_for_mtu_exchange(self, timeout=30):
         return wait_for_event(timeout, self.is_mtu_exchanged)
 
-    def is_prim_disc_complete(self, args):
+    def is_prim_disc_complete(self, *args):
         return is_procedure_done(self.prim_svcs, self.prim_svcs_cnt)
 
     def wait_for_prim_svcs(self, timeout=30):
         return wait_for_event(timeout, self.is_prim_disc_complete)
 
-    def is_incl_disc_complete(self, args):
+    def is_incl_disc_complete(self, *args):
         return is_procedure_done(self.incl_svcs, self.incl_svcs_cnt)
 
     def wait_for_incl_svcs(self, timeout=30):
         return wait_for_event(timeout, self.is_incl_disc_complete)
 
-    def is_chrcs_disc_complete(self, args):
+    def is_chrcs_disc_complete(self, *args):
         return is_procedure_done(self.chrcs, self.chrcs_cnt)
 
     def wait_for_chrcs(self, timeout=30):
         return wait_for_event(timeout, self.is_chrcs_disc_complete)
 
-    def is_dscs_disc_complete(self, args):
+    def is_dscs_disc_complete(self, *args):
         return is_procedure_done(self.dscs, self.dscs_cnt)
 
     def wait_for_descs(self, timeout=30):
         return wait_for_event(timeout, self.is_dscs_disc_complete)
 
-    def is_read_complete(self, args):
+    def is_read_complete(self, *args):
         return self.verify_values != []
 
     def wait_for_read(self, timeout=30):
@@ -95,7 +95,7 @@ class GattCl:
         return wait_for_event(timeout,
                               self.is_notification_rxed, expected_count)
 
-    def is_write_completed(self, args):
+    def is_write_completed(self, *args):
         return self.write_status is not None
 
     def wait_for_write_rsp(self, timeout=30):
