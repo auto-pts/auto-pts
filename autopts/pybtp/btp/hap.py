@@ -18,19 +18,11 @@ import binascii
 import logging
 import struct
 
-from autopts.pybtp import defs
-from autopts.pybtp.btp.btp import get_iut_method as get_iut
-from autopts.pybtp.btp.btp import (CONTROLLER_INDEX, btp_hdr_check,
-                                   pts_addr_get, pts_addr_type_get)
-from autopts.pybtp.types import BTPError, addr2btp_ba
+from .btpdefs import defs
+from .btp import get_iut_method as get_iut
+from .btp import CONTROLLER_INDEX, btp_hdr_check
+from .btpdefs.types import BTPError
 
-def address_to_ba(bd_addr_type=None, bd_addr=None):
-    data = bytearray()
-    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
-    bd_addr_type_ba = chr(pts_addr_type_get(bd_addr_type)).encode('utf-8')
-    data.extend(bd_addr_type_ba)
-    data.extend(bd_addr_ba)
-    return data
 
 HAP = {
     'read_supported_cmds': (defs.BTP_SERVICE_ID_HAP,

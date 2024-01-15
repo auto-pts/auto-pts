@@ -18,20 +18,20 @@
 import logging
 import struct
 
-from autopts.pybtp import defs
-from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, get_iut_method as get_iut
+from .btpdefs import defs
+from .btp import CONTROLLER_INDEX, btp_hdr_check, get_iut_method as get_iut
 
 VCS = {
     "set_vol":(defs.BTP_SERVICE_ID_VCS, defs.VCS_SET_VOL,
                CONTROLLER_INDEX),
     "vol_up":(defs.BTP_SERVICE_ID_VCS, defs.VCS_VOL_UP,
-               CONTROLLER_INDEX, ""),
+              CONTROLLER_INDEX, ""),
     "vol_down":(defs.BTP_SERVICE_ID_VCS, defs.VCS_VOL_DOWN,
-               CONTROLLER_INDEX, ""),
+                CONTROLLER_INDEX, ""),
     "mute":(defs.BTP_SERVICE_ID_VCS, defs.VCS_MUTE,
-               CONTROLLER_INDEX, ""),
+            CONTROLLER_INDEX, ""),
     "unmute":(defs.BTP_SERVICE_ID_VCS, defs.VCS_UNMUTE,
-               CONTROLLER_INDEX, "")
+              CONTROLLER_INDEX, "")
 }
 
 VCS_EV = {

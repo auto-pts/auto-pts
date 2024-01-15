@@ -24,24 +24,15 @@ import binascii
 
 from abc import abstractmethod
 
-from autopts.pybtp import defs
-from autopts.pybtp.types import BTPError
-from autopts.pybtp.parser import enc_frame, dec_hdr, dec_data, HDR_LEN
-from autopts.utils import get_global_end, raise_on_global_end
+from .btp import defs
+from .btp.btpdefs.types import BTPError
+from .parser import enc_frame, dec_hdr, dec_data, HDR_LEN
+from .btp.btp import event_handler
 
 log = logging.debug
 
 # BTP communication transport: unix domain socket file name
 BTP_ADDRESS = "/tmp/bt-stack-tester"
-
-EVENT_HANDLER = None
-
-
-def set_event_handler(event_handler):
-    """This is required by BTPWorker to drive stack"""
-    global EVENT_HANDLER
-
-    EVENT_HANDLER = event_handler
 
 
 class BTPSocket:
@@ -192,19 +183,19 @@ class BTPWorker:
         self._rx_worker = threading.Thread(target=self._rx_task)
         self._rx_worker.name = f'BTPWorker{self._rx_worker.name}'
 
-        self.event_handler_cb = None
+        self.event_handler_cb = event_handler
 
     def _rx_task(self):
         log(f'{threading.current_thread().name} started')
         socket_ok = True
-        while self._running.is_set() and not get_global_end():
+        while self._running.is_set():
             try:
                 data = self._socket.read(timeout=1.0)
 
                 hdr = data[0]
                 if hdr.op >= 0x80:
                     # Do not put handled events on RX queue
-                    ret = EVENT_HANDLER(*data)
+                    ret = self.event_handler_cb(*data)
                     if ret is True:
                         continue
 
@@ -236,8 +227,6 @@ class BTPWorker:
         t.start()
 
         while flag.is_set():
-            raise_on_global_end()
-
             if self._rx_queue.empty():
                 continue
 
@@ -303,7 +292,7 @@ class BTPWorker:
 
             # is_alive returns True if a thread has not been started
             # and may result in deadlock here.
-            while self._rx_worker.is_alive() and not get_global_end():
+            while self._rx_worker.is_alive():
                 log('Waiting for _rx_worker to finish ...')
                 self._rx_worker.join(timeout=1)
 
@@ -311,5 +300,5 @@ class BTPWorker:
 
         self._socket.close()
 
-    def register_event_handler(self, event_handler):
-        self.event_handler_cb = event_handler
+    def register_event_handler(self, _event_handler):
+        self.event_handler_cb = _event_handler

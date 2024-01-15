@@ -40,6 +40,7 @@ from autopts.ptsprojects import ptstypes
 from autopts.ptsprojects import stack
 from autopts.ptsprojects.boards import get_available_boards, tty_to_com
 from autopts.ptsprojects.ptstypes import E_FATAL_ERROR
+from autopts.ptsprojects.stack import ThreadWithStack, get_global_stack
 from autopts.ptsprojects.testcase import PTSCallback, TestCaseLT1, TestCaseLT2
 from autopts.ptsprojects.testcase_db import TestCaseTable
 from autopts.pybtp import btp, defs
@@ -878,9 +879,10 @@ def synchronize_instances(state, break_state=None, end_flag=None):
     return match.get(predicate=wait_for)
 
 
-class LTThread(InterruptableThread):
+class LTThread(InterruptableThread, ThreadWithStack):
     def __init__(self, name=None, args=()):
-        super().__init__(name=name)
+        super(InterruptableThread, self).__init__(name=name)
+        super(ThreadWithStack, self).__init__(stack=stack.get_global_stack())
         self._args = args
         self.locked = False
 
@@ -899,7 +901,7 @@ class LTThread(InterruptableThread):
                 self.interrupt_lock.release()
 
     def cancel_sync_points(self):
-        stack_inst = stack.get_stack()
+        stack_inst = stack.get_global_stack()
         stack_inst.synch.cancel_synch()
 
     def interrupt(self):
@@ -1340,7 +1342,7 @@ class Client:
         self.init_iutctl(self.args)
 
         stack.init_stack()
-        stack_inst = stack.get_stack()
+        stack_inst = stack.get_global_stack()
 
         self.setup_project_pixits(self.ptses)
         self.setup_test_cases(self.ptses)
@@ -1458,7 +1460,7 @@ def run_recovery(args, ptses):
                 log('Server is still resetting. Wait a little more.')
                 time.sleep(1)
 
-    stack_inst = stack.get_stack()
+    stack_inst = stack.get_global_stack()
     stack_inst.cleanup()
 
     if args.ykush:

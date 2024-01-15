@@ -44,6 +44,18 @@ class GattCl:
         self.write_status = None
         self.event_to_await = None
 
+    def clear_verify_values(self):
+        self.verify_values = []
+
+    def add_to_verify_values(self, item):
+        self.verify_values.append(item)
+
+    def get_verify_values(self):
+        return self.verify_values
+
+    def extend_verify_values(self, item):
+        self.verify_values.extend(item)
+
     def set_event_to_await(self, event):
         self.event_to_await = event
 

@@ -25,8 +25,7 @@ import struct
 from autopts.pybtp import btp
 from autopts.pybtp.types import Prop, Perm, IOCap, UUID, WIDParams, GATTErrorCodes
 from autopts.ptsprojects.testcase import MMI
-from autopts.ptsprojects.stack import get_stack, GattPrimary, GattService, GattSecondary, GattServiceIncluded, \
-    GattCharacteristic, GattCharacteristicDescriptor, GattDB
+from autopts.ptsprojects.stack import get_stack
 from autopts.wid import generic_wid_hdl
 
 log = logging.debug

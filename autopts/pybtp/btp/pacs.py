@@ -18,20 +18,20 @@ import binascii
 import logging
 import struct
 
-from autopts.pybtp import defs
-from autopts.pybtp.btp.btp import CONTROLLER_INDEX, get_iut_method as get_iut,\
+from .btpdefs import defs
+from .btp import CONTROLLER_INDEX, get_iut_method as get_iut,\
     btp_hdr_check
-from autopts.pybtp.types import BTPError
+from .btpdefs.types import BTPError
 
 PACS = {
     'update_char': (defs.BTP_SERVICE_ID_PACS, defs.PACS_UPDATE_CHARACTERISTIC,
                     CONTROLLER_INDEX),
     'set_location': (defs.BTP_SERVICE_ID_PACS, defs.PACS_SET_LOCATION,
-                    CONTROLLER_INDEX),
+                     CONTROLLER_INDEX),
     'set_available_contexts': (defs.BTP_SERVICE_ID_PACS, defs.PACS_SET_AVAILABLE_CONTEXTS,
-                    CONTROLLER_INDEX),
+                               CONTROLLER_INDEX),
     'set_supported_contexts': (defs.BTP_SERVICE_ID_PACS, defs.PACS_SET_SUPPORTED_CONTEXTS,
-                    CONTROLLER_INDEX),
+                               CONTROLLER_INDEX),
 }
 
 

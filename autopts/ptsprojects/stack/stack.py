@@ -14,12 +14,25 @@
 # more details.
 #
 import logging
+import threading
+from collections import namedtuple
+
 from autopts.ptsprojects.stack.layers import *
 from autopts.ptsprojects.stack.synch import Synch
 from autopts.pybtp import defs
 
 STACK = None
 log = logging.debug
+
+LeAddress = namedtuple('LeAddress', 'addr_type addr')
+CONTROLLER_INDEX = 0
+
+
+def bd_addr_convert(bdaddr):
+    """ Remove colons from address and convert to lower case """
+    if isinstance(bdaddr, bytes):
+        bdaddr = bdaddr.decode("utf-8")
+    return "".join(bdaddr.split(':')).lower()
 
 
 # these are in little endian
@@ -55,6 +68,7 @@ services = {
 
 class Stack:
     def __init__(self):
+        self.pts_bd_addresses = {}
         self.supported_svcs = 0
         self.synch = None
 
@@ -238,6 +252,32 @@ class Stack:
 
         # GENERATOR append 4
 
+    def pts_addr_get(self, bd_addr=None, lt=1):
+        """"If address provided, convert, otherwise, use stored address. """
+        if bd_addr is None:
+            if lt not in self.pts_bd_addresses:
+                self.set_pts_addr(addr_type=0, addr='000000000000', lt=lt)
+
+            bd_addr = self.pts_bd_addresses[lt].addr
+
+        return bd_addr_convert(bd_addr)
+
+    def pts_addr_type_get(self, bd_addr_type=None, lt=1):
+        """"
+        If address type provided, return it, otherwise,
+        use stored address.
+        """
+        if bd_addr_type is None:
+            if lt not in self.pts_bd_addresses:
+                self.set_pts_addr(addr_type=0, addr='000000000000', lt=lt)
+
+            bd_addr_type = self.pts_bd_addresses[lt].addr_type
+
+        return bd_addr_type
+
+    def set_pts_addr(self, addr, addr_type, lt=1):
+        self.pts_bd_addresses[lt] = LeAddress(addr_type=addr_type, addr=bd_addr_convert(addr))
+
 
 def init_stack():
     global STACK
@@ -254,3 +294,19 @@ def cleanup_stack():
 
 def get_stack():
     return STACK
+
+
+class ThreadWithStack:
+    def __init__(self, stack):
+        self._stack = stack
+
+    def get_stack(self):
+        return self._stack
+
+
+def get_thread_stack():
+    thread = threading.current_thread()
+    if isinstance(thread, ThreadWithStack):
+        return thread.get_stack()
+    else:
+        raise Exception('The get_lt_thread_stack() cannot be used outside of the LTThread!')

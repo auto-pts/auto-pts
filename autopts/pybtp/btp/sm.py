@@ -15,17 +15,17 @@
 
 """Wrapper around btp messages. The functions are added as needed."""
 
-from autopts.ptsprojects.stack import get_stack
+from .btp import get_stack
 
 
-def var_store_get_passkey(description):
+def var_store_get_passkey():
     pk = get_stack().gap.get_passkey()
     if pk:
         return str(pk).zfill(6)
     return '000000'
 
 
-def var_store_get_wrong_passkey(description):
+def var_store_get_wrong_passkey():
     passkey = get_stack().gap.get_passkey()
 
     # Passkey is in range 0-999999

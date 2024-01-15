@@ -21,11 +21,9 @@ import re
 import struct
 from random import randint
 
-from autopts.ptsprojects.stack import get_stack, ConnParams
-from autopts.pybtp import defs
-from autopts.pybtp.types import BTPError, gap_settings_btp2txt, addr2btp_ba, Addr, OwnAddrType, AdDuration, AdType
-from autopts.pybtp.btp.btp import pts_addr_get, pts_addr_type_get, lt2_addr_get, lt2_addr_type_get, btp_hdr_check, \
-    CONTROLLER_INDEX, set_pts_addr, set_lt2_addr,LeAdv, get_iut_method as get_iut
+from .btpdefs import defs
+from .btpdefs.types import BTPError, gap_settings_btp2txt, addr2btp_ba, Addr, OwnAddrType, AdDuration, AdType, LeAdv
+from .btp import get_stack, btp_hdr_check, CONTROLLER_INDEX, get_iut_method as get_iut, address_to_ba
 
 GAP = {
     "start_adv": (defs.BTP_SERVICE_ID_GAP, defs.GAP_START_ADVERTISING,
@@ -209,6 +207,7 @@ def gap_passkey_disp_ev_(gap, data, data_len):
 def gap_identity_resolved_ev_(gap, data, data_len):
     logging.debug("%s", gap_identity_resolved_ev_.__name__)
 
+    stack = get_stack()
     logging.debug("received %r", data)
 
     fmt = '<B6sB6s'
@@ -220,11 +219,11 @@ def gap_identity_resolved_ev_(gap, data, data_len):
     _addr = binascii.hexlify(_addr[::-1]).lower()
     _id_addr = binascii.hexlify(_id_addr[::-1]).lower()
 
-    if _addr_t == pts_addr_type_get() and _addr.decode('utf-8') == pts_addr_get():
-        set_pts_addr(_id_addr, _id_addr_t)
+    if _addr_t == stack.pts_addr_type_get() and _addr.decode('utf-8') == stack.pts_addr_get():
+        stack.set_pts_addr(_id_addr, _id_addr_t)
 
-    if _addr_t == lt2_addr_type_get() and _addr.decode('utf-8') == lt2_addr_get():
-        set_lt2_addr(_id_addr, _id_addr_t)
+    if _addr_t == stack.pts_addr_type_get(lt=2) and _addr.decode('utf-8') == stack.pts_addr_get(lt=2):
+        stack.set_pts_addr(_id_addr, _id_addr_t, lt=2)
 
 
 def gap_conn_param_update_ev_(gap, data, data_len):
@@ -236,11 +235,13 @@ def gap_conn_param_update_ev_(gap, data, data_len):
     if len(data) != struct.calcsize(fmt):
         raise BTPError("Invalid data length")
 
+    stack = get_stack()
+
     _addr_t, _addr, _itvl, _latency, _timeout = struct.unpack_from(fmt, data)
     # Convert addresses to lower case
     _addr = binascii.hexlify(_addr[::-1]).lower()
 
-    if _addr_t != pts_addr_type_get() or _addr.decode('utf-8') != pts_addr_get():
+    if _addr_t != stack.pts_addr_type_get() or _addr.decode('utf-8') != stack.pts_addr_get():
         raise BTPError("Received data mismatch")
 
     logging.debug("received %r", (_addr_t, _addr, _itvl, _latency, _timeout))
@@ -558,12 +559,8 @@ def gap_conn(bd_addr=None, bd_addr_type=None, own_addr_type=OwnAddrType.le_ident
     iutctl = get_iut()
 
     data_ba = bytearray()
-    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
-    bd_addr_type_ba = chr(pts_addr_type_get(bd_addr_type)).encode('utf-8')
     own_addr_type_ba = chr(own_addr_type).encode('utf-8')
-
-    data_ba.extend(bd_addr_type_ba)
-    data_ba.extend(bd_addr_ba)
+    data_ba.extend(address_to_ba(bd_addr_type, bd_addr))
     data_ba.extend(own_addr_type_ba)
 
     iutctl.btp_socket.send_wait_rsp(*GAP['conn'], data=data_ba)
@@ -580,11 +577,11 @@ def set_filter_accept_list(address_list=None):
     """
     logging.debug("%s %s", set_filter_accept_list.__name__, address_list)
     iutctl = get_iut()
-
+    stack = get_stack()
     data_ba = bytearray()
 
     if not address_list:
-        address_list = [(pts_addr_type_get(None), pts_addr_get(None))]
+        address_list = [(stack.pts_addr_type_get(None), stack.pts_addr_get(None))]
 
     addr_cnt_ba = chr(len(address_list)).encode('utf-8')
     data_ba.extend(addr_cnt_ba)
@@ -609,10 +606,11 @@ def gap_rpa_conn(description, own_addr_type=OwnAddrType.le_identity_address):
     """
     logging.debug("%s %s", gap_conn.__name__, description)
     iutctl = get_iut()
+    stack = get_stack()
 
     bd_addr = re.search("[a-fA-F0-9]{12}", description).group(0)
     bd_addr_type = Addr.le_random
-    set_pts_addr(bd_addr, bd_addr_type)
+    stack.set_pts_addr(bd_addr, bd_addr_type)
 
     data_ba = bytearray()
     bd_addr_ba = addr2btp_ba(bd_addr)
@@ -629,13 +627,8 @@ def gap_disconn(bd_addr=None, bd_addr_type=None):
     logging.debug("%s %r %r", gap_disconn.__name__, bd_addr, bd_addr_type)
     iutctl = get_iut()
 
-    stack = get_stack()
-
     data_ba = bytearray()
-    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
-
-    data_ba.extend(chr(pts_addr_type_get(bd_addr_type)).encode('utf-8'))
-    data_ba.extend(bd_addr_ba)
+    data_ba.extend(address_to_ba(bd_addr_type, bd_addr))
 
     iutctl.btp_socket.send_wait_rsp(*GAP['disconn'], data=data_ba)
 
@@ -669,10 +662,7 @@ def gap_pair(bd_addr=None, bd_addr_type=None):
     gap_wait_for_connection()
 
     data_ba = bytearray()
-    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
-
-    data_ba.extend(chr(pts_addr_type_get(bd_addr_type)).encode('utf-8'))
-    data_ba.extend(bd_addr_ba)
+    data_ba.extend(address_to_ba(bd_addr_type, bd_addr))
 
     iutctl.btp_socket.send(*GAP['pair'], data=data_ba)
 
@@ -685,10 +675,7 @@ def gap_unpair(bd_addr=None, bd_addr_type=None):
     iutctl = get_iut()
 
     data_ba = bytearray()
-    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
-
-    data_ba.extend(chr(pts_addr_type_get(bd_addr_type)).encode('utf-8'))
-    data_ba.extend(bd_addr_ba)
+    data_ba.extend(address_to_ba(bd_addr_type, bd_addr))
 
     iutctl.btp_socket.send(*GAP['unpair'], data=data_ba)
 
@@ -702,10 +689,7 @@ def gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey):
     iutctl = get_iut()
 
     data_ba = bytearray()
-    bd_addr_ba = addr2btp_ba(bd_addr)
-
-    data_ba.extend(chr(bd_addr_type).encode('utf-8'))
-    data_ba.extend(bd_addr_ba)
+    data_ba.extend(address_to_ba(bd_addr_type, bd_addr))
 
     if isinstance(passkey, str):
         passkey = int(passkey)
@@ -724,10 +708,7 @@ def gap_passkey_confirm_rsp(bd_addr, bd_addr_type, passkey):
     iutctl = get_iut()
 
     data_ba = bytearray()
-    bd_addr_ba = addr2btp_ba(bd_addr)
-
-    data_ba.extend(chr(bd_addr_type).encode('utf-8'))
-    data_ba.extend(bd_addr_ba)
+    data_ba.extend(address_to_ba(bd_addr_type, bd_addr))
 
     if isinstance(passkey, str):
         passkey = int(passkey)
@@ -986,10 +967,7 @@ def gap_conn_param_update(bd_addr, bd_addr_type, conn_itvl_min,
     gap_wait_for_connection()
 
     data_ba = bytearray()
-    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
-
-    data_ba.extend(chr(pts_addr_type_get(bd_addr_type)).encode('utf-8'))
-    data_ba.extend(bd_addr_ba)
+    data_ba.extend(address_to_ba(bd_addr_type, bd_addr))
 
     conn_itvl_min_ba = struct.pack('H', conn_itvl_min)
     conn_itvl_max_ba = struct.pack('H', conn_itvl_max)
@@ -1241,8 +1219,9 @@ def parse_eir_data(eir):
 
 
 def check_discov_results(addr_type=None, addr=None, discovered=True, eir=None, uuids=None, svc_data=None):
-    addr = pts_addr_get(addr).encode('utf-8')
-    addr_type = pts_addr_type_get(addr_type)
+    stack = get_stack()
+    addr = stack.pts_addr_get(addr).encode('utf-8')
+    addr_type = stack.pts_addr_type_get(addr_type)
 
     logging.debug("%s %r %r %r %r", check_discov_results.__name__, addr_type,
                   addr, discovered, eir)
@@ -1353,13 +1332,9 @@ def gap_padv_create_sync(adv_sid, skip, sync_to, flags,
                          addr_type=None, addr=None):
     logging.debug("%s", gap_padv_create_sync.__name__)
 
-    if not addr_type or not addr:
-        addr_type = pts_addr_type_get(None)
-        addr = addr2btp_ba(pts_addr_get(None))
-
     iutctl = get_iut()
 
-    data_ba = bytearray(struct.pack("<B6s", addr_type, addr))
+    data_ba = address_to_ba(addr_type, addr)
     data_ba.extend(bytearray(struct.pack("<BHHB", adv_sid, skip,
                                          sync_to, flags)))
 
@@ -1371,13 +1346,9 @@ def gap_padv_create_sync(adv_sid, skip, sync_to, flags,
 def gap_padv_sync_transfer_set_info(svc_data, addr_type=None, addr=None):
     logging.debug("%s", gap_padv_sync_transfer_set_info.__name__)
 
-    if not addr_type or not addr:
-        addr_type = pts_addr_type_get(None)
-        addr = addr2btp_ba(pts_addr_get(None))
-
     iutctl = get_iut()
 
-    data_ba = bytearray(struct.pack("<B6s", addr_type, addr))
+    data_ba = address_to_ba(addr_type, addr)
     data_ba.extend(bytearray(struct.pack("<H", svc_data)))
 
     iutctl.btp_socket.send(*GAP['padv_sync_transfer_set_info'], data=data_ba)
@@ -1388,13 +1359,9 @@ def gap_padv_sync_transfer_set_info(svc_data, addr_type=None, addr=None):
 def gap_padv_sync_transfer_start(svc_data, addr_type=None, addr=None):
     logging.debug("%s", gap_padv_sync_transfer_start.__name__)
 
-    if not addr_type or not addr:
-        addr_type = pts_addr_type_get(None)
-        addr = addr2btp_ba(pts_addr_get(None))
-
     iutctl = get_iut()
 
-    data_ba = bytearray(struct.pack("<B6s", addr_type, addr))
+    data_ba = address_to_ba(addr_type, addr)
     data_ba.extend(bytearray(struct.pack("<H", svc_data)))
 
     iutctl.btp_socket.send(*GAP['padv_sync_transfer_set_info'], data=data_ba)
@@ -1405,13 +1372,10 @@ def gap_padv_sync_transfer_start(svc_data, addr_type=None, addr=None):
 def gap_padv_sync_transfer_recv(skip, sync_timeout, flags, addr_type=None, addr=None):
     logging.debug("%s", gap_padv_sync_transfer_recv.__name__)
 
-    if not addr_type or not addr:
-        addr_type = pts_addr_type_get(None)
-        addr = addr2btp_ba(pts_addr_get(None))
-
     iutctl = get_iut()
 
-    data_ba = bytearray(struct.pack("<B6sHHB", addr_type, addr, skip, sync_timeout, flags))
+    data_ba = address_to_ba(addr_type, addr)
+    data_ba.extend(struct.pack("<HHB", skip, sync_timeout, flags))
 
     iutctl.btp_socket.send(*GAP['padv_sync_transfer_recv'], data=data_ba)
 

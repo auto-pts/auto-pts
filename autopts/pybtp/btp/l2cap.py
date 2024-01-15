@@ -19,11 +19,10 @@ import binascii
 import logging
 import struct
 
-from autopts.ptsprojects.stack import get_stack
-from autopts.pybtp import defs
-from autopts.pybtp.types import addr2btp_ba, L2CAPConnectionResponse
-from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, pts_addr_get, pts_addr_type_get, get_iut_method as get_iut
-from autopts.pybtp.btp.gap import gap_wait_for_connection
+from .btpdefs import defs
+from .btpdefs.types import L2CAPConnectionResponse
+from .btp import get_stack, btp_hdr_check, get_iut_method as get_iut, address_to_ba
+from .gap import gap_wait_for_connection
 
 L2CAP = {
     "read_supp_cmds": (defs.BTP_SERVICE_ID_L2CAP,
@@ -61,17 +60,13 @@ def l2cap_conn(bd_addr, bd_addr_type, psm, mtu=0, num=1, ecfc=0, hold_credit=0):
     logging.debug("%s %r %r %r", l2cap_conn.__name__, bd_addr, bd_addr_type,
                   psm)
     iutctl = get_iut()
+    stack = get_stack()
     gap_wait_for_connection()
 
     if isinstance(psm, str):
         psm = int(psm, 16)
 
-    bd_addr = pts_addr_get(bd_addr)
-    bd_addr_type = pts_addr_type_get(bd_addr_type)
-
-    bd_addr_ba = addr2btp_ba(bd_addr)
-    data_ba = bytearray(chr(bd_addr_type).encode('utf-8'))
-    data_ba.extend(bd_addr_ba)
+    data_ba = address_to_ba(bd_addr_type, bd_addr)
     data_ba.extend(struct.pack('H', psm))
     data_ba.extend(struct.pack('H', mtu))
     data_ba.extend(struct.pack('B', num))
@@ -174,12 +169,7 @@ def l2cap_disconn_eatt_chans(bd_addr, bd_addr_type, channel_count):
 
     iutctl = get_iut()
 
-    bd_addr = pts_addr_get(bd_addr)
-    bd_addr_type = pts_addr_type_get(bd_addr_type)
-
-    bd_addr_ba = addr2btp_ba(bd_addr)
-    data_ba = bytearray(chr(bd_addr_type).encode('utf-8'))
-    data_ba.extend(bd_addr_ba)
+    data_ba = address_to_ba(bd_addr_type, bd_addr)
     data_ba.extend(bytearray(chr(channel_count).encode('utf-8')))
 
     iutctl.btp_socket.send(*L2CAP['disconnect_eatt_chans'], data=data_ba)
@@ -197,12 +187,7 @@ def l2cap_reconfigure(bd_addr, bd_addr_type, mtu, channels):
 
     iutctl = get_iut()
 
-    bd_addr = pts_addr_get(bd_addr)
-    bd_addr_type = pts_addr_type_get(bd_addr_type)
-
-    bd_addr_ba = addr2btp_ba(bd_addr)
-    data_ba = bytearray(chr(bd_addr_type).encode('utf-8'))
-    data_ba.extend(bd_addr_ba)
+    data_ba = address_to_ba(bd_addr_type, bd_addr)
     data_ba.extend(struct.pack('H', mtu))
     data_ba.extend(struct.pack('B', len(channels)))
     for chan in channels:

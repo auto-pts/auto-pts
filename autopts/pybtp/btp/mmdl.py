@@ -19,9 +19,8 @@ import binascii
 import logging
 import struct
 
-from autopts.ptsprojects.stack import get_stack
-from autopts.pybtp import defs
-from autopts.pybtp.btp.btp import CONTROLLER_INDEX, get_iut_method as get_iut
+from .btpdefs import defs
+from .btp import CONTROLLER_INDEX, get_stack, get_iut_method as get_iut
 
 MMDL = {
     "read_supp_cmds": (defs.BTP_SERVICE_ID_MMDL,
@@ -343,8 +342,8 @@ MMDL = {
                                   defs.MMDL_DFU_UPDATE_FIRMWARE_APPLY,
                                   CONTROLLER_INDEX),
     "mmdl_dfu_srv_apply": (defs.BTP_SERVICE_ID_MMDL,
-                                  defs.MMDL_DFU_SRV_APPLY,
-                                  CONTROLLER_INDEX),
+                           defs.MMDL_DFU_SRV_APPLY,
+                           CONTROLLER_INDEX),
 }
 
 
