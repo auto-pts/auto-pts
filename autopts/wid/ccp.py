@@ -350,62 +350,61 @@ def hdl_wid_20107(params: WIDParams):
     addr_type = btp.pts_addr_type_get()
     addr = btp.pts_addr_get()
 
-    if "0x00A2" in params.description or "0x00D2" in params.description:
-        inst_index = (0x00 if "0x00A2" in params.description else BT_TBS_GTBS_INDEX)
+    if "0x0112" in params.description or "0x00D2" in params.description:
+        inst_index = (0x00 if "0x00D2" in params.description else BT_TBS_GTBS_INDEX)
         btp.ccp_read_bearer_name(inst_index, addr_type, addr)
         ev = stack.ccp.wait_characteristic_str_ev(addr_type, addr, 30)
-    elif "0x00A5" in params.description or "0x00D5" in params.description:
-        inst_index = (0x00 if "0x00A5" in params.description else BT_TBS_GTBS_INDEX)
+    elif "0x0115" in params.description or "0x00D5" in params.description:
+        inst_index = (0x00 if "0x00D5" in params.description else BT_TBS_GTBS_INDEX)
         btp.ccp_read_bearer_uci(inst_index, addr_type, addr)
         ev = stack.ccp.wait_characteristic_str_ev(addr_type, addr, 30)
-    elif "00A7" in params.description or "0x00D7" in params.description:
-        inst_index = (0x00 if "00A7" in params.description else BT_TBS_GTBS_INDEX)
+    elif "0x0117" in params.description or "0x00D7" in params.description:
+        inst_index = (0x00 if "0x00D7" in params.description else BT_TBS_GTBS_INDEX)
         btp.ccp_read_bearer_tech(inst_index, addr_type, addr)
         ev = stack.ccp.wait_characteristic_value_ev(addr_type, addr, 30)
-    elif "0x00AA" in params.description or "0x00DA" in params.description:
-        inst_index = (0x00 if "0x00AA" in params.description else BT_TBS_GTBS_INDEX)
+    elif "0x011A" in params.description or "0x00DA" in params.description:
+        inst_index = (0x00 if "0x00DA" in params.description else BT_TBS_GTBS_INDEX)
         btp.ccp_read_uri_list(inst_index, addr_type, addr)
         ev = stack.ccp.wait_characteristic_str_ev(addr_type, addr, 30)
-    elif "0x00AD" in params.description or "0x00DD" in params.description:
-        inst_index = (0x00 if "0x00AD" in params.description else BT_TBS_GTBS_INDEX)
+    elif "0x011D" in params.description or "0x00DD" in params.description:
+        inst_index = (0x00 if "0x00DD" in params.description else BT_TBS_GTBS_INDEX)
         btp.ccp_read_signal_strength(inst_index, addr_type, addr)
         ev = stack.ccp.wait_characteristic_value_ev(addr_type, addr, 30)
-    elif "0x00B0" in params.description or "0x00E0" in params.description:
-        inst_index = (0x00 if "0x00B0" in params.description else BT_TBS_GTBS_INDEX)
+    elif "0x0120" in params.description or "0x00E0" in params.description:
+        inst_index = (0x00 if "0x00E0" in params.description else BT_TBS_GTBS_INDEX)
         btp.ccp_read_signal_interval(inst_index, addr_type, addr)
         ev = stack.ccp.wait_characteristic_value_ev(addr_type, addr, 30)
-    elif "0x00B2" in params.description or "0x00E2" in params.description:
-        inst_index = (0x00 if "0x00B2" in params.description else BT_TBS_GTBS_INDEX)
+    elif "0x0122" in params.description or "0x00E2" in params.description:
+        inst_index = (0x00 if "0x00E2" in params.description else BT_TBS_GTBS_INDEX)
         btp.ccp_read_current_calls(inst_index, addr_type, addr)
         ev = stack.ccp.wait_current_ev(addr_type, addr, 30)
-    elif "0x00B5" in params.description or "0x00E5" in params.description:
+    elif "0x0125" in params.description or "0x00E5" in params.description:
         # CCID is read by a client during service discovery. This is needed for
         # sending characteristic handles BTP event.
         # Testcase CCP/CL/CGGIT/CHA/BV-24-C ends in hdl_wid_20103
         return True
-    elif "0x00B7" in params.description or "0x00E7" in params.description:
-        inst_index = (0x00 if "0x00B7" in params.description else BT_TBS_GTBS_INDEX)
+    elif "0x0127" in params.description or "0x00E7" in params.description:
+        inst_index = (0x00 if "0x00E7" in params.description else BT_TBS_GTBS_INDEX)
         btp.ccp_read_call_uri(inst_index, addr_type, addr)
         ev = stack.ccp.wait_characteristic_str_ev(addr_type, addr, 30)
-    elif "0x00BA" in params.description or "0x00EA" in params.description:
-        inst_index = (0x00 if "0x00BA" in params.description else BT_TBS_GTBS_INDEX)
+    elif "0x012A" in params.description or "0x00EA" in params.description:
+        inst_index = (0x00 if "0x00EA" in params.description else BT_TBS_GTBS_INDEX)
         btp.ccp_read_status_flags(inst_index, addr_type, addr)
         ev = stack.ccp.wait_characteristic_value_ev(addr_type, addr, 30)
-    elif "0x00CC" in params.description or "0x00FC" in params.description:
-        inst_index = (0x00 if "0x00CC" in params.description else BT_TBS_GTBS_INDEX)
+    elif "0x013C" in params.description or "0x00FC" in params.description:
+        inst_index = (0x00 if "0x00FC" in params.description else BT_TBS_GTBS_INDEX)
         btp.ccp_read_optional_opcodes(inst_index, addr_type, addr)
-        # Optional Opcodes (TBS) not implemented on PTS
         ev = stack.ccp.wait_characteristic_value_ev(addr_type, addr, 30)
-    elif "0x00C6" in params.description or "0x00F6" in params.description:
-        inst_index = (0x00 if "0x00C6" in params.description else BT_TBS_GTBS_INDEX)
+    elif "0x0136" in params.description or "0x00F6" in params.description:
+        inst_index = (0x00 if "0x00F6" in params.description else BT_TBS_GTBS_INDEX)
         btp.ccp_read_remote_uri(inst_index, addr_type, addr)
         ev = stack.ccp.wait_characteristic_str_ev(addr_type, addr, 30)
-    elif "0x00C9" in params.description or "0x00F9" in params.description:
-        inst_index = (0x00 if "0x00C9" in params.description else BT_TBS_GTBS_INDEX)
+    elif "0x0139" in params.description or "0x00F9" in params.description:
+        inst_index = (0x00 if "0x00F9" in params.description else BT_TBS_GTBS_INDEX)
         btp.ccp_read_friendly_name(inst_index, addr_type, addr)
         ev = stack.ccp.wait_characteristic_str_ev(addr_type, addr, 30)
-    elif "0x00BD" in params.description or "0x00ED" in params.description:
-        inst_index = (0x00 if "0x00BD" in params.description else BT_TBS_GTBS_INDEX)
+    elif "0x012D" in params.description or "0x00ED" in params.description:
+        inst_index = (0x00 if "0x00ED" in params.description else BT_TBS_GTBS_INDEX)
         btp.ccp_read_call_state(inst_index)
         success, status, index, call_count, states = btp.ccp_await_call_state()
         return success and (status == 0)
