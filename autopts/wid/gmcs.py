@@ -41,15 +41,10 @@ def hdl_wid_4(params: WIDParams):
 
     if media_pl_state != 0:
         return False
-
     elif params.test_case_name == 'GMCS/SR/MCP/BV-37-C':
         next_track_id = btp.gmcs_next_track_obj_id_get()
         stack.gmcs.track_obj_id = next_track_id
         # This is validated in hdl_wid_32
-    elif params.test_case_name == 'GMCS/SR/MCP/BV-41-C':
-        # Initial condition from Test Spec
-        MEDIA_PROXY_OP_NEXT_TRACK = 0x31
-        btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_NEXT_TRACK, 0)
     elif params.test_case_name == 'GMCS/SR/MCP/BV-33-C':
         # This is validated in hdl_wid_32
         current_track_id = btp.gmcs_current_track_obj_id_get()
@@ -65,7 +60,6 @@ def hdl_wid_4(params: WIDParams):
         # Initial condition from Test Spec
         MEDIA_PROXY_OP_NEXT_GROUP = 0x41
         btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_NEXT_GROUP, 0)
-
 
     return True
 
@@ -177,6 +171,20 @@ def hdl_wid_32(params: WIDParams):
     elif params.test_case_name == 'GMCS/SR/MCP/BV-37-C':
         if current_track_obj_id != stack.gmcs.track_obj_id:
             return False
+
+    return True
+
+
+def hdl_wid_44(params: WIDParams):
+    """If the IUT supports transitioning to an active state, please set the
+       current track to a track other than the first or last within a group
+       of tracks."""
+
+    if params.test_case_name in ['GMCS/SR/MCP/BV-41-C', 'GMCS/SR/MCP/BV-45-C']:
+        # This applies only for testcases where media player is initially
+        # in inactive state
+        MEDIA_PROXY_OP_NEXT_TRACK = 0x31
+        btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_NEXT_TRACK, 0)
 
     return True
 
