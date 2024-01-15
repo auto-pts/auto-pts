@@ -2,3 +2,4 @@ wmi
 pywin32
 utils
 psutil
+yepkit-pykush
