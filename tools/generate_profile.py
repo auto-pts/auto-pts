@@ -78,8 +78,10 @@ f"""{license_text}
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
-from autopts.pybtp.btp import btp
+from autopts.pybtp import btp
 from autopts.ptsprojects.zephyr.{profile_name_lower}_wid import {profile_name_lower}_wid_hdl
+from autopts.client import get_unique_name
+from autopts.pybtp.types import Addr
 
 
 def set_pixits(ptses):
@@ -96,10 +98,21 @@ def test_cases(ptses):
     \"\"\"
 
     pts = ptses[0]
+    pts_bd_addr = pts.q_bd_addr
+    iut_device_name = get_unique_name(pts)
     stack = get_stack()
 
     # Generic preconditions for all test case in the profile
     pre_conditions = [
+        TestFunc(btp.core_reg_svc_gap),
+        TestFunc(stack.gap_init, iut_device_name),
+        TestFunc(btp.gap_read_ctrl_info),
+        TestFunc(lambda: pts.update_pixit_param(
+                 "BAP", "TSPX_bd_addr_iut",
+                 stack.gap.iut_addr_get_str())),
+        TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public),
+        TestFunc(btp.core_reg_svc_gatt),
+        TestFunc(stack.gatt_init),
         TestFunc(btp.core_reg_svc_{profile_name_lower}),
         TestFunc(stack.{profile_name_lower}_init)
     ]
@@ -195,7 +208,8 @@ def {profile_name_lower}_command_rsp_succ(timeout=20.0):
     return tuple_data
 
 
-def {profile_name_lower}_ev_discovery_completed(profile, data, data_len):
+# An example event, to be changed or deleted
+def {profile_name_lower}_ev_discovery_completed({profile_name_lower}, data, data_len):
     logging.debug('%s %r', {profile_name_lower}_ev_discovery_completed.__name__, data)
 
     fmt = '<B6sB'
@@ -209,7 +223,7 @@ def {profile_name_lower}_ev_discovery_completed(profile, data, data_len):
     logging.debug(f'{profile_name_upper} Discovery completed: addr {'{'}addr{'}'} addr_type '
                   f'{'{'}addr_type{'}'} status {'{'}status{'}'}')
 
-    profile.event_received(defs.{profile_name_upper}_EV_DISCOVERY_COMPLETED, (addr_type, addr, status))
+    {profile_name_lower}.event_received(defs.{profile_name_upper}_EV_DISCOVERY_COMPLETED, (addr_type, addr, status))
 
 
 {profile_name_upper}_EV = {'{'}
@@ -245,7 +259,7 @@ class {profile_name_upper}:
 
     # START of doc/btp_profile.txt
     f'{AUTOPTS_REPO}/doc/btp_{profile_name_lower}.txt':
-f"""{profile_name_upper} Service (ID {hex(int(profile_id)).upper()[2:]})
+f"""{profile_name_upper} Service (ID {profile_id})
 =====================
 
 Commands and responses:
@@ -274,7 +288,7 @@ changes_to_prepend = {
     f'{project_path}/__init__.py': {1: f"import autopts.ptsprojects.{basename(project_path)}.{profile_name_lower}\n"},
     f'{AUTOPTS_REPO}/autopts/pybtp/defs.py': {
         1: f"BTP_SERVICE_ID_{profile_name_upper} = {profile_id}\n",
-        2: f"{profile_name_upper}_READ_SUPPORTED_COMMANDS = 0x01\n{profile_name_upper}_EV_DISCOVERY_COMPLETED = 0x80\n",
+        2: f"{profile_name_upper}_READ_SUPPORTED_COMMANDS = 0x01\n{profile_name_upper}_EV_DISCOVERY_COMPLETED = 0x80\n\n",
     },
     f'{AUTOPTS_REPO}/autopts/ptsprojects/stack/layers/__init__.py': {1: f"from .{profile_name_lower} import *\n"},
     f'{AUTOPTS_REPO}/autopts/ptsprojects/stack/stack.py': {
@@ -295,7 +309,11 @@ changes_to_prepend = {
 """,
         2: f"from .{profile_name_lower} import {profile_name_upper}_EV\n",
         3: f"        defs.BTP_SERVICE_ID_{profile_name_upper}: ({profile_name_upper}_EV, stack.{profile_name_lower}),\n",
+        4: f"    \"{profile_name_lower}_reg\": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,\n"
+           f"                defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_{profile_name_upper}),\n",
     },
+    f'{AUTOPTS_REPO}/autopts/pybtp/btp/__init__.py': {1: f"from autopts.pybtp.btp.{profile_name_lower} import *\n"},
+    f'{AUTOPTS_REPO}/doc/overview.txt': {1: f" {profile_id} {profile_name_upper} Service\n"},
 }
 
 
