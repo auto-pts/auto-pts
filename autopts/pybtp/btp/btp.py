@@ -117,6 +117,7 @@ CORE = {
                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GMCS),
     "hap_reg": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,
                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_HAP),
+    # GENERATOR append 4
     "read_supp_cmds": (defs.BTP_SERVICE_ID_CORE,
                        defs.CORE_READ_SUPPORTED_COMMANDS,
                        defs.BTP_INDEX_NONE, ""),
