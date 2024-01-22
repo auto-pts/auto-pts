@@ -413,8 +413,10 @@ class Server(threading.Thread):
         same context as its instance was initialized.
         """
 
-        pythoncom.CoInitialize()
-        log(f'pythoncom._GetInterfaceCount(): {pythoncom._GetInterfaceCount()}')
+        if threading.current_thread().name != 'MainThread':
+            # Should be called only in threads other than the main one.
+            pythoncom.CoInitialize()
+            log(f'pythoncom._GetInterfaceCount(): {pythoncom._GetInterfaceCount()}')
 
         c = wmi.WMI()
         for iface in c.Win32_NetworkAdapterConfiguration(IPEnabled=True):
@@ -441,8 +443,9 @@ class Server(threading.Thread):
             except BaseException as e:
                 logging.exception(e)
 
-        pythoncom.CoUninitialize()
-        log(f'pythoncom._GetInterfaceCount(): {pythoncom._GetInterfaceCount()}')
+        if threading.current_thread().name != 'MainThread':
+            pythoncom.CoUninitialize()
+            log(f'pythoncom._GetInterfaceCount(): {pythoncom._GetInterfaceCount()}')
 
     def server_init(self):
         if self.server:
