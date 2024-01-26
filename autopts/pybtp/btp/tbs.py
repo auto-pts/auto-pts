@@ -119,7 +119,7 @@ def tbs_set_bearer_name(index, name):
     logging.debug(f"{tbs_set_bearer_name.__name__}")
 
     data = bytearray()
-    data.extend(struct.pack("b", index))
+    data.extend(struct.pack("B", index))
     name_len = len(name)
     data.extend(struct.pack("b", name_len))
     encoded_name = name.encode("utf-8")
@@ -136,7 +136,7 @@ def tbs_set_bearer_technology(index, technology):
     logging.debug(f"{tbs_set_bearer_technology.__name__}")
 
     data = bytearray()
-    data.extend(struct.pack("bb", index, technology))
+    data.extend(struct.pack("Bb", index, technology))
 
     iutctl = get_iut()
     iutctl.btp_socket.send(*TBS['set_bearer_technology'], data=data)
@@ -172,7 +172,7 @@ def tbs_set_signal_strength(index, strength):
     logging.debug(f"{tbs_set_signal_strength.__name__}")
 
     data = bytearray()
-    data.extend(struct.pack("bb", index, strength))
+    data.extend(struct.pack("Bb", index, strength))
 
     iutctl = get_iut()
     iutctl.btp_socket.send(*TBS['set_signal_strength'], data=data)
@@ -184,7 +184,7 @@ def tbs_set_uri_scheme_list(index, uri):
     logging.debug(f"{tbs_set_uri_scheme_list.__name__}")
 
     data = bytearray()
-    data.extend(struct.pack("b", index))
+    data.extend(struct.pack("B", index))
     uri_len = len(uri)
     data.extend(struct.pack("b", uri_len))
     encoded_name = uri.encode("utf-8")
@@ -203,7 +203,7 @@ def tbs_set_status_flags(index, flags):
     logging.debug(f"{tbs_set_status_flags.__name__}")
 
     data = bytearray()
-    data.extend(struct.pack("b", index))
+    data.extend(struct.pack("B", index))
     data.extend(struct.pack("H", flags))
 
     iutctl = get_iut()

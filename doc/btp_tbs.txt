@@ -1,4 +1,4 @@
-Telephone Bearer Service(ID 25)
+Telephone Bearer Service(ID 27)
 =================================
 
 Commands and responses:
