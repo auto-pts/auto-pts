@@ -39,7 +39,8 @@ def tbs_wid_hdl(wid, description, test_case_name):
 def hdl_wid_101(params: WIDParams):
     """Please generate incoming call from the Server"""
 
-    btp.tbs_remote_incoming(0, 'tel:+19991111234', 'tel:+19991111235', 'tel:+19991110011')
+    btp.tbs_remote_incoming(0, 'tel:+19991111234', 'tel:+19991111235',
+                            'tel:+19991110011')
 
     return True
 
@@ -68,7 +69,12 @@ def hdl_wid_110(params: WIDParams):
 def hdl_wid_111(params: WIDParams):
     """Waiting for Bearer Signal Strength Notification."""
 
-    btp.tbs_set_signal_strength(0, 10)
+    if 'GTBS' in params.test_case_name:
+        inst_index = 0xFF
+    else:
+        inst_index = 0x00
+
+    btp.tbs_set_signal_strength(inst_index, 10)
 
     return True
 
@@ -92,14 +98,19 @@ def hdl_wid_118(params: WIDParams):
     """Please update Bearer Provider Name characteristic(Handle = 0x006D) and send
      a notification containing the updated value of the characteristic."""
 
+    if 'GTBS' in params.test_case_name:
+        inst_index = 0xFF
+    else:
+        inst_index = 0x00
+
     if "Name" in params.description:
-        btp.tbs_set_bearer_name(0, 'newname')
+        btp.tbs_set_bearer_name(inst_index, 'newname')
     elif "Technology" in params.description:
-        btp.tbs_set_bearer_technology(0, 0x03)
+        btp.tbs_set_bearer_technology(inst_index, 0x03)
     elif "URI Schemes" in params.description:
-        btp.tbs_set_uri_scheme_list(0, 'tel')
+        btp.tbs_set_uri_scheme_list(inst_index, 'tel')
     elif "Status Flags" in params.description:
-        btp.tbs_set_status_flags(0, 2)
+        btp.tbs_set_status_flags(inst_index, 2)
 
     return True
 
@@ -108,9 +119,14 @@ def hdl_wid_120(params: WIDParams):
     """Please force to update Bear Signal Strength value 3 times and then send
      a Bearer Signal Strength notification using new interval."""
 
-    btp.tbs_set_signal_strength(0, 9)
-    btp.tbs_set_signal_strength(0, 8)
-    btp.tbs_set_signal_strength(0, 7)
+    if 'GTBS' in params.test_case_name:
+        inst_index = 0xFF
+    else:
+        inst_index = 0x00
+
+    btp.tbs_set_signal_strength(inst_index, 9)
+    btp.tbs_set_signal_strength(inst_index, 8)
+    btp.tbs_set_signal_strength(inst_index, 7)
 
     return True
 
@@ -158,24 +174,30 @@ def hdl_wid_20141(params: WIDParams):
     """Please update Bearer Provider Name characteristic with value whose length
      is greater than the (ATT_MTU-3). Click OK when it is ready."""
 
-    # Insufficient authentication in all test cases (no secure pairing)
-    ovs_val = 'namenamenamenamenamedddddddd'
-    ovs_uri = 'tel:12345678901234567890'
-    if "Name" in params.description:
-        btp.tbs_set_bearer_name(0, ovs_val)
+    if 'GTBS' in params.test_case_name:
+        inst_index = 0xFF
+    else:
+        inst_index = 0x00
+
+    ovs_receiver = 'tel:12345678901234567890'
+    ovs_caller = 'tel:123456789012345678905555'
+    ovs_friendly = 'namenamenamenamenamedddddddd'
+
+    if "Call Friendly Name" in params.description:
+        btp.tbs_remote_incoming(0, ovs_receiver, ovs_caller, ovs_friendly)
+    elif "Name" in params.description:
+        btp.tbs_set_bearer_name(inst_index, ovs_friendly)
     elif "URI Schemes" in params.description:
-        btp.tbs_set_uri_scheme_list(0, ovs_uri)
+        btp.tbs_set_uri_scheme_list(inst_index, 'telteltelteltelteltelteltel')
     elif "Current Calls" in params.description:
-        for _ in range(0, 20):
-            btp.tbs_remote_incoming(0, ovs_uri, ovs_uri, ovs_uri)
+        btp.tbs_remote_incoming(0, ovs_receiver, ovs_caller, ovs_friendly)
     elif "Call Target" in params.description:
-        btp.tbs_remote_incoming(0, ovs_uri, ovs_uri, ovs_uri)
+        btp.tbs_remote_incoming(0, ovs_receiver, ovs_caller, ovs_friendly)
     elif "Call State" in params.description:
-        btp.tbs_remote_incoming(0, ovs_uri, ovs_uri, ovs_uri)
+        for _ in range(0, 9):
+            btp.tbs_remote_incoming(0, ovs_receiver, ovs_caller, ovs_friendly)
     elif "Incoming Call" in params.description:
-        btp.tbs_remote_incoming(0, ovs_uri, ovs_uri, ovs_uri)
-    elif "Call Friendly Name" in params.description:
-        btp.tbs_remote_incoming(0, ovs_uri, ovs_uri, ovs_uri)
+        btp.tbs_remote_incoming(0, ovs_receiver, ovs_caller, ovs_friendly)
 
     return True
 
@@ -185,23 +207,28 @@ def hdl_wid_20142(params: WIDParams):
        a notification containing the updated value of the characteristic with
        a different value whose length is greater than the (ATT_MTU-3)"""
 
-    ovs_val = 'namenamenamenamenamexxxxxxxx'
-    ovs_uri = 'tel:12345678901234567890'
+    if 'GTBS' in params.test_case_name:
+        inst_index = 0xFF
+    else:
+        inst_index = 0x00
 
-    if "Name" in params.description:
-        btp.tbs_set_bearer_name(0, ovs_val)
+    ovs_receiver = 'tel:12345678901234567891'
+    ovs_caller = 'tel:123456789012345678905551'
+    ovs_friendly = 'namenamenamenamenamexxxxxx'
+
+    if "Call Friendly Name" in params.description:
+        btp.tbs_remote_incoming(0, ovs_receiver, ovs_caller, ovs_friendly)
+    elif "Name" in params.description:
+        btp.tbs_set_bearer_name(inst_index, ovs_friendly)
     elif "URI Schemes" in params.description:
-        btp.tbs_set_uri_scheme_list(0, ovs_uri)
+        btp.tbs_set_uri_scheme_list(inst_index, 'telteltelteltelteltelteltel')
     elif "Current Calls" in params.description:
-        for _ in range(0, 20):
-            btp.tbs_remote_incoming(0, ovs_uri, ovs_uri, ovs_uri)
+        btp.tbs_remote_incoming(0, ovs_receiver, ovs_caller, ovs_friendly)
     elif "Call Target" in params.description:
-        btp.tbs_remote_incoming(0, ovs_uri, ovs_uri, ovs_uri)
+        btp.tbs_remote_incoming(0, ovs_receiver, ovs_caller, ovs_friendly)
     elif "Call State" in params.description:
-        btp.tbs_remote_incoming(0, ovs_uri, ovs_uri, ovs_uri)
+        btp.tbs_remote_incoming(0, ovs_receiver, ovs_caller, ovs_friendly)
     elif "Incoming Call" in params.description:
-        btp.tbs_remote_incoming(0, ovs_uri, ovs_uri, ovs_uri)
-    elif "Call Friendly Name" in params.description:
-        btp.tbs_remote_incoming(0, ovs_uri, ovs_uri, ovs_uri)
+        btp.tbs_remote_incoming(0, ovs_receiver, ovs_caller, ovs_friendly)
 
     return True
