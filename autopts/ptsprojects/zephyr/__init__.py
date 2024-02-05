@@ -46,6 +46,7 @@ import autopts.ptsprojects.zephyr.gmcs
 import autopts.ptsprojects.zephyr.tbs
 import autopts.ptsprojects.zephyr.gtbs
 import autopts.ptsprojects.zephyr.ots
+import autopts.ptsprojects.zephyr.tmap
 # GENERATOR append 1
 
 # Constants
