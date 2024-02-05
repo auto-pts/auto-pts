@@ -42,4 +42,5 @@ from .csip import csip_wid_hdl
 from .tbs import tbs_wid_hdl
 from .gtbs import gtbs_wid_hdl
 from .ots import ots_wid_hdl
+from .tmap import tmap_wid_hdl
 # GENERATOR append 1

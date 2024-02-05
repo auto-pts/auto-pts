@@ -50,6 +50,7 @@ services = {
     "CAP": 1 << defs.BTP_SERVICE_ID_CAP,
     "CSIP": 1 << defs.BTP_SERVICE_ID_CSIP,
     "TBS": 1 << defs.BTP_SERVICE_ID_TBS,
+    "TMAP": 1 << defs.BTP_SERVICE_ID_TMAP,
     # GENERATOR append 1
 }
 
@@ -84,6 +85,7 @@ class Stack:
         self.tbs = None
         self.gtbs = None
         self.ots = None
+        self.tmap = None
         # GENERATOR append 2
 
     def is_svc_supported(self, svc):
@@ -180,6 +182,9 @@ class Stack:
     def ots_init(self):
         self.ots = OTS()
 
+    def tmap_init(self):
+        self.tmap = TMAP()
+
     # GENERATOR append 3
 
     def cleanup(self):
@@ -257,6 +262,9 @@ class Stack:
 
         if self.ots:
             self.ots_init()
+
+        if self.tmap:
+            self.tmap_init()
 
         # GENERATOR append 4
 

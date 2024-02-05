@@ -39,4 +39,5 @@ from .csip import *
 from .tbs import *
 from .gtbs import *
 from .ots import *
+from .tmap import *
 # GENERATOR append 1
