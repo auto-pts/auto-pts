@@ -505,7 +505,12 @@ def hdl_wid_106(params: WIDParams):
 
 
 def hdl_wid_108(params: WIDParams):
-    btp.gap_pair()
+    if params.test_case_name in ['GAP/BOND/BON/BV-02-C']:
+        if "Please start the Bonding Procedure in bondable mode." in params.description:
+                return True
+    else:
+        btp.gap_pair()
+
     return True
 
 
