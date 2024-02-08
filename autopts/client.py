@@ -40,7 +40,7 @@ from autopts.ptsprojects import ptstypes
 from autopts.ptsprojects import stack
 from autopts.ptsprojects.boards import get_available_boards, tty_to_com
 from autopts.ptsprojects.ptstypes import E_FATAL_ERROR
-from autopts.ptsprojects.testcase import PTSCallback, TestCaseLT1, TestCaseLT2
+from autopts.ptsprojects.testcase import PTSCallback, TestCaseLT1, TestCaseLT2, TestCaseLT3
 from autopts.ptsprojects.testcase_db import TestCaseTable
 from autopts.pybtp import btp, defs
 from autopts.pybtp.types import BTPError, SynchError
@@ -1079,8 +1079,8 @@ def run_test_case(ptses, test_case_instances, test_case_name, stats,
     # Lookup TestCase class instances
     test_case_lts = []
     tc_name = test_case_name
-    for i, tc_class in enumerate([TestCaseLT1, TestCaseLT2], 2):
 
+    for i, tc_class in enumerate([TestCaseLT1, TestCaseLT2, TestCaseLT3], 2):
         test_case_lt = test_case_lookup_name(tc_name, tc_class)
         if test_case_lt is None:
             log(f'The {tc_name} test case enabled in workspace, but the profile not implemented!')
@@ -1160,6 +1160,7 @@ def run_test_case(ptses, test_case_instances, test_case_name, stats,
 test_case_blacklist = [
     "_HELPER",
     "LT2",
+    "LT3",
     "TWO_NODES_PROVISIONER",
 ]
 

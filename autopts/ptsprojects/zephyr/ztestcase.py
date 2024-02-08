@@ -15,7 +15,7 @@
 
 """Test case that manages Zephyr IUT"""
 
-from autopts.ptsprojects.testcase import TestCaseLT1, TestCaseLT2, TestFunc, TestFuncCleanUp
+from autopts.ptsprojects.testcase import TestCaseLT1, TestCaseLT2, TestCaseLT3, TestFunc, TestFuncCleanUp
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.zephyr.iutctl import get_iut
 
@@ -56,6 +56,15 @@ class ZTestCase(TestCaseLT1):
 
 
 class ZTestCaseSlave(TestCaseLT2):
+    """A Zephyr helper test case that uses QEMU or HW as DUT"""
+
+    def __init__(self, *args, **kwargs):
+        """Refer to TestCase.__init__ for parameters and their documentation"""
+
+        super().__init__(*args, ptsproject_name="zephyr", **kwargs)
+
+
+class ZTestCaseSlave2(TestCaseLT3):
     """A Zephyr helper test case that uses QEMU or HW as DUT"""
 
     def __init__(self, *args, **kwargs):
