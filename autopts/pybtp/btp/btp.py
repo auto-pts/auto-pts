@@ -33,6 +33,7 @@ get_iut = None
 LeAddress = namedtuple('LeAddress', 'addr_type addr')
 PTS_BD_ADDR = LeAddress(addr_type=0, addr='000000000000')
 LT2_BD_ADDR = LeAddress(addr_type=0, addr='000000000000')
+LT3_BD_ADDR = LeAddress(addr_type=0, addr='000000000000')
 
 # Devices found
 LeAdv = namedtuple('LeAdv', 'addr_type addr rssi flags eir')
@@ -422,9 +423,31 @@ def lt2_addr_type_get(bd_addr_type=None):
     return bd_addr_type
 
 
+def lt3_addr_get(bd_addr=None):
+    """" If address provided, convert, otherwise, use stored address. """
+    if bd_addr is None:
+        return LT3_BD_ADDR.addr
+    return bd_addr_convert(bd_addr)
+
+
+def lt3_addr_type_get(bd_addr_type=None):
+    """"
+    If address type provided, return it, otherwise,
+    use stored address.
+    """
+    if bd_addr_type is None:
+        return LT3_BD_ADDR.addr_type
+    return bd_addr_type
+
+
 def set_lt2_addr(addr, addr_type):
     global LT2_BD_ADDR
     LT2_BD_ADDR = LeAddress(addr_type=addr_type, addr=bd_addr_convert(addr))
+
+
+def set_lt3_addr(addr, addr_type):
+    global LT3_BD_ADDR
+    LT3_BD_ADDR = LeAddress(addr_type=addr_type, addr=bd_addr_convert(addr))
 
 
 def core_reg_svc_gap():

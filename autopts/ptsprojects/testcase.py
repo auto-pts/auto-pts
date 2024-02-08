@@ -814,17 +814,26 @@ class TestCaseLT1(TestCase):
 
         test_case = super().copy()
         test_case.name_lt2 = self.name_lt2
+        test_case.name_lt3 = self.name_lt3
 
         return test_case
 
     def __init__(self, *args, **kwargs):
         name_lt2 = kwargs.pop('lt2', None)
+        name_lt3 = kwargs.pop('lt3', None)
         super().__init__(*args, **kwargs)
         self.name_lt2 = name_lt2
+        self.name_lt3 = name_lt3
         self.run_pre_and_post_sp = True
 
 
 class TestCaseLT2(TestCase):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.run_pre_and_post_sp = False
+
+
+class TestCaseLT3(TestCase):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.run_pre_and_post_sp = False

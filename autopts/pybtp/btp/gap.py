@@ -25,7 +25,8 @@ from autopts.ptsprojects.stack import get_stack, ConnParams
 from autopts.pybtp import defs
 from autopts.pybtp.types import BTPError, gap_settings_btp2txt, addr2btp_ba, Addr, OwnAddrType, AdDuration, AdType
 from autopts.pybtp.btp.btp import pts_addr_get, pts_addr_type_get, lt2_addr_get, lt2_addr_type_get, btp_hdr_check, \
-    CONTROLLER_INDEX, set_pts_addr, set_lt2_addr,LeAdv, get_iut_method as get_iut
+    CONTROLLER_INDEX, set_pts_addr, set_lt2_addr, LeAdv, get_iut_method as get_iut, lt3_addr_type_get, lt3_addr_get, \
+    set_lt3_addr
 
 GAP = {
     "start_adv": (defs.BTP_SERVICE_ID_GAP, defs.GAP_START_ADVERTISING,
@@ -225,6 +226,9 @@ def gap_identity_resolved_ev_(gap, data, data_len):
 
     if _addr_t == lt2_addr_type_get() and _addr.decode('utf-8') == lt2_addr_get():
         set_lt2_addr(_id_addr, _id_addr_t)
+
+    if _addr_t == lt3_addr_type_get() and _addr.decode('utf-8') == lt3_addr_get():
+        set_lt3_addr(_id_addr, _id_addr_t)
 
 
 def gap_conn_param_update_ev_(gap, data, data_len):
