@@ -49,6 +49,7 @@ from autopts.utils import InterruptableThread, ResultWithFlag, CounterWithFlag, 
 from cliparser import CliParser
 
 log = logging.debug
+log_lock = threading.RLock()
 
 RUNNING_TEST_CASE = {}
 TEST_CASE_DB = None
@@ -67,6 +68,11 @@ MAX_SERVER_RESTART_TIME = 60
 # be used. When FakeProxy is used autoptsserver on Windows will
 # not be contacted.
 AUTO_PTS_LOCAL = "AUTO_PTS_LOCAL" in os.environ
+
+
+def logger_log(self, *args, **kwargs):
+    with log_lock:
+        self.original_log(*args, **kwargs)
 
 
 class PtsServerProxy(xmlrpc.client.ServerProxy):
@@ -405,6 +411,12 @@ get_my_ip_address.cached_address = None
 def init_logging(tag=""):
     """Initialize logging"""
     root_logger = logging.getLogger('root')
+
+    # Monkey-patch this to make use of logger lock
+    if not hasattr(logging.Logger, 'original_log'):
+        logging.Logger.original_log = logging.Logger._log
+        logging.Logger._log = logger_log
+
     if root_logger.handlers:
         # Already inited
         return
@@ -905,21 +917,26 @@ class LTThread(InterruptableThread):
     def interrupt(self):
         self.cancel_sync_points()
 
-        while not get_global_end():
-            try:
-                # Acquire the logger lock to prevent breaking the lock or other
-                # logger handles at interrupt.
-                if not logging._lock.acquire(True, timeout=1):
-                    continue
+        # Acquire the lock to prevent breaking pre- or post-test-case steps,
+        # which crucial and do not fail in general.
+        while not self.interrupt_lock.acquire(True, timeout=1) and not get_global_end():
+            # Ctrl + C friendly loop
+            pass
 
-                try:
-                    super().interrupt()
-                    return
-                finally:
-                    logging._lock.release()
-            except BaseException as e:
-                logging.exception(e)
-                traceback.print_exc()
+        # Acquire the logger lock to prevent breaking the lock or other
+        # logger handles at interrupt.
+        while not log_lock.acquire(True, timeout=1) and not get_global_end():
+            # Ctrl + C friendly loop
+            pass
+
+        try:
+            super().interrupt()
+        except BaseException as e:
+            logging.exception(e)
+            traceback.print_exc()
+        finally:
+            log_lock.release()
+            self.interrupt_lock.release()
 
     def _run_test_case(self, pts, test_case, exceptions, finish_count):
         """Runs the test case specified by a TestCase instance."""
