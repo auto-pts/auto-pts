@@ -150,25 +150,30 @@ class BTMON:
         plain_log_filename += '_text' + ''.join(extension)
 
         if sys.platform == 'win32':
+            # Remember to install btmon and socat in your Ubuntu WSL2 instance,
+            # as they are not available after fresh install.
             self._wsl_call('killall btmon')
             self._wsl_call('killall socat')
 
             cmd = f'socat -dd pty,raw,echo=0 TCP-LISTEN:{BTMON_PORT},reuseaddr'
             self.socat_process = self._wsl_popen(cmd, log_filecwd)
             if not self.socat_process or self.socat_process.poll():
-                log('socat failed to start')
+                log('Socat failed to start')
                 self.stop()
                 return
 
             pty = None
+            err = ""
             for line in self.socat_process.stderr:
                 match = re.findall(r'/dev/pts/\d+', line.decode())
                 if match:
                     pty = match[0]
                     break
+                else:
+                    err += line.decode()
 
             if not pty:
-                log('PTY not crated')
+                log(f'Socat failed to start, err: {err}')
                 self.stop()
                 return
 
