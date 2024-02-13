@@ -94,12 +94,6 @@ class PTSLogger(win32com.server.connect.ConnectableServer):
     _reg_progid_ = "autopts.PTSLogger"
     _public_methods_ = ['Log'] + win32com.server.connect.ConnectableServer._public_methods_
 
-    def __getattribute__(self, name):
-        if super().__getattribute__('_end') and name in ['Log']:
-            raise AlreadyClosedException
-
-        return super().__getattribute__(name)
-
     def __init__(self):
         """"Constructor"""
         super().__init__()
@@ -109,6 +103,7 @@ class PTSLogger(win32com.server.connect.ConnectableServer):
         self._test_case_name = None
         self._end = False
         self._tc_status = ResultWithFlag()
+        self.in_call = False
 
     def close(self):
         self._end = True
@@ -145,6 +140,11 @@ class PTSLogger(win32com.server.connect.ConnectableServer):
         };
         """
 
+        if self._end:
+            raise AlreadyClosedException
+
+        self.in_call = True
+
         logger = logging.getChild(self.__class__.__name__)
 
         logger.info("%d %s %s %s", log_type, logtype_string, log_time, log_message)
@@ -178,6 +178,8 @@ class PTSLogger(win32com.server.connect.ConnectableServer):
             if not self._tc_status.is_set():
                 self._tc_status.set(None)
             logging.exception(e)
+        finally:
+            self.in_call = False
 
     def get_test_case_status(self, timeout):
         return self._tc_status.get(timeout=timeout, predicate=lambda: not self._end)
@@ -190,12 +192,6 @@ class PTSSender(win32com.server.connect.ConnectableServer):
     _reg_progid_ = "autopts.PTSSender"
     _public_methods_ = ['OnImplicitSend'] + win32com.server.connect.ConnectableServer._public_methods_
 
-    def __getattribute__(self, name):
-        if super().__getattribute__('_end') and name in ['OnImplicitSend']:
-            raise AlreadyClosedException
-
-        return super().__getattribute__(name)
-
     def __init__(self):
         """"Constructor"""
         super().__init__()
@@ -203,6 +199,7 @@ class PTSSender(win32com.server.connect.ConnectableServer):
         self._callback = None
         self._end = False
         self._response = ResultWithFlag()
+        self.in_call = False
 
     def close(self):
         self._end = True
@@ -235,6 +232,11 @@ class PTSSender(win32com.server.connect.ConnectableServer):
                         [in] unsigned long style);
         };
         """
+        if self._end:
+            raise AlreadyClosedException
+
+        self.in_call = True
+
         logger = logging.getChild(self.__class__.__name__)
 
         # Remove whitespaces from project and test case name
@@ -294,6 +296,8 @@ class PTSSender(win32com.server.connect.ConnectableServer):
 
         logger.info("END OnImplicitSend")
         logger.info("*" * 20)
+
+        self.in_call = False
 
         return win32com.client.VARIANT(pythoncom.VT_ARRAY | pythoncom.VT_BSTR,
                                        [rsp, rsp_len, is_present])
@@ -566,20 +570,21 @@ class PyPTS:
         self._ready = False
 
         if self._pts_logger:
-            try:
-                log(f"Closing PTSLogger")
-                self._pts_logger.close()
-                self._pts_logger = None
-            except Exception as error:
-                logging.exception(repr(error))
+            log(f"Closing PTSLogger")
+            log(f"Closing PTSSender")
+            # No new calls to the PTS callbacks after closing
+            self._pts_logger.close()
+            self._pts_sender.close()
 
-        if self._pts_sender:
-            try:
-                log(f"Closing PTSSender")
-                self._pts_sender.close()
-                self._pts_sender = None
-            except Exception as error:
-                logging.exception(repr(error))
+            # Wait until the PTS callbacks are out of fn call to decrease
+            # a chance of breaking the log file handler lock
+            for i in range(10):
+                if not self._pts_logger.in_call and not self._pts_sender.in_call:
+                    break
+                time.sleep(1)
+
+            self._pts_logger = None
+            self._pts_sender = None
 
         if self._pts:
             pid = self._get_process_pid()
