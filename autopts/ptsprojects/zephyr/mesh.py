@@ -74,6 +74,7 @@ def set_pixits(ptses):
     pts.set_pixit("MESH", "TSPX_vendor_model_id", "05f11234")
     pts.set_pixit("MESH", "TSPX_maximum_network_message_cache_entries", "2")
     pts.set_pixit("MESH", "TSPX_health_valid_test_ids", "00")
+    pts.set_pixit("MESH", "TSPX_iut_comp_data_page", "130")
     pts.set_pixit("MESH", "TSPX_netkeyindex_value", "0")
     pts.set_pixit("MESH", "TSPX_iut_supports_relay", "FALSE")
     pts.set_pixit("MESH", "TSPX_application_key",
