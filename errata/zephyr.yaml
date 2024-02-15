@@ -103,3 +103,8 @@ OTS/SR/OLE/BI-01-C: https://github.com/zephyrproject-rtos/zephyr/issues/66023
 OTS/SR/OLE/BI-03-C: https://github.com/zephyrproject-rtos/zephyr/issues/66023
 OTS/SR/OLE/BI-04-C: https://github.com/zephyrproject-rtos/zephyr/issues/66023
 OTS/SR/OLE/BI-05-C: https://github.com/zephyrproject-rtos/zephyr/issues/66023
+MESH/NODE/TNPT/BV-11-C: ES-24062
+MESH/CL/DPROX/BV-02-C: ES-24237
+MESH/CL/PROX/BV-11-C: ES-24124
+MESH/CL/PROX/BV-12-C: ES-24124
+MESH/CL/PROX/BV-13-C: ES-24124
