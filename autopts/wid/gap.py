@@ -497,7 +497,7 @@ def hdl_wid_104(_: WIDParams):
 def hdl_wid_106(params: WIDParams):
     # description: Waiting for HCI_ENCRYPTION_CHANGE_EVENT...
     # Depending on test, PTS seems to start pairing on its own here or not
-    if params.test_case_name in ['GAP/SEC/AUT/BV-19-C', 'GAP/SEC/AUT/BV-25-C']:
+    if params.test_case_name in ['GAP/SEC/AUT/BV-19-C']:
         btp.gap_pair()
 
     btp.gap_wait_for_sec_lvl_change(1)
