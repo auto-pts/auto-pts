@@ -138,7 +138,7 @@ def set_pixits(ptses):
     pts.set_pixit("GAP", "TSPX_conn_update_supervision_timeout", "01F4")
     pts.set_pixit("GAP", "TSPX_pairing_before_service_request", "FALSE")
     pts.set_pixit("GAP", "TSPX_iut_mandates_mitm", "FALSE")
-    pts.set_pixit("GAP", "TSPX_encryption_before_service_request", "FALSE")
+    pts.set_pixit("GAP", "TSPX_encryption_before_service_request", "TRUE")
     pts.set_pixit("GAP", "TSPX_tester_appearance", "0000")
     pts.set_pixit("GAP", "TSPX_iut_device_IRK_for_resolvable_privacy_address_generation_procedure",
                   "00000000000000000000000000000000")
