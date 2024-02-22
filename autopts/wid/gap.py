@@ -525,10 +525,6 @@ def hdl_wid_112(params: WIDParams):
         btp.gattc_read(bd_addr_type, bd_addr, handle)
         btp.gattc_read_rsp(store_rsp=True)
 
-    if params.test_case_name in ['GAP/SEC/AUT/BV-19-C']:
-        if (btp.verify_att_error("authentication error")):
-            btp.gap_pair()
-
     return True
 
 
@@ -1078,6 +1074,12 @@ def hdl_wid_226(_: WIDParams):
 
 
 def hdl_wid_227(params: WIDParams):
+    # There seems to be issue in PTS regarding using WID112 and WID227 in that test
+    # Should be removed if PTS fix this.
+    if params.test_case_name in ['GAP/SEC/AUT/BV-19-C']:
+        btp.gap_pair()
+        return True
+
     stack = get_stack()
 
     bd_addr = btp.pts_addr_get()
