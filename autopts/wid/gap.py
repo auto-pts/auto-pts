@@ -528,6 +528,10 @@ def hdl_wid_112(params: WIDParams):
     if params.test_case_name in ['GAP/SEC/AUT/BV-19-C']:
         if (btp.verify_att_error("authentication error")):
             btp.gap_pair()
+        # Allow some time to receive a response before returning because next
+        # order is a disconnect. This will lead create a `BTP ERROR` if receive
+        # a response while being disconnected.
+        sleep(1)
 
     return True
 
