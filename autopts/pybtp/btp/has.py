@@ -14,34 +14,33 @@
 #
 
 """Wrapper around btp messages. The functions are added as needed."""
-import binascii
 import logging
 import struct
 
-from autopts.pybtp import defs
-from autopts.pybtp.btp.btp import CONTROLLER_INDEX, get_iut_method as get_iut,\
-    btp_hdr_check, pts_addr_get, pts_addr_type_get
-from autopts.pybtp.types import addr2btp_ba, BTPError
+from .btpdefs import defs
+from .btp import CONTROLLER_INDEX, get_iut_method as get_iut, \
+    btp_hdr_check, address_to_ba
+
 
 HAS = {
-    'read_supported_cmds': ( defs.BTP_SERVICE_ID_HAS,
-                             defs.HAS_READ_SUPPORTED_COMMANDS,
-                             CONTROLLER_INDEX),
-    'set_active_index':    ( defs.BTP_SERVICE_ID_HAS, 
-                             defs.HAS_SET_ACTIVE_INDEX,
-                             CONTROLLER_INDEX),
-    'set_preset_name':     ( defs.BTP_SERVICE_ID_HAS, 
-                             defs.HAS_SET_PRESET_NAME,
-                             CONTROLLER_INDEX),
-    'remove_preset':       ( defs.BTP_SERVICE_ID_HAS, 
-                             defs.HAS_REMOVE_PRESET,
-                             CONTROLLER_INDEX),
-    'add_preset':          ( defs.BTP_SERVICE_ID_HAS, 
-                             defs.HAS_ADD_PRESET,
-                             CONTROLLER_INDEX),
-    'set_properties':      ( defs.BTP_SERVICE_ID_HAS, 
-                             defs.HAS_SET_PROPERTIES,
-                             CONTROLLER_INDEX)
+    'read_supported_cmds': (defs.BTP_SERVICE_ID_HAS,
+                            defs.HAS_READ_SUPPORTED_COMMANDS,
+                            CONTROLLER_INDEX),
+    'set_active_index':    (defs.BTP_SERVICE_ID_HAS,
+                            defs.HAS_SET_ACTIVE_INDEX,
+                            CONTROLLER_INDEX),
+    'set_preset_name':     (defs.BTP_SERVICE_ID_HAS,
+                            defs.HAS_SET_PRESET_NAME,
+                            CONTROLLER_INDEX),
+    'remove_preset':       (defs.BTP_SERVICE_ID_HAS,
+                            defs.HAS_REMOVE_PRESET,
+                            CONTROLLER_INDEX),
+    'add_preset':          (defs.BTP_SERVICE_ID_HAS,
+                            defs.HAS_ADD_PRESET,
+                            CONTROLLER_INDEX),
+    'set_properties':      (defs.BTP_SERVICE_ID_HAS,
+                            defs.HAS_SET_PROPERTIES,
+                            CONTROLLER_INDEX)
 }
 
 
@@ -56,15 +55,6 @@ def has_command_rsp_succ(timeout=20.0):
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_HAS)
 
     return tuple_data
-
-
-def address_to_ba(bd_addr_type=None, bd_addr=None):
-    data = bytearray()
-    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
-    bd_addr_type_ba = chr(pts_addr_type_get(bd_addr_type)).encode('utf-8')
-    data.extend(bd_addr_type_ba)
-    data.extend(bd_addr_ba)
-    return data
 
 
 def has_set_active_index(index, bd_addr_type=None, bd_addr=None):

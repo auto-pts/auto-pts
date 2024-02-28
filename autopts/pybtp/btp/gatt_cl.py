@@ -18,13 +18,12 @@ import binascii
 import logging
 import struct
 
-from autopts.pybtp import defs
-from autopts.pybtp.types import addr2btp_ba, Perm
-from autopts.pybtp.btp.btp import btp_hdr_check, CONTROLLER_INDEX, \
+from .btpdefs import defs
+from .btpdefs.types import addr2btp_ba, Perm
+from .btp import btp_hdr_check, get_stack, CONTROLLER_INDEX, \
     get_iut_method as get_iut, btp2uuid, clear_verify_values, \
     add_to_verify_values, get_verify_values, extend_verify_values
-from autopts.pybtp.btp.gap import gap_wait_for_connection
-from autopts.ptsprojects.stack import get_stack, GattCharacteristic
+from .gap import gap_wait_for_connection
 
 GATTC = {
     "read_supp_cmds": (defs.BTP_SERVICE_ID_GATTC,

@@ -19,13 +19,13 @@ import binascii
 import logging
 import struct
 
-from autopts.ptsprojects.stack import GattCharacteristic, GattCharacteristicDescriptor, GattService
-from autopts.pybtp import defs
-from autopts.pybtp.btp.btp import btp_hdr_check, CONTROLLER_INDEX, get_iut_method as get_iut, btp2uuid, \
-    clear_verify_values, add_to_verify_values, get_verify_values, pts_addr_get, pts_addr_type_get
-from autopts.pybtp.btp.gap import gap_wait_for_connection
-from autopts.pybtp.types import BTPError, addr2btp_ba
-from autopts.pybtp.types import Perm, att_rsp_str
+from .btpdefs import defs
+from .btp import btp_hdr_check, CONTROLLER_INDEX, get_iut_method as get_iut, btp2uuid, \
+    clear_verify_values, add_to_verify_values, get_verify_values, address_to_ba
+from .btpdefs.gatt import GattService, GattCharacteristic, GattCharacteristicDescriptor
+from .gap import gap_wait_for_connection
+from .btpdefs.types import BTPError, addr2btp_ba
+from .btpdefs.types import Perm, att_rsp_str
 
 #  Global temporary objects
 GATT_SVCS = None
@@ -1763,17 +1763,13 @@ def gattc_write_reliable_rsp(store_rsp=False):
         clear_verify_values()
         add_to_verify_values(att_rsp_str[rsp])
 
+
 def eatt_conn(bd_addr, bd_addr_type, num=1):
     logging.debug("%s %r %r", eatt_conn.__name__, bd_addr, bd_addr_type)
     iutctl = get_iut()
     gap_wait_for_connection()
 
-    bd_addr = pts_addr_get(bd_addr)
-    bd_addr_type = pts_addr_type_get(bd_addr_type)
-
-    bd_addr_ba = addr2btp_ba(bd_addr)
-    data_ba = bytearray(chr(bd_addr_type).encode('utf-8'))
-    data_ba.extend(bd_addr_ba)
+    data_ba = address_to_ba(bd_addr_type, bd_addr)
     data_ba.extend(struct.pack('B', num))
 
     iutctl.btp_socket.send(*GATTC['eatt_connect'], data=data_ba)

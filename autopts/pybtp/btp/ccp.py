@@ -21,30 +21,30 @@ from enum import IntEnum, IntFlag
 from threading import Timer, Event
 from time import sleep
 
-from autopts.pybtp import defs
-from autopts.pybtp.btp.btp import CONTROLLER_INDEX, get_iut_method as get_iut, btp_hdr_check, pts_addr_get, pts_addr_type_get
-from autopts.ptsprojects.stack import get_stack
-from autopts.pybtp.types import addr2btp_ba, BTPError
+from .btpdefs import defs
+from .btp import CONTROLLER_INDEX, get_stack, get_iut_method as get_iut, btp_hdr_check, \
+    address_to_ba
+from .btpdefs.types import BTPError
 
 CCP = {
-    'read_supported_cmds': ( defs.BTP_SERVICE_ID_CCP,
-                             defs.CCP_READ_SUPPORTED_COMMANDS,
-                             CONTROLLER_INDEX),
-    'discover_tbs':        ( defs.BTP_SERVICE_ID_CCP,
-                             defs.CCP_DISCOVER_TBS,
-                             CONTROLLER_INDEX),
-    'accept_call':         ( defs.BTP_SERVICE_ID_CCP,
-                             defs.CCP_ACCEPT_CALL,
-                             CONTROLLER_INDEX),
-    'terminate_call':      ( defs.BTP_SERVICE_ID_CCP,
-                             defs.CCP_TERMINATE_CALL,
-                             CONTROLLER_INDEX),
-    'originate_call':      ( defs.BTP_SERVICE_ID_CCP,
-                             defs.CCP_ORIGINATE_CALL,
-                             CONTROLLER_INDEX),
-    'read_call_state':     ( defs.BTP_SERVICE_ID_CCP,
-                             defs.CCP_READ_CALL_STATE,
-                             CONTROLLER_INDEX),
+    'read_supported_cmds': (defs.BTP_SERVICE_ID_CCP,
+                            defs.CCP_READ_SUPPORTED_COMMANDS,
+                            CONTROLLER_INDEX),
+    'discover_tbs':        (defs.BTP_SERVICE_ID_CCP,
+                            defs.CCP_DISCOVER_TBS,
+                            CONTROLLER_INDEX),
+    'accept_call':         (defs.BTP_SERVICE_ID_CCP,
+                            defs.CCP_ACCEPT_CALL,
+                            CONTROLLER_INDEX),
+    'terminate_call':      (defs.BTP_SERVICE_ID_CCP,
+                            defs.CCP_TERMINATE_CALL,
+                            CONTROLLER_INDEX),
+    'originate_call':      (defs.BTP_SERVICE_ID_CCP,
+                            defs.CCP_ORIGINATE_CALL,
+                            CONTROLLER_INDEX),
+    'read_call_state':     (defs.BTP_SERVICE_ID_CCP,
+                            defs.CCP_READ_CALL_STATE,
+                            CONTROLLER_INDEX),
     'read_bearer_name':    (defs.BTP_SERVICE_ID_CCP,
                             defs.CCP_READ_BEARER_NAME,
                             CONTROLLER_INDEX),
@@ -131,15 +131,6 @@ def ccp_command_rsp_succ(timeout=20.0):
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_CCP)
 
     return tuple_data
-
-
-def address_to_ba(bd_addr_type=None, bd_addr=None):
-    data = bytearray()
-    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
-    bd_addr_type_ba = chr(pts_addr_type_get(bd_addr_type)).encode('utf-8')
-    data.extend(bd_addr_type_ba)
-    data.extend(bd_addr_ba)
-    return data
 
 
 def ccp_discover_tbs(bd_addr_type=None, bd_addr=None):

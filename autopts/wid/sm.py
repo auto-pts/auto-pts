@@ -52,11 +52,11 @@ def hdl_wid_104(params: WIDParams):
         bd_addr_type = btp.pts_addr_type_get()
         passkey = stack.gap.get_passkey()
         btp.gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey)
-    return btp.var_store_get_passkey(params.description)
+    return btp.var_store_get_passkey()
 
 
 def hdl_wid_106(params: WIDParams):
-    return btp.var_store_get_wrong_passkey(params.description)
+    return btp.var_store_get_wrong_passkey()
 
 
 def hdl_wid_107(params: WIDParams):
@@ -109,7 +109,7 @@ def hdl_wid_116(_: WIDParams):
 
 
 def hdl_wid_141(params: WIDParams):
-    return btp.var_store_get_passkey(params.description)
+    return btp.var_store_get_passkey()
 
 
 def hdl_wid_142(params: WIDParams):
@@ -216,7 +216,7 @@ def hdl_wid_174(_: WIDParams):
 
 
 def hdl_wid_1009(params: WIDParams):
-    return btp.var_store_get_passkey(params.description)
+    return btp.var_store_get_passkey()
 
 
 def hdl_wid_20001(_: WIDParams):
@@ -232,7 +232,7 @@ def hdl_wid_20100(_: WIDParams):
 
 
 def hdl_wid_20011(params: WIDParams):
-    return btp.var_store_get_passkey(params.description)
+    return btp.var_store_get_passkey()
 
 
 def hdl_wid_20115(_: WIDParams):

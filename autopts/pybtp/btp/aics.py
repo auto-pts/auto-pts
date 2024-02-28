@@ -2,10 +2,9 @@ import binascii
 import logging
 import struct
 
-from autopts.pybtp import defs
-from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, get_iut_method as get_iut, pts_addr_get, \
-    pts_addr_type_get
-from autopts.pybtp.types import addr2btp_ba, BTPError
+from .btpdefs import defs
+from .btp import CONTROLLER_INDEX, btp_hdr_check, get_iut_method as get_iut, address_to_ba
+from .btpdefs.types import BTPError
 
 AICS = {
     "read_supported_cmds": (defs.BTP_SERVICE_ID_AICS,
@@ -184,15 +183,6 @@ def aics_gain_setting_prop_get(bd_addr_type=None, bd_addr=None):
     iutctl.btp_socket.send(*AICS['gain_setting_prop'], data=data)
 
     aics_command_rsp_succ()
-
-
-def address_to_ba(bd_addr_type=None, bd_addr=None):
-    data = bytearray()
-    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
-    bd_addr_type_ba = chr(pts_addr_type_get(bd_addr_type)).encode('utf-8')
-    data.extend(bd_addr_type_ba)
-    data.extend(bd_addr_ba)
-    return data
 
 
 def aics_set_gain(gain, bd_addr_type=None, bd_addr=None):

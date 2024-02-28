@@ -16,49 +16,28 @@
 import logging
 from threading import Event
 
-
-class GattAttribute:
-    def __init__(self, handle, perm, uuid, att_rsp):
-        self.handle = handle
-        self.perm = perm
-        self.uuid = uuid
-        self.att_read_rsp = att_rsp
+from autopts.ptsprojects.stack import get_stack
+from autopts.pybtp.btp.btpdefs.gatt import GattCharacteristicDescriptor
 
 
-class GattService(GattAttribute):
-    def __init__(self, handle, perm, uuid, att_rsp, end_handle=None):
-        super().__init__(handle, perm, uuid, att_rsp)
-        self.end_handle = end_handle
+def clear_verify_values():
+    stack = get_stack()
+    stack.gatt_cl.verify_values = []
 
 
-class GattPrimary(GattService):
-    pass
+def add_to_verify_values(item):
+    stack = get_stack()
+    stack.gatt_cl.verify_values.append(item)
 
 
-class GattSecondary(GattService):
-    pass
+def get_verify_values():
+    stack = get_stack()
+    return stack.gatt_cl.verify_values
 
 
-class GattServiceIncluded(GattAttribute):
-    def __init__(self, handle, perm, uuid, att_rsp, incl_svc_hdl, end_grp_hdl):
-        GattAttribute.__init__(self, handle, perm, uuid, att_rsp)
-        self.incl_svc_hdl = incl_svc_hdl
-        self.end_grp_hdl = end_grp_hdl
-
-
-class GattCharacteristic(GattAttribute):
-    def __init__(self, handle, perm, uuid, att_rsp, prop, value_handle):
-        GattAttribute.__init__(self, handle, perm, uuid, att_rsp)
-        self.prop = prop
-        self.value_handle = value_handle
-
-
-class GattCharacteristicDescriptor(GattAttribute):
-    def __init__(self, handle, perm, uuid, att_rsp, value):
-        GattAttribute.__init__(self, handle, perm, uuid, att_rsp)
-        self.value = value
-        self.has_changed_cnt = 0
-        self.has_changed = Event()
+def extend_verify_values(item):
+    stack = get_stack()
+    stack.gatt_cl.verify_values.extend(item)
 
 
 class GattDB:
@@ -82,6 +61,18 @@ class Gatt:
         self.notification_events = []
         self.notification_ev_received = Event()
         self.signed_write_handle = 0
+
+    def clear_verify_values(self):
+        self.verify_values = []
+
+    def add_to_verify_values(self, item):
+        self.verify_values.append(item)
+
+    def get_verify_values(self):
+        return self.verify_values
+
+    def extend_verify_values(self, item):
+        self.verify_values.extend(item)
 
     def attr_value_set(self, handle, value):
         attr = self.server_db.attr_lookup_handle(handle)

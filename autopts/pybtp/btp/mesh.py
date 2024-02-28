@@ -19,10 +19,9 @@ import binascii
 import logging
 import struct
 
-from autopts.ptsprojects.stack import get_stack
-from autopts.pybtp import defs
-from autopts.pybtp.types import BTPError
-from autopts.pybtp.btp.btp import CONTROLLER_INDEX, get_iut_method as get_iut
+from .btpdefs import defs
+from .btpdefs.types import BTPError
+from .btp import get_stack, CONTROLLER_INDEX, get_iut_method as get_iut
 
 MESH = {
     "read_supp_cmds": (defs.BTP_SERVICE_ID_MESH,
@@ -299,8 +298,8 @@ MESH = {
                           defs.MESH_RPR_SCAN_CAPS_GET,
                           CONTROLLER_INDEX),
     "rpr_scan_get": (defs.BTP_SERVICE_ID_MESH,
-                          defs.MESH_RPR_SCAN_GET,
-                          CONTROLLER_INDEX),
+                     defs.MESH_RPR_SCAN_GET,
+                     CONTROLLER_INDEX),
     "rpr_scan_stop": (defs.BTP_SERVICE_ID_MESH,
                       defs.MESH_RPR_SCAN_STOP,
                       CONTROLLER_INDEX),

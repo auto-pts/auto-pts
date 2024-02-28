@@ -17,21 +17,21 @@
 import logging
 import struct
 
-from autopts.pybtp import defs
-from autopts.pybtp.btp.btp import CONTROLLER_INDEX, get_iut_method as get_iut,\
-    btp_hdr_check, pts_addr_get, pts_addr_type_get
-from autopts.pybtp.types import addr2btp_ba, BTPError
+from .btpdefs import defs
+from .btp import CONTROLLER_INDEX, get_iut_method as get_iut, \
+    btp_hdr_check, address_to_ba
+
 
 CSIS = {
-    'read_supported_cmds': ( defs.BTP_SERVICE_ID_CSIS,
-                             defs.CSIS_READ_SUPPORTED_COMMANDS,
-                             CONTROLLER_INDEX),
-    'set_member_lock':     ( defs.BTP_SERVICE_ID_CSIS,
-                             defs.CSIS_SET_MEMBER_LOCK,
-                             CONTROLLER_INDEX),
-    'get_member_rsi':      ( defs.BTP_SERVICE_ID_CSIS,
-                             defs.CSIS_GET_MEMBER_RSI,
-                             CONTROLLER_INDEX)
+    'read_supported_cmds': (defs.BTP_SERVICE_ID_CSIS,
+                            defs.CSIS_READ_SUPPORTED_COMMANDS,
+                            CONTROLLER_INDEX),
+    'set_member_lock':     (defs.BTP_SERVICE_ID_CSIS,
+                            defs.CSIS_SET_MEMBER_LOCK,
+                            CONTROLLER_INDEX),
+    'get_member_rsi':      (defs.BTP_SERVICE_ID_CSIS,
+                            defs.CSIS_GET_MEMBER_RSI,
+                            CONTROLLER_INDEX)
 }
 
 
@@ -46,15 +46,6 @@ def csis_command_rsp_succ(timeout=20.0):
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_CSIS)
 
     return tuple_data
-
-
-def address_to_ba(bd_addr_type=None, bd_addr=None):
-    data = bytearray()
-    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
-    bd_addr_type_ba = chr(pts_addr_type_get(bd_addr_type)).encode('utf-8')
-    data.extend(bd_addr_type_ba)
-    data.extend(bd_addr_ba)
-    return data
 
 
 def csis_set_member_lock(lock, force, bd_addr_type=None, bd_addr=None):
