@@ -505,6 +505,10 @@ def hdl_wid_106(params: WIDParams):
 
 
 def hdl_wid_108(params: WIDParams):
+    if params.test_case_name in ['GAP/BOND/BON/BV-02-C']:
+        if params.description.startswith('Please configure the IUT into LE Security and start pairing process.'):
+            return True
+
     btp.gap_pair()
     return True
 
