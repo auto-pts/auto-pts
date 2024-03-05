@@ -39,7 +39,7 @@ AUTOPTS_REPO = dirname(dirname(dirname(abspath(__file__))))
 sys.path.insert(0, AUTOPTS_REPO)
 
 from autopts.bot.common_features.mail import send_mail
-from autopts.bot.common import get_absolute_module_path
+from autopts.bot.common import get_absolute_module_path, load_module_from_path
 
 mimetypes.add_type('text/plain', '.log')
 
@@ -104,6 +104,15 @@ def get_sha(cwd):
     return call_and_result(cmd, cwd)
 
 
+def load_cfg(cfg):
+    cfg_path = get_absolute_module_path(cfg)
+    if not os.path.isfile(cfg_path):
+        raise Exception('{} does not exists!'.format(cfg_path))
+
+    mod = load_module_from_path(cfg_path)
+    return mod.BotProjects[0], cfg_path
+
+
 def bisect(cfg, test_case, good_commit, bad_commit=''):
     """Performs bisect test for broken test.
     :param cfg name of config file that exists in autopts/bot/
@@ -115,13 +124,8 @@ def bisect(cfg, test_case, good_commit, bad_commit=''):
     print('Bisect started testing of test_case={} cfg={}'.format(test_case, cfg))
     included = '-c {} '.format(test_case)
 
-    conf_path = get_absolute_module_path(cfg)
-    if not os.path.isfile(conf_path):
-        print('{} does not exists!'.format(conf_path))
-        return None
-
-    mod = importlib.import_module('autopts.bot.' + cfg)
-    project_repo = mod.BotProjects[0]['auto_pts']['project_path']
+    cfg_dict, cfg_path = load_cfg(cfg)
+    project_repo = cfg_dict['auto_pts']['project_path']
 
     last_bad = get_sha(project_repo)
 
@@ -173,7 +177,7 @@ def bisect(cfg, test_case, good_commit, bad_commit=''):
 class Bisect:
     def __init__(self, cfg_name):
         self.cfg_name = cfg_name
-        self.cfg_dict, self.cfg_path = self.load_cfg(cfg_name)
+        self.cfg_dict, self.cfg_path = load_cfg(cfg_name)
         self.good_commit = self.cfg_dict['bisect']['good_commit']
         self.mail = self.cfg_dict['bisect']['mail']
         self.time_limit = float(self.cfg_dict['bisect']['time_limit'])
@@ -191,14 +195,6 @@ class Bisect:
             f.seek(0)
             f.write(data)
             f.truncate()
-
-    def load_cfg(self, cfg):
-        cfg_path = get_absolute_module_path(cfg)
-        if not os.path.isfile(cfg_path):
-            raise Exception('{} does not exists!'.format(cfg_path))
-
-        mod = importlib.import_module('autopts.bot.' + cfg)
-        return mod.BotProjects[0], cfg_path
 
     def send_mail(self, test_case, result):
         """Sends email with biesect result for one test case
