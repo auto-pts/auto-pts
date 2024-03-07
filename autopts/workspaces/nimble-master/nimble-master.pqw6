@@ -3540,7 +3540,7 @@
             <Name>TSPX_bearer_for_le</Name>
             <Description>When both ATT and EATT bearers are supported, this specifies the bearer the controller creates for the LE transport. Values: ATT or EATT. (Default: "ATT")</Description>
             <Type>IA5STRING</Type>
-            <Value>ATT</Value>
+            <Value>EATT</Value>
             <ValueList>
               <ValueListItem>ATT</ValueListItem>
               <ValueListItem>EATT</ValueListItem>
