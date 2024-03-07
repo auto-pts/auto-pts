@@ -17,6 +17,9 @@
 
 iut_config = {
     "default.conf": {
+        "overlay": {
+            'BLE_SVC_GAP_DEVICE_NAME_MAX_LENGTH': '6',
+        },
         "test_cases": [
             'GAP', 'GATT', 'L2CAP', 'SM', 'MESH',
         ],
