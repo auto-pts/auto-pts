@@ -339,7 +339,9 @@ def hdl_wid_101(_: WIDParams):
     return True
 
 
-def hdl_wid_102(_: WIDParams):
+def hdl_wid_102(params: WIDParams):
+    if params.test_case_name == 'L2CAP/ECFC/BI-02-C':
+        return True
     btp.l2cap_credits(0)
     return True
 
