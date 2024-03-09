@@ -179,15 +179,19 @@ class ZephyrBotClient(BotClient):
         if type(post_overlay) == str:
             post_overlay = [post_overlay]
 
-        # The order is used in the -DOVERLAY_CONFIG="<overlay1>;<...>" option
-        configs = pre_overlay + [config] + post_overlay
-
-        for name in configs:
+        configs = []
+        for name in pre_overlay + [config] + post_overlay:
             if name in self.iut_config and 'overlay' in self.iut_config[name] \
                     and len(self.iut_config[name]['overlay']):
                 apply_overlay(args.project_path, name,
                               self.iut_config[name]['overlay'])
+            elif not os.path.exists(os.path.join(args.project_path, "tests", "bluetooth", "tester", name)):
+                log(f'Overlay {name} is not a file.')
+                continue
 
+            configs.append(name)
+
+        # The order is used in the -DOVERLAY_CONFIG="<overlay1>;<...>" option.
         overlays = ';'.join(configs)
 
         log("TTY path: %s" % args.tty_file)
