@@ -1839,23 +1839,6 @@ def hdl_wid_363(params: WIDParams):
     """Wait for an extended advertising packet containing Audio Control
        Service UUID with announcement fields.
     """
-    stack = get_stack()
-
-    if params.test_case_name in ['BAP/USR/ADV/BV-01-C']:
-        announcement_type = '00'  # General Announcement
-    else:  # BAP/USR/ADV/BV-04-C
-        announcement_type = '01'  # Targeted Announcement
-
-    ad = {
-        AdType.name_full: stack.gap.name[::1].hex(),
-        AdType.flags: format(AdFlags.br_edr_not_supp |
-                             AdFlags.le_gen_discov_mode, '02x'),
-        AdType.uuid16_all: bytes.fromhex(UUID.ASCS)[::-1].hex(),
-        AdType.uuid16_svc_data: f'4e18{announcement_type}ff0fff0f00',
-    }
-
-    btp.gap_set_extended_advertising_on()
-    btp.gap_adv_ind_on(ad=ad)
 
     return True
 
@@ -2081,7 +2064,7 @@ def hdl_wid_387(_: WIDParams):
     return True
 
 
-def hdl_wid_20001(_: WIDParams):
+def hdl_wid_20001(params: WIDParams):
     """Please prepare IUT into a connectable mode. Description: Verify
        that the Implementation Under Test (IUT) can accept GATT connect
         request from PTS.
@@ -2092,6 +2075,11 @@ def hdl_wid_20001(_: WIDParams):
             gap_settings_btp2txt[defs.GAP_SETTINGS_ADVERTISING]):
         return True
 
+    if params.test_case_name in ['BAP/USR/ADV/BV-01-C']:
+        announcement_type = '00'  # General Announcement
+    else:  # BAP/USR/ADV/BV-04-C
+        announcement_type = '01'  # Targeted Announcement
+
     # The Unicast Server shall transmit connectable extended advertising PDUs
     # that contain the Service Data AD data type, including additional
     # service data defined in BAP_v1.0.1, 3.5.3, Table 3.7.
@@ -2100,7 +2088,7 @@ def hdl_wid_20001(_: WIDParams):
         AdType.flags: format(AdFlags.br_edr_not_supp |
                              AdFlags.le_gen_discov_mode, '02x'),
         AdType.uuid16_all: bytes.fromhex(UUID.ASCS)[::-1].hex(),
-        AdType.uuid16_svc_data: '4e1801ff0fff0f00',
+        AdType.uuid16_svc_data: f'4e18{announcement_type}ff0fff0f00',
     }
 
     btp.gap_set_extended_advertising_on()
