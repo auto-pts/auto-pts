@@ -57,7 +57,12 @@ Commands and responses:
 
 		Controller Index:	<controller id>
 		Command parameters:	Chan_ID (1 octet)
+		                        Transport (1 octet)
 		Response parameters:	<none>
+
+		Valid Transport parameter values:
+					0x00 = BR/EDR
+					0x01 = LE
 
 		This command is used to close an L2CAP channel.
 		Chan_ID is the internal application number that identifies
@@ -70,9 +75,14 @@ Commands and responses:
 
 		Controller Index:	<controller id>
 		Command parameters:	Chan_ID (1 octet)
+					Transport (1 octet)
 					Data_Length (2 octets)
 					Data (Data_Length octets)
 		Response parameters:	<none>
+
+		Valid Transport parameter values:
+					0x00 = BR/EDR
+					0x01 = LE
 
 		This command is used to send data over L2CAP channel.
 		Chan_ID is the internal application number that identifies
@@ -135,14 +145,20 @@ Commands and responses:
 	Opcode 0x07 - Reconfigure Request
 
 		Controller Index:	<controller id>
-		Command parameters:	Address_Type (1 octet)
+		Command parameters:	Transport (1 octet)
+					Address_Type (1 octet)
 					Address (6 octets)
 					MTU (2 octets)
+					MPS (2 octets)
 					Num (1 octet)
 					Channels (1 octet x number of channels)
 		Return Parameters:	<none>
 
 		This command is used to reconfigure Enhanced L2CAP Channels.
+
+		Valid Transport parameter values:
+					0x00 = BR/EDR
+					0x01 = LE
 
 		In case of an error, the error response will be returned.
 
@@ -150,10 +166,42 @@ Commands and responses:
 
 		Controller Index:	<controller id>
 		Command parameters:	Chan_ID (1 octet)
+					Transport (1 octet)
 		Return Parameters:	<none>
 
 		This command is used to instruct IUT to return credits on
 		specified channel.
+
+		Valid Transport parameter values:
+					0x00 = BR/EDR
+					0x01 = LE
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0A - Echo
+
+		Controller Index:	<controller id>
+		Command parameters:	Address (6 octets)
+					Data_Length (2 octets)
+					Data (Data_Length octets)
+		Return Parameters:	<none>
+
+		This command is used to send echo request to peer device.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0B - RxFlowReq
+
+		Controller Index:	<controller id>
+		Command parameters:	Chan_ID (1 octet)
+					Flow (1 octets)
+		Return Parameters:	<none>
+
+		Valid Transport parameter values:
+					0x00 = L2CAP_FEC_RX_FLOW_ON
+					0x01 = L2CAP_FEC_RX_FLOW_OFF
+
+		This command is used to send l2cap rx flow req to peer.
 
 		In case of an error, the error response will be returned.
 

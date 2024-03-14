@@ -43,6 +43,10 @@ L2CAP = {
                               CONTROLLER_INDEX),
     "credits": (defs.BTP_SERVICE_ID_L2CAP, defs.L2CAP_CREDITS,
                 CONTROLLER_INDEX),
+    "echo": (defs.BTP_SERVICE_ID_L2CAP, defs.L2CAP_ECHO,
+                CONTROLLER_INDEX),
+    "rx_flow_req": (defs.BTP_SERVICE_ID_L2CAP, defs.L2CAP_RX_FLOW_REQ,
+                CONTROLLER_INDEX),
 }
 
 
@@ -116,21 +120,30 @@ def l2cap_conn_rsp():
     channels = struct.unpack_from('%ds' % num, tuple_data[0], 1)[0]
     return list(channels)
 
-
-def l2cap_disconn(chan_id):
-    logging.debug("%s %r", l2cap_disconn.__name__, chan_id)
+def l2cap_disconn(chan_id, transport=defs.L2CAP_TRANSPORT_LE):
+    logging.debug("%s %r %r", l2cap_disconn.__name__, chan_id, transport)
 
     iutctl = get_iut()
 
     data_ba = bytearray(chr(chan_id).encode('utf-8'))
+    data_ba.extend(struct.pack('B', transport))
 
     iutctl.btp_socket.send(*L2CAP['disconnect'], data=data_ba)
 
     l2cap_command_rsp_succ(defs.L2CAP_DISCONNECT)
 
+def l2cap_br_rx_flow_req(chan_id, flow):
+    logging.debug("%s %r %r", l2cap_br_rx_flow_req.__name__, chan_id, flow)
 
-def l2cap_send_data(chan_id, val, val_mtp=None):
-    logging.debug("%s %r %r %r", l2cap_send_data.__name__, chan_id, val,
+    iutctl = get_iut()
+
+    data_ba = bytearray(chr(chan_id).encode('utf-8'))
+    data_ba.extend(struct.pack('B', flow))
+
+    iutctl.btp_socket.send_wait_rsp(*L2CAP['rx_flow_req'], data=data_ba)
+
+def l2cap_send_data(chan_id, transport, val, val_mtp=None):
+    logging.debug("%s %r %r %r %r", l2cap_send_data.__name__, chan_id, transport, val,
                   val_mtp)
 
     iutctl = get_iut()
@@ -142,6 +155,7 @@ def l2cap_send_data(chan_id, val, val_mtp=None):
     val_len_ba = struct.pack('H', len(val_ba))
 
     data_ba = bytearray(chr(chan_id).encode('utf-8'))
+    data_ba.extend(struct.pack('B', transport))
     data_ba.extend(val_len_ba)
     data_ba.extend(val_ba)
 
@@ -150,9 +164,27 @@ def l2cap_send_data(chan_id, val, val_mtp=None):
     stack = get_stack()
     stack.l2cap.tx(chan_id, val)
 
+def l2cap_echo(bd_addr, val, val_mtp=None):
+    logging.debug("%s %r %r %r", l2cap_echo.__name__, bd_addr, val, val_mtp)
+    iutctl = get_iut()
+
+    if val_mtp:
+        val *= int(val_mtp)
+
+    val_ba = bytes.fromhex(val)
+    val_len_ba = struct.pack('H', len(val_ba))
+
+    data_ba = bytearray()
+    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
+
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(val_len_ba)
+    data_ba.extend(val_ba)
+
+    iutctl.btp_socket.send_wait_rsp(*L2CAP['echo'], data=data_ba)
 
 def l2cap_listen(psm, transport, mtu=0, response=L2CAPConnectionResponse.success):
-    logging.debug("%s %r %r %r %r", l2cap_le_listen.__name__, psm, transport, mtu, response)
+    logging.debug("%s %r %r %r %r", l2cap_listen.__name__, psm, transport, mtu, response)
 
     iutctl = get_iut()
 
@@ -190,10 +222,12 @@ def l2cap_disconn_eatt_chans(bd_addr, bd_addr_type, channel_count):
 def l2cap_le_listen(psm, mtu=0, response=0):
     l2cap_listen(psm, defs.L2CAP_TRANSPORT_LE, mtu, response)
 
+def l2cap_bredr_listen(psm, mtu=0, response=0):
+    l2cap_listen(psm, defs.L2CAP_TRANSPORT_BREDR, mtu, response)
 
-def l2cap_reconfigure(bd_addr, bd_addr_type, mtu, channels):
-    logging.debug("%s %r %r %r %r", l2cap_reconfigure.__name__,
-                  bd_addr, bd_addr_type, mtu, channels)
+def l2cap_reconfigure(transport, bd_addr, bd_addr_type, mtu, mps, channels):
+    logging.debug("%s %r %r %r %r %r %r", l2cap_reconfigure.__name__,
+                  transport, bd_addr, bd_addr_type, mtu, mps, channels)
 
     iutctl = get_iut()
 
@@ -201,9 +235,11 @@ def l2cap_reconfigure(bd_addr, bd_addr_type, mtu, channels):
     bd_addr_type = pts_addr_type_get(bd_addr_type)
 
     bd_addr_ba = addr2btp_ba(bd_addr)
-    data_ba = bytearray(chr(bd_addr_type).encode('utf-8'))
+    data_ba = bytearray(chr(transport).encode('utf-8'))
+    data_ba.extend(struct.pack('B', bd_addr_type))
     data_ba.extend(bd_addr_ba)
     data_ba.extend(struct.pack('H', mtu))
+    data_ba.extend(struct.pack('H', mps))
     data_ba.extend(struct.pack('B', len(channels)))
     for chan in channels:
         data_ba.extend(struct.pack('B', chan))
@@ -212,13 +248,13 @@ def l2cap_reconfigure(bd_addr, bd_addr_type, mtu, channels):
 
     l2cap_command_rsp_succ(defs.L2CAP_RECONFIGURE)
 
-
-def l2cap_credits(chan_id):
-    logging.debug("%s %r", l2cap_credits.__name__, chan_id)
+def l2cap_credits(chan_id, transport = defs.L2CAP_TRANSPORT_LE):
+    logging.debug("%s %r %r", l2cap_credits.__name__, chan_id, transport)
 
     iutctl = get_iut()
 
     data_ba = bytearray(chr(chan_id).encode('utf-8'))
+    data_ba.extend(struct.pack('B', transport))
 
     iutctl.btp_socket.send(*L2CAP['credits'], data=data_ba)
 
