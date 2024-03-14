@@ -347,6 +347,7 @@ def hdl_wid_400(params: WIDParams):
     stack = get_stack()
 
     if params.test_case_name.endswith('LT2'):
+        log('hdl_wid_400 started for LT2')
         addr = lt2_addr_get()
         addr_type = lt2_addr_type_get()
         if params.test_case_name in wid_400_settings:
@@ -359,6 +360,7 @@ def hdl_wid_400(params: WIDParams):
         # the increasing order to assure this.
         cis_id = stack.bap.ase_configs[-1].cis_id + 1
     else:
+        log('hdl_wid_400 started for LT1')
         addr = pts_addr_get()
         addr_type = pts_addr_type_get()
         settings_name = params.test_case_name
@@ -392,6 +394,7 @@ def hdl_wid_400(params: WIDParams):
             default_config.addr_type, default_config.addr, config.audio_dir)
 
         if not config.audio_locations:
+            log('hdl_wid_400 exit, no suitable sink audio locations')
             return False
 
         sinks.append(config)
@@ -404,6 +407,7 @@ def hdl_wid_400(params: WIDParams):
             default_config.addr_type, default_config.addr, config.audio_dir)
 
         if not config.audio_locations:
+            log('hdl_wid_400 exit, no suitable source audio locations')
             return False
 
         sources.append(config)
@@ -415,6 +419,7 @@ def hdl_wid_400(params: WIDParams):
                                          default_config.addr,
                                          config.audio_dir, 30, remove=True)
         if ev is None:
+            log('hdl_wid_400 exit, no suitable ase found')
             return False
 
         ase_found_ev_cache.append(ev)
