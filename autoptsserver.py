@@ -52,7 +52,7 @@ import wmi
 
 from autopts import ptscontrol
 from autopts.config import SERVER_PORT
-from autopts.utils import CounterWithFlag, get_global_end, exit_if_admin, ykush_replug_usb
+from autopts.utils import CounterWithFlag, get_global_end, exit_if_admin, ykush_replug_usb, usb_power
 from autopts.winutils import kill_all_processes
 
 logging = root_logging.getLogger('server')
@@ -330,6 +330,22 @@ class SvrArgumentParser(argparse.ArgumentParser):
 
         arg.superguard = 60 * arg.superguard
 
+        if arg.ykush:
+            ykush_confs = []
+            for ykush_conf in arg.ykush:
+                config = {}
+                if ':' in ykush_conf:
+                    ykush_srn, port = ykush_conf.split(':')
+                else:
+                    port = ykush_conf
+                    ykush_srn = None
+
+                config['ports'] = port
+                config['ykush_srn'] = ykush_srn
+                ykush_confs.append(config)
+
+            arg.ykush = ykush_confs
+
     def parse_args(self, args=None, namespace=None):
         arg = super().parse_args(args, namespace)
         self.check_args(arg)
@@ -558,7 +574,7 @@ if __name__ == "__main__":
 
     if _args.ykush:
         for ykush_config in _args.ykush:
-            ykush_replug_usb(ykush_config, device_id=None, delay=3)
+            usb_power(ykush_config['ports'], False, ykush_config['ykush_srn'])
 
     autoptsservers = []
     server_count = len(_args.srv_port)
