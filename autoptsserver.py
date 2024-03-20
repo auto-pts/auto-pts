@@ -52,7 +52,8 @@ import wmi
 
 from autopts import ptscontrol
 from autopts.config import SERVER_PORT
-from autopts.utils import CounterWithFlag, get_global_end, exit_if_admin, ykush_replug_usb, usb_power
+from autopts.utils import CounterWithFlag, get_global_end, exit_if_admin, ykush_replug_usb, usb_power, \
+    print_thread_stack_trace
 from autopts.winutils import kill_all_processes
 
 logging = root_logging.getLogger('server')
@@ -447,6 +448,7 @@ class Server(threading.Thread):
                 if self._args.superguard and \
                         self._args.superguard < time.time() - self.last_request_time:
                     log('Superguard timeout, reinitializing XMLRPC')
+                    print_thread_stack_trace()
                     self.server_init()
 
                 # Main work

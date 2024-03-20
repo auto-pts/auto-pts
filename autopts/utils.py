@@ -20,6 +20,7 @@ import logging
 import os
 import sys
 import threading
+import traceback
 from time import sleep
 
 import psutil
@@ -356,6 +357,15 @@ def ykush_replug_usb(ykush_config, device_id=None, delay=0, end_flag=None):
             i += 1
 
         sleep(0.1)
+
+
+def print_thread_stack_trace():
+    logging.debug("Printing stack trace for each thread:")
+    for thread_id, thread_obj in threading._active.items():
+        stack = sys._current_frames().get(thread_id)
+        if stack is not None:
+            logging.debug(f"Thread ID: {thread_id}, Thread Name: {thread_obj.name}")
+            logging.debug(traceback.extract_stack(stack))
 
 
 def exit_if_admin():
