@@ -85,10 +85,10 @@ def tbs_remote_incoming(index, receiver_uri, caller_uri, friendly_name):
     data.extend(struct.pack("b", index))
     uri_str = receiver_uri + caller_uri + friendly_name
     encoded_uri_str = uri_str.encode("utf-8")
-    data.extend(struct.pack("b", len(encoded_uri_str)))
     data.extend(struct.pack("b", len(receiver_uri)))
     data.extend(struct.pack("b", len(caller_uri)))
     data.extend(struct.pack("b", len(friendly_name)))
+    data.extend(struct.pack("b", len(encoded_uri_str)))
     fmt = str(len(encoded_uri_str)) + "s"
     data.extend(struct.pack(fmt, encoded_uri_str))
 
