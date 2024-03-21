@@ -42,17 +42,20 @@ def hdl_wid_142(desc):
 
     Discover all characteristics if needed.
     """
-    log("Mynewt sends EATT supported bit")
+    log("Mynewt sends EATT supported bit on encryption changed")
+    btp.gap_pair()
 
     # No response expected
     return True
 
 
 def hdl_wid_400(desc):
-    log("Mynewt sends EATT supported bit")
+    log("Mynewt sends EATT supported bit on encryption changed")
+    btp.gap_pair()
     return '0000'
 
 
 def hdl_wid_402(desc):
-    log("Mynewt sends EATT supported bit")
+    log("Mynewt sends EATT supported bit on encryption changed")
+    btp.gap_pair()
     return '0000'
