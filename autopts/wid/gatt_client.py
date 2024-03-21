@@ -1178,7 +1178,7 @@ def hdl_wid_90(_: WIDParams):
     notification send from PTS.
     """
     stack = get_stack()
-    return stack.gatt_cl.wait_for_notifications(expected_count=1)
+    return stack.gatt_cl.wait_for_notifications(expected_count=2)
 
 
 def hdl_wid_91(params: WIDParams):
