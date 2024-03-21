@@ -755,7 +755,8 @@ def hdl_wid_55(params: WIDParams):
     MMI.parse_description(params.description)
 
     stack = get_stack()
-    stack.gatt_cl.wait_for_read()
+
+    stack.gatt_cl.wait_for_verify_values(expected_count=2)
 
     for saved_val in btp.get_verify_values():
         logging.debug("received value: %s", saved_val[1].decode().upper())
