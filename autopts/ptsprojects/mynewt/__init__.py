@@ -18,3 +18,4 @@ import autopts.ptsprojects.mynewt.gatt
 import autopts.ptsprojects.mynewt.sm
 import autopts.ptsprojects.mynewt.l2cap
 import autopts.ptsprojects.mynewt.mesh
+import autopts.ptsprojects.mynewt.bap
