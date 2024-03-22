@@ -42,6 +42,42 @@ def hdl_wid_477(_: WIDParams):
     return stack.ias.alert_lvl == 2
 
 
+def hdl_wid_479(_: WIDParams):
+    """
+        Please read Set Size Characteristic.
+    """
+    # Set Size is read during CSIP discovery
+
+    return True
+
+
+def hdl_wid_480(_: WIDParams):
+    """
+        Please read Set Member Rank Characteristic.
+    """
+    # Set Member Rank is read during CSIP discovery
+
+    return True
+
+
+def hdl_wid_481(_: WIDParams):
+    """
+        Please read SIRK Characteristic.
+    """
+    stack = get_stack()
+    addr = pts_addr_get()
+    addr_type = pts_addr_type_get()
+
+    # SIRK is read during CSIP discovery
+    btp.csip_discover(addr_type, addr)
+    ev = stack.csip.wait_discovery_completed_ev(addr_type, addr, 30)
+
+    if ev is None:
+        return False
+
+    return True
+
+
 def hdl_wid_482(_: WIDParams):
     """
         Please configure to Streaming state.
@@ -140,10 +176,13 @@ def hdl_wid_20100(_: WIDParams):
         Please initiate a GATT connection to the PTS.
         Description: Verify that the Implementation Under Test (IUT) can initiate a GATT connect request to the PTS.
     """
+    addr = pts_addr_get()
+    addr_type = pts_addr_type_get()
     stack = get_stack()
 
-    btp.gap_conn()
-    stack.gap.gap_wait_for_sec_lvl_change(30)
+    btp.gap_conn(addr, addr_type)
+    stack.gap.wait_for_connection(timeout=10, addr=addr)
+    stack.gap.gap_wait_for_sec_lvl_change(level=2, timeout=30, addr=addr)
 
     return True
 

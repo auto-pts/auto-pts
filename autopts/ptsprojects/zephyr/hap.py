@@ -187,6 +187,8 @@ def test_cases(ptses):
         TestFunc(stack.hap_init),
         TestFunc(lambda: pts.update_pixit_param("HAP", "TSPX_bd_addr_iut", stack.gap.iut_addr_get_str())),
         TestFunc(btp.hap_hauc_init),
+        TestFunc(stack.csip_init),
+        TestFunc(btp.core_reg_svc_csip),
     ]
 
     pre_conditions_iac = pre_conditions + [

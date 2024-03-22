@@ -126,7 +126,7 @@ def hap_iac_discover(bd_addr_type=None, bd_addr=None):
     hap_command_rsp_succ()
 
 def hap_iac_set_alert(bd_addr_type=None, bd_addr=None, alert=None):
-    logging.debug(f"{hap_iac_discover.__name__}")
+    logging.debug(f"{hap_iac_set_alert.__name__}")
 
     data = address_to_ba(bd_addr_type, bd_addr)
     data += struct.pack('B', alert)
@@ -161,19 +161,22 @@ def hap_ev_iac_discovery_complete_(hap, data, data_len):
 
     hap.event_received(defs.HAP_EV_IAC_DISCOVERY_COMPLETE, (addr_type, addr, status))
 
+
 def hap_ev_hauc_discovery_complete_(hap, data, data_len):
     logging.debug("%s %r", hap_ev_hauc_discovery_complete_.__name__, data)
 
-    fmt = '<B6sBBHHH'
+    fmt = '<B6sbHHH'
     if len(data) < struct.calcsize(fmt):
         raise BTPError('Invalid data length')
 
-    (addr_type, addr, status, type, hearing_aid_features_handle,
-     hearing_aid_control_point_handle, active_preset_index_handle) = struct.unpack_from(fmt, data)
+    addr_type, addr, status, hearing_aid_features_handle, \
+        hearing_aid_control_point_handle, \
+        active_preset_index_handle = struct.unpack_from(fmt, data)
+
     addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
 
     logging.debug(f'HAUC Discovery complete: addr {addr} addr_type {addr_type} '
-                  f'status {status} type {type} '
+                  f'status {status} '
                   f'has_hearing_aid_features_handle {hearing_aid_features_handle} '
                   f'has_control_point_handle {hearing_aid_control_point_handle} '
                   f'has_active_preset_index_handle {active_preset_index_handle}')
