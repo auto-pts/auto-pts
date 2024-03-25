@@ -24,13 +24,13 @@ class IAS:
     def __init__(self):
         self.alert_lvl = None
 
-    def is_mild_alert_set(self, args):
+    def is_mild_alert_set(self, *args):
         return self.alert_lvl == self.ALERT_LEVEL_MILD
 
-    def is_high_alert_set(self, args):
+    def is_high_alert_set(self, *args):
         return self.alert_lvl == self.ALERT_LEVEL_HIGH
 
-    def is_alert_stopped(self, args):
+    def is_alert_stopped(self, *args):
         return self.alert_lvl == self.ALERT_LEVEL_NONE
 
     def wait_for_mild_alert(self, timeout=30):
