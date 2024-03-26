@@ -180,6 +180,22 @@ iut_config = {
             'L2CAP/COS/ECFC/BV-04-C',
         ]
     },
+
+    "leaudio.conf": {
+        "overlay": {
+            'BLE_ISO': '1',
+            'BLE_AUDIO': '1',
+            'BLE_ROLE_BROADCASTER': '1',
+            'BLE_ISO_MAX_BISES': '1',
+            'BLE_ISO_MAX_BIGS': '1',
+            'BLE_EXT_ADV': '1',
+            'BLE_PERIODIC_ADV': '1',
+            'BLE_ISO_BROADCAST_SOURCE': '1'
+        },
+        "test_cases": [
+            'BAP',
+        ]
+    },
 }
 
 retry_config = {
