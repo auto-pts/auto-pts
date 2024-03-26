@@ -295,7 +295,7 @@ def hdl_wid_20110(params: WIDParams):
             ev = stack.aics.wait_aics_procedure_ev(addr_type, addr, 10, remove=False)
             # opcode 0x06: set automatic gain
             return ev[3] == 6
-    elif "0x00A3" in params.description:
+    elif "0x00D3" in params.description:
         btp.micp_mute(addr_type, addr)
         ev = stack.micp.wait_mute_state_ev(addr_type, addr, 30)
         if ev is None:
