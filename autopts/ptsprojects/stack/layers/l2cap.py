@@ -26,6 +26,7 @@ class L2capChan:
         self.peer_mps = peer_mps
         self.our_mtu = our_mtu
         self.our_mps = our_mps
+        self.chan_reconfigured = None
         self.peer_bd_addr_type = bd_addr_type
         self.peer_bd_addr = bd_addr
         self.disconn_reason = None
@@ -124,6 +125,7 @@ class L2cap:
         channel.peer_mps = peer_mps
         channel.our_mtu = our_mtu
         channel.our_mps = our_mps
+        channel.chan_reconfigured = True
 
     def psm_set(self, psm):
         self.psm = psm
@@ -164,6 +166,13 @@ class L2cap:
             return False
 
         return chan.is_connected(10)
+    
+    def is_reconfigured(self, chan_id):
+        chan = self.chan_lookup_id(chan_id)
+        if chan is None:
+            return False
+
+        return chan.chan_reconfigured
 
     def wait_for_disconnection(self, chan_id, timeout):
         if not self.is_connected(chan_id):
@@ -176,6 +185,11 @@ class L2cap:
             return True
 
         return wait_for_event(timeout, self.is_connected, chan_id)
+
+    def wait_for_reconfiguration(self, chan_id, timeout=5):            
+        chan = self.chan_lookup_id(chan_id)
+        
+        return wait_for_event(timeout, self.is_reconfigured, chan_id)
 
     def rx(self, chan_id, data):
         chan = self.chan_lookup_id(chan_id)

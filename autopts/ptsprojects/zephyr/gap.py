@@ -177,6 +177,7 @@ def test_cases(ptses):
 
     pre_conditions = [
         TestFunc(btp.core_reg_svc_gap),
+        TestFunc(btp.core_reg_svc_l2cap),
         TestFunc(stack.gap_init, iut_device_name,
                  iut_manufacturer_data, iut_appearance, iut_svc_data, iut_flags,
                  iut_svcs, iut_uri, periodic_data, iut_le_supp_feat),
@@ -222,6 +223,19 @@ def test_cases(ptses):
     custom_test_cases = [
         ZTestCase("GAP", "GAP/SEC/CSIGN/BI-04-C",
                   cmds=pre_conditions + init_gatt_db2,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/IDLE/DNDIS/BV-01-C",
+                  cmds=pre_conditions + [TestFunc(lambda: btp.gap_set_gendiscov())],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-09-C",
+                  cmds=pre_conditions + [TestFunc(lambda: btp.gap_set_io_cap(IOCap.display_yesno)), TestFunc(lambda: btp.gap_set_bondable_off())],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/DM/NBON/BV-01-C",
+                  cmds=pre_conditions + [TestFunc(lambda: btp.gap_set_gendiscov()),
+                                         TestFunc(lambda : btp.gap_set_io_cap(IOCap.no_input_output))],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/DM/BON/BV-01-C",
+                  cmds=pre_conditions + [TestFunc(lambda : btp.gap_set_io_cap(IOCap.no_input_output)), TestFunc(lambda: stack.l2cap_init(psm=0x1001, initial_mtu=60))],
                   generic_wid_hdl=gap_wid_hdl),
     ]
 

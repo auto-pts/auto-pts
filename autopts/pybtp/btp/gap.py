@@ -557,7 +557,7 @@ def gap_direct_adv_on(addr, addr_type, high_duty=0, peer_rpa=0):
     __gap_current_settings_update(tuple_data)
 
 
-def gap_conn(bd_addr=None, bd_addr_type=None, own_addr_type=OwnAddrType.le_identity_address):
+def gap_conn(bd_addr=None, bd_addr_type=None, own_addr_type=OwnAddrType.le_identity_address, transport=defs.GAP_CONNECT_LE):
     logging.debug("%s %r %r", gap_conn.__name__, bd_addr, bd_addr_type)
     iutctl = get_iut()
 
@@ -565,10 +565,12 @@ def gap_conn(bd_addr=None, bd_addr_type=None, own_addr_type=OwnAddrType.le_ident
     bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
     bd_addr_type_ba = chr(pts_addr_type_get(bd_addr_type)).encode('utf-8')
     own_addr_type_ba = chr(own_addr_type).encode('utf-8')
+    transport_ba = chr(transport).encode('utf-8')
 
     data_ba.extend(bd_addr_type_ba)
     data_ba.extend(bd_addr_ba)
     data_ba.extend(own_addr_type_ba)
+    data_ba.extend(transport_ba)
 
     iutctl.btp_socket.send_wait_rsp(*GAP['conn'], data=data_ba)
 

@@ -18,9 +18,10 @@ import re
 import socket
 import time
 
+from autopts.wid import generic_wid_hdl
 from autopts.ptsprojects.stack import get_stack
-from autopts.pybtp import btp
-from autopts.pybtp.types import BTPError, WIDParams
+from autopts.pybtp import btp, defs
+from autopts.pybtp.types import BTPError, WIDParams, IOCap
 from autopts.wid import generic_wid_hdl
 
 log = logging.debug
@@ -32,26 +33,169 @@ def l2cap_wid_hdl(wid, description, test_case_name):
 
 
 # wid handlers section begin
-def hdl_wid_14(_: WIDParams):
+def hdl_wid_1(params: WIDParams):
+    """
+    description: Using the Implementation Under Test(IUT), send an I - Frame(data) to the PTS.
+    """
+    stack = get_stack()
+    channel = stack.l2cap.chan_lookup_id(0)
+    if not channel:
+        return False
+    
+    if (1 == defs.BTP_BR_EDR):
+        if params.test_case_name in ['L2CAP/OFS/BV-01-C', 'L2CAP/OFS/BV-03-C', 'L2CAP/OFS/BV-05-C', 'L2CAP/OFS/BV-07-C']:
+            #workaround to fix auto-pts timing issue
+            btp.l2cap_send_data(0, defs.L2CAP_TRANSPORT_BREDR, '00' * 24)
+        else:
+            btp.l2cap_send_data(0, defs.L2CAP_TRANSPORT_BREDR, '01' * channel.peer_mtu)
+    return True
+
+
+def hdl_wid_2(_: WIDParams):
+    """
+    description: Using the Implementation Under Test(IUT), queue up and send two I - Frames(data) to the PTS.
+    """
+    stack = get_stack()
+    channel = stack.l2cap.chan_lookup_id(0)
+    if not channel:
+        return False
+    
+    if (1 == defs.BTP_BR_EDR):
+        btp.l2cap_send_data(0, defs.L2CAP_TRANSPORT_BREDR, '01' * channel.peer_mtu)
+        btp.l2cap_send_data(0, defs.L2CAP_TRANSPORT_BREDR, '02' * channel.peer_mtu)
+    return True
+
+
+def hdl_wid_3(_: WIDParams):
+    """
+    description: Using the Implementation Under Test(IUT), queue up and send four(4) I - Frames(data) to the PTS.
+    """
+    stack = get_stack()
+    channel = stack.l2cap.chan_lookup_id(0)
+    if not channel:
+        return False
+    
+    if (1 == defs.BTP_BR_EDR):
+        btp.l2cap_send_data(0, defs.L2CAP_TRANSPORT_BREDR, '01' * channel.peer_mtu)
+        btp.l2cap_send_data(0, defs.L2CAP_TRANSPORT_BREDR, '02' * channel.peer_mtu)
+        btp.l2cap_send_data(0, defs.L2CAP_TRANSPORT_BREDR, '03' * channel.peer_mtu)
+        btp.l2cap_send_data(0, defs.L2CAP_TRANSPORT_BREDR, '04' * channel.peer_mtu)
+    return True
+
+
+def hdl_wid_6(_: WIDParams):
+    """
+    description: Did the Implementation Under Test(IUT) inform the Upper Tester the connection attempt failed?
+    """
+    # Wait for disconnected event before replying to PTS
+    get_stack().l2cap.wait_for_disconnection(0, 10)
+    return True
+
+
+def hdl_wid_7(_: WIDParams):
+    """
+    description: Place the Implementation Under Test(IUT) in a state to receive an I - Frame from the PTS, then click Ok.
+    """
+    return True
+
+
+def hdl_wid_9(_: WIDParams):
+    """
+    description: Place the Implementation Under Test(IUT) in a state to receive an S - Frame with Poll bit set(P = 1) from the PTS.
+    """
+    return True
+
+
+def hdl_wid_10(_: WIDParams):
+    """
+    description: Place the Implementation Under Test(IUT) in a state to receive data from the PTS.
+    """
+    return True
+
+
+def hdl_wid_14(params: WIDParams):
     """
     Implements: TSC_MMI_iut_disable_connection
     description: Initiate an L2CAP disconnection from the IUT to the PTS.
     """
-    btp.l2cap_disconn(0)
+    if (1 == defs.BTP_BR_EDR):
+        #support BR/EDR
+        if params.test_case_name not in ['L2CAP/CMC/BI-05-C', 'L2CAP/CMC/BI-06-C', 'L2CAP/ERM/BV-12-C']:
+            btp.l2cap_disconn(0, transport = defs.L2CAP_TRANSPORT_BREDR)
+    else:
+        btp.l2cap_disconn(0)
 
     return True
 
 
-def hdl_wid_15(_: WIDParams):
+def hdl_wid_15(params: WIDParams):
     """
     Implements: TSC_MMI_tester_enable_connection
     description: Action: Place the IUT in connectable mode.
     """
     stack = btp.get_stack()
     btp.gap_set_conn()
-    btp.gap_set_gendiscov()
-    btp.gap_adv_ind_on(ad=stack.gap.ad)
+    if (1 == defs.BTP_BR_EDR):
+        #support BR/EDR adv
+        btp.gap_set_io_cap(IOCap.no_input_output)
+        btp.gap_set_gendiscov()
+    else:
+        btp.gap_set_gendiscov()
+        btp.gap_adv_ind_on(ad=stack.gap.ad)
+    return True
 
+
+def hdl_wid_17(params: WIDParams):
+    """
+    description: Place the Implementation Under Test(IUT) into the Local Busy Condition, such that an RNR S - Frame will be sent to the PTS.
+    """
+    stack = get_stack()
+    channel = stack.l2cap.chan_lookup_id(0)
+    if not channel:
+        return False
+    
+    if (1 == defs.BTP_BR_EDR):
+        btp.l2cap_br_rx_flow_req(0, 1)
+    return True
+
+
+def hdl_wid_18(params: WIDParams):
+    """
+    description: The Upper Tester should now clear the Local Busy Condition which should cause the Implementation Under Test(IUT) to send an RR S - Frame.
+    """
+    stack = get_stack()
+    channel = stack.l2cap.chan_lookup_id(0)
+    if not channel:
+        return False
+    
+    if (1 == defs.BTP_BR_EDR):
+        #send RR S-frame
+        btp.l2cap_br_rx_flow_req(0, 0)
+    return True
+
+
+def hdl_wid_19(params: WIDParams):
+    """
+    description: Is the Upper Tester of the Implementation Under Test able to force the IUT into a Local Busy Condition
+    """
+    stack = get_stack()
+    channel = stack.l2cap.chan_lookup_id(0)
+    if not channel:
+        return False
+    
+    if (1 == defs.BTP_BR_EDR):
+        #send RNR S-frame
+        btp.l2cap_br_rx_flow_req(0, 1)
+    return True
+
+
+def hdl_wid_20(params: WIDParams):
+    """
+    description: Verify that the following test conditions are true :
+1. The implementation Under Test(IUT) must specify the capability of sending SDUs of N bytes.
+2.  The PIXIT setting for TSPX_IUT_SDU_SIZE_N_BYTES is set correctly.
+ Once verified, click Ok to continue.
+    """
     return True
 
 
@@ -63,6 +207,73 @@ def hdl_wid_22(_: WIDParams):
     btp.gap_wait_for_connection()
     btp.gap_disconn()
 
+    return True
+
+
+def hdl_wid_23(params: WIDParams):
+    """
+    Implements: send BR/EDR L2CAP_Data
+    description: Using the Implementation Under Test(IUT), send L2CAP_Data over the assigned channel with correct DCID to the PTS.
+    """
+    stack = get_stack()
+    channel = stack.l2cap.chan_lookup_id(0)
+    if not channel:
+        return False
+
+    if (1 == defs.BTP_BR_EDR):
+        if params.test_case_name in ['L2CAP/COS/CFD/BV-09-C']:
+            btp.l2cap_send_data(0, defs.L2CAP_TRANSPORT_BREDR, '00' * channel.peer_mtu)
+        else:
+            btp.l2cap_send_data(0, defs.L2CAP_TRANSPORT_BREDR, 'FF')
+
+    return True
+
+
+def hdl_wid_26(params: WIDParams):
+    """
+    Implements: send BR/EDR L2CAP_Data
+    description: Using the Implementation Under Test(IUT), send an Echo Request to the PTS.
+    """
+    stack = get_stack()
+    if (1 == defs.BTP_BR_EDR):
+        btp.l2cap_echo(None,'')
+        return True
+
+
+def hdl_wid_32(params: WIDParams):
+    """
+    description: Wait for monitor timeout to Initiate an L2CAP disconnection from the IUT to the PTS.
+    """
+    return True
+
+
+def hdl_wid_34(params: WIDParams):
+    """
+    description: The Implementation Under Test(IUT) should receive 4 bytes of data and notify upper tester.
+    """
+    if (1 == defs.BTP_BR_EDR):
+        stack = get_stack()
+        rx_data = stack.l2cap.rx_data_get(0, 10)
+        size = [len(d) for d in rx_data]
+
+        for i in size:
+            if 4 != i:
+                return False
+    return True
+
+
+def hdl_wid_35(_: WIDParams):
+    """
+    description: The Implementation Under Test(IUT) should receive 48 bytes of data and notify upper tester.
+    """
+    stack = get_stack()
+    rx_data = stack.l2cap.rx_data_get(0, 10)
+
+    size = [len(d) for d in rx_data]
+
+    for i in size:
+        if 48 != i:
+            return False
     return True
 
 
@@ -108,7 +319,7 @@ def hdl_wid_38(_: WIDParams):
     if not channel:
         return False
 
-    btp.l2cap_send_data(0, 'FF')
+    btp.l2cap_send_data(0, defs.L2CAP_TRANSPORT_LE, 'FF')
     return True
 
 
@@ -147,6 +358,8 @@ def hdl_wid_41(params: WIDParams):
             btp.l2cap_conn(None, None, stack.l2cap.psm, l2cap.initial_mtu)
         else:
             pass # skip second wid call
+    elif params.test_case_name in ['L2CAP/LE/CID/BV-01-C']:
+        btp.l2cap_conn(None, None, 0x40, l2cap.initial_mtu)
     else:
         btp.l2cap_conn(None, None, stack.l2cap.psm, l2cap.initial_mtu)
 
@@ -165,7 +378,7 @@ def hdl_wid_42(_: WIDParams):
     return not stack.l2cap.is_connected(0)
 
 
-def hdl_wid_43(_: WIDParams):
+def hdl_wid_43(params: WIDParams):
     """
     Implements: TSC_MMI_upper_tester_send_le_data_packet_large
     description: Upper Tester command IUT to send multiple LE frame data packet to the PTS.
@@ -177,7 +390,7 @@ def hdl_wid_43(_: WIDParams):
     if not channel:
         return False
 
-    btp.l2cap_send_data(0, 'FF' * channel.peer_mps)
+    btp.l2cap_send_data(0, defs.L2CAP_TRANSPORT_LE, 'FF' * channel.peer_mps)
 
     return True
 
@@ -192,6 +405,26 @@ def hdl_wid_48(_: WIDParams):
 
     # If IUT received insufficient resources on LE based connection request it means that the channel is not connected.
     return not stack.l2cap.is_connected(0)
+
+
+def hdl_wid_49(params: WIDParams):
+    """
+    description: The Implementation Under Test(IUT) should create ACL connection request to PTS.
+    """
+    if (1 == defs.BTP_BR_EDR):
+        #support BR/EDR adv
+        stack = btp.get_stack()
+        btp.gap_conn(transport=defs.GAP_CONNECT_BREDR)
+        btp.gap_wait_for_connection()
+        return True
+
+
+def hdl_wid_50(_: WIDParams):
+    """
+    description: Using the Implementation Under Test(IUT), send connectionless data to the PTS using connectionless channel.
+    """
+    if (1 == defs.BTP_BR_EDR):
+        return True
 
 
 def hdl_wid_51(_: WIDParams):
@@ -254,11 +487,11 @@ def hdl_wid_55(_: WIDParams):
     if not channel:
         return False
 
-    btp.l2cap_send_data(0, '00' * channel.peer_mps)
+    btp.l2cap_send_data(0, defs.L2CAP_TRANSPORT_LE, '00' * channel.peer_mps)
     return True
 
 
-def hdl_wid_56(_: WIDParams):
+def hdl_wid_56(params: WIDParams):
     """
     Implements: TSC_MMI_tester_enable_connection
     description: Action: Place the IUT in connectable mode.
@@ -280,7 +513,7 @@ def hdl_wid_57(_: WIDParams):
         return False
 
     for i in range(4):
-        btp.l2cap_send_data(0, '00')
+        btp.l2cap_send_data(0, defs.L2CAP_TRANSPORT_LE, '00')
         time.sleep(2)
     return True
 
@@ -321,7 +554,10 @@ def hdl_wid_100(_: WIDParams):
     for channel in l2cap.channels:
         try:
             while True:
-                btp.l2cap_send_data(channel.id, '00')
+                if (1 == defs.BTP_BR_EDR):
+                    btp.l2cap_send_data(channel.id, defs.L2CAP_TRANSPORT_BREDR, '00')
+                else:
+                    btp.l2cap_send_data(channel.id, defs.L2CAP_TRANSPORT_LE, '00') 
         except BTPError:
             pass
         except socket.timeout:
@@ -333,14 +569,20 @@ def hdl_wid_101(_: WIDParams):
     l2cap = get_stack().l2cap
     for channel in l2cap.channels:
         try:
-            btp.l2cap_disconn(channel.id)
+            if (1 == defs.BTP_BR_EDR):
+                btp.l2cap_disconn(channel.id, transport = defs.L2CAP_TRANSPORT_BREDR)
+            else:
+                btp.l2cap_disconn(channel.id)
         except BTPError:
             logging.debug("Ignoring expected error on L2CAP disconnect")
     return True
 
 
 def hdl_wid_102(_: WIDParams):
-    btp.l2cap_credits(0)
+    if (1 == defs.BTP_BR_EDR):
+        btp.l2cap_credits(0, transport = defs.L2CAP_TRANSPORT_BREDR)
+    else:
+        btp.l2cap_credits(0)
     return True
 
 
@@ -349,18 +591,39 @@ def hdl_wid_103(_: WIDParams):
     stack.l2cap.clear_data()
     chan = stack.l2cap.chan_lookup_id(0)
     time.sleep(10)
-    btp.l2cap_reconfigure(None, None, chan.our_mtu + 1,
-                          [chan.id for chan in stack.l2cap.channels])
+    if (1 == defs.BTP_BR_EDR):
+        btp.l2cap_reconfigure(defs.L2CAP_TRANSPORT_BREDR, None, None, chan.our_mtu + 1,
+                            [chan.id for chan in stack.l2cap.channels])
+        stack.l2cap.clear_data()
+    else:
+        btp.l2cap_reconfigure(defs.L2CAP_TRANSPORT_LE, None, None, chan.our_mtu + 1,
+                            [chan.id for chan in stack.l2cap.channels])
     return True
 
 
 def hdl_wid_104(_: WIDParams):
     return True
 
-
-def hdl_wid_105(_: WIDParams):
-    logging.error("Updating MPS size is not supported.")
-    return False
+def hdl_wid_105(params: WIDParams):
+    """Please send Credit Based Reconfigure Request with updated MPS size."""
+    stack = get_stack()
+    chan = stack.l2cap.chan_lookup_id(0)
+    time.sleep(10)
+    if (1 == defs.BTP_BR_EDR):
+        if params.test_case_name in ['L2CAP/ECFC/BV-60-C']:
+            if chan.chan_reconfigured:
+                chan.our_mps -= 3
+                btp.l2cap_reconfigure(defs.L2CAP_TRANSPORT_BREDR, None, None, chan.our_mtu, chan.our_mps + 1, 
+                                    [chan.id for chan in stack.l2cap.channels])
+            else:
+                btp.l2cap_reconfigure(defs.L2CAP_TRANSPORT_BREDR, None, None, chan.our_mtu, chan.our_mps + 1, 
+                                    [chan.id for chan in stack.l2cap.channels])
+            stack.l2cap.wait_for_reconfiguration(0, 30)
+        else:
+            btp.l2cap_reconfigure(defs.L2CAP_TRANSPORT_BREDR, None, None, chan.our_mtu + 1, 0, 
+                                [chan.id for chan in stack.l2cap.channels])
+        stack.l2cap.clear_data()
+        return True
 
 
 def hdl_wid_106(_: WIDParams):
@@ -438,6 +701,73 @@ def hdl_wid_112(_: WIDParams):
     return True
 
 
+def hdl_wid_113(_: WIDParams):
+    return True
+
+
+def hdl_wid_114(_: WIDParams):
+    """description: Please send Configure Request with Enhanced Retransmission Mode."""
+    return True
+
+
+def hdl_wid_115(_: WIDParams):
+    """description: Please send Configure Request with Streaming Mode."""
+    return True
+
+
+def hdl_wid_116(_: WIDParams):
+    return True
+
+
+def hdl_wid_118(params: WIDParams):
+    """Please send L2CAP Disconnection Response to PTS."""
+    return True
+
+
+def hdl_wid_119(params: WIDParams):
+    """Please send L2CAP Information Request with InfoType to Extended Features(0x0002)."""
+    if (1 == defs.BTP_BR_EDR):
+        stack = btp.get_stack()
+        l2cap = stack.l2cap
+        if params.test_case_name in ['L2CAP/CMC/BV-10-C', 'L2CAP/CMC/BV-11-C']:
+            btp.l2cap_conn(None, None, l2cap.psm, l2cap.initial_mtu, 1, 0, 0)
+    return True
+
+
+def hdl_wid_121(_: WIDParams):
+    """Please initiate Information Request procedure to discover supported features and configure connection."""
+    if (1 == defs.BTP_BR_EDR):
+        stack = btp.get_stack()
+        l2cap = stack.l2cap
+        btp.l2cap_conn(None, None, l2cap.psm, l2cap.initial_mtu, 1, 0, 0)
+    return True
+
+
+def hdl_wid_128(_: WIDParams):
+    """Please send a Poll BIT(P=1) using S-Frame."""
+    return True
+
+
+def hdl_wid_129(_: WIDParams):
+    """Please send a Poll BIT(P=1) using S-Frame when every monitor timer is expired."""
+    return True
+
+
+def hdl_wid_130(_: WIDParams):
+    """Please send a FINAL BIT(F=1) using S-Frame."""
+    return True
+
+
+def hdl_wid_131(_: WIDParams):
+    """Please send a RR using S-Frame."""
+    return True
+
+
+def hdl_wid_133(_: WIDParams):
+    """Please send a SREJ using S-Frame."""
+    return True
+
+
 def hdl_wid_135(_: WIDParams):
     return True
 
@@ -487,7 +817,12 @@ def hdl_wid_255(params: WIDParams):
         btp.eatt_conn(None, None, 1)
     else:
         l2cap = stack.l2cap
-        btp.l2cap_conn(None, None, l2cap.psm, l2cap.initial_mtu, l2cap.num_channels, 1, l2cap.hold_credits)
+        if params.test_case_name in ['L2CAP/ECFC/BV-46-C']:
+            btp.l2cap_conn(None, None, l2cap.psm, l2cap.initial_mtu, l2cap.num_channels, 1, 1)
+        elif params.test_case_name in ['L2CAP/ECFC/BV-64-C']:
+            btp.l2cap_conn(None, None, l2cap.psm, l2cap.initial_mtu, 1, 1, 1)
+        else:
+            btp.l2cap_conn(None, None, l2cap.psm, l2cap.initial_mtu, l2cap.num_channels, 1, l2cap.hold_credits)
 
         # Wait until all channels connected to avoid race condition between channel connection and new received wid
         for channel_id in range(l2cap.num_channels):
@@ -497,6 +832,7 @@ def hdl_wid_255(params: WIDParams):
 
 
 def hdl_wid_256(_: WIDParams):
+    """ Please send L2CAP Credit Based Connection RSP to PTS. """
     btp.gap_wait_for_connection()
     return True
 
@@ -509,7 +845,10 @@ def hdl_wid_257(_: WIDParams):
         return False
 
     for _ in range(2):
-        btp.l2cap_send_data(0, '00' * channel.peer_mtu)
+        if (1 == defs.BTP_BR_EDR):
+            btp.l2cap_send_data(0, defs.L2CAP_TRANSPORT_BREDR, '01' * channel.peer_mtu)
+        else:
+            btp.l2cap_send_data(0, defs.L2CAP_TRANSPORT_LE, '00' * channel.peer_mtu)
     return True
 
 
@@ -521,7 +860,10 @@ def hdl_wid_258(_: WIDParams):
         return False
 
     for _ in range(2):
-        btp.l2cap_send_data(0, '00' * channel.peer_mtu)
+        if (1 == defs.BTP_BR_EDR):
+            btp.l2cap_send_data(0, defs.L2CAP_TRANSPORT_BREDR, '00' * channel.peer_mtu)
+        else:
+            btp.l2cap_send_data(0, defs.L2CAP_TRANSPORT_LE, '00' * channel.peer_mtu)
     return True
 
 
@@ -565,8 +907,25 @@ def hdl_wid_262(_: WIDParams):
         return False
 
     for _ in range(5):
-        btp.l2cap_send_data(0, '00' * channel.peer_mtu)
+        if (1 == defs.BTP_BR_EDR):
+            btp.l2cap_send_data(0, defs.L2CAP_TRANSPORT_BREDR, '00' * channel.peer_mtu)
+        else:
+            btp.l2cap_send_data(0, defs.L2CAP_TRANSPORT_LE, '00' * channel.peer_mtu)
         time.sleep(2)
+    return True
+
+
+def hdl_wid_263(_: WIDParams):
+    """ Please send L2CAP Connection REQ to PTS. """
+    stack = get_stack()
+    l2cap = stack.l2cap
+
+    btp.l2cap_conn(None, None, l2cap.psm, l2cap.initial_mtu, 1, 0, 0)
+    return True
+
+
+def hdl_wid_264(_: WIDParams):
+    """ Please place the IUT in L2CAP connectable mode. """
     return True
 
 
