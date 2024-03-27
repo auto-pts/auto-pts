@@ -23,15 +23,18 @@ from autopts.pybtp.btp.btp import CONTROLLER_INDEX, get_iut_method as get_iut,\
 from autopts.pybtp.types import addr2btp_ba, BTPError
 
 CSIS = {
-    'read_supported_cmds': ( defs.BTP_SERVICE_ID_CSIS,
-                             defs.CSIS_READ_SUPPORTED_COMMANDS,
-                             CONTROLLER_INDEX),
-    'set_member_lock':     ( defs.BTP_SERVICE_ID_CSIS,
-                             defs.CSIS_SET_MEMBER_LOCK,
-                             CONTROLLER_INDEX),
-    'get_member_rsi':      ( defs.BTP_SERVICE_ID_CSIS,
-                             defs.CSIS_GET_MEMBER_RSI,
-                             CONTROLLER_INDEX)
+    'read_supported_cmds': (defs.BTP_SERVICE_ID_CSIS,
+                            defs.CSIS_READ_SUPPORTED_COMMANDS,
+                            CONTROLLER_INDEX),
+    'set_member_lock':     (defs.BTP_SERVICE_ID_CSIS,
+                            defs.CSIS_SET_MEMBER_LOCK,
+                            CONTROLLER_INDEX),
+    'get_member_rsi':      (defs.BTP_SERVICE_ID_CSIS,
+                            defs.CSIS_GET_MEMBER_RSI,
+                            CONTROLLER_INDEX),
+    'set_sirk_type':       (defs.BTP_SERVICE_ID_CSIS,
+                            defs.CSIS_SET_SIRK_TYPE,
+                            CONTROLLER_INDEX)
 }
 
 
@@ -79,3 +82,16 @@ def csis_get_member_rsi(bd_addr_type=None, bd_addr=None):
 
     rsi = struct.unpack('<6B', rsp)
     return rsi
+
+
+def csis_set_sirk_type(sirk_type):
+    logging.debug(f"{csis_set_sirk_type.__name__}")
+
+    data = bytearray()
+    data.extend(struct.pack('<b', sirk_type))
+
+    iutctl = get_iut()
+
+    iutctl.btp_socket.send(*CSIS['set_sirk_type'], data=data)
+
+    csis_command_rsp_succ()
