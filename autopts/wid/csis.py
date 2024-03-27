@@ -53,11 +53,19 @@ def hdl_wid_7(_: WIDParams):
     return True
 
 
-def hdl_wid_20001(_: WIDParams):
+def hdl_wid_20001(params: WIDParams):
     """
         Please prepare IUT into a connectable mode.
         Description: Verify that the Implementation Under Test (IUT) can accept GATT connect request from PTS.
     """
+
+    if params.test_case_name == "CSIS/SR/SP/BV-08-C":
+        # Encrypted SIRK
+        btp.csis_set_sirk_type(1)
+    else:
+        # Plain Text SIRK
+        btp.csis_set_sirk_type(0)
+
     stack = get_stack()
     btp.gap_set_conn()
     btp.gap_adv_ind_on(ad=stack.gap.ad)

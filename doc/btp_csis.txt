@@ -55,3 +55,13 @@ Commands and responses:
 		This command is used to generate and return a new RSI (Resolvable Set Identifier).
 
 		In case of an error, the error response will be returned.
+
+	Opcode 0x04 - CSIS Set SIRK Type
+
+		Controller Index:       <controller id>
+		Command parameters:     SIRK Type (1 octet)
+		Response parameters:    <none>
+
+		This command is used to set SIRK type.
+		0 - Plain text SIRK
+		1 - Encrypted SIRK
