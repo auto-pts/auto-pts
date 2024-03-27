@@ -47,10 +47,18 @@ def hdl_wid_4(_: WIDParams):
     return True
 
 
-def hdl_wid_5(_: WIDParams):
+def hdl_wid_5(params: WIDParams):
     """
         Please have IUT enter GAP Discoverable Mode and generate Advertising Packets.
     """
+
+    if params.test_case_name == "CSIP/SR/SP/BV-03-C":
+        # Encrypted SIRK
+        btp.csis_set_sirk_type(1)
+    else:
+        # Plain Text SIRK
+        btp.csis_set_sirk_type(0)
+
     rsi = btp.csis_get_member_rsi()
     if not rsi:
         return False
@@ -64,7 +72,7 @@ def hdl_wid_5(_: WIDParams):
     if stack.gap.current_settings_get(key):
         btp.gap_adv_off()
 
-    btp.gap_adv_ind_on(ad=advdata, own_addr_type=OwnAddrType.le_resolvable_private_address)
+    btp.gap_adv_ind_on(ad=advdata, own_addr_type=OwnAddrType.le_identity_address)
     return True
 
 
@@ -148,7 +156,7 @@ def hdl_wid_20001(_: WIDParams):
     """
     stack = get_stack()
     btp.gap_set_conn()
-    btp.gap_adv_ind_on(ad=stack.gap.ad, own_addr_type=OwnAddrType.le_resolvable_private_address)
+    # btp.gap_adv_ind_on(ad=stack.gap.ad, own_addr_type=OwnAddrType.le_resolvable_private_address)
     return True
 
 
