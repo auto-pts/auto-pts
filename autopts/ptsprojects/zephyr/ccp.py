@@ -37,7 +37,7 @@ def set_pixits(ptses):
 
     pts.set_pixit("CCP", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
     pts.set_pixit("CCP", "TSPX_iut_device_name_in_adv_packet_for_random_address", "")
-    pts.set_pixit("CCP", "TSPX_time_guard", "18000")
+    pts.set_pixit("CCP", "TSPX_time_guard", "180000")
     pts.set_pixit("CCP", "TSPX_use_implicit_send", "TRUE")
     pts.set_pixit("CCP", "TSPX_tester_database_file",
         r"C:\Program Files (x86)\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_CCP_db.xml")
