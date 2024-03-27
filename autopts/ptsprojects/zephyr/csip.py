@@ -47,7 +47,7 @@ def set_pixits(ptses):
     pts.set_pixit("CSIP", "TSPX_delete_link_key", "FALSE")
     pts.set_pixit("CSIP", "TSPX_pin_code", "0000")
     pts.set_pixit("CSIP", "TSPX_use_dynamic_pin", "FALSE")
-    pts.set_pixit("CSIP", "TSPX_delete_ltk", "FALSE")
+    pts.set_pixit("CSIP", "TSPX_delete_ltk", "TRUE")
     pts.set_pixit("CSIP", "TSPX_security_enabled", "FALSE")
     pts.set_pixit("CSIP", "TSPX_target_service", "5F03")
     pts.set_pixit("CSIP", "TSPX_set_size", "3")
@@ -127,6 +127,7 @@ def test_cases(ptses):
         TestFunc(btp.gap_set_conn),
         TestFunc(btp.gap_set_gendiscov),
         TestFunc(btp.core_reg_svc_csip),
+        TestFunc(btp.core_reg_svc_csis),
         TestFunc(stack.csip_init),
         TestFunc(lambda: set_addr(
             stack.gap.iut_addr_get_str())),
