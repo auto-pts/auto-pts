@@ -532,7 +532,11 @@ def hdl_wid_410(params: WIDParams):
     source_id = 0x00
     metadata = update_settings[params.test_case_name]
 
+    btp.cap_broadcast_adv_stop(source_id)
+
     btp.cap_broadcast_source_update(source_id, metadata)
+
+    btp.cap_broadcast_adv_start(source_id)
 
     return True
 
