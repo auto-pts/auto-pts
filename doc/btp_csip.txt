@@ -47,21 +47,29 @@ Commands and responses:
 	Opcode 0x04 - Set Coordinator Lock
 
 		Controller Index:	<controller id>
-		Command parameters:     Members count (1 octet)
+		Command parameters:     Address count (1 octet)
+					Address list (varies)
 		Response parameters:    <none>
 
-		This command is used to lock an array of set members.
-		During operation, the IUT may send event:
+		This command is used to perform lock request on set members.
+		Address list parameter should contain tuple(s) of address type
+		and address: ([(0, 'DB:F5:72:56:C9:EF'), (0, 'DB:F5:72:56:C9:EF')].
+		When Address list is not provided, lock procedure will be performed
+		on all set members. During operation, the IUT may send event:
 				CSIP Lock event
 
 	Opcode 0x05 - Set Coordinator Lock Release
 
 		Controller Index:	<controller id>
-		Command parameters:     Members count (1 octet)
+		Command parameters:     Address count (1 octet)
+					Address list (varies)
 		Response parameters:    <none>
 
-		This command is used to release an array of set members.
-		During operation, the IUT may send event:
+		This command is used to perform lock release on set members.
+		Address list parameter should contain tuple(s) of address type
+		and address: ([(0, 'DB:F5:72:56:C9:EF'), (0, 'DB:F5:72:56:C9:EF')].
+		When Address list is not provided, lock procedure will be performed
+		on all set members. During operation, the IUT may send event:
 				CSIP Lock event
 
 Events:

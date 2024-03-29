@@ -75,25 +75,45 @@ def csip_discover(bd_addr_type=None, bd_addr=None):
     csip_command_rsp_succ()
 
 
-def csip_set_coordinator_lock(count):
+def csip_set_coordinator_lock(addr_list=None):
     logging.debug(f"{csip_set_coordinator_lock.__name__}")
 
-    data = bytearray()
-    data.extend(struct.pack('b', count))
-
     iutctl = get_iut()
+    data = bytearray()
+    addr_cnt = len(addr_list) if addr_list else 0
+
+    data.extend(struct.pack('b', addr_cnt))
+
+    if addr_cnt != 0:
+        # Perform lock request procedure on subset of set members
+        for addr_type, addr in addr_list:
+            bd_addr_type_ba = chr(addr_type).encode('utf-8')
+            bd_addr_ba = addr2btp_ba(addr)
+            data.extend(bd_addr_type_ba)
+            data.extend(bd_addr_ba)
+
     iutctl.btp_socket.send(*CSIP['set_coordinator_lock'], data=data)
 
     csip_command_rsp_succ()
 
 
-def csip_set_coordinator_release(count):
+def csip_set_coordinator_release(addr_list=None):
     logging.debug(f"{csip_set_coordinator_release.__name__}")
 
-    data = bytearray()
-    data.extend(struct.pack('b', count))
-
     iutctl = get_iut()
+    data = bytearray()
+    addr_cnt = len(addr_list) if addr_list else 0
+
+    data.extend(struct.pack('b', addr_cnt))
+
+    if addr_cnt != 0:
+        # Perform lock release procedure on subset of set members
+        for addr_type, addr in addr_list:
+            bd_addr_type_ba = chr(addr_type).encode('utf-8')
+            bd_addr_ba = addr2btp_ba(addr)
+            data.extend(bd_addr_type_ba)
+            data.extend(bd_addr_ba)
+
     iutctl.btp_socket.send(*CSIP['set_coordinator_release'], data=data)
 
     csip_command_rsp_succ()
