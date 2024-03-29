@@ -182,6 +182,7 @@ def hdl_wid_20100(params: WIDParams):
     if 'CSIP/CL/SP/BV-04-C' in params.test_case_name or\
             'CSIP/CL/SPE/BI-01-C' in params.test_case_name or\
             'CSIP/CL/SPE/BI-02-C' in params.test_case_name or\
+            'CSIP/CL/SP/BV-03-C' in params.test_case_name or\
             'CSIP/CL/SPE/BI-03-C' in params.test_case_name:
         btp.csip_discover(addr_type, addr)
         ev = stack.csip.wait_sirk_ev(addr_type, addr, 30, remove=False)
@@ -292,59 +293,51 @@ def hdl_wid_20110(params: WIDParams):
     """
     stack = get_stack()
 
-    if 'LT2' in params.test_case_name:
-        addr_type = btp.lt2_addr_type_get()
-        addr = btp.lt2_addr_get()
-    elif 'LT3' in params.test_case_name:
-        addr_type = btp.lt3_addr_type_get()
-        addr = btp.lt3_addr_get()
-    else:
-        addr_type = btp.pts_addr_type_get()
-        addr = btp.pts_addr_get()
-
-    if params.test_case_name == 'CSIP/CL/SPE/BI-02-C':
-        btp.csip.csip_set_coordinator_release(stack.csip.member_cnt)
-        stack.csip.wait_lock_ev(10)
-        return True
-
-    if params.test_case_name == 'CSIP/CL/SPE/BI-03-C':
-        btp.csip.csip_set_coordinator_release(1)
-        stack.csip.wait_lock_ev(10)
-        return True
-
+    # LT3 test cases
     if 'CSIP/CL/SPE/BI-01-C' in params.test_case_name:
+        if stack.csip.wid_cnt > 1:
+            return True
+        if stack.csip.wid_cnt == 1:
+            stack.csip.wid_cnt += 1
+            stack.csip.wait_lock_ev(10)
+            return True
+        btp.csip_set_coordinator_lock()
+        stack.csip.wait_lock_ev(10)
+        stack.csip.wid_cnt += 1
+        return True
+
+    # LT3 test cases
+    if 'CSIP/CL/SP/BV-03-C' in params.test_case_name:
         if stack.csip.wid_cnt > 0:
             return True
-        btp.csip_set_coordinator_lock(stack.csip.member_cnt)
-        stack.csip.wid_cnt += 1
-        return True
-
-    if 'CSIP/CL/SP/BV-03-C' in params.test_case_name:
-        btp.csip_discover(addr_type, addr)
-        ev = stack.csip.wait_sirk_ev(addr_type, addr, 30, remove=False)
-        if ev is None:
+        btp.csip.csip_set_coordinator_lock()
+        ev = stack.csip.wait_lock_ev(10)
+        if ev[0] != 0:
+            # success
             return False
-
-        stack.csip.member_cnt += 1
         stack.csip.wid_cnt += 1
-
-        if stack.csip.wid_cnt == 3:
-            btp.csip_set_coordinator_lock(stack.csip.member_cnt)
-
         return True
 
-    if stack.csip.wid_cnt == 0:
-        btp.csip_set_coordinator_lock(stack.csip.member_cnt)
-
-    if stack.csip.wid_cnt >= 3:
-        if stack.csip.wid_cnt > 3:
+    # LT3 test cases
+    if 'CSIP/CL/SP/BV-04-C' in params.test_case_name:
+        if stack.csip.wid_cnt > 0:
             return True
-        btp.csip.csip_set_coordinator_release(stack.csip.member_cnt)
-        stack.csip.wait_lock_ev(10, remove=False)
+        btp.csip.csip_set_coordinator_release()
+        ev = stack.csip.wait_lock_ev(10)
+        if ev[0] != 0:
+            # success
+            return False
         stack.csip.wid_cnt += 1
         return True
 
-    stack.csip.wid_cnt += 1
+    if "Set Member Lock: [2 (0x02)]" in params.description:
+        btp.csip.csip_set_coordinator_lock()
+    else:
+        btp.csip.csip_set_coordinator_release()
+
+    ev = stack.csip.wait_lock_ev(10)
+    if ev is None:
+        return False
 
     return True
 
