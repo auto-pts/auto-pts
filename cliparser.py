@@ -82,6 +82,9 @@ class CliParser(argparse.ArgumentParser):
                           help="Specify ykush downstream port number, so on BTP TIMEOUT "
                                "the iut device could be powered off and on.")
 
+        self.add_argument("--pylink_reset", action='store_true', default=False,
+                          help="Use pylink reset.")
+
         # Hidden option to save test cases data in TestCase.db
         self.add_argument("-s", "--store", action="store_true",
                           default=False, help=argparse.SUPPRESS)

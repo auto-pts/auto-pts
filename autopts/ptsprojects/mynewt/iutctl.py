@@ -47,6 +47,7 @@ class MynewtCtl:
         assert args.tty_file and args.board_name
 
         self.tty_file = args.tty_file
+        self.pylink_reset = args.pylink_reset
         self.device_core = args.device_core
         self.debugger_snr = get_debugger_snr(self.tty_file) \
             if args.debugger_snr is None else args.debugger_snr

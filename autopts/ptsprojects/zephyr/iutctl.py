@@ -64,6 +64,7 @@ class ZephyrCtl:
             self.__class__, self.__init__.__name__, args.kernel_image,
             args.tty_file, args.board_name)
 
+        self.pylink_reset = args.pylink_reset
         self.device_core = args.device_core
         self.debugger_snr = args.debugger_snr
         self.kernel_image = args.kernel_image
