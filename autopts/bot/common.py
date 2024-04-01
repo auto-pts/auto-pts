@@ -93,6 +93,7 @@ class BotConfigArgs(Namespace):
         self.test_case_limit = args.get('test_case_limit', 0)
         self.simple_mode = args.get('simple_mode', False)
         self.server_args = args.get('server_args', None)
+        self.pylink_reset = args.get('pylink_reset', False)
 
         if self.server_args is not None:
             from autoptsserver import SvrArgumentParser

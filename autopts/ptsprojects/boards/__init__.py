@@ -18,6 +18,7 @@
 import os
 import sys
 import shlex
+import pylink
 import serial.tools.list_ports
 import logging
 import pkgutil
@@ -45,15 +46,19 @@ class Board:
     def reset(self):
         """Reset HW DUT board with
         """
-        log("About to reset DUT: %r", self.reset_cmd)
+        log(f"About to reset DUT: {self.reset_cmd}")
 
-        reset_process = subprocess.Popen(shlex.split(self.reset_cmd),
-                                         shell=False,
-                                         stdout=subprocess.DEVNULL,
-                                         stderr=self.iutctl.iut_log_file)
+        if type(self.reset_cmd) == str:
+            reset_process = subprocess.Popen(shlex.split(self.reset_cmd),
+                                             shell=False,
+                                             stdout=subprocess.DEVNULL,
+                                             stderr=self.iutctl.iut_log_file)
 
-        if reset_process.wait(20):
-            logging.error("reset failed")
+            if reset_process.wait(20):
+                logging.error("reset failed")
+
+        else:
+            self.reset_cmd()
 
     def get_reset_cmd(self):
         """Get and Return Board reset command, 
@@ -65,7 +70,9 @@ class Board:
         """
 
         module_name = __package__ + '.' + self.name
-        if importlib.util.find_spec(module_name):
+        if getattr(self.iutctl, 'pylink_reset', False):
+            return lambda: pylink_reset(self.iutctl.debugger_snr, self.iutctl.device_core)
+        elif importlib.util.find_spec(module_name):
             board_mod = importlib.import_module(__package__ + '.' + self.name)
 
             if board_mod is None:
@@ -77,6 +84,21 @@ class Board:
             except Exception as e:
                 raise Exception("Board name %s is not supported! and failed to reset with Jlink." % self.name)
 
+
+def pylink_reset(debugger_snr, device_core):
+    log(f'debugger_snr={debugger_snr}, device_core={device_core}')
+
+    jlink = pylink.JLink()
+    try:
+        jlink.disable_dialog_boxes()
+        if not jlink.opened():
+            jlink.open(serial_no=debugger_snr)
+
+        jlink.set_tif(pylink.enums.JLinkInterfaces.SWD)
+        jlink.connect(device_core)
+        jlink.reset(ms=0, halt=False)
+    finally:
+        jlink.close()
 
 
 def get_build_and_flash(board_name):
