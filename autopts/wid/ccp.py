@@ -238,7 +238,8 @@ def hdl_wid_113(params: WIDParams):
     count = len(call_index)
 
     tbs_testcases = ["CCP/CL/CP/BV-06-C",
-                     "CCP/CL/CP/BV-07-C"]
+                     "CCP/CL/CP/BV-07-C",
+                     "CCP/CL/SPE/BI-03-C"]
 
     if params.test_case_name in tbs_testcases:
         inst_index = 0x00
