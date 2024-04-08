@@ -333,7 +333,7 @@ class PyPTS:
 
     """
 
-    def __init__(self, device=None):
+    def __init__(self, device=None, lite_start=False):
         """Constructor"""
         log("%s", self.__init__.__name__)
 
@@ -359,6 +359,7 @@ class PyPTS:
         self._com_sender = None
         self._preferred_device = device
         self._device = None
+        self.lite_start = lite_start
 
     def _init_attributes(self):
         """Initializes class attributes"""
@@ -529,6 +530,9 @@ class PyPTS:
         log("start_pts")
 
         self._pts = win32com.client.Dispatch('ProfileTuningSuite_6.PTSControlServer')
+
+        if self.lite_start:
+            return True
 
         # The dispatched COM object cannot be passed between threads directly
         self._pts_dispatch_id = pythoncom.CoMarshalInterThreadInterfaceInStream(
@@ -982,6 +986,9 @@ class PyPTS:
     def get_bluetooth_address(self):
         """Returns PTS bluetooth address string"""
         log(self.get_bluetooth_address.__name__)
+
+        if self.lite_start:
+            return 'xxxxxxxxxxxx'
 
         address = None
         if self._device:
