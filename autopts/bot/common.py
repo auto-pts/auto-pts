@@ -159,59 +159,11 @@ class BotClient(Client):
         pass
 
     def run_test_cases(self):
-        _args = {}
         limit_counter = 0
         all_stats = None
 
-        config_default = self.config_default
-        _args[config_default] = self.args
-
-        # These contain values passed with -c and -e options
-        included = sort_and_reduce_prefixes(_args[config_default].test_cases)
-        excluded = sort_and_reduce_prefixes(_args[config_default].excluded)
-        _args[config_default].excluded = []
-        _args[config_default].test_cases = []
-
-        # Ask the PTS about test cases available in the workspace
-        filtered_test_cases = autoptsclient.get_test_cases(self.ptses[0], included, excluded)
-
-        # Save the iut_config key run order.
-        run_order = list(self.iut_config.keys())
-
-        # Make sure that default config is processed last and gets from the remaining test cases
-        distribution_order = copy.deepcopy(run_order)
-        if config_default in run_order:
-            distribution_order.remove(config_default)
-            distribution_order.append(config_default)
-
-        # Distribute test cases among .conf files
-        remaining_test_cases = copy.deepcopy(filtered_test_cases)
-        for config in distribution_order:
-            value = self.iut_config[config]
-
-            # Merge .confs without 'test_cases' into the default one
-            if 'test_cases' not in value:
-                # The 'test_cases' can be skipped only in the default config.
-                # It means: Run all remaining after distribution test cases
-                # with the default config.
-                continue
-
-            _args[config] = copy.deepcopy(_args[config_default])
-
-            for prefix in value['test_cases']:
-                for tc in filtered_test_cases:
-                    if tc.startswith(prefix):
-                        _args[config].test_cases.append(tc)
-                        remaining_test_cases.remove(tc)
-
-                filtered_test_cases = copy.deepcopy(remaining_test_cases)
-
-        # Remaining test cases will be run with the default .conf file
-        # if default .conf doesn't have already defined test cases
-        if len(_args[config_default].test_cases) == 0 and \
-                config_default in self.iut_config and \
-                len(self.iut_config[config_default].get('test_cases', [])) == 0:
-            _args[config_default].test_cases = filtered_test_cases
+        run_order, _args = get_filtered_test_cases(self.iut_config, self.args,
+                                                   self.config_default, self.ptses[0])
 
         for config in run_order:
             if _args.get(config) is None:
@@ -286,6 +238,61 @@ class BotClient(Client):
     def run_tests(self):
         # Entry point of the simple client layer
         return super().start()
+
+
+def get_filtered_test_cases(iut_config, bot_args, config_default, pts):
+    _args = {}
+    config_default = config_default
+    _args[config_default] = bot_args
+
+    # These contain values passed with -c and -e options
+    included = sort_and_reduce_prefixes(_args[config_default].test_cases)
+    excluded = sort_and_reduce_prefixes(_args[config_default].excluded)
+    _args[config_default].excluded = []
+    _args[config_default].test_cases = []
+
+    # Ask the PTS about test cases available in the workspace
+    filtered_test_cases = autoptsclient.get_test_cases(pts, included, excluded)
+
+    # Save the iut_config key run order.
+    run_order = list(iut_config.keys())
+
+    # Make sure that default config is processed last and gets from the remaining test cases
+    distribution_order = copy.deepcopy(run_order)
+    if config_default in run_order:
+        distribution_order.remove(config_default)
+        distribution_order.append(config_default)
+
+    # Distribute test cases among .conf files
+    remaining_test_cases = copy.deepcopy(filtered_test_cases)
+    for config in distribution_order:
+        value = iut_config[config]
+
+        # Merge .confs without 'test_cases' into the default one
+        if 'test_cases' not in value:
+            # The 'test_cases' can be skipped only in the default config.
+            # It means: Run all remaining after distribution test cases
+            # with the default config.
+            continue
+
+        _args[config] = copy.deepcopy(_args[config_default])
+
+        for prefix in value['test_cases']:
+            for tc in filtered_test_cases:
+                if tc.startswith(prefix):
+                    _args[config].test_cases.append(tc)
+                    remaining_test_cases.remove(tc)
+
+            filtered_test_cases = copy.deepcopy(remaining_test_cases)
+
+    # Remaining test cases will be run with the default .conf file
+    # if default .conf doesn't have already defined test cases
+    if len(_args[config_default].test_cases) == 0 and \
+            config_default in iut_config and \
+            len(iut_config[config_default].get('test_cases', [])) == 0:
+        _args[config_default].test_cases = filtered_test_cases
+
+    return run_order, _args
 
 
 def sort_and_reduce_prefixes(prefixes):
