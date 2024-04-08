@@ -19,11 +19,12 @@ import os
 import subprocess
 import sys
 import shutil
+import time
 
 from pathlib import Path
 from argparse import Namespace
 from autopts import client as autoptsclient
-from autopts.client import CliParser, Client, TestCaseRunStats, init_logging
+from autopts.client import CliParser, Client, TestCaseRunStats, init_logging, TEST_CASE_DB
 from autopts.ptsprojects.boards import get_free_device, get_tty, get_debugger_snr
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
 
@@ -33,6 +34,10 @@ PROJECT_DIR = os.path.dirname(  # auto-pts repo directory
                         os.path.abspath(__file__))))  # this file directory
 
 log = logging.debug
+
+
+class BuildAndFlashException(Exception):
+    pass
 
 
 class BotCliParser(CliParser):
@@ -229,9 +234,17 @@ class BotClient(Client):
 
                 limit_counter += test_case_number
 
-            self.apply_config(_args[config], config, self.iut_config[config])
+            try:
+                self.apply_config(_args[config], config, self.iut_config[config])
 
-            stats = autoptsclient.run_test_cases(self.ptses, self.test_cases, _args[config])
+                stats = autoptsclient.run_test_cases(self.ptses, self.test_cases, _args[config])
+            except BuildAndFlashException:
+                log(f'Build and flash step failed for config {config}')
+                stats = TestCaseRunStats(self.ptses[0].get_project_list(),
+                                         _args[config].test_cases, 0, TEST_CASE_DB)
+                for tc in _args[config].test_cases:
+                    status = 'BUILD_OR_FLASH ERROR'
+                    stats.update(tc, time.time(), status)
 
             if all_stats is None:
                 all_stats = stats

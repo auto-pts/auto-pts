@@ -23,6 +23,7 @@ import time
 from pathlib import Path
 
 from autopts import bot
+from autopts.bot.common import BuildAndFlashException
 from autopts.bot.common_features.github import update_sources
 from autopts.client import Client
 from autopts.ptsprojects.boards import release_device, get_build_and_flash, get_board_type
@@ -162,7 +163,7 @@ class MynewtBotClient(bot.common.BotClient):
                 build_and_flash(args.project_path, board_type, overlay, args.debugger_snr)
             except:
                 report.make_error_txt('Build and flash step failed')
-                raise
+                raise BuildAndFlashException
 
             time.sleep(10)
 
