@@ -31,7 +31,7 @@ from autopts.bot.common_features.github import update_sources
 from autopts.ptsprojects.zephyr import ZEPHYR_PROJECT_URL
 from autopts import client as autoptsclient
 
-from autopts.bot.common import BotConfigArgs, BotClient
+from autopts.bot.common import BotConfigArgs, BotClient, BuildAndFlashException
 from autopts.ptsprojects.boards import tty_to_com, release_device, get_build_and_flash, get_board_type
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
 from autopts.ptsprojects.zephyr.iutctl import get_iut, log
@@ -207,7 +207,7 @@ class ZephyrBotClient(BotClient):
                 flush_serial(args.tty_file)
             except:
                 report.make_error_txt('Build and flash step failed')
-                raise
+                raise BuildAndFlashException
 
             time.sleep(10)
 
