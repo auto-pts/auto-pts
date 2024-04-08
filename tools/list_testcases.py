@@ -20,22 +20,13 @@ $ python3 testplan_vs_workspace.py path/to/workspace.pqw6
 """
 import sys
 import os
-import win32com.client
+from os.path import dirname, abspath
 
+AUTOPTS_REPO = dirname(dirname(dirname(abspath(__file__))))
+sys.path.insert(0, AUTOPTS_REPO)
 
-test_case_blacklist = [
-    "_HELPER",
-    "LT2",
-    "LT3",
-    "TWO_NODES_PROVISIONER",
-]
-
-
-def tc_filter(test_case_name):
-    for entry in test_case_blacklist:
-        if entry in test_case_name:
-            return False
-    return True
+from autopts.client import get_test_cases
+from autopts.ptscontrol import PyPTS
 
 
 if __name__ == '__main__':
@@ -48,14 +39,10 @@ if __name__ == '__main__':
     if not os.path.isfile(workspace_path) or not workspace_path.endswith('.pqw6'):
         sys.exit('{} is not a file or workspace (*.pqw6)!'.format(workspace_path))
 
-    pts = win32com.client.Dispatch('ProfileTuningSuite_6.PTSControlServer')
-    pts.OpenWorkspace(workspace_path)
+    pts = PyPTS(lite_start=True)
+    pts.start_pts()
+    pts.open_workspace(workspace_path)
+    test_cases = get_test_cases(pts, [], [])
 
-    for i in range(0, pts.GetProjectCount()):
-        project_name = pts.GetProjectName(i)
-
-        for j in range(0, pts.GetTestCaseCount(project_name)):
-            test_case_name = pts.GetTestCaseName(project_name, j)
-            if pts.IsActiveTestCase(project_name, test_case_name) and \
-                    tc_filter(test_case_name):
-                print(test_case_name)
+    for test_case_name in test_cases:
+        print(test_case_name)
