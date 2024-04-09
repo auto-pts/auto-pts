@@ -70,7 +70,7 @@ def set_pixits(ptses):
     pts2.set_pixit("CSIP", "TSPX_delete_link_key", "FALSE")
     pts2.set_pixit("CSIP", "TSPX_pin_code", "0000")
     pts2.set_pixit("CSIP", "TSPX_use_dynamic_pin", "FALSE")
-    pts2.set_pixit("CSIP", "TSPX_delete_ltk", "FALSE")
+    pts2.set_pixit("CSIP", "TSPX_delete_ltk", "TRUE")
     pts2.set_pixit("CSIP", "TSPX_security_enabled", "FALSE")
     pts2.set_pixit("CSIP", "TSPX_target_service", "5F03")
     pts2.set_pixit("CSIP", "TSPX_set_size", "3")
@@ -93,7 +93,7 @@ def set_pixits(ptses):
     pts3.set_pixit("CSIP", "TSPX_delete_link_key", "FALSE")
     pts3.set_pixit("CSIP", "TSPX_pin_code", "0000")
     pts3.set_pixit("CSIP", "TSPX_use_dynamic_pin", "FALSE")
-    pts3.set_pixit("CSIP", "TSPX_delete_ltk", "FALSE")
+    pts3.set_pixit("CSIP", "TSPX_delete_ltk", "TRUE")
     pts3.set_pixit("CSIP", "TSPX_security_enabled", "FALSE")
     pts3.set_pixit("CSIP", "TSPX_target_service", "5F03")
     pts3.set_pixit("CSIP", "TSPX_set_size", "3")
@@ -197,8 +197,7 @@ def test_cases(ptses):
                                 SynchPoint("CSIP/CL/SPE/BI-01-C_LT3", 20100)]),
                       TestFunc(get_stack().synch.add_synch_element,
                                [SynchPoint("CSIP/CL/SPE/BI-01-C", 20110),
-                                SynchPoint("CSIP/CL/SPE/BI-01-C_LT2", 20110),
-                                SynchPoint("CSIP/CL/SPE/BI-01-C_LT3", 20110)]),
+                                SynchPoint("CSIP/CL/SPE/BI-01-C_LT2", 20110)]),
                   ],
                   generic_wid_hdl=csip_wid_hdl,
                   lt2="CSIP/CL/SPE/BI-01-C_LT2",
