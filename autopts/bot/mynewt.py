@@ -273,7 +273,7 @@ def main(bot_client):
 
         # Elapsed Time
         mail_ctx["elapsed_time"] = str(datetime.timedelta(
-            seconds=(end_time - start_time)))
+            seconds=(int(end_time - start_time))))
 
         subject, body = compose_mail(args, cfg['mail'], mail_ctx)
 
