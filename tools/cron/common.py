@@ -42,14 +42,14 @@ from time import sleep, time
 from os.path import dirname, abspath
 from datetime import datetime, date
 
-from autopts.utils import get_global_end
-from autopts_bisect import Bisect, set_run_test_fun
-from autopts.bot.common import load_module_from_path
-from autopts.bot.common_features.github import update_sources, update_repos
-from autopts.bot.common_features.mail import send_mail
-
 AUTOPTS_REPO=dirname(dirname(dirname(abspath(__file__))))
 sys.path.insert(0, AUTOPTS_REPO)
+
+from autopts.utils import get_global_end
+from tools.cron.autopts_bisect import Bisect, set_run_test_fun
+from autopts.bot.common import load_module_from_path
+from autopts.bot.common_features.github import update_repos
+from autopts.bot.common_features.mail import send_mail
 
 
 if sys.platform == 'win32':
@@ -257,6 +257,35 @@ def pre_cleanup(autopts_repo, project_repo):
     pre_cleanup_files(autopts_repo, project_repo)
 
 
+def ssh_run_commands(hostname, username, password, commands):
+    import paramiko
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    client.connect(hostname, username=username, password=password)
+
+    for cmd in commands:
+        stdin, stdout, stderr = client.exec_command(cmd)
+        log(f"Command: {cmd}")
+        log(stdout.read().decode())
+        log(stderr.read().decode())
+
+    client.close()
+
+
+def ssh_copy_file(hostname, username, password,
+                  remote_file_path, local_file_path):
+    import paramiko
+    client = paramiko.SSHClient()
+    client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    client.connect(hostname, username=username, password=password)
+
+    sftp = client.open_sftp()
+    sftp.get(remote_file_path, local_file_path)
+
+    sftp.close()
+    client.close()
+
+
 def pre_cleanup_files(autopts_repo, project_repo):
     files_to_save = [
         os.path.join(autopts_repo, 'tmp/'),
@@ -336,6 +365,17 @@ def merge_pr_branch(pr_source_repo_owner, pr_source_branch, repo_name, project_r
     check_call(cmd.split(), cwd=project_repo)
 
 
+def parse_yaml(file_path):
+    import yaml
+    parsed_dict = {}
+
+    if os.path.exists(file_path):
+        with open(file_path, 'r') as stream:
+            parsed_dict = yaml.safe_load(stream)
+
+    return parsed_dict
+
+
 def run_test(bot_options, server_options, autopts_repo):
     if sys.platform == 'win32':
         # Start subprocess running autoptsserver
@@ -388,33 +428,20 @@ def run_test(bot_options, server_options, autopts_repo):
     kill_processes('python.exe')
 
 
-def parse_test_cases_from_comment(pr_cfg):
-    included = re.sub(r'\s+', r' ', pr_cfg['comment_body'][len(pr_cfg['magic_tag']):]).strip()
-    excluded = ''
-
-    if included and not included.isspace():
-        included = ' -c {}'.format(included)
-    else:
-        included = ''
-
-    if excluded and not excluded.isspace():
-        excluded = ' -e {}'.format(excluded)
-    else:
-        excluded = ''
-
-    return included, excluded
-
-
 @catch_exceptions(cancel_on_failure=True)
 def generic_pr_job(cron, cfg, pr_cfg, server_options, pr_repo_name_in_config,
-                   bot_options_append='', **kwargs):
+                   bot_options_append='', included='', excluded='', **kwargs):
     log('Started PR Job: repo_name={repo_name} PR={number} src_owner={source_repo_owner}'
         ' branch={source_branch} head_sha={head_sha} comment={comment_body} '
         'magic_tag={magic_tag} cfg={cfg}'.format(**pr_cfg, cfg=cfg))
 
     cfg_dict = load_config(cfg)
 
-    included, excluded = parse_test_cases_from_comment(pr_cfg)
+    if included and type(included) is list:
+        included = ' -c {}'.format(' '.join(included))
+
+    if excluded and type(excluded) is list:
+        excluded = ' -e {}'.format(' '.join(excluded))
 
     # Path to the project
     PROJECT_REPO = cfg_dict['auto_pts']['project_path']
