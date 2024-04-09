@@ -1,7 +1,7 @@
 #
 # auto-pts - The Bluetooth PTS Automation Framework
 #
-# Copyright (c) 2017, Intel Corporation.
+# Copyright (c) 2024, Codecoup.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms and conditions of the GNU General Public License,
@@ -13,9 +13,17 @@
 # more details.
 #
 
-import autopts.ptsprojects.mynewt.gap
-import autopts.ptsprojects.mynewt.gatt
-import autopts.ptsprojects.mynewt.sm
-import autopts.ptsprojects.mynewt.l2cap
-import autopts.ptsprojects.mynewt.mesh
-import autopts.ptsprojects.mynewt.pacs
+import logging
+
+from autopts.pybtp import btp
+from autopts.pybtp.types import WIDParams
+from autopts.wid import generic_wid_hdl
+from autopts.ptsprojects.stack import get_stack
+from autopts.pybtp.types import *
+
+log = logging.debug
+
+
+def bap_wid_hdl(wid, description, test_case_name):
+    log(f'{bap_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
+    return generic_wid_hdl(wid, description, test_case_name, [__name__, 'autopts.wid.pacs'])
