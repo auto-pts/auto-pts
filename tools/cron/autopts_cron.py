@@ -26,9 +26,9 @@ $ ssh-add path/to/id_rsa
 """
 import argparse
 import logging
+import re
 import sys
 import signal
-import pythoncom
 import schedule
 import threading
 from datetime import timedelta, datetime
@@ -42,12 +42,19 @@ sys.path.extend([AUTOPTS_REPO])
 
 from autopts.utils import get_global_end, set_global_end, have_admin_rights
 from autopts.bot.common import get_absolute_module_path, load_module_from_path
-from tools.cron.common import kill_processes, set_cron_cfg
+from tools.cron.estimations import get_estimations
+from tools.cron.common import kill_processes, set_cron_cfg, load_config
 from tools.cron.cron_gui import CronGUI, RequestPuller
+
+
+if sys.platform == 'win32':
+    import pythoncom
+
 
 pullers = {}
 cron_gui = None
 log = logging.info
+cron_config = None
 
 
 class CliParser(argparse.ArgumentParser):
@@ -61,14 +68,28 @@ class CliParser(argparse.ArgumentParser):
                           help="Open cron window.")
 
 
+class AutoPTSMagicTagParser(argparse.ArgumentParser):
+    def __init__(self, add_help=True):
+        super().__init__(description='Github Magic Tag parser', add_help=add_help)
+
+        self.add_argument("included", nargs='+', default=None,
+                          help="abc")
+
+        self.add_argument("-e", "--excluded", nargs='+', default=[],
+                          help="Names of test cases to exclude. Groups of "
+                               "test cases can be specified by profile names")
+
+
 def run_pending_thread_func():
-    pythoncom.CoInitialize()
+    if sys.platform == 'win32':
+        pythoncom.CoInitialize()
 
     while not get_global_end():
         schedule.run_pending()
         sleep(1)
 
-    pythoncom.CoUninitialize()
+    if sys.platform == 'win32':
+        pythoncom.CoUninitialize()
 
 
 def cron_puller_toggled(*args):
@@ -85,23 +106,22 @@ def cron_puller_toggled(*args):
             break
 
 
-def pr_choose_start_time(delay):
+def pr_choose_start_time(job_config):
+    prio = job_config.get('job_priority', 0)
+    est_duration = job_config.get('estimated_duration', timedelta(minutes=1))
+    delay = job_config.get('delay', timedelta(minutes=1))
     start_time = datetime.today() + delay
-    run_time = 0.0  # TODO run time estimation and prioritising
     all_jobs = schedule.jobs[:]
 
-    while True:
-        for job in [j for j in all_jobs]:
-            if job.next_run < start_time or \
-                    job.next_run > start_time + timedelta(hours=run_time):
-                all_jobs.remove(job)
+    # prio == 0 means the highest priority to start
+    if prio > 0:
+        for job in all_jobs:
+            if start_time < job.next_run < start_time + est_duration and \
+               prio >= job.job_func.keywords.get('job_priority', 0):
+                start_time = job.next_run + job.job_func.keywords.get(
+                    'estimated_duration', timedelta(minutes=1))
 
-        if not len(all_jobs):
-            break
-
-        start_time = datetime.today() + timedelta(hours=run_time)
-
-    return start_time + timedelta(minutes=1)
+    return start_time
 
 
 def pr_job_finish_wrapper(job_func, job_name, *args, **kwargs):
@@ -114,15 +134,90 @@ def pr_job_finish_wrapper(job_func, job_name, *args, **kwargs):
     return result
 
 
-def schedule_pr_job(cron, pr_url, tag_cfg, pr_cfg, delay):
-    start_time = pr_choose_start_time(delay)
-    job_name = f'PR {pr_url}'
+def cron_comment(cron, pr_number, text):
+    cron.post_pr_comment(pr_number, f'{text}')
+    log(text)
+
+
+def check_supported_profiles(test_case_prefixes, job_config):
+    if not job_config['included']:
+        # 'included' parameter not specified in job config. Assume
+        # all profiles supported on this server.
+        return True
+
+    job_config_prefixes = re.sub(r'\s+', r' ', job_config['included']).strip().split(' ')
+
+    for prefix in test_case_prefixes:
+        for profile in job_config_prefixes:
+            if prefix.startswith(profile):
+                # At least one prefix matched
+                return True
+
+    # Not even a single test case prefix is supported on this test server.
+    # Ignore the command.
+    return False
+
+
+def magic_tag_cb(cron, comment_info):
+    body = comment_info['comment_body']
+    magic_tag = comment_info['magic_tag']
+    job_config = cron.tags[magic_tag]
+    job_name = f'PR {comment_info["html_url"]}'
+    pr_number = comment_info['pr_number']
+    command_args = body[len(magic_tag):].split(' ')
+    command_args = [x for x in command_args if x.strip()]
+
+    parser = job_config.get('magic_tag_parser', AutoPTSMagicTagParser)()
+    parsed_args = parser.parse_args(command_args)
+
+    if not check_supported_profiles(parsed_args.included, job_config):
+        log('Magic tag detected but no test case can be matched')
+        return
+
+    job_config['included'] = parsed_args.included
+    job_config['excluded'] = parsed_args.excluded
+
+    try:
+        cfg_dict = load_config(job_config['cfg'])
+        included_tc = job_config['included']
+        excluded_tc = job_config['excluded']
+
+        test_cases, est_duration = get_estimations(cfg_dict, included_tc, excluded_tc)
+
+        test_case_count = len(test_cases)
+        estimations = f', test case count: {test_case_count}, '\
+                      f'estimated duration: {est_duration}'
+
+        if test_case_count > 0:
+            estimations += f'<details><summary>Test cases to be run</summary>{"<br>".join(test_cases)}</details>\n'
+
+        job_config['estimated_duration'] = est_duration
+    except Exception as e:
+        # Probably the configuration missed some parameters,
+        # skip estimation this time.
+        logging.exception(e)
+        estimations = ''
+
+    pr_info = cron.get_pr_info(pr_number)
+    if not pr_info:
+        cron_comment(cron, pr_number, 'Failed to read PR info')
+        return
+
+    pr_info.update(comment_info)
+
+    start_time = pr_choose_start_time(job_config)
+    start_time_str = start_time.strftime('%H:%M:%S')
+    post_text = f'Scheduled PR, {comment_info["html_url"]}, ' \
+                f'estimated start time: {start_time_str}{estimations}'
+
+    cron_comment(cron, pr_number, post_text)
 
     getattr(schedule.every(), start_time.strftime('%A').lower()) \
         .at(start_time.strftime('%H:%M:%S')) \
         .do(lambda *args, **kwargs: pr_job_finish_wrapper(
-            tag_cfg.func, job_name, *args, **kwargs),
-            cron=cron, pr_cfg=pr_cfg, **vars(tag_cfg)).tag(job_name)
+            job_config['func'], job_name, *args, **kwargs),
+            cron=cron, pr_cfg=pr_info,
+            **job_config).tag(job_name)
 
     if cron_gui:
         cron_gui_update_job_list()
@@ -176,6 +271,7 @@ def main():
 
     args = CliParser().parse_args()
 
+    global cron_config
     cron_config = load_module_from_path(args.config_path)
 
     if not cron_config:
@@ -200,7 +296,7 @@ def main():
 
             job_config = vars(cron_config.default_job).copy()
             job_config.update(vars(cron.tags[tag]))
-            cron.tags[tag] = Namespace(**job_config)
+            cron.tags[tag] = job_config
 
             if not get_absolute_module_path(cfg):
                 raise Exception('{} config does not exists!'.format(cfg))
@@ -227,7 +323,7 @@ def main():
 
     try:
         for cron in cron_config.github_crons:
-            cron.schedule_job_cb = schedule_pr_job
+            cron.handle_magic_tag = magic_tag_cb
             cron.start()
 
         if args.gui:
