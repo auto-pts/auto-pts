@@ -163,7 +163,7 @@ def run_cron_gui():
     cron_gui.mainloop()
 
 
-if __name__ == '__main__':
+def main():
     def sigint_handler(sig, frame):
         get_global_end()
         if sys.platform != 'win32':
@@ -241,3 +241,7 @@ if __name__ == '__main__':
         set_global_end()
 
     log('Cron finished')
+
+
+if __name__ == '__main__':
+    main()
