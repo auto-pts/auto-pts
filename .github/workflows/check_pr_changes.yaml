@@ -1,0 +1,86 @@
+name: Check PR for changes in autopts/wid/
+
+on:
+  pull_request:
+    types: [review_requested, ready_for_review, opened, ]
+    branches:
+      - master
+
+jobs:
+  check_changes:
+    runs-on: ubuntu-latest
+    if: github.run_number == 1
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 2
+
+      - name: Check for changes in autopts/wid directory
+        id: check_changes
+        run: |
+          if git diff --name-only HEAD^ HEAD -- autopts/wid/ | grep -q "."; then
+            echo "changes_detected=true" >> $GITHUB_OUTPUT
+          else
+            echo "changes_detected=false" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+      - name: Extract filenames
+        id: extract_filenames
+        if: ${{ steps.check_changes.outputs.changes_detected }} == 'true'
+        run: |
+          changed_files=$(git diff --name-only HEAD^ HEAD -- autopts/wid/)
+          echo "filenames=$(echo "$changed_files" | tr '\n' ',')" >> $GITHUB_OUTPUT
+
+      - name: Parse filenames
+        id: parse_filenames
+        if: steps.check_changes.outputs.changes_detected == 'true'
+        run: |
+          filenames=$(echo "${{ steps.extract_filenames.outputs.filenames }}" | tr ',' '\n')
+          extracted_names=""
+          for filename in $filenames; do
+          if [[ "$filename" == "autopts/wid/__init__.py" ]]; then
+            continue
+          fi
+
+            name_wo_extension=$(basename "$filename" .py)
+            name_formatted=$(echo "$name_wo_extension" | tr '[:lower:]' '[:upper:]')
+            if [[ "$name_formatted" == "GATT_CLIENT" ]]; then
+              name_formatted="GATT/CL"
+            fi
+
+            extracted_names="$extracted_names $name_formatted"
+          done
+          extracted_names=$(echo "$extracted_names" | xargs)
+          echo "extracted_names=$extracted_names" >> $GITHUB_OUTPUT
+
+      - name: Trigger cron on PR - zephyr
+        if: steps.check_changes.outputs.changes_detected == 'true'
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const extractedNames = '${{ steps.parse_filenames.outputs.extracted_names }}'.trim();
+            const commentBody = `#AutoPTS run zephyr ${extractedNames}`;
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: commentBody
+            })
+
+      - name: Trigger cron on PR - mynewt
+        if: steps.check_changes.outputs.changes_detected == 'true'
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const extractedNames = '${{ steps.parse_filenames.outputs.extracted_names }}'.trim();
+            const commentBody = `#AutoPTS run mynewt ${extractedNames}`;
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: commentBody
+            })
