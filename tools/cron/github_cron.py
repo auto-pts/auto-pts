@@ -103,6 +103,17 @@ class GitHubCron(Thread):
 
         return resp
 
+    @catch_connection_error
+    def delete(self, url, params):
+        # DELETE request (GitHub REST API)
+        headers = CaseInsensitiveDict()
+        if 'access_token' in self.config and self.config['access_token'] is not None:
+            headers['Authorization'] = 'token {access_token}'.format(**self.config)
+
+        resp = requests.delete(url, data=json.dumps(params), headers=headers)
+
+        return resp
+
     def post_pr_comment(self, pr_number, comment_body):
         self.check_token()
         url = '{base_url}/repos/{owner}/{repo}/issues/{pr_number}/comments'.format(
@@ -114,6 +125,19 @@ class GitHubCron(Thread):
         }
 
         rsp = self.post(url, params)
+
+        return rsp
+
+    def delete_pr_comment(self, comment_id):
+        self.check_token()
+        url = '{base_url}/repos/{owner}/{repo}/issues/comments/{comment_id}'.format(
+            comment_id=comment_id, **self.config)
+
+        params = {
+            'accept': 'application/vnd.github.v3+json',
+        }
+
+        rsp = self.delete(url, params)
 
         return rsp
 
