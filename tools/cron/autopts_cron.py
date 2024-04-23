@@ -33,17 +33,16 @@ import schedule
 import threading
 from datetime import timedelta, datetime
 from time import sleep
-from argparse import Namespace
 from os.path import dirname, abspath
 
 # Needed if autopts is not installed as a module
 AUTOPTS_REPO=dirname(dirname(dirname(abspath(__file__))))
 sys.path.extend([AUTOPTS_REPO])
 
-from autopts.utils import get_global_end, set_global_end, have_admin_rights
-from autopts.bot.common import get_absolute_module_path, load_module_from_path
+from autopts.utils import get_global_end, set_global_end, have_admin_rights, terminate_process
+from autopts.bot.common import load_module_from_path
 from tools.cron.estimations import get_estimations
-from tools.cron.common import kill_processes, set_cron_cfg, load_config
+from tools.cron.common import set_cron_cfg, load_config
 from tools.cron.cron_gui import CronGUI, RequestPuller
 
 
@@ -258,6 +257,27 @@ def run_cron_gui():
     cron_gui.mainloop()
 
 
+def get_job_config(job, defaults):
+    job_config = {}
+
+    # Set cron configs that are default for all jobs
+    if defaults is not None:
+        job_config.update(vars(defaults))
+
+    # Apply cron configs from config.py
+    if hasattr(job, 'cfg'):
+        config = load_config(job.cfg)
+
+        if 'cron' in config:
+            job_config.update(config['cron'])
+
+    # Overwrite default/config.py parameters with values
+    # directly specified in job config namespace.
+    job_config.update(vars(job))
+
+    return job_config
+
+
 def main():
     def sigint_handler(sig, frame):
         get_global_end()
@@ -265,9 +285,10 @@ def main():
             signal.signal(signal.SIGINT, prev_sigint_handler)
             threading.Thread(target=signal.raise_signal(signal.SIGINT)).start()
         else:
-            kill_processes('python.exe')
-            kill_processes('PTS.exe')
-            kill_processes('Fts.exe')
+            terminate_process(name='PTS')
+            terminate_process(name='Fts')
+            terminate_process(cmdline='autoptsserver.py')
+            terminate_process(cmdline='autoptsclient_bot.py')
 
     args = CliParser().parse_args()
 
@@ -292,34 +313,21 @@ def main():
 
     for cron in cron_config.github_crons:
         for tag in cron.tags:
-            cfg = cron.tags[tag].cfg
-
-            job_config = vars(cron_config.default_job).copy()
-            job_config.update(vars(cron.tags[tag]))
-            cron.tags[tag] = job_config
-
-            if not get_absolute_module_path(cfg):
-                raise Exception('{} config does not exists!'.format(cfg))
+            cron.tags[tag] = get_job_config(cron.tags[tag], getattr(cron_config, 'default_job', None))
 
     for job in cron_config.cyclical_jobs:
-        cfg = job.cfg
-        if not get_absolute_module_path(cfg):
-            raise Exception('{} config does not exists!'.format(cfg))
+        job_config = get_job_config(job, getattr(cron_config, 'default_job', None))
+
+        if 'name' in job_config:
+            job_name = job_config['name']
+        else:
+            job_name = f'cyclical {job_config["day"]} {job_config["hour"]} {job_config["cfg"]}'
+
+        getattr(schedule.every(), job_config['day']).at(job_config['hour']) \
+            .do(job.func, **job_config).tag(job_name)
 
     prev_sigint_handler = signal.getsignal(signal.SIGINT)
     signal.signal(signal.SIGINT, sigint_handler)
-
-    for job in cron_config.cyclical_jobs:
-        job_dict = vars(cron_config.default_job).copy()
-        job_dict.update(vars(job))
-
-        if 'name' in job_dict:
-            job_name = job_dict['name']
-        else:
-            job_name = f'cyclical {job_dict["day"]} {job_dict["hour"]} {job_dict["cfg"]}'
-
-        getattr(schedule.every(), job_dict['day']).at(job_dict['hour']) \
-            .do(job.func, **job_dict).tag(job_name)
 
     try:
         for cron in cron_config.github_crons:

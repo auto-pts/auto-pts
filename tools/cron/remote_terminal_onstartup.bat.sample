@@ -1,0 +1,4 @@
+:: Remote Terminal startup file.
+:: Put this file into Startup folder of your Windows VM instance.
+start "AutoPTS Remote Terminal" /D "path/to/auto-pts/tools/cron" ^
+"%ProgramFiles%\Git\git-bash.exe" -c "python ./remote_terminal.py"

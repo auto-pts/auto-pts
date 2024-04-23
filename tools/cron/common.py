@@ -30,6 +30,7 @@ import re
 import shlex
 import sys
 import shutil
+import threading
 import schedule
 import requests
 import mimetypes
@@ -45,11 +46,14 @@ from datetime import datetime, date
 AUTOPTS_REPO=dirname(dirname(dirname(abspath(__file__))))
 sys.path.insert(0, AUTOPTS_REPO)
 
-from autopts.utils import get_global_end
+from autopts.utils import get_global_end, terminate_process
 from tools.cron.autopts_bisect import Bisect, set_run_test_fun
 from autopts.bot.common import load_module_from_path
 from autopts.bot.common_features.github import update_repos
 from autopts.bot.common_features.mail import send_mail
+from tools.cron.compatibility import find_latest, find_by_project_hash, find_by_autopts_hash, find_by_pts_ver, \
+    get_hash_from_reference
+from tools.cron.remote_terminal import RemoteTerminalClientProxy
 
 
 if sys.platform == 'win32':
@@ -124,8 +128,8 @@ def report_to_review_msg(report_path):
     return msg
 
 
-def error_to_review_msg():
-    error_txt_path = os.path.join(AUTOPTS_REPO, 'error.txt')
+def error_to_review_msg(config):
+    error_txt_path = os.path.join(config['cron']['autopts_repo'], 'error.txt')
     msg = 'AutoPTS Bot failed:\n'
 
     if not os.path.exists(error_txt_path):
@@ -145,6 +149,10 @@ def error_to_review_msg():
 
 
 def send_mail_exception(conf_name, email_cfg, exception, magic_tag=None):
+    if not email_cfg.get('recipients', False):
+        log('No recipients in mail config')
+        return
+
     iso_cal = date.today().isocalendar()
     ww_dd_str = 'WW%s.%s' % (iso_cal[1], iso_cal[2])
 
@@ -170,18 +178,6 @@ def send_mail_exception(conf_name, email_cfg, exception, magic_tag=None):
 
     subject = 'AutoPTS session FAILED - fail logs'
     send_mail(email_cfg, subject, body, attachments)
-
-
-def kill_processes(name):
-    c = wmi.WMI()
-    own_id = os.getpid()
-    for ps in c.Win32_Process(name=name):
-        try:
-            if ps.ProcessId != own_id:
-                ps.Terminate()
-                log('{} process (PID {}) terminated successfully'.format(name, ps.ProcessId))
-        except:
-            log('There is no {} process running with id: {}'.format(name, ps.ProcessId))
 
 
 def clear_workspace(workspace_dir):
@@ -250,11 +246,17 @@ def find_workspace_in_tree(tree_path, workspace, init_depth=4):
     return workspace_path
 
 
-def pre_cleanup(autopts_repo, project_repo):
-    kill_processes('PTS.exe')
-    kill_processes('Fts.exe')
-    kill_processes('python.exe')
-    pre_cleanup_files(autopts_repo, project_repo)
+def pre_cleanup(config):
+    terminate_processes(config)
+
+    pre_cleanup_files(config['cron']['autopts_repo'],
+                      config['auto_pts']['project_path'])
+
+    workspace_path = find_workspace_in_tree(
+        os.path.join(config['cron']['autopts_repo'],
+                     'autopts/workspaces'),
+        config['auto_pts']['workspace'])
+    clear_workspace(workspace_path)
 
 
 def ssh_run_commands(hostname, username, password, commands):
@@ -292,7 +294,7 @@ def pre_cleanup_files(autopts_repo, project_repo):
         os.path.join(autopts_repo, 'logs/'),
         os.path.join(autopts_repo, 'report.txt'),
         os.path.join(autopts_repo, 'report.xlsx'),
-        os.path.join(AUTOPTS_REPO, 'TestCase.db'),
+        os.path.join(autopts_repo, 'TestCase.db'),
         os.path.join(autopts_repo, 'stdout_autoptsbot.log'),
         os.path.join(autopts_repo, 'stdout_autoptsserver.log'),
     ]
@@ -341,6 +343,15 @@ def git_stash_clear(cwd):
     check_call(cmd.split(), cwd=cwd)
 
 
+def git_reset_head(cwd):
+    cmd = 'git reset HEAD --hard'
+    log(f'Running: {cmd}')
+    check_call(cmd.split(), cwd=cwd)
+    cmd = 'git clean -fdx'
+    log(f'Running: {cmd}')
+    check_call(cmd.split(), cwd=cwd)
+
+
 def git_checkout(branch, cwd):
     cmd = 'git checkout {}'.format(branch)
     log(f'Running: {cmd}')
@@ -376,95 +387,290 @@ def parse_yaml(file_path):
     return parsed_dict
 
 
-def run_test(bot_options, server_options, autopts_repo):
-    if sys.platform == 'win32':
-        # Start subprocess running autoptsserver
-        srv_cmd = 'python autoptsserver.py {} >> stdout_autoptsserver.log 2>&1'.format(server_options)
-        log(f'Running: {srv_cmd}')
-        srv_process = subprocess.Popen(shlex.split(srv_cmd),
-                                       shell=True,
-                                       stdout=subprocess.PIPE,
-                                       stderr=subprocess.STDOUT,
-                                       cwd=autopts_repo)
+def start_vm(config):
+    # Reset the VM state
+    config = config['cron']
+    git_reset_head(config['vm']['path'])
 
-        sleep(60)
-    else:
-        # Assume that autoptsserver is available remotely on virtual machine
-        srv_process = None
+    # Checkout the VM instance to branch with specific PTS version
+    if 'pts_ver' in config:
+        vm_yaml = parse_yaml(config['vm']['yaml'])
+        vm_commit = vm_yaml[config['pts_ver']]
+        git_checkout(vm_commit, config['vm']['path'])
 
-    # Start subprocess of autoptsclient_bot
-    bot_cmd = 'python autoptsclient_bot.py {}' \
-              ' >> stdout_autoptsbot.log 2>&1'.format(bot_options)
-    log(f'Running: {bot_cmd}')
-    bot_process = subprocess.Popen(shlex.split(bot_cmd),
+    log(f"Starting VM with: {config['vm']['vm_start_cmd']}")
+    subprocess.Popen(shlex.split(config['vm']['vm_start_cmd']),
+                     shell=False,
+                     stdout=subprocess.PIPE,
+                     stderr=subprocess.STDOUT,
+                     cwd=config['vm']['path'])
+
+    with RemoteTerminalClientProxy(config['remote_machine']['terminal_ip'],
+                                   config['remote_machine']['terminal_port'],
+                                   config['remote_machine'].get(
+                                       'socket_timeout', None)
+                                   ) as client:
+
+        timeout_flag = threading.Event()
+
+        def set_timeout_flag():
+            timeout_flag.set()
+
+        timer = threading.Timer(config['vm']['max_start_time'], set_timeout_flag)
+        timer.start()
+
+        while True:
+            try:
+                log(client.run_command(f"echo Connected", None))
+                break
+            except BaseException:
+                if timeout_flag.is_set():
+                    return
+
+                log("Awaiting VM to start...")
+                sleep(5)
+
+        timer.cancel()
+
+
+def start_remote_autoptsserver(config):
+    with RemoteTerminalClientProxy(config['remote_machine']['terminal_ip'],
+                                   config['remote_machine']['terminal_port'],
+                                   config['remote_machine'].get(
+                                       'socket_timeout', None)
+                                   ) as client:
+        for repo in config['remote_machine']['git']:
+            repo_info = config['remote_machine']['git'][repo]
+
+            if 'checkout_cmd' in repo_info:
+                log(client.run_command(repo_info['checkout_cmd'], repo_info['path']))
+            else:
+                log(client.run_command(f"git fetch {repo_info['remote']}", repo_info['path']))
+                log(client.run_command(f"git checkout {repo_info['remote']}/{repo_info['branch']}", repo_info['path']))
+
+    log(f"Starting process on the remote machine: {config['server_start_cmd']}")
+    log(client.open_process(config['server_start_cmd'],
+                              config['remote_machine']['git']['autopts']['path']))
+
+
+def close_vm(config):
+    config = config['cron']
+    log(f"Closing VM with: {config['vm']['vm_close_cmd']}")
+    try:
+        with RemoteTerminalClientProxy(config['remote_machine']['terminal_ip'],
+                                       config['remote_machine']['terminal_port'],
+                                       config['remote_machine'].get('close_vm_socket_timeout', 5)
+                                       ) as client:
+            log(client.run_command(config['vm']['vm_close_cmd'], None))
+        sleep(config['vm']['max_close_time'])
+    except BaseException as e:
+        log(f"Remote server at IP {config['remote_machine']['terminal_ip']} "
+            f"port {config['remote_machine']['terminal_port']} is not reachable")
+
+
+def close_remote_autoptsserver(config):
+    log(f"Closing remote autoptsserver and PTS")
+    try:
+        config = config['cron']['remote_machine']
+        with RemoteTerminalClientProxy(config['terminal_ip'],
+                                       config['terminal_port'],
+                                       config.get('close_remote_autoptsserver_socket_timeout', 5)
+                                       ) as client:
+            client.terminate_process(None, 'PTS', None)
+            client.terminate_process(None, 'FTS', None)
+            client.terminate_process(None, None, 'autoptsserver.py')
+    except BaseException as e:
+        log(f"Remote server at IP {config['terminal_ip']} port {config['terminal_port']} is not reachable")
+
+
+def win_start_autoptsserver(config):
+    log(f"Running: {config['server_start_cmd']}")
+    srv_process = subprocess.Popen(shlex.split(config['server_start_cmd']),
                                    shell=True,
                                    stdout=subprocess.PIPE,
                                    stderr=subprocess.STDOUT,
-                                   cwd=autopts_repo)
+                                   cwd=config['autopts_repo'])
+    return srv_process
+
+
+def terminate_processes(config):
+    if 'remote_machine' in config['cron']:
+        close_remote_autoptsserver(config)
+    elif sys.platform == 'win32':
+        terminate_process(name='PTS')
+        terminate_process(name='Fts')
+        terminate_process(cmdline='autoptsserver.py')
+        terminate_process(cmdline='autoptsclient_bot.py')
+
+    if 'vm' in config['cron']:
+        close_vm(config)
+
+
+def _run_test(config):
+    srv_process = None
+
+    if 'vm' in config['cron']:
+        try:
+            start_vm(config)
+        except BaseException as e:
+            close_vm(config)
+            raise e
+
+    config = config['cron']
+
+    if 'remote_machine' in config:
+        # Start the autoptsserver.py on the remote machine
+        start_remote_autoptsserver(config)
+    elif sys.platform == 'win32' and config['server_start_cmd']:
+        # Start subprocess running autoptsserver.py
+        srv_process = win_start_autoptsserver(config)
+    # else assume that autoptsserver is already available somewhere
+
+    sleep(config['bot_start_delay'])
+
+    log(f"Running: {config['bot_start_cmd']}")
+    bot_process = subprocess.Popen(config['bot_start_cmd'],
+                                   shell=True,
+                                   stdout=subprocess.PIPE,
+                                   stderr=subprocess.STDOUT,
+                                   cwd=config['autopts_repo'])
 
     sleep(5)
     try:
         # Main thread waits for at least one of subprocesses to finish
-        while (srv_process is None or srv_process.poll() is None) and \
-                bot_process.poll() is None:
+        while True:
+            if srv_process and srv_process.poll() is not None:
+                log('server process finished.')
+                break
+
+            if bot_process.poll() is not None:
+                log('bot  process finished.')
+                break
+
             sleep(5)
     except:
         pass
 
-    if srv_process is None:
-        # autoptsserver is running on virtual machine
-        return
-
     # Terminate the other subprocess if it is still running
-    if srv_process.poll() is None:
+    if srv_process and srv_process.poll() is None:
         srv_process.terminate()
 
     if bot_process.poll() is None:
         bot_process.terminate()
 
     sleep(10)
-    kill_processes('PTS.exe')
-    kill_processes('Fts.exe')
-    kill_processes('python.exe')
+
+
+def run_test(config):
+    try:
+        _run_test(config)
+    except:
+        log(traceback.format_exc())
+
+    terminate_processes(config)
+
+
+def parse_test_cases_from_comment(pr_cfg):
+    included = re.sub(r'\s+', r' ', pr_cfg['comment_body'][len(pr_cfg['magic_tag']):]).strip()
+    excluded = ''
+
+    return included, excluded
+
+
+def get_cron_config(cfg, **kwargs):
+    cron_config = load_config(cfg)
+    if 'cron' not in cron_config:
+        cron_config['cron'] = {}
+
+    config = cron_config['cron']
+    config.update(kwargs)
+
+    if 'project_path' not in config:
+        config['project_path'] = cron_config['auto_pts']['project_path']
+
+    update_repos(config['project_path'], cron_config['git'])
+
+    if 'autopts_repo' not in config:
+        config['autopts_repo'] = AUTOPTS_REPO
+
+    if 'compatibility_csv' in config:
+        if 'project_hash' in config:
+            project_hash = get_hash_from_reference(config['project_path'], config['project_hash'])
+            pts_ver, autopts_hash, _ = find_by_project_hash(
+                config['compatibility_csv'], config['project_path'], project_hash)
+        elif 'autopts_hash' in config:
+            autopts_hash = get_hash_from_reference(config['autopts_repo'], config['project_hash'])
+            pts_ver, _, project_hash = find_by_autopts_hash(
+                config['compatibility_csv'], config['autopts_repo'], autopts_hash)
+        elif 'pts_ver' in config:
+            pts_ver = config['pts_ver']
+            _, autopts_hash, project_hash = find_by_pts_ver(
+                config['compatibility_csv'], pts_ver)
+        else:
+            pts_ver, autopts_hash, project_hash = find_latest(config['compatibility_csv'])
+
+        config['pts_ver'] = pts_ver
+        config['autopts_hash'] = autopts_hash
+        config['project_hash'] = project_hash
+
+    if 'remote_machine' in config and 'autopts_hash' in config:
+        config['remote_machine']['git']['autopts']['branch'] = config['autopts_hash']
+
+    if 'pre_cleanup' not in config:
+        config['pre_cleanup'] = pre_cleanup
+
+    if 'bot_options_append' not in config:
+        config['bot_options_append'] = ''
+
+    if 'included' in config and config['included'].strip():
+        config['bot_options_append'] += f" -c {config['included']}"
+
+    if 'excluded' in config and config['excluded'].strip():
+        config['bot_options_append'] += f" -e {config['excluded']}"
+
+    if 'bot_start_cmd' not in config:
+        bot_args = f'{cfg} {config["bot_options_append"]}'
+        config['bot_start_cmd'] = \
+            f'python autoptsclient_bot.py {bot_args} >> stdout_autoptsbot.log 2>&1'
+
+    if 'bot_start_delay' not in config:
+        config['bot_start_delay'] = 60
+
+    if 'server_start_cmd' not in config:
+        server_options = config.get('server_options', '')
+        config['server_start_cmd'] = \
+            f'python autoptsserver.py {server_options} >> stdout_autoptsserver.log 2>&1'
+
+    return cron_config
 
 
 @catch_exceptions(cancel_on_failure=True)
-def generic_pr_job(cron, cfg, pr_cfg, server_options, pr_repo_name_in_config,
-                   bot_options_append='', included='', excluded='', **kwargs):
+def generic_pr_job(cron, cfg, pr_cfg, **kwargs):
     log('Started PR Job: repo_name={repo_name} PR={number} src_owner={source_repo_owner}'
         ' branch={source_branch} head_sha={head_sha} comment={comment_body} '
         'magic_tag={magic_tag} cfg={cfg}'.format(**pr_cfg, cfg=cfg))
 
-    cfg_dict = load_config(cfg)
-
-    if included and type(included) is list:
-        included = ' -c {}'.format(' '.join(included))
-
-    if excluded and type(excluded) is list:
-        excluded = ' -e {}'.format(' '.join(excluded))
+    kwargs['included'], kwargs['excluded'] = parse_test_cases_from_comment(pr_cfg)
+    config = get_cron_config(cfg, **kwargs)
 
     # Path to the project
-    PROJECT_REPO = cfg_dict['auto_pts']['project_path']
+    PROJECT_REPO = config['auto_pts']['project_path']
 
     # Delete AutoPTS logs, tmp files, old bin directories, kill old PTS.exe, ...
-    pre_cleanup(AUTOPTS_REPO, PROJECT_REPO)
-
-    # Find PTS workspace path and delete PTS logs
-    workspace_path = find_workspace_in_tree(
-        os.path.join(AUTOPTS_REPO, 'autopts/workspaces'), cfg_dict['auto_pts']['workspace'])
-    clear_workspace(workspace_path)
+    config['cron']['pre_cleanup'](config)
 
     # Update repo.
     # To prevent update of the repo by bot, remember to set 'update_repo'
     # to False in m['git']['repo_name']['update_repo'] of config.py
-    cfg_dict['git'][pr_repo_name_in_config]['update_repo'] = True
-    update_repos(PROJECT_REPO, cfg_dict['git'])
+    pr_repo_name_in_config = config['cron']['pr_repo_name_in_config']
+    config['git'][pr_repo_name_in_config]['update_repo'] = True
+    update_repos(PROJECT_REPO, config['git'])
 
     # Merge PR branch into local instance of tested repo
-    if not os.path.isabs(cfg_dict['git'][pr_repo_name_in_config]['path']):
-        repo_path = os.path.join(PROJECT_REPO, cfg_dict['git'][pr_repo_name_in_config]['path'])
+    if not os.path.isabs(config['git'][pr_repo_name_in_config]['path']):
+        repo_path = os.path.join(PROJECT_REPO, config['git'][pr_repo_name_in_config]['path'])
     else:
-        repo_path = os.path.abspath(cfg_dict['git'][pr_repo_name_in_config]['path'])
+        repo_path = os.path.abspath(config['git'][pr_repo_name_in_config]['path'])
 
     try:
         merge_pr_branch(pr_cfg['source_repo_owner'], pr_cfg['source_branch'],
@@ -475,16 +681,15 @@ def generic_pr_job(cron, cfg, pr_cfg, server_options, pr_repo_name_in_config,
         return schedule.CancelJob
 
     # Run AutoPTS server and bot
-    bot_options = f'{cfg} {included} {excluded} {bot_options_append}'
-    run_test(bot_options, server_options, AUTOPTS_REPO)
+    run_test(config)
 
-    git_checkout(cfg_dict['git'][pr_repo_name_in_config]['branch'], repo_path)
+    git_checkout(config['git'][pr_repo_name_in_config]['branch'], repo_path)
 
     # report.txt is created at the very end of bot run, so
     # it should exist if bot completed tests fully
-    report = os.path.join(AUTOPTS_REPO, 'report.txt')
+    report = os.path.join(config['cron']['autopts_repo'], 'report.txt')
     if not os.path.exists(report):
-        error_msg = error_to_review_msg()
+        error_msg = error_to_review_msg(config)
         cron.post_pr_comment(pr_cfg['number'], error_msg)
 
         raise Exception(error_msg)
@@ -500,40 +705,28 @@ def generic_pr_job(cron, cfg, pr_cfg, server_options, pr_repo_name_in_config,
 
 
 @catch_exceptions(cancel_on_failure=True)
-def generic_test_job(cfg, server_options, included='', excluded='',
-                     bisect=None, bot_options_append='', **kwargs):
+def generic_test_job(cfg, *args, **kwargs):
     log(f'Started {cfg} Job')
 
-    cfg_dict = load_config(cfg)
+    config = get_cron_config(cfg, **kwargs)
 
-    if included and not included.isspace():
-        included = ' -c {}'.format(included)
+    config['cron']['pre_cleanup'](config)
 
-    if excluded and not excluded.isspace():
-        excluded = ' -e {}'.format(excluded)
+    if 'autopts_hash' in config['cron']:
+        # Checkout AutoPTS to selected version
+        git_checkout(config['cron']['autopts_hash'],
+                     config['cron']['autopts_repo'])
 
-    PROJECT_REPO = cfg_dict['auto_pts']['project_path']
-
-    pre_cleanup(AUTOPTS_REPO, PROJECT_REPO)
-
-    workspace_path = find_workspace_in_tree(
-        os.path.join(AUTOPTS_REPO, 'autopts/workspaces'), cfg_dict['auto_pts']['workspace'])
-    clear_workspace(workspace_path)
-
-    # To prevent update of the project repo by bot, set 'update_repo'
-    # to False in zephyr['git'] of config.py
-
-    bot_options = f'{cfg} {included} {excluded} {bot_options_append}'
-    run_test(bot_options, server_options, AUTOPTS_REPO)
+    run_test(config)
 
     # report.txt is created at the very end of bot run, so
     # it should exist if bot completed tests fully
-    report = os.path.join(AUTOPTS_REPO, 'report.txt')
+    report = os.path.join(config['cron']['autopts_repo'], 'report.txt')
     if not os.path.exists(report):
         raise Exception('Bot failed before report creation')
 
-    if bisect:
-        Bisect(bisect).run_bisect(report)
+    if 'bisect' in config:
+        Bisect(config['bisect']).run_bisect(report)
 
     log(f'{cfg} Job finished')
 
