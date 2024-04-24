@@ -136,13 +136,22 @@ iut_config = {
         ]
     },
 
+    "ots_no_dir_list.conf": {
+        "overlay": {
+            'CONFIG_BT_OTS_DIR_LIST_OBJ': 'n',
+        },
+        "test_cases": [
+            'OTS/SR/OLE/BI-03-C',
+        ]
+    },
+
     "overlay-le-audio.conf": {
         "overlay": {
             # The overlay file exists in zephyr repo. Leave this empty.
         },
         "test_cases": [
             'VOCS', 'VCS', 'AICS', 'IAS', 'PACS', 'ASCS', 'BAP', 'HAS', 'CSIS', 'MICP',
-            'MICS', 'VCP', 'MCP', 'CAP', 'BASS', 'GMCS', 'CCP', 'HAP', 'TBS', 'GTBS', 'OTS',
+            'MICS', 'VCP', 'MCP', 'CAP', 'BASS', 'GMCS', 'CCP', 'HAP', 'TBS', 'GTBS',
             'TMAP',
         ]
     },

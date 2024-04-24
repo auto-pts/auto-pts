@@ -1,7 +1,7 @@
 #
 # auto-pts - The Bluetooth PTS Automation Framework
 #
-# Copyright (c) 2023, Codecoup.
+# Copyright (c) 2024, Codecoup.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms and conditions of the GNU General Public License,
@@ -13,11 +13,11 @@
 # more details.
 #
 
+
 import logging
 
+from autopts.pybtp.types import WIDParams
 from autopts.wid import generic_wid_hdl
-from autopts.pybtp import btp
-from autopts.ptsprojects.zephyr.iutctl import get_iut
 
 log = logging.debug
 
