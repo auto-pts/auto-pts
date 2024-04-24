@@ -1,7 +1,7 @@
 #
 # auto-pts - The Bluetooth PTS Automation Framework
 #
-# Copyright (c) 2023, Codecoup.
+# Copyright (c) 2024, Codecoup.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms and conditions of the GNU General Public License,
@@ -13,27 +13,50 @@
 # more details.
 #
 
-"""Wrapper around btp messages. The functions are added as needed."""
 import binascii
 import logging
 import struct
 
 from autopts.pybtp import defs
-from autopts.pybtp.btp.btp import CONTROLLER_INDEX, get_iut_method as get_iut, btp_hdr_check, pts_addr_get, \
-    pts_addr_type_get
-from autopts.pybtp.types import BTPError, addr2btp_ba
+from autopts.pybtp.btp.btp import CONTROLLER_INDEX, CONTROLLER_INDEX_NONE, get_iut_method as get_iut, \
+    btp_hdr_check
+from autopts.pybtp.types import BTPError
+
+log = logging.debug
+
 
 OTS = {
+    'read_supported_cmds': (defs.BTP_SERVICE_ID_OTS,
+                            defs.OTS_READ_SUPPORTED_COMMANDS,
+                            CONTROLLER_INDEX_NONE),
+    'register_object': (defs.BTP_SERVICE_ID_OTS,
+                        defs.OTS_REGISTER_OBJECT,
+                        CONTROLLER_INDEX),
 }
 
 
-def address_to_ba(bd_addr_type=None, bd_addr=None):
-    data = bytearray()
-    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
-    bd_addr_type_ba = chr(pts_addr_type_get(bd_addr_type)).encode('utf-8')
-    data.extend(bd_addr_type_ba)
-    data.extend(bd_addr_ba)
-    return data
+def otc_register_object(index, name, flags=0, props=0, alloc_size=0, current_size=0):
+    logging.debug(f"{otc_register_object.__name__}")
 
+    data_ba = bytearray(struct.pack('<BIIIB', flags, props, alloc_size, current_size, len(name)))
+    data_ba.extend(name.encode())
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*OTS['register_object'], data=data_ba)
+
+    ots_command_rsp_succ()
+
+
+def ots_command_rsp_succ(timeout=20.0):
+    logging.debug("%s", ots_command_rsp_succ.__name__)
+
+    iutctl = get_iut()
+
+    tuple_hdr, tuple_data = iutctl.btp_socket.read(timeout)
+    logging.debug("received %r %r", tuple_hdr, tuple_data)
+
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_OTS)
+
+    return tuple_data
 
 OTS_EV = {}

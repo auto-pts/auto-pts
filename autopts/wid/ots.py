@@ -35,9 +35,9 @@ def ots_wid_hdl(wid, description, test_case_name):
 def hdl_wid_0(params: WIDParams):
     """Please make sure no object is stored on the IUT"""
 
-    # Currently there is no API to do that.
+    # Currently this relies on IUT configuration, we don't have BTP command for this
 
-    return False
+    return True
 
 
 def hdl_wid_1(params: WIDParams):
@@ -48,6 +48,12 @@ def hdl_wid_1(params: WIDParams):
 
 def hdl_wid_2(params: WIDParams):
     """Please make sure at least two objects are stored on the IUT."""
+
+    return True
+
+
+def hdl_wid_150(params: WIDParams):
+    """Please continue to wait for 30 seconds timeout to close object transfer channel."""
 
     return True
 

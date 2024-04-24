@@ -51,6 +51,7 @@ services = {
     "CSIP": 1 << defs.BTP_SERVICE_ID_CSIP,
     "TBS": 1 << defs.BTP_SERVICE_ID_TBS,
     "TMAP": 1 << defs.BTP_SERVICE_ID_TMAP,
+    "OTS": 1 << defs.BTP_SERVICE_ID_OTS,
     # GENERATOR append 1
 }
 
@@ -84,8 +85,8 @@ class Stack:
         self.csip = None
         self.tbs = None
         self.gtbs = None
-        self.ots = None
         self.tmap = None
+        self.ots = None
         # GENERATOR append 2
 
     def is_svc_supported(self, svc):
@@ -179,11 +180,11 @@ class Stack:
     def gtbs_init(self):
         self.gtbs = GTBS()
 
-    def ots_init(self):
-        self.ots = OTS()
-
     def tmap_init(self):
         self.tmap = TMAP()
+
+    def ots_init(self):
+        self.ots = OTS()
 
     # GENERATOR append 3
 
@@ -260,11 +261,11 @@ class Stack:
         if self.gtbs:
             self.gtbs_init()
 
-        if self.ots:
-            self.ots_init()
-
         if self.tmap:
             self.tmap_init()
+
+        if self.ots:
+            self.ots_init()
 
         # GENERATOR append 4
 

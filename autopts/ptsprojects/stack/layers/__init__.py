@@ -38,6 +38,6 @@ from .cap import *
 from .csip import *
 from .tbs import *
 from .gtbs import *
-from .ots import *
 from .tmap import *
+from .ots import *
 # GENERATOR append 1
