@@ -212,8 +212,8 @@ def {profile_name_lower}_command_rsp_succ(timeout=20.0):
 
 
 # An example event, to be changed or deleted
-def {profile_name_lower}_ev_discovery_completed({profile_name_lower}, data, data_len):
-    logging.debug('%s %r', {profile_name_lower}_ev_discovery_completed.__name__, data)
+def {profile_name_lower}_ev_dummy_completed({profile_name_lower}, data, data_len):
+    logging.debug('%s %r', {profile_name_lower}_ev_dummy_completed.__name__, data)
 
     fmt = '<B6sB'
     if len(data) < struct.calcsize(fmt):
@@ -223,14 +223,14 @@ def {profile_name_lower}_ev_discovery_completed({profile_name_lower}, data, data
 
     addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
 
-    logging.debug(f'{profile_name_upper} Discovery completed: addr {'{'}addr{'}'} addr_type '
+    logging.debug(f'{profile_name_upper} Dummy event completed: addr {'{'}addr{'}'} addr_type '
                   f'{'{'}addr_type{'}'} status {'{'}status{'}'}')
 
-    {profile_name_lower}.event_received(defs.{profile_name_upper}_EV_DISCOVERY_COMPLETED, (addr_type, addr, status))
+    {profile_name_lower}.event_received(defs.{profile_name_upper}_EV_DUMMY_COMPLETED, (addr_type, addr, status))
 
 
 {profile_name_upper}_EV = {'{'}
-    defs.{profile_name_upper}_EV_DISCOVERY_COMPLETED: {profile_name_lower}_ev_discovery_completed,
+    defs.{profile_name_upper}_EV_DUMMY_COMPLETED: {profile_name_lower}_ev_dummy_completed,
 {'}'}
 """,
     # END of autopts/pybtp/btp/profile.py
@@ -245,15 +245,15 @@ from autopts.pybtp import defs
 class {profile_name_upper}:
     def __init__(self):
         self.event_queues = {'{'}
-            defs.{profile_name_upper}_EV_DISCOVERY_COMPLETED: [],
+            defs.{profile_name_upper}_EV_DUMMY_COMPLETED: [],
         {'}'}
 
     def event_received(self, event_type, event_data):
         self.event_queues[event_type].append(event_data)
 
-    def wait_discovery_completed_ev(self, addr_type, addr, timeout, remove=True):
+    def wait_dummyevent_completed_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.{profile_name_upper}_EV_DISCOVERY_COMPLETED],
+            self.event_queues[defs.{profile_name_upper}_EV_DUMMY_COMPLETED],
             lambda _addr_type, _addr, *_:
                 (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
@@ -291,7 +291,7 @@ changes_to_prepend = {
     f'{project_path}/__init__.py': {1: f"import autopts.ptsprojects.{basename(project_path)}.{profile_name_lower}\n"},
     f'{AUTOPTS_REPO}/autopts/pybtp/defs.py': {
         1: f"BTP_SERVICE_ID_{profile_name_upper} = {profile_id}\n",
-        2: f"{profile_name_upper}_READ_SUPPORTED_COMMANDS = 0x01\n{profile_name_upper}_EV_DISCOVERY_COMPLETED = 0x80\n\n",
+        2: f"{profile_name_upper}_READ_SUPPORTED_COMMANDS = 0x01\n{profile_name_upper}_EV_DUMMY_COMPLETED = 0x80\n\n",
     },
     f'{AUTOPTS_REPO}/autopts/ptsprojects/stack/layers/__init__.py': {1: f"from .{profile_name_lower} import *\n"},
     f'{AUTOPTS_REPO}/autopts/ptsprojects/stack/stack.py': {
