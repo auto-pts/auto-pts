@@ -13,6 +13,7 @@
 # more details.
 #
 
+from datetime import datetime
 from os.path import dirname, abspath, basename
 
 AUTOPTS_REPO = dirname(dirname(abspath(__file__)))
@@ -51,10 +52,12 @@ project_name = input('Enter project name (e.g. zephyr): ').strip() or f'zephyr'
 project_path = f'{AUTOPTS_REPO}/autopts/ptsprojects/{project_name}'
 profile_name = input('Enter profile name: ').strip() or f'profile'
 profile_id = input('Enter new BTP service ID: ').strip() or 0xff
+code_owner = input('Enter code owner name (e.g. Codecoup): ').strip() or 'Codecoup'
 profile_name_lower = profile_name.lower()
 profile_name_upper = profile_name.upper()
 
-copyright_text = 'Copyright (c) 2024, Codecoup.'
+
+copyright_text = f'Copyright (c) {datetime.now().year}, {code_owner}.'
 license_text = f"""#
 # auto-pts - The Bluetooth PTS Automation Framework
 #
