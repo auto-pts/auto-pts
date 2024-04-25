@@ -283,6 +283,17 @@ Commands and responses:
 		is not supported.
 
 		In case of an error, the error response will be returned.
+
+Events:
+	Opcode 0x80 - Dummy event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status  (1 octet)
+
+        This dummy event indicates something that happens asynchronously
+        e.g. IUT finished discovery, a notification arrived, etc.
 """
     # END of doc/btp_profile.txt
 }
