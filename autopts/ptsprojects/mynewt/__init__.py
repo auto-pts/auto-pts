@@ -20,3 +20,4 @@ import autopts.ptsprojects.mynewt.l2cap
 import autopts.ptsprojects.mynewt.mesh
 import autopts.ptsprojects.mynewt.bap
 import autopts.ptsprojects.mynewt.pacs
+# GENERATOR append 1
