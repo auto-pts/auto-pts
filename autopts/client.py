@@ -43,7 +43,7 @@ from autopts.ptsprojects.ptstypes import E_FATAL_ERROR
 from autopts.ptsprojects.testcase import PTSCallback, TestCaseLT1, TestCaseLT2, TestCaseLT3
 from autopts.ptsprojects.testcase_db import TestCaseTable
 from autopts.pybtp import btp, defs
-from autopts.pybtp.types import BTPError, SynchError
+from autopts.pybtp.types import BTPError, SynchError, MissingWIDError
 from autopts.utils import InterruptableThread, ResultWithFlag, CounterWithFlag, set_global_end, \
     raise_on_global_end, RunEnd, get_global_end, have_admin_rights, ykush_replug_usb
 from cliparser import CliParser
@@ -853,6 +853,9 @@ def get_error_code(exc):
 
     elif isinstance(exc, xmlrpc.client.Fault):
         error_code = ptstypes.E_XML_RPC_ERROR
+
+    elif isinstance(exc, MissingWIDError):
+        error_code = ptstypes.E_MISSING_WID_ERROR
 
     elif error_code is None:
         error_code = ptstypes.E_FATAL_ERROR
