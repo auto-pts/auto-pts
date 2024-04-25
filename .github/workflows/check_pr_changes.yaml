@@ -2,14 +2,13 @@ name: Check PR for changes in autopts/wid/
 
 on:
   pull_request:
-    types: [review_requested, ready_for_review, opened, ]
+    types: [ready_for_review, opened]
     branches:
       - master
 
 jobs:
   check_changes:
     runs-on: ubuntu-latest
-    if: github.run_number == 1
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
