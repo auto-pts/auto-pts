@@ -64,6 +64,10 @@ class SynchError(Exception):
     """Exception raised if cannot synchronize"""
 
 
+class MissingWIDError(Exception):
+    pass
+
+
 class AdType:
     flags = 1
     uuid16_some = 2

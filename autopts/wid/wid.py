@@ -1,7 +1,7 @@
 import importlib
 import logging
 
-from ..pybtp.types import WIDParams
+from ..pybtp.types import WIDParams, MissingWIDError
 
 log = logging.debug
 
@@ -17,7 +17,7 @@ def _generic_wid_hdl(wid, description, test_case_name, module_names):
             break
 
     if wid_hdl is None:
-        raise Exception(f'No {wid_str} found!')
+        raise MissingWIDError(f'No {wid_str} found!')
 
     return wid_hdl(WIDParams(wid, description, test_case_name))
 
