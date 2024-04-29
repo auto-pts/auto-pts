@@ -211,6 +211,14 @@ def hdl_wid_20001(params: WIDParams):
     return True
 
 
+def hdl_wid_20109(_: WIDParams):
+    """
+    Please send indications for Characteristic 'Object List Control Point' to the PTS.
+    """
+
+    return True
+
+
 def hdl_wid_20141(params: WIDParams):
     """Please update Media Player Name/Track Title characteristic with value
        whose length is greater than the (ATT_MTU-3). Click OK when it is ready."""
