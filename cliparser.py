@@ -19,7 +19,7 @@ import os
 import time
 
 from distutils.spawn import find_executable
-from autopts.config import SERVER_PORT, CLIENT_PORT
+from autopts.config import SERVER_PORT, CLIENT_PORT, MAX_SERVER_RESTART_TIME
 from autopts.ptsprojects.boards import tty_exists, com_to_tty
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
 from autopts.utils import ykush_replug_usb
@@ -93,6 +93,9 @@ class CliParser(argparse.ArgumentParser):
                           default=False, help=argparse.SUPPRESS)
 
         self.add_argument("--database-file", type=str, default=DATABASE_FILE,
+                          help=argparse.SUPPRESS)
+
+        self.add_argument("--max_server_restart_time", type=int, default=MAX_SERVER_RESTART_TIME,
                           help=argparse.SUPPRESS)
 
         if cli_support is None:
