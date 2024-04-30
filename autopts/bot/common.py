@@ -25,6 +25,7 @@ from pathlib import Path
 from argparse import Namespace
 from autopts import client as autoptsclient
 from autopts.client import CliParser, Client, TestCaseRunStats, init_logging, TEST_CASE_DB
+from autopts.config import MAX_SERVER_RESTART_TIME
 from autopts.ptsprojects.boards import get_free_device, get_tty, get_debugger_snr
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
 
@@ -94,6 +95,7 @@ class BotConfigArgs(Namespace):
         self.simple_mode = args.get('simple_mode', False)
         self.server_args = args.get('server_args', None)
         self.pylink_reset = args.get('pylink_reset', False)
+        self.max_server_restart_time = args.get('max_server_restart_time', MAX_SERVER_RESTART_TIME)
 
         if self.server_args is not None:
             from autoptsserver import SvrArgumentParser
