@@ -81,7 +81,7 @@ def test_cases(ptses):
 
     pts = ptses[0]
 
-    if 'MMDL' not in pts.get_project_list():
+    if 'MBT' not in pts.get_project_list():
         return []
 
     stack = get_stack()
