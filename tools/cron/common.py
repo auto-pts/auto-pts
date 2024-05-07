@@ -680,6 +680,10 @@ def generic_pr_job(cron, cfg, pr_cfg, **kwargs):
         cron.post_pr_comment(pr_cfg['number'], 'Failed to merge the branch')
         return schedule.CancelJob
 
+    if 'mail' in config and 'additional_info_path' in config['mail']:
+        with open(config['mail']['additional_info_path'], 'w') as file:
+            file.write(f'PR comment: {pr_cfg["html_url"]}')
+
     # Run AutoPTS server and bot
     run_test(config)
 

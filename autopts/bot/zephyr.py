@@ -19,6 +19,7 @@
 import collections
 import datetime
 import importlib
+import logging
 import os
 import sys
 import time
@@ -118,12 +119,21 @@ def compose_mail(args, mail_cfg, mail_ctx):
     """ Create a email body
     """
 
+    additional_info = ''
+    if 'additional_info_path' in mail_cfg:
+        try:
+            with open(mail_cfg['additional_info_path']) as file:
+                additional_info = f'{file.read()} <br>'
+        except Exception as e:
+            logging.exception(e)
+
     iso_cal = datetime.date.today().isocalendar()
     ww_dd_str = "WW%s.%s" % (iso_cal[1], iso_cal[2])
 
     body = f'''
     <p>This is automated email and do not reply.</p>
     <h1>Bluetooth test session - {ww_dd_str} </h1>
+    {additional_info}
     <h2>1. IUT Setup</h2>
     <p><b> Type:</b> Zephyr <br>
     <b> Board:</b> {args['board']} <br>
