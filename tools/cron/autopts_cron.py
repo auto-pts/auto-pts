@@ -56,6 +56,11 @@ log = logging.info
 cron_config = None
 
 
+class CancelJob:
+    def __init__(self, canceled):
+        self.canceled = canceled
+
+
 class CliParser(argparse.ArgumentParser):
     def __init__(self):
         super().__init__(description='AutoPTS cron', add_help=True)
@@ -124,11 +129,12 @@ def pr_choose_start_time(job_config):
 
 
 def pr_job_finish_wrapper(job_func, job_name, *args, **kwargs):
-    result = job_func(*args, **kwargs)
-
-    if cron_gui:
+    try:
+        result = job_func(*args, **kwargs)
+    finally:
         schedule.cancel_job(schedule.get_jobs(job_name)[0])
-        cron_gui_update_job_list()
+        if cron_gui:
+            cron_gui_update_job_list()
 
     return result
 
@@ -158,6 +164,12 @@ def check_supported_profiles(test_case_prefixes, job_config):
 
 
 def magic_tag_cb(cron, comment_info):
+    magic_tag = comment_info['magic_tag']
+    job_config = cron.tags[magic_tag]
+    job_config['magic_tag_cb'](cron, comment_info)
+
+
+def autopts_magic_tag_cb(cron, comment_info):
     body = comment_info['comment_body']
     magic_tag = comment_info['magic_tag']
     job_config = cron.tags[magic_tag]
@@ -211,6 +223,7 @@ def magic_tag_cb(cron, comment_info):
 
     cron_comment(cron, pr_number, post_text)
 
+    job_config['cancel_job'] = CancelJob(False)
     getattr(schedule.every(), start_time.strftime('%A').lower()) \
         .at(start_time.strftime('%H:%M:%S')) \
         .do(lambda *args, **kwargs: pr_job_finish_wrapper(
@@ -228,6 +241,23 @@ def cancel_job(name):
     log(f'Canceled {name} job')
     job = schedule.get_jobs(name)[0]
     schedule.cancel_job(job)
+    kwargs = job.job_func.keywords
+    kwargs['cancel_job'].canceled = True
+    if 'pr_cfg' in kwargs and 'cron' in kwargs:
+        pr_cfg = kwargs['pr_cfg']
+        msg = f'Job triggered with {pr_cfg["html_url"]} has been canceled'
+        kwargs['cron'].post_pr_comment(pr_cfg['number'], msg)
+
+    if cron_gui:
+        cron_gui_update_job_list()
+
+
+def cancel_pr_job(cron, comment_info):
+    body = comment_info['comment_body']
+    magic_tag = comment_info['magic_tag']
+    command_args = body[len(magic_tag):].strip().split(' ')
+    job_name = f'PR {command_args[0]}'
+    cancel_job(job_name)
 
 
 def cron_gui_update_job_list():
@@ -314,9 +344,14 @@ def main():
     for cron in cron_config.github_crons:
         for tag in cron.tags:
             cron.tags[tag] = get_job_config(cron.tags[tag], getattr(cron_config, 'default_job', None))
+            if 'magic_tag_cb' not in cron.tags[tag]:
+                cron.tags[tag]['magic_tag_cb'] = autopts_magic_tag_cb
+
+        cron.tags['#AutoPTS cancel'] = {'magic_tag_cb': cancel_pr_job}
 
     for job in cron_config.cyclical_jobs:
         job_config = get_job_config(job, getattr(cron_config, 'default_job', None))
+        job_config['cancel_job'] = CancelJob(False)
 
         if 'name' in job_config:
             job_name = job_config['name']
