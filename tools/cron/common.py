@@ -98,6 +98,21 @@ def catch_connection_error(func):
     return _catch_exceptions
 
 
+def sleep_job(cancel_object, delay):
+    timeout_flag = threading.Event()
+
+    def set_timeout_flag():
+        timeout_flag.set()
+
+    timer = threading.Timer(delay, set_timeout_flag)
+    timer.start()
+
+    while not cancel_object.canceled and not timeout_flag.is_set():
+        sleep(1)
+
+    timer.cancel()
+
+
 def report_to_review_msg(report_path):
     failed = []
     passed = []
@@ -526,7 +541,12 @@ def _run_test(config):
         srv_process = win_start_autoptsserver(config)
     # else assume that autoptsserver is already available somewhere
 
-    sleep(config['bot_start_delay'])
+    sleep_job(config['cancel_job'], config['bot_start_delay'])
+    if config['cancel_job'].canceled:
+        if srv_process and srv_process.poll() is None:
+            srv_process.terminate()
+
+        return
 
     log(f"Running: {config['bot_start_cmd']}")
     bot_process = subprocess.Popen(config['bot_start_cmd'],
@@ -535,10 +555,11 @@ def _run_test(config):
                                    stderr=subprocess.STDOUT,
                                    cwd=config['autopts_repo'])
 
-    sleep(5)
+    sleep_job(config['cancel_job'], 5)
+
     try:
         # Main thread waits for at least one of subprocesses to finish
-        while True:
+        while not config['cancel_job'].canceled:
             if srv_process and srv_process.poll() is not None:
                 log('server process finished.')
                 break
@@ -547,7 +568,7 @@ def _run_test(config):
                 log('bot  process finished.')
                 break
 
-            sleep(5)
+            sleep_job(config['cancel_job'], 5)
     except:
         pass
 
@@ -562,6 +583,9 @@ def _run_test(config):
 
 
 def run_test(config):
+    if config['cron']['cancel_job'].canceled:
+        return
+
     try:
         _run_test(config)
     except:
@@ -644,8 +668,10 @@ def get_cron_config(cfg, **kwargs):
     return cron_config
 
 
-@catch_exceptions(cancel_on_failure=True)
-def generic_pr_job(cron, cfg, pr_cfg, **kwargs):
+def _generic_pr_job(cron, cfg, pr_cfg, **kwargs):
+    if kwargs['cancel_job'].canceled:
+        return None
+
     log('Started PR Job: repo_name={repo_name} PR={number} src_owner={source_repo_owner}'
         ' branch={source_branch} head_sha={head_sha} comment={comment_body} '
         'magic_tag={magic_tag} cfg={cfg}'.format(**pr_cfg, cfg=cfg))
@@ -677,8 +703,7 @@ def generic_pr_job(cron, cfg, pr_cfg, **kwargs):
                         pr_cfg['repo_name'], repo_path)
     except:
         git_rebase_abort(repo_path)
-        cron.post_pr_comment(pr_cfg['number'], 'Failed to merge the branch')
-        return schedule.CancelJob
+        return 'Failed to merge the PR branch'
 
     if 'mail' in config and 'additional_info_path' in config['mail']:
         with open(config['mail']['additional_info_path'], 'w') as file:
@@ -689,20 +714,28 @@ def generic_pr_job(cron, cfg, pr_cfg, **kwargs):
 
     git_checkout(config['git'][pr_repo_name_in_config]['branch'], repo_path)
 
+    if kwargs['cancel_job'].canceled:
+        return None
+
     # report.txt is created at the very end of bot run, so
     # it should exist if bot completed tests fully
     report = os.path.join(config['cron']['autopts_repo'], 'report.txt')
     if not os.path.exists(report):
-        error_msg = error_to_review_msg(config)
-        cron.post_pr_comment(pr_cfg['number'], error_msg)
-
-        raise Exception(error_msg)
+        return error_to_review_msg(config)
 
     log(f'{pr_cfg["repo_name"]} PR Job finished')
 
-    # Post in PR comment with results
-    cron.post_pr_comment(
-        pr_cfg['number'], report_to_review_msg(report))
+    return report_to_review_msg(report)
+
+
+@catch_exceptions(cancel_on_failure=True)
+def generic_pr_job(cron, cfg, pr_cfg, **kwargs):
+    msg = 'Job failed at setup'
+    try:
+        msg = _generic_pr_job(cron, cfg, pr_cfg, **kwargs)
+    finally:
+        if msg:
+            cron.post_pr_comment(pr_cfg['number'], msg)
 
     # To prevent scheduler from cyclical running of the job
     return schedule.CancelJob
@@ -722,6 +755,9 @@ def generic_test_job(cfg, *args, **kwargs):
                      config['cron']['autopts_repo'])
 
     run_test(config)
+
+    if kwargs['cancel_job'].canceled:
+        return schedule.CancelJob
 
     # report.txt is created at the very end of bot run, so
     # it should exist if bot completed tests fully
