@@ -20015,13 +20015,13 @@
           <Row>
             <Name>TSPC_OTS_4_4</Name>
             <Description>Object Name Characteristic - Read Long (longer than default ATT_MTU-1 octets) (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_OTS_4_5</Name>
             <Description>Object Name Characteristic - Write Long (longer than default ATT_MTU-3 octets) (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -20117,7 +20117,7 @@
           <Row>
             <Name>TSPC_OTS_4_20</Name>
             <Description>Object Changed Characteristic (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -20141,7 +20141,7 @@
           <Row>
             <Name>TSPC_OTS_5_4</Name>
             <Description>OACP Execute Procedure (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -20171,7 +20171,7 @@
           <Row>
             <Name>TSPC_OTS_5_9</Name>
             <Description>Patching of Objects (over-writing a portion of the object's contents) (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -20243,7 +20243,7 @@
           <Row>
             <Name>TSPC_OTS_8_2</Name>
             <Description>Read Long Characteristic Values (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -20255,7 +20255,7 @@
           <Row>
             <Name>TSPC_OTS_8_6</Name>
             <Description>Write Long Characteristic Values (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
