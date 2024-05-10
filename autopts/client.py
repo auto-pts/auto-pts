@@ -1168,6 +1168,27 @@ test_case_blacklist = [
 ]
 
 
+def run_or_not(test_case_name, test_cases, excluded):
+    for entry in test_case_blacklist:
+        if entry in test_case_name:
+            return False
+
+    if excluded:
+        for n in excluded:
+            if test_case_name.startswith(n):
+                return False
+
+    if test_cases:
+        for n in test_cases:
+            if test_case_name.startswith(n):
+                return True
+
+        return False
+
+    # Empty test_cases means "run them all"
+    return True
+
+
 def get_test_cases(pts, test_cases, excluded):
     """
     param: pts: proxy to initiated pts instance
@@ -1177,33 +1198,13 @@ def get_test_cases(pts, test_cases, excluded):
     param: excluded: test cases specified with -e option
     """
 
-    def run_or_not(test_case_name):
-        for entry in test_case_blacklist:
-            if entry in test_case_name:
-                return False
-
-        if excluded:
-            for n in excluded:
-                if test_case_name.startswith(n):
-                    return False
-
-        if test_cases:
-            for n in test_cases:
-                if test_case_name.startswith(n):
-                    return True
-
-            return False
-
-        # Empty test_cases means "run them all"
-        return True
-
     projects = pts.get_project_list()
 
     _test_cases = []
 
     for project in projects:
         _test_case_list = pts.get_test_case_list(project)
-        _test_cases += [tc for tc in _test_case_list if run_or_not(tc)]
+        _test_cases += [tc for tc in _test_case_list if run_or_not(tc, test_cases, excluded)]
 
     return _test_cases
 
