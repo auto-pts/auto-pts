@@ -1170,7 +1170,7 @@ def hdl_wid_82(_: WIDParams):
     return True
 
 
-def hdl_wid_90(_: WIDParams):
+def hdl_wid_90(params: WIDParams):
     """
     Please confirm IUT received notification from PTS. Click YES if received,
     otherwise NO.
@@ -1179,6 +1179,11 @@ def hdl_wid_90(_: WIDParams):
     notification send from PTS.
     """
     stack = get_stack()
+
+    if params.test_case_name == 'GATT/CL/GAN/BV-02-C':
+        # multiple handle value notification
+        return stack.gatt_cl.wait_for_notifications(expected_count=2)
+
     return stack.gatt_cl.wait_for_notifications(expected_count=1)
 
 

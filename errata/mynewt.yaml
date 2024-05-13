@@ -1,3 +1,8 @@
 # To add note to the reports about awaited errata, list them here e.g.:
 # GAP/CONN/NCON/BV-01-C: CASE00xxxxx
 # GAP/CONN/NCON/BV-02-C: CASE00xxxxx
+
+GATT/CL/GAD/BV-01-C: Request ID 90121
+GATT/CL/GAD/BV-02-C: Request ID 90121
+GATT/CL/GAD/BV-05-C: Request ID 90121
+GATT/CL/GAD/BV-06-C: Request ID 90121

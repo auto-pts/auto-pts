@@ -133,6 +133,7 @@ def set_pixits(ptses):
     pts.set_pixit("GATT", "TSPX_use_dynamic_pin", "FALSE")
     pts.set_pixit("GATT", "TSPX_delete_ltk", "TRUE")
     pts.set_pixit("GATT", "TSPX_tester_appearance", "0000")
+    pts.set_pixit("GATT", "TSPX_bearer_for_le", "EATT")
 
 
 def test_cases_server(ptses):
