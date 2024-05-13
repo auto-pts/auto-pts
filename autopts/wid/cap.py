@@ -19,10 +19,11 @@ import struct
 from argparse import Namespace
 
 from autopts.pybtp import btp, defs
-from autopts.ptsprojects.stack import get_stack
-from autopts.pybtp.btp import pts_addr_get, pts_addr_type_get, lt2_addr_get, lt2_addr_type_get
+from autopts.ptsprojects.stack import get_stack, WildCard
+from autopts.pybtp.btp import pts_addr_get, pts_addr_type_get, lt2_addr_get, lt2_addr_type_get, lt3_addr_get, \
+    lt3_addr_type_get
 from autopts.pybtp.defs import AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, AUDIO_METADATA_CCID_LIST
-from autopts.pybtp.types import WIDParams, ASCSState, BTPError
+from autopts.pybtp.types import WIDParams, ASCSState, BTPError, PaSyncState
 from autopts.wid import generic_wid_hdl
 from autopts.wid.bap import (create_default_config, AudioDir, get_audio_locations_from_pac,
                              create_lc3_ltvs_bytes, CODEC_CONFIG_SETTINGS, QOS_CONFIG_SETTINGS,
@@ -37,6 +38,46 @@ def cap_wid_hdl(wid, description, test_case_name):
 
 
 # wid handlers section begin
+
+def hdl_wid_100(params: WIDParams):
+    """
+    Please synchronize with Broadcast ISO request
+    """
+    if params.test_case_name.endswith('LT3'):
+        addr = lt3_addr_get()
+        addr_type = lt3_addr_type_get()
+    elif params.test_case_name.endswith('LT2'):
+        addr = lt2_addr_get()
+        addr_type = lt2_addr_type_get()
+    else:
+        addr = pts_addr_get()
+        addr_type = pts_addr_type_get()
+
+    stack = get_stack()
+
+    btp.bap_broadcast_sink_setup()
+    btp.bap_broadcast_scan_start()
+
+    ev = stack.bap.wait_baa_found_ev(addr_type, addr, 30, False)
+    if ev is None:
+        log('BAA not found.')
+        return False
+
+    btp.bap_broadcast_scan_stop()
+
+    log(f'Synchronizing to broadcast with ID {hex(ev["broadcast_id"])}')
+
+    btp.bap_broadcast_sink_sync(ev['broadcast_id'], ev['advertiser_sid'],
+                                5, 100, False, 0, ev['addr_type'], ev['addr'])
+
+    broadcast_id = ev['broadcast_id']
+    ev = stack.bap.wait_bis_found_ev(broadcast_id, 20, False)
+    if ev is None:
+        log(f'BIS not found, broadcast ID {broadcast_id}')
+        return False
+
+    return True
+
 
 def hdl_wid_104(_: WIDParams):
     """Please send non connectable advertise with periodic info."""
@@ -232,6 +273,179 @@ def hdl_wid_312(params: WIDParams):
     return True
 
 
+def hdl_wid_345(params: WIDParams):
+    """Please ADD Broadcast Source to Lower Tester with PA SYNC with PAST(01) or No PAST(02), BIS INDEX: 0x00000001"""
+    stack = get_stack()
+
+    # get our address and lt1 test name
+    if params.test_case_name.endswith('LT2'):
+        addr = lt2_addr_get()
+        addr_type = lt2_addr_type_get()
+        lt1_test_name = params.test_case_name.replace('_LT2','')
+    else:
+        addr = pts_addr_get()
+        addr_type = pts_addr_type_get()
+        lt1_test_name = params.test_case_name
+
+    # get broadcaster address
+    if lt1_test_name in ['CAP/COM/BST/BV-01-C',
+                         'CAP/COM/BST/BV-02-C',
+                         'CAP/COM/BST/BV-06-C']:
+        broadcaster_addr = lt3_addr_get()
+        broadcaster_addr_type = lt3_addr_type_get()
+    else:
+        broadcaster_addr = lt2_addr_get()
+        broadcaster_addr_type = lt2_addr_type_get()
+
+    log('Wait for BAA for %s' % broadcaster_addr)
+    ev = stack.bap.wait_baa_found_ev(broadcaster_addr_type, broadcaster_addr, 10, False)
+    if ev is None:
+        log('No BAA found')
+        return False
+
+    base_found_ev = stack.bap.wait_bis_found_ev(ev['broadcast_id'], 10, False)
+    if base_found_ev is None:
+        log('No base found')
+        return False
+
+    advertiser_sid = ev['advertiser_sid']
+    broadcast_id = ev['broadcast_id']
+    padv_interval = ev['padv_interval']
+    padv_sync = 0x02
+    num_subgroups = 1
+    bis_sync = 1
+    result = re.search(r'BIS INDEX: 0x(\d+)', params.description)
+    if result:
+        bis_sync = int(result.group(1), 16)
+    metadata_len = 0
+    subgroups = struct.pack('<IB', bis_sync, metadata_len)
+    btp.bap_add_broadcast_src(advertiser_sid, broadcast_id, padv_sync,
+                              padv_interval, num_subgroups, subgroups,
+                              broadcaster_addr_type, broadcaster_addr,
+                              addr_type, addr)
+
+    ev = stack.bap.wait_broadcast_receive_state_ev(
+        broadcast_id, addr_type, addr, broadcaster_addr_type,
+        broadcaster_addr, WildCard(), 10, True)
+
+    if ev is None:
+        log('No broadcast receive state event 1')
+        return False
+
+    # We get 2 Broadcast Receive State updates: one to ack the sync process and one that sync was achieved.
+
+    # Issue: On PTS 8.5.3, if we send a new command before the second was received, it will be ignored
+    # Fix: Wait for second update
+    # note: it would be better to wait for PA SYNC == 0x02 with BIS SYNC = 1
+    ev = stack.bap.wait_broadcast_receive_state_ev(
+        broadcast_id, addr_type, addr, broadcaster_addr_type,
+        broadcaster_addr, WildCard(), 10, True)
+
+    if ev is None:
+        log('No broadcast receive state event 2')
+        return False
+
+    # handle BIG Encryption
+    if ev['big_encryption'] == 1:
+        log("BIG Encryption, set Broadcast code")
+        source_id = (ev['src_id'])
+        # broadcast code from TSPX_broadcast_code in ptsproject/x/cap.py
+        broadcast_code = "0102680553F1415AA265BBAFC6EA03B8"
+        btp.bap_set_broadcast_code(source_id, broadcast_code, addr_type, addr)
+
+        # wait for BIS sync
+        stack.bap.wait_broadcast_receive_state_ev(
+            broadcast_id, addr_type, addr, broadcaster_addr_type,
+            broadcaster_addr, WildCard(), 10, True)
+
+    return True
+
+def hdl_wid_347(params: WIDParams):
+    """1. Please ADD Broadcast Source from Lower Tester 2 to
+          Lower Tester 1 with PA SYNC: 0x00, BIS INDEX: 0x00000000
+       2. After that, please REMOVE Broadcast Source.
+    """
+    addr = pts_addr_get()
+    addr_type = pts_addr_type_get()
+    stack = get_stack()
+    broadcaster_addr = lt2_addr_get()
+    broadcaster_addr_type = lt2_addr_type_get()
+
+    ev = stack.bap.wait_baa_found_ev(broadcaster_addr_type, broadcaster_addr, 10, False)
+    if ev is None:
+        log('No BAA found')
+        return False
+
+    base_found_ev = stack.bap.wait_bis_found_ev(ev['broadcast_id'], 10, False)
+    if base_found_ev is None:
+        log('No base found')
+        return False
+
+    broadcast_id = ev['broadcast_id']
+
+    # stop sync to free resources on Controller
+    btp.bap_broadcast_sink_stop( broadcast_id, addr_type, addr)
+
+    advertiser_sid = ev['advertiser_sid']
+    padv_interval = ev['padv_interval']
+    num_subgroups = 1
+    padv_sync = 0x02
+    bis_sync = 1
+    result = re.search(r'BIS INDEX: 0x(\d+)', params.description)
+    if result:
+        bis_sync = int(result.group(1), 16)
+    metadata_len = 0
+    subgroups = struct.pack('<IB', bis_sync, metadata_len)
+    btp.bap_add_broadcast_src(advertiser_sid, broadcast_id, padv_sync,
+                              padv_interval, num_subgroups, subgroups,
+                              broadcaster_addr_type, broadcaster_addr,
+                              addr_type, addr)
+
+    ev = stack.bap.wait_broadcast_receive_state_ev(
+        broadcast_id, addr_type, addr, broadcaster_addr_type,
+        broadcaster_addr, WildCard(), 10, True)
+
+    if ev is None:
+        log('No broadcast receive state event 1')
+        return False
+
+    # We get 2 Broadcast Receive State updates: one to ack the sync process and one that sync was achieved.
+
+    # Issue: On PTS 8.5.3, if we send a new command before the second was received, it will be ignored
+    # Fix: Wait for second update
+    # note: it would be better to wait for PA SYNC == 0x02 with BIS SYNC = 1
+    ev = stack.bap.wait_broadcast_receive_state_ev(
+        broadcast_id, addr_type, addr, broadcaster_addr_type,
+        broadcaster_addr, WildCard(), 10, True)
+
+    # stop sync with Modify Source
+    padv_sync = 0x0
+    bis_sync = 0
+    subgroups = struct.pack('<IB', bis_sync, metadata_len)
+    source_id = (ev['src_id'])
+    btp.bap_modify_broadcast_src(source_id, padv_sync, padv_interval, num_subgroups, subgroups, addr_type, addr)
+
+    ev = stack.bap.wait_broadcast_receive_state_ev(
+        broadcast_id, addr_type, addr, broadcaster_addr_type,
+        broadcaster_addr, padv_sync, 10, False)
+
+    if ev is None:
+        log('No broadcast receive state event 3')
+        return False
+
+    # then remove it with Remove Source
+    btp.bap_remove_broadcast_src(ev['src_id'], addr_type, addr)
+
+    ev = stack.bap.wait_broadcast_receive_state_ev(
+        broadcast_id, addr_type, addr, broadcaster_addr_type,
+        broadcaster_addr, padv_sync, 10, False)
+
+    if ev is None:
+        log('No broadcast receive state event 4')
+        return False
+
+    return True
+
 def hdl_wid_353(params: WIDParams):
     """Wait for Broadcast ISO request."""
 
@@ -248,8 +462,37 @@ def hdl_wid_357(_: WIDParams):
     return True
 
 
+def hdl_wid_376(params: WIDParams):
+    """
+    Please confirm received streaming data.
+    """
+
+    stack = get_stack()
+
+    if params.test_case_name in ['CAP/COM/BST/BV-01-C_LT3',
+                                 'CAP/COM/BST/BV-02-C_LT3',
+                                 'CAP/COM/BST/BV-03-C_LT2',
+                                 'CAP/COM/BST/BV-04-C_LT2',
+                                 'CAP/COM/BST/BV-06-C_LT3'
+                                 ]:
+        # Confirm that LT1 & LT2 received stream from LT3 ...
+        # Pending errata.
+
+        return True
+
+    return False
+
+
 def hdl_wid_377(_: WIDParams):
     """Please confirm sent streaming data"""
+    return True
+
+
+def hdl_wid_384(_: WIDParams):
+    """
+    Click OK will start transmitting audio streaming data.
+    """
+
     return True
 
 
@@ -573,6 +816,11 @@ def hdl_wid_416(_: WIDParams):
 
     return True
 
+def hdl_wid_418(_: WIDParams):
+    """
+       Please confirm the other tester successfully added broadcast source.
+    """
+    return True
 
 def hdl_wid_419(params: WIDParams):
     """
