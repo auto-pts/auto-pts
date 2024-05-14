@@ -309,6 +309,9 @@ else:
             import pyudev
             _pyudev = pyudev
 
+        if os.path.islink(serial_address):
+            serial_address = os.path.realpath(serial_address)
+
         context = _pyudev.Context()
         for device in context.list_devices(subsystem=subsystem):
             try:
@@ -341,6 +344,7 @@ def ykush_replug_usb(ykush_config, device_id=None, delay=0, end_flag=None):
         usb_power(ykush_port, False, ykush_srn)
         sleep(delay)
         usb_power(ykush_port, True, ykush_srn)
+        sleep(delay)
         return
 
     i = 0
