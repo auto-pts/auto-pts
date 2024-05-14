@@ -599,6 +599,18 @@ class PyPTS:
                 # This is faster that ExitPTS. Moreover, the ExitPTS
                 # can fail to close the PTS due to a broken COM server.
                 try:
+                    del self._com_logger
+                    del self._com_sender
+                    del self._pts_logger
+                    del self._pts_sender
+                    del self._pts_dispatch_id
+                    del self._pts
+                    self._com_logger = None
+                    self._com_sender = None
+                    self._pts_logger = None
+                    self._pts_sender = None
+                    self._pts_dispatch_id = None
+                    self._pts = None
                     self._pts_proc.terminate()
                 except Exception as error:
                     logging.exception(repr(error))
