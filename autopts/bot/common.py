@@ -72,6 +72,7 @@ class BotConfigArgs(Namespace):
         self.local_addr = args.get('local_ip', ['127.0.0.1'] * len(self.cli_port))
         self.server_count = args.get('server_count', len(self.cli_port))
         self.tty_file = args.get('tty_file', None)
+        self.tty_alias = args.get('tty_alias', None)
         self.debugger_snr = args.get('debugger_snr', None)
         self.kernel_image = args.get('kernel_image', None)
         self.database_file = args.get('database_file', DATABASE_FILE)
@@ -127,7 +128,9 @@ class BotClient(Client):
         self.iut_config = None
 
     def parse_or_find_tty(self, args):
-        if args.tty_file is None:
+        if args.tty_alias:
+            args.tty_file = args.tty_alias
+        elif args.tty_file is None:
             if args.debugger_snr is None:
                 args.tty_file, args.debugger_snr = get_free_device(args.board_name)
             else:

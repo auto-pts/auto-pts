@@ -1452,10 +1452,20 @@ def run_recovery(args, ptses):
     if args.ykush:
         if sys.platform == 'win32':
             device_id = tty_to_com(args.tty_file)
+        elif args.tty_alias:
+            device_id = args.tty_alias
         else:
             device_id = args.tty_file
 
         ykush_replug_usb(args.ykush, device_id=device_id)
+
+        if args.tty_alias:
+            while not os.path.islink(args.tty_alias) and not os.path.exists(os.path.realpath(args.tty_alias)):
+                raise_on_global_end()
+                log(f'Waiting for TTY {args.tty_alias} to appear...\n')
+                time.sleep(1)
+
+            args.tty_file = os.path.realpath(args.tty_alias)
 
     for pts in ptses:
         req_sent = False
