@@ -54,6 +54,7 @@ from autopts.bot.common_features.mail import send_mail
 from tools.cron.compatibility import find_latest, find_by_project_hash, find_by_autopts_hash, find_by_pts_ver, \
     get_hash_from_reference
 from tools.cron.remote_terminal import RemoteTerminalClientProxy
+from tools.merge_db import TestCaseTable
 
 
 if sys.platform == 'win32':
@@ -779,6 +780,41 @@ def update_repos_job(cfg, **kwargs):
     update_repos('', cfg_dict['git'])
 
     log(f'The {cfg} Job finished')
+
+
+def start_vm_job(cfg, **kwargs):
+    log(f'Started {start_vm_job.__name__} Job, config: {cfg}')
+
+    config = load_config(cfg)
+
+    start_vm(config)
+
+    log(f'The {start_vm_job.__name__} Job finished')
+
+
+def close_vm_job(cfg, **kwargs):
+    log(f'Started {start_vm_job.__name__} Job, config: {cfg}')
+
+    config = load_config(cfg)
+
+    close_vm(config)
+
+    log(f'The {start_vm_job.__name__} Job finished')
+
+
+def merge_db_job(cfg, **kwargs):
+    log(f'Started {merge_db_job.__name__} Job, config: {cfg}')
+
+    config = load_config(cfg)
+    config = config['cron']['merge_db']
+
+    if os.path.exists(config['merged_db_file']):
+        os.remove(config['merged_db_file'])
+
+    database = TestCaseTable(config['database_files'], config['merged_db_file'])
+    database.merge_databases()
+
+    log(f'The {merge_db_job.__name__} Job finished')
 
 
 set_run_test_fun(run_test)
