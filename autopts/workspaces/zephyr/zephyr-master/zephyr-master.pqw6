@@ -20117,7 +20117,7 @@
           <Row>
             <Name>TSPC_OTS_4_20</Name>
             <Description>Object Changed Characteristic (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
