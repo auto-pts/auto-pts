@@ -133,6 +133,8 @@ GAP = {
                                 defs.BTP_GAP_CMD_PADV_SYNC_TRANSFER_RECV,
                                 CONTROLLER_INDEX),
     "conn_br": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_CONNECT_BR, CONTROLLER_INDEX),
+    "pair_with_sec_level": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_PAIR_WITH_SEC_LEVEL,
+                            CONTROLLER_INDEX),
 }
 
 
@@ -1433,3 +1435,23 @@ def gap_conn_br(bd_addr=None):
     data_ba.extend(bd_addr_ba)
 
     iutctl.btp_socket.send_wait_rsp(*GAP['conn_br'], data=data_ba)
+
+
+def gap_pair_with_sec_level(bd_addr=None, bd_addr_type=None, sec_level=defs.GAP_PAIR_LEVEL_2):
+    logging.debug("%s %r %r %r", gap_pair_with_sec_level.__name__, bd_addr, bd_addr_type, sec_level)
+    iutctl = get_iut()
+
+    gap_wait_for_connection()
+
+    data_ba = bytearray()
+    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
+    sec_level_ba = chr(sec_level).encode('utf-8')
+
+    data_ba.extend(chr(pts_addr_type_get(bd_addr_type)).encode('utf-8'))
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(sec_level_ba)
+
+    iutctl.btp_socket.send(*GAP['pair_with_sec_level'], data=data_ba)
+
+    # Expected result
+    gap_command_rsp_succ()
