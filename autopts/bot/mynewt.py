@@ -21,6 +21,7 @@ import os
 import subprocess
 import sys
 import time
+import traceback
 from pathlib import Path
 
 from autopts import bot
@@ -171,7 +172,8 @@ class MynewtBotClient(bot.common.BotClient):
 
             try:
                 build_and_flash(args.project_path, board_type, overlay, args.debugger_snr)
-            except:
+            except BaseException as e:
+                traceback.print_exception(e)
                 report.make_error_txt('Build and flash step failed')
                 raise BuildAndFlashException
 
