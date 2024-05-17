@@ -132,6 +132,7 @@ GAP = {
     "padv_sync_transfer_recv": (defs.BTP_SERVICE_ID_GAP,
                                 defs.GAP_PADV_SYNC_TRANSFER_RECV,
                                 CONTROLLER_INDEX),
+    "conn_br": (defs.BTP_SERVICE_ID_GAP, defs.GAP_CONNECT_BR, CONTROLLER_INDEX),
 }
 
 
@@ -1420,3 +1421,15 @@ def gap_padv_sync_transfer_recv(skip, sync_timeout, flags, addr_type=None, addr=
     iutctl.btp_socket.send(*GAP['padv_sync_transfer_recv'], data=data_ba)
 
     gap_command_rsp_succ()
+
+
+def gap_conn_br(bd_addr=None):
+    logging.debug("%s %r", gap_conn_br.__name__, bd_addr)
+    iutctl = get_iut()
+
+    data_ba = bytearray()
+    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
+
+    data_ba.extend(bd_addr_ba)
+
+    iutctl.btp_socket.send_wait_rsp(*GAP['conn_br'], data=data_ba)

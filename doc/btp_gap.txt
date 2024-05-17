@@ -637,6 +637,17 @@ Commands and responses:
 
 		In case of an error, the error response will be returned.
 
+	Opcode 0x2a - Connect BR command/response
+
+		Controller Index:	<controller id>
+		Command parameters: Address (6 octets)
+		Return Parameters:	<none>
+
+		This command is used to create a Link Layer BR connection with
+		remote device.
+
+		In case of an error, the error response will be returned.
+
 Events:
 	Opcode 0x80 - New Settings event
 
