@@ -648,6 +648,28 @@ Commands and responses:
 
 		In case of an error, the error response will be returned.
 
+	Opcode 0x2b - Pair with specified security level command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Security_level (1 octet)
+		Return Parameters:	<none>
+
+		This command is used to initiate security with remote with
+		specified security level.
+		If peer is already paired IUT is expected to enable security
+		(encryption) with peer. If peer is not paired IUT shall
+		start pairing process.
+		Possible values for the Security_level parameter are:
+			0 - Only for BR/EDR special cases, like SDP
+			1 - No encryption and no authentication
+			2 - Encryption and no authentication (no MITM)
+			3 - Encryption and authentication (MITM)
+			4 - Authenticated Secure Connections and 128-bit key
+
+		In case of an error, the error response will be returned.
+
 Events:
 	Opcode 0x80 - New Settings event
 
