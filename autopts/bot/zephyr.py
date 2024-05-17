@@ -23,6 +23,7 @@ import logging
 import os
 import sys
 import time
+import traceback
 from pathlib import Path
 
 import serial
@@ -215,7 +216,8 @@ class ZephyrBotClient(BotClient):
                                 overlays, args.project_repos)
 
                 flush_serial(args.tty_file)
-            except:
+            except BaseException as e:
+                traceback.print_exception(e)
                 report.make_error_txt('Build and flash step failed')
                 raise BuildAndFlashException
 

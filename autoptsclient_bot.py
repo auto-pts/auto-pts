@@ -100,6 +100,8 @@ def get_client(module, project):
 
 
 def main():
+    logging.basicConfig(level=logging.DEBUG)
+
     bot_projects, config_path = import_bot_projects()
     if not bot_projects:
         print(f'Could not load any BotProjects. Please check your {config_path} file.')
