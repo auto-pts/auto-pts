@@ -16,7 +16,7 @@
 from .nrf5x import *
 from autopts.bot.common import check_call
 
-board_type = 'nrf5340dk_nrf5340_cpuapp'
+board_type = 'nrf5340dk/nrf5340/cpuapp'
 
 
 def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None, *args):
@@ -44,7 +44,7 @@ def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None, *args):
     check_call(cmd, cwd=tester_dir)
     check_call(['west', 'flash', '--skip-rebuild', '--recover', '-i', debugger_snr], cwd=tester_dir)
 
-    cmd = ['west', 'build', '-b', 'nrf5340dk_nrf5340_cpunet', '--',
+    cmd = ['west', 'build', '-b', 'nrf5340dk/nrf5340/cpunet', '--',
            f'-DOVERLAY_CONFIG=\'nrf5340_cpunet_iso-bt_ll_sw_split.conf;'
            f'../../../tests/bluetooth/tester/nrf5340_hci_ipc_cpunet.conf\'']
     check_call(cmd, cwd=controller_dir)

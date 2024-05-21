@@ -24,7 +24,7 @@ from autopts.bot.common import check_call
 supported_projects = ['zephyr']
 
 
-board_type = 'nrf52840dk_nrf52840'
+board_type = 'nrf52840dk/nrf52840'
 
 
 def reset_cmd(iutctl):
