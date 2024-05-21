@@ -829,6 +829,8 @@ def run_test_case_wrapper(func):
         else:
             print(result)
 
+        sys.stdout.flush()
+
         return status, end_time
 
     return wrapper
