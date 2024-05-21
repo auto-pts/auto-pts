@@ -16,5 +16,5 @@
 
 from .nrf5x import *
 
-board_type = 'nrf54l15pdk_nrf54l15_cpuapp'
+board_type = 'nrf54l15pdk/nrf54l15/cpuapp'
 
