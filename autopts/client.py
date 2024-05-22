@@ -518,9 +518,10 @@ def init_pts(args, ptses, tc_db_table_name=None):
         global TEST_CASE_DB
         TEST_CASE_DB = TestCaseTable(tc_db_table_name, args.database_file)
 
-    # Wait till every PTS instance finish executing its test case
+    # Wait until each PTS instance is initialized.
     try:
-        finish_count.wait_for(thread_count, timeout=180.0)
+        finish_count.wait_for(thread_count, timeout=max(
+            180.0, server_count * args.max_server_restart_time))
     except Exception as e:
         logging.exception(e)
         raise
