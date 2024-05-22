@@ -224,7 +224,7 @@ class GitHubCron(Thread):
 
         pr_info = {
             'number': github_pr_number,
-            'source_repo_owner': pr['user']['login'],
+            'source_repo_owner': pr['head']['repo']['owner']['login'],
             'repo_name': pr['head']['repo']['name'],
             'source_branch': pr['head']['ref'],
             'head_sha': pr['head']['sha'],
