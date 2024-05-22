@@ -48,10 +48,11 @@ def build_and_flash(project_path, board, overlay=None, debugger_snr=None):
     logging.debug("%s: %s %s %s", build_and_flash.__name__, project_path,
                   board, overlay)
 
-    check_call('nrfjprog --eraseall'.split(), cwd=project_path)
-    check_call('nrfjprog --recover --coprocessor CP_NETWORK'.split(), cwd=project_path)
-    check_call('nrfjprog --recover'.split(), cwd=project_path)
-    check_call(f'nrfjprog -r {f" -s {debugger_snr}" if debugger_snr else ""}'.split(), cwd=project_path)
+    nrfjprog_snr = f" -s {debugger_snr}" if debugger_snr else ""
+    check_call(f'nrfjprog --eraseall {nrfjprog_snr}'.split(), cwd=project_path)
+    check_call(f'nrfjprog --recover --coprocessor CP_NETWORK  {nrfjprog_snr}'.split(), cwd=project_path)
+    check_call(f'nrfjprog --recover {nrfjprog_snr}'.split(), cwd=project_path)
+    check_call(f'nrfjprog -r {nrfjprog_snr}'.split(), cwd=project_path)
     check_call('rm -rf bin/'.split(), cwd=project_path)
     check_call(f'rm -rf targets/{board}_boot/'.split(), cwd=project_path)
     check_call(f'rm -rf targets/{board}_net_boot/'.split(), cwd=project_path)
@@ -77,13 +78,13 @@ def build_and_flash(project_path, board, overlay=None, debugger_snr=None):
     check_call(f'newt target set bttester app=@apache-mynewt-nimble/apps/bttester'
                .split(), cwd=project_path)
 
-    config = 'NRF5340_EMBED_NET_CORE=1:BSP_NRF5340_NET_ENABLE=1'
+    config = 'NRF5340_EMBED_NET_CORE=1:BSP_NRF5340_NET_ENABLE=1:MYNEWT_DOWNLOADER=jlink'
     if overlay:
         config += ':' + ':'.join([f'{k}={v}' for k, v in list(overlay.items())])
     check_call(f'newt target set bttester syscfg={config}'
                .split(), cwd=project_path)
-    # check_call(f'newt target set {board}_boot syscfg='.split(), cwd=project_path)
-    check_call(f'newt target set {board}_net_boot syscfg=BOOTUTIL_OVERWRITE_ONLY=1'.split(), cwd=project_path)
+    check_call(f'newt target set {board}_boot syscfg=MYNEWT_DOWNLOADER=jlink'.split(), cwd=project_path)
+    check_call(f'newt target set {board}_net_boot syscfg=BOOTUTIL_OVERWRITE_ONLY=1:MYNEWT_DOWNLOADER=jlink'.split(), cwd=project_path)
 
     check_call(f'newt build {board}_boot'.split(), cwd=project_path)
     check_call(f'newt build {board}_net_boot'.split(), cwd=project_path)
