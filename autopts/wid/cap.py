@@ -716,8 +716,9 @@ def hdl_wid_400(params: WIDParams):
                                                            config.addr,
                                                            config.ase_id,
                                                            ASCSState.STREAMING,
-                                                           10)
+                                                           20)
             if ev is None:
+                log('hdl_wid_400 exit, not streaming')
                 return False
 
     return True
