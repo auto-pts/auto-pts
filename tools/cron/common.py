@@ -677,7 +677,6 @@ def _generic_pr_job(cron, cfg, pr_cfg, **kwargs):
         ' branch={source_branch} head_sha={head_sha} comment={comment_body} '
         'magic_tag={magic_tag} cfg={cfg}'.format(**pr_cfg, cfg=cfg))
 
-    kwargs['included'], kwargs['excluded'] = parse_test_cases_from_comment(pr_cfg)
     config = get_cron_config(cfg, **kwargs)
 
     # Path to the project

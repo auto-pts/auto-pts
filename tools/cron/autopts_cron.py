@@ -25,12 +25,15 @@ $ eval `ssh-agent`
 $ ssh-add path/to/id_rsa
 """
 import argparse
+import copy
+import json
 import logging
 import re
 import sys
 import signal
 import schedule
 import threading
+from argparse import Namespace
 from datetime import timedelta, datetime
 from time import sleep
 from os.path import dirname, abspath
@@ -140,54 +143,78 @@ def pr_job_finish_wrapper(job_func, job_name, *args, **kwargs):
 
 
 def cron_comment(cron, pr_number, text):
-    cron.post_pr_comment(pr_number, f'{text}')
+    rsp = cron.post_pr_comment(pr_number, f'{text}')
     log(text)
+    return rsp
 
 
 def check_supported_profiles(test_case_prefixes, job_config):
     if not job_config['included']:
         # 'included' parameter not specified in job config. Assume
         # all profiles supported on this server.
-        return True
+        return True, []
 
     job_config_prefixes = re.sub(r'\s+', r' ', job_config['included']).strip().split(' ')
 
+    test_cases_to_run = []
     for prefix in test_case_prefixes:
         for profile in job_config_prefixes:
             if prefix.startswith(profile):
                 # At least one prefix matched
-                return True
+                test_cases_to_run.append(prefix)
+
+    if test_cases_to_run:
+        return True, test_cases_to_run
 
     # Not even a single test case prefix is supported on this test server.
     # Ignore the command.
-    return False
+    return False, []
 
 
 def magic_tag_cb(cron, comment_info):
     magic_tag = comment_info['magic_tag']
-    job_config = cron.tags[magic_tag]
-    job_config['magic_tag_cb'](cron, comment_info)
+    tag_config = cron.tags[magic_tag]
+    tag_config['magic_tag_cb'](cron, comment_info)
 
 
 def autopts_magic_tag_cb(cron, comment_info):
     body = comment_info['comment_body']
     magic_tag = comment_info['magic_tag']
-    job_config = cron.tags[magic_tag]
-    job_name = f'PR {comment_info["html_url"]}'
-    pr_number = comment_info['pr_number']
     command_args = body[len(magic_tag):].split(' ')
     command_args = [x for x in command_args if x.strip()]
 
-    parser = job_config.get('magic_tag_parser', AutoPTSMagicTagParser)()
-    parsed_args = parser.parse_args(command_args)
+    configs = []
+    for board in cron.tags[magic_tag]['configs']:
+        config = copy.deepcopy(cron.tags[magic_tag]['configs'][board])
+        parser = config.get('magic_tag_parser', AutoPTSMagicTagParser)()
+        parsed_args = parser.parse_args(command_args)
 
-    if not check_supported_profiles(parsed_args.included, job_config):
-        log('Magic tag detected but no test case can be matched')
+        is_supported, supported_test_cases = check_supported_profiles(parsed_args.included, config)
+        if not is_supported:
+            log('Magic tag detected but no test case can be matched')
+            continue
+
+        config['included'] = supported_test_cases
+        config['excluded'] = parsed_args.excluded
+        config['board'] = board
+        configs.append(config)
+
+    if not configs:
         return
 
-    job_config['included'] = parsed_args.included
-    job_config['excluded'] = parsed_args.excluded
+    pr_number = comment_info['pr_number']
+    pr_info = cron.get_pr_info(pr_number)
+    if not pr_info:
+        log('Failed to read PR info')
+        return
 
+    pr_info.update(comment_info)
+
+    for config in configs:
+        schedule_pr_job(cron, pr_info, config)
+
+
+def schedule_pr_job(cron, pr_info, job_config):
     try:
         cfg_dict = load_config(job_config['cfg'])
         included_tc = job_config['included']
@@ -209,21 +236,20 @@ def autopts_magic_tag_cb(cron, comment_info):
         logging.exception(e)
         estimations = ''
 
-    pr_info = cron.get_pr_info(pr_number)
-    if not pr_info:
-        cron_comment(cron, pr_number, 'Failed to read PR info')
-        return
-
-    pr_info.update(comment_info)
-
     start_time = pr_choose_start_time(job_config)
     start_time_str = start_time.strftime('%H:%M:%S')
-    post_text = f'Scheduled PR, {comment_info["html_url"]}, ' \
+    post_text = f'Scheduled PR {pr_info["html_url"]}, board: {job_config["board"]}, ' \
                 f'estimated start time: {start_time_str}{estimations}'
 
-    cron_comment(cron, pr_number, post_text)
+    pr_number = pr_info['pr_number']
+    rsp = cron_comment(cron, pr_number, post_text)
+    cron_comment_url = json.loads(rsp.text)['html_url']
+    job_name = f'PR {cron_comment_url}'
 
+    job_config['included'] = ' '.join(job_config['included'])
+    job_config['excluded'] = ' '.join(job_config['excluded'])
     job_config['cancel_job'] = CancelJob(False)
+
     getattr(schedule.every(), start_time.strftime('%A').lower()) \
         .at(start_time.strftime('%H:%M:%S')) \
         .do(lambda *args, **kwargs: pr_job_finish_wrapper(
@@ -290,20 +316,26 @@ def run_cron_gui():
 def get_job_config(job, defaults):
     job_config = {}
 
+    if isinstance(defaults, Namespace):
+        defaults = vars(defaults)
+
+    if isinstance(job, Namespace):
+        job = vars(job)
+
     # Set cron configs that are default for all jobs
     if defaults is not None:
-        job_config.update(vars(defaults))
+        job_config.update(defaults)
 
     # Apply cron configs from config.py
-    if hasattr(job, 'cfg'):
-        config = load_config(job.cfg)
+    if 'cfg' in job:
+        config = load_config(job['cfg'])
 
         if 'cron' in config:
             job_config.update(config['cron'])
 
     # Overwrite default/config.py parameters with values
     # directly specified in job config namespace.
-    job_config.update(vars(job))
+    job_config.update(job)
 
     return job_config
 
@@ -343,7 +375,10 @@ def main():
 
     for cron in cron_config.github_crons:
         for tag in cron.tags:
-            cron.tags[tag] = get_job_config(cron.tags[tag], getattr(cron_config, 'default_job', None))
+            for board in cron.tags[tag]['configs']:
+                cron.tags[tag]['configs'][board] = get_job_config(
+                    cron.tags[tag]['configs'][board], getattr(cron_config, 'default_job', None))
+
             if 'magic_tag_cb' not in cron.tags[tag]:
                 cron.tags[tag]['magic_tag_cb'] = autopts_magic_tag_cb
 
