@@ -31,7 +31,7 @@ def mcp_wid_hdl(wid, description, test_case_name):
     log(f'{mcp_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
     return generic_wid_hdl(wid, description, test_case_name, [__name__])
 
-
+#test
 class SearchTypes:
     TRACK_NAME = 0x01
     ARTIST_NAME = 0x02
