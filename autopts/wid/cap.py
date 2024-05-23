@@ -23,7 +23,7 @@ from autopts.ptsprojects.stack import get_stack, WildCard
 from autopts.pybtp.btp import pts_addr_get, pts_addr_type_get, lt2_addr_get, lt2_addr_type_get, lt3_addr_get, \
     lt3_addr_type_get
 from autopts.pybtp.defs import AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, AUDIO_METADATA_CCID_LIST
-from autopts.pybtp.types import WIDParams, ASCSState, BTPError, PaSyncState
+from autopts.pybtp.types import WIDParams, ASCSState, BTPError, PaSyncState, Addr
 from autopts.wid import generic_wid_hdl
 from autopts.wid.bap import (create_default_config, AudioDir, get_audio_locations_from_pac,
                              create_lc3_ltvs_bytes, CODEC_CONFIG_SETTINGS, QOS_CONFIG_SETTINGS,
@@ -114,8 +114,14 @@ wid_114_settings = {
                                struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
     'CAP/INI/BST/BV-16-C': (1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
     'CAP/INI/BST/BV-17-C': (2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
+    'CAP/INI/UTB/BV-01-C': (2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
+    'CAP/INI/UTB/BV-02-C': (2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0004) +
+                        struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
+    'CAP/INI/UTB/BV-03-C': (2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
+                        struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
+    'CAP/INI/UTB/BV-04-C': (2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
+                        struct.pack('<BBBB', 3, AUDIO_METADATA_CCID_LIST, 0x00, 0x01)),
 }
-
 
 def hdl_wid_114(params: WIDParams):
     """Please advertise with Broadcast Audio Announcement (0x1852) service data"""
@@ -277,7 +283,7 @@ def hdl_wid_345(params: WIDParams):
     """Please ADD Broadcast Source to Lower Tester with PA SYNC with PAST(01) or No PAST(02), BIS INDEX: 0x00000001"""
     stack = get_stack()
 
-    # get our address and lt1 test name
+    # get pts address and lt1 test name
     if params.test_case_name.endswith('LT2'):
         addr = lt2_addr_get()
         addr_type = lt2_addr_type_get()
@@ -288,29 +294,44 @@ def hdl_wid_345(params: WIDParams):
         lt1_test_name = params.test_case_name
 
     # get broadcaster address
-    if lt1_test_name in ['CAP/COM/BST/BV-01-C',
-                         'CAP/COM/BST/BV-02-C',
-                         'CAP/COM/BST/BV-06-C']:
-        broadcaster_addr = lt3_addr_get()
-        broadcaster_addr_type = lt3_addr_type_get()
+    if lt1_test_name.startswith('CAP/INI/UTB/BV-'):
+        # IUT is Broadcaster
+        broadcaster_addr = stack.gap.iut_addr_get_addr()
+        # TODO: Broadcast Advertising Start uses Random Address for NRF5340 in BTstack's BTP Client
+        broadcaster_addr_type = Addr.le_random
+        # TODO: hard-coded in BTstack BTP Client
+        advertiser_sid = 0
+        # TODO: hard-coded in BTstack BTP Client, but not used by Add Broadcast Source operation
+        padv_interval = 750
+        # TODO: hard-coded. Unclear if used by PTS
+        broadcast_id = 0x123456
+
     else:
-        broadcaster_addr = lt2_addr_get()
-        broadcaster_addr_type = lt2_addr_type_get()
+        # A Lower Tester is Broadcaster
+        if lt1_test_name in ['CAP/COM/BST/BV-01-C',
+                             'CAP/COM/BST/BV-02-C',
+                             'CAP/COM/BST/BV-06-C']:
+            broadcaster_addr = lt3_addr_get()
+            broadcaster_addr_type = lt3_addr_type_get()
+        else:
+            broadcaster_addr = lt2_addr_get()
+            broadcaster_addr_type = lt2_addr_type_get()
 
-    log('Wait for BAA for %s' % broadcaster_addr)
-    ev = stack.bap.wait_baa_found_ev(broadcaster_addr_type, broadcaster_addr, 10, False)
-    if ev is None:
-        log('No BAA found')
-        return False
+        log('Wait for BAA for %s' % broadcaster_addr)
+        ev = stack.bap.wait_baa_found_ev(broadcaster_addr_type, broadcaster_addr, 10, False)
+        if ev is None:
+            log('No BAA found')
+            return False
 
-    base_found_ev = stack.bap.wait_bis_found_ev(ev['broadcast_id'], 10, False)
-    if base_found_ev is None:
-        log('No base found')
-        return False
+        base_found_ev = stack.bap.wait_bis_found_ev(ev['broadcast_id'], 10, False)
+        if base_found_ev is None:
+            log('No base found')
+            return False
 
-    advertiser_sid = ev['advertiser_sid']
-    broadcast_id = ev['broadcast_id']
-    padv_interval = ev['padv_interval']
+        advertiser_sid = ev['advertiser_sid']
+        broadcast_id = ev['broadcast_id']
+        padv_interval = ev['padv_interval']
+
     padv_sync = 0x02
     num_subgroups = 1
     bis_sync = 1
@@ -580,6 +601,14 @@ wid_400_settings = {
 
     'CAP/INI/UST/BV-42-C': (1, 1, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
     'CAP/INI/UST/BV-42-C_LT2': (1, 0, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
+    # Two Lower Testers, unidirectional
+    'CAP/INI/UTB/BV-01-C': (1, 0, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
+    'CAP/INI/UTB/BV-02-C': (1, 0, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0004) +
+                            struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
+    'CAP/INI/UTB/BV-03-C': (1, 0, 2,  struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
+                            struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
+    'CAP/INI/UTB/BV-04-C': (1, 0, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
+                            struct.pack('<BBBB', 3, AUDIO_METADATA_CCID_LIST, 0x00, 0x01)),
 }
 
 
@@ -744,6 +773,28 @@ def hdl_wid_405(params: WIDParams):
 
     return True
 
+def hdl_wid_406(params: WIDParams):
+    """
+        Please perform Unicast Audio Ending procedure, and initiate Broadcast Audio Reception Start procedure for Unicast Handover procedure.
+    """
+
+    # Stop Unicast
+
+    if params.test_case_name.endswith('LT2'):
+        return True
+
+    cig_id = 0x00
+    btp.cap_unicast_audio_stop(cig_id)
+
+    stack = get_stack()
+    ev = stack.cap.wait_unicast_stop_completed_ev(cig_id, 20)
+    if ev is None:
+        log('hdl_wid_406 exit, unicasst stop event not received')
+        return False
+
+    # Setup Broadcast
+    return hdl_wid_114(params)
+
 
 def hdl_wid_409(_: WIDParams):
     """Please update metadata in BASE. Then click OK when IUT is ready
@@ -796,6 +847,35 @@ def hdl_wid_412(params: WIDParams):
 
     return hdl_wid_410(params)
 
+def hdl_wid_414(params: WIDParams):
+    """"Please click OK when IUT received notification."""
+    stack = get_stack()
+
+    # get pts address and lt1 test name
+    if params.test_case_name.endswith('LT2'):
+        addr = lt2_addr_get()
+        addr_type = lt2_addr_type_get()
+    else:
+        addr = pts_addr_get()
+        addr_type = pts_addr_type_get()
+
+    # IUT is Broadcaster
+    broadcaster_addr = stack.gap.iut_addr_get_addr()
+    # TODO: Broadcast Advertising Start uses Random Address for NRF5340 in BTstack's BTP Client
+    broadcaster_addr_type = Addr.le_random
+    # TODO: hard-coded. Unclear if used by PTS
+    broadcast_id = 0x123456
+
+    padv_sync = 0x02
+    ev = stack.bap.wait_broadcast_receive_state_ev(
+        broadcast_id, addr_type, addr, broadcaster_addr_type,
+        broadcaster_addr, padv_sync, 10, False)
+
+    if ev is None:
+        log('No broadcast receive state event 4')
+        return False
+
+    return True
 
 def hdl_wid_415(_: WIDParams):
     """
