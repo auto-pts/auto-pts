@@ -34,7 +34,7 @@ jobs:
 
       - name: Parse filenames
         id: parse_filenames
-        if: steps.check_changes.outputs.changes_detected == 'true'
+        if: ${{ steps.check_changes.outputs.changes_detected }} == 'true'
         run: |
           filenames=$(echo "${{ steps.extract_filenames.outputs.filenames }}" | tr ',' '\n')
           extracted_names=""
@@ -55,7 +55,7 @@ jobs:
           echo "extracted_names=$extracted_names" >> $GITHUB_OUTPUT
 
       - name: Trigger cron on PR - zephyr
-        if: steps.check_changes.outputs.changes_detected == 'true'
+        if: ${{ steps.check_changes.outputs.changes_detected }} == 'true'
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -70,7 +70,7 @@ jobs:
             })
 
       - name: Trigger cron on PR - mynewt
-        if: steps.check_changes.outputs.changes_detected == 'true'
+        if: ${{ steps.check_changes.outputs.changes_detected }} == 'true'
         uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
