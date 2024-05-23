@@ -338,6 +338,7 @@ def check_call(cmd, env=None, cwd=None, shell=True):
         executable = None
 
     logging.debug(f'Running cmd: {cmd}')
+    sys.stdout.flush()
 
     return subprocess.check_call(cmd, env=env, cwd=cwd, shell=shell, executable=executable)
 
