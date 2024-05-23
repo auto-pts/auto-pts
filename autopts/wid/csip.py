@@ -40,6 +40,7 @@ def hdl_wid_4(_: WIDParams):
     """Please verify the number of discovered Set Members is equal to 3."""
 
     stack = get_stack()
+    #test
 
     if stack.csip.member_cnt != 3:
         return False
