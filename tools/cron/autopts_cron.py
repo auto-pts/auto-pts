@@ -152,7 +152,7 @@ def check_supported_profiles(test_case_prefixes, job_config):
     if not job_config['included']:
         # 'included' parameter not specified in job config. Assume
         # all profiles supported on this server.
-        return True, []
+        return True, test_case_prefixes
 
     job_config_prefixes = re.sub(r'\s+', r' ', job_config['included']).strip().split(' ')
 
