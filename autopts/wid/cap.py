@@ -295,6 +295,9 @@ def hdl_wid_345(params: WIDParams):
 
     # get broadcaster address
     if lt1_test_name.startswith('CAP/INI/UTB/BV-'):
+        # Setup Broadcast
+        hdl_wid_114(params)
+
         # IUT is Broadcaster
         broadcaster_addr = stack.gap.iut_addr_get_addr()
         # TODO: Broadcast Advertising Start uses Random Address for NRF5340 in BTstack's BTP Client
@@ -792,9 +795,7 @@ def hdl_wid_406(params: WIDParams):
         log('hdl_wid_406 exit, unicasst stop event not received')
         return False
 
-    # Setup Broadcast
-    return hdl_wid_114(params)
-
+    return True
 
 def hdl_wid_409(_: WIDParams):
     """Please update metadata in BASE. Then click OK when IUT is ready
