@@ -121,6 +121,9 @@ wid_114_settings = {
                         struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
     'CAP/INI/UTB/BV-04-C': (2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
                         struct.pack('<BBBB', 3, AUDIO_METADATA_CCID_LIST, 0x00, 0x01)),
+    'CAP/INI/BTU/BV-01-C': (1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
+    'CAP/INI/BTU/BV-02-C': (1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
+                        struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
 }
 
 def hdl_wid_114(params: WIDParams):
@@ -294,12 +297,13 @@ def hdl_wid_345(params: WIDParams):
         lt1_test_name = params.test_case_name
 
     # get broadcaster address
-    if lt1_test_name.startswith('CAP/INI/UTB/BV-'):
+    if lt1_test_name.startswith('CAP/INI/UTB/BV-') or lt1_test_name.startswith('CAP/INI/BTU/BV-'):
+
         # Setup Broadcast
         hdl_wid_114(params)
 
         # IUT is Broadcaster
-        broadcaster_addr = stack.gap.iut_addr_get_addr()
+        broadcaster_addr = stack.gap.iut_addr_get_str()
         # TODO: Broadcast Advertising Start uses Random Address for NRF5340 in BTstack's BTP Client
         broadcaster_addr_type = Addr.le_random
         # TODO: hard-coded in BTstack BTP Client
@@ -612,6 +616,10 @@ wid_400_settings = {
                             struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
     'CAP/INI/UTB/BV-04-C': (1, 0, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
                             struct.pack('<BBBB', 3, AUDIO_METADATA_CCID_LIST, 0x00, 0x01)),
+    # Single LT, unidirectional
+    'CAP/INI/BTU/BV-01-C': (1, 0, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
+    'CAP/INI/BTU/BV-02-C': (1, 0, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
+                            struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
 }
 
 
@@ -848,6 +856,54 @@ def hdl_wid_412(params: WIDParams):
 
     return hdl_wid_410(params)
 
+
+def hdl_wid_413(params: WIDParams):
+    """Please remove source."""
+
+    stack = get_stack()
+
+    # IUT is Broadcaster
+    broadcaster_addr = stack.gap.iut_addr_get_str()
+    # TODO: Broadcast Advertising Start uses Random Address for NRF5340 in BTstack's BTP Client
+    broadcaster_addr_type = Addr.le_random
+    # TODO: hard-coded. Unclear if used by PTS
+    broadcast_id = 0x123456
+
+    addr = pts_addr_get()
+    addr_type = pts_addr_type_get()
+
+    # first stop sync with Modify Source
+    pa_sync = 0x0
+    bis_sync = 0
+    metadata_len = 0
+    num_subgroups = 1
+    subgroups = struct.pack('<IB', bis_sync, metadata_len)
+    # TODO: get src_id from Broadcast Add Source
+    source_id = 1
+    # TODO: padv_interval most likely isn't used
+    padv_interval = 0
+    btp.bap_modify_broadcast_src(source_id, pa_sync, padv_interval, num_subgroups, subgroups, addr_type, addr)
+
+    pa_sync_state = 0x0
+    ev = stack.bap.wait_broadcast_receive_state_ev(
+        broadcast_id, addr_type, addr, broadcaster_addr_type,
+        broadcaster_addr, pa_sync_state, 10, True)
+
+    if ev is None:
+        log('No broadcast receive state event 1')
+        return False
+
+    # then remove it with Remove Source
+    btp.bap_remove_broadcast_src(source_id, addr_type, addr)
+
+    # stop IUT Broadcaster
+    source_id = 0
+    btp.cap_broadcast_adv_stop(source_id)
+    btp.cap_broadcast_source_stop(source_id)
+
+    return True
+
+
 def hdl_wid_414(params: WIDParams):
     """"Please click OK when IUT received notification."""
     stack = get_stack()
@@ -861,7 +917,7 @@ def hdl_wid_414(params: WIDParams):
         addr_type = pts_addr_type_get()
 
     # IUT is Broadcaster
-    broadcaster_addr = stack.gap.iut_addr_get_addr()
+    broadcaster_addr = stack.gap.iut_addr_get_str()
     # TODO: Broadcast Advertising Start uses Random Address for NRF5340 in BTstack's BTP Client
     broadcaster_addr_type = Addr.le_random
     # TODO: hard-coded. Unclear if used by PTS
