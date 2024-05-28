@@ -88,6 +88,7 @@ class BotConfigArgs(Namespace):
         self.retry = args.get('retry', 0)
         self.stress_test = args.get('stress_test', False)
         self.ykush = args.get('ykush', None)
+        self.ykush_replug_delay = args.get('ykush_replug_delay', 3)
         self.recovery = args.get('recovery', False)
         self.superguard = float(args.get('superguard', 0))
         self.cron_optim = args.get('cron_optim', False)
