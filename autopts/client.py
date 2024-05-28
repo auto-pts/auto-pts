@@ -1460,7 +1460,7 @@ def run_recovery(args, ptses):
         else:
             device_id = args.tty_file
 
-        ykush_replug_usb(args.ykush, device_id=device_id)
+        ykush_replug_usb(args.ykush, device_id=device_id, delay=args.ykush_replug_delay)
 
         if args.tty_alias:
             while not os.path.islink(args.tty_alias) and not os.path.exists(os.path.realpath(args.tty_alias)):

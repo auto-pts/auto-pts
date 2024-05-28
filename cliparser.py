@@ -102,6 +102,8 @@ class CliParser(argparse.ArgumentParser):
 
         self.add_argument("--tty_alias", type=str, default='', help=argparse.SUPPRESS)
 
+        self.add_argument("--ykush_replug_delay", type=float, default=3, help=argparse.SUPPRESS)
+
         if cli_support is None:
             return
 
@@ -180,7 +182,7 @@ class CliParser(argparse.ArgumentParser):
                 device_id = args.tty_file
 
             # If ykush is used, the board could be unplugged right now
-            ykush_replug_usb(args.ykush, device_id=device_id, delay=2)
+            ykush_replug_usb(args.ykush, device_id=device_id, delay=args.ykush_replug_delay)
 
             if args.tty_alias:
                 while not os.path.islink(args.tty_alias) and not os.path.exists(os.path.realpath(args.tty_alias)):
