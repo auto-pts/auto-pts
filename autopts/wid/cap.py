@@ -772,6 +772,14 @@ def hdl_wid_402(_: WIDParams):
     return True
 
 
+def hdl_wid_404(_: WIDParams):
+    """
+        Please wait to establish 2 connections. After that, Click OK to send notification.
+    """
+
+    return True
+
+
 def hdl_wid_405(params: WIDParams):
     """
         Please read lock characteristic.
@@ -802,6 +810,22 @@ def hdl_wid_406(params: WIDParams):
     if ev is None:
         log('hdl_wid_406 exit, unicasst stop event not received')
         return False
+
+    return True
+
+def hdl_wid_408(params: WIDParams):
+    """Please write Mute Characteristic."""
+
+    if params.test_case_name.endswith('LT2'):
+        addr = lt2_addr_get()
+        addr_type = lt2_addr_type_get()
+        lt1_test_name = params.test_case_name.replace('_LT2','')
+    else:
+        addr = pts_addr_get()
+        addr_type = pts_addr_type_get()
+        lt1_test_name = params.test_case_name
+
+    btp.micp_mute(addr_type, addr)
 
     return True
 
@@ -997,6 +1021,10 @@ def hdl_wid_20100(params: WIDParams):
     btp.bap_discover(addr_type, addr)
     stack.bap.wait_discovery_completed_ev(addr_type, addr, 30)
 
+    #  CAP/COM/CRC/BV-07-C - BV-09-C request to write to Mute characteristic in 20106
+    btp.micp_discover(addr_type, addr)
+    stack.micp.wait_discovery_completed_ev(addr_type, addr, 10)
+
     return True
 
 
@@ -1012,6 +1040,43 @@ def hdl_wid_20106(_: WIDParams):
         Please write to Client Characteristic Configuration Descriptor
         of ASE Control Point characteristic to enable notification.
     """
+    return True
+
+
+def hdl_wid_20110(params: WIDParams):
+    """
+        Please send write request to handle 0x016A with following value.
+        Volume Control Point:
+            Op Code: [? (0x0?)] ?
+            Change Counter: <WildCard: Exists
+        """
+
+    if params.test_case_name.endswith('LT2'):
+        addr = lt2_addr_get()
+        addr_type = lt2_addr_type_get()
+        lt1_test_name = params.test_case_name.replace('_LT2','')
+    else:
+        addr = pts_addr_get()
+        addr_type = pts_addr_type_get()
+        lt1_test_name = params.test_case_name
+
+    stack = get_stack()
+    btp.vcp_discover(addr_type, addr)
+    stack.vcp.wait_discovery_completed_ev(addr_type, addr, 10)
+
+    if lt1_test_name == 'CAP/COM/CRC/BV-01-C':
+        btp.vcp_set_vol(50, addr_type, addr)
+    if lt1_test_name == 'CAP/COM/CRC/BV-03-C':
+        btp.vcp_unmute(addr_type, addr)
+    if lt1_test_name == 'CAP/COM/CRC/BV-04-C':
+        btp.vcp_mute(addr_type, addr)
+    if lt1_test_name == 'CAP/COM/CRC/BV-05-C':
+        btp.vcp_set_vol(13, addr_type, addr)
+    if lt1_test_name == 'CAP/COM/CRC/BV-06-C':
+        btp.vcp_mute(addr_type, addr)
+    if lt1_test_name == 'CAP/COM/CRC/BV-09-C':
+        btp.aics_set_gain(42, addr_type, addr)
+
     return True
 
 
