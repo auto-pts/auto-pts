@@ -1472,16 +1472,25 @@ def run_recovery(args, ptses):
 
     for pts in ptses:
         req_sent = False
+        last_restart_time = None
+
         while not get_global_end():
             try:
+                if not last_restart_time:
+                    last_restart_time = pts.get_last_recovery_time()
+                    log(f'Last restart time of PTS {pts}: {last_restart_time}')
+
                 if not req_sent:
                     log(f'Recovering PTS {pts} ...')
                     pts.recover_pts()
                     req_sent = True
+                    err = pts.callback.get_result('recover_pts', timeout=args.max_server_restart_time)
+                    if err == True:
+                        break
 
-                err = pts.callback.get_result('recover_pts', timeout=args.max_server_restart_time)
-                if err == True:
+                if last_restart_time < pts.get_last_recovery_time():
                     break
+
             except Exception:
                 log('Server is still resetting. Wait a little more.')
                 time.sleep(1)
