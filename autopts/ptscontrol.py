@@ -45,7 +45,7 @@ import win32com.server.util
 import pythoncom
 import psutil
 import logging as root_logging
-
+from datetime import datetime
 from pathlib import Path
 from autopts.ptsprojects import ptstypes
 from autopts.ptsprojects.ptstypes import E_FATAL_ERROR
@@ -360,6 +360,7 @@ class PyPTS:
         self._preferred_device = device
         self._device = None
         self.lite_start = lite_start
+        self._last_recovery_time = datetime.now()
 
     def _init_attributes(self):
         """Initializes class attributes"""
@@ -489,6 +490,7 @@ class PyPTS:
             self._recover_item(item)
 
         self._recov_in_progress = False
+        self._last_recovery_time = datetime.now()
 
         return True
 
@@ -1128,3 +1130,6 @@ class PyPTS:
 
         self._pts_logger.unset_callback()
         self._pts_sender.unset_callback()
+
+    def get_last_recovery_time(self):
+        return self._last_recovery_time
