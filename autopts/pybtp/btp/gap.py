@@ -1297,6 +1297,14 @@ def check_discov_results(addr_type=None, addr=None, discovered=True, eir=None, u
     return False
 
 
+def clear_discov_results():
+    stack = get_stack()
+
+    stack.gap.found_devices.data.clear()
+
+    return True
+
+
 def check_scan_rep_and_rsp(report, response):
     stack = get_stack()
     devices = stack.gap.found_devices.data
