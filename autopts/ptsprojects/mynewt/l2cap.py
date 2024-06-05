@@ -22,6 +22,7 @@ from autopts.wid import l2cap_wid_hdl
 from autopts.ptsprojects.stack import get_stack, L2cap
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.mynewt.ztestcase import ZTestCase
+from autopts.ptsprojects.mynewt.l2cap_wid import l2cap_wid_hdl as l2cap_mynewt_hdl
 
 
 le_psm = 128
@@ -224,6 +225,9 @@ def test_cases(ptses):
                   [TestFunc(lambda: pts.update_pixit_param(
                       "L2CAP", "TSPX_l2ca_cbmps_min", "0040"))],
                   generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/TIM/BV-03-C",
+                  pre_conditions,
+                  generic_wid_hdl=l2cap_mynewt_hdl),
     ]
 
     test_case_name_list = pts.get_test_case_list('L2CAP')

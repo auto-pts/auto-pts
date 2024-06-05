@@ -106,6 +106,7 @@ class L2cap:
         self.channels = []
         self.hold_credits = 0
         self.num_channels = 2
+        self.wid_cnt = 0
 
     def chan_lookup_id(self, chan_id):
         for chan in self.channels:
