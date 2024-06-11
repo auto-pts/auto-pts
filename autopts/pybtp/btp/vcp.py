@@ -166,7 +166,7 @@ def vcp_set_vol(volume, bd_addr_type=None, bd_addr=None):
     if isinstance(volume, str):
         volume = int(volume)
     data = address_to_ba(bd_addr_type, bd_addr)
-    data.extend(struct.pack("<b", volume))
+    data.extend(struct.pack("<B", volume))
 
     iutctl.btp_socket.send(*VCP['vcp_set_vol'], data=data)
 
