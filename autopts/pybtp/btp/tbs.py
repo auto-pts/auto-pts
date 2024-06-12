@@ -54,6 +54,9 @@ TBS = {
     'set_signal_strength':   (defs.BTP_SERVICE_ID_TBS,
                               defs.TBS_SIGNAL_STRENGTH,
                               CONTROLLER_INDEX),
+    'terminate_call':        (defs.BTP_SERVICE_ID_TBS,
+                              defs.TBS_TERMINATE_CALL,
+                              CONTROLLER_INDEX),
 }
 
 
@@ -211,6 +214,16 @@ def tbs_set_status_flags(index, flags):
 
     tbs_command_rsp_succ()
 
+def tbs_terminate_call(index):
+    logging.debug(f"{tbs_terminate_call.__name__}")
+
+    data = bytearray()
+    data.extend(struct.pack("b", index))
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*TBS['terminate_call'], data=data)
+
+    tbs_command_rsp_succ()
 
 TBS_EV = {
 }
