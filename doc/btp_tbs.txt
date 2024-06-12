@@ -34,7 +34,7 @@ Commands and responses:
 		URI String variable is Receiver URI, Caller URI Friendly Name
 		concatenated.
 
-		In case of an error, the error reponse will be returned.
+		In case of an error, the error response will be returned.
 
 	Opcode 0x03 - Hold Call
 
@@ -44,7 +44,7 @@ Commands and responses:
 
 		This command is used to hold a call.
 
-		In case of an error, the error reponse will be returned.
+		In case of an error, the error response will be returned.
 
 	Opcode 0x04 - Set Bearer Name
 
@@ -56,7 +56,7 @@ Commands and responses:
 
 		This command is used to set bearer provider name.
 
-		In case of an error, the error reponse will be returned.
+		In case of an error, the error response will be returned.
 
 	Opcode 0x05 - Set Technology
 
@@ -67,7 +67,7 @@ Commands and responses:
 
 		This command is used to set a new bearer technology.
 
-		In case of an error, the error reponse will be returned.
+		In case of an error, the error response will be returned.
 
 	Opcode 0x06 - Set URI Schemes List
 
@@ -81,7 +81,7 @@ Commands and responses:
 		This command is used to set a new URI scheme list of a bearer.
 		For now, URI list with one element is supported.
 
-		In case of an error, the error reponse will be returned.
+		In case of an error, the error response will be returned.
 
 	Opcode 0x07 - Set Status Flags
 
@@ -92,7 +92,7 @@ Commands and responses:
 
 		This command is used to set the feature and status value.
 
-		In case of an error, the error reponse will be returned.
+		In case of an error, the error response will be returned.
 
 	Opcode 0x08 - Remote Hold
 
@@ -103,7 +103,7 @@ Commands and responses:
 		This command is used to notify the server that the remote
 		party held the call.
 
-		In case of an error, the error reponse will be returned.
+		In case of an error, the error response will be returned.
 
 	Opcode 0x09 - Originate Call
 
@@ -115,7 +115,7 @@ Commands and responses:
 
 		This command is used to originate call.
 
-		In case of an error, the error reponse will be returned.
+		In case of an error, the error response will be returned.
 
 	Opcode 0x0a - Set Signal Strength
 
@@ -127,4 +127,4 @@ Commands and responses:
 		This command is used to update signal strength reported by the
 		server.
 
-		In case of an error, the error reponse will be returned.
+		In case of an error, the error response will be returned.
