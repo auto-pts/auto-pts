@@ -86,6 +86,9 @@ class AutoPTSMagicTagParser(argparse.ArgumentParser):
                           help="Names of test cases to exclude. Groups of "
                                "test cases can be specified by profile names")
 
+        self.add_argument("--test_case_limit", nargs='?', type=int, default=0,
+                          help="Limit of test cases to run")
+
 
 def run_pending_thread_func():
     if sys.platform == 'win32':
@@ -152,7 +155,7 @@ def check_supported_profiles(test_case_prefixes, job_config):
     if not job_config['included']:
         # 'included' parameter not specified in job config. Assume
         # all profiles supported on this server.
-        return True, []
+        return True, test_case_prefixes
 
     job_config_prefixes = re.sub(r'\s+', r' ', job_config['included']).strip().split(' ')
 
@@ -197,6 +200,7 @@ def autopts_magic_tag_cb(cron, comment_info):
         config['included'] = supported_test_cases
         config['excluded'] = parsed_args.excluded
         config['board'] = board
+        config['test_case_limit'] = parsed_args.test_case_limit
         configs.append(config)
 
     if not configs:
@@ -220,7 +224,8 @@ def schedule_pr_job(cron, pr_info, job_config):
         included_tc = job_config['included']
         excluded_tc = job_config['excluded']
 
-        test_cases, est_duration = get_estimations(cfg_dict, included_tc, excluded_tc)
+        test_cases, est_duration = get_estimations(cfg_dict, included_tc, excluded_tc,
+                                                   job_config['test_case_limit'])
 
         test_case_count = len(test_cases)
         estimations = f', test case count: {test_case_count}, '\

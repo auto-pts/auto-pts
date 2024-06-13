@@ -653,6 +653,9 @@ def get_cron_config(cfg, **kwargs):
     if 'excluded' in config and config['excluded'].strip():
         config['bot_options_append'] += f" -e {config['excluded']}"
 
+    if 'test_case_limit' in config and config['test_case_limit']:
+        config['bot_options_append'] += f" --test_case_limit {config['test_case_limit']}"
+
     if 'bot_start_cmd' not in config:
         bot_args = f'{cfg} {config["bot_options_append"]}'
         config['bot_start_cmd'] = \
