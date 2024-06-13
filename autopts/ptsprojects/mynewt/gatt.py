@@ -147,9 +147,11 @@ def test_cases_server(ptses):
         iut_addr.set(addr)
 
     pts = ptses[0]
+    pts_bd_addr = pts.q_bd_addr
 
     pre_conditions_1 = [TestFunc(btp.core_reg_svc_gap),
                         TestFunc(btp.core_reg_svc_gatt),
+                        TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public),
                         TestFunc(btp.gap_read_ctrl_info),
                         TestFunc(lambda: pts.update_pixit_param(
                             "GATT", "TSPX_bd_addr_iut",
@@ -173,6 +175,7 @@ def test_cases_server(ptses):
                             "TRUE" if stack.gap.iut_addr_is_random()
                             else "FALSE")),
                         TestFunc(btp.gap_set_gendiscov),
+                        TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public),
                         TestFunc(btp.gap_set_conn)]
 
     custom_test_cases = [
