@@ -95,8 +95,11 @@ def estimate_test_cases_duration(database_file, table_name, test_cases, max_coun
     return est_duration
 
 
-def get_estimations(config, included_tc, excluded_tc):
+def get_estimations(config, included_tc, excluded_tc, limit=None):
     test_cases = estimate_test_cases(config, included_tc, excluded_tc)
+
+    if limit:
+        test_cases = test_cases[:limit]
 
     est_duration = None
     database_file = config['auto_pts'].get('database_file', None)

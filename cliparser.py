@@ -54,6 +54,9 @@ class CliParser(argparse.ArgumentParser):
                           help="Names of test cases to exclude. Groups of "
                                "test cases can be specified by profile names")
 
+        self.add_argument("--test_case_limit", nargs='?', type=int, default=0,
+                          help="Limit of test cases to run")
+
         self.add_argument("-r", "--retry", type=int, default=0,
                           help="Repeat test if failed. Parameter specifies "
                                "maximum repeat count per test")
