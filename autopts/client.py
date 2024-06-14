@@ -1220,6 +1220,7 @@ def run_test_cases(ptses, test_case_instances, args):
     test_cases = args.test_cases
     projects = ptses[0].get_project_list()
     retry_config = getattr(args, 'retry_config', None)
+    repeat_until_failed = getattr(args, 'repeat_until_fail', False)
 
     # Statistics
     stats = TestCaseRunStats(projects, test_cases, args.retry, TEST_CASE_DB)
@@ -1258,6 +1259,9 @@ def run_test_cases(ptses, test_case_instances, args):
                 retry_limit = test_retry_count
             else:
                 retry_limit = args.retry
+
+            if repeat_until_failed and status == 'PASS':
+                continue
 
             if (status == 'PASS' and not args.stress_test) or \
                     stats.run_count == retry_limit:
