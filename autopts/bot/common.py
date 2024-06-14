@@ -86,6 +86,7 @@ class BotConfigArgs(Namespace):
         self.bd_addr = args.get('bd_addr', '')
         self.enable_max_logs = args.get('enable_max_logs', False)
         self.retry = args.get('retry', 0)
+        self.repeat_until_fail = args.get('repeat_until_fail', False)
         self.stress_test = args.get('stress_test', False)
         self.ykush = args.get('ykush', None)
         self.ykush_replug_delay = args.get('ykush_replug_delay', 3)
