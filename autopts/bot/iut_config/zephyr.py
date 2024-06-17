@@ -296,7 +296,37 @@ iut_config = {
         "test_cases": [
             'MBTM/CL/BT'
         ]
-    }
+    },
+
+    "overlay-br-sc-only.conf": {
+        "overlay": {
+            'CONFIG_BT_SMP_SC_ONLY': 'y',
+        },
+        "test_cases": [
+            'GAP/SEC/SEM/BV-16-C',
+            'GAP/SEC/SEM/BV-17-C',
+            'GAP/SEC/SEM/BV-18-C',
+            'GAP/SEC/SEM/BI-31-C',
+            'GAP/SEC/SEM/BV-54-C',
+        ]
+    },
+
+    "overlay-br-min-enc-key-size-16.conf": {
+        "overlay": {
+            'CONFIG_BT_SMP_MIN_ENC_KEY_SIZE': '16',
+        },
+        "test_cases": [
+            'GAP/SEC/SEM/BI-14-C',
+            'GAP/SEC/SEM/BI-17-C',
+            'GAP/SEC/SEM/BI-15-C',
+            'GAP/SEC/SEM/BI-18-C',
+            'GAP/SEC/SEM/BI-16-C',
+            'GAP/SEC/SEM/BI-19-C',
+            'GAP/SEC/SEM/BI-04-C',
+            'GAP/SEC/SEM/BI-08-C',
+            'GAP/SEC/SEM/BI-31-C',
+        ]
+    },
 }
 
 retry_config = {
