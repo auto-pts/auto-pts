@@ -20,10 +20,12 @@
 
 import datetime
 import errno
+import json
 import logging
 import os
 import queue
 import random
+import shutil
 import signal
 import socket
 import sys
@@ -36,6 +38,7 @@ import xmlrpc.client
 from xmlrpc.server import SimpleXMLRPCServer
 from termcolor import colored
 
+from autopts.config import TC_STATS_RESULTS_XML, TEST_CASE_DB, TMP_DIR
 from autopts.ptsprojects import ptstypes
 from autopts.ptsprojects import stack
 from autopts.ptsprojects.boards import get_available_boards, tty_to_com
@@ -52,7 +55,6 @@ log = logging.debug
 log_lock = threading.RLock()
 
 RUNNING_TEST_CASE = {}
-TEST_CASE_DB = None
 autoprojects = None
 TEST_CASE_TIMEOUT_MS = 300000  # milliseconds
 
@@ -478,7 +480,7 @@ def init_pts_thread_entry(proxy, args, exceptions, finish_count):
     proxy.enable_maximum_logging(args.enable_max_logs)
 
 
-def init_pts(args, ptses, tc_db_table_name=None):
+def init_pts(args, ptses):
     """Initialization procedure for PTS instances"""
 
     proxy_list = ptses
@@ -513,10 +515,6 @@ def init_pts(args, ptses, tc_db_table_name=None):
 
         thread_list.append(thread)
         thread.start()
-
-    if tc_db_table_name:
-        global TEST_CASE_DB
-        TEST_CASE_DB = TestCaseTable(tc_db_table_name, args.database_file)
 
     # Wait until each PTS instance is initialized.
     try:
@@ -555,7 +553,8 @@ def get_result_color(status):
 
 
 class TestCaseRunStats:
-    def __init__(self, projects, test_cases, retry_count, db=None):
+    def __init__(self, projects, test_cases, retry_count, db=None,
+                 xml_results_file=None):
         self.pts_ver = ''
         self.platform = ''
         self.run_count_max = retry_count + 1  # Run test at least once
@@ -566,53 +565,55 @@ class TestCaseRunStats:
         self.max_test_case_name = len(max(test_cases, key=len)) if test_cases else 0
         self.margin = 3
         self.index = 0
-
-        self.xml_results = tempfile.NamedTemporaryFile(delete=False).name
-        root = ElementTree.Element("results")
-        tree = ElementTree.ElementTree(root)
-        tree.write(self.xml_results)
-
+        self.xml_results = xml_results_file
         self.db = db
+        self.est_duration = 0
+        self.pending_config = None
+        self.pending_test_case = None
+        self.test_run_completed = False
+
+        if self.xml_results and not os.path.exists(self.xml_results):
+            root = ElementTree.Element("results")
+            tree = ElementTree.ElementTree(root)
+            tree.write(self.xml_results)
 
         if self.db:
             self.est_duration = db.estimate_session_duration(test_cases,
                                                              self.run_count_max)
-            if self.est_duration:
-                approx = str(datetime.timedelta(seconds=self.est_duration))
 
-                print("Number of test cases to run: ", self.num_test_cases, " in approximately: ", approx)
-        else:
-            self.est_duration = 0
+    def save_to_backup(self, filename):
+        data_to_save = {}
+        for key, value in self.__dict__.items():
+            if isinstance(value, (int, str, bool)):
+                data_to_save[key] = value
 
-    def __del__(self):
-        try:
-            os.remove(self.xml_results)
-        except Exception as e:
-            print(e)
+        with open(filename, 'w') as json_file:
+            json.dump(data_to_save, json_file, indent=4)
 
     @staticmethod
-    def merge(stats1, stats2):
-        merged_stats = TestCaseRunStats([], [], 0, stats1.db)
-        merged_stats.num_test_cases = stats1.num_test_cases + stats2.num_test_cases
-        merged_stats.num_test_cases_width = max(stats1.num_test_cases_width, stats2.num_test_cases_width)
-        merged_stats.max_project_name = max(stats1.max_project_name, stats2.max_project_name)
-        merged_stats.max_test_case_name = max(stats1.max_test_case_name, stats2.max_test_case_name)
-        merged_stats.est_duration = stats1.est_duration + stats2.est_duration
+    def load_from_backup(backup_file):
+        with open(backup_file, 'r') as f:
+            data = json.load(f)
+            stats = TestCaseRunStats([], [], 0, None)
+            stats.__dict__.update(data)
+            return stats
 
-        merged_stats_tree = ElementTree.parse(merged_stats.xml_results)
-        merged_stats_root = merged_stats_tree.getroot()
-
-        stats1_tree = ElementTree.parse(stats1.xml_results)
-        root1 = stats1_tree.getroot()
+    def merge(self, stats2):
+        self.num_test_cases = self.num_test_cases + stats2.num_test_cases
+        self.num_test_cases_width = max(self.num_test_cases_width, stats2.num_test_cases_width)
+        self.max_project_name = max(self.max_project_name, stats2.max_project_name)
+        self.max_test_case_name = max(self.max_test_case_name, stats2.max_test_case_name)
+        self.est_duration = self.est_duration + stats2.est_duration
+        self.pending_config = stats2.pending_config
+        self.pending_test_case = stats2.pending_test_case
 
         stats2_tree = ElementTree.parse(stats2.xml_results)
         root2 = stats2_tree.getroot()
 
-        merged_stats_root.extend(root1)
-        merged_stats_root.extend(root2)
-        merged_stats_tree.write(merged_stats.xml_results)
-
-        return merged_stats
+        self_tree = ElementTree.parse(self.xml_results)
+        root1 = self_tree.getroot()
+        root1.extend(root2)
+        self_tree.write(self.xml_results)
 
     def update(self, test_case_name, duration, status, description=''):
         tree = ElementTree.parse(self.xml_results)
@@ -1205,7 +1206,7 @@ def get_test_cases(pts, test_cases, excluded):
     return _test_cases
 
 
-def run_test_cases(ptses, test_case_instances, args):
+def run_test_cases(ptses, test_case_instances, args, stats, **kwargs):
     """Runs a list of test cases"""
 
     ports_str = '_'.join(str(x) for x in args.cli_port)
@@ -1218,14 +1219,15 @@ def run_test_cases(ptses, test_case_instances, args):
             raise
 
     test_cases = args.test_cases
-    projects = ptses[0].get_project_list()
     retry_config = getattr(args, 'retry_config', None)
     repeat_until_failed = getattr(args, 'repeat_until_fail', False)
-
-    # Statistics
-    stats = TestCaseRunStats(projects, test_cases, args.retry, TEST_CASE_DB)
-
+    pre_test_case_fn = kwargs.get('pre_test_case_fn', None)
     exceptions = queue.Queue()
+
+    approx = ''
+    if stats.est_duration:
+        approx = f" in approximately: " + str(datetime.timedelta(seconds=stats.est_duration))
+    print(f"Number of test cases to run: {stats.num_test_cases}{approx}")
 
     for test_case in test_cases:
         stats.run_count = 0
@@ -1236,6 +1238,9 @@ def run_test_cases(ptses, test_case_instances, args):
                 test_retry_count = retry_config[test_case]
 
         while True:
+            if pre_test_case_fn:
+                pre_test_case_fn(test_case=test_case, stats=stats, **kwargs)
+
             status, duration = run_test_case(ptses, test_case_instances,
                                              test_case, stats, session_log_dir,
                                              exceptions, args.superguard)
@@ -1265,8 +1270,8 @@ def run_test_cases(ptses, test_case_instances, args):
 
             if (status == 'PASS' and not args.stress_test) or \
                     stats.run_count == retry_limit:
-                if TEST_CASE_DB:
-                    TEST_CASE_DB.update_statistics(test_case, duration, status)
+                if stats.db:
+                    stats.db.update_statistics(test_case, duration, status)
 
                 break
 
@@ -1304,6 +1309,7 @@ class Client:
         # Command line arguments parser
         self.arg_parser = parser_class(cli_support=autoprojects.iutctl.CLI_SUPPORT, board_names=self.boards)
         self.prev_sigint_handler = None
+        self.test_case_database = None
 
     def parse_config_and_args(self, args_namespace=None):
         if args_namespace is None:
@@ -1351,18 +1357,22 @@ class Client:
         elif self.args.sudo:
             sys.exit("Please run this program as root.")
 
+        os.makedirs(os.path.dirname(TMP_DIR), exist_ok=True)
+
         if self.args.store:
             tc_db_table_name = self.store_tag + str(self.args.board_name)
-        else:
-            tc_db_table_name = None
 
-        init_pts(self.args, self.ptses, tc_db_table_name)
+            if os.path.exists(self.args.database_file) and not os.path.exists(TEST_CASE_DB):
+                shutil.copy(self.args.database_file, TEST_CASE_DB)
+
+            self.test_case_database = TestCaseTable(tc_db_table_name, TEST_CASE_DB)
+
+        init_pts(self.args, self.ptses)
 
         btp.init(self.get_iut)
         self.init_iutctl(self.args)
 
         stack.init_stack()
-        stack_inst = stack.get_stack()
 
         self.setup_project_pixits(self.ptses)
         self.setup_test_cases(self.ptses)
@@ -1370,6 +1380,9 @@ class Client:
         stats = self.run_test_cases()
 
         self.cleanup()
+
+        if self.args.store:
+            shutil.move(TEST_CASE_DB, self.args.database_file)
 
         print("\nBye!")
         sys.stdout.flush()
@@ -1395,7 +1408,17 @@ class Client:
         self.args.test_cases = get_test_cases(self.ptses[0],
                                               self.args.test_cases,
                                               self.args.excluded)
-        return run_test_cases(self.ptses, self.test_cases, self.args)
+
+        projects = self.ptses[0].get_project_list()
+
+        if os.path.exists(TC_STATS_RESULTS_XML):
+            os.remove(TC_STATS_RESULTS_XML)
+
+        stats = TestCaseRunStats(projects, self.args.test_cases,
+                                 self.args.retry, self.test_case_database,
+                                 xml_results_file=TC_STATS_RESULTS_XML)
+
+        return run_test_cases(self.ptses, self.test_cases, self.args, stats)
 
     def cleanup(self):
         log(f'{self.__class__.__name__}.{self.cleanup.__name__}')
