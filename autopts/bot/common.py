@@ -20,12 +20,13 @@ import subprocess
 import sys
 import shutil
 import time
-
+import json
 from pathlib import Path
 from argparse import Namespace
 from autopts import client as autoptsclient
-from autopts.client import CliParser, Client, TestCaseRunStats, init_logging, TEST_CASE_DB
-from autopts.config import MAX_SERVER_RESTART_TIME
+from autopts.client import CliParser, Client, TestCaseRunStats, init_logging
+from autopts.config import MAX_SERVER_RESTART_TIME, TEST_CASES_JSON, ALL_STATS_JSON, TC_STATS_JSON, \
+    ALL_STATS_RESULTS_XML, TC_STATS_RESULTS_XML, BOT_STATE_JSON
 from autopts.ptsprojects.boards import get_free_device, get_tty, get_debugger_snr
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
 
@@ -35,6 +36,20 @@ PROJECT_DIR = os.path.dirname(  # auto-pts repo directory
                         os.path.abspath(__file__))))  # this file directory
 
 log = logging.debug
+
+
+def cleanup_tmp_files():
+    files = [ALL_STATS_RESULTS_XML,
+             TC_STATS_RESULTS_XML,
+             TEST_CASES_JSON,
+             ALL_STATS_JSON,
+             TC_STATS_JSON,
+             BOT_STATE_JSON,
+             ]
+
+    for file in files:
+        if os.path.exists(file):
+            os.remove(file)
 
 
 class BuildAndFlashException(Exception):
@@ -99,6 +114,7 @@ class BotConfigArgs(Namespace):
         self.server_args = args.get('server_args', None)
         self.pylink_reset = args.get('pylink_reset', False)
         self.max_server_restart_time = args.get('max_server_restart_time', MAX_SERVER_RESTART_TIME)
+        self.use_backup = args.get('use_backup', False)
 
         if self.server_args is not None:
             from autoptsserver import SvrArgumentParser
@@ -128,6 +144,15 @@ class BotClient(Client):
         self.config_default = "default.conf"
         # The iut_config dictionary loaded from config.py
         self.iut_config = None
+        # Backup files with test cases and stats from a previous test run that
+        # has been stopped unexpectedly.
+        self.backup = {'available': False,
+                       'create': False,
+                       'all_stats': None,
+                       'tc_stats': None,
+                       'test_cases_file': TEST_CASES_JSON,
+                       'all_stats_file': ALL_STATS_JSON,
+                       'tc_stats_file': TC_STATS_JSON}
 
     def parse_or_find_tty(self, args):
         if args.tty_alias:
@@ -143,6 +168,69 @@ class BotClient(Client):
         elif args.debugger_snr is None:
             args.debugger_snr = get_debugger_snr(args.tty_file)
 
+    def load_backup_of_previous_run(self):
+        """
+        If the backup mode was enabled in the previous test run, and it
+        has been terminated unexpectedly, it is possible to resume the test series
+        from the last remembered config/test_case.
+        """
+
+        continue_test_case = None
+        continue_config = None
+        if os.path.exists(self.backup['all_stats_file']):
+            self.backup['all_stats'] = TestCaseRunStats.load_from_backup(self.backup['all_stats_file'])
+            continue_config = self.backup['all_stats'].pending_config
+
+            # The last config and test case preformed in the broken test run
+            if os.path.exists(self.backup['tc_stats_file']):
+                self.backup['tc_stats'] = TestCaseRunStats.load_from_backup(self.backup['tc_stats_file'])
+                continue_config = self.backup['tc_stats'].pending_config
+                continue_test_case = self.backup['tc_stats'].pending_test_case
+
+        if not continue_config:
+            return
+
+        with open(self.backup['test_cases_file']) as f:
+            data = f.read()
+            test_cases_per_config = json.loads(data)
+            run_order = list(test_cases_per_config.keys())
+
+        # Skip already completed configs
+        config_index = run_order.index(continue_config)
+        if continue_test_case:
+            # Skip already completed test cases and the faulty one
+            tc_index = test_cases_per_config[continue_config].index(continue_test_case)
+            test_cases_per_config[continue_config] = test_cases_per_config[continue_config][tc_index + 1:]
+            
+            if not test_cases_per_config[continue_config]:
+                # The faulty test case was the last one in the config. Move to the next config
+                self.backup['tc_stats'].update(continue_test_case, 0, 'TIMEOUT')
+                self._merge_stats(self.backup['all_stats'], self.backup['tc_stats'])
+                self.backup['all_stats'].save_to_backup(self.backup['all_stats_file'])
+                self.backup['tc_stats'] = None
+                config_index += 1
+                continue_test_case = None
+
+        _args = {}
+        self.backup['args_per_config'] = _args
+        self.backup['available'] = True
+        self.backup['run_order'] = run_order[config_index:]
+
+        if not self.backup['run_order']:
+            # All test cases done, the last one was faulty
+            self.backup['all_stats'].test_run_completed = True
+            return
+
+        continue_config = self.backup['run_order'][0]
+
+        for config in self.backup['run_order']:
+            _args[config] = copy.deepcopy(self.args)
+            _args[config].test_cases = test_cases_per_config[config]
+
+        # Skip build and flash for the pending config as it has been
+        # already done in previous test run.
+        _args[continue_config].no_build = True
+
     def parse_config_and_args(self, bot_config_dict=None):
         if self.bot_config is not None:
             # Do not parse a second time in the simple client layer
@@ -155,71 +243,148 @@ class BotClient(Client):
         self.args, errmsg = self.arg_parser.parse(bot_config_namespace)
         self.args.retry_config = bot_config_dict.get('retry_config', None)
 
-        if not errmsg:
-            # Remove default root handler that was created at first logging.debug
-            logging.getLogger().handlers.clear()
-            init_logging('_' + '_'.join(str(x) for x in self.args.cli_port))
+        if errmsg:
+            return errmsg
+
+        if self.args.use_backup:
+            self.load_backup_of_previous_run()
+        else:
+            cleanup_tmp_files()
+
+        # Remove default root handler that was created at the first logging.debug
+        logging.getLogger().handlers.clear()
+        init_logging('_' + '_'.join(str(x) for x in self.args.cli_port))
 
         return errmsg
 
     def apply_config(self, args, config, value):
         pass
 
-    def run_test_cases(self):
+    def _yield_next_config(self):
         limit_counter = 0
-        all_stats = None
 
-        run_order, _args = get_filtered_test_cases(self.iut_config, self.args,
-                                                   self.config_default, self.ptses[0])
+        if self.backup['available']:
+            if self.backup['all_stats'].test_run_completed:
+                # All test cases have been completed before termination
+                return
+
+            _args = self.backup['args_per_config']
+            run_order = self.backup['run_order']
+        else:
+            _run_order, _args = get_filtered_test_cases(self.iut_config, self.args,
+                                                        self.config_default, self.ptses[0])
+
+            run_order = []
+            test_cases = {}
+            for config in _run_order:
+                if _args.get(config) is None:
+                    test_case_number = 0
+                else:
+                    test_case_number = len(_args[config].test_cases)
+
+                if test_case_number == 0:
+                    log(f'No test cases for {config} config, ignored.')
+                    continue
+
+                if self.args.test_case_limit:
+                    limit = self.args.test_case_limit - limit_counter
+                    if limit == 0:
+                        log(f'Limit of test cases reached. No more test cases will be run.')
+                        break
+
+                    if test_case_number > limit:
+                        _args[config].test_cases = _args[config].test_cases[:limit]
+                        test_case_number = limit
+
+                    limit_counter += test_case_number
+
+                test_cases[config] = _args[config].test_cases
+                run_order.append(config)
+
+            if self.args.use_backup:
+                with open(self.backup['test_cases_file'], 'w') as file:
+                    file.write(json.dumps(test_cases, indent=4))
 
         for config in run_order:
-            if _args.get(config) is None:
-                test_case_number = 0
-            else:
-                test_case_number = len(_args[config].test_cases)
+            yield config, _args[config]
 
-            if test_case_number == 0:
-                log(f'No test cases for {config} config, ignored.')
-                continue
+    def _backup_tc_stats(self, config=None, test_case=None, stats=None, **kwargs):
+        if not self.backup or not stats:
+            return
 
-            if self.args.test_case_limit:
-                limit = self.args.test_case_limit - limit_counter
-                if limit == 0:
-                    log(f'Limit of test cases reached. No more test cases will be run.')
-                    break
+        stats.pending_config = config
+        stats.pending_test_case = test_case
+        stats.save_to_backup(self.backup['tc_stats_file'])
 
-                if test_case_number > limit:
-                    _args[config].test_cases = _args[config].test_cases[:limit]
-                    test_case_number = limit
+    def _merge_stats(self, all_stats, stats):
+        all_stats.merge(stats)
 
-                limit_counter += test_case_number
+        if os.path.exists(stats.xml_results):
+            os.remove(stats.xml_results)
 
+        if os.path.exists(TC_STATS_JSON):
+            os.remove(TC_STATS_JSON)
+
+    def run_test_cases(self):
+        all_stats = self.backup['all_stats']
+        stats = self.backup['tc_stats']
+
+        if not all_stats:
+            all_stats = TestCaseRunStats([], [], 0, xml_results_file=ALL_STATS_RESULTS_XML)
+            self.backup['all_stats'] = all_stats
+
+            if self.args.use_backup:
+                all_stats.save_to_backup(self.backup['all_stats_file'])
+
+        projects = self.ptses[0].get_project_list()
+
+        for config, config_args in self._yield_next_config():
             try:
-                self.apply_config(_args[config], config, self.iut_config[config])
+                if not stats:
+                    stats = TestCaseRunStats(projects,
+                                             config_args.test_cases,
+                                             config_args.retry,
+                                             self.test_case_database,
+                                             xml_results_file=TC_STATS_RESULTS_XML)
 
-                stats = autoptsclient.run_test_cases(self.ptses, self.test_cases, _args[config])
+                    if self.args.use_backup:
+                        self._backup_tc_stats(config=config, test_case=None, stats=stats)
+
+                self.apply_config(config_args, config, self.iut_config[config])
+
+                stats = autoptsclient.run_test_cases(self.ptses,
+                                                     self.test_cases,
+                                                     config_args,
+                                                     stats,
+                                                     config=config,
+                                                     pre_test_case_fn=self._backup_tc_stats)
+
             except BuildAndFlashException:
                 log(f'Build and flash step failed for config {config}')
-                stats = TestCaseRunStats(self.ptses[0].get_project_list(),
-                                         _args[config].test_cases, 0, TEST_CASE_DB)
-                for tc in _args[config].test_cases:
+
+                for tc in config_args.test_cases:
                     status = 'BUILD_OR_FLASH ERROR'
                     stats.update(tc, time.time(), status)
 
-            if all_stats is None:
-                all_stats = stats
-            else:
-                all_stats = all_stats.merge(all_stats, stats)
+            if stats:
+                self._merge_stats(all_stats, stats)
+                stats = None
+
+            if self.args.use_backup:
+                all_stats.save_to_backup(self.backup['all_stats_file'])
 
         # End of bot run - all test cases completed
 
-        if all_stats is None:
+        if all_stats.num_test_cases == 0:
             print(f'\nNo test cases were run. Please verify your config.\n')
-            return TestCaseRunStats([], [], 0, None)
-
-        all_stats.print_summary()
+            return all_stats
 
         print(f'\nFinal Bot Summary:\n')
+        all_stats.print_summary()
+
+        if self.args.use_backup:
+            all_stats.test_run_completed = True
+            all_stats.save_to_backup(self.backup['all_stats_file'])
 
         try:
             results = all_stats.get_results()
@@ -431,6 +596,6 @@ def cleanup():
     :return: None
     """
     try:
-        pass
+        cleanup_tmp_files()
     except OSError:
         pass
