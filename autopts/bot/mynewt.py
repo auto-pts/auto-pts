@@ -104,28 +104,27 @@ def compose_mail(args, mail_cfg, mail_ctx):
         except Exception as e:
             logging.exception(e)
 
-    body = '''
+    body = f'''
     <p>This is automated email and do not reply.</p>
     <h1>Bluetooth test session</h1>
-    {}
+    {additional_info}
     <h2>1. IUT Setup</h2>
-    <b> Board:</b> {} <br>
-    <b> Source:</b> {} </p>
+    <b> Board:</b> {args["board"]} <br>
+    <b> Source:</b> {mail_ctx["mynewt_repo_status"]} </p>
     <h2>2. PTS Setup</h2>
     <p><b> OS:</b> Windows 10 <br>
-    <b> Platform:</b> {} <br>
-    <b> Version:</b> {} </p>
+    <b> Platform:</b> {args['platform']} <br>
+    <b> Version:</b> {args['pts_ver']} </p>
     <h2>3. Test Results</h2>
-    <p><b>Execution Time</b>: {}</p>
-    {}
-    {}
+    <p><b>Execution Time</b>: {mail_ctx["elapsed_time"]}</p>
+    {mail_ctx["summary"]}
+    {mail_ctx["regression"]}
+    {mail_ctx["progresses"]}
     <h3>Logs</h3>
-    {}
+    {mail_ctx["log_url"]}
     <p>Sincerely,</p>
-    <p> {}</p>
-    '''.format(additional_info, args["board"], mail_ctx["mynewt_repo_status"], args['platform'],
-               args['pts_ver'], mail_ctx["elapsed_time"], mail_ctx["summary"],
-               mail_ctx["regression"], mail_ctx["log_url"], mail_cfg['name'])
+    <p> {mail_cfg['name']}</p>
+'''
 
     if 'subject' in mail_cfg:
         subject = mail_cfg['subject']
@@ -270,6 +269,8 @@ def main(bot_client):
         mail_ctx = {"summary": mail.status_dict2summary_html(summary),
                     "regression": mail.regressions2html(regressions,
                                                         descriptions),
+                    "progresses": mail.progresses2html(progresses,
+                                                       descriptions),
                     "mynewt_repo_status": repo_status}
 
         # Summary
