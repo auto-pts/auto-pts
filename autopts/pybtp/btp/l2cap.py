@@ -124,6 +124,11 @@ def l2cap_conn_rsp():
 def l2cap_disconn(chan_id):
     logging.debug("%s %r", l2cap_disconn.__name__, chan_id)
 
+    stack = get_stack()
+    l2cap = stack.l2cap
+    if not l2cap.is_connected(chan_id):
+        return
+
     iutctl = get_iut()
 
     data_ba = bytearray(chr(chan_id).encode('utf-8'))
