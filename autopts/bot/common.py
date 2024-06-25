@@ -105,6 +105,7 @@ class BotConfigArgs(Namespace):
         self.stress_test = args.get('stress_test', False)
         self.ykush = args.get('ykush', None)
         self.ykush_replug_delay = args.get('ykush_replug_delay', 3)
+        self.active_hub_server = args.get('active_hub_server', None)
         self.recovery = args.get('recovery', False)
         self.superguard = float(args.get('superguard', 0))
         self.cron_optim = args.get('cron_optim', False)
@@ -115,6 +116,11 @@ class BotConfigArgs(Namespace):
         self.pylink_reset = args.get('pylink_reset', False)
         self.max_server_restart_time = args.get('max_server_restart_time', MAX_SERVER_RESTART_TIME)
         self.use_backup = args.get('use_backup', False)
+
+        if self.ykush or self.active_hub_server:
+            self.usb_replug_available = True
+        else:
+            self.usb_replug_available = False
 
         if self.server_args is not None:
             from autoptsserver import SvrArgumentParser

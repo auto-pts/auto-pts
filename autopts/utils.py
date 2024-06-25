@@ -21,9 +21,11 @@ import os
 import sys
 import threading
 import traceback
+import xmlrpc.client
+import hid
+import psutil
 from time import sleep
 
-import psutil
 
 PTS_WORKSPACE_FILE_EXT = ".pqw6"
 
@@ -208,18 +210,23 @@ except:
     pass
 
 
-def usb_power(ykush_port, on=True, ykush_srn=None):
+def ykush_set_usb_power(ykush_port, on=True, ykush_srn=None):
     if not pykush_installed:
         print('pykush not installed')
         return
 
-    ykush_port = int(ykush_port)
-    yk = pykush.YKUSH(serial=ykush_srn)
-    state = pykush.YKUSH_PORT_STATE_UP if on else pykush.YKUSH_PORT_STATE_DOWN
-    yk.set_port_state(ykush_port, state)
-    if yk.get_port_state(ykush_port) != state:
-        ykush_name = ykush_srn if ykush_srn else ''
-        raise Exception(f'YKUSH {ykush_name} failed to change state {state} of port {ykush_port}')
+    yk = None
+    try:
+        ykush_port = int(ykush_port)
+        yk = pykush.YKUSH(serial=ykush_srn)
+        state = pykush.YKUSH_PORT_STATE_UP if on else pykush.YKUSH_PORT_STATE_DOWN
+        yk.set_port_state(ykush_port, state)
+        if yk.get_port_state(ykush_port) != state:
+            ykush_name = ykush_srn if ykush_srn else ''
+            raise Exception(f'YKUSH {ykush_name} failed to change state {state} of port {ykush_port}')
+    finally:
+        if yk:
+            del yk
 
 
 def get_own_workspaces():
@@ -341,9 +348,9 @@ def ykush_replug_usb(ykush_config, device_id=None, delay=0, end_flag=None):
         return
 
     if device_id is None:
-        usb_power(ykush_port, False, ykush_srn)
+        ykush_set_usb_power(ykush_port, False, ykush_srn)
         sleep(delay)
-        usb_power(ykush_port, True, ykush_srn)
+        ykush_set_usb_power(ykush_port, True, ykush_srn)
         sleep(delay)
         return
 
@@ -355,7 +362,7 @@ def ykush_replug_usb(ykush_config, device_id=None, delay=0, end_flag=None):
 
         if i == 0:
             logging.debug(f'Power down device ({device_id}) under ykush_port:{ykush_port}')
-            usb_power(ykush_port, False, ykush_srn)
+            ykush_set_usb_power(ykush_port, False, ykush_srn)
             i = 20
         else:
             i -= 1
@@ -363,7 +370,7 @@ def ykush_replug_usb(ykush_config, device_id=None, delay=0, end_flag=None):
 
     sleep(delay)
     logging.debug(f'Power up device ({device_id}) under ykush_port:{ykush_port}')
-    usb_power(ykush_port, True, ykush_srn)
+    ykush_set_usb_power(ykush_port, True, ykush_srn)
 
     i = 0
     while not device_exists(device_id):
@@ -374,14 +381,63 @@ def ykush_replug_usb(ykush_config, device_id=None, delay=0, end_flag=None):
         if i == 20:
             # Sometimes JLink falls into a bad state and cannot
             # be enumerated correctly at first time
-            usb_power(ykush_port, False, ykush_srn)
+            ykush_set_usb_power(ykush_port, False, ykush_srn)
             sleep(delay)
-            usb_power(ykush_port, True, ykush_srn)
+            ykush_set_usb_power(ykush_port, True, ykush_srn)
             i = 0
         else:
             i += 1
 
         sleep(0.1)
+
+
+def hid_gpio_hub_set_usb_power(vid, pid, port, on):
+    path = None
+    cmd = b"\x05xxxxxxxx"
+    index = int(port)
+
+    if 1 <= index <= len(cmd) - 1:
+        cmd_list = list(cmd)
+        cmd_list[index] = ord('0' if on else '1')
+        cmd = bytes(cmd_list)
+
+    for device in hid.enumerate(vid, pid):
+        print(device)
+        path = device['path']
+
+    device = hid.device()
+    device.open_path(path)
+    device.send_feature_report(cmd)
+    device.close()
+
+    # Read the flashed versions of hid_gpio and apache-mynewt-core
+    # print(device.get_indexed_string(32))
+    # print(device.get_indexed_string(33))
+    # Read the states of hub ports
+    # print(device.get_feature_report(5, 9))
+
+
+def active_hub_server_replug_usb(config):
+    with xmlrpc.client.ServerProxy(uri=f"http://{config['ip']}:{config['tcp_port']}/",
+                                   allow_none=True, transport=None,
+                                   encoding=None, verbose=False,
+                                   use_datetime=False, use_builtin_types=False,
+                                   headers=(), context=None) as proxy:
+        logging.debug(f'Power down USB port: {config["usb_port"]}')
+        proxy.set_usb_power(config['usb_port'], False)
+        sleep(config['replug_delay'])
+        logging.debug(f'Power up USB port: {config["usb_port"]}')
+        proxy.set_usb_power(config['usb_port'], True)
+
+
+def active_hub_server_set_usb_power(config, on):
+    with xmlrpc.client.ServerProxy(uri=f"http://{config['ip']}:{config['tcp_port']}/",
+                                   allow_none=True, transport=None,
+                                   encoding=None, verbose=False,
+                                   use_datetime=False, use_builtin_types=False,
+                                   headers=(), context=None) as proxy:
+
+        proxy.set_usb_power(config['usb_port'], on)
 
 
 def print_thread_stack_trace():

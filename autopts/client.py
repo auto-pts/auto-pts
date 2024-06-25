@@ -48,7 +48,7 @@ from autopts.ptsprojects.testcase_db import TestCaseTable
 from autopts.pybtp import btp, defs
 from autopts.pybtp.types import BTPError, SynchError, MissingWIDError
 from autopts.utils import InterruptableThread, ResultWithFlag, CounterWithFlag, set_global_end, \
-    raise_on_global_end, RunEnd, get_global_end, have_admin_rights, ykush_replug_usb
+    raise_on_global_end, RunEnd, get_global_end, have_admin_rights, ykush_replug_usb, active_hub_server_replug_usb
 from cliparser import CliParser
 
 log = logging.debug
@@ -1479,6 +1479,51 @@ def run_recovery(args, ptses):
     iut = autoprojects.iutctl.get_iut()
     iut.stop()
 
+    if args.usb_replug_available:
+        replug_usb(args)
+
+    for pts in ptses:
+        req_sent = False
+        last_restart_time = None
+
+        while not get_global_end():
+            try:
+                if not last_restart_time:
+                    last_restart_time = pts.get_last_recovery_time()
+                    log(f'Last restart time of PTS {pts}: {last_restart_time}')
+
+                if not req_sent:
+                    log(f'Recovering PTS {pts} ...')
+                    pts.recover_pts()
+                    req_sent = True
+                    err = pts.callback.get_result('recover_pts', timeout=args.max_server_restart_time)
+                    if err == True:
+                        log('PTS recovered')
+                        break
+
+                if last_restart_time < pts.get_last_recovery_time():
+                    log('PTS recovered')
+                    break
+
+            except BaseException as e:
+                log(e)
+
+            log('Server is still resetting. Wait a little more.')
+            time.sleep(1)
+
+    stack_inst = stack.get_stack()
+    stack_inst.cleanup()
+
+    if args.usb_replug_available:
+        # mynewt project has not been refactored yet to reduce the number of
+        # IUT board resets.
+        if stack_inst.core:
+            stack_inst.core.event_received(defs.CORE_EV_IUT_READY, True)
+
+    log('Recovery finished')
+
+
+def replug_usb(args):
     if args.ykush:
         if sys.platform == 'win32':
             device_id = tty_to_com(args.tty_file)
@@ -1497,41 +1542,8 @@ def run_recovery(args, ptses):
 
             args.tty_file = os.path.realpath(args.tty_alias)
 
-    for pts in ptses:
-        req_sent = False
-        last_restart_time = None
-
-        while not get_global_end():
-            try:
-                if not last_restart_time:
-                    last_restart_time = pts.get_last_recovery_time()
-                    log(f'Last restart time of PTS {pts}: {last_restart_time}')
-
-                if not req_sent:
-                    log(f'Recovering PTS {pts} ...')
-                    pts.recover_pts()
-                    req_sent = True
-                    err = pts.callback.get_result('recover_pts', timeout=args.max_server_restart_time)
-                    if err == True:
-                        break
-
-                if last_restart_time < pts.get_last_recovery_time():
-                    break
-
-            except Exception:
-                log('Server is still resetting. Wait a little more.')
-                time.sleep(1)
-
-    stack_inst = stack.get_stack()
-    stack_inst.cleanup()
-
-    if args.ykush:
-        # mynewt project has not been refactored yet to reduce the number of
-        # IUT board resets.
-        if stack_inst.core:
-            stack_inst.core.event_received(defs.CORE_EV_IUT_READY, True)
-
-    log('Recovery finished')
+    elif args.active_hub_server:
+        active_hub_server_replug_usb(args.active_hub_server)
 
 
 def setup_project_name(project):

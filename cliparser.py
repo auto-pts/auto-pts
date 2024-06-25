@@ -23,7 +23,8 @@ from distutils.spawn import find_executable
 from autopts.config import SERVER_PORT, CLIENT_PORT, MAX_SERVER_RESTART_TIME
 from autopts.ptsprojects.boards import tty_exists, com_to_tty, get_debugger_snr
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
-from autopts.utils import ykush_replug_usb, raise_on_global_end
+from autopts.utils import ykush_replug_usb, raise_on_global_end, active_hub_server_replug_usb
+
 log = logging.debug
 
 
@@ -107,6 +108,8 @@ class CliParser(argparse.ArgumentParser):
 
         self.add_argument("--ykush_replug_delay", type=float, default=3, help=argparse.SUPPRESS)
 
+        self.add_argument("--active-hub-server", type=str, help=argparse.SUPPRESS)
+
         if cli_support is None:
             return
 
@@ -178,14 +181,17 @@ class CliParser(argparse.ArgumentParser):
                           "e.g. elf file for qemu, exe for native.")
 
     def check_args_tty(self, args):
-        if args.ykush:
+        if args.ykush or args.active_hub_server:
             if args.tty_alias:
                 device_id = None
             else:
                 device_id = args.tty_file
 
-            # If ykush is used, the board could be unplugged right now
-            ykush_replug_usb(args.ykush, device_id=device_id, delay=args.ykush_replug_delay)
+            if args.ykush:
+                # If ykush is used, the board could be unplugged right now
+                ykush_replug_usb(args.ykush, device_id=device_id, delay=args.ykush_replug_delay)
+            elif args.active_hub_server:
+                active_hub_server_replug_usb(args.active_hub_server)
 
             if args.tty_alias:
                 while not os.path.islink(args.tty_alias) and not os.path.exists(os.path.realpath(args.tty_alias)):
