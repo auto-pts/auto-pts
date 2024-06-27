@@ -41,9 +41,9 @@ from os import listdir
 from pathlib import Path
 from time import sleep, time
 from os.path import dirname, abspath
-from datetime import datetime, date
+from datetime import datetime, date, timedelta
 
-AUTOPTS_REPO=dirname(dirname(dirname(abspath(__file__))))
+AUTOPTS_REPO = dirname(dirname(dirname(abspath(__file__))))
 sys.path.insert(0, AUTOPTS_REPO)
 
 from autopts.utils import get_global_end, terminate_process
@@ -51,6 +51,7 @@ from tools.cron.autopts_bisect import Bisect, set_run_test_fun
 from autopts.bot.common import load_module_from_path
 from autopts.bot.common_features.github import update_repos
 from autopts.bot.common_features.mail import send_mail
+from autopts.config import TC_STATS_JSON
 from tools.cron.compatibility import find_latest, find_by_project_hash, find_by_autopts_hash, find_by_pts_ver, \
     get_hash_from_reference
 from tools.cron.remote_terminal import RemoteTerminalClientProxy
@@ -403,16 +404,18 @@ def parse_yaml(file_path):
     return parsed_dict
 
 
-def start_vm(config):
+def start_vm(config, checkout_repos=False):
     # Reset the VM state
     config = config['cron']
-    git_reset_head(config['vm']['path'])
 
-    # Checkout the VM instance to branch with specific PTS version
-    if 'pts_ver' in config:
-        vm_yaml = parse_yaml(config['vm']['yaml'])
-        vm_commit = vm_yaml[config['pts_ver']]
-        git_checkout(vm_commit, config['vm']['path'])
+    if checkout_repos:
+        git_reset_head(config['vm']['path'])
+
+        # Checkout the VM instance to branch with specific PTS version
+        if 'pts_ver' in config:
+            vm_yaml = parse_yaml(config['vm']['yaml'])
+            vm_commit = vm_yaml[config['pts_ver']]
+            git_checkout(vm_commit, config['vm']['path'])
 
     log(f"Starting VM with: {config['vm']['vm_start_cmd']}")
     subprocess.Popen(shlex.split(config['vm']['vm_start_cmd']),
@@ -449,24 +452,25 @@ def start_vm(config):
         timer.cancel()
 
 
-def start_remote_autoptsserver(config):
+def start_remote_autoptsserver(config, checkout_repos):
     with RemoteTerminalClientProxy(config['remote_machine']['terminal_ip'],
                                    config['remote_machine']['terminal_port'],
                                    config['remote_machine'].get(
                                        'socket_timeout', None)
                                    ) as client:
-        for repo in config['remote_machine']['git']:
-            repo_info = config['remote_machine']['git'][repo]
+        if checkout_repos:
+            for repo in config['remote_machine']['git']:
+                repo_info = config['remote_machine']['git'][repo]
 
-            if 'checkout_cmd' in repo_info:
-                log(client.run_command(repo_info['checkout_cmd'], repo_info['path']))
-            else:
-                log(client.run_command(f"git fetch {repo_info['remote']}", repo_info['path']))
-                log(client.run_command(f"git checkout {repo_info['remote']}/{repo_info['branch']}", repo_info['path']))
+                if 'checkout_cmd' in repo_info:
+                    log(client.run_command(repo_info['checkout_cmd'], repo_info['path']))
+                else:
+                    log(client.run_command(f"git fetch {repo_info['remote']}", repo_info['path']))
+                    log(client.run_command(f"git checkout {repo_info['remote']}/{repo_info['branch']}", repo_info['path']))
 
-    log(f"Starting process on the remote machine: {config['server_start_cmd']}")
-    log(client.open_process(config['server_start_cmd'],
-                              config['remote_machine']['git']['autopts']['path']))
+        log(f"Starting process on the remote machine: {config['server_start_cmd']}")
+        log(client.open_process(config['server_start_cmd'],
+                                config['remote_machine']['git']['autopts']['path']))
 
 
 def close_vm(config):
@@ -512,6 +516,7 @@ def win_start_autoptsserver(config):
 def terminate_processes(config):
     if 'remote_machine' in config['cron']:
         close_remote_autoptsserver(config)
+        terminate_process(cmdline='autoptsclient_bot.py')
     elif sys.platform == 'win32':
         terminate_process(name='PTS')
         terminate_process(name='Fts')
@@ -522,12 +527,12 @@ def terminate_processes(config):
         close_vm(config)
 
 
-def _run_test(config):
+def _start_processes(config, checkout_repos):
     srv_process = None
 
     if 'vm' in config['cron']:
         try:
-            start_vm(config)
+            start_vm(config, checkout_repos=checkout_repos)
         except BaseException as e:
             close_vm(config)
             raise e
@@ -536,7 +541,7 @@ def _run_test(config):
 
     if 'remote_machine' in config:
         # Start the autoptsserver.py on the remote machine
-        start_remote_autoptsserver(config)
+        start_remote_autoptsserver(config, checkout_repos)
     elif sys.platform == 'win32' and config['server_start_cmd']:
         # Start subprocess running autoptsserver.py
         srv_process = win_start_autoptsserver(config)
@@ -556,31 +561,52 @@ def _run_test(config):
                                    stderr=subprocess.STDOUT,
                                    cwd=config['autopts_repo'])
 
-    sleep_job(config['cancel_job'], 5)
+    return srv_process, bot_process
 
-    try:
-        # Main thread waits for at least one of subprocesses to finish
-        while not config['cancel_job'].canceled:
-            if srv_process and srv_process.poll() is not None:
-                log('server process finished.')
-                break
 
-            if bot_process.poll() is not None:
-                log('bot  process finished.')
-                break
+def _restart_processes(config):
+    terminate_processes(config)
+    return _start_processes(config, checkout_repos=False)
 
-            sleep_job(config['cancel_job'], 5)
-    except:
-        pass
 
-    # Terminate the other subprocess if it is still running
-    if srv_process and srv_process.poll() is None:
-        srv_process.terminate()
+def _run_test(config):
+    backup = config['auto_pts'].get('use_backup', False)
+    timeguard = config['cron']['test_run_timeguard']
+    results_file_path = os.path.join(config['cron']['autopts_repo'], TC_STATS_JSON)
 
-    if bot_process.poll() is None:
-        bot_process.terminate()
+    srv_process, bot_process = _start_processes(config, checkout_repos=True)
+    last_check_time = time()
 
-    sleep(10)
+    # Main thread waits for at least one of subprocesses to finish
+    while not config['cron']['cancel_job'].canceled:
+        sleep_job(config['cron']['cancel_job'], config['cron']['check_interval'])
+
+        if srv_process and srv_process.poll() is not None:
+            log('server process finished.')
+            break
+
+        if bot_process.poll() is not None:
+            log('bot process finished.')
+            break
+
+        if not backup:
+            continue
+
+        current_time = time()
+
+        if not os.path.exists(results_file_path):
+            if timedelta(seconds=current_time - last_check_time) > timedelta(seconds=timeguard):
+                log("Test run has not been started on time. Restarting processes...")
+                srv_process, bot_process = _restart_processes(config)
+
+            continue
+
+        last_check_time = current_time
+
+        if timedelta(seconds=current_time - os.path.getmtime(results_file_path)) > timedelta(seconds=timeguard):
+            log("Test run results have not been updated for a while. Restarting processes...")
+            srv_process, bot_process = _restart_processes(config)
+            sleep_job(config['cron']['cancel_job'], timeguard)
 
 
 def run_test(config):
@@ -591,8 +617,8 @@ def run_test(config):
         _run_test(config)
     except:
         log(traceback.format_exc())
-
-    terminate_processes(config)
+    finally:
+        terminate_processes(config)
 
 
 def parse_test_cases_from_comment(pr_cfg):
@@ -662,12 +688,18 @@ def get_cron_config(cfg, **kwargs):
             f'python autoptsclient_bot.py {bot_args} >> stdout_autoptsbot.log 2>&1'
 
     if 'bot_start_delay' not in config:
-        config['bot_start_delay'] = 60
+        config['bot_start_delay'] = 60  # seconds
 
     if 'server_start_cmd' not in config:
         server_options = config.get('server_options', '')
         config['server_start_cmd'] = \
             f'python autoptsserver.py {server_options} >> stdout_autoptsserver.log 2>&1'
+
+    if 'test_run_timeguard' not in config:
+        config['test_run_timeguard'] = 20 * 60  # seconds
+
+    if 'check_interval' not in config:
+        config['check_interval'] = 60  # seconds
 
     return cron_config
 
@@ -789,7 +821,7 @@ def start_vm_job(cfg, **kwargs):
 
     config = load_config(cfg)
 
-    start_vm(config)
+    start_vm(config, checkout_repos=True)
 
     log(f'The {start_vm_job.__name__} Job finished')
 
