@@ -19,6 +19,7 @@
 import collections
 import datetime
 import importlib
+import json
 import logging
 import os
 import sys
@@ -30,6 +31,7 @@ import serial
 
 from autopts import bot
 from autopts.bot.common_features.github import update_sources
+from autopts.config import BOT_STATE_JSON, TMP_DIR
 from autopts.ptsprojects.zephyr import ZEPHYR_PROJECT_URL
 from autopts import client as autoptsclient
 
@@ -236,33 +238,52 @@ BotClient = ZephyrBotClient
 
 
 def main(bot_client):
-    bot.common.pre_cleanup()
+    if os.path.exists(BOT_STATE_JSON):
+        print('Continuing the previous terminated test run (remove tmp/ to start freshly)')
 
-    start_time = time.time()
-    start_time_stamp = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+        with open(BOT_STATE_JSON, "r") as f:
+            data = f.read()
+            bot_state = json.loads(data)
+            cfg = bot_state['config']
+            args = cfg['auto_pts']
 
-    cfg = bot_client.bot_config
-    args = cfg['auto_pts']
-
-    if 'database_file' not in args:
-        args['database_file'] = DATABASE_FILE
-
-    if 'githubdrive' in cfg:
-        update_sources(cfg['githubdrive']['path'],
-                       cfg['githubdrive']['remote'],
-                       cfg['githubdrive']['branch'], True)
-
-    args['kernel_image'] = os.path.join(args['project_path'], 'tests',
-                                        'bluetooth', 'tester', 'outdir',
-                                        'zephyr', 'zephyr.elf')
-
-    if 'git' in cfg:
-        repos_info = github.update_repos(args['project_path'], cfg["git"])
-        repo_status = report.make_repo_status(repos_info)
-        args['repos'] = cfg['git']
     else:
-        repos_info = {}
-        repo_status = ''
+        # Start fresh test run
+
+        bot_state = {}
+        bot.common.pre_cleanup()
+
+        bot_state['start_time'] = time.time()
+
+        cfg = bot_client.bot_config
+        args = cfg['auto_pts']
+        bot_state['config'] = cfg
+
+        if 'database_file' not in args:
+            args['database_file'] = DATABASE_FILE
+
+        if 'githubdrive' in cfg:
+            update_sources(cfg['githubdrive']['path'],
+                           cfg['githubdrive']['remote'],
+                           cfg['githubdrive']['branch'], True)
+
+        args['kernel_image'] = os.path.join(args['project_path'], 'tests',
+                                            'bluetooth', 'tester', 'outdir',
+                                            'zephyr', 'zephyr.elf')
+
+        if 'git' in cfg:
+            bot_state['repos_info'] = github.update_repos(args['project_path'], cfg["git"])
+            bot_state['repo_status'] = report.make_repo_status(bot_state['repos_info'])
+            args['repos'] = cfg['git']
+        else:
+            bot_state['repos_info'] = {}
+            bot_state['repo_status'] = ''
+
+        if args.get('use_backup', False):
+            os.makedirs(os.path.dirname(TMP_DIR), exist_ok=True)
+
+            with open(BOT_STATE_JSON, "w") as f:
+                f.write(json.dumps(bot_state, indent=4))
 
     try:
         stats = bot_client.run_tests()
@@ -286,10 +307,11 @@ def main(bot_client):
     report_file = report.make_report_xlsx(results, summary, regressions,
                                           progresses, descriptions, xmls, PROJECT_NAME)
     report_txt = report.make_report_txt(results, regressions,
-                                        progresses, repo_status, PROJECT_NAME)
+                                        progresses, bot_state['repo_status'], PROJECT_NAME)
 
     end_time = time.time()
-    end_time_stamp = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+    end_time_stamp = datetime.datetime.fromtimestamp(end_time).strftime("%Y_%m_%d_%H_%M_%S")
+    start_time_stamp = datetime.datetime.fromtimestamp(bot_state['start_time']).strftime("%Y_%m_%d_%H_%M_%S")
     url = None
     github_link = None
     report_folder = None
@@ -297,7 +319,7 @@ def main(bot_client):
     if 'githubdrive' in cfg or 'gdrive' in cfg:
         iut_logs = 'logs/'
         readme_file = make_readme_md(start_time_stamp, end_time_stamp,
-                                     repos_info, args['pts_ver'])
+                                     bot_state['repos_info'], args['pts_ver'])
 
         report_diff_txt, deleted_cases = report.make_report_diff(cfg['githubdrive'], results,
                                                                  regressions, progresses, new_cases)
@@ -318,7 +340,7 @@ def main(bot_client):
             commit_msg_pattern = cfg['githubdrive']['commit_msg']
 
         if 'git' in cfg:
-            commit_sha = repos_info['zephyr']['commit']
+            commit_sha = bot_state['repos_info']['zephyr']['commit']
             branch = cfg['git']['zephyr']['branch']
 
         commit_msg = commit_msg_pattern.format(
@@ -337,7 +359,7 @@ def main(bot_client):
         print("Sending email ...")
 
         # keep mail related context to simplify the code
-        mail_ctx = {'repos_info': repo_status,
+        mail_ctx = {'repos_info': bot_state['repo_status'],
                     'summary': f'''{mail.status_dict2summary_html(summary)}
 {mail.regressions2html(regressions, descriptions)}
 {mail.progresses2html(progresses, descriptions)}
@@ -365,7 +387,7 @@ def main(bot_client):
 
         # Elapsed Time
         mail_ctx["elapsed_time"] = str(datetime.timedelta(
-            seconds=(int(end_time - start_time))))
+            seconds=(int(end_time - bot_state['start_time']))))
 
         subject, body = compose_mail(args, cfg['mail'], mail_ctx)
 

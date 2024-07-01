@@ -8,6 +8,7 @@ from unittest.mock import patch
 
 from autopts.bot.zephyr import make_readme_md
 from autopts.client import FakeProxy, TestCaseRunStats
+from autopts.config import TMP_DIR, ALL_STATS_RESULTS_XML
 from autopts.ptsprojects.testcase_db import TestCaseTable
 from autoptsclient_bot import import_bot_projects, import_bot_module
 from test.mocks.mocked_test_cases import mock_workspace_test_cases, test_case_list_generation_samples
@@ -15,33 +16,6 @@ from autopts.bot.common_features import report
 
 
 DATABASE_FILE = 'test/mocks/zephyr_database.db'
-
-
-class TestCaseRunStatsMock:
-    def __init__(self, projects, test_cases, retry_count, db=None):
-        pass
-
-    def update(self, test_case_name, duration, status):
-        return [], []
-
-    def get_results(self):
-        return {}
-
-    def get_regressions(self):
-        return []
-
-    def get_progresses(self):
-        return []
-
-    def get_status_count(self):
-        return {}
-
-    def print_summary(self):
-        pass
-
-    @staticmethod
-    def merge(stats1, stats2):
-        return stats1
 
 
 def delete_file(file_path):
@@ -59,10 +33,12 @@ class MyTestCase(unittest.TestCase):
         os.chdir(dirname(dirname(abspath(__file__))))
         open('ttyUSB', 'w').close()
         shutil.copy('test/configs/config_zephyr.py', 'autopts/bot/config.py')
+        os.makedirs(os.path.dirname(TMP_DIR), exist_ok=True)
 
     def tearDown(self):
         os.remove('ttyUSB')
         delete_file('autopts/bot/config.py')
+        delete_file('tmp/')
 
     def test_bot_startup_import_bot_projects(self):
         """Check that all supported methods of passing a config file
@@ -139,8 +115,8 @@ class MyTestCase(unittest.TestCase):
         def mock_get_test_case_list(project):
             return mock_workspace_test_cases[project]
 
-        def mock_run_test_cases(ptses, test_case_instances, args):
-            return TestCaseRunStatsMock([], [], 0)
+        def mock_run_test_cases(ptses, test_case_instances, args, stats, **kwargs):
+            return TestCaseRunStats([], [], 0, xml_results_file=ALL_STATS_RESULTS_XML)
 
         for args in testargs:
             with patch.object(sys, 'argv', args.split(' ')):
@@ -188,7 +164,7 @@ class MyTestCase(unittest.TestCase):
         new_cases_id = [13, 14, 15]
 
         stats1 = TestCaseRunStats(mock_workspace_test_cases.keys(),
-                                  test_cases, 0, None)
+                                  test_cases, 0, None, xml_results_file=ALL_STATS_RESULTS_XML)
         # Mock results from a first bot run, to generate regressions,
         # progresses, new cases in a second one.
         for i, tc in enumerate(test_cases):
@@ -225,7 +201,7 @@ class MyTestCase(unittest.TestCase):
         files['first_report_txt'] = first_report_txt
 
         stats = TestCaseRunStats(mock_workspace_test_cases.keys(),
-                                 test_cases, 0, TEST_CASE_DB)
+                                 test_cases, 0, TEST_CASE_DB, xml_results_file=ALL_STATS_RESULTS_XML)
 
         # Mock results from a second bot run.
         # Note one deleted test case.

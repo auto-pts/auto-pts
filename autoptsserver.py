@@ -52,8 +52,8 @@ import wmi
 
 from autopts import ptscontrol
 from autopts.config import SERVER_PORT
-from autopts.utils import CounterWithFlag, get_global_end, exit_if_admin, ykush_replug_usb, usb_power, \
-    print_thread_stack_trace
+from autopts.utils import CounterWithFlag, get_global_end, exit_if_admin, ykush_replug_usb, ykush_set_usb_power, \
+    print_thread_stack_trace, active_hub_server_replug_usb, active_hub_server_set_usb_power
 from autopts.winutils import kill_all_processes
 
 logging = root_logging.getLogger('server')
@@ -153,19 +153,21 @@ class PyPTSWithCallback(ptscontrol.PyPTS, threading.Thread):
 
     def _replug_dongle(self):
         log(f"{self._replug_dongle.__name__}")
-        ykush_port = self.args.ykush
-        if not ykush_port:
-            return
 
-        device = self._device
-        log(f'Replugging device ({device}) under ykush:{ykush_port} ...')
-        if device:
-            ykush_replug_usb(self.args.ykush, device_id=device, delay=0, end_flag=self._end)
-        else:
-            # Cases where ykush was down or the dongle was
-            # not enumerated for any other reason.
-            ykush_replug_usb(self.args.ykush, device_id=None, delay=3, end_flag=self._end)
-        log(f'Done replugging device ({device}) under ykush:{ykush_port}')
+        if self.args.ykush:
+            ykush_port = self.args.ykush
+            device = self._device
+            log(f'Replugging device ({device}) under ykush:{ykush_port} ...')
+            if device:
+                ykush_replug_usb(self.args.ykush, device_id=device, delay=0, end_flag=self._end)
+            else:
+                # Cases where ykush was down or the dongle was
+                # not enumerated for any other reason.
+                ykush_replug_usb(self.args.ykush, device_id=None, delay=3, end_flag=self._end)
+            log(f'Done replugging device ({device}) under ykush:{ykush_port}')
+
+        elif self.args.active_hub_server:
+            active_hub_server_replug_usb(self.args.active_hub_server)
 
     def _dispatch(self, method_name, param_tuple):
         """Dispatcher that is used by xmlrpc server"""
@@ -309,6 +311,10 @@ class SvrArgumentParser(argparse.ArgumentParser):
                           help="Specify ykush hub downstream port number, so "
                           "during recovery steps PTS dongle could be replugged.")
 
+        self.add_argument("--active-hub-server", nargs="+", default=[],
+                          help="Specify active hub server e.g. IP:TCP_PORT:USB_PORT, so "
+                          "during recovery steps PTS dongle could be replugged.")
+
         self.add_argument("--dongle", nargs="+", default=None,
                           help='Select the dongle port.'
                                'COMx in case of LE only dongle. '
@@ -346,8 +352,25 @@ class SvrArgumentParser(argparse.ArgumentParser):
                 ykush_confs.append(config)
 
             arg.ykush = ykush_confs
+            arg.active_hub = True
+
+        elif arg.active_hub_server:
+            active_hub_server_configs = []
+            for active_hub_server_conf in arg.active_hub_server:
+                config = {}
+                ip, tcp_port, usb_port = active_hub_server_conf.split(':')
+
+                config['ip'] = ip
+                config['tcp_port'] = tcp_port
+                config['usb_port'] = usb_port
+                config['replug_delay'] = 5
+                active_hub_server_configs.append(config)
+
+            arg.active_hub_server = active_hub_server_configs
+            arg.active_hub = True
 
     def parse_args(self, args=None, namespace=None):
+        namespace = argparse.Namespace(active_hub=None)
         arg = super().parse_args(args, namespace)
         self.check_args(arg)
         return arg
@@ -574,9 +597,14 @@ if __name__ == "__main__":
 
     init_logging(_args)
 
-    if _args.ykush:
-        for ykush_config in _args.ykush:
-            usb_power(ykush_config['ports'], False, ykush_config['ykush_srn'])
+    if _args.active_hub:
+        if _args.ykush:
+            for ykush_config in _args.ykush:
+                ykush_set_usb_power(ykush_config['ports'], False, ykush_config['ykush_srn'])
+
+        elif _args.active_hub_server:
+            for active_hub_server_config in _args.active_hub_server:
+                active_hub_server_set_usb_power(active_hub_server_config, False)
 
     autoptsservers = []
     server_count = len(_args.srv_port)
@@ -586,6 +614,7 @@ if __name__ == "__main__":
             args_copy = copy.deepcopy(_args)
             args_copy.srv_port = _args.srv_port[i]
             args_copy.ykush = _args.ykush[i] if _args.ykush else None
+            args_copy.active_hub_server = _args.active_hub_server[i] if _args.active_hub_server else None
             args_copy.dongle = _args.dongle[i] if _args.dongle else None
             srv = Server(finish_count, args_copy)
             autoptsservers.append(srv)
