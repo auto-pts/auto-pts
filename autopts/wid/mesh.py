@@ -1958,6 +1958,14 @@ def hdl_wid_394(_: WIDParams):
     btp.mesh_proxy_identity()
     return True
 
+def hdl_wid_395(_: WIDParams):
+    """
+    Implements:
+    description: Please send Proxy Solicitation.
+    """
+    btp.mesh_proxy_solicit()
+    return True
+
 def hdl_wid_423(_: WIDParams):
     """
     Implements:
