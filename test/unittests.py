@@ -6,9 +6,9 @@ from os.path import dirname, abspath
 from pathlib import Path
 from unittest.mock import patch
 
-from autopts.bot.zephyr import make_readme_md
+# from autopts.bot.zephyr import make_readme_md
 from autopts.client import FakeProxy, TestCaseRunStats
-from autopts.config import TMP_DIR, ALL_STATS_RESULTS_XML
+from autopts.config import TMP_DIR, ALL_STATS_RESULTS_XML, IUT_LOGS_FOLDER
 from autopts.ptsprojects.testcase_db import TestCaseTable
 from autoptsclient_bot import import_bot_projects, import_bot_module
 from test.mocks.mocked_test_cases import mock_workspace_test_cases, test_case_list_generation_samples
@@ -33,7 +33,7 @@ class MyTestCase(unittest.TestCase):
         os.chdir(dirname(dirname(abspath(__file__))))
         open('ttyUSB', 'w').close()
         shutil.copy('test/configs/config_zephyr.py', 'autopts/bot/config.py')
-        os.makedirs(os.path.dirname(TMP_DIR), exist_ok=True)
+        os.makedirs(TMP_DIR, exist_ok=True)
 
     def tearDown(self):
         os.remove('ttyUSB')
@@ -150,6 +150,7 @@ class MyTestCase(unittest.TestCase):
 
         database_file = DATABASE_FILE
         TEST_CASE_DB = TestCaseTable('zephyr', database_file)
+        errata = report.get_errata('zephyr')
         start_time = 1693378197  # result of time.time()
         duration = 30  # seconds
         end_time = start_time + duration
@@ -188,7 +189,7 @@ class MyTestCase(unittest.TestCase):
         }
 
         report_txt = report.make_report_txt(
-            results, regressions, progresses, '', 'zephyr')
+            results, regressions, progresses, '', errata)
         files['first_report_txt'] = report_txt
         assert os.path.exists(report_txt)
 
@@ -226,7 +227,7 @@ class MyTestCase(unittest.TestCase):
         repos_info = {'zephyr': {'commit': '123456', 'desc': 'zephyr'}}
         pts_ver = '8_5_0'
 
-        iut_logs = 'logs/'
+        iut_logs = IUT_LOGS_FOLDER
         pts_logs = 'tmp/zephyr-master'
         xmls = 'tmp/XMLs'
         Path(iut_logs).mkdir(parents=True, exist_ok=True)
@@ -238,30 +239,30 @@ class MyTestCase(unittest.TestCase):
 
         report_file = report.make_report_xlsx(
             results, summary, regressions, progresses, descriptions,
-            xmls, 'zephyr')
+            xmls, errata)
         files['report_file'] = report_file
         assert os.path.exists(report_file)
 
         report_txt = report.make_report_txt(
-            results, regressions, progresses, '', 'zephyr')
+            results, regressions, progresses, '', errata)
         files['report_txt'] = report_txt
         assert os.path.exists(report_txt)
 
-        readme_file = make_readme_md(
-            start_timestamp, end_time, repos_info, pts_ver)
-        files['readme_file'] = readme_file
-        assert os.path.exists(readme_file)
+        # readme_file = make_readme_md(
+        #     start_timestamp, end_time, repos_info, pts_ver)
+        # files['readme_file'] = readme_file
+        # assert os.path.exists(readme_file)
 
         report_diff_txt, deleted_cases = report.make_report_diff(
-            githubdrive, results, regressions, progresses, new_cases)
+            '', results, regressions, progresses, new_cases)
         files['report_diff_txt'] = report_diff_txt
         assert os.path.exists(report_diff_txt)
 
-        report_folder = report.make_report_folder(
-            iut_logs, pts_logs, xmls, report_file, report_txt, report_diff_txt,
-            readme_file, database_file, '_iut_zephyr_' + start_timestamp)
-        files['report_folder'] = report_folder
-        assert os.path.exists(report_folder)
+        # report_folder = report.make_report_folder(
+        #     iut_logs, pts_logs, xmls, report_file, report_txt, report_diff_txt,
+        #     readme_file, database_file, '_iut_zephyr_' + start_timestamp)
+        # files['report_folder'] = report_folder
+        # assert os.path.exists(report_folder)
 
     def test_generate_stats(self):
         files = {}

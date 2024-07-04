@@ -29,13 +29,9 @@ import xlsxwriter
 from autopts.bot.common_features import github
 from autopts.bot import common
 from autopts.client import PtsServer
+from autopts.config import PTS_XMLS_FOLDER, TMP_DIR, REPORT_XLSX, REPORT_TXT, REPORT_DIFF_TXT, ERROR_TXT, \
+    ERRATA_DIR_PATH, AUTOPTS_ROOT_DIR
 
-REPORT_XLSX = "report.xlsx"
-REPORT_TXT = "report.txt"
-REPORT_DIFF_TXT = "report-diff.txt"
-ERROR_TXT = 'error.txt'
-
-ERRATA_DIR_PATH = os.path.join(common.PROJECT_DIR, 'errata')
 log = logging.debug
 
 
@@ -54,7 +50,7 @@ def get_errata(project_name):
 
 
 def get_autopts_version():
-    repo = git.Repo(common.PROJECT_DIR)
+    repo = git.Repo(AUTOPTS_ROOT_DIR)
     version = repo.git.show('-s', '--format=%H')
 
     if repo.is_dirty():
@@ -76,7 +72,7 @@ def make_repo_status(repos_info):
 # .xlsx spreadsheet file
 # ****************************************************************************
 def make_report_xlsx(results_dict, status_dict, regressions_list,
-                     progresses_list, descriptions, xmls, project_name=''):
+                     progresses_list, descriptions, xmls, errata):
     """Creates excel file containing test cases results and summary pie chart
     :param results_dict: dictionary with test cases results
     :param status_dict: status dictionary, where key is status and value is
@@ -90,7 +86,7 @@ def make_report_xlsx(results_dict, status_dict, regressions_list,
     try:
         xml_list = list(os.scandir(xmls))
     except FileNotFoundError as e:
-        print("No XMLs found")
+        log("No XMLs found")
         xml_list = None
     matched_xml = ''
 
@@ -104,8 +100,6 @@ def make_report_xlsx(results_dict, status_dict, regressions_list,
             if to_match in xml.name:
                 matched_xml = xml.name
                 break
-
-    errata = get_errata(project_name)
 
     header = "AutoPTS Report: " \
              "{}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
@@ -186,7 +180,7 @@ def make_report_xlsx(results_dict, status_dict, regressions_list,
 # .txt result file
 # ****************************************************************************
 def make_report_txt(results_dict, regressions_list,
-                    progresses_list, repo_status, project_name=''):
+                    progresses_list, repo_status, errata):
     """Creates txt file containing test cases results
     :param results_dict: dictionary with test cases results
     :param regressions_list: list of regressions found
@@ -198,8 +192,6 @@ def make_report_txt(results_dict, regressions_list,
 
     filename = os.path.join(os.getcwd(), REPORT_TXT)
     f = open(filename, "w")
-
-    errata = get_errata(project_name)
 
     f.write(f"{repo_status}, autopts={get_autopts_version()}\n")
     for tc, result in list(results_dict.items()):
@@ -217,67 +209,13 @@ def make_report_txt(results_dict, regressions_list,
         if tc in errata:
             result += ' - ERRATA ' + errata[tc]
 
-        # The first id in the test case is test group
+        # The first id in the test case is a test group
         tg = tc.split('/')[0]
         f.write("%s%s%s\n" % (tg.ljust(8, ' '), tc.ljust(32, ' '), result))
 
     f.close()
 
     return filename
-
-
-# ****************************************************************************
-# autopts_report result folder
-# ****************************************************************************
-def make_report_folder(iut_logs, pts_logs, xmls, report_xlsx, report_txt,
-                       report_diff_txt, readme_file, database_file, tag=''):
-    """Creates folder containing .txt and .xlsx reports, pulled logs
-    from autoptsserver, iut logs and additional README.md.
-    """
-
-    def get_deepest_dirs(logs_tree, dst_tree, max_depth):
-        def recursive(directory, depth=3):
-            depth -= 1
-
-            for file in os.scandir(directory):
-                if file.is_dir():
-                    if depth > 0:
-                        recursive(file.path, depth)
-                    else:
-                        dst_file = os.path.join(dst_tree, file.name)
-                        try:
-                            shutil.move(file.path, dst_file)
-                        except:  # skip waiting for BPV to release the file
-                            try:
-                                shutil.copy(file.path, dst_file)
-                            except:
-                                pass
-
-        recursive(logs_tree, max_depth)
-
-    report_dir = 'tmp/autopts_report'
-    shutil.rmtree(report_dir, ignore_errors=True)
-    Path(report_dir).mkdir(parents=True, exist_ok=True)
-
-    shutil.copy(report_diff_txt, os.path.join(report_dir, 'report-diff.txt'))
-    shutil.copy(report_txt, os.path.join(report_dir, 'report.txt'))
-    shutil.copy(report_txt, os.path.join(report_dir, 'report{}.txt'.format(tag)))
-    shutil.copy(report_xlsx, os.path.join(report_dir, 'report{}.xlsx'.format(tag)))
-    shutil.copy(readme_file, os.path.join(report_dir, 'README.md'))
-    shutil.copy(database_file, os.path.join(report_dir, os.path.basename(database_file)))
-
-    iut_logs_new = os.path.join(report_dir, 'iut_logs')
-    pts_logs_new = os.path.join(report_dir, 'pts_logs')
-    xmls_new = os.path.join(report_dir, 'XMLs/')
-
-    get_deepest_dirs(iut_logs, iut_logs_new, 3)
-    get_deepest_dirs(pts_logs, pts_logs_new, 3)
-    try:
-        shutil.move(xmls, xmls_new)
-    except FileNotFoundError:
-        print('XMLs directory doesn\'t exist')
-
-    return os.path.join(os.getcwd(), report_dir)
 
 
 def report_parse_test_cases(report):
@@ -300,13 +238,8 @@ def report_parse_test_cases(report):
     return test_cases[1:]
 
 
-def make_report_diff(log_git_conf, results, regressions,
+def make_report_diff(old_report_txt, results, regressions,
                      progresses, new_cases):
-    old_report_txt = os.path.join(log_git_conf['path'],
-                                  log_git_conf['subdir'],
-                                  'autopts_report',
-                                  REPORT_TXT)
-
     filename = os.path.join(os.getcwd(), REPORT_DIFF_TXT)
     f = open(filename, "w")
 
@@ -432,8 +365,8 @@ def pull_server_logs(args):
     else:
         workspace_dir = workspace_name
 
-    logs_folder = 'tmp/' + workspace_name
-    xml_folder = 'tmp/XMLs'
+    logs_folder = os.path.join(TMP_DIR, workspace_name)
+    xml_folder = PTS_XMLS_FOLDER
     shutil.rmtree(logs_folder, ignore_errors=True)
     shutil.rmtree(xml_folder, ignore_errors=True)
     Path(xml_folder).mkdir(parents=True, exist_ok=True)

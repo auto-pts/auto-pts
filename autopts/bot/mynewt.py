@@ -13,8 +13,6 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
-import collections
-import datetime
 import importlib
 import logging
 import os
@@ -26,12 +24,11 @@ from pathlib import Path
 
 from autopts import bot
 from autopts.bot.common import BuildAndFlashException
-from autopts.bot.common_features.github import update_sources
 from autopts.client import Client
-from autopts.ptsprojects.boards import release_device, get_build_and_flash, get_board_type
+from autopts.config import BOT_STATE_JSON
+from autopts.ptsprojects.boards import get_build_and_flash, get_board_type
 from autopts.ptsprojects.mynewt.iutctl import get_iut, log
-from autopts.ptsprojects.testcase_db import DATABASE_FILE
-from autopts.bot.common_features import github, report, mail, google_drive
+from autopts.bot.common_features import report
 
 
 PROJECT_NAME = Path(__file__).stem
@@ -92,48 +89,6 @@ def get_build_info_file(project_path):
     return file_name
 
 
-def compose_mail(args, mail_cfg, mail_ctx):
-    """ Create a email body
-    """
-
-    additional_info = ''
-    if 'additional_info_path' in mail_cfg:
-        try:
-            with open(mail_cfg['additional_info_path']) as file:
-                additional_info = f'{file.read()} <br>'
-        except Exception as e:
-            logging.exception(e)
-
-    body = f'''
-    <p>This is automated email and do not reply.</p>
-    <h1>Bluetooth test session</h1>
-    {additional_info}
-    <h2>1. IUT Setup</h2>
-    <b> Board:</b> {args["board"]} <br>
-    <b> Source:</b> {mail_ctx["mynewt_repo_status"]} </p>
-    <h2>2. PTS Setup</h2>
-    <p><b> OS:</b> Windows 10 <br>
-    <b> Platform:</b> {args['platform']} <br>
-    <b> Version:</b> {args['pts_ver']} </p>
-    <h2>3. Test Results</h2>
-    <p><b>Execution Time</b>: {mail_ctx["elapsed_time"]}</p>
-    {mail_ctx["summary"]}
-    {mail_ctx["regression"]}
-    {mail_ctx["progresses"]}
-    <h3>Logs</h3>
-    {mail_ctx["log_url"]}
-    <p>Sincerely,</p>
-    <p> {mail_cfg['name']}</p>
-'''
-
-    if 'subject' in mail_cfg:
-        subject = mail_cfg['subject']
-    else:
-        subject = "[Mynewt Nimble] AutoPTS test session results"
-
-    return subject, body
-
-
 class MynewtBotConfigArgs(bot.common.BotConfigArgs):
     def __init__(self, args):
         super().__init__(args)
@@ -179,7 +134,32 @@ class MynewtBotClient(bot.common.BotClient):
             time.sleep(10)
 
     def start(self, args=None):
-        main(self)
+        print("Mynewt bot start!")
+
+        if sys.platform == 'win32':
+            if 'MSYS2_BASH_PATH' not in os.environ:
+                print('Set environmental variable MSYS2_BASH_PATH.')
+                return 0
+            # In case wsl was configured and its bash has higher prio than msys2 bash
+            os.environ['PATH'] = '/usr/bin:' + os.environ['PATH']
+
+        if not os.path.exists(BOT_STATE_JSON):
+            if self.bot_config.get('newt_upgrade', False):
+                bot.common.check_call(['newt', 'upgrade', '-f', '--shallow=0'],
+                                      cwd=self.bot_config['project_path'])
+
+        super().start(args)
+
+    def generate_attachments(self, report_data, attachments):
+        project_path = os.path.abspath(self.bot_config['auto_pts']['project_path'])
+        build_info_file = get_build_info_file(project_path)
+        attachments.append(build_info_file)
+
+    def compose_mail(self, mail_ctx):
+        if 'subject' not in mail_ctx:
+            mail_ctx['subject'] = "[Mynewt Nimble] AutoPTS test session results"
+
+        return super().compose_mail(mail_ctx)
 
 
 class MynewtClient(Client):
@@ -188,115 +168,3 @@ class MynewtClient(Client):
 
 
 BotClient = MynewtBotClient
-
-
-def main(bot_client):
-    print("Mynewt bot start!")
-
-    if sys.platform == 'win32':
-        if 'MSYS2_BASH_PATH' not in os.environ:
-            print('Set environmental variable MSYS2_BASH_PATH.')
-            return 0
-        # In case wsl was configured and its bash has higher prio than msys2 bash
-        os.environ['PATH'] = '/usr/bin:' + os.environ['PATH']
-
-    bot.common.pre_cleanup()
-
-    start_time = time.time()
-
-    cfg = bot_client.bot_config
-    args = cfg['auto_pts']
-
-    if 'database_file' not in args:
-        args['database_file'] = DATABASE_FILE
-
-    if 'githubdrive' in cfg:
-        update_sources(cfg['githubdrive']['path'],
-                       cfg['githubdrive']['remote'],
-                       cfg['githubdrive']['branch'], True)
-
-    if args.get('newt_upgrade', False):
-        bot.common.check_call(['newt', 'upgrade', '-f', '--shallow=0'], cwd=args['project_path'])
-
-    if 'git' in cfg:
-        repos_info = github.update_repos(args['project_path'], cfg["git"])
-        repo_status = report.make_repo_status(repos_info)
-    else:
-        repo_status = ''
-
-    try:
-        stats = bot_client.run_tests()
-    finally:
-        release_device(bot_client.args.tty_file)
-
-    summary = stats.get_status_count()
-    results = stats.get_results()
-    descriptions = stats.get_descriptions()
-    regressions = stats.get_regressions()
-    progresses = stats.get_progresses()
-    args['pts_ver'] = stats.pts_ver
-    args['platform'] = stats.platform
-
-    results = collections.OrderedDict(sorted(results.items()))
-
-    pts_logs, xmls = report.pull_server_logs(bot_client.args)
-
-    report_file = report.make_report_xlsx(results, summary, regressions,
-                                          progresses, descriptions, xmls, PROJECT_NAME)
-    report_txt = report.make_report_txt(results, regressions,
-                                        progresses, repo_status, PROJECT_NAME)
-    logs_folder = report.archive_testcases("logs")
-
-    build_info_file = get_build_info_file(os.path.abspath(args['project_path']))
-
-    end_time = time.time()
-    url = None
-
-    if 'gdrive' in cfg:
-        drive = google_drive.Drive(cfg['gdrive'])
-        url = drive.new_workdir(args['board'])
-        drive.upload(report_file)
-        drive.upload(report_txt)
-        drive.upload_folder(logs_folder)
-        drive.upload(build_info_file)
-        drive.upload(args['database_file'])
-        drive.upload_folder(pts_logs)
-
-    if 'mail' in cfg:
-        print("Sending email ...")
-
-        # keep mail related context to simplify the code
-        mail_ctx = {"summary": mail.status_dict2summary_html(summary),
-                    "regression": mail.regressions2html(regressions,
-                                                        descriptions),
-                    "progresses": mail.progresses2html(progresses,
-                                                       descriptions),
-                    "mynewt_repo_status": repo_status}
-
-        # Summary
-
-        # Regression and test case description
-
-        # Log in Google drive in HTML format
-        if 'gdrive' in cfg and url:
-            mail_ctx["log_url"] = mail.url2html(url,
-                                                "Results on Google Drive")
-        else:
-            mail_ctx["log_url"] = "Not Available"
-
-        # Elapsed Time
-        mail_ctx["elapsed_time"] = str(datetime.timedelta(
-            seconds=(int(end_time - start_time))))
-
-        subject, body = compose_mail(args, cfg['mail'], mail_ctx)
-
-        mail.send_mail(cfg['mail'], subject, body,
-                       [report_file, report_txt])
-
-        print("Done")
-
-    bot.common.cleanup()
-
-    print("\nBye!")
-    sys.stdout.flush()
-    return 0
