@@ -51,7 +51,7 @@ from tools.cron.autopts_bisect import Bisect, set_run_test_fun
 from autopts.bot.common import load_module_from_path
 from autopts.bot.common_features.github import update_repos
 from autopts.bot.common_features.mail import send_mail
-from autopts.config import TC_STATS_JSON
+from autopts.config import TC_STATS_JSON, TMP_DIR, IUT_LOGS_FOLDER, REPORT_XLSX, REPORT_TXT
 from tools.cron.compatibility import find_latest, find_by_project_hash, find_by_autopts_hash, find_by_pts_ver, \
     get_hash_from_reference
 from tools.cron.remote_terminal import RemoteTerminalClientProxy
@@ -307,10 +307,10 @@ def ssh_copy_file(hostname, username, password,
 
 def pre_cleanup_files(autopts_repo, project_repo):
     files_to_save = [
-        os.path.join(autopts_repo, 'tmp/'),
-        os.path.join(autopts_repo, 'logs/'),
-        os.path.join(autopts_repo, 'report.txt'),
-        os.path.join(autopts_repo, 'report.xlsx'),
+        os.path.join(autopts_repo, TMP_DIR),
+        os.path.join(autopts_repo, IUT_LOGS_FOLDER),
+        os.path.join(autopts_repo, REPORT_TXT),
+        os.path.join(autopts_repo, REPORT_XLSX),
         os.path.join(autopts_repo, 'TestCase.db'),
         os.path.join(autopts_repo, 'stdout_autoptsbot.log'),
         os.path.join(autopts_repo, 'stdout_autoptsserver.log'),

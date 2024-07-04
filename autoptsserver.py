@@ -32,6 +32,7 @@ import argparse
 import copy
 import logging as root_logging
 import os
+import platform
 import shutil
 import subprocess
 import sys
@@ -502,6 +503,7 @@ class Server(threading.Thread):
         self.server.register_function(self.copy_file, 'copy_file')
         self.server.register_function(self.delete_file, 'delete_file')
         self.server.register_function(self.get_system_model, 'get_system_model')
+        self.server.register_function(self.get_system_version, 'get_system_version')
         self.server.register_function(self.shutdown_pts_bpv, 'shutdown_pts_bpv')
         self.server.register_function(self.get_path, 'get_path')
         self.server.register_instance(self.pts)
@@ -548,6 +550,11 @@ class Server(threading.Thread):
                             return platform
                     return 'Real HW'
         return 'PotatOS'
+
+    def get_system_version(self):
+        os_name = platform.system()
+        version = platform.release()
+        return f'{os_name} {version}'
 
     def get_path(self):
         self._update_request_time()

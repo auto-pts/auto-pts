@@ -38,7 +38,7 @@ import xmlrpc.client
 from xmlrpc.server import SimpleXMLRPCServer
 from termcolor import colored
 
-from autopts.config import TC_STATS_RESULTS_XML, TEST_CASE_DB, TMP_DIR
+from autopts.config import TC_STATS_RESULTS_XML, TEST_CASE_DB, TMP_DIR, IUT_LOGS_FOLDER
 from autopts.ptsprojects import ptstypes
 from autopts.ptsprojects import stack
 from autopts.ptsprojects.boards import get_available_boards, tty_to_com
@@ -557,6 +557,7 @@ class TestCaseRunStats:
                  xml_results_file=None):
         self.pts_ver = ''
         self.platform = ''
+        self.system_version = ''
         self.run_count_max = retry_count + 1  # Run test at least once
         self.run_count = 0  # Run count of current test case
         self.num_test_cases = len(test_cases)
@@ -1211,7 +1212,7 @@ def run_test_cases(ptses, test_case_instances, args, stats, **kwargs):
 
     ports_str = '_'.join(str(x) for x in args.cli_port)
     now = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
-    session_log_dir = 'logs/cli_port_' + ports_str + '/' + now
+    session_log_dir = f'{IUT_LOGS_FOLDER}/cli_port_{ports_str}/{now}'
     try:
         os.makedirs(session_log_dir)
     except OSError as e:
@@ -1300,6 +1301,7 @@ class Client:
         """
         self.test_cases = None
         self.get_iut = get_iut
+        self.autopts_project_name = name
         self.store_tag = name + '_'
         setup_project_name(project)
         self.boards = get_available_boards(name)
@@ -1357,7 +1359,7 @@ class Client:
         elif self.args.sudo:
             sys.exit("Please run this program as root.")
 
-        os.makedirs(os.path.dirname(TMP_DIR), exist_ok=True)
+        os.makedirs(TMP_DIR, exist_ok=True)
 
         if self.args.store:
             tc_db_table_name = self.store_tag + str(self.args.board_name)
