@@ -22,7 +22,7 @@ import sys
 import os
 from os.path import dirname, abspath
 
-AUTOPTS_REPO = dirname(dirname(dirname(abspath(__file__))))
+AUTOPTS_REPO = dirname(dirname(abspath(__file__)))
 sys.path.insert(0, AUTOPTS_REPO)
 
 from autopts.client import get_test_cases
