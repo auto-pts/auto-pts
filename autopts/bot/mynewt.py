@@ -25,7 +25,6 @@ from pathlib import Path
 from autopts import bot
 from autopts.bot.common import BuildAndFlashException
 from autopts.client import Client
-from autopts.config import BOT_STATE_JSON
 from autopts.ptsprojects.boards import get_build_and_flash, get_board_type
 from autopts.ptsprojects.mynewt.iutctl import get_iut, log
 from autopts.bot.common_features import report
@@ -128,7 +127,7 @@ class MynewtBotClient(bot.common.BotClient):
                 build_and_flash(args.project_path, board_type, overlay, args.debugger_snr)
             except BaseException as e:
                 traceback.print_exception(e)
-                report.make_error_txt('Build and flash step failed')
+                report.make_error_txt('Build and flash step failed', self.file_paths['ERROR_TXT_FILE'])
                 raise BuildAndFlashException
 
             time.sleep(10)
@@ -143,7 +142,7 @@ class MynewtBotClient(bot.common.BotClient):
             # In case wsl was configured and its bash has higher prio than msys2 bash
             os.environ['PATH'] = '/usr/bin:' + os.environ['PATH']
 
-        if not os.path.exists(BOT_STATE_JSON):
+        if not os.path.exists(self.file_paths['BOT_STATE_JSON_FILE']):
             if self.bot_config.get('newt_upgrade', False):
                 bot.common.check_call(['newt', 'upgrade', '-f', '--shallow=0'],
                                       cwd=self.bot_config['project_path'])

@@ -51,7 +51,7 @@ from tools.cron.autopts_bisect import Bisect, set_run_test_fun
 from autopts.bot.common import load_module_from_path
 from autopts.bot.common_features.github import update_repos
 from autopts.bot.common_features.mail import send_mail
-from autopts.config import TC_STATS_JSON, TMP_DIR, IUT_LOGS_FOLDER, REPORT_XLSX, REPORT_TXT
+from autopts.config import generate_file_paths, FILE_PATHS
 from tools.cron.compatibility import find_latest, find_by_project_hash, find_by_autopts_hash, find_by_pts_ver, \
     get_hash_from_reference
 from tools.cron.remote_terminal import RemoteTerminalClientProxy
@@ -146,7 +146,7 @@ def report_to_review_msg(report_path):
 
 
 def error_to_review_msg(config):
-    error_txt_path = os.path.join(config['cron']['autopts_repo'], 'error.txt')
+    error_txt_path = config['file_paths']['ERROR_TXT_FILE']
     msg = 'AutoPTS Bot failed:\n'
 
     if not os.path.exists(error_txt_path):
@@ -266,8 +266,7 @@ def find_workspace_in_tree(tree_path, workspace, init_depth=4):
 def pre_cleanup(config):
     terminate_processes(config)
 
-    pre_cleanup_files(config['cron']['autopts_repo'],
-                      config['auto_pts']['project_path'])
+    pre_cleanup_files(config)
 
     workspace_path = find_workspace_in_tree(
         os.path.join(config['cron']['autopts_repo'],
@@ -305,12 +304,16 @@ def ssh_copy_file(hostname, username, password,
     client.close()
 
 
-def pre_cleanup_files(autopts_repo, project_repo):
+def pre_cleanup_files(config):
+    file_paths = config['file_paths']
+    autopts_repo = config['cron']['autopts_repo']
+    project_repo = config['auto_pts']['project_path']
+
     files_to_save = [
-        os.path.join(autopts_repo, TMP_DIR),
-        os.path.join(autopts_repo, IUT_LOGS_FOLDER),
-        os.path.join(autopts_repo, REPORT_TXT),
-        os.path.join(autopts_repo, REPORT_XLSX),
+        file_paths['TMP_DIR'],
+        file_paths['IUT_LOGS_DIR'],
+        file_paths['REPORT_TXT_FILE'],
+        file_paths['REPORT_XLSX_FILE'],
         os.path.join(autopts_repo, 'TestCase.db'),
         os.path.join(autopts_repo, 'stdout_autoptsbot.log'),
         os.path.join(autopts_repo, 'stdout_autoptsserver.log'),
@@ -572,7 +575,7 @@ def _restart_processes(config):
 def _run_test(config):
     backup = config['auto_pts'].get('use_backup', False)
     timeguard = config['cron']['test_run_timeguard']
-    results_file_path = os.path.join(config['cron']['autopts_repo'], TC_STATS_JSON)
+    results_file_path = config['file_paths']['TC_STATS_JSON_FILE']
 
     srv_process, bot_process = _start_processes(config, checkout_repos=True)
     last_check_time = time()
@@ -643,6 +646,14 @@ def get_cron_config(cfg, **kwargs):
 
     if 'autopts_repo' not in config:
         config['autopts_repo'] = AUTOPTS_REPO
+
+    file_paths = cron_config.get('file_paths', {})
+    if 'TMP_DIR' not in file_paths:
+        file_paths['TMP_DIR'] = os.path.join(config['autopts_repo'],
+                                             os.path.basename(FILE_PATHS['TMP_DIR']))
+
+    cron_config['file_paths'] = generate_file_paths(
+        file_paths=file_paths, autopts_root_dir=config['autopts_repo'])
 
     if 'compatibility_csv' in config:
         if 'project_hash' in config:

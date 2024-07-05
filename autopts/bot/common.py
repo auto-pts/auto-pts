@@ -28,29 +28,12 @@ from pathlib import Path
 from argparse import Namespace
 from autopts import client as autoptsclient
 from autopts.bot.common_features import github, report, mail, google_drive
-from autopts.bot.common_features.report import REPORT_TXT
 from autopts.client import CliParser, Client, TestCaseRunStats, init_logging
-from autopts.config import MAX_SERVER_RESTART_TIME, TEST_CASES_JSON, ALL_STATS_JSON, TC_STATS_JSON, \
-    ALL_STATS_RESULTS_XML, TC_STATS_RESULTS_XML, BOT_STATE_JSON, TMP_DIR, REPORT_README_MD, AUTOPTS_REPORT_FOLDER, \
-    REPORT_DIFF_TXT, REPORT_XLSX, IUT_LOGS_FOLDER, AUTOPTS_ROOT_DIR
+from autopts.config import MAX_SERVER_RESTART_TIME, AUTOPTS_ROOT_DIR, generate_file_paths
 from autopts.ptsprojects.boards import get_free_device, get_tty, get_debugger_snr, release_device
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
 
 log = logging.debug
-
-
-def cleanup_tmp_files():
-    files = [ALL_STATS_RESULTS_XML,
-             TC_STATS_RESULTS_XML,
-             TEST_CASES_JSON,
-             ALL_STATS_JSON,
-             TC_STATS_JSON,
-             BOT_STATE_JSON,
-             ]
-
-    for file in files:
-        if os.path.exists(file):
-            os.remove(file)
 
 
 def get_deepest_dirs(logs_tree, dst_tree, max_depth):
@@ -177,10 +160,7 @@ class BotClient(Client):
         self.backup = {'available': False,
                        'create': False,
                        'all_stats': None,
-                       'tc_stats': None,
-                       'test_cases_file': TEST_CASES_JSON,
-                       'all_stats_file': ALL_STATS_JSON,
-                       'tc_stats_file': TC_STATS_JSON}
+                       'tc_stats': None}
 
     def parse_or_find_tty(self, args):
         if args.tty_alias:
@@ -205,20 +185,20 @@ class BotClient(Client):
 
         continue_test_case = None
         continue_config = None
-        if os.path.exists(self.backup['all_stats_file']):
-            self.backup['all_stats'] = TestCaseRunStats.load_from_backup(self.backup['all_stats_file'])
+        if os.path.exists(self.file_paths['ALL_STATS_JSON_FILE']):
+            self.backup['all_stats'] = TestCaseRunStats.load_from_backup(self.file_paths['ALL_STATS_JSON_FILE'])
             continue_config = self.backup['all_stats'].pending_config
 
             # The last config and test case preformed in the broken test run
-            if os.path.exists(self.backup['tc_stats_file']):
-                self.backup['tc_stats'] = TestCaseRunStats.load_from_backup(self.backup['tc_stats_file'])
+            if os.path.exists(self.file_paths['TC_STATS_JSON_FILE']):
+                self.backup['tc_stats'] = TestCaseRunStats.load_from_backup(self.file_paths['TC_STATS_JSON_FILE'])
                 continue_config = self.backup['tc_stats'].pending_config
                 continue_test_case = self.backup['tc_stats'].pending_test_case
 
         if not continue_config:
             return
 
-        with open(self.backup['test_cases_file']) as f:
+        with open(self.file_paths['TEST_CASES_JSON_FILE']) as f:
             data = f.read()
             test_cases_per_config = json.loads(data)
             run_order = list(test_cases_per_config.keys())
@@ -234,7 +214,7 @@ class BotClient(Client):
                 # The faulty test case was the last one in the config. Move to the next config
                 self.backup['tc_stats'].update(continue_test_case, 0, 'TIMEOUT')
                 self._merge_stats(self.backup['all_stats'], self.backup['tc_stats'])
-                self.backup['all_stats'].save_to_backup(self.backup['all_stats_file'])
+                self.backup['all_stats'].save_to_backup(self.file_paths['ALL_STATS_JSON_FILE'])
                 self.backup['tc_stats'] = None
                 config_index += 1
                 continue_test_case = None
@@ -271,22 +251,46 @@ class BotClient(Client):
         self.args, errmsg = self.arg_parser.parse(bot_config_namespace)
         self.args.retry_config = bot_config_dict.get('retry_config', None)
 
+        if 'file_paths' in self.bot_config:
+            generate_file_paths(self.bot_config['file_paths'])
+
         if errmsg:
             return errmsg
 
-        if self.args.use_backup:
+        if self.args.use_backup and os.path.exists(self.file_paths['BOT_STATE_JSON_FILE']):
             self.load_backup_of_previous_run()
         else:
-            cleanup_tmp_files()
+            self.bot_pre_cleanup()
 
         # Remove default root handler that was created at the first logging.debug
         logging.getLogger().handlers.clear()
-        init_logging('_' + '_'.join(str(x) for x in self.args.cli_port))
+        init_logging('_' + '_'.join(str(x) for x in self.args.cli_port),
+                     self.file_paths.get('BOT_LOG_FILE', None))
 
         return errmsg
 
     def apply_config(self, args, config, value):
         pass
+
+    def bot_pre_cleanup(self):
+        """Perform cleanup before test run
+        :return: None
+        """
+        try:
+            files_to_save = [
+                self.file_paths['TMP_DIR'],
+                self.file_paths['IUT_LOGS_DIR'],
+            ]
+
+            save_dir = os.path.join(self.file_paths['OLD_LOGS_DIR'],
+                                    datetime.datetime.now().strftime("%Y_%m_%d_%H_%M"))
+            Path(save_dir).mkdir(parents=True, exist_ok=True)
+
+            for file_path in files_to_save:
+                if os.path.exists(file_path):
+                    shutil.move(file_path, os.path.join(save_dir, os.path.basename(file_path)))
+        except OSError as e:
+            pass
 
     def _yield_next_config(self):
         limit_counter = 0
@@ -330,7 +334,7 @@ class BotClient(Client):
                 run_order.append(config)
 
             if self.args.use_backup:
-                with open(self.backup['test_cases_file'], 'w') as file:
+                with open(self.file_paths['TEST_CASES_JSON_FILE'], 'w') as file:
                     file.write(json.dumps(test_cases, indent=4))
 
         for config in run_order:
@@ -342,7 +346,7 @@ class BotClient(Client):
 
         stats.pending_config = config
         stats.pending_test_case = test_case
-        stats.save_to_backup(self.backup['tc_stats_file'])
+        stats.save_to_backup(self.file_paths['TC_STATS_JSON_FILE'])
 
     def _merge_stats(self, all_stats, stats):
         all_stats.merge(stats)
@@ -350,19 +354,19 @@ class BotClient(Client):
         if os.path.exists(stats.xml_results):
             os.remove(stats.xml_results)
 
-        if os.path.exists(TC_STATS_JSON):
-            os.remove(TC_STATS_JSON)
+        if os.path.exists(self.file_paths['TC_STATS_JSON_FILE']):
+            os.remove(self.file_paths['TC_STATS_JSON_FILE'])
 
     def run_test_cases(self):
         all_stats = self.backup['all_stats']
         stats = self.backup['tc_stats']
 
         if not all_stats:
-            all_stats = TestCaseRunStats([], [], 0, xml_results_file=ALL_STATS_RESULTS_XML)
+            all_stats = TestCaseRunStats([], [], 0, xml_results_file=self.file_paths['ALL_STATS_RESULTS_XML_FILE'])
             self.backup['all_stats'] = all_stats
 
             if self.args.use_backup:
-                all_stats.save_to_backup(self.backup['all_stats_file'])
+                all_stats.save_to_backup(self.file_paths['ALL_STATS_JSON_FILE'])
 
         projects = self.ptses[0].get_project_list()
 
@@ -373,7 +377,7 @@ class BotClient(Client):
                                              config_args.test_cases,
                                              config_args.retry,
                                              self.test_case_database,
-                                             xml_results_file=TC_STATS_RESULTS_XML)
+                                             xml_results_file=self.file_paths['TC_STATS_RESULTS_XML_FILE'])
 
                     if self.args.use_backup:
                         self._backup_tc_stats(config=config, test_case=None, stats=stats)
@@ -385,7 +389,8 @@ class BotClient(Client):
                                                      config_args,
                                                      stats,
                                                      config=config,
-                                                     pre_test_case_fn=self._backup_tc_stats)
+                                                     pre_test_case_fn=self._backup_tc_stats,
+                                                     file_paths=copy.deepcopy(self.file_paths))
 
             except BuildAndFlashException:
                 log(f'Build and flash step failed for config {config}')
@@ -399,7 +404,7 @@ class BotClient(Client):
                 stats = None
 
             if self.args.use_backup:
-                all_stats.save_to_backup(self.backup['all_stats_file'])
+                all_stats.save_to_backup(self.file_paths['ALL_STATS_JSON_FILE'])
 
         # End of bot run - all test cases completed
 
@@ -412,7 +417,7 @@ class BotClient(Client):
 
         if self.args.use_backup:
             all_stats.test_run_completed = True
-            all_stats.save_to_backup(self.backup['all_stats_file'])
+            all_stats.save_to_backup(self.file_paths['ALL_STATS_JSON_FILE'])
 
         try:
             results = all_stats.get_results()
@@ -437,10 +442,11 @@ class BotClient(Client):
         sending logs, reports, etc.
         """
 
-        if os.path.exists(BOT_STATE_JSON):
-            print(f'Continuing the previous terminated test run (remove {TMP_DIR} to start freshly)')
+        if os.path.exists(self.file_paths['BOT_STATE_JSON_FILE']):
+            print(f'Continuing the previous terminated test run '
+                  f'(remove {self.file_paths["TMP_DIR"]} to start freshly)')
 
-            with open(BOT_STATE_JSON, "r") as f:
+            with open(self.file_paths['BOT_STATE_JSON_FILE'], "r") as f:
                 data = f.read()
                 bot_state = json.loads(data)
                 self.bot_config = bot_state['bot_config']
@@ -448,7 +454,6 @@ class BotClient(Client):
         else:
             # Start fresh test run
 
-            pre_cleanup()
             bot_state = {'start_time': time.time()}
 
             if 'githubdrive' in self.bot_config:
@@ -466,10 +471,10 @@ class BotClient(Client):
                 bot_state['repo_status'] = ''
 
             if self.bot_config['auto_pts'].get('use_backup', False):
-                os.makedirs(os.path.dirname(TMP_DIR), exist_ok=True)
+                os.makedirs(self.file_paths["TMP_DIR"], exist_ok=True)
                 bot_state['bot_config'] = self.bot_config
 
-                with open(BOT_STATE_JSON, "w") as f:
+                with open(self.file_paths['BOT_STATE_JSON_FILE'], "w") as f:
                     f.write(json.dumps(bot_state, indent=4))
 
         try:
@@ -498,23 +503,31 @@ class BotClient(Client):
 
         report_data['tc_results'] = collections.OrderedDict(sorted(report_data['tc_results'].items()))
 
-        report_data['errata'] = report.get_errata(self.autopts_project_name)
+        report_data['errata'] = report.get_errata([
+            os.path.join(AUTOPTS_ROOT_DIR, 'errata/common.yaml'),
+            os.path.join(AUTOPTS_ROOT_DIR, f'errata/{self.autopts_project_name}.yaml')
+        ])
 
-        report_data['pts_logs_folder'], report_data['pts_xml_folder'] = report.pull_server_logs(self.args)
+        report_data['pts_logs_folder'], report_data['pts_xml_folder'] = \
+            report.pull_server_logs(self.args,
+                                    self.file_paths['TMP_DIR'],
+                                    self.file_paths['PTS_XMLS_DIR'])
 
-        report_data['report_xlsx'] = report.make_report_xlsx(report_data['tc_results'],
-                                                             report_data['status_count'],
-                                                             report_data['regressions'],
-                                                             report_data['progresses'],
-                                                             report_data['descriptions'],
-                                                             report_data['pts_xml_folder'],
-                                                             report_data['errata'])
+        report.make_report_xlsx(self.file_paths['REPORT_XLSX_FILE'],
+                                report_data['tc_results'],
+                                report_data['status_count'],
+                                report_data['regressions'],
+                                report_data['progresses'],
+                                report_data['descriptions'],
+                                report_data['pts_xml_folder'],
+                                report_data['errata'])
 
-        report_data['report_txt'] = report.make_report_txt(report_data['tc_results'],
-                                                           report_data['regressions'],
-                                                           report_data['progresses'],
-                                                           report_data['repo_status'],
-                                                           report_data['errata'])
+        report.make_report_txt(self.file_paths['REPORT_TXT_FILE'],
+                               report_data['tc_results'],
+                               report_data['regressions'],
+                               report_data['progresses'],
+                               report_data['repo_status'],
+                               report_data['errata'])
 
         if 'githubdrive' in self.bot_config or 'gdrive' in self.bot_config:
             self.make_report_folder(report_data)
@@ -534,10 +547,10 @@ class BotClient(Client):
         # Entry point of the simple client layer
         return super().start()
 
-    def make_readme_md(self, report_data):
+    def make_readme_md(self, readme_md_path, report_data):
         """Creates README.md for Github logging repo
         """
-        readme_file = REPORT_README_MD
+        readme_file = readme_md_path
 
         Path(os.path.dirname(readme_file)).mkdir(parents=True, exist_ok=True)
 
@@ -564,39 +577,33 @@ class BotClient(Client):
         """Creates folder containing .txt and .xlsx reports, pulled logs
         from autoptsserver, iut logs and additional README.md.
         """
-        report_data['report_folder'] = AUTOPTS_REPORT_FOLDER
-        shutil.rmtree(report_data['report_folder'], ignore_errors=True)
-        Path(report_data['report_folder']).mkdir(parents=True, exist_ok=True)
+        shutil.rmtree(self.file_paths['REPORT_DIR'], ignore_errors=True)
+        Path(self.file_paths['REPORT_DIR']).mkdir(parents=True, exist_ok=True)
 
         if 'githubdrive' in self.bot_config:
-            report_folder_name = os.path.basename(report_data['report_folder'])
-
-            report_data['old_report_txt'] = os.path.join(self.bot_config['githubdrive']['path'],
-                                                         self.bot_config['githubdrive']['subdir'],
-                                                         report_folder_name, REPORT_TXT)
-
-            report_data['report_diff_txt'], report_data['deleted_cases'] = \
-                report.make_report_diff(report_data['old_report_txt'],
+            report_data['deleted_cases'] = \
+                report.make_report_diff(self.bot_config['githubdrive'].get('old_report_txt', ''),
+                                        self.file_paths['REPORT_DIFF_TXT_FILE'],
                                         report_data['tc_results'],
                                         report_data['regressions'],
                                         report_data['progresses'],
                                         report_data['new_cases'])
 
-        report_data['readme_file'] = self.make_readme_md(report_data)
+        report_data['readme_file'] = self.make_readme_md(self.file_paths['REPORT_README_MD_FILE'], report_data)
 
         attachments = [
-            REPORT_DIFF_TXT,
-            report_data['report_txt'],
-            (report_data['report_txt'], f'report_{report_data["start_time_stamp"]}.txt'),
-            (report_data['report_xlsx'], f'report_{report_data["start_time_stamp"]}.xlsx'),
-            REPORT_README_MD,
+            self.file_paths['REPORT_DIFF_TXT_FILE'],
+            self.file_paths['REPORT_TXT_FILE'],
+            (self.file_paths['REPORT_TXT_FILE'], f'report_{report_data["start_time_stamp"]}.txt'),
+            (self.file_paths['REPORT_TXT_FILE'], f'report_{report_data["start_time_stamp"]}.xlsx'),
+            self.file_paths['REPORT_README_MD_FILE'],
             report_data['database_file'],
             report_data['pts_xml_folder'],
         ]
 
-        iut_logs_new = os.path.join(report_data['report_folder'], 'iut_logs')
-        pts_logs_new = os.path.join(report_data['report_folder'], 'pts_logs')
-        get_deepest_dirs(IUT_LOGS_FOLDER, iut_logs_new, 3)
+        iut_logs_new = os.path.join(self.file_paths['REPORT_DIR'], 'iut_logs')
+        pts_logs_new = os.path.join(self.file_paths['REPORT_DIR'], 'pts_logs')
+        get_deepest_dirs(self.file_paths['IUT_LOGS_DIR'], iut_logs_new, 3)
         get_deepest_dirs(report_data['pts_logs_folder'], pts_logs_new, 3)
 
         self.generate_attachments(report_data, attachments)
@@ -608,7 +615,7 @@ class BotClient(Client):
         pass
 
     def pack_report_folder(self, report_data, attachments):
-        report_dir = report_data['report_folder']
+        report_dir = self.file_paths['REPORT_DIR']
 
         for item in attachments:
             if isinstance(item, tuple):
@@ -644,16 +651,17 @@ class BotClient(Client):
         if 'commit_msg' not in report_data:
             report_data['commit_msg'] = report_data['start_time_stamp']
 
-        report_data['github_link'], report_data['report_folder'] = report.github_push_report(
-            report_data['report_folder'], self.bot_config['githubdrive'], report_data['commit_msg'])
+        report_data['github_link'], self.file_paths['REPORT_DIR'] = \
+            report.github_push_report(self.file_paths['REPORT_DIR'],
+                                      self.bot_config['githubdrive'],
+                                      report_data['commit_msg'])
 
     def upload_logs_to_gdrive(self, report_data):
-        report_folder = report_data['report_folder']
         board_name = self.bot_config['auto_pts']['board']
         gdrive_config = self.bot_config['gdrive']
 
         log(f'Archiving the report folder ...')
-        report.archive_testcases(report_folder, depth=2)
+        report.archive_testcases(self.file_paths['REPORT_DIR'], depth=2)
 
         log(f'Connecting to GDrive ...')
         drive = google_drive.Drive(gdrive_config)
@@ -663,7 +671,7 @@ class BotClient(Client):
         log(report_data['gdrive_url'])
 
         log("Uploading to GDrive ...")
-        drive.upload_folder(report_folder)
+        drive.upload_folder(self.file_paths['REPORT_DIR'])
 
     def send_email(self, report_data):
         log("Sending email ...")
@@ -720,7 +728,8 @@ class BotClient(Client):
         subject, body = self.compose_mail(mail_ctx)
 
         mail.send_mail(self.bot_config['mail'], subject, body,
-                       [report_data['report_xlsx'], report_data['report_txt']])
+                       [self.file_paths['REPORT_XLSX_FILE'],
+                        self.file_paths['REPORT_TXT_FILE']])
 
     def compose_mail(self, mail_ctx):
         """ Create a email body
@@ -926,24 +935,3 @@ def load_module_from_path(cfg):
     sys.path.remove(config_dirname)
 
     return module
-
-
-def pre_cleanup():
-    """Perform cleanup before test run
-    :return: None
-    """
-    try:
-        shutil.copytree(IUT_LOGS_FOLDER, "oldlogs", dirs_exist_ok=True)
-        shutil.rmtree(IUT_LOGS_FOLDER)
-    except OSError:
-        pass
-
-
-def cleanup():
-    """Perform cleanup
-    :return: None
-    """
-    try:
-        cleanup_tmp_files()
-    except OSError:
-        pass

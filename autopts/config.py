@@ -27,20 +27,39 @@ AUTOPTS_ROOT_DIR = os.path.dirname(  # auto-pts repo directory
                 os.path.dirname(  # autopts module directory
                     os.path.abspath(__file__)))  # this file directory
 
-TMP_DIR = 'tmp'
-ALL_STATS_RESULTS_XML = os.path.join(TMP_DIR, 'all_stats_results.xml')
-TC_STATS_RESULTS_XML = os.path.join(TMP_DIR, 'tc_stats_results.xml')
-TEST_CASES_JSON = os.path.join(TMP_DIR, 'test_cases_file.json')
-ALL_STATS_JSON = os.path.join(TMP_DIR, 'all_stats.json')
-TC_STATS_JSON = os.path.join(TMP_DIR, 'tc_stats.json')
-TEST_CASE_DB = os.path.join(TMP_DIR, 'TestCase.db')
-BOT_STATE_JSON = os.path.join(TMP_DIR, 'bot_state.json')
-REPORT_README_MD = os.path.join(TMP_DIR, 'README.md')
-AUTOPTS_REPORT_FOLDER = os.path.join(TMP_DIR, 'autopts_report')
-IUT_LOGS_FOLDER = 'logs'
-PTS_XMLS_FOLDER = os.path.join(TMP_DIR, 'XMLs')
-ERRATA_DIR_PATH = os.path.join(AUTOPTS_ROOT_DIR, 'errata')
-REPORT_XLSX = "report.xlsx"
-REPORT_TXT = "report.txt"
-REPORT_DIFF_TXT = "report-diff.txt"
-ERROR_TXT = 'error.txt'
+FILE_PATHS = {}
+
+
+def generate_file_paths(file_paths=None, autopts_root_dir=AUTOPTS_ROOT_DIR):
+    if file_paths and 'TMP_DIR' in file_paths:
+        FILE_PATHS['TMP_DIR'] = file_paths['TMP_DIR']
+    else:
+        FILE_PATHS['TMP_DIR'] = os.path.join(autopts_root_dir, 'tmp')
+
+    FILE_PATHS.update({
+        'ALL_STATS_RESULTS_XML_FILE': os.path.join(FILE_PATHS['TMP_DIR'], 'all_stats_results.xml'),
+        'TC_STATS_RESULTS_XML_FILE': os.path.join(FILE_PATHS['TMP_DIR'], 'tc_stats_results.xml'),
+        'TEST_CASES_JSON_FILE': os.path.join(FILE_PATHS['TMP_DIR'], 'test_cases_file.json'),
+        'ALL_STATS_JSON_FILE': os.path.join(FILE_PATHS['TMP_DIR'], 'all_stats.json'),
+        'TC_STATS_JSON_FILE': os.path.join(FILE_PATHS['TMP_DIR'], 'tc_stats.json'),
+        'TEST_CASE_DB_FILE': os.path.join(FILE_PATHS['TMP_DIR'], 'TestCase.db'),
+        'BOT_STATE_JSON_FILE': os.path.join(FILE_PATHS['TMP_DIR'], 'bot_state.json'),
+        'REPORT_README_MD_FILE': os.path.join(FILE_PATHS['TMP_DIR'], 'README.md'),
+        'REPORT_DIR': os.path.join(FILE_PATHS['TMP_DIR'], 'autopts_report'),
+        'IUT_LOGS_DIR': os.path.join(autopts_root_dir, 'logs'),
+        'OLD_LOGS_DIR': os.path.join(autopts_root_dir, 'oldlogs'),
+        'PTS_XMLS_DIR': os.path.join(FILE_PATHS['TMP_DIR'], 'XMLs'),
+        'REPORT_XLSX_FILE': os.path.join(autopts_root_dir, "report.xlsx"),
+        'REPORT_TXT_FILE': os.path.join(autopts_root_dir, "report.txt"),
+        'REPORT_DIFF_TXT_FILE': os.path.join(FILE_PATHS['TMP_DIR'], "report-diff.txt"),
+        'ERROR_TXT_FILE': os.path.join(FILE_PATHS['TMP_DIR'], 'error.txt'),
+        # 'BOT_LOG_FILE': os.path.join(autopts_root_dir, 'autoptsclient_bot.log'),
+    })
+
+    if file_paths:
+        FILE_PATHS.update(file_paths)
+
+    return FILE_PATHS
+
+
+generate_file_paths({}, AUTOPTS_ROOT_DIR)
