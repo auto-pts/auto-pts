@@ -1,25 +1,24 @@
-<WORKSPACE_INFORMATION NAME="nimble-master" PATH="C:\Users\Krzysiek\Desktop\nimble-master" CREATED_WITH="Profile Tuning Suite, 8.5.1, 10" BD_ADDR="000000000000" QDID="224034">
+<WORKSPACE_INFORMATION NAME="nimble-master" PATH="C:\Users\Krzysiek\Desktop\nimble-master" CREATED_WITH="Profile Tuning Suite, 8.5.1, 10" BD_ADDR="000000000000" QDID="224034" SWITCH_TTCN="FALSE">
   <PROJECTS_INFORMATION>
     <PROJECT_INFORMATION NAME="GAP" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
       <PICS>
         <Name>GAP</Name>
-        <Version />
         <Rows>
           <Row>
             <Name>TSPC_GAP_0_1</Name>
-            <Description>BR/EDR (C.1)</Description>
+            <Description>BR/EDR (C.1, C.4)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_0_2</Name>
-            <Description>LE (C.2)</Description>
+            <Description>LE (C.2, C.4)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_0_3</Name>
-            <Description>BR/EDR/LE (C.3)</Description>
+            <Description>BR/EDR/LE (C.3, C.4)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -180,6 +179,12 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_GAP_2_14</Name>
+            <Description>Out-of-Band (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_GAP_3_1</Name>
             <Description>Initiation of general inquiry (C.1)</Description>
             <Value>FALSE</Value>
@@ -258,6 +263,12 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_GAP_4a_1</Name>
+            <Description>Detect insufficient authentication (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_GAP_5_1</Name>
             <Description>Broadcaster (C.1)</Description>
             <Value>TRUE</Value>
@@ -313,25 +324,25 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_8_1</Name>
-            <Description>Non-connectable and non-scannable undirected event (M)</Description>
+            <Description>Non-connectable and non-scannable undirected events (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_8_2</Name>
-            <Description>Scannable undirected event (O)</Description>
+            <Description>Scannable undirected events (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_8_3</Name>
-            <Description>Non-connectable and non-scannable directed event (C.1)</Description>
+            <Description>Non-connectable and non-scannable directed events (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_8_4</Name>
-            <Description>Scannable directed event (C.1)</Description>
+            <Description>Scannable directed events (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -859,43 +870,43 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_20_1</Name>
-            <Description>Connectable and scannable undirected event (M)</Description>
+            <Description>Connectable and scannable undirected events (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_20_2</Name>
-            <Description>Connectable directed event (O)</Description>
+            <Description>Connectable directed events (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_20_3</Name>
-            <Description>Non-connectable and non-scannable undirected event (O)</Description>
+            <Description>Non-connectable and non-scannable undirected events (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_20_4</Name>
-            <Description>Scannable undirected event (O)</Description>
+            <Description>Scannable undirected events (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_20_5</Name>
-            <Description>Connectable undirected event (C.1)</Description>
+            <Description>Connectable undirected events (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_20_6</Name>
-            <Description>Non-connectable and non-scannable directed event (C.1)</Description>
+            <Description>Non-connectable and non-scannable directed events (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_20_7</Name>
-            <Description>Scannable directed event (C.1)</Description>
+            <Description>Scannable directed events (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -1039,7 +1050,7 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_21_3</Name>
-            <Description>Encryption procedure (O)</Description>
+            <Description>Encryption procedure (C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -1273,7 +1284,7 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_25_14</Name>
-            <Description>Client security checks for GATT indications and notifications (C.7)</Description>
+            <Description>Client security checks for GATT indications and notifications (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -1340,6 +1351,12 @@
           <Row>
             <Name>TSPC_GAP_27_10</Name>
             <Description>Encrypted Data Key Material (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_27_10a</Name>
+            <Description>Encrypted Data Key Material Indications (C.2)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -1412,6 +1429,30 @@
           <Row>
             <Name>TSPC_GAP_27b_8</Name>
             <Description>Signing Key (C.7)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_27b_9</Name>
+            <Description>Out of Band (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_27c_1</Name>
+            <Description>Detect insufficient authentication (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_27c_2</Name>
+            <Description>Detect insufficient authorization (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_27c_3</Name>
+            <Description>Detect insufficient encryption (C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -1603,7 +1644,7 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_31_3</Name>
-            <Description>Encryption procedure (O)</Description>
+            <Description>Encryption procedure (C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -1795,7 +1836,7 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_35_8</Name>
-            <Description>Unauthenticated Pairing (LE security mode1 level 2) (C.1)</Description>
+            <Description>Unauthenticated Pairing (LE security mode 1 level 2) (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -1837,7 +1878,7 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_35_15</Name>
-            <Description>Client security checks for GATT indications and notifications (C.5)</Description>
+            <Description>Client security checks for GATT indications and notifications (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -1956,6 +1997,30 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_GAP_37b_9</Name>
+            <Description>Out of Band (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_37c_1</Name>
+            <Description>Detect insufficient authentication (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_37c_2</Name>
+            <Description>Detect insufficient authorization (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_37c_3</Name>
+            <Description>Detect insufficient encryption (C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_GAP_38_1</Name>
             <Description>Broadcaster (C.1)</Description>
             <Value>FALSE</Value>
@@ -1986,14 +2051,20 @@
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_GAP_41_2</Name>
+            <Description>Cross Transport Key Derivation Supported (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_GAP_41_2a</Name>
-            <Description>Derivation of BR/EDR Link Key from LE LTK (O)</Description>
+            <Description>Derivation of BR/EDR Link Key from LE LTK (C.2)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_41_2b</Name>
-            <Description>Derivation of LE LTK from BR/EDR Link Key (O)</Description>
+            <Description>Derivation of LE LTK from BR/EDR Link Key (C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -2004,14 +2075,20 @@
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_GAP_43_2</Name>
+            <Description>Cross Transport Key Derivation Supported (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_GAP_43_2a</Name>
-            <Description>Derivation of BR/EDR Link Key from LE LTK (O)</Description>
+            <Description>Derivation of BR/EDR Link Key from LE LTK (C.2)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_43_2b</Name>
-            <Description>Derivation of LE LTK from BR/EDR Link Key (O)</Description>
+            <Description>Derivation of LE LTK from BR/EDR Link Key (C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -2605,13 +2682,13 @@
           <Row>
             <Name>TSPC_GATT_1_1</Name>
             <Description>Generic Attribute Profile (GATT) Client (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_1_2</Name>
             <Description>Generic Attribute Profile (GATT) Server (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -2779,7 +2856,7 @@
           <Row>
             <Name>TSPC_GATT_3_17</Name>
             <Description>Notifications (C.7)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -3101,6 +3178,12 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_GATT_6_6</Name>
+            <Description>AdditionalProtocolDescriptorList (C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_GATT_7_2</Name>
             <Description>LE security Mode 1 (C.2)</Description>
             <Value>TRUE</Value>
@@ -3133,6 +3216,12 @@
           <Row>
             <Name>TSPC_GATT_7_7</Name>
             <Description>Authorization Procedure (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_7_8</Name>
+            <Description>Client security checks for GATT indications and notifications (C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -3349,66 +3438,48 @@
           <Row>
             <Name>TSPC_GAP_0_2</Name>
             <Description>LE (C.2)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_24_2</Name>
             <Description>Bondable Mode (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_24_3</Name>
             <Description>Bonding Procedure (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_34_2</Name>
             <Description>Bondable Mode (C.2)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_34_3</Name>
             <Description>Bonding Procedure (C.2)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_SUM_ICS_31_17</Name>
-            <Description>Core Spec Version 4.2, Adopted 02 December 2014 (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_SUM_ICS_31_18</Name>
-            <Description>Core Spec Version 4.2 + HS, Adopted 02 December 2014 (C.1)</Description>
+            <Name>TSPC_CORE_2a_52</Name>
+            <Description>Host Core v5.2 or later (C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_SUM_ICS_31_19</Name>
-            <Description>Core Specification Version 5.0. Adopted 06 December 2016 (C.1)</Description>
+            <Name>TSPC_CORE_2a_53</Name>
+            <Description>Host Core v5.3 or later (C.4)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_SUM_ICS_31_20</Name>
-            <Description>Core Specification Version 5.1. Adopted 15 January 2019 (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_SUM_ICS_31_21</Name>
-            <Description>Core Specification Version 5.2. Adopted 31 December 2019 (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_SUM_ICS_31_22</Name>
-            <Description>Core Specification Version 5.3. Adopted 06 July 2021 (C.1)</Description>
+            <Name>TSPC_CORE_2b_51</Name>
+            <Description>Host Core v5.1 or earlier (C.2)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -3558,401 +3629,223 @@
             <Type>BOOLEAN</Type>
             <Value>FALSE</Value>
           </Row>
+          <Row>
+            <Name>TSPX_iut_mandates_mitm</Name>
+            <Description>IUT security policy of whether or not it mandates MITM. (Default: FALSE)</Description>
+            <Value>FALSE</Value>
+            <Type>BOOLEAN</Type>
+          </Row>
+          <Row>
+            <Name>TSPX_additional_service_uuid_for_sdp</Name>
+            <Description>Service Search Pattern used by Discover Services by UUID using SDP test cases.(Default: 180F)</Description>
+            <Value>180F</Value>
+            <Type>OCTETSTRING</Type>
+          </Row>
         </Rows>
       </PIXIT>
     </PROJECT_INFORMATION>
-    <PROJECT_INFORMATION NAME="IOPT" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
+    <PROJECT_INFORMATION NAME="IOPT_OLD" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
       <PICS>
-        <Name>IOPT</Name>
+        <Name>IOPT_OLD</Name>
         <Version />
         <Rows>
           <Row>
-            <Name>TSPC_GAP_1_2</Name>
-            <Description>Limited-discoverable mode (O)</Description>
+            <Name>TSPC_3DSP_1_1</Name>
+            <Description>3DSP 1.0</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_1_3</Name>
-            <Description>General-discoverable mode (O)</Description>
+            <Name>TSPC_A2DP_1_1</Name>
+            <Description>Source (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_HFP_1_1</Name>
-            <Description>Role: Audio Gateway (AG)</Description>
+            <Name>TSPC_A2DP_1_2</Name>
+            <Description>Sink (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_SDP_1b_2</Name>
-            <Description>Support for client role. (C.1)</Description>
-            <Reference>SDP, 2.1</Reference>
-            <Status>C.1</Status>
+            <Name>TSPC_AVRCP_1_1</Name>
+            <Description>Controller (C.1)</Description>
             <Role />
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_SDP_2_1</Name>
-            <Description>Support for respond on search of single Service, using ServiceSearchRequest. (C.2)</Description>
-            <Reference>SDP, 4.5</Reference>
-            <Status>C.2</Status>
+            <Name>TSPC_BPP_1_1</Name>
+            <Description>Roles: Printer (Pr) (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DUN_1_1</Name>
+            <Description>Role : Gateway (GW) (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_FTP_1_1</Name>
+            <Description>File Transfer Server (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GNSS_1_1</Name>
+            <Description>Role: Server (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_HCRP_1_1</Name>
+            <Description>Role: Server (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_HFP_1_2</Name>
+            <Description>Role: Hands-Free (HF) (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_HID11_1_4</Name>
+            <Description>HID Device Role (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_HSP_1_2</Name>
+            <Description>Role: Headset (HS) (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_OPP_1_2</Name>
+            <Description>Object Push Server (C.1)</Description>
             <Role />
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_support_AdvancedAudioDistributionProfile_Sink</Name>
-            <Description>Support for: Advanced Audio Distribution Profile.              Role: Sink</Description>
+            <Name>TSPC_PAN_1_1</Name>
+            <Description>Role: Network Access Point (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_support_AdvancedAudioDistributionProfile_Source</Name>
-            <Description>Support for: Advanced Audio Distribution Profile.              Role: Source</Description>
+            <Name>TSPC_PAN_1_2</Name>
+            <Description>Role: Group Ad-hoc Network (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_support_AVRemoteControlProfile_CT</Name>
-            <Description>Support for: Audio\Video Remote Control Profile.              Role: Controller</Description>
+            <Name>TSPC_PAN_1_3</Name>
+            <Description>Role: PAN User (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_support_AVRemoteControlProfile_TG</Name>
-            <Description>Support for: Audio\Video Remote Control Profile.              Role: Target</Description>
+            <Name>TSPC_SAP_1_2</Name>
+            <Description>Role: SIM Access Server (Server) (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_support_BasicImagingProfile_CLIENT</Name>
-            <Description>Support for: Basic Imaging Profile.                                      Role: Client</Description>
+            <Name>TSPC_SYNC_1_1</Name>
+            <Description>IrMC Client (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_support_BasicImagingProfile_SERVER_ImagingAutomaticArchive</Name>
-            <Description>Support for: Basic Imaging Profile.                                      Role: Server                Functionality: Imaging autoarchive</Description>
+            <Name>TSPC_SYNC_1_2</Name>
+            <Description>IrMC Server (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_support_BasicImagingProfile_SERVER_ImagingReferencedObjects</Name>
-            <Description>Support for: Basic Imaging Profile.                                      Role: Server                Functionality: Imaging referenced objects</Description>
+            <Name>TSPC_VDP_1_1</Name>
+            <Description>Source (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_support_BasicImagingProfile_SERVER_ImagingResponder</Name>
-            <Description>Support for: Basic Imaging Profile.                                      Role: Server                Functionality: Imaging responder</Description>
+            <Name>TSPC_VDP_1_2</Name>
+            <Description>Sink (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_support_BasicPrintingProfile_PRINTER</Name>
-            <Description>Support for: Basic Printing Profile.                                       Role: Printer</Description>
+            <Name>TSPC_AICS_1_1</Name>
+            <Description>Service supported over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_support_BasicPrintingProfile_PRINTER_ReflectedUI</Name>
-            <Description>Support for: Basic Printing Profile.                                       Role: Printer              Functionality: Reflected UI</Description>
+            <Name>TSPC_ASCS_2_1</Name>
+            <Description>Service supported over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_support_BasicPrintingProfile_SENDER_Referenced_objects_Service</Name>
-            <Description>Support for: Basic Printing Profile.                                       Role: Sender              Functionality: Reference objects service</Description>
+            <Name>TSPC_BASS_2_1</Name>
+            <Description>Service supported over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_support_DialUpNetworkingProfile_DT</Name>
-            <Description>Support for: Dial-Up Networking Profile.                             Role: Data Terminal</Description>
+            <Name>TSPC_CAS_2_1</Name>
+            <Description>Service supported over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_support_DialUpNetworkingProfile_GW</Name>
-            <Description>Support for: Dial-Up Networking Profile.                             Role: Gateway</Description>
+            <Name>TSPC_MCS_1_1</Name>
+            <Description>Service supported over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_support_ExtendedServiceDiscoveryProfile_IP_LAP</Name>
-            <Description>Support for: Extended Service Discovery Profile.              Version: IP-LAP</Description>
+            <Name>TSPC_GMCS_1_1</Name>
+            <Description>Service supported over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_support_ExtendedServiceDiscoveryProfile_IP_PAN</Name>
-            <Description>Support for: Extended Service Discovery Profile.              Version: IP-PAN</Description>
+            <Name>TSPC_MICS_1_1</Name>
+            <Description>Service supported over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_support_ExtendedServiceDiscoveryProfile_L2CAP</Name>
-            <Description>Support for: Extended Service Discovery Profile.              Version: L2CAP</Description>
+            <Name>TSPC_PACS_2_1</Name>
+            <Description>Service supported over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_support_FAXProfile_DT</Name>
-            <Description>Support for: FAX Profile.                                                      Role: Data Terminal</Description>
+            <Name>TSPC_TBS_1_1</Name>
+            <Description>Service supported over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_support_FAXProfile_GW</Name>
-            <Description>Support for: FAX Profile.                                                      Role: Gateway</Description>
+            <Name>TSPC_GTBS_1_1</Name>
+            <Description>Service supported over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_support_FileTransferProfile_CLIENT</Name>
-            <Description>Support for: File Transfer Profile.                                        Role: Client </Description>
+            <Name>TSPC_VCS_1_1</Name>
+            <Description>Service supported over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_support_FileTransferProfile_SERVER</Name>
-            <Description>Support for: File Transfer Profile.                                        Role: Server</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_HealthDeviceProfile_Sink</Name>
-            <Description>Support for: Health Device Profile                                       Role: Sink</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_HealthDeviceProfile_Source</Name>
-            <Description>Support for: Health Device Profile                                       Role: Source</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_NewHandsFreeProfile_AG</Name>
-            <Description>Support for: Handsfree Profile                         Role: Audio gateway</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_NewHandsFreeProfile_HF</Name>
-            <Description>Support for: Handsfree Profile                         Role: Hands-Free unit</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_HardCopyReplacementProfile_CLIENT_CR_RegisterNotofication_support</Name>
-            <Description>Support for: Hard Copy cable Replacement Profile.           Role: Client                 Functionality: CR register notification support</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_HardCopyReplacementProfile_CLIENT_print</Name>
-            <Description>Support for: Hard Copy cable Replacement Profile.           Role: Client                 Functionality: Print</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_HardCopyReplacementProfile_CLIENT_scan</Name>
-            <Description>Support for: Hard Copy cable Replacement Profile.           Role: Client                 Functionality: Scan</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_HardCopyReplacementProfile_SERVER_print</Name>
-            <Description>Support for: Hard Copy cable Replacement Profile.           Role: Server               Functionality: Print</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_HardCopyReplacementProfile_SERVER_scan</Name>
-            <Description>Support for: Hard Copy cable Replacement Profile.           Role: Server               Functionality: Scan</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_HeadsetProfile_AG</Name>
-            <Description>Support for: Headset Profile                                               Role: Audio Gateway</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_HeadsetProfile_HS</Name>
-            <Description>Support for: Headset Profile.                                              Role: Headset</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_HumanInterfaceDeviceProfile</Name>
-            <Description>Support for: Human Interface Device Profile                      Role: Device</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_HID_Host</Name>
-            <Description>Support for: Human Interface Device Profile                      Role: Host</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_LANAccessProfile_DT</Name>
-            <Description>Support for: LAN Access Profile.                                         Role: Data Terminal</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_LANAccessProfile_LAP</Name>
-            <Description>Support for: LAN Access Profile.                                         Role: LAN Access Point</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_MessageAccessProfile_MCE</Name>
-            <Description>Support for: Message Access Profile                                Role: MCE</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_MessageAccessProfile_MSE</Name>
-            <Description>Support for: Message Access Profile                                Role: MSE</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_ObjectPushProfile_CLIENT</Name>
-            <Description>Support for: Object Push Profile.                                        Role: Client</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_ObjectPushProfile_SERVER</Name>
-            <Description>Support for: Object Push Profile.                                        Role: Server  </Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_PersonalAreaNetworkProfile_GN</Name>
-            <Description>Support for: Personal Area Network Profile.                       Role: GN</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_PersonalAreaNetworkProfile_NAP</Name>
-            <Description>Support for: Personal Area Network Profile.                       Role: NAP</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_PersonalAreaNetworkProfile_PANU</Name>
-            <Description>Support for: Personal Area Network Profile.                       Role: PANU</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_PhonebookAccessProfile_PCE</Name>
-            <Description>Support for: Personal phone book access.                          Role: PCE.</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_PhonebookAccessProfile_PSE</Name>
-            <Description>Support for: Personal phone book access.                          Role: PSE.</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_SerialPortProfile_Service</Name>
-            <Description>Support for: Serial Port Profile.                                            Role: Dev B</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_ServiceDiscoveryApplicationProfile</Name>
-            <Description>Support for: Service Discovery Application Profile.</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_SIMAccessProfile_CLIENT</Name>
-            <Description>Support for: SIM access Profile.                                           Role: Client</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_SIMAccessProfile_SERVER</Name>
-            <Description>Support for: SIM access Profile.                                           Role: Server</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_SynchronizationProfile_CLIENT</Name>
-            <Description>Support for: Synchronization Profile.                                   Role: Client</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_SynchronizationProfile_SERVER</Name>
-            <Description>Support for: Synchronization Profile.                                   Role: Server</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_UDIProfile_MT</Name>
-            <Description>Support for: UDI Profile.                                                      Role: MT</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_UDIProfile_TA</Name>
-            <Description>Support for: UDI Profile.                                                      Role: TA</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_VideoDistributionProfile_Sink</Name>
-            <Description>Support for: Video distribution Profile.                                 Role: Sink </Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_VideoDistributionProfile_Source</Name>
-            <Description>Support for: Video distribution Profile.                                 Role: Source</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_WAPOverBluetooth_CLIENT</Name>
-            <Description>Support for: WAP over Bluetooth Profile.                            Role: Client</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_WAPOverBluetooth_PROXY</Name>
-            <Description>Support for: WAP over Bluetooth Profile.                            Role: PROXY </Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_GNSS_SERVER</Name>
-            <Description>Support for: GNSS Profile. 	Role: Server</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_3DSP_Display</Name>
-            <Description>Support for: 3DSP Profile.  	Role: Display</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_support_3DSP_Glasses</Name>
-            <Description>Support for: 3DSP Profile.  	Role: Glasses</Description>
+            <Name>TSPC_VOCS_1_1</Name>
+            <Description>Service supported over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -3965,7 +3858,7 @@
         </Rows>
       </PICS>
       <PIXIT>
-        <Name>IOPT</Name>
+        <Name>IOPT_OLD</Name>
         <Version />
         <Rows>
           <Row>
@@ -4043,19 +3936,19 @@
         <Rows>
           <Row>
             <Name>TSPC_L2CAP_0_1</Name>
-            <Description>BR/EDR (includes possible support of GAP LE Broadcaster or LE Observer roles) (C.1)</Description>
+            <Description>BR/EDR (C.1, C.4)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_0_2</Name>
-            <Description>LE (C.2)</Description>
+            <Description>LE (C.2, C.4)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_0_3</Name>
-            <Description>BR/EDR/LE (C.3)</Description>
+            <Description>BR/EDR/LE (C.3, C.4)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -4127,7 +4020,7 @@
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_6</Name>
-            <Description>Send information request (C.17)</Description>
+            <Description>Send information request (C.11)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -4151,7 +4044,7 @@
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_11</Name>
-            <Description>Flow Control mode (C.17)</Description>
+            <Description>Flow Control mode (C.11)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -4265,7 +4158,7 @@
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_30</Name>
-            <Description>Fixed channel(s) (C.11)</Description>
+            <Description>Information request for fixed channels (C.9)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -4331,7 +4224,7 @@
           </Row>
           <Row>
             <Name>TSPC_L2CAP_2_41</Name>
-            <Description>Command reject (C.13)</Description>
+            <Description>Command reject (C.29)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -4396,6 +4289,12 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_L2CAP_2_49</Name>
+            <Description>Support pending result in L2CAP_CREDIT_BASED_CONNECTION_RSP (C.28)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_L2CAP_3_1</Name>
             <Description>RTX timer (M)</Description>
             <Value>TRUE</Value>
@@ -4445,19 +4344,19 @@
           </Row>
           <Row>
             <Name>TSPC_L2CAP_3_9</Name>
-            <Description>Negotiate and support service type No traffic (C.2)</Description>
+            <Description>Negotiate and support service type 'No traffic' (C.2)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_3_10</Name>
-            <Description>Negotiate and support service type Best effort (C.3)</Description>
+            <Description>Negotiate and support service type 'Best effort' (C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_3_11</Name>
-            <Description>Negotiate and support service type Guaranteed (C.2)</Description>
+            <Description>Negotiate and support service type 'Guaranteed' (C.2)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -4469,19 +4368,19 @@
           </Row>
           <Row>
             <Name>TSPC_L2CAP_3_13</Name>
-            <Description>Negotiate and support service type No traffic for Extended Flow Specification (C.7)</Description>
+            <Description>Negotiate and support service type 'No traffic' for Extended Flow Specification (C.7)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_3_14</Name>
-            <Description>Negotiate and support service type Best Effort for Extended Flow Specification (C.8)</Description>
+            <Description>Negotiate and support service type 'Best Effort' for Extended Flow Specification (C.8)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_3_15</Name>
-            <Description>Negotiate and support service type Guaranteed for Extended Flow Specification. (C.7)</Description>
+            <Description>Negotiate and support service type 'Guaranteed' for Extended Flow Specification. (C.7)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -4493,31 +4392,31 @@
           </Row>
           <Row>
             <Name>TSPC_L2CAP_4_1</Name>
-            <Description>Authentication procedure (LE) (C.1)</Description>
+            <Description>Detect insufficient authentication (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_4_2</Name>
-            <Description>Authorization procedure (LE) (C.1)</Description>
+            <Description>Detect insufficient authorization (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_4_3</Name>
-            <Description>Encryption procedure (C.2)</Description>
+            <Description>Detect insufficient encryption (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_5_1</Name>
-            <Description>Authentication procedure (BR/EDR) (C.1)</Description>
+            <Description>Detect insufficient authentication (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_L2CAP_5_2</Name>
-            <Description>Authorization procedure (BR/EDR) (O)</Description>
+            <Description>Detect insufficient authorization (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -4548,7 +4447,7 @@
           <Row>
             <Name>TSPC_GATT_1a_1</Name>
             <Description>GATT Client over LE (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4560,7 +4459,7 @@
           <Row>
             <Name>TSPC_GATT_1a_3</Name>
             <Description>GATT Server over LE (C.3)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4578,7 +4477,7 @@
           <Row>
             <Name>TSPC_GATT_2_3a</Name>
             <Description>Enhanced ATT bearer over LE (C.4, C.3)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -7505,18 +7404,17 @@
     <PROJECT_INFORMATION NAME="SM" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
       <PICS>
         <Name>SM</Name>
-        <Version />
         <Rows>
           <Row>
             <Name>TSPC_SM_1_1</Name>
-            <Description>Role : Central Role (Initiator) (C.1)</Description>
-            <Value>TRUE</Value>
+            <Description>Central Role (Initiator) (C.1)</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_SM_1_2</Name>
-            <Description>Role : Peripheral Role (Responder) (C.1)</Description>
-            <Value>TRUE</Value>
+            <Description>Peripheral Role (Responder) (C.1)</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -7536,12 +7434,6 @@
             <Description>No security requirements (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_SM_2_4</Name>
-            <Description>OOB supported (O)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_SM_2_5</Name>
@@ -7688,38 +7580,8 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_SUM_ICS_31_17</Name>
-            <Description>Core Spec Version 4.2, Adopted 02 December 2014 (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_SUM_ICS_31_18</Name>
-            <Description>Core Spec Version 4.2 + HS, Adopted 02 December 2014 (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_SUM_ICS_31_19</Name>
-            <Description>Core Specification Version 5.0. Adopted 06 December 2016 (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_SUM_ICS_31_20</Name>
-            <Description>Core Specification Version 5.1. Adopted 15 January 2019 (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_SUM_ICS_31_21</Name>
-            <Description>Core Specification Version 5.2. Adopted 31 December 2019 (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_SUM_ICS_31_22</Name>
-            <Description>Core Specification Version 5.3. Adopted 06 July 2021 (C.1)</Description>
+            <Name>TSPC_CORE_2a_53</Name>
+            <Description>Host Core v5.3 or later (C.4)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
