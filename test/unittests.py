@@ -6,9 +6,8 @@ from os.path import dirname, abspath
 from pathlib import Path
 from unittest.mock import patch
 
-# from autopts.bot.zephyr import make_readme_md
 from autopts.client import FakeProxy, TestCaseRunStats
-from autopts.config import TMP_DIR, ALL_STATS_RESULTS_XML, IUT_LOGS_FOLDER
+from autopts.config import FILE_PATHS
 from autopts.ptsprojects.testcase_db import TestCaseTable
 from autoptsclient_bot import import_bot_projects, import_bot_module
 from test.mocks.mocked_test_cases import mock_workspace_test_cases, test_case_list_generation_samples
@@ -33,12 +32,12 @@ class MyTestCase(unittest.TestCase):
         os.chdir(dirname(dirname(abspath(__file__))))
         open('ttyUSB', 'w').close()
         shutil.copy('test/configs/config_zephyr.py', 'autopts/bot/config.py')
-        os.makedirs(TMP_DIR, exist_ok=True)
 
     def tearDown(self):
         os.remove('ttyUSB')
         delete_file('autopts/bot/config.py')
-        delete_file('tmp/')
+        for name in FILE_PATHS:
+            delete_file(FILE_PATHS[name])
 
     def test_bot_startup_import_bot_projects(self):
         """Check that all supported methods of passing a config file
@@ -116,7 +115,7 @@ class MyTestCase(unittest.TestCase):
             return mock_workspace_test_cases[project]
 
         def mock_run_test_cases(ptses, test_case_instances, args, stats, **kwargs):
-            return TestCaseRunStats([], [], 0, xml_results_file=ALL_STATS_RESULTS_XML)
+            return TestCaseRunStats([], [], 0, xml_results_file=FILE_PATHS['ALL_STATS_RESULTS_XML_FILE'])
 
         for args in testargs:
             with patch.object(sys, 'argv', args.split(' ')):
@@ -145,11 +144,11 @@ class MyTestCase(unittest.TestCase):
                                         f'mock_iut_config_{i} use case failed')
                     bot_client.run_test_cases()
 
-    def generate_stats(self, files):
+    def test_generate_stats(self):
         # Test useful for debugging stats and reports generation
 
         database_file = DATABASE_FILE
-        TEST_CASE_DB = TestCaseTable('zephyr', database_file)
+        test_case_db = TestCaseTable('zephyr', database_file)
         errata = report.get_errata('zephyr')
         start_time = 1693378197  # result of time.time()
         duration = 30  # seconds
@@ -165,7 +164,7 @@ class MyTestCase(unittest.TestCase):
         new_cases_id = [13, 14, 15]
 
         stats1 = TestCaseRunStats(mock_workspace_test_cases.keys(),
-                                  test_cases, 0, None, xml_results_file=ALL_STATS_RESULTS_XML)
+                                  test_cases, 0, None, xml_results_file=FILE_PATHS['ALL_STATS_RESULTS_XML_FILE'])
         # Mock results from a first bot run, to generate regressions,
         # progresses, new cases in a second one.
         for i, tc in enumerate(test_cases):
@@ -176,7 +175,7 @@ class MyTestCase(unittest.TestCase):
                 continue
 
             stats1.update(tc, end_time, status)
-            TEST_CASE_DB.update_statistics(tc, duration, status)
+            test_case_db.update_statistics(tc, duration, status)
             end_time = start_time + duration
 
         results = stats1.get_results()
@@ -188,21 +187,19 @@ class MyTestCase(unittest.TestCase):
             'subdir': 'host/',
         }
 
-        report_txt = report.make_report_txt(
-            results, regressions, progresses, '', errata)
-        files['first_report_txt'] = report_txt
-        assert os.path.exists(report_txt)
+        report.make_report_txt(FILE_PATHS['REPORT_TXT_FILE'], results,
+                               regressions, progresses, '', errata)
+        assert os.path.exists(FILE_PATHS['REPORT_TXT_FILE'])
 
         first_report_txt = os.path.join(
             githubdrive['path'], githubdrive['subdir'], 'autopts_report',
-            os.path.basename(report_txt))
+            os.path.basename(FILE_PATHS['REPORT_TXT_FILE']))
 
         Path(os.path.dirname(first_report_txt)).mkdir(parents=True, exist_ok=True)
-        shutil.move(report_txt, first_report_txt)
-        files['first_report_txt'] = first_report_txt
+        shutil.move(FILE_PATHS['REPORT_TXT_FILE'], first_report_txt)
 
         stats = TestCaseRunStats(mock_workspace_test_cases.keys(),
-                                 test_cases, 0, TEST_CASE_DB, xml_results_file=ALL_STATS_RESULTS_XML)
+                                 test_cases, 0, test_case_db, xml_results_file=FILE_PATHS['ALL_STATS_RESULTS_XML_FILE'])
 
         # Mock results from a second bot run.
         # Note one deleted test case.
@@ -212,7 +209,7 @@ class MyTestCase(unittest.TestCase):
                 status = 'FAIL'
 
             stats.update(tc, end_time, status)
-            TEST_CASE_DB.update_statistics(tc, duration, status)
+            test_case_db.update_statistics(tc, duration, status)
             end_time = start_time + duration
 
         summary = stats.get_status_count()
@@ -227,50 +224,24 @@ class MyTestCase(unittest.TestCase):
         repos_info = {'zephyr': {'commit': '123456', 'desc': 'zephyr'}}
         pts_ver = '8_5_0'
 
-        iut_logs = IUT_LOGS_FOLDER
-        pts_logs = 'tmp/zephyr-master'
-        xmls = 'tmp/XMLs'
+        iut_logs = FILE_PATHS['IUT_LOGS_DIR']
+        pts_logs = os.path.join(FILE_PATHS['TMP_DIR'], 'zephyr-master')
+        xmls = FILE_PATHS['PTS_XMLS_DIR']
         Path(iut_logs).mkdir(parents=True, exist_ok=True)
         Path(pts_logs).mkdir(parents=True, exist_ok=True)
         Path(xmls).mkdir(parents=True, exist_ok=True)
-        files['iut_logs'] = iut_logs
-        files['pts_logs'] = pts_logs
-        files['xmls'] = xmls
 
-        report_file = report.make_report_xlsx(
-            results, summary, regressions, progresses, descriptions,
-            xmls, errata)
-        files['report_file'] = report_file
-        assert os.path.exists(report_file)
+        report.make_report_xlsx(FILE_PATHS['REPORT_XLSX_FILE'], results, summary,
+                                regressions, progresses, descriptions, xmls, errata)
+        assert os.path.exists(FILE_PATHS['REPORT_XLSX_FILE'])
 
-        report_txt = report.make_report_txt(
-            results, regressions, progresses, '', errata)
-        files['report_txt'] = report_txt
-        assert os.path.exists(report_txt)
+        report.make_report_txt(FILE_PATHS['REPORT_TXT_FILE'], results,
+                               regressions, progresses, '', errata)
+        assert os.path.exists(FILE_PATHS['REPORT_TXT_FILE'])
 
-        # readme_file = make_readme_md(
-        #     start_timestamp, end_time, repos_info, pts_ver)
-        # files['readme_file'] = readme_file
-        # assert os.path.exists(readme_file)
-
-        report_diff_txt, deleted_cases = report.make_report_diff(
-            '', results, regressions, progresses, new_cases)
-        files['report_diff_txt'] = report_diff_txt
-        assert os.path.exists(report_diff_txt)
-
-        # report_folder = report.make_report_folder(
-        #     iut_logs, pts_logs, xmls, report_file, report_txt, report_diff_txt,
-        #     readme_file, database_file, '_iut_zephyr_' + start_timestamp)
-        # files['report_folder'] = report_folder
-        # assert os.path.exists(report_folder)
-
-    def test_generate_stats(self):
-        files = {}
-        try:
-            self.generate_stats(files)
-        finally:
-            for key in files:
-                delete_file(files[key])
+        report.make_report_diff('', FILE_PATHS['REPORT_DIFF_TXT_FILE'],
+                                results, regressions, progresses, new_cases)
+        assert os.path.exists(FILE_PATHS['REPORT_DIFF_TXT_FILE'])
 
 
 if __name__ == '__main__':

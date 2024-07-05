@@ -17,7 +17,7 @@
 #
 
 """Common code for the auto PTS clients"""
-
+import copy
 import datetime
 import errno
 import json
@@ -35,10 +35,11 @@ import time
 import traceback
 import xml.etree.ElementTree as ElementTree
 import xmlrpc.client
+from os.path import dirname
 from xmlrpc.server import SimpleXMLRPCServer
 from termcolor import colored
 
-from autopts.config import TC_STATS_RESULTS_XML, TEST_CASE_DB, TMP_DIR, IUT_LOGS_FOLDER
+from autopts.config import FILE_PATHS
 from autopts.ptsprojects import ptstypes
 from autopts.ptsprojects import stack
 from autopts.ptsprojects.boards import get_available_boards, tty_to_com
@@ -404,7 +405,7 @@ def get_test_data_path(pts):
 get_my_ip_address.cached_address = None
 
 
-def init_logging(tag=""):
+def init_logging(tag="", log_filename=None):
     """Initialize logging"""
     root_logger = logging.getLogger('root')
 
@@ -417,10 +418,13 @@ def init_logging(tag=""):
         # Already inited
         return
 
-    script_name = os.path.basename(sys.argv[0])  # in case it is full path
-    script_name_no_ext = os.path.splitext(script_name)[0]
+    if log_filename:
+        os.makedirs(dirname(log_filename), exist_ok=True)
+    else:
+        script_name = os.path.basename(sys.argv[0])  # in case it is full path
+        script_name_no_ext = os.path.splitext(script_name)[0]
+        log_filename = "%s%s.log" % (script_name_no_ext, tag)
 
-    log_filename = "%s%s.log" % (script_name_no_ext, tag)
     format_template = ("%(asctime)s %(threadName)s %(name)s %(levelname)s %(filename)-25s "
                        "%(lineno)-5s %(funcName)-25s : %(message)s")
 
@@ -574,6 +578,7 @@ class TestCaseRunStats:
         self.test_run_completed = False
 
         if self.xml_results and not os.path.exists(self.xml_results):
+            os.makedirs(dirname(self.xml_results), exist_ok=True)
             root = ElementTree.Element("results")
             tree = ElementTree.ElementTree(root)
             tree.write(self.xml_results)
@@ -1212,7 +1217,8 @@ def run_test_cases(ptses, test_case_instances, args, stats, **kwargs):
 
     ports_str = '_'.join(str(x) for x in args.cli_port)
     now = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
-    session_log_dir = f'{IUT_LOGS_FOLDER}/cli_port_{ports_str}/{now}'
+    logs_folder = kwargs["file_paths"]["IUT_LOGS_DIR"]
+    session_log_dir = f'{logs_folder}/cli_port_{ports_str}/{now}'
     try:
         os.makedirs(session_log_dir)
     except OSError as e:
@@ -1300,6 +1306,7 @@ class Client:
         param parser_class: argument parser
         """
         self.test_cases = None
+        self.file_paths = FILE_PATHS
         self.get_iut = get_iut
         self.autopts_project_name = name
         self.store_tag = name + '_'
@@ -1359,15 +1366,17 @@ class Client:
         elif self.args.sudo:
             sys.exit("Please run this program as root.")
 
-        os.makedirs(TMP_DIR, exist_ok=True)
+        os.makedirs(self.file_paths["TMP_DIR"], exist_ok=True)
 
         if self.args.store:
             tc_db_table_name = self.store_tag + str(self.args.board_name)
 
-            if os.path.exists(self.args.database_file) and not os.path.exists(TEST_CASE_DB):
-                shutil.copy(self.args.database_file, TEST_CASE_DB)
+            if os.path.exists(self.args.database_file) and \
+                    not os.path.exists(self.file_paths['TEST_CASE_DB_FILE']):
+                shutil.copy(self.args.database_file, self.file_paths['TEST_CASE_DB_FILE'])
 
-            self.test_case_database = TestCaseTable(tc_db_table_name, TEST_CASE_DB)
+            self.test_case_database = TestCaseTable(tc_db_table_name,
+                                                    self.file_paths['TEST_CASE_DB_FILE'])
 
         init_pts(self.args, self.ptses)
 
@@ -1384,7 +1393,7 @@ class Client:
         self.cleanup()
 
         if self.args.store:
-            shutil.move(TEST_CASE_DB, self.args.database_file)
+            shutil.move(self.file_paths['TEST_CASE_DB_FILE'], self.args.database_file)
 
         print("\nBye!")
         sys.stdout.flush()
@@ -1413,14 +1422,15 @@ class Client:
 
         projects = self.ptses[0].get_project_list()
 
-        if os.path.exists(TC_STATS_RESULTS_XML):
-            os.remove(TC_STATS_RESULTS_XML)
+        if os.path.exists(self.file_paths['TC_STATS_RESULTS_XML_FILE']):
+            os.remove(self.file_paths['TC_STATS_RESULTS_XML_FILE'])
 
         stats = TestCaseRunStats(projects, self.args.test_cases,
                                  self.args.retry, self.test_case_database,
-                                 xml_results_file=TC_STATS_RESULTS_XML)
+                                 xml_results_file=self.file_paths['TC_STATS_RESULTS_XML_FILE'])
 
-        return run_test_cases(self.ptses, self.test_cases, self.args, stats)
+        return run_test_cases(self.ptses, self.test_cases, self.args, stats,
+                              file_paths=copy.deepcopy(self.file_paths))
 
     def cleanup(self):
         log(f'{self.__class__.__name__}.{self.cleanup.__name__}')

@@ -29,18 +29,15 @@ import xlsxwriter
 from autopts.bot.common_features import github
 from autopts.bot import common
 from autopts.client import PtsServer
-from autopts.config import PTS_XMLS_FOLDER, TMP_DIR, REPORT_XLSX, REPORT_TXT, REPORT_DIFF_TXT, ERROR_TXT, \
-    ERRATA_DIR_PATH, AUTOPTS_ROOT_DIR
+from autopts.config import AUTOPTS_ROOT_DIR
 
 log = logging.debug
 
 
-def get_errata(project_name):
-    errata_common = os.path.join(ERRATA_DIR_PATH, 'common.yaml')
-    errata_project = os.path.join(ERRATA_DIR_PATH, f'{project_name}.yaml')
+def get_errata(errata_files):
     errata = {}
 
-    for file in [errata_common, errata_project]:
+    for file in errata_files:
         if os.path.exists(file):
             with open(file, 'r') as stream:
                 loaded_errata = yaml.safe_load(stream)
@@ -71,7 +68,7 @@ def make_repo_status(repos_info):
 # ****************************************************************************
 # .xlsx spreadsheet file
 # ****************************************************************************
-def make_report_xlsx(results_dict, status_dict, regressions_list,
+def make_report_xlsx(report_xlsx_path, results_dict, status_dict, regressions_list,
                      progresses_list, descriptions, xmls, errata):
     """Creates excel file containing test cases results and summary pie chart
     :param results_dict: dictionary with test cases results
@@ -103,7 +100,7 @@ def make_report_xlsx(results_dict, status_dict, regressions_list,
 
     header = "AutoPTS Report: " \
              "{}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
-    workbook = xlsxwriter.Workbook(REPORT_XLSX)
+    workbook = xlsxwriter.Workbook(report_xlsx_path)
     worksheet = workbook.add_worksheet()
     chart = workbook.add_chart({'type': 'pie',
                                 'subtype': 'percent_stacked'})
@@ -173,13 +170,11 @@ def make_report_xlsx(results_dict, status_dict, regressions_list,
     worksheet.insert_chart('H2', chart)
     workbook.close()
 
-    return os.path.join(os.getcwd(), REPORT_XLSX)
-
 
 # ****************************************************************************
 # .txt result file
 # ****************************************************************************
-def make_report_txt(results_dict, regressions_list,
+def make_report_txt(report_txt_path, results_dict, regressions_list,
                     progresses_list, repo_status, errata):
     """Creates txt file containing test cases results
     :param results_dict: dictionary with test cases results
@@ -190,8 +185,7 @@ def make_report_txt(results_dict, regressions_list,
     :return: txt file path
     """
 
-    filename = os.path.join(os.getcwd(), REPORT_TXT)
-    f = open(filename, "w")
+    f = open(report_txt_path, "w")
 
     f.write(f"{repo_status}, autopts={get_autopts_version()}\n")
     for tc, result in list(results_dict.items()):
@@ -215,8 +209,6 @@ def make_report_txt(results_dict, regressions_list,
 
     f.close()
 
-    return filename
-
 
 def report_parse_test_cases(report):
     if not os.path.exists(report):
@@ -238,10 +230,9 @@ def report_parse_test_cases(report):
     return test_cases[1:]
 
 
-def make_report_diff(old_report_txt, results, regressions,
-                     progresses, new_cases):
-    filename = os.path.join(os.getcwd(), REPORT_DIFF_TXT)
-    f = open(filename, "w")
+def make_report_diff(old_report_txt, report_diff_txt_path, results,
+                     regressions, progresses, new_cases):
+    f = open(report_diff_txt_path, "w")
 
     deleted_cases = []
     old_test_cases = []
@@ -272,12 +263,11 @@ def make_report_diff(old_report_txt, results, regressions,
 
     f.close()
 
-    return filename, deleted_cases
+    return deleted_cases
 
 
-def make_error_txt(msg):
-    filename = os.path.join(os.getcwd(), ERROR_TXT)
-    with open(filename, "w") as f:
+def make_error_txt(msg, error_txt_path):
+    with open(error_txt_path, "w") as f:
         f.write(msg)
 
 
@@ -352,7 +342,7 @@ def split_xml_filename(file_path):
     return test_name, timestamp
 
 
-def pull_server_logs(args):
+def pull_server_logs(args, tmp_dir, xml_folder):
     """Copy Bluetooth Protocol Viewer logs from auto-pts servers.
     :param args: args
     """
@@ -365,8 +355,7 @@ def pull_server_logs(args):
     else:
         workspace_dir = workspace_name
 
-    logs_folder = os.path.join(TMP_DIR, workspace_name)
-    xml_folder = PTS_XMLS_FOLDER
+    logs_folder = os.path.join(tmp_dir, workspace_name)
     shutil.rmtree(logs_folder, ignore_errors=True)
     shutil.rmtree(xml_folder, ignore_errors=True)
     Path(xml_folder).mkdir(parents=True, exist_ok=True)
