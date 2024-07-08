@@ -1,0 +1,77 @@
+PBP Service (ID 30)
+=====================
+
+Commands and responses:
+
+	Opcode 0x00 - Error response
+
+	Opcode 0x01 - Read Supported Commands command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	<none>
+		Response parameters:	<supported commands> (variable)
+
+		Each bit in response is a flag indicating if command with
+		opcode matching bit number is supported. Bit set to 1 means
+		that command is supported. Bit 0 is reserved and shall always
+		be set to 0. If specific bit is not present in response (less
+		than required bytes received) it shall be assumed that command
+		is not supported.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x02: Set Public Broadcast Announcement
+
+		Controller Index:	<controller id>
+		Command parameters:	Features (1 octet)
+							Metadata LTVs len (1 octet)
+							LTVs (varies)
+
+		This command is used to set the Public Broadcast Announcement in broadcast advertisements
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x03: Set Broadcast Name
+
+		Controller Index:	<controller id>
+		Command parameters:	Name Length (1 octet)
+							Name (<Name Length> octets)
+
+		This command is used to set the Public Broadcast Announcement in broadcast advertisements
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x04 - Broadcast Scan Start
+		Controller Index:	<controller id>
+		Command parameters:	<none>
+		Response parameters:	<none>
+
+        This command is used to start scanning for Public Broadcast Announcements.
+        In case of an error, the error status response will be returned.
+        In case of a success, the IUT continues processing the command
+        asynchronously.
+
+	Opcode 0x05 - Broadcast Scan Stop
+		Controller Index:	<controller id>
+		Command parameters:	<none>
+		Response parameters:	<none>
+
+        This command is used to stop scanning for Public Broadcast Announcements.
+        In case of an error, the error status response will be returned.
+        In case of a success, the IUT continues processing the command
+        asynchronously.
+
+Events:
+	Opcode 0x80 - Public Broadcast Announcement Found event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Broadcast_ID (3 octets)
+					Advertiser_SID (1 octet)
+					PA_Interval (2 octets)
+					PBA_Features (1 octet)
+					Broadcast_Name_Len (1 octet)
+					Broadcast_Name (<Broadcast_Name_Len> octets)
+
+        This event returns info from scanned Public Broadcast Announcement.
