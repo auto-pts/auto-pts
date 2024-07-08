@@ -43,6 +43,8 @@ L2CAP = {
                               CONTROLLER_INDEX),
     "credits": (defs.BTP_SERVICE_ID_L2CAP, defs.L2CAP_CREDITS,
                 CONTROLLER_INDEX),
+    "connect_with_sec_level": (defs.BTP_SERVICE_ID_L2CAP, defs.L2CAP_CONNECT_WITH_SEC_LEVEL,
+                CONTROLLER_INDEX),
 }
 
 
@@ -274,6 +276,55 @@ def l2cap_reconfigured_ev(l2cap, data, data_len):
     l2cap.reconfigured(chan_id, peer_mtu, peer_mps, our_mtu, our_mps)
     logging.debug("id:%r, peer_mtu:%r, peer_mps:%r our_mtu:%r our_mps:%r",
                   chan_id, peer_mtu, peer_mps, our_mtu, our_mps)
+
+
+def l2cap_conn_with_sec_level_rsp():
+    logging.debug("%s", l2cap_conn_with_sec_level_rsp.__name__)
+
+    iutctl = get_iut()
+
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
+    logging.debug("received %r %r", tuple_hdr, tuple_data)
+
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_L2CAP, defs.L2CAP_CONNECT_WITH_SEC_LEVEL)
+    num = struct.unpack_from('<B', tuple_data[0])[0]
+    channels = struct.unpack_from('%ds' % num, tuple_data[0], 1)[0]
+    return list(channels)
+
+
+def l2cap_conn_with_sec_level(bd_addr, bd_addr_type, psm, mtu=0, num=1, ecfc=0, hold_credit=0, sec_level=defs.L2CAP_CONNECT_SEC_LEVEL_0):
+    logging.debug("%s %r %r %r %r", l2cap_conn.__name__, bd_addr, bd_addr_type,
+                  psm, sec_level)
+    iutctl = get_iut()
+    gap_wait_for_connection()
+
+    if isinstance(psm, str):
+        psm = int(psm, 16)
+
+    bd_addr = pts_addr_get(bd_addr)
+    bd_addr_type = pts_addr_type_get(bd_addr_type)
+
+    bd_addr_ba = addr2btp_ba(bd_addr)
+    data_ba = bytearray(chr(bd_addr_type).encode('utf-8'))
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(struct.pack('H', psm))
+    data_ba.extend(struct.pack('H', mtu))
+    data_ba.extend(struct.pack('B', num))
+
+    opts = 0
+    if ecfc:
+        opts |= defs.L2CAP_CONNECT_OPT_ECFC
+
+    if hold_credit:
+        opts |= defs.L2CAP_CONNECT_OPT_HOLD_CREDIT
+
+    data_ba.extend(struct.pack('B', opts))
+    data_ba.extend(struct.pack('B', sec_level))
+
+    iutctl.btp_socket.send(*L2CAP['connect_with_sec_level'], data=data_ba)
+
+    chan_ids = l2cap_conn_with_sec_level_rsp()
+    logging.debug("id %r", chan_ids)
 
 
 L2CAP_EV = {
