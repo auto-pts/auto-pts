@@ -250,10 +250,10 @@ def cap_broadcast_source_setup(source_id, broadcast_id, sdu_interval, framing, m
 
     flags = 0x00
     if encryption:
-        flags &= BTP_CAP_BROADCAST_SOURCE_SETUP_FLAG_ENCRYPTION
+        flags |= BTP_CAP_BROADCAST_SOURCE_SETUP_FLAG_ENCRYPTION
 
     if subgroup_codec_level:
-        flags &= BTP_CAP_BROADCAST_SOURCE_SETUP_FLAG_SUBGROUP_CODEC
+        flags |= BTP_CAP_BROADCAST_SOURCE_SETUP_FLAG_SUBGROUP_CODEC
 
     if broadcast_code is None:
         broadcast_code = 16 * b'\x00'
