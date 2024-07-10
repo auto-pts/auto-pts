@@ -36,8 +36,8 @@ import autopts.ptsprojects.zephyr.micp
 import autopts.ptsprojects.zephyr.mics
 import autopts.ptsprojects.zephyr.ccp
 import autopts.ptsprojects.zephyr.vcp
-import autopts.ptsprojects.zephyr.dfu
-import autopts.ptsprojects.zephyr.mbt
+import autopts.ptsprojects.zephyr.dfum
+import autopts.ptsprojects.zephyr.mbtm
 import autopts.ptsprojects.zephyr.cas
 import autopts.ptsprojects.zephyr.cap
 import autopts.ptsprojects.zephyr.mcp

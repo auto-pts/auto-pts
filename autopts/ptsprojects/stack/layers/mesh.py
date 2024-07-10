@@ -186,11 +186,11 @@ class Mesh:
     def set_iut_addr(self, _addr):
         self.address_iut = _addr
 
-    def timeout_set(self, timeout):
-        self.timeout = timeout
+    def timeout_base_set(self, timeout):
+        self.timeout_base = timeout
 
-    def timeout_get(self):
-        return self.timeout
+    def timeout_base_get(self):
+        return self.timeout_base
 
     def transfer_ttl_set(self, ttl):
         self.transfer_ttl = ttl
