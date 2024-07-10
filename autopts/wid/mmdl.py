@@ -2188,11 +2188,11 @@ def hdl_wid_850(params: WIDParams):
     Please initiate the transfer of the test object to the Lower Tester.
     """
     # Do not execute this wid, it's automatically send as part of FU procedure
-    if params.test_case_name == 'DFU/CL/FU/BV-02-C':
+    if params.test_case_name == 'DFUM/CL/FU/BV-02-C':
         return True
 
     stack = get_stack()
-    timeout = stack.mesh.timeout_get()
+    timeout_base = stack.mesh.timeout_base_get()
     ttl = stack.mesh.transfer_ttl_get()
     addr = ["0001"]
     id = 0x1100000000000011
@@ -2204,7 +2204,7 @@ def hdl_wid_850(params: WIDParams):
 
     time.sleep(5)
 
-    btp.mmdl_blob_transfer_start(id, block_size, chunk_size, timeout, ttl, blob_data_size)
+    btp.mmdl_blob_transfer_start(id, block_size, chunk_size, timeout_base, ttl, blob_data_size)
 
     return True
 
@@ -2214,7 +2214,7 @@ def hdl_wid_851(_: WIDParams):
     Please initiate the transfer of the test object to the Lower Tester.
     """
     stack = get_stack()
-    timeout = stack.mesh.timeout_get()
+    timeout_base = stack.mesh.timeout_base_get()
     ttl = stack.mesh.transfer_ttl_get()
     addr = ["0001"]
     id = 0x1100000000000011
@@ -2226,7 +2226,7 @@ def hdl_wid_851(_: WIDParams):
 
     time.sleep(5)
 
-    btp.mmdl_blob_transfer_start(id, block_size, chunk_size, timeout, ttl, blob_data_size)
+    btp.mmdl_blob_transfer_start(id, block_size, chunk_size, timeout_base, ttl, blob_data_size)
 
     return True
 
@@ -2246,12 +2246,12 @@ def hdl_wid_852(params: WIDParams):
 
 def hdl_wid_853(_: WIDParams):
     stack = get_stack()
-    timeout = stack.mesh.timeout_get()
+    timeout_base = stack.mesh.timeout_base_get()
     ttl = stack.mesh.transfer_ttl_get()
     id = 0x1100000000000011
 
     btp.mesh_store_model_data()
-    btp.mmdl_blob_srv_recv(id, timeout, ttl)
+    btp.mmdl_blob_srv_recv(id, timeout_base, ttl)
 
     return True
 
@@ -2275,7 +2275,7 @@ def hdl_wid_855(_: WIDParams):
 
 def hdl_wid_856(params: WIDParams):
     stack = get_stack()
-    timeout = stack.mesh.timeout_get()
+    timeout_base = stack.mesh.timeout_base_get()
     ttl = stack.mesh.transfer_ttl_get()
     addrs = re.findall(r'(0x[0-9a-fA-F]{1,2})', params.description)
     addrs = [e[2:].rjust(4, '0') for e in addrs]
@@ -2286,7 +2286,7 @@ def hdl_wid_856(params: WIDParams):
 
     btp.mmdl_blob_info_get(addrs)
     time.sleep(5)
-    btp.mmdl_blob_transfer_start(id, block_size, chunk_size, timeout, ttl, blob_data_size)
+    btp.mmdl_blob_transfer_start(id, block_size, chunk_size, timeout_base, ttl, blob_data_size)
 
     return True
 

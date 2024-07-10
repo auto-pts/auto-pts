@@ -40,48 +40,47 @@ def set_pixits(ptses):
 
     pts = ptses[0]
 
-    pts.set_pixit("DFU", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
-    pts.set_pixit("DFU", "TSPX_time_guard", "300000")
-    pts.set_pixit("DFU", "TSPX_use_implicit_send", "TRUE")
-    pts.set_pixit("DFU", "TSPX_tester_database_file",
+    pts.set_pixit("DFUM", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
+    pts.set_pixit("DFUM", "TSPX_time_guard", "300000")
+    pts.set_pixit("DFUM", "TSPX_use_implicit_send", "TRUE")
+    pts.set_pixit("DFUM", "TSPX_tester_database_file",
                   r"C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_SMPP_db.xml")
-    pts.set_pixit("DFU", "TSPX_mtu_size", "23")
-    pts.set_pixit("DFU", "TSPX_delete_link_key", "TRUE")
-    pts.set_pixit("DFU", "TSPX_delete_ltk", "TRUE")
-    pts.set_pixit("DFU", "TSPX_security_enabled", "FALSE")
-    pts.set_pixit("DFU", "TSPX_iut_setup_att_over_br_edr", "FALSE")
-    pts.set_pixit("DFU", "TSPX_scan_interval", "30")
-    pts.set_pixit("DFU", "TSPX_scan_window", "30")
-    pts.set_pixit("DFU", "TSPX_scan_filter", "00")
-    pts.set_pixit("DFU", "TSPX_advertising_interval_min", "160")
-    pts.set_pixit("DFU", "TSPX_advertising_interval_max", "160")
-    pts.set_pixit("DFU", "TSPX_tester_OOB_information", "F87F")
-    pts.set_pixit("DFU", "TSPX_device_uuid", "00000000000000000000000000000000")
-    pts.set_pixit("DFU", "TSPX_device_uuid2", "001BDC0810210B0E0A0C000B0E0A0C00")
-    pts.set_pixit("DFU", "TSPX_use_pb_gatt_bearer", "FALSE")
-    pts.set_pixit("DFU", "TSPX_iut_comp_data_page", "2")
-    pts.set_pixit("DFU", "TSPX_oob_state_change", "FALSE")
-    pts.set_pixit("DFU", "TSPX_enable_IUT_provisioner", "FALSE")
-    pts.set_pixit("DFU", "TSPX_Procedure_Timeout", "60")
-    pts.set_pixit("DFU", "TSPX_Client_BLOB_ID", "1100000000000011")
-    pts.set_pixit("DFU", "TSPX_Client_BLOB_Data", r"data.txt")
-    pts.set_pixit("DFU", "TSPX_TTL", "2")
-    pts.set_pixit("DFU", "TSPX_Reception_Counter", "1")
-    pts.set_pixit("DFU", "TSPX_Server_Timeout", "10")
-    pts.set_pixit("DFU", "TSPX_Firmware_ID", "11000011")
-    pts.set_pixit("DFU", "TSPX_Firmware_Metadata", "1100000000000011")
-    pts.set_pixit("DFU", "TSPX_Firmware_Update_URI", "http://www.dummy.com")
-    pts.set_pixit("DFU", "TSPX_New_Firmware_Image", r"data2.txt")
-    pts.set_pixit("DFU", "TSPX_Update_Firmware_Image_Index", "0")
+    pts.set_pixit("DFUM", "TSPX_mtu_size", "23")
+    pts.set_pixit("DFUM", "TSPX_delete_link_key", "TRUE")
+    pts.set_pixit("DFUM", "TSPX_delete_ltk", "TRUE")
+    pts.set_pixit("DFUM", "TSPX_security_enabled", "FALSE")
+    pts.set_pixit("DFUM", "TSPX_iut_setup_att_over_br_edr", "FALSE")
+    pts.set_pixit("DFUM", "TSPX_scan_interval", "30")
+    pts.set_pixit("DFUM", "TSPX_scan_window", "30")
+    pts.set_pixit("DFUM", "TSPX_scan_filter", "00")
+    pts.set_pixit("DFUM", "TSPX_advertising_interval_min", "160")
+    pts.set_pixit("DFUM", "TSPX_advertising_interval_max", "160")
+    pts.set_pixit("DFUM", "TSPX_tester_OOB_information", "F87F")
+    pts.set_pixit("DFUM", "TSPX_device_uuid", "00000000000000000000000000000000")
+    pts.set_pixit("DFUM", "TSPX_device_uuid2", "001BDC0810210B0E0A0C000B0E0A0C00")
+    pts.set_pixit("DFUM", "TSPX_use_pb_gatt_bearer", "FALSE")
+    pts.set_pixit("DFUM", "TSPX_iut_comp_data_page", "2")
+    pts.set_pixit("DFUM", "TSPX_oob_state_change", "FALSE")
+    pts.set_pixit("DFUM", "TSPX_enable_IUT_provisioner", "FALSE")
+    pts.set_pixit("DFUM", "TSPX_Procedure_Timeout", "60")
+    pts.set_pixit("DFUM", "TSPX_Client_BLOB_ID", "1100000000000011")
+    pts.set_pixit("DFUM", "TSPX_Client_BLOB_Data", r"data.txt")
+    pts.set_pixit("DFUM", "TSPX_TTL", "2")
+    pts.set_pixit("MBTM", "TSPX_Server_Timeout_Base", "5")
+    pts.set_pixit("DFUM", "TSPX_Firmware_ID", "11000011")
+    pts.set_pixit("DFUM", "TSPX_Firmware_Metadata", "1100000000000011")
+    pts.set_pixit("DFUM", "TSPX_Firmware_Update_URI", "http://www.dummy.com")
+    pts.set_pixit("DFUM", "TSPX_New_Firmware_Image", r"data2.txt")
+    pts.set_pixit("DFUM", "TSPX_Update_Firmware_Image_Index", "0")
 
 
 def test_cases(ptses):
-    """Returns a list of MMDL test cases
+    """Returns a list of DFUM test cases
     ptses -- list of PyPTS instances"""
 
     pts = ptses[0]
 
-    if 'DFU' not in pts.get_project_list():
+    if 'DFUM' not in pts.get_project_list():
         return []
 
     stack = get_stack()
@@ -104,7 +103,8 @@ def test_cases(ptses):
     crpl_size = 10  # Maximum capacity of the replay protection list
     auth_method = 0x00
     iut_device_name = get_unique_name(pts)
-    FD_timeout = 80
+    FD_timeout = 8
+    timeout_base = 5
 
     pre_conditions = [
         TestFunc(btp.core_reg_svc_gap),
@@ -117,58 +117,61 @@ def test_cases(ptses):
         TestFunc(lambda: stack.mesh.set_prov_data(oob, out_size, rand_out_actions, in_size,
                                                   rand_in_actions, crpl_size, auth_method)),
         TestFunc(lambda: pts.update_pixit_param(
-            "DFU", "TSPX_device_uuid", stack.mesh.get_dev_uuid())),
+            "DFUM", "TSPX_device_uuid", stack.mesh.get_dev_uuid())),
         TestFunc(lambda: pts.update_pixit_param(
-            "DFU", "TSPX_device_uuid2", stack.mesh.get_dev_uuid_lt2())),
+            "DFUM", "TSPX_device_uuid2", stack.mesh.get_dev_uuid_lt2())),
         TestFunc(lambda: pts.update_pixit_param(
-            "DFU", "TSPX_bd_addr_iut",
+            "DFUM", "TSPX_bd_addr_iut",
             stack.gap.iut_addr_get_str())),
         TestFunc(lambda: pts.update_pixit_param(
-            "DFU", "TSPX_Client_BLOB_Data",
+            "DFUM", "TSPX_Client_BLOB_Data",
             get_test_data_path(pts) + "sample_data_1.txt")),
         TestFunc(lambda: pts.update_pixit_param(
-            "DFU", "TSPX_New_Firmware_Image",
-            get_test_data_path(pts) + "sample_data_1.txt"))]
+            "DFUM", "TSPX_New_Firmware_Image",
+            get_test_data_path(pts) + "sample_data_1.txt")),
+        TestFunc(lambda: pts.update_pixit_param(
+            "DFUM", "TSPX_Server_Timeout_Base", timeout_base)),
+        TestFunc(lambda: stack.mesh.timeout_base_set(timeout_base))]
 
     custom_test_cases = [
-        ZTestCase("DFU", "DFU/SR/FD/BV-05-C", cmds=pre_conditions + [
+        ZTestCase("DFUM", "DFUM/SR/FD/BV-05-C", cmds=pre_conditions + [
             TestFunc(lambda: pts.update_pixit_param(
-                "DFU", "TSPX_New_Firmware_Image",
+                "DFUM", "TSPX_New_Firmware_Image",
                 get_test_data_path(pts) + "sample_data_2.txt"))],
                   generic_wid_hdl=mmdl_wid_hdl),
-        ZTestCase("DFU", "DFU/SR/FD/BV-07-C", cmds=pre_conditions + [
+        ZTestCase("DFUM", "DFUM/SR/FD/BV-07-C", cmds=pre_conditions + [
             TestFunc(lambda: pts.update_pixit_param(
-                "DFU", "TSPX_Server_Timeout", FD_timeout))],
+                "DFUM", "TSPX_Server_Timeout_Base", FD_timeout))],
                   generic_wid_hdl=mmdl_wid_hdl),
-        ZTestCase("DFU", "DFU/SR/FD/BV-19-C", cmds=pre_conditions + [
+        ZTestCase("DFUM", "DFUM/SR/FD/BV-19-C", cmds=pre_conditions + [
             TestFunc(lambda: pts.update_pixit_param(
-                "DFU", "TSPX_Server_Timeout", FD_timeout))],
+                "DFUM", "TSPX_Server_Timeout_Base", FD_timeout))],
                   generic_wid_hdl=mmdl_wid_hdl),
-        ZTestCase("DFU", "DFU/SR/FD/BV-48-C", cmds=pre_conditions + [
+        ZTestCase("DFUM", "DFUM/SR/FD/BV-48-C", cmds=pre_conditions + [
             TestFunc(lambda: pts.update_pixit_param(
-                "DFU", "TSPX_Firmware_ID", "010000000100000000000000"))],
+                "DFUM", "TSPX_Firmware_ID", "010000000100000000000000"))],
                   generic_wid_hdl=mmdl_wid_hdl),
-        ZTestCase("DFU", "DFU/SR/FU/BV-24-C", cmds=pre_conditions + [
+        ZTestCase("DFUM", "DFUM/SR/FU/BV-24-C", cmds=pre_conditions + [
             TestFunc(lambda: pts.update_pixit_param(
-                "DFU", "TSPX_New_Firmware_Image",
+                "DFUM", "TSPX_New_Firmware_Image",
                 get_test_data_path(pts) + "sample_data_2.txt"))],
                   generic_wid_hdl=mmdl_wid_hdl),
-        ZTestCase("DFU", "DFU/SR/FU/BV-27-C", cmds=pre_conditions + [
+        ZTestCase("DFUM", "DFUM/SR/FU/BV-27-C", cmds=pre_conditions + [
             TestFunc(lambda: pts.update_pixit_param(
-                "DFU", "TSPX_New_Firmware_Image",
+                "DFUM", "TSPX_New_Firmware_Image",
                 get_test_data_path(pts) + "sample_data_2.txt"))],
                   generic_wid_hdl=mmdl_wid_hdl),
-        ZTestCase("DFU", "DFU/SR/FD/BV-13-C", cmds=pre_conditions + [
+        ZTestCase("DFUM", "DFUM/SR/FD/BV-13-C", cmds=pre_conditions + [
             TestFunc(lambda: pts.update_pixit_param(
-                "DFU", "TSPX_Server_Timeout", FD_timeout))],
+                "DFUM", "TSPX_Server_Timeout_Base", FD_timeout))],
                  generic_wid_hdl=mmdl_wid_hdl),
     ]
 
-    test_case_name_list = pts.get_test_case_list('DFU')
+    test_case_name_list = pts.get_test_case_list('DFUM')
     tc_list = []
 
     for tc_name in test_case_name_list:
-        instance = ZTestCase('DFU', tc_name,
+        instance = ZTestCase('DFUM', tc_name,
                              cmds=pre_conditions,
                              generic_wid_hdl=mmdl_wid_hdl)
 
