@@ -99,6 +99,42 @@ def l2cap_conn(bd_addr, bd_addr_type, psm, mtu=0, num=1, ecfc=0, hold_credit=0):
     logging.debug("id %r", chan_ids)
 
 
+def l2cap_conn_with_mode(bd_addr, bd_addr_type, psm, mtu=0, num=1, mode=defs.L2CAP_CONNECT_OPT_NONE, ecfc=0, hold_credit=0):
+    logging.debug("%s %r %r %r", l2cap_conn_with_mode.__name__, bd_addr, bd_addr_type,
+                  psm)
+    iutctl = get_iut()
+    gap_wait_for_connection()
+
+    if isinstance(psm, str):
+        psm = int(psm, 16)
+
+    bd_addr = pts_addr_get(bd_addr)
+    bd_addr_type = pts_addr_type_get(bd_addr_type)
+
+    bd_addr_ba = addr2btp_ba(bd_addr)
+    data_ba = bytearray(chr(bd_addr_type).encode('utf-8'))
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(struct.pack('H', psm))
+    data_ba.extend(struct.pack('H', mtu))
+    data_ba.extend(struct.pack('B', num))
+
+    opts = 0
+    if ecfc:
+        opts |= defs.L2CAP_CONNECT_OPT_ECFC
+
+    if hold_credit:
+        opts |= defs.L2CAP_CONNECT_OPT_HOLD_CREDIT
+
+    opts |= mode
+
+    data_ba.extend(struct.pack('B', opts))
+
+    iutctl.btp_socket.send(*L2CAP['connect'], data=data_ba)
+
+    chan_ids = l2cap_conn_rsp()
+    logging.debug("id %r", chan_ids)
+
+
 l2cap_result_str = {0: "Success",
                     2: "LE_PSM not supported",
                     4: "Insufficient Resources",
