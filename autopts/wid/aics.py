@@ -39,6 +39,7 @@ def hdl_wid_20001(_: WIDParams):
 
 
 def hdl_wid_2(_: WIDParams):
+    #test
     btp.aics_mute(addr_type, addr)
     return True
 
