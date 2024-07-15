@@ -452,8 +452,8 @@ def l2cap_cls_send(bd_addr, bd_addr_type, psm, val=None, val_mtp=None):
     iutctl.btp_socket.send_wait_rsp(*L2CAP['cls_send'], data=data_ba)
 
 
-def l2cap_listen_with_mode(psm, transport, mode=defs.L2CAP_MODE_BASIC, mtu=0, response=L2CAPConnectionResponse.success):
-    logging.debug("%s %r %r %r %r %r", l2cap_listen_with_mode.__name__, psm, transport, mode, mtu, response)
+def l2cap_listen_with_mode(psm, transport, opt=defs.L2CAP_LISTEN_OPT_NONE, mtu=0, response=L2CAPConnectionResponse.success):
+    logging.debug("%s %r %r %r %r %r", l2cap_listen_with_mode.__name__, psm, transport, opt, mtu, response)
 
     iutctl = get_iut()
 
@@ -462,7 +462,7 @@ def l2cap_listen_with_mode(psm, transport, mode=defs.L2CAP_MODE_BASIC, mtu=0, re
 
     data_ba = bytearray(struct.pack('H', psm))
     data_ba.extend(struct.pack('B', transport))
-    data_ba.extend(struct.pack('B', mode))
+    data_ba.extend(struct.pack('B', opt))
     data_ba.extend(struct.pack('H', mtu))
     data_ba.extend(struct.pack('H', response))
 

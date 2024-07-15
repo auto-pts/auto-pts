@@ -239,12 +239,12 @@ Commands and responses:
 
 		In case of an error, the error response will be returned.
 
-	Opcode 0x0e - Listen with specified mdoe command
+	Opcode 0x0e - Listen with specified mode command
 
 		Controller Index:	<controller id>
 		Command parameters:	PSM (2 octets)
 					Transport (1 octet)
-					Mode (1 octet)
+					Options (1 octet)
 					MTU (2 octets)
 					Key_Size (1 octet)
 					Response (2 octets)
@@ -254,12 +254,17 @@ Commands and responses:
 					0x00 = BR/EDR
 					0x01 = LE
 
-		Valid Mode parameter values:
-					0x00 = Basic
-					0x01 = Retransmission
-					0x02 = Flow Control
-					0x03 = Enhanced Retransmission
-					0x04 = Streaming
+		Available options:
+		bit 0 - ECFC - If set then Enhanced Credit Based L2CAP channel
+			shall be created even if Num == 1. This is used to
+			create single Enhanced CFC channel. This flag must be
+			set to 1 when Num > 1.
+		bit 1 - Hold Credit - If set IUT is required to hold returning at
+			least 1 credit until Credits command is received.
+		bit 2 - Retransmission - Retransmission Mode
+		bit 3 - Flow Control - Flow Control Mode
+		bit 4 - Enhanced Retransmission - Enhanced Retransmission Mode
+		bit 5 - Streaming - Streaming Mode
 
 		This command is used to register L2CAP PSM and listen for
 		incoming data.
