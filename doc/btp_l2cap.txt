@@ -265,6 +265,7 @@ Commands and responses:
 		bit 3 - Flow Control - Flow Control Mode
 		bit 4 - Enhanced Retransmission - Enhanced Retransmission Mode
 		bit 5 - Streaming - Streaming Mode
+		bit 6 - Mode is optional - The mode set by bit2~5 is optional
 
 		This command is used to register L2CAP PSM and listen for
 		incoming data.
