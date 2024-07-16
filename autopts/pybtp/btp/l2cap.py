@@ -21,7 +21,7 @@ import struct
 
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import defs
-from autopts.pybtp.types import addr2btp_ba, L2CAPConnectionResponse
+from autopts.pybtp.types import addr2btp_ba, L2CAPConnectionResponse, BTPError
 from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, pts_addr_get, pts_addr_type_get, get_iut_method as get_iut
 from autopts.pybtp.btp.gap import gap_wait_for_connection
 
@@ -133,7 +133,7 @@ def l2cap_conn_with_mode(bd_addr, bd_addr_type, psm, mtu=0, num=1, mode=defs.L2C
 
     iutctl.btp_socket.send(*L2CAP['connect'], data=data_ba)
 
-    chan_ids = l2cap_conn_rsp()
+    chan_ids = l2cap_conn_with_mode_rsp()
     logging.debug("id %r", chan_ids)
 
 
@@ -148,6 +148,27 @@ l2cap_result_str = {0: "Success",
                     10: "Source CID already allocated",
                     }
 
+
+def l2cap_conn_with_mode_rsp():
+    logging.debug("%s", l2cap_conn_rsp.__name__)
+
+    iutctl = get_iut()
+
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
+    logging.debug("received %r %r", tuple_hdr, tuple_data)
+
+    try:
+        btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_L2CAP, defs.L2CAP_CONNECT)
+        num = struct.unpack_from('<B', tuple_data[0])[0]
+        channels = struct.unpack_from('%ds' % num, tuple_data[0], 1)[0]
+        return list(channels)
+    except BTPError as err:
+        if tuple_hdr.op == defs.BTP_STATUS:
+            error = struct.unpack_from('<B', tuple_data[0])[0]
+            if error == defs.BTP_STATUS_NOT_SUPPORT:
+                logging.debug("The mode is unsupported")
+                return None
+        raise
 
 def l2cap_conn_rsp():
     logging.debug("%s", l2cap_conn_rsp.__name__)
