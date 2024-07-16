@@ -74,6 +74,7 @@ Error response is common for all services and has fixed structure:
 					0x02 = Unknown Command
 					0x03 = Not ready
 					0x04 = Invalid Index
+					0x05 = Unsupported
 
 
 BTP Services
