@@ -1274,6 +1274,15 @@ ac_configs = {
     'BAP/UCL/STR/BV-557-C':     ([(1, 0)], 1, True),          # AC 10, Mono, Default Ch Count
     'BAP/UCL/STR/BV-558-C':     ([(1, 0)], 1, True),          # AC 10, Mono, No PACS
     'BAP/UCL/STR/BV-559-C':     ([(1, 0)], 1, True),          # AC 10, Mono, No PACS, Default Ch Count
+    # Mono in QoS Configured state
+    'BAP/UCL/STR/BV-560-C':     ([(0, 1)], 1, True),          # AC 2, Generic, QoS, Mono
+    'BAP/UCL/STR/BV-561-C':     ([(0, 1)], 1, True),          # AC 2, Generic, QoS, Mono, Default Ch Count
+    'BAP/UCL/STR/BV-562-C':     ([(0, 1)], 1, True),          # AC 2, Generic, QoS, Mono, No PACS
+    'BAP/UCL/STR/BV-563-C':     ([(0, 1)], 1, True),          # AC 2, Generic, QoS, Mono, Default Ch Count, No PACS
+    'BAP/UCL/STR/BV-564-C':     ([(1, 0)], 1, True),          # AC 1, Generic, QoS, Mono
+    'BAP/UCL/STR/BV-565-C':     ([(1, 0)], 1, True),          # AC 1, Generic, QoS, Mono, Default Ch Count
+    'BAP/UCL/STR/BV-566-C':     ([(1, 0)], 1, True),          # AC 1, Generic, QoS, Mono, No PACS
+    'BAP/UCL/STR/BV-567-C':     ([(1, 0)], 1, True),          # AC 1, Generic, QoS, Mono, Default Ch Count, No PACS
 }
 
 
