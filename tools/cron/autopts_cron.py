@@ -190,7 +190,11 @@ def autopts_magic_tag_cb(cron, comment_info):
     for board in cron.tags[magic_tag]['configs']:
         config = copy.deepcopy(cron.tags[magic_tag]['configs'][board])
         parser = config.get('magic_tag_parser', AutoPTSMagicTagParser)()
-        parsed_args = parser.parse_args(command_args)
+        try:
+            parsed_args = parser.parse_args(command_args)
+        except BaseException as e:
+            log(e)
+            continue
 
         is_supported, supported_test_cases = check_supported_profiles(parsed_args.included, config)
         if not is_supported:
