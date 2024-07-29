@@ -529,9 +529,20 @@ def terminate_processes(config):
     if 'vm' in config['cron']:
         close_vm(config)
 
+    if 'active_hub_server_start_cmd' in config['cron']:
+        terminate_process(cmdline='active_hub_server.py')
+
 
 def _start_processes(config, checkout_repos):
     srv_process = None
+
+    if 'active_hub_server_start_cmd' in config['cron']:
+        log(f"Running: {config['cron']['active_hub_server_start_cmd']}")
+        subprocess.Popen(config['cron']['active_hub_server_start_cmd'],
+                         shell=True,
+                         stdout=subprocess.PIPE,
+                         stderr=subprocess.STDOUT,
+                         cwd=config['cron']['autopts_repo'])
 
     if 'vm' in config['cron']:
         try:
