@@ -86,7 +86,7 @@ class AutoPTSMagicTagParser(argparse.ArgumentParser):
                           help="Names of test cases to exclude. Groups of "
                                "test cases can be specified by profile names")
 
-        self.add_argument("--test_case_limit", nargs='?', type=int, default=0,
+        self.add_argument("--test_case_limit", "--test-case-limit", nargs='?', type=int, default=0,
                           help="Limit of test cases to run")
 
 
