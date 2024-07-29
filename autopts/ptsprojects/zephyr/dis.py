@@ -26,38 +26,11 @@ from autopts.ptsprojects.zephyr.dis_wid import dis_wid_hdl
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
 
 
-class Value:
-    one_byte = '01'
-    two_bytes = '0123'
-    eight_bytes_1 = '0123456789ABCDEF'
-    eight_bytes_2 = 'FEDCBA9876543210'
-    long_1 = eight_bytes_1 * 4
-    long_2 = eight_bytes_2 * 4
-
-
-# these UUIDs are in little endian
-class DIS_DB:
-    SVC = '0A18'
-    CHR_MAN_NAME = '292A'
-    CHR_MODEL_NUM = '242A'
-    CHR_SER_NUM = '252A'
-    CHR_HW_REV = '272A'
-    CHR_FW_REV = '262A'
-    CHR_SW_REV = '282A'
-    CHR_PnP_ID = '502A'
-
-
-# Vendor ID Source field, a Vendor ID field, a Product ID field and a Product Version field
-# BT SIG assigned Device ID - Nordic Semi - dummy Product ID - Dummy Product Version (1.0.0)
-# all values in little endian
-dis_pnp_char_val = '0100E5FE110011'
-
 iut_manufacturer_data = 'ABCD'
 iut_appearance = '1111'
 iut_svc_data = '1111'
 iut_flags = '11'
 iut_svcs = '1111'
-iut_attr_db_off = 0x000b
 
 
 def set_pixits(ptses):
@@ -84,26 +57,6 @@ def set_pixits(ptses):
     pts.set_pixit("DIS", "TSPX_security_enabled", "FALSE")
     pts.set_pixit("MESH", "TSPX_iut_setup_att_over_br_edr", "FALSE")
     pts.set_pixit("DIS", "TSPX_tester_appearance", "0000")
-
-
-init_server = [TestFunc(btp.core_reg_svc_gatt),
-               TestFunc(btp.gatts_add_svc, 0, DIS_DB.SVC),
-               TestFunc(btp.gatts_add_char, 0, gatt.Prop.read,
-                        gatt.Perm.read, DIS_DB.CHR_MAN_NAME),
-               TestFunc(btp.gatts_add_char, 0, gatt.Prop.read,
-                        gatt.Perm.read, DIS_DB.CHR_MODEL_NUM),
-               TestFunc(btp.gatts_add_char, 0, gatt.Prop.read,
-                        gatt.Perm.read, DIS_DB.CHR_SER_NUM),
-               TestFunc(btp.gatts_add_char, 0, gatt.Prop.read,
-                        gatt.Perm.read, DIS_DB.CHR_HW_REV),
-               TestFunc(btp.gatts_add_char, 0, gatt.Prop.read,
-                        gatt.Perm.read, DIS_DB.CHR_FW_REV),
-               TestFunc(btp.gatts_add_char, 0, gatt.Prop.read,
-                        gatt.Perm.read, DIS_DB.CHR_SW_REV),
-               TestFunc(btp.gatts_add_char, 0, gatt.Prop.read,
-                        gatt.Perm.read, DIS_DB.CHR_PnP_ID),
-               TestFunc(btp.gatts_set_val, 0, dis_pnp_char_val),
-               TestFunc(btp.gatts_start_server)]
 
 
 def test_cases(ptses):
@@ -142,7 +95,7 @@ def test_cases(ptses):
 
     for tc_name in test_case_name_list:
         instance = ZTestCase("DIS", tc_name,
-                             cmds=pre_conditions + init_server,
+                             cmds=pre_conditions,
                              generic_wid_hdl=dis_wid_hdl)
 
         for custom_tc in custom_test_cases:
