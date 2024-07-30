@@ -99,7 +99,20 @@ def get_estimations(config, included_tc, excluded_tc, limit=None):
     test_cases = estimate_test_cases(config, included_tc, excluded_tc)
 
     if limit:
-        test_cases = test_cases[:limit]
+        if len(included_tc) == 1:
+            test_cases = test_cases[:limit]
+        else:
+            profile_count = {prefix: 0 for prefix in included_tc}
+            tc_list = []
+            for profile in included_tc:
+                for test_case in test_cases:
+                    if profile_count[profile] == limit:
+                        break
+                    if test_case.startswith(profile):
+                        tc_list.append(test_case)
+                        profile_count[profile] += 1
+
+            test_cases = tc_list
 
     est_duration = None
     database_file = config['auto_pts'].get('database_file', None)

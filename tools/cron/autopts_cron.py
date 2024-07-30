@@ -227,6 +227,9 @@ def schedule_pr_job(cron, pr_info, job_config):
         test_cases, est_duration = get_estimations(cfg_dict, included_tc, excluded_tc,
                                                    job_config['test_case_limit'])
 
+        job_config.pop('test_case_limit')
+        job_config['included'] = test_cases
+
         test_case_count = len(test_cases)
         estimations = f', test case count: {test_case_count}, '\
                       f'estimated duration: {est_duration}'
