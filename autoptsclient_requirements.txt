@@ -11,3 +11,4 @@ pylink-square
 openpyxl
 pyyaml
 yepkit-pykush
+hidapi
