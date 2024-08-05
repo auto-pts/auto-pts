@@ -183,15 +183,19 @@ class BotClient(Client):
         from the last remembered config/test_case.
         """
 
+        self.load_test_case_database()
+
         continue_test_case = None
         continue_config = None
         if os.path.exists(self.file_paths['ALL_STATS_JSON_FILE']):
             self.backup['all_stats'] = TestCaseRunStats.load_from_backup(self.file_paths['ALL_STATS_JSON_FILE'])
+            self.backup['all_stats'].db = self.test_case_database
             continue_config = self.backup['all_stats'].pending_config
 
             # The last config and test case preformed in the broken test run
             if os.path.exists(self.file_paths['TC_STATS_JSON_FILE']):
                 self.backup['tc_stats'] = TestCaseRunStats.load_from_backup(self.file_paths['TC_STATS_JSON_FILE'])
+                self.backup['tc_stats'].db = self.test_case_database
                 continue_config = self.backup['tc_stats'].pending_config
                 continue_test_case = self.backup['tc_stats'].pending_test_case
 
@@ -209,7 +213,8 @@ class BotClient(Client):
             # Skip already completed test cases and the faulty one
             tc_index = test_cases_per_config[continue_config].index(continue_test_case)
             test_cases_per_config[continue_config] = test_cases_per_config[continue_config][tc_index + 1:]
-            
+            self.backup['tc_stats'].index += 1
+
             if not test_cases_per_config[continue_config]:
                 # The faulty test case was the last one in the config. Move to the next config
                 self.backup['tc_stats'].update(continue_test_case, 0, 'TIMEOUT')
