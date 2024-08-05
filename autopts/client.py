@@ -1327,6 +1327,19 @@ class Client:
         self.args, errmsg = self.arg_parser.parse(args_namespace)
         return errmsg
 
+    def load_test_case_database(self):
+        if not self.args.store or self.test_case_database:
+            return
+
+        tc_db_table_name = self.store_tag + str(self.args.board_name)
+
+        if os.path.exists(self.args.database_file) and \
+                not os.path.exists(self.file_paths['TEST_CASE_DB_FILE']):
+            shutil.copy(self.args.database_file, self.file_paths['TEST_CASE_DB_FILE'])
+
+        self.test_case_database = TestCaseTable(tc_db_table_name,
+                                                self.file_paths['TEST_CASE_DB_FILE'])
+
     def start(self, args=None):
         """Start main with exception handling."""
 
@@ -1368,15 +1381,7 @@ class Client:
 
         os.makedirs(self.file_paths["TMP_DIR"], exist_ok=True)
 
-        if self.args.store:
-            tc_db_table_name = self.store_tag + str(self.args.board_name)
-
-            if os.path.exists(self.args.database_file) and \
-                    not os.path.exists(self.file_paths['TEST_CASE_DB_FILE']):
-                shutil.copy(self.args.database_file, self.file_paths['TEST_CASE_DB_FILE'])
-
-            self.test_case_database = TestCaseTable(tc_db_table_name,
-                                                    self.file_paths['TEST_CASE_DB_FILE'])
+        self.load_test_case_database()
 
         init_pts(self.args, self.ptses)
 
