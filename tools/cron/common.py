@@ -587,6 +587,7 @@ def _run_test(config):
     backup = config['auto_pts'].get('use_backup', False)
     timeguard = config['cron']['test_run_timeguard']
     results_file_path = config['file_paths']['TC_STATS_JSON_FILE']
+    report_file_path = config['file_paths']['REPORT_TXT_FILE']
 
     srv_process, bot_process = _start_processes(config, checkout_repos=True)
     last_check_time = time()
@@ -601,7 +602,13 @@ def _run_test(config):
 
         if bot_process.poll() is not None:
             log('bot process finished.')
-            break
+            if os.path.exists(report_file_path):
+                break
+
+            elif backup:
+                log("Autopts bot terminated before report creation. Restarting processes...")
+                srv_process, bot_process = _restart_processes(config)
+                sleep_job(config['cron']['cancel_job'], timeguard)
 
         if not backup:
             continue

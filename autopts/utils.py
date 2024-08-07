@@ -269,6 +269,8 @@ def terminate_process(pid=None, name=None, cmdline=None):
             continue
 
         process.terminate()
+        process.wait()
+
         logging.debug(f"The process with pid={process.info['pid']} name={process.info['name']} "
                       f"cmdline={process.info['cmdline']} has been terminated.")
 
