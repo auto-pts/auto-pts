@@ -50,7 +50,7 @@ def hdl_wid_20100(params: WIDParams):
     btp.bap_discover(addr_type, addr)
     stack.bap.wait_discovery_completed_ev(addr_type, addr, 30)
 
-    if params.test_case_name.startswith('BAP/BA/BASS'):
+    if params.test_case_name.startswith('BAP/BA/BASS') or params.test_case_name.startswith('BAP/BA/CGGIT'):
         btp.bap_discover_scan_delegator(addr_type, addr)
 
     return True
