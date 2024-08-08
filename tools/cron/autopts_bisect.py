@@ -124,8 +124,11 @@ def bisect(cfg, test_case, good_commit, bad_commit=''):
     print('Bisect started testing of test_case={} cfg={}'.format(test_case, cfg))
     included = '-c {} '.format(test_case)
 
-    cfg_dict, cfg_path = load_cfg(cfg)
-    project_repo = cfg_dict['auto_pts']['project_path']
+    cfg_dict, _ = load_cfg(cfg)
+    if 'repo_path' in cfg_dict['bisect']:
+        project_repo = cfg_dict['bisect']['repo_path']
+    else:
+        project_repo = cfg_dict['auto_pts']['project_path']
 
     last_bad = get_sha(project_repo)
 
