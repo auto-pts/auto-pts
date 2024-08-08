@@ -42,7 +42,7 @@ import autopts.ptsprojects.zephyr.cas
 import autopts.ptsprojects.zephyr.cap
 import autopts.ptsprojects.zephyr.mcp
 import autopts.ptsprojects.zephyr.bass
-import autopts.ptsprojects.zephyr.gmcs
+import autopts.ptsprojects.zephyr.mcs
 import autopts.ptsprojects.zephyr.tbs
 import autopts.ptsprojects.zephyr.tmap
 import autopts.ptsprojects.zephyr.ots

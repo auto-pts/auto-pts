@@ -13,7 +13,7 @@
 # more details.
 #
 
-"""GMCS test cases"""
+"""MCS/GMCS test cases"""
 
 from autopts.pybtp import btp
 from autopts.client import get_unique_name
@@ -32,7 +32,7 @@ def set_addr(addr):
 
 
 def set_pixits(ptses):
-    """Setup GMCS profile PIXITS for workspace. Those values are used for test
+    """Setup MCS/GMCS profile PIXITS for workspace. Those values are used for test
     case if not updated within test case.
 
     PIXITS always should be updated accordingly to project and newest version of
@@ -42,28 +42,28 @@ def set_pixits(ptses):
 
     pts = ptses[0]
 
-    pts.set_pixit("GMCS", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
-    pts.set_pixit("GMCS", "TSPX_iut_device_name_in_adv_packet_for_random_address", "")
-    pts.set_pixit("GMCS", "TSPX_time_guard", "180000")
-    pts.set_pixit("GMCS", "TSPX_use_implicit_send", "TRUE")
-    pts.set_pixit("GMCS", "TSPX_secure_simple_pairing_pass_key_confirmation", "FALSE")
-    pts.set_pixit("GMCS", "TSPX_mtu_size", 23)
-    pts.set_pixit("GMCS", "TSPX_delete_link_key", "FALSE")
-    pts.set_pixit("GMCS", "TSPX_pin_code", "0000")
-    pts.set_pixit("GMCS", "TSPX_use_dynamic_pin", "FALSE")
-    pts.set_pixit("GMCS", "TSPX_delete_ltk", "TRUE")
-    pts.set_pixit("GMCS", "TSPX_security_enabled", "FALSE")
-    pts.set_pixit("GMCS", "TSPX_Track_Name", "Track")
-    pts.set_pixit("GMCS", "TSPX_Artist_Name", "Artist")
-    pts.set_pixit("GMCS", "TSPX_Album_Name", "Album")
-    pts.set_pixit("GMCS", "TSPX_Group_Name", "Group")
-    pts.set_pixit("GMCS", "TSPX_Earliest_Year", "1999")
-    pts.set_pixit("GMCS", "TSPX_Latest_Year", "2000")
-    pts.set_pixit("GMCS", "TSPX_Genre", "Genre")
+    pts.set_pixit("MCS", "TSPX_bd_addr_iut", "DEADBEEFDEAD")
+    pts.set_pixit("MCS", "TSPX_iut_device_name_in_adv_packet_for_random_address", "")
+    pts.set_pixit("MCS", "TSPX_time_guard", "180000")
+    pts.set_pixit("MCS", "TSPX_use_implicit_send", "TRUE")
+    pts.set_pixit("MCS", "TSPX_secure_simple_pairing_pass_key_confirmation", "FALSE")
+    pts.set_pixit("MCS", "TSPX_mtu_size", 23)
+    pts.set_pixit("MCS", "TSPX_delete_link_key", "FALSE")
+    pts.set_pixit("MCS", "TSPX_pin_code", "0000")
+    pts.set_pixit("MCS", "TSPX_use_dynamic_pin", "FALSE")
+    pts.set_pixit("MCS", "TSPX_delete_ltk", "TRUE")
+    pts.set_pixit("MCS", "TSPX_security_enabled", "FALSE")
+    pts.set_pixit("MCS", "TSPX_Track_Name", "Track")
+    pts.set_pixit("MCS", "TSPX_Artist_Name", "Artist")
+    pts.set_pixit("MCS", "TSPX_Album_Name", "Album")
+    pts.set_pixit("MCS", "TSPX_Group_Name", "Group")
+    pts.set_pixit("MCS", "TSPX_Earliest_Year", "1999")
+    pts.set_pixit("MCS", "TSPX_Latest_Year", "2000")
+    pts.set_pixit("MCS", "TSPX_Genre", "Genre")
 
 
 def test_cases(ptses):
-    """Returns a list of GMCS Server test cases"""
+    """Returns a list of MCS/GMCS Server test cases"""
 
     pts = ptses[0]
 
@@ -77,7 +77,7 @@ def test_cases(ptses):
         TestFunc(btp.core_reg_svc_gatt),
         TestFunc(btp.gap_read_ctrl_info),
         TestFunc(lambda: pts.update_pixit_param(
-            "GMCS", "TSPX_bd_addr_iut",
+            "MCS", "TSPX_bd_addr_iut",
             stack.gap.iut_addr_get_str())),
         TestFunc(btp.gap_set_io_cap, IOCap.display_only),
         TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public),
@@ -86,15 +86,15 @@ def test_cases(ptses):
         TestFunc(btp.gap_set_gendiscov),
         TestFunc(btp.core_reg_svc_gmcs),
         TestFunc(lambda: pts.update_pixit_param(
-            "GMCS", "TSPX_iut_device_name_in_adv_packet_for_random_address", iut_device_name)),
+            "MCS", "TSPX_iut_device_name_in_adv_packet_for_random_address", iut_device_name)),
         TestFunc(stack.gmcs_init),
     ]
 
-    test_case_name_list = pts.get_test_case_list('GMCS')
+    test_case_name_list = pts.get_test_case_list('MCS')
     tc_list = []
 
     for tc_name in test_case_name_list:
-        instance = ZTestCase("GMCS", tc_name,
+        instance = ZTestCase("MCS", tc_name,
                              cmds=pre_conditions,
                              generic_wid_hdl=gmcs_wid_hdl)
         tc_list.append(instance)
