@@ -262,6 +262,17 @@ def schedule_pr_job(cron, pr_info, job_config):
     job_config['excluded'] = ' '.join(job_config['excluded'])
     job_config['cancel_job'] = CancelJob(False)
 
+    if pr_info['html_url'].startswith('https://github.com/auto-pts/auto-pts'):
+        try:
+            vm_autopts = job_config['remote_machine']['git']['autopts']
+            vm_autopts['checkout_cmd'] = f"git fetch {vm_autopts['remote']} & " \
+                                         f"git fetch {vm_autopts['remote']} pull/{pr_number}/head & " \
+                                         f"git checkout FETCH_HEAD & " \
+                                         f"set GIT_COMMITTER_NAME=Name & set GIT_COMMITTER_EMAIL=temp@example.com & " \
+                                         f"git pull --rebase {vm_autopts['remote']} {vm_autopts['branch']} > NUL 2>&1"
+        except KeyError:
+            pass
+
     getattr(schedule.every(), start_time.strftime('%A').lower()) \
         .at(start_time.strftime('%H:%M:%S')) \
         .do(lambda *args, **kwargs: pr_job_finish_wrapper(
