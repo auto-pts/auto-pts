@@ -80,9 +80,9 @@ files_to_create = {
 f"""{license_text}
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
-from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
+from autopts.ptsprojects.{project_name}.ztestcase import ZTestCase
 from autopts.pybtp import btp
-from autopts.ptsprojects.zephyr.{profile_name_lower}_wid import {profile_name_lower}_wid_hdl
+from autopts.ptsprojects.{project_name}.{profile_name_lower}_wid import {profile_name_lower}_wid_hdl
 from autopts.client import get_unique_name
 from autopts.pybtp.types import Addr
 

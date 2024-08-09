@@ -224,7 +224,7 @@ def bap_broadcast_source_stop(broadcast_id):
 
 def bap_broadcast_sink_setup():
 
-    logging.debug(f"{bap_broadcast_source_setup.__name__}")
+    logging.debug(f"{bap_broadcast_sink_setup.__name__}")
 
     iutctl = get_iut()
     iutctl.btp_socket.send(*BAP['broadcast_sink_setup'])
