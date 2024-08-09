@@ -231,16 +231,19 @@ def schedule_pr_job(cron, pr_info, job_config):
         test_cases, est_duration = get_estimations(cfg_dict, included_tc, excluded_tc,
                                                    job_config['test_case_limit'])
 
-        job_config.pop('test_case_limit')
-        job_config['included'] = test_cases
-
         test_case_count = len(test_cases)
-        estimations = f', test case count: {test_case_count}, '\
-                      f'estimated duration: {est_duration}'
 
         if test_case_count > 0:
-            estimations += f'<details><summary>Test cases to be run</summary>{"<br>".join(test_cases)}</details>\n'
+            if job_config['test_case_limit']:
+                job_config['included'] = test_cases
 
+            estimations = f', test case count: {test_case_count}, ' \
+                          f'estimated duration: {est_duration}'
+            estimations += f'<details><summary>Test cases to be run</summary>{"<br>".join(test_cases)}</details>\n'
+        else:
+            estimations = f', test case count: estimation not available'
+
+        job_config.pop('test_case_limit')
         job_config['estimated_duration'] = est_duration
     except Exception as e:
         # Probably the configuration missed some parameters,
