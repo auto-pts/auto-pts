@@ -24,6 +24,7 @@ start ssh agent in the same console:
 $ eval `ssh-agent`
 $ ssh-add path/to/id_rsa
 """
+import copy
 import logging
 import os
 import re
@@ -233,7 +234,7 @@ def load_config(cfg):
     if not mod:
         raise Exception(f'Could not load the config {cfg}')
 
-    return mod.BotProjects[0]
+    return copy.deepcopy(mod.BotProjects[0])
 
 
 def find_workspace_in_tree(tree_path, workspace, init_depth=4):

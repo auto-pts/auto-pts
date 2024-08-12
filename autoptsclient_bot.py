@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-
 #
 # auto-pts - The Bluetooth PTS Automation Framework
 #
@@ -21,6 +20,7 @@ import sys
 import threading
 import time
 import schedule
+import copy
 
 from autopts.bot.common import get_absolute_module_path, load_module_from_path
 from autopts.utils import log_running_threads, have_admin_rights, set_global_end
@@ -59,7 +59,7 @@ def import_bot_projects():
         return None, config_path
 
     module = load_module_from_path(config_path)
-    return getattr(module, "BotProjects", None), config_path
+    return copy.deepcopy(getattr(module, "BotProjects", None)), config_path
 
 
 def import_bot_module(project):
