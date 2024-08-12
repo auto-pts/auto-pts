@@ -24,7 +24,7 @@ $ python3 autopts_bisect.py config_zephyr_bisect SM/CEN/JW/BV-05-C 7ab16c457b304
 
 If last_bad_commit is empty, then takes HEAD commit.
 """
-
+import copy
 import importlib
 import os
 import re
@@ -110,7 +110,7 @@ def load_cfg(cfg):
         raise Exception('{} does not exists!'.format(cfg_path))
 
     mod = load_module_from_path(cfg_path)
-    return mod.BotProjects[0], cfg_path
+    return copy.deepcopy(mod.BotProjects[0]), cfg_path
 
 
 def bisect(cfg, test_case, good_commit, bad_commit=''):
