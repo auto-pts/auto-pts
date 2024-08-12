@@ -43,6 +43,8 @@ def hdl_wid_142(_: WIDParams):
     Discover all characteristics if needed.
     """
 
+    btp.gap_pair()
+
     return True
 
 
