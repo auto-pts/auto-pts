@@ -20995,13 +20995,13 @@
           <Row>
             <Name>TSPC_MESH_11_7</Name>
             <Description>Bridge Configuration Server Model (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MESH_11_8</Name>
             <Description>Bridge Configuration Client Model (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>

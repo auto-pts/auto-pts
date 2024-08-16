@@ -3685,6 +3685,210 @@ def hdl_wid_891(params: WIDParams):
     return True
 
 
+def hdl_wid_920(params: WIDParams):
+    """
+    Implements:
+    description: Please send SUBNET_BRIDGE_GET:
+
+    MeshApplicationData::Network Header
+    Network Header: 
+        NID: <WildCard: Exists>
+        IVI: <WildCard: Exists>
+        TTL: <WildCard: Exists>
+        CTL: <WildCard: Exists>
+        SEQ: <WildCard: Exists>
+        SRC: [0x0002]
+        DST: [0x0001]
+        TransportPDU: <WildCard: Exists>
+    MeshApplicationData::Application Data
+    Subnet Bridge Server:
+        Op Code: [0x80B1] SUBNET_BRIDGE_GET
+        style: MMI_Style_Ok_Cancel2 0x11141
+    """
+    _, dst = find_src_dst(params.description)
+
+    btp.mesh_subnet_bridge_get(dst)
+    return True
+
+
+def hdl_wid_921(params: WIDParams):
+    """
+    Implements:
+    description: Please send SUBNET_BRIDGE_SET:
+
+    MeshApplicationData::Network Header
+    Network Header: 
+        NID: <WildCard: Exists>
+        IVI: <WildCard: Exists>
+        TTL: <WildCard: Exists>
+        CTL: <WildCard: Exists>
+        SEQ: <WildCard: Exists>
+        SRC: [0x0003]
+        DST: [0x0001]
+        TransportPDU: <WildCard: Exists>
+    MeshApplicationData::Application Data
+    Subnet Bridge Server:
+        Op Code: [0x80B2] SUBNET_BRIDGE_SET
+        Subnet_Bridge: [1 (0x01)] Enable
+        style: MMI_Style_Ok_Cancel2 0x11141
+    """
+    _, dst = find_src_dst(params.description)
+
+    pattern = re.compile(r"\((0x[0-9a-fA-F]+)\)")
+    vals = pattern.findall(params.description)
+
+    enable = int(vals[0], 16)
+
+    btp.mesh_subnet_bridge_set(dst, enable)
+    return True
+
+
+def hdl_wid_922(params: WIDParams):
+    """
+    Implements:
+    description: Please send BRIDGING_TABLE_GET:
+
+    MeshApplicationData::Network Header
+    Network Header:
+        NID: <WildCard: Exists>
+        IVI: <WildCard: Exists>
+        TTL: <WildCard: Exists>
+        CTL: <WildCard: Exists>
+        SEQ: <WildCard: Exists>
+        SRC: [0x0003]
+        DST: [0x0001]
+        TransportPDU: <WildCard: Exists>
+    MeshApplicationData::Application Data
+    Subnet Bridge Server:
+        Op Code: [0x80B9] BRIDGING_TABLE_GET
+        NetKeyIndex1: <WildCard: Exists>
+        NetKeyIndex2: <WildCard: Exists>
+        Start_Index_Bridging_Table: <WildCard: Exists>
+        style: MMI_Style_Ok_Cancel2 0x11141
+    """
+    _, dst = find_src_dst(params.description)
+
+    btp.mesh_bridging_table_get(dst, 1, 0, 0)
+    return True
+
+
+def hdl_wid_923(params: WIDParams):
+    """
+    Implements:
+    description: Please send BRIDGING_TABLE_ADD:
+
+    MeshApplicationData::Network Header
+    Network Header:
+        NID: <WildCard: Exists>
+        IVI: <WildCard: Exists>
+        TTL: <WildCard: Exists>
+        CTL: <WildCard: Exists>
+        SEQ: <WildCard: Exists>
+        SRC: [0x0003]
+        DST: [0x0001]
+        TransportPDU: <WildCard: Exists>
+    MeshApplicationData::Application Data
+        Subnet Bridge Server:
+        Op Code: [0x80B4] BRIDGING_TABLE_ADD
+        Directions: <WildCard: Exists>
+        NetKeyIndex1: <WildCard: Exists>
+        NetKeyIndex2: <WildCard: Exists>
+        Address1: <WildCard: Exists>
+        Address2: <WildCard: Exists>
+        style: MMI_Style_Ok_Cancel2 0x11141
+    """
+    _, dst = find_src_dst(params.description)
+
+    btp.mesh_bridging_table_add(dst, 2, 1, 2, 1, 2)
+    return True
+
+
+def hdl_wid_924(params: WIDParams):
+    """
+    Implements:
+    description: Please send BRIDGING_TABLE_REMOVE:
+
+    MeshApplicationData::Network Header
+    Network Header:
+        NID: <WildCard: Exists>
+        IVI: <WildCard: Exists>
+        TTL: <WildCard: Exists>
+        CTL: <WildCard: Exists>
+        SEQ: <WildCard: Exists>
+        SRC: [0x0003]
+        DST: [0x0001]
+        TransportPDU: <WildCard: Exists>
+    MeshApplicationData::Application Data
+        Subnet Bridge Server:
+        Op Code: [0x80B5] BRIDGING_TABLE_REMOVE
+        NetKeyIndex1: <WildCard: Exists>
+        NetKeyIndex2: <WildCard: Exists>
+        Address1: <WildCard: Exists>
+        Address2: <WildCard: Exists>
+        style: MMI_Style_Ok_Cancel2 0x11141
+    """
+    _, dst = find_src_dst(params.description)
+
+    btp.mesh_bridging_table_remove(dst, 1, 2, 1, 2)
+    return True
+
+
+def hdl_wid_925(params: WIDParams):
+    """
+    Implements:
+    description: Please send BRIDGED_SUBNETS_GET:
+
+    MeshApplicationData::Network Header
+    Network Header:
+        NID: <WildCard: Exists>
+        IVI: <WildCard: Exists>
+        TTL: <WildCard: Exists>
+        CTL: <WildCard: Exists>
+        SEQ: <WildCard: Exists>
+        SRC: [0x0003]
+        DST: [0x0001]
+        TransportPDU: <WildCard: Exists>
+    MeshApplicationData::Application Data
+        Subnet Bridge Server:
+        Op Code: [0x80B7] BRIDGED_SUBNETS_GET
+        Filter: <WildCard: Exists>
+        Prohibited: <WildCard: Exists>
+        NetKeyIndex: <WildCard: Exists>
+        Start_Index_Bridged_Subnets: <WildCard: Exists>
+        style: MMI_Style_Ok_Cancel2 0x11141
+    """
+    _, dst = find_src_dst(params.description)
+
+    btp.mesh_bridged_subnets_get(dst, 1, 1, 0)
+    return True
+
+
+def hdl_wid_926(params: WIDParams):
+    """
+    Implements:
+    description: Please send BRIDGE_CAPABILITY_GET:
+
+    MeshApplicationData::Network Header
+    Network Header: 
+        NID: <WildCard: Exists>
+        IVI: <WildCard: Exists>
+        TTL: <WildCard: Exists>
+        CTL: <WildCard: Exists>
+        SEQ: <WildCard: Exists>
+        SRC: [0x0002]
+        DST: [0x0001]
+        TransportPDU: <WildCard: Exists>
+    MeshApplicationData::Application Data
+    Subnet Bridge Server:
+        Op Code: [0x80BB] BRIDGING_TABLE_SIZE_GET
+        style: MMI_Style_Ok_Cancel2 0x11141
+    """
+    _, dst = find_src_dst(params.description)
+
+    btp.mesh_bridge_capability_get(dst)
+    return True
+
+
 def hdl_wid_940(_: WIDParams):
     """
     Implements:

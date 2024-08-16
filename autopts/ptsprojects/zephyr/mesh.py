@@ -708,6 +708,12 @@ def test_cases(ptses):
                   [TestFunc(time.sleep, 10, post_wid=500),
                    TestFunc(btp.mesh_proxy_solicit, post_wid=500)],
                   generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CL/BCM/SBS/BV-01-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CL/BCM/BDS/BV-01-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
+        ZTestCase("MESH", "MESH/CL/BCM/BTS/BV-01-C", cmds=pre_conditions_prov,
+                  generic_wid_hdl=mesh_wid_hdl),
     ]
 
     test_cases_lt2 = [
