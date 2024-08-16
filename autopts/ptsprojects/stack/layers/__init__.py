@@ -40,4 +40,5 @@ from .tbs import *
 from .gtbs import *
 from .tmap import *
 from .ots import *
+from .bas import *
 # GENERATOR append 1

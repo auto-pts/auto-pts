@@ -114,4 +114,5 @@ ID  Name
  27 TBS Service
  28 TMAP Service
  29 OTS Service
+ 30 BAS Service
  # GENERATOR append 1

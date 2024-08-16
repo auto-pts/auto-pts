@@ -1,3 +1,4 @@
+2
 #
 # auto-pts - The Bluetooth PTS Automation Framework
 #
