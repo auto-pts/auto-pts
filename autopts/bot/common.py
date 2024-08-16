@@ -494,6 +494,7 @@ class BotClient(Client):
         report_data['start_time_stamp'] = datetime.datetime.fromtimestamp(
             bot_state['start_time']).strftime("%Y_%m_%d_%H_%M_%S")
 
+        report_data['project_name'] = self.autopts_project_name
         report_data['status_count'] = stats.get_status_count()
         report_data['tc_results'] = stats.get_results()
         report_data['descriptions'] = stats.get_descriptions()
@@ -683,7 +684,8 @@ class BotClient(Client):
 
         descriptions = report_data['descriptions']
 
-        mail_ctx = {'repos_info': report_data['repo_status'],
+        mail_ctx = {'project_name': report_data['project_name'],
+                    'repos_info': report_data['repo_status'],
                     'summary': [mail.status_dict2summary_html(report_data['status_count'])],
                     'log_url': [],
                     'board': self.bot_config['auto_pts']['board'],
@@ -747,7 +749,7 @@ class BotClient(Client):
     <h1>Bluetooth test session - {ww_dd_str} </h1>
     {additional_info}
     <h2>1. IUT Setup</h2>
-    <p><b> Type:</b> Zephyr <br>
+    <p><b> Type:</b> {project_name} <br>
     <b> Board:</b> {board} <br>
     <b> Source:</b> {repos_info} </p>
     <h2>2. PTS Setup</h2>
