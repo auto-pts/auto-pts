@@ -1148,6 +1148,71 @@ Commands and responses:
 		This command can be used to change the device key,
 		unicast address and composition data of another device.
 
+	Opcode 0x62 - Subnet Bridge Get
+
+		Controller Index:       <controller id>
+		Command parameters:     Destination (2 octet)
+
+		This command is used to get the current Subnet Bridge state of a node.
+
+	Opcode 0x63 - Subnet Bridge Set
+
+		Controller Index:       <controller id>
+		Command parameters:     Destination (2 octet)
+					State (1 octet)
+
+		This command is used  to set the Subnet Bridge state of a node.
+
+	Opcode 0x64 - Bridging Table Add
+
+		Controller Index:       <controller id>
+		Command parameters:     Destination (2 octet)
+					Direction (1 octet)
+					Network Index 1 (2 octet)
+					Network Index 2 (2 octet)
+					Address 1 (2 octet)
+					Address 2 (2 octet)
+
+		This command is used to add an entry in the Bridging table of a node.
+
+	Opcode 0x65 - Bridging Table Remove
+
+		Controller Index:       <controller id>
+		Command parameters:     Destination (2 octet)
+					Network Index 1 (2 octet)
+					Network Index 2 (2 octet)
+					Address 1 (2 octet)
+					Address 2 (2 octet)
+
+		This command is used remove an entry in the Bridging table of a node.
+
+	Opcode 0x66 - Bridged Subnets Get
+
+		Controller Index:       <controller id>
+		Command parameters:     Destination (2 octet)
+					Filter (1 octet)
+					Network Index (2 octet)
+					Start Index (1 octet)
+
+		This command is used to get the current Bridged subnets list of a node.
+
+	Opcode 0x67 - Bridging Table Get
+
+		Controller Index:       <controller id>
+		Command parameters:     Destination (2 octet)
+					Network Index 1 (2 octet)
+					Network Index 2 (2 octet)
+					Start Index (2 octet)
+
+		This command is used to get the current Bridging table list of a node.
+
+	Opcode 0x68 - Bridge Capability Get
+
+		Controller Index:       <controller id>
+		Command parameters:     Destination (2 octet)
+
+		This command is used to get the current Bridge table size of a node.
+
 	Opcode 0x6C - Private Beacon Get
 
 		Controller Index:       <controller id>

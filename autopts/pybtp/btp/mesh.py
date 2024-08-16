@@ -337,6 +337,27 @@ MESH = {
     "proxy_private_identity": (defs.BTP_SERVICE_ID_MESH,
                                defs.MESH_PROXY_PRIVATE_IDENTITY,
                                CONTROLLER_INDEX, ""),
+    "subnet_bridge_get": (defs.BTP_SERVICE_ID_MESH,
+                          defs.MESH_SUBNET_BRIDGE_GET,
+                          CONTROLLER_INDEX),
+    "subnet_bridge_set": (defs.BTP_SERVICE_ID_MESH,
+                          defs.MESH_SUBNET_BRIDGE_SET,
+                          CONTROLLER_INDEX),
+    "bridging_table_add": (defs.BTP_SERVICE_ID_MESH,
+                          defs.MESH_BRIDGING_TABLE_ADD,
+                          CONTROLLER_INDEX),
+    "bridging_table_remove": (defs.BTP_SERVICE_ID_MESH,
+                              defs.MESH_BRIDGING_TABLE_REMOVE,
+                              CONTROLLER_INDEX),
+    "bridged_subnets_get": (defs.BTP_SERVICE_ID_MESH,
+                            defs.MESH_BRIDGED_SUBNETS_GET,
+                            CONTROLLER_INDEX),
+    "bridging_table_get": (defs.BTP_SERVICE_ID_MESH,
+                           defs.MESH_BRIDGING_TABLE_GET,
+                           CONTROLLER_INDEX),
+    "bridge_capability_get": (defs.BTP_SERVICE_ID_MESH,
+                              defs.MESH_BRIDGE_CAPABILITY_GET,
+                              CONTROLLER_INDEX),
     "od_priv_proxy_get":  (defs.BTP_SERVICE_ID_MESH,
                            defs.MESH_OD_PRIV_PROXY_GET,
                            CONTROLLER_INDEX),
@@ -1954,6 +1975,83 @@ def mesh_rpr_reprov_remote(dst, addr, comp_change):
     data = bytearray(struct.pack("<HH?", dst, addr, comp_change))
 
     iutctl.btp_socket.send_wait_rsp(*MESH['rpr_reprov_remote'], data)
+
+
+def mesh_subnet_bridge_get(dst):
+    logging.debug("%s", mesh_subnet_bridge_get.__name__)
+
+    stack = get_stack()
+    iutctl = get_iut()
+
+    data = bytearray(struct.pack("<H", dst))
+
+    iutctl.btp_socket.send_wait_rsp(*MESH['subnet_bridge_get'], data)
+
+
+def mesh_subnet_bridge_set(dst, val):
+    logging.debug("%s", mesh_subnet_bridge_set.__name__)
+
+    stack = get_stack()
+    iutctl = get_iut()
+
+    data = bytearray(struct.pack("<HB", dst, val))
+
+    iutctl.btp_socket.send_wait_rsp(*MESH['subnet_bridge_set'], data)
+
+
+def mesh_bridging_table_add(dst, dir, net_idx1, net_idx2, addr1, addr2):
+    logging.debug("%s", mesh_bridging_table_add.__name__)
+
+    stack = get_stack()
+    iutctl = get_iut()
+
+    data = bytearray(struct.pack("<HBHHHH", dst, dir, net_idx1, net_idx2, addr1, addr2))
+
+    iutctl.btp_socket.send_wait_rsp(*MESH['bridging_table_add'], data)
+
+
+def mesh_bridging_table_remove(dst, net_idx1, net_idx2, addr1, addr2):
+    logging.debug("%s", mesh_bridging_table_remove.__name__)
+
+    stack = get_stack()
+    iutctl = get_iut()
+
+    data = bytearray(struct.pack("<HHHHH", dst, net_idx1, net_idx2, addr1, addr2))
+
+    iutctl.btp_socket.send_wait_rsp(*MESH['bridging_table_remove'], data)
+
+
+def mesh_bridged_subnets_get(dst, filter, net_idx, start_idx):
+    logging.debug("%s", mesh_bridged_subnets_get.__name__)
+
+    stack = get_stack()
+    iutctl = get_iut()
+
+    data = bytearray(struct.pack("<HBHB", dst, filter, net_idx, start_idx))
+
+    iutctl.btp_socket.send_wait_rsp(*MESH['bridged_subnets_get'], data)
+
+
+def mesh_bridging_table_get(dst, net_idx1, net_idx2, start_idx):
+    logging.debug("%s", mesh_bridging_table_get.__name__)
+
+    stack = get_stack()
+    iutctl = get_iut()
+
+    data = bytearray(struct.pack("<HHHH", dst, net_idx1, net_idx2, start_idx))
+
+    iutctl.btp_socket.send_wait_rsp(*MESH['bridging_table_get'], data)
+
+
+def mesh_bridge_capability_get(dst):
+    logging.debug("%s", mesh_bridge_capability_get.__name__)
+
+    stack = get_stack()
+    iutctl = get_iut()
+
+    data = bytearray(struct.pack("<H", dst))
+
+    iutctl.btp_socket.send_wait_rsp(*MESH['bridge_capability_get'], data)
 
 
 def mesh_od_priv_proxy_get(dst):
