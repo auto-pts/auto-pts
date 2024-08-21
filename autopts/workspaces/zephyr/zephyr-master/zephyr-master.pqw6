@@ -6865,7 +6865,7 @@
           <Row>
             <Name>TSPC_CAP_28_7</Name>
             <Description>Change Volume Offset procedure (C.6)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -6883,13 +6883,13 @@
           <Row>
             <Name>TSPC_CAP_28_10</Name>
             <Description>Change Microphone Gain Setting procedure (C.8)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_CAP_28_11</Name>
             <Description>Find Content Control Service procedure (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -6931,7 +6931,7 @@
           <Row>
             <Name>TSPC_CAP_31_2</Name>
             <Description>Set Volume Offset (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -6955,7 +6955,7 @@
           <Row>
             <Name>TSPC_CAP_32_2</Name>
             <Description>Set Gain Setting (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -10451,7 +10451,7 @@
           <Row>
             <Name>TSPC_GAP_17b_4</Name>
             <Description>LE security mode 3 level 3 (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -10559,7 +10559,7 @@
           <Row>
             <Name>TSPC_GAP_20a_6</Name>
             <Description>Security Manager OOB (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -10787,7 +10787,7 @@
           <Row>
             <Name>TSPC_GAP_23_7</Name>
             <Description>Connected Isochronous Stream Terminate procedure (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -10955,7 +10955,7 @@
           <Row>
             <Name>TSPC_GAP_27_7</Name>
             <Description>Writable Appearance (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -12466,7 +12466,7 @@
           <Row>
             <Name>TSPC_GATT_3_16</Name>
             <Description>Characteristic Value Reliable Writes (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -24052,13 +24052,13 @@
           <Row>
             <Name>TSPC_PBP_6_1</Name>
             <Description>Transmit Program_Info Metadata (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_PBP_6_2</Name>
             <Description>BAP Broadcast Audio Stream Metadata Update (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -25068,7 +25068,7 @@
           <Row>
             <Name>TSPC_TBS_21_2</Name>
             <Description>Service supported over LE (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -25086,7 +25086,7 @@
           <Row>
             <Name>TSPC_TBS_22_3</Name>
             <Description>Bearer Provider Name Read Long Support (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -25110,25 +25110,25 @@
           <Row>
             <Name>TSPC_TBS_22_7</Name>
             <Description>Bearer URI Schemes Supported List Notification (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TBS_22_8</Name>
             <Description>Bearer URI Schemes Supported List Read Long Support (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TBS_22_9</Name>
             <Description>Bearer Signal Strength Characteristic (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TBS_22_10</Name>
             <Description>Bearer Signal Strength Reporting Interval Characteristic (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -25140,7 +25140,7 @@
           <Row>
             <Name>TSPC_TBS_22_12</Name>
             <Description>Bearer List Current Calls Read Long Support (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -25158,13 +25158,13 @@
           <Row>
             <Name>TSPC_TBS_22_15</Name>
             <Description>Incoming Call Target Bearer URI Characteristic (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TBS_22_16</Name>
             <Description>Incoming Call Target Bearer URI Read Long Support (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -25176,7 +25176,7 @@
           <Row>
             <Name>TSPC_TBS_22_18</Name>
             <Description>Call State Read Long Support (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -25206,19 +25206,19 @@
           <Row>
             <Name>TSPC_TBS_22_23</Name>
             <Description>Incoming Call Read Long Support (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TBS_22_24</Name>
             <Description>Call Friendly Name Characteristic (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TBS_22_25</Name>
             <Description>Call Friendly Name Read Long Support (C.4)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -25236,13 +25236,13 @@
           <Row>
             <Name>TSPC_TBS_23_3</Name>
             <Description>Local Hold (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TBS_23_4</Name>
             <Description>Local Retrieve (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -25254,7 +25254,7 @@
           <Row>
             <Name>TSPC_TBS_23_6</Name>
             <Description>Join (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -25296,13 +25296,13 @@
           <Row>
             <Name>TSPC_TBS_24_7</Name>
             <Description>GATT Server over LE (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TBS_25_1</Name>
             <Description>SDP record present for GTBS (M)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -25452,7 +25452,7 @@
           <Row>
             <Name>TSPC_TMAP_1_1</Name>
             <Description>Call Gateway (CG) (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -25524,217 +25524,217 @@
           <Row>
             <Name>TSPC_TMAP_10_1</Name>
             <Description>TMAP v1.0 (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_12_1</Name>
             <Description>Common Audio Profile (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_12_2</Name>
             <Description>Basic Audio Profile (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_12_3</Name>
             <Description>Call Control Profile (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_13_1</Name>
             <Description>Advertise Call Gateway Support (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_14_1</Name>
             <Description>CAP Initiator (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_14_2</Name>
             <Description>CAP Commander (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_14_3</Name>
             <Description>CCP Call Control Server (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_14_4</Name>
             <Description>VCP Volume Controller (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_14_5</Name>
             <Description>Audio Source (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_14_6</Name>
             <Description>Audio Sink (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_14_7</Name>
             <Description>BAP Unicast Client (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_15_1</Name>
             <Description>16_1 LC3: 16 kHz Sampling Frequency, 7.5 ms Frame Duration, 30 Octets (Audio Source) (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_15_2</Name>
             <Description>32_1 LC3: 32 kHz Sampling Frequency, 7.5 ms Frame Duration, 60 Octets (Audio Source) (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_15_3</Name>
             <Description>32_2 LC3: 32 kHz Sampling Frequency, 10 ms Frame Duration, 80 Octets (Audio Source) (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_15_4</Name>
             <Description>16_1 LC3: 16 kHz Sampling Frequency, 7.5 ms Frame Duration, 30 Octets (Audio Sink) (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_15_5</Name>
             <Description>32_1 LC3: 32 kHz Sampling Frequency, 7.5 ms Frame Duration, 60 Octets (Audio Sink) (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_15_6</Name>
             <Description>32_2 LC3: 32 kHz Sampling Frequency, 10 ms Frame Duration, 80 Octets (Audio Sink) (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_16_1</Name>
             <Description>16_1_1 LC3: 7500 SDU Interval, unframed, 30 Max SDU Size, 2 RTN, 8 Max_Transport_Latency (Audio Source) (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_16_2</Name>
             <Description>32_1_1 LC3: 7500 SDU Interval, unframed, 60 Max SDU Size, 2 RTN, 8 Max_Transport_Latency (Audio Source) (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_16_3</Name>
             <Description>32_2_1 LC3: 10000 SDU Interval, unframed, 80 Max SDU Size, 2 RTN, 10 Max_Transport_Latency (Audio Source) (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_16_4</Name>
             <Description>16_1_1 LC3: 7500 SDU Interval, unframed, 30 Max SDU Size, 2 RTN, 8 Max_Transport_Latency (Audio Sink) (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_16_5</Name>
             <Description>32_1_1 LC3: 7500 SDU Interval, unframed, 60 Max SDU Size, 2 RTN, 8 Max_Transport_Latency (Audio Sink) (C.4)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_16_6</Name>
             <Description>32_2_1 LC3: 10000 SDU Interval, unframed, 80 Max SDU Size, 2 RTN, 10 Max_Transport_Latency (Audio Sink) (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_17_1</Name>
             <Description>Configuration A: 1 bidirectional stream between CG and CT (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_17_2</Name>
             <Description>Configuration B: 1 stream with 1 channel from CG to CT, 1 stream with 1 channel from 2nd CT to CG. (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_17_3</Name>
             <Description>Configuration C: 1 stream with 1 channel from CG to CT, 1 bidirectional stream between CG and a 2nd CT (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_17_4</Name>
             <Description>Configuration D: 1 stream with 1 channel from CG to CT, 1 bidirectional stream between CG and same CT (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_17_5</Name>
             <Description>Configuration E: 1 bidirectional stream with 2 channels from CG to CT (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_17_6</Name>
             <Description>Configuration F: 2 bidirectional streams between CG and CT (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_17_7</Name>
             <Description>Configuration G: 1 bidirectional stream from CG to CT, 1 bidirectional stream between CG and a 2nd CT (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_18_1</Name>
             <Description>Sink Audio Locations characteristic (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_18_2</Name>
             <Description>Source Audio Locations characteristic (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_19_1</Name>
             <Description>Front Left Audio Location (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_19_2</Name>
             <Description>Front Right Audio Location (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_19_3</Name>
             <Description>Front Right and Front Left Audio Locations (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -26040,7 +26040,7 @@
           <Row>
             <Name>TSPC_TMAP_54_2</Name>
             <Description>CAP Commander (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -26238,7 +26238,7 @@
           <Row>
             <Name>TSPC_TMAP_73_1</Name>
             <Description>Advertise Call Terminal Support (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -26250,7 +26250,7 @@
           <Row>
             <Name>TSPC_TMAP_74_2</Name>
             <Description>CAP Commander (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -26424,7 +26424,7 @@
           <Row>
             <Name>TSPC_TMAP_94_2</Name>
             <Description>CAP Commander (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -26676,7 +26676,7 @@
           <Row>
             <Name>TSPC_TMAP_114_2</Name>
             <Description>CAP Commander (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -26994,7 +26994,7 @@
           <Row>
             <Name>TSPC_TMAP_153_1</Name>
             <Description>Call Gateway Support (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
