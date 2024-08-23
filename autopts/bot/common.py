@@ -214,10 +214,10 @@ class BotClient(Client):
             tc_index = test_cases_per_config[continue_config].index(continue_test_case)
             test_cases_per_config[continue_config] = test_cases_per_config[continue_config][tc_index + 1:]
             self.backup['tc_stats'].index += 1
+            self.backup['tc_stats'].update(continue_test_case, 0, 'TIMEOUT')
 
             if not test_cases_per_config[continue_config]:
                 # The faulty test case was the last one in the config. Move to the next config
-                self.backup['tc_stats'].update(continue_test_case, 0, 'TIMEOUT')
                 self._merge_stats(self.backup['all_stats'], self.backup['tc_stats'])
                 self.backup['all_stats'].save_to_backup(self.file_paths['ALL_STATS_JSON_FILE'])
                 self.backup['tc_stats'] = None
