@@ -443,6 +443,8 @@ class BotClient(Client):
             all_stats.pts_ver = str(self.ptses[0].get_version())
             all_stats.platform = str(self.ptses[0].get_system_model())
             all_stats.system_version = str(self.ptses[0].get_system_version())
+            if self.args.use_backup:
+                all_stats.save_to_backup(self.file_paths['ALL_STATS_JSON_FILE'])
         except:
             log('Failed to generate some stats.')
 

@@ -25,6 +25,7 @@ $ eval `ssh-agent`
 $ ssh-add path/to/id_rsa
 """
 import copy
+import json
 import logging
 import os
 import re
@@ -585,9 +586,11 @@ def _restart_processes(config):
 
 
 def _run_test(config):
+    test_cases_completed = False
     backup = config['auto_pts'].get('use_backup', False)
     timeguard = config['cron']['test_run_timeguard']
     results_file_path = config['file_paths']['TC_STATS_JSON_FILE']
+    all_stats_file_path = config['file_paths']['ALL_STATS_JSON_FILE']
     report_file_path = config['file_paths']['REPORT_TXT_FILE']
 
     srv_process, bot_process = _start_processes(config, checkout_repos=True)
@@ -616,7 +619,7 @@ def _run_test(config):
 
         current_time = time()
 
-        if not os.path.exists(results_file_path):
+        if not test_cases_completed and not os.path.exists(results_file_path):
             if timedelta(seconds=current_time - last_check_time) > timedelta(seconds=timeguard):
                 log("Test run has not been started on time. Restarting processes...")
                 srv_process, bot_process = _restart_processes(config)
@@ -625,10 +628,24 @@ def _run_test(config):
 
         last_check_time = current_time
 
-        if timedelta(seconds=current_time - os.path.getmtime(results_file_path)) > timedelta(seconds=timeguard):
-            log("Test run results have not been updated for a while. Restarting processes...")
-            srv_process, bot_process = _restart_processes(config)
-            sleep_job(config['cron']['cancel_job'], timeguard)
+        if (not test_cases_completed and
+                timedelta(seconds=current_time - os.path.getmtime(results_file_path)) > timedelta(seconds=timeguard)):
+            if os.path.exists(all_stats_file_path):
+                try:
+                    with open(all_stats_file_path, 'r') as f:
+                        data = json.load(f)
+                        test_cases_completed = data.get('test_run_completed', False)
+                except BaseException as e:
+                    log(e)
+
+            # Do not restart bot if test_run_completed, because pulling PTS logs at the end
+            # of the bot run takes a while, and it should not be interrupted.
+            if test_cases_completed:
+                log("Bot completed running the test cases. Waiting for report to be generated ...")
+            else:
+                log("Test run results have not been updated for a while. Restarting processes...")
+                srv_process, bot_process = _restart_processes(config)
+                sleep_job(config['cron']['cancel_job'], timeguard)
 
 
 def run_test(config):
