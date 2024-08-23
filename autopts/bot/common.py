@@ -383,6 +383,7 @@ class BotClient(Client):
                                              config_args.retry,
                                              self.test_case_database,
                                              xml_results_file=self.file_paths['TC_STATS_RESULTS_XML_FILE'])
+                    stats.session_log_dir = all_stats.session_log_dir
 
                     if self.args.use_backup:
                         self._backup_tc_stats(config=config, test_case=None, stats=stats)
