@@ -44,6 +44,7 @@ def generate_file_paths(file_paths=None, autopts_root_dir=AUTOPTS_ROOT_DIR):
         'TC_STATS_JSON_FILE': os.path.join(FILE_PATHS['TMP_DIR'], 'tc_stats.json'),
         'TEST_CASE_DB_FILE': os.path.join(FILE_PATHS['TMP_DIR'], 'TestCase.db'),
         'BOT_STATE_JSON_FILE': os.path.join(FILE_PATHS['TMP_DIR'], 'bot_state.json'),
+        'BOT_STATE_DIR': os.path.join(FILE_PATHS['TMP_DIR'], 'final_state'),
         'REPORT_README_MD_FILE': os.path.join(FILE_PATHS['TMP_DIR'], 'README.md'),
         'REPORT_DIR': os.path.join(FILE_PATHS['TMP_DIR'], 'autopts_report'),
         'IUT_LOGS_DIR': os.path.join(autopts_root_dir, 'logs'),
