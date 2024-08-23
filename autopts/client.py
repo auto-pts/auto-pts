@@ -576,6 +576,7 @@ class TestCaseRunStats:
         self.pending_config = None
         self.pending_test_case = None
         self.test_run_completed = False
+        self.session_log_dir = None
 
         if self.xml_results and not os.path.exists(self.xml_results):
             os.makedirs(dirname(self.xml_results), exist_ok=True)
@@ -612,6 +613,7 @@ class TestCaseRunStats:
         self.est_duration = self.est_duration + stats2.est_duration
         self.pending_config = stats2.pending_config
         self.pending_test_case = stats2.pending_test_case
+        self.session_log_dir = stats2.session_log_dir
 
         stats2_tree = ElementTree.parse(stats2.xml_results)
         root2 = stats2_tree.getroot()
@@ -1214,16 +1216,19 @@ def get_test_cases(pts, test_cases, excluded):
 
 def run_test_cases(ptses, test_case_instances, args, stats, **kwargs):
     """Runs a list of test cases"""
+    session_log_dir = stats.session_log_dir
 
-    ports_str = '_'.join(str(x) for x in args.cli_port)
-    now = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
-    logs_folder = kwargs["file_paths"]["IUT_LOGS_DIR"]
-    session_log_dir = f'{logs_folder}/cli_port_{ports_str}/{now}'
-    try:
-        os.makedirs(session_log_dir)
-    except OSError as e:
-        if e.errno != errno.EEXIST:
-            raise
+    if not session_log_dir:
+        ports_str = '_'.join(str(x) for x in args.cli_port)
+        now = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+        logs_folder = kwargs["file_paths"]["IUT_LOGS_DIR"]
+        session_log_dir = f'{logs_folder}/cli_port_{ports_str}/{now}'
+        stats.session_log_dir = session_log_dir
+        try:
+            os.makedirs(session_log_dir)
+        except OSError as e:
+            if e.errno != errno.EEXIST:
+                raise
 
     test_cases = args.test_cases
     retry_config = getattr(args, 'retry_config', None)
