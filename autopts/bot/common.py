@@ -281,21 +281,27 @@ class BotClient(Client):
         """Perform cleanup before test run
         :return: None
         """
-        try:
-            files_to_save = [
-                self.file_paths['TMP_DIR'],
-                self.file_paths['IUT_LOGS_DIR'],
-            ]
+        files_to_save = [
+            self.file_paths['TMP_DIR'],
+            self.file_paths['IUT_LOGS_DIR'],
+        ]
 
-            save_dir = os.path.join(self.file_paths['OLD_LOGS_DIR'],
-                                    datetime.datetime.now().strftime("%Y_%m_%d_%H_%M"))
-            Path(save_dir).mkdir(parents=True, exist_ok=True)
+        save_dir = os.path.join(self.file_paths['OLD_LOGS_DIR'],
+                                datetime.datetime.now().strftime("%Y_%m_%d_%H_%M"))
+        save_files(files_to_save, save_dir)
 
-            for file_path in files_to_save:
-                if os.path.exists(file_path):
-                    shutil.move(file_path, os.path.join(save_dir, os.path.basename(file_path)))
-        except OSError as e:
-            pass
+    def bot_post_cleanup(self):
+        files_to_save = [
+            self.file_paths['ALL_STATS_RESULTS_XML_FILE'],
+            self.file_paths['TC_STATS_RESULTS_XML_FILE'],
+            self.file_paths['TEST_CASES_JSON_FILE'],
+            self.file_paths['ALL_STATS_JSON_FILE'],
+            self.file_paths['TC_STATS_JSON_FILE'],
+            self.file_paths['BOT_STATE_JSON_FILE'],
+        ]
+
+        save_dir = self.file_paths['BOT_STATE_DIR']
+        save_files(files_to_save, save_dir)
 
     def _yield_next_config(self):
         limit_counter = 0
@@ -547,6 +553,8 @@ class BotClient(Client):
 
         if 'mail' in self.bot_config:
             self.send_email(report_data)
+
+        self.bot_post_cleanup()
 
         print("Done")
 
@@ -943,3 +951,18 @@ def load_module_from_path(cfg):
     sys.path.remove(config_dirname)
 
     return module
+
+
+def save_files(files_to_save, save_dir: str):
+    try:
+        for file_path in files_to_save:
+            if os.path.exists(file_path):
+                Path(save_dir).mkdir(parents=True, exist_ok=True)
+                break
+
+        for file_path in files_to_save:
+            if os.path.exists(file_path):
+                dst_file_path = os.path.join(save_dir, os.path.basename(file_path))
+                shutil.move(file_path, dst_file_path)
+    except OSError as e:
+        pass
