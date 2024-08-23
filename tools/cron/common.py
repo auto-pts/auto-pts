@@ -50,7 +50,7 @@ sys.path.insert(0, AUTOPTS_REPO)
 
 from autopts.utils import get_global_end, terminate_process
 from tools.cron.autopts_bisect import Bisect, set_run_test_fun
-from autopts.bot.common import load_module_from_path
+from autopts.bot.common import load_module_from_path, save_files
 from autopts.bot.common_features.github import update_repos
 from autopts.bot.common_features.mail import send_mail
 from autopts.config import generate_file_paths, FILE_PATHS
@@ -351,10 +351,7 @@ def pre_cleanup_files(config):
                 else:
                     shutil.rmtree(file_path, ignore_errors=True)
 
-        for file in files_to_save:
-            file_path = os.path.join(autopts_repo, file)
-            if os.path.exists(file_path):
-                shutil.move(file_path, os.path.join(save_dir, os.path.basename(file_path)))
+        save_files(files_to_save, save_dir)
     except:
         pass
 
