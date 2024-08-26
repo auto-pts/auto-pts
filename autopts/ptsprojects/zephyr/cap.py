@@ -158,8 +158,12 @@ def test_cases(ptses):
         TestFunc(stack.ascs_init),
         TestFunc(stack.bap_init),
         TestFunc(stack.cap_init),
+        TestFunc(stack.micp_init),
+        TestFunc(stack.vcp_init),
         TestFunc(btp.core_reg_svc_cap),
         TestFunc(btp.core_reg_svc_cas),
+        TestFunc(btp.core_reg_svc_micp),
+        TestFunc(btp.core_reg_svc_vcp),
         TestFunc(btp.gap_set_extended_advertising_on),
         # Gives a signal to the LT2 to continue its preconditions
         TestFunc(lambda: set_addr(stack.gap.iut_addr_get_str())),
