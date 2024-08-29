@@ -131,6 +131,8 @@ CORE = {
                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_OTS),
     "pbp_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_PBP),
+    "bas_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
+                defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_BAS),
     # GENERATOR append 4
     "read_supp_cmds": (defs.BTP_SERVICE_ID_CORE,
                        defs.BTP_CORE_CMD_READ_SUPPORTED_COMMANDS,
@@ -711,6 +713,13 @@ def core_reg_svc_pbp():
 
     iutctl = get_iut()
     iutctl.btp_socket.send_wait_rsp(*CORE['pbp_reg'])
+
+
+def core_reg_svc_bas():
+    logging.debug("%s", core_reg_svc_bas.__name__)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*CORE['bas_reg'])
 
 
 # GENERATOR append 1
