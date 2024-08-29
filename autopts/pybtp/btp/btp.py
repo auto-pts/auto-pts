@@ -601,6 +601,10 @@ def core_reg_svc_sdp():
     core_reg_svc_univ("sdp_reg", "SDP")
 
 
+def core_reg_svc_bas():
+    core_reg_svc_univ("bas_reg", "BAS")
+
+
 # GENERATOR append 1
 
 def core_reg_svc_rsp_succ(service_name):
