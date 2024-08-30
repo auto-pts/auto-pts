@@ -618,7 +618,7 @@ class BotClient(Client):
             self.file_paths['REPORT_DIFF_TXT_FILE'],
             self.file_paths['REPORT_TXT_FILE'],
             (self.file_paths['REPORT_TXT_FILE'], f'report_{report_data["start_time_stamp"]}.txt'),
-            (self.file_paths['REPORT_TXT_FILE'], f'report_{report_data["start_time_stamp"]}.xlsx'),
+            (self.file_paths['REPORT_XLSX_FILE'], f'report_{report_data["start_time_stamp"]}.xlsx'),
             self.file_paths['REPORT_README_MD_FILE'],
             report_data['database_file'],
             report_data['pts_xml_folder'],
