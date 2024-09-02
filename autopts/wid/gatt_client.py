@@ -470,7 +470,7 @@ def hdl_wid_35(params: WIDParams):
     result = True
     # Partial matches are allowed for WID 35 as the verify values may be
     # truncated to ATT_MTU
-    pattern = re.compile("'([0-9a-fA-F]+)'")
+    pattern = re.compile(r"'([0-9a-fA-F]+)'")
     params = pattern.findall(params.description)
 
     to_verify = []
@@ -650,7 +650,7 @@ def hdl_wid_50(params: WIDParams):
     Please confirm IUT received characteristic value='Attribute Handle = '0233'O
     Value = 7F11220405060708090A0B0C0405060708090A0B0C 'O in random selected
     adopted database. Click Yes if IUT received it, otherwise click No.
-    
+
     Description: Verify that the Implementation Under Test (IUT) can send
     Read characteristic to PTS random select adopted database."
     """
@@ -990,7 +990,7 @@ def hdl_wid_70(params: WIDParams):
     Description: Verify that the Implementation Under Test (IUT) can send
     write request.
     """
-    pattern = re.compile("'([0-9a-fA-F]+)'")
+    pattern = re.compile(r"'([0-9a-fA-F]+)'")
     params = pattern.findall(params.description)
     if not params:
         logging.error("parsing error")
@@ -1070,7 +1070,7 @@ def hdl_wid_76(params: WIDParams):
     Description: Verify that the Implementation Under Test (IUT) can send
     prepare write request.
     """
-    pattern = re.compile("'([0-9a-fA-F]+)'")
+    pattern = re.compile(r"'([0-9a-fA-F]+)'")
     params = pattern.findall(params.description)
     if not params:
         logging.error("parsing error")
@@ -1196,7 +1196,7 @@ def hdl_wid_91(params: WIDParams):
     notification sent from PTS.
     """
     stack = get_stack()
-    pattern = re.compile("'([0-9a-fA-F]+)'")
+    pattern = re.compile(r"'([0-9a-fA-F]+)'")
     params = pattern.findall(params.description)
     if not params:
         logging.error("parsing error")
@@ -1232,7 +1232,7 @@ def hdl_wid_99(params: WIDParams):
     Description: Verify that the Implementation Under Test (IUT) can receive
     indication sent from PTS.
     """
-    pattern = re.compile("'([0-9a-fA-F]+)'")
+    pattern = re.compile(r"'([0-9a-fA-F]+)'")
     params = pattern.findall(params.description)
     if not params:
         logging.error("parsing error")
