@@ -1424,7 +1424,7 @@ def hdl_wid_1003(params: WIDParams):
     """
     Please confirm the following number matches IUT: [passkey]
     """
-    pattern = '[\d]{6}'
+    pattern = r'[\d]{6}'
     passkey = re.search(pattern, params.description)[0]
     stack = get_stack()
     bd_addr = btp.pts_addr_get()
@@ -1455,7 +1455,7 @@ def hdl_wid_2001(params: WIDParams):
     """
     The secureId is [passkey]
     """
-    pattern = '[\d]{6}'
+    pattern = r'[\d]{6}'
     passkey = re.search(pattern, params.description)[0]
     stack = get_stack()
     bd_addr = btp.pts_addr_get()
@@ -1472,7 +1472,7 @@ def hdl_wid_2004(params: WIDParams):
     """
     Please confirm that 6 digit number is matched with [passkey].
     """
-    pattern = '[\d]{6}'
+    pattern = r'[\d]{6}'
     passkey = re.search(pattern, params.description)[0]
     stack = get_stack()
     bd_addr = btp.pts_addr_get()

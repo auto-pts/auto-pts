@@ -116,7 +116,7 @@ def hdl_wid_142(params: WIDParams):
     """
     Please confirm the following number matches IUT: [passkey]
     """
-    pattern = '[\d]{6}'
+    pattern = r'[\d]{6}'
     passkey = re.search(pattern, params.description)[0]
     stack = get_stack()
     bd_addr = btp.pts_addr_get()

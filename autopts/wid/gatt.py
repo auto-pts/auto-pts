@@ -42,7 +42,7 @@ def gattc_wid_hdl_multiple_indications(wid, description, test_case_name):
     if wid == 99:
         log("%s, %r, %r, %s", gattc_wid_hdl_multiple_indications.__name__, wid, description,
             test_case_name)
-        pattern = re.compile("'([0-9a-fA-F]+)'")
+        pattern = re.compile(r"'([0-9a-fA-F]+)'")
         params = pattern.findall(description)
         if not params:
             logging.error("parsing error")
@@ -861,7 +861,7 @@ def hdl_wid_69(params: WIDParams):
 
 
 def hdl_wid_70(params: WIDParams):
-    pattern = re.compile("'([0-9a-fA-F]+)'")
+    pattern = re.compile(r"'([0-9a-fA-F]+)'")
     params = pattern.findall(params.description)
     if not params:
         logging.error("parsing error")
@@ -939,7 +939,7 @@ def hdl_wid_75(params: WIDParams):
 
 
 def hdl_wid_76(params: WIDParams):
-    pattern = re.compile("'([0-9a-fA-F]+)'")
+    pattern = re.compile(r"'([0-9a-fA-F]+)'")
     command_params = pattern.findall(params.description)
     if not command_params:
         logging.error("parsing error")
@@ -1050,7 +1050,7 @@ def hdl_wid_90(_: WIDParams):
 
 
 def hdl_wid_91(params: WIDParams):
-    pattern = re.compile("'([0-9a-fA-F]+)'")
+    pattern = re.compile(r"'([0-9a-fA-F]+)'")
     params = pattern.findall(params.description)
     if not params:
         logging.error("parsing error")
@@ -1161,7 +1161,7 @@ def hdl_wid_98(params: WIDParams):
 
 
 def hdl_wid_99(params: WIDParams):
-    pattern = re.compile("'([0-9a-fA-F]+)'")
+    pattern = re.compile(r"'([0-9a-fA-F]+)'")
     params = pattern.findall(params.description)
     if not params:
         logging.error("parsing error")
