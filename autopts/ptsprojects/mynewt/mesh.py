@@ -618,8 +618,10 @@ def test_cases(ptses):
 
         tc_list.append(instance)
 
-    if len(ptses) == 2:
-        tc_list += test_cases_slaves
-        pts2 = ptses[1]
+    if len(ptses) < 2:
+        return tc_list
+
+    tc_list += test_cases_slaves
+    pts2 = ptses[1]
 
     return tc_list
