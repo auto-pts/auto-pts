@@ -28,8 +28,9 @@ import yaml
 
 from autopts.bot import common
 from autopts.bot.common_features import github
-from autopts.client import PtsServer
+from autopts.client import PtsDirectClient
 from autopts.config import AUTOPTS_ROOT_DIR
+from autopts.types import AutoPTSMode
 
 log = logging.debug
 
@@ -473,9 +474,9 @@ def pull_server_logs(args, tmp_dir, xml_folder):
             except BaseException as e:
                 logging.exception(e)
 
-    if args.server_args:
+    if args.autopts_mode == AutoPTSMode.AUTO_CLIENT_ONLY:
         # Logs available locally
-        _pull_logs(PtsServer)
+        _pull_logs(PtsDirectClient)
     else:
         # Use xmlrpc proxy to pull logs
         server_addr = args.ip_addr
