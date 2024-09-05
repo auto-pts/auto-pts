@@ -503,6 +503,14 @@ def init_pts(args, ptses):
         else:
             if AUTO_PTS_LOCAL:
                 proxy = FakeProxy()
+            elif getattr(args, 'ptsgui_mode', False):
+                from autopts.ptsguiproxy import PTSGUIProxy
+                proxy = PTSGUIProxy(args.ptsgui_mode, ClientCallback())
+                # Run in main thread in order to enable GUI
+                init_pts_thread_entry(proxy, args, exceptions, finish_count)
+                proxy_list.append(proxy)
+                continue
+
             elif getattr(args, 'server_args', False):
                 proxy = PtsServer.factory_get_instance(args.server_args[i], args.max_server_restart_time)
             else:
@@ -978,7 +986,13 @@ class LTThread(InterruptableThread):
                 raise Exception(f"Failed to start the test case {test_case.name}")
 
             def wait_if_no_step():
-                return test_case.steps_queue.empty()
+                if test_case.steps_queue.empty():
+                    if hasattr(pts, 'ask_for_wid'):
+                        pts.ask_for_wid()
+
+                    return True
+
+                return False
 
             try:
                 while not finish_count.is_set():
@@ -1056,6 +1070,9 @@ class LTThread(InterruptableThread):
             test_case.post_run(error_code)  # stop qemu and other commands
             del RUNNING_TEST_CASE[test_case.name]
 
+            if hasattr(pts, 'stop_mainloop'):
+                pts.stop_mainloop()
+
             log("Done TestCase %s %s", self._run_test_case.__name__, test_case)
 
     def set_test_case_result(self, status):
@@ -1115,6 +1132,7 @@ def run_test_case(ptses, test_case_instances, test_case_name, stats,
     finish_count = CounterWithFlag(init_count=0)
     thread_count = 0
     thread_list = []
+    pts = None
 
     for thread_count, (test_case_lt, pts) in enumerate(zip(test_case_lts, ptses), 1):
         thread = LTThread(
@@ -1125,6 +1143,10 @@ def run_test_case(ptses, test_case_instances, test_case_name, stats,
 
     superguard_timeout = False
     try:
+        if hasattr(pts, 'mainloop'):
+            # In GUI mode
+            pts.mainloop()
+
         # Wait until each PTS instance has finished executing its test case
         finish_count.wait_for(thread_count, timeout=timeout)
     except TimeoutError:

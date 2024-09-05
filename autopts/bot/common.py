@@ -121,6 +121,7 @@ class BotConfigArgs(Namespace):
         self.pylink_reset = args.get('pylink_reset', False)
         self.max_server_restart_time = args.get('max_server_restart_time', MAX_SERVER_RESTART_TIME)
         self.use_backup = args.get('use_backup', False)
+        self.ptsgui_mode = args.get('ptsgui_mode', False)
 
         if self.ykush or self.active_hub_server:
             self.usb_replug_available = True
@@ -529,10 +530,14 @@ class BotClient(Client):
             os.path.join(AUTOPTS_ROOT_DIR, f'errata/{self.autopts_project_name}.yaml')
         ])
 
-        report_data['pts_logs_folder'], report_data['pts_xml_folder'] = \
-            report.pull_server_logs(self.args,
-                                    self.file_paths['TMP_DIR'],
-                                    self.file_paths['PTS_XMLS_DIR'])
+        if 'ptsgui_mode' in self.bot_config['auto_pts']:
+            report_data['pts_logs_folder'] = ''
+            report_data['pts_xml_folder'] = ''
+        else:
+            report_data['pts_logs_folder'], report_data['pts_xml_folder'] = \
+                report.pull_server_logs(self.args,
+                                        self.file_paths['TMP_DIR'],
+                                        self.file_paths['PTS_XMLS_DIR'])
 
         report.make_report_xlsx(self.file_paths['REPORT_XLSX_FILE'],
                                 report_data['tc_results'],
