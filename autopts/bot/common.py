@@ -35,6 +35,7 @@ from autopts.client import Client, CliParser, TestCaseRunStats, init_logging, ru
 from autopts.config import AUTOPTS_ROOT_DIR, MAX_SERVER_RESTART_TIME, generate_file_paths, SERIAL_BAUDRATE
 from autopts.ptsprojects.boards import get_debugger_snr, get_free_device, get_tty, release_device
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
+from autopts.types import AutoPTSMode
 
 log = logging.debug
 
@@ -84,6 +85,7 @@ class BotConfigArgs(Namespace):
 
     def __init__(self, args, **kwargs):
         super().__init__(**kwargs)
+        self.autopts_mode = args.get('autopts_mode', AutoPTSMode.AUTO_TCP_IP)
         self.iut_mode = args.get('iut_mode', None)
         self.workspace = args['workspace']
         self.project_path = args['project_path']
@@ -121,6 +123,7 @@ class BotConfigArgs(Namespace):
         self.excluded = args.get('excluded', [])
 
         self.bd_addr = args.get('bd_addr', '')
+        self.pts_addr = args.get('pts_addr', '')
         self.enable_max_logs = args.get('enable_max_logs', False)
         self.retry = args.get('retry', 0)
         self.no_retry_on_regression = args.get('no_retry_on_regression')
@@ -155,7 +158,8 @@ class BotConfigArgs(Namespace):
                     # For backward compatibility
                     iut_target['board_name'] = iut_target['board']
 
-        if self.server_args is not None:
+        if self.autopts_mode == AutoPTSMode.AUTO_CLIENT_ONLY:
+            assert(self.server_args is not None)
             from autoptsserver import SvrArgumentParser
             _server_args = SvrArgumentParser(
                 "PTS automation server").parse_args(self.server_args.split())
@@ -614,7 +618,10 @@ class BotClient(Client):
             os.path.join(AUTOPTS_ROOT_DIR, f'errata/{self.autopts_project_name}.yaml')
         ])
 
-        if self.args.copy_workspace:
+        if self.args.autopts_mode == AutoPTSMode.GUI_CLIENT_ONLY:
+            report_data['pts_logs_folder'] = ''
+            report_data['pts_xml_folder'] = ''
+        elif self.args.copy_workspace:
             report_data['pts_logs_folder'], report_data['pts_xml_folder'] = \
                 report.pull_server_logs(self.args,
                                         self.file_paths['TMP_DIR'],
