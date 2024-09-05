@@ -29,6 +29,7 @@ from pathlib import Path
 from autopts.config import CLIENT_PORT, FILE_PATHS, MAX_SERVER_RESTART_TIME, SERIAL_BAUDRATE, SERVER_PORT
 from autopts.ptsprojects.boards import com_to_tty, get_debugger_snr, get_free_device, get_tty, tty_exists
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
+from autopts.types import AutoPTSMode
 from autopts.utils import active_hub_server_replug_usb, get_tc_from_wid, load_wid_report, raise_on_global_end, ykush_replug_usb
 
 log = logging.debug
@@ -68,6 +69,12 @@ class CliParser(SmartDefaultsMixin, argparse.ArgumentParser):
 
         if iut_modes is None:
             iut_modes = IUT_MODES
+
+        self.add_argument("--autopts-mode", "--autopts_mode", type=str, default=AutoPTSMode.AUTO_TCP_IP,
+                          choices=[AutoPTSMode.AUTO_TCP_IP, AutoPTSMode.GUI_CLIENT_ONLY, AutoPTSMode.FAKE_PROXY,
+                                   AutoPTSMode.AUTO_CLIENT_ONLY],
+                          help="Specify AutoPTS client mode, which determines the method "
+                               "of communication with the PTS.")
 
         self.add_argument("--iut-mode", "--iut_mode", type=str, nargs='+',
                           action="extend", choices=iut_modes, default=None,
@@ -204,6 +211,7 @@ class CliParser(SmartDefaultsMixin, argparse.ArgumentParser):
                           help=argparse.SUPPRESS)
 
         self.add_argument("--pts_addr_map", default={}, help=argparse.SUPPRESS)
+        self.add_argument("--pts_addr", type=str, default='', help=argparse.SUPPRESS)
         self.add_argument("--restricted_pts_addrs", default=[], help=argparse.SUPPRESS)
 
         self.add_argument("--iut_targets", default=None, help=argparse.SUPPRESS)
