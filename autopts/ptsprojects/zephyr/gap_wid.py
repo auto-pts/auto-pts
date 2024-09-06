@@ -330,7 +330,13 @@ def hdl_wid_220(_: WIDParams):
 def hdl_wid_255(_: WIDParams):
     return True
 
-def hdl_wid_266(_: WIDParams):
+def hdl_wid_266(params: WIDParams):
+    if (params.test_case_name.startswith("GAP/SEC/SEM/BI-28-C")
+        or params.test_case_name.startswith("GAP/SEC/SEM/BI-29-C")
+        or params.test_case_name.startswith("GAP/SEC/SEM/BI-30-C")):
+        return btp.gap_wait_for_encryption_fail()
+    if params.test_case_name.startswith("GAP/SEC/SEM/BI-33-C"):
+        return btp.gap_wait_for_sec_lvl_change(defs.GAP_PAIR_LEVEL_4)
     btp.gap_wait_for_disconnection()
     return not get_stack().gap.is_connected()
 
@@ -392,4 +398,7 @@ def hdl_wid_208(params: WIDParams):
         btp.gap_pair_with_sec_level(sec_level=defs.GAP_PAIR_LEVEL_4)
         return True
     btp.gap_pair()
+    return True
+
+def hdl_wid_274(_: WIDParams):
     return True
