@@ -304,6 +304,24 @@ def gap_pairing_failed_ev_(gap, data, data_len):
     stack.gap.pairing_failed_rcvd.data = (_addr_t, _addr, _reason)
 
 
+def gap_encryption_failed_ev_(gap, data, data_len):
+    stack = get_stack()
+    logging.debug("%s", gap_encryption_failed_ev_.__name__)
+
+    logging.debug("received %r", data)
+
+    fmt = '<B6sB'
+    if len(data) != struct.calcsize(fmt):
+        raise BTPError("Invalid data length")
+
+    _addr_t, _addr, _error = struct.unpack_from(fmt, data)
+    _addr = binascii.hexlify(_addr[::-1]).decode()
+
+    logging.debug("received %r", (_addr_t, _addr, _error))
+
+    stack.gap.encryption_failed_rcvd.data = (_addr_t, _addr, _error)
+
+
 def gap_bond_lost_ev_(gap, data, data_len):
     logging.debug("%s", gap_bond_lost_ev_.__name__)
 
@@ -394,7 +412,8 @@ GAP_EV = {
     defs.GAP_EV_PERIODIC_SYNC_ESTABLISHED: gap_padv_sync_established_ev_,
     defs.GAP_EV_PERIODIC_SYNC_LOST: gap_padv_sync_lost_ev_,
     defs.GAP_EV_PERIODIC_REPORT: gap_padv_report_ev_,
-    defs.GAP_EV_PERIODIC_TRANSFER_RECEIVED: gap_padv_transfer_received_ev_
+    defs.GAP_EV_PERIODIC_TRANSFER_RECEIVED: gap_padv_transfer_received_ev_,
+    defs.GAP_EV_ENCRYPTION_FAILED: gap_encryption_failed_ev_
 }
 
 
@@ -433,6 +452,12 @@ def gap_wait_for_pairing_fail(timeout=30):
     stack = get_stack()
 
     return stack.gap.gap_wait_for_pairing_fail(timeout)
+
+
+def gap_wait_for_encryption_fail(timeout=30):
+    stack = get_stack()
+
+    return stack.gap.gap_wait_for_encryption_fail(timeout)
 
 
 def gap_wait_for_lost_bond(timeout=30):

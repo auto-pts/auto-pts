@@ -856,3 +856,13 @@ Events:
 
 		This event can be sent after IUT received Periodic Advertising Sync
 		Transfer was received.
+
+	Opcode 0x91 - Encryption Failed event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+							Address (6 octets)
+							Error (1 octet)
+
+		This event can be sent when IUT encryption procedure fails with
+		specified error.
