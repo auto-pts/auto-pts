@@ -53,6 +53,7 @@ services = {
     "TMAP": 1 << defs.BTP_SERVICE_ID_TMAP,
     "OTS": 1 << defs.BTP_SERVICE_ID_OTS,
     "PBP": 1 << defs.BTP_SERVICE_ID_PBP,
+    "SDP": 1 << defs.BTP_SERVICE_ID_SDP,
     # GENERATOR append 1
 }
 
@@ -89,6 +90,7 @@ class Stack:
         self.tmap = None
         self.ots = None
         self.pbp = None
+        self.sdp = None
         # GENERATOR append 2
 
     def is_svc_supported(self, svc):
@@ -191,6 +193,8 @@ class Stack:
     def pbp_init(self):
         self.pbp = PBP()
 
+    def sdp_init(self):
+        self.sdp = SDP()
     # GENERATOR append 3
 
     def cleanup(self):
@@ -223,7 +227,7 @@ class Stack:
 
         if self.micp:
             self.micp_init()
-            
+
         if self.ccp:
             self.ccp_init()
 
@@ -274,6 +278,9 @@ class Stack:
 
         if self.pbp:
             self.pbp_init()
+
+        if self.sdp:
+            self.sdp_init()
 
         # GENERATOR append 4
 
