@@ -225,9 +225,9 @@ def hdl_wid_20100(_: WIDParams):
     return True
 
 
-def hdl_wid_20103(_: WIDParams):
+def hdl_wid_20103(params: WIDParams):
     """
-        Please take action to discover the Alert Level characteristic from the Immediate Alert.
+        Please take action to discover the X Control Point characteristic from the Y.
         Discover the primary service if needed.
         Description: Verify that the Implementation Under Test (IUT) can send Discover All Characteristics command.
     """
@@ -235,8 +235,13 @@ def hdl_wid_20103(_: WIDParams):
     addr_type = pts_addr_type_get()
     stack = get_stack()
 
-    btp.hap_iac_discover(addr_type, addr)
-    stack.hap.wait_iac_discovery_complete_ev(addr_type, addr, 30)
+    # Pick Service to discover by description text
+    if 'Alert Level' in params.description:
+        btp.hap_iac_discover(addr_type, addr)
+        stack.hap.wait_iac_discovery_complete_ev(addr_type, addr, 30)
+    else:
+        btp.hap_hauc_discover(addr_type, addr)
+        stack.hap.wait_hauc_discovery_complete_ev(addr_type, addr, 30)
 
     return True
 
