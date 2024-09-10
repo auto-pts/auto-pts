@@ -1860,12 +1860,13 @@ def hdl_wid_364(_: WIDParams):
 
     for config in stack.bap.ase_configs:
         if config.audio_dir == AudioDir.SOURCE:
-            ev = stack.bap.wait_stream_received_ev(config.addr_type,
-                                                   config.addr,
-                                                   config.ase_id,
-                                                   10)
-            if ev is None:
-                return False
+            if config.addr_type == pts_addr_type_get() and config.addr == pts_addr_get():
+                ev = stack.bap.wait_stream_received_ev(config.addr_type,
+                                                       config.addr,
+                                                       config.ase_id,
+                                                       10)
+                if ev is None:
+                    return False
 
     return True
 
@@ -1878,12 +1879,13 @@ def hdl_wid_366(_: WIDParams):
 
     for config in stack.bap.ase_configs:
         if config.audio_dir == AudioDir.SINK:
-            ev = stack.bap.wait_stream_received_ev(config.addr_type,
-                                                   config.addr,
-                                                   config.ase_id,
-                                                   10)
-            if ev is None:
-                return False
+            if config.addr_type == pts_addr_type_get() and config.addr == pts_addr_get():
+                ev = stack.bap.wait_stream_received_ev(config.addr_type,
+                                                       config.addr,
+                                                       config.ase_id,
+                                                       10)
+                if ev is None:
+                    return False
 
     return True
 
