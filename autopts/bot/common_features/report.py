@@ -342,6 +342,24 @@ def split_xml_filename(file_path):
     return test_name, timestamp
 
 
+def copy_server_log_file(tmp_dir, pts, ports):
+    try:
+        autopts_dir = pts.get_path()
+
+        tag = '_'.join(str(x) for x in ports)
+        file_name = f'autoptsserver_{tag}.log'
+        file_path = f'{autopts_dir}\\{file_name}'
+        file_bin = pts.copy_file(file_path)
+
+        file_path = os.path.join(tmp_dir, file_name)
+        Path(tmp_dir).mkdir(parents=True, exist_ok=True)
+
+        with open(file_path, 'wb') as handle:
+            handle.write(file_bin.data)
+    except BaseException as e:
+        logging.exception(e)
+
+
 def pull_server_logs(args, tmp_dir, xml_folder):
     """Copy Bluetooth Protocol Viewer logs from auto-pts servers.
     :param args: args
@@ -429,14 +447,18 @@ def pull_server_logs(args, tmp_dir, xml_folder):
         # Use xmlrpc proxy to pull logs
         server_addr = args.ip_addr
         server_port = args.srv_port
-        for i in range(len(server_addr)):
-            if i != 0 and server_addr[i] in server_addr[0:i]:
-                # Skip pulling from other sever instances if those
-                # are at the same address as the first one,
-                # we have pulled their logs already.
-                continue
-            with ServerProxy(f"http://{server_addr[i]}:{server_port[i]}/",
+
+        servers = {}
+        for address, port in zip(server_addr, server_port):
+            if address in servers:
+                servers[address].append(port)
+            else:
+                servers[address] = [port]
+
+        for addr in servers:
+            with ServerProxy(f"http://{addr}:{servers[addr][0]}/",
                              allow_none=True) as proxy:
                 _pull_logs(proxy)
+                copy_server_log_file(tmp_dir, proxy, servers[addr])
 
     return logs_folder, xml_folder
