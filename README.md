@@ -389,10 +389,12 @@ Then it sends recovery request to autoptsserver, restarting and reinitializing P
 
 Options --superguard and --ykush works on autoptsclient same as on autoptsserver. So when run with --superguard 15, after 15 minutes of unfinished test case, superguard will force recovery. With option --ykush \<port\> the IUT board will be re-plugged during recovery.
 
-# Slack Channel 
+# Community
 
-First join [Zephyr Slack Workspace](https://join.slack.com/t/zephyrproject/shared_invite/zt-953wf991-q7qw_houhNJrwT~Ac1TJEg)
-Then join our Channel `#auto-pts`
+Use this [link](https://discord.com/invite/Ck7jw53nU2) to join Discord server. After that enter #qualification channel (under Bluetooth section). Although Discord server is for Zephyr Project topics are not limited to Zephyr.
 
-Or join using direct link [auto-pts](https://zephyrproject.slack.com/archives/CG1N5KGUT)
+You may also seek IUT specific help on:
 
+* [Apache Mynewt (NimBLE)](https://mynewt.apache.org)
+* [Zephyr Project](https://zephyrproject.org)
+* [BlueZ](https://www.bluez.org)
