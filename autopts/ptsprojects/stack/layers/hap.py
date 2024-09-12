@@ -23,6 +23,8 @@ class HAP:
             self.hearing_aid_features_handle = None
             self.hearing_aid_control_point_handle = None
             self.active_preset_index_handle = None
+            self.discover_started = False
+            self.discovery_completed = False
 
     def __init__(self):
         self.peers = {}
@@ -73,3 +75,4 @@ class HAP:
         peer.hearing_aid_features_handle = hearing_aid_features_handle
         peer.hearing_aid_control_point_handle = hearing_aid_control_point_handle
         peer.active_preset_index_handle = active_preset_index_handle
+        peer.discovery_completed = (status == defs.BTP_STATUS_SUCCESS)
