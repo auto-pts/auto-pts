@@ -57,6 +57,21 @@ HAP = {
     'hauc_discover': (defs.BTP_SERVICE_ID_HAP,
                       defs.HAP_HAUC_DISCOVER,
                       CONTROLLER_INDEX),
+    'hap_read_presets': (defs.BTP_SERVICE_ID_HAP,
+                      defs.HAP_READ_PRESETS,
+                      CONTROLLER_INDEX),
+    'hap_write_preset_name': (defs.BTP_SERVICE_ID_HAP,
+                      defs.HAP_WRITE_PRESET_NAME,
+                      CONTROLLER_INDEX),
+    'hap_set_active_preset': (defs.BTP_SERVICE_ID_HAP,
+                      defs.HAP_SET_ACTIVE_PRESET,
+                      CONTROLLER_INDEX),
+    'hap_set_next_preset': (defs.BTP_SERVICE_ID_HAP,
+                      defs.HAP_SET_NEXT_PRESET,
+                      CONTROLLER_INDEX),
+    'hap_set_previous_preset': (defs.BTP_SERVICE_ID_HAP,
+                      defs.HAP_SET_PREVIOUS_PRESET,
+                      CONTROLLER_INDEX),
 }
 
 def hap_command_rsp_succ(timeout=20.0, exp_op=None):
@@ -146,6 +161,73 @@ def hap_hauc_discover(bd_addr_type=None, bd_addr=None):
 
     hap_command_rsp_succ()
 
+
+def hap_read_presets(start_index, num_presets, bd_addr_type=None, bd_addr=None):
+    logging.debug(f"{hap_read_presets.__name__}, start_index {start_index}, num_presets {num_presets}")
+
+    data = address_to_ba(bd_addr_type, bd_addr)
+    data += struct.pack('B', start_index)
+    data += struct.pack('B', num_presets)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*HAP['hap_read_presets'], data=data)
+
+    hap_command_rsp_succ()
+
+
+def hap_write_preset_name(index, name, bd_addr_type=None, bd_addr=None):
+    logging.debug(f"{hap_write_preset_name.__name__}, index {index}, name {name}")
+    encoded_name = name.encode()
+    size = len(encoded_name)
+
+    data = address_to_ba(bd_addr_type, bd_addr)
+    data += struct.pack('B', index)
+    data += struct.pack('B', size)
+    data += encoded_name
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*HAP['hap_write_preset_name'], data=data)
+
+    hap_command_rsp_succ()
+
+
+def hap_set_active_preset(index, synchronize_locally=0, bd_addr_type=None, bd_addr=None):
+    logging.debug(f"{hap_set_active_preset.__name__}, index {index}, synchronize_locally {synchronize_locally}")
+
+    data = address_to_ba(bd_addr_type, bd_addr)
+    data += struct.pack('B', index)
+    data += struct.pack('B', synchronize_locally)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*HAP['hap_set_active_preset'], data=data)
+
+    hap_command_rsp_succ()
+
+
+def hap_set_next_preset(synchronize_locally=0, bd_addr_type=None, bd_addr=None):
+    logging.debug(f"{hap_set_next_preset.__name__}, synchronize_locally {synchronize_locally}")
+
+    data = address_to_ba(bd_addr_type, bd_addr)
+    data += struct.pack('B', synchronize_locally)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*HAP['hap_set_next_preset'], data=data)
+
+    hap_command_rsp_succ()
+
+
+def hap_set_previous_preset(synchronize_locally=0, bd_addr_type=None, bd_addr=None):
+    logging.debug(f"{hap_set_previous_preset.__name__}, synchronize_locally {synchronize_locally}")
+
+    data = address_to_ba(bd_addr_type, bd_addr)
+    data += struct.pack('B', synchronize_locally)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*HAP['hap_set_previous_preset'], data=data)
+
+    hap_command_rsp_succ()
+
+
 def hap_ev_iac_discovery_complete_(hap, data, data_len):
     logging.debug("%s %r", hap_ev_iac_discovery_complete_.__name__, data)
 
@@ -186,7 +268,35 @@ def hap_ev_hauc_discovery_complete_(hap, data, data_len):
                                                              hearing_aid_control_point_handle,
                                                              active_preset_index_handle))
 
+
+def hap_ev_preset_changed_(hap, data, data_len):
+    logging.debug("%s %r", hap_ev_preset_changed_.__name__, data)
+
+    fmt = '<B6sBBBBBB'
+    fixed_size = struct.calcsize(fmt)
+    if len(data) < fixed_size:
+        raise BTPError('Invalid data length')
+
+    addr_type, addr, change_id, is_last, preset_index, prev_index, \
+            properties, name_len = struct.unpack_from(fmt, data)
+    name = data[fixed_size:].decode('utf-8')
+    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+
+    logging.debug(f'Preset Changed: addr {addr} addr_type {addr_type} '
+                  f'change_id {change_id} '
+                  f'is_last {is_last} '
+                  f'preset_index {preset_index} '
+                  f'prev_index {prev_index}'
+                  f'prev_index {properties}'
+                  f'name {name}')
+
+    hap.event_received(defs.HAP_EV_PRESET_READ, (addr_type, addr, change_id,
+                                                is_last, preset_index,
+                                                prev_index, properties, name))
+
+
 HAP_EV = {
     defs.HAP_EV_IAC_DISCOVERY_COMPLETE: hap_ev_iac_discovery_complete_,
     defs.HAP_EV_HAUC_DISCOVERY_COMPLETE: hap_ev_hauc_discovery_complete_,
+    defs.HAP_EV_PRESET_CHANGED: hap_ev_preset_changed_,
 }
