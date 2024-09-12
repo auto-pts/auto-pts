@@ -111,6 +111,77 @@ Commands and responses:
 		(HAUC) discovery result event.
 		In case of an error, the error response will be returned.
 
+	Opcode 0x09: HAP Read Presets
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Start_Index (1 octet)
+					Num_Presets (1 octet)
+		Response parameters:	<None>
+
+		TODO: how do we get the results?
+
+		This command is used to read the selected Presets.
+		If called with a Preset Index of 0, it will de-select the Active Preset.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0A: HAP Write Preset Name
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Preset Index (1 octet)
+					Name Length (1 octet)
+					Name (<Name Length> octets)
+		Response parameters:	<None>
+
+                Name shall be a UTF-8 encoded string.
+		Name Length holds the number of bytes in the UTF-8 encoded name.
+
+		This command is used to change the Name of a Preset.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0B: HAP Set Active Preset
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Preset_Index (1 octet)
+					Synchronized_Locally (1)
+		Response parameters:	<None>
+
+		This command is used to set the Active Preset.
+		If called with a Preset Index of 0, it will de-select the Active Preset.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0C: HAP Set Next Preset
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Synchronized_Locally (1)
+		Response parameters:	<None>
+
+		This command is used to set the Active Preset.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0C: HAP Set Previous Preset
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Synchronized_Locally (1)
+		Response parameters:	<None>
+
+		This command is used to set the Active Preset.
+
+		In case of an error, the error response will be returned.
+
 Events:
 	Opcode 0x80 - Immediate Alert Client (IAC) discovery result
 
@@ -133,3 +204,37 @@ Events:
 		Valid Type values:	0x00 = Binaural Hearing Aid
 					0x01 = Monaural Hearing Aid
 					0x02 = Banded Hearing Aid
+
+	Opcode 0x82 - Hearing Aid Preset Read event
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Preset_Index (1 octet)
+					Properties (1 octet)
+					Name_Length (1 octet)
+					Name (<Name Length> octets)
+
+		Properties:             bit 0: The name of the preset is writable
+					bit 1: The preset is available
+
+                Name shall be a UTF-8 encoded string.
+		Name Length holds the number of bytes in the UTF-8 encoded name.
+
+	Opcode 0x83 - Hearing Aid Preset Changed event
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Change_Id (1 octet)
+					Is_Last (1 octet)
+					Preset_Index (1 octet)
+					Prev_Index (1 octet)        - for Generic Update
+					Properties (1 octet)        - for Generic Update
+					Name_Length (1 octet)       - for Generic Update
+					Name (<Name Length> octets) - for Generic Update
+
+		Change_Id values:       0x00 = Generic Update
+					0x01 = Preset Record Deleted
+					0x02 = Preset Record Available
+					0x03 = Preset Record Unavailable
+
+
