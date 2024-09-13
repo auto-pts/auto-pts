@@ -31,6 +31,7 @@ class HAP:
         self.event_queues = {
             defs.HAP_EV_IAC_DISCOVERY_COMPLETE: [],
             defs.HAP_EV_HAUC_DISCOVERY_COMPLETE: [],
+            defs.HAP_EV_PRESET_CHANGED: [],
         }
         self.event_handlers = {
             defs.HAP_EV_HAUC_DISCOVERY_COMPLETE: self._ev_hauc_discovery_complete,
@@ -76,3 +77,10 @@ class HAP:
         peer.hearing_aid_control_point_handle = hearing_aid_control_point_handle
         peer.active_preset_index_handle = active_preset_index_handle
         peer.discovery_completed = (status == defs.BTP_STATUS_SUCCESS)
+
+    def wait_preset_changed_ev(self, addr_type, addr, timeout, change_id, remove=True):
+        return wait_for_queue_event(
+            self.event_queues[defs.HAP_EV_PRESET_CHANGED],
+            lambda _addr_type, _addr, _change_id, *_:
+                (addr_type, addr, change_id) == (_addr_type, _addr, _change_id),
+            timeout, remove)
