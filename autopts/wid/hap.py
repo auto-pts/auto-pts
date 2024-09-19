@@ -647,6 +647,21 @@ def hdl_wid_20128(_: WIDParams):
     return True
 
 
+def hdl_wid_20137(params: WIDParams):
+    """
+        Please initiate an L2CAP Credit Based Connection to the PTS.
+    """
+    if params.test_case_name.endswith('LT2'):
+        addr = lt2_addr_get()
+        addr_type = lt2_addr_type_get()
+    else:
+        addr = pts_addr_get()
+        addr_type = pts_addr_type_get()
+
+    btp.gatt.eatt_conn(addr, addr_type, 5)
+    return True
+
+
 def hdl_wid_20144(_: WIDParams):
     """
         Please click Yes if IUT support Write Command(without response), otherwise click No.
