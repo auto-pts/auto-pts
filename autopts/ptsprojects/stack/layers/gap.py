@@ -107,6 +107,9 @@ class Gap:
         self.periodic_sync_established_rxed = False
         self.periodic_transfer_received = False
 
+        # Used for MMI handling
+        self.delay_mmi = False
+
     def add_connection(self, addr, addr_type):
         self.connections[addr] = GapConnection(addr=addr,
                                                addr_type=addr_type)
