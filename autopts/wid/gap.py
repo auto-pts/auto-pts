@@ -509,6 +509,15 @@ def hdl_wid_108(params: WIDParams):
         if params.description.startswith('Please configure the IUT into LE Security and start pairing process.'):
             return True
 
+    stack = get_stack()
+
+    if params.test_case_name in ['GAP/SEC/SEM/BV-28-C', 'GAP/SEC/SEM/BV-42-C']:
+        if not stack.gap.delay_mmi:
+            # Note: this is part of a workaround related to PTS issue 136305 which
+            # is needed to properly handle two conflicting MMIs (208 and 227)
+            hdl_wid_227(params, 7)
+            stack.gap.delay_mmi = True
+
     btp.gap_pair()
     return True
 
@@ -1051,8 +1060,18 @@ def hdl_wid_206(params: WIDParams):
     return True
 
 
-def hdl_wid_208(_: WIDParams):
+def hdl_wid_208(params: WIDParams):
+    stack = get_stack()
+
+    if params.test_case_name in ['GAP/SEC/SEM/BV-26-C']:
+        if not stack.gap.delay_mmi:
+            # Note: this is part of a workaround related to PTS issue 136305 which
+            # is needed to properly handle two conflicting MMIs (208 and 227)
+            hdl_wid_227(params, 7)
+            stack.gap.delay_mmi = True
+
     btp.gap_pair()
+
     return True
 
 
@@ -1077,19 +1096,25 @@ def hdl_wid_226(_: WIDParams):
     return True
 
 
-def hdl_wid_227(params: WIDParams):
+def hdl_wid_227(params: WIDParams, desc_handle=None):
     # There seems to be issue in PTS regarding using WID112 and WID227 in that test
     # Should be removed if PTS fix this.
+    stack = get_stack()
+
+    if params.test_case_name in ['GAP/SEC/SEM/BV-26-C', 'GAP/SEC/SEM/BV-28-C', 'GAP/SEC/SEM/BV-42-C']:
+        # Note: this is part of a workaround related to PTS issue 136305 which
+        # is needed to properly handle two conflicting MMIs (208 and 227)
+        if stack.gap.delay_mmi is True:
+            return True
+
     if params.test_case_name in ['GAP/SEC/AUT/BV-19-C']:
         btp.gap_pair()
         return True
 
-    stack = get_stack()
-
     bd_addr = btp.pts_addr_get()
     bd_addr_type = btp.pts_addr_type_get()
 
-    handle = btp.parse_handle_description(params.description)
+    handle = btp.parse_handle_description(params.description) or desc_handle
     if not handle:
         return False
 
@@ -1109,6 +1134,7 @@ def hdl_wid_227(params: WIDParams):
         if (btp.verify_att_error("insufficient encryption")):
             btp.gap_pair()
 
+    stack.gap.delay_mmi = True
     return True
 
 
