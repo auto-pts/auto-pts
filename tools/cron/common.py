@@ -137,12 +137,12 @@ def report_to_review_msg(report_path):
                 failed.append(line.strip())
 
     if len(failed) > 0:
-        msg += f'<details><summary>Failed tests</summary>{"<br>".join(failed)}</details>\n'
+        msg += f'<details><summary>Failed tests ({len(failed)})</summary>{"<br>".join(failed)}</details>\n'
     else:
         msg += 'No failed test found.\n'
 
     if len(passed) > 0:
-        msg += f'<details><summary>Successful tests</summary>{"<br>".join(passed)}</details>\n'
+        msg += f'<details><summary>Successful tests ({len(passed)})</summary>{"<br>".join(passed)}</details>\n'
 
     return msg
 
