@@ -48,8 +48,10 @@ class CliParser(argparse.ArgumentParser):
                                "'Run (Debug Logs)'")
 
         self.add_argument("-c", "--test-cases", nargs='+', default=[],
+                          action="extend",
                           help="Names of test cases to run. Groups of "
-                               "test cases can be specified by profile names")
+                               "test cases can be specified by profile names."
+                                "Option can be used multiple times.")
 
         self.add_argument("-e", "--excluded", nargs='+', default=[],
                           help="Names of test cases to exclude. Groups of "
