@@ -586,6 +586,30 @@ def bap_ev_bis_synced_received_(bap, data, data_len):
     bap.event_received(defs.BAP_EV_BIS_SYNCED, ev)
 
 
+def bap_ev_bis_stopped_received_(bap, data, data_len):
+    logging.debug('%s %r', bap_ev_bis_stopped_received_.__name__, data)
+
+    fmt = '<B6s3sBB'
+    fmt_len = struct.calcsize(fmt)
+    if len(data) < fmt_len:
+        raise BTPError('Invalid data length')
+
+    addr_type, addr, broadcast_id, bis_id, reason = struct.unpack_from(fmt, data[:fmt_len])
+
+    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    broadcast_id = int.from_bytes(broadcast_id, "little")
+
+    ev = {'addr_type': addr_type,
+          'addr': addr,
+          'broadcast_id': broadcast_id,
+          'bis_id': bis_id,
+          'reason': reason}
+
+    logging.debug(f'BIS stopped: {ev}')
+
+    bap.event_received(defs.BAP_EV_BIS_STOPPED, ev)
+
+
 def bap_ev_bis_stream_received_(bap, data, data_len):
     logging.debug('%s %r', bap_ev_bis_stream_received_.__name__, data)
 
@@ -707,4 +731,5 @@ BAP_EV = {
     defs.BAP_EV_SCAN_DELEGATOR_FOUND: bap_ev_scan_delegator_found_,
     defs.BAP_EV_BROADCAST_RECEIVE_STATE: bap_ev_broadcast_receive_state_,
     defs.BAP_EV_PA_SYNC_REQ: bap_ev_pa_syn_req,
+    defs.BAP_EV_BIS_STOPPED: bap_ev_bis_stopped_received_,
 }

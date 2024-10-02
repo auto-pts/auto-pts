@@ -39,6 +39,7 @@ class BAP:
             defs.BAP_EV_SCAN_DELEGATOR_FOUND: [],
             defs.BAP_EV_BROADCAST_RECEIVE_STATE: [],
             defs.BAP_EV_PA_SYNC_REQ: [],
+            defs.BAP_EV_BIS_STOPPED: [],
         }
         self.event_handlers = {
             defs.BAP_EV_DISCOVERY_COMPLETED: self._ev_discovery_completed,
@@ -106,6 +107,19 @@ class BAP:
             self.event_queues[defs.BAP_EV_BIS_SYNCED],
             lambda ev: (broadcast_id, bis_id) == (ev['broadcast_id'], ev['bis_id']),
             timeout, remove)
+
+    def wait_bis_stopped_ev(self, broadcast_id, bis_id, reason, timeout, remove=True):
+        if reason is not None:
+            return wait_for_queue_event(
+                self.event_queues[defs.BAP_EV_BIS_STOPPED],
+                lambda ev: (broadcast_id, bis_id, reason) ==
+                           (ev['broadcast_id'], ev['bis_id'], ev['reason']),
+                timeout, remove)
+        return wait_for_queue_event(
+            self.event_queues[defs.BAP_EV_BIS_STOPPED],
+            lambda ev: (broadcast_id, bis_id) == (ev['broadcast_id'], ev['bis_id']),
+            timeout, remove)
+
 
     def wait_bis_stream_received_ev(self, broadcast_id, bis_id, timeout, remove=True):
         return wait_for_queue_event(

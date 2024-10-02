@@ -1985,6 +1985,9 @@ def hdl_wid_379(_: WIDParams):
     broadcast_id = stack.bap.broadcast_id
     btp.bap_broadcast_source_stop(broadcast_id)
     btp.bap_broadcast_adv_stop(broadcast_id)
+    for ev in stack.bap.event_queues[defs.BAP_EV_BIS_SYNCED]:
+        if broadcast_id == ev['broadcast_id']:
+            stack.btp.wait_bis_stopped_ev(broadcast_id, ev['bis_id'], None, 2)
     btp.bap_broadcast_source_release(broadcast_id)
 
     return True
@@ -1999,6 +2002,9 @@ def hdl_wid_380(_: WIDParams):
     stack = get_stack()
     btp.bap_broadcast_adv_stop(stack.bap.broadcast_id)
     btp.bap_broadcast_source_stop(stack.bap.broadcast_id)
+    for ev in stack.bap.event_queues[defs.BAP_EV_BIS_SYNCED]:
+        if broadcast_id == ev['broadcast_id']:
+            stack.btp.wait_bis_stopped_ev(broadcast_id, ev['bis_id'], None, 2)
 
     coding_format = 0x06
     vid = 0x0000
