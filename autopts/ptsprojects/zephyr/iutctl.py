@@ -112,7 +112,7 @@ class ZephyrCtl:
         # partial or whole IUT ready event. Flush serial to ignore it.
         self.flush_serial()
 
-        self.socket_srv = BTPSocketSrv()
+        self.socket_srv = BTPSocketSrv(test_case.log_dir)
         self.socket_srv.open(self.btp_address)
         self.btp_socket = BTPWorker(self.socket_srv)
 
