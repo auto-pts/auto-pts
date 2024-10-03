@@ -1,0 +1,132 @@
+BAS Service (ID 30)
+=====================
+
+Commands and responses:
+
+	Opcode 0x00 - Error response
+
+	Opcode 0x01 - Read Supported Commands command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	<none>
+		Response parameters:	<supported commands> (variable)
+
+		Each bit in response is a flag indicating if command with
+		opcode matching bit number is supported. Bit set to 1 means
+		that command is supported. Bit 0 is reserved and shall always
+		be set to 0. If specific bit is not present in response (less
+		than required bytes received) it shall be assumed that command
+		is not supported.
+
+		In case of an error, the error response will be returned.
+
+Events:
+	Opcode 0x02 - BAS Set Battery Level
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status  (1 octet)
+
+        This event instruct the IUT to change the Battery Level field of 
+		the Battery Level Status characteristic.
+
+	Opcode 0x03 - BAS Set Battery Present
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status  (1 octet)
+
+        This event instruct the IUT to change the Power State field of 
+		the Battery Level Status characteristic.
+
+	Opcode 0x04 - BAS Set Wired Power Source
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status  (1 octet)
+
+        This event instruct the IUT to change the Wired Power Source field
+		of the Battery Level Status characteristic.
+
+	Opcode 0x05 - BAS Set Wireless Power Source
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status  (1 octet)
+
+        This event instruct the IUT to change the Wireless Power Source field
+		of the Battery Level Status characteristic.
+
+	Opcode 0x06 - BAS Set Battery Charge State
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status  (1 octet)
+
+        This event instruct the IUT to change the Battery Charge State field
+		of the Battery Level Status characteristic.
+
+	Opcode 0x07 - BAS Set Battery Charge Level
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status  (1 octet)
+
+        This event instruct the IUT to change the Battery Charge Level field
+		of the Battery Level Status characteristic.
+
+	Opcode 0x08 - BAS Set Battery Charge Type
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status  (1 octet)
+
+        This event instruct the IUT to change the Battery Charge Type field
+		of the Battery Level Status characteristic.
+
+	Opcode 0x09 - BAS Set Charging Fault Reason
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status  (1 octet)
+
+        This event instruct the IUT to change the Charging Fault Reason field
+		of the Battery Level Status characteristic.
+
+	Opcode 0x0A - BAS Set Identifier
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status  (1 octet)
+
+        This event instruct the IUT to change the Identifier field of 
+		the Battery Level Status characteristic.
+
+	Opcode 0x0B - BAS Set Service Required
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status  (1 octet)
+
+        This event instruct the IUT to change the Service Required field of 
+		the Battery Level Status characteristic.
+
+	Opcode 0x0C - BAS Set Battery Fault
+
+		Controller Index:	<controller id>
+		Event parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Status  (1 octet)
+
+        This event instruct the IUT to change the Battery Fault field of 
+		the Battery Level Status characteristic.
