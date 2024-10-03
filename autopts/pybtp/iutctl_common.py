@@ -20,11 +20,14 @@ import socket
 import sys
 import threading
 import binascii
+import re
 
 
 from abc import abstractmethod
 
 from autopts.pybtp import defs
+from autopts.pybtp.defs import *
+from datetime import datetime
 from autopts.pybtp.types import BTPError
 from autopts.pybtp.parser import enc_frame, dec_hdr, repr_hdr, dec_data, HDR_LEN
 from autopts.utils import get_global_end, raise_on_global_end
@@ -46,9 +49,12 @@ def set_event_handler(event_handler):
 
 class BTPSocket:
 
-    def __init__(self):
+    def __init__(self, log_dir=None):
         self.conn = None
         self.addr = None
+        self.btp_service_id_dict = None
+        self.log_file = open(os.path.join(log_dir, "autopts-iutctl.log"), "a")
+        self.btp_service_id_dict = self.get_svc_id()
 
     @abstractmethod
     def open(self, address):
@@ -57,6 +63,46 @@ class BTPSocket:
     @abstractmethod
     def accept(self, timeout=10.0):
         pass
+
+    @staticmethod
+    def get_svc_id():
+        """Looks for BTP_SVC_ID variables from the defs.py"""
+        btp_service_ids = {}
+
+        for name, value in vars(defs).items():
+            if name.startswith('BTP_SERVICE_ID_') and isinstance(value, int):
+                trimmed_name = name.replace('BTP_SERVICE_ID_', '')
+                btp_service_ids[trimmed_name] = value
+
+        return btp_service_ids
+
+    def write_to_log(self, req, data, hex_data):
+        """Log decoded header and raw data"""
+        current_time = datetime.now().strftime('%H:%M:%S:%f')
+        f = self.log_file
+        indent = ' ' * 18
+
+        if len(hex_data) > 47:
+            # This ensures clean text indentation for longer raw data, with 16 bytes per line
+            hex_data = '\n' + indent + re.sub(r'(.{48})', r'\1\n' + indent, hex_data)
+
+        if req:
+            f.write(f'{current_time[:-3]}\t> {self.parse_data(data)} {hex_data}\n')
+        else:
+            f.write(f'{current_time[:-3]}\t< {self.parse_data(data)} {hex_data}\n')
+
+    def write_err_status(self, data, hex_data, status):
+        """Log command status value for error response"""
+        current_time = datetime.now().strftime('%H:%M:%S:%f')
+        f = self.log_file
+        status_values = {
+            1: 'Fail',
+            2: 'Unknown Command',
+            3: 'Not Ready',
+            4: 'Invalid Index'
+        }
+        err_status = status_values[int(status)]
+        f.write(f'{current_time[:-3]}\t<- Response:  {self.parse_data(data)} {hex_data} {err_status}\n')
 
     def read(self, timeout=20.0):
         """Read BTP data from socket
@@ -77,6 +123,7 @@ class BTPSocket:
             hdr_memview = hdr_memview[nbytes:]
             toread_hdr_len -= nbytes
 
+        hex_hdr = ' '.join(hdr.hex()[i:i+2] for i in range(0, len(hdr.hex()), 2))
         tuple_hdr = dec_hdr(hdr)
         toread_data_len = tuple_hdr.data_len
 
@@ -96,6 +143,13 @@ class BTPSocket:
 
         data_string = binascii.hexlify(data).decode('utf-8')
         data_string = ' '.join(f'{data_string[i:i+2]}' for i in range(0, len(data_string), 2))
+        raw_data = hex_hdr if data_string == '' else hex_hdr + ' ' + data_string
+
+        if tuple_hdr.op == 0:
+            self.write_err_status(tuple_hdr, raw_data, data_string)
+        else:
+            # 0 for logging response, 1 for command
+            self.write_to_log(0, tuple_hdr, raw_data)
         log(f"Received data: { {data_string} }, {data}")
 
         self.conn.settimeout(None)
@@ -109,17 +163,56 @@ class BTPSocket:
         frame = enc_frame(svc_id, op, ctrl_index, data)
 
         logging.debug("sending frame %r", frame.hex())
+
+        hex_data = ' '.join(frame.hex()[i:i+2] for i in range(0, len(frame.hex()), 2))
+        tuple_data = (svc_id, op, ctrl_index, len(data) if isinstance(data, (str,  bytearray)) else data)
+        # 0 for logging response, 1 for command
+        self.write_to_log(1, tuple_data, hex_data)
         self.conn.send(frame)
+
+    def parse_data(self, data):
+        def get_btp_cmd_name(prefix, op_code):
+            """Looks for BTP Command variables from the defs.py"""
+            if op_code in ('0x0', '0x00'):
+                return 'BTP_ERROR'
+            for key, value in vars(defs).items():
+                if (key.startswith(f'BTP_{prefix}_CMD_') and value == int(op_code, 16)) or\
+                        (key.startswith(f'BTP_{prefix}_EV_') and value == int(op_code, 16)):
+                    return key
+
+            return 'BTP Undecoded'  # Return if no matching variable is found
+
+        parsed_data = ''
+        svc_name = ''
+        if isinstance(data, str):
+            svc_id = data[:2]
+            opc = data[2:4]
+        else:
+            svc_id, opc, ctrl_idx, data_len = data[0], data[1], data[2], data[3]
+        for name, btp_id in self.btp_service_id_dict.items():
+            if btp_id == int(svc_id):
+                svc_name += name
+                break
+
+        indent = "\n" + (" " * 17)
+        to_hex = lambda x: "0x{:02x}".format(int(x))
+        btp_command = get_btp_cmd_name(svc_name, to_hex(opc))
+        parsed_data += f'{btp_command} ({to_hex(svc_id)}|{to_hex(opc)}|{to_hex(ctrl_idx)}){indent} ' \
+                       f'raw data ({data_len}):'
+
+        return parsed_data
 
     @abstractmethod
     def close(self):
+        self.log_file.close()
+        self.log_file = None
         pass
 
 
 class BTPSocketSrv(BTPSocket):
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, log_dir=None):
+        super().__init__(log_dir)
         self.sock = None
 
     def open(self, addres=BTP_ADDRESS):
@@ -148,6 +241,7 @@ class BTPSocketSrv(BTPSocket):
         self.sock.settimeout(None)
 
     def close(self):
+        super().close()
         try:
             self.conn.shutdown(socket.SHUT_RDWR)
             self.conn.close()
