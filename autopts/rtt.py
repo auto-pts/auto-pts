@@ -38,6 +38,8 @@ class RTT:
     def __init__(self):
         self.read_thread = None
         self.stop_thread = threading.Event()
+        self.rtt_stop = False
+        self.test_end = False
         pylink.logger.setLevel(logging.WARNING)
 
     def _get_buffer_index(self, buffer_name):
@@ -57,14 +59,22 @@ class RTT:
             if buf.name == buffer_name:
                 return buf_index
 
-    @staticmethod
-    def _read_from_buffer(jlink, buffer_index, stop_thread, user_callback, user_data):
+    def _read_from_buffer(self, jlink, buffer_index, stop_thread, user_callback, user_data):
+        count = 0
+        threshold = 5
         try:
             while not stop_thread.is_set() and jlink.connected() and not get_global_end():
                 byte_list = jlink.rtt_read(buffer_index, 1024)
                 if len(byte_list) > 0:
+                    count = 0
                     user_callback(bytes(byte_list), user_data)
-        except BaseException:
+                elif self.test_end:
+                    count += 1
+                    if count >= threshold:
+                        # we have reached the threshold for consecutive empty reads, we can stop rtt_read
+                        self.rtt_stop = True
+        except BaseException as e:
+            self.rtt_stop = True
             pass  # JLink closed
 
     def init_jlink(self, device_core, debugger_snr):
@@ -233,9 +243,23 @@ class RTTLogger:
         self.log_file = open(log_filename, 'ab')
         self.rtt_reader.start(buffer_name, device_core, debugger_snr, self._on_line_read_callback, (self.log_file,))
 
-    def stop(self):
+    def stop_timer(self):
+        # timeout reached
+        self.rtt_reader.rtt_stop = True
+
+    def stop(self, reset, timeout=0.1):
         log("%s.%s", self.__class__, self.stop.__name__)
-        self.rtt_reader.stop()
+
+        if reset:
+            self.rtt_reader.stop()
+        else:
+            self.rtt_reader.test_end = True
+            # let's wait until stopping rtt reader; timeout is configurable
+            timer = threading.Timer(timeout, self.stop_timer)
+            timer.start()
+            while not self.rtt_reader.rtt_stop:
+                time.sleep(0.1)
+            self.rtt_reader.stop()
 
         if self.log_file:
             self.log_file.close()
