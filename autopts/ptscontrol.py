@@ -784,6 +784,26 @@ class PyPTS:
             self._pts_logger.set_test_case_name(test_case_name)
             self._pts_sender.reopen()
 
+            # Workaround for PTS issue 145370.
+            # PTS server can detect that the PTS dongle had been corrupted
+            # by calling GetPTSBluetoothAddress() before test case started.
+            address = None
+            for i in range(10):
+                try:
+                    address = self._pts.GetPTSBluetoothAddress()
+                    log(f"GetPTSBluetoothAddress(): {address}")
+                    if address:
+                        break
+                except Exception as e:
+                    log(e)
+                finally:
+                    # The dongle verification should take less than 100ms,
+                    # but it might take longer on a slow VM.
+                    time.sleep(float(os.environ.get('GLOBAL_DONGLE_INIT_DELAY')))
+
+            if not address:
+                raise Exception("Bluetooth address not available")
+
             self._pts.RunTestCase(project_name, test_case_name)
 
             err = self._pts_logger.get_test_case_status(timeout=30)

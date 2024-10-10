@@ -325,6 +325,11 @@ class SvrArgumentParser(argparse.ArgumentParser):
                                r'"Device instance path" in device settings, e.g. '
                                r'"USB\VID_0A12&PID_0001\5&A70BC4C&0&8"')
 
+        self.add_argument("--dongle_init_delay", default=0.1, type=float, metavar='SECONDS',
+                          help="Specify amount of time in seconds to wait before RunTestCase()"
+                               "after dongle reinitialization has been triggered with"
+                               "GetPTSBluetoothAddress().")
+
     @staticmethod
     def check_args(arg):
         """Sanity check command line arguments"""
@@ -369,6 +374,8 @@ class SvrArgumentParser(argparse.ArgumentParser):
 
             arg.active_hub_server = active_hub_server_configs
             arg.active_hub = True
+
+        os.environ['GLOBAL_DONGLE_INIT_DELAY'] = str(arg.dongle_init_delay)
 
     def parse_args(self, args=None, namespace=None):
         namespace = argparse.Namespace(active_hub=None)
