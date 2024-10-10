@@ -122,10 +122,11 @@ def cap_unicast_audio_update(metadata_tuple):
     cap_command_rsp_succ()
 
 
-def cap_unicast_audio_stop(cig_id):
+def cap_unicast_audio_stop(cig_id, release):
     logging.debug(f"{cap_unicast_audio_stop.__name__}")
 
     data = struct.pack('B', cig_id)
+    data += struct.pack('?', release)
 
     iutctl = get_iut()
     iutctl.btp_socket.send(*CAP['unicast_audio_stop'], data=data)
