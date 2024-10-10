@@ -213,11 +213,12 @@ wid_310_settings = {
 
 
 def hdl_wid_309(params: WIDParams):
+    """ Please configure ASE state to Releasing state. """
     if params.test_case_name.endswith('LT2'):
         return True
 
     cig_id = 0x00
-    btp.cap_unicast_audio_stop(cig_id)
+    btp.cap_unicast_audio_stop(cig_id, True)
 
     stack = get_stack()
     ev = stack.cap.wait_unicast_stop_completed_ev(cig_id, 20)
@@ -248,36 +249,15 @@ def hdl_wid_310(params: WIDParams):
 def hdl_wid_312(params: WIDParams):
     """Please configure ASE state to Disable"""
     if params.test_case_name.endswith('LT2'):
-        addr = lt2_addr_get()
-        addr_type = lt2_addr_type_get()
-    else:
-        addr = pts_addr_get()
-        addr_type = pts_addr_type_get()
+        return True
 
-    configs = []
+    cig_id = 0x00
+    btp.cap_unicast_audio_stop(cig_id, False)
+
     stack = get_stack()
-    for ase in stack.bap.ase_configs:
-        if ase.addr == addr:
-            configs.append(ase)
-
-    if not configs:
-        log('No ASE ID found in configs')
+    ev = stack.cap.wait_unicast_stop_completed_ev(cig_id, 20)
+    if ev is None:
         return False
-
-    stack.ascs.event_queues[defs.ASCS_EV_OPERATION_COMPLETED].clear()
-    for config in configs:
-        btp.ascs_disable(config.ase_id, addr_type, addr)
-        ev = stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, config.ase_id, 10)
-        if ev is None:
-            raise Exception("Disable command failed")
-
-    for config in configs:
-        if config.audio_dir == AudioDir.SOURCE:
-            # Initiate receiver Stop Ready
-            btp.ascs_receiver_stop_ready(config.ase_id, addr_type, addr)
-            ev = stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, config.ase_id, 10)
-            if ev is None:
-                raise Exception("Receiver Stop Ready command failed")
 
     return True
 
@@ -803,7 +783,7 @@ def hdl_wid_406(params: WIDParams):
         return True
 
     cig_id = 0x00
-    btp.cap_unicast_audio_stop(cig_id)
+    btp.cap_unicast_audio_stop(cig_id, True)
 
     stack = get_stack()
     ev = stack.cap.wait_unicast_stop_completed_ev(cig_id, 20)
