@@ -102,6 +102,10 @@ Commands and responses:
 	Opcode 0x06 - Unicast Audio Stop
 		Controller Index:	<controller id>
 		Command parameters:	CIG_ID (1 octet)
+		Command parameters:	Flags (1 octet)
+		where:
+			- Flags is a bit map of settings:
+				bit 0: To release the streams. If not set, the streams will only be disabled.
 
 		Response parameters:	<none>
 
