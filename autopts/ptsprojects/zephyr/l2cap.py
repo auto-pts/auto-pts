@@ -50,7 +50,7 @@ def set_pixits(ptses):
     pts.set_pixit("L2CAP", "TSPX_pin_code", "0000")
     pts.set_pixit("L2CAP", "TSPX_delete_ltk", "FALSE")
     pts.set_pixit("L2CAP", "TSPX_flushto", "FFFF")
-    pts.set_pixit("L2CAP", "TSPX_inmtu", "02A0")
+    pts.set_pixit("L2CAP", "TSPX_l2ca_inmtu", "02A0")
     pts.set_pixit("L2CAP", "TSPX_no_fail_verdicts", "FALSE")
     pts.set_pixit("L2CAP", "TSPX_iut_supported_max_channels", "5")
     pts.set_pixit("L2CAP", "TSPX_IUT_mps", "0030")
