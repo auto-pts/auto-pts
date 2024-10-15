@@ -28,24 +28,16 @@ def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None, *args):
     """
     logging.debug("%s: %s %s %s", build_and_flash.__name__, zephyr_wd,
                   board, conf_file)
-
-    tester_dir = os.path.join(zephyr_wd, 'tests', 'bluetooth', 'tester')
-    controller_dir = os.path.join(zephyr_wd, 'samples', 'bluetooth', 'hci_ipc')
+    tester_dir = os.path.join(zephyr_wd, "tests", "bluetooth", "tester")
 
     check_call('rm -rf build/'.split(), cwd=tester_dir)
-    check_call('rm -rf build/'.split(), cwd=controller_dir)
 
-    bttester_overlay = 'nrf5340_hci_ipc.conf'
+    cmd = ['west', 'build', '-p', 'auto', '-b', board]
+    if conf_file and conf_file not in ['default', 'prj.conf']:
+        if 'audio' in conf_file:
+            conf_file += ';overlay-le-audio-ctlr.conf'
+        cmd.extend(('--', f'-DOVERLAY_CONFIG=\'{conf_file}\''))
 
-    if conf_file and conf_file != 'default' and conf_file != 'prj.conf':
-        bttester_overlay += f';{conf_file}'
-
-    cmd = ['west', 'build', '-b', board, '--', f'-DOVERLAY_CONFIG=\'{bttester_overlay}\'']
     check_call(cmd, cwd=tester_dir)
-    check_call(['west', 'flash', '--skip-rebuild', '--recover', '-i', debugger_snr], cwd=tester_dir)
-
-    cmd = ['west', 'build', '-b', 'nrf5340dk/nrf5340/cpunet', '--',
-           f'-DOVERLAY_CONFIG=\'nrf5340_cpunet_iso-bt_ll_sw_split.conf;'
-           f'../../../tests/bluetooth/tester/nrf5340_hci_ipc_cpunet.conf\'']
-    check_call(cmd, cwd=controller_dir)
-    check_call(['west', 'flash', '--skip-rebuild', '-i', debugger_snr], cwd=controller_dir)
+    check_call(['west', 'flash', '--skip-rebuild', '--recover',
+                '-i', debugger_snr], cwd=tester_dir)
