@@ -4451,25 +4451,25 @@
           <Row>
             <Name>TSPC_BAP_80_13</Name>
             <Description>Periodic Advertising Synchronization Establishment procedure over an LE connection without listening for periodic advertising (Peripheral) (C.6)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_80_14</Name>
             <Description>Periodic Advertising Synchronization Establishment procedure over an LE connection with listening for periodic advertising (Peripheral) (C.6)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_80_15</Name>
             <Description>Periodic Advertising Synchronization Establishment procedure over an LE connection without listening for periodic advertising (Central) (C.7)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_80_16</Name>
             <Description>Periodic Advertising Synchronization Establishment procedure over an LE connection with listening for periodic advertising (Central) (C.7)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4541,7 +4541,7 @@
           <Row>
             <Name>TSPC_BAP_82_4</Name>
             <Description>Periodic Advertising Sync Transfer - Recipient (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4667,7 +4667,7 @@
           <Row>
             <Name>TSPC_BAP_88_5</Name>
             <Description>SyncInfo Transfer (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4853,13 +4853,13 @@
           <Row>
             <Name>TSPC_BAP_90_16</Name>
             <Description>Periodic Advertising Synchronization Establishment procedure over an LE connection without listening for periodic advertising (C.8)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_90_17</Name>
             <Description>Periodic Advertising Synchronization Establishment procedure over an LE connection with listening for periodic advertising (C.8)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4919,19 +4919,19 @@
           <Row>
             <Name>TSPC_BAP_92_4</Name>
             <Description>Periodic Advertising Sync Transfer - Sender (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_92_5</Name>
             <Description>Initiating Periodic Advertising Sync Transfer for Local Periodic Advertising (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_92_6</Name>
             <Description>Initiating Periodic Advertising Sync Transfer for Remote Periodic Advertising (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
