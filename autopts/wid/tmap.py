@@ -306,7 +306,7 @@ def hdl_wid_376(_: WIDParams):
     addr_type = pts_addr_type_get()
     stack = get_stack()
 
-    for ev in stack.bap.event_queues[defs.BAP_EV_ASE_FOUND]:
+    for ev in stack.bap.event_queues[defs.BTP_BAP_EV_ASE_FOUND]:
         _, _, ase_dir, ase_id = ev
 
         if ase_dir == AudioDir.SINK:

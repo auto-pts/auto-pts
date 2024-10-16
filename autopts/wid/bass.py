@@ -88,7 +88,7 @@ def hdl_wid_102(_: WIDParams):
     Please click OK when IUT establishes BIG sync. Lower tester will terminate BIG.
     """
     stack = get_stack()
-    ev_queue = stack.bap.event_queues[defs.BAP_EV_PA_SYNC_REQ]
+    ev_queue = stack.bap.event_queues[defs.BTP_BAP_EV_PA_SYNC_REQ]
     if len(ev_queue) == 0:
         log('PA sync request not received.')
         return False
@@ -129,7 +129,7 @@ def hdl_wid_110(_: WIDParams):
     """
     stack = get_stack()
 
-    ev_queue = stack.bap.event_queues[defs.BAP_EV_BIS_FOUND]
+    ev_queue = stack.bap.event_queues[defs.BTP_BAP_EV_BIS_FOUND]
     if len(ev_queue) == 0:
         return False
 

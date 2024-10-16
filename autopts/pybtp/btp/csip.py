@@ -26,18 +26,18 @@ log = logging.debug
 
 CSIP = {
     'read_supported_cmds': (defs.BTP_SERVICE_ID_CSIP,
-                            defs.CSIP_READ_SUPPORTED_COMMANDS,
+                            defs.BTP_CSIP_CMD_READ_SUPPORTED_COMMANDS,
                             CONTROLLER_INDEX),
-    'discover': (defs.BTP_SERVICE_ID_CSIP, defs.CSIP_DISCOVER,
+    'discover': (defs.BTP_SERVICE_ID_CSIP, defs.BTP_CSIP_CMD_DISCOVER,
                  CONTROLLER_INDEX),
     'start_ordered_access': (defs.BTP_SERVICE_ID_CSIP,
-                             defs.CSIP_START_ORDERED_ACCESS,
+                             defs.BTP_CSIP_CMD_START_ORDERED_ACCESS,
                              CONTROLLER_INDEX),
     'set_coordinator_lock': (defs.BTP_SERVICE_ID_CSIP,
-                             defs.CSIP_SET_COORDINATOR_LOCK,
+                             defs.BTP_CSIP_CMD_SET_COORDINATOR_LOCK,
                              CONTROLLER_INDEX),
     'set_coordinator_release': (defs.BTP_SERVICE_ID_CSIP,
-                                defs.CSIP_SET_COORDINATOR_RELEASE,
+                                defs.BTP_CSIP_CMD_SET_COORDINATOR_RELEASE,
                                 CONTROLLER_INDEX),
 }
 
@@ -148,7 +148,7 @@ def csip_ev_discovery_completed(csip, data, data_len):
                   f' Set Size Handle {size_handle}, Set Lock Handle {lock_handle},'
                   f' Rank Handle {rank_handle}')
 
-    csip.event_received(defs.CSIP_DISCOVERED_EV, (addr_type, addr, status,
+    csip.event_received(defs.BTP_CSIP_EV_DISCOVERED, (addr_type, addr, status,
                                                   sirk_handle, size_handle,
                                                   lock_handle, rank_handle))
 
@@ -168,7 +168,7 @@ def csip_sirk_ev(csip, data, data_len):
     logging.debug(f'CSIP Sirk event: addr {addr}, addr_type {addr_type},'
                   f' sirk {sirk_hex}')
 
-    csip.event_received(defs.CSIP_SIRK_EV, (addr_type, addr, sirk_hex))
+    csip.event_received(defs.BTP_CSIP_EV_SIRK, (addr_type, addr, sirk_hex))
 
 
 def csip_lock_ev(csip, data, data_len):
@@ -182,11 +182,11 @@ def csip_lock_ev(csip, data, data_len):
 
     logging.debug(f'CSIP Set Lock status {lock_val}')
 
-    csip.event_received(defs.CSIP_LOCK_EV, lock_val)
+    csip.event_received(defs.BTP_CSIP_EV_LOCK, lock_val)
 
 
 CSIP_EV = {
-    defs.CSIP_DISCOVERED_EV: csip_ev_discovery_completed,
-    defs.CSIP_SIRK_EV: csip_sirk_ev,
-    defs.CSIP_LOCK_EV: csip_lock_ev,
+    defs.BTP_CSIP_EV_DISCOVERED: csip_ev_discovery_completed,
+    defs.BTP_CSIP_EV_SIRK: csip_sirk_ev,
+    defs.BTP_CSIP_EV_LOCK: csip_lock_ev,
 }

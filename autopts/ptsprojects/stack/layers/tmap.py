@@ -20,7 +20,7 @@ from autopts.pybtp import defs
 class TMAP:
     def __init__(self):
         self.event_queues = {
-            defs.TMAP_EV_DISCOVERY_COMPLETED: [],
+            defs.BTP_TMAP_EV_DISCOVERY_COMPLETED: [],
         }
 
     def event_received(self, event_type, event_data):
@@ -28,7 +28,7 @@ class TMAP:
 
     def wait_discovery_completed_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.TMAP_EV_DISCOVERY_COMPLETED],
+            self.event_queues[defs.BTP_TMAP_EV_DISCOVERY_COMPLETED],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)

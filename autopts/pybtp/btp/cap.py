@@ -26,31 +26,31 @@ from autopts.pybtp.types import addr2btp_ba, BTPError
 
 CAP = {
     'read_supported_cmds': (defs.BTP_SERVICE_ID_CAP,
-                            defs.CAP_READ_SUPPORTED_COMMANDS,
+                            defs.BTP_CAP_CMD_READ_SUPPORTED_COMMANDS,
                             CONTROLLER_INDEX),
-    'discover': (defs.BTP_SERVICE_ID_CAP, defs.CAP_DISCOVER, CONTROLLER_INDEX),
-    'unicast_setup_ase': (defs.BTP_SERVICE_ID_CAP, defs.CAP_UNICAST_SETUP_ASE, CONTROLLER_INDEX),
-    'unicast_audio_start': (defs.BTP_SERVICE_ID_CAP, defs.CAP_UNICAST_AUDIO_START, CONTROLLER_INDEX),
-    'unicast_audio_update': (defs.BTP_SERVICE_ID_CAP, defs.CAP_UNICAST_AUDIO_UPDATE, CONTROLLER_INDEX),
-    'unicast_audio_stop': (defs.BTP_SERVICE_ID_CAP, defs.CAP_UNICAST_AUDIO_STOP, CONTROLLER_INDEX),
+    'discover': (defs.BTP_SERVICE_ID_CAP, defs.BTP_CAP_CMD_DISCOVER, CONTROLLER_INDEX),
+    'unicast_setup_ase': (defs.BTP_SERVICE_ID_CAP, defs.BTP_CAP_CMD_UNICAST_SETUP_ASE, CONTROLLER_INDEX),
+    'unicast_audio_start': (defs.BTP_SERVICE_ID_CAP, defs.BTP_CAP_CMD_UNICAST_AUDIO_START, CONTROLLER_INDEX),
+    'unicast_audio_update': (defs.BTP_SERVICE_ID_CAP, defs.BTP_CAP_CMD_UNICAST_AUDIO_UPDATE, CONTROLLER_INDEX),
+    'unicast_audio_stop': (defs.BTP_SERVICE_ID_CAP, defs.BTP_CAP_CMD_UNICAST_AUDIO_STOP, CONTROLLER_INDEX),
     'broadcast_source_setup_stream': (defs.BTP_SERVICE_ID_CAP,
-        defs.CAP_BROADCAST_SOURCE_SETUP_STREAM, CONTROLLER_INDEX),
+        defs.BTP_CAP_CMD_BROADCAST_SOURCE_SETUP_STREAM, CONTROLLER_INDEX),
     'broadcast_source_setup_subgroup': (defs.BTP_SERVICE_ID_CAP,
-        defs.CAP_BROADCAST_SOURCE_SETUP_SUBGROUP, CONTROLLER_INDEX),
+        defs.BTP_CAP_CMD_BROADCAST_SOURCE_SETUP_SUBGROUP, CONTROLLER_INDEX),
     'broadcast_source_setup': (defs.BTP_SERVICE_ID_CAP,
-        defs.CAP_BROADCAST_SOURCE_SETUP, CONTROLLER_INDEX),
+        defs.BTP_CAP_CMD_BROADCAST_SOURCE_SETUP, CONTROLLER_INDEX),
     'broadcast_source_release': (defs.BTP_SERVICE_ID_CAP,
-        defs.CAP_BROADCAST_SOURCE_RELEASE, CONTROLLER_INDEX),
+        defs.BTP_CAP_CMD_BROADCAST_SOURCE_RELEASE, CONTROLLER_INDEX),
     'broadcast_adv_start': (defs.BTP_SERVICE_ID_CAP,
-        defs.CAP_BROADCAST_ADV_START, CONTROLLER_INDEX),
+        defs.BTP_CAP_CMD_BROADCAST_ADV_START, CONTROLLER_INDEX),
     'broadcast_adv_stop': (defs.BTP_SERVICE_ID_CAP,
-        defs.CAP_BROADCAST_ADV_STOP, CONTROLLER_INDEX),
+        defs.BTP_CAP_CMD_BROADCAST_ADV_STOP, CONTROLLER_INDEX),
     'broadcast_source_start': (defs.BTP_SERVICE_ID_CAP,
-        defs.CAP_BROADCAST_SOURCE_START, CONTROLLER_INDEX),
+        defs.BTP_CAP_CMD_BROADCAST_SOURCE_START, CONTROLLER_INDEX),
     'broadcast_source_stop': (defs.BTP_SERVICE_ID_CAP,
-        defs.CAP_BROADCAST_SOURCE_STOP, CONTROLLER_INDEX),
+        defs.BTP_CAP_CMD_BROADCAST_SOURCE_STOP, CONTROLLER_INDEX),
     'broadcast_source_update': (defs.BTP_SERVICE_ID_CAP,
-        defs.CAP_BROADCAST_SOURCE_UPDATE, CONTROLLER_INDEX),
+        defs.BTP_CAP_CMD_BROADCAST_SOURCE_UPDATE, CONTROLLER_INDEX),
 }
 
 
@@ -366,7 +366,7 @@ def cap_ev_discovery_completed_(cap, data, data_len):
     logging.debug(f'CAP Discovery completed: addr {addr} addr_type '
                   f'{addr_type} status {status}')
 
-    cap.event_received(defs.CAP_EV_DISCOVERY_COMPLETED, (addr_type, addr, status))
+    cap.event_received(defs.BTP_CAP_EV_DISCOVERY_COMPLETED, (addr_type, addr, status))
 
 
 def cap_ev_unicast_start_completed_(cap, data, data_len):
@@ -380,7 +380,7 @@ def cap_ev_unicast_start_completed_(cap, data, data_len):
 
     logging.debug(f'CAP Unicast Start completed: cig_id {cig_id}, status {status}')
 
-    cap.event_received(defs.CAP_EV_UNICAST_START_COMPLETED, (status,))
+    cap.event_received(defs.BTP_CAP_EV_UNICAST_START_COMPLETED, (status,))
 
 
 def cap_ev_unicast_stop_completed_(cap, data, data_len):
@@ -394,11 +394,11 @@ def cap_ev_unicast_stop_completed_(cap, data, data_len):
 
     logging.debug(f'CAP Unicast Stop completed: cig_id {cig_id}, status {status}')
 
-    cap.event_received(defs.CAP_EV_UNICAST_STOP_COMPLETED, (cig_id, status))
+    cap.event_received(defs.BTP_CAP_EV_UNICAST_STOP_COMPLETED, (cig_id, status))
 
 
 CAP_EV = {
-    defs.CAP_EV_DISCOVERY_COMPLETED: cap_ev_discovery_completed_,
-    defs.CAP_EV_UNICAST_START_COMPLETED: cap_ev_unicast_start_completed_,
-    defs.CAP_EV_UNICAST_STOP_COMPLETED: cap_ev_unicast_stop_completed_,
+    defs.BTP_CAP_EV_DISCOVERY_COMPLETED: cap_ev_discovery_completed_,
+    defs.BTP_CAP_EV_UNICAST_START_COMPLETED: cap_ev_unicast_start_completed_,
+    defs.BTP_CAP_EV_UNICAST_STOP_COMPLETED: cap_ev_unicast_stop_completed_,
 }

@@ -27,21 +27,21 @@ from autopts.pybtp.btp.gap import gap_wait_for_connection
 
 L2CAP = {
     "read_supp_cmds": (defs.BTP_SERVICE_ID_L2CAP,
-                       defs.L2CAP_READ_SUPPORTED_COMMANDS,
+                       defs.BTP_L2CAP_CMD_READ_SUPPORTED_COMMANDS,
                        defs.BTP_INDEX_NONE, ""),
-    "connect": (defs.BTP_SERVICE_ID_L2CAP, defs.L2CAP_CONNECT,
+    "connect": (defs.BTP_SERVICE_ID_L2CAP, defs.BTP_L2CAP_CMD_CONNECT,
                 CONTROLLER_INDEX),
-    "disconnect": (defs.BTP_SERVICE_ID_L2CAP, defs.L2CAP_DISCONNECT,
+    "disconnect": (defs.BTP_SERVICE_ID_L2CAP, defs.BTP_L2CAP_CMD_DISCONNECT,
                    CONTROLLER_INDEX),
-    "send_data": (defs.BTP_SERVICE_ID_L2CAP, defs.L2CAP_SEND_DATA,
+    "send_data": (defs.BTP_SERVICE_ID_L2CAP, defs.BTP_L2CAP_CMD_SEND_DATA,
                   CONTROLLER_INDEX),
-    "listen": (defs.BTP_SERVICE_ID_L2CAP, defs.L2CAP_LISTEN,
+    "listen": (defs.BTP_SERVICE_ID_L2CAP, defs.BTP_L2CAP_CMD_LISTEN,
                CONTROLLER_INDEX),
-    "reconfigure": (defs.BTP_SERVICE_ID_L2CAP, defs.L2CAP_RECONFIGURE,
+    "reconfigure": (defs.BTP_SERVICE_ID_L2CAP, defs.BTP_L2CAP_CMD_RECONFIGURE,
                     CONTROLLER_INDEX),
-    "disconnect_eatt_chans": (defs.BTP_SERVICE_ID_L2CAP, defs.L2CAP_DISCONNECT_EATT_CHANS,
+    "disconnect_eatt_chans": (defs.BTP_SERVICE_ID_L2CAP, defs.BTP_L2CAP_CMD_DISCONNECT_EATT_CHANS,
                               CONTROLLER_INDEX),
-    "credits": (defs.BTP_SERVICE_ID_L2CAP, defs.L2CAP_CREDITS,
+    "credits": (defs.BTP_SERVICE_ID_L2CAP, defs.BTP_L2CAP_CMD_CREDITS,
                 CONTROLLER_INDEX),
 }
 
@@ -111,7 +111,7 @@ def l2cap_conn_rsp():
     tuple_hdr, tuple_data = iutctl.btp_socket.read()
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
-    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_L2CAP, defs.L2CAP_CONNECT)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_L2CAP, defs.BTP_L2CAP_CMD_CONNECT)
     num = struct.unpack_from('<B', tuple_data[0])[0]
     channels = struct.unpack_from('%ds' % num, tuple_data[0], 1)[0]
     return list(channels)
@@ -126,7 +126,7 @@ def l2cap_disconn(chan_id):
 
     iutctl.btp_socket.send(*L2CAP['disconnect'], data=data_ba)
 
-    l2cap_command_rsp_succ(defs.L2CAP_DISCONNECT)
+    l2cap_command_rsp_succ(defs.BTP_L2CAP_CMD_DISCONNECT)
 
 
 def l2cap_send_data(chan_id, val, val_mtp=None):
@@ -166,7 +166,7 @@ def l2cap_listen(psm, transport, mtu=0, response=L2CAPConnectionResponse.success
 
     iutctl.btp_socket.send(*L2CAP['listen'], data=data_ba)
 
-    l2cap_command_rsp_succ(defs.L2CAP_LISTEN)
+    l2cap_command_rsp_succ(defs.BTP_L2CAP_CMD_LISTEN)
 
 
 def l2cap_disconn_eatt_chans(bd_addr, bd_addr_type, channel_count):
@@ -184,7 +184,7 @@ def l2cap_disconn_eatt_chans(bd_addr, bd_addr_type, channel_count):
 
     iutctl.btp_socket.send(*L2CAP['disconnect_eatt_chans'], data=data_ba)
 
-    l2cap_command_rsp_succ(defs.L2CAP_DISCONNECT_EATT_CHANS)
+    l2cap_command_rsp_succ(defs.BTP_L2CAP_CMD_DISCONNECT_EATT_CHANS)
 
 
 def l2cap_le_listen(psm, mtu=0, response=0):
@@ -210,7 +210,7 @@ def l2cap_reconfigure(bd_addr, bd_addr_type, mtu, channels):
 
     iutctl.btp_socket.send(*L2CAP['reconfigure'], data=data_ba)
 
-    l2cap_command_rsp_succ(defs.L2CAP_RECONFIGURE)
+    l2cap_command_rsp_succ(defs.BTP_L2CAP_CMD_RECONFIGURE)
 
 
 def l2cap_credits(chan_id):
@@ -222,7 +222,7 @@ def l2cap_credits(chan_id):
 
     iutctl.btp_socket.send(*L2CAP['credits'], data=data_ba)
 
-    l2cap_command_rsp_succ(defs.L2CAP_CREDITS)
+    l2cap_command_rsp_succ(defs.BTP_L2CAP_CMD_CREDITS)
 
 
 def l2cap_connected_ev(l2cap, data, data_len):
@@ -277,8 +277,8 @@ def l2cap_reconfigured_ev(l2cap, data, data_len):
 
 
 L2CAP_EV = {
-    defs.L2CAP_EV_CONNECTED: l2cap_connected_ev,
-    defs.L2CAP_EV_DISCONNECTED: l2cap_disconnected_ev,
-    defs.L2CAP_EV_DATA_RECEIVED: l2cap_data_rcv_ev,
-    defs.L2CAP_EV_RECONFIGURED: l2cap_reconfigured_ev,
+    defs.BTP_L2CAP_EV_CONNECTED: l2cap_connected_ev,
+    defs.BTP_L2CAP_EV_DISCONNECTED: l2cap_disconnected_ev,
+    defs.BTP_L2CAP_EV_DATA_RECEIVED: l2cap_data_rcv_ev,
+    defs.BTP_L2CAP_EV_RECONFIGURED: l2cap_reconfigured_ev,
 }

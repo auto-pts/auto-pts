@@ -22,15 +22,15 @@ from autopts.pybtp import defs
 from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, get_iut_method as get_iut
 
 VCS = {
-    "set_vol":(defs.BTP_SERVICE_ID_VCS, defs.VCS_SET_VOL,
+    "set_vol":(defs.BTP_SERVICE_ID_VCS, defs.BTP_VCS_CMD_SET_VOL,
                CONTROLLER_INDEX),
-    "vol_up":(defs.BTP_SERVICE_ID_VCS, defs.VCS_VOL_UP,
+    "vol_up":(defs.BTP_SERVICE_ID_VCS, defs.BTP_VCS_CMD_VOL_UP,
                CONTROLLER_INDEX, ""),
-    "vol_down":(defs.BTP_SERVICE_ID_VCS, defs.VCS_VOL_DOWN,
+    "vol_down":(defs.BTP_SERVICE_ID_VCS, defs.BTP_VCS_CMD_VOL_DOWN,
                CONTROLLER_INDEX, ""),
-    "mute":(defs.BTP_SERVICE_ID_VCS, defs.VCS_MUTE,
+    "mute":(defs.BTP_SERVICE_ID_VCS, defs.BTP_VCS_CMD_MUTE,
                CONTROLLER_INDEX, ""),
-    "unmute":(defs.BTP_SERVICE_ID_VCS, defs.VCS_UNMUTE,
+    "unmute":(defs.BTP_SERVICE_ID_VCS, defs.BTP_VCS_CMD_UNMUTE,
                CONTROLLER_INDEX, "")
 }
 

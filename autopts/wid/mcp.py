@@ -479,10 +479,10 @@ def hdl_wid_20206(params: WIDParams):
     stack = get_stack()
 
     if params.test_case_name == "MCP/CL/CGGIT/SER/BV-02-C":
-        chars = stack.mcp.event_queues[defs.MCP_DISCOVERED_EV][0][3:25]
+        chars = stack.mcp.event_queues[defs.BTP_MCP_EV_DISCOVERED][0][3:25]
         chrc_list = [f'{chrc:04X}' for chrc in chars]
     elif params.test_case_name == "MCP/CL/CGGIT/SER/BV-03-C":
-        chars = stack.mcp.event_queues[defs.MCP_DISCOVERED_EV][0][25:]
+        chars = stack.mcp.event_queues[defs.BTP_MCP_EV_DISCOVERED][0][25:]
         chrc_list = [f'{chrc:04X}' for chrc in chars]
         # Object First-Created and Object Last-Modified Characteristic are omitted
         # because Server doest not have access to real time clock (data is set to 0)

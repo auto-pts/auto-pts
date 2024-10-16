@@ -378,13 +378,13 @@ def hdl_wid_20206(params: WIDParams):
     stack = get_stack()
 
     if params.test_case_name == "VCP/VC/CGGIT/SER/BV-01-C":
-        chars = (stack.vcp.event_queues[defs.VCP_DISCOVERED_EV][0][3:6])
+        chars = (stack.vcp.event_queues[defs.BTP_VCP_EV_DISCOVERED][0][3:6])
         chrc_list = ['{:04X}'.format(chrc).upper() for chrc in chars]
     elif params.test_case_name == "VCP/VC/CGGIT/SER/BV-02-C":
-        chars = (stack.vcp.event_queues[defs.VCP_DISCOVERED_EV][0][6:10])
+        chars = (stack.vcp.event_queues[defs.BTP_VCP_EV_DISCOVERED][0][6:10])
         chrc_list = ['{:04X}'.format(chrc).upper() for chrc in chars]
     elif params.test_case_name == "VCP/VC/CGGIT/SER/BV-03-C":
-        chars = (stack.vcp.event_queues[defs.VCP_DISCOVERED_EV][0][10:])
+        chars = (stack.vcp.event_queues[defs.BTP_VCP_EV_DISCOVERED][0][10:])
         chrc_list = ['{:04X}'.format(chrc).upper() for chrc in chars]
 
     pattern = re.compile(r"0x([0-9a-fA-F]+)")

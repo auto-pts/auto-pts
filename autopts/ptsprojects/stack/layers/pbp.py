@@ -20,7 +20,7 @@ from autopts.pybtp import defs
 class PBP:
     def __init__(self):
         self.event_queues = {
-            defs.PBP_EV_PUBLIC_BROADCAST_ANNOUNCEMENT_FOUND: [],
+            defs.BTP_PBP_EV_PUBLIC_BROADCAST_ANNOUNCEMENT_FOUND: [],
         }
 
     def event_received(self, event_type, event_data):
@@ -28,6 +28,6 @@ class PBP:
 
     def wait_public_broadcast_event_found_ev(self, addr_type, addr, broadcast_name, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.PBP_EV_PUBLIC_BROADCAST_ANNOUNCEMENT_FOUND],
+            self.event_queues[defs.BTP_PBP_EV_PUBLIC_BROADCAST_ANNOUNCEMENT_FOUND],
             lambda ev: (addr_type, addr, broadcast_name) == (ev['addr_type'], ev['addr'], ev['broadcast_name']),
             timeout, remove)

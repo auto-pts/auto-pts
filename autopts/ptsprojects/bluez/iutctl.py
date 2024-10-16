@@ -83,7 +83,7 @@ class IUTCtl:
 
         try:
             if (tuple_hdr.svc_id != defs.BTP_SERVICE_ID_CORE or
-                    tuple_hdr.op != defs.CORE_EV_IUT_READY):
+                    tuple_hdr.op != defs.BTP_CORE_EV_IUT_READY):
                 raise BTPError("Failed to get ready event")
         except BTPError as err:
             log("Unexpected event received (%s), expected IUT ready!", err)

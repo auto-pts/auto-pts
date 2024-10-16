@@ -26,54 +26,54 @@ from autopts.pybtp.types import BTPError, addr2btp_ba
 
 BAP = {
     'read_supported_cmds': (defs.BTP_SERVICE_ID_BAP,
-                            defs.BAP_READ_SUPPORTED_COMMANDS,
+                            defs.BTP_BAP_CMD_READ_SUPPORTED_COMMANDS,
                             CONTROLLER_INDEX),
-    'discover': (defs.BTP_SERVICE_ID_BAP, defs.BAP_DISCOVER,
+    'discover': (defs.BTP_SERVICE_ID_BAP, defs.BTP_BAP_CMD_DISCOVER,
                  CONTROLLER_INDEX),
-    'send': (defs.BTP_SERVICE_ID_BAP, defs.BAP_SEND, CONTROLLER_INDEX),
-    'broadcast_source_setup': (defs.BTP_SERVICE_ID_BAP, defs.BAP_BROADCAST_SOURCE_SETUP,
+    'send': (defs.BTP_SERVICE_ID_BAP, defs.BTP_BAP_CMD_SEND, CONTROLLER_INDEX),
+    'broadcast_source_setup': (defs.BTP_SERVICE_ID_BAP, defs.BTP_BAP_CMD_BROADCAST_SOURCE_SETUP,
                                CONTROLLER_INDEX),
-    'broadcast_source_release': (defs.BTP_SERVICE_ID_BAP, defs.BAP_BROADCAST_SOURCE_RELEASE,
+    'broadcast_source_release': (defs.BTP_SERVICE_ID_BAP, defs.BTP_BAP_CMD_BROADCAST_SOURCE_RELEASE,
                                  CONTROLLER_INDEX),
-    'broadcast_adv_start': (defs.BTP_SERVICE_ID_BAP, defs.BAP_BROADCAST_ADV_START,
+    'broadcast_adv_start': (defs.BTP_SERVICE_ID_BAP, defs.BTP_BAP_CMD_BROADCAST_ADV_START,
                             CONTROLLER_INDEX),
-    'broadcast_adv_stop': (defs.BTP_SERVICE_ID_BAP, defs.BAP_BROADCAST_ADV_STOP,
+    'broadcast_adv_stop': (defs.BTP_SERVICE_ID_BAP, defs.BTP_BAP_CMD_BROADCAST_ADV_STOP,
                            CONTROLLER_INDEX),
-    'broadcast_source_start': (defs.BTP_SERVICE_ID_BAP, defs.BAP_BROADCAST_SOURCE_START,
+    'broadcast_source_start': (defs.BTP_SERVICE_ID_BAP, defs.BTP_BAP_CMD_BROADCAST_SOURCE_START,
                                CONTROLLER_INDEX),
-    'broadcast_source_stop': (defs.BTP_SERVICE_ID_BAP, defs.BAP_BROADCAST_SOURCE_STOP,
+    'broadcast_source_stop': (defs.BTP_SERVICE_ID_BAP, defs.BTP_BAP_CMD_BROADCAST_SOURCE_STOP,
                               CONTROLLER_INDEX),
-    'broadcast_sink_setup': (defs.BTP_SERVICE_ID_BAP, defs.BAP_BROADCAST_SINK_SETUP,
+    'broadcast_sink_setup': (defs.BTP_SERVICE_ID_BAP, defs.BTP_BAP_CMD_BROADCAST_SINK_SETUP,
                              CONTROLLER_INDEX, ""),
-    'broadcast_sink_release': (defs.BTP_SERVICE_ID_BAP, defs.BAP_BROADCAST_SINK_RELEASE,
+    'broadcast_sink_release': (defs.BTP_SERVICE_ID_BAP, defs.BTP_BAP_CMD_BROADCAST_SINK_RELEASE,
                                CONTROLLER_INDEX, ""),
-    'broadcast_scan_start': (defs.BTP_SERVICE_ID_BAP, defs.BAP_BROADCAST_SCAN_START,
+    'broadcast_scan_start': (defs.BTP_SERVICE_ID_BAP, defs.BTP_BAP_CMD_BROADCAST_SCAN_START,
                              CONTROLLER_INDEX, ""),
-    'broadcast_scan_stop': (defs.BTP_SERVICE_ID_BAP, defs.BAP_BROADCAST_SCAN_STOP,
+    'broadcast_scan_stop': (defs.BTP_SERVICE_ID_BAP, defs.BTP_BAP_CMD_BROADCAST_SCAN_STOP,
                             CONTROLLER_INDEX, ""),
-    'broadcast_sink_sync': (defs.BTP_SERVICE_ID_BAP, defs.BAP_BROADCAST_SINK_SYNC,
+    'broadcast_sink_sync': (defs.BTP_SERVICE_ID_BAP, defs.BTP_BAP_CMD_BROADCAST_SINK_SYNC,
                             CONTROLLER_INDEX),
-    'broadcast_sink_stop': (defs.BTP_SERVICE_ID_BAP, defs.BAP_BROADCAST_SINK_STOP,
+    'broadcast_sink_stop': (defs.BTP_SERVICE_ID_BAP, defs.BTP_BAP_CMD_BROADCAST_SINK_STOP,
                             CONTROLLER_INDEX),
-    'broadcast_sink_bis_sync': (defs.BTP_SERVICE_ID_BAP, defs.BAP_BROADCAST_SINK_BIS_SYNC,
+    'broadcast_sink_bis_sync': (defs.BTP_SERVICE_ID_BAP, defs.BTP_BAP_CMD_BROADCAST_SINK_BIS_SYNC,
                                 CONTROLLER_INDEX),
-    'discover_scan_delegator': (defs.BTP_SERVICE_ID_BAP, defs.BAP_DISCOVER_SCAN_DELEGATOR,
+    'discover_scan_delegator': (defs.BTP_SERVICE_ID_BAP, defs.BTP_BAP_CMD_DISCOVER_SCAN_DELEGATOR,
                                 CONTROLLER_INDEX),
     'broadcast_assistant_scan_start': (defs.BTP_SERVICE_ID_BAP,
-                                       defs.BAP_BROADCAST_ASSISTANT_SCAN_START,
+                                       defs.BTP_BAP_CMD_BROADCAST_ASSISTANT_SCAN_START,
                                        CONTROLLER_INDEX),
     'broadcast_assistant_scan_stop': (defs.BTP_SERVICE_ID_BAP,
-                                      defs.BAP_BROADCAST_ASSISTANT_SCAN_STOP,
+                                      defs.BTP_BAP_CMD_BROADCAST_ASSISTANT_SCAN_STOP,
                                       CONTROLLER_INDEX),
-    'add_broadcast_src': (defs.BTP_SERVICE_ID_BAP, defs.BAP_ADD_BROADCAST_SRC,
+    'add_broadcast_src': (defs.BTP_SERVICE_ID_BAP, defs.BTP_BAP_CMD_ADD_BROADCAST_SRC,
                           CONTROLLER_INDEX),
-    'remove_broadcast_src': (defs.BTP_SERVICE_ID_BAP, defs.BAP_REMOVE_BROADCAST_SRC,
+    'remove_broadcast_src': (defs.BTP_SERVICE_ID_BAP, defs.BTP_BAP_CMD_REMOVE_BROADCAST_SRC,
                              CONTROLLER_INDEX),
-    'modify_broadcast_src': (defs.BTP_SERVICE_ID_BAP, defs.BAP_MODIFY_BROADCAST_SRC,
+    'modify_broadcast_src': (defs.BTP_SERVICE_ID_BAP, defs.BTP_BAP_CMD_MODIFY_BROADCAST_SRC,
                              CONTROLLER_INDEX),
-    'set_broadcast_code': (defs.BTP_SERVICE_ID_BAP, defs.BAP_SET_BROADCAST_CODE,
+    'set_broadcast_code': (defs.BTP_SERVICE_ID_BAP, defs.BTP_BAP_CMD_SET_BROADCAST_CODE,
                            CONTROLLER_INDEX),
-    'bap_send_past': (defs.BTP_SERVICE_ID_BAP, defs.BAP_SEND_PAST, CONTROLLER_INDEX),
+    'bap_send_past': (defs.BTP_SERVICE_ID_BAP, defs.BTP_BAP_CMD_SEND_PAST, CONTROLLER_INDEX),
 }
 
 
@@ -445,7 +445,7 @@ def bap_ev_discovery_completed_(bap, data, data_len):
     logging.debug(f'BAP Discovery completed: addr {addr} addr_type '
                   f'{addr_type} status {status}')
 
-    bap.event_received(defs.BAP_EV_DISCOVERY_COMPLETED, (addr_type, addr, status))
+    bap.event_received(defs.BTP_BAP_EV_DISCOVERY_COMPLETED, (addr_type, addr, status))
 
 
 def bap_ev_codec_cap_found_(bap, data, data_len):
@@ -465,7 +465,7 @@ def bap_ev_codec_cap_found_(bap, data, data_len):
                   f'freq {frequencies:#b} duration {frame_durations:#b} '
                   f'frame_len {octets_per_frame:#x} channel_counts {channel_counts:#b}')
 
-    bap.event_received(defs.BAP_EV_CODEC_CAP_FOUND,
+    bap.event_received(defs.BTP_BAP_EV_CODEC_CAP_FOUND,
                        (addr_type, addr, pac_dir, coding_format, frequencies,
                         frame_durations, octets_per_frame, channel_counts))
 
@@ -484,7 +484,7 @@ def bap_ev_ase_found_(bap, data, data_len):
     logging.debug(f'Found ASE: addr {addr} addr_type {addr_type}'
                   f' dir {ase_dir} ID {ase_id}')
 
-    bap.event_received(defs.BAP_EV_ASE_FOUND, (addr_type, addr, ase_dir, ase_id))
+    bap.event_received(defs.BTP_BAP_EV_ASE_FOUND, (addr_type, addr, ase_dir, ase_id))
 
 
 def bap_ev_stream_received_(bap, data, data_len):
@@ -503,7 +503,7 @@ def bap_ev_stream_received_(bap, data, data_len):
     logging.debug(f'Stream received: addr {addr} addr_type {addr_type}'
                   f' ID {ase_id} data {iso_data}')
 
-    bap.event_received(defs.BAP_EV_STREAM_RECEIVED, (addr_type, addr, ase_id, iso_data))
+    bap.event_received(defs.BTP_BAP_EV_STREAM_RECEIVED, (addr_type, addr, ase_id, iso_data))
 
 
 def bap_ev_baa_found_(bap, data, data_len):
@@ -528,7 +528,7 @@ def bap_ev_baa_found_(bap, data, data_len):
 
     logging.debug(f'Broadcast Audio Announcement received: {ev}')
 
-    bap.event_received(defs.BAP_EV_BAA_FOUND, ev)
+    bap.event_received(defs.BTP_BAP_EV_BAA_FOUND, ev)
 
 
 def bap_ev_bis_found_(bap, data, data_len):
@@ -560,7 +560,7 @@ def bap_ev_bis_found_(bap, data, data_len):
 
     logging.debug(f'BIS found: {ev}')
 
-    bap.event_received(defs.BAP_EV_BIS_FOUND, ev)
+    bap.event_received(defs.BTP_BAP_EV_BIS_FOUND, ev)
 
 
 def bap_ev_bis_synced_received_(bap, data, data_len):
@@ -583,7 +583,7 @@ def bap_ev_bis_synced_received_(bap, data, data_len):
 
     logging.debug(f'BIS synced: {ev}')
 
-    bap.event_received(defs.BAP_EV_BIS_SYNCED, ev)
+    bap.event_received(defs.BTP_BAP_EV_BIS_SYNCED, ev)
 
 
 def bap_ev_bis_stream_received_(bap, data, data_len):
@@ -609,7 +609,7 @@ def bap_ev_bis_stream_received_(bap, data, data_len):
 
     logging.debug(f'BIS data received: {ev}')
 
-    bap.event_received(defs.BAP_EV_BIS_STREAM_RECEIVED, ev)
+    bap.event_received(defs.BTP_BAP_EV_BIS_STREAM_RECEIVED, ev)
 
 
 def bap_ev_scan_delegator_found_(bap, data, data_len):
@@ -629,7 +629,7 @@ def bap_ev_scan_delegator_found_(bap, data, data_len):
 
     logging.debug(f'Scan Delegator found: {ev}')
 
-    bap.event_received(defs.BAP_EV_SCAN_DELEGATOR_FOUND, ev)
+    bap.event_received(defs.BTP_BAP_EV_SCAN_DELEGATOR_FOUND, ev)
 
 
 def bap_ev_broadcast_receive_state_(bap, data, data_len):
@@ -664,7 +664,7 @@ def bap_ev_broadcast_receive_state_(bap, data, data_len):
 
     logging.debug(f'Broadcast Receive State event: {ev}')
 
-    bap.event_received(defs.BAP_EV_BROADCAST_RECEIVE_STATE, ev)
+    bap.event_received(defs.BTP_BAP_EV_BROADCAST_RECEIVE_STATE, ev)
 
 
 def bap_ev_pa_syn_req(bap, data, data_len):
@@ -692,19 +692,19 @@ def bap_ev_pa_syn_req(bap, data, data_len):
 
     logging.debug(f'PA Sync Request event: {ev}')
 
-    bap.event_received(defs.BAP_EV_PA_SYNC_REQ, ev)
+    bap.event_received(defs.BTP_BAP_EV_PA_SYNC_REQ, ev)
 
 
 BAP_EV = {
-    defs.BAP_EV_DISCOVERY_COMPLETED: bap_ev_discovery_completed_,
-    defs.BAP_EV_CODEC_CAP_FOUND: bap_ev_codec_cap_found_,
-    defs.BAP_EV_ASE_FOUND: bap_ev_ase_found_,
-    defs.BAP_EV_STREAM_RECEIVED: bap_ev_stream_received_,
-    defs.BAP_EV_BAA_FOUND: bap_ev_baa_found_,
-    defs.BAP_EV_BIS_FOUND: bap_ev_bis_found_,
-    defs.BAP_EV_BIS_SYNCED: bap_ev_bis_synced_received_,
-    defs.BAP_EV_BIS_STREAM_RECEIVED: bap_ev_bis_stream_received_,
-    defs.BAP_EV_SCAN_DELEGATOR_FOUND: bap_ev_scan_delegator_found_,
-    defs.BAP_EV_BROADCAST_RECEIVE_STATE: bap_ev_broadcast_receive_state_,
-    defs.BAP_EV_PA_SYNC_REQ: bap_ev_pa_syn_req,
+    defs.BTP_BAP_EV_DISCOVERY_COMPLETED: bap_ev_discovery_completed_,
+    defs.BTP_BAP_EV_CODEC_CAP_FOUND: bap_ev_codec_cap_found_,
+    defs.BTP_BAP_EV_ASE_FOUND: bap_ev_ase_found_,
+    defs.BTP_BAP_EV_STREAM_RECEIVED: bap_ev_stream_received_,
+    defs.BTP_BAP_EV_BAA_FOUND: bap_ev_baa_found_,
+    defs.BTP_BAP_EV_BIS_FOUND: bap_ev_bis_found_,
+    defs.BTP_BAP_EV_BIS_SYNCED: bap_ev_bis_synced_received_,
+    defs.BTP_BAP_EV_BIS_STREAM_RECEIVED: bap_ev_bis_stream_received_,
+    defs.BTP_BAP_EV_SCAN_DELEGATOR_FOUND: bap_ev_scan_delegator_found_,
+    defs.BTP_BAP_EV_BROADCAST_RECEIVE_STATE: bap_ev_broadcast_receive_state_,
+    defs.BTP_BAP_EV_PA_SYNC_REQ: bap_ev_pa_syn_req,
 }

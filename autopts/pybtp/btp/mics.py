@@ -25,19 +25,19 @@ from autopts.pybtp.types import BTPError, addr2btp_ba
 
 MICS = {
     'read_supported_cmds': (defs.BTP_SERVICE_ID_MICS,
-                            defs.MICP_READ_SUPPORTED_COMMANDS,
+                            defs.BTP_MICS_CMD_READ_SUPPORTED_COMMANDS,
                             CONTROLLER_INDEX, ""),
     'mute_disable':        (defs.BTP_SERVICE_ID_MICS,
-                            defs.MICS_MUTE_DISABLE,
+                            defs.BTP_MICS_CMD_MUTE_DISABLE,
                             CONTROLLER_INDEX, ""),
     'mute_read':           (defs.BTP_SERVICE_ID_MICS,
-                            defs.MICS_MUTE_READ,
+                            defs.BTP_MICS_CMD_MUTE_READ,
                             CONTROLLER_INDEX, ""),
     'mute':                (defs.BTP_SERVICE_ID_MICS,
-                            defs.MICS_MUTE,
+                            defs.BTP_MICS_CMD_MUTE,
                             CONTROLLER_INDEX, ""),
     'unmute':              (defs.BTP_SERVICE_ID_MICS,
-                            defs.MICS_UNMUTE,
+                            defs.BTP_MICS_CMD_UNMUTE,
                             CONTROLLER_INDEX, ""),
 }
 
@@ -114,9 +114,9 @@ def mics_mute_state_ev(mics, data, data_len):
 
     logging.debug(f'MICS Mute state: {mute[0]}')
 
-    mics.event_received(defs.MICS_MUTE_STATE_EV, mute)
+    mics.event_received(defs.BTP_MICS_EV_MUTE_STATE, mute)
 
 
 MICS_EV = {
-    defs.MICS_MUTE_STATE_EV: mics_mute_state_ev,
+    defs.BTP_MICS_EV_MUTE_STATE: mics_mute_state_ev,
 }

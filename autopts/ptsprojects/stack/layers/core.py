@@ -20,7 +20,7 @@ from autopts.pybtp import defs
 class CORE:
     def __init__(self):
         self.event_queues = {
-            defs.CORE_EV_IUT_READY: [],
+            defs.BTP_CORE_EV_IUT_READY: [],
         }
 
     def event_received(self, event_type, event_data_tuple):
@@ -28,13 +28,13 @@ class CORE:
 
     def wait_iut_ready_ev(self, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.CORE_EV_IUT_READY],
+            self.event_queues[defs.BTP_CORE_EV_IUT_READY],
             lambda *_: True,
             timeout, remove)
 
     def cleanup(self):
         for key in self.event_queues:
-            if key == defs.CORE_EV_IUT_READY:
+            if key == defs.BTP_CORE_EV_IUT_READY:
                 # To pass IUT ready event between test cases
                 continue
 

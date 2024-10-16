@@ -323,7 +323,7 @@ changes_to_prepend = {
 """,
         2: f"from .{profile_name_lower} import {profile_name_upper}_EV\n",
         3: f"        defs.BTP_SERVICE_ID_{profile_name_upper}: ({profile_name_upper}_EV, stack.{profile_name_lower}),\n",
-        4: f"    \"{profile_name_lower}_reg\": (defs.BTP_SERVICE_ID_CORE, defs.CORE_REGISTER_SERVICE,\n"
+        4: f"    \"{profile_name_lower}_reg\": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,\n"
            f"                defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_{profile_name_upper}),\n",
     },
     f'{AUTOPTS_REPO}/autopts/pybtp/btp/__init__.py': {1: f"from autopts.pybtp.btp.{profile_name_lower} import *\n"},

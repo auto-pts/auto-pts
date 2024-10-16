@@ -27,9 +27,9 @@ from autopts.pybtp.types import BTPError
 def core_iut_ready_ev(core, data, data_len):
     logging.debug("%s", core_iut_ready_ev.__name__)
 
-    core.event_received(defs.CORE_EV_IUT_READY, True)
+    core.event_received(defs.BTP_CORE_EV_IUT_READY, True)
 
 
 CORE_EV = {
-    defs.CORE_EV_IUT_READY: core_iut_ready_ev,
+    defs.BTP_CORE_EV_IUT_READY: core_iut_ready_ev,
 }

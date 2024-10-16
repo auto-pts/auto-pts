@@ -20,8 +20,8 @@ from autopts.pybtp import defs
 class MICP:
     def __init__(self):
         self.event_queues = {
-            defs.MICP_DISCOVERED_EV: [],
-            defs.MICP_MUTE_STATE_EV: [],
+            defs.BTP_MICP_EV_DISCOVERED: [],
+            defs.BTP_MICP_EV_MUTE_STATE: [],
         }
 
     def event_received(self, event_type, event_data_tuple):
@@ -29,14 +29,14 @@ class MICP:
 
     def wait_discovery_completed_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.MICP_DISCOVERED_EV],
+            self.event_queues[defs.BTP_MICP_EV_DISCOVERED],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_mute_state_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.MICP_MUTE_STATE_EV],
+            self.event_queues[defs.BTP_MICP_EV_MUTE_STATE],
             lambda _addr_type, _addr, *_:
                 (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)

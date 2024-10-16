@@ -21,7 +21,7 @@ class MICS:
     def __init__(self):
         self.mute_state = None
         self.event_queues = {
-            defs.MICS_MUTE_STATE_EV: [],
+            defs.BTP_MICS_EV_MUTE_STATE: [],
         }
 
     def event_received(self, event_type, event_data_tuple):
@@ -29,5 +29,5 @@ class MICS:
 
     def wait_mute_state_ev(self, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.MICS_MUTE_STATE_EV],
+            self.event_queues[defs.BTP_MICS_EV_MUTE_STATE],
             lambda *_: True, timeout, remove)

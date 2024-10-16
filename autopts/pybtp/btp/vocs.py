@@ -28,20 +28,20 @@ from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, get_iut_metho
 
 VOCS = {
     'read_supported_cmds': (defs.BTP_SERVICE_ID_VCP,
-                            defs.VCP_READ_SUPPORTED_COMMANDS,
+                            defs.BTP_VOCS_CMD_READ_SUPPORTED_COMMANDS,
                             CONTROLLER_INDEX, ""),
-    'audio_desc':          (defs.BTP_SERVICE_ID_VOCS, defs.VOCS_UPDATE_OUT_DESC,
+    'audio_desc':          (defs.BTP_SERVICE_ID_VOCS, defs.BTP_VOCS_CMD_UPDATE_OUT_DESC,
                             CONTROLLER_INDEX),
-    "audio_loc":           (defs.BTP_SERVICE_ID_VOCS, defs.VOCS_UPDATE_AUDIO_LOC,
+    "audio_loc":           (defs.BTP_SERVICE_ID_VOCS, defs.BTP_VOCS_CMD_UPDATE_AUDIO_LOC,
                             CONTROLLER_INDEX),
     'state_read':          (defs.BTP_SERVICE_ID_VOCS,
-                            defs.VOCS_OFFSET_STATE_GET,
+                            defs.BTP_VOCS_CMD_OFFSET_STATE_GET,
                             CONTROLLER_INDEX),
     'audio_loc_get':       (defs.BTP_SERVICE_ID_VOCS,
-                            defs.VOCS_AUDIO_LOC_GET,
+                            defs.BTP_VOCS_CMD_AUDIO_LOC_GET,
                             CONTROLLER_INDEX),
     'state_set':           (defs.BTP_SERVICE_ID_VOCS,
-                            defs.VOCS_OFFSET_STATE_SET,
+                            defs.BTP_VOCS_CMD_OFFSET_STATE_SET,
                             CONTROLLER_INDEX),
 }
 
@@ -141,7 +141,7 @@ def vocs_state_ev(vocs, data, data_len):
     logging.debug(f'VOCS Offset State: addr {addr} addr_type {addr_type},'
                   f'ATT status {att_status}, offset {offset}')
 
-    vocs.event_received(defs.VOCS_OFFSET_EV, (addr_type, addr, att_status, offset))
+    vocs.event_received(defs.BTP_VOCS_EV_OFFSET, (addr_type, addr, att_status, offset))
 
 
 def vocs_audio_loc_ev(vocs, data, data_len):
@@ -158,7 +158,7 @@ def vocs_audio_loc_ev(vocs, data, data_len):
     logging.debug(f'VOCS Audio Location: addr {addr} addr_type {addr_type},'
                   f' ATT Status {att_status}, Audio Location {location}')
 
-    vocs.event_received(defs.VOCS_AUDIO_LOC_EV, (addr_type, addr, att_status,
+    vocs.event_received(defs.BTP_VOCS_EV_AUDIO_LOC, (addr_type, addr, att_status,
                                                  location))
 
 
@@ -176,11 +176,11 @@ def vocs_procedure_ev(vocs, data, data_len):
     logging.debug(f'VOCS Procedure Event: addr {addr} addr_type {addr_type},'
                   f' ATT status {att_status}, opcode {opcode}')
 
-    vocs.event_received(defs.VOCS_PROCEDURE_EV, (addr_type, addr, att_status, opcode))
+    vocs.event_received(defs.BTP_VOCS_EV_PROCEDURE, (addr_type, addr, att_status, opcode))
 
 
 VOCS_EV = {
-    defs.VOCS_OFFSET_EV: vocs_state_ev,
-    defs.VOCS_AUDIO_LOC_EV: vocs_audio_loc_ev,
-    defs.VOCS_PROCEDURE_EV: vocs_procedure_ev
+    defs.BTP_VOCS_EV_OFFSET: vocs_state_ev,
+    defs.BTP_VOCS_EV_AUDIO_LOC: vocs_audio_loc_ev,
+    defs.BTP_VOCS_EV_PROCEDURE: vocs_procedure_ev
 }

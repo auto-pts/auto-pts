@@ -474,7 +474,7 @@ def hdl_wid_20206(params: WIDParams):
     """
     stack = get_stack()
 
-    chars = stack.ccp.events[defs.CCP_EV_CHRC_HANDLES][0]
+    chars = stack.ccp.events[defs.BTP_CCP_EV_CHRC_HANDLES][0]
     chrc_list = [f'{chrc:04X}' for chrc in chars]
 
     pattern = re.compile(r"0x([0-9a-fA-F]+)")

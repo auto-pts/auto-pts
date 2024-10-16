@@ -20,12 +20,12 @@ from autopts.pybtp import defs
 class AICS:
     def __init__(self):
         self.event_queues = {
-            defs.AICS_STATE_EV: [],
-            defs.AICS_GAIN_SETTING_PROP_EV: [],
-            defs.AICS_INPUT_TYPE_EV: [],
-            defs.AICS_STATUS_EV: [],
-            defs.AICS_DESCRIPTION_EV: [],
-            defs.AICS_PROCEDURE_EV: [],
+            defs.BTP_AICS_EV_STATE: [],
+            defs.BTP_AICS_EV_GAIN_SETTING_PROP: [],
+            defs.BTP_AICS_EV_INPUT_TYPE: [],
+            defs.BTP_AICS_EV_STATUS: [],
+            defs.BTP_AICS_EV_DESCRIPTION: [],
+            defs.BTP_AICS_EV_PROCEDURE: [],
         }
 
     def event_received(self, event_type, event_data_tuple):
@@ -33,42 +33,42 @@ class AICS:
 
     def wait_aics_state_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.AICS_STATE_EV],
+            self.event_queues[defs.BTP_AICS_EV_STATE],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_aics_gain_setting_prop_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.AICS_GAIN_SETTING_PROP_EV],
+            self.event_queues[defs.BTP_AICS_EV_GAIN_SETTING_PROP],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_aics_input_type_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.AICS_INPUT_TYPE_EV],
+            self.event_queues[defs.BTP_AICS_EV_INPUT_TYPE],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_aics_status_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.AICS_STATUS_EV],
+            self.event_queues[defs.BTP_AICS_EV_STATUS],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_aics_description_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.AICS_DESCRIPTION_EV],
+            self.event_queues[defs.BTP_AICS_EV_DESCRIPTION],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_aics_procedure_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.AICS_PROCEDURE_EV],
+            self.event_queues[defs.BTP_AICS_EV_PROCEDURE],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)

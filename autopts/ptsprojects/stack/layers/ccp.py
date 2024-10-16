@@ -22,13 +22,13 @@ from autopts.pybtp import defs
 class CCP:
     def __init__(self):
         self.events = {
-            defs.CCP_EV_DISCOVERED:  { 'count': 0, 'status': 0, 'tbs_count': 0, 'gtbs': False },
-            defs.CCP_EV_CALL_STATES: { 'count': 0, 'status': 0, 'index': 0, 'call_count': 0, 'states': [] },
-            defs.CCP_EV_CHRC_HANDLES: [],
-            defs.CCP_EV_CHRC_VAL: [],
-            defs.CCP_EV_CHRC_STR: [],
-            defs.CCP_EV_CP: [],
-            defs.CCP_EV_CURRENT_CALLS: [],
+            defs.BTP_CCP_EV_DISCOVERED:  { 'count': 0, 'status': 0, 'tbs_count': 0, 'gtbs': False },
+            defs.BTP_CCP_EV_CALL_STATES: { 'count': 0, 'status': 0, 'index': 0, 'call_count': 0, 'states': [] },
+            defs.BTP_CCP_EV_CHRC_HANDLES: [],
+            defs.BTP_CCP_EV_CHRC_VAL: [],
+            defs.BTP_CCP_EV_CHRC_STR: [],
+            defs.BTP_CCP_EV_CP: [],
+            defs.BTP_CCP_EV_CURRENT_CALLS: [],
         }
 
     def event_received(self, event_type, event_dict):
@@ -41,35 +41,35 @@ class CCP:
 
     def wait_characteristic_value_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.events[defs.CCP_EV_CHRC_VAL],
+            self.events[defs.BTP_CCP_EV_CHRC_VAL],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_characteristic_str_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.events[defs.CCP_EV_CHRC_STR],
+            self.events[defs.BTP_CCP_EV_CHRC_STR],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_chrc_handles_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.events[defs.CCP_EV_CHRC_HANDLES],
+            self.events[defs.BTP_CCP_EV_CHRC_HANDLES],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_cp_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.events[defs.CCP_EV_CP],
+            self.events[defs.BTP_CCP_EV_CP],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_current_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.events[defs.CCP_EV_CURRENT_CALLS],
+            self.events[defs.BTP_CCP_EV_CURRENT_CALLS],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)

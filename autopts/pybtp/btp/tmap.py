@@ -34,10 +34,10 @@ def address_to_ba(bd_addr_type=None, bd_addr=None):
 
 TMAP = {
     'read_supported_cmds': (defs.BTP_SERVICE_ID_TMAP,
-                            defs.TMAP_READ_SUPPORTED_COMMANDS,
+                            defs.BTP_TMAP_CMD_READ_SUPPORTED_COMMANDS,
                             CONTROLLER_INDEX),
     'discover': (defs.BTP_SERVICE_ID_TMAP,
-                      defs.TMAP_DISCOVER,
+                      defs.BTP_TMAP_CMD_DISCOVER,
                       CONTROLLER_INDEX),
 }
 
@@ -88,9 +88,9 @@ def tmap_ev_discovery_completed(tmap, data, data_len):
                   f'{addr_type} status {status}'
                   f'role {role}')
 
-    tmap.event_received(defs.TMAP_EV_DISCOVERY_COMPLETED, (addr_type, addr, status, role))
+    tmap.event_received(defs.BTP_TMAP_EV_DISCOVERY_COMPLETED, (addr_type, addr, status, role))
 
 
 TMAP_EV = {
-    defs.TMAP_EV_DISCOVERY_COMPLETED: tmap_ev_discovery_completed,
+    defs.BTP_TMAP_EV_DISCOVERY_COMPLETED: tmap_ev_discovery_completed,
 }
