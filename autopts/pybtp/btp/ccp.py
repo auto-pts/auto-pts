@@ -28,73 +28,73 @@ from autopts.pybtp.types import addr2btp_ba, BTPError
 
 CCP = {
     'read_supported_cmds': ( defs.BTP_SERVICE_ID_CCP,
-                             defs.CCP_READ_SUPPORTED_COMMANDS,
+                             defs.BTP_CCP_CMD_READ_SUPPORTED_COMMANDS,
                              CONTROLLER_INDEX),
     'discover_tbs':        ( defs.BTP_SERVICE_ID_CCP,
-                             defs.CCP_DISCOVER_TBS,
+                             defs.BTP_CCP_CMD_DISCOVER_TBS,
                              CONTROLLER_INDEX),
     'accept_call':         ( defs.BTP_SERVICE_ID_CCP,
-                             defs.CCP_ACCEPT_CALL,
+                             defs.BTP_CCP_CMD_ACCEPT_CALL,
                              CONTROLLER_INDEX),
     'terminate_call':      ( defs.BTP_SERVICE_ID_CCP,
-                             defs.CCP_TERMINATE_CALL,
+                             defs.BTP_CCP_CMD_TERMINATE_CALL,
                              CONTROLLER_INDEX),
     'originate_call':      ( defs.BTP_SERVICE_ID_CCP,
-                             defs.CCP_ORIGINATE_CALL,
+                             defs.BTP_CCP_CMD_ORIGINATE_CALL,
                              CONTROLLER_INDEX),
     'read_call_state':     ( defs.BTP_SERVICE_ID_CCP,
-                             defs.CCP_READ_CALL_STATE,
+                             defs.BTP_CCP_CMD_READ_CALL_STATE,
                              CONTROLLER_INDEX),
     'read_bearer_name':    (defs.BTP_SERVICE_ID_CCP,
-                            defs.CCP_READ_BEARER_NAME,
+                            defs.BTP_CCP_CMD_READ_BEARER_NAME,
                             CONTROLLER_INDEX),
     'read_bearer_uci':     (defs.BTP_SERVICE_ID_CCP,
-                            defs.CCP_READ_BEARER_UCI,
+                            defs.BTP_CCP_CMD_READ_BEARER_UCI,
                             CONTROLLER_INDEX),
     'read_bearer_tech':    (defs.BTP_SERVICE_ID_CCP,
-                            defs.CCP_READ_BEARER_TECH,
+                            defs.BTP_CCP_CMD_READ_BEARER_TECH,
                             CONTROLLER_INDEX),
     'read_uri_list':       (defs.BTP_SERVICE_ID_CCP,
-                            defs.CCP_READ_URI_LIST,
+                            defs.BTP_CCP_CMD_READ_URI_LIST,
                             CONTROLLER_INDEX),
     'read_signal_strength': (defs.BTP_SERVICE_ID_CCP,
-                             defs.CCP_READ_SIGNAL_STRENGTH,
+                             defs.BTP_CCP_CMD_READ_SIGNAL_STRENGTH,
                              CONTROLLER_INDEX),
     'read_signal_interval': (defs.BTP_SERVICE_ID_CCP,
-                             defs.CCP_READ_SIGNAL_INTERVAL,
+                             defs.BTP_CCP_CMD_READ_SIGNAL_INTERVAL,
                              CONTROLLER_INDEX),
     'read_current_calls':   (defs.BTP_SERVICE_ID_CCP,
-                             defs.CCP_READ_CURRENT_CALLS,
+                             defs.BTP_CCP_CMD_READ_CURRENT_CALLS,
                              CONTROLLER_INDEX),
     'read_ccid':            (defs.BTP_SERVICE_ID_CCP,
-                             defs.CCP_READ_CCID,
+                             defs.BTP_CCP_CMD_READ_CCID,
                              CONTROLLER_INDEX),
     'read_call_uri':        (defs.BTP_SERVICE_ID_CCP,
-                             defs.CCP_READ_CALL_URI,
+                             defs.BTP_CCP_CMD_READ_CALL_URI,
                              CONTROLLER_INDEX),
     'read_status_flags':    (defs.BTP_SERVICE_ID_CCP,
-                             defs.CCP_READ_STATUS_FLAGS,
+                             defs.BTP_CCP_CMD_READ_STATUS_FLAGS,
                              CONTROLLER_INDEX),
     'read_optional_opcodes':(defs.BTP_SERVICE_ID_CCP,
-                             defs.CCP_READ_OPTIONAL_OPCODES,
+                             defs.BTP_CCP_CMD_READ_OPTIONAL_OPCODES,
                              CONTROLLER_INDEX),
     'read_friendly_name':   (defs.BTP_SERVICE_ID_CCP,
-                             defs.CCP_READ_FRIENDLY_NAME,
+                             defs.BTP_CCP_CMD_READ_FRIENDLY_NAME,
                              CONTROLLER_INDEX),
     'read_remote_uri':      (defs.BTP_SERVICE_ID_CCP,
-                             defs.CCP_READ_REMOTE_URI,
+                             defs.BTP_CCP_CMD_READ_REMOTE_URI,
                              CONTROLLER_INDEX),
     'set_signal_interval':  (defs.BTP_SERVICE_ID_CCP,
-                             defs.CCP_SET_SIGNAL_INTERVAL,
+                             defs.BTP_CCP_CMD_SET_SIGNAL_INTERVAL,
                              CONTROLLER_INDEX),
     'hold_call':            (defs.BTP_SERVICE_ID_CCP,
-                             defs.CCP_HOLD_CALL,
+                             defs.BTP_CCP_CMD_HOLD_CALL,
                              CONTROLLER_INDEX),
     'retrieve_call':        (defs.BTP_SERVICE_ID_CCP,
-                             defs.CCP_RETRIEVE_CALL,
+                             defs.BTP_CCP_CMD_RETRIEVE_CALL,
                              CONTROLLER_INDEX),
     'join_calls':           (defs.BTP_SERVICE_ID_CCP,
-                             defs.CCP_JOIN_CALLS,
+                             defs.BTP_CCP_CMD_JOIN_CALLS,
                              CONTROLLER_INDEX),
 }
 
@@ -439,12 +439,12 @@ def ccp_await_discovered(timeout=6000):
     logging.debug(f"{ccp_await_discovered.__name__}")
 
     stack = get_stack()
-    success = ccp_await_event(stack.ccp, defs.CCP_EV_DISCOVERED, timeout)
+    success = ccp_await_event(stack.ccp, defs.BTP_CCP_EV_DISCOVERED, timeout)
 
     return success, \
-           stack.ccp.events[defs.CCP_EV_DISCOVERED]['status'], \
-           stack.ccp.events[defs.CCP_EV_DISCOVERED]['tbs_count'], \
-           stack.ccp.events[defs.CCP_EV_DISCOVERED]['gtbs']
+           stack.ccp.events[defs.BTP_CCP_EV_DISCOVERED]['status'], \
+           stack.ccp.events[defs.BTP_CCP_EV_DISCOVERED]['tbs_count'], \
+           stack.ccp.events[defs.BTP_CCP_EV_DISCOVERED]['gtbs']
 
 
 def ccp_ev_discovered(ccp, data, data_len):
@@ -457,7 +457,7 @@ def ccp_ev_discovered(ccp, data, data_len):
         'tbs_count': tbs_count,
         'gtbs': gtbs_found
     }
-    ccp.event_received(defs.CCP_EV_DISCOVERED, event_dict)
+    ccp.event_received(defs.BTP_CCP_EV_DISCOVERED, event_dict)
 
 
 def ccp_ev_chrc_handles(ccp, data, data_len):
@@ -482,7 +482,7 @@ def ccp_ev_chrc_handles(ccp, data, data_len):
                   f'Termination Reasons {termination_reasons}, Incoming Call {incoming_call},'
                   f'Friendly Name {friendly_name}')
 
-    ccp.event_received_2(defs.CCP_EV_CHRC_HANDLES, (provider_name, bearer_uci, bearer_technology,
+    ccp.event_received_2(defs.BTP_CCP_EV_CHRC_HANDLES, (provider_name, bearer_uci, bearer_technology,
                                                     uri_list, signal_strength, signal_interval,
                                                     current_calls, ccid, status_flags, bearer_uri,
                                                     call_state, control_point, optional_opcodes,
@@ -505,7 +505,7 @@ def ccp_ev_chrc_val(ccp, data, data_len):
                   f'{addr_type}, status {status}, Instance index {inst_index},'
                   f' Value {value}')
 
-    ccp.event_received_2(defs.CCP_EV_CHRC_VAL, (addr_type, addr, status, inst_index,
+    ccp.event_received_2(defs.BTP_CCP_EV_CHRC_VAL, (addr_type, addr, status, inst_index,
                                                 value))
 
 
@@ -526,7 +526,7 @@ def ccp_ev_chrc_str(ccp, data, data_len):
     logging.debug(f'CCP Characteristic String data: addr {addr} addr_type '
                   f'{addr_type}, status {status}, String Data: {str_data}')
 
-    ccp.event_received_2(defs.CCP_EV_CHRC_STR, (addr_type, addr, status, inst_index, str_data))
+    ccp.event_received_2(defs.BTP_CCP_EV_CHRC_STR, (addr_type, addr, status, inst_index, str_data))
 
 
 def ccp_ev_cp(ccp, data, data_len):
@@ -544,7 +544,7 @@ def ccp_ev_cp(ccp, data, data_len):
     logging.debug(f'CCP Control Point event: addr {addr} addr_type '
                   f'{addr_type}, status {status}')
 
-    ccp.event_received_2(defs.CCP_EV_CP, (addr_type, addr, status))
+    ccp.event_received_2(defs.BTP_CCP_EV_CP, (addr_type, addr, status))
 
 
 def ccp_ev_current_calls(ccp, data, data_len):
@@ -562,20 +562,20 @@ def ccp_ev_current_calls(ccp, data, data_len):
     logging.debug(f'CCP Current Calls event: addr {addr} addr_type '
                   f'{addr_type}, status {status}')
 
-    ccp.event_received_2(defs.CCP_EV_CURRENT_CALLS, (addr_type, addr, status))
+    ccp.event_received_2(defs.BTP_CCP_EV_CURRENT_CALLS, (addr_type, addr, status))
 
 
 def ccp_await_call_state(timeout=1000):
     logging.debug(f"{ccp_await_call_state.__name__}")
 
     stack = get_stack()
-    success = ccp_await_event(stack.ccp, defs.CCP_EV_CALL_STATES, timeout)
+    success = ccp_await_event(stack.ccp, defs.BTP_CCP_EV_CALL_STATES, timeout)
 
     return success, \
-           stack.ccp.events[defs.CCP_EV_CALL_STATES]['status'], \
-           stack.ccp.events[defs.CCP_EV_CALL_STATES]['index'], \
-           stack.ccp.events[defs.CCP_EV_CALL_STATES]['call_count'], \
-           stack.ccp.events[defs.CCP_EV_CALL_STATES]['states']
+           stack.ccp.events[defs.BTP_CCP_EV_CALL_STATES]['status'], \
+           stack.ccp.events[defs.BTP_CCP_EV_CALL_STATES]['index'], \
+           stack.ccp.events[defs.BTP_CCP_EV_CALL_STATES]['call_count'], \
+           stack.ccp.events[defs.BTP_CCP_EV_CALL_STATES]['states']
 
 
 def ccp_fmt_flags(flags):
@@ -617,15 +617,15 @@ def ccp_ev_call_states(ccp, data, data_len):
     logging.debug(f"{ccp_ev_call_states.__name__} status: %u index: 0x%02x calls: %u %s" % \
                   (status, index, call_count, states_fmt))
 
-    ccp.event_received(defs.CCP_EV_CALL_STATES, event_dict)
+    ccp.event_received(defs.BTP_CCP_EV_CALL_STATES, event_dict)
 
 
 CCP_EV = {
-    defs.CCP_EV_DISCOVERED: ccp_ev_discovered,
-    defs.CCP_EV_CALL_STATES: ccp_ev_call_states,
-    defs.CCP_EV_CHRC_HANDLES: ccp_ev_chrc_handles,
-    defs.CCP_EV_CHRC_VAL: ccp_ev_chrc_val,
-    defs.CCP_EV_CHRC_STR: ccp_ev_chrc_str,
-    defs.CCP_EV_CP: ccp_ev_cp,
-    defs.CCP_EV_CURRENT_CALLS: ccp_ev_current_calls,
+    defs.BTP_CCP_EV_DISCOVERED: ccp_ev_discovered,
+    defs.BTP_CCP_EV_CALL_STATES: ccp_ev_call_states,
+    defs.BTP_CCP_EV_CHRC_HANDLES: ccp_ev_chrc_handles,
+    defs.BTP_CCP_EV_CHRC_VAL: ccp_ev_chrc_val,
+    defs.BTP_CCP_EV_CHRC_STR: ccp_ev_chrc_str,
+    defs.BTP_CCP_EV_CP: ccp_ev_cp,
+    defs.BTP_CCP_EV_CURRENT_CALLS: ccp_ev_current_calls,
 }

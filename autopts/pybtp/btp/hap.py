@@ -34,43 +34,43 @@ def address_to_ba(bd_addr_type=None, bd_addr=None):
 
 HAP = {
     'read_supported_cmds': (defs.BTP_SERVICE_ID_HAP,
-                            defs.HAP_READ_SUPPORTED_COMMANDS,
+                            defs.BTP_HAP_CMD_READ_SUPPORTED_COMMANDS,
                             CONTROLLER_INDEX, ""),
     'ha_init': (defs.BTP_SERVICE_ID_HAP,
-                defs.HAP_HA_INIT,
+                defs.BTP_HAP_CMD_HA_INIT,
                 CONTROLLER_INDEX),
     'harc_init': (defs.BTP_SERVICE_ID_HAP,
-                  defs.HAP_HARC_INIT,
+                  defs.BTP_HAP_CMD_HARC_INIT,
                   CONTROLLER_INDEX, ""),
     'hauc_init': (defs.BTP_SERVICE_ID_HAP,
-                  defs.HAP_HAUC_INIT,
+                  defs.BTP_HAP_CMD_HAUC_INIT,
                   CONTROLLER_INDEX, ""),
     'iac_init': (defs.BTP_SERVICE_ID_HAP,
-                 defs.HAP_IAC_INIT,
+                 defs.BTP_HAP_CMD_IAC_INIT,
                  CONTROLLER_INDEX, ""),
     'iac_discover': (defs.BTP_SERVICE_ID_HAP,
-                     defs.HAP_IAC_DISCOVER,
+                     defs.BTP_HAP_CMD_IAC_DISCOVER,
                      CONTROLLER_INDEX),
     'iac_set_alert': (defs.BTP_SERVICE_ID_HAP,
-                      defs.HAP_IAC_SET_ALERT,
+                      defs.BTP_HAP_CMD_IAC_SET_ALERT,
                       CONTROLLER_INDEX),
     'hauc_discover': (defs.BTP_SERVICE_ID_HAP,
-                      defs.HAP_HAUC_DISCOVER,
+                      defs.BTP_HAP_CMD_HAUC_DISCOVER,
                       CONTROLLER_INDEX),
     'hap_read_presets': (defs.BTP_SERVICE_ID_HAP,
-                      defs.HAP_READ_PRESETS,
+                      defs.BTP_HAP_CMD_READ_PRESETS,
                       CONTROLLER_INDEX),
     'hap_write_preset_name': (defs.BTP_SERVICE_ID_HAP,
-                      defs.HAP_WRITE_PRESET_NAME,
+                      defs.BTP_HAP_CMD_WRITE_PRESET_NAME,
                       CONTROLLER_INDEX),
     'hap_set_active_preset': (defs.BTP_SERVICE_ID_HAP,
-                      defs.HAP_SET_ACTIVE_PRESET,
+                      defs.BTP_HAP_CMD_SET_ACTIVE_PRESET,
                       CONTROLLER_INDEX),
     'hap_set_next_preset': (defs.BTP_SERVICE_ID_HAP,
-                      defs.HAP_SET_NEXT_PRESET,
+                      defs.BTP_HAP_CMD_SET_NEXT_PRESET,
                       CONTROLLER_INDEX),
     'hap_set_previous_preset': (defs.BTP_SERVICE_ID_HAP,
-                      defs.HAP_SET_PREVIOUS_PRESET,
+                      defs.BTP_HAP_CMD_SET_PREVIOUS_PRESET,
                       CONTROLLER_INDEX),
 }
 
@@ -241,7 +241,7 @@ def hap_ev_iac_discovery_complete_(hap, data, data_len):
     logging.debug(f'IAC Discovery complete: addr {addr} addr_type '
                   f'{addr_type} status {status}')
 
-    hap.event_received(defs.HAP_EV_IAC_DISCOVERY_COMPLETE, (addr_type, addr, status))
+    hap.event_received(defs.BTP_HAP_EV_IAC_DISCOVERY_COMPLETE, (addr_type, addr, status))
 
 
 def hap_ev_hauc_discovery_complete_(hap, data, data_len):
@@ -263,7 +263,7 @@ def hap_ev_hauc_discovery_complete_(hap, data, data_len):
                   f'has_control_point_handle {hearing_aid_control_point_handle} '
                   f'has_active_preset_index_handle {active_preset_index_handle}')
 
-    hap.event_received(defs.HAP_EV_HAUC_DISCOVERY_COMPLETE, (addr_type, addr, status,
+    hap.event_received(defs.BTP_HAP_EV_HAUC_DISCOVERY_COMPLETE, (addr_type, addr, status,
                                                              hearing_aid_features_handle,
                                                              hearing_aid_control_point_handle,
                                                              active_preset_index_handle))
@@ -290,13 +290,13 @@ def hap_ev_preset_changed_(hap, data, data_len):
                   f'prev_index {properties}'
                   f'name {name}')
 
-    hap.event_received(defs.HAP_EV_PRESET_READ, (addr_type, addr, change_id,
+    hap.event_received(defs.BTP_HAP_EV_PRESET_READ, (addr_type, addr, change_id,
                                                 is_last, preset_index,
                                                 prev_index, properties, name))
 
 
 HAP_EV = {
-    defs.HAP_EV_IAC_DISCOVERY_COMPLETE: hap_ev_iac_discovery_complete_,
-    defs.HAP_EV_HAUC_DISCOVERY_COMPLETE: hap_ev_hauc_discovery_complete_,
-    defs.HAP_EV_PRESET_CHANGED: hap_ev_preset_changed_,
+    defs.BTP_HAP_EV_IAC_DISCOVERY_COMPLETE: hap_ev_iac_discovery_complete_,
+    defs.BTP_HAP_EV_HAUC_DISCOVERY_COMPLETE: hap_ev_hauc_discovery_complete_,
+    defs.BTP_HAP_EV_PRESET_CHANGED: hap_ev_preset_changed_,
 }

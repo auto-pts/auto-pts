@@ -29,12 +29,12 @@ class HAP:
     def __init__(self):
         self.peers = {}
         self.event_queues = {
-            defs.HAP_EV_IAC_DISCOVERY_COMPLETE: [],
-            defs.HAP_EV_HAUC_DISCOVERY_COMPLETE: [],
-            defs.HAP_EV_PRESET_CHANGED: [],
+            defs.BTP_HAP_EV_IAC_DISCOVERY_COMPLETE: [],
+            defs.BTP_HAP_EV_HAUC_DISCOVERY_COMPLETE: [],
+            defs.BTP_HAP_EV_PRESET_CHANGED: [],
         }
         self.event_handlers = {
-            defs.HAP_EV_HAUC_DISCOVERY_COMPLETE: self._ev_hauc_discovery_complete,
+            defs.BTP_HAP_EV_HAUC_DISCOVERY_COMPLETE: self._ev_hauc_discovery_complete,
         }
 
     def get_peer(self, addr_type, addr):
@@ -53,14 +53,14 @@ class HAP:
 
     def wait_iac_discovery_complete_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.HAP_EV_IAC_DISCOVERY_COMPLETE],
+            self.event_queues[defs.BTP_HAP_EV_IAC_DISCOVERY_COMPLETE],
             lambda _addr_type, _addr, *_:
                 (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_hauc_discovery_complete_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.HAP_EV_HAUC_DISCOVERY_COMPLETE],
+            self.event_queues[defs.BTP_HAP_EV_HAUC_DISCOVERY_COMPLETE],
             lambda _addr_type, _addr, *_:
                 (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
@@ -80,7 +80,7 @@ class HAP:
 
     def wait_preset_changed_ev(self, addr_type, addr, timeout, change_id, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.HAP_EV_PRESET_CHANGED],
+            self.event_queues[defs.BTP_HAP_EV_PRESET_CHANGED],
             lambda _addr_type, _addr, _change_id, *_:
                 (addr_type, addr, change_id) == (_addr_type, _addr, _change_id),
             timeout, remove)

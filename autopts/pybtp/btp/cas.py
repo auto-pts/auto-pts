@@ -25,13 +25,13 @@ from autopts.pybtp.types import addr2btp_ba, BTPError
 
 CAS = {
     'read_supported_cmds': ( defs.BTP_SERVICE_ID_CAS,
-                             defs.CAS_READ_SUPPORTED_COMMANDS,
+                             defs.BTP_CAS_CMD_READ_SUPPORTED_COMMANDS,
                              CONTROLLER_INDEX),
     'set_member_lock':     ( defs.BTP_SERVICE_ID_CAS,
-                             defs.CAS_SET_MEMBER_LOCK,
+                             defs.BTP_CAS_CMD_SET_MEMBER_LOCK,
                              CONTROLLER_INDEX),
     'get_member_rsi':      ( defs.BTP_SERVICE_ID_CAS,
-                             defs.CAS_GET_MEMBER_RSI,
+                             defs.BTP_CAS_CMD_GET_MEMBER_RSI,
                              CONTROLLER_INDEX)
 }
 

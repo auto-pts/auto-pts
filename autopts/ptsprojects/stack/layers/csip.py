@@ -22,9 +22,9 @@ class CSIP:
         self.member_cnt = 0
         self.wid_cnt = 0
         self.event_queues = {
-            defs.CSIP_DISCOVERED_EV: [],
-            defs.CSIP_SIRK_EV: [],
-            defs.CSIP_LOCK_EV: []
+            defs.BTP_CSIP_EV_DISCOVERED: [],
+            defs.BTP_CSIP_EV_SIRK: [],
+            defs.BTP_CSIP_EV_LOCK: []
         }
 
     def event_received(self, event_type, event_data):
@@ -32,19 +32,19 @@ class CSIP:
 
     def wait_discovery_completed_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.CSIP_DISCOVERED_EV],
+            self.event_queues[defs.BTP_CSIP_EV_DISCOVERED],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_sirk_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.CSIP_SIRK_EV],
+            self.event_queues[defs.BTP_CSIP_EV_SIRK],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_lock_ev(self, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.CSIP_LOCK_EV],
+            self.event_queues[defs.BTP_CSIP_EV_LOCK],
             lambda *_: True, timeout, remove)

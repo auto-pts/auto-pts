@@ -25,79 +25,79 @@ from autopts.pybtp.types import BTPError, addr2btp_ba
 
 MCP = {
     'read_supported_cmds':           (defs.BTP_SERVICE_ID_MCP,
-                                      defs.MCP_READ_SUPPORTED_COMMANDS,
+                                      defs.BTP_MCP_CMD_READ_SUPPORTED_COMMANDS,
                                       CONTROLLER_INDEX, ""),
     'discovery':                     (defs.BTP_SERVICE_ID_MCP,
-                                      defs.MCP_DISCOVERY,
+                                      defs.BTP_MCP_CMD_DISCOVERY,
                                       CONTROLLER_INDEX),
     'track_duration':                (defs.BTP_SERVICE_ID_MCP,
-                                      defs.MCP_TRACK_DURATION_READ,
+                                      defs.BTP_MCP_CMD_TRACK_DURATION_READ,
                                       CONTROLLER_INDEX),
     'track_position_read':           (defs.BTP_SERVICE_ID_MCP,
-                                      defs.MCP_TRACK_POSITION_READ,
+                                      defs.BTP_MCP_CMD_TRACK_POSITION_READ,
                                       CONTROLLER_INDEX),
     'track_position_set':            (defs.BTP_SERVICE_ID_MCP,
-                                      defs.MCP_TRACK_POSITION_SET,
+                                      defs.BTP_MCP_CMD_TRACK_POSITION_SET,
                                       CONTROLLER_INDEX),
     'playback_speed_get':            (defs.BTP_SERVICE_ID_MCP,
-                                      defs.MCP_PLAYBACK_SPEED_READ,
+                                      defs.BTP_MCP_CMD_PLAYBACK_SPEED_READ,
                                       CONTROLLER_INDEX),
     'playback_speed_set':            (defs.BTP_SERVICE_ID_MCP,
-                                      defs.MCP_PLAYBACK_SPEED_SET,
+                                      defs.BTP_MCP_CMD_PLAYBACK_SPEED_SET,
                                       CONTROLLER_INDEX),
     'seeking_speed_get':             (defs.BTP_SERVICE_ID_MCP,
-                                      defs.MCP_SEEKING_SPEED_READ,
+                                      defs.BTP_MCP_CMD_SEEKING_SPEED_READ,
                                       CONTROLLER_INDEX),
     'icon_obj_id_read':              (defs.BTP_SERVICE_ID_MCP,
-                                      defs.MCP_ICON_OBJ_ID_READ,
+                                      defs.BTP_MCP_CMD_ICON_OBJ_ID_READ,
                                       CONTROLLER_INDEX),
     'next_track_obj_id_read':        (defs.BTP_SERVICE_ID_MCP,
-                                      defs.MCP_NEXT_TRACK_OBJ_ID_READ,
+                                      defs.BTP_MCP_CMD_NEXT_TRACK_OBJ_ID_READ,
                                       CONTROLLER_INDEX),
     'next_track_obj_id_set':         (defs.BTP_SERVICE_ID_MCP,
-                                      defs.MCP_NEXT_TRACK_OBJ_ID_SET,
+                                      defs.BTP_MCP_CMD_NEXT_TRACK_OBJ_ID_SET,
                                       CONTROLLER_INDEX),
     'parent_group_obj_id_read':      (defs.BTP_SERVICE_ID_MCP,
-                                      defs.MCP_PARENT_GROUP_OBJ_ID_READ,
+                                      defs.BTP_MCP_CMD_PARENT_GROUP_OBJ_ID_READ,
                                       CONTROLLER_INDEX),
     'current_group_obj_id_read':     (defs.BTP_SERVICE_ID_MCP,
-                                      defs.MCP_CURRENT_GROUP_OBJ_ID_READ,
+                                      defs.BTP_MCP_CMD_CURRENT_GROUP_OBJ_ID_READ,
                                       CONTROLLER_INDEX),
     'current_group_obj_id_set':      (defs.BTP_SERVICE_ID_MCP,
-                                      defs.MCP_CURRENT_GROUP_OBJ_ID_SET,
+                                      defs.BTP_MCP_CMD_CURRENT_GROUP_OBJ_ID_SET,
                                       CONTROLLER_INDEX),
     'playing_order_read':            (defs.BTP_SERVICE_ID_MCP,
-                                      defs.MCP_PLAYING_ORDER_READ,
+                                      defs.BTP_MCP_CMD_PLAYING_ORDER_READ,
                                       CONTROLLER_INDEX),
     'playing_order_set':             (defs.BTP_SERVICE_ID_MCP,
-                                      defs.MCP_PLAYING_ORDER_SET,
+                                      defs.BTP_MCP_CMD_PLAYING_ORDER_SET,
                                       CONTROLLER_INDEX),
     'playing_orders_supported_read': (defs.BTP_SERVICE_ID_MCP,
-                                      defs.MCP_PLAYING_ORDERS_SUPPORTED_READ,
+                                      defs.BTP_MCP_CMD_PLAYING_ORDERS_SUPPORTED_READ,
                                       CONTROLLER_INDEX),
     'media_state_read':              (defs.BTP_SERVICE_ID_MCP,
-                                      defs.MCP_MEDIA_STATE_READ,
+                                      defs.BTP_MCP_CMD_MEDIA_STATE_READ,
                                       CONTROLLER_INDEX),
     'opcodes_supported_read':        (defs.BTP_SERVICE_ID_MCP,
-                                      defs.MCP_OPCODES_SUPPORTED_READ,
+                                      defs.BTP_MCP_CMD_OPCODES_SUPPORTED_READ,
                                       CONTROLLER_INDEX),
     'content_control_id_read':       (defs.BTP_SERVICE_ID_MCP,
-                                      defs.MCP_CONTENT_CONTROL_ID_READ,
+                                      defs.BTP_MCP_CMD_CONTENT_CONTROL_ID_READ,
                                       CONTROLLER_INDEX),
     'segments_obj_id_read':          (defs.BTP_SERVICE_ID_MCP,
-                                      defs.MCP_SEGMENTS_OBJ_ID_READ,
+                                      defs.BTP_MCP_CMD_SEGMENTS_OBJ_ID_READ,
                                       CONTROLLER_INDEX),
     'current_track_obj_id_read':     (defs.BTP_SERVICE_ID_MCP,
-                                      defs.MCP_CURRENT_TRACK_OBJ_ID_READ,
+                                      defs.BTP_MCP_CMD_CURRENT_TRACK_OBJ_ID_READ,
                                       CONTROLLER_INDEX),
     'current_track_obj_id_set':      (defs.BTP_SERVICE_ID_MCP,
-                                      defs.MCP_CURRENT_TRACK_OBJ_ID_SET,
+                                      defs.BTP_MCP_CMD_CURRENT_TRACK_OBJ_ID_SET,
                                       CONTROLLER_INDEX),
     'control_point_command':         (defs.BTP_SERVICE_ID_MCP,
-                                      defs.MCP_CMD_SEND,
+                                      defs.BTP_MCP_CMD_CMD_SEND,
                                       CONTROLLER_INDEX),
     'search_control_point_command':  (defs.BTP_SERVICE_ID_MCP,
-                                      defs.MCP_SCP_SEND,
+                                      defs.BTP_MCP_CMD_SCP_SEND,
                                       CONTROLLER_INDEX),
 }
 
@@ -441,7 +441,7 @@ def mcp_ev_discovery_completed(mcp, data, data_len):
                   f'Object Action Control Point {oacp},'
                   f'Object List Control Point {olcp}')
 
-    mcp.event_received(defs.MCP_DISCOVERED_EV, (addr_type, addr, status, player_name,
+    mcp.event_received(defs.BTP_MCP_EV_DISCOVERED, (addr_type, addr, status, player_name,
                                                 icon_obj_id, icon_url, track_changed,
                                                 track_title, track_duration, track_position,
                                                 playback_speed, seeking_speed, segments_obj_id,
@@ -468,7 +468,7 @@ def mcp_track_duration_ev(mcp, data, data_len):
     logging.debug(f'MCP Track Duration ev: addr {addr} addr_type {addr_type},'
                   f' Status {status}, track duration {duration}')
 
-    mcp.event_received(defs.MCP_TRACK_DURATION_EV, (addr_type, addr, status,
+    mcp.event_received(defs.BTP_MCP_EV_TRACK_DURATION, (addr_type, addr, status,
                                                     duration))
 
 
@@ -486,7 +486,7 @@ def mcp_track_position_ev(mcp, data, data_len):
     logging.debug(f'MCP Track Position ev: addr {addr} addr_type {addr_type},'
                   f' Status {status}, track position {position}')
 
-    mcp.event_received(defs.MCP_TRACK_POSITION_EV, (addr_type, addr, status,
+    mcp.event_received(defs.BTP_MCP_EV_TRACK_POSITION, (addr_type, addr, status,
                                                     position))
 
 
@@ -504,7 +504,7 @@ def mcp_playback_speed_ev(mcp, data, data_len):
     logging.debug(f'MCP Playback speed: addr {addr} addr_type {addr_type},'
                   f' Status {status}, playback speed {speed}')
 
-    mcp.event_received(defs.MCP_PLAYBACK_SPEED_EV, (addr_type, addr, status,
+    mcp.event_received(defs.BTP_MCP_EV_PLAYBACK_SPEED, (addr_type, addr, status,
                                                     speed))
 
 
@@ -522,7 +522,7 @@ def mcp_seeking_speed_ev(mcp, data, data_len):
     logging.debug(f'MCP Seeking speed: addr {addr} addr_type {addr_type},'
                   f' Status {status}, seeking speed {speed}')
 
-    mcp.event_received(defs.MCP_SEEKING_SPEED_EV, (addr_type, addr, status,
+    mcp.event_received(defs.BTP_MCP_EV_SEEKING_SPEED, (addr_type, addr, status,
                                                    speed))
 
 
@@ -541,7 +541,7 @@ def mcp_icon_obj_id_ev(mcp, data, data_len):
     logging.debug(f'MCP Icon Object ID: addr {addr} addr_type {addr_type},'
                   f' Status {status}, Icon Object ID {obj_id}')
 
-    mcp.event_received(defs.MCP_ICON_OBJ_ID_EV, (addr_type, addr, status,
+    mcp.event_received(defs.BTP_MCP_EV_ICON_OBJ_ID, (addr_type, addr, status,
                                                  obj_id))
 
 
@@ -560,7 +560,7 @@ def mcp_next_track_obj_id_ev(mcp, data, data_len):
     logging.debug(f'MCP Next Track Object ID: addr {addr} addr_type {addr_type},'
                   f' Status {status}, Next Track object ID {obj_id}')
 
-    mcp.event_received(defs.MCP_NEXT_TRACK_OBJ_ID_EV, (addr_type, addr, status,
+    mcp.event_received(defs.BTP_MCP_EV_NEXT_TRACK_OBJ_ID, (addr_type, addr, status,
                                                        obj_id))
 
 
@@ -579,7 +579,7 @@ def mcp_parent_group_obj_id_ev(mcp, data, data_len):
     logging.debug(f'MCP Parent Group Object ID: addr {addr} addr_type {addr_type},'
                   f' Status {status}, Parent Group Object ID {obj_id}')
 
-    mcp.event_received(defs.MCP_PARENT_GROUP_OBJ_ID_EV, (addr_type, addr, status,
+    mcp.event_received(defs.BTP_MCP_EV_PARENT_GROUP_OBJ_ID, (addr_type, addr, status,
                                                          obj_id))
 
 
@@ -598,7 +598,7 @@ def mcp_current_group_obj_id_ev(mcp, data, data_len):
     logging.debug(f'MCP Current Group Object ID: addr {addr} addr_type {addr_type},'
                   f' Status {status}, Current Group Object ID {obj_id}')
 
-    mcp.event_received(defs.MCP_CURRENT_GROUP_OBJ_ID_EV, (addr_type, addr, status,
+    mcp.event_received(defs.BTP_MCP_EV_CURRENT_GROUP_OBJ_ID, (addr_type, addr, status,
                                                           obj_id))
 
 
@@ -616,7 +616,7 @@ def mcp_playing_order_ev(mcp, data, data_len):
     logging.debug(f'MCP Playing Order: addr {addr} addr_type {addr_type},'
                   f' Status {status}, playing order {order}')
 
-    mcp.event_received(defs.MCP_PLAYING_ORDER_EV, (addr_type, addr, status,
+    mcp.event_received(defs.BTP_MCP_EV_PLAYING_ORDER, (addr_type, addr, status,
                                                    order))
 
 
@@ -634,7 +634,7 @@ def mcp_playing_orders_supported_ev(mcp, data, data_len):
     logging.debug(f'MCP Playing orders supported: addr {addr} addr_type {addr_type},'
                   f' Status {status}, playing orders supported {orders}')
 
-    mcp.event_received(defs.MCP_PLAYING_ORDERS_SUPPORTED_EV, (addr_type, addr,
+    mcp.event_received(defs.BTP_MCP_EV_PLAYING_ORDERS_SUPPORTED, (addr_type, addr,
                                                               status, orders))
 
 
@@ -652,7 +652,7 @@ def mcp_media_state_ev(mcp, data, data_len):
     logging.debug(f'MCP Media State: addr {addr} addr_type {addr_type},'
                   f' Status {status}, media state {state}')
 
-    mcp.event_received(defs.MCP_MEDIA_STATE_EV, (addr_type, addr, status,
+    mcp.event_received(defs.BTP_MCP_EV_MEDIA_STATE, (addr_type, addr, status,
                                                  state))
 
 
@@ -670,7 +670,7 @@ def mcp_opcodes_supported_ev(mcp, data, data_len):
     logging.debug(f'MCP Opcodes Supported: addr {addr} addr_type {addr_type},'
                   f' Status {status}, opcodes {opcodes}')
 
-    mcp.event_received(defs.MCP_OPCODES_SUPPORTED_EV, (addr_type, addr,
+    mcp.event_received(defs.BTP_MCP_EV_OPCODES_SUPPORTED, (addr_type, addr,
                                                        status, opcodes))
 
 
@@ -688,7 +688,7 @@ def mcp_content_control_id_ev(mcp, data, data_len):
     logging.debug(f'MCP Content Control ID: addr {addr} addr_type {addr_type},'
                   f' Status {status}, content control ID {ccid}')
 
-    mcp.event_received(defs.MCP_CONTENT_CONTROL_ID_EV, (addr_type, addr, status,
+    mcp.event_received(defs.BTP_MCP_EV_CONTENT_CONTROL_ID, (addr_type, addr, status,
                                                         ccid))
 
 
@@ -707,7 +707,7 @@ def mcp_segments_obj_id_ev(mcp, data, data_len):
     logging.debug(f'MCP Track Segments Object ID: addr {addr} addr_type {addr_type},'
                   f' Status {status}, Track Segments Object ID {obj_id}')
 
-    mcp.event_received(defs.MCP_SEGMENTS_OBJ_ID_EV, (addr_type, addr, status,
+    mcp.event_received(defs.BTP_MCP_EV_SEGMENTS_OBJ_ID, (addr_type, addr, status,
                                                      obj_id))
 
 
@@ -726,7 +726,7 @@ def mcp_current_track_obj_id_ev(mcp, data, data_len):
     logging.debug(f'MCP Current Track Object ID: addr {addr} addr_type {addr_type},'
                   f' Status {status}, Current Track Object ID {obj_id}')
 
-    mcp.event_received(defs.MCP_CURRENT_TRACK_OBJ_ID_EV, (addr_type, addr, status,
+    mcp.event_received(defs.BTP_MCP_EV_CURRENT_TRACK_OBJ_ID, (addr_type, addr, status,
                                                           obj_id))
 
 
@@ -745,7 +745,7 @@ def mcp_control_point_ev(mcp, data, data_len):
     logging.debug(f'MCP Media Control Point: addr {addr} addr_type {addr_type},'
                   f' Status {status}, Opcode {opcode}, Param {param}')
 
-    mcp.event_received(defs.MCP_COMMAND_EV, (addr_type, addr, status, opcode,
+    mcp.event_received(defs.BTP_MCP_EV_COMMAND, (addr_type, addr, status, opcode,
                                              use_param, param))
 
 
@@ -768,7 +768,7 @@ def mcp_search_control_point_ev(mcp, data, data_len):
                   f' Status {status}, param_len {param_len},'
                   f'search type {search}, param {param}')
 
-    mcp.event_received(defs.MCP_SEARCH_EV, (addr_type, addr, status, param_len,
+    mcp.event_received(defs.BTP_MCP_EV_SEARCH, (addr_type, addr, status, param_len,
                                             search, param))
 
 
@@ -788,7 +788,7 @@ def mcp_cmd_ntf_ev(mcp, data, data_len):
                   f' Status {status}, Requested Opcode {requested_opcode},'
                   f' Result Code {result_code}')
 
-    mcp.event_received(defs.MCP_CMD_NTF_EV, (addr_type, addr, status,
+    mcp.event_received(defs.BTP_MCP_EV_CMD_NTF, (addr_type, addr, status,
                                              requested_opcode, result_code))
 
 
@@ -806,29 +806,29 @@ def mcp_search_ntf_ev(mcp, data, data_len):
     logging.debug(f'MCP Search Control Point Notification: addr {addr} addr_type {addr_type},'
                   f' Status {status}, Result Code {result_code}')
 
-    mcp.event_received(defs.MCP_SEARCH_NTF_EV, (addr_type, addr, status,
+    mcp.event_received(defs.BTP_MCP_EV_SEARCH_NTF, (addr_type, addr, status,
                                                 result_code))
 
 
 MCP_EV = {
-    defs.MCP_DISCOVERED_EV: mcp_ev_discovery_completed,
-    defs.MCP_TRACK_DURATION_EV: mcp_track_duration_ev,
-    defs.MCP_TRACK_POSITION_EV: mcp_track_position_ev,
-    defs.MCP_PLAYBACK_SPEED_EV: mcp_playback_speed_ev,
-    defs.MCP_SEEKING_SPEED_EV: mcp_seeking_speed_ev,
-    defs.MCP_ICON_OBJ_ID_EV: mcp_icon_obj_id_ev,
-    defs.MCP_NEXT_TRACK_OBJ_ID_EV: mcp_next_track_obj_id_ev,
-    defs.MCP_PARENT_GROUP_OBJ_ID_EV: mcp_parent_group_obj_id_ev,
-    defs.MCP_CURRENT_GROUP_OBJ_ID_EV: mcp_current_group_obj_id_ev,
-    defs.MCP_PLAYING_ORDER_EV: mcp_playing_order_ev,
-    defs.MCP_PLAYING_ORDERS_SUPPORTED_EV: mcp_playing_orders_supported_ev,
-    defs.MCP_MEDIA_STATE_EV: mcp_media_state_ev,
-    defs.MCP_OPCODES_SUPPORTED_EV: mcp_opcodes_supported_ev,
-    defs.MCP_CONTENT_CONTROL_ID_EV: mcp_content_control_id_ev,
-    defs.MCP_SEGMENTS_OBJ_ID_EV: mcp_segments_obj_id_ev,
-    defs.MCP_CURRENT_TRACK_OBJ_ID_EV: mcp_current_track_obj_id_ev,
-    defs.MCP_COMMAND_EV: mcp_control_point_ev,
-    defs.MCP_SEARCH_EV: mcp_search_control_point_ev,
-    defs.MCP_CMD_NTF_EV: mcp_cmd_ntf_ev,
-    defs.MCP_SEARCH_NTF_EV: mcp_search_ntf_ev
+    defs.BTP_MCP_EV_DISCOVERED: mcp_ev_discovery_completed,
+    defs.BTP_MCP_EV_TRACK_DURATION: mcp_track_duration_ev,
+    defs.BTP_MCP_EV_TRACK_POSITION: mcp_track_position_ev,
+    defs.BTP_MCP_EV_PLAYBACK_SPEED: mcp_playback_speed_ev,
+    defs.BTP_MCP_EV_SEEKING_SPEED: mcp_seeking_speed_ev,
+    defs.BTP_MCP_EV_ICON_OBJ_ID: mcp_icon_obj_id_ev,
+    defs.BTP_MCP_EV_NEXT_TRACK_OBJ_ID: mcp_next_track_obj_id_ev,
+    defs.BTP_MCP_EV_PARENT_GROUP_OBJ_ID: mcp_parent_group_obj_id_ev,
+    defs.BTP_MCP_EV_CURRENT_GROUP_OBJ_ID: mcp_current_group_obj_id_ev,
+    defs.BTP_MCP_EV_PLAYING_ORDER: mcp_playing_order_ev,
+    defs.BTP_MCP_EV_PLAYING_ORDERS_SUPPORTED: mcp_playing_orders_supported_ev,
+    defs.BTP_MCP_EV_MEDIA_STATE: mcp_media_state_ev,
+    defs.BTP_MCP_EV_OPCODES_SUPPORTED: mcp_opcodes_supported_ev,
+    defs.BTP_MCP_EV_CONTENT_CONTROL_ID: mcp_content_control_id_ev,
+    defs.BTP_MCP_EV_SEGMENTS_OBJ_ID: mcp_segments_obj_id_ev,
+    defs.BTP_MCP_EV_CURRENT_TRACK_OBJ_ID: mcp_current_track_obj_id_ev,
+    defs.BTP_MCP_EV_COMMAND: mcp_control_point_ev,
+    defs.BTP_MCP_EV_SEARCH: mcp_search_control_point_ev,
+    defs.BTP_MCP_EV_CMD_NTF: mcp_cmd_ntf_ev,
+    defs.BTP_MCP_EV_SEARCH_NTF: mcp_search_ntf_ev
 }

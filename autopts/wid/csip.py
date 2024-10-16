@@ -125,7 +125,7 @@ def hdl_wid_13(params: WIDParams):
     """
 
     stack = get_stack()
-    sirk = stack.csip.event_queues[defs.CSIP_SIRK_EV][0][2]
+    sirk = stack.csip.event_queues[defs.BTP_CSIP_EV_SIRK][0][2]
     pattern = r'decrypted SIRK is (\w+)\.'
     match = re.search(pattern, params.description)
     desc_sirk = match.group(1)
@@ -142,7 +142,7 @@ def hdl_wid_14(params: WIDParams):
 
     stack = get_stack()
 
-    if stack.csip.event_queues[defs.CSIP_DISCOVERED_EV] != []:
+    if stack.csip.event_queues[defs.BTP_CSIP_EV_DISCOVERED] != []:
         return False
 
     return True
@@ -397,7 +397,7 @@ def hdl_wid_20206(params: WIDParams):
     """
     stack = get_stack()
 
-    chars = stack.csip.event_queues[defs.CSIP_DISCOVERED_EV][0][3:]
+    chars = stack.csip.event_queues[defs.BTP_CSIP_EV_DISCOVERED][0][3:]
     chrc_list = [f'{chrc:04X}' for chrc in chars]
 
     pattern = re.compile(r"0x([0-9a-fA-F]+)")

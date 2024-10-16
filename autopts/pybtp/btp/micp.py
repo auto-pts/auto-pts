@@ -25,16 +25,16 @@ from autopts.pybtp.types import BTPError, addr2btp_ba
 
 MICP = {
     'read_supported_cmds': (defs.BTP_SERVICE_ID_MICP,
-                            defs.MICP_READ_SUPPORTED_COMMANDS,
+                            defs.BTP_MICP_CMD_READ_SUPPORTED_COMMANDS,
                             CONTROLLER_INDEX, ""),
     'discovery':           (defs.BTP_SERVICE_ID_MICP,
-                            defs.MICP_DISCOVERY,
+                            defs.BTP_MICP_CMD_DISCOVERY,
                             CONTROLLER_INDEX),
     'mute_state':          (defs.BTP_SERVICE_ID_MICP,
-                            defs.MICP_MUTE_STATE,
+                            defs.BTP_MICP_CMD_MUTE_STATE,
                             CONTROLLER_INDEX),
     'mute':                (defs.BTP_SERVICE_ID_MICP,
-                            defs.MICP_MUTE,
+                            defs.BTP_MICP_CMD_MUTE,
                             CONTROLLER_INDEX),
 }
 
@@ -111,7 +111,7 @@ def micp_ev_discovery_completed_(micp, data, data_len):
                   f' type handle {type_handle}, status handle {status_handle},'
                   f' control handle {control_handle}, description handle {desc_handle}')
 
-    micp.event_received(defs.MICP_DISCOVERED_EV, (addr_type, addr, att_status, mute_handle,
+    micp.event_received(defs.BTP_MICP_EV_DISCOVERED, (addr_type, addr, att_status, mute_handle,
                                                   state_handle, gain_handle, type_handle,
                                                   status_handle, control_handle, desc_handle))
 
@@ -130,10 +130,10 @@ def micp_mute_state_ev(micp, data, data_len):
     logging.debug(f'MICP Mute Read: addr {addr} addr_type '
                   f'{addr_type}, att_status {att_status} mute {mute}')
 
-    micp.event_received(defs.MICP_MUTE_STATE_EV, (addr_type, addr, att_status, mute))
+    micp.event_received(defs.BTP_MICP_EV_MUTE_STATE, (addr_type, addr, att_status, mute))
 
 
 MICP_EV = {
-    defs.MICP_DISCOVERED_EV: micp_ev_discovery_completed_,
-    defs.MICP_MUTE_STATE_EV: micp_mute_state_ev,
+    defs.BTP_MICP_EV_DISCOVERED: micp_ev_discovery_completed_,
+    defs.BTP_MICP_EV_MUTE_STATE: micp_mute_state_ev,
 }

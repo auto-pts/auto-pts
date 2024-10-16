@@ -24,16 +24,16 @@ from autopts.pybtp.types import addr2btp_ba, BTPError
 
 CSIS = {
     'read_supported_cmds': (defs.BTP_SERVICE_ID_CSIS,
-                            defs.CSIS_READ_SUPPORTED_COMMANDS,
+                            defs.BTP_CSIS_CMD_READ_SUPPORTED_COMMANDS,
                             CONTROLLER_INDEX),
     'set_member_lock':     (defs.BTP_SERVICE_ID_CSIS,
-                            defs.CSIS_SET_MEMBER_LOCK,
+                            defs.BTP_CSIS_CMD_SET_MEMBER_LOCK,
                             CONTROLLER_INDEX),
     'get_member_rsi':      (defs.BTP_SERVICE_ID_CSIS,
-                            defs.CSIS_GET_MEMBER_RSI,
+                            defs.BTP_CSIS_CMD_GET_MEMBER_RSI,
                             CONTROLLER_INDEX),
     'set_sirk_type':       (defs.BTP_SERVICE_ID_CSIS,
-                            defs.CSIS_SET_SIRK_TYPE,
+                            defs.BTP_CSIS_CMD_SET_SIRK_TYPE,
                             CONTROLLER_INDEX)
 }
 

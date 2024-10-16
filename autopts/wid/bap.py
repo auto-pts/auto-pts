@@ -1916,7 +1916,7 @@ def hdl_wid_376(params: WIDParams):
         return True
 
     if params.test_case_name.startswith('BAP/BSNK'):
-        for ev in stack.bap.event_queues[defs.BAP_EV_BIS_SYNCED]:
+        for ev in stack.bap.event_queues[defs.BTP_BAP_EV_BIS_SYNCED]:
             ev = stack.bap.wait_bis_stream_received_ev(ev['broadcast_id'], ev['bis_id'], 10)
             if ev is None:
                 return False
@@ -1940,7 +1940,7 @@ def hdl_wid_377(_: WIDParams):
     stack = get_stack()
 
     sources = []
-    for ev in stack.ascs.event_queues[defs.ASCS_EV_ASE_STATE_CHANGED]:
+    for ev in stack.ascs.event_queues[defs.BTP_ASCS_EV_ASE_STATE_CHANGED]:
         _, _, ase_id, state = ev
 
         if state == ASCSState.STREAMING:
@@ -2056,7 +2056,7 @@ def hdl_wid_387(_: WIDParams):
     stack = get_stack()
 
     sources = []
-    for ev in stack.ascs.event_queues[defs.ASCS_EV_ASE_STATE_CHANGED]:
+    for ev in stack.ascs.event_queues[defs.BTP_ASCS_EV_ASE_STATE_CHANGED]:
         _, _, ase_id, state = ev
 
         if state == ASCSState.STREAMING:

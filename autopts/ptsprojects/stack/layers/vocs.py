@@ -20,9 +20,9 @@ from autopts.pybtp import defs
 class VOCS:
     def __init__(self):
         self.event_queues = {
-            defs.VOCS_OFFSET_EV: [],
-            defs.VOCS_AUDIO_LOC_EV: [],
-            defs.VOCS_PROCEDURE_EV: []
+            defs.BTP_VOCS_EV_OFFSET: [],
+            defs.BTP_VOCS_EV_AUDIO_LOC: [],
+            defs.BTP_VOCS_EV_PROCEDURE: []
         }
 
     def event_received(self, event_type, event_data_tuple):
@@ -30,21 +30,21 @@ class VOCS:
 
     def wait_vocs_state_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.VOCS_OFFSET_EV],
+            self.event_queues[defs.BTP_VOCS_EV_OFFSET],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_vocs_location_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.VOCS_AUDIO_LOC_EV],
+            self.event_queues[defs.BTP_VOCS_EV_AUDIO_LOC],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_vocs_procedure_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.VOCS_PROCEDURE_EV],
+            self.event_queues[defs.BTP_VOCS_EV_PROCEDURE],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)

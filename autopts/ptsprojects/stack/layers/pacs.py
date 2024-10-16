@@ -20,7 +20,7 @@ from autopts.pybtp import defs
 class PACS:
     def __init__(self):
         self.event_queues = {
-            defs.PACS_EV_CHARACTERISTIC_SUBSCRIBED: [],
+            defs.BTP_PACS_EV_CHARACTERISTIC_SUBSCRIBED: [],
         }
 
     def event_received(self, event_type, event_data_tuple):
@@ -28,6 +28,6 @@ class PACS:
 
     def wait_pacs_characteristic_subscribed_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.PACS_EV_CHARACTERISTIC_SUBSCRIBED],
+            self.event_queues[defs.BTP_PACS_EV_CHARACTERISTIC_SUBSCRIBED],
             lambda _addr_type, _addr, *_: (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)

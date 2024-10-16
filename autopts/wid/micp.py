@@ -332,10 +332,10 @@ def hdl_wid_20206(params: WIDParams):
     stack = get_stack()
 
     if params.test_case_name == "MICP/CL/CGGIT/SER/BV-01-C":
-        chars = (stack.micp.event_queues[defs.MICP_DISCOVERED_EV][0][3])
+        chars = (stack.micp.event_queues[defs.BTP_MICP_EV_DISCOVERED][0][3])
         chrc_list = ['{:04X}'.format(chars).upper()]
     else:
-        chars = (stack.micp.event_queues[defs.MICP_DISCOVERED_EV][0][4:])
+        chars = (stack.micp.event_queues[defs.BTP_MICP_EV_DISCOVERED][0][4:])
         chrc_list = ['{:04X}'.format(chrc).upper() for chrc in chars]
 
     pattern = re.compile(r"0x([0-9a-fA-F]+)")

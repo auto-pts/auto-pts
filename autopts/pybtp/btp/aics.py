@@ -9,49 +9,49 @@ from autopts.pybtp.types import addr2btp_ba, BTPError
 
 AICS = {
     "read_supported_cmds": (defs.BTP_SERVICE_ID_AICS,
-                            defs.AICS_READ_SUPPORTED_COMMANDS,
+                            defs.BTP_AICS_CMD_READ_SUPPORTED_COMMANDS,
                             CONTROLLER_INDEX, ""),
     "set_gain":            (defs.BTP_SERVICE_ID_AICS,
-                            defs.AICS_SET_GAIN,
+                            defs.BTP_AICS_CMD_SET_GAIN,
                             CONTROLLER_INDEX),
     "mute":                (defs.BTP_SERVICE_ID_AICS,
-                            defs.AICS_MUTE,
+                            defs.BTP_AICS_CMD_MUTE,
                             CONTROLLER_INDEX),
     "unmute":              (defs.BTP_SERVICE_ID_AICS,
-                            defs.AICS_UNMUTE,
+                            defs.BTP_AICS_CMD_UNMUTE,
                             CONTROLLER_INDEX),
     "auto_gain":           (defs.BTP_SERVICE_ID_AICS,
-                            defs.AICS_AUTO_GAIN_SET,
+                            defs.BTP_AICS_CMD_AUTO_GAIN_SET,
                             CONTROLLER_INDEX),
     "man_gain":            (defs.BTP_SERVICE_ID_AICS,
-                            defs.AICS_MAN_GAIN_SET,
+                            defs.BTP_AICS_CMD_MAN_GAIN_SET,
                             CONTROLLER_INDEX),
     "man_gain_only":       (defs.BTP_SERVICE_ID_AICS,
-                            defs.AICS_SET_MAN_GAIN_ONLY,
+                            defs.BTP_AICS_CMD_SET_MAN_GAIN_ONLY,
                             CONTROLLER_INDEX, ""),
     "auto_gain_only":      (defs.BTP_SERVICE_ID_AICS,
-                            defs.AICS_SET_AUTO_GAIN_ONLY,
+                            defs.BTP_AICS_CMD_SET_AUTO_GAIN_ONLY,
                             CONTROLLER_INDEX, ""),
     "desc_set":            (defs.BTP_SERVICE_ID_AICS,
-                            defs.AICS_AUDIO_DESC_SET,
+                            defs.BTP_AICS_CMD_AUDIO_DESC_SET,
                             CONTROLLER_INDEX),
     "mute_disable":        (defs.BTP_SERVICE_ID_AICS,
-                            defs.AICS_MUTE_DISABLE,
+                            defs.BTP_AICS_CMD_MUTE_DISABLE,
                             CONTROLLER_INDEX, ""),
     "aics_state":          (defs.BTP_SERVICE_ID_AICS,
-                            defs.AICS_STATE_GET,
+                            defs.BTP_AICS_CMD_STATE_GET,
                             CONTROLLER_INDEX),
     "status":              (defs.BTP_SERVICE_ID_AICS,
-                            defs.AICS_STATUS_GET,
+                            defs.BTP_AICS_CMD_STATUS_GET,
                             CONTROLLER_INDEX),
     "type":                (defs.BTP_SERVICE_ID_AICS,
-                            defs.AICS_TYPE_GET,
+                            defs.BTP_AICS_CMD_TYPE_GET,
                             CONTROLLER_INDEX),
     "gain_setting_prop":   (defs.BTP_SERVICE_ID_AICS,
-                            defs.AICS_GAIN_SETTING_PROP_GET,
+                            defs.BTP_AICS_CMD_GAIN_SETTING_PROP_GET,
                             CONTROLLER_INDEX),
     "description":         (defs.BTP_SERVICE_ID_AICS,
-                            defs.AICS_DESCRIPTION_GET,
+                            defs.BTP_AICS_CMD_DESCRIPTION_GET,
                             CONTROLLER_INDEX)
 }
 
@@ -242,7 +242,7 @@ def aics_state_ev(aics, data, data_len):
     logging.debug(f'Audio Input Control State: addr {addr} addr_type '
                   f'{addr_type}, att_status {att_status}, gain {gain}, mute {mute}, mode {mode}')
 
-    aics.event_received(defs.AICS_STATE_EV, (addr_type, addr, att_status, gain, mute, mode))
+    aics.event_received(defs.BTP_AICS_EV_STATE, (addr_type, addr, att_status, gain, mute, mode))
 
 
 def aics_gain_setting_prop_ev(aics, data, data_len):
@@ -260,7 +260,7 @@ def aics_gain_setting_prop_ev(aics, data, data_len):
                   f'{addr_type}, units {units}, minimum {minimum}, maximum {maximum},'
                   f' att_status {att_status}')
 
-    aics.event_received(defs.AICS_GAIN_SETTING_PROP_EV, (addr_type, addr, units,
+    aics.event_received(defs.BTP_AICS_EV_GAIN_SETTING_PROP, (addr_type, addr, units,
                                                          minimum, maximum, att_status))
 
 
@@ -278,7 +278,7 @@ def aics_input_type_ev(aics, data, data_len):
     logging.debug(f'AICS Input type ev: addr {addr} addr_type '
                   f'{addr_type}, input type {input_type}, att_status {att_status}')
 
-    aics.event_received(defs.AICS_INPUT_TYPE_EV, (addr_type, addr, input_type, att_status))
+    aics.event_received(defs.BTP_AICS_EV_INPUT_TYPE, (addr_type, addr, input_type, att_status))
 
 
 def aics_status_ev(aics, data, data_len):
@@ -295,7 +295,7 @@ def aics_status_ev(aics, data, data_len):
     logging.debug(f'AICS Status ev: addr {addr} addr_type '
                   f'{addr_type}, status {status}, att_status {att_status}')
 
-    aics.event_received(defs.AICS_STATUS_EV, (addr_type, addr, status, att_status))
+    aics.event_received(defs.BTP_AICS_EV_STATUS, (addr_type, addr, status, att_status))
 
 
 def aics_description_ev(aics, data, data_len):
@@ -316,7 +316,7 @@ def aics_description_ev(aics, data, data_len):
     logging.debug(f'AICS Description ev: addr {addr} addr_type '
                   f'{addr_type}, att_status {att_status}, description {description}')
 
-    aics.event_received(defs.AICS_DESCRIPTION_EV, (addr_type, addr, att_status, description))
+    aics.event_received(defs.BTP_AICS_EV_DESCRIPTION, (addr_type, addr, att_status, description))
 
 
 def aics_procedure_ev(aics, data, data_len):
@@ -333,14 +333,14 @@ def aics_procedure_ev(aics, data, data_len):
     logging.debug(f'AICS Procedure ev: addr {addr} addr_type '
                   f'{addr_type}, att status {att_status}, opcode {opcode}')
 
-    aics.event_received(defs.AICS_PROCEDURE_EV, (addr_type, addr, att_status, opcode))
+    aics.event_received(defs.BTP_AICS_EV_PROCEDURE, (addr_type, addr, att_status, opcode))
 
 
 AICS_EV = {
-    defs.AICS_STATE_EV: aics_state_ev,
-    defs.AICS_GAIN_SETTING_PROP_EV: aics_gain_setting_prop_ev,
-    defs.AICS_INPUT_TYPE_EV: aics_input_type_ev,
-    defs.AICS_STATUS_EV: aics_status_ev,
-    defs.AICS_DESCRIPTION_EV: aics_description_ev,
-    defs.AICS_PROCEDURE_EV: aics_procedure_ev,
+    defs.BTP_AICS_EV_STATE: aics_state_ev,
+    defs.BTP_AICS_EV_GAIN_SETTING_PROP: aics_gain_setting_prop_ev,
+    defs.BTP_AICS_EV_INPUT_TYPE: aics_input_type_ev,
+    defs.BTP_AICS_EV_STATUS: aics_status_ev,
+    defs.BTP_AICS_EV_DESCRIPTION: aics_description_ev,
+    defs.BTP_AICS_EV_PROCEDURE: aics_procedure_ev,
 }

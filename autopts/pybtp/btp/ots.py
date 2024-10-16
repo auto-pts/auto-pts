@@ -27,10 +27,10 @@ log = logging.debug
 
 OTS = {
     'read_supported_cmds': (defs.BTP_SERVICE_ID_OTS,
-                            defs.OTS_READ_SUPPORTED_COMMANDS,
+                            defs.BTP_OTS_CMD_READ_SUPPORTED_COMMANDS,
                             CONTROLLER_INDEX_NONE),
     'register_object': (defs.BTP_SERVICE_ID_OTS,
-                        defs.OTS_REGISTER_OBJECT,
+                        defs.BTP_OTS_CMD_REGISTER_OBJECT,
                         CONTROLLER_INDEX),
 }
 

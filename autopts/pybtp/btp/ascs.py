@@ -25,27 +25,27 @@ from autopts.pybtp.types import addr2btp_ba, BTPError
 
 ASCS = {
     'read_supported_cmds': (defs.BTP_SERVICE_ID_ASCS,
-                            defs.ASCS_READ_SUPPORTED_COMMANDS,
+                            defs.BTP_ASCS_CMD_READ_SUPPORTED_COMMANDS,
                             CONTROLLER_INDEX),
-    'config_codec': (defs.BTP_SERVICE_ID_ASCS, defs.ASCS_CONFIGURE_CODEC,
+    'config_codec': (defs.BTP_SERVICE_ID_ASCS, defs.BTP_ASCS_CMD_CONFIGURE_CODEC,
                      CONTROLLER_INDEX),
-    'config_qos': (defs.BTP_SERVICE_ID_ASCS, defs.ASCS_CONFIGURE_QOS,
+    'config_qos': (defs.BTP_SERVICE_ID_ASCS, defs.BTP_ASCS_CMD_CONFIGURE_QOS,
                    CONTROLLER_INDEX),
-    'enable': (defs.BTP_SERVICE_ID_ASCS, defs.ASCS_ENABLE,
+    'enable': (defs.BTP_SERVICE_ID_ASCS, defs.BTP_ASCS_CMD_ENABLE,
                CONTROLLER_INDEX),
-    'start_ready': (defs.BTP_SERVICE_ID_ASCS, defs.ASCS_RECEIVER_START_READY,
+    'start_ready': (defs.BTP_SERVICE_ID_ASCS, defs.BTP_ASCS_CMD_RECEIVER_START_READY,
                     CONTROLLER_INDEX),
-    'stop_ready': (defs.BTP_SERVICE_ID_ASCS, defs.ASCS_RECEIVER_STOP_READY,
+    'stop_ready': (defs.BTP_SERVICE_ID_ASCS, defs.BTP_ASCS_CMD_RECEIVER_STOP_READY,
                    CONTROLLER_INDEX),
-    'disable': (defs.BTP_SERVICE_ID_ASCS, defs.ASCS_DISABLE,
+    'disable': (defs.BTP_SERVICE_ID_ASCS, defs.BTP_ASCS_CMD_DISABLE,
                 CONTROLLER_INDEX),
-    'release': (defs.BTP_SERVICE_ID_ASCS, defs.ASCS_RELEASE,
+    'release': (defs.BTP_SERVICE_ID_ASCS, defs.BTP_ASCS_CMD_RELEASE,
                 CONTROLLER_INDEX),
-    'update_metadata': (defs.BTP_SERVICE_ID_ASCS, defs.ASCS_UPDATE_METADATA,
+    'update_metadata': (defs.BTP_SERVICE_ID_ASCS, defs.BTP_ASCS_CMD_UPDATE_METADATA,
                         CONTROLLER_INDEX),
-    'add_ase_to_cis': (defs.BTP_SERVICE_ID_ASCS, defs.ASCS_ADD_ASE_TO_CIS,
+    'add_ase_to_cis': (defs.BTP_SERVICE_ID_ASCS, defs.BTP_ASCS_CMD_ADD_ASE_TO_CIS,
                        CONTROLLER_INDEX),
-    'preconfig_qos': (defs.BTP_SERVICE_ID_ASCS, defs.ASCS_PRECONFIG_QOS,
+    'preconfig_qos': (defs.BTP_SERVICE_ID_ASCS, defs.BTP_ASCS_CMD_PRECONFIG_QOS,
                       CONTROLLER_INDEX),
 }
 
@@ -229,7 +229,7 @@ def ascs_ev_operation_completed_(ascs, data, data_len):
                   f'{addr_type} ase_id {ase_id} opcode {opcode} '
                   f'status {status} flags {flags}')
 
-    ascs.event_received(defs.ASCS_EV_OPERATION_COMPLETED,
+    ascs.event_received(defs.BTP_ASCS_EV_OPERATION_COMPLETED,
                         (addr_type, addr, ase_id, opcode, status, flags))
 
 
@@ -247,7 +247,7 @@ def ascs_ev_characteristic_subscribed_(ascs, data, data_len):
 
     logging.debug(f'ASCS characteristic with handle {handle} subscribed')
 
-    ascs.event_received(defs.ASCS_EV_CHARACTERISTIC_SUBSCRIBED,
+    ascs.event_received(defs.BTP_ASCS_EV_CHARACTERISTIC_SUBSCRIBED,
                         (addr_type, addr, handle))
 
 
@@ -265,12 +265,12 @@ def ascs_ev_ase_state_changed_(ascs, data, data_len):
 
     logging.debug(f'ASE state: ase_id {ase_id}, state {state}')
 
-    ascs.event_received(defs.ASCS_EV_ASE_STATE_CHANGED,
+    ascs.event_received(defs.BTP_ASCS_EV_ASE_STATE_CHANGED,
                         (addr_type, addr, ase_id, state))
 
 
 ASCS_EV = {
-    defs.ASCS_EV_OPERATION_COMPLETED: ascs_ev_operation_completed_,
-    defs.ASCS_EV_CHARACTERISTIC_SUBSCRIBED: ascs_ev_characteristic_subscribed_,
-    defs.ASCS_EV_ASE_STATE_CHANGED: ascs_ev_ase_state_changed_,
+    defs.BTP_ASCS_EV_OPERATION_COMPLETED: ascs_ev_operation_completed_,
+    defs.BTP_ASCS_EV_CHARACTERISTIC_SUBSCRIBED: ascs_ev_characteristic_subscribed_,
+    defs.BTP_ASCS_EV_ASE_STATE_CHANGED: ascs_ev_ase_state_changed_,
 }

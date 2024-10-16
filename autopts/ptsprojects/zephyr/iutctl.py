@@ -223,7 +223,7 @@ class ZephyrCtl:
                 ev = stack.core.wait_iut_ready_ev(30)
                 # If the board has reset unexpectedly in the middle of a test case,
                 # two IUT events may be received because of cleanup.
-                stack.core.event_queues[defs.CORE_EV_IUT_READY].clear()
+                stack.core.event_queues[defs.BTP_CORE_EV_IUT_READY].clear()
                 if not ev:
                     self.stop()
                     raise Exception('IUT ready event NOT received!')
@@ -241,7 +241,7 @@ class ZephyrCtl:
             # test case, to avoid double reset let's use 'hw_reset'
             # only if it was not received, e.g. at the beginning of
             # the first test case.
-            if len(stack.core.event_queues[defs.CORE_EV_IUT_READY]) == 0:
+            if len(stack.core.event_queues[defs.BTP_CORE_EV_IUT_READY]) == 0:
                 self.board.reset()
 
     def stop(self):
@@ -258,7 +258,7 @@ class ZephyrCtl:
         if not self.gdb and self.board and \
                 stack.core and not get_global_end():
 
-            stack.core.event_queues[defs.CORE_EV_IUT_READY].clear()
+            stack.core.event_queues[defs.BTP_CORE_EV_IUT_READY].clear()
             self.board.reset()
 
             # We have to wait for IUT ready event before we close socket

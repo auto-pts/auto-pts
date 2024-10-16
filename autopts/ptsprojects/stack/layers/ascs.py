@@ -20,9 +20,9 @@ from autopts.pybtp import defs
 class ASCS:
     def __init__(self):
         self.event_queues = {
-            defs.ASCS_EV_OPERATION_COMPLETED: [],
-            defs.ASCS_EV_CHARACTERISTIC_SUBSCRIBED: [],
-            defs.ASCS_EV_ASE_STATE_CHANGED: [],
+            defs.BTP_ASCS_EV_OPERATION_COMPLETED: [],
+            defs.BTP_ASCS_EV_CHARACTERISTIC_SUBSCRIBED: [],
+            defs.BTP_ASCS_EV_ASE_STATE_CHANGED: [],
         }
 
     def event_received(self, event_type, event_data_tuple):
@@ -30,19 +30,19 @@ class ASCS:
 
     def wait_ascs_operation_complete_ev(self, addr_type, addr, ase_id, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.ASCS_EV_OPERATION_COMPLETED],
+            self.event_queues[defs.BTP_ASCS_EV_OPERATION_COMPLETED],
             lambda _addr_type, _addr, _ase_id, *_: (addr_type, addr, ase_id) == (_addr_type, _addr, _ase_id),
             timeout, remove)
 
     def wait_ascs_characteristic_subscribed_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.ASCS_EV_CHARACTERISTIC_SUBSCRIBED],
+            self.event_queues[defs.BTP_ASCS_EV_CHARACTERISTIC_SUBSCRIBED],
             lambda _addr_type, _addr, *_: (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_ascs_ase_state_changed_ev(self, addr_type, addr, ase_id, state, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.ASCS_EV_ASE_STATE_CHANGED],
+            self.event_queues[defs.BTP_ASCS_EV_ASE_STATE_CHANGED],
             lambda _addr_type, _addr, _ase_id, _state, *_:
             (addr_type, addr, ase_id, state) == (_addr_type, _addr, _ase_id, _state),
             timeout, remove)

@@ -29,108 +29,108 @@ from autopts.pybtp.btp.btp import pts_addr_get, pts_addr_type_get, lt2_addr_get,
     set_lt3_addr
 
 GAP = {
-    "start_adv": (defs.BTP_SERVICE_ID_GAP, defs.GAP_START_ADVERTISING,
+    "start_adv": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_START_ADVERTISING,
                   CONTROLLER_INDEX),
-    "stop_adv": (defs.BTP_SERVICE_ID_GAP, defs.GAP_STOP_ADVERTISING,
+    "stop_adv": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_STOP_ADVERTISING,
                  CONTROLLER_INDEX, ""),
-    "conn": (defs.BTP_SERVICE_ID_GAP, defs.GAP_CONNECT, CONTROLLER_INDEX),
-    "pair": (defs.BTP_SERVICE_ID_GAP, defs.GAP_PAIR, CONTROLLER_INDEX),
-    "unpair": (defs.BTP_SERVICE_ID_GAP, defs.GAP_UNPAIR, CONTROLLER_INDEX),
-    "disconn": (defs.BTP_SERVICE_ID_GAP, defs.GAP_DISCONNECT,
+    "conn": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_CONNECT, CONTROLLER_INDEX),
+    "pair": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_PAIR, CONTROLLER_INDEX),
+    "unpair": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_UNPAIR, CONTROLLER_INDEX),
+    "disconn": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_DISCONNECT,
                 CONTROLLER_INDEX),
-    "set_io_cap": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_IO_CAP,
+    "set_io_cap": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_SET_IO_CAP,
                    CONTROLLER_INDEX),
-    "set_conn": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_CONNECTABLE,
+    "set_conn": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_SET_CONNECTABLE,
                  CONTROLLER_INDEX, 1),
-    "set_nonconn": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_CONNECTABLE,
+    "set_nonconn": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_SET_CONNECTABLE,
                     CONTROLLER_INDEX, 0),
-    "set_nondiscov": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_DISCOVERABLE,
+    "set_nondiscov": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_SET_DISCOVERABLE,
                       CONTROLLER_INDEX, defs.GAP_NON_DISCOVERABLE),
-    "set_gendiscov": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_DISCOVERABLE,
+    "set_gendiscov": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_SET_DISCOVERABLE,
                       CONTROLLER_INDEX, defs.GAP_GENERAL_DISCOVERABLE),
-    "set_limdiscov": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_DISCOVERABLE,
+    "set_limdiscov": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_SET_DISCOVERABLE,
                       CONTROLLER_INDEX, defs.GAP_LIMITED_DISCOVERABLE),
-    "set_powered_on": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_POWERED,
+    "set_powered_on": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_SET_POWERED,
                        CONTROLLER_INDEX, 1),
-    "set_powered_off": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_POWERED,
+    "set_powered_off": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_SET_POWERED,
                         CONTROLLER_INDEX, 0),
-    "set_bondable_on": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_BONDABLE,
+    "set_bondable_on": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_SET_BONDABLE,
                         CONTROLLER_INDEX, 1),
-    "set_bondable_off": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_BONDABLE,
+    "set_bondable_off": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_SET_BONDABLE,
                          CONTROLLER_INDEX, 0),
     "start_discov": (defs.BTP_SERVICE_ID_GAP,
-                     defs.GAP_START_DISCOVERY, CONTROLLER_INDEX),
-    "stop_discov": (defs.BTP_SERVICE_ID_GAP, defs.GAP_STOP_DISCOVERY,
+                     defs.BTP_GAP_CMD_START_DISCOVERY, CONTROLLER_INDEX),
+    "stop_discov": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_STOP_DISCOVERY,
                     CONTROLLER_INDEX, ""),
     "read_ctrl_info": (defs.BTP_SERVICE_ID_GAP,
-                       defs.GAP_READ_CONTROLLER_INFO,
+                       defs.BTP_GAP_CMD_READ_CONTROLLER_INFO,
                        CONTROLLER_INDEX, ""),
     "passkey_entry_rsp": (defs.BTP_SERVICE_ID_GAP,
-                          defs.GAP_PASSKEY_ENTRY,
+                          defs.BTP_GAP_CMD_PASSKEY_ENTRY,
                           CONTROLLER_INDEX),
     "passkey_confirm_rsp": (defs.BTP_SERVICE_ID_GAP,
-                            defs.GAP_PASSKEY_CONFIRM,
+                            defs.BTP_GAP_CMD_PASSKEY_CONFIRM,
                             CONTROLLER_INDEX),
-    "start_direct_adv": (defs.BTP_SERVICE_ID_GAP, defs.GAP_START_DIRECT_ADV,
+    "start_direct_adv": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_START_DIRECT_ADV,
                          CONTROLLER_INDEX),
     "conn_param_update": (defs.BTP_SERVICE_ID_GAP,
-                          defs.GAP_CONN_PARAM_UPDATE,
+                          defs.BTP_GAP_CMD_CONN_PARAM_UPDATE,
                           CONTROLLER_INDEX),
     "pairing_consent_rsp": (defs.BTP_SERVICE_ID_GAP,
-                            defs.GAP_PAIRING_CONSENT_RSP,
+                            defs.BTP_GAP_CMD_PAIRING_CONSENT_RSP,
                             CONTROLLER_INDEX),
     "oob_legacy_set_data": (defs.BTP_SERVICE_ID_GAP,
-                            defs.GAP_OOB_LEGACY_SET_DATA,
+                            defs.BTP_GAP_CMD_OOB_LEGACY_SET_DATA,
                             CONTROLLER_INDEX),
     "oob_sc_get_local_data": (defs.BTP_SERVICE_ID_GAP,
-                              defs.GAP_OOB_SC_GET_LOCAL_DATA,
+                              defs.BTP_GAP_CMD_OOB_SC_GET_LOCAL_DATA,
                               CONTROLLER_INDEX),
     "oob_sc_set_remote_data": (defs.BTP_SERVICE_ID_GAP,
-                               defs.GAP_OOB_SC_SET_REMOTE_DATA,
+                               defs.BTP_GAP_CMD_OOB_SC_SET_REMOTE_DATA,
                                CONTROLLER_INDEX),
-    "set_mitm_on": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_MITM,
+    "set_mitm_on": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_SET_MITM,
                     CONTROLLER_INDEX, 1),
-    "set_mitm_off": (defs.BTP_SERVICE_ID_GAP, defs.GAP_SET_MITM,
+    "set_mitm_off": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_SET_MITM,
                      CONTROLLER_INDEX, 0),
-    "reset": (defs.BTP_SERVICE_ID_GAP, defs.GAP_RESET, CONTROLLER_INDEX, ""),
+    "reset": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_RESET, CONTROLLER_INDEX, ""),
     "set_filter_accept_list": (defs.BTP_SERVICE_ID_GAP,
-                               defs.GAP_SET_FILTER_ACCEPT_LIST, CONTROLLER_INDEX),
+                               defs.BTP_GAP_CMD_SET_FILTER_ACCEPT_LIST, CONTROLLER_INDEX),
     "set_privacy_on": (defs.BTP_SERVICE_ID_GAP,
-                       defs.GAP_SET_PRIVACY, CONTROLLER_INDEX, 1),
+                       defs.BTP_GAP_CMD_SET_PRIVACY, CONTROLLER_INDEX, 1),
     "set_privacy_off": (defs.BTP_SERVICE_ID_GAP,
-                        defs.GAP_SET_PRIVACY, CONTROLLER_INDEX, 0),
+                        defs.BTP_GAP_CMD_SET_PRIVACY, CONTROLLER_INDEX, 0),
     "set_sc_only_on": (defs.BTP_SERVICE_ID_GAP,
-                       defs.GAP_SET_SC_ONLY, CONTROLLER_INDEX, 1),
+                       defs.BTP_GAP_CMD_SET_SC_ONLY, CONTROLLER_INDEX, 1),
     "set_sc_only_off": (defs.BTP_SERVICE_ID_GAP,
-                        defs.GAP_SET_SC_ONLY, CONTROLLER_INDEX, 0),
+                        defs.BTP_GAP_CMD_SET_SC_ONLY, CONTROLLER_INDEX, 0),
     "set_sc_on": (defs.BTP_SERVICE_ID_GAP,
-                  defs.GAP_SET_SC, CONTROLLER_INDEX, 1),
+                  defs.BTP_GAP_CMD_SET_SC, CONTROLLER_INDEX, 1),
     "set_sc_off": (defs.BTP_SERVICE_ID_GAP,
-                   defs.GAP_SET_SC, CONTROLLER_INDEX, 0),
+                   defs.BTP_GAP_CMD_SET_SC, CONTROLLER_INDEX, 0),
     "set_min_enc_key_size": (defs.BTP_SERVICE_ID_GAP,
-                             defs.GAP_SET_MIN_ENC_KEY_SIZE, CONTROLLER_INDEX),
+                             defs.BTP_GAP_CMD_SET_MIN_ENC_KEY_SIZE, CONTROLLER_INDEX),
     "set_extend_advertising_on": (defs.BTP_SERVICE_ID_GAP,
-                                  defs.GAP_SET_EXTENDED_ADVERTISING, CONTROLLER_INDEX, 1),
+                                  defs.BTP_GAP_CMD_SET_EXTENDED_ADVERTISING, CONTROLLER_INDEX, 1),
     "set_extend_advertising_off": (defs.BTP_SERVICE_ID_GAP,
-                                   defs.GAP_SET_EXTENDED_ADVERTISING, CONTROLLER_INDEX, 0),
+                                   defs.BTP_GAP_CMD_SET_EXTENDED_ADVERTISING, CONTROLLER_INDEX, 0),
     "padv_configure": (defs.BTP_SERVICE_ID_GAP,
-                       defs.GAP_PADV_CONFIGURE, CONTROLLER_INDEX),
+                       defs.BTP_GAP_CMD_PADV_CONFIGURE, CONTROLLER_INDEX),
     "padv_start": (defs.BTP_SERVICE_ID_GAP,
-                   defs.GAP_PADV_START, CONTROLLER_INDEX),
+                   defs.BTP_GAP_CMD_PADV_START, CONTROLLER_INDEX),
     "padv_stop": (defs.BTP_SERVICE_ID_GAP,
-                  defs.GAP_PADV_STOP, CONTROLLER_INDEX, ""),
+                  defs.BTP_GAP_CMD_PADV_STOP, CONTROLLER_INDEX, ""),
     "padv_set_data": (defs.BTP_SERVICE_ID_GAP,
-                      defs.GAP_PADV_SET_DATA, CONTROLLER_INDEX),
+                      defs.BTP_GAP_CMD_PADV_SET_DATA, CONTROLLER_INDEX),
     "padv_create_sync": (defs.BTP_SERVICE_ID_GAP,
-                         defs.GAP_PADV_CREATE_SYNC, CONTROLLER_INDEX),
+                         defs.BTP_GAP_CMD_PADV_CREATE_SYNC, CONTROLLER_INDEX),
     "padv_sync_transfer_set_info": (defs.BTP_SERVICE_ID_GAP,
-                                    defs.GAP_PADV_SYNC_TRANSFER_SET_INFO,
+                                    defs.BTP_GAP_CMD_PADV_SYNC_TRANSFER_SET_INFO,
                                     CONTROLLER_INDEX),
     "padv_sync_transfer_start": (defs.BTP_SERVICE_ID_GAP,
-                                 defs.GAP_PADV_SYNC_TRANSFER_START,
+                                 defs.BTP_GAP_CMD_PADV_SYNC_TRANSFER_START,
                                  CONTROLLER_INDEX),
     "padv_sync_transfer_recv": (defs.BTP_SERVICE_ID_GAP,
-                                defs.GAP_PADV_SYNC_TRANSFER_RECV,
+                                defs.BTP_GAP_CMD_PADV_SYNC_TRANSFER_RECV,
                                 CONTROLLER_INDEX),
 }
 
@@ -376,23 +376,23 @@ def gap_passkey_entry_req_ev_(gap, data, data_len):
 
 
 GAP_EV = {
-    defs.GAP_EV_NEW_SETTINGS: gap_new_settings_ev_,
-    defs.GAP_EV_DEVICE_FOUND: gap_device_found_ev_,
-    defs.GAP_EV_DEVICE_CONNECTED: gap_connected_ev_,
-    defs.GAP_EV_DEVICE_DISCONNECTED: gap_disconnected_ev_,
-    defs.GAP_EV_PASSKEY_DISPLAY: gap_passkey_disp_ev_,
-    defs.GAP_EV_PASSKEY_ENTRY_REQ: gap_passkey_entry_req_ev_,
-    defs.GAP_EV_PASSKEY_CONFIRM_REQ: gap_passkey_confirm_req_ev_,
-    defs.GAP_EV_IDENTITY_RESOLVED: gap_identity_resolved_ev_,
-    defs.GAP_EV_CONN_PARAM_UPDATE: gap_conn_param_update_ev_,
-    defs.GAP_EV_SEC_LEVEL_CHANGED: gap_sec_level_changed_ev_,
-    defs.GAP_EV_PAIRING_CONSENT_REQ: gap_pairing_consent_ev_,
-    defs.GAP_EV_PAIRING_FAILED: gap_pairing_failed_ev_,
-    defs.GAP_EV_BOND_LOST: gap_bond_lost_ev_,
-    defs.GAP_EV_PERIODIC_SYNC_ESTABLISHED: gap_padv_sync_established_ev_,
-    defs.GAP_EV_PERIODIC_SYNC_LOST: gap_padv_sync_lost_ev_,
-    defs.GAP_EV_PERIODIC_REPORT: gap_padv_report_ev_,
-    defs.GAP_EV_PERIODIC_TRANSFER_RECEIVED: gap_padv_transfer_received_ev_
+    defs.BTP_GAP_EV_NEW_SETTINGS: gap_new_settings_ev_,
+    defs.BTP_GAP_EV_DEVICE_FOUND: gap_device_found_ev_,
+    defs.BTP_GAP_EV_DEVICE_CONNECTED: gap_connected_ev_,
+    defs.BTP_GAP_EV_DEVICE_DISCONNECTED: gap_disconnected_ev_,
+    defs.BTP_GAP_EV_PASSKEY_DISPLAY: gap_passkey_disp_ev_,
+    defs.BTP_GAP_EV_PASSKEY_ENTRY_REQ: gap_passkey_entry_req_ev_,
+    defs.BTP_GAP_EV_PASSKEY_CONFIRM_REQ: gap_passkey_confirm_req_ev_,
+    defs.BTP_GAP_EV_IDENTITY_RESOLVED: gap_identity_resolved_ev_,
+    defs.BTP_GAP_EV_CONN_PARAM_UPDATE: gap_conn_param_update_ev_,
+    defs.BTP_GAP_EV_SEC_LEVEL_CHANGED: gap_sec_level_changed_ev_,
+    defs.BTP_GAP_EV_PAIRING_CONSENT_REQ: gap_pairing_consent_ev_,
+    defs.BTP_GAP_EV_PAIRING_FAILED: gap_pairing_failed_ev_,
+    defs.BTP_GAP_EV_BOND_LOST: gap_bond_lost_ev_,
+    defs.BTP_GAP_EV_PERIODIC_SYNC_ESTABLISHED: gap_padv_sync_established_ev_,
+    defs.BTP_GAP_EV_PERIODIC_SYNC_LOST: gap_padv_sync_lost_ev_,
+    defs.BTP_GAP_EV_PERIODIC_REPORT: gap_padv_report_ev_,
+    defs.BTP_GAP_EV_PERIODIC_TRANSFER_RECEIVED: gap_padv_transfer_received_ev_
 }
 
 
@@ -505,7 +505,7 @@ def gap_adv_ind_on(ad=None, sd=None, duration=AdDuration.forever, own_addr_type=
 
     iutctl.btp_socket.send(*GAP['start_adv'], data=data_ba)
 
-    tuple_data = gap_command_rsp_succ(defs.GAP_START_ADVERTISING)
+    tuple_data = gap_command_rsp_succ(defs.BTP_GAP_CMD_START_ADVERTISING)
     __gap_current_settings_update(tuple_data)
 
 
@@ -522,7 +522,7 @@ def gap_adv_off():
 
     iutctl.btp_socket.send(*GAP['stop_adv'])
 
-    tuple_data = gap_command_rsp_succ(defs.GAP_STOP_ADVERTISING)
+    tuple_data = gap_command_rsp_succ(defs.BTP_GAP_CMD_STOP_ADVERTISING)
     __gap_current_settings_update(tuple_data)
 
 
@@ -553,7 +553,7 @@ def gap_direct_adv_on(addr, addr_type, high_duty=0, peer_rpa=0):
 
     iutctl.btp_socket.send(*GAP['start_direct_adv'], data=data_ba)
 
-    tuple_data = gap_command_rsp_succ(defs.GAP_START_DIRECT_ADV)
+    tuple_data = gap_command_rsp_succ(defs.BTP_GAP_CMD_START_DIRECT_ADV)
     __gap_current_settings_update(tuple_data)
 
 
@@ -697,7 +697,7 @@ def gap_unpair(bd_addr=None, bd_addr_type=None):
     iutctl.btp_socket.send(*GAP['unpair'], data=data_ba)
 
     # Expected result
-    gap_command_rsp_succ(defs.GAP_UNPAIR)
+    gap_command_rsp_succ(defs.BTP_GAP_CMD_UNPAIR)
 
 
 def gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey):
@@ -944,7 +944,7 @@ def gap_read_ctrl_info():
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GAP,
-                  defs.GAP_READ_CONTROLLER_INFO)
+                  defs.BTP_GAP_CMD_READ_CONTROLLER_INFO)
 
     fmt = '<6sII3s249s11s'
     if len(tuple_data[0]) < struct.calcsize(fmt):
@@ -1034,7 +1034,7 @@ def gap_oob_sc_get_local_data():
                   tuple_hdr, tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GAP,
-                  defs.GAP_OOB_SC_GET_LOCAL_DATA)
+                  defs.BTP_GAP_CMD_OOB_SC_GET_LOCAL_DATA)
 
     hdr = '<16s16s'
     r, c = struct.unpack_from(hdr, tuple_data[0])
@@ -1322,7 +1322,7 @@ def gap_padv_configure(include_tx_power, intvl_min, intvl_max):
 
     iutctl.btp_socket.send(*GAP['padv_configure'], data=data_ba)
 
-    tuple_data = gap_command_rsp_succ(defs.GAP_PADV_CONFIGURE)
+    tuple_data = gap_command_rsp_succ(defs.BTP_GAP_CMD_PADV_CONFIGURE)
     __gap_current_settings_update(tuple_data)
 
 
@@ -1334,7 +1334,7 @@ def gap_padv_start(flags=0):
 
     iutctl.btp_socket.send(*GAP['padv_start'], data=data_ba)
 
-    tuple_data = gap_command_rsp_succ(defs.GAP_PADV_START)
+    tuple_data = gap_command_rsp_succ(defs.BTP_GAP_CMD_PADV_START)
     __gap_current_settings_update(tuple_data)
 
 

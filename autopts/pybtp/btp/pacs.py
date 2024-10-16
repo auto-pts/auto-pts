@@ -24,13 +24,13 @@ from autopts.pybtp.btp.btp import CONTROLLER_INDEX, get_iut_method as get_iut,\
 from autopts.pybtp.types import BTPError
 
 PACS = {
-    'update_char': (defs.BTP_SERVICE_ID_PACS, defs.PACS_UPDATE_CHARACTERISTIC,
+    'update_char': (defs.BTP_SERVICE_ID_PACS, defs.BTP_PACS_CMD_UPDATE_CHARACTERISTIC,
                     CONTROLLER_INDEX),
-    'set_location': (defs.BTP_SERVICE_ID_PACS, defs.PACS_SET_LOCATION,
+    'set_location': (defs.BTP_SERVICE_ID_PACS, defs.BTP_PACS_CMD_SET_LOCATION,
                     CONTROLLER_INDEX),
-    'set_available_contexts': (defs.BTP_SERVICE_ID_PACS, defs.PACS_SET_AVAILABLE_CONTEXTS,
+    'set_available_contexts': (defs.BTP_SERVICE_ID_PACS, defs.BTP_PACS_CMD_SET_AVAILABLE_CONTEXTS,
                     CONTROLLER_INDEX),
-    'set_supported_contexts': (defs.BTP_SERVICE_ID_PACS, defs.PACS_SET_SUPPORTED_CONTEXTS,
+    'set_supported_contexts': (defs.BTP_SERVICE_ID_PACS, defs.BTP_PACS_CMD_SET_SUPPORTED_CONTEXTS,
                     CONTROLLER_INDEX),
 }
 
@@ -132,10 +132,10 @@ def pacs_ev_characteristic_subscribed_(pacs, data, data_len):
 
     logging.debug(f'PACS characteristic with handle {handle} subscribed')
 
-    pacs.event_received(defs.PACS_EV_CHARACTERISTIC_SUBSCRIBED,
+    pacs.event_received(defs.BTP_PACS_EV_CHARACTERISTIC_SUBSCRIBED,
                         (addr_type, addr, handle))
 
 
 PACS_EV = {
-    defs.PACS_EV_CHARACTERISTIC_SUBSCRIBED: pacs_ev_characteristic_subscribed_,
+    defs.BTP_PACS_EV_CHARACTERISTIC_SUBSCRIBED: pacs_ev_characteristic_subscribed_,
 }

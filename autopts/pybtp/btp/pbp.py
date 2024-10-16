@@ -26,19 +26,19 @@ log = logging.debug
 
 PBP = {
     'read_supported_cmds': (defs.BTP_SERVICE_ID_PBP,
-                            defs.PBP_READ_SUPPORTED_COMMANDS,
+                            defs.BTP_PBP_CMD_READ_SUPPORTED_COMMANDS,
                             CONTROLLER_INDEX),
     'set_public_broadcast_announcement': (defs.BTP_SERVICE_ID_PBP,
-                                          defs.PBP_SET_PUBLIC_BROADCAST_ANNOUNCEMENT,
+                                          defs.BTP_PBP_CMD_SET_PUBLIC_BROADCAST_ANNOUNCEMENT,
                                           CONTROLLER_INDEX),
     'set_broadcast_name': (defs.BTP_SERVICE_ID_PBP,
-                           defs.PBP_SET_BROADCAST_NAME,
+                           defs.BTP_PBP_CMD_SET_BROADCAST_NAME,
                            CONTROLLER_INDEX),
     'broadcast_scan_start': (defs.BTP_SERVICE_ID_PBP,
-                             defs.PBP_BROADCAST_SCAN_START,
+                             defs.BTP_PBP_CMD_BROADCAST_SCAN_START,
                              CONTROLLER_INDEX),
     'broadcast_scan_stop': (defs.BTP_SERVICE_ID_PBP,
-                            defs.PBP_BROADCAST_SCAN_STOP,
+                            defs.BTP_PBP_CMD_BROADCAST_SCAN_STOP,
                             CONTROLLER_INDEX),
 }
 
@@ -132,9 +132,9 @@ def pbp_ev_public_broadcast_announcement_found(pbp, data, data_len):
 
     logging.debug(f'Public Broadcast Announcement received: {ev}')
 
-    pbp.event_received(defs.PBP_EV_PUBLIC_BROADCAST_ANNOUNCEMENT_FOUND, ev)
+    pbp.event_received(defs.BTP_PBP_EV_PUBLIC_BROADCAST_ANNOUNCEMENT_FOUND, ev)
 
 
 PBP_EV = {
-    defs.PBP_EV_PUBLIC_BROADCAST_ANNOUNCEMENT_FOUND: pbp_ev_public_broadcast_announcement_found,
+    defs.BTP_PBP_EV_PUBLIC_BROADCAST_ANNOUNCEMENT_FOUND: pbp_ev_public_broadcast_announcement_found,
 }

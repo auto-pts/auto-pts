@@ -31,68 +31,68 @@ from autopts.pybtp.types import Perm, att_rsp_str
 GATT_SVCS = None
 
 GATTS = {
-    "add_svc": (defs.BTP_SERVICE_ID_GATT, defs.GATT_ADD_SERVICE,
+    "add_svc": (defs.BTP_SERVICE_ID_GATT, defs.BTP_GATT_CMD_ADD_SERVICE,
                 CONTROLLER_INDEX),
-    "start_server": (defs.BTP_SERVICE_ID_GATT, defs.GATT_START_SERVER,
+    "start_server": (defs.BTP_SERVICE_ID_GATT, defs.BTP_GATT_CMD_START_SERVER,
                      CONTROLLER_INDEX, ""),
     "add_inc_svc": (defs.BTP_SERVICE_ID_GATT,
-                    defs.GATT_ADD_INCLUDED_SERVICE, CONTROLLER_INDEX),
-    "add_char": (defs.BTP_SERVICE_ID_GATT, defs.GATT_ADD_CHARACTERISTIC,
+                    defs.BTP_GATT_CMD_ADD_INCLUDED_SERVICE, CONTROLLER_INDEX),
+    "add_char": (defs.BTP_SERVICE_ID_GATT, defs.BTP_GATT_CMD_ADD_CHARACTERISTIC,
                  CONTROLLER_INDEX),
-    "set_val": (defs.BTP_SERVICE_ID_GATT, defs.GATT_SET_VALUE,
+    "set_val": (defs.BTP_SERVICE_ID_GATT, defs.BTP_GATT_CMD_SET_VALUE,
                 CONTROLLER_INDEX),
-    "add_desc": (defs.BTP_SERVICE_ID_GATT, defs.GATT_ADD_DESCRIPTOR,
+    "add_desc": (defs.BTP_SERVICE_ID_GATT, defs.BTP_GATT_CMD_ADD_DESCRIPTOR,
                  CONTROLLER_INDEX),
     "set_enc_key_size": (defs.BTP_SERVICE_ID_GATT,
-                         defs.GATT_SET_ENC_KEY_SIZE, CONTROLLER_INDEX),
-    "get_attrs": (defs.BTP_SERVICE_ID_GATT, defs.GATT_GET_ATTRIBUTES,
+                         defs.BTP_GATT_CMD_SET_ENC_KEY_SIZE, CONTROLLER_INDEX),
+    "get_attrs": (defs.BTP_SERVICE_ID_GATT, defs.BTP_GATT_CMD_GET_ATTRIBUTES,
                   CONTROLLER_INDEX),
     "get_attr_val": (defs.BTP_SERVICE_ID_GATT,
-                     defs.GATT_GET_ATTRIBUTE_VALUE, CONTROLLER_INDEX),
+                     defs.BTP_GATT_CMD_GET_ATTRIBUTES, CONTROLLER_INDEX),
     "change_database": (defs.BTP_SERVICE_ID_GATT,
-                        defs.GATT_CHANGE_DATABASE, CONTROLLER_INDEX),
+                        defs.BTP_GATT_CMD_CHANGE_DATABASE, CONTROLLER_INDEX),
     "notify_mult": (defs.BTP_SERVICE_ID_GATT,
-                    defs.GATT_NOTIFY_MULTIPLE, CONTROLLER_INDEX),
+                    defs.BTP_GATT_CMD_NOTIFY_MULTIPLE, CONTROLLER_INDEX),
 }
 
 GATTC = {
-    "exchange_mtu": (defs.BTP_SERVICE_ID_GATT, defs.GATT_EXCHANGE_MTU,
+    "exchange_mtu": (defs.BTP_SERVICE_ID_GATT, defs.BTP_GATT_CMD_EXCHANGE_MTU,
                      CONTROLLER_INDEX),
-    "disc_all_prim": (defs.BTP_SERVICE_ID_GATT, defs.GATT_DISC_ALL_PRIM,
+    "disc_all_prim": (defs.BTP_SERVICE_ID_GATT, defs.BTP_GATT_CMD_DISC_ALL_PRIM,
                       CONTROLLER_INDEX),
-    "disc_prim_uuid": (defs.BTP_SERVICE_ID_GATT, defs.GATT_DISC_PRIM_UUID,
+    "disc_prim_uuid": (defs.BTP_SERVICE_ID_GATT, defs.BTP_GATT_CMD_DISC_PRIM_UUID,
                        CONTROLLER_INDEX),
-    "find_included": (defs.BTP_SERVICE_ID_GATT, defs.GATT_FIND_INCLUDED,
+    "find_included": (defs.BTP_SERVICE_ID_GATT, defs.BTP_GATT_CMD_FIND_INCLUDED,
                       CONTROLLER_INDEX),
-    "disc_all_chrc": (defs.BTP_SERVICE_ID_GATT, defs.GATT_DISC_ALL_CHRC,
+    "disc_all_chrc": (defs.BTP_SERVICE_ID_GATT, defs.BTP_GATT_CMD_DISC_ALL_CHRC,
                       CONTROLLER_INDEX),
-    "disc_chrc_uuid": (defs.BTP_SERVICE_ID_GATT, defs.GATT_DISC_CHRC_UUID,
+    "disc_chrc_uuid": (defs.BTP_SERVICE_ID_GATT, defs.BTP_GATT_CMD_DISC_CHRC_UUID,
                        CONTROLLER_INDEX),
-    "disc_all_desc": (defs.BTP_SERVICE_ID_GATT, defs.GATT_DISC_ALL_DESC,
+    "disc_all_desc": (defs.BTP_SERVICE_ID_GATT, defs.BTP_GATT_CMD_DISC_ALL_DESC,
                       CONTROLLER_INDEX),
-    "read": (defs.BTP_SERVICE_ID_GATT, defs.GATT_READ, CONTROLLER_INDEX),
-    "read_uuid": (defs.BTP_SERVICE_ID_GATT, defs.GATT_READ_UUID,
+    "read": (defs.BTP_SERVICE_ID_GATT, defs.BTP_GATT_CMD_READ, CONTROLLER_INDEX),
+    "read_uuid": (defs.BTP_SERVICE_ID_GATT, defs.BTP_GATT_CMD_READ_UUID,
                   CONTROLLER_INDEX),
-    "read_long": (defs.BTP_SERVICE_ID_GATT, defs.GATT_READ_LONG,
+    "read_long": (defs.BTP_SERVICE_ID_GATT, defs.BTP_GATT_CMD_READ_LONG,
                   CONTROLLER_INDEX),
-    "read_multiple": (defs.BTP_SERVICE_ID_GATT, defs.GATT_READ_MULTIPLE,
+    "read_multiple": (defs.BTP_SERVICE_ID_GATT, defs.BTP_GATT_CMD_READ_MULTIPLE,
                       CONTROLLER_INDEX),
-    "read_multiple_var": (defs.BTP_SERVICE_ID_GATT, defs.GATT_READ_MULTIPLE_VAR,
+    "read_multiple_var": (defs.BTP_SERVICE_ID_GATT, defs.BTP_GATT_CMD_READ_MULTIPLE_VAR,
                           CONTROLLER_INDEX),
     "write_without_rsp": (defs.BTP_SERVICE_ID_GATT,
-                          defs.GATT_WRITE_WITHOUT_RSP, CONTROLLER_INDEX),
+                          defs.BTP_GATT_CMD_WRITE_WITHOUT_RSP, CONTROLLER_INDEX),
     "signed_write": (defs.BTP_SERVICE_ID_GATT,
-                     defs.GATT_SIGNED_WRITE_WITHOUT_RSP, CONTROLLER_INDEX),
-    "write": (defs.BTP_SERVICE_ID_GATT, defs.GATT_WRITE, CONTROLLER_INDEX),
-    "write_long": (defs.BTP_SERVICE_ID_GATT, defs.GATT_WRITE_LONG,
+                     defs.BTP_GATT_CMD_SIGNED_WRITE_WITHOUT_RSP, CONTROLLER_INDEX),
+    "write": (defs.BTP_SERVICE_ID_GATT, defs.BTP_GATT_CMD_WRITE, CONTROLLER_INDEX),
+    "write_long": (defs.BTP_SERVICE_ID_GATT, defs.BTP_GATT_CMD_WRITE_LONG,
                    CONTROLLER_INDEX),
-    "write_reliable": (defs.BTP_SERVICE_ID_GATT, defs.GATT_WRITE_RELIABLE,
+    "write_reliable": (defs.BTP_SERVICE_ID_GATT, defs.BTP_GATT_CMD_WRITE_RELIABLE,
                        CONTROLLER_INDEX),
-    "cfg_notify": (defs.BTP_SERVICE_ID_GATT, defs.GATT_CFG_NOTIFY,
+    "cfg_notify": (defs.BTP_SERVICE_ID_GATT, defs.BTP_GATT_CMD_CFG_NOTIFY,
                    CONTROLLER_INDEX),
-    "cfg_indicate": (defs.BTP_SERVICE_ID_GATT, defs.GATT_CFG_INDICATE,
+    "cfg_indicate": (defs.BTP_SERVICE_ID_GATT, defs.BTP_GATT_CMD_CFG_INDICATE,
                      CONTROLLER_INDEX),
-    'eatt_connect': (defs.BTP_SERVICE_ID_GATT, defs.GATT_EATT_CONNECT,
+    'eatt_connect': (defs.BTP_SERVICE_ID_GATT, defs.BTP_GATT_CMD_EATT_CONNECT,
                      CONTROLLER_INDEX),
 }
 
@@ -115,8 +115,8 @@ def gatt_notification_ev_(gatt, data, data_len):
 
 
 GATT_EV = {
-    defs.GATT_EV_ATTR_VALUE_CHANGED: gatt_attr_value_changed_ev_,
-    defs.GATT_EV_NOTIFICATION: gatt_notification_ev_,
+    defs.BTP_GATT_EV_ATTR_VALUE_CHANGED: gatt_attr_value_changed_ev_,
+    defs.BTP_GATT_EV_NOTIFICATION: gatt_notification_ev_,
 }
 
 
@@ -354,7 +354,7 @@ def gatts_attr_value_changed_ev():
     (tuple_hdr, tuple_data) = iutctl.btp_socket.read()
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
-                  defs.GATT_EV_ATTR_VALUE_CHANGED)
+                  defs.BTP_GATT_EV_ATTR_VALUE_CHANGED)
 
     (handle, data) = gatts_dec_attr_value_changed_ev_data(tuple_data[0])
     logging.debug("%s %r %r", gatts_attr_value_changed_ev.__name__,
@@ -434,7 +434,7 @@ def gatts_get_attrs(start_handle=0x0001, end_handle=0xffff, type_uuid=None):
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
-                  defs.GATT_GET_ATTRIBUTES)
+                  defs.BTP_GATT_CMD_GET_ATTRIBUTES)
 
     return dec_gatts_get_attrs_rp(tuple_data[0], tuple_hdr.data_len)
 
@@ -462,7 +462,7 @@ def gatts_get_attr_val(bd_addr_type, bd_addr, handle):
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
-                  defs.GATT_GET_ATTRIBUTE_VALUE)
+                  defs.BTP_GATT_CMD_GET_ATTRIBUTES)
 
     hdr = '<BH'
     hdr_len = struct.calcsize(hdr)
@@ -559,7 +559,7 @@ def _gattc_find_included_rsp():
                   tuple_hdr, tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
-                  defs.GATT_FIND_INCLUDED)
+                  defs.BTP_GATT_CMD_FIND_INCLUDED)
 
     incls_list = gatt_dec_disc_rsp(tuple_data[0], "include")
     logging.debug("%s %r", gattc_find_included_rsp.__name__, incls_list)
@@ -610,7 +610,7 @@ def gattc_disc_all_chrc_find_attrs_rsp(exp_chars, store_attrs=False):
                   gattc_disc_all_chrc_find_attrs_rsp.__name__, tuple_hdr,
                   tuple_data)
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
-                  defs.GATT_DISC_ALL_CHRC)
+                  defs.BTP_GATT_CMD_DISC_ALL_CHRC)
 
     chars_list = gatt_dec_disc_rsp(tuple_data[0], "characteristic")
 
@@ -1083,7 +1083,7 @@ def gattc_cfg_notify(bd_addr_type, bd_addr, enable, ccc_hdl):
                   tuple_hdr, tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
-                  defs.GATT_CFG_NOTIFY)
+                  defs.BTP_GATT_CMD_CFG_NOTIFY)
 
 
 def gattc_cfg_indicate(bd_addr_type, bd_addr, enable, ccc_hdl):
@@ -1112,7 +1112,7 @@ def gattc_cfg_indicate(bd_addr_type, bd_addr, enable, ccc_hdl):
                   tuple_hdr, tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
-                  defs.GATT_CFG_INDICATE)
+                  defs.BTP_GATT_CMD_CFG_INDICATE)
 
 
 def gattc_notification_ev(bd_addr, bd_addr_type, ev_type):
@@ -1124,7 +1124,7 @@ def gattc_notification_ev(bd_addr, bd_addr_type, ev_type):
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
-                  defs.GATT_EV_NOTIFICATION)
+                  defs.BTP_GATT_EV_NOTIFICATION)
 
     data_ba = bytearray()
     bd_addr_ba = addr2btp_ba(bd_addr)
@@ -1331,7 +1331,7 @@ def gattc_disc_prim_uuid_find_attrs_rsp(exp_svcs, store_attrs=False):
                   gattc_disc_prim_uuid_find_attrs_rsp.__name__, tuple_hdr,
                   tuple_data)
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
-                  defs.GATT_DISC_PRIM_UUID)
+                  defs.BTP_GATT_CMD_DISC_PRIM_UUID)
 
     svcs_list = gatt_dec_disc_rsp(tuple_data[0], "service")
 
@@ -1367,7 +1367,7 @@ def gattc_disc_all_prim_rsp(store_rsp=False):
                   tuple_hdr, tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
-                  defs.GATT_DISC_ALL_PRIM)
+                  defs.BTP_GATT_CMD_DISC_ALL_PRIM)
 
     svcs_list = gatt_dec_disc_rsp(tuple_data[0], "service")
     logging.debug("%s %r", gattc_disc_all_prim_rsp.__name__, svcs_list)
@@ -1405,7 +1405,7 @@ def gattc_disc_prim_uuid_rsp(store_rsp=False):
                   tuple_hdr, tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
-                  defs.GATT_DISC_PRIM_UUID)
+                  defs.BTP_GATT_CMD_DISC_PRIM_UUID)
 
     svcs_list = gatt_dec_disc_rsp(tuple_data[0], "service")
     logging.debug("%s %r", gattc_disc_prim_uuid_rsp.__name__, svcs_list)
@@ -1454,7 +1454,7 @@ def gattc_find_included_rsp(store_rsp=False):
                   tuple_hdr, tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
-                  defs.GATT_FIND_INCLUDED)
+                  defs.BTP_GATT_CMD_FIND_INCLUDED)
 
     incls_tuple = gatt_dec_disc_rsp(tuple_data[0], "include")
     logging.debug("%s %r", gattc_find_included_rsp.__name__, incls_tuple)
@@ -1485,7 +1485,7 @@ def gattc_disc_all_chrc_rsp(store_rsp=False):
                   tuple_hdr, tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
-                  defs.GATT_DISC_ALL_CHRC)
+                  defs.BTP_GATT_CMD_DISC_ALL_CHRC)
 
     chrcs_list = gatt_dec_disc_rsp(tuple_data[0], "characteristic")
     logging.debug("%s %r", gattc_disc_all_chrc_rsp.__name__, chrcs_list)
@@ -1519,7 +1519,7 @@ def gattc_disc_chrc_uuid_rsp(store_rsp=False):
                   tuple_hdr, tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
-                  defs.GATT_DISC_CHRC_UUID)
+                  defs.BTP_GATT_CMD_DISC_CHRC_UUID)
 
     chrcs_list = gatt_dec_disc_rsp(tuple_data[0], "characteristic")
     logging.debug("%s %r", gattc_disc_chrc_uuid_rsp.__name__, chrcs_list)
@@ -1561,7 +1561,7 @@ def gattc_disc_all_desc_rsp(store_rsp=False):
                   tuple_hdr, tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
-                  defs.GATT_DISC_ALL_DESC)
+                  defs.BTP_GATT_CMD_DISC_ALL_DESC)
 
     descs_list = gatt_dec_disc_rsp(tuple_data[0], "descriptor")
     logging.debug("%s %r", gattc_disc_all_desc_rsp.__name__, descs_list)
@@ -1598,7 +1598,7 @@ def gattc_read_rsp(store_rsp=False, store_val=False, timeout=None):
     logging.debug("%s received %r %r", gattc_read_rsp.__name__, tuple_hdr,
                   tuple_data)
 
-    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT, defs.GATT_READ)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT, defs.BTP_GATT_CMD_READ)
 
     rsp, value = gatt_dec_read_rsp(tuple_data[0])
     logging.debug("%s %r %r", gattc_read_rsp.__name__, rsp, value)
@@ -1622,7 +1622,7 @@ def gattc_read_uuid_rsp(store_rsp=False, store_val=False):
     logging.debug("%s received %r %r", gattc_read_uuid_rsp.__name__, tuple_hdr,
                   tuple_data)
 
-    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT, defs.GATT_READ_UUID)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT, defs.BTP_GATT_CMD_READ_UUID)
 
     rsp, char_values = gatt_dec_read_uuid_rsp(tuple_data[0])
     logging.debug("%s %r %r", gattc_read_uuid_rsp.__name__, rsp, char_values)
@@ -1649,7 +1649,7 @@ def gattc_read_long_rsp(store_rsp=False, store_val=False):
     logging.debug("%s received %r %r", gattc_read_long_rsp.__name__, tuple_hdr,
                   tuple_data)
 
-    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT, defs.GATT_READ_LONG)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT, defs.BTP_GATT_CMD_READ_LONG)
 
     rsp, value = gatt_dec_read_rsp(tuple_data[0])
     logging.debug("%s %r %r", gattc_read_long_rsp.__name__, rsp, value)
@@ -1672,7 +1672,7 @@ def gattc_read_multiple_rsp(store_val=False, store_rsp=False):
                   tuple_hdr, tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
-                  defs.GATT_READ_MULTIPLE)
+                  defs.BTP_GATT_CMD_READ_MULTIPLE)
 
     rsp, values = gatt_dec_read_rsp(tuple_data[0])
     logging.debug("%s %r %r", gattc_read_multiple_rsp.__name__, rsp, values)
@@ -1694,7 +1694,7 @@ def gattc_read_multiple_var_rsp(store_val=False, store_rsp=False):
                   tuple_hdr, tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
-                  defs.GATT_READ_MULTIPLE_VAR)
+                  defs.BTP_GATT_CMD_READ_MULTIPLE_VAR)
 
     rsp, values = gatt_dec_read_rsp(tuple_data[0])
     logging.debug("%s %r %r", gattc_read_multiple_var_rsp.__name__, rsp, values)
@@ -1718,7 +1718,7 @@ def gattc_write_rsp(store_rsp=False, timeout=None):
     logging.debug("%s received %r %r", gattc_write_rsp.__name__, tuple_hdr,
                   tuple_data)
 
-    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT, defs.GATT_WRITE)
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT, defs.BTP_GATT_CMD_WRITE)
 
     rsp = gatt_dec_write_rsp(tuple_data[0])
     logging.debug("%s %r", gattc_write_rsp.__name__, rsp)
@@ -1736,7 +1736,7 @@ def gattc_write_long_rsp(store_rsp=False):
                   tuple_hdr, tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
-                  defs.GATT_WRITE_LONG)
+                  defs.BTP_GATT_CMD_WRITE_LONG)
 
     rsp = gatt_dec_write_rsp(tuple_data[0])
     logging.debug("%s %r", gattc_write_long_rsp.__name__, rsp)
@@ -1754,7 +1754,7 @@ def gattc_write_reliable_rsp(store_rsp=False):
                   tuple_hdr, tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
-                  defs.GATT_WRITE_RELIABLE)
+                  defs.BTP_GATT_CMD_WRITE_RELIABLE)
 
     rsp = gatt_dec_write_rsp(tuple_data[0])
     logging.debug("%s %r", gattc_write_long_rsp.__name__, rsp)

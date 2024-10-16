@@ -25,37 +25,37 @@ from autopts.pybtp.types import BTPError, addr2btp_ba
 
 VCP = {
     'read_supported_cmds': (defs.BTP_SERVICE_ID_VCP,
-                            defs.VCP_READ_SUPPORTED_COMMANDS,
+                            defs.BTP_VCP_CMD_READ_SUPPORTED_COMMANDS,
                             CONTROLLER_INDEX, ""),
     'discovery':           (defs.BTP_SERVICE_ID_VCP,
-                            defs.VCP_DISCOVERY,
+                            defs.BTP_VCP_CMD_DISCOVERY,
                             CONTROLLER_INDEX),
     'state_read':          (defs.BTP_SERVICE_ID_VCP,
-                            defs.VCP_STATE_READ,
+                            defs.BTP_VCP_CMD_STATE_READ,
                             CONTROLLER_INDEX),
     'flags_read':          (defs.BTP_SERVICE_ID_VCP,
-                            defs.VCP_FLAGS_READ,
+                            defs.BTP_VCP_CMD_FLAGS_READ,
                             CONTROLLER_INDEX),
     'vcp_vol_down':        (defs.BTP_SERVICE_ID_VCP,
-                            defs.VCP_VOL_DOWN,
+                            defs.BTP_VCP_CMD_VOL_DOWN,
                             CONTROLLER_INDEX),
     'vcp_vol_up':          (defs.BTP_SERVICE_ID_VCP,
-                            defs.VCP_VOL_UP,
+                            defs.BTP_VCP_CMD_VOL_UP,
                             CONTROLLER_INDEX),
     'vcp_unmute_vol_down': (defs.BTP_SERVICE_ID_VCP,
-                            defs.VCP_UNMUTE_VOL_DOWN,
+                            defs.BTP_VCP_CMD_UNMUTE_VOL_DOWN,
                             CONTROLLER_INDEX),
     'vcp_unmute_vol_up':   (defs.BTP_SERVICE_ID_VCP,
-                            defs.VCP_UNMUTE_VOL_UP,
+                            defs.BTP_VCP_CMD_UNMUTE_VOL_UP,
                             CONTROLLER_INDEX),
     'vcp_set_vol':         (defs.BTP_SERVICE_ID_VCP,
-                            defs.VCP_SET_VOL,
+                            defs.BTP_VCP_CMD_SET_VOL,
                             CONTROLLER_INDEX),
     'vcp_unmute':          (defs.BTP_SERVICE_ID_VCP,
-                            defs.VCP_UNMUTE,
+                            defs.BTP_VCP_CMD_UNMUTE,
                             CONTROLLER_INDEX),
     'vcp_mute':            (defs.BTP_SERVICE_ID_VCP,
-                            defs.VCP_MUTE,
+                            defs.BTP_VCP_CMD_MUTE,
                             CONTROLLER_INDEX),
 }
 
@@ -224,7 +224,7 @@ def vcp_ev_discovery_completed_(vcp, data, data_len):
                   f' AICS Control Point {aics_control},'
                   f' AICS Description {aics_desc}')
 
-    vcp.event_received(defs.VCP_DISCOVERED_EV, (addr_type, addr, att_status, control_handle,
+    vcp.event_received(defs.BTP_VCP_EV_DISCOVERED, (addr_type, addr, att_status, control_handle,
                                                 flag_handle, state_handle, vocs_state,
                                                 vocs_location, vocs_control,
                                                 vocs_desc, aics_state, aics_gain,
@@ -246,7 +246,7 @@ def vcp_state_ev(vcp, data, data_len):
     logging.debug(f'VCP State: addr {addr} addr_type {addr_type}, ATT Status {att_status},'
                   f' volume {volume}, mute {mute}')
 
-    vcp.event_received(defs.VCP_STATE_EV, (addr_type, addr, att_status, volume, mute))
+    vcp.event_received(defs.BTP_VCP_EV_STATE, (addr_type, addr, att_status, volume, mute))
 
 
 def vcp_flags_ev(vcp, data, data_len):
@@ -263,7 +263,7 @@ def vcp_flags_ev(vcp, data, data_len):
     logging.debug(f'VCP Volume Flags: addr {addr} addr_type {addr_type},'
                   f'ATT Status {att_status}, flags {flags}')
 
-    vcp.event_received(defs.VCP_FLAGS_EV, (addr_type, addr, att_status, flags))
+    vcp.event_received(defs.BTP_VCP_EV_FLAGS, (addr_type, addr, att_status, flags))
 
 
 def vcp_procedure_ev(vcp, data, data_len):
@@ -280,12 +280,12 @@ def vcp_procedure_ev(vcp, data, data_len):
     logging.debug(f'VCP Procedure Event: addr {addr} addr_type {addr_type},'
                   f' ATT status {att_status}, opcode {opcode}')
 
-    vcp.event_received(defs.VCP_PROCEDURE_EV, (addr_type, addr, att_status, opcode))
+    vcp.event_received(defs.BTP_VCP_EV_PROCEDURE, (addr_type, addr, att_status, opcode))
 
 
 VCP_EV = {
-    defs.VCP_DISCOVERED_EV: vcp_ev_discovery_completed_,
-    defs.VCP_STATE_EV: vcp_state_ev,
-    defs.VCP_FLAGS_EV: vcp_flags_ev,
-    defs.VCP_PROCEDURE_EV: vcp_procedure_ev
+    defs.BTP_VCP_EV_DISCOVERED: vcp_ev_discovery_completed_,
+    defs.BTP_VCP_EV_STATE: vcp_state_ev,
+    defs.BTP_VCP_EV_FLAGS: vcp_flags_ev,
+    defs.BTP_VCP_EV_PROCEDURE: vcp_procedure_ev
 }

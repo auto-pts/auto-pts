@@ -25,22 +25,22 @@ from autopts.pybtp.types import addr2btp_ba, BTPError
 
 HAS = {
     'read_supported_cmds': ( defs.BTP_SERVICE_ID_HAS,
-                             defs.HAS_READ_SUPPORTED_COMMANDS,
+                             defs.BTP_HAS_CMD_READ_SUPPORTED_COMMANDS,
                              CONTROLLER_INDEX),
     'set_active_index':    ( defs.BTP_SERVICE_ID_HAS, 
-                             defs.HAS_SET_ACTIVE_INDEX,
+                             defs.BTP_HAS_CMD_SET_ACTIVE_INDEX,
                              CONTROLLER_INDEX),
     'set_preset_name':     ( defs.BTP_SERVICE_ID_HAS, 
-                             defs.HAS_SET_PRESET_NAME,
+                             defs.BTP_HAS_CMD_SET_PRESET_NAME,
                              CONTROLLER_INDEX),
     'remove_preset':       ( defs.BTP_SERVICE_ID_HAS, 
-                             defs.HAS_REMOVE_PRESET,
+                             defs.BTP_HAS_CMD_REMOVE_PRESET,
                              CONTROLLER_INDEX),
     'add_preset':          ( defs.BTP_SERVICE_ID_HAS, 
-                             defs.HAS_ADD_PRESET,
+                             defs.BTP_HAS_CMD_ADD_PRESET,
                              CONTROLLER_INDEX),
     'set_properties':      ( defs.BTP_SERVICE_ID_HAS, 
-                             defs.HAS_SET_PROPERTIES,
+                             defs.BTP_HAS_CMD_SET_PROPERTIES,
                              CONTROLLER_INDEX)
 }
 

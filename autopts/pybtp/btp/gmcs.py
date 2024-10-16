@@ -25,22 +25,22 @@ from autopts.pybtp.types import BTPError, addr2btp_ba
 
 GMCS = {
     'read_supported_cmds':      (defs.BTP_SERVICE_ID_GMCS,
-                                 defs.GMCS_READ_SUPPORTED_COMMANDS,
+                                 defs.BTP_GMCS_CMD_READ_SUPPORTED_COMMANDS,
                                  CONTROLLER_INDEX, ""),
     'control_point_command':    (defs.BTP_SERVICE_ID_GMCS,
-                                 defs.GMCS_COMMAND_SEND,
+                                 defs.BTP_GMCS_CMD_COMMAND_SEND,
                                  CONTROLLER_INDEX),
     'current_track_obj_id_get': (defs.BTP_SERVICE_ID_GMCS,
-                                 defs.GMCS_CURRENT_TRACK_OBJ_ID_GET,
+                                 defs.BTP_GMCS_CMD_CURRENT_TRACK_OBJ_ID_GET,
                                  CONTROLLER_INDEX, ""),
     'next_track_obj_id_get':     (defs.BTP_SERVICE_ID_GMCS,
-                                  defs.GMCS_NEXT_TRACK_OBJ_ID_GET,
+                                  defs.BTP_GMCS_CMD_NEXT_TRACK_OBJ_ID_GET,
                                   CONTROLLER_INDEX, ""),
     'inactive_state_set':        (defs.BTP_SERVICE_ID_GMCS,
-                                  defs.GMCS_INACTIVE_STATE_SET,
+                                  defs.BTP_GMCS_CMD_INACTIVE_STATE_SET,
                                   CONTROLLER_INDEX, ""),
     'parent_group_set':          (defs.BTP_SERVICE_ID_GMCS,
-                                  defs.GMCS_PARENT_GROUP_SET,
+                                  defs.BTP_GMCS_CMD_PARENT_GROUP_SET,
                                   CONTROLLER_INDEX, ""),
 }
 

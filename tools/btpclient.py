@@ -722,10 +722,10 @@ def receive(exp_svc_id=None, exp_op=None):
         return
 
     if tuple_hdr.svc_id == defs.BTP_SERVICE_ID_GAP:
-        if tuple_hdr.op == defs.GAP_EV_PASSKEY_DISPLAY:
+        if tuple_hdr.op == defs.BTP_GAP_EV_PASSKEY_DISPLAY:
             passkey = struct.unpack('I', tuple_data[0][7:11])[0]
             print("Passkey:", passkey)
-        if tuple_hdr.op == defs.GAP_READ_CONTROLLER_INFO:
+        if tuple_hdr.op == defs.BTP_GAP_CMD_READ_CONTROLLER_INFO:
             print_controller_info(tuple_data[0])
     print(green("OK"))
 

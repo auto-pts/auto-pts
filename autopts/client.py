@@ -1543,7 +1543,7 @@ def run_recovery(args, ptses):
         # mynewt project has not been refactored yet to reduce the number of
         # IUT board resets.
         if stack_inst.core:
-            stack_inst.core.event_received(defs.CORE_EV_IUT_READY, True)
+            stack_inst.core.event_received(defs.BTP_CORE_EV_IUT_READY, True)
 
     log('Recovery finished')
 

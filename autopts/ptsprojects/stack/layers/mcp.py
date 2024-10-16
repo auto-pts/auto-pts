@@ -20,26 +20,26 @@ from autopts.pybtp import defs
 class MCP:
     def __init__(self):
         self.event_queues = {
-            defs.MCP_DISCOVERED_EV: [],
-            defs.MCP_TRACK_DURATION_EV: [],
-            defs.MCP_TRACK_POSITION_EV: [],
-            defs.MCP_PLAYBACK_SPEED_EV: [],
-            defs.MCP_SEEKING_SPEED_EV: [],
-            defs.MCP_ICON_OBJ_ID_EV: [],
-            defs.MCP_NEXT_TRACK_OBJ_ID_EV: [],
-            defs.MCP_PARENT_GROUP_OBJ_ID_EV: [],
-            defs.MCP_CURRENT_GROUP_OBJ_ID_EV: [],
-            defs.MCP_PLAYING_ORDER_EV: [],
-            defs.MCP_PLAYING_ORDERS_SUPPORTED_EV: [],
-            defs.MCP_MEDIA_STATE_EV: [],
-            defs.MCP_OPCODES_SUPPORTED_EV: [],
-            defs.MCP_CONTENT_CONTROL_ID_EV: [],
-            defs.MCP_SEGMENTS_OBJ_ID_EV: [],
-            defs.MCP_CURRENT_TRACK_OBJ_ID_EV: [],
-            defs.MCP_COMMAND_EV: [],
-            defs.MCP_SEARCH_EV: [],
-            defs.MCP_CMD_NTF_EV: [],
-            defs.MCP_SEARCH_NTF_EV: []
+            defs.BTP_MCP_EV_DISCOVERED: [],
+            defs.BTP_MCP_EV_TRACK_DURATION: [],
+            defs.BTP_MCP_EV_TRACK_POSITION: [],
+            defs.BTP_MCP_EV_PLAYBACK_SPEED: [],
+            defs.BTP_MCP_EV_SEEKING_SPEED: [],
+            defs.BTP_MCP_EV_ICON_OBJ_ID: [],
+            defs.BTP_MCP_EV_NEXT_TRACK_OBJ_ID: [],
+            defs.BTP_MCP_EV_PARENT_GROUP_OBJ_ID: [],
+            defs.BTP_MCP_EV_CURRENT_GROUP_OBJ_ID: [],
+            defs.BTP_MCP_EV_PLAYING_ORDER: [],
+            defs.BTP_MCP_EV_PLAYING_ORDERS_SUPPORTED: [],
+            defs.BTP_MCP_EV_MEDIA_STATE: [],
+            defs.BTP_MCP_EV_OPCODES_SUPPORTED: [],
+            defs.BTP_MCP_EV_CONTENT_CONTROL_ID: [],
+            defs.BTP_MCP_EV_SEGMENTS_OBJ_ID: [],
+            defs.BTP_MCP_EV_CURRENT_TRACK_OBJ_ID: [],
+            defs.BTP_MCP_EV_COMMAND: [],
+            defs.BTP_MCP_EV_SEARCH: [],
+            defs.BTP_MCP_EV_CMD_NTF: [],
+            defs.BTP_MCP_EV_SEARCH_NTF: []
         }
         self.error_opcodes = []
 
@@ -48,140 +48,140 @@ class MCP:
 
     def wait_discovery_completed_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.MCP_DISCOVERED_EV],
+            self.event_queues[defs.BTP_MCP_EV_DISCOVERED],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_track_duration_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.MCP_TRACK_DURATION_EV],
+            self.event_queues[defs.BTP_MCP_EV_TRACK_DURATION],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_track_position_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.MCP_TRACK_POSITION_EV],
+            self.event_queues[defs.BTP_MCP_EV_TRACK_POSITION],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_playback_speed_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.MCP_PLAYBACK_SPEED_EV],
+            self.event_queues[defs.BTP_MCP_EV_PLAYBACK_SPEED],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_seeking_speed_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.MCP_SEEKING_SPEED_EV],
+            self.event_queues[defs.BTP_MCP_EV_SEEKING_SPEED],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_icon_obj_id_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.MCP_ICON_OBJ_ID_EV],
+            self.event_queues[defs.BTP_MCP_EV_ICON_OBJ_ID],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_next_track_obj_id_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.MCP_NEXT_TRACK_OBJ_ID_EV],
+            self.event_queues[defs.BTP_MCP_EV_NEXT_TRACK_OBJ_ID],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_parent_group_obj_id_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.MCP_PARENT_GROUP_OBJ_ID_EV],
+            self.event_queues[defs.BTP_MCP_EV_PARENT_GROUP_OBJ_ID],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_current_group_obj_id_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.MCP_CURRENT_GROUP_OBJ_ID_EV],
+            self.event_queues[defs.BTP_MCP_EV_CURRENT_GROUP_OBJ_ID],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_playing_order_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.MCP_PLAYING_ORDER_EV],
+            self.event_queues[defs.BTP_MCP_EV_PLAYING_ORDER],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_playing_orders_supported_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.MCP_PLAYING_ORDERS_SUPPORTED_EV],
+            self.event_queues[defs.BTP_MCP_EV_PLAYING_ORDERS_SUPPORTED],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_media_state_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.MCP_MEDIA_STATE_EV],
+            self.event_queues[defs.BTP_MCP_EV_MEDIA_STATE],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_opcodes_supported_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.MCP_OPCODES_SUPPORTED_EV],
+            self.event_queues[defs.BTP_MCP_EV_OPCODES_SUPPORTED],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_content_control_id_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.MCP_CONTENT_CONTROL_ID_EV],
+            self.event_queues[defs.BTP_MCP_EV_CONTENT_CONTROL_ID],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_segments_obj_id_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.MCP_SEGMENTS_OBJ_ID_EV],
+            self.event_queues[defs.BTP_MCP_EV_SEGMENTS_OBJ_ID],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_current_track_obj_id_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.MCP_CURRENT_TRACK_OBJ_ID_EV],
+            self.event_queues[defs.BTP_MCP_EV_CURRENT_TRACK_OBJ_ID],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_control_point_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.MCP_COMMAND_EV],
+            self.event_queues[defs.BTP_MCP_EV_COMMAND],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_search_control_point_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.MCP_SEARCH_EV],
+            self.event_queues[defs.BTP_MCP_EV_SEARCH],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_cmd_notification_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.MCP_CMD_NTF_EV],
+            self.event_queues[defs.BTP_MCP_EV_CMD_NTF],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_search_notification_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.MCP_SEARCH_NTF_EV],
+            self.event_queues[defs.BTP_MCP_EV_SEARCH_NTF],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
