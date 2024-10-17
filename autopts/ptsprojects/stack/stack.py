@@ -52,6 +52,7 @@ services = {
     "TBS": 1 << defs.BTP_SERVICE_ID_TBS,
     "TMAP": 1 << defs.BTP_SERVICE_ID_TMAP,
     "OTS": 1 << defs.BTP_SERVICE_ID_OTS,
+    "BAS": 1 << defs.BTP_SERVICE_ID_BAS,
     # GENERATOR append 1
 }
 
@@ -87,6 +88,7 @@ class Stack:
         self.gtbs = None
         self.tmap = None
         self.ots = None
+        self.bas = None
         # GENERATOR append 2
 
     def is_svc_supported(self, svc):

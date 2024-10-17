@@ -45,4 +45,5 @@ from autopts.pybtp.btp.csip import *
 from autopts.pybtp.btp.tbs import *
 from autopts.pybtp.btp.tmap import *
 from autopts.pybtp.btp.ots import *
+from autopts.pybtp.btp.bas import *
 # GENERATOR append 1
