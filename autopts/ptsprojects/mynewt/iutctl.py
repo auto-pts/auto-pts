@@ -138,19 +138,17 @@ class MynewtCtl:
                                     '_iutctl.log')
             self.rtt_logger.start('Terminal', log_file, self.device_core, self.debugger_snr)
 
-    def rtt_logger_stop(self):
+    def rtt_logger_stop(self, reset):
         if self.rtt_logger:
-            self.rtt_logger.stop()
+            self.rtt_logger.stop(reset)
 
     def reset(self):
         """Restart IUT related processes and reset the IUT"""
         log("%s.%s", self.__class__, self.reset.__name__)
 
-        self.stop()
+        self.stop(reset=True)
         self.start(self.test_case)
         self.flush_serial()
-
-        self.rtt_logger_stop()
         self.btmon_stop()
 
         if not self.gdb:
@@ -180,7 +178,7 @@ class MynewtCtl:
     def get_supported_svcs(self):
         btp.read_supp_svcs()
 
-    def stop(self):
+    def stop(self, reset=False):
         """Powers off the Mynewt OS"""
         log("%s.%s", self.__class__, self.stop.__name__)
 
@@ -199,7 +197,7 @@ class MynewtCtl:
             self.iut_log_file.close()
             self.iut_log_file = None
 
-        self.rtt_logger_stop()
+        self.rtt_logger_stop(reset)
         self.btmon_stop()
 
         if self.socat_process:
