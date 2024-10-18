@@ -25,6 +25,7 @@ import binascii
 from abc import abstractmethod
 
 from autopts.pybtp import defs
+from autopts.pybtp.defs import *
 from autopts.pybtp.types import BTPError
 from autopts.pybtp.parser import enc_frame, dec_hdr, dec_data, HDR_LEN
 from autopts.utils import get_global_end, raise_on_global_end
@@ -49,6 +50,9 @@ class BTPSocket:
     def __init__(self):
         self.conn = None
         self.addr = None
+        self.btp_service_id_dict = None
+        self.log_file = open(os.path.join('C:\\Users\\Piotr\\auto-pts', "autopts-testlog.log2"), "w")
+        self.btp_service_id_dict = self.get_svc_id()
 
     @abstractmethod
     def open(self, address):
@@ -79,6 +83,7 @@ class BTPSocket:
 
         tuple_hdr = dec_hdr(hdr)
         toread_data_len = tuple_hdr.data_len
+        self.log_file.write(f'Received < {self.parse_data(tuple_hdr[:2])}')
 
         logging.debug("Received: hdr: %r %r", tuple_hdr, hdr)
 
@@ -99,6 +104,7 @@ class BTPSocket:
         log(f"Received data: { {data_string} }, {data}")
 
         self.conn.settimeout(None)
+        # try writing to file
         return tuple_hdr, dec_data(data)
 
     def send(self, svc_id, op, ctrl_index, data):
@@ -109,10 +115,56 @@ class BTPSocket:
         frame = enc_frame(svc_id, op, ctrl_index, data)
 
         logging.debug("sending frame %r", frame.hex())
+
+        hex_data = frame.hex()
+        parsed_data = self.parse_data(hex_data)
+        self.log_file.write(f'Send > {parsed_data}')
         self.conn.send(frame)
+
+    def get_svc_id(self):
+        """Looks for BTP_SVC_ID variables from the defs.py"""
+        btp_service_ids = {}
+
+        for name, value in vars(defs).items():
+            if name.startswith('BTP_SERVICE_ID_') and isinstance(value, int):
+                trimmed_name = name.replace('BTP_SERVICE_ID_', '')
+                btp_service_ids[trimmed_name] = value
+
+        return btp_service_ids
+
+    def parse_data(self, data):
+        def get_btp_cmd_name(prefix, op_code):
+            """Looks for BTP Command variables from the defs.py"""
+            for key, value in vars(defs).items():
+                if (key.startswith(f'BTP_CMD_{prefix}') and value == int(op_code, 16)) or\
+                        (key.startswith(f'BTP_EV_{prefix}') and value == int(op_code, 16)):
+                    return key
+
+            return None  # Return None if no matching variable is found
+
+        # For now parse only svc id + opcode
+        parsed_data = ''
+        if isinstance(data, str):
+            svc_id = data[:2]
+            opc = data[2:4]
+            hex_op = int(opc, 16)
+            opc = hex(hex_op)
+        else:
+            svc_id = data[0]
+            opc = hex(data[1])
+        for name, btp_id in self.btp_service_id_dict.items():
+            if btp_id == int(svc_id):
+                parsed_data += name
+                break
+        btp_command = get_btp_cmd_name(parsed_data, opc)
+        parsed_data += f': {btp_command} (raw data: {data})\n'
+
+        return parsed_data
 
     @abstractmethod
     def close(self):
+        self.log_file.close()
+        self.log_file = None
         pass
 
 
@@ -148,6 +200,7 @@ class BTPSocketSrv(BTPSocket):
         self.sock.settimeout(None)
 
     def close(self):
+        super().close()
         try:
             self.conn.shutdown(socket.SHUT_RDWR)
             self.conn.close()
