@@ -120,10 +120,8 @@ Commands and responses:
 					Num_Presets (1 octet)
 		Response parameters:	<None>
 
-		TODO: how do we get the results?
-
 		This command is used to read the selected Presets.
-		If called with a Preset Index of 0, it will de-select the Active Preset.
+		Each preset is returned in a Hearing Aid Preset Read event.
 
 		In case of an error, the error response will be returned.
 
@@ -150,7 +148,7 @@ Commands and responses:
 		Command parameters:	Address_Type (1 octet)
 					Address (6 octets)
 					Preset_Index (1 octet)
-					Synchronized_Locally (1)
+					Synchronized_Locally (1 octet)
 		Response parameters:	<None>
 
 		This command is used to set the Active Preset.
