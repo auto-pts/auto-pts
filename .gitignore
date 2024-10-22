@@ -8,3 +8,6 @@
 */client_secret.json
 */credentials.json
 autopts/bot/config.py
+
+venv
+.venv
