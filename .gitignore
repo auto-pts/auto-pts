@@ -11,3 +11,5 @@ autopts/bot/config.py
 
 venv
 .venv
+
+.vscode
