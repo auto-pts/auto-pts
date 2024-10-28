@@ -578,8 +578,12 @@ def _start_processes(config, checkout_repos):
 
 
 def _restart_processes(config):
-    terminate_processes(config)
-    return _start_processes(config, checkout_repos=False)
+    while not config['cron']['cancel_job'].canceled:
+        try:
+            terminate_processes(config)
+            return _start_processes(config, checkout_repos=False)
+        except OSError:
+            log(traceback.format_exc())
 
 
 def _run_test(config):
