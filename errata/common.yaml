@@ -11,3 +11,9 @@ GAP/GAT/BV-17-C: ES-26322
 
 L2CAP/ECFC/BI-02-C: ES-26416
 L2CAP/ECFC/BI-11-C: ES-26416
+
+# This errata affect so many cases (any test, including non-CSIP) that uses multiple connected lower testers, but we only track it for CSIP where it's most common
+CSIP/CL/SP/BV-03-C: Request ID 147314
+CSIP/CL/SP/BV-04-C: Request ID 147314
+CSIP/CL/SP/BV-07-C: Request ID 147314
+CSIP/CL/SPE/BI-01-C: Request ID 147314
