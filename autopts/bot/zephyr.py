@@ -125,7 +125,7 @@ class ZephyrBotClient(BotClient):
 
             configs.append(name)
 
-        # The order is used in the -DOVERLAY_CONFIG="<overlay1>;<...>" option.
+        # The order is used in the -DEXTRA_CONF_FILE="<overlay1>;<...>" option.
         overlays = ';'.join(configs)
 
         log("TTY path: %s" % args.tty_file)
