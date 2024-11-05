@@ -84,35 +84,35 @@ btp_SERVICE_NAME.txt. The currently defined services are listed below. Core Serv
 is mandatory to be supported by IUT.
 
 ID  Name
- 0  Core Service
- 1  GAP Service
- 2  GATT Service (DEPRECATED)
- 3  L2CAP Service
- 4  Mesh Node Service
- 5  Mesh Model Service
- 6  GATT Client Service
- 7  GATT Server Service
- 8  VCS Service
- 9  IAS Service
- 10 AICS Service
- 11 VOCS Service
- 12 PACS Service
- 13 ASCS Service
- 14 BAP Service
- 15 HAS Service
- 16 MICP Service
- 17 CSIS Service
- 18 MICS Service
- 19 CCP Service
- 20 VCP Service
- 21 CAS Service
- 22 MCP Service
- 23 GMCS Service
- 24 HAP Service
- 25 CSIP Service
- 26 CAP Service
- 27 TBS Service
- 28 TMAP Service
- 29 OTS Service
- 30 PBP Service
+ 0x00  Core Service
+ 0x01  GAP Service
+ 0x02  GATT Service (DEPRECATED)
+ 0x03  L2CAP Service
+ 0x04  Mesh Node Service
+ 0x05  Mesh Model Service
+ 0x06  GATT Client Service
+ 0x07  GATT Server Service
+ 0x08  VCS Service
+ 0x09  IAS Service
+ 0x0a  AICS Service
+ 0x0b  VOCS Service
+ 0x0c  PACS Service
+ 0x0d  ASCS Service
+ 0x0e  BAP Service
+ 0x0f  HAS Service
+ 0x10  MICP Service
+ 0x11  CSIS Service
+ 0x12  MICS Service
+ 0x13  CCP Service
+ 0x14 VCP Service
+ 0x15 CAS Service
+ 0x16 MCP Service
+ 0x17 GMCS Service
+ 0x18 HAP Service
+ 0x19 CSIP Service
+ 0x1a CAP Service
+ 0x1b TBS Service
+ 0x1c TMAP Service
+ 0x1d OTS Service
+ 0x1e PBP Service
  # GENERATOR append 1
