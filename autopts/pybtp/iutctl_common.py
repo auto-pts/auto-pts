@@ -26,7 +26,7 @@ from abc import abstractmethod
 
 from autopts.pybtp import defs
 from autopts.pybtp.types import BTPError
-from autopts.pybtp.parser import enc_frame, dec_hdr, dec_data, HDR_LEN
+from autopts.pybtp.parser import enc_frame, dec_hdr, repr_hdr, dec_data, HDR_LEN
 from autopts.utils import get_global_end, raise_on_global_end
 
 log = logging.debug
@@ -80,7 +80,7 @@ class BTPSocket:
         tuple_hdr = dec_hdr(hdr)
         toread_data_len = tuple_hdr.data_len
 
-        logging.debug("Received: hdr: %r %r", tuple_hdr, hdr)
+        logging.debug("Received: hdr: %s %r", repr_hdr(tuple_hdr), hdr)
 
         data = bytearray(toread_data_len)
         data_memview = memoryview(data)
