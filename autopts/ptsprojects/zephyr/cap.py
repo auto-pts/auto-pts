@@ -145,8 +145,9 @@ def test_cases(ptses):
         TestFunc(stack.aics_init),
         TestFunc(btp.core_reg_svc_vocs),
         TestFunc(stack.vocs_init),
-        # Enable GMCS to have a second CCID in Zephyr stack
+        # Enable GMCS and TBS to have 2 CCIDs in Zephyr stack which is required by some tests
         TestFunc(btp.core_reg_svc_gmcs),
+        TestFunc(btp.core_reg_svc_tbs),
         TestFunc(stack.gmcs_init),
         # Enable CSIP to have access to Start Ordered Access
         # procedure BTP command
