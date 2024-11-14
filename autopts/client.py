@@ -1280,7 +1280,7 @@ def run_test_cases(ptses, test_case_instances, args, stats, **kwargs):
             if repeat_until_failed and status == 'PASS':
                 continue
 
-            if (status == 'PASS' and not args.stress_test) or \
+            if (status in ('PASS', 'MISSING WID ERROR') and not args.stress_test) or \
                     stats.run_count == retry_limit:
                 if stats.db:
                     stats.db.update_statistics(test_case, duration, status)
