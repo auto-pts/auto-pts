@@ -1361,9 +1361,12 @@ class Client:
             signal.signal(signal.SIGINT, sigint_handler)
 
             return self.main(args)
-        except BaseException as e:  # Ctrl-C
-            if not isinstance(e, KeyboardInterrupt):
-                logging.exception(e)
+        except BaseException as e:
+            if not isinstance(e, KeyboardInterrupt):   # Ctrl-C
+                if e.code != 0:
+                    # Exit with traceback
+                    logging.exception(e)
+
             set_global_end()
             self.cleanup()
             raise
