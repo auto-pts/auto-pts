@@ -266,10 +266,31 @@ iut_config = {
             'CONFIG_BT_MESH_BLOB_BLOCK_SIZE_MAX': '256'
         },
         "test_cases": [
-            'DFUM/SR/FU',
-            'MBTM/CL/BT'
+            'DFUM/SR/FU'
         ]
     },
+
+    "mesh_blob_cli.conf": {
+        "pre_overlay": "overlay-mesh.conf",
+        "overlay": {
+            'CONFIG_BT_SETTINGS': 'y',
+            'CONFIG_FLASH': 'y',
+            'CONFIG_FLASH_PAGE_LAYOUT': 'y',
+            'CONFIG_FLASH_MAP': 'y',
+            'CONFIG_NVS': 'y',
+            'CONFIG_BT_MESH_SETTINGS_WORKQ_STACK_SIZE': '1200',
+            'CONFIG_BT_MESH_DFD_SRV': 'n',
+            'CONFIG_BT_MESH_DFU_SRV': 'n',
+            'CONFIG_BT_MESH_BLOB_SRV': 'n',
+            'CONFIG_BT_MESH_DFD_SRV_OOB_UPLOAD': 'y',
+            'CONFIG_BT_MESH_BLOB_SIZE_MAX': '5000',
+            'CONFIG_BT_MESH_BLOB_BLOCK_SIZE_MIN': '256',
+            'CONFIG_BT_MESH_BLOB_BLOCK_SIZE_MAX': '256'
+        },
+        "test_cases": [
+            'MBTM/CL/BT'
+        ]
+    }
 }
 
 retry_config = {
