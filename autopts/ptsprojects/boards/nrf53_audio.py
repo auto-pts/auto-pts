@@ -28,7 +28,7 @@ def build_and_flash_core(zephyr_wd, build_dir, board, debugger_snr, configs, rec
     overlay = '-- -DCMAKE_C_FLAGS="-Werror"'
     for conf in configs:
         overlay += f' -D{conf}'
-    cmd = ['west', 'build', '-b', board]
+    cmd = ['west', 'build', '--no-sysbuild', '-b', board]
     cmd.extend(overlay.split())
     check_call(cmd, cwd=build_dir)
     
