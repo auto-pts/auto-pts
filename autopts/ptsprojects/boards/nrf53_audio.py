@@ -69,7 +69,7 @@ def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None, *args):
     config_dir_net = os.getenv("AUTOPTS_SOURCE_DIR_NET")
     if config_dir_net is None:
         net_core_configs = [f'EXTRA_CONF_FILE=\'nrf5340_cpunet_iso-bt_ll_sw_split.conf;'
-                            f'../../../tests/bluetooth/tester/nrf5340_hci_ipc_cpunet.conf\'']
+                            f'../../../tests/bluetooth/tester/hci_ipc_cpunet.conf\'']
     else:
         conf_path = os.path.join(zephyr_wd, config_dir_net, 'hci_ipc.conf')
         net_core_configs = [f'EXTRA_CONF_FILE=\'{conf_path}\'']

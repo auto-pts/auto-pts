@@ -35,7 +35,7 @@ def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None, *args):
     check_call('rm -rf build/'.split(), cwd=tester_dir)
     check_call('rm -rf build/'.split(), cwd=controller_dir)
 
-    bttester_overlay = 'nrf5340_hci_ipc.conf'
+    bttester_overlay = 'hci_ipc.conf'
 
     if conf_file and conf_file != 'default' and conf_file != 'prj.conf':
         bttester_overlay += f';{conf_file}'
@@ -46,6 +46,6 @@ def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None, *args):
 
     cmd = ['west', 'build', '--no-sysbuild', '-b', 'nrf5340dk/nrf5340/cpunet', '--',
            f'-DEXTRA_CONF_FILE=\'nrf5340_cpunet_iso-bt_ll_sw_split.conf;'
-           f'../../../tests/bluetooth/tester/nrf5340_hci_ipc_cpunet.conf\'']
+           f'../../../tests/bluetooth/tester/hci_ipc_cpunet.conf\'']
     check_call(cmd, cwd=controller_dir)
     check_call(['west', 'flash', '--skip-rebuild', '-i', debugger_snr], cwd=controller_dir)

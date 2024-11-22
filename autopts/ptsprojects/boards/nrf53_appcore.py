@@ -33,7 +33,7 @@ def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None, *args):
 
     check_call('rm -rf build/'.split(), cwd=tester_dir)
 
-    bttester_overlay = 'nrf5340_hci_ipc.conf'
+    bttester_overlay = 'hci_ipc.conf'
 
     if conf_file and conf_file != 'default' and conf_file != 'prj.conf':
         bttester_overlay += f';{conf_file}'
