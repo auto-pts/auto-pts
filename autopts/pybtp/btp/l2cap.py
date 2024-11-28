@@ -49,6 +49,8 @@ L2CAP = {
              CONTROLLER_INDEX),
     "cls_listen": (defs.BTP_SERVICE_ID_L2CAP, defs.BTP_L2CAP_CMD_CLS_LISTEN,
                    CONTROLLER_INDEX),
+    "cls_send": (defs.BTP_SERVICE_ID_L2CAP, defs.BTP_L2CAP_CMD_CLS_SEND,
+                 CONTROLLER_INDEX),
 }
 
 
@@ -325,6 +327,39 @@ def l2cap_cls_listen(psm):
     data_ba = bytearray(struct.pack('H', psm))
 
     iutctl.btp_socket.send_wait_rsp(*L2CAP['cls_listen'], data=data_ba)
+
+
+def l2cap_cls_send(bd_addr, bd_addr_type, psm, val=None, val_mtp=None):
+    logging.debug("%s %r %r %r %r %r", l2cap_cls_send.__name__, bd_addr, bd_addr_type,
+                  psm, val, val_mtp)
+
+    iutctl = get_iut()
+
+    if val_mtp:
+        val *= int(val_mtp)
+
+    bd_addr = pts_addr_get(bd_addr)
+    bd_addr_type = pts_addr_type_get(bd_addr_type)
+
+    bd_addr_ba = addr2btp_ba(bd_addr)
+
+    if isinstance(psm, str):
+        psm = int(psm, 16)
+
+    if val:
+        val_ba = bytes.fromhex(val)
+        val_len_ba = struct.pack('H', len(val_ba))
+    else:
+        val_len_ba = struct.pack('H', 0)
+
+    data_ba = bytearray(chr(bd_addr_type).encode('utf-8'))
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(struct.pack('H', psm))
+    data_ba.extend(val_len_ba)
+    if val:
+        data_ba.extend(val_ba)
+
+    iutctl.btp_socket.send_wait_rsp(*L2CAP['cls_send'], data=data_ba)
 
 
 def l2cap_connected_ev(l2cap, data, data_len):
