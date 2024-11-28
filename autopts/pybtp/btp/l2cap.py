@@ -45,6 +45,8 @@ L2CAP = {
                 CONTROLLER_INDEX),
     "connect_with_sec_level": (defs.BTP_SERVICE_ID_L2CAP, defs.BTP_L2CAP_CMD_CONNECT_WITH_SEC_LEVEL,
                                CONTROLLER_INDEX),
+    "echo": (defs.BTP_SERVICE_ID_L2CAP, defs.BTP_L2CAP_CMD_ECHO,
+             CONTROLLER_INDEX),
 }
 
 
@@ -274,6 +276,35 @@ def l2cap_conn_with_sec_level(bd_addr, bd_addr_type, psm, mtu=0, num=1, ecfc=0, 
 
     chan_ids = l2cap_conn_with_sec_level_rsp()
     logging.debug("id %r", chan_ids)
+
+
+def l2cap_echo(bd_addr, bd_addr_type, val=None, val_mtp=None):
+    logging.debug("%s %r %r %r %r", l2cap_echo.__name__, bd_addr, bd_addr_type,
+                  val, val_mtp)
+
+    iutctl = get_iut()
+
+    if val_mtp:
+        val *= int(val_mtp)
+
+    bd_addr = pts_addr_get(bd_addr)
+    bd_addr_type = pts_addr_type_get(bd_addr_type)
+
+    bd_addr_ba = addr2btp_ba(bd_addr)
+
+    if val:
+        val_ba = bytes.fromhex(val)
+        val_len_ba = struct.pack('H', len(val_ba))
+    else:
+        val_len_ba = struct.pack('H', 0)
+
+    data_ba = bytearray(chr(bd_addr_type).encode('utf-8'))
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(val_len_ba)
+    if val:
+        data_ba.extend(val_ba)
+
+    iutctl.btp_socket.send_wait_rsp(*L2CAP['echo'], data=data_ba)
 
 
 def l2cap_connected_ev(l2cap, data, data_len):

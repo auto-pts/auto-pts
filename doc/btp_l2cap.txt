@@ -199,6 +199,20 @@ Commands and responses:
 
 		In case of an error, the error response will be returned.
 
+	Opcode 0x0b - Echo
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Data_Length (2 octets)
+					Data (Data_Length octets)
+		Response parameters:	<none>
+
+		This command is used to send echo request over L2CAP channel
+		0x0001. If Data_Length is 0, the Data should not exist.
+
+		In case of an error, the error response will be returned.
+
 Events:
 	Opcode 0x80 - Connection Request Event
 
