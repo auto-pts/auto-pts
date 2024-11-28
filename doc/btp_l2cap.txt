@@ -213,6 +213,17 @@ Commands and responses:
 
 		In case of an error, the error response will be returned.
 
+	Opcode 0x0c - Connectionless data channel listen command
+
+		Controller Index:	<controller id>
+		Command parameters:	PSM (2 octets)
+		Response parameters:	<none>
+
+		This command is used to register L2CAP PSM and listen for
+		incoming data from connectionless data channel.
+
+		In case of an error, the error response will be returned.
+
 Events:
 	Opcode 0x80 - Connection Request Event
 
