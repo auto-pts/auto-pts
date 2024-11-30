@@ -70,6 +70,7 @@ class ZephyrCtl:
         self.kernel_image = args.kernel_image
         self.tty_file = args.tty_file
         self.hci = args.hci
+        self.rtt_logger_timeout = args.rtt_logger_timeout
         self.native = None
         self.gdb = args.gdb
         self.is_running = False
@@ -205,7 +206,8 @@ class ZephyrCtl:
 
     def rtt_logger_stop(self):
         if self.rtt_logger:
-            time.sleep(0.1)  # Make sure all logs have been collected, in case test failed early.
+            # Make sure all logs have been collected, in case test failed early.
+            time.sleep(self.rtt_logger_timeout)
             self.rtt_logger.stop()
 
     def wait_iut_ready_event(self, reset=True):
