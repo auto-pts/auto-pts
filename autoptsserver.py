@@ -51,6 +51,8 @@ from time import sleep
 import pythoncom
 import wmi
 
+import serial.tools.list_ports
+
 from autopts import ptscontrol
 from autopts.config import SERVER_PORT
 from autopts.utils import CounterWithFlag, get_global_end, exit_if_admin, ykush_replug_usb, ykush_set_usb_power, \
@@ -62,6 +64,13 @@ log = root_logging.debug
 log_inited = False
 PROJECT_DIR = dirname(abspath(__file__))
 
+def _com_port_exists(port_name):
+    """Check if the COM port exists."""
+    ports = serial.tools.list_ports.comports()
+    for port in ports:
+        if port.device == port_name:
+            return True
+    return False
 
 def init_logging(_args):
     """Initialize server logging"""
@@ -623,6 +632,17 @@ if __name__ == "__main__":
     autoptsservers = []
     server_count = len(_args.srv_port)
     finish_count = CounterWithFlag(init_count=0)
+
+    if _args.dongle is not None:
+        for dongle in _args.dongle:
+            # If dongle does not start with "COM" then it is considered valid port
+            # for legacy dual-mode dongle compatibility.
+            if dongle.startswith("COM"):
+                if not _com_port_exists(dongle):
+                    sys.exit(f"Port {dongle} not found")
+            else:
+                continue
+
     try:
         for i in range(server_count):
             args_copy = copy.deepcopy(_args)

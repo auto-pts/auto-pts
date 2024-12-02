@@ -4,3 +4,4 @@ utils
 psutil
 yepkit-pykush
 hidapi
+pyserial
