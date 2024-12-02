@@ -487,6 +487,7 @@ class Server(threading.Thread):
 
             except KeyboardInterrupt:
                 # Ctrl-C termination for single instance mode
+                print("Keyboard Interrupt. Single-instance termination")
                 break
 
             except BaseException as e:
@@ -643,6 +644,7 @@ if __name__ == "__main__":
     except KeyboardInterrupt:  # Ctrl-C
         # Termination for multi instance mode
         # because the threads does not receive a signal from Ctrl-C
+        print("Keyboard Interrupt. Multi-instance termination")
         for s in autoptsservers:
             s.terminate()
 
