@@ -25,6 +25,7 @@ gap_settings_btp2txt = {
     defs.GAP_SETTINGS_POWERED: "Powered",
     defs.GAP_SETTINGS_CONNECTABLE: "Connectable",
     defs.GAP_SETTINGS_FAST_CONNECTABLE: "Fast Connectable",
+    defs.GAP_SETTINGS_SCANNABLE: "Scannable",
     defs.GAP_SETTINGS_DISCOVERABLE: "Discoverable",
     defs.GAP_SETTINGS_BONDABLE: "Bondable",
     defs.GAP_SETTINGS_LINK_SEC_3: "Link Level Security",
