@@ -121,6 +121,7 @@ class BotConfigArgs(Namespace):
         self.pylink_reset = args.get('pylink_reset', False)
         self.max_server_restart_time = args.get('max_server_restart_time', MAX_SERVER_RESTART_TIME)
         self.use_backup = args.get('use_backup', False)
+        self.rtt_logger_timeout = args.get('rtt_logger_timeout', 0.1)
 
         if self.ykush or self.active_hub_server:
             self.usb_replug_available = True
