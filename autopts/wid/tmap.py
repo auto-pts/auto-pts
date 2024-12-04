@@ -562,6 +562,7 @@ def hdl_wid_506(params: WIDParams):
     source_id = 0x00
     btp.cap_broadcast_adv_stop(source_id)
     btp.cap_broadcast_source_stop(source_id)
+    btp.cap_broadcast_source_release(source_id)
 
     # Get Audio Locations from description
     audio_locations = 0
