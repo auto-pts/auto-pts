@@ -76,7 +76,7 @@ class MynewtCtl:
 
         self.flush_serial()
 
-        self.socket_srv = BTPSocketSrv()
+        self.socket_srv = BTPSocketSrv(test_case.log_dir)
         self.socket_srv.open(self.btp_address)
         self.btp_socket = BTPWorker(self.socket_srv)
 
@@ -165,7 +165,7 @@ class MynewtCtl:
 
             try:
                 if (tuple_hdr.svc_id != defs.BTP_SERVICE_ID_CORE or
-                        tuple_hdr.op != defs.CORE_EV_IUT_READY):
+                        tuple_hdr.op != defs.BTP_EV_CORE_IUT_READY):
                     raise BTPError("Failed to get ready event")
             except BTPError as err:
                 log("Unexpected event received (%s), expected IUT ready!", err)
