@@ -132,7 +132,7 @@ def hdl_wid_114(params: WIDParams):
     # btp.gap_adv_off()
 
     source_num, metadata = wid_114_settings[params.test_case_name]
-    qos_set_name = '8_1_1'
+    qos_set_name = "16_2_1"
     coding_format = 0x06
     vid = 0x0000
     cid = 0x0000

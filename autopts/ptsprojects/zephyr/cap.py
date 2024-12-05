@@ -89,7 +89,7 @@ def set_pixits(ptses):
     pts.set_pixit("CAP", "TSPX_Extended_Adv_Interval_max", "1200")
     pts.set_pixit("CAP", "TSPX_Periodic_Adv_Interval_min", "600")
     pts.set_pixit("CAP", "TSPX_Periodic_Adv_Interval_max", "600")
-    pts.set_pixit("CAP", "TSPX_BST_CODEC_CONFIG", "8_1_1")
+    pts.set_pixit("CAP", "TSPX_BST_CODEC_CONFIG", "16_2_1")
 
 
 sink_contexts = Context.LIVE | Context.CONVERSATIONAL | Context.MEDIA | Context.RINGTONE
