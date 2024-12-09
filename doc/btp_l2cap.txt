@@ -50,6 +50,10 @@ Commands and responses:
 			set to 1 when Num > 1.
 		bit 1 - Hold Credit - If set IUT is required to hold returning at
 			least 1 credit until Credits command is received.
+		bit 2 - Retransmission - Retransmission Mode
+		bit 3 - Flow Control - Flow Control Mode
+		bit 4 - Enhanced Retransmission - Enhanced Retransmission Mode
+		bit 5 - Streaming - Streaming Mode
 
 		In case of an error, the error response will be returned.
 
@@ -154,6 +158,135 @@ Commands and responses:
 
 		This command is used to instruct IUT to return credits on
 		specified channel.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0a - Connect with specified security level command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					PSM (2 octets)
+					MTU (2 octets)
+					Num (1 octet)
+					Options (1 octet)
+					Security_level (1 octet)
+		Response parameters:	Num (1 octet)
+					Chan_IDs (1 octet x num of channels created)
+
+		This command is used to create an L2CAP channel with specified
+		security level.
+		Chan_ID is returned in the response to this command to allow
+		cancellation of this connection request using Disconnect
+		command.
+		Connected Event (or Disconnected Event in case of an error)
+		shall be expected after issuing this command.
+
+		if Num > 1 then Enhanced Credit Based L2CAP channels shall be created.
+		Return value will contain a list of Chan_IDs that were created by
+		this command.
+
+		Available options:
+		bit 0 - ECFC - If set then Enhanced Credit Based L2CAP channel
+			shall be created even if Num == 1. This is used to
+			create single Enhanced CFC channel. This flag must be
+			set to 1 when Num > 1.
+		bit 1 - Hold Credit - If set IUT is required to hold returning at
+			least 1 credit until Credits command is received.
+
+		Possible values for the Security_level parameter are:
+			0 - Only for BR/EDR special cases, like SDP
+			1 - No encryption and no authentication
+			2 - Encryption and no authentication (no MITM)
+			3 - Encryption and authentication (MITM)
+			4 - Authenticated Secure Connections and 128-bit key
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0b - Echo
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Data_Length (2 octets)
+					Data (Data_Length octets)
+		Response parameters:	<none>
+
+		This command is used to send echo request over L2CAP channel
+		0x0001. If Data_Length is 0, the Data should not exist.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0c - Connectionless data channel listen command
+
+		Controller Index:	<controller id>
+		Command parameters:	PSM (2 octets)
+		Response parameters:	<none>
+
+		This command is used to register L2CAP PSM and listen for
+		incoming data from connectionless data channel.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0d - Send connectionless channel data
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					PSM (2 octets)
+					Data_Length (2 octets)
+					Data (Data_Length octets)
+		Response parameters:	<none>
+
+		This command is used to send data with specific PSM
+		via connectionless data channel.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0e - Listen with specified mode command
+
+		Controller Index:	<controller id>
+		Command parameters:	PSM (2 octets)
+					Transport (1 octet)
+					Options (1 octet)
+					MTU (2 octets)
+					Key_Size (1 octet)
+					Response (2 octets)
+		Response parameters:	<none>
+
+		Valid Transport parameter values:
+					0x00 = BR/EDR
+					0x01 = LE
+
+		Available options:
+		bit 0 - ECFC - If set then Enhanced Credit Based L2CAP channel
+			shall be created even if Num == 1. This is used to
+			create single Enhanced CFC channel. This flag must be
+			set to 1 when Num > 1.
+		bit 1 - Hold Credit - If set IUT is required to hold returning at
+			least 1 credit until Credits command is received.
+		bit 2 - Retransmission - Retransmission Mode
+		bit 3 - Flow Control - Flow Control Mode
+		bit 4 - Enhanced Retransmission - Enhanced Retransmission Mode
+		bit 5 - Streaming - Streaming Mode
+		bit 6 - Mode is optional - The mode set by bit2~5 is optional
+
+		This command is used to register L2CAP PSM and listen for
+		incoming data.
+
+		The MTU parameter is used to specify initial MTU for channels.
+
+		Response parameter can be used to specify a response value used in
+		L2CAP Connection Response to send non-success responses like
+		Insufficient Authentication. If device bases its security requirements
+		for creating L2CAP connection on PSM, this value should be 0x00.
+
+		Valid Response values:
+					0x00 = Success
+					0x01 = Insufficient authentication
+					0x02 = Insufficient authorization
+					0x03 = Insufficient encryption key size
+					0x04 = Insufficient encryption
 
 		In case of an error, the error response will be returned.
 
