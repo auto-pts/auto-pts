@@ -72,7 +72,6 @@ class MynewtCtl:
         log("%s.%s", self.__class__, self.start.__name__)
 
         self.test_case = test_case
-        self.iut_log_file = open(os.path.join(test_case.log_dir, "autopts-iutctl-mynewt.log"), "a")
 
         self.flush_serial()
 
@@ -99,8 +98,8 @@ class MynewtCtl:
         # socat dies after socket is closed, so no need to kill it
         self.socat_process = subprocess.Popen(shlex.split(socat_cmd),
                                               shell=False,
-                                              stdout=self.iut_log_file,
-                                              stderr=self.iut_log_file)
+                                              stdout=subprocess.DEVNULL,
+                                              stderr=subprocess.DEVNULL)
 
         self.btp_socket.accept()
 

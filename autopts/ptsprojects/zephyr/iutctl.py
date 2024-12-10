@@ -105,7 +105,6 @@ class ZephyrCtl:
 
         self.is_running = True
         self.test_case = test_case
-        self.iut_log_file = open(os.path.join(test_case.log_dir, "autopts-iutctl-zephyr.log"), "a")
 
         # We will reset HW after BTP socket is open. If the board was
         # reset before this happened, it is possible to receive none,
@@ -136,9 +135,10 @@ class ZephyrCtl:
             # socat dies after socket is closed, so no need to kill it
             self.socat_process = subprocess.Popen(shlex.split(socat_cmd),
                                                   shell=False,
-                                                  stdout=self.iut_log_file,
-                                                  stderr=self.iut_log_file)
+                                                  stdout=subprocess.DEVNULL,
+                                                  stderr=subprocess.DEVNULL)
         elif self.hci is not None:
+            self.iut_log_file = open(os.path.join(test_case.log_dir, "autopts-iutctl-zephyr.log"), "a")
             socat_cmd = ("socat -x -v %%s,rawer,b115200 UNIX-CONNECT:%s &" %
                          self.btp_address)
 
@@ -153,6 +153,7 @@ class ZephyrCtl:
                                                    stdout=self.iut_log_file,
                                                    stderr=self.iut_log_file)
         else:
+            self.iut_log_file = open(os.path.join(test_case.log_dir, "autopts-iutctl-zephyr.log"), "a")
             qemu_cmd = get_qemu_cmd(self.kernel_image)
 
             log("Starting QEMU zephyr process: %s", qemu_cmd)
