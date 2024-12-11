@@ -72,11 +72,10 @@ class MynewtCtl:
         log("%s.%s", self.__class__, self.start.__name__)
 
         self.test_case = test_case
-        self.iut_log_file = open(os.path.join(test_case.log_dir, "autopts-iutctl-mynewt.log"), "a")
 
         self.flush_serial()
 
-        self.socket_srv = BTPSocketSrv()
+        self.socket_srv = BTPSocketSrv(test_case.log_dir)
         self.socket_srv.open(self.btp_address)
         self.btp_socket = BTPWorker(self.socket_srv)
 
@@ -99,8 +98,8 @@ class MynewtCtl:
         # socat dies after socket is closed, so no need to kill it
         self.socat_process = subprocess.Popen(shlex.split(socat_cmd),
                                               shell=False,
-                                              stdout=self.iut_log_file,
-                                              stderr=self.iut_log_file)
+                                              stdout=subprocess.DEVNULL,
+                                              stderr=subprocess.DEVNULL)
 
         self.btp_socket.accept()
 
@@ -165,7 +164,7 @@ class MynewtCtl:
 
             try:
                 if (tuple_hdr.svc_id != defs.BTP_SERVICE_ID_CORE or
-                        tuple_hdr.op != defs.CORE_EV_IUT_READY):
+                        tuple_hdr.op != defs.BTP_EV_CORE_IUT_READY):
                     raise BTPError("Failed to get ready event")
             except BTPError as err:
                 log("Unexpected event received (%s), expected IUT ready!", err)

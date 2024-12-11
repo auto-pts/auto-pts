@@ -21,10 +21,10 @@ class VCP:
     def __init__(self):
         self.wid_counter = 0
         self.event_queues = {
-            defs.VCP_DISCOVERED_EV: [],
-            defs.VCP_STATE_EV: [],
-            defs.VCP_FLAGS_EV: [],
-            defs.VCP_PROCEDURE_EV: [],
+            defs.BTP_EV_VCP_DISCOVERED: [],
+            defs.BTP_EV_VCP_STATE: [],
+            defs.BTP_EV_VCP_FLAGS: [],
+            defs.BTP_EV_VCP_PROCEDURE: [],
         }
 
     def event_received(self, event_type, event_data_tuple):
@@ -32,28 +32,28 @@ class VCP:
 
     def wait_discovery_completed_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.VCP_DISCOVERED_EV],
+            self.event_queues[defs.BTP_EV_VCP_DISCOVERED],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_vcp_state_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.VCP_STATE_EV],
+            self.event_queues[defs.BTP_EV_VCP_STATE],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_vcp_flags_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.VCP_FLAGS_EV],
+            self.event_queues[defs.BTP_EV_VCP_FLAGS],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_vcp_procedure_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.VCP_PROCEDURE_EV],
+            self.event_queues[defs.BTP_EV_VCP_PROCEDURE],
             lambda _addr_type, _addr, *_:
             (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)

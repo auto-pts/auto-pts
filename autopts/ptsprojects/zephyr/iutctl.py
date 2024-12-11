@@ -105,14 +105,13 @@ class ZephyrCtl:
 
         self.is_running = True
         self.test_case = test_case
-        self.iut_log_file = open(os.path.join(test_case.log_dir, "autopts-iutctl-zephyr.log"), "a")
 
         # We will reset HW after BTP socket is open. If the board was
         # reset before this happened, it is possible to receive none,
         # partial or whole IUT ready event. Flush serial to ignore it.
         self.flush_serial()
 
-        self.socket_srv = BTPSocketSrv()
+        self.socket_srv = BTPSocketSrv(test_case.log_dir)
         self.socket_srv.open(self.btp_address)
         self.btp_socket = BTPWorker(self.socket_srv)
 
@@ -136,9 +135,10 @@ class ZephyrCtl:
             # socat dies after socket is closed, so no need to kill it
             self.socat_process = subprocess.Popen(shlex.split(socat_cmd),
                                                   shell=False,
-                                                  stdout=self.iut_log_file,
-                                                  stderr=self.iut_log_file)
+                                                  stdout=subprocess.DEVNULL,
+                                                  stderr=subprocess.DEVNULL)
         elif self.hci is not None:
+            self.iut_log_file = open(os.path.join(test_case.log_dir, "autopts-iutctl-zephyr.log"), "a")
             socat_cmd = ("socat -x -v %%s,rawer,b115200 UNIX-CONNECT:%s &" %
                          self.btp_address)
 
@@ -153,6 +153,7 @@ class ZephyrCtl:
                                                    stdout=self.iut_log_file,
                                                    stderr=self.iut_log_file)
         else:
+            self.iut_log_file = open(os.path.join(test_case.log_dir, "autopts-iutctl-zephyr.log"), "a")
             qemu_cmd = get_qemu_cmd(self.kernel_image)
 
             log("Starting QEMU zephyr process: %s", qemu_cmd)
@@ -223,7 +224,7 @@ class ZephyrCtl:
                 ev = stack.core.wait_iut_ready_ev(30)
                 # If the board has reset unexpectedly in the middle of a test case,
                 # two IUT events may be received because of cleanup.
-                stack.core.event_queues[defs.CORE_EV_IUT_READY].clear()
+                stack.core.event_queues[defs.BTP_EV_CORE_IUT_READY].clear()
                 if not ev:
                     self.stop()
                     raise Exception('IUT ready event NOT received!')
@@ -241,7 +242,7 @@ class ZephyrCtl:
             # test case, to avoid double reset let's use 'hw_reset'
             # only if it was not received, e.g. at the beginning of
             # the first test case.
-            if len(stack.core.event_queues[defs.CORE_EV_IUT_READY]) == 0:
+            if len(stack.core.event_queues[defs.BTP_EV_CORE_IUT_READY]) == 0:
                 self.board.reset()
 
     def stop(self):
@@ -258,7 +259,7 @@ class ZephyrCtl:
         if not self.gdb and self.board and \
                 stack.core and not get_global_end():
 
-            stack.core.event_queues[defs.CORE_EV_IUT_READY].clear()
+            stack.core.event_queues[defs.BTP_EV_CORE_IUT_READY].clear()
             self.board.reset()
 
             # We have to wait for IUT ready event before we close socket
