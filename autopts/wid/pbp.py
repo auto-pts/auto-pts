@@ -198,11 +198,15 @@ def hdl_wid_552(params: WIDParams):
     features, bis_count, qos_set_name = wid_552_settings[params.test_case_name]
 
     # default PTS program info, see TSPX_Program_Info
-    program_info_string = "00112233445566778899AABBCCDDEEFF"
-    program_info = bytes.fromhex(program_info_string)
+    stack = get_stack()
+    program_info = bytes.fromhex(stack.pbp.program_info)
     program_info_len = len(program_info)
     metadata = struct.pack('<BB', program_info_len + 1, AUDIO_METADATA_PROGRAM_INFO) + program_info
+
     btp.pbp.pbp_set_public_broadcast_announcement(features, metadata)
+    btp.pbp.pbp_set_broadcast_name(stack.pbp.broadcast_name)
+
+    metadata += struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)
 
     coding_format = 0x06
     vid = 0x0000
@@ -229,13 +233,12 @@ def hdl_wid_552(params: WIDParams):
     btp.cap_broadcast_source_setup_subgroup(source_id, subgroup_id, coding_format, vid, cid,
                                             codec_ltvs_bytes, metadata)
 
-    # Zephyr stack generates Broadcast_ID itself
+    # Due to no broadcast ID in the IXIT for PBP, any broadcast ID will work
     broadcast_id = 0x123456
     encrypted = False
     broadcast_code = None
     if (features & 1) != 0:
         encrypted = True
-        stack = get_stack()
         broadcast_code = stack.bap.broadcast_code
         if isinstance(broadcast_code, str):
             # The default broadcast code string from PTS is in big endian
