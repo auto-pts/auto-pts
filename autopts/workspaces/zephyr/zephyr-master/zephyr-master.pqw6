@@ -1,4 +1,4 @@
-<WORKSPACE_INFORMATION NAME="zephyr-master" PATH="C:\Users\Szymon\auto-pts\autopts\workspaces\zephyr\zephyr-master" CREATED_WITH="Profile Tuning Suite, 8.6.0, 6" BD_ADDR="000000000000" SWITCH_TTCN="FALSE" QDID="302478">
+<WORKSPACE_INFORMATION NAME="zephyr-master" PATH="C:\Users\Szymon\auto-pts\autopts\workspaces\zephyr\zephyr-master" CREATED_WITH="Profile Tuning Suite, 8.7.4, 1" BD_ADDR="000000000000" SWITCH_TTCN="FALSE" QDID="332723">
   <PROJECTS_INFORMATION>
     <PROJECT_INFORMATION NAME="AICS" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
       <PICS>
@@ -677,7 +677,7 @@
           <Row>
             <Name>TSPC_BAP_5_1</Name>
             <Description>BAP v1.0.1 (C.4)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -695,7 +695,7 @@
           <Row>
             <Name>TSPC_BAP_5_4</Name>
             <Description>BAP v1.0.2 (C.4)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1907,7 +1907,7 @@
           <Row>
             <Name>TSPC_BAP_27_2</Name>
             <Description>BAP v1.0.1 (C.3)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1925,7 +1925,7 @@
           <Row>
             <Name>TSPC_BAP_27_5</Name>
             <Description>BAP v1.0.2 (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -3131,13 +3131,13 @@
           <Row>
             <Name>TSPC_BAP_50_1</Name>
             <Description>BAP v1.0.1 (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_50_2</Name>
             <Description>BAP v1.0.2 (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -3179,7 +3179,7 @@
           <Row>
             <Name>TSPC_BAP_51_7</Name>
             <Description>Multiple BIG Support (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -3689,7 +3689,7 @@
           <Row>
             <Name>TSPC_BAP_63_1</Name>
             <Description>BAP v1.0.1 (C.3)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -3701,7 +3701,7 @@
           <Row>
             <Name>TSPC_BAP_63_3</Name>
             <Description>BAP v1.0.2 (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4349,7 +4349,7 @@
           <Row>
             <Name>TSPC_BAP_78_1</Name>
             <Description>BAP v1.0.1 (C.3)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4361,7 +4361,7 @@
           <Row>
             <Name>TSPC_BAP_78_3</Name>
             <Description>BAP v1.0.2 (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4553,7 +4553,7 @@
           <Row>
             <Name>TSPC_BAP_84_1</Name>
             <Description>BAP v1.0.1 (C.3)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4565,7 +4565,7 @@
           <Row>
             <Name>TSPC_BAP_84_3</Name>
             <Description>BAP v1.0.2 (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -10000,25 +10000,25 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_2_13a</Name>
-            <Description>128-bit encryption key size capable, Security Mode-4, level 4 (C.12)</Description>
+            <Description>128-bit encryption key size capable, Security mode 4, level 4 (C.12)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_2_13b</Name>
-            <Description>128-bit encryption key size capable, Security Mode-4, level 3 (C.13)</Description>
+            <Description>128-bit encryption key size capable, Security mode 4, level 3 (C.13)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_2_13c</Name>
-            <Description>128-bit encryption key size capable, Security Mode-4, level 2 (C.14)</Description>
+            <Description>128-bit encryption key size capable, Security mode 4, level 2 (C.14)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_2_13d</Name>
-            <Description>128-bit encryption key size capable, Security Mode-4, level 1 (C.15)</Description>
+            <Description>128-bit encryption key size capable, Security mode 4, level 1 (C.15)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -10456,13 +10456,7 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_11a_3</Name>
-            <Description>Periodic Advertising with responses (O)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_11a_4</Name>
-            <Description>No longer used (N/A)</Description>
+            <Description>Periodic Advertising with Responses (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -10731,12 +10725,6 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_17a_3</Name>
-            <Description>No longer used (N/A)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
             <Name>TSPC_GAP_17a_4</Name>
             <Description>Scanning for Periodic Advertising (C.1)</Description>
             <Value>TRUE</Value>
@@ -10853,7 +10841,7 @@
           <Row>
             <Name>TSPC_GAP_20_8</Name>
             <Description>LE Extended Advertising (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -10984,7 +10972,7 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_20a_21</Name>
-            <Description>Periodic Advertising with responses (C.4)</Description>
+            <Description>Periodic Advertising with Responses (C.4)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -11152,7 +11140,13 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_23a_2</Name>
-            <Description>CS Reflector Role (C.2)</Description>
+            <Description>CS Reflector Role (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_23a_3</Name>
+            <Description>Channel Sounding procedure for GAP Peripheral (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -11254,25 +11248,25 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_25_13</Name>
-            <Description>Minimum 128 Bit entropy key (C.5)</Description>
+            <Description>Minimum 128-bit entropy key (C.5)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_25_13a</Name>
-            <Description>Minimum 128 Bit entropy key, LE security Mode-1 level 4 (C.7)</Description>
+            <Description>Minimum 128-bit entropy key, LE security mode 1 level 4 (C.7)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_25_13b</Name>
-            <Description>Minimum 128 Bit entropy key, LE security Mode-1 level 3 (C.8)</Description>
+            <Description>Minimum 128-bit entropy key, LE security mode 1 level 3 (C.8)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_25_13c</Name>
-            <Description>Minimum 128 Bit entropy key, LE security Mode-1 level 2 (C.9)</Description>
+            <Description>Minimum 128-bit entropy key, LE security mode 1 level 2 (C.9)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -11608,13 +11602,13 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_30_1</Name>
-            <Description>Passive scanning (C.1)</Description>
+            <Description>Passive Scanning (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_30_2</Name>
-            <Description>Active scanning (C.1)</Description>
+            <Description>Active Scanning (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -11914,7 +11908,13 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_33a_2</Name>
-            <Description>CS Reflector Role (C.2)</Description>
+            <Description>CS Reflector Role (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_33a_3</Name>
+            <Description>Channel Sounding procedure for GAP Central (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -12010,25 +12010,25 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_35_13</Name>
-            <Description>Minimum 128 Bit entropy key (C.4)</Description>
+            <Description>Minimum 128-bit entropy key (C.4)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_35_13a</Name>
-            <Description>Minimum 128 Bit entropy key, LE security Mode-1 level 4 (C.5)</Description>
+            <Description>Minimum 128-bit entropy key, LE security mode 1 level 4 (C.5)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_35_13b</Name>
-            <Description>Minimum 128 Bit entropy key, LE security Mode-1 level 3 (C.6)</Description>
+            <Description>Minimum 128-bit entropy key, LE security mode 1 level 3 (C.6)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_35_13c</Name>
-            <Description>Minimum 128 Bit entropy key, LE security Mode-1 level 2 (C.7)</Description>
+            <Description>Minimum 128-bit entropy key, LE security mode 1 level 2 (C.7)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -22186,7 +22186,7 @@
           </Row>
           <Row>
             <Name>TSPX_bd_addr_additional_filter_accept_list</Name>
-            <Description>A list of BD addresses (Maximum 4) to be added into filter accept list. Use comma to seperate the address. (Example: 112233445566,778899AABBCC)</Description>
+            <Description>A list of BD addresses (Maximum 4) to be added into filter accept list. Use comma to seperate the address. (Example: 000000000000,778899AABBCC)</Description>
             <Type>IA5STRING</Type>
             <Value />
           </Row>
@@ -24417,13 +24417,13 @@
           <Row>
             <Name>TSPC_PACS_1_1</Name>
             <Description>PACS v1.0.1 (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_PACS_1_2</Name>
             <Description>PACS v1.0.2 (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -24760,7 +24760,7 @@
           <Row>
             <Name>TSPC_PBP_4_1</Name>
             <Description>PBP v1.0.1 (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
