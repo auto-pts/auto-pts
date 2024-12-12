@@ -19,6 +19,8 @@ from autopts.pybtp import defs
 
 class PBP:
     def __init__(self):
+        self.program_info = None
+        self.broadcast_name = None
         self.event_queues = {
             defs.BTP_PBP_EV_PUBLIC_BROADCAST_ANNOUNCEMENT_FOUND: [],
         }
@@ -31,3 +33,17 @@ class PBP:
             self.event_queues[defs.BTP_PBP_EV_PUBLIC_BROADCAST_ANNOUNCEMENT_FOUND],
             lambda ev: (addr_type, addr, broadcast_name) == (ev['addr_type'], ev['addr'], ev['broadcast_name']),
             timeout, remove)
+
+    def set_program_info(self, program_info):
+        if not isinstance(program_info, str):
+            raise TypeError('Tried to set improper program info')
+        if len(program_info) == 0:
+            raise ValueError('Tried to set empty program info')
+        self.program_info = program_info
+
+    def set_broadcast_name(self, broadcast_name):
+        if not isinstance(broadcast_name, str):
+            raise TypeError('Tried to set improper broadcast name')
+        if len(broadcast_name) < 4 or len(broadcast_name) > 32:
+            raise ValueError(f'Tried to set broadcast name with invalid length: \'{broadcast_name}\' ({len(broadcast_name)})')
+        self.broadcast_name = broadcast_name
