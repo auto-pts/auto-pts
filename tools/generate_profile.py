@@ -193,7 +193,7 @@ log = logging.debug
 
 {profile_name_upper} = """ + "{" + f"""
     'read_supported_cmds': (defs.BTP_SERVICE_ID_{profile_name_upper},
-                            defs.{profile_name_upper}_READ_SUPPORTED_COMMANDS,
+                            defs.BTP_{profile_name_upper}_CMD_READ_SUPPORTED_COMMANDS,
                             CONTROLLER_INDEX),
 """ + "}" + f"""
 
@@ -226,11 +226,11 @@ def {profile_name_lower}_ev_dummy_completed({profile_name_lower}, data, data_len
     logging.debug(f'{profile_name_upper} Dummy event completed: addr {'{'}addr{'}'} addr_type '
                   f'{'{'}addr_type{'}'} status {'{'}status{'}'}')
 
-    {profile_name_lower}.event_received(defs.{profile_name_upper}_EV_DUMMY_COMPLETED, (addr_type, addr, status))
+    {profile_name_lower}.event_received(defs.BTP_{profile_name_upper}_EV_DUMMY_COMPLETED, (addr_type, addr, status))
 
 
 {profile_name_upper}_EV = {'{'}
-    defs.{profile_name_upper}_EV_DUMMY_COMPLETED: {profile_name_lower}_ev_dummy_completed,
+    defs.BTP_{profile_name_upper}_EV_DUMMY_COMPLETED: {profile_name_lower}_ev_dummy_completed,
 {'}'}
 """,
     # END of autopts/pybtp/btp/profile.py
@@ -245,7 +245,7 @@ from autopts.pybtp import defs
 class {profile_name_upper}:
     def __init__(self):
         self.event_queues = {'{'}
-            defs.{profile_name_upper}_EV_DUMMY_COMPLETED: [],
+            defs.BTP_{profile_name_upper}_EV_DUMMY_COMPLETED: [],
         {'}'}
 
     def event_received(self, event_type, event_data):
@@ -253,7 +253,7 @@ class {profile_name_upper}:
 
     def wait_dummyevent_completed_ev(self, addr_type, addr, timeout, remove=True):
         return wait_for_queue_event(
-            self.event_queues[defs.{profile_name_upper}_EV_DUMMY_COMPLETED],
+            self.event_queues[defs.BTP_{profile_name_upper}_EV_DUMMY_COMPLETED],
             lambda _addr_type, _addr, *_:
                 (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
@@ -302,7 +302,7 @@ changes_to_prepend = {
     f'{project_path}/__init__.py': {1: f"import autopts.ptsprojects.{basename(project_path)}.{profile_name_lower}\n"},
     f'{AUTOPTS_REPO}/autopts/pybtp/defs.py': {
         1: f"BTP_SERVICE_ID_{profile_name_upper} = {profile_id}\n",
-        2: f"{profile_name_upper}_READ_SUPPORTED_COMMANDS = 0x01\n{profile_name_upper}_EV_DUMMY_COMPLETED = 0x80\n\n",
+        2: f"BTP_{profile_name_upper}_CMD_READ_SUPPORTED_COMMANDS = 0x01\nBTP_{profile_name_upper}_EV_DUMMY_COMPLETED = 0x80\n\n",
     },
     f'{AUTOPTS_REPO}/autopts/ptsprojects/stack/layers/__init__.py': {1: f"from .{profile_name_lower} import *\n"},
     f'{AUTOPTS_REPO}/autopts/ptsprojects/stack/stack.py': {
