@@ -289,10 +289,16 @@ class PTSSender(win32com.server.connect.ConnectableServer):
         finally:
             self._response.clear()
 
-        # Stringify response
-        rsp = str(rsp)
-        rsp_len = str(len(rsp))
-        is_present = str(1)
+        if rsp in ['No', 'Cancel', 'Abort', None]:
+            # NULL pointer is acceptable for any negative response which includes No and Cancel.
+            rsp = ""
+            rsp_len = 0
+            is_present = False
+        else:  # if rsp in ['OK', 'Yes', 'Retry' or Edit value]:
+            # Stringify response
+            rsp = str(rsp)
+            rsp_len = str(len(rsp))
+            is_present = str(1)
 
         logger.info("END OnImplicitSend")
         logger.info("*" * 20)
