@@ -48,7 +48,7 @@ GATTS = {
     "get_attrs": (defs.BTP_SERVICE_ID_GATT, defs.BTP_GATT_CMD_GET_ATTRIBUTES,
                   CONTROLLER_INDEX),
     "get_attr_val": (defs.BTP_SERVICE_ID_GATT,
-                     defs.BTP_GATT_CMD_GET_ATTRIBUTES, CONTROLLER_INDEX),
+                     defs.BTP_GATT_CMD_GET_ATTRIBUTE_VALUE, CONTROLLER_INDEX),
     "change_database": (defs.BTP_SERVICE_ID_GATT,
                         defs.BTP_GATT_CMD_CHANGE_DATABASE, CONTROLLER_INDEX),
     "notify_mult": (defs.BTP_SERVICE_ID_GATT,
@@ -462,7 +462,7 @@ def gatts_get_attr_val(bd_addr_type, bd_addr, handle):
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
-                  defs.BTP_GATT_CMD_GET_ATTRIBUTES)
+                  defs.BTP_GATT_CMD_GET_ATTRIBUTE_VALUE)
 
     hdr = '<BH'
     hdr_len = struct.calcsize(hdr)
