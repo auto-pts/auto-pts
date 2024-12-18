@@ -551,7 +551,7 @@ def get_result_color(status):
         return "green"
     if status == "FAIL":
         return "red"
-    if status == "INCONC":
+    if status in ("INCONC", "INDCSV"):
         return "yellow"
     return "white"
 
@@ -953,7 +953,7 @@ class LTThread(InterruptableThread):
 
         if AUTO_PTS_LOCAL:  # set fake status and return
             statuses = ["PASS", "INCONC", "FAIL", "UNKNOWN VERDICT: NONE",
-                        "BTP ERROR", "XML-RPC ERROR", "BTP TIMEOUT"]
+                        "BTP ERROR", "XML-RPC ERROR", "BTP TIMEOUT", "INDCSV"]
             test_case.status = random.choice(statuses)
             return
 

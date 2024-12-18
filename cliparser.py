@@ -78,7 +78,7 @@ class CliParser(argparse.ArgumentParser):
                                " itself after wrong status.")
 
         self.add_argument("--not_recover", nargs='+',
-                          default=['PASS', 'INCONC', 'FAIL', 'NOT_IMPLEMENTED'],
+                          default=['PASS', 'INCONC', 'FAIL', 'NOT_IMPLEMENTED', 'INDCSV'],
                           help="Specify at which statuses autoptsclient should "
                                "try to recover itself.")
 
