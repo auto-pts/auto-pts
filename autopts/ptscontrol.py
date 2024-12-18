@@ -165,6 +165,8 @@ class PTSLogger(win32com.server.connect.ConnectableServer):
 
                         if "PASS" in log_message:
                             new_status = "PASS"
+                        elif "INDCSV" in log_message:
+                            new_status = "INDCSV"
                         elif "INCONC" in log_message:
                             new_status = "INCONC"
                         elif "FAIL" in log_message:
