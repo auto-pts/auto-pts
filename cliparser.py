@@ -155,6 +155,9 @@ class CliParser(argparse.ArgumentParser):
                               "Requires rtt support on IUT.",
                               action='store_true', default=False)
 
+            self.add_argument("--rtt_logger_timeout", nargs='?', type=float, default=0.1,
+                              help="Timeout for rtt logger to make sure all logs have been collected")
+
             self.add_argument("--gdb",
                               help="Skip board resets to avoid gdb server disconnection.",
                               action='store_true', default=False)
