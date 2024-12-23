@@ -326,6 +326,14 @@ def hdl_wid_20107(params: WIDParams):
     return True
 
 
+def hdl_wid_20109(_: WIDParams):
+    """
+    Please send indications for Characteristic 'Object List Control Point' to the PTS.
+    """
+
+    return True
+
+
 def hdl_wid_20110(params: WIDParams):
     """
     Please send write request to handle 0xXXXX with following value.
