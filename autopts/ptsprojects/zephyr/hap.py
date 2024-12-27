@@ -189,6 +189,8 @@ def test_cases(ptses):
         TestFunc(btp.hap_hauc_init),
         TestFunc(stack.csip_init),
         TestFunc(btp.core_reg_svc_csip),
+        TestFunc(btp.core_reg_svc_cap),
+        TestFunc(stack.cap_init),
     ]
 
     pre_conditions_iac = pre_conditions + [
