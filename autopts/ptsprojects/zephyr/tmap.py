@@ -81,10 +81,16 @@ def test_cases(ptses):
         TestFunc(btp.core_reg_svc_bap),
         TestFunc(btp.core_reg_svc_cap),
         TestFunc(btp.core_reg_svc_tmap),
+        TestFunc(btp.core_reg_svc_vcp),
+        TestFunc(btp.core_reg_svc_tbs),
+        TestFunc(btp.core_reg_svc_csip),
         TestFunc(stack.ascs_init),
         TestFunc(stack.bap_init),
         TestFunc(stack.cap_init),
-        TestFunc(stack.tmap_init)
+        TestFunc(stack.tmap_init),
+        TestFunc(stack.vcp_init),
+        TestFunc(stack.tbs_init),
+        TestFunc(stack.csip_init),
     ]
 
     test_case_name_list = pts.get_test_case_list('TMAP')
