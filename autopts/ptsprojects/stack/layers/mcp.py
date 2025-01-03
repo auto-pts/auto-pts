@@ -42,6 +42,7 @@ class MCP:
             defs.BTP_MCP_EV_SEARCH_NTF: []
         }
         self.error_opcodes = []
+        self.object_id = None
 
     def event_received(self, event_type, event_data_tuple):
         self.event_queues[event_type].append(event_data_tuple)
