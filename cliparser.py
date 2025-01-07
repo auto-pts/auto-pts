@@ -34,10 +34,16 @@ class CliParser(argparse.ArgumentParser):
         super().__init__(description='PTS automation client', add_help=add_help)
 
         self.add_argument("-i", "--ip_addr", nargs="+",
-                          help="IP address of the PTS automation servers")
+                          help="IP address of the PTS automation servers. "
+                          "If running with multiple servers(PTS dongles), "
+                          "specify the IP addresses separated by a space, "
+                          "e.g. \"-i 192.168.2.2 192.168.2.2\"")
 
         self.add_argument("-l", "--local_addr", nargs="+", default=None,
-                          help="Local IP address of PTS automation client")
+                          help="Local IP address of PTS automation client. "
+                          "If running with multiple servers(PTS dongles), "
+                          "specify the IP addresses separated by a space, "
+                          "e.g. \"-l 192.168.2.1 192.168.2.1\"")
 
         self.add_argument("-a", "--bd-addr",
                           help="Bluetooth device address of the IUT")
@@ -76,10 +82,16 @@ class CliParser(argparse.ArgumentParser):
                           help="Repeat every test even if previous result was PASS")
 
         self.add_argument("-S", "--srv_port", type=int, nargs="+", default=[SERVER_PORT],
-                          help="Specify the server port number")
+                          help="Specify the server port number. "
+                          "If running with multiple servers(PTS dongles), "
+                          "specify the ports separated by a space, "
+                          "e.g. \"-S 65000 65002 65004\"")
 
         self.add_argument("-C", "--cli_port", type=int, nargs="+", default=[CLIENT_PORT],
-                          help="Specify the client port number")
+                          help="Specify the client port number. "
+                          "If running with multiple servers(PTS dongles), "
+                          "specify the ports separated by a space, "
+                          "e.g. \"-C 65001 65003 65005\"")
 
         self.add_argument("--recovery", action='store_true', default=False,
                           help="Specify if autoptsclient should try to recover"
