@@ -169,6 +169,7 @@ iut_config = {
         "pre_overlay": "overlay-mesh.conf",
         "overlay": {
             'CONFIG_BT_SETTINGS': 'y',
+            'CONFIG_SECURE_STORAGE': 'y',
             'CONFIG_FLASH_PAGE_LAYOUT': 'y',
             'CONFIG_FLASH': 'y',
             'CONFIG_FLASH_MAP': 'y',
@@ -214,6 +215,7 @@ iut_config = {
         "pre_overlay": "overlay-mesh.conf",
         "overlay": {
             'CONFIG_BT_SETTINGS': 'y',
+            'CONFIG_SECURE_STORAGE': 'y',
             'CONFIG_FLASH': 'y',
             'CONFIG_FLASH_PAGE_LAYOUT': 'y',
             'CONFIG_FLASH_MAP': 'y',
@@ -231,6 +233,7 @@ iut_config = {
         "pre_overlay": "overlay-mesh.conf",
         "overlay": {
             'CONFIG_BT_SETTINGS': 'y',
+            'CONFIG_SECURE_STORAGE': 'y',
             'CONFIG_FLASH': 'y',
             'CONFIG_FLASH_PAGE_LAYOUT': 'y',
             'CONFIG_FLASH_MAP': 'y',
@@ -254,6 +257,7 @@ iut_config = {
         "pre_overlay": "overlay-mesh.conf",
         "overlay": {
             'CONFIG_BT_SETTINGS': 'y',
+            'CONFIG_SECURE_STORAGE': 'y',
             'CONFIG_FLASH': 'y',
             'CONFIG_FLASH_PAGE_LAYOUT': 'y',
             'CONFIG_FLASH_MAP': 'y',
@@ -274,6 +278,7 @@ iut_config = {
         "pre_overlay": "overlay-mesh.conf",
         "overlay": {
             'CONFIG_BT_SETTINGS': 'y',
+            'CONFIG_SECURE_STORAGE': 'y',
             'CONFIG_FLASH': 'y',
             'CONFIG_FLASH_PAGE_LAYOUT': 'y',
             'CONFIG_FLASH_MAP': 'y',
