@@ -1373,15 +1373,22 @@ class Client:
             signal.signal(signal.SIGINT, sigint_handler)
 
             return self.main(args)
-        except BaseException as e:
-            if not isinstance(e, KeyboardInterrupt):   # Ctrl-C
-                if e.code != 0:
-                    # Exit with traceback
-                    logging.exception(e)
-
+        except KeyboardInterrupt:
+            # Handling Ctrl-C
+            raise
+        except SystemExit as e:
+            if e.code != 0:
+                logging.exception(e)
+            # Handling --help
+            raise
+        except (TimeoutError, BaseException) as e:
+            logging.exception(e)
+            # We have to propagate an exception from the simple client layer
+            # up to the bot layer, so it could handle its own cleanup.
+            raise
+        finally:
             set_global_end()
             self.cleanup()
-            raise
 
     def main(self, _args=None):
         """Main.
