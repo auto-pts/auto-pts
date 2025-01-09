@@ -231,6 +231,11 @@ def schedule_pr_job(cron, pr_info, job_config):
         test_cases, est_duration = get_estimations(cfg_dict, included_tc, excluded_tc,
                                                    job_config['test_case_limit'])
 
+        if est_duration:
+            # Estimated duration does not include build/flash time. Let's add some
+            # minutes just to get closer to real time for short test runs.
+            est_duration += timedelta(minutes=10)
+
         test_case_count = len(test_cases)
 
         if test_case_count > 0:
