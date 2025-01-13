@@ -203,6 +203,9 @@ def make_report_txt(report_txt_path, results_dict, regressions_list,
         if tc in errata:
             result += ' - ERRATA ' + errata[tc]
 
+        if result[0] == 'TIMEOUT':
+            result += ' - Logs may not be available'
+
         # The first id in the test case is a test group
         tg = tc.split('/')[0]
         f.write("%s%s%s\n" % (tg.ljust(8, ' '), tc.ljust(32, ' '), result))
