@@ -20,6 +20,7 @@ import shlex
 import os
 import sys
 import serial
+import time
 
 from autopts.pybtp import defs, btp
 from autopts.ptsprojects.boards import Board, get_debugger_snr, tty_to_com
@@ -52,6 +53,7 @@ class MynewtCtl:
         self.debugger_snr = get_debugger_snr(self.tty_file) \
             if args.debugger_snr is None else args.debugger_snr
         self.board = Board(args.board_name, self)
+        self.rtt_logger_timeout = args.rtt_logger_timeout
         self.socat_process = None
         self.socket_srv = None
         self.btp_socket = None
@@ -139,6 +141,8 @@ class MynewtCtl:
 
     def rtt_logger_stop(self):
         if self.rtt_logger:
+            # Make sure all logs have been collected, in case test failed early.
+            time.sleep(self.rtt_logger_timeout)
             self.rtt_logger.stop()
 
     def reset(self):
