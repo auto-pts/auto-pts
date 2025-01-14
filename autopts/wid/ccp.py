@@ -485,20 +485,22 @@ def hdl_wid_20206(params: WIDParams):
     """
     stack = get_stack()
 
-    chars = stack.ccp.events[defs.BTP_CCP_EV_CHRC_HANDLES][0]
-    chrc_list = [f'{chrc:04X}' for chrc in chars]
+    if len(stack.ccp.events[defs.BTP_CCP_EV_CHRC_HANDLES]) > 0:
+        chars = stack.ccp.events[defs.BTP_CCP_EV_CHRC_HANDLES][0]
+        chrc_list = [f'{chrc:04X}' for chrc in chars]
 
-    pattern = re.compile(r"0x([0-9a-fA-F]+)")
-    desc_params = pattern.findall(params.description)
-    if not desc_params:
-        logging.error("parsing error")
-        return False
+        pattern = re.compile(r"0x([0-9a-fA-F]+)")
+        desc_params = pattern.findall(params.description)
+        if not desc_params:
+            logging.error("parsing error")
+            return False
 
-    desc_params_list = desc_params[2::4]
+        desc_params_list = desc_params[2::4]
 
-    if desc_params_list == chrc_list:
-        return True
+        if desc_params_list == chrc_list:
+            return True
 
+    logging.debug('No attribute handle/UUID pair for supported characteristic to verify.')
     return False
 
 
