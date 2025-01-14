@@ -69,6 +69,79 @@ def status_dict2summary_html(status_dict):
     return summary
 
 
+class TestGroup:
+    def __init__(self):
+        self.total = 0
+        self.passed = 0
+        self.failed = 0
+        self.pass_rate = 0.0
+
+    def get_pass_rate(self):
+        if self.total > 0:
+            self.pass_rate = (self.passed / float(self.total)) * 100
+
+
+def profile_summary_html(tc_results):
+    """Creates HTML formatted message with summarized profile results"""
+
+    """Dictionary containing profile name as key, test group object as value
+    test_groups = {
+    'ASCS' = TestGroup()
+    }
+    """
+
+    test_groups = {}
+    # Get data from tc_results
+    for tc, res in list(tc_results.items()):
+        result = res[0]
+        profile = tc.split('/')[0]
+        if profile not in test_groups.keys():
+            test_groups[profile] = TestGroup()
+        if result == 'PASS':
+            test_groups[profile].passed += 1
+        else:
+            test_groups[profile].failed += 1
+        test_groups[profile].total += 1
+
+    for tg in test_groups.values():
+        tg.get_pass_rate()
+
+    # Generate table
+
+    table_rows = ""
+    for suite, stats in test_groups.items():
+        table_rows += f"""
+            <tr>
+                <td>{suite}</td>
+                <td>{stats.total}</td>
+                <td>{stats.passed}</td>
+                <td>{stats.failed}</td>
+                <td>{stats.pass_rate:.2f} %</td>
+            </tr>
+            """
+
+    suite_summary = f"""
+        <div>
+            <h3>Test Group/Profile Summary</h3>
+            <table border="1" style="border-collapse: collapse; width: 100%;">
+                <thead>
+                    <tr>
+                        <th>Suite</th>
+                        <th>Total</th>
+                        <th>Pass</th>
+                        <th>Fail</th>
+                        <th>Pass Rate</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {table_rows}
+                </tbody>
+            </table>
+        </div>
+        """
+    return suite_summary
+
+
 def url2html(url, msg):
     """Creates HTML formatted URL with results
     :param url: URL

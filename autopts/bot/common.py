@@ -704,6 +704,7 @@ class BotClient(Client):
         mail_ctx = {'project_name': report_data['project_name'],
                     'repos_info': report_data['repo_status'],
                     'summary': [mail.status_dict2summary_html(report_data['status_count'])],
+                    'profile_summary': mail.profile_summary_html(report_data['tc_results']),
                     'log_url': [],
                     'board': self.bot_config['auto_pts']['board'],
                     'platform': report_data['platform'],
@@ -776,6 +777,7 @@ class BotClient(Client):
     <h2>3. Test Results</h2>
     <p><b>Execution Time</b>: {elapsed_time}</p>
     {summary}
+    {profile_summary}
     <h3>Logs</h3>
     {log_url}
     <p>Sincerely,</p>
