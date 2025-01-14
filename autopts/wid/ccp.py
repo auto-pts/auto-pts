@@ -195,9 +195,13 @@ def hdl_wid_104(params: WIDParams):
             btp.ccp_originate_call(inst_index, 'skype:test')
 
     ev = stack.ccp.wait_cp_ev(addr_type, addr, 30, remove=False)
-    if ev[2] != 0:
+
+    if ev is None:
+        return False
+    elif ev[2] != 0:
         if params.test_case_name == 'CCP/CL/SPE/BI-06-C':
             # Invalid opcode should be returned
+            log(f'INVALID OPCODE: {ev[2]}')
             return True
         return False
 
@@ -279,8 +283,10 @@ def hdl_wid_114(params: WIDParams):
 
     btp.ccp_terminate_call(inst_index, 1)
     ev = stack.ccp.wait_cp_ev(addr_type, addr, 20, remove=True)
-    if ev[2] != 0:
+
+    if ev is not None and ev[2] != 0:
         # Invalid opcode should be returned
+        log(f'Invalid opcode {ev[2]}')
         return True
 
     return False
@@ -353,6 +359,7 @@ def hdl_wid_20107(params: WIDParams):
     stack = get_stack()
     addr_type = btp.pts_addr_type_get()
     addr = btp.pts_addr_get()
+    ev = None
 
     if "0x0112" in params.description or "0x00D2" in params.description:
         inst_index = (0x00 if "0x00D2" in params.description else BT_TBS_GTBS_INDEX)
@@ -414,6 +421,7 @@ def hdl_wid_20107(params: WIDParams):
         return success and (status == 0)
 
     if ev is None:
+        logging.error("Invalid or missing handle for Call State characteristic to Read Request.")
         return False
 
     return True
