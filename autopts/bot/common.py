@@ -574,6 +574,7 @@ class BotClient(Client):
         """Creates README.md for Github logging repo
         """
         readme_file = readme_md_path
+        profile_summary = mail.profile_summary(report_data['tc_results'])
 
         Path(os.path.dirname(readme_file)).mkdir(parents=True, exist_ok=True)
 
@@ -585,6 +586,8 @@ class BotClient(Client):
     End time: {report_data["end_time_stamp"]}
 
     PTS version: {report_data["pts_ver"]}
+    
+    {profile_summary}
 
     Repositories:
 
@@ -704,7 +707,7 @@ class BotClient(Client):
         mail_ctx = {'project_name': report_data['project_name'],
                     'repos_info': report_data['repo_status'],
                     'summary': [mail.status_dict2summary_html(report_data['status_count'])],
-                    'profile_summary': mail.profile_summary_html(report_data['tc_results']),
+                    'profile_summary': mail.profile_summary(report_data['tc_results']),
                     'log_url': [],
                     'board': self.bot_config['auto_pts']['board'],
                     'platform': report_data['platform'],
