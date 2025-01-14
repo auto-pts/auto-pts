@@ -370,31 +370,31 @@ def hdl_wid_503(params: WIDParams):
     if params.test_case_name.endswith('LT2'):
         return True
 
-    btp.tbs_terminate_call(0)
+    btp.tbs_terminate_call(1)
 
     return True
 
 
 wid_504_settings = {
     # test_case_name: (lt count, iut as audio source: streams + channels, sink locations (0 - don't care), iut as audio sink streams, metadata)
-    'TMAP/CG/VRC/BV-01-I': (1, 1, 1, 0, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'TMAP/CG/VRC/BV-05-I': (1, 2, 1, 0, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'TMAP/CG/VRC/BV-06-I': (1, 1, 2, 0, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'TMAP/CG/VRC/BV-07-I': (1, 1, 1, 0, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'TMAP/CG/VRC/BV-08-I': (1, 2, 1, 0, 2, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'TMAP/CG/VRC/BV-11-I': (1, 2, 1, 0, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'TMAP/CG/VRC/BV-12-I': (1, 2, 1, 0, 2, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'TMAP/CG/ASC/BV-01-I': (1, 1, 1, 1, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'TMAP/CG/ASC/BV-02-I': (1, 1, 1, 2, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'TMAP/CG/ASC/BV-03-I': (1, 1, 1, 3, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
+    'TMAP/CG/VRC/BV-01-C': (1, 1, 1, 0, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
+    'TMAP/CG/VRC/BV-05-C': (1, 2, 1, 0, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
+    'TMAP/CG/VRC/BV-06-C': (1, 1, 2, 0, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
+    'TMAP/CG/VRC/BV-07-C': (1, 1, 1, 0, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
+    'TMAP/CG/VRC/BV-08-C': (1, 2, 1, 0, 2, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
+    'TMAP/CG/VRC/BV-11-C': (1, 2, 1, 0, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
+    'TMAP/CG/VRC/BV-12-C': (1, 2, 1, 0, 2, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
+    'TMAP/CG/ASC/BV-01-C': (1, 1, 1, 1, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
+    'TMAP/CG/ASC/BV-02-C': (1, 1, 1, 2, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
+    'TMAP/CG/ASC/BV-03-C': (1, 1, 1, 3, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
 
     # According to TMAP.TS.p1 LT1 provides audio source and LT2 provides audio sink, however, PTS 8.5.3 seem to have this the other way round
-    'TMAP/CG/VRC/BV-02-I':     (2, 1, 1, 0, 0, 0, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'TMAP/CG/VRC/BV-02-I_LT2': (2, 0, 0, 0, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'TMAP/CG/VRC/BV-03-I':     (2, 1, 1, 0, 0, 0, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'TMAP/CG/VRC/BV-03-I_LT2': (2, 1, 1, 0, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'TMAP/CG/VRC/BV-09-I':     (2, 1, 1, 0, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'TMAP/CG/VRC/BV-09-I_LT2': (2, 1, 1, 0, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
+    'TMAP/CG/VRC/BV-02-C':     (2, 1, 1, 0, 0, 0, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
+    'TMAP/CG/VRC/BV-02-C_LT2': (2, 0, 0, 0, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
+    'TMAP/CG/VRC/BV-03-C':     (2, 1, 1, 0, 0, 0, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
+    'TMAP/CG/VRC/BV-03-C_LT2': (2, 1, 1, 0, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
+    'TMAP/CG/VRC/BV-09-C':     (2, 1, 1, 0, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
+    'TMAP/CG/VRC/BV-09-C_LT2': (2, 1, 1, 0, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
 
 }
 
@@ -800,6 +800,8 @@ def hdl_wid_20107(params: WIDParams):
     Please send Read Request to read X characteristic with handle = 0xXXXX.
     """
 
+    stack = get_stack()
+
     logging.debug("description=%r", params.description)
 
     if params.test_case_name.endswith('LT2'):
@@ -808,6 +810,12 @@ def hdl_wid_20107(params: WIDParams):
     else:
         addr = pts_addr_get()
         addr_type = pts_addr_type_get()
+
+    if "Volume State" in params.description:
+        btp.vcp_state_read(addr_type, addr)
+        ev = stack.vcp.wait_vcp_procedure_ev(addr_type, addr, 10)
+        if ev is not None:
+            return True
 
     MMI.reset()
     MMI.parse_description(params.description)
