@@ -81,7 +81,7 @@ class TestGroup:
             self.pass_rate = (self.passed / float(self.total)) * 100
 
 
-def profile_summary_html(tc_results):
+def profile_summary(tc_results):
     """Creates HTML formatted message with summarized profile results"""
 
     """Dictionary containing profile name as key, test group object as value
@@ -106,8 +106,6 @@ def profile_summary_html(tc_results):
     for tg in test_groups.values():
         tg.get_pass_rate()
 
-    # Generate table
-
     table_rows = ""
     for suite, stats in test_groups.items():
         table_rows += f"""
@@ -123,14 +121,14 @@ def profile_summary_html(tc_results):
     suite_summary = f"""
         <div>
             <h3>Test Group/Profile Summary</h3>
-            <table border="1" style="border-collapse: collapse; width: 100%;">
+            <table border="1" style="border-collapse: collapse; text-align: center;">
                 <thead>
                     <tr>
-                        <th>Suite</th>
-                        <th>Total</th>
-                        <th>Pass</th>
-                        <th>Fail</th>
-                        <th>Pass Rate</th>
+                        <th  width="10em">Suite</th>
+                        <th  width="10em">Total</th>
+                        <th  width="10em">Pass</th>
+                        <th  width="10em">Fail</th>
+                        <th  width="10em">Pass Rate</th>
                     </tr>
                 </thead>
                 <tbody>
