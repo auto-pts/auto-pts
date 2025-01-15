@@ -16,6 +16,7 @@
 import logging
 import os
 
+from subprocess import CalledProcessError
 from autopts.bot.common import check_call
 
 supported_projects = ['zephyr']
@@ -51,5 +52,9 @@ def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None, *args):
         cmd.extend(('--', f'-DEXTRA_CONF_FILE=\'{conf_file}\''))
 
     check_call(cmd, cwd=tester_dir)
-    check_call(['west', 'flash', '--skip-rebuild',
-                '-i', debugger_snr], cwd=tester_dir)
+    try:
+        check_call(['west', 'flash', '--skip-rebuild',
+                    '-i', debugger_snr], cwd=tester_dir)
+    except CalledProcessError:
+        check_call(['west', 'flash', '--skip-rebuild', '--recover',
+                    '-i', debugger_snr], cwd=tester_dir)
