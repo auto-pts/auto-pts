@@ -112,6 +112,7 @@ iut_config = {
             'GAP/BROB/BCST/BV-05-C',
             'GAP/BROB/OBSV/BV-06-C',
             'GAP/DISC/RPA/BV-01-C',
+            'GAP/GAT/BV-18-C',
             'SM/CEN/KDU/BV-05-C',
             'SM/CEN/KDU/BV-10-C',
             'SM/CEN/KDU/BV-11-C',
