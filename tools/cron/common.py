@@ -899,4 +899,25 @@ def merge_db_job(cfg, **kwargs):
     log(f'The {merge_db_job.__name__} Job finished')
 
 
+def newt_update_job(cfg, **kwargs):
+    log(f'Started {newt_update_job.__name__} Job, config: {cfg}')
+
+    config = get_cron_config(cfg, **kwargs)
+
+    prj_path = config['auto_pts']['project_path']
+    newt_repo_path = config['auto_pts']['newt_repo_path']
+    newt_exe = config['auto_pts']['newt_exe']
+    newt_path = config['auto_pts']['newt_path']
+
+    cmd = f'git pull origin && ./build.sh && mv {newt_exe} {newt_path}'
+    log(f'Running: {cmd}')
+    check_call(cmd.split(), cwd=newt_repo_path)
+
+    cmd = 'newt upgrade'
+    log(f'Running: {cmd}')
+    check_call(cmd.split(), cwd=prj_path)
+
+    log(f'The {newt_update_job.__name__} Job finished')
+
+
 set_run_test_fun(run_test)
