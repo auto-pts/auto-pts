@@ -132,6 +132,8 @@ GAP = {
     "padv_sync_transfer_recv": (defs.BTP_SERVICE_ID_GAP,
                                 defs.BTP_GAP_CMD_PADV_SYNC_TRANSFER_RECV,
                                 CONTROLLER_INDEX),
+    "conn_br": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_CONNECT_BR, CONTROLLER_INDEX),
+    "pair_with_sec_level": (defs.BTP_SERVICE_ID_GAP, defs.GAP_PAIR_WITH_SEC_LEVEL, CONTROLLER_INDEX),
 }
 
 
@@ -302,6 +304,24 @@ def gap_pairing_failed_ev_(gap, data, data_len):
     stack.gap.pairing_failed_rcvd.data = (_addr_t, _addr, _reason)
 
 
+def gap_encryption_failed_ev_(gap, data, data_len):
+    stack = get_stack()
+    logging.debug("%s", gap_encryption_failed_ev_.__name__)
+
+    logging.debug("received %r", data)
+
+    fmt = '<B6sB'
+    if len(data) != struct.calcsize(fmt):
+        raise BTPError("Invalid data length")
+
+    _addr_t, _addr, _error = struct.unpack_from(fmt, data)
+    _addr = binascii.hexlify(_addr[::-1]).decode()
+
+    logging.debug("received %r", (_addr_t, _addr, _error))
+
+    stack.gap.encryption_failed_rcvd.data = (_addr_t, _addr, _error)
+
+
 def gap_bond_lost_ev_(gap, data, data_len):
     logging.debug("%s", gap_bond_lost_ev_.__name__)
 
@@ -392,7 +412,8 @@ GAP_EV = {
     defs.BTP_GAP_EV_PERIODIC_SYNC_ESTABLISHED: gap_padv_sync_established_ev_,
     defs.BTP_GAP_EV_PERIODIC_SYNC_LOST: gap_padv_sync_lost_ev_,
     defs.BTP_GAP_EV_PERIODIC_REPORT: gap_padv_report_ev_,
-    defs.BTP_GAP_EV_PERIODIC_TRANSFER_RECEIVED: gap_padv_transfer_received_ev_
+    defs.BTP_GAP_EV_PERIODIC_TRANSFER_RECEIVED: gap_padv_transfer_received_ev_,
+    defs.BTP_GAP_EV_ENCRYPTION_FAILED: gap_encryption_failed_ev_
 }
 
 
@@ -431,6 +452,12 @@ def gap_wait_for_pairing_fail(timeout=30):
     stack = get_stack()
 
     return stack.gap.gap_wait_for_pairing_fail(timeout)
+
+
+def gap_wait_for_encryption_fail(timeout=30):
+    stack = get_stack()
+
+    return stack.gap.gap_wait_for_encryption_fail(timeout)
 
 
 def gap_wait_for_lost_bond(timeout=30):
@@ -1294,6 +1321,14 @@ def check_discov_results(addr_type=None, addr=None, discovered=True, eir=None, u
     return False
 
 
+def clear_discov_results():
+    stack = get_stack()
+
+    stack.gap.found_devices.data.clear()
+
+    return True
+
+
 def check_scan_rep_and_rsp(report, response):
     stack = get_stack()
     devices = stack.gap.found_devices.data
@@ -1419,4 +1454,36 @@ def gap_padv_sync_transfer_recv(skip, sync_timeout, flags, addr_type=None, addr=
 
     iutctl.btp_socket.send(*GAP['padv_sync_transfer_recv'], data=data_ba)
 
+    gap_command_rsp_succ()
+
+
+def gap_conn_br(bd_addr=None):
+    logging.debug("%s %r", gap_conn_br.__name__, bd_addr)
+    iutctl = get_iut()
+
+    data_ba = bytearray()
+    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
+
+    data_ba.extend(bd_addr_ba)
+
+    iutctl.btp_socket.send_wait_rsp(*GAP['conn_br'], data=data_ba)
+
+
+def gap_pair_with_sec_level(bd_addr=None, bd_addr_type=None, sec_level=defs.GAP_PAIR_LEVEL_2):
+    logging.debug("%s %r %r %r", gap_pair_with_sec_level.__name__, bd_addr, bd_addr_type, sec_level)
+    iutctl = get_iut()
+
+    gap_wait_for_connection()
+
+    data_ba = bytearray()
+    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
+    sec_level_ba = chr(sec_level).encode('utf-8')
+
+    data_ba.extend(chr(pts_addr_type_get(bd_addr_type)).encode('utf-8'))
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(sec_level_ba)
+
+    iutctl.btp_socket.send(*GAP['pair_with_sec_level'], data=data_ba)
+
+    # Expected result
     gap_command_rsp_succ()

@@ -18,6 +18,8 @@ import logging
 from autopts.wid import generic_wid_hdl
 from autopts.pybtp import btp
 from autopts.ptsprojects.zephyr.iutctl import get_iut
+from autopts.pybtp.types import WIDParams
+from autopts.ptsprojects.stack import get_stack
 
 log = logging.debug
 
@@ -35,4 +37,35 @@ def hdl_wid_143(desc):
     btp.core_reg_svc_gap()
     btp.gap_read_ctrl_info()
 
+    return True
+
+
+def hdl_wid_172(_: WIDParams):
+    btp.gap_conn_br()
+    btp.gap_wait_for_connection()
+    btp.gap_pair()
+    return True
+
+
+def hdl_wid_20117(_: WIDParams):
+    return True
+
+
+def hdl_wid_112(_: WIDParams):
+    return True
+
+
+def hdl_wid_100(params: WIDParams):
+    btp.gap_conn()
+    get_stack().gap.wait_for_connection(30)
+
+    if (params.test_case_name.startswith("SM/CEN/SCCT/BV-03-C") or
+        params.test_case_name.startswith("SM/CEN/SCCT/BV-05-C")):
+        btp.gap_pair()
+    return True
+
+
+def hdl_wid_171(_: WIDParams):
+    btp.gap_set_conn()
+    btp.gap_set_gendiscov()
     return True
