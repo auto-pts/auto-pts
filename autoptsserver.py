@@ -68,6 +68,7 @@ def _com_port_exists(port_name):
     """Check if the COM port exists."""
     ports = serial.tools.list_ports.comports()
     for port in ports:
+        print(f"Port_device: {port.device}, port_name: {port_name}")
         if port.device == port_name:
             return True
     return False
@@ -636,10 +637,12 @@ if __name__ == "__main__":
 
     if _args.dongle is not None:
         for dongle in _args.dongle:
+            print(f"dongle: {dongle}")
             # If dongle does not start with "COM" then it is considered valid port
             # for legacy dual-mode dongle compatibility.
             if dongle.startswith("COM"):
                 if not _com_port_exists(dongle):
+                    print(f"Port {dongle} not found")
                     sys.exit(f"Port {dongle} not found")
             else:
                 continue
