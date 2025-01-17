@@ -1,0 +1,62 @@
+SDP Service (ID 31)
+=====================
+
+Commands and responses:
+
+	Opcode 0x00 - Error response
+
+	Opcode 0x01 - Read Supported Commands command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	<none>
+		Response parameters:	<supported commands> (variable)
+
+		Each bit in response is a flag indicating if command with
+		opcode matching bit number is supported. Bit set to 1 means
+		that command is supported. Bit 0 is reserved and shall always
+		be set to 0. If specific bit is not present in response (less
+		than required bytes received) it shall be assumed that command
+		is not supported.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x02: SDP service search request
+
+		Controller Index:	<controller id>
+		Command parameters:	 Address (6 octets)
+							SDP UUID (2 octets)
+
+		This command is used to generate an SDP_SERVICE_SEARCH_REQ to locate service records
+		that match the service search pattern given as the 3th parameter "SDP UUID".
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x03: SDP service attribute request
+
+		Controller Index:	<controller id>
+		Command parameters:	Address (6 octets)
+							Service Record Handle (4 octets)
+
+		This command is used to generate an SDP_SERVICE_ATTR_REQ to retrieve specified
+		attribute values from a specific service record.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x04 - SDP service search attribute request
+		Controller Index:	<controller id>
+		Command parameters:	 Address (6 octets)
+							SDP UUID (2 octets)
+
+		This command is used to combine the capabilities of the SDP_SERVICE_SEARCH_REQ and
+		the SDP_SERVICE_ATTR_REQ into a single request.
+
+		In case of an error, the error response will be returned.
+
+Events:
+	Opcode 0x80 - Service record handle Found event
+
+		Controller Index:	<controller id>
+		Event parameters:	Address (6 octets)
+					Service Record Handle (4 octets)
+
+		This event returns info from SDP service search response.

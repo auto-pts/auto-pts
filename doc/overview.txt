@@ -115,4 +115,5 @@ ID  Name
  0x1c TMAP Service
  0x1d OTS Service
  0x1e PBP Service
+ 0x1f SDP Service
  # GENERATOR append 1
