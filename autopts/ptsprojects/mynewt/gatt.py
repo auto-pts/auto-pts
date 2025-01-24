@@ -18,7 +18,7 @@
 from autopts.pybtp import btp
 from autopts.pybtp.types import Addr
 from autopts.client import get_unique_name
-from autopts.ptsprojects.stack import get_stack
+from autopts.ptsprojects.stack import get_stack, SynchPoint
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.mynewt.ztestcase import ZTestCase, ZTestCaseSlave
 from autopts.ptsprojects.mynewt.gatt_wid import gatt_wid_hdl
@@ -180,7 +180,14 @@ def test_cases_server(ptses):
 
     custom_test_cases = [
         ZTestCase("GATT", "GATT/SR/GAN/BV-02-C",
-                  pre_conditions_2,
+                  pre_conditions_2 +
+                  [TestFunc(get_stack().synch.add_synch_element, [
+                            SynchPoint("GATT/SR/GAN/BV-02-C", 1),
+                            SynchPoint("GATT/SR/GAN/BV-02-C_LT2", 1)]),
+                  TestFunc(get_stack().synch.add_synch_element, [
+                           SynchPoint("GATT/SR/GAN/BV-02-C_LT2", 308),
+                           SynchPoint("GATT/SR/GAN/BV-02-C", 93)]),
+                  ],
                   generic_wid_hdl=gatt_wid_hdl,
                   lt2="GATT/SR/GAN/BV-02-C_LT2"),
         ZTestCase("GATT", "GATT/SR/GAS/BV-01-C",
