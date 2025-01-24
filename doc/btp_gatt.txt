@@ -685,6 +685,22 @@ Commands and responses:
 
 		In case of an error, the error response will be returned.
 
+	Opcode 0x21 - Handle Value Multiple Notification
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Count (2 octet)
+					[array] Handles (variable)
+		Response parameters:	ATT_Response (1 octet)
+
+		This procedure is used to configure & perform Handle
+		Value Multiple Notification by server.
+
+		In case of error, the error response will be returned.
+
+
+
 Events:
 	Opcode 0x80 - Notification/Indication Received
 
