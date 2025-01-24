@@ -291,9 +291,11 @@ def hdl_wid_20107(params: WIDParams):
         btp.mcp_icon_obj_id_read(addr_type, addr)
         ev = stack.mcp.wait_icon_obj_id_ev(addr_type, addr, 10)
 
-    elif "Next Track" in params.description:
+    elif "Next Track Object" in params.description:
         btp.mcp_next_track_obj_id_read(addr_type, addr)
         ev = stack.mcp.wait_next_track_obj_id_ev(addr_type, addr, 10)
+        if ev is not None:
+            stack.mcp.object_id = ev[3]
 
     elif "Current Track Object" in params.description:
         btp.mcp_current_track_obj_id_read(addr_type, addr)
@@ -309,9 +311,11 @@ def hdl_wid_20107(params: WIDParams):
         btp.mcp_segments_obj_id_read(addr_type, addr)
         ev = stack.mcp.wait_segments_obj_id_ev(addr_type, addr, 10)
 
-    elif "Current Group" in params.description:
+    elif "Current Group Object" in params.description:
         btp.mcp_current_group_obj_id_read(addr_type, addr)
         ev = stack.mcp.wait_current_group_obj_id_ev(addr_type, addr, 10)
+        if ev is not None:
+            stack.mcp.object_id = ev[3]
 
     elif "Playing Order Supported" in params.description:
         btp.mcp_playing_orders_supported_read(addr_type, addr)
