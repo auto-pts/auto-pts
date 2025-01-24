@@ -121,14 +121,14 @@ def profile_summary(tc_results):
     suite_summary = f"""
         <div>
             <h3>Test Group/Profile Summary</h3>
-            <table border="1" style="border-collapse: collapse; text-align: center;">
+            <table border="1" style="border-collapse: collapse; text-align: center; width: 35em">
                 <thead>
                     <tr>
-                        <th  width="10em">Suite</th>
-                        <th  width="10em">Total</th>
-                        <th  width="10em">Pass</th>
-                        <th  width="10em">Fail</th>
-                        <th  width="10em">Pass Rate</th>
+                        <th style="width: 20%">Suite</th>
+                        <th style="width: 20%">Total</th>
+                        <th style="width: 20%">Pass</th>
+                        <th style="width: 20%">Fail</th>
+                        <th style="width: 20%">Pass Rate</th>
                     </tr>
                 </thead>
                 <tbody>
