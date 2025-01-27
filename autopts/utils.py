@@ -457,6 +457,14 @@ def exit_if_admin():
         sys.exit("Administrator rights are not required to run this script!")
 
 
+def log_memory_usage():
+    process = psutil.Process(os.getpid())
+    mem_info = process.memory_info()
+
+    mem_usage = mem_info.rss / (1024 ** 2)
+    logging.debug(f"Memory usage: {mem_usage:.2f} MB")
+
+
 def main():
     """Main."""
 
