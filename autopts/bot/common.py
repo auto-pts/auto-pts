@@ -574,7 +574,7 @@ class BotClient(Client):
         """Creates README.md for Github logging repo
         """
         readme_file = readme_md_path
-        profile_summary = mail.profile_summary(report_data['tc_results'])
+        profile_summary = report.ascii_profile_summary(report_data['tc_results'])
 
         Path(os.path.dirname(readme_file)).mkdir(parents=True, exist_ok=True)
 
@@ -586,6 +586,8 @@ class BotClient(Client):
     End time: {report_data["end_time_stamp"]}
 
     PTS version: {report_data["pts_ver"]}
+    
+    Test Group/Profile Summary:
     
     {profile_summary}
 
@@ -707,7 +709,7 @@ class BotClient(Client):
         mail_ctx = {'project_name': report_data['project_name'],
                     'repos_info': report_data['repo_status'],
                     'summary': [mail.status_dict2summary_html(report_data['status_count'])],
-                    'profile_summary': mail.profile_summary(report_data['tc_results']),
+                    'profile_summary': mail.html_profile_summary(report_data['tc_results']),
                     'log_url': [],
                     'board': self.bot_config['auto_pts']['board'],
                     'platform': report_data['platform'],
@@ -869,6 +871,36 @@ def sort_and_reduce_prefixes(prefixes):
             final_prefixes.append(s)
 
     return final_prefixes
+
+
+class TestGroup:
+    def __init__(self):
+        self.total = 0
+        self.passed = 0
+        self.failed = 0
+        self.pass_rate = 0.0
+
+    def get_pass_rate(self):
+        if self.total > 0:
+            self.pass_rate = (self.passed / float(self.total)) * 100
+
+
+def get_tc_res_data(tc_results, test_groups):
+    """Gets test results from repord_data['tc_results']and returns
+     dictionary containing profile name as key, TestGroup object as value
+     e.g. test_groups = {'ASCS' = TestGroup()}"""
+    for tc, res in list(tc_results.items()):
+        result = res[0]
+        profile = tc.split('/')[0]
+        if profile not in test_groups.keys():
+            test_groups[profile] = TestGroup()
+        if result == 'PASS':
+            test_groups[profile].passed += 1
+        else:
+            test_groups[profile].failed += 1
+        test_groups[profile].total += 1
+
+    return test_groups
 
 
 # ****************************************************************************
