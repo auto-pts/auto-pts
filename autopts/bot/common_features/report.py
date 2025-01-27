@@ -465,3 +465,22 @@ def pull_server_logs(args, tmp_dir, xml_folder):
                 copy_server_log_file(tmp_dir, proxy, servers[addr])
 
     return logs_folder, xml_folder
+
+
+def ascii_profile_summary(tc_results):
+    """Creates ASCII formatted table with summarized profile results"""
+    test_groups = {}
+    common.get_tc_res_data(tc_results, test_groups)
+
+    for tg in test_groups.values():
+        tg.get_pass_rate()
+
+    header = "|  Suite  | Total | Pass | Fail | Pass Rate|"
+    separator = "|---------|-------|------|------|----------|"
+    rows = []
+    for suite, stats in test_groups.items():
+        rows.append(
+            f"\n|{suite:<9}|{stats.total:<7}|{stats.passed:<6}|{stats.failed:<6}|{stats.pass_rate:>7.2f} % |")
+    table = f"{header}\n{separator}" + "".join(rows)
+
+    return table

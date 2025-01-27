@@ -15,6 +15,7 @@
 import os
 import mimetypes
 import smtplib
+import autopts.bot.common as common
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.base import MIMEBase
@@ -69,39 +70,10 @@ def status_dict2summary_html(status_dict):
     return summary
 
 
-class TestGroup:
-    def __init__(self):
-        self.total = 0
-        self.passed = 0
-        self.failed = 0
-        self.pass_rate = 0.0
-
-    def get_pass_rate(self):
-        if self.total > 0:
-            self.pass_rate = (self.passed / float(self.total)) * 100
-
-
-def profile_summary(tc_results):
-    """Creates HTML formatted message with summarized profile results"""
-
-    """Dictionary containing profile name as key, test group object as value
-    test_groups = {
-    'ASCS' = TestGroup()
-    }
-    """
-
+def html_profile_summary(tc_results):
+    """Creates HTML formatted table with summarized profile results"""
     test_groups = {}
-    # Get data from tc_results
-    for tc, res in list(tc_results.items()):
-        result = res[0]
-        profile = tc.split('/')[0]
-        if profile not in test_groups.keys():
-            test_groups[profile] = TestGroup()
-        if result == 'PASS':
-            test_groups[profile].passed += 1
-        else:
-            test_groups[profile].failed += 1
-        test_groups[profile].total += 1
+    common.get_tc_res_data(tc_results, test_groups)
 
     for tg in test_groups.values():
         tg.get_pass_rate()
