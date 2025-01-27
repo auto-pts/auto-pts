@@ -34,6 +34,7 @@ class RTT:
     # Due to Pylink module limitations we have to
     # share one instance of JLink object
     jlink = None
+    lib = None
 
     def __init__(self):
         self.read_thread = None
@@ -71,7 +72,12 @@ class RTT:
         if RTT.jlink:
             return
 
-        RTT.jlink = pylink.JLink()
+        RTT.jlink = pylink.JLink(lib=RTT.lib)
+        # Pylink loads a new cache of J-Link DLL at its __init__,
+        # but the __del__ does not unload it. Luckily we can reuse
+        # the cached lib to prevent memory leak (around 20MB per test case!).
+        RTT.lib = RTT.jlink._library
+
         RTT.jlink.disable_dialog_boxes()
         if not RTT.jlink.opened():
             RTT.jlink.open(serial_no=debugger_snr)
@@ -87,7 +93,6 @@ class RTT:
         log("%s.%s", self.__class__, self.start.__name__)
 
         self.init_jlink(device_core, debugger_snr)
-
         buffer_index = self._get_buffer_index(buffer_name)
         self.stop_thread.clear()
         self.read_thread = threading.Thread(target=self._read_from_buffer,
@@ -108,6 +113,7 @@ class RTT:
             if RTT.jlink:
                 RTT.jlink.rtt_stop()
                 RTT.jlink.close()
+                del RTT.jlink
                 RTT.jlink = None
 
 
