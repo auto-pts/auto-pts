@@ -43,18 +43,9 @@ def hdl_wid_3(_: WIDParams):
     btp.gap_disconn(btp.pts_addr_get(), btp.pts_addr_type_get())
     return True
 
+
 def hdl_wid_49(_: WIDParams):
     time.sleep(30)
-    return True
-
-
-def hdl_wid_92(_: WIDParams):
-    time.sleep(2)
-    return True
-
-
-def hdl_wid_98(_: WIDParams):
-    time.sleep(5)
     return True
 
 
