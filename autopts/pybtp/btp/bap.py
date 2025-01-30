@@ -74,6 +74,8 @@ BAP = {
     'set_broadcast_code': (defs.BTP_SERVICE_ID_BAP, defs.BTP_BAP_CMD_SET_BROADCAST_CODE,
                            CONTROLLER_INDEX),
     'bap_send_past': (defs.BTP_SERVICE_ID_BAP, defs.BTP_BAP_CMD_SEND_PAST, CONTROLLER_INDEX),
+    'broadcast_source_setup_v2': (defs.BTP_SERVICE_ID_BAP, defs.BTP_BAP_CMD_BROADCAST_SOURCE_SETUP_V2,
+                                  CONTROLLER_INDEX),
 }
 
 
@@ -157,6 +159,46 @@ def bap_broadcast_source_setup(
         data += codec_ltvs
 
     iutctl.btp_socket.send(*BAP['broadcast_source_setup'], data=data)
+
+    tuple_data = bap_command_rsp_succ()[0]
+    gap_settings = int.from_bytes(tuple_data[:4], 'little')
+    broadcast_id = int.from_bytes(tuple_data[4:7], 'little')
+    __gap_current_settings_update(gap_settings)
+
+    return broadcast_id
+
+
+def bap_broadcast_source_setup_v2(
+        broadcast_id, streams_per_subgroup, subgroups, coding_format, vid, cid,
+        codec_ltvs, sdu_interval, framing, max_sdu, retransmission_number,
+        max_transport_latency, presentation_delay):
+
+    logging.debug(f"{bap_broadcast_source_setup_v2.__name__}")
+
+    iutctl = get_iut()
+    data = bytearray()
+    data += int.to_bytes(broadcast_id, 3, 'little')
+    data += struct.pack('B', streams_per_subgroup)
+    data += struct.pack('B', subgroups)
+
+    # QoS Config
+    data += int.to_bytes(sdu_interval, 3, 'little')
+    data += struct.pack('B', framing)
+    data += struct.pack('<H', max_sdu)
+    data += struct.pack('B', retransmission_number)
+    data += struct.pack('<H', max_transport_latency)
+    data += int.to_bytes(presentation_delay, 3, 'little')
+
+    # Codec Config
+    data += struct.pack('B', coding_format)
+    data += struct.pack('<H', vid)
+    data += struct.pack('<H', cid)
+    codec_ltvs_len = len(codec_ltvs)
+    data += struct.pack('B', codec_ltvs_len)
+    if codec_ltvs_len:
+        data += codec_ltvs
+
+    iutctl.btp_socket.send(*BAP['broadcast_source_setup_v2'], data=data)
 
     tuple_data = bap_command_rsp_succ()[0]
     gap_settings = int.from_bytes(tuple_data[:4], 'little')
