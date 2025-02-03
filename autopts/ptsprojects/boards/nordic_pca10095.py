@@ -49,9 +49,9 @@ def build_and_flash(project_path, board, overlay=None, debugger_snr=None):
                   board, overlay)
 
     nrfjprog_snr = f" -s {debugger_snr}" if debugger_snr else ""
-    check_call(f'nrfjprog --eraseall {nrfjprog_snr}'.split(), cwd=project_path)
-    check_call(f'nrfjprog --recover --coprocessor CP_NETWORK  {nrfjprog_snr}'.split(), cwd=project_path)
     check_call(f'nrfjprog --recover {nrfjprog_snr}'.split(), cwd=project_path)
+    check_call(f'nrfjprog --recover --coprocessor CP_NETWORK  {nrfjprog_snr}'.split(), cwd=project_path)
+    check_call(f'nrfjprog --eraseall {nrfjprog_snr}'.split(), cwd=project_path)
     check_call(f'nrfjprog -r {nrfjprog_snr}'.split(), cwd=project_path)
     check_call('rm -rf bin/'.split(), cwd=project_path)
     check_call(f'rm -rf targets/{board}_boot/'.split(), cwd=project_path)
@@ -78,13 +78,13 @@ def build_and_flash(project_path, board, overlay=None, debugger_snr=None):
     check_call(f'newt target set bttester app=@apache-mynewt-nimble/apps/bttester'
                .split(), cwd=project_path)
 
-    config = 'NRF5340_EMBED_NET_CORE=1:BSP_NRF5340_NET_ENABLE=1:MYNEWT_DOWNLOADER=jlink'
+    config = 'NRF5340_EMBED_NET_CORE=1:BSP_NRF5340_NET_ENABLE=1:MYNEWT_DOWNLOADER=nrfjprog'
     if overlay:
         config += ':' + ':'.join([f'{k}={v}' for k, v in list(overlay.items())])
     check_call(f'newt target set bttester syscfg={config}'
                .split(), cwd=project_path)
-    check_call(f'newt target set {board}_boot syscfg=MYNEWT_DOWNLOADER=jlink'.split(), cwd=project_path)
-    check_call(f'newt target set {board}_net_boot syscfg=BOOTUTIL_OVERWRITE_ONLY=1:MYNEWT_DOWNLOADER=jlink'.split(), cwd=project_path)
+    check_call(f'newt target set {board}_boot syscfg=MYNEWT_DOWNLOADER=nrfjprog'.split(), cwd=project_path)
+    check_call(f'newt target set {board}_net_boot syscfg=BOOTUTIL_OVERWRITE_ONLY=1:MYNEWT_DOWNLOADER=nrfjprog'.split(), cwd=project_path)
 
     check_call(f'newt build {board}_boot'.split(), cwd=project_path)
     check_call(f'newt build {board}_net_boot'.split(), cwd=project_path)
@@ -98,10 +98,10 @@ def build_and_flash(project_path, board, overlay=None, debugger_snr=None):
     load_net_boot_cmd = f'newt load {board}_net_boot'.split()
     load_app_cmd = 'newt load bttester'.split()
     if debugger_snr:
-        snr = ['--extrajtagcmd', f'-select usb={debugger_snr}']
-        load_boot_cmd.extend(snr)
-        load_net_boot_cmd.extend(snr)
-        load_app_cmd.extend(snr)
+        snr = f'JLINK_SN={debugger_snr}'
+        load_boot_cmd.insert(0, snr)
+        load_net_boot_cmd.insert(0, snr)
+        load_app_cmd.insert(0, snr)
 
     check_call(load_boot_cmd, cwd=project_path)
     check_call(load_app_cmd, cwd=project_path)
