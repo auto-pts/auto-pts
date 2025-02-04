@@ -587,9 +587,7 @@ class BotClient(Client):
 
     PTS version: {report_data["pts_ver"]}
     
-    Test Group/Profile Summary:
-    
-    {profile_summary}
+    Test Group/Profile Summary: {profile_summary}
 
     Repositories:
 
