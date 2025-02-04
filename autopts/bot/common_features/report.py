@@ -481,6 +481,6 @@ def ascii_profile_summary(tc_results):
     for suite, stats in test_groups.items():
         rows.append(
             f"\n|{suite:<9}|{stats.total:<7}|{stats.passed:<6}|{stats.failed:<6}|{stats.pass_rate:>7.2f} % |")
-    table = f"{header}\n{separator}" + "".join(rows)
+    table = f"\n{header}\n{separator}" + "".join(rows)
 
     return table
