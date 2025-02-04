@@ -24,9 +24,6 @@ from autopts.pybtp.types import WIDParams
 from autopts.wid import generic_wid_hdl
 
 log = logging.debug
-global wid_counter
-wid_counter = 0
-
 
 def tbs_wid_hdl(wid, description, test_case_name):
     log(f'{tbs_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')

@@ -21,8 +21,6 @@ from autopts.pybtp import defs
 class TBS:
     def __init__(self):
         self.event_queues = {}
-        self.wid_counter = 0
-        self.index_counter = 0
 
     def event_received(self, event_type, event_data_tuple):
         self.event_queues[event_type].append(event_data_tuple)
