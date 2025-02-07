@@ -505,6 +505,17 @@ def core_unreg_svc_gatt_cl():
     iutctl.btp_socket.send_wait_rsp(*CORE['gatt_cl_unreg'])
 
 
+def core_reg_svc_gatts():
+    core_reg_svc_univ("gatts_reg", "GATTS")
+
+
+def core_unreg_svc_gatts():
+    logging.debug("%s", core_unreg_svc_gatts.__name__)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*CORE['gatts_unreg'])
+
+
 def core_reg_svc_vcs():
     core_reg_svc_univ("vcs_reg", "VCS")
 
@@ -697,6 +708,7 @@ def event_handler(hdr, data):
         GAP_EV,
         GATT_EV,
         GATTC_EV,
+        GATTS_EV,
         GMCS_EV,
         HAP_EV,
         IAS_EV,
@@ -726,6 +738,7 @@ def event_handler(hdr, data):
         defs.BTP_SERVICE_ID_GAP: (GAP_EV, stack.gap),
         defs.BTP_SERVICE_ID_GATT: (GATT_EV, stack.gatt),
         defs.BTP_SERVICE_ID_GATTC: (GATTC_EV, stack.gatt_cl),
+        defs.BTP_SERVICE_ID_GATTS: (GATTS_EV, stack.gatts),
         defs.BTP_SERVICE_ID_IAS: (IAS_EV, stack.ias),
         defs.BTP_SERVICE_ID_VCS: (VCS_EV, stack.vcs),
         defs.BTP_SERVICE_ID_AICS: (AICS_EV, stack.aics),

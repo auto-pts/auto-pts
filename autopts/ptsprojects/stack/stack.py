@@ -25,6 +25,7 @@ from autopts.ptsprojects.stack.layers.csip import CSIP
 from autopts.ptsprojects.stack.layers.gap import Gap
 from autopts.ptsprojects.stack.layers.gatt import Gatt
 from autopts.ptsprojects.stack.layers.gattcl import GattCl
+from autopts.ptsprojects.stack.layers.gatts import GATTS
 from autopts.ptsprojects.stack.layers.gmcs import GMCS
 from autopts.ptsprojects.stack.layers.gtbs import GTBS
 from autopts.ptsprojects.stack.layers.hap import HAP
@@ -61,6 +62,7 @@ class Stack:
         self.l2cap = None
         self.gatt = None
         self.gatt_cl = None
+        self.gatts = None
         self.vcs = None
         self.ias = None
         self.vocs = None
@@ -191,6 +193,9 @@ class Stack:
     def sdp_init(self):
         self.sdp = SDP()
 
+    def gatts_init(self):
+        self.gatts = GATTS()
+
     # GENERATOR append 3
 
     def cleanup(self):
@@ -277,6 +282,9 @@ class Stack:
 
         if self.sdp:
             self.sdp_init()
+
+        if self.gatts:
+            self.gatts_init()
 
         # GENERATOR append 4
 
