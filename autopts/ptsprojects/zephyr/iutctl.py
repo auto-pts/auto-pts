@@ -70,6 +70,7 @@ class ZephyrCtl:
         self.kernel_image = args.kernel_image
         self.tty_file = args.tty_file
         self.hci = args.hci
+        self.rtt_logger_timeout = args.rtt_logger_timeout
         self.native = None
         self.gdb = args.gdb
         self.is_running = False
@@ -204,10 +205,9 @@ class ZephyrCtl:
                                     '_iutctl.log')
             self.rtt_logger.start('Logger', log_file, self.device_core, self.debugger_snr)
 
-    def rtt_logger_stop(self):
+    def rtt_logger_stop(self, reset):
         if self.rtt_logger:
-            time.sleep(0.1)  # Make sure all logs have been collected, in case test failed early.
-            self.rtt_logger.stop()
+            self.rtt_logger.stop(reset, self.rtt_logger_timeout)
 
     def wait_iut_ready_event(self, reset=True):
         """Wait until IUT sends ready event after power up"""
@@ -215,7 +215,7 @@ class ZephyrCtl:
 
         if reset:
             # For HW, the IUT ready event is triggered at board.reset()
-            self.stop()
+            self.stop(reset)
             # For QEMU, the IUT ready event is sent at startup of the process.
             self.start(self.test_case)
 
@@ -226,7 +226,7 @@ class ZephyrCtl:
                 # two IUT events may be received because of cleanup.
                 stack.core.event_queues[defs.BTP_CORE_EV_IUT_READY].clear()
                 if not ev:
-                    self.stop()
+                    self.stop(reset)
                     raise Exception('IUT ready event NOT received!')
 
             log("IUT ready event received OK")
@@ -245,14 +245,14 @@ class ZephyrCtl:
             if len(stack.core.event_queues[defs.BTP_CORE_EV_IUT_READY]) == 0:
                 self.board.reset()
 
-    def stop(self):
+    def stop(self, reset=False):
         """Powers off the Zephyr OS"""
         log("%s.%s", self.__class__, self.stop.__name__)
 
         if not self.is_running:
             return
 
-        self.rtt_logger_stop()
+        self.rtt_logger_stop(reset)
         self.btmon_stop()
 
         stack = get_stack()

@@ -39,7 +39,12 @@ class RTT:
     def __init__(self):
         self.read_thread = None
         self.stop_thread = threading.Event()
+        self.rtt_stop = False
+        self.test_end = False
         pylink.logger.setLevel(logging.WARNING)
+        self.timer = None
+        self.is_timer_running = False
+        self.timeout = None
 
     def _get_buffer_index(self, buffer_name):
         timeout = time.time() + 10
@@ -58,15 +63,40 @@ class RTT:
             if buf.name == buffer_name:
                 return buf_index
 
-    @staticmethod
-    def _read_from_buffer(jlink, buffer_index, stop_thread, user_callback, user_data):
+    def stop_rtt_read(self):
+        self.is_timer_running = False
+        self.rtt_stop = True
+        self.stop()
+
+    def set_end(self, timeout):
+        self.timeout = timeout
+        self.test_end = True
+
+    def start_timer(self, timeout):
+        if self.timer is not None:
+            self.timer.cancel()  # Cancel the existing timer
+        self.is_timer_running = True
+        self.timer = threading.Timer(timeout, self.stop_rtt_read)
+        self.timer.start()
+
+    def _read_from_buffer(self, jlink, buffer_index, stop_thread, user_callback, user_data):
         try:
             while not stop_thread.is_set() and jlink.connected() and not get_global_end():
                 byte_list = jlink.rtt_read(buffer_index, 1024)
                 if len(byte_list) > 0:
                     user_callback(bytes(byte_list), user_data)
-        except BaseException:
-            pass  # JLink closed
+                    if self.test_end:
+                        if self.timer is not None:
+                            self.timer.cancel()
+                else:  # empty packet
+                    if self.test_end and not self.is_timer_running:
+                        self.start_timer(self.timeout)
+        except BaseException as e:
+            # JLink closed
+            if self.timer is not None:
+                self.timer.cancel()
+                self.is_timer_running = False
+
 
     def init_jlink(self, device_core, debugger_snr):
         if RTT.jlink:
@@ -239,9 +269,15 @@ class RTTLogger:
         self.log_file = open(log_filename, 'ab')
         self.rtt_reader.start(buffer_name, device_core, debugger_snr, self._on_line_read_callback, (self.log_file,))
 
-    def stop(self):
+    def stop(self, reset, timeout=0.1):
         log("%s.%s", self.__class__, self.stop.__name__)
-        self.rtt_reader.stop()
+
+        if reset:
+            self.rtt_reader.stop()
+        else:
+            self.rtt_reader.set_end(timeout)
+            while not self.rtt_reader.rtt_stop:
+                pass
 
         if self.log_file:
             self.log_file.close()
