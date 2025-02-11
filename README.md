@@ -391,7 +391,7 @@ Options --superguard and --ykush works on autoptsclient same as on autoptsserver
 
 # Community
 
-Use this [link](https://discord.com/invite/Ck7jw53nU2) to join Discord server. After that enter #qualification channel (under Bluetooth section). Although Discord server is for Zephyr Project topics are not limited to Zephyr.
+Use this [link](https://discord.com/invite/Ck7jw53nU2) to join Discord server. After that enter [#bt-qualification](https://discord.com/channels/720317445772017664/733036879062106264) channel (under Bluetooth section). Although Discord server is for Zephyr Project topics are not limited to Zephyr.
 
 You may also seek IUT specific help on:
 
