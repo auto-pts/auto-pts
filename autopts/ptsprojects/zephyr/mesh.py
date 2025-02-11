@@ -491,7 +491,7 @@ def test_cases(ptses):
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/PVNR/PROV/BV-01-C", cmds=pre_conditions_prov +
                   [TestFunc(lambda: stack.mesh.set_prov_data(oob, 1, defs.MESH_OUT_DISPLAY_NUMBER,
-                                                             random.randint(1, 2), defs.MESH_INPUT_NUMBER,
+                                                             random.randint(1, 2), defs.BTP_MESH_CMD_INPUT_NUMBER,
                                                              crpl_size, defs.MESH_OUTPUT_OOB))],
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/PVNR/PROV/BV-02-C", cmds=pre_conditions_prov +
@@ -507,7 +507,7 @@ def test_cases(ptses):
         ZTestCase("MESH", "MESH/PVNR/PROV/BV-04-C", cmds=pre_conditions_prov_pub_key +
                   [TestFunc(lambda: stack.mesh.set_prov_data(oob, 1, defs.MESH_OUT_DISPLAY_NUMBER,
                                                              random.randint(
-                                                                 1, 2), defs.MESH_INPUT_NUMBER,
+                                                                 1, 2), defs.BTP_MESH_CMD_INPUT_NUMBER,
                                                              crpl_size, defs.MESH_OUTPUT_OOB))],
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/PVNR/PROV/BV-05-C", cmds=pre_conditions_prov_pub_key +
@@ -528,7 +528,7 @@ def test_cases(ptses):
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/PVNR/PROV/BV-11-C", cmds=pre_conditions_prov_sha256 +
                   [TestFunc(lambda: stack.mesh.set_prov_data(oob_sha256, 1, defs.MESH_OUT_DISPLAY_NUMBER,
-                                                             random.randint(1, 2), defs.MESH_INPUT_NUMBER,
+                                                             random.randint(1, 2), defs.BTP_MESH_CMD_INPUT_NUMBER,
                                                              crpl_size, defs.MESH_OUTPUT_OOB))],
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/PVNR/PROV/BV-12-C", cmds=pre_conditions_prov_sha256 +
@@ -544,7 +544,7 @@ def test_cases(ptses):
         ZTestCase("MESH", "MESH/PVNR/PROV/BV-14-C", cmds=pre_conditions_prov_pub_key_sha256 +
                   [TestFunc(lambda: stack.mesh.set_prov_data(oob_sha256, 1, defs.MESH_OUT_DISPLAY_NUMBER,
                                                              random.randint(
-                                                                 1, 2), defs.MESH_INPUT_NUMBER,
+                                                                 1, 2), defs.BTP_MESH_CMD_INPUT_NUMBER,
                                                              crpl_size, defs.MESH_OUTPUT_OOB))],
                   generic_wid_hdl=mesh_wid_hdl),
         ZTestCase("MESH", "MESH/PVNR/PROV/BV-15-C", cmds=pre_conditions_prov_pub_key_sha256 +
