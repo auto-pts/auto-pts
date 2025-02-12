@@ -2,24 +2,11 @@
 # GAP/CONN/NCON/BV-01-C: CASE00xxxxx
 # GAP/CONN/NCON/BV-02-C: CASE00xxxxx
 
-GAP/BOND/BON/BV-03-C: ES-25754
-
-L2CAP/LE/REJ/BI-02-C: ES-25764
-
 GAP/GAT/BV-16-C: ES-26322
 GAP/GAT/BV-17-C: ES-26322
-
-L2CAP/ECFC/BI-02-C: ES-26416
-L2CAP/ECFC/BI-11-C: ES-26416
 
 # This errata affect so many cases (any test, including non-CSIP) that uses multiple connected lower testers, but we only track it for CSIP where it's most common
 CSIP/CL/SP/BV-03-C: Request ID 147314
 CSIP/CL/SP/BV-04-C: Request ID 147314
 CSIP/CL/SP/BV-07-C: Request ID 147314
 CSIP/CL/SPE/BI-01-C: Request ID 147314
-
-CAP/INI/BST/BV-01-C: Request ID 147512
-CAP/INI/BST/BV-03-C: Request ID 147512
-CAP/INI/BST/BV-05-C: Request ID 147512
-CAP/INI/BST/BV-08-C: Request ID 147512
-CAP/INI/BST/BV-16-C: Request ID 147512
