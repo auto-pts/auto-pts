@@ -18,7 +18,7 @@ import os
 from .nrf5x import *
 from autopts.bot.common import check_call
 
-board_type = 'nrf5340_audio_dk_nrf5340_cpuapp'
+board_type = 'nrf5340_audio_dk/nrf5340/cpuapp'
 
 
 def build_and_flash_core(zephyr_wd, build_dir, board, debugger_snr, configs, recover = False):
@@ -76,6 +76,6 @@ def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None, *args):
 
     build_and_flash_core(zephyr_wd,
                          os.path.join('samples', 'bluetooth', 'hci_ipc'),
-                         'nrf5340_audio_dk_nrf5340_cpunet',
+                         'nrf5340_audio_dk/nrf5340/cpunet',
                          debugger_snr,
                          net_core_configs)
