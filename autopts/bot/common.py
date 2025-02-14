@@ -121,6 +121,7 @@ class BotConfigArgs(Namespace):
         self.pylink_reset = args.get('pylink_reset', False)
         self.max_server_restart_time = args.get('max_server_restart_time', MAX_SERVER_RESTART_TIME)
         self.use_backup = args.get('use_backup', False)
+        self.no_build = args.get('no_build', False)
 
         if self.ykush or self.active_hub_server:
             self.usb_replug_available = True
@@ -586,7 +587,7 @@ class BotClient(Client):
     End time: {report_data["end_time_stamp"]}
 
     PTS version: {report_data["pts_ver"]}
-    
+
     Test Group/Profile Summary: {profile_summary}
 
     Repositories:
