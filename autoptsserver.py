@@ -311,7 +311,9 @@ class SvrArgumentParser(argparse.ArgumentParser):
 
         self.add_argument("-S", "--srv_port", type=int,
                           nargs="+", default=[SERVER_PORT],
-                          help="Specify the server port number")
+                          help="Specify the server port number."
+                            " If running with three dongles, this may be on the form:"
+                            " \"-S 65000 65002 65004\"")
 
         self.add_argument("--superguard", default=0, type=float, metavar='MINUTES',
                           help="Specify amount of time in minutes, after which"
