@@ -59,18 +59,23 @@ Commands and responses:
 
 		In case of an error, the error response will be returned.
 
-	Opcode 0x04 - Set Characteristic/Descriptor Value
+	Opcode 0x04 - Set Characteristic/Descriptor Values
 
 		Controller Index:	<controller id>
 		Command parameters:	Address_Type (1 octet)
 					Address (6 octets)
-					Handle (2 octets)
-					Value_Length (2 octet)
+					Count (1 octet)
+					HL (variable)
 					Value (variable)
 		Response parameters:	<none>
 
 		This command is used to set the value of characteristic
 		or descriptor.
+		HL is:
+		             Handle (2 octets)
+		             Value Length (2 octets)
+
+		Value is an array of values.
 
 		In case of an error, the error response will be returned.
 
