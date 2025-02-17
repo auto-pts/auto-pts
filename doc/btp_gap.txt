@@ -152,7 +152,8 @@ Commands and responses:
 	Opcode 0x0a - Start Advertising command/response
 
 		Controller Index:	<controller id>
-		Command parameters:	Adv_Data_Len (1 octet)
+		Command parameters:	Ext_adv_id (1 octet)
+					Adv_Data_Len (1 octet)
 					Scan_Rsp_len (1 octet)
 					Adv_Data (0-255 octets)
 					Scan_Rsp (0-255 octets)
