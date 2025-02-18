@@ -60,6 +60,8 @@ def build_and_flash(project_path, board, overlay=None, debugger_snr=None):
     check_call(
         'newt target set {}_boot app=@mcuboot/boot/mynewt'.format(
             board).split(), cwd=project_path)
+    check_call(f'newt target set {board}_boot syscfg=MYNEWT_DOWNLOADER=nrfjprog'.split(),
+               cwd=project_path)
 
     check_call(
         'newt target set bttester bsp=@apache-mynewt-core/hw/bsp/{}'.format(
@@ -68,10 +70,11 @@ def build_and_flash(project_path, board, overlay=None, debugger_snr=None):
         'newt target set bttester app=@apache-mynewt-nimble/apps/bttester'.split(),
         cwd=project_path)
 
+    config = 'MYNEWT_DOWNLOADER=nrfjprog'
     if overlay:
-        config = ':'.join(['{}={}'.format(k, v) for k, v in list(overlay.items())])
-        check_call('newt target set bttester syscfg={}'.format(config).split(),
-                   cwd=project_path)
+        config += ':' + ':'.join(['{}={}'.format(k, v) for k, v in list(overlay.items())])
+
+    check_call('newt target set bttester syscfg={}'.format(config).split(), cwd=project_path)
 
     check_call('newt build {}_boot'.format(board).split(), cwd=project_path)
     check_call('newt build bttester'.split(), cwd=project_path)
@@ -83,9 +86,9 @@ def build_and_flash(project_path, board, overlay=None, debugger_snr=None):
     load_boot_cmd = f'newt load {board}_boot'.split()
     load_app_cmd = 'newt load bttester'.split()
     if debugger_snr:
-        snr = ['--extrajtagcmd', f'-select usb={debugger_snr}']
-        load_boot_cmd.extend(snr)
-        load_app_cmd.extend(snr)
+        snr = f'JLINK_SN={debugger_snr}'
+        load_boot_cmd.insert(0, snr)
+        load_app_cmd.insert(0, snr)
 
     check_call(load_boot_cmd, cwd=project_path)
     check_call(load_app_cmd, cwd=project_path)
