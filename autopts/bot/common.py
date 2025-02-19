@@ -501,6 +501,9 @@ class BotClient(Client):
 
         try:
             stats = self.run_tests()
+        except:
+            report.make_error_txt(traceback.format_exc(), self.file_paths['ERROR_TXT_FILE'])
+            raise
         finally:
             release_device(self.args.tty_file)
 
