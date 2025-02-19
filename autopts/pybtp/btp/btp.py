@@ -131,6 +131,8 @@ CORE = {
                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_OTS),
     "pbp_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_PBP),
+    "gatts_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
+                  defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GATTS),
     # GENERATOR append 4
     "read_supp_cmds": (defs.BTP_SERVICE_ID_CORE,
                        defs.BTP_CORE_CMD_READ_SUPPORTED_COMMANDS,
@@ -713,6 +715,13 @@ def core_reg_svc_pbp():
     iutctl.btp_socket.send_wait_rsp(*CORE['pbp_reg'])
 
 
+def core_reg_svc_gatts():
+    logging.debug("%s", core_reg_svc_gatts.__name__)
+
+    iutctl = get_iut()
+    iutctl.btp_socket.send_wait_rsp(*CORE['gatts_reg'])
+
+
 # GENERATOR append 1
 
 def core_reg_svc_rsp_succ():
@@ -815,6 +824,7 @@ from .tbs import TBS_EV
 from .tmap import TMAP_EV
 from .ots import OTS_EV
 from .pbp import PBP_EV
+from .gatts import GATTS_EV
 # GENERATOR append 2
 
 from autopts.pybtp.iutctl_common import set_event_handler
@@ -855,6 +865,7 @@ def event_handler(hdr, data):
         defs.BTP_SERVICE_ID_TMAP: (TMAP_EV, stack.tmap),
         defs.BTP_SERVICE_ID_OTS: (OTS_EV, stack.ots),
         defs.BTP_SERVICE_ID_PBP: (PBP_EV, stack.pbp),
+        defs.BTP_SERVICE_ID_GATTS: (GATTS_EV, stack.gatts),
         # GENERATOR append 3
     }
 

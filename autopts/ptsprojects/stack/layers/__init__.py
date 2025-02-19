@@ -41,4 +41,5 @@ from .gtbs import *
 from .tmap import *
 from .ots import *
 from .pbp import *
+from .gatts import *
 # GENERATOR append 1

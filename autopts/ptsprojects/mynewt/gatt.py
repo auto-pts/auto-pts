@@ -23,6 +23,7 @@ from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.mynewt.ztestcase import ZTestCase, ZTestCaseSlave
 from autopts.ptsprojects.mynewt.gatt_wid import gatt_wid_hdl
 from autopts.ptsprojects.mynewt.gatt_client_wid import gattc_wid_hdl
+from autopts.ptsprojects.mynewt.gatts_wid import gatts_wid_hdl
 from autopts.utils import ResultWithFlag
 
 
@@ -214,7 +215,7 @@ def test_cases_server(ptses):
             continue
         instance = ZTestCase('GATT', tc_name,
                              cmds=pre_conditions_1,
-                             generic_wid_hdl=gatt_wid_hdl)
+                             generic_wid_hdl=gatts_wid_hdl)
 
         for custom_tc in custom_test_cases:
             if tc_name == custom_tc.name:
