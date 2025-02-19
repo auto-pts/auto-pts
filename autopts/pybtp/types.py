@@ -496,3 +496,7 @@ class BIGEncryption:
     BROADCAST_CODE_REQUIRED = 0x01
     DECRYPTING              = 0x02
     BAD_CODE                = 0x03
+
+class BAS_BATTERY_PRESENT(IntEnum):
+    BATTERY_NOT_PRESENT = 0
+    BATTERY_PRESENT = 1
