@@ -240,6 +240,7 @@ def hdl_wid_114(params: WIDParams):
         'BAP/BSRC/SCC/BV-30-C': '48_4_2',
         'BAP/BSRC/SCC/BV-31-C': '48_5_2',
         'BAP/BSRC/SCC/BV-32-C': '48_6_2',
+        'BAP/BSRC/SCC/BV-38-C': '16_2_1',
         # Cases with 1 BIS:
         'BAP/BSRC/STR/BV-01-C': '8_1_1',
         'BAP/BSRC/STR/BV-02-C': '8_2_1',
@@ -276,6 +277,15 @@ def hdl_wid_114(params: WIDParams):
         'BAP/BSRC/STR/BV-33-C': '48_6_1',
     }
 
+    stack = get_stack()
+
+    if stack.bap.hdl_wid_114_cnt == 0:
+        broadcast_id = stack.bap.broadcast_id
+    elif stack.bap.hdl_wid_114_cnt == 1:
+        broadcast_id = stack.bap.broadcast_id_2
+    else:
+        raise ValuError("hdl_wid_114 is not 0 or 1")
+
     if params.test_case_name in configurations:
         qos_set_name = configurations[params.test_case_name]
         coding_format = 0x06
@@ -305,12 +315,11 @@ def hdl_wid_114(params: WIDParams):
 
     presentation_delay = 40000
     subgroups = 1
-    broadcast_id = btp.bap_broadcast_source_setup(
-        streams_per_subgroup, subgroups, coding_format, vid, cid,
-        codec_ltvs_bytes, *qos_config, presentation_delay)
 
-    stack = get_stack()
-    stack.bap.broadcast_id = broadcast_id
+    broadcast_id = btp.bap_broadcast_source_setup(streams_per_subgroup, subgroups,
+                                                  coding_format, vid, cid, codec_ltvs_bytes,
+                                                  *qos_config, presentation_delay,
+                                                  broadcast_id)
 
     btp.bap_broadcast_adv_start(broadcast_id)
 
@@ -324,6 +333,8 @@ def hdl_wid_114(params: WIDParams):
         except BTPError:
             # Buffer full
             pass
+
+    stack.bap.hdl_wid_114_cnt += 1
 
     return True
 
@@ -2015,12 +2026,13 @@ def hdl_wid_380(_: WIDParams):
                                              audio_locations, octets_per_frame,
                                              frames_per_sdu)
 
+    broadcast_id = 0x123456
     presentation_delay = 40000
     streams_per_subgroup = 2
     subgroups = 1
     broadcast_id = btp.bap_broadcast_source_setup(
         streams_per_subgroup, subgroups, coding_format, vid, cid,
-        codec_ltvs_bytes, *qos_config, presentation_delay)
+        codec_ltvs_bytes, *qos_config, presentation_delay, broadcast_id)
 
     stack.bap.broadcast_id = broadcast_id
 
