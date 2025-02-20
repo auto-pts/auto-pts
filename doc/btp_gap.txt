@@ -192,12 +192,12 @@ Commands and responses:
 
 		Possible values for the Flags parameter are a bit-wise or
 		of the following bits:
-					0 = LE scan
-					1 = BR/EDR scan
-					2 = Use limited discovery procedure
+					0 = LE scan (deprecated, always enabled)
+					1 = BR/EDR scan (deprecated, not supported)
+					2 = Use limited discovery procedure (deprecated, ignored)
 					3 = Use active scan type
-					4 = Use observation procedure
-					5 = Use own ID address
+					4 = Use observation procedure (deprecated, ignored)
+					5 = Use own ID address (deprecated, ignored)
 
 		This command is used to start discovery.
 
@@ -637,6 +637,180 @@ Commands and responses:
 
 		In case of an error, the error response will be returned.
 
+	Opcode 0x2a - Create Advertising Set
+
+		Controller Index:	<controller id>
+		Command parameters:	<none>
+		Return Parameters:	Created Advertising Set ID (1 octet)
+
+		This command is used to create an advertising set, which can be used
+		for both legacy and extended advertisements. The set is created in
+		the stopped state.
+
+		The set is created with the default parameters of:
+			SID (1 octet) = 0
+			Address Type (1 octet) = 0x00 (Identity)
+			Advertising Type (1 octet) = 0x00 (Legacy Not Connectable, Not Scannable)
+			Filter Accept List (1 octet) = 0x00 (Do not use the filter accept list)
+			Directed Advertising (1 octet) = 0x00 (Do not use directed advertising)
+			Options (2 octets) = 0x0000
+			Minimum Interval (4 octets) = 160 (100 ms)
+			Maximum Interval (4 octets) = 320 (200 ms)
+			Peer Address Type (1 octet) = 0x00 (Public)
+			Peer Address (6 octets) = 00:00:00:00:00:00
+
+		The parameters can be changed with the Update Advertising Set
+		Parameters command.
+
+		The set can be deleted with Delete Advertising Set.
+
+		The return value is the ID of the newly created set.
+
+		Note that the state of advertising sets created with this command do
+		not affect the Current_Settings state.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x2b - Delete Advertising Set
+
+		Controller Index:	<controller id>
+		Command parameters:	Advertising Set Id (1 octet)
+		Return Parameters:	<none>
+
+		This command is used to delete a previously created advertising set.
+		If the advertising set is currently active, it will be stopped.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x2c - Update Advertising Set Parameters
+
+		Controller Index:	<controller id>
+		Command parameters:	Advertising Set Id (1 octet)
+					SID (1 octet)
+					Address Type (1 octet)
+					Advertising Type (1 octet)
+					Filter Accept List (1 octet)
+					Directed Advertising (1 octet)
+					Options (2 octets)
+					Minimum Interval, in 0.625ms units (4 octets)
+					Maximum Interval, in 0.625ms units (4 octets)
+					Peer Address Type (1 octet)
+					Peer Address (6 octets)
+		Return Parameters:	<none>
+
+		This command is used to configure the parameters of a previously created
+		advertising set. The advertising set must be stopped when the command
+		is given, otherwise an error will be emitted.
+
+		The allowed values for SID are 0...15.
+
+		The allowed values for Address Type are:
+			0x00 = Identity Address
+			0x01 = Private Address (resolvable if connectable)
+
+		The allowed values for Advertising Type are:
+			0x00 = Legacy Not Connectable, Not Scannable
+			0x01 = Legacy Connectable
+			0x02 = Legacy Scannable
+			0x03 = Legacy Connectable and Scannable
+			0x04 = Extended Not Connectable, Not Scannable
+			0x05 = Extended Connectable
+			0x06 = Extended Scannable
+			0x08 = Coded Not Connectable, Not Scannable
+			0x09 = Coded Connectable
+			0x0a = Coded Scannable
+
+		The allowed values for Filter Accept List are:
+			0x00 = Do not use the filter accept list
+			0x01 = Use the filter accept list for connections
+			0x02 = Use the filter accept list for scan requests
+			0x03 = Use the filter accept list for connections and scan requests
+
+		The allowed values for Directed Advertising are:
+			0x00 = Do not use directed advertising
+			0x01 = Use high duty directed advertising
+			0x02 = Use low duty directed advertising
+
+		The Options bitfield is a bit-wise OR of the following bits:
+			0 = Advertise with device name
+			1 = Disable 2M PHY for extended advertising
+			2 = Anonymous advertising for extended advertising
+			3 = Include TX Power in extended advertising
+			4-15 = Reserved
+
+		Minimum Interval must be less than or equal to Maximum Interval.
+
+		The allowed values for Peer Address Type are:
+			0x00 = Public
+			0x01 = Random
+			0x02 = Resolvable
+
+		The Peer Address and Peer Address Type fields will be ignored if
+		directed advertising is not used.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x2d - Update Advertising Set Data
+
+		Controller Index:	<controller id>
+		Command parameters:	Advertising Set Id (1 octet)
+					Adv Data Length (2 octets)
+					Scan Response Length (2 octets)
+					Adv Data (0-1650 octets)
+					Scan Response Data (0-1650 octets)
+		Return Parameters:	<none>
+
+		This command is used to set the advertising and scan response data
+		for an advertising set.
+
+		The advertising set must have been previously configured appropriately
+		for the data. For example, if more than 31 octets of advertising or scan
+		response data is given, the set must have been configured to use extended
+		PDUs.
+
+		If scan response data is given but the set is not configured as scannable,
+		then the scan response data is ignored.
+
+		Note that if extended PDUs are used, and the set is scannable, the set
+		can only have scan response data and no advertising data.
+
+		If the advertising set is currently advertising, the data will be
+		updated at the next advertising interval.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x2e - Start Advertising Set
+
+		Controller Index:	<controller id>
+		Command parameters:	Advertising Set Id (1 octet)
+					Timeout (2 octets)
+					Number of Events (1 octet)
+		Return Parameters:	<none>
+
+		This command is used to start a previously defined advertising set.
+
+		The timeout parameter is in units of 10ms. Set to zero for no timeout.
+
+		Set the Number of Events to zero for unlimited.
+
+		Note that starting advertising sets with this command does not affect
+		the Current_Settings state.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x2f - Stop Advertising Set
+
+		Controller Index:	<controller id>
+		Command parameters:	Advertising Set Id (1 octet)
+		Return Parameters:	<none>
+
+		This command is used to stop a previously started advertising set.
+
+		Note that stopping advertising sets with this command does not affect
+		the Current_Settings state.
+
+		In case of an error, the error response will be returned.
+
 Events:
 	Opcode 0x80 - New Settings event
 
@@ -823,3 +997,13 @@ Events:
 
 		This event can be sent after IUT received Periodic Advertising Sync
 		Transfer was received.
+
+	Opcode 0x91 - Advertising Set Terminated event
+
+		Controller Index:	<controller id>
+		Event parameters:	Advertising Set ID (1 octet)
+
+		This event is sent when an advertising set is terminated by the timeout
+		or maximum events mechanism. This event is not sent when a set is
+		explicitly stopped, or when a connection establishment causes the set to
+		stop.
