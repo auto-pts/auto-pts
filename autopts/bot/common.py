@@ -122,6 +122,7 @@ class BotConfigArgs(Namespace):
         self.max_server_restart_time = args.get('max_server_restart_time', MAX_SERVER_RESTART_TIME)
         self.use_backup = args.get('use_backup', False)
         self.no_build = args.get('no_build', False)
+        self.dongle_init_retry = args.get('dongle_init_retry', 5)
 
         if self.ykush or self.active_hub_server:
             self.usb_replug_available = True

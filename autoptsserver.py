@@ -246,7 +246,7 @@ class PyPTSWithCallback(ptscontrol.PyPTS, threading.Thread):
             self.pts_thread_id = threading.get_ident()
 
             print(f"({id(self)}) Starting PTS {self.args.srv_port} ...")
-            self.restart_pts()
+            self.restart_pts(self.args)
             print(f"({id(self)}) OK")
 
             while not self._end.is_set() and not get_global_end():
@@ -338,6 +338,11 @@ class SvrArgumentParser(argparse.ArgumentParser):
                           help="Specify amount of time in seconds to wait before RunTestCase()"
                                "after dongle reinitialization has been triggered with"
                                "GetPTSBluetoothAddress().")
+
+        self.add_argument("--dongle_init_retry", type=int, default=5,
+                          help="autoptsserver will try to launch for specified amount of times "
+                               "with unplugged dongle before terminating the process. Use Param "
+                               "value 0 to retry indefinitely")
 
     @staticmethod
     def check_args(arg):

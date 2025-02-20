@@ -503,7 +503,7 @@ class PyPTS:
         return True
 
     @pts_lock_wrapper(PTS_START_LOCK)
-    def restart_pts(self):
+    def restart_pts(self, args=None):
         """Restarts PTS
 
         This function will block for a couple of seconds while PTS starts
@@ -522,14 +522,16 @@ class PyPTS:
 
                 break
             except Exception as e:
-                exception += 1
                 logging.exception(e)
                 self.stop_pts()
                 # Kill all stale PTS.exe processes only if this is
                 # the only running instance of autoptsserver.py
                 if count_script_instances('autoptsserver.py') <= 1:
                     kill_all_processes('PTS.exe')
-                if exception >= 5:
+                if args.dongle_init_retry == 0:
+                    continue
+                exception += 1
+                if exception >= args.dongle_init_retry:
                     # This stops PTS from restarting indefinitely when PTS
                     # dongle is unplugged
                     print(f"Please check your dongle connection! Aborting")
