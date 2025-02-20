@@ -110,33 +110,41 @@ def make_report_xlsx(report_xlsx_path, results_dict, status_dict, regressions_li
 
     # Write data headers.
     worksheet.write('A1', header)
-    worksheet.write_row('A3', ['Test Case', 'Result', 'XML'])
+    worksheet.write_row('A3', ['Test Case', 'Result', 'XML','Description','Start Time', 'End Time', 'Duration'])
 
     row = 3
     col = 0
 
     for k, v in list(results_dict.items()):
+        dict_v = v
         worksheet.write(row, col, k)
-        if v[0] == 'PASS':
+        if dict_v[0] == 'PASS':
             find_xml_by_case(k)
             worksheet.write(row, col + 2, matched_xml)
-        if v[0] == 'PASS' and int(v[1]) > 1:
-            v = '{} ({})'.format(v[0], v[1])
+        if dict_v[0] == 'PASS' and int(dict_v[1]) > 1:
+            result_v = '{} ({})'.format(v[0], v[1])
         else:
-            v = v[0]
+            result_v = dict_v[0]
         if k in errata:
-            v += ' - ERRATA ' + errata[k]
-        worksheet.write(row, col + 1, v)
+            result_v += ' - ERRATA ' + errata[k]
+        worksheet.write(row, col + 1, result_v)
         if k in list(descriptions.keys()):
             worksheet.write(row, col + 3, descriptions[k])
+        if len(dict_v) > 2 and dict_v[2] is not None:
+            worksheet.write(row, col + 4, dict_v[2])
+        if len(dict_v) > 3 and dict_v[3] is not None:
+            worksheet.write(row, col + 5, dict_v[3])
+        if len(dict_v) > 4 and dict_v[4] is not None:
+            value = float(dict_v[4])
+            worksheet.write(row, col + 6, round(value, 2))
         if k in regressions_list:
-            worksheet.write(row, col + 4, "REGRESSION")
+            worksheet.write(row, col + 8, "REGRESSION")
         if k in progresses_list:
-            worksheet.write(row, col + 4, "PROGRESS")
+            worksheet.write(row, col + 8, "PROGRESS")
         row += 1
 
     summary_row = 2
-    summary_col = 5
+    summary_col = 9
 
     worksheet.write(summary_row, summary_col, 'Summary')
     end_row = summary_row
