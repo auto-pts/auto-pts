@@ -593,6 +593,7 @@ def _run_test(config):
     results_file_path = config['file_paths']['TC_STATS_JSON_FILE']
     all_stats_file_path = config['file_paths']['ALL_STATS_JSON_FILE']
     report_file_path = config['file_paths']['REPORT_TXT_FILE']
+    error_file_path = config['file_paths']['ERROR_TXT_FILE']
 
     srv_process, bot_process = _start_processes(config, checkout_repos=True)
     last_check_time = time()
@@ -600,6 +601,9 @@ def _run_test(config):
     # Main thread waits for at least one of subprocesses to finish
     while not config['cron']['cancel_job'].canceled:
         sleep_job(config['cron']['cancel_job'], config['cron']['check_interval'])
+
+        if os.path.exists(error_file_path):
+            break
 
         if srv_process and srv_process.poll() is not None:
             log('server process finished.')
