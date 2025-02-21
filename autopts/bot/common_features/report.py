@@ -30,6 +30,7 @@ from autopts.bot.common_features import github
 from autopts.bot import common
 from autopts.client import PtsServer
 from autopts.config import AUTOPTS_ROOT_DIR
+from typing import Tuple, List, Optional
 
 log = logging.debug
 
@@ -68,106 +69,176 @@ def make_repo_status(repos_info):
 # ****************************************************************************
 # .xlsx spreadsheet file
 # ****************************************************************************
-def make_report_xlsx(report_xlsx_path, results_dict, status_dict, regressions_list,
-                     progresses_list, descriptions, xmls, errata):
-    """Creates excel file containing test cases results and summary pie chart
+def parse_result_column(full_result: str) -> Tuple[str, str]:
+    """
+    Helper function: Searches for fixed keywords in `full_result`.
+    If found, returns (keyword, rest_text).
+    If it doesn't find it, it returns (full_result, "").
+    """
+    # The order matters - if there is a possibility
+    # of several matches, the first one in the list decides.
+    patterns = [
+        "PASS",
+        "UNKNOWN VERDICT",
+        "FAIL",
+        "PTS TIMEOUT",
+        "RUNNING",
+        "BTP ERROR",
+        "INDCSV",
+        "BTP",
+        "MiSSING WID ERROR",
+        "ERROR"
+    ]
+    for pattern in patterns:
+        if pattern in full_result:
+            additional_text = full_result.replace(pattern, "", 1).strip()
+            return pattern, additional_text
+    return full_result, ""
+
+
+def find_matching_xml_filename(test_case: str, xml_list: Optional[List[os.DirEntry]]) -> Optional[str]:
+    """
+    Finds first XML filename in `xml_list` matching the test_case string.
+    Matching is based on replacing '/' and '-' with '_' in test_case.
+    Returns the matched filename or None if not found or xml_list is None.
+    """
+    if xml_list is None:
+        return None
+
+    to_match = test_case.replace('/', '_').replace('-', '_')
+    for entry in xml_list:
+        if to_match in entry.name:
+            return entry.name
+    return None
+
+
+def make_report_xlsx(report_xlsx_path: str,
+                     results_dict: dict,
+                     status_dict: dict,
+                     regressions_list: list,
+                     progresses_list: list,
+                     descriptions: dict,
+                     xmls: str,
+                     errata: dict):
+    """
+    Creates xlsx file containing test cases results and summary pie chart.
+
+    :param report_xlsx_path: Path where to create the report XLSX file
     :param results_dict: dictionary with test cases results
     :param status_dict: status dictionary, where key is status and value is
-    status count
+                        status count
     :param regressions_list: list of regressions found
-    :param progresses_list: list of regressions found
-    :param descriptions: test cases
-    :return:
+    :param progresses_list: list of progresses found
+    :param descriptions: dictionary with test cases descriptions
+    :param xmls: directory where XML files are located
+    :param errata: dictionary with errata notes for specific test cases
+    :return: None
     """
 
     try:
         xml_list = list(os.scandir(xmls))
-    except FileNotFoundError as e:
-        log("No XMLs found")
+    except FileNotFoundError:
+        print("No XMLs found")
         xml_list = None
-    matched_xml = ''
 
-    def find_xml_by_case(case):
-        if xml_list is None:
-            return
-        nonlocal matched_xml
-        matched_xml = ''
-        to_match = case.replace('/', '_').replace('-', '_')
-        for xml in xml_list:
-            if to_match in xml.name:
-                matched_xml = xml.name
-                break
-
-    header = "AutoPTS Report: " \
-             "{}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
+    header = "AutoPTS Report: {}".format(datetime.datetime.now().strftime("%Y-%m-%d %H:%M"))
     workbook = xlsxwriter.Workbook(report_xlsx_path)
-    worksheet = workbook.add_worksheet()
-    chart = workbook.add_chart({'type': 'pie',
-                                'subtype': 'percent_stacked'})
+    worksheet = workbook.add_worksheet("Report")
+    chart = workbook.add_chart({'type': 'pie', 'subtype': 'percent_stacked'})
 
-    # Add a bold format to use to highlight cells.
-    bold = workbook.add_format({'bold': True})
+    bold_format = workbook.add_format({'bold': True})
 
-    # Write data headers.
     worksheet.write('A1', header)
-    worksheet.write_row('A3', ['Test Case', 'Result', 'XML'])
+    worksheet.write_row('A3', [
+        'Test Case',
+        'Result',
+        'Result Additional Info',
+        'XML',
+        'Description',
+        'Start Time',
+        'End Time',
+        'Duration'
+    ])
 
-    row = 3
-    col = 0
+    current_row = 3
+    start_col = 0
 
-    for k, v in list(results_dict.items()):
-        worksheet.write(row, col, k)
-        if v[0] == 'PASS':
-            find_xml_by_case(k)
-            worksheet.write(row, col + 2, matched_xml)
-        if v[0] == 'PASS' and int(v[1]) > 1:
-            v = '{} ({})'.format(v[0], v[1])
-        else:
-            v = v[0]
-        if k in errata:
-            v += ' - ERRATA ' + errata[k]
-        worksheet.write(row, col + 1, v)
-        if k in list(descriptions.keys()):
-            worksheet.write(row, col + 3, descriptions[k])
-        if k in regressions_list:
-            worksheet.write(row, col + 4, "REGRESSION")
-        if k in progresses_list:
-            worksheet.write(row, col + 4, "PROGRESS")
-        row += 1
+    for test_case, result_data in results_dict.items():
+        raw_result = result_data[0]
+        parsed_result, additional_info = parse_result_column(raw_result)
 
+        if parsed_result == 'PASS' and len(result_data) > 1:
+            try:
+                count_val = int(result_data[1])
+                if count_val > 1:
+                    parsed_result = f"{parsed_result} ({count_val})"
+            except ValueError:
+                pass
+
+        if test_case in errata:
+            if additional_info:
+                additional_info += f" - ERRATA {errata[test_case]}"
+            else:
+                additional_info = f"ERRATA {errata[test_case]}"
+
+        worksheet.write(current_row, start_col, test_case)
+        worksheet.write(current_row, start_col + 1, parsed_result)
+        worksheet.write(current_row, start_col + 2, additional_info)
+
+        if parsed_result.startswith('PASS'):
+            matched_xml = find_matching_xml_filename(test_case, xml_list)
+            worksheet.write(current_row, start_col + 3, matched_xml or "")
+
+        description = descriptions.get(test_case, "")
+        worksheet.write(current_row, start_col + 4, description)
+
+        if len(result_data) > 2 and result_data[2] is not None:
+            worksheet.write(current_row, start_col + 5, result_data[2])
+        if len(result_data) > 3 and result_data[3] is not None:
+            worksheet.write(current_row, start_col + 6, result_data[3])
+        if len(result_data) > 4 and result_data[4] is not None:
+            try:
+                duration_value = float(result_data[4])
+                worksheet.write(current_row, start_col + 7, round(duration_value, 2))
+            except ValueError:
+                worksheet.write(current_row, start_col + 7, result_data[4])
+
+        if test_case in regressions_list:
+            worksheet.write(current_row, start_col + 9, "REGRESSION")
+        if test_case in progresses_list:
+            worksheet.write(current_row, start_col + 9, "PROGRESS")
+
+        current_row += 1
     summary_row = 2
-    summary_col = 5
+    summary_col = 10
 
     worksheet.write(summary_row, summary_col, 'Summary')
     end_row = summary_row
+
     for status in sorted(status_dict.keys()):
         count = status_dict[status]
         end_row += 1
         worksheet.write_row(end_row, summary_col, [status, count])
 
-    # Total TCS
-    row = end_row + 2
-    col = summary_col
     total_count = len(results_dict)
-    worksheet.write(row, col, "Total")
-    worksheet.write(row, col + 1, "{}".format(total_count))
-    worksheet.write(row + 1, col, "PassRate", bold)
-    if "PASS" in status_dict:
-        pass_rate = \
-            '{0:.2f}%'.format((status_dict["PASS"] / float(total_count) * 100))
+    worksheet.write(end_row + 2, summary_col, "Total")
+    worksheet.write(end_row + 2, summary_col + 1, f"{total_count}")
+
+    worksheet.write(end_row + 3, summary_col, "PassRate", bold_format)
+    pass_count = status_dict.get("PASS", 0)
+    if total_count > 0:
+        pass_rate = f"{(pass_count / float(total_count)) * 100:.2f}%"
     else:
-        pass_rate = '{0:.2f}%'.format(0)
-    worksheet.write(row + 1, col + 1, pass_rate, bold)
+        pass_rate = "0.00%"
+    worksheet.write(end_row + 3, summary_col + 1, pass_rate, bold_format)
 
     chart.set_title({'name': 'AutoPTS test results'})
     chart.add_series({
-        'categories': ['Sheet1', summary_row + 1, summary_col,
-                       end_row, summary_col],
-        'values': ['Sheet1', summary_row + 1, summary_col + 1,
-                   end_row, summary_col + 1],
+        'categories': ['Report', summary_row + 1, summary_col, end_row, summary_col],
+        'values':     ['Report', summary_row + 1, summary_col + 1, end_row, summary_col + 1],
     })
 
-    worksheet.insert_chart('H2', chart)
+    worksheet.insert_chart('O2', chart)
     workbook.close()
 
 
