@@ -130,12 +130,13 @@ def bap_send(ase_id, data_ba, bd_addr_type=None, bd_addr=None):
 def bap_broadcast_source_setup(
         streams_per_subgroup, subgroups, coding_format, vid, cid,
         codec_ltvs, sdu_interval, framing, max_sdu, retransmission_number,
-        max_transport_latency, presentation_delay):
+        max_transport_latency, presentation_delay, broadcast_id=0x123456):
 
     logging.debug(f"{bap_broadcast_source_setup.__name__}")
 
     iutctl = get_iut()
     data = bytearray()
+    data += int.to_bytes(broadcast_id, 3, 'little')
     data += struct.pack('B', streams_per_subgroup)
     data += struct.pack('B', subgroups)
 
@@ -155,6 +156,7 @@ def bap_broadcast_source_setup(
     data += struct.pack('B', codec_ltvs_len)
     if codec_ltvs_len:
         data += codec_ltvs
+
 
     iutctl.btp_socket.send(*BAP['broadcast_source_setup'], data=data)
 

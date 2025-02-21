@@ -445,7 +445,7 @@ def gap_wait_for_sec_lvl_change(level, timeout=30):
     return stack.gap.gap_wait_for_sec_lvl_change(level, timeout)
 
 
-def gap_adv_ind_on(ad=None, sd=None, duration=AdDuration.forever, own_addr_type=OwnAddrType.le_identity_address):
+def gap_adv_ind_on(ext_adv_id=0, ad=None, sd=None, duration=AdDuration.forever, own_addr_type=OwnAddrType.le_identity_address):
     logging.debug("%s %r %r", gap_adv_ind_on.__name__, ad, sd)
 
     if ad is None:
@@ -496,6 +496,7 @@ def gap_adv_ind_on(ad=None, sd=None, duration=AdDuration.forever, own_addr_type=
         sd_ba.extend(chr(len(data)).encode('utf-8'))
         sd_ba.extend(data)
 
+    data_ba.extend(struct.pack('B', ext_adv_id))
     data_ba.extend(chr(len(ad_ba)).encode('utf-8'))
     data_ba.extend(chr(len(sd_ba)).encode('utf-8'))
     data_ba.extend(ad_ba)

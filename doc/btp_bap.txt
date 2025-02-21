@@ -49,7 +49,8 @@ Commands and responses:
 
 	Opcode 0x04 - Broadcast Source Setup
 		Controller Index:	<controller id>
-		Command parameters:	Streams Per Subgroup (1 octet)
+		Command parameters:	Broadcast ID (3 octets)
+					Streams Per Subgroup (1 octet)
 					Subgroups (1 octet)
 					Sdu Interval (3 octets)
 					Framing (1 octet)
