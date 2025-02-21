@@ -168,20 +168,18 @@ def test_cases(ptses):
         TestFunc(btp.gap_set_extended_advertising_on),
         # Gives a signal to the LT2 to continue its preconditions
         TestFunc(lambda: set_addr(stack.gap.iut_addr_get_str())),
+        TestFunc(lambda: pts.update_pixit_param("CAP", "TSPX_bd_addr_iut",
+                                                stack.gap.iut_addr_get_str()))
     ]
 
     general_conditions = [
         TestFunc(announcements, adv_data, rsp_data, False),
         TestFunc(btp.gap_adv_ind_on, ad=adv_data, sd=rsp_data),
-        TestFunc(lambda: pts.update_pixit_param("CAP", "TSPX_bd_addr_iut",
-                                                stack.gap.iut_addr_get_str()))
     ]
 
     targeted_conditions = [
         TestFunc(announcements, adv_data, rsp_data, True),
         TestFunc(btp.gap_adv_ind_on, ad=adv_data, sd=rsp_data),
-        TestFunc(lambda: pts.update_pixit_param("CAP", "TSPX_bd_addr_iut",
-                                                stack.gap.iut_addr_get_str()))
     ]
 
     custom_test_cases = [
@@ -638,7 +636,7 @@ def test_cases(ptses):
     for tc_name in test_case_name_list:
 
         instance = ZTestCase("CAP", tc_name,
-                             cmds=pre_conditions + targeted_conditions,
+                             cmds=pre_conditions + (targeted_conditions if "CAP/ACC" in tc_name else []),
                              generic_wid_hdl=cap_wid_hdl)
 
         for custom_tc in custom_test_cases:
