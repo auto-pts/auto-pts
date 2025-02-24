@@ -3,41 +3,41 @@ OTS Service (ID 29)
 
 Commands and responses:
 
-	Opcode 0x00 - Error response
+        Opcode 0x00 - Error response
 
-	Opcode 0x01 - Read Supported Commands command/response
+        Opcode 0x01 - Read Supported Commands command/response
 
-		Controller Index:	<controller id>
-		Command parameters:	<none>
-		Response parameters:	<supported commands> (variable)
+                Controller Index:       <controller id>
+                Command parameters:     <none>
+                Response parameters:    <supported commands> (variable)
 
-		Each bit in response is a flag indicating if command with
-		opcode matching bit number is supported. Bit set to 1 means
-		that command is supported. Bit 0 is reserved and shall always
-		be set to 0. If specific bit is not present in response (less
-		than required bytes received) it shall be assumed that command
-		is not supported.
+                Each bit in response is a flag indicating if command with
+                opcode matching bit number is supported. Bit set to 1 means
+                that command is supported. Bit 0 is reserved and shall always
+                be set to 0. If specific bit is not present in response (less
+                than required bytes received) it shall be assumed that command
+                is not supported.
 
-		In case of an error, the error response will be returned.
+                In case of an error, the error response will be returned.
 
-	Opcode 0x02 - Register Object command/response
+        Opcode 0x02 - Register Object command/response
 
-		Controller Index:	<controller id>
-		Command parameters:	Flags (1 octet)
-					Properties (4 octets)
-					Allocation_Size 4 octets)
-					Current_Size (4 octets)
-					Name_Length (1 octet)
-					Name (variable)
-		Response parameters:	Object_ID (4 octets)
+                Controller Index:       <controller id>
+                Command parameters:     Flags (1 octet)
+                                        Properties (4 octets)
+                                        Allocation_Size 4 octets)
+                                        Current_Size (4 octets)
+                                        Name_Length (1 octet)
+                                        Name (variable)
+                Response parameters:    Object_ID (4 octets)
 
-	This command is used to register new Object in OTS server with
-	specified parameters. Properties are OTS Object properties as per
-	specification. Allocation and current sizes defines Object sizes
-	as per specification.
+                This command is used to register new Object in OTS server with
+                specified parameters. Properties are OTS Object properties as per
+                specification. Allocation and current sizes defines Object sizes
+                as per specification.
 
-	Possible values for the Flags parameter are a bit-wise or of
-	the following bits:
-		0 = Skip Unsupported Properties
+                Possible values for the Flags parameter are a bit-wise or of
+                the following bits:
+                        0 = Skip Unsupported Properties
 
-	In case of an error, the error response will be returned.
+                In case of an error, the error response will be returned.

@@ -3,44 +3,44 @@ TMAP Service (ID 28)
 
 Commands and responses:
 
-	Opcode 0x00 - Error response
+        Opcode 0x00 - Error response
 
-	Opcode 0x01 - Read Supported Commands command/response
+        Opcode 0x01 - Read Supported Commands command/response
 
-		Controller Index:	<controller id>
-		Command parameters:	<none>
-		Response parameters:	<supported commands> (variable)
+                Controller Index:       <controller id>
+                Command parameters:     <none>
+                Response parameters:    <supported commands> (variable)
 
-		Each bit in response is a flag indicating if command with
-		opcode matching bit number is supported. Bit set to 1 means
-		that command is supported. Bit 0 is reserved and shall always
-		be set to 0. If specific bit is not present in response (less
-		than required bytes received) it shall be assumed that command
-		is not supported.
+                Each bit in response is a flag indicating if command with
+                opcode matching bit number is supported. Bit set to 1 means
+                that command is supported. Bit 0 is reserved and shall always
+                be set to 0. If specific bit is not present in response (less
+                than required bytes received) it shall be assumed that command
+                is not supported.
 
-		In case of an error, the error response will be returned.
+                In case of an error, the error response will be returned.
 
 
-	Opcode 0x02 - Discover and Subscribe
+        Opcode 0x02 - Discover and Subscribe
 
-		Controller Index:	<controller id>
-		Command parameters:	Address_Type (1 octet)
-					Address (6 octets)
-		Response parameters:	<none>
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
 
-		This command is used to discover all remote TMAP characteristics.
-		In case of an error, the error status response will be returned.
-		In case of a success, the IUT continues processing the command
-		asynchronously.
+                This command is used to discover all remote TMAP characteristics.
+                In case of an error, the error status response will be returned.
+                In case of a success, the IUT continues processing the command
+                asynchronously.
 
 Events:
-	Opcode 0x80 - Discover and Subscribe Completed event
+        Opcode 0x80 - Discover and Subscribe Completed event
 
-		Controller Index:	<controller id>
-		Event parameters:	Address_Type (1 octet)
-					Address (6 octets)
-					Status  (1 octet)
-					Role    (2 octet)
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Status  (1 octet)
+                                        Role    (2 octet)
 
-        This event indicates that the IUT finished discovery TMAP
-        characteristics.
+                This event indicates that the IUT finished discovery TMAP
+                characteristics.

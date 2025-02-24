@@ -3,102 +3,101 @@ CSIP Service (ID 25)
 
 Commands and responses:
 
-	Opcode 0x00 - Error response
+        Opcode 0x00 - Error response
 
-	Opcode 0x01 - Read Supported Commands command/response
+        Opcode 0x01 - Read Supported Commands command/response
 
-		Controller Index:	<controller id>
-		Command parameters:	<none>
-		Response parameters:	<supported commands> (variable)
+                Controller Index:       <controller id>
+                Command parameters:     <none>
+                Response parameters:    <supported commands> (variable)
 
-		Each bit in response is a flag indicating if command with
-		opcode matching bit number is supported. Bit set to 1 means
-		that command is supported. Bit 0 is reserved and shall always
-		be set to 0. If specific bit is not present in response (less
-		than required bytes received) it shall be assumed that command
-		is not supported.
+                Each bit in response is a flag indicating if command with
+                opcode matching bit number is supported. Bit set to 1 means
+                that command is supported. Bit 0 is reserved and shall always
+                be set to 0. If specific bit is not present in response (less
+                than required bytes received) it shall be assumed that command
+                is not supported.
 
-		In case of an error, the error response will be returned.
+                In case of an error, the error response will be returned.
 
-	Opcode 0x02 - Discover and Subscribe
-		Controller Index:	<controller id>
-		Command parameters:	Address_Type (1 octet)
-					Address (6 octets)
-		Response parameters:	<none>
+        Opcode 0x02 - Discover and Subscribe
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
 
-		This command is used to discover all remote CSIP characteristics.
-		In case of an error, the error status response will be returned.
-		In case of a success, the IUT continues processing the command
-		asynchronously.
-		During operation, the IUT may send events:
-				CSIP Lock event
-				CSIP Sirk event
+                This command is used to discover all remote CSIP characteristics.
+                In case of an error, the error status response will be returned.
+                In case of a success, the IUT continues processing the command
+                asynchronously.
+                During operation, the IUT may send events:
+                                CSIP Lock event
+                                CSIP Sirk event
 
-	Opcode 0x03 - Start Ordered Access
-		Controller Index:	<controller id>
-		Command parameters:	Flags (1 octet)
-		Response parameters:	<none>
+        Opcode 0x03 - Start Ordered Access
+                Controller Index:       <controller id>
+                Command parameters:     Flags (1 octet)
+                Response parameters:    <none>
 
-		This command is used to start the CSIP Ordered Access procedure.
-		In case of an error, the error status response will be returned.
-		In case of a success, the IUT continues processing the command
-		asynchronously.
+                This command is used to start the CSIP Ordered Access procedure.
+                In case of an error, the error status response will be returned.
+                In case of a success, the IUT continues processing the command
+                asynchronously.
 
-	Opcode 0x04 - Set Coordinator Lock
+        Opcode 0x04 - Set Coordinator Lock
 
-		Controller Index:	<controller id>
-		Command parameters:     Address count (1 octet)
-					Address list (varies)
-		Response parameters:    <none>
+                Controller Index:       <controller id>
+                Command parameters:     Address count (1 octet)
+                                        Address list (varies)
+                Response parameters:    <none>
 
-		This command is used to perform lock request on set members.
-		Address list parameter should contain tuple(s) of address type
-		and address: ([(0, 'DB:F5:72:56:C9:EF'), (0, 'DB:F5:72:56:C9:EF')].
-		When Address list is not provided, lock procedure will be performed
-		on all set members. During operation, the IUT may send event:
-				CSIP Lock event
+                This command is used to perform lock request on set members.
+                Address list parameter should contain tuple(s) of address type
+                and address: ([(0, 'DB:F5:72:56:C9:EF'), (0, 'DB:F5:72:56:C9:EF')].
+                When Address list is not provided, lock procedure will be performed
+                on all set members. During operation, the IUT may send event:
+                                CSIP Lock event
 
-	Opcode 0x05 - Set Coordinator Lock Release
+        Opcode 0x05 - Set Coordinator Lock Release
 
-		Controller Index:	<controller id>
-		Command parameters:     Address count (1 octet)
-					Address list (varies)
-		Response parameters:    <none>
+                Controller Index:       <controller id>
+                Command parameters:     Address count (1 octet)
+                                        Address list (varies)
+                Response parameters:    <none>
 
-		This command is used to perform lock release on set members.
-		Address list parameter should contain tuple(s) of address type
-		and address: ([(0, 'DB:F5:72:56:C9:EF'), (0, 'DB:F5:72:56:C9:EF')].
-		When Address list is not provided, lock procedure will be performed
-		on all set members. During operation, the IUT may send event:
-				CSIP Lock event
+                This command is used to perform lock release on set members.
+                Address list parameter should contain tuple(s) of address type
+                and address: ([(0, 'DB:F5:72:56:C9:EF'), (0, 'DB:F5:72:56:C9:EF')].
+                When Address list is not provided, lock procedure will be performed
+                on all set members. During operation, the IUT may send event:
+                                CSIP Lock event
 
 Events:
-	Opcode 0x80 - Discover Completed event
+        Opcode 0x80 - Discover Completed event
 
-		Controller Index:	<controller id>
-		Event parameters:	Address Type (1 octet)
-					Address (6 octets)
-					ATT status (1 octet)
-					Set Sirk Handle (1 octet)
-					Set Size Handle (1 octet)
-					Set Lock Handle (1 octet)
-					Rank Handle (1 octet)
+                Controller Index:       <controller id>
+                Event parameters:       Address Type (1 octet)
+                                        Address (6 octets)
+                                        ATT status (1 octet)
+                                        Set Sirk Handle (1 octet)
+                                        Set Size Handle (1 octet)
+                                        Set Lock Handle (1 octet)
+                                        Rank Handle (1 octet)
 
-		This event returns handles of CSIP characteristsics.
+                This event returns handles of CSIP characteristsics.
 
-	Opcode 0x81 - Sirk event
+        Opcode 0x81 - Sirk event
 
-		Controller Index:       <controller id>
-		Event parameters:       Address Type (1 octet)
-					Address (6 octets)
-					SIRK (16 octets)
+                Controller Index:       <controller id>
+                Event parameters:       Address Type (1 octet)
+                                        Address (6 octets)
+                                        SIRK (16 octets)
 
-		This event returns SIRK (Set identity resolving key) value.
+                This event returns SIRK (Set identity resolving key) value.
 
-	Opcode 0x82 - Lock event
+        Opcode 0x82 - Lock event
 
-		Controller Index:       <controller id>
-		Event parameters:       Lock (1 octet)
+                Controller Index:       <controller id>
+                Event parameters:       Lock (1 octet)
 
-		This event returns Set Member Lock value.
-
+                This event returns Set Member Lock value.

@@ -2,7 +2,7 @@ Immediate Alert Service (ID 9)
 =============================
 
 Events:
-	Opcode 0x80 - Alert level action Event
+        Opcode 0x80 - Alert level action Event
 
-		Controller Index:	<controller id>
-		Event parameters:	Alert level (1 octet)
+                Controller Index:       <controller id>
+                Event parameters:       Alert level (1 octet)

@@ -3,90 +3,90 @@ Microphone Control Profile(ID 16)
 
 Commands and responses:
 
-	Opcode 0x00 - Error response
+        Opcode 0x00 - Error response
 
-	Opcode 0x01 - Read supported commands
+        Opcode 0x01 - Read supported commands
 
-		Controller Index:	<controller id>
-		Command parameters:     <none>
-		Response parameters:    <supported commands> (variable)
+                Controller Index:       <controller id>
+                Command parameters:     <none>
+                Response parameters:    <supported commands> (variable)
 
-		Each bit in response is a flag indicating if command with
-		opcode matching bit number is supported. Bit set to 1 means
-		that command is supported. Bit 0 is reserved and shall always
-		be set to 0. If specific bit is not present in response (less
-		than required bytes received) it shall be assumed that command
-		is not supported.
+                Each bit in response is a flag indicating if command with
+                opcode matching bit number is supported. Bit set to 1 means
+                that command is supported. Bit 0 is reserved and shall always
+                be set to 0. If specific bit is not present in response (less
+                than required bytes received) it shall be assumed that command
+                is not supported.
 
-		In case of an error, the error response will be returned.
+                In case of an error, the error response will be returned.
 
-	Opcode 0x02 - Discovery
+        Opcode 0x02 - Discovery
 
-		Controller Index:	<controller id>
-		Command parameters:     Address_Type (1 octet)
-					Address (6 octets)
-		Response parameters: <none>
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters: <none>
 
-		This command is used to discover primary service, AICS included
-		service(s) and all characteristics related to them. During discovery,
-		the IUT may send events:
-				Discovered Event
+                This command is used to discover primary service, AICS included
+                service(s) and all characteristics related to them. During discovery,
+                the IUT may send events:
+                                Discovered Event
 
-		In case of an error, the error response will be returned.
+                In case of an error, the error response will be returned.
 
-	Opcode 0x03 - Mute read
+        Opcode 0x03 - Mute read
 
-		Controller Index:	<controller id>
-		Command parameters:     Address_Type (1 octet)
-					Address (6 octets)
-		Response parameters:	<none>
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
 
-		This command is used to read Mute characteristic. During read
-		operation, the IUT may send event:
-				Mute State event
+                This command is used to read Mute characteristic. During read
+                operation, the IUT may send event:
+                                Mute State event
 
-		In case of an error, the error reponse will be returned.
+                In case of an error, the error reponse will be returned.
 
-	Opcode 0x04 - Mute
+        Opcode 0x04 - Mute
 
-		Controller Index:	<controller id>
-		Command parameters:     Address_Type (1 octet)
-					Address (6 octets)
-		Response parameters:	<none>
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
 
-		This command is used to request Mute operation. During write operation,
-		the IUT may send event:
-				Mute State event
+                This command is used to request Mute operation. During write operation,
+                the IUT may send event:
+                                Mute State event
 
-		In case of an error, the error reponse will be returned.
+                In case of an error, the error reponse will be returned.
 
 
 Events:
-	Opcode 0x80 - Discovered Event
+        Opcode 0x80 - Discovered Event
 
-		Controller Index:	<controller id>
-		Event parameters:	Address_Type (1 octet)
-					Address (6 octets)
-					ATT status (1 octet)
-					MICP Mute handle (2 octets)
-					AICS State handle (2 octets)
-					AICS Gain handle (2 octets)
-					AICS Type handle (2 octets)
-					AICS Status handle (2 octets)
-					AICS Control Point handle (2 octets)
-					AICS Description handle (2 octets)
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        ATT status (1 octet)
+                                        MICP Mute handle (2 octets)
+                                        AICS State handle (2 octets)
+                                        AICS Gain handle (2 octets)
+                                        AICS Type handle (2 octets)
+                                        AICS Status handle (2 octets)
+                                        AICS Control Point handle (2 octets)
+                                        AICS Description handle (2 octets)
 
-		This event returns handles of MICP characteristic and AICS included
-		service characteristics.
+                This event returns handles of MICP characteristic and AICS included
+                service characteristics.
 
-	Opcode 0x81 - Mute State event
+        Opcode 0x81 - Mute State event
 
-		Controller Index:	<controller id>
-		Event parameters:	Address_Type (1 octet)
-					Address (6 octets)
-					ATT status (1 octet)
-					Mute state (1 octet)
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        ATT status (1 octet)
+                                        Mute state (1 octet)
 
-		This event returns Mute state (from primary service).
+                This event returns Mute state (from primary service).
 
 
