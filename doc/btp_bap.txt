@@ -3,461 +3,482 @@ BAP Service (ID 14)
 
 Commands and responses:
 
-	Opcode 0x00 - Error response
+        Opcode 0x00 - Error response
 
-	Opcode 0x01 - Read supported commands
-		Controller Index:    <controller id>
-		Command parameters:  <none>
-		Response parameters: <supported commands> (variable)
+        Opcode 0x01 - Read supported commands
 
-		Each bit in response is a flag indicating if command with
-		opcode matching bit number is supported. Bit set to 1 means
-		that command is supported. Bit 0 is reserved and shall always
-		be set to 0. If specific bit is not present in response (less
-		than required bytes received) it shall be assumed that command
-		is not supported.
+                Controller Index:    <controller id>
+                Command parameters:  <none>
+                Response parameters: <supported commands> (variable)
 
-		In case of an error, the error response will be returned.
+                Each bit in response is a flag indicating if command with
+                opcode matching bit number is supported. Bit set to 1 means
+                that command is supported. Bit 0 is reserved and shall always
+                be set to 0. If specific bit is not present in response (less
+                than required bytes received) it shall be assumed that command
+                is not supported.
 
-	Opcode 0x02 - Discover and Subscribe
-		Controller Index:    <controller id>
-		Command parameters:	Address_Type (1 octet)
-					Address  (6 octets)
-		Response parameters: <none>
+                In case of an error, the error response will be returned.
 
-        This command is used to discover all remote PACS and ASCS
-        characteristics. In case of an error, the error status response
-        will be returned. In case of a success, the IUT continues processing
-        the command asynchronously. During discovery, the IUT may send events:
-                    Discover and Subscribe Completed event
-                    Codec Capabilities Found event
-                    ASE Found event
+        Opcode 0x02 - Discover and Subscribe
 
-	Opcode 0x03 - Send
-		Controller Index:    <controller id>
-		Command parameters:	Address_Type (1 octet)
-					Address  (6 octets)
-					ASE ID (1 octet)
-					Data len (1 octet)
-					Data (varies)
-		Response parameters:	Number of buffered bytes of data (1 octet)
+                Controller Index:    <controller id>
+                Command parameters:  Address_Type (1 octet)
+                                     Address  (6 octets)
+                Response parameters: <none>
 
-        This command is used to send a data packet stream to the given ASE.
-        In case of an error, the error status response will be returned.
-        In case of a success, the IUT continues processing the command
-        asynchronously.
+                This command is used to discover all remote PACS and ASCS
+                characteristics. In case of an error, the error status response
+                will be returned. In case of a success, the IUT continues processing
+                the command asynchronously. During discovery, the IUT may send events:
+                        Discover and Subscribe Completed event
+                        Codec Capabilities Found event
+                        ASE Found event
 
-	Opcode 0x04 - Broadcast Source Setup
-		Controller Index:	<controller id>
-		Command parameters:	Streams Per Subgroup (1 octet)
-					Subgroups (1 octet)
-					Sdu Interval (3 octets)
-					Framing (1 octet)
-					Max SDU (2 octets)
-					Retransmission Num (1 octet)
-					Max Transport Latency (2 octets)
-					Presentation Delay (3 octets)
-					Coding Format (1 octet)
-					VID (2 octets)
-					CID (2 octets)
-					LTVs length (1 octet)
-					LTVs (varies)
-		Response parameters:	Current_Settings (4 Octets) (see btp_gap.txt)
-					Broadcast ID (3 Octets)
+        Opcode 0x03 - Send
 
-        This command is used to set up and configure a Broadcast Source
-        with the given Codec Config.
-        In case of an error, the error status response will be returned.
-        In case of a success, the IUT continues processing the command
-        asynchronously.
+                Controller Index:    <controller id>
+                Command parameters:  Address_Type (1 octet)
+                                     Address  (6 octets)
+                                     ASE ID (1 octet)
+                                     Data len (1 octet)
+                                     Data (varies)
+                Response parameters: Number of buffered bytes of data (1 octet)
 
-	Opcode 0x05 - Broadcast Source Release
-		Controller Index:	<controller id>
-		Command parameters:	Broadcast ID (3 Octets)
-		Response parameters:	<none>
+                This command is used to send a data packet stream to the given ASE.
+                In case of an error, the error status response will be returned.
+                In case of a success, the IUT continues processing the command
+                asynchronously.
 
-        This command is used to release resources used by Broadcast Source.
-        In case of an error, the error status response will be returned.
-        In case of a success, the IUT continues processing the command
-        asynchronously.
+        Opcode 0x04 - Broadcast Source Setup
 
-	Opcode 0x06 - Start Broadcast Advertising
-		Controller Index:	<controller id>
-		Command parameters:	Broadcast ID (3 Octets)
-		Response parameters:	<none>
+                Controller Index:       <controller id>
+                Command parameters:     Streams Per Subgroup (1 octet)
+                                        Subgroups (1 octet)
+                                        Sdu Interval (3 octets)
+                                        Framing (1 octet)
+                                        Max SDU (2 octets)
+                                        Retransmission Num (1 octet)
+                                        Max Transport Latency (2 octets)
+                                        Presentation Delay (3 octets)
+                                        Coding Format (1 octet)
+                                        VID (2 octets)
+                                        CID (2 octets)
+                                        LTVs length (1 octet)
+                                        LTVs (varies)
+                Response parameters:    Current_Settings (4 Octets) (see btp_gap.txt)
+                                        Broadcast ID (3 Octets)
 
-        This command is used to start the Broadcast Audio Announcement
-        advertising (extended and periodic).
-        In case of an error, the error status response will be returned.
-        In case of a success, the IUT continues processing the command
-        asynchronously.
+                This command is used to set up and configure a Broadcast Source
+                with the given Codec Config.
+                In case of an error, the error status response will be returned.
+                In case of a success, the IUT continues processing the command
+                asynchronously.
 
-	Opcode 0x07 - Stop Broadcast Advertising
-		Controller Index:	<controller id>
-		Command parameters:	Broadcast ID (3 Octets)
-		Response parameters:	<none>
+        Opcode 0x05 - Broadcast Source Release
 
-        This command is used to stop the Broadcast Audio Announcement
-        advertising (extended and periodic).
-        In case of an error, the error status response will be returned.
-        In case of a success, the IUT continues processing the command
-        asynchronously.
+                Controller Index:       <controller id>
+                Command parameters:     Broadcast ID (3 Octets)
+                Response parameters:    <none>
 
-	Opcode 0x08 - Start Broadcast Source
-		Controller Index:	<controller id>
-		Command parameters:	Broadcast ID (3 Octets)
-		Response parameters:	<none>
+                This command is used to release resources used by Broadcast Source.
+                In case of an error, the error status response will be returned.
+                In case of a success, the IUT continues processing the command
+                asynchronously.
 
-        This command is used to start BIS ISO data streaming.
-        In case of an error, the error status response will be returned.
-        In case of a success, the IUT continues processing the command
-        asynchronously.
+        Opcode 0x06 - Start Broadcast Advertising
 
-	Opcode 0x09 - Stop Broadcast Source
-		Controller Index:	<controller id>
-		Command parameters:	Broadcast ID (3 Octets)
-		Response parameters:	<none>
+                Controller Index:       <controller id>
+                Command parameters:     Broadcast ID (3 Octets)
+                Response parameters:    <none>
 
-        This command is used to stop BIS ISO data streaming.
-        In case of an error, the error status response will be returned.
-        In case of a success, the IUT continues processing the command
-        asynchronously.
+                This command is used to start the Broadcast Audio Announcement
+                advertising (extended and periodic).
+                In case of an error, the error status response will be returned.
+                In case of a success, the IUT continues processing the command
+                asynchronously.
 
-	Opcode 0x0a - Broadcast Sink Setup
-		Controller Index:	<controller id>
-		Command parameters:	<none>
-		Response parameters:	<none>
+        Opcode 0x07 - Stop Broadcast Advertising
 
-        This command is used to set up a Broadcast Sink.
-        In case of an error, the error status response will be returned.
-        In case of a success, the IUT continues processing the command
-        asynchronously.
+                Controller Index:       <controller id>
+                Command parameters:     Broadcast ID (3 Octets)
+                Response parameters:    <none>
 
-	Opcode 0x0b - Broadcast Sink Release
-		Controller Index:	<controller id>
-		Command parameters:	<none>
-		Response parameters:	<none>
+                This command is used to stop the Broadcast Audio Announcement
+                advertising (extended and periodic).
+                In case of an error, the error status response will be returned.
+                In case of a success, the IUT continues processing the command
+                asynchronously.
 
-        This command is used to release resources used by Broadcast Sink.
-        In case of an error, the error status response will be returned.
-        In case of a success, the IUT continues processing the command
-        asynchronously.
+        Opcode 0x08 - Start Broadcast Source
 
-	Opcode 0x0c - Broadcast Scan Start
-		Controller Index:	<controller id>
-		Command parameters:	<none>
-		Response parameters:	<none>
+                Controller Index:       <controller id>
+                Command parameters:     Broadcast ID (3 Octets)
+                Response parameters:    <none>
 
-        This command is used to start scanning for BAA when in Sink role.
-        In case of an error, the error status response will be returned.
-        In case of a success, the IUT continues processing the command
-        asynchronously.
+                This command is used to start BIS ISO data streaming.
+                In case of an error, the error status response will be returned.
+                In case of a success, the IUT continues processing the command
+                asynchronously.
 
-	Opcode 0x0d - Broadcast Scan Stop
-		Controller Index:	<controller id>
-		Command parameters:	<none>
-		Response parameters:	<none>
+        Opcode 0x09 - Stop Broadcast Source
+                Controller Index:       <controller id>
+                Command parameters:     Broadcast ID (3 Octets)
+                Response parameters:    <none>
 
-        This command is used to stop scanning for BAA when in Sink role.
-        In case of an error, the error status response will be returned.
-        In case of a success, the IUT continues processing the command
-        asynchronously.
+                This command is used to stop BIS ISO data streaming.
+                In case of an error, the error status response will be returned.
+                In case of a success, the IUT continues processing the command
+                asynchronously.
 
-	Opcode 0x0e - Broadcast Sink Sync
-		Controller Index:	<controller id>
-		Command parameters:	Address_Type (1 octet)
-					Address  (6 octets)
-					Broadcast ID (3 octets)
-					Advertiser SID (1 octet)
-					Skip (2 octet)
-					Sync Timeout (2 octets)
-					Past Available (1 octet)
-                    Source ID (1 octet)
-		Response parameters:	<none>
+        Opcode 0x0a - Broadcast Sink Setup
 
-        This command is used to start synchronization with the source
-        broadcaster.
-        In case of an error, the error status response will be returned.
-        In case of a success, the IUT continues processing the command
-        asynchronously.
+                Controller Index:       <controller id>
+                Command parameters:     <none>
+                Response parameters:    <none>
 
-	Opcode 0x0f - Broadcast Sink Stop
-		Controller Index:	<controller id>
-		Command parameters:	Address_Type (1 octet)
-					Address  (6 octets)
-					Broadcast ID (3 Octets)
-		Response parameters:	<none>
+                This command is used to set up a Broadcast Sink.
+                In case of an error, the error status response will be returned.
+                In case of a success, the IUT continues processing the command
+                asynchronously.
 
-        This command is used to stop synchronization with the source
-        broadcaster.
-        In case of an error, the error status response will be returned.
-        In case of a success, the IUT continues processing the command
-        asynchronously.
+        Opcode 0x0b - Broadcast Sink Release
 
-    Opcode 0x10 - Broadcast Sink BIS Sync
-		Controller Index:	<controller id>
-		Command parameters:	Address_Type (1 octet)
-					Address (6 octets)
-					Broadcast ID (3 octets)
-					Requested BID Sync (4 octets)
-		Response parameters:	<none>
+                Controller Index:       <controller id>
+                Command parameters:     <none>
+                Response parameters:    <none>
 
-		This command is used to start PA/BIS Sync.
-		In case of an error, the error status response will be returned.
-        In case of a success, the IUT continues processing the command
-        asynchronously.
+                This command is used to release resources used by Broadcast Sink.
+                In case of an error, the error status response will be returned.
+                In case of a success, the IUT continues processing the command
+                asynchronously.
 
-	Opcode 0x11 - Discover Scan Delegators
-		Controller Index:	<controller id>
-		Command parameters:	Address_Type (1 octet)
-					Address (6 octets)
-		Response parameters:	<none>
+        Opcode 0x0c - Broadcast Scan Start
 
-		This command is used to start a discovery of Scan Delegators.
-		In case of an error, the error status response will be returned.
-        In case of a success, the IUT continues processing the command
-        asynchronously.
+                Controller Index:       <controller id>
+                Command parameters:     <none>
+                Response parameters:    <none>
 
-    Opcode 0x12 - Broadcast Assistant Scan Start
-		Controller Index:	<controller id>
-		Command parameters:	Address_Type (1 octet)
-					Address (6 octets)
-		Response parameters:	<none>
+                This command is used to start scanning for BAA when in Sink role.
+                In case of an error, the error status response will be returned.
+                In case of a success, the IUT continues processing the command
+                asynchronously.
 
-		This command is used to
-		        In case of an error, the error status response will be returned.
-        In case of a success, the IUT continues processing the command
-        asynchronously.
+        Opcode 0x0d - Broadcast Scan Stop
 
-    Opcode 0x13 - Broadcast Assistant Scan Stop
-		Controller Index:	<controller id>
-		Command parameters:	Address_Type (1 octet)
-					Address (6 octets)
-		Response parameters:	<none>
+                Controller Index:       <controller id>
+                Command parameters:     <none>
+                Response parameters:    <none>
 
-		This command is used in Broadcast Assistant role to start a discovery of
-		Broadcast Audio Announcements.
-		In case of an error, the error status response will be returned.
-        In case of a success, the IUT continues processing the command
-        asynchronously.
+                This command is used to stop scanning for BAA when in Sink role.
+                In case of an error, the error status response will be returned.
+                In case of a success, the IUT continues processing the command
+                asynchronously.
 
-    Opcode 0x14 - Add Broadcast Source
-		Controller Index:	<controller id>
-		Command parameters:	Scan Delegator Address Type (1 octet)
-					Scan Delegator Address  (6 octets)
-					Broadcaster Address Type (1 octet)
-					Broadcaster Address (6 octets)
-					Advertiser SID (1 octet)
-					Broadcast ID (3 octets)
-					PA Sync (1 octet)
-					PA Interval (2 octets)
-					Num Subgroups (1 octet)
-					Subgroups (varies)
-		Response parameters:	<none>
+        Opcode 0x0e - Broadcast Sink Sync
 
-        This command is used in Broadcast Assistant role to perform
-        Add Source operation on a remote Scan Delegator.
-        In case of an error, the error status response will be returned.
-        In case of a success, the IUT continues processing the command
-        asynchronously.
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address  (6 octets)
+                                        Broadcast ID (3 octets)
+                                        Advertiser SID (1 octet)
+                                        Skip (2 octet)
+                                        Sync Timeout (2 octets)
+                                        Past Available (1 octet)
+                                        Source ID (1 octet)
+                Response parameters:    <none>
+
+                This command is used to start synchronization with the source
+                broadcaster.
+                In case of an error, the error status response will be returned.
+                In case of a success, the IUT continues processing the command
+                asynchronously.
+
+        Opcode 0x0f - Broadcast Sink Stop
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address  (6 octets)
+                                        Broadcast ID (3 Octets)
+                Response parameters:    <none>
+
+                This command is used to stop synchronization with the source
+                broadcaster.
+                In case of an error, the error status response will be returned.
+                In case of a success, the IUT continues processing the command
+                asynchronously.
+
+        Opcode 0x10 - Broadcast Sink BIS Sync
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Broadcast ID (3 octets)
+                                        Requested BID Sync (4 octets)
+                Response parameters:    <none>
+
+                This command is used to start PA/BIS Sync.
+                In case of an error, the error status response will be returned.
+                In case of a success, the IUT continues processing the command
+                asynchronously.
+
+        Opcode 0x11 - Discover Scan Delegators
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to start a discovery of Scan Delegators.
+                In case of an error, the error status response will be returned.
+                In case of a success, the IUT continues processing the command
+                asynchronously.
+
+        Opcode 0x12 - Broadcast Assistant Scan Start
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to In case of an error, the error status
+                response will be returned. In case of a success, the IUT
+                continues processing the command asynchronously.
+
+        Opcode 0x13 - Broadcast Assistant Scan Stop
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used in Broadcast Assistant role to start a discovery of
+                Broadcast Audio Announcements.
+                In case of an error, the error status response will be returned.
+                In case of a success, the IUT continues processing the command
+                asynchronously.
+
+        Opcode 0x14 - Add Broadcast Source
+
+                Controller Index:       <controller id>
+                Command parameters:     Scan Delegator Address Type (1 octet)
+                                        Scan Delegator Address  (6 octets)
+                                        Broadcaster Address Type (1 octet)
+                                        Broadcaster Address (6 octets)
+                                        Advertiser SID (1 octet)
+                                        Broadcast ID (3 octets)
+                                        PA Sync (1 octet)
+                                        PA Interval (2 octets)
+                                        Num Subgroups (1 octet)
+                                        Subgroups (varies)
+                Response parameters:    <none>
+
+                This command is used in Broadcast Assistant role to perform
+                Add Source operation on a remote Scan Delegator.
+                In case of an error, the error status response will be returned.
+                In case of a success, the IUT continues processing the command
+                asynchronously.
 
     Opcode 0x15 - Remove Broadcast Source
-		Controller Index:	<controller id>
-		Command parameters:	Address_Type (1 octet)
-					Address  (6 octets)
-					Source ID (1 octet)
-		Response parameters:	<none>
 
-        This command is used in Broadcast Assistant role to perform
-        Remove Source operation on a remote Scan Delegator.
-        In case of an error, the error status response will be returned.
-        In case of a success, the IUT continues processing the command
-        asynchronously.
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address  (6 octets)
+                                        Source ID (1 octet)
+                Response parameters:    <none>
+
+                This command is used in Broadcast Assistant role to perform
+                Remove Source operation on a remote Scan Delegator.
+                In case of an error, the error status response will be returned.
+                In case of a success, the IUT continues processing the command
+                asynchronously.
 
     Opcode 0x16 - Modify Broadcast Source
-		Controller Index:	<controller id>
-		Command parameters:	Address_Type (1 octet)
-					Address  (6 octets)
-					Source ID (1 octet)
-					PA_Sync (1 octet)
-					PA_Interval (2 octets)
-					Num_Subgroups (1 octet)
-					Subgroups (varies)
-		Response parameters:	<none>
 
-		This command is used in Broadcast Assistant role to perform
-		Modify Source operation on a remote Scan Delegator.
-		In case of an error, the error status response will be returned.
-        In case of a success, the IUT continues processing the command
-        asynchronously.
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address  (6 octets)
+                                        Source ID (1 octet)
+                                        PA_Sync (1 octet)
+                                        PA_Interval (2 octets)
+                                        Num_Subgroups (1 octet)
+                                        Subgroups (varies)
+                Response parameters:    <none>
+
+                This command is used in Broadcast Assistant role to perform
+                Modify Source operation on a remote Scan Delegator.
+                In case of an error, the error status response will be returned.
+                In case of a success, the IUT continues processing the command
+                asynchronously.
 
     Opcode 0x17 - Set Broadcast Code
-		Controller Index:	<controller id>
-		Command parameters:	Address_Type (1 octet)
-					Address  (6 octets)
-					Source ID (1 octet)
-					Broadcast Code (16 octets)
-		Response parameters:	<none>
 
-		This command is used to set Broadcast Code in the IUT.
-		In case of an error, the error status response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address  (6 octets)
+                                        Source ID (1 octet)
+                                        Broadcast Code (16 octets)
+                Response parameters:    <none>
+
+                This command is used to set Broadcast Code in the IUT.
+                In case of an error, the error status response will be returned.
         In case of a success, the IUT continues processing the command
         asynchronously.
 
     Opcode 0x18 - Send PAST
-		Controller Index:	<controller id>
-		Command parameters:	Address_Type (1 octet)
-					Address  (6 octets)
-					Source ID (1 octet)
-		Response parameters:	<none>
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address  (6 octets)
+                                        Source ID (1 octet)
+                Response parameters:    <none>
 
-		This command is used in Broadcast Assistant role to trigger
-		a PAST transfer.
-		In case of an error, the error status response will be returned.
-        In case of a success, the IUT continues processing the command
-        asynchronously.
+                This command is used in Broadcast Assistant role to trigger
+                a PAST transfer.
+                In case of an error, the error status response will be returned.
+                In case of a success, the IUT continues processing the command
+                asynchronously.
 
 Events:
-	Opcode 0x80 - Discover and Subscribe Completed event
+        Opcode 0x80 - Discover and Subscribe Completed event
 
-		Controller Index:	<controller id>
-		Event parameters:	Address_Type (1 octet)
-					Address (6 octets)
-					Status  (1 octet)
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Status  (1 octet)
 
-        This event indicates that the IUT finished discovery of PACS and ASCS
-        characteristics and subscribing to their notifications.
+                This event indicates that the IUT finished discovery of PACS and ASCS
+                characteristics and subscribing to their notifications.
 
-	Opcode 0x81 - Codec Capabilities Found event
+        Opcode 0x81 - Codec Capabilities Found event
 
-		Controller Index:	<controller id>
-		Event parameters:	Address_Type (1 octet)
-					Address (6 octets)
-					PAC dir (1 octet)
-					Coding Format (1 octet)
-					Frequencies (2 octets)
-					Frame Durations (1 octet)
-					Octets Per Frame (4 octets)
-					Supported Audio Channel Counts (1 octet)
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        PAC dir (1 octet)
+                                        Coding Format (1 octet)
+                                        Frequencies (2 octets)
+                                        Frame Durations (1 octet)
+                                        Octets Per Frame (4 octets)
+                                        Supported Audio Channel Counts (1 octet)
 
-        About parameters:
-            Frequencies: a bitfield as defined in Assigned Numbers,
-            6.12.4.1 Supported_Sampling_Frequencies.
+                About parameters:
+                Frequencies: a bitfield as defined in Assigned Numbers,
+                6.12.4.1 Supported_Sampling_Frequencies.
 
-            Frame durations: as defined in Assigned Numbers, 6.12.4.2
-            Supported_Frame_Durations.
+                Frame durations: as defined in Assigned Numbers, 6.12.4.2
+                Supported_Frame_Durations.
 
-            Octets Per Frame: as defined in Assigned Numbers 6.12.4.4
-            Supported_Octets_Per_Codec_Frame.
+                Octets Per Frame: as defined in Assigned Numbers 6.12.4.4
+                Supported_Octets_Per_Codec_Frame.
 
-		This event returns the found PACS capabilities record info.
+                This event returns the found PACS capabilities record info.
 
-	Opcode 0x82 - ASE Found event
+        Opcode 0x82 - ASE Found event
 
-		Controller Index:	<controller id>
-		Event parameters:	Address_Type (1 octet)
-					Address (6 octets)
-					ASE ID (1 octet)
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        ASE ID (1 octet)
 
-        This event returns the found ASE info.
+                This event returns the found ASE info.
 
-	Opcode 0x83 - Stream Received event
+        Opcode 0x83 - Stream Received event
 
-		Controller Index:	<controller id>
-		Event parameters:	Address_Type (1 octet)
-					Address (6 octets)
-					ASE ID (1 octet)
-					Data len (1 octet)
-					Data (varies)
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        ASE ID (1 octet)
+                                        Data len (1 octet)
+                                        Data (varies)
 
-        This event returns the received data stream packet.
+                This event returns the received data stream packet.
 
-	Opcode 0x84 - BAA Found event
+        Opcode 0x84 - BAA Found event
 
-		Controller Index:	<controller id>
-		Event parameters:	Address_Type (1 octet)
-					Address (6 octets)
-					Broadcast_ID (3 octets)
-					Advertiser_SID (1 octet)
-					PA_Interval (2 octets)
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Broadcast_ID (3 octets)
+                                        Advertiser_SID (1 octet)
+                                        PA_Interval (2 octets)
 
         This event returns info from scanned Broadcast Audio Announcement.
 
-	Opcode 0x85 - BIS Found event
+        Opcode 0x85 - BIS Found event
 
-		Controller Index:	<controller id>
-		Event parameters:	Address_Type (1 octet)
-					Address (6 octets)
-					Broadcast ID (3 octets)
-					Presentation Delay (3 octets)
-					Subgroup ID (1 octet)
-					BIS ID (1 octet)
-					Coding Format (1 octet)
-					VID (2 octets)
-					CID (2 octets)
-					Codec Config LTVs length (1 octet)
-					Codec Config LTVs (varies)
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Broadcast ID (3 octets)
+                                        Presentation Delay (3 octets)
+                                        Subgroup ID (1 octet)
+                                        BIS ID (1 octet)
+                                        Coding Format (1 octet)
+                                        VID (2 octets)
+                                        CID (2 octets)
+                                        Codec Config LTVs length (1 octet)
+                                        Codec Config LTVs (varies)
 
-        This event returns info of found Broadcast Isochronous Stream.
+                This event returns info of found Broadcast Isochronous Stream.
 
-	Opcode 0x86 - BIS Synced event
+        Opcode 0x86 - BIS Synced event
 
-		Controller Index:	<controller id>
-		Event parameters:	Address_Type (1 octet)
-					Address (6 octets)
-					Broadcast ID (3 octets)
-					BIS ID (1 octet)
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Broadcast ID (3 octets)
+                                        BIS ID (1 octet)
 
-        This event is received when IUT has successfully synced to a BIS.
+                This event is received when IUT has successfully synced to a BIS.
 
-	Opcode 0x87 - BIS Stream Received event
+        Opcode 0x87 - BIS Stream Received event
 
-		Controller Index:	<controller id>
-		Event parameters:	Address_Type (1 octet)
-					Address (6 octets)
-				    Broadcast ID (3 octets)
-					BIS ID (1 octet)
-					Data Length (1 octet)
-					Data (varies)
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Broadcast ID (3 octets)
+                                        BIS ID (1 octet)
+                                        Data Length (1 octet)
+                                        Data (varies)
 
-        This event returns data from received ISO Data packet.
+                This event returns data from received ISO Data packet.
 
-	Opcode 0x88 - Scan Delegator Found event
+        Opcode 0x88 - Scan Delegator Found event
 
-		Controller Index:	<controller id>
-		Event parameters:	Address_Type (1 octet)
-					Address (6 octets)
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
 
-        This event informs that a Scan Delegator instance has been discovered.
+                This event informs that a Scan Delegator instance has been discovered.
 
-	Opcode 0x89 - Broadcast Receive State event
+        Opcode 0x89 - Broadcast Receive State event
 
-		Controller Index:	<controller id>
-		Event parameters:	Address_Type (1 octet)
-					Address (6 octets)
-					Source ID (1 octet)
-					Broadcaster Address Type (1 octet)
-					Broadcaster Address (6 octets)
-					Advertiser SID (1 octet)
-					Broadcast ID (3 octets)
-					PA Sync State (1 octet)
-					BIG Encryption (1 octet)
-					Num Subgroups (1 octet)
-					Subgroups (varies)
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Source ID (1 octet)
+                                        Broadcaster Address Type (1 octet)
+                                        Broadcaster Address (6 octets)
+                                        Advertiser SID (1 octet)
+                                        Broadcast ID (3 octets)
+                                        PA Sync State (1 octet)
+                                        BIG Encryption (1 octet)
+                                        Num Subgroups (1 octet)
+                                        Subgroups (varies)
 
-        This event is received when the Broadcast Receive State characteristic
-        of the remote server has been updated.
+                This event is received when the Broadcast Receive State characteristic
+                of the remote server has been updated.
 
-	Opcode 0x8a - PA Sync Request event
+        Opcode 0x8a - PA Sync Request event
 
-		Controller Index:	<controller id>
-		Event parameters:	Address_Type (1 octet)
-					Address (6 octets)
-					Source ID (1 octet)
-					Advertiser SID (1 octet)
-					Broadcast ID (3 octets)
-                    PAST Available (1 octet)
-	                PA Interval (2 octets)
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Source ID (1 octet)
+                                        Advertiser SID (1 octet)
+                                        Broadcast ID (3 octets)
+                                        PAST Available (1 octet)
+                                        PA Interval (2 octets)
 
-        This event is received when a remote Broadcast Assistant has requested
-        a PA Sync from of the IUT.
+                This event is received when a remote Broadcast Assistant has requested
+                a PA Sync from of the IUT.

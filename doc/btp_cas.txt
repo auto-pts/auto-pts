@@ -3,55 +3,55 @@ CAS Service (ID 21)
 
 Commands and responses:
 
-	Opcode 0x00 - Error response
+        Opcode 0x00 - Error response
 
-	Opcode 0x01 - Read Supported Commands command/response
+        Opcode 0x01 - Read Supported Commands command/response
 
-		Controller Index:	<non-controller>
-		Command parameters:	<none>
-		Response parameters:	<supported commands> (variable)
+                Controller Index:       <non-controller>
+                Command parameters:     <none>
+                Response parameters:    <supported commands> (variable)
 
-		Each bit in response is a flag indicating if command with
-		opcode matching bit number is supported. Bit set to 1 means
-		that command is supported. Bit 0 is reserved and shall always
-		be set to 0. If specific bit is not present in response (less
-		than required bytes received) it shall be assumed that command
-		is not supported.
+                Each bit in response is a flag indicating if command with
+                opcode matching bit number is supported. Bit set to 1 means
+                that command is supported. Bit 0 is reserved and shall always
+                be set to 0. If specific bit is not present in response (less
+                than required bytes received) it shall be assumed that command
+                is not supported.
 
-		In case of an error, the error response will be returned.
+                In case of an error, the error response will be returned.
 
-	Opcode 0x02: CAS Set Member Lock
+        Opcode 0x02: CAS Set Member Lock
 
-		Controller Index:	<controller id>
-		Command parameters:	Address_Type (1 octet)
-					Address (6 octets)
-					Lock (1 octet)
-					Force (1 octet)
-		Response parameters:	<None>
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Lock (1 octet)
+                                        Force (1 octet)
+                Response parameters:    <None>
 
-		Address Type is a byte; Address type of the PTS address.
-		Address is a 6 octet address; Address of the PTS.
-		Lock is a boolean; True to set the Lock; False to release the Lock.
-		Force is a boolean; True to force the Lock operation; False otherwise.
-		Force is only relevant when releasing the member Lock. 
-		In this case it will force release the lock, regardless of who took the lock. 
+                Address Type is a byte; Address type of the PTS address.
+                Address is a 6 octet address; Address of the PTS.
+                Lock is a boolean; True to set the Lock; False to release the Lock.
+                Force is a boolean; True to force the Lock operation; False otherwise.
+                Force is only relevant when releasing the member Lock. 
+                In this case it will force release the lock, regardless of who took the lock. 
 
-		This command is used to set the member Lock. 
-		
-		In case of an error, the error response will be returned.
+                This command is used to set the member Lock. 
+                
+                In case of an error, the error response will be returned.
 
-	Opcode 0x02: CAS Get Member RSI
+        Opcode 0x02: CAS Get Member RSI
 
-		Controller Index:	<controller id>
-		Command parameters:	Address_Type (1 octet)
-					Address (6 octets)
-		Response parameters:	RSI (6 octets)
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    RSI (6 octets)
 
-		Address Type is a byte; Address type of the PTS address.
-		Address is a 6 octet address; Address of the PTS.
-		
-		RSI is a 6 octet Resolvable Set Identifier.
+                Address Type is a byte; Address type of the PTS address.
+                Address is a 6 octet address; Address of the PTS.
+                
+                RSI is a 6 octet Resolvable Set Identifier.
 
-		This command is used to generate and return a new RSI (Resolvable Set Identifier). 
-		
-		In case of an error, the error response will be returned.
+                This command is used to generate and return a new RSI (Resolvable Set Identifier). 
+                
+                In case of an error, the error response will be returned.

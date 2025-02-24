@@ -3,105 +3,104 @@ HAS Service (ID 15)
 
 Commands and responses:
 
-	Opcode 0x00 - Error response
+        Opcode 0x00 - Error response
 
-	Opcode 0x01 - Read Supported Commands command/response
+        Opcode 0x01 - Read Supported Commands command/response
 
-		Controller Index:	<controller id>
-		Command parameters:	<none>
-		Response parameters:	<supported commands> (variable)
+                Controller Index:       <controller id>
+                Command parameters:     <none>
+                Response parameters:    <supported commands> (variable)
 
-		Each bit in response is a flag indicating if command with
-		opcode matching bit number is supported. Bit set to 1 means
-		that command is supported. Bit 0 is reserved and shall always
-		be set to 0. If specific bit is not present in response (less
-		than required bytes received) it shall be assumed that command
-		is not supported.
+                Each bit in response is a flag indicating if command with
+                opcode matching bit number is supported. Bit set to 1 means
+                that command is supported. Bit 0 is reserved and shall always
+                be set to 0. If specific bit is not present in response (less
+                than required bytes received) it shall be assumed that command
+                is not supported.
 
-		In case of an error, the error response will be returned.
+                In case of an error, the error response will be returned.
 
-	Opcode 0x02: HAS Set Active Preset Index
+        Opcode 0x02: HAS Set Active Preset Index
 
-		Controller Index:	<controller id>
-		Command parameters:	Address_Type (1 octet)
-					Address (6 octets)
-					Preset Index (1 octet)
-		Response parameters:	<None>
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Preset Index (1 octet)
+                Response parameters:    <None>
 
-		This command is used to set the Active Preset. 
-		If called with a Preset Index of 0, it will de-select the Active Preset.
-		
-		In case of an error, the error response will be returned.
+                This command is used to set the Active Preset. 
+                If called with a Preset Index of 0, it will de-select the Active Preset.
+                
+                In case of an error, the error response will be returned.
 
-	Opcode 0x03: HAS Set Preset Name
+        Opcode 0x03: HAS Set Preset Name
 
-		Controller Index:	<controller id>
-		Command parameters:	Address_Type (1 octet)
-					Address (6 octets)
-					Preset Index (1 octet)
-					Name Length (1 octet)
-					Name (<Name Length> octets)
-		Response parameters:	<None>
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Preset Index (1 octet)
+                                        Name Length (1 octet)
+                                        Name (<Name Length> octets)
+                Response parameters:    <None>
 
-        Name shall be a UTF-8 encoded string. 
-		Name Length holds the number of bytes in the UTF-8 encoded name. 
+                Name Length holds the number of bytes in the UTF-8 encoded name. 
 
-		This command is used to change the Name of a Preset.
+                This command is used to change the Name of a Preset.
 
-		In case of an error, the error response will be returned.
+                In case of an error, the error response will be returned.
 
-	Opcode 0x04: HAS Remove Preset
+        Opcode 0x04: HAS Remove Preset
 
-		Controller Index:	<controller id>
-		Command parameters:	Address_Type (1 octet)
-					Address (6 octets)
-					Preset Index (1 octet)
-		Response parameters:	<None>
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Preset Index (1 octet)
+                Response parameters:    <None>
 
-		Passing Preset Index := 0 will remove all active Presets.
+                Passing Preset Index := 0 will remove all active Presets.
 
-		This command is used to delete a specific Preset or all Presets.
+                This command is used to delete a specific Preset or all Presets.
 
-		In case of an error, the error response will be returned.
+                In case of an error, the error response will be returned.
 
-	Opcode 0x05: HAS Add Preset
+        Opcode 0x05: HAS Add Preset
 
-		Controller Index:	<controller id>
-		Command parameters:	Address_Type (1 octet)
-					Address (6 octets)
-					Preset Index (1 octet)
-					Preset Properties (1 octet)
-					Name Length (1 octet)
-					Name (<Name Length> octets)
-		Response parameters:	<None>
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Preset Index (1 octet)
+                                        Preset Properties (1 octet)
+                                        Name Length (1 octet)
+                                        Name (<Name Length> octets)
+                Response parameters:    <None>
 
-		Preset Properties is a bit-field, with the following interpretation: 
-		Preset Properties:
-				1 - Preset will be Writable (N.U.)
-				2 - Preset will be Available
+                Preset Properties is a bit-field, with the following interpretation: 
+                Preset Properties:
+                                1 - Preset will be Writable (N.U.)
+                                2 - Preset will be Available
 
         Name shall be a UTF-8 encoded string (nul-termination not needed). 
-		Name Length holds the number of bytes in the UTF-8 encoded name. 
+                Name Length holds the number of bytes in the UTF-8 encoded name. 
 
-		This command is used to add a new Preset.
+                This command is used to add a new Preset.
 
-		In case of an error, the error response will be returned.
+                In case of an error, the error response will be returned.
 
-	Opcode 0x06: HAS Set Preset Properties (available/unavailable)
+        Opcode 0x06: HAS Set Preset Properties (available/unavailable)
 
-		Controller Index:	<controller id>
-		Command parameters:	Address_Type (1 octet)
-					Address (6 octets)
-					Preset Index (1 octet)
-					Preset Properties (1 octet)
-		Response parameters:	<None>
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Preset Index (1 octet)
+                                        Preset Properties (1 octet)
+                Response parameters:    <None>
 
-		Preset Properties is a bit-field, with the following interpretation: 
-		Preset Properties:
-				1 - Preset will be Writable (N.U.)
-				2 - Preset will be Available
+                Preset Properties is a bit-field, with the following interpretation: 
+                Preset Properties:
+                                1 - Preset will be Writable (N.U.)
+                                2 - Preset will be Available
 
-		This command is used to change a Preset's available/unavailable property.
+                This command is used to change a Preset's available/unavailable property.
 
-		In case of an error, the error response will be returned.
+                In case of an error, the error response will be returned.
 

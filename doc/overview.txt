@@ -20,18 +20,18 @@ to signal notifications.
 Commands and events use single socket. All services are multi-plexed over same
 socket.
 
-	.--  IUT  --.                             .--Tester--.
-	|           |                             |          |
-	|           |          Command            |          |
-	|           | <-------------------------- |          |
-	|           |                             |          |
-	|           |          Response           |          |
-	|           | --------------------------> |          |
-	|           |                             |          |
-	|           |           Event             |          |
-	|           | --------------------------> |          |
-	|           |                             |          |
-	'-----------'                             '----------'
+        .--  IUT  --.                             .--Tester--.
+        |           |                             |          |
+        |           |          Command            |          |
+        |           | <-------------------------- |          |
+        |           |                             |          |
+        |           |          Response           |          |
+        |           | --------------------------> |          |
+        |           |                             |          |
+        |           |           Event             |          |
+        |           | --------------------------> |          |
+        |           |                             |          |
+        '-----------'                             '----------'
 
 
 Packet Structures
@@ -42,11 +42,11 @@ over the same socket. It will also support a basic control channel with service
 id 0. Due to use of single socket for command/response and events it is
 possible that event(s) will be received before response to command.
 
-	0            8       16                  24            40
-	+------------+--------+------------------+-------------+
-	| Service ID | Opcode | Controller Index | Data Length |
-	+------------+--------+------------------+-------------+
-	|                                                      |
+        0            8       16                  24            40
+        +------------+--------+------------------+-------------+
+        | Service ID | Opcode | Controller Index | Data Length |
+        +------------+--------+------------------+-------------+
+        |                                                      |
 
 The unique service ID is assigned by this specification for each service
 supported by tester.
@@ -61,19 +61,19 @@ All fields are in little-endian byte order (least significant byte first).
 Controller Index can have a special value <non-controller> to indicate that
 command or event is not related to any controller. Possible values:
 
-	<controller id>		0x00 to 0xFE
-	<non-controller>	0xFF
+        <controller id>         0x00 to 0xFE
+        <non-controller>        0xFF
 
 Error response is common for all services and has fixed structure:
 
-	Opcode 0x00 - Error response
+        Opcode 0x00 - Error response
 
-		Response parameters: Status (1 octet)
+                Response parameters: Status (1 octet)
 
-		Valid status values:	0x01 = Fail
-					0x02 = Unknown Command
-					0x03 = Not ready
-					0x04 = Invalid Index
+                Valid status values:    0x01 = Fail
+                                        0x02 = Unknown Command
+                                        0x03 = Not ready
+                                        0x04 = Invalid Index
 
 
 BTP Services

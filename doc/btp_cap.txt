@@ -3,264 +3,268 @@ CAP Service (ID 26)
 
 Commands and responses:
 
-	Opcode 0x00 - Error response
+        Opcode 0x00 - Error response
 
-	Opcode 0x01 - Read Supported Commands command/response
+        Opcode 0x01 - Read Supported Commands command/response
 
-		Controller Index:	<non-controller>
-		Command parameters:	<none>
-		Response parameters:	<supported commands> (variable)
+                Controller Index:       <non-controller>
+                Command parameters:     <none>
+                Response parameters:    <supported commands> (variable)
 
-		Each bit in response is a flag indicating if command with
-		opcode matching bit number is supported. Bit set to 1 means
-		that command is supported. Bit 0 is reserved and shall always
-		be set to 0. If specific bit is not present in response (less
-		than required bytes received) it shall be assumed that command
-		is not supported.
+                Each bit in response is a flag indicating if command with
+                opcode matching bit number is supported. Bit set to 1 means
+                that command is supported. Bit 0 is reserved and shall always
+                be set to 0. If specific bit is not present in response (less
+                than required bytes received) it shall be assumed that command
+                is not supported.
 
-		In case of an error, the error response will be returned.
+                In case of an error, the error response will be returned.
 
-	Opcode 0x02 - Discover and Subscribe
-		Controller Index:	<controller id>
-		Command parameters:	Address_Type (1 octet)
-					Address (6 octets)
-		Response parameters:	<none>
+        Opcode 0x02 - Discover and Subscribe
 
-		This command is used to discover all remote PACS, ASCS and BASS
-		characteristics. In case of an error, the error status response
-		will be returned. In case of a success, the IUT continues processing
-		the command asynchronously. During discovery, the IUT may send events:
-					Discover and Subscribe Completed event
-					Codec Capabilities Found event
-					ASE Found event
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
 
-	Opcode 0x03 - Unicast Setup ASE
-		Controller Index:	<controller id>
-		Command parameters:	Address_Type (1 octet)
-					Address (6 octets)
-					ASE_ID (1 octet)
-					CIS_ID (1 octet)
-					CIG_ID (1 octet)
-					Coding Format (1 octet)
-					VID (2 octets)
-					CID (2 octets)
-					Sdu Interval (3 octets)
-					Framing (1 octet)
-					Max SDU (2 octets)
-					Retransmission Num (1 octet)
-					Max Transport Latency (2 octets)
-					Presentation Delay (3 octets)
-					Codec Config LTVs length (1 octet)
-					Metadata LTVs length (1 octet)
-					LTVs (varies)
+                This command is used to discover all remote PACS, ASCS and BASS
+                characteristics. In case of an error, the error status response
+                will be returned. In case of a success, the IUT continues processing
+                the command asynchronously. During discovery, the IUT may send events:
+                                        Discover and Subscribe Completed event
+                                        Codec Capabilities Found event
+                                        ASE Found event
 
-		Response parameters:	<none>
+        Opcode 0x03 - Unicast Setup ASE
 
-		This command is used to configure an ASE locally before executing
-		the Unicast Audio Start procedure. Can be called once per ASE,
-		while twice per CIS, as the Sink/Source ASE might share single CIS.
-		In case of an error, the error status response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        ASE_ID (1 octet)
+                                        CIS_ID (1 octet)
+                                        CIG_ID (1 octet)
+                                        Coding Format (1 octet)
+                                        VID (2 octets)
+                                        CID (2 octets)
+                                        Sdu Interval (3 octets)
+                                        Framing (1 octet)
+                                        Max SDU (2 octets)
+                                        Retransmission Num (1 octet)
+                                        Max Transport Latency (2 octets)
+                                        Presentation Delay (3 octets)
+                                        Codec Config LTVs length (1 octet)
+                                        Metadata LTVs length (1 octet)
+                                        LTVs (varies)
+                Response parameters:    <none>
 
-	Opcode 0x04 - Unicast Audio Start
-		Controller Index:	<controller id>
-		Command parameters:	CIG_ID (1 octet)
-					Set Type (1 octet)
+                This command is used to configure an ASE locally before executing
+                the Unicast Audio Start procedure. Can be called once per ASE,
+                while twice per CIS, as the Sink/Source ASE might share single CIS.
+                In case of an error, the error status response will be returned.
 
-		Valid Set Type values:
-					0x00 = Ad-Hoc Set
-					0x01 = CSIP Coordinated Set
+        Opcode 0x04 - Unicast Audio Start
 
-		Response parameters: <none>
+                Controller Index:       <controller id>
+                Command parameters:     CIG_ID (1 octet)
+                                        Set Type (1 octet)
+                Response parameters: <none>
 
-		This command is used to execute the Unicast Audio Start procedure.
-		In case of an error, the error status response will be returned.
-		In case of a success, the IUT continues processing the command
-		asynchronously.
+                Valid Set Type values:
+                        0x00 = Ad-Hoc Set
+                        0x01 = CSIP Coordinated Set
 
-	Opcode 0x05 - Unicast Audio Update
-		Controller Index:	<controller id>
-		Command parameters:	Stream Count (1 octet)
-					Data (varies)
+                This command is used to execute the Unicast Audio Start procedure.
+                In case of an error, the error status response will be returned.
+                In case of a success, the IUT continues processing the command
+                asynchronously.
 
-		where Data can contain one or multiple structures defined as:
-					Address_Type (1 octet)
-					Address (6 octets)
-					ASE_ID (1 octet)
-					Metadata LTVs length (1 octet)
-					Metadata LTVs (varies)
-		The number of structures is specified with the Stream Count.
-		The Address_Type, Address and ASE_ID are used to select the right
-		stream instance.
+        Opcode 0x05 - Unicast Audio Update
 
-		Response parameters: <none>
+                Controller Index:       <controller id>
+                Command parameters:     Stream Count (1 octet)
+                                        Data (varies)
+                Response parameters: <none>
 
-		This command is used to execute the Unicast Audio Update procedure.
-		In case of an error, the error status response will be returned.
-		In case of a success, the IUT continues processing the command
-		asynchronously.
+                Data can contain one or multiple structures defined as:
+                        Address_Type (1 octet)
+                        Address (6 octets)
+                        ASE_ID (1 octet)
+                        Metadata LTVs length (1 octet)
+                        Metadata LTVs (varies)
+                The number of structures is specified with the Stream Count.
+                The Address_Type, Address and ASE_ID are used to select the right
+                stream instance.
 
-	Opcode 0x06 - Unicast Audio Stop
-		Controller Index:	<controller id>
-		Command parameters:	CIG_ID (1 octet)
-		Command parameters:	Flags (1 octet)
-		where:
-			- Flags is a bit map of settings:
-				bit 0: To release the streams. If not set, the streams will only be disabled.
+                This command is used to execute the Unicast Audio Update procedure.
+                In case of an error, the error status response will be returned.
+                In case of a success, the IUT continues processing the command
+                asynchronously.
 
-		Response parameters:	<none>
+        Opcode 0x06 - Unicast Audio Stop
 
-		This command is used to execute the Unicast Audio Stop procedure.
-		In case of an error, the error status response will be returned.
-		In case of a success, the IUT continues processing the command
-		asynchronously.
+                Controller Index:       <controller id>
+                Command parameters:     CIG_ID (1 octet)
+                Command parameters:     Flags (1 octet)
+                Response parameters:    <none>
 
-	Opcode 0x07 - Broadcast Source Setup Stream
-		Controller Index:	<controller id>
-		Command parameters:	Source ID (1 octet)
-					Subgroup ID (1 octet)
-					Coding Format (1 octet)
-					VID (2 octets)
-					CID (2 octets)
-					Codec Config LTVs len (1 octet)
-					Metadata LTVs len (1 octet)
-					LTVs (varies)
-		where Source ID and Subgroup ID are local identifiers.
+                Flags is a bit map of settings:
+                        bit 0: To release the streams. If not set, the streams will only be disabled.
 
-		Response parameters:	<none>
+                This command is used to execute the Unicast Audio Stop procedure.
+                In case of an error, the error status response will be returned.
+                In case of a success, the IUT continues processing the command
+                asynchronously.
 
-		This command is used to configure the local source stream before
-		start of the source advertising.
-		In case of an error, the error status response will be returned.
+        Opcode 0x07 - Broadcast Source Setup Stream
 
-	Opcode 0x08 - Broadcast Source Setup Subgroup
-		Controller Index:	<controller id>
-		Command parameters:	Source ID (1 octet)
-					Subgroup ID (1 octet)
-					Coding Format (1 octet)
-					VID (2 octets)
-					CID (2 octets)
-					Codec Config LTVs len (1 octet)
-					Metadata LTVs len (1 octet)
-					LTVs (varies)
-		where Source ID and Subgroup ID are local identifiers.
+                Controller Index:       <controller id>
+                Command parameters:     Source ID (1 octet)
+                                        Subgroup ID (1 octet)
+                                        Coding Format (1 octet)
+                                        VID (2 octets)
+                                        CID (2 octets)
+                                        Codec Config LTVs len (1 octet)
+                                        Metadata LTVs len (1 octet)
+                                        LTVs (varies)
+                Response parameters:    <none>
 
-		Response parameters:	<none>
+                Source ID and Subgroup ID are local identifiers.
 
-		This command is used to configure the local source subgroup before
-		start of the source advertising.
-		In case of an error, the error status response will be returned.
+                This command is used to configure the local source stream before
+                start of the source advertising.
+                In case of an error, the error status response will be returned.
 
-	Opcode 0x09 - Broadcast Source Setup
-		Controller Index:	<controller id>
-		Command parameters:	Source ID (1 octet)
-					Broadcast ID (3 octets)
-					Sdu Interval (3 octets)
-					Framing (1 octet)
-					Max SDU (2 octets)
-					Retransmission Num (1 octet)
-					Max Transport Latency (2 octets)
-					Presentation Delay (3 octets)
-					Flags (1 octet)
-					Broadcast Code (16 octet)
-		where:
-			- Source ID is a local identifier.
-			- Flags is a bit map of settings:
-				bit 0: Use encryption and the given Broadcast Code
-				bit 1: Setup Codec Config at Subgroup level
+        Opcode 0x08 - Broadcast Source Setup Subgroup
 
-		Response parameters:
-					Source ID (1 octet)
-					GAP Settings (4 octets)
-					Broadcast Code (16 octet)
+                Controller Index:       <controller id>
+                Command parameters:     Source ID (1 octet)
+                                        Subgroup ID (1 octet)
+                                        Coding Format (1 octet)
+                                        VID (2 octets)
+                                        CID (2 octets)
+                                        Codec Config LTVs len (1 octet)
+                                        Metadata LTVs len (1 octet)
+                                        LTVs (varies)
+                Response parameters:    <none>
 
-		This command is used to configure the local source before start of
-		the source advertising.
-		In case of an error, the error status response will be returned.
+                Source ID and Subgroup ID are local identifiers.
 
-	Opcode 0x0a - Broadcast Source Release
-		Controller Index:	<controller id>
-		Command parameters:	Source ID (1 octet)
+                This command is used to configure the local source subgroup before
+                start of the source advertising.
+                In case of an error, the error status response will be returned.
 
-		Response parameters:	<none>
+        Opcode 0x09 - Broadcast Source Setup
 
-		This command is used to release the local source.
-		In case of an error, the error status response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:     Source ID (1 octet)
+                                        Broadcast ID (3 octets)
+                                        Sdu Interval (3 octets)
+                                        Framing (1 octet)
+                                        Max SDU (2 octets)
+                                        Retransmission Num (1 octet)
+                                        Max Transport Latency (2 octets)
+                                        Presentation Delay (3 octets)
+                                        Flags (1 octet)
+                                        Broadcast Code (16 octet)
+                Response parameters:    Source ID (1 octet)
+                                        GAP Settings (4 octets)
+                                        Broadcast Code (16 octet)
 
-	Opcode 0x0b - Broadcast Advertising Start
-		Controller Index:	<controller id>
-		Command parameters:	Source ID (1 octet)
+                Source ID is a local identifier.
+                Flags is a bit map of settings:
+                        bit 0: Use encryption and the given Broadcast Code
+                        bit 1: Setup Codec Config at Subgroup level
 
-		Response parameters:	<none>
+                This command is used to configure the local source before start of
+                the source advertising.
+                In case of an error, the error status response will be returned.
 
-		This command is used to start the Extended and Periodic advertising
-		of the broadcast source.
-		In case of an error, the error status response will be returned.
+        Opcode 0x0a - Broadcast Source Release
 
-	Opcode 0x0c - Broadcast Advertising Stop
-		Controller Index:	<controller id>
-		Command parameters:	Source ID (1 octet)
+                Controller Index:       <controller id>
+                Command parameters:     Source ID (1 octet)
+                Response parameters:    <none>
 
-		Response parameters:	<none>
+                This command is used to release the local source.
+                In case of an error, the error status response will be returned.
 
-		This command is used to stop the Extended and Periodic advertising
-		of the broadcast source.
-		In case of an error, the error status response will be returned.
+        Opcode 0x0b - Broadcast Advertising Start
 
-	Opcode 0x0d - Broadcast Source Start
-		Controller Index:	<controller id>
-		Command parameters:	Source ID (1 octet)
+                Controller Index:       <controller id>
+                Command parameters:     Source ID (1 octet)
+                Response parameters:    <none>
 
-		Response parameters:	<none>
+                This command is used to start the Extended and Periodic advertising
+                of the broadcast source.
+                In case of an error, the error status response will be returned.
 
-		This command is used to start the streaming of the broadcast source.
-		In case of an error, the error status response will be returned.
+        Opcode 0x0c - Broadcast Advertising Stop
 
-	Opcode 0x0e - Broadcast Source Stop
-		Controller Index:	<controller id>
-		Command parameters:	Source ID (1 octet)
+                Controller Index:       <controller id>
+                Command parameters:     Source ID (1 octet)
+                Response parameters:    <none>
 
-		Response parameters:	<none>
+                This command is used to stop the Extended and Periodic advertising
+                of the broadcast source.
+                In case of an error, the error status response will be returned.
 
-		This command is used to stop the streaming of the broadcast source.
-		In case of an error, the error status response will be returned.
+        Opcode 0x0d - Broadcast Source Start
 
-	Opcode 0x0f - Broadcast Source Update
-		Controller Index:	<controller id>
-		Command parameters:	Source ID (1 octet)
-					Metadata LTVs length (1 octet)
-					Metadata LTVs (varies)
+                Controller Index:       <controller id>
+                Command parameters:     Source ID (1 octet)
+                Response parameters:    <none>
 
-		Response parameters:	<none>
+                This command is used to start the streaming of the broadcast source.
+                In case of an error, the error status response will be returned.
 
-		This command is used to update the metadata in BASE.
-		In case of an error, the error status response will be returned.
+        Opcode 0x0e - Broadcast Source Stop
+
+                Controller Index:       <controller id>
+                Command parameters:     Source ID (1 octet)
+                Response parameters:    <none>
+
+                This command is used to stop the streaming of the broadcast source.
+                In case of an error, the error status response will be returned.
+
+        Opcode 0x0f - Broadcast Source Update
+
+                Controller Index:       <controller id>
+                Command parameters:     Source ID (1 octet)
+                                        Metadata LTVs length (1 octet)
+                                        Metadata LTVs (varies)
+                Response parameters:    <none>
+
+                This command is used to update the metadata in BASE.
+                In case of an error, the error status response will be returned.
 
 Events:
-	Opcode 0x80 - Discover and Subscribe Completed event
+        Opcode 0x80 - Discover and Subscribe Completed event
 
-		Controller Index:	<controller id>
-		Event parameters:	Address_Type (1 octet)
-					Address (6 octets)
-					Status  (1 octet)
-		where Status is 0x00 in case of success and 0x01 in case of failure.
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Status  (1 octet)
 
-        This event indicates that the IUT finished discovery of the Unicast
-        characteristics and subscribing to their notifications.
+                Status is 0x00 in case of success and 0x01 in case of failure.
 
-	Opcode 0x81 - Unicast Start Completed
+                This event indicates that the IUT finished discovery of the Unicast
+                characteristics and subscribing to their notifications.
 
-		Controller Index:	<controller id>
-		Event parameters:	CIG ID (1 octet)
-					Status  (1 octet)
-		where Status is 0x00 in case of success and 0x01 in case of failure.
+        Opcode 0x81 - Unicast Start Completed
 
-        This event indicates that the IUT finished starting the Unicast source.
+                Controller Index:       <controller id>
+                Event parameters:       CIG ID (1 octet)
+                                        Status  (1 octet)
 
-	Opcode 0x82 - Unicast Stop Completed
+                Status is 0x00 in case of success and 0x01 in case of failure.
 
-		Controller Index:	<controller id>
-		Event parameters:	CIG ID (1 octet)
-					Status  (1 octet)
-		where Status is 0x00 in case of success and 0x01 in case of failure.
+                This event indicates that the IUT finished starting the Unicast source.
 
-        This event indicates that the IUT finished starting the Unicast source.
+        Opcode 0x82 - Unicast Stop Completed
+
+                Controller Index:       <controller id>
+                Event parameters:       CIG ID (1 octet)
+                                        Status  (1 octet)
+                Status is 0x00 in case of success and 0x01 in case of failure.
+
+                This event indicates that the IUT finished starting the Unicast source.

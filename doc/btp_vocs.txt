@@ -3,111 +3,111 @@ Volume Offset Control Service (ID 11)
 
 Commands and responses:
 
-	Opcode 0x00 - Error response
+        Opcode 0x00 - Error response
 
-	Opcode 0x01 - Read supported commands
-		Controller Index:	<controller id>
-		Command parameters:	<none>
-		Response parameters:	<supported commands> (variable)
+        Opcode 0x01 - Read supported commands
+                Controller Index:       <controller id>
+                Command parameters:     <none>
+                Response parameters:    <supported commands> (variable)
 
-		Each bit in response is a flag indicating if command with
-		opcode matching bit number is supported. Bit set to 1 means
-		that command is supported. Bit 0 is reserved and shall always
-		be set to 0. If specific bit is not present in response (less
-		than required bytes received) it shall be assumed that command
-		is not supported.
+                Each bit in response is a flag indicating if command with
+                opcode matching bit number is supported. Bit set to 1 means
+                that command is supported. Bit 0 is reserved and shall always
+                be set to 0. If specific bit is not present in response (less
+                than required bytes received) it shall be assumed that command
+                is not supported.
 
-		In case of an error, the error response will be returned.
+                In case of an error, the error response will be returned.
 
-	Opcode 0x02 - Update audio location
+        Opcode 0x02 - Update audio location
 
-		Controller Index:	<controller id>
-		Command parameters:	Location (4 octets)
-		Response parameters:	<none>
+                Controller Index:       <controller id>
+                Command parameters:     Location (4 octets)
+                Response parameters:    <none>
 
-		This command is used to change audio location.
+                This command is used to change audio location.
 
-		In case of an error, the error response will be returned.
+                In case of an error, the error response will be returned.
 
-	Opcode 0x03 - Update audio description
+        Opcode 0x03 - Update audio description
 
-		Controller Index:	<controller id>
-		Command parameters:	Description (string)
-		Response parameters:	<none>
+                Controller Index:       <controller id>
+                Command parameters:     Description (string)
+                Response parameters:    <none>
 
-		This command is used to change audio description.
+                This command is used to change audio description.
 
-		In case of an error, the error response will be returned.
+                In case of an error, the error response will be returned.
 
-	Opcode 0x04 - Offset State Get
+        Opcode 0x04 - Offset State Get
 
-		Controller Index:	<controller id>
-		Command parameters:     Address_Type (1 octet)
-					Address (6 octets)
-		Response parameters:	<none>
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
 
-		This command is used for reading VOCS Offset State characteristic.
-		During operation, the IUT may send event:
-				VOCS Offset State Event
+                This command is used for reading VOCS Offset State characteristic.
+                During operation, the IUT may send event:
+                                VOCS Offset State Event
 
-		In case of an error, the error response will be returned.
+                In case of an error, the error response will be returned.
 
-	Opcode 0x05 - Location Get
+        Opcode 0x05 - Location Get
 
-		Controller Index:	<controller id>
-		Command parameters:     Address_Type (1 octet)
-					Address (6 octets)
-		Response parameters:	<none>
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
 
-		This command is used for reading VOCS Location characteristic.
-		During operation, the IUT may send event:
-				VOCS Audio Location Event
+                This command is used for reading VOCS Location characteristic.
+                During operation, the IUT may send event:
+                                VOCS Audio Location Event
 
-		In case of an error, the error response will be returned.
+                In case of an error, the error response will be returned.
 
-	Opcode 0x06 - Offset State Set
+        Opcode 0x06 - Offset State Set
 
-		Controller Index:	<controller id>
-		Command parameters:     Address_Type (1 octet)
-					Address (6 octets)
-					Offset (2 octets)
-		Response parameters:	<none>
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Offset (2 octets)
+                Response parameters:    <none>
 
-		This command is used for setting VOCS Offset state. During
-		operation, the IUT may send event:
-				VOCS Offset State Event
-				VOCS Procedure Event
+                This command is used for setting VOCS Offset state. During
+                operation, the IUT may send event:
+                                VOCS Offset State Event
+                                VOCS Procedure Event
 
 Events:
-	Opcode 0x80 - VOCS Offset State event
+        Opcode 0x80 - VOCS Offset State event
 
-		Controller Index:	<controller id>
-		Event parameters:	Address_Type (1 octet)
-					Address (6 octets)
-					ATT status (1 octet)
-					Offset (2 octets)
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        ATT status (1 octet)
+                                        Offset (2 octets)
 
-		This event returns VOCS Offset State information.
+                This event returns VOCS Offset State information.
 
-	Opcode 0x81 - VOCS Audio Location event
+        Opcode 0x81 - VOCS Audio Location event
 
-		Controller Index:	<controller id>
-		Event parameters:	Address_Type (1 octet)
-					Address (6 octets)
-					ATT status (1 octet)
-					Location (4 octets)
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        ATT status (1 octet)
+                                        Location (4 octets)
 
-		This event returns VOCS Audio Location information.
+                This event returns VOCS Audio Location information.
 
-	Opcode 0x82 - VOCS Procedure Event
+        Opcode 0x82 - VOCS Procedure Event
 
-		Controller Index:	<controller id>
-		Event parameters:	Address_Type (1 octet)
-					Address (6 octets)
-					ATT status (1 octet)
-					Opcode (1 octet)
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        ATT status (1 octet)
+                                        Opcode (1 octet)
 
-		This event returns VOCS operation opcode information.
+                This event returns VOCS operation opcode information.
 
 
 

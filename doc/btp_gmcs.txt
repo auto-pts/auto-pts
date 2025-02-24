@@ -3,85 +3,86 @@ Generic Media Control Service(ID 23)
 
 Commands and responses:
 
-	Opcode 0x00 - Error response
+        Opcode 0x00 - Error response
 
-	Opcode 0x01 - Read supported commands
-		Controller Index:       <controller id>
-		Command parameters:     <none>
-		Response parameters:    <supported commands> (variable)
+        Opcode 0x01 - Read supported commands
 
-		Each bit in response is a flag indicating if command with
-		opcode matching bit number is supported. Bit set to 1 means
-		that command is supported. Bit 0 is reserved and shall always
-		be set to 0. If specific bit is not present in response (less
-		than required bytes received) it shall be assumed that command
-		is not supported.
+                Controller Index:       <controller id>
+                Command parameters:     <none>
+                Response parameters:    <supported commands> (variable)
 
-		In case of an error, the error response will be returned.
+                Each bit in response is a flag indicating if command with
+                opcode matching bit number is supported. Bit set to 1 means
+                that command is supported. Bit 0 is reserved and shall always
+                be set to 0. If specific bit is not present in response (less
+                than required bytes received) it shall be assumed that command
+                is not supported.
 
-	Opcode 0x02 - Command Send
+                In case of an error, the error response will be returned.
 
-		Controller Index:	<controller id>
-		Command parameters:	Opcode (1 octets)
-					Use Param (1 octet)
-					Param (Varies)
-		Response parameters:    <none>
+        Opcode 0x02 - Command Send
 
-		This command is used to trigger media player action defined by
-		opcode. Use Param is boolean variable. Param variable is
-		initialized only if Use Param is True.
+                Controller Index:       <controller id>
+                Command parameters:     Opcode (1 octets)
+                                        Use Param (1 octet)
+                                        Param (Varies)
+                Response parameters:    <none>
 
-		Opcodes: 0x01 - Play
-			 0x02 - Pause
-			 0x03 - Fast Rewind
-			 0x04 - Fast Forward
-			 0x05 - Stop
-			 0x10 - Move Relative (uses Param)
-			 0x20 - Previous Segment
-			 0x21 - Next Segment
-			 0x22 - First Segment
-			 0x23 - Last Segment
-			 0x24 - Goto Segment (uses Param)
-			 0x30 - Previous Track
-			 0x30 - Previous Track
-			 0x31 - Next Track
-			 0x32 - First Track
-			 0x33 - Last Track
-			 0x34 - Goto Track (uses Param)
-			 0x40 - Previous Group
-			 0x41 - Next Group
-			 0x42 - First Group
-			 0x43 - Last Group
-			 0x44 - Goto Group (uses Param)
+                This command is used to trigger media player action defined by
+                opcode. Use Param is boolean variable. Param variable is
+                initialized only if Use Param is True.
 
-	Opcode 0x04 - Current Track Object ID Get
+                Opcodes: 0x01 - Play
+                         0x02 - Pause
+                         0x03 - Fast Rewind
+                         0x04 - Fast Forward
+                         0x05 - Stop
+                         0x10 - Move Relative (uses Param)
+                         0x20 - Previous Segment
+                         0x21 - Next Segment
+                         0x22 - First Segment
+                         0x23 - Last Segment
+                         0x24 - Goto Segment (uses Param)
+                         0x30 - Previous Track
+                         0x30 - Previous Track
+                         0x31 - Next Track
+                         0x32 - First Track
+                         0x33 - Last Track
+                         0x34 - Goto Track (uses Param)
+                         0x40 - Previous Group
+                         0x41 - Next Group
+                         0x42 - First Group
+                         0x43 - Last Group
+                         0x44 - Goto Group (uses Param)
 
-		Controller Index:	<controller id>
-		Command parameters:     <none>
-		Response parameters:    Current Track Object ID (6 octets)
+        Opcode 0x04 - Current Track Object ID Get
 
-		This command is used to read Current Track Object ID.
+                Controller Index:       <controller id>
+                Command parameters:     <none>
+                Response parameters:    Current Track Object ID (6 octets)
 
-	Opcode 0x05 - Next Track Object ID Get
+                This command is used to read Current Track Object ID.
 
-		Controller Index:	<controller id>
-		Command parameters:     <none>
-		Response parameters:    Next Track Object ID (6 octets)
+        Opcode 0x05 - Next Track Object ID Get
 
-		This command is used to read Next Track Object ID.
+                Controller Index:       <controller id>
+                Command parameters:     <none>
+                Response parameters:    Next Track Object ID (6 octets)
 
-	Opcode 0x06 - Set Inactive State
+                This command is used to read Next Track Object ID.
 
-		Controller Index:	<controller id>
-		Command parameters:     <none>
-		Response parameters:    Media Player State (1 octet)
+        Opcode 0x06 - Set Inactive State
 
-		Set media player into inactive state.
+                Controller Index:       <controller id>
+                Command parameters:     <none>
+                Response parameters:    Media Player State (1 octet)
 
-	Opcode 0x07 - Set Parent Group
+                Set media player into inactive state.
 
-		Controller Index:	<controller id>
-		Command parameters:     <none>
-		Response parameters:    <none>
+        Opcode 0x07 - Set Parent Group
 
-		Set Media Player's Current Group to be it's own Parent Group.
+                Controller Index:       <controller id>
+                Command parameters:     <none>
+                Response parameters:    <none>
+
+                Set Media Player's Current Group to be it's own Parent Group.

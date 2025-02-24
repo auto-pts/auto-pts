@@ -3,639 +3,647 @@ GAP Service (ID 1)
 
 Commands and responses:
 
-	Opcode 0x00 - Error response
+        Opcode 0x00 - Error response
+
+        Opcode 0x01 - Read Supported Commands command/response
 
-	Opcode 0x01 - Read Supported Commands command/response
+                Controller Index:       <non-controller>
+                Command parameters:     <none>
+                Response parameters:    <supported commands> (variable)
 
-		Controller Index:	<non-controller>
-		Command parameters:	<none>
-		Response parameters:	<supported commands> (variable)
+                Each bit in response is a flag indicating if command with
+                opcode matching bit number is supported. Bit set to 1 means
+                that command is supported. Bit 0 is reserved and shall always
+                be set to 0. If specific bit is not present in response (less
+                than required bytes received) it shall be assumed that command
+                is not supported.
 
-		Each bit in response is a flag indicating if command with
-		opcode matching bit number is supported. Bit set to 1 means
-		that command is supported. Bit 0 is reserved and shall always
-		be set to 0. If specific bit is not present in response (less
-		than required bytes received) it shall be assumed that command
-		is not supported.
+                In case of an error, the error response will be returned.
 
-		In case of an error, the error response will be returned.
+        Opcode 0x02 - Read Controller Index List command/response
 
-	Opcode 0x02 - Read Controller Index List command/response
+                Controller Index:       <non-controller>
+                Command parameters:     <none>
+                Response parameters:    Number of Controllers (1 octet)
+                                        Controller Index[i] (1 octet)
 
-		Controller Index:	<non-controller>
-		Command parameters:	<none>
-		Response parameters:	Number of Controllers (1 octet)
-					Controller Index[i] (1 octet)
+                This command returns the list of controllers.
 
-		This command returns the list of controllers.
+                In case of an error, the error response will be returned.
 
-		In case of an error, the error response will be returned.
+        Opcode 0x03 - Read Controller Information command/response
 
-	Opcode 0x03 - Read Controller Information command/response
+        Controller Index:       <controller id>
+        Command parameters:     <none>
+        Response parameters:    Address (6 Octets)
+                                Supported_Settings (4 Octets)
+                                Current_Settings (4 Octets)
+                                Class_Of_Device (3 Octets)
+                                Name (249 Octets)
+                                Short_Name (11 Octets)
 
-	Controller Index:	<controller id>
-	Command parameters:	<none>
-	Response parameters:	Address (6 Octets)
-				Supported_Settings (4 Octets)
-				Current_Settings (4 Octets)
-				Class_Of_Device (3 Octets)
-				Name (249 Octets)
-				Short_Name (11 Octets)
+                This command is used to retrieve the current state and basic
+                information of a controller. It is typically used right after
+                getting the response to the Read Controller Index List command
 
-		This command is used to retrieve the current state and basic
-		information of a controller. It is typically used right after
-		getting the response to the Read Controller Index List command
+                Current_Settings and Supported_Settings is a bitmask with
+                currently the following available bits:
+                        0       Powered
+                        1       Connectable
+                        2       Fast Connectable
+                        3       Discoverable
+                        4       Bondable
+                        5       Link Level Security (Sec. mode 3)
+                        6       Secure Simple Pairing
+                        7       Basic Rate/Enhanced Data Rate
+                        8       High Speed
+                        9       Low Energy
+                        10      Advertising
+                        11      Secure Connections
+                        12      Debug Keys
+                        13      Privacy
+                        14      Controller Configuration
+                        15      Static Address
+                        16      Secure Connections Only
+                        17      Extended Advertising
+                        18      Periodic Advertising
 
-		Current_Settings and Supported_Settings is a bitmask with
-		currently the following available bits:
+                In case of an error, the error response will be returned.
 
-			0	Powered
-			1	Connectable
-			2	Fast Connectable
-			3	Discoverable
-			4	Bondable
-			5	Link Level Security (Sec. mode 3)
-			6	Secure Simple Pairing
-			7	Basic Rate/Enhanced Data Rate
-			8	High Speed
-			9	Low Energy
-			10	Advertising
-			11	Secure Connections
-			12	Debug Keys
-			13	Privacy
-			14	Controller Configuration
-			15	Static Address
-			16	Secure Connections Only
-			17	Extended Advertising
-			18	Periodic Advertising
+        Opcode 0x04 - Reset command/response
 
-		In case of an error, the error response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:     <none>
+                Response parameters:    Current_Settings (4 Octets)
 
-	Opcode 0x04 - Reset command/response
+                This allows to clean up any state data (eg. keys) and restore
+                controller to its default system state.
 
-		Controller Index:	<controller id>
-		Command parameters:	<none>
-		Response parameters:	Current_Settings (4 Octets)
+                In case of an error, the error response will be returned.
 
-		This allows to clean up any state data (eg. keys) and restore
-		controller to its default system state.
+        Opcode 0x05 - Set Powered command/response
 
-		In case of an error, the error response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:     Powered (1 octet)
+                Response parameters:    Current_Settings (4 Octets)
 
-	Opcode 0x05 - Set Powered command/response
+                Valid Powered values:
+                        0x00 = Off
+                        0x01 = On
 
-		Controller Index:	<controller id>
-		Command parameters:	Powered (1 octet)
-		Response parameters:	Current_Settings (4 Octets)
+                This command is used to power on or off a controller.
 
-		Valid Powered values:	0x00 = Off
-					0x01 = On
+                In case of an error, the error response will be returned.
 
-		This command is used to power on or off a controller.
+        Opcode 0x06 - Set Connectable command/response
 
-		In case of an error, the error response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:     Connectable (1 octet)
+                Response parameters:    Current_Settings (4 Octets)
 
-	Opcode 0x06 - Set Connectable command/response
+                Valid Connectable values:
+                        0x00 = Off
+                        0x01 = On
 
-		Controller Index:	<controller id>
-		Command parameters:	Connectable (1 octet)
-		Response parameters:	Current_Settings (4 Octets)
+                This command is used to set controller connectable.
 
-		Valid Connectable values:	0x00 = Off
-						0x01 = On
+                In case of an error, the error response will be returned.
 
-		This command is used to set controller connectable.
+        Opcode 0x07 - Set Fast Connectable command/response
 
-		In case of an error, the error response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:     Fast Connectable (1 octet)
+                Response parameters:    Current_Settings (4 Octets)
 
-	Opcode 0x07 - Set Fast Connectable command/response
+                Valid Fast Connectable values:
+                        0x00 = Off
+                        0x01 = On
 
-		Controller Index:	<controller id>
-		Command parameters:	Fast Connectable (1 octet)
-		Response parameters:	Current_Settings (4 Octets)
+                This command is used to set controller fast connectable.
+                This command is only available for BR/EDR capable controllers.
 
-		Valid Fast Connectable values:	0x00 = Off
-						0x01 = On
+                In case of an error, the error response will be returned.
 
-		This command is used to set controller fast connectable.
-		This command is only available for BR/EDR capable controllers.
+        Opcode 0x08 - Set Discoverable command/response
 
-		In case of an error, the error response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:     Discoverable (1 octet)
+                Response parameters:    Current_Settings (4 Octets)
 
-	Opcode 0x08 - Set Discoverable command/response
+                Valid Discoverable values:
+                        0x00 = Off
+                        0x01 = General Discoverable
+                        0x02 = Limited Discoverable
 
-		Controller Index:	<controller id>
-		Command parameters:	Discoverable (1 octet)
-		Response parameters:	Current_Settings (4 Octets)
+                This command is used to set controller discoverable.
 
-		Valid Discoverable values:	0x00 = Off
-						0x01 = General Discoverable
-						0x02 = Limited Discoverable
+                In case of an error, the error response will be returned.
 
-		This command is used to set controller discoverable.
+        Opcode 0x09 - Set Bondable command/response
 
-		In case of an error, the error response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:     Bondable (1 octet)
+                Response parameters:    Current_Settings (4 Octets)
 
-	Opcode 0x09 - Set Bondable command/response
+                Valid Bondable values:
+                        0x00 = Off
+                        0x01 = On
 
-		Controller Index:	<controller id>
-		Command parameters:	Bondable (1 octet)
-		Response parameters:	Current_Settings (4 Octets)
+                This command is used to set controller bondable.
 
-		Valid Bondable values:	0x00 = Off
-					0x01 = On
+                In case of an error, the error response will be returned.
 
-		This command is used to set controller bondable.
+        Opcode 0x0a - Start Advertising command/response
 
-		In case of an error, the error response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:     Adv_Data_Len (1 octet)
+                                        Scan_Rsp_len (1 octet)
+                                        Adv_Data (0-255 octets)
+                                        Scan_Rsp (0-255 octets)
+                                        Duration (4 octets)
+                                        Own_Addr_Type (1 octet)
+                Return Parameters:      Current_Settings (4 Octets)
 
-	Opcode 0x0a - Start Advertising command/response
+                Valid Own_Addr_Type parameter values:
+                        0x00 = Identity Address
+                        0x01 = Resolvable Private Address
+                        0x02 = Non-resolvabe Private Address
 
-		Controller Index:	<controller id>
-		Command parameters:	Adv_Data_Len (1 octet)
-					Scan_Rsp_len (1 octet)
-					Adv_Data (0-255 octets)
-					Scan_Rsp (0-255 octets)
-					Duration (4 octets)
-					Own_Addr_Type (1 octet)
-		Return Parameters:	Current_Settings (4 Octets)
+                This command is used to start advertising.
 
-		Valid Own_Addr_Type parameter values:
-					0x00 = Identity Address
-					0x01 = Resolvable Private Address
-					0x02 = Non-resolvabe Private Address
+                Adv_Data and Scan_Rsp are a list of { AD_Type, AD_Len, AD_DATA } structures.
 
-		This command is used to start advertising.
+                When Duration parameter value equals UINT32_MAX then the
+                advertising duration is disabled.
 
-		Adv_Data and Scan_Rsp are a list of { AD_Type, AD_Len, AD_DATA } structures.
+                In case of an error, the error response will be returned.
 
-		When Duration parameter value equals UINT32_MAX then the
-		advertising duration is disabled.
+        Opcode 0x0b - Stop Advertising command/response
 
-		In case of an error, the error response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:     <none>
+                Return Parameters:      Current_Settings (4 Octets)
 
-	Opcode 0x0b - Stop Advertising command/response
+                This command is used to stop advertising.
 
-		Controller Index:	<controller id>
-		Command parameters:	<none>
-		Return Parameters:	Current_Settings (4 Octets)
+                In case of an error, the error response will be returned.
 
-		This command is used to stop advertising.
+        Opcode 0x0c - Start Discovery command/response
 
-		In case of an error, the error response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:     Flags (1 octet)
+                Return Parameters:      <none>
 
-	Opcode 0x0c - Start Discovery command/response
+                Possible values for the Flags parameter are a bit-wise or
+                of the following bits:
+                        0 = LE scan
+                        1 = BR/EDR scan
+                        2 = Use limited discovery procedure
+                        3 = Use active scan type
+                        4 = Use observation procedure
+                        5 = Use own ID address
 
-		Controller Index:	<controller id>
-		Command parameters:	Flags (1 octet)
-		Return Parameters:	<none>
+                This command is used to start discovery.
 
-		Possible values for the Flags parameter are a bit-wise or
-		of the following bits:
-					0 = LE scan
-					1 = BR/EDR scan
-					2 = Use limited discovery procedure
-					3 = Use active scan type
-					4 = Use observation procedure
-					5 = Use own ID address
+                Observation Procedure allows to receive advertisements
+                (and scan responses) from broadcasters (that are not visible
+                during General or Limited discovery, because those are not
+                discoverable). This procedure can use either passive or active
+                scan type. If "Use observation procedure" (bit 4) is set,
+                "Use limited discovery procedure" (bit 2) is excluded.
 
-		This command is used to start discovery.
+                In case of an error, the error response will be returned.
 
-		Observation Procedure allows to receive advertisements
-		(and scan responses) from broadcasters (that are not visible
-		during General or Limited discovery, because those are not
-		discoverable). This procedure can use either passive or active
-		scan type. If "Use observation procedure" (bit 4) is set,
-		"Use limited discovery procedure" (bit 2) is excluded.
+        Opcode 0x0d - Stop Discovery command/response
 
-		In case of an error, the error response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:     <none>
+                Return Parameters:      <none>
 
-	Opcode 0x0d - Stop Discovery command/response
+                This command is used to stop discovery.
 
-		Controller Index:	<controller id>
-		Command parameters:	<none>
-		Return Parameters:	<none>
+                In case of an error, the error response will be returned.
 
-		This command is used to stop discovery.
+        Opcode 0x0e - Connect command/response
 
-		In case of an error, the error response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Own_Addr_Type (1 octet)
+                Return Parameters:      <none>
 
-	Opcode 0x0e - Connect command/response
+                Valid Own_Addr_Type parameter values:
+                        0x00 = Identity Address
+                        0x01 = Resolvable Private Address
+                        0x02 = Non-resolvabe Private Address
 
-		Controller Index:	<controller id>
-		Command parameters:	Address_Type (1 octet)
-					Address (6 octets)
-					Own_Addr_Type (1 octet)
-		Return Parameters:	<none>
+                This command is used to create a Link Layer connection with
+                remote device.
+                Address '00:00:00:00:00:00' and type '0' will attempt to
+                use address from filter accept list.
 
-		Valid Own_Addr_Type parameter values:
-					0x00 = Identity Address
-					0x01 = Resolvable Private Address
-					0x02 = Non-resolvabe Private Address
+                In case of an error, the error response will be returned.
 
-		This command is used to create a Link Layer connection with
-		remote device.
-		Address '00:00:00:00:00:00' and type '0' will attempt to
-		use address from filter accept list.
+        Opcode 0x0f - Disconnect command/response
 
-		In case of an error, the error response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Return Parameters:      <none>
 
-	Opcode 0x0f - Disconnect command/response
+                Valid Address_Type parameter values:
+                        0x00 = Public
+                        0x01 = Random
 
-		Controller Index:	<controller id>
-		Command parameters:	Address_Type (1 octet)
-					Address (6 octets)
-		Return Parameters:	<none>
+                This command is used to terminate an existing connection or
+                to cancel pending connection attempt.
 
-		Valid Address_Type parameter values:
-					0x00 = Public
-					0x01 = Random
+                In case of an error, the error response will be returned.
 
-		This command is used to terminate an existing connection or
-		to cancel pending connection attempt.
+        Opcode 0x10 - Set IO Capability command/response
 
-		In case of an error, the error response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:     IO_Capability (1 octet)
+                Return Parameters:      <none>
 
-	Opcode 0x10 - Set IO Capability command/response
+                Valid IO_Capabilities parameter values:
+                        0x00 = Display Only
+                        0x01 = Display Yes/No
+                        0x02 = Keyboard Only
+                        0x03 = No Input, No Output
+                        0x04 = Keyboard Display
 
-		Controller Index:	<controller id>
-		Command parameters:	IO_Capability (1 octet)
-		Return Parameters:	<none>
+                This command is used to set IO capability.
 
-		Valid IO_Capabilities parameter values:
-					0x00 = Display Only
-					0x01 = Display Yes/No
-					0x02 = Keyboard Only
-					0x03 = No Input, No Output
-					0x04 = Keyboard Display
+                In case of an error, the error response will be returned.
 
-		This command is used to set IO capability.
+        Opcode 0x11 - Pair command/response
 
-		In case of an error, the error response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Return Parameters:      <none>
 
-	Opcode 0x11 - Pair command/response
+                This command is used to initiate security with remote. If
+                peer is already paired IUT is expected to enable security
+                (encryption) with peer. If peer is not paired IUT shall
+                start pairing process.
 
-		Controller Index:	<controller id>
-		Command parameters:	Address_Type (1 octet)
-					Address (6 octets)
-		Return Parameters:	<none>
+                In case of an error, the error response will be returned.
 
-		This command is used to initiate security with remote. If
-		peer is already paired IUT is expected to enable security
-		(encryption) with peer. If peer is not paired IUT shall
-		start pairing process.
+        Opcode 0x12 - Unpair command/response
 
-		In case of an error, the error response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Return Parameters:      <none>
 
-	Opcode 0x12 - Unpair command/response
+                This command is used to unpair with remote.
 
-		Controller Index:	<controller id>
-		Command parameters:	Address_Type (1 octet)
-					Address (6 octets)
-		Return Parameters:	<none>
+                In case of an error, the error response will be returned.
 
-		This command is used to unpair with remote.
+        Opcode 0x13 - Passkey Entry Response command/response
 
-		In case of an error, the error response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Passkey (4 octets)
+                Return Parameters:      <none>
 
-	Opcode 0x13 - Passkey Entry Response command/response
+                This command is used to response with passkey for pairing
+                request.
 
-		Controller Index:	<controller id>
-		Command parameters:	Address_Type (1 octet)
-					Address (6 octets)
-					Passkey (4 octets)
-		Return Parameters:	<none>
+                In case of an error, the error response will be returned.
 
-		This command is used to response with passkey for pairing
-		request.
+        Opcode 0x14 - Passkey Confirmation Response command/response
 
-		In case of an error, the error response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Match (1 octet)
+                Return Parameters:      <none>
 
-	Opcode 0x14 - Passkey Confirmation Response command/response
+                This command is used to response for pairing request with
+                confirmation in accordance with initiator and responder
+                passkey.
 
-		Controller Index:	<controller id>
-		Command parameters:	Address_Type (1 octet)
-					Address (6 octets)
-					Match (1 octet)
-		Return Parameters:	<none>
+                In case of an error, the error response will be returned.
 
-		This command is used to response for pairing request with
-		confirmation in accordance with initiator and responder
-		passkey.
+        Opcode 0x15 - Start Directed advertising command/response
 
-		In case of an error, the error response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:     Directed_address_Type (1 octet)
+                                        Directed_address (6 octets)
+                                        Options (2 octets)
+                Return Parameters:      Current_Settings (4 Octets)
 
-	Opcode 0x15 - Start Directed advertising command/response
+                This command is used to start directed advertising.
 
-		Controller Index:	<controller id>
-		Command parameters:	Directed_address_Type (1 octet)
-					Directed_address (6 octets)
-					Options (2 octets)
-		Return Parameters:	Current_Settings (4 Octets)
+                Available options:
+                bit 0 - High Duty - If set then High Duty cycle is used,
+                        otherwise Low Duty cycle is used for advertising
+                bit 1 - Own ID Address - If set IUT is required to advertise
+                        using ID address even if privacy is enabled
+                bit 2 - Peer RPA Address - If set IUT is expected to use peer
+                        RPA as target address (is supported by peer).
 
-		This command is used to start directed advertising.
+                Possible values for the High duty parameter are:
+                                        0 = Use low duty cycle
+                                        1 = Use high duty cycle
 
-		Available options:
-		bit 0 - High Duty - If set then High Duty cycle is used,
-			otherwise Low Duty cycle is used for advertising
-		bit 1 - Own ID Address - If set IUT is required to advertise
-			using ID address even if privacy is enabled
-		bit 2 - Peer RPA Address - If set IUT is expected to use peer
-			RPA as target address (is supported by peer).
+                In case of an error, the error response will be returned.
 
-		Possible values for the High duty parameter are:
-					0 = Use low duty cycle
-					1 = Use high duty cycle
+        Opcode 0x16 - Connection Parameters Update
 
-		In case of an error, the error response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Connection Interval Min (2 octets)
+                                        Connection Interval Max (2 octets)
+                                        Connection Latency (2 octets)
+                                        Supervision Timeout (2 octets)
+                Return Parameters:      <none>
 
-	Opcode 0x16 - Connection Parameters Update
+                This command is used to change connection parameters. If current
+                connection parameters do not match with the ones requested then
+                the IUT should send a Connection Parameter Update Request
+                to a peer device.
 
-		Controller Index:	<controller id>
-		Command parameters:	Address_Type (1 octet)
-					Address (6 octets)
-					Connection Interval Min (2 octets)
-					Connection Interval Max (2 octets)
-					Connection Latency (2 octets)
-					Supervision Timeout (2 octets)
-		Return Parameters:	<none>
+                In case of an error, the error response will be returned.
 
-		This command is used to change connection parameters. If current
-		connection parameters do not match with the ones requested then
-		the IUT should send a Connection Parameter Update Request
-		to a peer device.
+        Opcode 0x17 - Pairing Consent Response command/response
 
-		In case of an error, the error response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Consent (1 octet)
+                Return Parameters:      <none>
 
-	Opcode 0x17 - Pairing Consent Response command/response
+                This command is used to response for Pairing Consent Request event.
 
-		Controller Index:	<controller id>
-		Command parameters:	Address_Type (1 octet)
-					Address (6 octets)
-					Consent (1 octet)
-		Return Parameters:	<none>
+                In case of an error, the error response will be returned.
 
-		This command is used to response for Pairing Consent Request event.
+        Opcode 0x18 - OOB Legacy Set Data command/response
 
-		In case of an error, the error response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:     OOB_data (16 octets)
+                Return Parameters:      <none>
 
-	Opcode 0x18 - OOB Legacy Set Data command/response
+                This command is used to set legacy OOB data.
 
-		Controller Index:	<controller id>
-		Command parameters:	OOB_data (16 octets)
-		Return Parameters:	<none>
+                In case of an error, the error response will be returned.
 
-		This command is used to set legacy OOB data.
+        Opcode 0x19 - OOB SC Get Local Data command/response
 
-		In case of an error, the error response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:     <none>
+                Return Parameters:      Rand (16 octets)
+                                    Conf (16 octets)
 
-	Opcode 0x19 - OOB SC Get Local Data command/response
+                This command is used to get local OOB Secure Connections data.
 
-		Controller Index:	<controller id>
-		Command parameters:	<none>
-		Return Parameters:	Rand (16 octets)
-		                    Conf (16 octets)
+                In case of an error, the error response will be returned.
 
-		This command is used to get local OOB Secure Connections data.
+        Opcode 0x1a - OOB SC Set Remote Data command/response
 
-		In case of an error, the error response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:      Rand (16 octets)
+                                     Conf (16 octets)
+                Return Parameters:      <none>
 
-	Opcode 0x1a - OOB SC Set Remote Data command/response
+                This command is used to set remote OOB Secure Connections data.
 
-		Controller Index:	<controller id>
-		Command parameters:	 Rand (16 octets)
-		                     Conf (16 octets)
-		Return Parameters:	<none>
+                In case of an error, the error response will be returned.
 
-		This command is used to set remote OOB Secure Connections data.
+        Opcode 0x1b - Set MITM command/response
 
-		In case of an error, the error response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:      mitm (1 octet)
+                Return Parameters:      <none>
 
-	Opcode 0x1b - Set MITM command/response
+                This command is used to set MITM setting.
 
-		Controller Index:	<controller id>
-		Command parameters:	 mitm (1 octet)
-		Return Parameters:	<none>
+                In case of an error, the error response will be returned.
 
-		This command is used to set MITM setting.
+        Opcode 0x1c - Set filter accept list command/response
 
-		In case of an error, the error response will be returned.
+                Controller Index: <controller id>
 
-	Opcode 0x1c - Set filter accept list command/response
+                Command parameters:     Type_Addr_Count (1 octet)
+                                        [array] Type_Addr
 
-		Controller Index: <controller id>
+                Object Type_Addr is defined as:
+                        Address_Type (1 octet)
+                        Address (6 octets)
 
-		Command parameters:	Type_Addr_Count (1 octet)
-					[array] Type_Addr
+                This command is used to set filter accept list.
+                When set, connect with address: '00:00:00:00:00:00'
+                and type '0' to use addresses from the list.
 
-		Object Type_Addr is defined as:
-					Address_Type (1 octet)
-					Address (6 octets)
+                In case of an error, the error response will be returned.
 
-		This command is used to set filter accept list.
-		When set, connect with address: '00:00:00:00:00:00'
-		and type '0' to use addresses from the list.
+        Opcode 0x1d - Set Privacy command/response
 
-		In case of an error, the error response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:      Privacy_Setting (1 octet)
+                Response parameters:    Current_Settings (4 Octets)
 
-	Opcode 0x1d - Set Privacy command/response
+                Valid Privacy_Setting values:
+                        0x00 = Off
+                        0x01 = On
 
-		Controller Index:	<controller id>
-		Command parameters:	 Privacy_Setting (1 octet)
-		Response parameters:	Current_Settings (4 Octets)
+                This command is used to set Privacy setting. This command
+                is designed for systems that allow to change privacy setting
+                during runtime of the system.
 
-		Valid Privacy_Setting values:	0x00 = Off
-						0x01 = On
+                In case of an error, the error response will be returned.
 
-		This command is used to set Privacy setting. This command
-		is designed for systems that allow to change privacy setting
-		during runtime of the system.
+        Opcode 0x1e - Set SC Only command/response
 
-		In case of an error, the error response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:      SC_Only_Setting (1 octet)
+                Response parameters:    Current_Settings (4 Octets)
 
-	Opcode 0x1e - Set SC Only command/response
+                Valid SC_Only_Setting values:
+                        0x00 = Off
+                        0x01 = On
 
-		Controller Index:	<controller id>
-		Command parameters:	 SC_Only_Setting (1 octet)
-		Response parameters:	Current_Settings (4 Octets)
+                This command is used to set SC Only setting. This command
+                is designed for systems that allow to change SC Only setting
+                during runtime of the system.
 
-		Valid SC_Only_Setting values:	0x00 = Off
-						0x01 = On
+                In case of an error, the error response will be returned.
 
-		This command is used to set SC Only setting. This command
-		is designed for systems that allow to change SC Only setting
-		during runtime of the system.
+        Opcode 0x1f - Set Secure Connections command/response
 
-		In case of an error, the error response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:      SC_Setting (1 octet)
+                Response parameters:    Current_Settings (4 Octets)
 
-	Opcode 0x1f - Set Secure Connections command/response
+                Valid SC_Only_Setting values:
+                        0x00 = Disable
+                        0x01 = Enable
 
-		Controller Index:	<controller id>
-		Command parameters:	 SC_Setting (1 octet)
-		Response parameters:	Current_Settings (4 Octets)
+                This command is used to enable/disable Secure Connections setting.
+                This command is designed for systems that allow to change Secure
+                Connections setting during runtime of the system.
 
-		Valid SC_Only_Setting values:	0x00 = Disable
-						0x01 = Enable
+                In case of an error, the error response will be returned.
 
-		This command is used to enable/disable Secure Connections setting.
-		This command is designed for systems that allow to change Secure
-		Connections setting during runtime of the system.
+        Opcode 0x20 - Set Minimum Encryption Key Size command/response
 
-		In case of an error, the error response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:     Encryption_Key_Size (1 octet)
+                Response parameters:    <none>
 
-	Opcode 0x20 - Set Minimum Encryption Key Size command/response
+                This command is used to set minimum Encryption Key Size for
+                security procedure.
 
-		Controller Index:	<controller id>
-		Command parameters:	Encryption_Key_Size (1 octet)
-		Response parameters:	<none>
+                Possible values for Encryption_Key_Size parameter are:
+                        <0x07, 0x0f>
 
-		This command is used to set minimum Encryption Key Size for
-		security procedure.
+                In case of an error, the error response will be returned.
 
-		Possible values for Encryption_Key_Size parameter are:
-								<0x07, 0x0f>
+        Opcode 0x21 - Set Extended Advertising command/response
 
-		In case of an error, the error response will be returned.
+                Controller Index:       <controller id>
+                Command parameter:      Extended_Advertising_Setting (1 Octet)
+                Response parameters:    Current_Settings (4 Octets)
 
-	Opcode 0x21 - Set Extended Advertising command/response
+                Valid Extended_Advertising_Setting:
+                        0x00 = Disable
+                        0x01 = Enable
 
-		Controller Index:	<controller id>
-		Command parameter:	Extended_Advertising_Setting (1 Octet)
-		Response parameters:	Current_Settings (4 Octets)
+                This command is used to enable/disable Extended Advertising when
+                Start/Stop Advertising is used.
 
-		Valid Extended_Advertising_Setting: 	0x00 = Disable
-							0x01 = Enable
+                In case of an error, the error response will be returned.
 
-		This command is used to enable/disable Extended Advertising when
-		Start/Stop Advertising is used.
 
-		In case of an error, the error response will be returned.
+        Opcode 0x22 - Configure Periodic Advertising command/response
 
+                Controller Index:       <controller id>
+                Command parameters:     Flags (1 octet)
+                                        Interval Min (2 octets)
+                                        Interval Max (2 octets)
+                Return Parameters:      Current_Settings (4 Octets)
 
-	Opcode 0x22 - Configure Periodic Advertising command/response
+                This command is used to configure Periodic Advertising instance.
+                IUT is expected to have 1 Periodic Advertising instance.
 
-		Controller Index:	<controller id>
-		Command parameters:	 Flags (1 octet)
-							 Interval Min (2 octets)
-							 Interval Max (2 octets)
-		Return Parameters:	Current_Settings (4 Octets)
+                Possible values for the Flags parameter are a bit-wise OR
+                of the following bits:
+                        0 = Include TX Power
 
-		This command is used to configure Periodic Advertising instance.
-		IUT is expected to have 1 Periodic Advertising instance.
+                In case of an error, the error response will be returned.
 
-		Possible values for the Flags parameter are a bit-wise OR
-		of the following bits:
-					0 = Include TX Power
+        Opcode 0x23 - Periodic Advertising Start command/response
 
-		In case of an error, the error response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:     Flags (1 octet)
+                Return Parameters:      Current_Settings (4 Octets)
 
-	Opcode 0x23 - Periodic Advertising Start command/response
+                This command is used to start advertising on Periodic Advertising
+                instance.
 
-		Controller Index:	<controller id>
-		Command parameters:	Flags (1 octet)
-		Return Parameters:	Current_Settings (4 Octets)
+                Flags are reserved for future use.
 
-		This command is used to start advertising on Periodic Advertising
-		instance.
+                In case of an error, the error response will be returned.
 
-		Flags are reserved for future use.
+        Opcode 0x24 - Periodic Advertising Stop command/response
 
-		In case of an error, the error response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:     <none>
+                Return Parameters:      Current_Settings (4 Octets)
 
-	Opcode 0x24 - Periodic Advertising Stop command/response
+                This command is used to stop advertising on Periodic Advertising
+                instance.
 
-		Controller Index:	<controller id>
-		Command parameters:	<none>
-		Return Parameters:	Current_Settings (4 Octets)
+                In case of an error, the error response will be returned.
 
-		This command is used to stop advertising on Periodic Advertising
-		instance.
+        Opcode 0x25 - Periodic Advertising Set Advertising Data command/response
 
-		In case of an error, the error response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:     Advertising data length (2 octets)
+                                        [array] Advertising data
+                Return Parameters:      <none>
 
-	Opcode 0x25 - Periodic Advertising Set Advertising Data command/response
+                This command is used to set advertising data for Periodic Advertising
+                instance. Data is an array of tuples in form of
+                (data length, Ad Type, data),
 
-		Controller Index:	<controller id>
-		Command parameters:	Advertising data length (2 octets)
-					[array] Advertising data
-		Return Parameters:	<none>
+                In case of an error, the error response will be returned.
 
-		This command is used to set advertising data for Periodic Advertising
-		instance. Data is an array of tuples in form of
-		(data length, Ad Type, data),
+        Opcode 0x26 - Create Periodic Advertising Sync command/response
 
-		In case of an error, the error response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Advertiser Set ID (1 octet)
+                                        Skip (2 octets)
+                                        Synchronization Timeout (2 octets)
+                                        Flags (1 octet)
+                Return Parameters:      <none>
 
-	Opcode 0x26 - Create Periodic Advertising Sync command/response
+                This command is used to perform Synchronization procedure with
+                periodic advertiser. Skip determines maximum number of periodic
+                advertising events that controller can skip after a successful
+                reception. Synchronization Timeout is in 10 ms units. Reports Disabled
+                determines if sync creation will lead to IUT sending reports.
 
-		Controller Index:	<controller id>
-		Command parameters:	Address_Type (1 octet)
-							Address (6 octets)
-							Advertiser Set ID (1 octet)
-							Skip (2 octets)
-							Synchronization Timeout (2 octets)
-							Flags (1 octet)
-		Return Parameters:	<none>
+                Possible values for the Flags parameter are a bit-wise OR
+                of the following bits:
+                        0 = Reports Disabled
+                        1 = Duplicate filtering enabled
 
-		This command is used to perform Synchronization procedure with
-		periodic advertiser. Skip determines maximum number of periodic
-		advertising events that controller can skip after a successful
-		reception. Synchronization Timeout is in 10 ms units. Reports Disabled
-		determines if sync creation will lead to IUT sending reports.
+                In case of an error, the error response will be returned.
 
-		Possible values for the Flags parameter are a bit-wise OR
-		of the following bits:
-					0 = Reports Disabled
-					1 = Duplicate filtering enabled
+        Opcode 0x27 - Periodic Advertising Set Transfer Info command/response
 
-		In case of an error, the error response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:     Address Type (1 octet)
+                                        Address (6 octets)
+                                        Service Data (2 octets)
+                Return Parameters:      <none>
 
-	Opcode 0x27 - Periodic Advertising Set Transfer Info command/response
+                This command is used to initialize set info transfer procedure to peer
+                given by address.
 
-		Controller Index:	<controller id>
-		Command parameters:	Address Type (1 octet)
-							Address (6 octets)
-							Service Data (2 octets)
-		Return Parameters:	<none>
+                In case of an error, the error response will be returned.
 
-		This command is used to initialize set info transfer procedure to peer
-		given by address.
+        Opcode 0x28 - Periodic Advertising Transfer Start command/response
 
-		In case of an error, the error response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:     Sync Handle (2 octets)
+                                        Address Type (1 octet)
+                                        Address (6 octets)
+                                        Service Data (2 octets)
+                Return Parameters:      <none>
 
-	Opcode 0x28 - Periodic Advertising Transfer Start command/response
+                This command is used to initialize periodic transfer procedure to peer
+                given by address. It is used to transfer periodic sync information
+                to synchronization identified by handle.
 
-		Controller Index:	<controller id>
-		Command parameters:	Sync Handle (2 octets)
-							Address Type (1 octet)
-							Address (6 octets)
-							Service Data (2 octets)
-		Return Parameters:	<none>
+                In case of an error, the error response will be returned.
 
-		This command is used to initialize periodic transfer procedure to peer
-		given by address. It is used to transfer periodic sync information
-		to synchronization identified by handle.
+        Opcode 0x29 - Periodic Advertising Transfer Receive command/response
 
-		In case of an error, the error response will be returned.
+                Controller Index:       <controller id>
+                Command parameters:     Address Type (1 octet)
+                                        Address (6 octets)
+                                        Skip (2 octets)
+                                        Sync timeout (2 octets)
+                                        Flags (1 octet)
+                Return Parameters:      <none>
 
-	Opcode 0x29 - Periodic Advertising Transfer Receive command/response
+                This command is used to enable reception of sync information on
+                specified connection.
 
-		Controller Index:	<controller id>
-		Command parameters: Address Type (1 octet)
-							Address (6 octets)
-							Skip (2 octets)
-							Sync timeout (2 octets)
-							Flags (1 octet)
-		Return Parameters:	<none>
+                Possible values for the Flags parameter are a bit-wise OR
+                of the following bits:
+                        0 = Reports Disabled
 
-		This command is used to enable reception of sync information on
-		specified connection.
-
-		Possible values for the Flags parameter are a bit-wise OR
-		of the following bits:
-					0 = Reports Disabled
-
-		In case of an error, the error response will be returned.
+                In case of an error, the error response will be returned.
 
         Opcode 0x30 - Set RPA Timeout command/response
 
@@ -649,188 +657,188 @@ Commands and responses:
                 In case of an error, the error response will be returned.
 
 Events:
-	Opcode 0x80 - New Settings event
+        Opcode 0x80 - New Settings event
 
-		Controller Index:	<controller id>
-		Event parameters:	Current_Settings (4 octets)
+                Controller Index:       <controller id>
+                Event parameters:       Current_Settings (4 octets)
 
-		This event indicates that one or more of the settings for a
-		controller has changed.
+                This event indicates that one or more of the settings for a
+                controller has changed.
 
-	Opcode 0x81 - Device Found event
+        Opcode 0x81 - Device Found event
 
-		Controller Index:	<controller id>
-		Event parameters:	Address_Type (1 octet)
-					Address (6 octets)
-					RSSI (1 octet)
-					Flags (1 octet)
-					EIR_Data_Length (2 Octets)
-					EIR_Data (0-65535 Octets)
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        RSSI (1 octet)
+                                        Flags (1 octet)
+                                        EIR_Data_Length (2 Octets)
+                                        EIR_Data (0-65535 Octets)
 
-		Possible values for the Flags parameter are a bit-wise or
-		of the following bits:
-					0 = RSSI valid
-					1 = Adv_Data included
-					2 = Scan_Rsp included
+                Possible values for the Flags parameter are a bit-wise or
+                of the following bits:
+                        0 = RSSI valid
+                        1 = Adv_Data included
+                        2 = Scan_Rsp included
 
-		This event indicates that a device was found during device
-		discovery.
+                This event indicates that a device was found during device
+                discovery.
 
-	Opcode 0x82 - Device Connected event
+        Opcode 0x82 - Device Connected event
 
-		Controller Index:	<controller id>
-		Event parameters:	Address_Type (1 octet)
-					Address (6 octets)
-					Connection Interval (2 octets)
-					Connection Latency (2 octets)
-					Supervision Timeout (2 octets)
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Connection Interval (2 octets)
+                                        Connection Latency (2 octets)
+                                        Supervision Timeout (2 octets)
 
-		This event indicates that a device was connected.
+                This event indicates that a device was connected.
 
-	Opcode 0x83 - Device Disconnected event
+        Opcode 0x83 - Device Disconnected event
 
-		Controller Index:	<controller id>
-		Event parameters:	Address_Type (1 octet)
-					Address (6 octets)
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
 
-		This event indicates that a device was disconnected.
+                This event indicates that a device was disconnected.
 
-	Opcode 0x84 - Passkey Display event
+        Opcode 0x84 - Passkey Display event
 
-		Controller Index:	<controller id>
-		Event parameters:	Address_Type (1 octet)
-					Address (6 octets)
-					Passkey (4 octets)
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Passkey (4 octets)
 
-		This event indicates that passkey was received and it needs to
-		be confirmed on remote side.
+                This event indicates that passkey was received and it needs to
+                be confirmed on remote side.
 
-	Opcode 0x85 - Passkey Enter Request event
+        Opcode 0x85 - Passkey Enter Request event
 
-		Controller Index:	<controller id>
-		Event parameters:	Address_Type (1 octet)
-					Address (6 octets)
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
 
-		This event indicates that remote requests for passkey enter.
+                This event indicates that remote requests for passkey enter.
 
-	Opcode 0x86 - Passkey Confirm Request event
+        Opcode 0x86 - Passkey Confirm Request event
 
-		Controller Index:	<controller id>
-		Event parameters:	Address_Type (1 octet)
-					Address (6 octets)
-					Passkey (4 octets)
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Passkey (4 octets)
 
-		This event indicates that passkey needs to be confirmed.
+                This event indicates that passkey needs to be confirmed.
 
-	Opcode 0x87 - Identity Resolved event
+        Opcode 0x87 - Identity Resolved event
 
-		Controller Index:	<controller id>
-		Event parameters:	Address_Type (1 octet)
-					Address (6 octets)
-					Identity_Address_Type (1 octet)
-					Identity_Address (6 octets)
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Identity_Address_Type (1 octet)
+                                        Identity_Address (6 octets)
 
-		This event indicates that the remote Identity Address has been
-		resolved.
+                This event indicates that the remote Identity Address has been
+                resolved.
 
-	Opcode 0x88 - Connection Parameters Update event
+        Opcode 0x88 - Connection Parameters Update event
 
-		Controller Index:	<controller id>
-		Event parameters:	Address_Type (1 octet)
-					Address (6 octets)
-					Connection Interval (2 octets)
-					Connection Latency (2 octets)
-					Supervision Timeout (2 octets)
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Connection Interval (2 octets)
+                                        Connection Latency (2 octets)
+                                        Supervision Timeout (2 octets)
 
-		This event can be sent when the connection parameters have changed.
+                This event can be sent when the connection parameters have changed.
 
-	Opcode 0x89 - Security Level Changed event
+        Opcode 0x89 - Security Level Changed event
 
-		Controller Index:	<controller id>
-		Event parameters:	Address_Type (1 octet)
-					Address (6 octets)
-					Security Level (1 octet)
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Security Level (1 octet)
 
-		Possible values for the Security Level parameter map to those
-		defined in Core Specification in LE security mode 1:
-					1 = Unauthenticated pairing with encryption
-					2 = Authenticated pairing with encryption
-					3 = Authenticated LE Secure Connections pairing
-					with encryption using a 128-bit strength encryption key
+                Possible values for the Security Level parameter map to those
+                defined in Core Specification in LE security mode 1:
+                        1 = Unauthenticated pairing with encryption
+                        2 = Authenticated pairing with encryption
+                        3 = Authenticated LE Secure Connections pairing
+                        with encryption using a 128-bit strength encryption key
 
-		This event can be sent when the Security Level has changed.
+                This event can be sent when the Security Level has changed.
 
-	Opcode 0x8a - Pairing Consent Request event
+        Opcode 0x8a - Pairing Consent Request event
 
-		Controller Index:	<controller id>
-		Event parameters:	Address_Type (1 octet)
-					Address (6 octets)
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
 
-		This event can be sent when the IUT requires a pairing consent
-		from the user.
+                This event can be sent when the IUT requires a pairing consent
+                from the user.
 
-	Opcode 0x8b - Bond Lost event
+        Opcode 0x8b - Bond Lost event
 
-		Controller Index:	<controller id>
-		Event parameters:	Address_Type (1 octet)
-							Address (6 octets)
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
 
-		This event can be sent when IUT lost a bond with a peer device.
+                This event can be sent when IUT lost a bond with a peer device.
 
-	Opcode 0x8c - Pairing Failed event
+        Opcode 0x8c - Pairing Failed event
 
-		Controller Index:	<controller id>
-		Event parameters:	Address_Type (1 octet)
-							Address (6 octets)
-							Reason (1 octet)
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Reason (1 octet)
 
-		This event can be sent when IUT pairing procedure fails with
-		specified reason.
+                This event can be sent when IUT pairing procedure fails with
+                specified reason.
 
 
-	Opcode 0x8d - Periodic Sync Established event
+        Opcode 0x8d - Periodic Sync Established event
 
-		Controller Index:	<controller id>
-		Event parameters:	Address_Type (1 octet)
-							Address (6 octets)
-							Sync Handle (2 octets)
-							Status (1 octet)
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Sync Handle (2 octets)
+                                        Status (1 octet)
 
-		This event can be sent when sync is established with Periodic Advertiser.
-		Address in event is address of a peer that sync was established with.
+                This event can be sent when sync is established with Periodic Advertiser.
+                Address in event is address of a peer that sync was established with.
 
-	Opcode 0x8e - Periodic Sync Lost event
+        Opcode 0x8e - Periodic Sync Lost event
 
-		Controller Index:	<controller id>
-		Event parameters:	Sync Handle (2 octet)
-							Reason (1 octets)
+                Controller Index:       <controller id>
+                Event parameters:       Sync Handle (2 octet)
+                                        Reason (1 octets)
 
-		This event can be sent lost sync with Periodic Advertiser
+                This event can be sent lost sync with Periodic Advertiser
 
-	Opcode 0x8f - Periodic Report event
+        Opcode 0x8f - Periodic Report event
 
-		Controller Index:	<controller id>
-		Event parameters:	Sync Handle (2 octet)
-							TX_Power (1 octet)
-							RSSI (1 octet)
-							CTE Type (1 octet)
-							Data Status (1 octet)
-							Data Length (1 octet)
-							Data (variable)
+                Controller Index:       <controller id>
+                Event parameters:       Sync Handle (2 octet)
+                                        TX_Power (1 octet)
+                                        RSSI (1 octet)
+                                        CTE Type (1 octet)
+                                        Data Status (1 octet)
+                                        Data Length (1 octet)
+                                        Data (variable)
 
-		This event can be sent after IUT received Periodic Advertising report
-		on established sync.
+                This event can be sent after IUT received Periodic Advertising report
+                on established sync.
 
-	Opcode 0x90 - Periodic Transfer Received event
+        Opcode 0x90 - Periodic Transfer Received event
 
-		Controller Index:	<controller id>
-		Event parameters:	Sync Handle (2 octet)
-							TX_Power (1 octet)
-							RSSI (1 octet)
-							CTE Type (1 octet)
-							Data Status (1 octet)
-							Data Length (1 octet)
-							Data (variable)
+                Controller Index:       <controller id>
+                Event parameters:       Sync Handle (2 octet)
+                                        TX_Power (1 octet)
+                                        RSSI (1 octet)
+                                        CTE Type (1 octet)
+                                        Data Status (1 octet)
+                                        Data Length (1 octet)
+                                        Data (variable)
 
-		This event can be sent after IUT received Periodic Advertising Sync
-		Transfer was received.
+                This event can be sent after IUT received Periodic Advertising Sync
+                Transfer was received.
