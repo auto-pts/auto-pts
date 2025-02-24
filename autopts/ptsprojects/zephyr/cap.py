@@ -185,6 +185,8 @@ def test_cases(ptses):
     custom_test_cases = [
         ZTestCase("CAP", "CAP/CL/ADV/BV-01-C", cmds=pre_conditions + general_conditions,
                   generic_wid_hdl=cap_wid_hdl),
+        ZTestCase("CAP", "CAP/CL/ADV/BV-03-C", cmds=pre_conditions + targeted_conditions,
+                  generic_wid_hdl=cap_wid_hdl),
         ZTestCase("CAP", "CAP/ACC/ERR/BI-01-C", cmds=pre_conditions + [
             TestFunc(btp.pacs_set_available_contexts,
                      PACS_AUDIO_CONTEXT_TYPE_CONVERSATIONAL,
