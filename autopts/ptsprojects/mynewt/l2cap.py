@@ -145,14 +145,30 @@ def test_cases(ptses):
         TestFunc(btp.l2cap_le_listen, le_psm)
     ]
 
-    pre_conditions_auth = common + [TestFunc(stack.l2cap_init, psm_authentication_required, le_initial_mtu),
-                                    TestFunc(btp.l2cap_le_listen, psm_authentication_required)]
-    pre_conditions_keysize = common + [TestFunc(stack.l2cap_init, psm_encryption_key_size_required, le_initial_mtu),
-                                       TestFunc(btp.l2cap_le_listen, psm_encryption_key_size_required)]
-    pre_conditions_author = common + [TestFunc(stack.l2cap_init, psm_authorization_required, le_initial_mtu),
-                                      TestFunc(btp.l2cap_le_listen, psm_authorization_required)]
-    pre_conditions_encryption = common + [TestFunc(stack.l2cap_init, psm_encryption_required, le_initial_mtu),
-                                          TestFunc(btp.l2cap_le_listen, psm_encryption_required, le_initial_mtu)]
+    pre_conditions_auth = common + [
+        TestFunc(stack.l2cap_init, psm_authentication_required, le_initial_mtu),
+        TestFunc(btp.l2cap_le_listen, psm_authentication_required)
+    ]
+
+    pre_conditions_keysize = common + [
+        TestFunc(stack.l2cap_init, psm_encryption_key_size_required, le_initial_mtu),
+        TestFunc(btp.l2cap_le_listen, psm_encryption_key_size_required)
+    ]
+
+    pre_conditions_author = common + [
+        TestFunc(stack.l2cap_init, psm_authorization_required, le_initial_mtu),
+        TestFunc(btp.l2cap_le_listen, psm_authorization_required)
+    ]
+
+    pre_conditions_encryption = common + [
+        TestFunc(stack.l2cap_init, psm_encryption_required, le_initial_mtu),
+        TestFunc(btp.l2cap_le_listen, psm_encryption_required, le_initial_mtu)
+    ]
+
+    pre_conditions_unacceptable_parameters = common + [
+        TestFunc(stack.l2cap_init, le_psm, le_initial_mtu),
+        TestFunc(btp.l2cap_le_listen, le_psm, le_initial_mtu, L2cap.unacceptable_parameters)
+    ]
 
     custom_test_cases = [
         # Connection Parameter Update
@@ -195,9 +211,7 @@ def test_cases(ptses):
                   pre_conditions_keysize,
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/ECFC/BV-27-C",
-                  pre_conditions +
-                  [TestFunc(btp.l2cap_le_listen, le_psm, le_initial_mtu,
-                            L2cap.unacceptable_parameters)],
+                  pre_conditions_unacceptable_parameters,
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/ECFC/BV-29-C",
                   pre_conditions +
@@ -205,15 +219,6 @@ def test_cases(ptses):
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/ECFC/BV-32-C",
                   pre_conditions_encryption,
-                  generic_wid_hdl=l2cap_wid_hdl),
-        ZTestCase("L2CAP", "L2CAP/COS/ECFC/BV-01-C",
-                  pre_conditions,
-                  generic_wid_hdl=l2cap_wid_hdl),
-        ZTestCase("L2CAP", "L2CAP/COS/ECFC/BV-02-C",
-                  pre_conditions,
-                  generic_wid_hdl=l2cap_wid_hdl),
-        ZTestCase("L2CAP", "L2CAP/COS/ECFC/BV-03-C",
-                  pre_conditions,
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/ECFC/BI-02-C",
                   pre_conditions +
@@ -230,13 +235,13 @@ def test_cases(ptses):
     tc_list = []
 
     for tc_name in test_case_name_list:
-        if tc_name.startswith('L2CAP/ECFC'):
+        if tc_name.startswith(('L2CAP/COS', 'L2CAP/ECFC', 'L2CAP/LE/CFC')):
             instance = ZTestCase('L2CAP', tc_name,
                                  pre_conditions,
                                  generic_wid_hdl=l2cap_wid_hdl)
         else:
             instance = ZTestCase('L2CAP', tc_name,
-                                 pre_conditions,
+                                 common,
                                  generic_wid_hdl=l2cap_wid_hdl)
 
         for custom_tc in custom_test_cases:
