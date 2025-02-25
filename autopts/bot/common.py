@@ -893,7 +893,7 @@ def get_tc_res_data(tc_results, test_groups):
      dictionary containing profile name as key, TestGroup object as value
      e.g. test_groups = {'ASCS' = TestGroup()}"""
     for tc, res in list(tc_results.items()):
-        result = res[0]
+        result = res["parsed_result"]
         profile = tc.split('/')[0]
         if profile not in test_groups.keys():
             test_groups[profile] = TestGroup()
