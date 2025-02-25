@@ -4449,7 +4449,7 @@
           <Row>
             <Name>TSPC_L2CAP_2_45a</Name>
             <Description>Send Disconnect Request Command - LE (C.22)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
