@@ -15,7 +15,7 @@
 #
 
 import logging
-from autopts.bot.common import check_call
+from autopts.bot.mynewt import check_call
 
 # Note: always specify tty or COM in 'tty_file' of app core in config.py.
 # Otherwise, net core could be selected and BTP timeouts will occur.
