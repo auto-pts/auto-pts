@@ -623,7 +623,7 @@ class TestCaseRunStats:
         root1.extend(root2)
         self_tree.write(self.xml_results)
 
-    def update(self, test_case_name, duration, status, description=''):
+    def update(self, test_case_name, duration, status, description='', test_start_time=None, test_end_time=None):
         tree = ElementTree.parse(self.xml_results)
         root = tree.getroot()
 
@@ -644,13 +644,20 @@ class TestCaseRunStats:
             elem.attrib["status"] = ""
             elem.attrib["status_previous"] = str(status_previous)
             elem.attrib["description"] = description
+            elem.attrib["test_start_time"] = ""
+            elem.attrib["test_end_time"] = ""
 
             run_count = 0
         else:
             run_count = int(elem.attrib["run_count"])
 
         elem.attrib["status"] = status
-
+        
+        if test_start_time is not None:
+            elem.attrib["test_start_time"] = test_start_time.strftime('%Y-%m-%d %H:%M:%S')
+        if test_end_time is not None:
+            elem.attrib["test_end_time"] = test_end_time.strftime('%Y-%m-%d %H:%M:%S')
+            
         regression = bool(elem.attrib["status"] != "PASS" and elem.attrib["status_previous"] == "PASS")
         progress = bool(elem.attrib["status"] == "PASS" and elem.attrib["status_previous"] != "PASS" \
                         and elem.attrib["status_previous"] != "None")
@@ -692,10 +699,32 @@ class TestCaseRunStats:
         root = tree.getroot()
 
         results = {}
-
         for tc_xml in root.findall("./test_case"):
-            results[tc_xml.attrib["name"]] = \
-                (tc_xml.attrib["status"], tc_xml.attrib["run_count"])
+            status = tc_xml.attrib["status"]
+            run_count = tc_xml.attrib["run_count"]
+            start_time = tc_xml.attrib.get("test_start_time")
+            end_time = tc_xml.attrib.get("test_end_time")
+            duration = tc_xml.attrib.get("duration")
+
+            patterns = ["UNKNOWN VERDICT"]
+            parsed_result = status
+            additional_info = ""
+
+            for pattern in patterns:
+                if pattern in status:
+                    additional_info = status.replace(pattern, "").strip()
+                    parsed_result = pattern
+                    break
+
+            results[tc_xml.attrib["name"]] = {
+                "status": status,
+                "run_count": run_count,
+                "test_start_time": start_time,
+                "test_end_time": end_time,
+                "duration": duration,
+                "parsed_result": parsed_result,
+                "additional_info": additional_info
+            }
 
         return results
 
@@ -806,11 +835,19 @@ def run_test_case_wrapper(func):
                test_case_name.ljust(max_test_case_name + margin - 1)), end=' ')
         sys.stdout.flush()
 
+        start_dt_test = datetime.datetime.now()
         start_time = time.time()
         status = func(*args)
-        end_time = time.time() - start_time
+        duration = time.time() - start_time
+        end_dt_test = datetime.datetime.now()
 
-        regression, progress = stats.update(test_case_name, end_time, status)
+        regression, progress = stats.update(
+            test_case_name,
+            duration,
+            status,
+            test_start_time=start_dt_test,
+            test_end_time=end_dt_test,
+        )
 
         retries_max = run_count_max - 1
         if run_count:
@@ -826,7 +863,7 @@ def run_test_case_wrapper(func):
             regression_msg = ""
 
         end_time_str = str(round(datetime.timedelta(
-            seconds=end_time).total_seconds(), 3))
+            seconds=duration).total_seconds(), 3))
 
         result = ("{} ".format(status).ljust(15) +
                   end_time_str.rjust(len(end_time_str)) +
@@ -841,7 +878,7 @@ def run_test_case_wrapper(func):
 
         sys.stdout.flush()
 
-        return status, end_time
+        return status, duration
 
     return wrapper
 
