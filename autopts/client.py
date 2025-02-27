@@ -1154,18 +1154,6 @@ def run_test_case(ptses, test_case_instances, test_case_name, stats,
     thread_list = []
 
     for thread_count, (test_case_lt, pts) in enumerate(zip(test_case_lts, ptses), 1):
-        if test_case_name.startswith("CSIP/CL/SP") and len(ptses) > 1:
-            # The following tests have shown issues with IRKs being duplicated in one or more lower testers:
-            # - CSIP/CL/SPE/BI-01-C
-            # - CSIP/CL/SP/BV-07-C
-            # - CSIP/CL/SP/BV-03-C
-            # - CSIP/CL/SP/BV-04-C
-            #
-            # Adding a sleep between each lower tester thread start seem to circumvent this issue
-            # but not solve it. Local testing has shown that at least 3 seconds of sleep is required.
-            # The sleep time has been set to 10 to add additional robustness.
-            # This is related to Request ID 147314
-            time.sleep(10)
         thread = LTThread(
             name=f'LT{thread_count}-thread',
             args=(pts, test_case_lt, exceptions, finish_count))
