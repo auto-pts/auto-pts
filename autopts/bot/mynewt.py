@@ -36,7 +36,11 @@ PROJECT_NAME = Path(__file__).stem
 def check_call(cmd, env=None, cwd=None, shell=True):
     if sys.platform == 'win32':
         cmd = subprocess.list2cmdline(cmd)
-        cmd = [os.path.expandvars('$MSYS2_BASH_PATH'), '-c', cmd]
+        if cwd.startswith('wsl:'):
+            cmd = ["wsl.exe", "--cd", cwd.removeprefix('wsl:'), "--", "/bin/bash", "-i", "-c", cmd]
+            cwd = None
+        else:
+            cmd = [os.path.expandvars('$MSYS2_BASH_PATH'), '-c', cmd]
     return bot.common.check_call(cmd, env, cwd, shell)
 
 
