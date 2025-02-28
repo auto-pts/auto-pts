@@ -1609,25 +1609,25 @@
           <Row>
             <Name>TSPC_GAP_27_10</Name>
             <Description>Encrypted Data Key Material (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_27_10a</Name>
             <Description>Encrypted Data Key Material Indications (C.2)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_27_11</Name>
             <Description>LE GATT Security Levels (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_27_12</Name>
             <Description>Resolvable Private Address Only (C.3)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -2353,13 +2353,13 @@
           <Row>
             <Name>TSPC_GAP_37_4</Name>
             <Description>LE GATT Security Levels (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_37_5</Name>
             <Description>Resolvable Private Address Only (C.2)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -3312,7 +3312,7 @@
           <Row>
             <Name>TSPC_GATT_3_16</Name>
             <Description>Characteristic Value Reliable Writes (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -3390,7 +3390,7 @@
           <Row>
             <Name>TSPC_GATT_3_28</Name>
             <Description>Read and Interpret Characteristic Aggregate Format (C.6)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -3570,25 +3570,25 @@
           <Row>
             <Name>TSPC_GATT_4_26</Name>
             <Description>Client Supported Features Characteristic (C.9)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_4_27</Name>
             <Description>Database Hash Characteristic (C.8)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_4_28</Name>
             <Description>Report Characteristic Value: Characteristic Presentation Format (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_4_29</Name>
             <Description>Report aggregate Characteristic Value: Characteristic Aggregate Format (C.10)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
