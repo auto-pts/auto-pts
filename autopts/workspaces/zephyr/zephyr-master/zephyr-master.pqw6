@@ -1,4 +1,4 @@
-<WORKSPACE_INFORMATION NAME="zephyr-master" PATH="C:\Users\Szymon\auto-pts\autopts\workspaces\zephyr\zephyr-master" CREATED_WITH="Profile Tuning Suite, 8.7.4, 1" BD_ADDR="000000000000" SWITCH_TTCN="FALSE" QDID="332723">
+<WORKSPACE_INFORMATION NAME="zephyr-master" PATH="zephyr-master" CREATED_WITH="Profile Tuning Suite, 8.8.0, 6" BD_ADDR="000000000000" SWITCH_TTCN="FALSE" QDID="347313">
   <PROJECTS_INFORMATION>
     <PROJECT_INFORMATION NAME="AICS" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
       <PICS>
@@ -9,6 +9,12 @@
             <Description>AICS v1.0 (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_AICS_0a_1</Name>
+            <Description>AICS v1.0.1 (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_AICS_1_1</Name>
@@ -71,6 +77,18 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_AICS_2_9</Name>
+            <Description>Autonomous Automatic Only Support (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_AICS_2_10</Name>
+            <Description>Autonomous Manual Only Support (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_AICS_3_1</Name>
             <Description>Set Gain Setting (M)</Description>
             <Value>TRUE</Value>
@@ -87,6 +105,12 @@
             <Description>Mute (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_AICS_3_3b</Name>
+            <Description>Mute Disabled (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_AICS_3_4</Name>
@@ -108,7 +132,7 @@
           </Row>
           <Row>
             <Name>TSPC_AICS_4_2</Name>
-            <Description>Notifications (M)</Description>
+            <Description>Single Notification (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -254,7 +278,7 @@
           <Row>
             <Name>TSPC_ASCS_1_1</Name>
             <Description>ASCS v1.0.1 (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -279,6 +303,18 @@
             <Name>TSPC_ASCS_4_1</Name>
             <Description>Support Multiple ASEs (O)</Description>
             <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_ASCS_4_2</Name>
+            <Description>Support Multiple Sink ASEs (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_ASCS_4_3</Name>
+            <Description>Support Multiple Source ASEs (C.2)</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -415,7 +451,7 @@
           </Row>
           <Row>
             <Name>TSPC_ASCS_9_4</Name>
-            <Description>Notifications (M)</Description>
+            <Description>Single Notification (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -670,9 +706,9 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_4_1</Name>
-            <Description>BAP v1.0 (M)</Description>
+            <Description>BAP v1.0 (C.1, C.2)</Description>
             <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_5_1</Name>
@@ -682,14 +718,14 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_5_2</Name>
-            <Description>Erratum 18556 (C.2)</Description>
+            <Description>No longer used (N/A)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_5_3</Name>
             <Description>Erratum 19096 (C.3)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1894,13 +1930,13 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_26_1</Name>
-            <Description>BAP v1.0 (M)</Description>
+            <Description>BAP v1.0 (C.1, C.2)</Description>
             <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_27_1</Name>
-            <Description>Erratum 18524 (C.1)</Description>
+            <Description>No longer used (N/A)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -1912,14 +1948,14 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_27_3</Name>
-            <Description>Erratum 18556 (C.1)</Description>
+            <Description>No longer used (N/A)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_27_4</Name>
             <Description>Erratum 19096 (C.2)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -2980,7 +3016,7 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_45_11</Name>
-            <Description>Notifications (M)</Description>
+            <Description>Single Notification (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -3124,9 +3160,9 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_49_1</Name>
-            <Description>BAP v1.0 (M)</Description>
+            <Description>BAP v1.0 (C.1, C.2)</Description>
             <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_50_1</Name>
@@ -3454,9 +3490,9 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_56_6</Name>
-            <Description>24_2_2 LC3: 10000 SDU Interval, unframed, 60 Max SDU Size, 4 RTN, 60 Max_Transport_Latency (M)</Description>
+            <Description>24_2_2 LC3: 10000 SDU Interval, unframed, 60 Max SDU Size, 4 RTN, 60 Max_Transport_Latency (C.15)</Description>
             <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_56_7</Name>
@@ -3682,9 +3718,9 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_62_1</Name>
-            <Description>BAP v1.0 (M)</Description>
+            <Description>BAP v1.0 (C.1, C.2)</Description>
             <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_63_1</Name>
@@ -3694,7 +3730,7 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_63_2</Name>
-            <Description>Erratum 18556 (C.2)</Description>
+            <Description>No longer used (N/A)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -4342,9 +4378,9 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_77_1</Name>
-            <Description>BAP v1.0 (M)</Description>
+            <Description>BAP v1.0 (C.1, C.2)</Description>
             <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_78_1</Name>
@@ -4354,7 +4390,7 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_78_2</Name>
-            <Description>Erratum 18556 (C.2)</Description>
+            <Description>No longer used (N/A)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -4504,7 +4540,7 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_80_22</Name>
-            <Description>Out of Band (Central) (C.10)</Description>
+            <Description>Out of Band (LE) (C.10)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -4546,9 +4582,9 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_83_1</Name>
-            <Description>BAP v1.0 (M)</Description>
+            <Description>BAP v1.0 (C.1, C.2)</Description>
             <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_84_1</Name>
@@ -4558,7 +4594,7 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_84_2</Name>
-            <Description>Erratum 18556 (C.2)</Description>
+            <Description>No longer used (N/A)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -4570,25 +4606,25 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_85_1</Name>
-            <Description>BASS supported over BR/EDR (C.1)</Description>
+            <Description>Discover BASS over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_85_2</Name>
-            <Description>BASS supported over LE (C.1)</Description>
+            <Description>Discover BASS over LE (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_85_3</Name>
-            <Description>PACS supported over BR/EDR (O)</Description>
+            <Description>Discover PACS over BR/EDR (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_85_4</Name>
-            <Description>PACS supported over LE (O)</Description>
+            <Description>Discover PACS over LE (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -4738,7 +4774,7 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_89_10</Name>
-            <Description>Notifications (M)</Description>
+            <Description>Single Notification (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -5469,9 +5505,9 @@
           </Row>
           <Row>
             <Name>TSPX_Connection_Interval</Name>
-            <Description>Connection interval for specific sampling frequency. unit 1.25ms(Default: 120 = 150ms)</Description>
+            <Description>Connection interval for specific sampling frequency. unit 1.25ms(Default: 64 = 80ms)</Description>
             <Type>INTEGER</Type>
-            <Value>120</Value>
+            <Value>64</Value>
           </Row>
           <Row>
             <Name>TSPX_Extended_Adv_Interval_min</Name>
@@ -5496,6 +5532,18 @@
             <Description>Max Periodic Advertisement interval for Periodic Advertisement. Only used in BSNK test case group. unit 1.25ms(Default: 600 = 750ms)</Description>
             <Type>INTEGER</Type>
             <Value>600</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_EXPOSE_CSIS</Name>
+            <Description>Expose CSIS Instance. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_sirk</Name>
+            <Description>The 16 bytes SIRK value. (Default: 0X838E680553F1415AA265BBAFC6EA03B8)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>838E680553F1415AA265BBAFC6EA03B8</Value>
           </Row>
         </Rows>
       </PIXIT>
@@ -5776,7 +5824,7 @@
           </Row>
           <Row>
             <Name>TSPC_BAS_2_43</Name>
-            <Description>Operate without battery (O)</Description>
+            <Description>Removable Battery and can operate without battery (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -5926,7 +5974,7 @@
           </Row>
           <Row>
             <Name>TSPC_BAS_3_4</Name>
-            <Description>Notifications (C.4)</Description>
+            <Description>Single Notification (C.4)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -6106,6 +6154,12 @@
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_BASS_1_1</Name>
+            <Description>BASS v1.0.1 (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_BASS_2_1</Name>
             <Description>Service supported over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
@@ -6132,7 +6186,7 @@
           <Row>
             <Name>TSPC_BASS_3_2a</Name>
             <Description>Broadcast Receive State characteristic: Bad_Code 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -6203,7 +6257,7 @@
           </Row>
           <Row>
             <Name>TSPC_BASS_5_3</Name>
-            <Description>Notifications (M)</Description>
+            <Description>Single Notification (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -6420,9 +6474,15 @@
           </Row>
           <Row>
             <Name>TSPC_CAP_4_1</Name>
-            <Description>	CAP v1.0 (M)</Description>
+            <Description>CAP v1.0 (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CAP_5_1</Name>
+            <Description>CAP v1.0.1 (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_CAP_6_1</Name>
@@ -6672,9 +6732,15 @@
           </Row>
           <Row>
             <Name>TSPC_CAP_14_1</Name>
-            <Description>Common Audio Profile 1.0 (M)</Description>
+            <Description>CAP v1.0 (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CAP_15_1</Name>
+            <Description>CAP v1.0.1 (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_CAP_16_1</Name>
@@ -6756,25 +6822,25 @@
           </Row>
           <Row>
             <Name>TSPC_CAP_19_1</Name>
-            <Description>Service supported over LE (TBS) (C.1)</Description>
+            <Description>Telephone Bearer Service (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_CAP_19_2</Name>
-            <Description>Service supported over LE (GTBS) (C.1)</Description>
+            <Description>Generic Telephone Bearer Service (C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_CAP_19_3</Name>
-            <Description>Service supported over LE (MCS) (C.2)</Description>
+            <Description>Media Control Service (C.2)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_CAP_19_4</Name>
-            <Description>Service supported over LE (GMCS) (C.2)</Description>
+            <Description>Generic Media Control Service (C.4)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -6824,12 +6890,6 @@
             <Name>TSPC_CAP_20_8</Name>
             <Description>Broadcast to Unicast Handover procedure (C.6)</Description>
             <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_CAP_20_9</Name>
-            <Description>Distribute Broadcast Code (C.7)</Description>
-            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -6936,9 +6996,15 @@
           </Row>
           <Row>
             <Name>TSPC_CAP_24_1</Name>
-            <Description>Common Audio Profile 1.0 (M)</Description>
+            <Description>CAP v1.0 (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CAP_25_1</Name>
+            <Description>CAP v1.0.1 (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_CAP_26_1</Name>
@@ -8513,19 +8579,13 @@
           </Row>
           <Row>
             <Name>TSPC_CSIP_3_1</Name>
-            <Description>Coordinated Set Identification Profile v1.0 (M)</Description>
+            <Description>CSIP v1.0 (C.1, C.2)</Description>
             <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_CSIP_4_1</Name>
-            <Description>Erratum 17455 (C.1)</Description>
-            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_CSIP_4_2</Name>
-            <Description>Coordinated Set Identification Profile v1.0.1 (O)</Description>
+            <Description>CSIP v1.0.1 (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -8669,19 +8729,13 @@
           </Row>
           <Row>
             <Name>TSPC_CSIP_8_1</Name>
-            <Description>Coordinated Set Identification Profile v1.0 (M)</Description>
+            <Description>CSIP v1.0 (C.1, C.2)</Description>
             <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_CSIP_9_1</Name>
-            <Description>Erratum 17455 (C.1)</Description>
-            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_CSIP_9_2</Name>
-            <Description>Coordinated Set Identification Profile v1.0.1 (O)</Description>
+            <Description>CSIP v1.0.1 (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -8795,7 +8849,7 @@
           </Row>
           <Row>
             <Name>TSPC_CSIP_13_9</Name>
-            <Description>Notifications (O)</Description>
+            <Description>Single Notification (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -8809,6 +8863,18 @@
             <Name>TSPC_CSIP_13_11</Name>
             <Description>Write Characteristic Descriptors (C.3)</Description>
             <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CSIP_13_12</Name>
+            <Description>GATT Client over LE (C.4)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CSIP_13_13</Name>
+            <Description>GATT Client over BR/EDR (C.5)</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -9054,19 +9120,13 @@
         <Rows>
           <Row>
             <Name>TSPC_CSIS_0_1</Name>
-            <Description>CSIS v1.0 (M)</Description>
+            <Description>CSIS v1.0 (C.1,C.2)</Description>
             <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_CSIS_0a_1</Name>
-            <Description>Erratum 17454 (C.1)</Description>
-            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_CSIS_0a_2</Name>
-            <Description>CSIS v1.0.1 (O)</Description>
+            <Description>CSIS v1.0.1 (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -9125,6 +9185,18 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_CSIS_2a_1</Name>
+            <Description>Notifiable Set Identity Resolving Key Characteristic (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CSIS_2a_2</Name>
+            <Description>Notifiable Coordinated Set Size Characteristic (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_CSIS_3_1</Name>
             <Description>Write Characteristic Value (C.1)</Description>
             <Value>TRUE</Value>
@@ -9132,7 +9204,7 @@
           </Row>
           <Row>
             <Name>TSPC_CSIS_3_2</Name>
-            <Description>Notifications (C.1)</Description>
+            <Description>Single Notification (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -9165,6 +9237,18 @@
             <Description>SDP record present for CSIS (M)</Description>
             <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CSIS_5_1</Name>
+            <Description>Bondable mode (LE) (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CSIS_5_2</Name>
+            <Description>Bondable mode (BR/EDR) (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_ALL</Name>
@@ -12953,12 +13037,6 @@
             <Type>OCTETSTRING</Type>
             <Value>46E77AB1EF007A9E</Value>
           </Row>
-          <Row>
-            <Name>TSPX_initiate_encryption_after_reconnection</Name>
-            <Description>Whether or not the IUT Central initiates encryption after reconnection (Default: FALSE)</Description>
-            <Type>BOOLEAN</Type>
-            <Value>FALSE</Value>
-          </Row>
         </Rows>
       </PIXIT>
     </PROJECT_INFORMATION>
@@ -13143,7 +13221,7 @@
           </Row>
           <Row>
             <Name>TSPC_GATT_3_17</Name>
-            <Description>Notifications (C.7)</Description>
+            <Description>Single Notification (C.7)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -13341,7 +13419,7 @@
           </Row>
           <Row>
             <Name>TSPC_GATT_4_17</Name>
-            <Description>Notifications (O)</Description>
+            <Description>Single Notification (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -13727,6 +13805,12 @@
             <Name>TSPC_GAP_0_2</Name>
             <Description>LE (C.2)</Description>
             <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_1_7</Name>
+            <Description>Bondable mode (C.2)</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -16652,7 +16736,7 @@
           <Row>
             <Name>TSPC_HAP_11_1</Name>
             <Description>HAP v1.0.1 (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -16844,7 +16928,7 @@
           <Row>
             <Name>TSPC_HAP_41_1</Name>
             <Description>HAP v1.0.1 (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -17078,7 +17162,7 @@
           <Row>
             <Name>TSPC_HAP_91_1</Name>
             <Description>HAP v1.0.1 (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -17614,6 +17698,12 @@
             <Type>IA5STRING</Type>
             <Value>3</Value>
           </Row>
+          <Row>
+            <Name>TSPX_deleted_preset_index</Name>
+            <Description>Preset index to be deleted. (Default: 9)</Description>
+            <Type>INTEGER</Type>
+            <Value>9</Value>
+          </Row>
         </Rows>
       </PIXIT>
     </PROJECT_INFORMATION>
@@ -18000,211 +18090,1198 @@
     <PROJECT_INFORMATION NAME="IOPT" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
       <PICS>
         <Name>IOPT</Name>
-        <Version />
         <Rows>
           <Row>
-            <Name>TSPC_3DSP_1_1</Name>
-            <Description>3DSP 1.0</Description>
+            <Name>TSPC_IOPT_1_1</Name>
+            <Description>3D Synchronization Profile (3DSP) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_1a</Name>
+            <Description>3DD - 3D Display (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_1b</Name>
+            <Description>3DG - 3D Glasses (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_2</Name>
+            <Description>Advanced Audio Distribution Profile (A2DP) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_2a</Name>
+            <Description>Source (A2DP) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_2b</Name>
+            <Description>Sink (A2DP) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_3</Name>
+            <Description>Audio/Video Remote Control Profile (AVRCP) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_3a</Name>
+            <Description>Controller (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_3b</Name>
+            <Description>Target (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_4</Name>
+            <Description>Basic Imaging Profile (BIP) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_4a</Name>
+            <Description>Image Push Responder (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_4b</Name>
+            <Description>Image Pull Responder (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_4c</Name>
+            <Description>Advanced Image Printing Responder (= Printer) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_4d</Name>
+            <Description>Automatic Archive Responder (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_4e</Name>
+            <Description>Remote Camera Responder (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_4f</Name>
+            <Description>Remote Display Responder (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_5</Name>
+            <Description>Basic Printing Profile (BPP) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_5a</Name>
+            <Description>Printer (Pr) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_5b</Name>
+            <Description>Sender Device (SD) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_6</Name>
+            <Description>Calendar, Tasks and Notes Profile (CTN) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_6a</Name>
+            <Description>CTN Client Equipment (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_6b</Name>
+            <Description>CTN Server Equipment (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_7</Name>
+            <Description>Device Identification (DID) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_8</Name>
+            <Description>Dial-up Networking Profile (DUN) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_8a</Name>
+            <Description>Gateway (GW) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_9</Name>
+            <Description>File Transfer Profile (FTP) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_9a</Name>
+            <Description>File Transfer Server (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_10</Name>
+            <Description>Global Navigation Satellite Systems Profile (GNSS) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_10a</Name>
+            <Description>Server (GNSS) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_11</Name>
+            <Description>Hardcopy Cable Replacement Profile (HCRP) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_11a</Name>
+            <Description>Server (HCRP) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_11b</Name>
+            <Description>Client (HCRP) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_12</Name>
+            <Description>Health Device Profile (HDP) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_12a</Name>
+            <Description>Source (HDP) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_12b</Name>
+            <Description>Sink (HDP) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_13</Name>
+            <Description>Hands-Free Profile (HFP) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_13a</Name>
+            <Description>Audio Gateway (AG) (HFP) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_13b</Name>
+            <Description>Hands-Free (HF) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_14</Name>
+            <Description>Human Interface Device v1.0 (HID) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_14a</Name>
+            <Description>Device (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_15</Name>
+            <Description>Human Interface Device v1.1 or later (HID11) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_15a</Name>
+            <Description>HID Device Role (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_16</Name>
+            <Description>Headset Profile (HSP) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_16a</Name>
+            <Description>Audio Gateway (AG) (HSP) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_16b</Name>
+            <Description>Headset (HS) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_17</Name>
+            <Description>Message Access Profile (MAP) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_17a</Name>
+            <Description>Messaging Server Equipment (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_17b</Name>
+            <Description>Notification (MCE) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_18</Name>
+            <Description>Multi-Profile Specification (MPS) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_19</Name>
+            <Description>Object Push Profile (OPP) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_19a</Name>
+            <Description>Object Push Server (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_20</Name>
+            <Description>Personal Area Networking (PAN) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_20a</Name>
+            <Description>Network Access Point (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_20b</Name>
+            <Description>Group Ad-hoc Network (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_20c</Name>
+            <Description>PANU Service Record (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_21</Name>
+            <Description>Phone Book Access Profile (PBAP) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_21a</Name>
+            <Description>PCE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_21b</Name>
+            <Description>PSE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_22</Name>
+            <Description>SIM Access Profile (SAP) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_22a</Name>
+            <Description>SIM Access Server (Server) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_23</Name>
+            <Description>Serial Port Profile (SPP) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_23a</Name>
+            <Description>SPP as a standalone profile - Device B (DevB) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_24</Name>
+            <Description>Synchronization Profile (SYNC) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_24a</Name>
+            <Description>IrMC Server (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_24b</Name>
+            <Description>Sync command (IrMC Client) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_25</Name>
+            <Description>Video Distribution Profile (VDP) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_25a</Name>
+            <Description>Source (VDP) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1_25b</Name>
+            <Description>Sink (VDP) (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_1a_1</Name>
+            <Description>Implementation of at least one traditional profile (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_A2DP_1_1</Name>
-            <Description>Source (C.1)</Description>
+            <Name>TSPC_IOPT_2_1a</Name>
+            <Description>Authorization Control Service (ACS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_1b</Name>
+            <Description>Authorization Control Service (ACS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_2a</Name>
+            <Description>Audio Input Control Service (AICS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_2b</Name>
+            <Description>Audio Input Control Service (AICS) over LE (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_3a</Name>
+            <Description>Automation IO Service (AIOS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_3b</Name>
+            <Description>Automation IO Service (AIOS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_4a</Name>
+            <Description>Alert Notification Service (ANS) over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_A2DP_1_2</Name>
-            <Description>Sink (C.1)</Description>
+            <Name>TSPC_IOPT_2_4b</Name>
+            <Description>Alert Notification Service (ANS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_5a</Name>
+            <Description>Audio Stream Control Service (ASCS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_5b</Name>
+            <Description>Audio Stream Control Service (ASCS) over LE (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_6a</Name>
+            <Description>Battery Service (BAS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_6b</Name>
+            <Description>Battery Service (BAS) over LE (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_7a</Name>
+            <Description>Broadcast Audio Scan Service (BASS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_7b</Name>
+            <Description>Broadcast Audio Scan Service (BASS) over LE (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_8a</Name>
+            <Description>Body Composition Service (BCS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_8b</Name>
+            <Description>Body Composition Service (BCS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_9a</Name>
+            <Description>Blood Pressure Service (BLS) over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_AVRCP_1_1</Name>
-            <Description>Controller (C.1)</Description>
-            <Role />
+            <Name>TSPC_IOPT_2_9b</Name>
+            <Description>Blood Pressure Service (BLS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_10a</Name>
+            <Description>Bond Management Service (BMS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_10b</Name>
+            <Description>Bond Management Service (BMS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_11a</Name>
+            <Description>Binary Sensor Service (BSS) over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_BPP_1_1</Name>
-            <Description>Roles: Printer (Pr) (C.1)</Description>
+            <Name>TSPC_IOPT_2_11b</Name>
+            <Description>Binary Sensor Service (BSS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_12a</Name>
+            <Description>Common Audio Service (CAS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_12b</Name>
+            <Description>Common Audio Service (CAS) over LE (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_13a</Name>
+            <Description>Continuous Glucose Monitoring Service (CGMS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_13b</Name>
+            <Description>Continuous Glucose Monitoring Service (CGMS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_14a</Name>
+            <Description>Cycling Power Service (CPS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_14b</Name>
+            <Description>Cycling Power Service (CPS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_15a</Name>
+            <Description>Cycling Speed and Cadence Service (CSCS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_15b</Name>
+            <Description>Cycling Speed and Cadence Service (CSCS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_16a</Name>
+            <Description>Coordinated Set Identification Service (CSIS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_16b</Name>
+            <Description>Coordinated Set Identification Service (CSIS) over LE (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_17a</Name>
+            <Description>Constant Tone Extension Service (CTES) over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_DUN_1_1</Name>
-            <Description>Role : Gateway (GW) (C.1)</Description>
+            <Name>TSPC_IOPT_2_17b</Name>
+            <Description>Constant Tone Extension Service (CTES) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_18a</Name>
+            <Description>Current Time Service (CTS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_18b</Name>
+            <Description>Current Time Service (CTS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_19a</Name>
+            <Description>Device Information Service (DIS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_19b</Name>
+            <Description>Device Information Service (DIS) over LE (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_20a</Name>
+            <Description>Device Time Service (DTS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_20b</Name>
+            <Description>Device Time Service (DTS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_21a</Name>
+            <Description>Emergency Configuration Service (EMCS) over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_FTP_1_1</Name>
-            <Description>File Transfer Server (C.1)</Description>
+            <Name>TSPC_IOPT_2_21b</Name>
+            <Description>Emergency Configuration Service (EMCS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_22a</Name>
+            <Description>Electronic Shelf Label Service (ESLS) over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GNSS_1_1</Name>
-            <Description>Role: Server (C.1)</Description>
+            <Name>TSPC_IOPT_2_22b</Name>
+            <Description>Electronic Shelf Label Service (ESLS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_23a</Name>
+            <Description>Environmental Sensing Service (ESS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_23b</Name>
+            <Description>Environmental Sensing Service (ESS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_24a</Name>
+            <Description>Elapsed Time Service (ETS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_24b</Name>
+            <Description>Elapsed Time Service (ETS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_25a</Name>
+            <Description>Fitness Machine Service (FTMS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_25b</Name>
+            <Description>Fitness Machine Service (FTMS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_63a</Name>
+            <Description>Gaming Audio Service (GMAS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_63b</Name>
+            <Description>Gaming Audio Service (GMAS) over LE (M[JB2])</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_26a</Name>
+            <Description>Generic Health Sensor Service (GHSS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_26b</Name>
+            <Description>Generic Health Sensor Service (GHSS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_27a</Name>
+            <Description>Glucose Service (GLS) over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_HCRP_1_1</Name>
-            <Description>Role: Server (C.1)</Description>
+            <Name>TSPC_IOPT_2_27b</Name>
+            <Description>Glucose Service (GLS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_28a</Name>
+            <Description>Generic Media Control Service (GMCS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_28b</Name>
+            <Description>Generic Media Control Service (GMCS) over LE (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_29a</Name>
+            <Description>Generic Telephone Bearer Service (GTBS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_29b</Name>
+            <Description>Generic Telephone Bearer Service (GTBS) over LE (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_30a</Name>
+            <Description>Hearing Access Service (HAS) over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_HFP_1_2</Name>
-            <Description>Role: Hands-Free (HF) (C.1)</Description>
+            <Name>TSPC_IOPT_2_30b</Name>
+            <Description>Hearing Access Service (HAS) over LE (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_31a</Name>
+            <Description>HID Service (HIDS) over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_HID11_1_4</Name>
-            <Description>HID Device Role (C.2)</Description>
+            <Name>TSPC_IOPT_2_31b</Name>
+            <Description>HID Service (HIDS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_32a</Name>
+            <Description>HTTP Proxy Service (HPS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_32b</Name>
+            <Description>HTTP Proxy Service (HPS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_33a</Name>
+            <Description>Heart Rate Service (HRS) over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_HSP_1_2</Name>
-            <Description>Role: Headset (HS) (C.1)</Description>
+            <Name>TSPC_IOPT_2_33b</Name>
+            <Description>Heart Rate Service (HRS) over LE (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_34a</Name>
+            <Description>Health Thermometer Service (HTS) over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_OPP_1_2</Name>
-            <Description>Object Push Server (C.1)</Description>
-            <Role />
+            <Name>TSPC_IOPT_2_34b</Name>
+            <Description>Health Thermometer Service (HTS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_35a</Name>
+            <Description>Immediate Alert Service (IAS) over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_PAN_1_1</Name>
-            <Description>Role: Network Access Point (C.1)</Description>
+            <Name>TSPC_IOPT_2_35b</Name>
+            <Description>Immediate Alert Service (IAS) over LE (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_61a</Name>
+            <Description>Industrial Measurement Device Service (IMDS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_61b</Name>
+            <Description>Industrial Measurement Device Service (IMDS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_36a</Name>
+            <Description>Insulin Delivery Service (IDS) over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_PAN_1_2</Name>
-            <Description>Role: Group Ad-hoc Network (C.1)</Description>
+            <Name>TSPC_IOPT_2_36b</Name>
+            <Description>Insulin Delivery Service (IDS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_37a</Name>
+            <Description>Indoor Positioning Service (IPS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_37b</Name>
+            <Description>Indoor Positioning Service (IPS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_38a</Name>
+            <Description>IP Support Service Declaration (Internet Protocol Support Service (IPSS)) over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_PAN_1_3</Name>
-            <Description>Role: PAN User (C.1)</Description>
+            <Name>TSPC_IOPT_2_38b</Name>
+            <Description>IP Support Service Declaration (Internet Protocol Support Service (IPSS)) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_39a</Name>
+            <Description>Link Loss Service (LLS) over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_SAP_1_2</Name>
-            <Description>Role: SIM Access Server (Server) (C.1)</Description>
+            <Name>TSPC_IOPT_2_39b</Name>
+            <Description>Link Loss Service (LLS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_40a</Name>
+            <Description>Location and Navigation Service (LNS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_40b</Name>
+            <Description>Location and Navigation Service (LNS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_41a</Name>
+            <Description>Media Control Service (MCS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_41b</Name>
+            <Description>Media Control Service (MCS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_42a</Name>
+            <Description>Microphone Control Service (MICS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_42b</Name>
+            <Description>Microphone Control Service (MICS) over LE (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_43a</Name>
+            <Description>Next DST Change Service (NDCS) over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_SYNC_1_1</Name>
-            <Description>IrMC Client (C.1)</Description>
+            <Name>TSPC_IOPT_2_43b</Name>
+            <Description>Next DST Change Service (NDCS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_44a</Name>
+            <Description>Object Transfer Service (OTS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_44b</Name>
+            <Description>Object Transfer Service (OTS) over LE (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_45a</Name>
+            <Description>Published Audio Capabilities Service (PACS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_45b</Name>
+            <Description>Published Audio Capabilities Service (PACS) over LE (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_46a</Name>
+            <Description>Physical Activity Monitor Service (PAMS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_46b</Name>
+            <Description>Physical Activity Monitor Service (PAMS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_47a</Name>
+            <Description>Phone Alert Status Service (PASS) over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_SYNC_1_2</Name>
-            <Description>IrMC Server (C.1)</Description>
+            <Name>TSPC_IOPT_2_47b</Name>
+            <Description>Phone Alert Status Service (PASS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_48a</Name>
+            <Description>Pulse Oximeter Service (PLXS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_48b</Name>
+            <Description>Pulse Oximeter Service (PLXS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_62a</Name>
+            <Description>Ranging Service (RAS) over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_VDP_1_1</Name>
-            <Description>Source (C.1)</Description>
+            <Name>TSPC_IOPT_2_62b</Name>
+            <Description>Ranging Service (RAS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_49a</Name>
+            <Description>Reconnection Configuration Service (RCS) over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_VDP_1_2</Name>
-            <Description>Sink (C.1)</Description>
+            <Name>TSPC_IOPT_2_49b</Name>
+            <Description>Reconnection Configuration Service (RCS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_50a</Name>
+            <Description>Running Speed and Cadence Service (RSCS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_50b</Name>
+            <Description>Running Speed and Cadence Service (RSCS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_51a</Name>
+            <Description>Reference Time Update Service (RTUS) over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_AICS_1_1</Name>
-            <Description>Service supported over BR/EDR (C.1)</Description>
+            <Name>TSPC_IOPT_2_51b</Name>
+            <Description>Reference Time Update Service (RTUS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_52a</Name>
+            <Description>Scan Parameters Service (SCPS) over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_ASCS_2_1</Name>
-            <Description>Service supported over BR/EDR (C.1)</Description>
+            <Name>TSPC_IOPT_2_52b</Name>
+            <Description>Scan Parameters Service (SCPS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_53a</Name>
+            <Description>Telephone Bearer Service (TBS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_53b</Name>
+            <Description>Telephone Bearer Service (TBS) over LE (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_54a</Name>
+            <Description>Transport Discovery Service (TDS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_54b</Name>
+            <Description>Transport Discovery Service (TDS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_55a</Name>
+            <Description>Telephony and Media Audio Service (TMAS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_55b</Name>
+            <Description>Telephony and Media Audio Service (TMAS) over LE (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_56b</Name>
+            <Description>Tx Power Service (TPS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_57a</Name>
+            <Description>User Data Service (UDS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_57b</Name>
+            <Description>User Data Service (UDS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_58a</Name>
+            <Description>Volume Control Service (VCS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_58b</Name>
+            <Description>Volume Control Service (VCS) over LE (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_59a</Name>
+            <Description>Volume Offset Control Service (VOCS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_59b</Name>
+            <Description>Volume Offset Control Service (VOCS) over LE (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_60a</Name>
+            <Description>Weight Scale Service (WSS) over BR/EDR (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2_60b</Name>
+            <Description>Weight Scale Service (WSS) over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_IOPT_2a_1</Name>
+            <Description>Implementation of at least one GATT-based service over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_BASS_2_1</Name>
-            <Description>Service supported over BR/EDR (C.1)</Description>
+            <Name>TSPC_IOPT_2a_2</Name>
+            <Description>Implementation of at least one GATT-based service over LE (C.2)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_1_2</Name>
+            <Description>Limited discoverable mode (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_CAS_2_1</Name>
-            <Description>Service supported over BR/EDR (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_MCS_1_1</Name>
-            <Description>Service supported over BR/EDR (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_MCS_21_1</Name>
-            <Description>Service supported over BR/EDR (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_MICS_1_1</Name>
-            <Description>Service supported over BR/EDR (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_PACS_2_1</Name>
-            <Description>Service supported over BR/EDR (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_TBS_1_1</Name>
-            <Description>Service supported over BR/EDR (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_TBS_21_1</Name>
-            <Description>Service supported over BR/EDR (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_VCS_1_1</Name>
-            <Description>Service supported over BR/EDR (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_VOCS_1_1</Name>
-            <Description>Service supported over BR/EDR (C.1)</Description>
+            <Name>TSPC_GAP_1_3</Name>
+            <Description>General discoverable mode (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_ALL</Name>
-            <Description>Enables all test cases when set.</Description>
+            <Description>Turns on all the test cases</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -18410,6 +19487,24 @@
           <Row>
             <Name>TSPC_L2CAP_2_14</Name>
             <Description>FCS Option (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_L2CAP_2_14a</Name>
+            <Description>Don't send FCS option in L2CAP_CONFIGURATION_REQ (C.30)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_L2CAP_2_14b</Name>
+            <Description>Send FCS option 0x00 in L2CAP_CONFIGURATION_REQ (C.31)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_L2CAP_2_14c</Name>
+            <Description>Send FCS option 0x01 in L2CAP_CONFIGURATION_REQ (C.31)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -19204,6 +20299,12 @@
             <Description>Value for the number of concurrent Credit Based Connections. (Default: 5)</Description>
             <Type>INTEGER</Type>
             <Value>5</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_supported_config_options</Name>
+            <Description>A list of supported configuration options in the L2CAP_CONFIGURATION_REQ that result in a 0x0000 response. (Default: 01020304050607)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>01020304050607</Value>
           </Row>
         </Rows>
       </PIXIT>
@@ -20770,7 +21871,7 @@
           </Row>
           <Row>
             <Name>TSPC_MCS_5_2</Name>
-            <Description>Notifications (M)</Description>
+            <Description>Single Notification (M)</Description>
             <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -20813,7 +21914,7 @@
           <Row>
             <Name>TSPC_MCS_20a_1</Name>
             <Description>GMCS v1.0.1 (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -21142,7 +22243,7 @@
           </Row>
           <Row>
             <Name>TSPC_MCS_25_2</Name>
-            <Description>Notifications (M)</Description>
+            <Description>Single Notification (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -22186,7 +23287,7 @@
           </Row>
           <Row>
             <Name>TSPX_bd_addr_additional_filter_accept_list</Name>
-            <Description>A list of BD addresses (Maximum 4) to be added into filter accept list. Use comma to seperate the address. (Example: 000000000000,778899AABBCC)</Description>
+            <Description>A list of BD addresses (Maximum 4) to be added into filter accept list. Use comma to seperate the address. (Example: 112233445566,778899AABBCC)</Description>
             <Type>IA5STRING</Type>
             <Value />
           </Row>
@@ -24410,9 +25511,9 @@
         <Rows>
           <Row>
             <Name>TSPC_PACS_0_1</Name>
-            <Description>PACS v1.0 (M)</Description>
+            <Description>PACS v1.0 (C.1, C.2)</Description>
             <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_PACS_1_1</Name>
@@ -24596,7 +25697,7 @@
           </Row>
           <Row>
             <Name>TSPC_PACS_6_3</Name>
-            <Description>Notifications (M)</Description>
+            <Description>Single Notification (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -24928,7 +26029,7 @@
           <Row>
             <Name>TSPC_PBP_10_1</Name>
             <Description>PBP v1.0.1 (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -25781,7 +26882,7 @@
           </Row>
           <Row>
             <Name>TSPC_TBS_4_3</Name>
-            <Description>Notifications (M)</Description>
+            <Description>Single Notification (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -26033,7 +27134,7 @@
           </Row>
           <Row>
             <Name>TSPC_TBS_24_3</Name>
-            <Description>Notifications (M)</Description>
+            <Description>Single Notification (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -26266,10 +27367,22 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_TMAP_2_1a</Name>
+            <Description>Service TMAS supported over BR/EDR (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_TMAP_2_2</Name>
-            <Description>Profile supported over LE (M)</Description>
+            <Description>Profile supported over LE (C.3, C.4)</Description>
             <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_TMAP_2_2a</Name>
+            <Description>Service TMAS supported over LE (C.3, C.5)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_3_1</Name>
@@ -26288,6 +27401,12 @@
             <Description>TMAP v1.0 (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_TMAP_11_1</Name>
+            <Description>TMAP v1.0.1 (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_12_1</Name>
@@ -26354,6 +27473,12 @@
             <Description>BAP Unicast Client (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_TMAP_14_8</Name>
+            <Description>Conversational (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_15_1</Name>
@@ -26512,6 +27637,12 @@
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_TMAP_31_1</Name>
+            <Description>TMAP v1.0.1 (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_TMAP_32_1</Name>
             <Description>Common Audio Profile (M)</Description>
             <Value>FALSE</Value>
@@ -26570,6 +27701,12 @@
             <Description>BAP Unicast Client (M)</Description>
             <Value>FALSE</Value>
             <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_TMAP_34_7</Name>
+            <Description>Media (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_35_1</Name>
@@ -26776,6 +27913,12 @@
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_TMAP_51_1</Name>
+            <Description>TMAP v1.0.1 (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_TMAP_52_1</Name>
             <Description>Common Audio Profile (M)</Description>
             <Value>TRUE</Value>
@@ -26815,6 +27958,12 @@
             <Name>TSPC_TMAP_54_4</Name>
             <Description>BAP Broadcast Assistant (C.2)</Description>
             <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_TMAP_54_5</Name>
+            <Description>Media (C.3)</Description>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -26986,6 +28135,12 @@
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_TMAP_71_1</Name>
+            <Description>TMAP v1.0.1 (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_TMAP_72_1</Name>
             <Description>Common Audio Profile (M)</Description>
             <Value>TRUE</Value>
@@ -27038,6 +28193,18 @@
             <Description>BAP Unicast Server (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_TMAP_74_7</Name>
+            <Description>Conversational (C.3)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_TMAP_74_8</Name>
+            <Description>Conversational (C.4)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_75_1</Name>
@@ -27160,6 +28327,12 @@
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_TMAP_91_1</Name>
+            <Description>TMAP v1.0.1 (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_TMAP_92_1</Name>
             <Description>Common Audio Profile (M)</Description>
             <Value>TRUE</Value>
@@ -27206,6 +28379,12 @@
             <Description>BAP Unicast Server (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_TMAP_94_6</Name>
+            <Description>Conversational (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_95_1</Name>
@@ -27412,6 +28591,12 @@
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_TMAP_111_1</Name>
+            <Description>TMAP v1.0.1 (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_TMAP_112_1</Name>
             <Description>Common Audio Profile (M)</Description>
             <Value>TRUE</Value>
@@ -27452,6 +28637,12 @@
             <Description>BAP Broadcast Sink (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_TMAP_114_5</Name>
+            <Description>Media (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_115_1</Name>
@@ -27716,6 +28907,12 @@
             <Description>GATT Client over LE (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_TMAP_151_1a</Name>
+            <Description>GATT Client over BR/EDR (C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_151_2</Name>
@@ -28158,7 +29355,7 @@
           </Row>
           <Row>
             <Name>TSPC_VCP_3_1</Name>
-            <Description>Volume Control Profile 1.0 (M)</Description>
+            <Description>VCP v1.0 (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -28266,7 +29463,7 @@
           </Row>
           <Row>
             <Name>TSPC_VCP_8_1</Name>
-            <Description>Volume Control Profile 1.0 (M)</Description>
+            <Description>VCP v1.0 (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -28590,7 +29787,7 @@
           </Row>
           <Row>
             <Name>TSPC_VCP_17_3</Name>
-            <Description>Find Included Services (O)</Description>
+            <Description>Find Included Services (C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -28626,7 +29823,7 @@
           </Row>
           <Row>
             <Name>TSPC_VCP_17_9</Name>
-            <Description>Notifications (M)</Description>
+            <Description>Single Notification (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -28880,7 +30077,7 @@
           <Row>
             <Name>TSPC_VCS_0a_1</Name>
             <Description>VCS v1.0.1 (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -29121,7 +30318,7 @@
           <Row>
             <Name>TSPC_VOCS_0a_1</Name>
             <Description>VOCS v1.0.1 (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
