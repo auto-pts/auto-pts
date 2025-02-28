@@ -438,6 +438,12 @@ def hdl_wid_112(_: WIDParams):
     return True
 
 
+def hdl_wid_118(_: WIDParams):
+    # Please send L2CAP Disconnection Response to PTS.
+
+    return True
+
+
 def hdl_wid_135(_: WIDParams):
     return True
 
@@ -605,6 +611,20 @@ def hdl_wid_271(_: WIDParams):
 def hdl_wid_272(_: WIDParams):
     """"description: Please press ok to disconnect the link."""
     return True
+
+
+def hdl_wid_274(_: WIDParams):
+    # Did the Implementation Under Test (IUT) discard the frame that has incorrect
+    # octets of Information Payload Data? Click Yes if the IUT discarded it,
+    # otherwise click No.
+
+    return True
+
+
+def hdl_wid_275(_: WIDParams):
+    # Did the Upper Tester issue a warning for incorrect PDU length?
+
+    return False
 
 
 def hdl_wid_2000(_: WIDParams):
