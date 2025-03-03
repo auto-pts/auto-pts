@@ -1590,3 +1590,12 @@ def hdl_wid_34(_: WIDParams):
     '''
     btp.gap_set_nonconn()
     return True
+
+
+def hdl_wid_105(_: WIDParams):
+    '''
+    Please make IUT connectable. Press OK to continue.
+    '''
+    btp.gap_set_conn()
+    btp.gap_set_gendiscov()
+    return True
