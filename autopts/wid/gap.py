@@ -1550,3 +1550,11 @@ def hdl_wid_31(_: WIDParams):
     '''
     btp.gap_set_nondiscov()
     return True
+
+
+def hdl_wid_32(_: WIDParams):
+    '''
+    Please make IUT limited discoverable. Press OK to continue.
+    '''
+    btp.gap_set_limdiscov()
+    return True
