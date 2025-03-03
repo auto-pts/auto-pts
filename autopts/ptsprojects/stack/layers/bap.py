@@ -25,8 +25,10 @@ class BAP:
     def __init__(self):
         self.peers = {}
         self.ase_configs = []
-        self.broadcast_id = 0x1000000  # Invalid Broadcast ID
+        self.broadcast_id = None
+        self.broadcast_id_2 = None
         self.broadcast_code = ''
+        self.hdl_wid_114_cnt = 0
         self.event_queues = {
             defs.BTP_BAP_EV_DISCOVERY_COMPLETED: [],
             defs.BTP_BAP_EV_CODEC_CAP_FOUND: [],
@@ -54,6 +56,12 @@ class BAP:
 
     def set_broadcast_code(self, broadcast_code):
         self.broadcast_code = broadcast_code
+
+    def set_broadcast_id(self, broadcast_id):
+        self.broadcast_id = broadcast_id
+
+    def set_broadcast_id_2(self, broadcast_id):
+        self.broadcast_id_2 = broadcast_id
 
     def event_received(self, event_type, event_data_tuple):
         if event_type in self.event_handlers:

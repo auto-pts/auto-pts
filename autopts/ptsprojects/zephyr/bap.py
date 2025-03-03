@@ -24,7 +24,9 @@ from autopts.ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
 from autopts.pybtp.types import Addr, AdType, UUID, AdFlags
 from autopts.utils import ResultWithFlag
 
-broadcast_code = '0102680553F1415AA265BBAFC6EA03B8'
+BROADCAST_CODE = '0102680553F1415AA265BBAFC6EA03B8'
+BROADCAST_ID = 0x123456
+BROADCAST_ID_2 = 0x234567
 
 
 def set_pixits(ptses):
@@ -52,7 +54,7 @@ def set_pixits(ptses):
     pts.set_pixit("BAP", "TSPX_iut_ATT_transport", "ATT Bearer on LE Transport")
     pts.set_pixit("BAP", "TSPX_VS_Codec_ID", "ffff")
     pts.set_pixit("BAP", "TSPX_VS_Company_ID", "ffff")
-    pts.set_pixit("BAP", "TSPX_broadcast_code", broadcast_code)
+    pts.set_pixit("BAP", "TSPX_broadcast_code", BROADCAST_CODE)
 
     if len(ptses) < 2:
         return
@@ -72,7 +74,7 @@ def set_pixits(ptses):
     pts2.set_pixit("BAP", "TSPX_iut_ATT_transport", "ATT Bearer on LE Transport")
     pts2.set_pixit("BAP", "TSPX_VS_Codec_ID", "ffff")
     pts2.set_pixit("BAP", "TSPX_VS_Company_ID", "ffff")
-    pts2.set_pixit("BAP", "TSPX_broadcast_code", broadcast_code)
+    pts2.set_pixit("BAP", "TSPX_broadcast_code", BROADCAST_CODE)
 
 
 def test_cases(ptses):
@@ -124,7 +126,7 @@ def test_cases(ptses):
                       TestFunc(btp.core_reg_svc_bap),
                       TestFunc(stack.ascs_init),
                       TestFunc(stack.bap_init),
-                      TestFunc(lambda: stack.bap.set_broadcast_code(broadcast_code)),
+                      TestFunc(lambda: stack.bap.set_broadcast_code(BROADCAST_CODE)),
                       TestFunc(lambda: set_addr(
                           stack.gap.iut_addr_get_str())),
                       ]
@@ -140,6 +142,18 @@ def test_cases(ptses):
     ]
 
     custom_test_cases = [
+        # If TSPX_Broadcast_ID is set, then PTS will use that for validation,
+        # and since BAP/BSRC/SCC/BV-38-C is the only test that uses the v2 command,
+        # then only this test can reliably set TSPX_Broadcast_ID (and TSPX_Broadcast_ID_2)
+        ZTestCase("BAP", "BAP/BSRC/SCC/BV-38-C",
+                  cmds=pre_conditions +
+                         [TestFunc(lambda: pts.update_pixit_param(
+                          "BAP", "TSPX_Broadcast_ID", BROADCAST_ID)),
+                         TestFunc(lambda: pts.update_pixit_param(
+                          "BAP", "TSPX_Broadcast_ID_2", BROADCAST_ID_2)),
+                         TestFunc(lambda: stack.bap.set_broadcast_id(BROADCAST_ID)),
+                         TestFunc(lambda: stack.bap.set_broadcast_id_2(BROADCAST_ID_2))],
+                  generic_wid_hdl=bap_wid_hdl),
         # Errata in progress since the PTS should use
         # TSPX_VS_Company_ID and TSPX_VS_Codec_ID instead.
         ZTestCase("BAP", "BAP/UCL/SCC/BV-033-C",

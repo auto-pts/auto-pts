@@ -338,6 +338,30 @@ Commands and responses:
                 In case of a success, the IUT continues processing the command
                 asynchronously.
 
+    Opcode 0x19 - Broadcast Source Setup v2
+                Controller Index:       <controller id>
+                Command parameters:     Broadcast ID (3 octets)
+                                        Streams Per Subgroup (1 octet)
+                                        Subgroups (1 octet)
+                                        Sdu Interval (3 octets)
+                                        Framing (1 octet)
+                                        Max SDU (2 octets)
+                                        Retransmission Num (1 octet)
+                                        Max Transport Latency (2 octets)
+                                        Presentation Delay (3 octets)
+                                        Coding Format (1 octet)
+                                        VID (2 octets)
+                                        CID (2 octets)
+                                        LTVs length (1 octet)
+                                        LTVs (varies)
+                Response parameters:    Current_Settings (4 Octets) (see btp_gap.txt)
+
+        This command is used to set up and configure a Broadcast Source
+        with the given Codec Config, with the addition of a fixed broadcast ID.
+        In case of an error, the error status response will be returned.
+        In case of a success, the IUT continues processing the command
+        asynchronously.
+
 Events:
         Opcode 0x80 - Discover and Subscribe Completed event
 
