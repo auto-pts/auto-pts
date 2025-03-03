@@ -55,8 +55,6 @@ def set_pixits(ptses):
     pts.set_pixit("BAP", "TSPX_VS_Codec_ID", "ffff")
     pts.set_pixit("BAP", "TSPX_VS_Company_ID", "ffff")
     pts.set_pixit("BAP", "TSPX_broadcast_code", BROADCAST_CODE)
-    pts.set_pixit("BAP", "TSPX_Broadcast_ID", BROADCAST_ID)
-    pts.set_pixit("BAP", "TSPX_Broadcast_ID_2", BROADCAST_ID_2)
 
     if len(ptses) < 2:
         return
@@ -131,8 +129,6 @@ def test_cases(ptses):
                       TestFunc(lambda: stack.bap.set_broadcast_code(BROADCAST_CODE)),
                       TestFunc(lambda: set_addr(
                           stack.gap.iut_addr_get_str())),
-                      TestFunc(lambda: stack.bap.set_broadcast_id(BROADCAST_ID)),
-                      TestFunc(lambda: stack.bap.set_broadcast_id_2(BROADCAST_ID_2)),
                       ]
 
     pre_conditions_server = pre_conditions + [
@@ -146,6 +142,18 @@ def test_cases(ptses):
     ]
 
     custom_test_cases = [
+        # If TSPX_Broadcast_ID is set, then PTS will use that for validation,
+        # and since BAP/BSRC/SCC/BV-38-C is the only test that uses the v2 command,
+        # then only this test can reliably set TSPX_Broadcast_ID (and TSPX_Broadcast_ID_2)
+        ZTestCase("BAP", "BAP/BSRC/SCC/BV-38-C",
+                  cmds=pre_conditions +
+                         [TestFunc(lambda: pts.update_pixit_param(
+                          "BAP", "TSPX_Broadcast_ID", BROADCAST_ID)),
+                         TestFunc(lambda: pts.update_pixit_param(
+                          "BAP", "TSPX_Broadcast_ID_2", BROADCAST_ID_2)),
+                         TestFunc(lambda: stack.bap.set_broadcast_id(BROADCAST_ID)),
+                         TestFunc(lambda: stack.bap.set_broadcast_id_2(BROADCAST_ID_2))],
+                  generic_wid_hdl=bap_wid_hdl),
         # Errata in progress since the PTS should use
         # TSPX_VS_Company_ID and TSPX_VS_Codec_ID instead.
         ZTestCase("BAP", "BAP/UCL/SCC/BV-033-C",

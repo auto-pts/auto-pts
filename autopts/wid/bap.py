@@ -21,8 +21,6 @@ from autopts.ptsprojects.stack import get_stack, WildCard
 from autopts.ptsprojects.testcase import MMI
 from autopts.pybtp import btp
 from autopts.pybtp.btp import pts_addr_get, pts_addr_type_get, ascs_add_ase_to_cis, lt2_addr_get, lt2_addr_type_get
-from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, get_iut_method as get_iut, pts_addr_get, \
-    pts_addr_type_get
 from autopts.pybtp.types import *
 from autopts.wid import generic_wid_hdl
 
@@ -326,6 +324,7 @@ def hdl_wid_114(params: WIDParams):
         broadcast_id = btp.bap_broadcast_source_setup(streams_per_subgroup, subgroups,
                                                       coding_format, vid, cid, codec_ltvs_bytes,
                                                       *qos_config, presentation_delay)
+        stack.bap.set_broadcast_id(broadcast_id)
 
     btp.bap_broadcast_adv_start(broadcast_id)
 
@@ -2032,7 +2031,6 @@ def hdl_wid_380(_: WIDParams):
                                              audio_locations, octets_per_frame,
                                              frames_per_sdu)
 
-    broadcast_id = 0x123456
     presentation_delay = 40000
     streams_per_subgroup = 2
     subgroups = 1
