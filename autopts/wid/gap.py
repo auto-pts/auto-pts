@@ -1558,3 +1558,12 @@ def hdl_wid_32(_: WIDParams):
     '''
     btp.gap_set_limdiscov()
     return True
+
+
+def hdl_wid_160(_: WIDParams):
+    '''
+    Please set IUT to limited discovery mode. Lower tester is continue using
+    GIAC to Inquiry and waiting for Inquiry result.
+    '''
+    btp.gap_set_limdiscov()
+    return True
