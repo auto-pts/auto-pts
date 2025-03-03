@@ -1567,3 +1567,10 @@ def hdl_wid_160(_: WIDParams):
     '''
     btp.gap_set_limdiscov()
     return True
+
+
+def hdl_wid_145(_: WIDParams):
+    '''
+    Waiting for limited discovery to time out so it is not able to discover IUT.
+    '''
+    return True
