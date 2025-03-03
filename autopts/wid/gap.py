@@ -1542,3 +1542,11 @@ def hdl_wid_20100(_: WIDParams):
 def hdl_wid_2142(_: WIDParams):
     btp.gap_conn()
     return True
+
+
+def hdl_wid_31(_: WIDParams):
+    '''
+    Please make IUT not discoverable. Press OK to continue.
+    '''
+    btp.gap_set_nondiscov()
+    return True
