@@ -1574,3 +1574,11 @@ def hdl_wid_145(_: WIDParams):
     Waiting for limited discovery to time out so it is not able to discover IUT.
     '''
     return True
+
+
+def hdl_wid_33(_: WIDParams):
+    '''
+    Please make IUT limited discoverable. Press OK to continue.
+    '''
+    btp.gap_set_gendiscov()
+    return True
