@@ -163,16 +163,6 @@ iut_config = {
         "test_cases": ['GAP/BROB/BCST/BV-04-C']
     },
 
-    "l2cap_param_update.conf": {
-        "overlay": {'BTTESTER_CONN_PARAM_UPDATE': '1'},
-        "test_cases": [
-            'GAP/CONN/CPUP/BV-01-C',
-            'GAP/CONN/CPUP/BV-02-C',
-            'GAP/CONN/CPUP/BV-03-C',
-            'GAP/CONN/CPUP/BV-06-C',
-            'L2CAP/LE/CPU/BV-01-C',
-        ]
-    },
 
     "l2cap_mtu_eq_mps.conf": {
         "overlay": {'BTTESTER_L2CAP_COC_MTU': '100'},
