@@ -219,9 +219,16 @@ def test_cases(ptses):
         # TODO: Get PTS address type
         TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public)]
 
+    br_pre_cond = pre_conditions + [
+        TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
+    ]
+
     custom_test_cases = [
         ZTestCase("GAP", "GAP/SEC/CSIGN/BI-04-C",
                   cmds=pre_conditions + init_gatt_db2,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/MOD/NBON/BV-03-C",
+                  cmds=br_pre_cond,
                   generic_wid_hdl=gap_wid_hdl),
     ]
 
