@@ -22,6 +22,7 @@ from time import sleep
 from autopts.ptsprojects.stack import get_stack, ConnParams
 from autopts.pybtp import types
 from autopts.pybtp import btp
+from autopts.pybtp import defs
 from autopts.pybtp.types import Prop, Perm, UUID, AdType, bdaddr_reverse, WIDParams, IOCap, OwnAddrType
 from autopts.wid import generic_wid_hdl
 
@@ -1598,4 +1599,11 @@ def hdl_wid_105(_: WIDParams):
     '''
     btp.gap_set_conn()
     btp.gap_set_gendiscov()
+    return True
+
+
+def hdl_wid_222(_: WIDParams):
+    '''
+    Please initiate a BR/EDR security authentication and pairing with interaction of HCI commands.
+    '''
     return True
