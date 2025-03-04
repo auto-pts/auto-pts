@@ -1482,6 +1482,7 @@ def hdl_wid_2000(_: WIDParams):
 def hdl_wid_2001(params: WIDParams):
     """
     The secureId is [passkey]
+    Or, Please verify the passKey is correct: [passkey]
     """
     pattern = r'[\d]{6}'
     passkey = re.search(pattern, params.description)[0]
@@ -1489,10 +1490,16 @@ def hdl_wid_2001(params: WIDParams):
     bd_addr = btp.pts_addr_get()
     bd_addr_type = btp.pts_addr_type_get()
 
+    if params.test_case_name in ['GAP/IDLE/BON/BV-04-C']:
+        bd_addr_type = defs.BTP_BR_ADDRESS_TYPE
+
     if stack.gap.get_passkey() is None:
         return False
 
-    btp.gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey)
+    if 'Please verify the passKey is correct' in params.description:
+        btp.gap_passkey_confirm_rsp(bd_addr, bd_addr_type, passkey)
+    else:
+        btp.gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey)
     return True
 
 
