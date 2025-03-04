@@ -1629,3 +1629,31 @@ def hdl_wid_147(_: WIDParams):
     sleep(10)
     btp.gap_stop_discov()
     return btp.check_discov_results(addr_type=defs.BTP_BR_ADDRESS_TYPE)
+
+
+def hdl_wid_164(_: WIDParams):
+    '''
+    Please confirm that IUT is in Idle mode with security mode 4. Press OK when IUT is ready to
+    start device discovery.
+    '''
+    return True
+
+
+def hdl_wid_165(params: WIDParams):
+    '''
+    Please confirm that IUT has discovered PTS and retrieved its name 'PTS-GAP-E449'.
+    '''
+    btp.gap_start_discov(transport='bredr', discov_type='passive', mode='general')
+    sleep(10)
+    btp.gap_stop_discov()
+
+    pattern = re.compile(r"'(.*)'")
+    macthed = pattern.findall(params.description)
+    if not macthed:
+        logging.error("parsing error")
+        return False
+
+    name = macthed[0]
+    name = binascii.hexlify(name.encode()).decode()
+
+    return btp.check_scan_rep_and_rsp(name, name)
