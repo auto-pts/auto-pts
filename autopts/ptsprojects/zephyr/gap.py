@@ -18,6 +18,7 @@ import binascii
 
 from autopts.pybtp import btp
 from autopts.pybtp.types import Addr, IOCap, AdType, AdFlags, Prop, Perm, UUID, UriScheme
+from autopts.pybtp.types import L2CAPConnectionResponse
 from autopts.client import get_unique_name
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
@@ -68,6 +69,10 @@ iut_flags = '11'
 iut_svcs = '1111'
 iut_uri = UriScheme.https + 'github.com/auto-pts'.encode()
 iut_le_supp_feat = 'FF'
+
+br_psm = 0x1001
+br_psm_2 = 0x2001
+br_initial_mtu = 120
 
 # Ad data for periodic advertising in format (type, data)
 # Value: shortened name
@@ -220,7 +225,40 @@ def test_cases(ptses):
         TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public)]
 
     br_pre_cond = pre_conditions + [
+        TestFunc(lambda: pts.update_pixit_param(
+            "GAP", "TSPX_psm", format(br_psm, '04x'))),
+        TestFunc(lambda: pts.update_pixit_param(
+            "GAP", "TSPX_psm_2", format(br_psm_2, '04x'))),
+        TestFunc(lambda: pts.update_pixit_param(
+            "GAP", "TSPX_delete_link_key", "FALSE")),
+        TestFunc(lambda: pts.update_pixit_param(
+            "GAP", "TSPX_delete_ltk", "FALSE")),
         TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
+    ]
+
+    br_l2cap = br_pre_cond + [
+        TestFunc(btp.core_reg_svc_l2cap),
+        TestFunc(stack.l2cap_init, br_psm, br_initial_mtu),
+    ]
+
+    br_l2cap_success = br_l2cap + [
+        TestFunc(btp.l2cap_br_listen, br_psm, br_initial_mtu,
+                 L2CAPConnectionResponse.insufficient_encryption),
+    ]
+
+    br_l2cap_authen = br_l2cap + [
+        TestFunc(btp.l2cap_br_listen, br_psm, br_initial_mtu,
+                 L2CAPConnectionResponse.insufficient_authentication),
+    ]
+
+    br_l2cap_keysize = br_l2cap + [
+        TestFunc(btp.l2cap_br_listen, br_psm, br_initial_mtu,
+                 L2CAPConnectionResponse.insufficient_encryption_key_size),
+    ]
+
+    br_l2cap_author = br_l2cap + [
+        TestFunc(btp.l2cap_br_listen, br_psm, br_initial_mtu,
+                 L2CAPConnectionResponse.insufficient_authorization),
     ]
 
     custom_test_cases = [
@@ -229,6 +267,9 @@ def test_cases(ptses):
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/MOD/NBON/BV-03-C",
                   cmds=br_pre_cond,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-02-C",
+                  cmds=br_l2cap_success,
                   generic_wid_hdl=gap_wid_hdl),
     ]
 
