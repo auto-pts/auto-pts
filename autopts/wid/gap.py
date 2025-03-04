@@ -1676,3 +1676,13 @@ def hdl_wid_102(params: WIDParams):
     btp.gap_pair(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
 
     return True
+
+
+def hdl_wid_264(_: WIDParams):
+    '''
+    Please send L2CAP Connection Request to PTS.
+    '''
+    stack = get_stack()
+    l2cap = stack.l2cap
+    btp.l2cap_conn(None, defs.BTP_BR_ADDRESS_TYPE, l2cap.psm, l2cap.initial_mtu)
+    return True
