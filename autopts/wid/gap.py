@@ -1607,3 +1607,14 @@ def hdl_wid_222(_: WIDParams):
     Please initiate a BR/EDR security authentication and pairing with interaction of HCI commands.
     '''
     return True
+
+
+def hdl_wid_146(_: WIDParams):
+    '''
+    Please start general inquiry. Click 'Yes' If IUT does discovers PTS and ready for PTS to
+    initiate a create connection otherwise click 'No'.
+    '''
+    btp.gap_start_discov(transport='bredr', discov_type='passive', mode='general')
+    sleep(10)
+    btp.gap_stop_discov()
+    return btp.check_discov_results(addr_type=defs.BTP_BR_ADDRESS_TYPE)
