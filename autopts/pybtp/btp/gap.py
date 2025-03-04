@@ -563,7 +563,7 @@ def gap_conn(bd_addr=None, bd_addr_type=None, own_addr_type=OwnAddrType.le_ident
 
     data_ba = bytearray()
     bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
-    bd_addr_type_ba = chr(pts_addr_type_get(bd_addr_type)).encode('utf-8')
+    bd_addr_type_ba = struct.pack('B', pts_addr_type_get(bd_addr_type))
     own_addr_type_ba = chr(own_addr_type).encode('utf-8')
 
     data_ba.extend(bd_addr_type_ba)
@@ -621,7 +621,7 @@ def gap_rpa_conn(description, own_addr_type=OwnAddrType.le_identity_address):
     data_ba = bytearray()
     bd_addr_ba = addr2btp_ba(bd_addr)
 
-    data_ba.extend(chr(bd_addr_type).encode('utf-8'))
+    data_ba.extend(struct.pack('B', bd_addr_type))
     data_ba.extend(bd_addr_ba)
     data_ba.extend(chr(own_addr_type).encode('utf-8'))
 
@@ -638,7 +638,7 @@ def gap_disconn(bd_addr=None, bd_addr_type=None):
     data_ba = bytearray()
     bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
 
-    data_ba.extend(chr(pts_addr_type_get(bd_addr_type)).encode('utf-8'))
+    data_ba.extend(struct.pack('B', pts_addr_type_get(bd_addr_type)))
     data_ba.extend(bd_addr_ba)
 
     iutctl.btp_socket.send_wait_rsp(*GAP['disconn'], data=data_ba)
@@ -675,7 +675,7 @@ def gap_pair(bd_addr=None, bd_addr_type=None):
     data_ba = bytearray()
     bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
 
-    data_ba.extend(chr(pts_addr_type_get(bd_addr_type)).encode('utf-8'))
+    data_ba.extend(struct.pack('B', pts_addr_type_get(bd_addr_type)))
     data_ba.extend(bd_addr_ba)
 
     iutctl.btp_socket.send(*GAP['pair'], data=data_ba)
@@ -691,7 +691,7 @@ def gap_unpair(bd_addr=None, bd_addr_type=None):
     data_ba = bytearray()
     bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
 
-    data_ba.extend(chr(pts_addr_type_get(bd_addr_type)).encode('utf-8'))
+    data_ba.extend(struct.pack('B', pts_addr_type_get(bd_addr_type)))
     data_ba.extend(bd_addr_ba)
 
     iutctl.btp_socket.send(*GAP['unpair'], data=data_ba)
@@ -708,7 +708,7 @@ def gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey):
     data_ba = bytearray()
     bd_addr_ba = addr2btp_ba(bd_addr)
 
-    data_ba.extend(chr(bd_addr_type).encode('utf-8'))
+    data_ba.extend(struct.pack('B', bd_addr_type))
     data_ba.extend(bd_addr_ba)
 
     if isinstance(passkey, str):
@@ -730,7 +730,7 @@ def gap_passkey_confirm_rsp(bd_addr, bd_addr_type, passkey):
     data_ba = bytearray()
     bd_addr_ba = addr2btp_ba(bd_addr)
 
-    data_ba.extend(chr(bd_addr_type).encode('utf-8'))
+    data_ba.extend(struct.pack('B', bd_addr_type))
     data_ba.extend(bd_addr_ba)
 
     if isinstance(passkey, str):
@@ -992,7 +992,7 @@ def gap_conn_param_update(bd_addr, bd_addr_type, conn_itvl_min,
     data_ba = bytearray()
     bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
 
-    data_ba.extend(chr(pts_addr_type_get(bd_addr_type)).encode('utf-8'))
+    data_ba.extend(struct.pack('B', pts_addr_type_get(bd_addr_type)))
     data_ba.extend(bd_addr_ba)
 
     conn_itvl_min_ba = struct.pack('H', conn_itvl_min)

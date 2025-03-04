@@ -70,7 +70,7 @@ def l2cap_conn(bd_addr, bd_addr_type, psm, mtu=0, num=1, ecfc=0, hold_credit=0):
     bd_addr_type = pts_addr_type_get(bd_addr_type)
 
     bd_addr_ba = addr2btp_ba(bd_addr)
-    data_ba = bytearray(chr(bd_addr_type).encode('utf-8'))
+    data_ba = bytearray(struct.pack('B', bd_addr_type))
     data_ba.extend(bd_addr_ba)
     data_ba.extend(struct.pack('H', psm))
     data_ba.extend(struct.pack('H', mtu))
@@ -178,7 +178,7 @@ def l2cap_disconn_eatt_chans(bd_addr, bd_addr_type, channel_count):
     bd_addr_type = pts_addr_type_get(bd_addr_type)
 
     bd_addr_ba = addr2btp_ba(bd_addr)
-    data_ba = bytearray(chr(bd_addr_type).encode('utf-8'))
+    data_ba = bytearray(struct.pack('B', bd_addr_type))
     data_ba.extend(bd_addr_ba)
     data_ba.extend(bytearray(chr(channel_count).encode('utf-8')))
 
@@ -201,7 +201,7 @@ def l2cap_reconfigure(bd_addr, bd_addr_type, mtu, channels):
     bd_addr_type = pts_addr_type_get(bd_addr_type)
 
     bd_addr_ba = addr2btp_ba(bd_addr)
-    data_ba = bytearray(chr(bd_addr_type).encode('utf-8'))
+    data_ba = bytearray(struct.pack('B', bd_addr_type))
     data_ba.extend(bd_addr_ba)
     data_ba.extend(struct.pack('H', mtu))
     data_ba.extend(struct.pack('B', len(channels)))
