@@ -190,6 +190,8 @@ def l2cap_disconn_eatt_chans(bd_addr, bd_addr_type, channel_count):
 def l2cap_le_listen(psm, mtu=0, response=0):
     l2cap_listen(psm, defs.L2CAP_TRANSPORT_LE, mtu, response)
 
+def l2cap_br_listen(psm, mtu=0, response=0):
+    l2cap_listen(psm, defs.L2CAP_TRANSPORT_BREDR, mtu, response)
 
 def l2cap_reconfigure(bd_addr, bd_addr_type, mtu, channels):
     logging.debug("%s %r %r %r %r", l2cap_reconfigure.__name__,
