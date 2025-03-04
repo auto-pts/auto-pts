@@ -1490,7 +1490,7 @@ def hdl_wid_2001(params: WIDParams):
     bd_addr = btp.pts_addr_get()
     bd_addr_type = btp.pts_addr_type_get()
 
-    if params.test_case_name in ['GAP/IDLE/BON/BV-04-C']:
+    if params.test_case_name in ['GAP/IDLE/BON/BV-04-C', 'GAP/IDLE/BON/BV-06-C']:
         bd_addr_type = defs.BTP_BR_ADDRESS_TYPE
 
     if stack.gap.get_passkey() is None:
@@ -1681,7 +1681,7 @@ def hdl_wid_102(params: WIDParams):
     btp.gap_conn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
     btp.gap_wait_for_connection()
 
-    if params.test_case_name in ['GAP/IDLE/BON/BV-05-C']:
+    if params.test_case_name in ['GAP/IDLE/BON/BV-05-C', 'GAP/IDLE/BON/BV-06-C']:
         return True
 
     btp.gap_pair(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
