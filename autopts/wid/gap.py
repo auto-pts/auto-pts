@@ -1657,3 +1657,22 @@ def hdl_wid_165(params: WIDParams):
     name = binascii.hexlify(name.encode()).decode()
 
     return btp.check_scan_rep_and_rsp(name, name)
+
+
+def hdl_wid_102(params: WIDParams):
+    '''
+    Please send an HCI connect request to establish a basic rate connection after the IUT
+    discovers the Lower Tester over BR and LE.
+    '''
+    btp.gap_start_discov(transport='bredr', discov_type='passive', mode='general')
+    sleep(10)
+    btp.gap_stop_discov()
+
+    if not btp.check_discov_results(addr_type=defs.BTP_BR_ADDRESS_TYPE):
+        return False
+
+    btp.gap_conn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
+    btp.gap_wait_for_connection()
+    btp.gap_pair(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
+
+    return True
