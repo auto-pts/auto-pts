@@ -1680,6 +1680,10 @@ def hdl_wid_102(params: WIDParams):
 
     btp.gap_conn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
     btp.gap_wait_for_connection()
+
+    if params.test_case_name in ['GAP/IDLE/BON/BV-05-C']:
+        return True
+
     btp.gap_pair(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
 
     return True
