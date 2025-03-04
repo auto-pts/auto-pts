@@ -18,6 +18,7 @@ import logging
 import re
 import struct
 from time import sleep
+import binascii
 
 from autopts.ptsprojects.stack import get_stack, ConnParams
 from autopts.pybtp import types
@@ -1615,6 +1616,16 @@ def hdl_wid_146(_: WIDParams):
     initiate a create connection otherwise click 'No'.
     '''
     btp.gap_start_discov(transport='bredr', discov_type='passive', mode='general')
+    sleep(10)
+    btp.gap_stop_discov()
+    return btp.check_discov_results(addr_type=defs.BTP_BR_ADDRESS_TYPE)
+
+
+def hdl_wid_147(_: WIDParams):
+    '''
+    Please start limited inquiry. Click 'Yes' If IUT does discovers PTS otherwise click 'No'.
+    '''
+    btp.gap_start_discov(transport='bredr', discov_type='passive', mode='limited')
     sleep(10)
     btp.gap_stop_discov()
     return btp.check_discov_results(addr_type=defs.BTP_BR_ADDRESS_TYPE)
