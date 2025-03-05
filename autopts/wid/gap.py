@@ -397,7 +397,8 @@ def hdl_wid_77(params: WIDParams):
     try:
         btp.gap_wait_for_connection(5)
         if params.test_case_name in ['GAP/SEC/SEM/BV-05-C', 'GAP/SEC/SEM/BV-50-C',
-                                     'GAP/SEC/SEM/BV-07-C', 'GAP/SEC/SEM/BV-51-C']:
+                                     'GAP/SEC/SEM/BV-07-C', 'GAP/SEC/SEM/BV-51-C',
+                                     'GAP/SEC/SEM/BV-52-C']:
             btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
         else:
             btp.gap_disconn()
@@ -524,10 +525,17 @@ def hdl_wid_108(params: WIDParams):
             hdl_wid_227(params, 7)
             stack.gap.delay_mmi = True
 
-    if params.test_case_name in ['GAP/SEC/SEM/BV-50-C', 'GAP/SEC/SEM/BV-51-C']:
+    if params.test_case_name in ['GAP/SEC/SEM/BV-50-C', 'GAP/SEC/SEM/BV-51-C',
+                                 'GAP/SEC/SEM/BV-52-C']:
         btp.gap_pair(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
     else:
         btp.gap_pair()
+
+    if params.test_case_name in ['GAP/SEC/SEM/BV-52-C']:
+        passkey = stack.gap.get_passkey()
+        if passkey != None:
+            btp.gap_passkey_confirm_rsp(btp.pts_addr_get(), defs.BTP_BR_ADDRESS_TYPE, passkey)
+
     return True
 
 
@@ -1692,7 +1700,8 @@ def hdl_wid_102(params: WIDParams):
 
     if params.test_case_name in ['GAP/IDLE/BON/BV-05-C', 'GAP/IDLE/BON/BV-06-C',
                                  'GAP/SEC/SEM/BV-50-C', 'GAP/SEC/SEM/BV-06-C',
-                                 'GAP/SEC/SEM/BV-07-C', 'GAP/SEC/SEM/BV-51-C']:
+                                 'GAP/SEC/SEM/BV-07-C', 'GAP/SEC/SEM/BV-51-C',
+                                 'GAP/SEC/SEM/BV-52-C']:
         return True
 
     btp.gap_pair(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
@@ -1745,12 +1754,18 @@ def hdl_wid_103(params: WIDParams):
         btp.gap_conn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
         btp.gap_wait_for_connection()
 
-    if params.test_case_name in ['GAP/SEC/SEM/BV-07-C']:
+    if params.test_case_name in ['GAP/SEC/SEM/BV-07-C', 'GAP/SEC/SEM/BV-52-C']:
         btp.gap_pair_v2(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE,
                         mode=defs.BTP_GAP_CMD_PAIR_V2_MODE_4,
                         level=defs.BTP_GAP_CMD_PAIR_V2_LEVEL_3)
     else:
         btp.gap_pair(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
+
+    if params.test_case_name in ['GAP/SEC/SEM/BV-52-C']:
+        passkey = stack.gap.get_passkey()
+        if passkey != None:
+            btp.gap_passkey_confirm_rsp(btp.pts_addr_get(), defs.BTP_BR_ADDRESS_TYPE, passkey)
+
     l2cap = stack.l2cap
     btp.l2cap_conn(None, defs.BTP_BR_ADDRESS_TYPE, l2cap.psm, l2cap.initial_mtu)
     return True
