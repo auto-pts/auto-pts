@@ -1711,3 +1711,29 @@ def hdl_wid_251(_: WIDParams):
     Please send L2CAP Connection Response to PTS.
     '''
     return True
+
+
+def hdl_wid_231(_: WIDParams):
+    '''
+    Please start the Bonding Procedure in bondable mode.
+    After Bonding Procedure is completed, please send a disconnect request to terminate connection.
+    '''
+    btp.gap_wait_for_sec_lvl_change(level=2)
+    btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
+    return True
+
+
+def hdl_wid_103(_: WIDParams):
+    '''
+    Please initiate BR/EDR security authentication and pairing to establish a service level
+    enforced security!
+    After that, please create the service channel using L2CAP Connection Request.
+    '''
+    stack = get_stack()
+    if not stack.gap.is_connected():
+        btp.gap_conn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
+        btp.gap_wait_for_connection()
+    btp.gap_pair(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
+    l2cap = stack.l2cap
+    btp.l2cap_conn(None, defs.BTP_BR_ADDRESS_TYPE, l2cap.psm, l2cap.initial_mtu)
+    return True
