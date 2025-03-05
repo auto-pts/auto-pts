@@ -18,7 +18,7 @@ import binascii
 
 from autopts.pybtp import btp
 from autopts.pybtp.types import Addr, IOCap, AdType, AdFlags, Prop, Perm, UUID, UriScheme
-from autopts.pybtp.types import L2CAPConnectionResponse
+from autopts.pybtp.types import L2CAPConnectionResponse, defs
 from autopts.client import get_unique_name
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
@@ -70,8 +70,8 @@ iut_svcs = '1111'
 iut_uri = UriScheme.https + 'github.com/auto-pts'.encode()
 iut_le_supp_feat = 'FF'
 
-br_psm = 0x1001
-br_psm_2 = 0x2001
+br_psm = defs.BTP_BR_L2CAP_PSM
+br_psm_2 = defs.BTP_BR_L2CAP_PSM_2
 br_initial_mtu = 120
 
 # Ad data for periodic advertising in format (type, data)
@@ -327,6 +327,12 @@ def test_cases(ptses):
                   ],
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/SEM/BV-52-C",
+                  cmds=br_l2cap + [
+                      TestFunc(btp.gap_set_bondable_off),
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-09-C",
                   cmds=br_l2cap + [
                       TestFunc(btp.gap_set_bondable_off),
                       TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
