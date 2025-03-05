@@ -396,7 +396,10 @@ def hdl_wid_77(params: WIDParams):
         sleep(10)
     try:
         btp.gap_wait_for_connection(5)
-        btp.gap_disconn()
+        if params.test_case_name in ['GAP/SEC/SEM/BV-05-C']:
+            btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
+        else:
+            btp.gap_disconn()
     except types.BTPError:
         logging.debug("Ignoring expected error on disconnect")
     else:
@@ -1736,4 +1739,11 @@ def hdl_wid_103(_: WIDParams):
     btp.gap_pair(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
     l2cap = stack.l2cap
     btp.l2cap_conn(None, defs.BTP_BR_ADDRESS_TYPE, l2cap.psm, l2cap.initial_mtu)
+    return True
+
+
+def hdl_wid_167(_: WIDParams):
+    '''
+    Please start simple pairing procedure.
+    '''
     return True
