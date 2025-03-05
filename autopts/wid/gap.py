@@ -1697,3 +1697,17 @@ def hdl_wid_264(_: WIDParams):
     l2cap = stack.l2cap
     btp.l2cap_conn(None, defs.BTP_BR_ADDRESS_TYPE, l2cap.psm, l2cap.initial_mtu)
     return True
+
+
+def hdl_wid_166(_: WIDParams):
+    '''
+    Please order the IUT to go in connectable mode and in security mode 4. Press OK to continue.
+    '''
+    return True
+
+
+def hdl_wid_251(_: WIDParams):
+    '''
+    Please send L2CAP Connection Response to PTS.
+    '''
+    return True
