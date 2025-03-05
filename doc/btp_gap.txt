@@ -656,6 +656,42 @@ Commands and responses:
 
                 In case of an error, the error response will be returned.
 
+        Opcode 0x2a - Pair V2 command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Mode (1 octet)
+                                        Level (1 octet)
+                                        Flags (1 octet)
+                Return Parameters:      <none>
+
+                This command is used to initiate security with remote. If
+                peer is already paired IUT is expected to enable security
+                (encryption) with peer. If peer is not paired IUT shall
+                start pairing process.
+
+                Valid Mode:
+                        0x01 = Security Mode 1
+                        0x02 = Security Mode 2
+                        0x03 = Security Mode 3
+                        0x04 = Security Mode 4
+                        0xFF = Any Mode
+
+                Valid Level:
+                        0x00 = Security Level 0
+                        0x01 = Security Level 1
+                        0x02 = Security Level 2
+                        0x03 = Security Level 3
+                        0x04 = Security Level 4
+                        0xFF = Any Level
+
+                Possible values for the Flags parameter are a bit-wise OR
+                of the following bits:
+                        0 = Force pairing procedure
+
+                In case of an error, the error response will be returned.
+
 Events:
         Opcode 0x80 - New Settings event
 

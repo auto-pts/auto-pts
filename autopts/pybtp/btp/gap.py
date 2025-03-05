@@ -35,6 +35,7 @@ GAP = {
                  CONTROLLER_INDEX, ""),
     "conn": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_CONNECT, CONTROLLER_INDEX),
     "pair": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_PAIR, CONTROLLER_INDEX),
+    "pair_v2": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_PAIR_V2, CONTROLLER_INDEX),
     "unpair": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_UNPAIR, CONTROLLER_INDEX),
     "disconn": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_DISCONNECT,
                 CONTROLLER_INDEX),
@@ -679,6 +680,29 @@ def gap_pair(bd_addr=None, bd_addr_type=None):
     data_ba.extend(bd_addr_ba)
 
     iutctl.btp_socket.send(*GAP['pair'], data=data_ba)
+
+    # Expected result
+    gap_command_rsp_succ()
+
+
+def gap_pair_v2(bd_addr=None, bd_addr_type=None, mode=defs.BTP_GAP_CMD_PAIR_V2_MODE_ANY,
+                level=defs.BTP_GAP_CMD_PAIR_V2_LEVEL_ANY, flags=defs.BTP_GAP_CMD_PAIR_V2_FLAG_NONE):
+    logging.debug("%s %r %r %r %r %r", gap_pair_v2.__name__, bd_addr, bd_addr_type, mode, level,
+                  flags)
+    iutctl = get_iut()
+
+    gap_wait_for_connection()
+
+    data_ba = bytearray()
+    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
+
+    data_ba.extend(struct.pack('B', pts_addr_type_get(bd_addr_type)))
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(struct.pack('B', mode))
+    data_ba.extend(struct.pack('B', level))
+    data_ba.extend(struct.pack('B', flags))
+
+    iutctl.btp_socket.send(*GAP['pair_v2'], data=data_ba)
 
     # Expected result
     gap_command_rsp_succ()
