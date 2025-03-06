@@ -349,6 +349,11 @@ def test_cases(ptses):
                       TestFunc(btp.gap_set_bondable_off),
                   ],
                   generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BI-24-C",
+                  cmds=br_l2cap_success + [
+                      TestFunc(btp.gap_set_bondable_off),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
     ]
 
     test_case_name_list = pts.get_test_case_list('GAP')
