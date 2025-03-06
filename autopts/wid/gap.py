@@ -1604,18 +1604,26 @@ def hdl_wid_145(_: WIDParams):
     return True
 
 
+GAP_TEST_ROUND = 0
+
+
 def hdl_wid_33(params: WIDParams):
     '''
-    Please make IUT limited discoverable. Press OK to continue.
+    Please make IUT general discoverable.
     '''
+    global GAP_TEST_ROUND
+
+    btp.gap_set_nondiscov()
     btp.gap_set_gendiscov()
 
-    if params.test_case_name in ['GAP/SEC/SEM/BV-10-C']:
+    if (params.test_case_name in ['GAP/SEC/SEM/BV-10-C']) or (params.test_case_name in ['GAP/SEC/SEM/BI-24-C'] and GAP_TEST_ROUND == 1):
         # ALT1 - Responder the test results in pass when the IUT initiates the Secure Simple
         # Pairing procedure autonomously before the Lower Tester initiates the L2CAP connection.
         btp.gap_wait_for_connection()
         btp.gap_pair(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
         btp.gap_wait_for_sec_lvl_change(2)
+
+    GAP_TEST_ROUND = GAP_TEST_ROUND + 1
 
     return True
 
@@ -1752,9 +1760,6 @@ def hdl_wid_231(_: WIDParams):
     btp.gap_wait_for_sec_lvl_change(level=2)
     btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
     return True
-
-
-GAP_TEST_ROUND = 0
 
 
 def hdl_wid_103(params: WIDParams):
