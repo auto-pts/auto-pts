@@ -1840,3 +1840,23 @@ def hdl_wid_20117(_: WIDParams):
     '''
     btp.gap_pair(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
     return True
+
+
+def hdl_wid_36(_: WIDParams):
+    '''
+    Please start general discovery over BR/EDR and over LE. If IUT discovers PTS
+    with both BR/EDR and LE method, press OK.
+    '''
+    btp.gap_start_discov(transport='bredr', discov_type='passive', mode='general')
+    btp.gap_start_discov(transport='le', discov_type='passive', mode='general')
+    sleep(10)
+    btp.gap_stop_discov()
+
+    if not btp.check_discov_results(addr_type=defs.BTP_BR_ADDRESS_TYPE):
+        return False
+
+    if not btp.check_discov_results():
+        return False
+
+    get_stack().gap.reset_discovery()
+    return True
