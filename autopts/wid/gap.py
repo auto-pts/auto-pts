@@ -399,7 +399,7 @@ def hdl_wid_77(params: WIDParams):
         if params.test_case_name in ['GAP/SEC/SEM/BV-05-C', 'GAP/SEC/SEM/BV-50-C',
                                      'GAP/SEC/SEM/BV-07-C', 'GAP/SEC/SEM/BV-51-C',
                                      'GAP/SEC/SEM/BV-52-C', 'GAP/SEC/SEM/BV-09-C',
-                                     'GAP/SEC/SEM/BV-53-C']:
+                                     'GAP/SEC/SEM/BV-53-C', 'GAP/DM/BON/BV-01-C']:
             btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
         else:
             btp.gap_disconn()
@@ -1720,7 +1720,7 @@ def hdl_wid_102(params: WIDParams):
                                  'GAP/SEC/SEM/BV-50-C', 'GAP/SEC/SEM/BV-06-C',
                                  'GAP/SEC/SEM/BV-07-C', 'GAP/SEC/SEM/BV-51-C',
                                  'GAP/SEC/SEM/BV-52-C', 'GAP/SEC/SEM/BV-09-C',
-                                 'GAP/SEC/SEM/BV-53-C']:
+                                 'GAP/SEC/SEM/BV-53-C', 'GAP/DM/BON/BV-01-C']:
         return True
 
     btp.gap_pair(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
@@ -1821,4 +1821,22 @@ def hdl_wid_167(_: WIDParams):
     '''
     Please start simple pairing procedure.
     '''
+    return True
+
+
+def hdl_wid_151(_: WIDParams):
+    '''
+    Please set IUT into bondable mode. Press OK to continue.
+    '''
+    btp.gap_set_bondable_on()
+    return True
+
+
+def hdl_wid_20117(_: WIDParams):
+    '''
+    Please start encryption. Use previously distributed key if available.
+    Description: Verify that the Implementation Under Test (IUT) can
+    successfully start and complete encryption.
+    '''
+    btp.gap_pair(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
     return True
