@@ -1860,3 +1860,43 @@ def hdl_wid_36(_: WIDParams):
 
     get_stack().gap.reset_discovery()
     return True
+
+
+def hdl_wid_7(_: WIDParams):
+    '''
+    Please start limited discovery over BR/EDR and over LE. If IUT discovers PTS
+    with both BR/EDR and LE method, press OK.
+    '''
+    btp.gap_start_discov(transport='bredr', discov_type='passive', mode='limited')
+    btp.gap_start_discov(transport='le', discov_type='passive', mode='limited')
+    sleep(10)
+    btp.gap_stop_discov()
+
+    if not btp.check_discov_results(addr_type=defs.BTP_BR_ADDRESS_TYPE):
+        return False
+
+    if not btp.check_discov_results():
+        return False
+
+    get_stack().gap.reset_discovery()
+    return True
+
+
+def hdl_wid_123(_: WIDParams):
+    '''
+    Please start limited discovery over BR/EDR and over LE. If IUT does not discovers PTS
+    with both BR/EDR and LE method, press OK.
+    '''
+    btp.gap_start_discov(transport='bredr', discov_type='passive', mode='limited')
+    btp.gap_start_discov(transport='le', discov_type='passive', mode='limited')
+    sleep(10)
+    btp.gap_stop_discov()
+
+    if btp.check_discov_results(addr_type=defs.BTP_BR_ADDRESS_TYPE):
+        return False
+
+    if btp.check_discov_results():
+        return False
+
+    get_stack().gap.reset_discovery()
+    return True
