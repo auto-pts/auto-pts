@@ -80,6 +80,32 @@ def hdl_wid_24(params: WIDParams):
     return set(incl_svcs).issubset(set(mmi_args))
 
 
+def hdl_wid_130(_: WIDParams):
+    """Please delete security key before connecting to PTS if IUT was bonded previously"""
+
+    return True
+
+
+def hdl_wid_135(params: WIDParams):
+    """Please write to client support feature handle = '0025'O to enable Robust Caching.
+     Discover all characteristics if needed."""
+    stack = get_stack()
+    MMI.reset()
+    MMI.parse_description(params.description)
+
+    hdl = MMI.args[0]
+
+    if not hdl:
+        logging.error("parsing error")
+        return False
+
+    btp.gatt_cl_write(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
+                      hdl, '07', 1)
+    stack.gatt_cl.wait_for_write_rsp()
+
+    return True
+
+
 def hdl_wid_142(_: WIDParams):
     """
     Please send an ATT_Write_Request to Client Support Features handle = '0015'O with 0x02 to enable Enhanced ATT.
@@ -88,6 +114,96 @@ def hdl_wid_142(_: WIDParams):
     """
 
     btp.gap_pair()
+
+    return True
+
+
+def hdl_wid_150(_: WIDParams):
+    """Please send an ATT_Write_Request to Client Support Features handle = '0025'O to enable
+     Multiple Handle Value Notifications."""
+
+    btp.gap_pair()
+
+    return True
+
+
+def hdl_wid_153(params: WIDParams):
+    """Please write to client support feature handle = '0025'O to enable Robust Caching.
+     Discover all characteristics if needed."""
+    stack = get_stack()
+    MMI.reset()
+    MMI.parse_description(params.description)
+
+    btp.gap_pair()
+    btp.gap_wait_for_sec_lvl_change(10)
+
+    hdl = MMI.args[0]
+
+    if not hdl:
+        logging.error("parsing error")
+        return False
+
+    btp.gatt_cl_write(btp.pts_addr_type_get(None), btp.pts_addr_get(None),
+                      hdl, '07', 1)
+    stack.gatt_cl.wait_for_write_rsp()
+
+    return True
+
+
+def hdl_wid_161(params: WIDParams):
+    """Please send Read request on ATT over LE using handle '0084'O"""
+    stack = get_stack()
+    MMI.reset()
+    MMI.parse_description(params.description)
+
+    hdl = MMI.args[0]
+
+    if not hdl:
+        logging.error("parsing error")
+        return False
+
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
+    btp.gatt_cl_read(bd_addr_type, bd_addr, hdl)
+
+    return True
+
+
+def hdl_wid_163(params: WIDParams):
+    """Please send Read request on EATT over LE using handle '020F'O"""
+    stack = get_stack()
+    MMI.reset()
+    MMI.parse_description(params.description)
+
+    hdl = MMI.args[0]
+
+    if not hdl:
+        logging.error("parsing error")
+        return False
+
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
+    btp.gatt_cl_read(bd_addr_type, bd_addr, hdl)
+
+    return True
+
+
+def hdl_wid_164(params: WIDParams):
+    """Please send Read By Type request on Bearer 1 containing the UUID
+    of the Database Hash characteristic"""
+    stack = get_stack()
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
+    btp.gatt_cl_disc_all_chrc(bd_addr_type, bd_addr, 0x0001, 0xffff)
+
+    return True
+
+
+def hdl_wid_165(_: WIDParams):
+    """Please delete the bond if IUT was bonded previously"""
 
     return True
 
