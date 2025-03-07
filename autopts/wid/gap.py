@@ -1509,7 +1509,7 @@ def hdl_wid_2001(params: WIDParams):
     if params.test_case_name in ['GAP/IDLE/BON/BV-04-C', 'GAP/IDLE/BON/BV-06-C',
                                  'GAP/SEC/SEM/BV-06-C', 'GAP/SEC/SEM/BV-07-C',
                                  'GAP/SEC/SEM/BV-51-C', 'GAP/SEC/SEM/BV-09-C',
-                                 'GAP/SEC/SEM/BV-53-C']:
+                                 'GAP/SEC/SEM/BV-53-C', 'GAP/SEC/SEM/BV-11-C']:
         bd_addr_type = defs.BTP_BR_ADDRESS_TYPE
 
     if stack.gap.get_passkey() is None:
@@ -1913,4 +1913,11 @@ def hdl_wid_86(_: WIDParams):
     if not btp.check_discov_results(addr_type=defs.BTP_BR_ADDRESS_TYPE):
         return False
     get_stack().gap.reset_discovery()
+    return True
+
+
+def hdl_wid_252(_: WIDParams):
+    '''
+    Please send L2CAP Connection Response with Security Blocked to PTS.
+    '''
     return True
