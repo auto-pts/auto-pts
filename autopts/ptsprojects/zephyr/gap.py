@@ -251,6 +251,11 @@ def test_cases(ptses):
                  L2CAPConnectionResponse.insufficient_authentication),
     ]
 
+    br_l2cap_secure_authen = br_l2cap + [
+        TestFunc(btp.l2cap_br_listen, br_psm, br_initial_mtu,
+                 L2CAPConnectionResponse.insufficient_secure_authentication),
+    ]
+
     br_l2cap_keysize = br_l2cap + [
         TestFunc(btp.l2cap_br_listen, br_psm, br_initial_mtu,
                  L2CAPConnectionResponse.insufficient_encryption_key_size),
@@ -384,6 +389,11 @@ def test_cases(ptses):
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/SEM/BV-14-C",
                   cmds=br_l2cap_authen + [
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-15-C",
+                  cmds=br_l2cap_secure_authen + [
                       TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
                   ],
                   generic_wid_hdl=gap_wid_hdl),
