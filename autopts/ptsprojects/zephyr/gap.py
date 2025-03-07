@@ -364,6 +364,9 @@ def test_cases(ptses):
                       TestFunc(btp.gap_set_bondable_off),
                   ],
                   generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/DM/BON/BV-01-C",
+                  cmds=br_pre_cond,
+                  generic_wid_hdl=gap_wid_hdl),
     ]
 
     test_case_name_list = pts.get_test_case_list('GAP')
