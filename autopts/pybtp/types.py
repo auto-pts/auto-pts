@@ -89,7 +89,7 @@ class AdType:
     uri = 0x24
     le_supp_feat = 0x27
     rsi = 0x2e
-    
+
 
 class AdFlags:
     le_limit_discov_mode = 0x01
@@ -284,6 +284,7 @@ class L2CAPConnectionResponse:
     insufficient_authorization = 2
     insufficient_encryption_key_size = 3
     insufficient_encryption = 4
+    insufficient_secure_authentication = 5
 
 
 class WIDParams(NamedTuple):
