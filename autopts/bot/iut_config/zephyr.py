@@ -296,7 +296,30 @@ iut_config = {
         "test_cases": [
             'MBTM/CL/BT'
         ]
-    }
+    },
+
+    "br_sec_sc_only.conf": {
+        "overlay": {
+            'CONFIG_BT_CLASSIC': 'y',
+            'CONFIG_BT_CENTRAL': 'y',
+            'CONFIG_BT_PERIPHERAL': 'y',
+            'CONFIG_BT_SMP': 'y',
+            'CONFIG_BT_L2CAP_DYNAMIC_CHANNEL': 'y',
+            'CONFIG_BT_PAGE_TIMEOUT': '0xFFFF',
+            'CONFIG_BT_SMP_SC_ONLY': 'y',
+            'CONFIG_BT_SMP_SC_PAIR_ONLY': 'y',
+        },
+        "test_cases": [
+            'GAP/SEC/SEM/BV-11-C',
+            'GAP/SEC/SEM/BV-12-C',
+            'GAP/SEC/SEM/BV-13-C',
+            'GAP/SEC/SEM/BV-47-C',
+            'GAP/SEC/SEM/BV-16-C',
+            'GAP/SEC/SEM/BV-17-C',
+            'GAP/SEC/SEM/BV-18-C',
+            'GAP/SEC/SEM/BV-54-C',
+        ]
+    },
 }
 
 retry_config = {
