@@ -399,7 +399,8 @@ def hdl_wid_77(params: WIDParams):
         if params.test_case_name in ['GAP/SEC/SEM/BV-05-C', 'GAP/SEC/SEM/BV-50-C',
                                      'GAP/SEC/SEM/BV-07-C', 'GAP/SEC/SEM/BV-51-C',
                                      'GAP/SEC/SEM/BV-52-C', 'GAP/SEC/SEM/BV-09-C',
-                                     'GAP/SEC/SEM/BV-53-C', 'GAP/DM/BON/BV-01-C']:
+                                     'GAP/SEC/SEM/BV-53-C', 'GAP/DM/BON/BV-01-C',
+                                     'GAP/SEC/SEM/BV-54-C']:
             btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
         else:
             btp.gap_disconn()
@@ -527,7 +528,8 @@ def hdl_wid_108(params: WIDParams):
             stack.gap.delay_mmi = True
 
     if params.test_case_name in ['GAP/SEC/SEM/BV-50-C', 'GAP/SEC/SEM/BV-51-C',
-                                 'GAP/SEC/SEM/BV-52-C', 'GAP/SEC/SEM/BV-53-C']:
+                                 'GAP/SEC/SEM/BV-52-C', 'GAP/SEC/SEM/BV-53-C',
+                                 'GAP/SEC/SEM/BV-54-C']:
         btp.gap_pair(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
     else:
         btp.gap_pair()
@@ -1514,7 +1516,8 @@ def hdl_wid_2001(params: WIDParams):
                                  'GAP/SEC/SEM/BV-14-C', 'GAP/SEC/SEM/BV-15-C',
                                  'GAP/SEC/SEM/BV-47-C', 'GAP/SEC/SEM/BV-48-C',
                                  'GAP/SEC/SEM/BV-49-C', 'GAP/SEC/SEM/BV-16-C',
-                                 'GAP/SEC/SEM/BV-17-C', 'GAP/SEC/SEM/BV-18-C']:
+                                 'GAP/SEC/SEM/BV-17-C', 'GAP/SEC/SEM/BV-18-C',
+                                 'GAP/SEC/SEM/BV-54-C']:
         bd_addr_type = defs.BTP_BR_ADDRESS_TYPE
 
     if stack.gap.get_passkey() is None:
@@ -1726,7 +1729,7 @@ def hdl_wid_102(params: WIDParams):
                                  'GAP/SEC/SEM/BV-07-C', 'GAP/SEC/SEM/BV-51-C',
                                  'GAP/SEC/SEM/BV-52-C', 'GAP/SEC/SEM/BV-09-C',
                                  'GAP/SEC/SEM/BV-53-C', 'GAP/DM/BON/BV-01-C',
-                                 'GAP/SEC/SEM/BV-18-C']:
+                                 'GAP/SEC/SEM/BV-18-C', 'GAP/SEC/SEM/BV-54-C']:
         return True
 
     btp.gap_pair(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
