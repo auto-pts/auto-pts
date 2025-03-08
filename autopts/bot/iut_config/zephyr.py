@@ -320,6 +320,28 @@ iut_config = {
             'GAP/SEC/SEM/BV-54-C',
         ]
     },
+
+    "br_sec_ks_128.conf": {
+        "overlay": {
+            'CONFIG_BT_CLASSIC': 'y',
+            'CONFIG_BT_CENTRAL': 'y',
+            'CONFIG_BT_PERIPHERAL': 'y',
+            'CONFIG_BT_SMP': 'y',
+            'CONFIG_BT_L2CAP_DYNAMIC_CHANNEL': 'y',
+            'CONFIG_BT_PAGE_TIMEOUT': '0xFFFF',
+            'CONFIG_BT_SMP_MIN_ENC_KEY_SIZE': '16',
+        },
+        "test_cases": [
+            'GAP/SEC/SEM/BI-14-C',
+            'GAP/SEC/SEM/BI-15-C',
+            'GAP/SEC/SEM/BI-16-C',
+            'GAP/SEC/SEM/BI-04-C',
+            'GAP/SEC/SEM/BI-17-C',
+            'GAP/SEC/SEM/BI-18-C',
+            'GAP/SEC/SEM/BI-19-C',
+            'GAP/SEC/SEM/BI-08-C',
+        ]
+    },
 }
 
 retry_config = {
