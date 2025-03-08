@@ -1521,7 +1521,8 @@ def hdl_wid_2001(params: WIDParams):
                                  'GAP/SEC/SEM/BV-49-C', 'GAP/SEC/SEM/BV-16-C',
                                  'GAP/SEC/SEM/BV-17-C', 'GAP/SEC/SEM/BV-18-C',
                                  'GAP/SEC/SEM/BV-54-C', 'GAP/SEC/SEM/BV-19-C',
-                                 'GAP/SEC/SEM/BV-20-C', 'GAP/SEC/SEM/BV-55-C']:
+                                 'GAP/SEC/SEM/BV-20-C', 'GAP/SEC/SEM/BV-55-C',
+                                 'GAP/SEC/SEM/BI-03-C']:
         bd_addr_type = defs.BTP_BR_ADDRESS_TYPE
 
     if stack.gap.get_passkey() is None:
@@ -1718,7 +1719,8 @@ def hdl_wid_102(params: WIDParams):
     Please send an HCI connect request to establish a basic rate connection after the IUT
     discovers the Lower Tester over BR and LE.
     '''
-    if params.test_case_name in ['GAP/SEC/SEM/BI-11-C', 'GAP/SEC/SEM/BI-02-C']:
+    if params.test_case_name in ['GAP/SEC/SEM/BI-11-C', 'GAP/SEC/SEM/BI-02-C',
+                                 'GAP/SEC/SEM/BI-03-C']:
         return True
 
     btp.gap_start_discov(transport='bredr', discov_type='passive', mode='general')
@@ -2002,5 +2004,13 @@ def hdl_wid_257(_: WIDParams):
 def hdl_wid_261(_: WIDParams):
     '''
     Please bring IUT to Security Mode 4 level 2. Press OK to continue.
+    '''
+    return True
+
+
+def hdl_wid_258(_: WIDParams):
+    '''
+    Please bring IUT to Mode 4 level 3 security and make IUT general discoverable.
+    Press OK to continue.
     '''
     return True
