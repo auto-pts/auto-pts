@@ -1957,3 +1957,13 @@ def hdl_wid_255(_: WIDParams):
     Please bring IUT to Security Mode 2. Press OK to continue.
     '''
     return True
+
+
+def hdl_wid_266(_: WIDParams):
+    '''
+    Please confirm that the IUT signals to the Upper Tester that the channel establishment
+    failure after link encryption.
+    Click 'Yes' If there is channel establishment failure otherwise click 'No'.
+    '''
+    btp.gap_wait_for_disconnection()
+    return True
