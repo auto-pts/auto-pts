@@ -1950,3 +1950,10 @@ def hdl_wid_220(_: WIDParams):
     if stack.l2cap.wait_for_connection(chan_id=2, timeout=30):
         return False
     return True
+
+
+def hdl_wid_255(_: WIDParams):
+    '''
+    Please bring IUT to Security Mode 2. Press OK to continue.
+    '''
+    return True
