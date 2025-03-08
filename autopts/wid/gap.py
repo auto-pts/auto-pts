@@ -1513,7 +1513,7 @@ def hdl_wid_2001(params: WIDParams):
                                  'GAP/SEC/SEM/BV-12-C', 'GAP/SEC/SEM/BV-13-C',
                                  'GAP/SEC/SEM/BV-14-C', 'GAP/SEC/SEM/BV-15-C',
                                  'GAP/SEC/SEM/BV-47-C', 'GAP/SEC/SEM/BV-48-C',
-                                 'GAP/SEC/SEM/BV-49-C']:
+                                 'GAP/SEC/SEM/BV-49-C', 'GAP/SEC/SEM/BV-16-C']:
         bd_addr_type = defs.BTP_BR_ADDRESS_TYPE
 
     if stack.gap.get_passkey() is None:
@@ -1925,3 +1925,19 @@ def hdl_wid_252(_: WIDParams):
     Please send L2CAP Connection Response with Security Blocked to PTS.
     '''
     return True
+
+
+def hdl_wid_220(_: WIDParams):
+    '''
+    Please confirm IUT rejects the Upper Tester's request to establish a channel to access the
+    service on the Lower Tester
+    Click Yes, if rejected
+    Click No, if not rejected.
+    '''
+    stack = get_stack()
+    if stack.gap.wait_for_disconnection(timeout=3):
+        # ACL connection has been disconnect due to the AUTH failed
+        return True
+    l2cap = stack.l2cap
+    btp.l2cap_conn(None, defs.BTP_BR_ADDRESS_TYPE, l2cap.psm, l2cap.initial_mtu)
+    return stack.gap.wait_for_disconnection(timeout=30)
