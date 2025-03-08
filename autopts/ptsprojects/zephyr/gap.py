@@ -427,6 +427,11 @@ def test_cases(ptses):
                       TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
                   ],
                   generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-19-C",
+                  cmds=br_l2cap + [
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/SEM/BV-54-C",
                   cmds=br_l2cap + [
                       TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
