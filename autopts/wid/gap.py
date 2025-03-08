@@ -1517,7 +1517,8 @@ def hdl_wid_2001(params: WIDParams):
                                  'GAP/SEC/SEM/BV-47-C', 'GAP/SEC/SEM/BV-48-C',
                                  'GAP/SEC/SEM/BV-49-C', 'GAP/SEC/SEM/BV-16-C',
                                  'GAP/SEC/SEM/BV-17-C', 'GAP/SEC/SEM/BV-18-C',
-                                 'GAP/SEC/SEM/BV-54-C', 'GAP/SEC/SEM/BV-19-C']:
+                                 'GAP/SEC/SEM/BV-54-C', 'GAP/SEC/SEM/BV-19-C',
+                                 'GAP/SEC/SEM/BV-20-C']:
         bd_addr_type = defs.BTP_BR_ADDRESS_TYPE
 
     if stack.gap.get_passkey() is None:
@@ -1946,4 +1947,6 @@ def hdl_wid_220(_: WIDParams):
         return True
     l2cap = stack.l2cap
     btp.l2cap_conn(None, defs.BTP_BR_ADDRESS_TYPE, l2cap.psm, l2cap.initial_mtu)
-    return stack.gap.wait_for_disconnection(timeout=30)
+    if stack.l2cap.wait_for_connection(chan_id=2, timeout=30):
+        return False
+    return True
