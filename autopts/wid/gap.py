@@ -1525,7 +1525,8 @@ def hdl_wid_2001(params: WIDParams):
                                  'GAP/SEC/SEM/BV-17-C', 'GAP/SEC/SEM/BV-18-C',
                                  'GAP/SEC/SEM/BV-54-C', 'GAP/SEC/SEM/BV-19-C',
                                  'GAP/SEC/SEM/BV-20-C', 'GAP/SEC/SEM/BV-55-C',
-                                 'GAP/SEC/SEM/BI-03-C', 'GAP/SEC/SEM/BI-07-C']:
+                                 'GAP/SEC/SEM/BI-03-C', 'GAP/SEC/SEM/BI-07-C',
+                                 'GAP/SEC/SEM/BI-31-C']:
         bd_addr_type = defs.BTP_BR_ADDRESS_TYPE
 
     if stack.gap.get_passkey() is None:
