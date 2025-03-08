@@ -1715,6 +1715,9 @@ def hdl_wid_102(params: WIDParams):
     Please send an HCI connect request to establish a basic rate connection after the IUT
     discovers the Lower Tester over BR and LE.
     '''
+    if params.test_case_name in ['GAP/SEC/SEM/BI-11-C']:
+        return True
+
     btp.gap_start_discov(transport='bredr', discov_type='passive', mode='general')
     sleep(10)
     btp.gap_stop_discov()
@@ -1966,4 +1969,12 @@ def hdl_wid_266(_: WIDParams):
     Click 'Yes' If there is channel establishment failure otherwise click 'No'.
     '''
     btp.gap_wait_for_disconnection()
+    return True
+
+
+def hdl_wid_256(_: WIDParams):
+    '''
+    Please bring IUT to Mode 4 level 1 security and make IUT general discoverable.
+    Press OK to continue.
+    '''
     return True
