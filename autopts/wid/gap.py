@@ -1724,7 +1724,8 @@ def hdl_wid_102(params: WIDParams):
     discovers the Lower Tester over BR and LE.
     '''
     if params.test_case_name in ['GAP/SEC/SEM/BI-11-C', 'GAP/SEC/SEM/BI-02-C',
-                                 'GAP/SEC/SEM/BI-03-C', 'GAP/SEC/SEM/BI-14-C']:
+                                 'GAP/SEC/SEM/BI-03-C', 'GAP/SEC/SEM/BI-14-C',
+                                 'GAP/SEC/SEM/BI-15-C']:
         return True
 
     btp.gap_start_discov(transport='bredr', discov_type='passive', mode='general')
