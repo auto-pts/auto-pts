@@ -485,6 +485,11 @@ def test_cases(ptses):
                       TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
                   ],
                   generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BI-04-C",
+                  cmds=br_l2cap_secure_authen + [
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
     ]
 
     test_case_name_list = pts.get_test_case_list('GAP')
