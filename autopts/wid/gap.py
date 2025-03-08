@@ -1317,6 +1317,9 @@ def hdl_wid_265(params: WIDParams):
     # Please initiate a link encryption with the Lower Tester.
     if params.test_case_name in ['GAP/SEC/SEM/BI-12-C', 'GAP/SEC/SEM/BI-06-C']:
         btp.gap_pair(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
+    elif params.test_case_name in ['GAP/SEC/SEM/BI-07-C']:
+        btp.gap_pair_v2(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE,
+                        level=defs.BTP_GAP_CMD_PAIR_V2_LEVEL_3)
     else:
         btp.gap_pair()
     return True
@@ -1522,7 +1525,7 @@ def hdl_wid_2001(params: WIDParams):
                                  'GAP/SEC/SEM/BV-17-C', 'GAP/SEC/SEM/BV-18-C',
                                  'GAP/SEC/SEM/BV-54-C', 'GAP/SEC/SEM/BV-19-C',
                                  'GAP/SEC/SEM/BV-20-C', 'GAP/SEC/SEM/BV-55-C',
-                                 'GAP/SEC/SEM/BI-03-C']:
+                                 'GAP/SEC/SEM/BI-03-C', 'GAP/SEC/SEM/BI-07-C']:
         bd_addr_type = defs.BTP_BR_ADDRESS_TYPE
 
     if stack.gap.get_passkey() is None:
@@ -1740,7 +1743,8 @@ def hdl_wid_102(params: WIDParams):
                                  'GAP/SEC/SEM/BV-53-C', 'GAP/DM/BON/BV-01-C',
                                  'GAP/SEC/SEM/BV-18-C', 'GAP/SEC/SEM/BV-54-C',
                                  'GAP/SEC/SEM/BV-19-C', 'GAP/SEC/SEM/BV-55-C',
-                                 'GAP/SEC/SEM/BI-12-C', 'GAP/SEC/SEM/BI-06-C']:
+                                 'GAP/SEC/SEM/BI-12-C', 'GAP/SEC/SEM/BI-06-C',
+                                 'GAP/SEC/SEM/BI-07-C']:
         return True
 
     btp.gap_pair(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
@@ -2012,5 +2016,12 @@ def hdl_wid_258(_: WIDParams):
     '''
     Please bring IUT to Mode 4 level 3 security and make IUT general discoverable.
     Press OK to continue.
+    '''
+    return True
+
+
+def hdl_wid_262(_: WIDParams):
+    '''
+    Please bring IUT to Security Mode 4 level 3. Press OK to continue.
     '''
     return True
