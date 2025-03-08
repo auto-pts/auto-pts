@@ -1315,7 +1315,8 @@ def hdl_wid_243(_: WIDParams):
 
 def hdl_wid_265(params: WIDParams):
     # Please initiate a link encryption with the Lower Tester.
-    if params.test_case_name in ['GAP/SEC/SEM/BI-12-C', 'GAP/SEC/SEM/BI-06-C']:
+    if params.test_case_name in ['GAP/SEC/SEM/BI-12-C', 'GAP/SEC/SEM/BI-06-C',
+                                 'GAP/SEC/SEM/BI-17-C']:
         btp.gap_pair(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
     elif params.test_case_name in ['GAP/SEC/SEM/BI-07-C']:
         btp.gap_pair_v2(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE,
@@ -1748,7 +1749,7 @@ def hdl_wid_102(params: WIDParams):
                                  'GAP/SEC/SEM/BV-18-C', 'GAP/SEC/SEM/BV-54-C',
                                  'GAP/SEC/SEM/BV-19-C', 'GAP/SEC/SEM/BV-55-C',
                                  'GAP/SEC/SEM/BI-12-C', 'GAP/SEC/SEM/BI-06-C',
-                                 'GAP/SEC/SEM/BI-07-C']:
+                                 'GAP/SEC/SEM/BI-07-C', 'GAP/SEC/SEM/BI-17-C']:
         return True
 
     btp.gap_pair(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
