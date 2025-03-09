@@ -1556,7 +1556,8 @@ def hdl_wid_2001(params: WIDParams):
                                  'GAP/SEC/SEM/BI-03-C', 'GAP/SEC/SEM/BI-07-C',
                                  'GAP/SEC/SEM/BI-31-C', 'GAP/SEC/SEM/BI-16-C',
                                  'GAP/SEC/SEM/BI-04-C', 'GAP/SEC/SEM/BI-19-C',
-                                 'GAP/SEC/SEM/BI-08-C', 'GAP/SEC/SEM/BI-27-C']:
+                                 'GAP/SEC/SEM/BI-08-C', 'GAP/SEC/SEM/BI-27-C',
+                                 'GAP/SEC/SEM/BI-32-C']:
         bd_addr_type = defs.BTP_BR_ADDRESS_TYPE
 
     if stack.gap.get_passkey() is None:
@@ -1605,7 +1606,7 @@ def hdl_wid_20001(_: WIDParams):
 
 
 def hdl_wid_20115(params: WIDParams):
-    if params.test_case_name in ['GAP/DM/LEP/BI-01-C']:
+    if params.test_case_name in ['GAP/DM/LEP/BI-01-C', 'GAP/SEC/SEM/BI-32-C']:
         btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
         return True
 
@@ -1760,6 +1761,9 @@ def hdl_wid_102(params: WIDParams):
     Please send an HCI connect request to establish a basic rate connection after the IUT
     discovers the Lower Tester over BR and LE.
     '''
+
+    global GAP_TEST_ROUND
+
     if params.test_case_name in ['GAP/SEC/SEM/BI-11-C', 'GAP/SEC/SEM/BI-02-C',
                                  'GAP/SEC/SEM/BI-03-C', 'GAP/SEC/SEM/BI-14-C',
                                  'GAP/SEC/SEM/BI-15-C', 'GAP/SEC/SEM/BI-16-C',
@@ -1779,10 +1783,15 @@ def hdl_wid_102(params: WIDParams):
     else:
         btp.gap_wait_for_connection()
 
+    GAP_TEST_ROUND = GAP_TEST_ROUND + 1
+
     if params.test_case_name in ['GAP/DM/LEP/BV-13-C']:
         passkey = get_stack().gap.get_passkey()
         if passkey != None:
             btp.gap_passkey_confirm_rsp(btp.pts_addr_get(), defs.BTP_BR_ADDRESS_TYPE, passkey)
+
+    if GAP_TEST_ROUND > 1 and params.test_case_name in ['GAP/SEC/SEM/BI-32-C']:
+        return True
 
     if params.test_case_name in ['GAP/IDLE/BON/BV-05-C', 'GAP/IDLE/BON/BV-06-C',
                                  'GAP/SEC/SEM/BV-50-C', 'GAP/SEC/SEM/BV-06-C',
