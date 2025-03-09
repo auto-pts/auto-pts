@@ -1764,7 +1764,7 @@ def hdl_wid_102(params: WIDParams):
                                  'GAP/SEC/SEM/BI-07-C', 'GAP/SEC/SEM/BI-17-C',
                                  'GAP/SEC/SEM/BI-18-C', 'GAP/SEC/SEM/BI-19-C',
                                  'GAP/SEC/SEM/BI-08-C', 'GAP/DM/LEP/BV-09-C',
-                                 'GAP/DM/LEP/BV-10-C']:
+                                 'GAP/DM/LEP/BV-10-C', 'GAP/DM/LEP/BV-12-C']:
         return True
 
     btp.gap_pair(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
