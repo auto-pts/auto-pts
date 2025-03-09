@@ -876,3 +876,14 @@ Events:
 
                 This event can be sent after IUT received Periodic Advertising Sync
                 Transfer was received.
+
+        Opcode 0x91 - Encryption Change Received event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        enabled (1 octet)
+
+                This event can be sent after IUT received encryption change event was received.
+                The parameter `enabled` is the flag whether the link is encrypted.
+
