@@ -1813,7 +1813,7 @@ def hdl_wid_102(params: WIDParams):
 
     btp.gap_pair(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
 
-    if params.test_case_name in ['GAP/SEC/SEM/BV-25-C']:
+    if params.test_case_name in ['GAP/SEC/SEM/BV-25-C', 'GAP/SEC/SEM/BV-30-C']:
         passkey = get_stack().gap.get_passkey()
         if passkey != None:
             btp.gap_passkey_confirm_rsp(btp.pts_addr_get(), defs.BTP_BR_ADDRESS_TYPE, passkey)
