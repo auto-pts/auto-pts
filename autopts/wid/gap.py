@@ -1556,7 +1556,7 @@ def hdl_wid_2001(params: WIDParams):
                                  'GAP/SEC/SEM/BI-03-C', 'GAP/SEC/SEM/BI-07-C',
                                  'GAP/SEC/SEM/BI-31-C', 'GAP/SEC/SEM/BI-16-C',
                                  'GAP/SEC/SEM/BI-04-C', 'GAP/SEC/SEM/BI-19-C',
-                                 'GAP/SEC/SEM/BI-08-C']:
+                                 'GAP/SEC/SEM/BI-08-C', 'GAP/SEC/SEM/BI-27-C']:
         bd_addr_type = defs.BTP_BR_ADDRESS_TYPE
 
     if stack.gap.get_passkey() is None:
@@ -1797,7 +1797,8 @@ def hdl_wid_102(params: WIDParams):
                                  'GAP/SEC/SEM/BI-08-C', 'GAP/DM/LEP/BV-09-C',
                                  'GAP/DM/LEP/BV-10-C', 'GAP/DM/LEP/BV-12-C',
                                  'GAP/DM/LEP/BV-15-C', 'GAP/DM/LEP/BV-17-C',
-                                 'GAP/DM/LEP/BV-22-C', 'GAP/DM/LEP/BV-18-C']:
+                                 'GAP/DM/LEP/BV-22-C', 'GAP/DM/LEP/BV-18-C',
+                                 'GAP/SEC/SEM/BI-27-C']:
         return True
 
     btp.gap_pair(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
@@ -2029,12 +2030,15 @@ def hdl_wid_255(_: WIDParams):
     return True
 
 
-def hdl_wid_266(_: WIDParams):
+def hdl_wid_266(params: WIDParams):
     '''
     Please confirm that the IUT signals to the Upper Tester that the channel establishment
     failure after link encryption.
     Click 'Yes' If there is channel establishment failure otherwise click 'No'.
     '''
+    if params.test_case_name in ['GAP/SEC/SEM/BI-27-C']:
+        return not get_stack().gap.gap_wait_for_encrypted()
+
     btp.gap_wait_for_disconnection()
     return True
 
@@ -2128,4 +2132,12 @@ def hdl_wid_216(_: WIDParams):
     Please initiate security after upgrade the BR/EDR link key to authenticated.
     Click OK when ready.
     '''
+    return True
+
+
+def hdl_wid_273(_: WIDParams):
+    '''
+    Please trigger channel creation. Expect to perform link encryption before channel creation.
+    '''
+    btp.gap_pair_v2(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE, level=defs.BTP_GAP_CMD_PAIR_V2_LEVEL_4)
     return True
