@@ -410,7 +410,8 @@ def hdl_wid_77(params: WIDParams):
                                      'GAP/SEC/SEM/BV-07-C', 'GAP/SEC/SEM/BV-51-C',
                                      'GAP/SEC/SEM/BV-52-C', 'GAP/SEC/SEM/BV-09-C',
                                      'GAP/SEC/SEM/BV-53-C', 'GAP/DM/BON/BV-01-C',
-                                     'GAP/SEC/SEM/BV-54-C', 'GAP/SEC/SEM/BV-55-C']:
+                                     'GAP/SEC/SEM/BV-54-C', 'GAP/SEC/SEM/BV-55-C',
+                                     'GAP/DM/LEP/BV-17-C']:
             btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
         elif params.test_case_name in ['GAP/DM/LEP/BV-20-C']:
             if GAP_DISCONN_ROUND == 1:
@@ -1605,7 +1606,7 @@ def hdl_wid_20115(_: WIDParams):
 
 def hdl_wid_20100(params: WIDParams):
     btp.gap_conn()
-    if params.test_case_name in ['GAP/DM/LEP/BV-20-C']:
+    if params.test_case_name in ['GAP/DM/LEP/BV-20-C', 'GAP/DM/LEP/BV-17-C']:
         btp.gap_pair()
     return True
 
@@ -1780,7 +1781,7 @@ def hdl_wid_102(params: WIDParams):
                                  'GAP/SEC/SEM/BI-18-C', 'GAP/SEC/SEM/BI-19-C',
                                  'GAP/SEC/SEM/BI-08-C', 'GAP/DM/LEP/BV-09-C',
                                  'GAP/DM/LEP/BV-10-C', 'GAP/DM/LEP/BV-12-C',
-                                 'GAP/DM/LEP/BV-15-C']:
+                                 'GAP/DM/LEP/BV-15-C', 'GAP/DM/LEP/BV-17-C']:
         return True
 
     btp.gap_pair(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
@@ -2074,5 +2075,13 @@ def hdl_wid_259(_: WIDParams):
 def hdl_wid_263(_: WIDParams):
     '''
     Please bring IUT to Security Mode 4 level 4. Press OK to continue.
+    '''
+    return True
+
+
+def hdl_wid_213(_: WIDParams):
+    '''
+    Please make sure the IUT does initiate the BR secure connection pairing proccess.
+    Click OK when ready.
     '''
     return True
