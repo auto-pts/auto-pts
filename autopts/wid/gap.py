@@ -395,7 +395,12 @@ def hdl_wid_77(params: WIDParams):
         # we should wait for an event here or submit a PTS Issue.
         sleep(10)
     try:
-        btp.gap_wait_for_connection(5)
+        if params.test_case_name in ['GAP/DM/LEP/BV-09-C']:
+            get_stack().gap.wait_for_connection(timeout=5, conn_count=2)
+            btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
+        else:
+            btp.gap_wait_for_connection(5)
+
         if params.test_case_name in ['GAP/SEC/SEM/BV-05-C', 'GAP/SEC/SEM/BV-50-C',
                                      'GAP/SEC/SEM/BV-07-C', 'GAP/SEC/SEM/BV-51-C',
                                      'GAP/SEC/SEM/BV-52-C', 'GAP/SEC/SEM/BV-09-C',
@@ -1743,7 +1748,10 @@ def hdl_wid_102(params: WIDParams):
         return False
 
     btp.gap_conn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
-    btp.gap_wait_for_connection()
+    if params.test_case_name in ['GAP/DM/LEP/BV-09-C']:
+        get_stack().gap.wait_for_connection(timeout=30, conn_count=2)
+    else:
+        btp.gap_wait_for_connection()
 
     if params.test_case_name in ['GAP/IDLE/BON/BV-05-C', 'GAP/IDLE/BON/BV-06-C',
                                  'GAP/SEC/SEM/BV-50-C', 'GAP/SEC/SEM/BV-06-C',
@@ -1755,7 +1763,7 @@ def hdl_wid_102(params: WIDParams):
                                  'GAP/SEC/SEM/BI-12-C', 'GAP/SEC/SEM/BI-06-C',
                                  'GAP/SEC/SEM/BI-07-C', 'GAP/SEC/SEM/BI-17-C',
                                  'GAP/SEC/SEM/BI-18-C', 'GAP/SEC/SEM/BI-19-C',
-                                 'GAP/SEC/SEM/BI-08-C']:
+                                 'GAP/SEC/SEM/BI-08-C', 'GAP/DM/LEP/BV-09-C']:
         return True
 
     btp.gap_pair(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
