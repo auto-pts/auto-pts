@@ -1599,7 +1599,11 @@ def hdl_wid_20001(_: WIDParams):
     return True
 
 
-def hdl_wid_20115(_: WIDParams):
+def hdl_wid_20115(params: WIDParams):
+    if params.test_case_name in ['GAP/DM/LEP/BI-01-C']:
+        btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
+        return True
+
     btp.gap_disconn()
     return True
 
@@ -2083,5 +2087,13 @@ def hdl_wid_213(_: WIDParams):
     '''
     Please make sure the IUT does initiate the BR secure connection pairing proccess.
     Click OK when ready.
+    '''
+    return True
+
+
+def hdl_wid_221(_: WIDParams):
+    '''
+    Please initiate BR/EDR Secure Simple Pairing then LE Secure Connections pairing for
+    this test case.
     '''
     return True
