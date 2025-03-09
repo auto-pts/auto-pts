@@ -561,6 +561,11 @@ def test_cases(ptses):
                       TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
                   ],
                   generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/DM/LEP/BV-13-C",
+                  cmds=br_pre_cond + [
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
     ]
 
     test_case_name_list = pts.get_test_case_list('GAP')
