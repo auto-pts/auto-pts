@@ -1779,6 +1779,11 @@ def hdl_wid_102(params: WIDParams):
     else:
         btp.gap_wait_for_connection()
 
+    if params.test_case_name in ['GAP/DM/LEP/BV-13-C']:
+        passkey = get_stack().gap.get_passkey()
+        if passkey != None:
+            btp.gap_passkey_confirm_rsp(btp.pts_addr_get(), defs.BTP_BR_ADDRESS_TYPE, passkey)
+
     if params.test_case_name in ['GAP/IDLE/BON/BV-05-C', 'GAP/IDLE/BON/BV-06-C',
                                  'GAP/SEC/SEM/BV-50-C', 'GAP/SEC/SEM/BV-06-C',
                                  'GAP/SEC/SEM/BV-07-C', 'GAP/SEC/SEM/BV-51-C',
@@ -2115,4 +2120,12 @@ def hdl_wid_217(_: WIDParams):
     Please initiate security after upgrade the LTK to authenticated. Click OK when ready.
     '''
     btp.gap_pair_v2(level=defs.BTP_GAP_CMD_PAIR_V2_LEVEL_4)
+    return True
+
+
+def hdl_wid_216(_: WIDParams):
+    '''
+    Please initiate security after upgrade the BR/EDR link key to authenticated.
+    Click OK when ready.
+    '''
     return True
