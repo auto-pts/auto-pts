@@ -388,7 +388,12 @@ def hdl_wid_76(_: WIDParams):
     return True
 
 
+GAP_DISCONN_ROUND = 0
+
+
 def hdl_wid_77(params: WIDParams):
+    global GAP_DISCONN_ROUND
+
     if params.test_case_name.startswith("GAP/BOND/BON/BV-04-C"):
         # PTS sends WID before IUT finishes encryption
         # This is a temporary workaround. Ultimately
@@ -407,12 +412,20 @@ def hdl_wid_77(params: WIDParams):
                                      'GAP/SEC/SEM/BV-53-C', 'GAP/DM/BON/BV-01-C',
                                      'GAP/SEC/SEM/BV-54-C', 'GAP/SEC/SEM/BV-55-C']:
             btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
+        elif params.test_case_name in ['GAP/DM/LEP/BV-20-C']:
+            if GAP_DISCONN_ROUND == 1:
+                btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
+            else:
+                btp.gap_disconn()
         else:
             btp.gap_disconn()
     except types.BTPError:
         logging.debug("Ignoring expected error on disconnect")
     else:
         btp.gap_wait_for_disconnection(30)
+
+    GAP_DISCONN_ROUND = GAP_DISCONN_ROUND + 1
+
     return True
 
 
@@ -1590,8 +1603,10 @@ def hdl_wid_20115(_: WIDParams):
     return True
 
 
-def hdl_wid_20100(_: WIDParams):
+def hdl_wid_20100(params: WIDParams):
     btp.gap_conn()
+    if params.test_case_name in ['GAP/DM/LEP/BV-20-C']:
+        btp.gap_pair()
     return True
 
 
