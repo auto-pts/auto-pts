@@ -418,6 +418,11 @@ def hdl_wid_77(params: WIDParams):
                 btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
             else:
                 btp.gap_disconn()
+        elif params.test_case_name in ['GAP/DM/LEP/BV-22-C']:
+            if GAP_DISCONN_ROUND == 1:
+                btp.gap_disconn()
+            else:
+                btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
         else:
             btp.gap_disconn()
     except types.BTPError:
@@ -1785,7 +1790,8 @@ def hdl_wid_102(params: WIDParams):
                                  'GAP/SEC/SEM/BI-18-C', 'GAP/SEC/SEM/BI-19-C',
                                  'GAP/SEC/SEM/BI-08-C', 'GAP/DM/LEP/BV-09-C',
                                  'GAP/DM/LEP/BV-10-C', 'GAP/DM/LEP/BV-12-C',
-                                 'GAP/DM/LEP/BV-15-C', 'GAP/DM/LEP/BV-17-C']:
+                                 'GAP/DM/LEP/BV-15-C', 'GAP/DM/LEP/BV-17-C',
+                                 'GAP/DM/LEP/BV-22-C']:
         return True
 
     btp.gap_pair(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
