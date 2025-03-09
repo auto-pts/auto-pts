@@ -319,6 +319,7 @@ iut_config = {
             'GAP/SEC/SEM/BV-18-C',
             'GAP/SEC/SEM/BV-54-C',
             'GAP/SEC/SEM/BI-32-C',
+            'GAP/SEC/SEM/BV-25-C',
         ]
     },
 
