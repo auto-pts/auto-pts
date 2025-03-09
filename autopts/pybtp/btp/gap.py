@@ -376,6 +376,24 @@ def gap_passkey_entry_req_ev_(gap, data, data_len):
     gap.passkey.data = randint(0, 999999)
 
 
+def gap_encryption_change_ev_(gap, data, data_len):
+    stack = get_stack()
+    logging.debug("%s", gap_encryption_change_ev_.__name__)
+
+    logging.debug("enc change received %r", data)
+
+    fmt = '<B6sBB'
+    if len(data) != struct.calcsize(fmt):
+        raise BTPError("Invalid data length")
+
+    _addr_t, _addr, _encrypted, _key_size = struct.unpack_from(fmt, data)
+    _addr = binascii.hexlify(_addr[::-1]).decode()
+
+    logging.debug("received %r", (_addr_t, _addr, _encrypted, _key_size))
+
+    stack.gap.encryption_change_rcvd.data = (_addr_t, _addr, _encrypted, _key_size)
+
+
 GAP_EV = {
     defs.BTP_GAP_EV_NEW_SETTINGS: gap_new_settings_ev_,
     defs.BTP_GAP_EV_DEVICE_FOUND: gap_device_found_ev_,
@@ -393,7 +411,8 @@ GAP_EV = {
     defs.BTP_GAP_EV_PERIODIC_SYNC_ESTABLISHED: gap_padv_sync_established_ev_,
     defs.BTP_GAP_EV_PERIODIC_SYNC_LOST: gap_padv_sync_lost_ev_,
     defs.BTP_GAP_EV_PERIODIC_REPORT: gap_padv_report_ev_,
-    defs.BTP_GAP_EV_PERIODIC_TRANSFER_RECEIVED: gap_padv_transfer_received_ev_
+    defs.BTP_GAP_EV_PERIODIC_TRANSFER_RECEIVED: gap_padv_transfer_received_ev_,
+    defs.BTP_GAP_EV_ENCRYPTION_CHANGE: gap_encryption_change_ev_,
 }
 
 

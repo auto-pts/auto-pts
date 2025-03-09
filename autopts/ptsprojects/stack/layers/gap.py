@@ -95,6 +95,7 @@ class Gap:
         self.passkey = Property(None)
         self.conn_params = Property(None)
         self.pairing_failed_rcvd = Property(None)
+        self.encryption_change_rcvd = Property(None)
 
         # bond_lost data (addr_type, addr)
         self.bond_lost_ev_data = Property(None)
@@ -223,6 +224,26 @@ class Gap:
             wait_for_event(timeout, lambda: self.pairing_failed_rcvd.data)
 
         return self.pairing_failed_rcvd.data
+
+    def gap_wait_for_encryption_change(self, timeout=5):
+        if self.encryption_change_rcvd.data is None:
+            wait_for_event(timeout, lambda: self.encryption_change_rcvd.data)
+
+        return self.encryption_change_rcvd.data
+
+    def gap_wait_for_encrypted(self, timeout=5):
+        if self.encryption_change_rcvd.data is None:
+            wait_for_event(timeout, lambda: self.encryption_change_rcvd.data)
+
+        if self.encryption_change_rcvd.data is None:
+            return False
+
+        (_, _, enabled, _) = self.encryption_change_rcvd.data
+
+        if enabled == 0:
+            return False
+        else:
+            return True
 
     def gap_wait_for_lost_bond(self, timeout=5):
         if self.bond_lost_ev_data.data is None:
