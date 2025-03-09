@@ -1807,7 +1807,8 @@ def hdl_wid_102(params: WIDParams):
                                  'GAP/DM/LEP/BV-10-C', 'GAP/DM/LEP/BV-12-C',
                                  'GAP/DM/LEP/BV-15-C', 'GAP/DM/LEP/BV-17-C',
                                  'GAP/DM/LEP/BV-22-C', 'GAP/DM/LEP/BV-18-C',
-                                 'GAP/SEC/SEM/BI-27-C', 'GAP/SEC/SEM/BI-26-C']:
+                                 'GAP/SEC/SEM/BI-27-C', 'GAP/SEC/SEM/BI-26-C',
+                                 'GAP/SEC/SEM/BI-25-C']:
         return True
 
     btp.gap_pair(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
@@ -2148,6 +2149,10 @@ def hdl_wid_273(params: WIDParams):
     '''
     Please trigger channel creation. Expect to perform link encryption before channel creation.
     '''
+    if params.test_case_name in ['GAP/SEC/SEM/BI-25-C']:
+        btp.gap_pair_v2(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE, level=defs.BTP_GAP_CMD_PAIR_V2_LEVEL_2)
+        return True
+
     if params.test_case_name in ['GAP/SEC/SEM/BI-26-C']:
         btp.gap_pair_v2(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE, level=defs.BTP_GAP_CMD_PAIR_V2_LEVEL_3)
         return True
