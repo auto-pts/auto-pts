@@ -418,7 +418,7 @@ def hdl_wid_77(params: WIDParams):
                 btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
             else:
                 btp.gap_disconn()
-        elif params.test_case_name in ['GAP/DM/LEP/BV-22-C']:
+        elif params.test_case_name in ['GAP/DM/LEP/BV-22-C', 'GAP/DM/LEP/BV-18-C']:
             if GAP_DISCONN_ROUND == 1:
                 btp.gap_disconn()
             else:
@@ -1615,7 +1615,8 @@ def hdl_wid_20115(params: WIDParams):
 
 def hdl_wid_20100(params: WIDParams):
     btp.gap_conn()
-    if params.test_case_name in ['GAP/DM/LEP/BV-20-C', 'GAP/DM/LEP/BV-17-C']:
+    if params.test_case_name in ['GAP/DM/LEP/BV-20-C', 'GAP/DM/LEP/BV-17-C',
+                                 'GAP/DM/LEP/BV-18-C']:
         btp.gap_pair()
     return True
 
@@ -1791,7 +1792,7 @@ def hdl_wid_102(params: WIDParams):
                                  'GAP/SEC/SEM/BI-08-C', 'GAP/DM/LEP/BV-09-C',
                                  'GAP/DM/LEP/BV-10-C', 'GAP/DM/LEP/BV-12-C',
                                  'GAP/DM/LEP/BV-15-C', 'GAP/DM/LEP/BV-17-C',
-                                 'GAP/DM/LEP/BV-22-C']:
+                                 'GAP/DM/LEP/BV-22-C', 'GAP/DM/LEP/BV-18-C']:
         return True
 
     btp.gap_pair(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
@@ -1903,13 +1904,17 @@ def hdl_wid_151(_: WIDParams):
     return True
 
 
-def hdl_wid_20117(_: WIDParams):
+def hdl_wid_20117(params: WIDParams):
     '''
     Please start encryption. Use previously distributed key if available.
     Description: Verify that the Implementation Under Test (IUT) can
     successfully start and complete encryption.
     '''
     btp.gap_pair(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
+    if params.test_case_name in ['GAP/DM/LEP/BV-18-C']:
+        passkey = get_stack().gap.get_passkey()
+        if passkey != None:
+            btp.gap_passkey_confirm_rsp(btp.pts_addr_get(), defs.BTP_BR_ADDRESS_TYPE, passkey)
     return True
 
 
@@ -2102,4 +2107,12 @@ def hdl_wid_221(_: WIDParams):
     Please initiate BR/EDR Secure Simple Pairing then LE Secure Connections pairing for
     this test case.
     '''
+    return True
+
+
+def hdl_wid_217(_: WIDParams):
+    '''
+    Please initiate security after upgrade the LTK to authenticated. Click OK when ready.
+    '''
+    btp.gap_pair_v2(level=defs.BTP_GAP_CMD_PAIR_V2_LEVEL_4)
     return True
