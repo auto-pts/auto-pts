@@ -1,0 +1,234 @@
+BAS Service (ID 30)
+=====================
+
+Commands and responses:
+
+	Opcode 0x00 - Error response
+
+	Opcode 0x01 - Read Supported Commands command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	<none>
+		Response parameters:	<supported commands> (variable)
+
+		Each bit in response is a flag indicating if command with
+		opcode matching bit number is supported. Bit set to 1 means
+		that command is supported. Bit 0 is reserved and shall always
+		be set to 0. If specific bit is not present in response (less
+		than required bytes received) it shall be assumed that command
+		is not supported.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x02 - BAS Set Battery Level
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Battery Level (1 octet)
+		Response parameters:	<None>
+
+		This command instruct the IUT to change the Battery Level field of 
+		the Battery Level Status characteristic.
+
+	Opcode 0x03 - BAS Set Battery Present
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					Battery Present (1 octet)
+		Response parameters:	<None>
+
+		This command instruct the IUT to change the Power State field of 
+		the Battery Level Status characteristic.
+
+		BTP Values:
+			/** Battery is not present. */
+			BTP_BAS_BLS_BATTERY_NOT_PRESENT = 0,
+
+			/** Battery is present. */
+			BTP_BAS_BLS_BATTERY_PRESENT = 1
+
+	Opcode 0x04 - BAS Set Wired Power Source
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:	<None>
+
+		This command instruct the IUT to change the Wired Power Source field
+		of the Battery Level Status characteristic.
+
+		BTP Values:
+			/** Wired external power source is not connected. */
+			BTP_BAS_BLS_WIRED_POWER_NOT_CONNECTED = 0,
+
+			/** Wired external power source is connected. */
+			BTP_BAS_BLS_WIRED_POWER_CONNECTED = 1,
+
+			/** Wired external power source status is unknown. */
+			BTP_BAS_BLS_WIRED_POWER_UNKNOWN = 2
+
+
+	Opcode 0x05 - BAS Set Wireless Power Source
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:	<None>
+
+		This command instruct the IUT to change the Wireless Power Source field
+		of the Battery Level Status characteristic.
+
+		BTP Values:
+			/** Wireless external power source is not connected. */
+			BTP_BAS_BLS_WIRELESS_POWER_NOT_CONNECTED = 0,
+
+			/** Wireless external power source is connected. */
+			BTP_BAS_BLS_WIRELESS_POWER_CONNECTED = 1,
+
+			/** Wireless external power source status is unknown. */
+			BTP_BAS_BLS_WIRELESS_POWER_UNKNOWN = 2
+
+	Opcode 0x06 - BAS Set Battery Charge State
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+					State (1 octet)
+		Response parameters:	<None>
+
+		This command instruct the IUT to change the Battery Charge State field
+		of the Battery Level Status characteristic.
+
+		BTP Values:
+			/** Battery charge state is unknown. */
+			BTP_BAS_BLS_CHARGE_STATE_UNKNOWN = 0,
+
+			/** Battery is currently charging. */
+			BTP_BAS_BLS_CHARGE_STATE_CHARGING = 1,
+
+			/** Battery is discharging actively. */
+			BTP_BAS_BLS_CHARGE_STATE_DISCHARGING_ACTIVE = 2,
+
+			/** Battery is discharging but inactive. */
+			BTP_BAS_BLS_CHARGE_STATE_DISCHARGING_INACTIVE = 3
+
+	Opcode 0x07 - BAS Set Battery Charge Level
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:	<None>
+
+		This command instruct the IUT to change the Battery Charge Level field
+		of the Battery Level Status characteristic.
+
+		BTP Values:
+			/** Battery charge level is unknown. */
+			BTP_BAS_BLS_CHARGE_LEVEL_UNKNOWN = 0,
+
+			/** Battery charge level is good. */
+			BTP_BAS_BLS_CHARGE_LEVEL_GOOD = 1,
+
+			/** Battery charge level is low. */
+			BTP_BAS_BLS_CHARGE_LEVEL_LOW = 2,
+
+			/** Battery charge level is critical. */
+			BTP_BAS_BLS_CHARGE_LEVEL_CRITICAL = 3
+
+	Opcode 0x08 - BAS Set Battery Charge Type
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:	<None>
+
+		This command instruct the IUT to change the Battery Charge Type field
+		of the Battery Level Status characteristic.
+
+		BTP Values:
+			/** Battery charge type is unknown or not charging. */
+			BTP_BAS_BLS_CHARGE_TYPE_UNKNOWN = 0,
+
+			/** Battery is charged using constant current. */
+			BTP_BAS_BLS_CHARGE_TYPE_CONSTANT_CURRENT = 1,
+
+			/** Battery is charged using constant voltage. */
+			BTP_BAS_BLS_CHARGE_TYPE_CONSTANT_VOLTAGE = 2,
+
+			/** Battery is charged using trickle charge. */
+			BTP_BAS_BLS_CHARGE_TYPE_TRICKLE = 3,
+
+			/** Battery is charged using float charge. */
+			BTP_BAS_BLS_CHARGE_TYPE_FLOAT = 4
+
+	Opcode 0x09 - BAS Set Charging Fault Reason
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:	<None>
+
+		This command instruct the IUT to change the Charging Fault Reason field
+		of the Battery Level Status characteristic.
+
+		BTP Values:
+			/** No charging fault. */
+			BTP_BAS_BLS_FAULT_REASON_NONE = 0,
+
+			/** Charging fault due to battery issue. */
+			BTP_BAS_BLS_FAULT_REASON_BATTERY = BIT(0),
+
+			/** Charging fault due to external power source issue. */
+			BTP_BAS_BLS_FAULT_REASON_EXTERNAL_POWER = BIT(1),
+
+			/** Charging fault for other reasons. */
+			BTP_BAS_BLS_FAULT_REASON_OTHER = BIT(2)
+
+	Opcode 0x0A - BAS Set Identifier
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:	<None>
+
+		This command instruct the IUT to change the Identifier field of 
+		the Battery Level Status characteristic.
+
+	Opcode 0x0B - BAS Set Service Required
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:	<None>
+
+		This command instruct the IUT to change the Service Required field of 
+		the Battery Level Status characteristic.
+
+		BTP Values:
+			/** Service is not required. */
+			BTP_BAS_BLS_SERVICE_REQUIRED_FALSE = 0,
+
+			/** Service is required. */
+			BTP_BAS_BLS_SERVICE_REQUIRED_TRUE = 1,
+
+			/** Service requirement is unknown. */
+			BTP_BAS_BLS_SERVICE_REQUIRED_UNKNOWN = 2
+
+	Opcode 0x0C - BAS Set Battery Fault
+
+		Controller Index:	<controller id>
+		Command parameters:	Address_Type (1 octet)
+					Address (6 octets)
+		Response parameters:	<None>
+
+		This command instruct the IUT to change the Battery Fault field of 
+		the Battery Level Status characteristic.
+
+		BTP Values:
+			/** No battery fault. */
+			BTP_BAS_BLS_BATTERY_FAULT_NO = 0,
+
+			/** Battery fault present. */
+			BTP_BAS_BLS_BATTERY_FAULT_YES = 1
