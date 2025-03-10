@@ -92,11 +92,11 @@ def set_pixits(ptses):
     pts.set_pixit("CAP", "TSPX_BST_CODEC_CONFIG", "16_2_1")
 
 
-sink_contexts = Context.LIVE | Context.CONVERSATIONAL | Context.MEDIA | Context.RINGTONE
-source_contexts = Context.LIVE | Context.CONVERSATIONAL
+SINK_CONTEXTS = Context.LIVE | Context.CONVERSATIONAL | Context.MEDIA | Context.RINGTONE
+SOURCE_CONTEXTS = Context.LIVE | Context.CONVERSATIONAL
 
 
-def announcements(adv_data, rsp_data, targeted):
+def announcements(adv_data, rsp_data, targeted, sink_contexts, source_contexts):
     """Setup Announcements"""
 
     # CAP General/Targeted Announcement
@@ -173,12 +173,17 @@ def test_cases(ptses):
     ]
 
     general_conditions = [
-        TestFunc(announcements, adv_data, rsp_data, False),
+        TestFunc(announcements, adv_data, rsp_data, False, SINK_CONTEXTS, SOURCE_CONTEXTS),
         TestFunc(btp.gap_adv_ind_on, ad=adv_data, sd=rsp_data),
     ]
 
     targeted_conditions = [
-        TestFunc(announcements, adv_data, rsp_data, True),
+        TestFunc(announcements, adv_data, rsp_data, True, SINK_CONTEXTS, SOURCE_CONTEXTS),
+        TestFunc(btp.gap_adv_ind_on, ad=adv_data, sd=rsp_data),
+    ]
+
+    idle_targeted_conditions = [
+        TestFunc(announcements, adv_data, rsp_data, True, 0, 0),
         TestFunc(btp.gap_adv_ind_on, ad=adv_data, sd=rsp_data),
     ]
 
@@ -186,6 +191,8 @@ def test_cases(ptses):
         ZTestCase("CAP", "CAP/CL/ADV/BV-01-C", cmds=pre_conditions + general_conditions,
                   generic_wid_hdl=cap_wid_hdl),
         ZTestCase("CAP", "CAP/CL/ADV/BV-03-C", cmds=pre_conditions + targeted_conditions,
+                  generic_wid_hdl=cap_wid_hdl),
+        ZTestCase("CAP", "CAP/CL/ADV/BV-04-C", cmds=pre_conditions + idle_targeted_conditions,
                   generic_wid_hdl=cap_wid_hdl),
         ZTestCase("CAP", "CAP/ACC/ERR/BI-01-C", cmds=pre_conditions + [
             TestFunc(btp.pacs_set_available_contexts,
