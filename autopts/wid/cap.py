@@ -22,8 +22,10 @@ from autopts.pybtp import btp, defs
 from autopts.ptsprojects.stack import get_stack, WildCard
 from autopts.pybtp.btp import pts_addr_get, pts_addr_type_get, lt2_addr_get, lt2_addr_type_get, lt3_addr_get, \
     lt3_addr_type_get
+from autopts.pybtp.btp.pacs import pacs_set_available_contexts
 from autopts.pybtp.defs import AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, AUDIO_METADATA_CCID_LIST
 from autopts.pybtp.types import WIDParams, ASCSState, BTPError, PaSyncState, Addr
+from autopts.pybtp.btp.cap import announcements
 from autopts.wid import generic_wid_hdl
 from autopts.wid.bap import (create_default_config, AudioDir, get_audio_locations_from_pac,
                              create_lc3_ltvs_bytes, CODEC_CONFIG_SETTINGS, QOS_CONFIG_SETTINGS,
@@ -970,6 +972,20 @@ def hdl_wid_419(params: WIDParams):
     """
     return hdl_wid_400(params)
 
+def hdl_wid_421(params: WIDParams):
+    """
+        Please make sure the IUT is a BAP Unicast Server that is in an Idle state
+    """
+    adv_data, rsp_data = {}, {}
+
+    # Set available contexts to 0
+    announcements(adv_data, rsp_data, True, 0, 0)
+    btp.gap_adv_ind_on(ad=adv_data, sd=rsp_data)
+
+    # Set available contexts to 0
+    pacs_set_available_contexts(0, 0)
+
+    return True
 
 def hdl_wid_20001(_: WIDParams):
     """

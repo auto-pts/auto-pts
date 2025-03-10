@@ -17,12 +17,21 @@
 import binascii
 import logging
 import struct
+from enum import IntEnum
 
-from autopts.pybtp import defs
+from autopts.pybtp import defs, btp
+from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp.btp.btp import CONTROLLER_INDEX, get_iut_method as get_iut,\
     btp_hdr_check, pts_addr_get, pts_addr_type_get
 from autopts.pybtp.btp.gap import __gap_current_settings_update
-from autopts.pybtp.types import addr2btp_ba, BTPError
+from autopts.pybtp.types import addr2btp_ba, BTPError, AdType
+
+class Uuid(IntEnum):
+    ASCS = 0x184E
+    BASS = 0x184F
+    PACS = 0x1850
+    BAAS = 0x1852
+    CAS  = 0x1853
 
 CAP = {
     'read_supported_cmds': (defs.BTP_SERVICE_ID_CAP,
@@ -52,6 +61,23 @@ CAP = {
     'broadcast_source_update': (defs.BTP_SERVICE_ID_CAP,
         defs.BTP_CAP_CMD_BROADCAST_SOURCE_UPDATE, CONTROLLER_INDEX),
 }
+
+
+def announcements(adv_data, rsp_data, targeted, sink_contexts, source_contexts):
+    """Setup Announcements"""
+
+    # CAP General/Targeted Announcement
+    adv_data[AdType.uuid16_svc_data] = [struct.pack('<HB', Uuid.CAS, 1 if targeted else 0) ]
+
+    # BAP General/Targeted Announcement
+    adv_data[AdType.uuid16_svc_data] += [struct.pack('<HBHHB', Uuid.ASCS, 1 if targeted else 0, sink_contexts, source_contexts, 0) ]
+
+    # Generate the Resolvable Set Identifier (RSI)
+    rsi = btp.cas_get_member_rsi()
+    adv_data[AdType.rsi] = struct.pack('<6B', *rsi)
+
+    stack = get_stack()
+    stack.gap.ad = adv_data
 
 
 def cap_command_rsp_succ(timeout=20.0):

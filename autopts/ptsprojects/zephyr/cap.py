@@ -15,7 +15,6 @@
 #
 
 """CAP test cases"""
-from enum import IntEnum, IntFlag
 import struct
 
 from autopts.pybtp import btp
@@ -25,17 +24,9 @@ from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.cap_wid import cap_wid_hdl
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
 from autopts.pybtp.defs import PACS_AUDIO_CONTEXT_TYPE_CONVERSATIONAL, PACS_AUDIO_CONTEXT_TYPE_MEDIA
-from autopts.pybtp.types import Addr, AdType, Context
+from autopts.pybtp.types import Addr, Context
+from autopts.pybtp.btp.cap import announcements
 from autopts.utils import ResultWithFlag
-
-
-class Uuid(IntEnum):
-    ASCS = 0x184E
-    BASS = 0x184F
-    PACS = 0x1850
-    BAAS = 0x1852
-    CAS  = 0x1853
-
 
 def set_pixits(ptses):
     """Setup CAP profile PIXITS for workspace. Those values are used for test
@@ -92,26 +83,8 @@ def set_pixits(ptses):
     pts.set_pixit("CAP", "TSPX_BST_CODEC_CONFIG", "16_2_1")
 
 
-sink_contexts = Context.LIVE | Context.CONVERSATIONAL | Context.MEDIA | Context.RINGTONE
-source_contexts = Context.LIVE | Context.CONVERSATIONAL
-
-
-def announcements(adv_data, rsp_data, targeted):
-    """Setup Announcements"""
-
-    # CAP General/Targeted Announcement
-    adv_data[AdType.uuid16_svc_data] = [struct.pack('<HB', Uuid.CAS, 1 if targeted else 0) ]
-
-    # BAP General/Targeted Announcement
-    adv_data[AdType.uuid16_svc_data] += [struct.pack('<HBHHB', Uuid.ASCS, 1 if targeted else 0, sink_contexts, source_contexts, 0) ]
-
-    # Generate the Resolvable Set Identifier (RSI)
-    rsi = btp.cas_get_member_rsi()
-    adv_data[AdType.rsi] = struct.pack('<6B', *rsi)
-
-    stack = get_stack()
-    stack.gap.ad = adv_data
-
+SINK_CONTEXTS = Context.LIVE | Context.CONVERSATIONAL | Context.MEDIA | Context.RINGTONE
+SOURCE_CONTEXTS = Context.LIVE | Context.CONVERSATIONAL
 
 def test_cases(ptses):
     """Returns a list of CAP Server test cases"""
@@ -173,12 +146,12 @@ def test_cases(ptses):
     ]
 
     general_conditions = [
-        TestFunc(announcements, adv_data, rsp_data, False),
+        TestFunc(announcements, adv_data, rsp_data, False, SINK_CONTEXTS, SOURCE_CONTEXTS),
         TestFunc(btp.gap_adv_ind_on, ad=adv_data, sd=rsp_data),
     ]
 
     targeted_conditions = [
-        TestFunc(announcements, adv_data, rsp_data, True),
+        TestFunc(announcements, adv_data, rsp_data, True, SINK_CONTEXTS, SOURCE_CONTEXTS),
         TestFunc(btp.gap_adv_ind_on, ad=adv_data, sd=rsp_data),
     ]
 
