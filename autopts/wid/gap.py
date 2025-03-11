@@ -413,7 +413,7 @@ def hdl_wid_77(params: WIDParams):
                                      'GAP/SEC/SEM/BV-54-C', 'GAP/SEC/SEM/BV-55-C',
                                      'GAP/DM/LEP/BV-17-C']:
             btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
-        elif params.test_case_name in ['GAP/DM/LEP/BV-20-C']:
+        elif params.test_case_name in ['GAP/DM/LEP/BV-20-C', 'GAP/DM/LEP/BV-13-C']:
             if GAP_DISCONN_ROUND == 1:
                 btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
             else:
@@ -1557,7 +1557,8 @@ def hdl_wid_2001(params: WIDParams):
                                  'GAP/SEC/SEM/BI-31-C', 'GAP/SEC/SEM/BI-16-C',
                                  'GAP/SEC/SEM/BI-04-C', 'GAP/SEC/SEM/BI-19-C',
                                  'GAP/SEC/SEM/BI-08-C', 'GAP/SEC/SEM/BI-27-C',
-                                 'GAP/SEC/SEM/BI-32-C', 'GAP/SEC/SEM/BI-26-C']:
+                                 'GAP/SEC/SEM/BI-32-C', 'GAP/SEC/SEM/BI-26-C',
+                                 'GAP/DM/LEP/BV-13-C']:
         bd_addr_type = defs.BTP_BR_ADDRESS_TYPE
 
     if stack.gap.get_passkey() is None:
@@ -1617,7 +1618,7 @@ def hdl_wid_20115(params: WIDParams):
 def hdl_wid_20100(params: WIDParams):
     btp.gap_conn()
     if params.test_case_name in ['GAP/DM/LEP/BV-20-C', 'GAP/DM/LEP/BV-17-C',
-                                 'GAP/DM/LEP/BV-18-C']:
+                                 'GAP/DM/LEP/BV-18-C', 'GAP/DM/LEP/BV-13-C']:
         btp.gap_pair()
     return True
 
@@ -1785,11 +1786,6 @@ def hdl_wid_102(params: WIDParams):
 
     GAP_TEST_ROUND = GAP_TEST_ROUND + 1
 
-    if params.test_case_name in ['GAP/DM/LEP/BV-13-C']:
-        passkey = get_stack().gap.get_passkey()
-        if passkey != None:
-            btp.gap_passkey_confirm_rsp(btp.pts_addr_get(), defs.BTP_BR_ADDRESS_TYPE, passkey)
-
     if GAP_TEST_ROUND > 1 and params.test_case_name in ['GAP/SEC/SEM/BI-32-C']:
         return True
 
@@ -1808,7 +1804,7 @@ def hdl_wid_102(params: WIDParams):
                                  'GAP/DM/LEP/BV-15-C', 'GAP/DM/LEP/BV-17-C',
                                  'GAP/DM/LEP/BV-22-C', 'GAP/DM/LEP/BV-18-C',
                                  'GAP/SEC/SEM/BI-27-C', 'GAP/SEC/SEM/BI-26-C',
-                                 'GAP/SEC/SEM/BI-25-C']:
+                                 'GAP/SEC/SEM/BI-25-C', 'GAP/DM/LEP/BV-13-C']:
         return True
 
     btp.gap_pair(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
