@@ -56,6 +56,10 @@ response. Or the opcode 0x00 for an error is returned.
 
 Events opcodes start from 0x80.
 
+For BR support, if the field "Address_Type" of the command is "0xe0", it means
+that the address is a BR address and the command should be transmitted on the
+BR transport.
+
 All fields are in little-endian byte order (least significant byte first).
 
 Controller Index can have a special value <non-controller> to indicate that
