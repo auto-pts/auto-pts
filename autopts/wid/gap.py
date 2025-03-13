@@ -347,7 +347,7 @@ def hdl_wid_73(_: WIDParams):
 
     stack = get_stack()
 
-    if stack.is_svc_supported('GATT_CL'):
+    if stack.is_svc_supported('GATT_CL') and stack.is_cmd_supported('GATT_CL'):
         btp.clear_verify_values()
         btp.gatt_cl_read_uuid(bd_addr_type, bd_addr,
                               '0001', 'FFFF', UUID.device_name)
