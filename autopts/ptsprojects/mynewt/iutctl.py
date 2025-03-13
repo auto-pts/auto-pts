@@ -179,6 +179,9 @@ class MynewtCtl:
     def get_supported_svcs(self):
         btp.read_supp_svcs()
 
+    def get_supported_cmds(self):
+        btp.read_supported_commands()
+
     def stop(self):
         """Powers off the Mynewt OS"""
         log("%s.%s", self.__class__, self.stop.__name__)

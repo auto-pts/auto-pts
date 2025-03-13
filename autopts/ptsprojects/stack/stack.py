@@ -56,10 +56,44 @@ services = {
     # GENERATOR append 1
 }
 
+supported_commands = {
+    "CORE": defs.BTP_CORE_CMD_READ_SUPPORTED_COMMANDS,
+    "GAP": defs.BTP_GAP_CMD_READ_SUPPORTED_COMMANDS,
+    "GATT": defs.BTP_GATT_CMD_READ_SUPPORTED_COMMANDS,
+    "GATT_CL": defs.BTP_GATTC_CMD_READ_SUPPORTED_COMMANDS,
+    "L2CAP": defs.BTP_L2CAP_CMD_READ_SUPPORTED_COMMANDS,
+    "MESH": defs.BTP_MESH_CMD_READ_SUPPORTED_COMMANDS,
+    "MESH_MMDL": defs.BTP_MMDL_CMD_READ_SUPPORTED_COMMANDS,
+    "VCS": defs.BTP_VCS_CMD_READ_SUPPORTED_COMMANDS,
+    "AICS": defs.BTP_AICS_CMD_READ_SUPPORTED_COMMANDS,
+    "VOCS": defs.BTP_VOCS_CMD_READ_SUPPORTED_COMMANDS,
+    "PACS": defs.BTP_PACS_CMD_READ_SUPPORTED_COMMANDS,
+    "ASCS": defs.BTP_ASCS_CMD_READ_SUPPORTED_COMMANDS,
+    "BAP": defs.BTP_BAP_CMD_READ_SUPPORTED_COMMANDS,
+    "HAS": defs.BTP_HAS_CMD_READ_SUPPORTED_COMMANDS,
+    "CSIS": defs.BTP_CSIS_CMD_READ_SUPPORTED_COMMANDS,
+    "MICP": defs.BTP_MICP_CMD_READ_SUPPORTED_COMMANDS,
+    "MICS": defs.BTP_MICS_CMD_READ_SUPPORTED_COMMANDS,
+    "CCP": defs.BTP_CCP_CMD_READ_SUPPORTED_COMMANDS,
+    "VCP": defs.BTP_VCP_CMD_READ_SUPPORTED_COMMANDS,
+    "CAS": defs.BTP_CAS_CMD_READ_SUPPORTED_COMMANDS,
+    "MCP": defs.BTP_MCP_CMD_READ_SUPPORTED_COMMANDS,
+    "BASS": defs.BTP_BASS_CMD_READ_SUPPORTED_COMMANDS,
+    "GMCS": defs.BTP_GMCS_CMD_READ_SUPPORTED_COMMANDS,
+    "HAP": defs.BTP_HAP_CMD_READ_SUPPORTED_COMMANDS,
+    "CAP": defs.BTP_CAP_CMD_READ_SUPPORTED_COMMANDS,
+    "CSIP": defs.BTP_CSIP_CMD_READ_SUPPORTED_COMMANDS,
+    "TBS": defs.BTP_TBS_CMD_READ_SUPPORTED_COMMANDS,
+    "TMAP": defs.BTP_TMAP_CMD_READ_SUPPORTED_COMMANDS,
+    "OTS": defs.BTP_OTS_CMD_READ_SUPPORTED_COMMANDS,
+    "PBP": defs.BTP_PBP_CMD_READ_SUPPORTED_COMMANDS,
+}
+
 
 class Stack:
     def __init__(self):
         self.supported_svcs = 0
+        self.supported_cmds = 0
         self.synch = None
 
         self.gap = None
@@ -89,10 +123,19 @@ class Stack:
         self.tmap = None
         self.ots = None
         self.pbp = None
+        self.services = services
+        self.supported_commands = supported_commands
         # GENERATOR append 2
 
     def is_svc_supported(self, svc):
         return self.supported_svcs & services[svc] > 0
+
+    def is_cmd_supported(self, cmd_name):
+        opcode = supported_commands.get(cmd_name)
+        if opcode is None:
+            logging.error("Unsupported command name: %s", cmd_name)
+            return False
+        return (self.supported_cmds & (1 << opcode)) != 0
 
     def gap_init(self, name=None, manufacturer_data=None, appearance=None,
                  svc_data=None, flags=None, svcs=None, uri=None, periodic_data=None,

@@ -59,6 +59,34 @@ def read_supp_svcs():
 
     stack.supported_svcs = int.from_bytes(tuple_data[0], 'little')
 
+def read_supported_commands(service="CORE"):
+    logging.debug("%s", read_supported_commands.__name__)
+    iutctl = get_iut()
+    stack = get_stack()
+
+    opcode = stack.supported_commands.get(service)
+    if opcode is None:
+        logging.error("Unsupported service for read_supported_commands: %s", service)
+        return None
+
+    service_id = stack.services.get(service)
+    if service_id is None:
+        logging.error("No service id for service: %s", service)
+        return None
+
+    cmd_tuple = (service_id, opcode, defs.BTP_INDEX_NONE, "")
+    iutctl.btp_socket.send(*cmd_tuple)
+
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
+    btp_hdr_check(tuple_hdr, exp_svc_id=service_id, exp_op=opcode)
+
+    if not hasattr(stack, "supported_cmds"):
+        stack.supported_cmds = {}
+    stack.supported_cmds[service] = int.from_bytes(tuple_data, 'little')
+
+    return stack.supported_cmds[service]
+
+
 
 CORE = {
     "gap_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
