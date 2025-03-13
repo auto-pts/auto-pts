@@ -1824,8 +1824,8 @@
             <Value>0046</Value>
           </Row>
           <Row>
-            <Name>TSPX_conn_update_slave_latency</Name>
-            <Description>Connection Update Slave Latency to be used. (Default: 0001)</Description>
+            <Name>TSPX_conn_update_peripheral_latency</Name>
+            <Description>Connection Update Peripheral Latency to be used. (Default: 0001)</Description>
             <Type>OCTETSTRING</Type>
             <Value>0001</Value>
           </Row>
