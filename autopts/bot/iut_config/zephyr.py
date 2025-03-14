@@ -121,6 +121,15 @@ iut_config = {
         ]
     },
 
+    "multiple_iso_adv_sets.conf": {
+        "overlay": {
+            'CONFIG_BT_CTLR_ADV_ISO_SET': '2',
+	},
+	"test_cases": [
+	    'BAP/BSRC/SCC/BV-38-C',
+	]
+    },
+
     "csip_privacy.conf": {
         "pre_overlay": ["overlay-le-audio.conf", "privacy.conf"],
         "test_cases": [
