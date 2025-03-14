@@ -1347,6 +1347,11 @@ def hdl_wid_150(params: WIDParams):
     Multiple Handle Value Notifications.
     Discover all characteristics if needed.
     """
+
+    if params.test_case_name == 'GATT/CL/GAS/BV-05-C':
+        # We must initiate security for this test case
+        btp.gap_pair()
+
     return True
 
 
