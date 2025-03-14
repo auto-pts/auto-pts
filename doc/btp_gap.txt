@@ -202,6 +202,7 @@ Commands and responses:
                         3 = Use active scan type
                         4 = Use observation procedure
                         5 = Use own ID address
+                        6 = Use filter accept list
 
                 This command is used to start discovery.
 
@@ -211,6 +212,8 @@ Commands and responses:
                 discoverable). This procedure can use either passive or active
                 scan type. If "Use observation procedure" (bit 4) is set,
                 "Use limited discovery procedure" (bit 2) is excluded.
+                If "Use filter accept list" (bit 6) is set, then the filter
+                accept list will be used to filter discovered devices.
 
                 In case of an error, the error response will be returned.
 
