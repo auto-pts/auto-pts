@@ -411,7 +411,7 @@ def hdl_wid_77(params: WIDParams):
                                      'GAP/SEC/SEM/BV-52-C', 'GAP/SEC/SEM/BV-09-C',
                                      'GAP/SEC/SEM/BV-53-C', 'GAP/DM/BON/BV-01-C',
                                      'GAP/SEC/SEM/BV-54-C', 'GAP/SEC/SEM/BV-55-C',
-                                     'GAP/DM/LEP/BV-17-C']:
+                                     'GAP/DM/LEP/BV-17-C', 'GAP/SEC/SEM/BV-06-C']:
             btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
         elif params.test_case_name in ['GAP/DM/LEP/BV-20-C', 'GAP/DM/LEP/BV-13-C']:
             if GAP_DISCONN_ROUND == 1:
