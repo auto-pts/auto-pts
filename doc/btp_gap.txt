@@ -192,6 +192,8 @@ Commands and responses:
 
                 Controller Index:       <controller id>
                 Command parameters:     Flags (1 octet)
+                                        Interval (2 octets)
+                                        Window (2 octets)
                 Return Parameters:      <none>
 
                 Possible values for the Flags parameter are a bit-wise or
@@ -672,6 +674,7 @@ Events:
                                         Address (6 octets)
                                         RSSI (1 octet)
                                         Flags (1 octet)
+                                        Adv Type (1 Octet)
                                         EIR_Data_Length (2 Octets)
                                         EIR_Data (0-65535 Octets)
 
@@ -680,6 +683,14 @@ Events:
                         0 = RSSI valid
                         1 = Adv_Data included
                         2 = Scan_Rsp included
+
+                Possible values for adv type are:
+                        0 = Scannable and connectable advertising.
+                        1 = Directed connectable advertising.
+                        2 = Non-connectable and scannable advertising.
+                        3 = Non-connectable and non-scannable advertising.
+                        4 = Additional advertising data requested by an active scanner.
+                        5 =  Extended advertising
 
                 This event indicates that a device was found during device
                 discovery.
