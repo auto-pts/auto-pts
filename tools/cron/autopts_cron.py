@@ -241,12 +241,23 @@ def schedule_pr_job(cron, pr_info, job_config):
         test_case_count = len(test_cases)
 
         if test_case_count > 0:
+            skipped_test_cases = []
+            if ('test_case_limit_per_comment' in job_config and
+                    job_config['test_case_limit_per_comment'] < test_case_count):
+                test_case_count = job_config['test_case_limit_per_comment']
+                skipped_test_cases = test_cases[test_case_count:]
+                test_cases = test_cases[:test_case_count]
+
             if job_config['test_case_limit']:
                 job_config['included'] = test_cases
 
             estimations = f', test case count: {test_case_count}, ' \
                           f'estimated duration: {est_duration}'
             estimations += f'<details><summary>Test cases to be run</summary>{"<br>".join(test_cases)}</details>\n'
+
+            if skipped_test_cases:
+                estimations += (f'<details><summary>Test cases skipped due to limit, count: {len(skipped_test_cases)}</summary>'
+                                f'{"<br>".join(skipped_test_cases)}</details>\n')
         else:
             estimations = f', test case count: estimation not available'
 
