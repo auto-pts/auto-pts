@@ -79,7 +79,7 @@ class AutoPTSMagicTagParser(argparse.ArgumentParser):
     def __init__(self, add_help=True):
         super().__init__(description='Github Magic Tag parser', add_help=add_help)
 
-        self.add_argument("included", nargs='+', default=None,
+        self.add_argument("included", nargs='*', default=[],
                           help="abc")
 
         self.add_argument("-e", "--excluded", nargs='+', default=[],
@@ -192,6 +192,8 @@ def autopts_magic_tag_cb(cron, comment_info):
         parser = config.get('magic_tag_parser', AutoPTSMagicTagParser)()
         try:
             parsed_args = parser.parse_args(command_args)
+            if len(parsed_args.included) == 0 and 'default_test_cases' in config:
+                parsed_args.included = config['default_test_cases'].split()
         except BaseException as e:
             log(e)
             continue
