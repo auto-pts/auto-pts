@@ -20,6 +20,7 @@ from uuid import UUID
 import logging
 import re
 import struct
+import math
 
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import MMI
@@ -59,33 +60,55 @@ def read_supp_svcs():
 
     stack.supported_svcs = int.from_bytes(tuple_data[0], 'little')
 
+
 def read_supported_commands(service="CORE"):
-    logging.debug("%s", read_supported_commands.__name__)
     iutctl = get_iut()
     stack = get_stack()
+    svc_key = service.upper()
 
-    opcode = stack.supported_commands.get(service)
-    if opcode is None:
-        logging.error("Unsupported service for read_supported_commands: %s", service)
+    service_bitmask = stack.services.get(svc_key)
+    if service_bitmask is None:
+        logging.error("Service %s not defined", svc_key)
         return None
 
-    service_id = stack.services.get(service)
-    if service_id is None:
-        logging.error("No service id for service: %s", service)
+    try:
+        service_id = int(math.log2(service_bitmask))
+    except Exception as err:
+        logging.error("Error converting service bitmask: %s", err)
+        return None
+
+    opcode = stack.supported_commands.get(svc_key)
+    if opcode is None:
+        logging.error("Opcode not defined for service %s", svc_key)
         return None
 
     cmd_tuple = (service_id, opcode, defs.BTP_INDEX_NONE, "")
     iutctl.btp_socket.send(*cmd_tuple)
-
     tuple_hdr, tuple_data = iutctl.btp_socket.read()
-    btp_hdr_check(tuple_hdr, exp_svc_id=service_id, exp_op=opcode)
 
-    if not hasattr(stack, "supported_cmds"):
+    try:
+        btp_hdr_check(tuple_hdr, exp_svc_id=service_id, exp_op=opcode)
+    except Exception as e:
+        error_data = tuple_data[0] if isinstance(tuple_data, tuple) and tuple_data else tuple_data
+        if error_data:
+            try:
+                error_code = int.from_bytes(error_data, 'little')
+                logging.error("Error code: 0x%02x", error_code)
+            except Exception:
+                pass
+        raise e
+
+    data_bytes = tuple_data[0] if isinstance(tuple_data, tuple) and tuple_data else tuple_data
+    try:
+        supported_cmds_value = int.from_bytes(data_bytes, 'little')
+    except Exception as conv_err:
+        logging.error("Error converting data_bytes: %s", conv_err)
+        return None
+
+    if not isinstance(stack.supported_cmds, dict):
         stack.supported_cmds = {}
-    stack.supported_cmds[service] = int.from_bytes(tuple_data, 'little')
-
-    return stack.supported_cmds[service]
-
+    stack.supported_cmds[svc_key] = supported_cmds_value
+    return supported_cmds_value
 
 
 CORE = {
