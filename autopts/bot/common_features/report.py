@@ -432,7 +432,7 @@ def pull_server_logs(args, tmp_dir, xml_folder):
                 file_bin = _pts.copy_file(file_path)
 
                 if not any(file_path.endswith(ext) for ext in
-                           ['.pts', '.pqw6', '.xlsx', '.gitignore', '.bls', '.bqw']):
+                           ['.pts', '.pqw6', '.xlsx', '.gitignore', '.bls', '.bqw', '.btt']):
                     _pts.delete_file(file_path)
 
                 if file_bin is None:
