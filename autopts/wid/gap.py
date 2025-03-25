@@ -1660,26 +1660,26 @@ def hdl_wid_145(_: WIDParams):
     return True
 
 
-GAP_TEST_ROUND = 0
+GAP_TEST_WID_33_ROUND = 0
 
 
 def hdl_wid_33(params: WIDParams):
     '''
     Please make IUT general discoverable.
     '''
-    global GAP_TEST_ROUND
+    global GAP_TEST_WID_33_ROUND
 
     btp.gap_set_nondiscov()
     btp.gap_set_gendiscov()
 
-    if (params.test_case_name in ['GAP/SEC/SEM/BV-10-C']) or (params.test_case_name in ['GAP/SEC/SEM/BI-24-C'] and GAP_TEST_ROUND == 1):
+    if (params.test_case_name in ['GAP/SEC/SEM/BV-10-C']) or (params.test_case_name in ['GAP/SEC/SEM/BI-24-C'] and GAP_TEST_WID_33_ROUND == 1):
         # ALT1 - Responder the test results in pass when the IUT initiates the Secure Simple
         # Pairing procedure autonomously before the Lower Tester initiates the L2CAP connection.
         btp.gap_wait_for_connection()
         btp.gap_pair(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
         btp.gap_wait_for_sec_lvl_change(2)
 
-    GAP_TEST_ROUND = GAP_TEST_ROUND + 1
+    GAP_TEST_WID_33_ROUND = GAP_TEST_WID_33_ROUND + 1
 
     return True
 
@@ -1757,13 +1757,15 @@ def hdl_wid_165(params: WIDParams):
     return btp.check_scan_rep_and_rsp(name, name)
 
 
+GAP_TEST_WID_102_ROUND = 0
+
 def hdl_wid_102(params: WIDParams):
     '''
     Please send an HCI connect request to establish a basic rate connection after the IUT
     discovers the Lower Tester over BR and LE.
     '''
 
-    global GAP_TEST_ROUND
+    global GAP_TEST_WID_102_ROUND
 
     if params.test_case_name in ['GAP/SEC/SEM/BI-11-C', 'GAP/SEC/SEM/BI-02-C',
                                  'GAP/SEC/SEM/BI-03-C', 'GAP/SEC/SEM/BI-14-C',
@@ -1784,9 +1786,9 @@ def hdl_wid_102(params: WIDParams):
     else:
         btp.gap_wait_for_connection()
 
-    GAP_TEST_ROUND = GAP_TEST_ROUND + 1
+    GAP_TEST_WID_102_ROUND = GAP_TEST_WID_102_ROUND + 1
 
-    if GAP_TEST_ROUND > 1 and params.test_case_name in ['GAP/SEC/SEM/BI-32-C']:
+    if GAP_TEST_WID_102_ROUND > 1 and params.test_case_name in ['GAP/SEC/SEM/BI-32-C']:
         return True
 
     if params.test_case_name in ['GAP/IDLE/BON/BV-05-C', 'GAP/IDLE/BON/BV-06-C',
@@ -1851,13 +1853,16 @@ def hdl_wid_231(_: WIDParams):
     return True
 
 
+GAP_TEST_WID_103_ROUND = 0
+
+
 def hdl_wid_103(params: WIDParams):
     '''
     Please initiate BR/EDR security authentication and pairing to establish a service level
     enforced security!
     After that, please create the service channel using L2CAP Connection Request.
     '''
-    global GAP_TEST_ROUND
+    global GAP_TEST_WID_103_ROUND
 
     stack = get_stack()
     br_psm = 0x1001
@@ -1870,14 +1875,14 @@ def hdl_wid_103(params: WIDParams):
         btp.gap_wait_for_connection()
 
     if params.test_case_name in ['GAP/SEC/SEM/BV-09-C', 'GAP/SEC/SEM/BV-53-C']:
-        if GAP_TEST_ROUND == 0:
+        if GAP_TEST_WID_103_ROUND == 0:
             btp.gap_pair(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
         else:
             btp.gap_pair_v2(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE,
                             mode=defs.BTP_GAP_CMD_PAIR_V2_MODE_4,
                             level=defs.BTP_GAP_CMD_PAIR_V2_LEVEL_3)
 
-        if GAP_TEST_ROUND == 0:
+        if GAP_TEST_WID_103_ROUND == 0:
             passkey = stack.gap.get_passkey()
             if passkey != None:
                 btp.gap_passkey_confirm_rsp(btp.pts_addr_get(), defs.BTP_BR_ADDRESS_TYPE, passkey)
@@ -1902,7 +1907,7 @@ def hdl_wid_103(params: WIDParams):
         l2cap = stack.l2cap
         btp.l2cap_conn(None, defs.BTP_BR_ADDRESS_TYPE, l2cap.psm, l2cap.initial_mtu)
 
-    GAP_TEST_ROUND = GAP_TEST_ROUND + 1
+    GAP_TEST_WID_103_ROUND = GAP_TEST_WID_103_ROUND + 1
     return True
 
 
