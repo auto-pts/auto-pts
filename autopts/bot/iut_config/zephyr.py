@@ -296,7 +296,55 @@ iut_config = {
         "test_cases": [
             'MBTM/CL/BT'
         ]
-    }
+    },
+
+    "br_sec_sc_only.conf": {
+        "overlay": {
+            'CONFIG_BT_CLASSIC': 'y',
+            'CONFIG_BT_CENTRAL': 'y',
+            'CONFIG_BT_PERIPHERAL': 'y',
+            'CONFIG_BT_SMP': 'y',
+            'CONFIG_BT_L2CAP_DYNAMIC_CHANNEL': 'y',
+            'CONFIG_BT_PAGE_TIMEOUT': '0xFFFF',
+            'CONFIG_BT_SMP_SC_ONLY': 'y',
+            'CONFIG_BT_SMP_SC_PAIR_ONLY': 'y',
+        },
+        "test_cases": [
+            'GAP/SEC/SEM/BV-11-C',
+            'GAP/SEC/SEM/BV-12-C',
+            'GAP/SEC/SEM/BV-13-C',
+            'GAP/SEC/SEM/BV-47-C',
+            'GAP/SEC/SEM/BV-16-C',
+            'GAP/SEC/SEM/BV-17-C',
+            'GAP/SEC/SEM/BV-18-C',
+            'GAP/SEC/SEM/BV-54-C',
+            'GAP/SEC/SEM/BI-32-C',
+            'GAP/SEC/SEM/BV-25-C',
+            'GAP/SEC/SEM/BV-30-C',
+        ]
+    },
+
+    "br_sec_ks_128.conf": {
+        "overlay": {
+            'CONFIG_BT_CLASSIC': 'y',
+            'CONFIG_BT_CENTRAL': 'y',
+            'CONFIG_BT_PERIPHERAL': 'y',
+            'CONFIG_BT_SMP': 'y',
+            'CONFIG_BT_L2CAP_DYNAMIC_CHANNEL': 'y',
+            'CONFIG_BT_PAGE_TIMEOUT': '0xFFFF',
+            'CONFIG_BT_SMP_MIN_ENC_KEY_SIZE': '16',
+        },
+        "test_cases": [
+            'GAP/SEC/SEM/BI-14-C',
+            'GAP/SEC/SEM/BI-15-C',
+            'GAP/SEC/SEM/BI-16-C',
+            'GAP/SEC/SEM/BI-04-C',
+            'GAP/SEC/SEM/BI-17-C',
+            'GAP/SEC/SEM/BI-18-C',
+            'GAP/SEC/SEM/BI-19-C',
+            'GAP/SEC/SEM/BI-08-C',
+        ]
+    },
 }
 
 retry_config = {

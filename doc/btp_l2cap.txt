@@ -115,6 +115,7 @@ Commands and responses:
                         0x02 = Insufficient authorization
                         0x03 = Insufficient encryption key size
                         0x04 = Insufficient encryption
+                        0x05 = Insufficient secure authentication
 
                 In case of an error, the error response will be returned.
 
