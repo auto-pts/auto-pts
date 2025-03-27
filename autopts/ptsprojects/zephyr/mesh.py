@@ -80,7 +80,7 @@ def set_pixits(ptses):
     pts.set_pixit("MESH", "TSPX_application_key",
                   "3216D1509884B533248541792B877F98")
     pts.set_pixit("MESH", "TSPX_device_key",
-                  "00000000000000000000000000000000")
+                  "C669D81851AFAB6A8F175AD264E66000")
     pts.set_pixit("MESH", "TSPX_enable_IUT_provisioner", "FALSE")
     pts.set_pixit("MESH", "TSPX_maximum_number_of_supported_subnets", "1")
     pts.set_pixit("MESH", "TSPX_Beacon_Observation_Period", "30")
@@ -136,7 +136,7 @@ def set_pixits(ptses):
     pts2.set_pixit("MESH", "TSPX_application_key",
                    "3216D1509884B533248541792B877F98")
     pts2.set_pixit("MESH", "TSPX_device_key",
-                   "00000000000000000000000000000000")
+                   "C669D81851AFAB6A8F175AD264E66001")
     pts2.set_pixit("MESH", "TSPX_enable_IUT_provisioner", "FALSE")
     pts2.set_pixit("MESH", "TSPX_maximum_number_of_supported_subnets", "1")
     pts2.set_pixit("MESH", "TSPX_Beacon_Observation_Period", "30")
