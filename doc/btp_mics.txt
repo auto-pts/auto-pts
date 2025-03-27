@@ -5,9 +5,9 @@ Commands and responses:
 
         Opcode 0x00 - Error response
 
-        Opcode 0x01 - Read supported commands
+        Opcode 0x01 - Read Supported Commands command/response
 
-                Controller Index:       <controller id>
+                Controller Index:       <non-controller>
                 Command parameters:     <none>
                 Response parameters:    <supported commands> (variable)
 
