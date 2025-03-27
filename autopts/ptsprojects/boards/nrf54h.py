@@ -46,9 +46,7 @@ def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None, *args):
     check_call('rm -rf build/'.split(), cwd=tester_dir)
 
     cmd = ['west', 'build', '--sysbuild', '-p', 'auto', '-b', board]
-    if conf_file and conf_file not in ['default', 'prj.conf']:
-        if 'audio' in conf_file:
-            conf_file += ';overlay-le-audio-ctlr.conf'
+    if conf_file and conf_file not in ["default", "prj.conf"]:
         cmd.extend(('--', f'-DEXTRA_CONF_FILE=\'{conf_file}\''))
 
     check_call(cmd, cwd=tester_dir)
