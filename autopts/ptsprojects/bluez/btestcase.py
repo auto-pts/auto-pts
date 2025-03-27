@@ -2,6 +2,7 @@
 # auto-pts - The Bluetooth PTS Automation Framework
 #
 # Copyright (c) 2017, Intel Corporation.
+# Copyright 2025 NXP
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms and conditions of the GNU General Public License,
@@ -33,7 +34,7 @@ class BTestCase(TestCaseLT1):
         self.bluezctrl = get_iut()
 
         # first command is to start bluez btpclient
-        self.cmds.insert(0, TestFunc(self.bluezctrl.start))
+        self.cmds.insert(0, TestFunc(self.bluezctrl.start, self))
         self.cmds.insert(1, TestFunc(self.bluezctrl.wait_iut_ready_event))
 
         self.cmds.append(TestFuncCleanUp(self.stack.cleanup))

@@ -2,6 +2,7 @@
 # auto-pts - The Bluetooth PTS Automation Framework
 #
 # Copyright (c) 2017, Intel Corporation.
+# Copyright 2025 NXP
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms and conditions of the GNU General Public License,
@@ -16,7 +17,7 @@
 """GAP test cases"""
 
 from autopts.pybtp import btp
-from autopts.pybtp.types import Addr, IOCap, UUID, Prop, Perm, AdType
+from autopts.pybtp.types import Addr, IOCap, UUID, Prop, Perm, AdType, AdFlags
 from autopts.client import get_unique_name
 from autopts.wid.gap import hdl_wid_161
 from autopts.ptsprojects.stack import get_stack
@@ -116,13 +117,12 @@ def set_pixits(ptses):
     pts.set_pixit("GAP", "TSPX_maximum_ce_length", "0000")
     pts.set_pixit("GAP", "TSPX_conn_update_int_min", "0032")
     pts.set_pixit("GAP", "TSPX_conn_update_int_max", "0046")
-    pts.set_pixit("GAP", "TSPX_conn_update_slave_latency", "0001")
+    pts.set_pixit("GAP", "TSPX_conn_update_peripheral_latency", "0001")
     pts.set_pixit("GAP", "TSPX_conn_update_supervision_timeout", "01F4")
     pts.set_pixit("GAP", "TSPX_pairing_before_service_request", "FALSE")
     pts.set_pixit("GAP", "TSPX_iut_mandates_mitm", "FALSE")
     pts.set_pixit("GAP", "TSPX_encryption_before_service_request", "FALSE")
     pts.set_pixit("GAP", "TSPX_tester_appearance", "0000")
-    pts.set_pixit("GAP", "TSPX_advertising_data", "")
     pts.set_pixit("GAP", "TSPX_iut_device_IRK_for_resolvable_privacy_address_generation_procedure",
                   "00000000000000000000000000000000")
     pts.set_pixit("GAP", "TSPX_tester_device_IRK_for_resolvable_privacy_address_generation_procedure",
@@ -139,11 +139,15 @@ def test_cases(ptses):
 
     pts = ptses[0]
 
+    ad_str_flags = str(AdType.flags).zfill(2) + \
+                   str(AdFlags.br_edr_not_supp).zfill(2)
+    ad_str_flags_len = str(len(ad_str_flags) // 2).zfill(2)
+
     ad_str_manufacturer_data = str(format(AdType.manufacturer_data, 'x')).zfill(2) + \
                                iut_manufacturer_data
-    ad_str_manufacturer_data_len = str(len(ad_str_manufacturer_data) / 2).zfill(2)
+    ad_str_manufacturer_data_len = str(len(ad_str_manufacturer_data) // 2).zfill(2)
 
-    ad_pixit = ad_str_manufacturer_data_len + ad_str_manufacturer_data
+    ad_pixit = ad_str_flags_len + ad_str_flags + ad_str_manufacturer_data_len + ad_str_manufacturer_data
 
     pts_bd_addr = pts.q_bd_addr
     iut_device_name = get_unique_name(pts)
@@ -167,7 +171,7 @@ def test_cases(ptses):
             "GAP", "TSPX_using_public_device_address",
             "FALSE" if stack.gap.iut_addr_is_random() else "TRUE")),
         TestFunc(lambda: pts.update_pixit_param(
-            "GAP", "TSPX_using_private_device_address",
+            "GAP", "TSPX_using_random_device_address",
             "TRUE" if stack.gap.iut_addr_is_random() else "FALSE")),
         TestFunc(lambda: pts.update_pixit_param(
             "GAP", "TSPX_iut_device_name_in_adv_packet_for_random_address", iut_device_name)),
