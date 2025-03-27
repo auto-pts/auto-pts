@@ -45,7 +45,8 @@ def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None, *args):
     check_call(['west', 'flash', '--skip-rebuild', '--recover', '-i', debugger_snr], cwd=tester_dir)
 
     cmd = ['west', 'build', '--no-sysbuild', '-b', 'nrf5340dk/nrf5340/cpunet', '--',
-           f'-DEXTRA_CONF_FILE=\'nrf5340_cpunet_iso-bt_ll_sw_split.conf;'
-           f'../../../tests/bluetooth/tester/hci_ipc_cpunet.conf\'']
+           f'-DEXTRA_CONF_FILE=\'nrf5340_cpunet_iso-bt_ll_sw_split.conf;',
+           f'../../../tests/bluetooth/tester/hci_ipc_cpunet.conf\'',
+           '-DSNIPPET=bt-ll-sw-split']
     check_call(cmd, cwd=controller_dir)
     check_call(['west', 'flash', '--skip-rebuild', '-i', debugger_snr], cwd=controller_dir)
