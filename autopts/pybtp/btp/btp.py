@@ -20,7 +20,9 @@ from uuid import UUID
 import logging
 import re
 import struct
+import math
 
+from autopts.pybtp.common import supported_svcs_cmds, reg_unreg_service
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import MMI
 from .. import defs
@@ -28,6 +30,9 @@ from autopts.pybtp.types import BTPError, att_rsp_str
 
 #  get IUT global method from iutctl
 get_iut = None
+
+#loading as CORE to maintain backward compatibility with older code snippet
+CORE = reg_unreg_service
 
 # Address
 LeAddress = namedtuple('LeAddress', 'addr_type addr')
@@ -59,88 +64,65 @@ def read_supp_svcs():
 
     stack.supported_svcs = int.from_bytes(tuple_data[0], 'little')
 
+def read_supported_commands(service):
+    iutctl = get_iut()
+    stack = get_stack()
+    svc_key = service.upper()
 
-CORE = {
-    "gap_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
-                defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GAP),
-    "gap_unreg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_UNREGISTER_SERVICE,
-                  defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GAP),
-    "gatt_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
-                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GATT),
-    "gatt_unreg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_UNREGISTER_SERVICE,
-                   defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GATT),
-    "l2cap_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
-                  defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_L2CAP),
-    "l2cap_unreg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_UNREGISTER_SERVICE,
-                    defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_L2CAP),
-    "mesh_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
-                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_MESH),
-    "mesh_unreg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_UNREGISTER_SERVICE,
-                   defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_MESH),
-    "mmdl_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
-                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_MMDL),
-    "mmdl_unreg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_UNREGISTER_SERVICE,
-                   defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_MMDL),
-    "gatt_cl_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
-                    defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GATTC),
-    "gatt_cl_unreg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_UNREGISTER_SERVICE,
-                      defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GATTC),
-    "vcs_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
-                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_VCS),
-    "vocs_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
-                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_VOCS),
-    "aics_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
-                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_AICS),
-    "ias_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
-                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_IAS),
-    "pacs_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
-                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_PACS),
-    "ascs_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
-                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_ASCS),
-    "bap_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
-                defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_BAP),
-    "has_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
-                defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_HAS),
-    "csis_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
-                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_CSIS),
-    "micp_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
-                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_MICP),
-    "mics_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
-                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_MICS),
-    "ccp_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
-                defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_CCP),
-    "vcp_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
-                defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_VCP),
-    "cas_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
-                defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_CAS),
-    "mcp_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
-                defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_MCP),
-    "gmcs_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
-                defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GMCS),
-    "hap_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
-                defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_HAP),
-    "cap_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
-                defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_CAP),
-    "csip_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
-                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_CSIP),
-    "tbs_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
-                defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_TBS),
-    "tmap_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
-                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_TMAP),
-    "ots_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
-                defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_OTS),
-    "pbp_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
-                defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_PBP),
-    # GENERATOR append 4
-    "read_supp_cmds": (defs.BTP_SERVICE_ID_CORE,
-                       defs.BTP_CORE_CMD_READ_SUPPORTED_COMMANDS,
-                       defs.BTP_INDEX_NONE, ""),
-    "read_supp_svcs": (defs.BTP_SERVICE_ID_CORE,
-                       defs.BTP_CORE_CMD_READ_SUPPORTED_SERVICES,
-                       defs.BTP_INDEX_NONE, ""),
-    "log_message": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_LOG_MESSAGE,
-                    defs.BTP_INDEX_NONE),
-}
+    entry = supported_svcs_cmds.get(svc_key)
+    if entry is None:
+        logging.warning("Service %s is not registered", svc_key)
+        return
+
+    if "supported_commands" not in entry:
+        logging.warning("No READ_SUPPORTED_COMMANDS for %s", svc_key)
+        return
+
+    service_bitmask = entry.get("service")
+    if service_bitmask is None:
+        logging.warning("No service bitmask for %s", svc_key)
+        return
+
+    try:
+        service_id = int(math.log2(service_bitmask))
+    except Exception as err:
+        logging.error("Invalid mask for %s: %s", svc_key, err)
+        return
+
+    opcode_supp_cmd = entry["supported_commands"]
+
+    cmd_tuple = (service_id, opcode_supp_cmd, defs.BTP_INDEX_NONE, "")
+    iutctl.btp_socket.send(*cmd_tuple)
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
+
+    btp_hdr_check(tuple_hdr, exp_svc_id=service_id, exp_op=opcode_supp_cmd)
+
+    data_bytes = tuple_data[0] if isinstance(tuple_data, tuple) and tuple_data else tuple_data
+    supported_cmds_value = int.from_bytes(data_bytes, 'little')
+
+    if not isinstance(stack.supported_cmds, dict):
+        stack.supported_cmds = {}
+    stack.supported_cmds[svc_key] = supported_cmds_value
+
+
+def core_reg_svc_univ(service_key: str, service_name: str):
+    """
+    Universal service registration.
+    Registers a BTP service via CORE and reads supported commands if service_name is set.
+    Usage:
+    TestFunc(lambda: core_reg_svc_univ("gap_reg", "GAP"))
+    TestFunc(lambda: core_reg_svc_univ("ias_reg", ""))  # skip reading commands
+    """
+    logging.debug("core_reg_svc_univ: %s (%s)", service_key, service_name)
+    iutctl = get_iut()
+
+    try:
+        iutctl.btp_socket.send(*CORE[service_key])
+    except KeyError:
+        logging.error("CORE key %s not found", service_key)
+        return
+
+    core_reg_svc_rsp_succ(service_name)
 
 
 def clear_verify_values():
@@ -460,12 +442,7 @@ def set_lt3_addr(addr, addr_type):
 
 
 def core_reg_svc_gap():
-    logging.debug("%s", core_reg_svc_gap.__name__)
-
-    iutctl = get_iut()
-    iutctl.btp_socket.send(*CORE['gap_reg'])
-
-    core_reg_svc_rsp_succ()
+    core_reg_svc_univ("gap_reg", "GAP")
 
 
 def core_unreg_svc_gap():
@@ -478,12 +455,7 @@ def core_unreg_svc_gap():
 
 
 def core_reg_svc_gatt():
-    logging.debug("%s", core_reg_svc_gatt.__name__)
-
-    iutctl = get_iut()
-    iutctl.btp_socket.send(*CORE['gatt_reg'])
-
-    core_reg_svc_rsp_succ()
+    core_reg_svc_univ("gatt_reg", "GATT")
 
 
 def core_unreg_svc_gatt():
@@ -494,12 +466,7 @@ def core_unreg_svc_gatt():
 
 
 def core_reg_svc_l2cap():
-    logging.debug("%s", core_reg_svc_l2cap.__name__)
-
-    iutctl = get_iut()
-    iutctl.btp_socket.send(*CORE['l2cap_reg'])
-
-    core_reg_svc_rsp_succ()
+    core_reg_svc_univ("l2cap_reg", "L2CAP")
 
 
 def core_unreg_svc_l2cap():
@@ -510,12 +477,7 @@ def core_unreg_svc_l2cap():
 
 
 def core_reg_svc_mesh():
-    logging.debug("%s", core_reg_svc_mesh.__name__)
-
-    iutctl = get_iut()
-    iutctl.btp_socket.send(*CORE['mesh_reg'])
-
-    core_reg_svc_rsp_succ()
+    core_reg_svc_univ("mesh_reg", "MESH")
 
 
 def core_unreg_svc_mesh():
@@ -526,12 +488,7 @@ def core_unreg_svc_mesh():
 
 
 def core_reg_svc_mmdl():
-    logging.debug("%s", core_reg_svc_mmdl.__name__)
-
-    iutctl = get_iut()
-    iutctl.btp_socket.send(*CORE['mmdl_reg'])
-
-    core_reg_svc_rsp_succ()
+    core_reg_svc_univ("mmdl_reg", "MESH_MMDL")
 
 
 def core_unreg_svc_mmdl():
@@ -542,12 +499,7 @@ def core_unreg_svc_mmdl():
 
 
 def core_reg_svc_gatt_cl():
-    logging.debug("%s", core_reg_svc_gatt_cl.__name__)
-
-    iutctl = get_iut()
-    iutctl.btp_socket.send(*CORE['gatt_cl_reg'])
-
-    core_reg_svc_rsp_succ()
+    core_reg_svc_univ("gatt_cl_reg", "GATT_CL")
 
 
 def core_unreg_svc_gatt_cl():
@@ -558,164 +510,99 @@ def core_unreg_svc_gatt_cl():
 
 
 def core_reg_svc_vcs():
-    logging.debug("%s", core_reg_svc_vcs.__name__)
-
-    iutctl = get_iut()
-    iutctl.btp_socket.send_wait_rsp(*CORE['vcs_reg'])
+    core_reg_svc_univ("vcs_reg", "VCS")
 
 def core_reg_svc_vocs():
-    logging.debug("%s", core_reg_svc_vocs.__name__)
+    core_reg_svc_univ("vocs_reg", "VOCS")
 
-    iutctl = get_iut()
-    iutctl.btp_socket.send_wait_rsp(*CORE['vocs_reg'])
 
 def core_reg_svc_aics():
-    logging.debug("%s", core_reg_svc_aics.__name__)
+    core_reg_svc_univ("aics_reg", "AICS")
 
-    iutctl = get_iut()
-    iutctl.btp_socket.send_wait_rsp(*CORE['aics_reg'])
 
 def core_reg_svc_ias():
-    logging.debug("%s", core_reg_svc_ias.__name__)
-
-    iutctl = get_iut()
-    iutctl.btp_socket.send_wait_rsp(*CORE['ias_reg'])
+    core_reg_svc_univ("ias_reg", "")
 
 
 def core_reg_svc_pacs():
-    logging.debug("%s", core_reg_svc_pacs.__name__)
-
-    iutctl = get_iut()
-    iutctl.btp_socket.send_wait_rsp(*CORE['pacs_reg'])
+    core_reg_svc_univ("pacs_reg", "PACS")
 
 
 def core_reg_svc_ascs():
-    logging.debug("%s", core_reg_svc_ascs.__name__)
-
-    iutctl = get_iut()
-    iutctl.btp_socket.send_wait_rsp(*CORE['ascs_reg'])
+    core_reg_svc_univ("ascs_reg", "ASCS")
 
 
 def core_reg_svc_has():
-    logging.debug("%s", core_reg_svc_has.__name__)
-
-    iutctl = get_iut()
-    iutctl.btp_socket.send_wait_rsp(*CORE['has_reg'])
+    core_reg_svc_univ("has_reg", "HAS")
 
 
 def core_reg_svc_bap():
-    logging.debug("%s", core_reg_svc_bap.__name__)
-
-    iutctl = get_iut()
-    iutctl.btp_socket.send_wait_rsp(*CORE['bap_reg'])
+    core_reg_svc_univ("bap_reg", "BAP")
 
 
 def core_reg_svc_csis():
-    logging.debug("%s", core_reg_svc_csis.__name__)
-
-    iutctl = get_iut()
-    iutctl.btp_socket.send_wait_rsp(*CORE['csis_reg'])
+    core_reg_svc_univ("csis_reg", "CSIS")
 
 
 def core_reg_svc_micp():
-    logging.debug("%s", core_reg_svc_micp.__name__)
-
-    iutctl = get_iut()
-    iutctl.btp_socket.send_wait_rsp(*CORE['micp_reg'])
+    core_reg_svc_univ("micp_reg", "MICP")
 
 
 def core_reg_svc_mics():
-    logging.debug("%s", core_reg_svc_mics.__name__)
-
-    iutctl = get_iut()
-    iutctl.btp_socket.send_wait_rsp(*CORE['mics_reg'])
+    core_reg_svc_univ("mics_reg", "MICS")
 
 
 def core_reg_svc_ccp():
-    logging.debug("%s", core_reg_svc_ccp.__name__)
-
-    iutctl = get_iut()
-    iutctl.btp_socket.send_wait_rsp(*CORE['ccp_reg'])
+    core_reg_svc_univ("ccp_reg", "CCP")
 
     
 def core_reg_svc_cas():
-    logging.debug("%s", core_reg_svc_cas.__name__)
-
-    iutctl = get_iut()
-    iutctl.btp_socket.send_wait_rsp(*CORE['cas_reg'])
+    core_reg_svc_univ("cas_reg", "CAS")
 
 
 def core_reg_svc_vcp():
-    logging.debug("%s", core_reg_svc_vcp.__name__)
-
-    iutctl = get_iut()
-    iutctl.btp_socket.send_wait_rsp(*CORE['vcp_reg'])
+    core_reg_svc_univ("vcp_reg", "VCP")
 
 
 def core_reg_svc_mcp():
-    logging.debug("%s", core_reg_svc_mcp.__name__)
-
-    iutctl = get_iut()
-    iutctl.btp_socket.send_wait_rsp(*CORE['mcp_reg'])
+    core_reg_svc_univ("mcp_reg", "MCP")
 
 
 def core_reg_svc_gmcs():
-    logging.debug("%s", core_reg_svc_gmcs.__name__)
+    core_reg_svc_univ("gmcs_reg", "GMCS")
 
-    iutctl = get_iut()
-    iutctl.btp_socket.send_wait_rsp(*CORE['gmcs_reg'])
 
 def core_reg_svc_hap():
-    logging.debug("%s", core_reg_svc_hap.__name__)
-
-    iutctl = get_iut()
-    iutctl.btp_socket.send_wait_rsp(*CORE['hap_reg'])
+    core_reg_svc_univ("hap_reg", "HAP")
 
 
 def core_reg_svc_cap():
-    logging.debug("%s", core_reg_svc_cap.__name__)
-
-    iutctl = get_iut()
-    iutctl.btp_socket.send_wait_rsp(*CORE['cap_reg'])
+    core_reg_svc_univ("cap_reg", "CAP")
 
 
 def core_reg_svc_csip():
-    logging.debug("%s", core_reg_svc_csip.__name__)
+    core_reg_svc_univ("csip_reg", "CSIP")
 
-    iutctl = get_iut()
-    iutctl.btp_socket.send_wait_rsp(*CORE['csip_reg'])
 
 def core_reg_svc_tmap():
-    logging.debug("%s", core_reg_svc_tmap.__name__)
-
-    iutctl = get_iut()
-    iutctl.btp_socket.send_wait_rsp(*CORE['tmap_reg'])
+    core_reg_svc_univ("tmap_reg", "TMAP")
     
 
 def core_reg_svc_tbs():
-    logging.debug("%s", core_reg_svc_tbs.__name__)
-
-    iutctl = get_iut()
-    iutctl.btp_socket.send_wait_rsp(*CORE['tbs_reg'])
+    core_reg_svc_univ("tbs_reg", "TBS")
 
 
 def core_reg_svc_ots():
-    logging.debug("%s", core_reg_svc_ots.__name__)
-
-    iutctl = get_iut()
-    iutctl.btp_socket.send_wait_rsp(*CORE['ots_reg'])
+    core_reg_svc_univ("ots_reg", "OTS")
 
 
 def core_reg_svc_pbp():
-    logging.debug("%s", core_reg_svc_pbp.__name__)
-
-    iutctl = get_iut()
-    iutctl.btp_socket.send_wait_rsp(*CORE['pbp_reg'])
+    core_reg_svc_univ("pbp_reg", "PBP")
 
 
 # GENERATOR append 1
 
-def core_reg_svc_rsp_succ():
+def core_reg_svc_rsp_succ(service_name):
     logging.debug("%s", core_reg_svc_rsp_succ.__name__)
     iutctl = get_iut()
 
@@ -734,6 +621,13 @@ def core_reg_svc_rsp_succ():
         logging.error("frames mismatch")
         raise BTPError("Unexpected response received!")
     logging.debug("response is valid")
+    service_name = service_name.strip()
+    if service_name:
+        logging.debug("Reading supported commands for service: %s", service_name)
+        try:
+            read_supported_commands(service_name)
+        except Exception as e:
+            logging.warning("No read supported commands for %s: %s", service_name, e)
 
 
 def core_unreg_svc_rsp_succ():

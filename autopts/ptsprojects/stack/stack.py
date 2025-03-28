@@ -16,50 +16,16 @@
 import logging
 from autopts.ptsprojects.stack.layers import *
 from autopts.ptsprojects.stack.synch import Synch
-from autopts.pybtp import defs
+from autopts.pybtp import common
 
 STACK = None
 log = logging.debug
 
 
-# these are in little endian
-services = {
-    "CORE": 1 << defs.BTP_SERVICE_ID_CORE,
-    "GAP": 1 << defs.BTP_SERVICE_ID_GAP,
-    "GATT": 1 << defs.BTP_SERVICE_ID_GATT,
-    "L2CAP": 1 << defs.BTP_SERVICE_ID_L2CAP,
-    "MESH": 1 << defs.BTP_SERVICE_ID_MESH,
-    "MESH_MMDL": 1 << defs.BTP_SERVICE_ID_MMDL,
-    "GATT_CL": 1 << defs.BTP_SERVICE_ID_GATTC,
-    "VCS": 1 << defs.BTP_SERVICE_ID_VCS,
-    "IAS": 1 << defs.BTP_SERVICE_ID_IAS,
-    "AICS": 1 << defs.BTP_SERVICE_ID_AICS,
-    "VOCS": 1 << defs.BTP_SERVICE_ID_VOCS,
-    "PACS": 1 << defs.BTP_SERVICE_ID_PACS,
-    "ASCS": 1 << defs.BTP_SERVICE_ID_ASCS,
-    "BAP": 1 << defs.BTP_SERVICE_ID_BAP,
-    "MICP": 1 << defs.BTP_SERVICE_ID_MICP,
-    "HAS": 1 << defs.BTP_SERVICE_ID_HAS,
-    "CSIS": 1 << defs.BTP_SERVICE_ID_CSIS,
-    "MICS": 1 << defs.BTP_SERVICE_ID_MICS,
-    "CCP": 1 << defs.BTP_SERVICE_ID_CCP,
-    "VCP": 1 << defs.BTP_SERVICE_ID_VCP,
-    "MCP": 1 << defs.BTP_SERVICE_ID_MCP,
-    "GMCS": 1 << defs.BTP_SERVICE_ID_GMCS,
-    "HAP": 1 << defs.BTP_SERVICE_ID_HAP,
-    "CAP": 1 << defs.BTP_SERVICE_ID_CAP,
-    "CSIP": 1 << defs.BTP_SERVICE_ID_CSIP,
-    "TBS": 1 << defs.BTP_SERVICE_ID_TBS,
-    "TMAP": 1 << defs.BTP_SERVICE_ID_TMAP,
-    "OTS": 1 << defs.BTP_SERVICE_ID_OTS,
-    "PBP": 1 << defs.BTP_SERVICE_ID_PBP,
-    # GENERATOR append 1
-}
-
-
 class Stack:
     def __init__(self):
         self.supported_svcs = 0
+        self.supported_cmds = 0
         self.synch = None
 
         self.gap = None
@@ -89,10 +55,12 @@ class Stack:
         self.tmap = None
         self.ots = None
         self.pbp = None
+        self.supported_svcs_cmds = common.supported_svcs_cmds
         # GENERATOR append 2
 
     def is_svc_supported(self, svc):
-        return self.supported_svcs & services[svc] > 0
+        svc_value = self.supported_svcs_cmds.get(svc, {}).get("service", 0)
+        return (self.supported_svcs & svc_value) > 0
 
     def gap_init(self, name=None, manufacturer_data=None, appearance=None,
                  svc_data=None, flags=None, svcs=None, uri=None, periodic_data=None,
