@@ -170,6 +170,10 @@ def test_cases(ptses):
         TestFunc(btp.l2cap_le_listen, le_psm, le_initial_mtu, L2cap.unacceptable_parameters)
     ]
 
+    pre_conditions_gatt = common + [
+              TestFunc(btp.core_reg_svc_gatt),
+    ]
+
     custom_test_cases = [
         # Connection Parameter Update
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-04-C",
@@ -228,6 +232,10 @@ def test_cases(ptses):
                   pre_conditions +
                   [TestFunc(lambda: pts.update_pixit_param(
                       "L2CAP", "TSPX_l2ca_cbmps_min", "0040"))],
+                  generic_wid_hdl=l2cap_wid_hdl),
+        # Collision mitigation handling
+        ZTestCase("L2CAP", "L2CAP/TIM/BV-03-C",
+                  pre_conditions_gatt,
                   generic_wid_hdl=l2cap_wid_hdl),
     ]
 
