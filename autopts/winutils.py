@@ -41,15 +41,14 @@ import win32process
 
 def get_pid_by_window_title(title):
     def callback(hwnd, hwnd_list):
-        if win32gui.IsWindowVisible(hwnd):
-            window_title = win32gui.GetWindowText(hwnd)
+        window_title = win32gui.GetWindowText(hwnd)
 
-            if window_title.startswith(title):
-                try:
-                    _, pid = win32process.GetWindowThreadProcessId(hwnd)
-                    hwnd_list.append(pid)
-                except:
-                    pass
+        if window_title.startswith(title):
+            try:
+                _, pid = win32process.GetWindowThreadProcessId(hwnd)
+                hwnd_list.append(pid)
+            except:
+                pass
 
     hwnd_list = []
     win32gui.EnumWindows(callback, hwnd_list)
