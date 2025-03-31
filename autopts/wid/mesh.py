@@ -3486,7 +3486,7 @@ def hdl_wid_881(params: WIDParams):
     Implements:
     description: Please order IUT to begin advertising with Private Node Identity.
     """
-    btp.mesh_proxy_private_identity()
+    btp.mesh_proxy_private_identity(True)
     return True
 
 
@@ -3495,9 +3495,7 @@ def hdl_wid_882(params: WIDParams):
     Implements:
     description: Please order IUT to stop advertising with Private Node Identity, then click OK.
     """
-
-    # Let the timer expire so PNID is no longer advertised and return True
-    time.sleep(60)
+    btp.mesh_proxy_private_identity(False)
     return True
 
 
