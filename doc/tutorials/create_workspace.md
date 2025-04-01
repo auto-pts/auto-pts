@@ -2,50 +2,76 @@
 
 To create a PTS workspace (.pqw6 file) follow below steps:
 
-[1. Create Launch Studio project](#create-launch-studio-project)
+[1. Qualification Workspace - Getting Started](#create-launch-studio-project)
 
 [2. Generate PTS workspace from ICSes](#generate-pts-workspace-from-icses)
 
-## Create Launch Studio project
+## Qualification Workspace - Getting Started
 
-Log in to the https://www.bluetooth.com. Go to the My Blue -> My Test Plans.
-The page will redirect you to Launch Studio. https://launchstudio.bluetooth.com.
-In Getting Started tab, create a new project by clicking "Start the Bluetooth
-Qualification Process with Required Testing". At Project Basics tab, fill the
-required fields e.g.:
+Log in to the https://www.bluetooth.com. Go to the My Blue -> Qualification Workspace.
+The page will redirect you to Bluetooth Qualification Process. https://qualification.bluetooth.com/.
+In Getting Started tab, create a new product by clicking "Start the Bluetooth
+Qualification Process". 
 
-![](images/launch_studio_new_project_basics.png)
+![](images/bluetooth_getting_started.png)
 
-Save and continue to Layer Selection. Select as many layers/profiles as you know
-that will be tested. If you are not sure, do not worry. The mandatory ones will
-be marked by Consistency Checker, and the project can always be edited later
-to add or remove profiles.
+On Product Details screen, the user defines a new Bluetooth project (Design) 
+that will be part of the qualified product. 
+In this step, it is possible to define the product name, description, 
+model number, and publication date (either current or future). 
+Additionally, a product website can be provided, and the visibility settings for 
+other users can be configured.
 
-![](images/launch_studio_layer_selection_core.png)
+It is possible to import several products by selecting the appropriate option "Import multiple Products"
+or add individual Product.
+To proceed to the next step you need to confirm the stage by selecting the "Save and go to Specify Design" button.
 
-Save and continue to ICS Selection. On the left panel there are all the selected
-profiles. Each profile has its own set of ICSes. The Consistency Checker has
-selected automatically some of the mandatory ICSes. But some still have to be
-selected manually, because of the multiple variants of some features.
+![](images/bluetooth_qualification_process_new_product.png)
 
-![](images/launch_studio_ics_selection.png)
+On Specify the Design screen is option of include any existing Design in Product.
+![](images/bluetooth_specify_the_design.png)
 
-Check which of the mandatory ICSes remain by clicking the Consistency Check:
+By selecting the "Yes, I do" option you can specify which DN or QDID can be used.
+![](images/bluetooth_specify_the_design_yes.png)
 
-![](images/launch_studio_ics_selection_consistency_checker.png)
+While by selecting the "No, I do not" option it is possible to choose the recommended TCRL 
+and advanced settings. 
+in the lower part of the view there is an option to import ICS 
+"Import from a file" by indicating the appropriate file, or selecting the option 
+"No, I'II do that myself" which gives the user the option to choose what will be 
+included in ICS.
+![](images/bluetooth_specify_the_design_no.png)
 
-To resolve all remaining mandatory ICSes it is convenient to follow and repeat
-the below steps until the Consistency Check no longer displays missing dependencies:
-- resolve manually ICSes of features with multiple variants,
-- click on the Consistency Check to auto-select/recalculate remaining mandatory ICSes.
+Proceeding further using the "Save and go to the Layer Selection" button will open the next step
 
-If you enable some optional ICSes, new mandatory ICSes to resolve may appear.
-Remember to save the project from time to time, because any accidental tab refresh
-will waste all your work.
+![](images/bluetooth_layer_selection.png)
 
-After selecting all mandatory and optional ICSes, finally save and continue to
-Testing tab. Here the project ICSes can be exported to a .pts file that will be
-needed to generate a valid PTS workspace file.
+On Layer Selection screen,
+in the first option we can determine whether we want to 
+specify the desired Core Configuration for the new Design.
+- Option No - it only informs us about the need for further Core Configuration manual configuration.
+- Option Yes - gives us the ability to automatically complete the Layer Selection by choosing the options that interest us.
+
+![](images/bluetooth_layer_selection_yes.png)
+
+"Save and go to ICS Selection" button allows us to move on to the next ICS selection view.
+
+depending on the options we have selected in the "Layer Selection" view, 
+the ICS view will allow us to add or remove the selected test
+![](images/bluetooth_ics_selection.png)
+
+On ICS Selection screen, the user selects Bluetooth-specific Capabilities—in this case, 
+“802.11 Protocol Adaptation Layer”—as part of the Implementation Conformance Statement (ICS). 
+Each capability is assigned a status: Mandatory (M), Optional (O), or Conditional (C). 
+Once the appropriate options are selected, a Consistency Check can be run
+and the test plan or documentation can be continued.
+
+To export an ICS .pts file that can be loaded into PTS, you need to expand the "Support Tools" submenu and select the "Export Draft" option.
+It is also possible to export a Draft file.
+
+The location of the submenu is shown in the screenshot below.
+
+![](images/bluetooth_ics_selection_export.png)
 
 ## Generate PTS workspace from ICSes
 
