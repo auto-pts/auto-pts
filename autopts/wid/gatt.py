@@ -704,15 +704,15 @@ def hdl_wid_52(params: WIDParams):
 
     if attr.uuid == UUID.CEP:
         (value_read,) = struct.unpack("<H", attr.value)
-        value_read = '{0:04x}'.format(value_read)
+        value_read_str = '{0:04x}'.format(value_read)
     else:
         value_read = hexlify(attr.value).upper()
+        value_read_str = value_read.decode('utf-8')
 
-    value_read = value_read.decode('utf-8')
     # PTS may select characteristic with value bigger than MTU but asks to
     # verify only MTU bytes of data
-    if value_read != value:
-        if not value_read.startswith(value):
+    if value_read_str != value:
+        if not value_read_str.startswith(value):
             return False
 
     return True
