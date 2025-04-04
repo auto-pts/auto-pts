@@ -1317,10 +1317,10 @@ Commands and responses:
         Opcode 0x72 - IUT Proxy Private Identity Enable
 
                 Controller Index:       <controller id>
-                Command parameters:    <none>
+                Command parameters:     Enabled (1 octet)
                 Response parameters:    <none>
 
-                This command is used to enable Proxy Private Identity of the IUT
+                This command is used to enable or to disable Proxy Private Identity of the IUT
 
         Opcode 0x73 - On-Demand Private Proxy Get
 

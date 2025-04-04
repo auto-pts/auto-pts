@@ -336,7 +336,7 @@ MESH = {
                          CONTROLLER_INDEX),
     "proxy_private_identity": (defs.BTP_SERVICE_ID_MESH,
                                defs.BTP_MESH_CMD_PROXY_PRIVATE_IDENTITY,
-                               CONTROLLER_INDEX, ""),
+                               CONTROLLER_INDEX),
     "subnet_bridge_get": (defs.BTP_SERVICE_ID_MESH,
                           defs.BTP_MESH_CMD_SUBNET_BRIDGE_GET,
                           CONTROLLER_INDEX),
@@ -712,11 +712,13 @@ def mesh_proxy_identity():
     iutctl.btp_socket.send_wait_rsp(*MESH['proxy_identity'])
 
 
-def mesh_proxy_private_identity():
-    logging.debug("%s", mesh_proxy_private_identity.__name__)
+def mesh_proxy_private_identity(enabled):
+    logging.debug("%s %s", mesh_proxy_private_identity.__name__, "Enabled" if enabled else "Disable")
+
+    enable = bytearray(struct.pack("<B", 0x01 if enabled else 0x00))
 
     iutctl = get_iut()
-    iutctl.btp_socket.send_wait_rsp(*MESH['proxy_private_identity'])
+    iutctl.btp_socket.send_wait_rsp(*MESH['proxy_private_identity'], enable)
 
 
 def mesh_sar_transmitter_get(dst):
