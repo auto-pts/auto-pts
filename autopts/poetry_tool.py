@@ -3,7 +3,7 @@ from pathlib import Path
 
 
 def check_style():
-    logs_dir = Path("logs/pep8")
+    logs_dir = Path("../logs/pep8")
     logs_dir.mkdir(parents=True, exist_ok=True)
 
     def run_tool(name, command, log_path):
