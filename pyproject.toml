@@ -32,4 +32,4 @@ line-length = 100
 exclude = ["build", "dist", ".venv"]
 
 [tool.poetry.scripts]
-check-style = "auto_pts.tools:check_style"
+check-style = "autopts.poetry_tool:check_style"
