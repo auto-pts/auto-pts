@@ -1,20 +1,18 @@
-[project]
+[tool.poetry]
 name = "autopts"
 version = "0.1.0"
 description = "Auto PTS tooling"
-authors = [
-    { name = "Jakub Marciniak", email = "marciniakjakub93@gmail.com" }
-]
+authors = ["Jakub Marciniak <marciniakjakub93@gmail.com>"]
 readme = "README.md"
+packages = [
+    { include = "autopts" }
+]
+
 requires-python = ">=3.11"
 
 [build-system]
 requires = ["poetry-core>=1.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
-
-packages = [
-    { include = "autopts" }
-]
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^4.2.0"
