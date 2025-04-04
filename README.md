@@ -1,3 +1,123 @@
+# Getting Started
+Follow the steps below to set up the project, install dependencies, 
+and enable automatic code formatting and linting.
+
+### Install Poetry (Recommended: Git Bash on Windows)
+To install Poetry using `pip` (works on all platforms):
+
+```bash
+pip install --user poetry
+```
+
+If you're on **Windows**, we recommend using **Git Bash** instead of PowerShell or CMD for better compatibility.
+
+After installation, make sure Poetry is available in your `PATH`. If not, you may need to add this line to your shell configuration (e.g. `~/.bashrc`, `~/.zshrc`, or Git Bash startup file):
+
+```bash
+export PATH="$HOME/.local/bin:$PATH"
+```
+
+Then reload your shell or run:
+
+```bash
+source ~/.bashrc    # or ~/.zshrc / ~/.bash_profile depending on your system
+```
+
+Finally, verify the installation:
+
+```bash
+poetry --version
+```
+
+---
+
+### Clone the Repository
+
+```bash
+git clone https://github.com/your-username/your-repo.git
+cd your-repo
+```
+
+---
+### 3. Install Dependencies
+
+This will install both main and development dependencies:
+
+```bash
+poetry install
+```
+
+---
+### 4. (Optional) Activate Virtual Environment
+
+To work inside the Poetry-managed environment:
+
+```bash
+poetry shell
+```
+
+Or prefix commands with `poetry run` (e.g. `poetry run check-style`).
+
+---
+## Code Style & Formatting
+
+This project uses:
+
+- [`Ruff`](https://docs.astral.sh/ruff/) – for fast PEP8 linting and auto-fixing
+- [`isort`](https://pycqa.github.io/isort/) – for sorting import statements
+
+### Run style checks and fixes
+
+To automatically fix and format your code, use the custom alias:
+
+```bash
+poetry run check-style
+```
+
+This will:
+
+- Run `ruff` with auto-fix
+- Sort imports using `isort`
+### Manual usage (optional)
+
+```bash
+poetry run ruff check . --fix
+poetry run isort .
+```
+
+---
+### Pre-commit Hook (Optional)
+
+To automatically check and fix code **before every commit**:
+
+1. Install pre-commit hooks:
+
+```bash
+poetry run pre-commit install
+```
+
+2. Now, every time you commit code:
+
+```bash
+git commit -m "Your message"
+```
+
+Ruff, isort, and black will run automatically before the commit is accepted.
+
+---
+
+###  GitHub Actions – Automatic Style Check
+
+A workflow is configured in `.github/workflows/style-check.yml` to automatically check code style on every push or pull request to `main` or `master`.
+
+### What it does:
+- Checks code with `ruff`
+- Verifies import order with `isort`
+
+This ensures consistent code quality across all contributions.
+
+---
+
 # Table of Contents
 
    * [Introduction](#introduction)
