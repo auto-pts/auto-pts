@@ -55,8 +55,8 @@ class Stack:
         self.tmap = None
         self.ots = None
         self.pbp = None
-        self.supported_svcs_cmds = common.supported_svcs_cmds
         # GENERATOR append 2
+        self.supported_svcs_cmds = common.supported_svcs_cmds
 
     def is_svc_supported(self, svc):
         svc_value = self.supported_svcs_cmds.get(svc, {}).get("service", 0)
