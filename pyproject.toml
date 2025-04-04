@@ -12,6 +12,10 @@ requires-python = ">=3.11"
 requires = ["poetry-core>=1.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
+packages = [
+    { include = "autopts" }
+]
+
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^4.2.0"
 ruff = "^0.11.3"
