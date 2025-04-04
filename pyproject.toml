@@ -8,7 +8,8 @@ packages = [
     { include = "autopts" }
 ]
 
-requires-python = ">=3.11"
+[tool.poetry.dependencies]
+python = ">=3.11"
 
 [build-system]
 requires = ["poetry-core>=1.0.0,<3.0.0"]
@@ -18,6 +19,9 @@ build-backend = "poetry.core.masonry.api"
 pre-commit = "^4.2.0"
 ruff = "^0.11.3"
 isort = "^6.0.1"
+
+[tool.poetry.scripts]
+check-style = "autopts.poetry_tool:check_style"
 
 [tool.isort]
 profile = "black"
@@ -32,6 +36,3 @@ lines_after_imports = 2
 [tool.ruff]
 line-length = 100
 exclude = ["build", "dist", ".venv"]
-
-[tool.poetry.scripts]
-check-style = "autopts.poetry_tool:check_style"
