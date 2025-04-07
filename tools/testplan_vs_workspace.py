@@ -18,8 +18,9 @@
 Usage:
 $ python3 testplan_vs_workspace.py path/to/workspace path/to/test_plan.xlsx
 """
-import sys
 import os
+import sys
+
 import pandas as pd
 import win32com
 import wmi

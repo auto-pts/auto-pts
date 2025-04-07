@@ -16,12 +16,13 @@
 import logging
 import re
 import sys
-
 from enum import IntFlag
-from autopts.pybtp import btp, defs
+
 from autopts.ptsprojects.stack import get_stack
+from autopts.pybtp import btp, defs
 from autopts.pybtp.types import WIDParams
 from autopts.wid import generic_wid_hdl
+
 
 class PresetProperty(IntFlag):
     BT_HAS_PROP_NONE      = 0

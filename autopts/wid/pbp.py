@@ -17,12 +17,13 @@ import logging
 import re
 import struct
 
-from autopts.ptsprojects.stack import get_stack, WildCard
-from autopts.pybtp.defs import AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, AUDIO_METADATA_PROGRAM_INFO
-from autopts.pybtp.types import WIDParams, CODEC_CONFIG_SETTINGS, create_lc3_ltvs_bytes, BTPError
-from autopts.wid import generic_wid_hdl
+from autopts.ptsprojects.stack import WildCard, get_stack
 from autopts.pybtp import btp, defs
+from autopts.pybtp.defs import AUDIO_METADATA_PROGRAM_INFO, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS
+from autopts.pybtp.types import CODEC_CONFIG_SETTINGS, BTPError, WIDParams, create_lc3_ltvs_bytes
+from autopts.wid import generic_wid_hdl
 from autopts.wid.bap import BAS_CONFIG_SETTINGS
+
 
 log = logging.debug
 

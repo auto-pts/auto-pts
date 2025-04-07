@@ -1,5 +1,6 @@
 from . import defs
 
+
 supported_svcs_cmds = {
     "CORE": {
         "service": 1 << defs.BTP_SERVICE_ID_CORE,

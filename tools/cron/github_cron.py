@@ -18,13 +18,15 @@
 import json
 import logging
 import re
-import requests
 from datetime import datetime, timedelta
 from threading import Thread
 from time import sleep
+
+import requests
 from requests.structures import CaseInsensitiveDict
 
 from autopts.utils import get_global_end
+
 
 log = logging.info
 

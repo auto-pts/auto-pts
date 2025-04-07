@@ -21,8 +21,9 @@ from pathlib import Path
 
 from autopts import bot
 from autopts import client as autoptsclient
-from autopts.bot.common import BotConfigArgs, BotClient
+from autopts.bot.common import BotClient, BotConfigArgs
 from autopts.ptsprojects.zephyr.iutctl import get_iut
+
 
 PROJECT_NAME = Path(__file__).stem
 

@@ -13,11 +13,13 @@
 # more details.
 #
 
+import autopts.ptsprojects.mynewt.bap
 import autopts.ptsprojects.mynewt.gap
 import autopts.ptsprojects.mynewt.gatt
-import autopts.ptsprojects.mynewt.sm
 import autopts.ptsprojects.mynewt.l2cap
 import autopts.ptsprojects.mynewt.mesh
-import autopts.ptsprojects.mynewt.bap
 import autopts.ptsprojects.mynewt.pacs
+import autopts.ptsprojects.mynewt.sm
+
+
 # GENERATOR append 1

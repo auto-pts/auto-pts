@@ -17,14 +17,15 @@
 
 from queue import Queue
 
-from autopts.pybtp import btp
 from autopts.client import get_unique_name
-from autopts.ptsprojects.stack import get_stack, SynchPoint
+from autopts.ptsprojects.stack import SynchPoint, get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.bass_wid import bass_wid_hdl
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
+from autopts.pybtp import btp
 from autopts.pybtp.btp import lt2_addr_get
-from autopts.pybtp.types import Addr, AdType, UUID, AdFlags
+from autopts.pybtp.types import UUID, Addr, AdFlags, AdType
+
 
 broadcast_code = '0102680553F1415AA265BBAFC6EA03B8'
 

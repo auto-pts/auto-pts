@@ -18,6 +18,7 @@
 
 from autopts.bot.iut_config.zephyr import iut_config
 
+
 BotProjects = []
 
 z = zephyr_nrf52 = {

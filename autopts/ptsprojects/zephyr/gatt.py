@@ -16,15 +16,15 @@
 """GATT test cases"""
 import logging
 
-from autopts.pybtp import btp
-from autopts.pybtp.types import UUID, Addr, IOCap, Prop, Perm
 from autopts.client import get_unique_name
-from autopts.utils import ResultWithFlag
-from autopts.wid.gatt import gattc_wid_hdl_multiple_indications
-from autopts.ptsprojects.stack import get_stack, SynchPoint
+from autopts.ptsprojects.stack import SynchPoint, get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.gatt_wid import gatt_wid_hdl
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
+from autopts.pybtp import btp
+from autopts.pybtp.types import UUID, Addr, IOCap, Perm, Prop
+from autopts.utils import ResultWithFlag
+from autopts.wid.gatt import gattc_wid_hdl_multiple_indications
 
 
 class Value:

@@ -13,7 +13,7 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
-from .layers import *
 from .common import *
-from .synch import *
+from .layers import *
 from .stack import *
+from .synch import *

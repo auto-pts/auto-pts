@@ -2,16 +2,16 @@ import os
 import shutil
 import sys
 import unittest
-from os.path import dirname, abspath
+from os.path import abspath, dirname
 from pathlib import Path
+from test.mocks.mocked_test_cases import mock_workspace_test_cases, test_case_list_generation_samples
 from unittest.mock import patch
 
+from autopts.bot.common_features import report
 from autopts.client import FakeProxy, TestCaseRunStats
 from autopts.config import FILE_PATHS
 from autopts.ptsprojects.testcase_db import TestCaseTable
-from autoptsclient_bot import import_bot_projects, import_bot_module
-from test.mocks.mocked_test_cases import mock_workspace_test_cases, test_case_list_generation_samples
-from autopts.bot.common_features import report
+from autoptsclient_bot import import_bot_module, import_bot_projects
 
 
 DATABASE_FILE = 'test/mocks/zephyr_database.db'

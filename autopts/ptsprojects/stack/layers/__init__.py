@@ -17,12 +17,15 @@
 from .aics import *
 from .ascs import *
 from .bap import *
+from .cap import *
 from .ccp import *
 from .core import *
+from .csip import *
 from .gap import *
 from .gatt import *
 from .gattcl import *
 from .gmcs import *
+from .gtbs import *
 from .hap import *
 from .ias import *
 from .l2cap import *
@@ -30,15 +33,14 @@ from .mcp import *
 from .mesh import *
 from .micp import *
 from .mics import *
+from .ots import *
 from .pacs import *
+from .pbp import *
+from .tbs import *
+from .tmap import *
 from .vcp import *
 from .vcs import *
 from .vocs import *
-from .cap import *
-from .csip import *
-from .tbs import *
-from .gtbs import *
-from .tmap import *
-from .ots import *
-from .pbp import *
+
+
 # GENERATOR append 1

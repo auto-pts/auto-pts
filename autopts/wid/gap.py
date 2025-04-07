@@ -13,19 +13,18 @@
 # more details.
 #
 
+import binascii
 import copy
 import logging
 import re
 import struct
 from time import sleep
-import binascii
 
-from autopts.ptsprojects.stack import get_stack, ConnParams
-from autopts.pybtp import types
-from autopts.pybtp import btp
-from autopts.pybtp import defs
-from autopts.pybtp.types import Prop, Perm, UUID, AdType, bdaddr_reverse, WIDParams, IOCap, OwnAddrType
+from autopts.ptsprojects.stack import ConnParams, get_stack
+from autopts.pybtp import btp, defs, types
+from autopts.pybtp.types import UUID, AdType, IOCap, OwnAddrType, Perm, Prop, WIDParams, bdaddr_reverse
 from autopts.wid import generic_wid_hdl
+
 
 log = logging.debug
 

@@ -29,24 +29,26 @@ import copy
 import json
 import logging
 import re
-import sys
 import signal
-import schedule
+import sys
 import threading
 from argparse import Namespace
-from datetime import timedelta, datetime
+from datetime import datetime, timedelta
+from os.path import abspath, dirname
 from time import sleep
-from os.path import dirname, abspath
+
+import schedule
+
 
 # Needed if autopts is not installed as a module
 AUTOPTS_REPO=dirname(dirname(dirname(abspath(__file__))))
 sys.path.extend([AUTOPTS_REPO])
 
-from autopts.utils import get_global_end, set_global_end, have_admin_rights, terminate_process
 from autopts.bot.common import load_module_from_path
-from tools.cron.estimations import get_estimations
-from tools.cron.common import set_cron_cfg, load_config
+from autopts.utils import get_global_end, have_admin_rights, set_global_end, terminate_process
+from tools.cron.common import load_config, set_cron_cfg
 from tools.cron.cron_gui import CronGUI, RequestPuller
+from tools.cron.estimations import get_estimations
 
 
 if sys.platform == 'win32':

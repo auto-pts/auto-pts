@@ -15,16 +15,18 @@
 # more details.
 #
 
+import importlib
+import logging
 import os
-import sys
+import pkgutil
 import shlex
+import subprocess
+import sys
+from collections import defaultdict
+
 import pylink
 import serial.tools.list_ports
-import logging
-import pkgutil
-import importlib
-import subprocess
-from collections import defaultdict
+
 
 # For each new board just create a <new-board-name>.py file that contains reset_cmd() function and list
 # of supported boards.

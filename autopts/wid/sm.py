@@ -15,10 +15,12 @@
 
 import logging
 import re
+
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp
-from autopts.pybtp.types import WIDParams, IOCap
+from autopts.pybtp.types import IOCap, WIDParams
 from autopts.wid import generic_wid_hdl
+
 
 log = logging.debug
 

@@ -19,12 +19,14 @@ import logging
 import struct
 from enum import IntEnum
 
-from autopts.pybtp import defs, btp
 from autopts.ptsprojects.stack import get_stack
-from autopts.pybtp.btp.btp import CONTROLLER_INDEX, get_iut_method as get_iut,\
-    btp_hdr_check, pts_addr_get, pts_addr_type_get
+from autopts.pybtp import btp, defs
+from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check
+from autopts.pybtp.btp.btp import get_iut_method as get_iut
+from autopts.pybtp.btp.btp import pts_addr_get, pts_addr_type_get
 from autopts.pybtp.btp.gap import __gap_current_settings_update
-from autopts.pybtp.types import addr2btp_ba, BTPError, AdType
+from autopts.pybtp.types import AdType, BTPError, addr2btp_ba
+
 
 class Uuid(IntEnum):
     ASCS = 0x184E

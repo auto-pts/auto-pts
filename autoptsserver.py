@@ -41,23 +41,30 @@ import time
 import traceback
 import xmlrpc.client
 import xmlrpc.server
-
 from functools import partial
-from os.path import dirname, abspath
+from os.path import abspath, dirname
 from pathlib import Path
-from queue import Queue, Empty
+from queue import Empty, Queue
 from time import sleep
 
 import pythoncom
-import wmi
-
 import serial.tools.list_ports
+import wmi
 
 from autopts import ptscontrol
 from autopts.config import SERVER_PORT
-from autopts.utils import CounterWithFlag, get_global_end, exit_if_admin, ykush_replug_usb, ykush_set_usb_power, \
-    print_thread_stack_trace, active_hub_server_replug_usb, active_hub_server_set_usb_power
+from autopts.utils import (
+    CounterWithFlag,
+    active_hub_server_replug_usb,
+    active_hub_server_set_usb_power,
+    exit_if_admin,
+    get_global_end,
+    print_thread_stack_trace,
+    ykush_replug_usb,
+    ykush_set_usb_power,
+)
 from autopts.winutils import kill_all_processes
+
 
 logging = root_logging.getLogger('server')
 log = root_logging.debug

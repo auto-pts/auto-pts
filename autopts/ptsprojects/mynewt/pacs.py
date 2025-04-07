@@ -15,12 +15,12 @@
 
 """PACS test cases"""
 
-from autopts.pybtp import btp
 from autopts.client import get_unique_name
-from autopts.ptsprojects.stack import get_stack
-from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.mynewt.pacs_wid import pacs_wid_hdl
 from autopts.ptsprojects.mynewt.ztestcase import ZTestCase
+from autopts.ptsprojects.stack import get_stack
+from autopts.ptsprojects.testcase import TestFunc
+from autopts.pybtp import btp
 from autopts.pybtp.types import Addr
 from autopts.utils import ResultWithFlag
 
