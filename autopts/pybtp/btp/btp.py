@@ -24,11 +24,11 @@ from uuid import UUID
 
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import MMI
-from autopts.pybtp.common import reg_unreg_service, supported_svcs_cmds
+from autopts.pybtp.common import CONTROLLER_INDEX, CONTROLLER_INDEX_NONE, reg_unreg_service, supported_svcs_cmds
+from autopts.pybtp.iutctl_common import set_event_handler
 from autopts.pybtp.types import BTPError, att_rsp_str
 
 from .. import defs
-
 
 #  get IUT global method from iutctl
 get_iut = None
@@ -45,8 +45,8 @@ LT3_BD_ADDR = LeAddress(addr_type=0, addr='000000000000')
 # Devices found
 LeAdv = namedtuple('LeAdv', 'addr_type addr rssi flags eir')
 
-CONTROLLER_INDEX = 0
-CONTROLLER_INDEX_NONE = 0xff
+CONTROLLER_INDEX = CONTROLLER_INDEX
+CONTROLLER_INDEX_NONE = CONTROLLER_INDEX_NONE
 
 
 def read_supp_svcs():
@@ -358,16 +358,13 @@ def parse_handle_description(description):
 
 def btp_hdr_check(rcv_hdr, exp_svc_id, exp_op=None):
     if rcv_hdr.svc_id != exp_svc_id:
-        raise BTPError("Incorrect service ID %s in the response, expected %s!"
-                       % (rcv_hdr.svc_id, exp_svc_id))
+        raise BTPError(f"Incorrect service ID {rcv_hdr.svc_id} in the response, expected {exp_svc_id}!")
 
     if rcv_hdr.op == defs.BTP_STATUS:
         raise BTPError("Error opcode in response!")
 
     if exp_op and exp_op != rcv_hdr.op:
-        raise BTPError(
-            "Invalid opcode 0x%.2x in the response, expected 0x%.2x!" %
-            (rcv_hdr.op, exp_op))
+        raise BTPError(f"Invalid opcode 0x{rcv_hdr.op:02x} in the response, expected 0x{exp_op:02x}!")
 
 
 def bd_addr_convert(bdaddr):
@@ -557,7 +554,7 @@ def core_reg_svc_mics():
 def core_reg_svc_ccp():
     core_reg_svc_univ("ccp_reg", "CCP")
 
-    
+
 def core_reg_svc_cas():
     core_reg_svc_univ("cas_reg", "CAS")
 
@@ -588,7 +585,7 @@ def core_reg_svc_csip():
 
 def core_reg_svc_tmap():
     core_reg_svc_univ("tmap_reg", "TMAP")
-    
+
 
 def core_reg_svc_tbs():
     core_reg_svc_univ("tbs_reg", "TBS")
@@ -684,8 +681,6 @@ def init(get_iut_method):
     get_iut = get_iut_method
     set_event_handler(event_handler)
 
-
-from autopts.pybtp.iutctl_common import set_event_handler
 
 
 def event_handler(hdr, data):

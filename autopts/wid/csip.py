@@ -21,7 +21,6 @@ from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp, defs
 from autopts.pybtp.types import AdType, OwnAddrType, WIDParams, gap_settings_btp2txt
 
-
 log = logging.debug
 
 

@@ -15,16 +15,14 @@
 
 """GAP test cases"""
 import binascii
-from time import sleep
 
 from autopts.client import get_unique_name
-from autopts.ptsprojects.mynewt import gatt
 from autopts.ptsprojects.mynewt.gap_wid import gap_wid_hdl, gap_wid_hdl_mode1_lvl2, gap_wid_hdl_mode1_lvl4
 from autopts.ptsprojects.mynewt.ztestcase import ZTestCase
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.pybtp import btp
-from autopts.pybtp.types import UUID, Addr, AdFlags, AdType, IOCap, Perm, Prop
+from autopts.pybtp.types import UUID, Addr, AdFlags, AdType, IOCap
 
 
 class SVC:
@@ -35,7 +33,7 @@ class CHAR:
     name = (None, None, None, UUID.device_name)
 
 
-iut_manufacturer_data = 'ABCD'.encode('utf-8')
+iut_manufacturer_data = b'ABCD'
 iut_ad_uri = '000168747470733A2F2F7777772E626C7565746F'
 iut_appearance = '1111'
 iut_svc_data = '1111'
@@ -47,7 +45,7 @@ iut_le_supp_feat = 'FF'
 # Advertising data
 ad = [(AdType.uuid16_some, '1111'),
       (AdType.gap_appearance, '1111'),
-      (AdType.name_full, bytes.hex('Tester'.encode('utf-8'))),
+      (AdType.name_full, bytes.hex(b'Tester')),
       (AdType.manufacturer_data, '11111111'),
       (AdType.uuid16_svc_data, '111111')]
 

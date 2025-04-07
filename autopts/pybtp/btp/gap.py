@@ -27,9 +27,6 @@ from autopts.pybtp.btp.btp import (
     CONTROLLER_INDEX,
     LeAdv,
     btp_hdr_check,
-)
-from autopts.pybtp.btp.btp import get_iut_method as get_iut
-from autopts.pybtp.btp.btp import (
     lt2_addr_get,
     lt2_addr_type_get,
     lt3_addr_get,
@@ -40,8 +37,8 @@ from autopts.pybtp.btp.btp import (
     set_lt3_addr,
     set_pts_addr,
 )
+from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.types import Addr, AdDuration, AdType, BTPError, OwnAddrType, addr2btp_ba, gap_settings_btp2txt
-
 
 GAP = {
     "start_adv": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_START_ADVERTISING,
@@ -1404,7 +1401,7 @@ def gap_padv_set_data(data):
     if isinstance(data, str):
         data = data.encode()
 
-    data_ba = bytearray(struct.pack("<H%ds" % len(data), len(data), data))
+    data_ba = bytearray(struct.pack(f"<H{len(data)}s", len(data), data))
 
     iutctl.btp_socket.send(*GAP['padv_set_data'], data=data_ba)
 

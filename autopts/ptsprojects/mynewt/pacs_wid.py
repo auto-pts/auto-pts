@@ -15,12 +15,7 @@
 
 import logging
 
-from autopts.ptsprojects.stack import get_stack
-from autopts.pybtp import btp
-from autopts.pybtp.types import *
-from autopts.pybtp.types import WIDParams
 from autopts.wid import generic_wid_hdl
-
 
 log = logging.debug
 

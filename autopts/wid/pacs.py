@@ -20,7 +20,6 @@ from autopts.pybtp import btp
 from autopts.pybtp.defs import PACS_AUDIO_CONTEXT_TYPE_CONVERSATIONAL, PACS_AUDIO_CONTEXT_TYPE_MEDIA
 from autopts.pybtp.types import WIDParams
 
-
 log = logging.debug
 pacs_update_fun = None
 
@@ -89,15 +88,24 @@ def hdl_wid_10(_: WIDParams):
 
 def hdl_wid_11(_: WIDParams):
     global pacs_update_fun
-    pacs_update_fun = lambda: btp.pacs_set_available_contexts(
-        PACS_AUDIO_CONTEXT_TYPE_CONVERSATIONAL, PACS_AUDIO_CONTEXT_TYPE_MEDIA)
+    def pacs_update_fun():
+        btp.pacs_set_available_contexts(
+            PACS_AUDIO_CONTEXT_TYPE_CONVERSATIONAL,
+            PACS_AUDIO_CONTEXT_TYPE_MEDIA
+        )
+
     return True
 
 
 def hdl_wid_12(_: WIDParams):
     global pacs_update_fun
-    pacs_update_fun = lambda: btp.pacs_set_supported_contexts(
-        PACS_AUDIO_CONTEXT_TYPE_CONVERSATIONAL, PACS_AUDIO_CONTEXT_TYPE_MEDIA)
+
+    def pacs_update_fun():
+        btp.pacs_set_supported_contexts(
+            PACS_AUDIO_CONTEXT_TYPE_CONVERSATIONAL,
+            PACS_AUDIO_CONTEXT_TYPE_MEDIA
+        )
+
     return True
 
 

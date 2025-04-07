@@ -19,7 +19,6 @@ import atexit
 import os
 import sys
 
-
 PROFILE = None
 TEST_CASE = None
 

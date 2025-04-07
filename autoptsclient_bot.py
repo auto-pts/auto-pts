@@ -26,7 +26,6 @@ import schedule
 from autopts.bot.common import get_absolute_module_path, load_module_from_path
 from autopts.utils import have_admin_rights, log_running_threads, set_global_end
 
-
 log = logging.debug
 
 

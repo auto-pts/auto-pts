@@ -14,7 +14,6 @@
 # more details.
 #
 import importlib
-import logging
 import os
 import subprocess
 import sys
@@ -28,7 +27,6 @@ from autopts.bot.common_features import report
 from autopts.client import Client
 from autopts.ptsprojects.boards import get_board_type, get_build_and_flash
 from autopts.ptsprojects.mynewt.iutctl import get_iut, log
-
 
 PROJECT_NAME = Path(__file__).stem
 
@@ -121,7 +119,7 @@ class MynewtBotClient(bot.common.BotClient):
             overlay['BTTESTER_BTP_LOG'] = '1'
             overlay['CONSOLE_UART_FLOW_CONTROL'] = 'UART_FLOW_CTL_RTS_CTS'
 
-        log("TTY path: %s" % args.tty_file)
+        log(f"TTY path: {args.tty_file}")
 
         if not args.no_build:
             build_and_flash = get_build_and_flash(args.board_name)

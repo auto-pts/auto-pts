@@ -21,12 +21,10 @@ import struct
 
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import defs
-from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check
+from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, pts_addr_get, pts_addr_type_get
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
-from autopts.pybtp.btp.btp import pts_addr_get, pts_addr_type_get
 from autopts.pybtp.btp.gap import gap_wait_for_connection
 from autopts.pybtp.types import L2CAPConnectionResponse, addr2btp_ba
-
 
 L2CAP = {
     "read_supp_cmds": (defs.BTP_SERVICE_ID_L2CAP,
@@ -116,7 +114,7 @@ def l2cap_conn_rsp():
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_L2CAP, defs.BTP_L2CAP_CMD_CONNECT)
     num = struct.unpack_from('<B', tuple_data[0])[0]
-    channels = struct.unpack_from('%ds' % num, tuple_data[0], 1)[0]
+    channels = struct.unpack_from(f"{num}s", tuple_data[0], 1)[0]
     return list(channels)
 
 
@@ -264,7 +262,7 @@ def l2cap_data_rcv_ev(l2cap, data, data_len):
     hdr_len = struct.calcsize(hdr_fmt)
 
     chan_id, data_len = struct.unpack_from(hdr_fmt, data)
-    data_rx = struct.unpack_from('%ds' % data_len, data, hdr_len)[0]
+    data_rx = struct.unpack_from(f"{data_len}s", data, hdr_len)[0]
     l2cap.rx(chan_id, data_rx)
 
     logging.debug("id:%r, data:%s", chan_id, binascii.hexlify(data_rx))

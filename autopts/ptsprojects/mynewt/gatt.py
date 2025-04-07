@@ -39,15 +39,15 @@ iut_attr_db_off = 0x000b
 
 
 def hdl_str(hdl):
-    return '{0:x}'.format(hdl)
+    return f'{hdl:x}'
 
 
 def u16_hdl_str(hdl):
-    return '{0:04x}'.format(hdl)
+    return f'{hdl:04x}'
 
 
 def u16_hdl_uc_str(hdl):
-    return '{0:04x}'.format(hdl)
+    return f'{hdl:04x}'
 
 
 class PTS_DB:
@@ -228,7 +228,7 @@ def test_cases_server(ptses):
 
 
     pts2 = ptses[1]
-    iut_device_name2 = get_unique_name(pts2)
+    iut_device_name2 = get_unique_name(pts2) # noqa: F841 # iut_device_name2 is not used
 
     pre_conditions_lt2 = [
                         TestFunc(lambda: pts2.update_pixit_param(

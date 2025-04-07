@@ -22,7 +22,6 @@ from email.mime.text import MIMEText
 
 import autopts.bot.common as common
 
-
 COMMASPACE = ', '
 
 
@@ -43,16 +42,16 @@ def status_dict2summary_html(status_dict):
 
     for status in sorted(status_dict.keys()):
         count = status_dict[status]
-        summary += """<tr>
-                      <td style=\"width: 150px;\">{}</td>
-                      <td style=\"text-align: center;\">{}</td>
-                      </tr>""".format(status, count)
+        summary += f"""<tr>
+                      <td style=\"width: 150px;\">{status}</td>
+                      <td style=\"text-align: center;\">{count}</td>
+                      </tr>"""
         total_count += count
 
-    summary += """<tr>
+    summary += f"""<tr>
                   <td style=\"width: 150px;\"><i>Total</i></td>
-                  <td style=\"text-align: center;\"><i>{}</i></td>
-                  </tr>""".format(total_count)
+                  <td style=\"text-align: center;\"><i>{total_count}</i></td>
+                  </tr>"""
     summary += "</table>"
 
     if "PASS" in status_dict:
@@ -120,7 +119,7 @@ def url2html(url, msg):
     :param msg: URL description
     :return: HTML formatted URL
     """
-    return "<a href={}>{}</a>".format(url, msg)
+    return f"<a href={url}>{msg}</a>"
 
 
 def test_cases2html(title, not_found_msg, test_cases, descriptions):
@@ -140,7 +139,7 @@ def test_cases2html(title, not_found_msg, test_cases, descriptions):
 
     if progresses_list:
         for name in progresses_list:
-            msg += "<p>{}</p>".format(name)
+            msg += f"<p>{name}</p>"
     else:
         msg += f"<p>{not_found_msg}</p>"
 
@@ -189,8 +188,7 @@ def send_mail(cfg, subject, body, attachments=None):
             file_type = mimetypes.guess_type(filename)
             if file_type[0] is None:
                 ext = os.path.splitext(filename)[1]
-                print('MIME Error: File extension %s is unknown. '
-                      'Try to associate it with app.' % ext)
+                print(f'MIME Error: File extension {ext} is unknown. Try to associate it with app.')
                 continue
             mimetype = file_type[0].split('/', 1)
             attachment = MIMEBase(mimetype[0], mimetype[1])

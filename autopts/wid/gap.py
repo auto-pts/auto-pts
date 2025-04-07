@@ -25,7 +25,6 @@ from autopts.pybtp import btp, defs, types
 from autopts.pybtp.types import UUID, AdType, IOCap, OwnAddrType, Perm, Prop, WIDParams, bdaddr_reverse
 from autopts.wid import generic_wid_hdl
 
-
 log = logging.debug
 
 
@@ -559,7 +558,7 @@ def hdl_wid_108(params: WIDParams):
 
     if params.test_case_name in ['GAP/SEC/SEM/BV-52-C', 'GAP/SEC/SEM/BV-53-C']:
         passkey = stack.gap.get_passkey()
-        if passkey != None:
+        if passkey is not None:
             btp.gap_passkey_confirm_rsp(btp.pts_addr_get(), defs.BTP_BR_ADDRESS_TYPE, passkey)
 
     return True
@@ -739,7 +738,7 @@ def hdl_wid_139(params: WIDParams):
         hdr_len = struct.calcsize(hdr)
         uuid_len = val_len - hdr_len
 
-        (props, handle, chrc_uuid) = struct.unpack("<BH%ds" % uuid_len, val)
+        (props, handle, chrc_uuid) = struct.unpack(f"<BH{uuid_len}s", val)
         chrc_value_attr = btp.gatts_get_attrs(start_handle=handle,
                                               end_handle=handle)
         if not chrc_value_attr:
@@ -772,7 +771,7 @@ def hdl_wid_139_mode1_lvl2(_: WIDParams):
         hdr_len = struct.calcsize(hdr)
         uuid_len = val_len - hdr_len
 
-        (props, handle, chrc_uuid) = struct.unpack("<BH%ds" % uuid_len, val)
+        (props, handle, chrc_uuid) = struct.unpack(f"<BH{uuid_len}s", val)
         chrc_value_attr = btp.gatts_get_attrs(start_handle=handle,
                                               end_handle=handle)
         if not chrc_value_attr:
@@ -805,7 +804,7 @@ def hdl_wid_139_mode1_lvl4(_: WIDParams):
         hdr_len = struct.calcsize(hdr)
         uuid_len = val_len - hdr_len
 
-        (props, handle, chrc_uuid) = struct.unpack("<BH%ds" % uuid_len, val)
+        (props, handle, chrc_uuid) = struct.unpack(f"<BH{uuid_len}s", val)
         chrc_value_attr = btp.gatts_get_attrs(start_handle=handle,
                                               end_handle=handle)
         if not chrc_value_attr:
@@ -856,7 +855,7 @@ def hdl_wid_144(params: WIDParams):
         hdr_len = struct.calcsize(hdr)
         uuid_len = val_len - hdr_len
 
-        (props, handle, chrc_uuid) = struct.unpack("<BH%ds" % uuid_len, val)
+        (props, handle, chrc_uuid) = struct.unpack(f"<BH{uuid_len}s", val)
         chrc_value_attr = btp.gatts_get_attrs(start_handle=handle,
                                               end_handle=handle)
         if not chrc_value_attr:
@@ -990,8 +989,7 @@ def hdl_wid_161(params: WIDParams):
     hdr_len = struct.calcsize(hdr)
     uuid_len = val_len - hdr_len
 
-    (properties, value_handle, chrc_uuid) = struct.unpack("<BH%ds" % uuid_len,
-                                                          val)
+    (properties, value_handle, chrc_uuid) = struct.unpack(f"<BH{uuid_len}s", val)
 
     if properties & Prop.auth_swrite == 0:
         return None
@@ -1041,7 +1039,7 @@ def hdl_wid_169(_: WIDParams):
 def hdl_wid_173(_: WIDParams):
     stack = get_stack()
 
-    if stack.gap.uri == None:
+    if stack.gap.uri is None:
         return False
 
     # Prepare space for URI
@@ -1095,7 +1093,7 @@ def hdl_wid_206(params: WIDParams):
     try:
         btp.gap_passkey_entry_rsp(bd_addr, bd_addr_type, passkey)
     except types.BTPError:
-        if (stack.gap.is_connected() == False):
+        if not stack.gap.is_connected():
             logging.debug("Ignoring expected error on disconnected")
         else:
             return False
@@ -1171,10 +1169,10 @@ def hdl_wid_227(params: WIDParams, desc_handle=None):
         btp.gattc_write(bd_addr_type, bd_addr, handle, '02', 1)
         btp.gattc_write_rsp(store_rsp=True)
 
-        if (btp.verify_att_error("authentication error")):
+        if btp.verify_att_error("authentication error"):
             btp.gap_pair()
 
-        if (btp.verify_att_error("insufficient encryption")):
+        if btp.verify_att_error("insufficient encryption"):
             btp.gap_pair()
 
     stack.gap.delay_mmi = True
@@ -1321,7 +1319,7 @@ def hdl_wid_243(_: WIDParams):
     """
     stack = get_stack()
 
-    if stack.gap.le_supp_feat == None:
+    if stack.gap.le_supp_feat is None:
         return False
 
     # Prepare space for LE Supported Features
@@ -1392,7 +1390,7 @@ def hdl_wid_267(_: WIDParams):
     return stack.gap.pair_user_interaction
 
 def hdl_wid_300(_: WIDParams):
-    # Please send non connectable advertise with periodic info.
+    # Please send non-connectable advertise with periodic info.
     stack = get_stack()
     btp.gap_padv_configure(1, 150, 200)
     if stack.gap.periodic_data:
@@ -1662,34 +1660,34 @@ def hdl_wid_2142(_: WIDParams):
 
 
 def hdl_wid_31(_: WIDParams):
-    '''
+    """
     Please make IUT not discoverable. Press OK to continue.
-    '''
+    """
     btp.gap_set_nondiscov()
     return True
 
 
 def hdl_wid_32(_: WIDParams):
-    '''
+    """
     Please make IUT limited discoverable. Press OK to continue.
-    '''
+    """
     btp.gap_set_limdiscov()
     return True
 
 
 def hdl_wid_160(_: WIDParams):
-    '''
+    """
     Please set IUT to limited discovery mode. Lower tester is continue using
     GIAC to Inquiry and waiting for Inquiry result.
-    '''
+    """
     btp.gap_set_limdiscov()
     return True
 
 
 def hdl_wid_145(_: WIDParams):
-    '''
+    """
     Waiting for limited discovery to time out so it is not able to discover IUT.
-    '''
+    """
     return True
 
 
@@ -1697,15 +1695,21 @@ GAP_TEST_WID_33_ROUND = 0
 
 
 def hdl_wid_33(params: WIDParams):
-    '''
+    """
     Please make IUT general discoverable.
-    '''
+    """
     global GAP_TEST_WID_33_ROUND
 
     btp.gap_set_nondiscov()
     btp.gap_set_gendiscov()
 
-    if (params.test_case_name in ['GAP/SEC/SEM/BV-10-C']) or (params.test_case_name in ['GAP/SEC/SEM/BI-24-C'] and GAP_TEST_WID_33_ROUND == 1):
+    if (
+            params.test_case_name in ['GAP/SEC/SEM/BV-10-C']
+            or (
+            params.test_case_name in ['GAP/SEC/SEM/BI-24-C']
+            and GAP_TEST_WID_33_ROUND == 1
+    )
+    ):
         # ALT1 - Responder the test results in pass when the IUT initiates the Secure Simple
         # Pairing procedure autonomously before the Lower Tester initiates the L2CAP connection.
         btp.gap_wait_for_connection()
@@ -1718,34 +1722,34 @@ def hdl_wid_33(params: WIDParams):
 
 
 def hdl_wid_34(_: WIDParams):
-    '''
+    """
     Please make IUT not connectable. Press OK to continue.
-    '''
+    """
     btp.gap_set_nonconn()
     return True
 
 
 def hdl_wid_105(_: WIDParams):
-    '''
+    """
     Please make IUT connectable. Press OK to continue.
-    '''
+    """
     btp.gap_set_conn()
     btp.gap_set_gendiscov()
     return True
 
 
 def hdl_wid_222(_: WIDParams):
-    '''
+    """
     Please initiate a BR/EDR security authentication and pairing with interaction of HCI commands.
-    '''
+    """
     return True
 
 
 def hdl_wid_146(_: WIDParams):
-    '''
+    """
     Please start general inquiry. Click 'Yes' If IUT does discovers PTS and ready for PTS to
     initiate a create connection otherwise click 'No'.
-    '''
+    """
     btp.gap_start_discov(transport='bredr', discov_type='passive', mode='general')
     sleep(10)
     btp.gap_stop_discov()
@@ -1753,9 +1757,9 @@ def hdl_wid_146(_: WIDParams):
 
 
 def hdl_wid_147(_: WIDParams):
-    '''
+    """
     Please start limited inquiry. Click 'Yes' If IUT does discovers PTS otherwise click 'No'.
-    '''
+    """
     btp.gap_start_discov(transport='bredr', discov_type='passive', mode='limited')
     sleep(10)
     btp.gap_stop_discov()
@@ -1763,17 +1767,17 @@ def hdl_wid_147(_: WIDParams):
 
 
 def hdl_wid_164(_: WIDParams):
-    '''
+    """
     Please confirm that IUT is in Idle mode with security mode 4. Press OK when IUT is ready to
     start device discovery.
-    '''
+    """
     return True
 
 
 def hdl_wid_165(params: WIDParams):
-    '''
+    """
     Please confirm that IUT has discovered PTS and retrieved its name 'PTS-GAP-E449'.
-    '''
+    """
     btp.gap_start_discov(transport='bredr', discov_type='passive', mode='general')
     sleep(10)
     btp.gap_stop_discov()
@@ -1793,10 +1797,10 @@ def hdl_wid_165(params: WIDParams):
 GAP_TEST_WID_102_ROUND = 0
 
 def hdl_wid_102(params: WIDParams):
-    '''
+    """
     Please send an HCI connect request to establish a basic rate connection after the IUT
     discovers the Lower Tester over BR and LE.
-    '''
+    """
 
     global GAP_TEST_WID_102_ROUND
 
@@ -1846,16 +1850,16 @@ def hdl_wid_102(params: WIDParams):
 
     if params.test_case_name in ['GAP/SEC/SEM/BV-25-C', 'GAP/SEC/SEM/BV-30-C']:
         passkey = get_stack().gap.get_passkey()
-        if passkey != None:
+        if passkey is not None:
             btp.gap_passkey_confirm_rsp(btp.pts_addr_get(), defs.BTP_BR_ADDRESS_TYPE, passkey)
 
     return True
 
 
 def hdl_wid_264(_: WIDParams):
-    '''
+    """
     Please send L2CAP Connection Request to PTS.
-    '''
+    """
     stack = get_stack()
     l2cap = stack.l2cap
     btp.l2cap_conn(None, defs.BTP_BR_ADDRESS_TYPE, l2cap.psm, l2cap.initial_mtu)
@@ -1863,24 +1867,24 @@ def hdl_wid_264(_: WIDParams):
 
 
 def hdl_wid_166(_: WIDParams):
-    '''
+    """
     Please order the IUT to go in connectable mode and in security mode 4. Press OK to continue.
-    '''
+    """
     return True
 
 
 def hdl_wid_251(_: WIDParams):
-    '''
+    """
     Please send L2CAP Connection Response to PTS.
-    '''
+    """
     return True
 
 
 def hdl_wid_231(_: WIDParams):
-    '''
+    """
     Please start the Bonding Procedure in bondable mode.
     After Bonding Procedure is completed, please send a disconnect request to terminate connection.
-    '''
+    """
     btp.gap_wait_for_sec_lvl_change(level=2)
     btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
     return True
@@ -1890,11 +1894,11 @@ GAP_TEST_WID_103_ROUND = 0
 
 
 def hdl_wid_103(params: WIDParams):
-    '''
+    """
     Please initiate BR/EDR security authentication and pairing to establish a service level
     enforced security!
     After that, please create the service channel using L2CAP Connection Request.
-    '''
+    """
     global GAP_TEST_WID_103_ROUND
 
     stack = get_stack()
@@ -1917,7 +1921,7 @@ def hdl_wid_103(params: WIDParams):
 
         if GAP_TEST_WID_103_ROUND == 0:
             passkey = stack.gap.get_passkey()
-            if passkey != None:
+            if passkey is not None:
                 btp.gap_passkey_confirm_rsp(btp.pts_addr_get(), defs.BTP_BR_ADDRESS_TYPE, passkey)
             stack.l2cap_init(br_psm_2, stack.l2cap.initial_mtu)
             btp.l2cap_conn(None, defs.BTP_BR_ADDRESS_TYPE, stack.l2cap.psm, stack.l2cap.initial_mtu)
@@ -1934,7 +1938,7 @@ def hdl_wid_103(params: WIDParams):
 
         if params.test_case_name in ['GAP/SEC/SEM/BV-52-C']:
             passkey = stack.gap.get_passkey()
-            if passkey != None:
+            if passkey is not None:
                 btp.gap_passkey_confirm_rsp(btp.pts_addr_get(), defs.BTP_BR_ADDRESS_TYPE, passkey)
 
         l2cap = stack.l2cap
@@ -1945,39 +1949,39 @@ def hdl_wid_103(params: WIDParams):
 
 
 def hdl_wid_167(_: WIDParams):
-    '''
+    """
     Please start simple pairing procedure.
-    '''
+    """
     return True
 
 
 def hdl_wid_151(_: WIDParams):
-    '''
+    """
     Please set IUT into bondable mode. Press OK to continue.
-    '''
+    """
     btp.gap_set_bondable_on()
     return True
 
 
 def hdl_wid_20117(params: WIDParams):
-    '''
+    """
     Please start encryption. Use previously distributed key if available.
     Description: Verify that the Implementation Under Test (IUT) can
     successfully start and complete encryption.
-    '''
+    """
     btp.gap_pair(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
     if params.test_case_name in ['GAP/DM/LEP/BV-18-C']:
         passkey = get_stack().gap.get_passkey()
-        if passkey != None:
+        if passkey is not None:
             btp.gap_passkey_confirm_rsp(btp.pts_addr_get(), defs.BTP_BR_ADDRESS_TYPE, passkey)
     return True
 
 
 def hdl_wid_36(_: WIDParams):
-    '''
+    """
     Please start general discovery over BR/EDR and over LE. If IUT discovers PTS
     with both BR/EDR and LE method, press OK.
-    '''
+    """
     btp.gap_start_discov(transport='bredr', discov_type='passive', mode='general')
     btp.gap_start_discov(transport='le', discov_type='passive', mode='general')
     sleep(10)
@@ -1994,10 +1998,10 @@ def hdl_wid_36(_: WIDParams):
 
 
 def hdl_wid_7(_: WIDParams):
-    '''
+    """
     Please start limited discovery over BR/EDR and over LE. If IUT discovers PTS
     with both BR/EDR and LE method, press OK.
-    '''
+    """
     btp.gap_start_discov(transport='bredr', discov_type='passive', mode='limited')
     btp.gap_start_discov(transport='le', discov_type='passive', mode='limited')
     sleep(10)
@@ -2014,10 +2018,10 @@ def hdl_wid_7(_: WIDParams):
 
 
 def hdl_wid_123(_: WIDParams):
-    '''
+    """
     Please start limited discovery over BR/EDR and over LE. If IUT does not discovers PTS
     with both BR/EDR and LE method, press OK.
-    '''
+    """
     btp.gap_start_discov(transport='bredr', discov_type='passive', mode='limited')
     btp.gap_start_discov(transport='le', discov_type='passive', mode='limited')
     sleep(10)
@@ -2034,9 +2038,9 @@ def hdl_wid_123(_: WIDParams):
 
 
 def hdl_wid_86(_: WIDParams):
-    '''
+    """
     Please start device name discovery over BR/EDR . If IUT discovers PTS, press OK to continue.
-    '''
+    """
     btp.gap_start_discov(transport='bredr', discov_type='passive', mode='general')
     sleep(10)
     btp.gap_stop_discov()
@@ -2048,19 +2052,19 @@ def hdl_wid_86(_: WIDParams):
 
 
 def hdl_wid_252(_: WIDParams):
-    '''
+    """
     Please send L2CAP Connection Response with Security Blocked to PTS.
-    '''
+    """
     return True
 
 
 def hdl_wid_220(_: WIDParams):
-    '''
+    """
     Please confirm IUT rejects the Upper Tester's request to establish a channel to access the
     service on the Lower Tester
     Click Yes, if rejected
     Click No, if not rejected.
-    '''
+    """
     stack = get_stack()
     if stack.gap.wait_for_disconnection(timeout=3):
         # ACL connection has been disconnect due to the AUTH failed
@@ -2073,18 +2077,18 @@ def hdl_wid_220(_: WIDParams):
 
 
 def hdl_wid_255(_: WIDParams):
-    '''
+    """
     Please bring IUT to Security Mode 2. Press OK to continue.
-    '''
+    """
     return True
 
 
 def hdl_wid_266(params: WIDParams):
-    '''
+    """
     Please confirm that the IUT signals to the Upper Tester that the channel establishment
     failure after link encryption.
     Click 'Yes' If there is channel establishment failure otherwise click 'No'.
-    '''
+    """
     if params.test_case_name in ['GAP/SEC/SEM/BI-27-C']:
         return not get_stack().gap.gap_wait_for_encrypted()
 
@@ -2093,101 +2097,101 @@ def hdl_wid_266(params: WIDParams):
 
 
 def hdl_wid_256(_: WIDParams):
-    '''
+    """
     Please bring IUT to Mode 4 level 1 security and make IUT general discoverable.
     Press OK to continue.
-    '''
+    """
     return True
 
 
 def hdl_wid_260(_: WIDParams):
-    '''
+    """
     Please bring IUT to Security Mode 4 level 1. Press OK to continue.
-    '''
+    """
     return True
 
 
 def hdl_wid_257(_: WIDParams):
-    '''
+    """
     Please bring IUT to Mode 4 level 2 security and make IUT general discoverable.
     Press OK to continue.
-    '''
+    """
     return True
 
 
 def hdl_wid_261(_: WIDParams):
-    '''
+    """
     Please bring IUT to Security Mode 4 level 2. Press OK to continue.
-    '''
+    """
     return True
 
 
 def hdl_wid_258(_: WIDParams):
-    '''
+    """
     Please bring IUT to Mode 4 level 3 security and make IUT general discoverable.
     Press OK to continue.
-    '''
+    """
     return True
 
 
 def hdl_wid_262(_: WIDParams):
-    '''
+    """
     Please bring IUT to Security Mode 4 level 3. Press OK to continue.
-    '''
+    """
     return True
 
 
 def hdl_wid_259(_: WIDParams):
-    '''
+    """
     Please bring IUT to Mode 4 level 4 security and make IUT general discoverable.
     Press OK to continue.
-    '''
+    """
     return True
 
 
 def hdl_wid_263(_: WIDParams):
-    '''
+    """
     Please bring IUT to Security Mode 4 level 4. Press OK to continue.
-    '''
+    """
     return True
 
 
 def hdl_wid_213(_: WIDParams):
-    '''
+    """
     Please make sure the IUT does initiate the BR secure connection pairing proccess.
     Click OK when ready.
-    '''
+    """
     return True
 
 
 def hdl_wid_221(_: WIDParams):
-    '''
+    """
     Please initiate BR/EDR Secure Simple Pairing then LE Secure Connections pairing for
     this test case.
-    '''
+    """
     return True
 
 
 def hdl_wid_217(_: WIDParams):
-    '''
+    """
     Please initiate security after upgrade the LTK to authenticated. Click OK when ready.
-    '''
+    """
     btp.gap_pair_v2(level=defs.BTP_GAP_CMD_PAIR_V2_LEVEL_4)
     return True
 
 
 def hdl_wid_216(_: WIDParams):
-    '''
+    """
     Please initiate security after upgrade the BR/EDR link key to authenticated.
     Click OK when ready.
-    '''
+    """
     return True
 
 
 def hdl_wid_273(params: WIDParams):
-    '''
+    """
     Please trigger channel creation. Expect to perform link encryption before channel creation.
-    '''
+    """
     if params.test_case_name in ['GAP/SEC/SEM/BI-25-C']:
         btp.gap_pair_v2(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE, level=defs.BTP_GAP_CMD_PAIR_V2_LEVEL_2)
         return True

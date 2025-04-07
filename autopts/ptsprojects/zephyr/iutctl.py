@@ -27,10 +27,8 @@ from autopts.ptsprojects.boards import Board, get_debugger_snr, tty_to_com
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import defs
 from autopts.pybtp.iutctl_common import BTP_ADDRESS, BTPSocketSrv, BTPWorker
-from autopts.pybtp.types import BTPError
 from autopts.rtt import BTMON, RTTLogger
 from autopts.utils import get_global_end
-
 
 log = logging.debug
 ZEPHYR = None
@@ -47,12 +45,13 @@ def get_qemu_cmd(kernel_image):
 
     kernel_image -- Path to Zephyr kernel image"""
 
-    qemu_cmd = ("%s -cpu cortex-m3 -machine lm3s6965evb -nographic "
-                "-serial mon:stdio "
-                "-serial unix:%s "
-                "-serial unix:/tmp/bt-server-bredr "
-                "-kernel %s" %
-                (QEMU_BIN, BTP_ADDRESS, kernel_image))
+    qemu_cmd = (
+        f"{QEMU_BIN} -cpu cortex-m3 -machine lm3s6965evb -nographic "
+        f"-serial mon:stdio "
+        f"-serial unix:{BTP_ADDRESS} "
+        f"-serial unix:/tmp/bt-server-bredr "
+        f"-kernel {kernel_image}"
+    )
 
     return qemu_cmd
 
@@ -125,12 +124,13 @@ class ZephyrCtl:
                 mode_cmd = (">nul 2>nul cmd.exe /c \"mode " + com + "BAUD=115200 PARITY=n DATA=8 STOP=1\"")
                 os.system(mode_cmd)
 
-                socat_cmd = ("socat.exe -x -v tcp:" + socket.gethostbyname(socket.gethostname()) +
-                             ":%s,retry=100,interval=1 %s,raw,b115200" %
-                             (self.socket_srv.sock.getsockname()[1], self.tty_file))
+                socat_cmd = (
+                    f"socat.exe -x -v tcp:{socket.gethostbyname(socket.gethostname())}:"
+                    f"{self.socket_srv.sock.getsockname()[1]},retry=100,interval=1 "
+                    f"{self.tty_file},raw,b115200"
+                )
             else:
-                socat_cmd = ("socat -x -v %s,rawer,b115200 UNIX-CONNECT:%s" %
-                             (self.tty_file, self.btp_address))
+                socat_cmd = f"socat -x -v {self.tty_file},rawer,b115200 UNIX-CONNECT:{self.btp_address}"
 
             log("Starting socat process: %s", socat_cmd)
 
@@ -140,12 +140,13 @@ class ZephyrCtl:
                                                   stdout=subprocess.DEVNULL,
                                                   stderr=subprocess.DEVNULL)
         elif self.hci is not None:
-            self.iut_log_file = open(os.path.join(test_case.log_dir, "autopts-iutctl-zephyr.log"), "a")
-            socat_cmd = ("socat -x -v %%s,rawer,b115200 UNIX-CONNECT:%s &" %
-                         self.btp_address)
+            self.iut_log_file = open(test_case.log_dir / "autopts-iutctl-zephyr.log", "a")
+            socat_cmd = f"socat -x -v %%s,rawer,b115200 UNIX-CONNECT:{self.btp_address} &"
 
-            native_cmd = ("%s --bt-dev=hci%d --attach_uart_cmd=\"%s\"" %
-                          (self.kernel_image, self.hci, socat_cmd))
+            native_cmd = (
+                f"{self.kernel_image} --bt-dev=hci{self.hci} "
+                f'--attach_uart_cmd="{socat_cmd}"'
+            )
 
             log("Starting native zephyr process: %s", native_cmd)
 
@@ -155,7 +156,7 @@ class ZephyrCtl:
                                                    stdout=self.iut_log_file,
                                                    stderr=self.iut_log_file)
         else:
-            self.iut_log_file = open(os.path.join(test_case.log_dir, "autopts-iutctl-zephyr.log"), "a")
+            self.iut_log_file = open(test_case.log_dir / "autopts-iutctl-zephyr.log", "a")
             qemu_cmd = get_qemu_cmd(self.kernel_image)
 
             log("Starting QEMU zephyr process: %s", qemu_cmd)

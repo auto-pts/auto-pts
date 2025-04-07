@@ -25,5 +25,31 @@ from .vcp import VCP_EV
 from .vcs import VCS_EV
 from .vocs import VOCS_EV
 
-
-# GENERATOR append 2
+__all__ = [
+    "AICS_EV",
+    "ASCS_EV",
+    "BAP_EV",
+    "CAP_EV",
+    "CCP_EV",
+    "CORE_EV",
+    "CSIP_EV",
+    "GAP_EV",
+    "GATT_EV",
+    "GATTC_EV",
+    "GMCS_EV",
+    "HAP_EV",
+    "IAS_EV",
+    "L2CAP_EV",
+    "MCP_EV",
+    "MESH_EV",
+    "MICP_EV",
+    "MICS_EV",
+    "OTS_EV",
+    "PACS_EV",
+    "PBP_EV",
+    "TBS_EV",
+    "TMAP_EV",
+    "VCP_EV",
+    "VCS_EV",
+    "VOCS_EV",
+]

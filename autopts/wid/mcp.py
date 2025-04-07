@@ -14,14 +14,11 @@
 #
 
 import logging
-import random
 import re
-import time
 
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp, defs
 from autopts.pybtp.types import WIDParams
-
 
 log = logging.debug
 

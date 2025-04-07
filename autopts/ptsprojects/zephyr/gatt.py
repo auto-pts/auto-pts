@@ -66,10 +66,13 @@ def verify_gatt_sr_gpa_bv_04_c(description):
     verification_pass = False
 
     verify = (
-        ("Attribute Handle = '0006'",
-         "Properties = '02'",
-         "Handle = '0007'",
-         "UUID = '%s'" % UUID.device_name),)
+        (
+            "Attribute Handle = '0006'",
+            "Properties = '02'",
+            "Handle = '0007'",
+            f"UUID = '{UUID.device_name}'",
+        ),
+    )
 
     for verify_tuple in verify:
         logging.debug("tuple to verify %r", verify_tuple)

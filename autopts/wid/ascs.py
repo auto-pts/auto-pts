@@ -21,7 +21,6 @@ from autopts.pybtp import btp
 from autopts.pybtp.types import WIDParams
 from autopts.wid.bap import create_lc3_ltvs_bytes
 
-
 log = logging.debug
 
 

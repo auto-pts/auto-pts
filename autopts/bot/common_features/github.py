@@ -53,7 +53,7 @@ def update_sources(repo_path, remote, branch, stash_changes=False):
         repo.git.stash('--include-untracked')
 
     repo.git.fetch(remote)
-    repo.git.checkout('{}/{}'.format(remote, branch))
+    repo.git.checkout(f'{remote}/{branch}')
 
     return describe_repo(repo_path)
 

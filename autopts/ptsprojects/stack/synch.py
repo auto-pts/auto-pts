@@ -19,7 +19,6 @@ from time import sleep
 
 from autopts.utils import ResultWithFlag
 
-
 log = logging.debug
 
 
@@ -144,10 +143,9 @@ class Synch:
         # Remove the synch element
         try:
             self._synch_table.remove(synch_elem)
-        except:
+        except ValueError:
             # Already cleaned up by other thread
             pass
-
         return None
 
     def cancel_synch(self):

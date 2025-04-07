@@ -21,63 +21,19 @@ import struct
 from autopts.ptsprojects.stack import GattCharacteristic, get_stack
 from autopts.pybtp import defs
 from autopts.pybtp.btp.btp import (
-    CONTROLLER_INDEX,
     add_to_verify_values,
     btp2uuid,
     btp_hdr_check,
     clear_verify_values,
     extend_verify_values,
-)
-from autopts.pybtp.btp.btp import get_iut_method as get_iut
-from autopts.pybtp.btp.btp import (
     get_verify_values,
 )
+from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.btp.gap import gap_wait_for_connection
+from autopts.pybtp.common import gatt_cl
 from autopts.pybtp.types import Perm, addr2btp_ba
 
-
-GATTC = {
-    "read_supp_cmds": (defs.BTP_SERVICE_ID_GATTC,
-                       defs.BTP_GATTC_CMD_READ_SUPPORTED_COMMANDS,
-                       defs.BTP_INDEX_NONE, ""),
-    "exchange_mtu": (defs.BTP_SERVICE_ID_GATTC,
-                     defs.BTP_GATTC_CMD_EXCHANGE_MTU,
-                     CONTROLLER_INDEX),
-    "disc_all_prim": (defs.BTP_SERVICE_ID_GATTC, defs.BTP_GATTC_CMD_DISC_ALL_PRIM,
-                      CONTROLLER_INDEX),
-    "disc_prim_uuid": (defs.BTP_SERVICE_ID_GATTC, defs.BTP_GATTC_CMD_DISC_PRIM_UUID,
-                       CONTROLLER_INDEX),
-    "find_included": (defs.BTP_SERVICE_ID_GATTC, defs.BTP_GATTC_CMD_FIND_INCLUDED,
-                      CONTROLLER_INDEX),
-    "disc_all_chrc": (defs.BTP_SERVICE_ID_GATTC, defs.BTP_GATTC_CMD_DISC_ALL_CHRC,
-                      CONTROLLER_INDEX),
-    "disc_chrc_uuid": (defs.BTP_SERVICE_ID_GATTC, defs.BTP_GATTC_CMD_DISC_CHRC_UUID,
-                       CONTROLLER_INDEX),
-    "disc_all_desc": (defs.BTP_SERVICE_ID_GATTC, defs.BTP_GATTC_CMD_DISC_ALL_DESC,
-                      CONTROLLER_INDEX),
-    "read": (defs.BTP_SERVICE_ID_GATTC, defs.BTP_GATTC_CMD_READ, CONTROLLER_INDEX),
-    "read_uuid": (defs.BTP_SERVICE_ID_GATTC, defs.BTP_GATTC_CMD_READ_UUID,
-                  CONTROLLER_INDEX),
-    "read_long": (defs.BTP_SERVICE_ID_GATTC, defs.BTP_GATTC_CMD_READ_LONG,
-                  CONTROLLER_INDEX),
-    "read_multiple": (defs.BTP_SERVICE_ID_GATTC, defs.BTP_GATTC_CMD_READ_MULTIPLE,
-                      CONTROLLER_INDEX),
-    "write_without_rsp": (defs.BTP_SERVICE_ID_GATTC,
-                          defs.BTP_GATTC_CMD_WRITE_WITHOUT_RSP, CONTROLLER_INDEX),
-    "signed_write": (defs.BTP_SERVICE_ID_GATTC,
-                     defs.BTP_GATTC_CMD_SIGNED_WRITE_WITHOUT_RSP, CONTROLLER_INDEX),
-    "write": (defs.BTP_SERVICE_ID_GATTC, defs.BTP_GATTC_CMD_WRITE, CONTROLLER_INDEX),
-    "write_long": (defs.BTP_SERVICE_ID_GATTC, defs.BTP_GATTC_CMD_WRITE_LONG,
-                   CONTROLLER_INDEX),
-    "write_reliable": (defs.BTP_SERVICE_ID_GATTC, defs.BTP_GATTC_CMD_WRITE_RELIABLE,
-                       CONTROLLER_INDEX),
-    "cfg_notify": (defs.BTP_SERVICE_ID_GATTC, defs.BTP_GATTC_CMD_CFG_NOTIFY,
-                   CONTROLLER_INDEX),
-    "cfg_indicate": (defs.BTP_SERVICE_ID_GATTC, defs.BTP_GATTC_CMD_CFG_INDICATE,
-                     CONTROLLER_INDEX),
-    "read_multiple_var": (defs.BTP_SERVICE_ID_GATTC, defs.BTP_GATTC_CMD_READ_MULTIPLE_VAR,
-                          CONTROLLER_INDEX),
-}
+GATTC = gatt_cl
 
 
 def gatt_cl_mtu_exchanged_ev_(gatt_cl, data, data_len):
@@ -105,7 +61,7 @@ def gatt_cl_dec_svc_attr(data):
     hdr_len = struct.calcsize(hdr)
 
     start_hdl, end_hdl, uuid_len = struct.unpack_from(hdr, data)
-    (uuid,) = struct.unpack_from('%ds' % uuid_len, data, hdr_len)
+    (uuid,) = struct.unpack_from(f"{uuid_len}s", data, hdr_len)
     uuid = btp2uuid(uuid_len, uuid)
 
     return (start_hdl, end_hdl, uuid), hdr_len + uuid_len
@@ -144,7 +100,7 @@ def gatt_cl_dec_chrc_attr(data):
     hdr_len = struct.calcsize(hdr)
 
     chrc_hdl, val_hdl, props, uuid_len = struct.unpack_from(hdr, data)
-    (uuid,) = struct.unpack_from('%ds' % uuid_len, data, hdr_len)
+    (uuid,) = struct.unpack_from(f"{uuid_len}s", data, hdr_len)
     uuid = btp2uuid(uuid_len, uuid)
 
     return (chrc_hdl, val_hdl, props, uuid), hdr_len + uuid_len
@@ -164,7 +120,7 @@ def gatt_cl_dec_desc_attr(data):
     hdr_len = struct.calcsize(hdr)
 
     hdl, uuid_len = struct.unpack_from(hdr, data)
-    (uuid,) = struct.unpack_from('%ds' % uuid_len, data, hdr_len)
+    (uuid,) = struct.unpack_from(f"{uuid_len}s", data, hdr_len)
     uuid = btp2uuid(uuid_len, uuid)
 
     return (hdl, uuid), hdr_len + uuid_len
@@ -181,7 +137,7 @@ def gatt_cl_dec_disc_rsp(data, attr_type):
 
     """
     attrs_len = len(data) - 1
-    attr_cnt, attrs = struct.unpack('B%ds' % attrs_len, data)
+    attr_cnt, attrs = struct.unpack(f"B{attrs_len}s", data)
     attrs_list = []
     offset = 0
 
@@ -241,8 +197,8 @@ def gatt_cl_disc_all_prim_rsp_ev_(gatt_cl, data, data_len):
     logging.debug("%s %r", gatt_cl_disc_all_prim_rsp_ev_.__name__, svcs)
 
     for svc in svcs:
-        start_handle = "%04X" % (svc[0],)
-        end_handle = "%04X" % (svc[1],)
+        start_handle = f"{svc[0]:04X}"
+        end_handle = f"{svc[1]:04X}"
         uuid = svc[2].upper()
 
         # avoid repeated service uuid, it should be verified only once
@@ -278,9 +234,8 @@ def gatt_cl_disc_prim_uuid_rsp_ev_(gatt_cl, data, data_len):
 
 
     for svc in svcs:
-        start_handle = "%04X" % (svc[0],)
-        end_handle = "%04X" % (svc[1],)
-
+        start_handle = f"{svc[0]:04X}"
+        end_handle = f"{svc[1]:04X}"
         uuid = svc[2]
 
         # add hyphens to long uuid: 0000-1157-0000-0000-0123-4567-89AB-CDEF
@@ -315,9 +270,9 @@ def gatt_cl_find_incld_rsp_ev_(gatt_cl, data, data_len):
 
 
     for incl in incl_tuples:
-        att_handle = "%04X" % (incl[0][0],)
-        inc_svc_handle = "%04X" % (incl[1][0],)
-        end_grp_handle = "%04X" % (incl[1][1],)
+        att_handle = f"{incl[0][0]:04X}"
+        inc_svc_handle = f"{incl[1][0]:04X}"
+        end_grp_handle = f"{incl[1][1]:04X}"
         uuid = incl[1][2]
 
         gatt_cl.incl_svcs.append((att_handle,
@@ -430,7 +385,7 @@ def gatt_cl_disc_all_desc_rsp_ev_(gatt_cl, data, data_len):
     gatt_cl.dscs_cnt = char_cnt
 
     for desc in descs:
-        handle = "%04X" % (desc[0],)
+        handle = f"{desc[0]:04X}"
         uuid = desc[1]
         gatt_cl.dscs.append((handle, uuid))
 
@@ -454,7 +409,7 @@ def gatt_cl_read_rsp_ev_(gatt_cl, data, data_len):
 
     rp_data = data[struct.calcsize(fmt):]
 
-    (value,) = struct.unpack_from('%ds' % data_length, rp_data)
+    (value,) = struct.unpack_from(f"{data_length}s", rp_data)
 
     logging.debug("%s %r %r", gatt_cl_read_rsp_ev_.__name__, status, value)
 
@@ -481,7 +436,7 @@ def gatt_cl_read_uuid_rsp_ev_(gatt_cl, data, data_len):
         add_to_verify_values(att_rsp_str[status])
         return
 
-    data_fmt = '>H%ds' % value_length
+    data_fmt = f">H{value_length}s"
     tuple_len = struct.calcsize(data_fmt)
     tuple_data = data[struct.calcsize(fmt):]
     chrc_count = data_length // tuple_len
@@ -530,7 +485,7 @@ def gatt_cl_read_long_rsp_ev_(gatt_cl, data, data_len):
 
     rp_data = data[struct.calcsize(fmt):]
 
-    (value,) = struct.unpack_from('%ds' % data_length, rp_data)
+    (value,) = struct.unpack_from(f"{data_length}s", rp_data)
 
     logging.debug("%s %r %r", gatt_cl_read_long_rsp_ev_.__name__, status, value)
 
@@ -564,7 +519,7 @@ def gatt_cl_read_mult_rsp_ev_(gatt_cl, data, data_len):
         logging.debug("No data in response")
         return
 
-    (value, ) = struct.unpack_from('%ds' % data_length, rp_data)
+    (value,) = struct.unpack_from(f"{data_length}s", rp_data)
 
     logging.debug("%s %r %r", gatt_cl_read_mult_rsp_ev_.__name__, status, value)
 
@@ -598,7 +553,7 @@ def gatt_cl_read_mult_var_rsp_ev_(gatt_cl, data, data_len):
         logging.debug("Set verify values to: %r", get_verify_values())
         return
 
-    (value, ) = struct.unpack_from('%ds' % data_length, rp_data)
+    (value,) = struct.unpack_from(f"{data_length}s", rp_data)
 
     logging.debug("%s %r %r", gatt_cl_read_mult_rsp_ev_.__name__, status, value)
 
@@ -748,35 +703,6 @@ def gatt_cl_disc_prim_uuid(bd_addr_type, bd_addr, uuid):
     data_ba.extend(uuid_ba)
 
     iutctl.btp_socket.send(*GATTC['disc_prim_uuid'], data=data_ba)
-
-    gatt_cl_command_rsp_succ()
-
-
-def gatt_cl_find_included(bd_addr_type, bd_addr, start_hdl, end_hdl):
-    logging.debug("%s %r %r %r %r", gatt_cl_find_included.__name__,
-                  bd_addr_type, bd_addr, start_hdl, end_hdl)
-    iutctl = get_iut()
-
-    gap_wait_for_connection()
-
-    if isinstance(end_hdl, str):
-        end_hdl = int(end_hdl, 16)
-
-    if isinstance(start_hdl, str):
-        start_hdl = int(start_hdl, 16)
-
-    data_ba = bytearray()
-
-    bd_addr_ba = addr2btp_ba(bd_addr)
-    start_hdl_ba = struct.pack('H', start_hdl)
-    end_hdl_ba = struct.pack('H', end_hdl)
-
-    data_ba.extend(chr(bd_addr_type).encode('utf-8'))
-    data_ba.extend(bd_addr_ba)
-    data_ba.extend(start_hdl_ba)
-    data_ba.extend(end_hdl_ba)
-
-    iutctl.btp_socket.send(*GATTC['find_included'], data=data_ba)
 
     gatt_cl_command_rsp_succ()
 

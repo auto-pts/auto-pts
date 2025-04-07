@@ -45,7 +45,6 @@ from functools import partial
 from os.path import abspath, dirname
 from pathlib import Path
 from queue import Empty, Queue
-from time import sleep
 
 import pythoncom
 import serial.tools.list_ports
@@ -64,7 +63,6 @@ from autopts.utils import (
     ykush_set_usb_power,
 )
 from autopts.winutils import kill_all_processes
-
 
 logging = root_logging.getLogger('server')
 log = root_logging.debug
@@ -360,7 +358,7 @@ class SvrArgumentParser(argparse.ArgumentParser):
 
         for srv_port in arg.srv_port:
             if not 49152 <= srv_port <= 65535:
-                sys.exit("Invalid server port number=%s, expected range <49152,65535> " % (srv_port,))
+                sys.exit(f"Invalid server port number={srv_port}, expected range <49152,65535>")
 
         arg.superguard = 60 * arg.superguard
 
@@ -489,7 +487,7 @@ class Server(threading.Thread):
 
         c = wmi.WMI()
         for iface in c.Win32_NetworkAdapterConfiguration(IPEnabled=True):
-            print("Local IP address: %s DNS %r" % (iface.IPAddress, iface.DNSDomain))
+            print(f"Local IP address: {iface.IPAddress} DNS {iface.DNSDomain!r}")
 
         self.server_init()
 
@@ -524,7 +522,7 @@ class Server(threading.Thread):
             del self.server
             self.server = None
 
-        print("Serving on port {} ...".format(self._args.srv_port))
+        print(f"Serving on port {self._args.srv_port} ...")
 
         self.server = xmlrpc.server.SimpleXMLRPCServer(("", self._args.srv_port), allow_none=True)
         # These methods will be run in the XMLRPC context
