@@ -3,7 +3,6 @@ from pathlib import Path
 
 
 def run_tool(name: str, command: list[str], log_path: Path) -> int:
-    """Uruchamia narzędzie i zapisuje log do wskazanego pliku."""
     print(f"🔧 Running {name}...")
     with open(log_path, "w") as log_file:
         result = subprocess.run(
