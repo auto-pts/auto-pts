@@ -19,7 +19,9 @@ import logging
 import struct
 
 from autopts.pybtp import defs
-from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, get_iut_method as get_iut
+from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check
+from autopts.pybtp.btp.btp import get_iut_method as get_iut
+
 
 VCS = {
     "set_vol":(defs.BTP_SERVICE_ID_VCS, defs.BTP_VCS_CMD_SET_VOL,

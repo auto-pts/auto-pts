@@ -26,6 +26,7 @@ It generates a new workspace_sorted.pqw6 file.
 import sys
 import xml.etree.ElementTree as ET
 
+
 def sort_projects_by_name(xml_file):
     tree = ET.parse(xml_file)
     root = tree.getroot()

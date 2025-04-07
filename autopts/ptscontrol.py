@@ -33,24 +33,27 @@
 Cause of tight coupling with PTS, this module is Windows specific
 """
 
-import os
-import time
-import shutil
-import xmlrpc.client
 import ctypes
+import logging as root_logging
+import os
+import shutil
 import threading
+import time
+import xmlrpc.client
+from datetime import datetime
+from pathlib import Path
+
+import psutil
+import pythoncom
 import win32com.client
 import win32com.server.connect
 import win32com.server.util
-import pythoncom
-import psutil
-import logging as root_logging
-from datetime import datetime
-from pathlib import Path
+
 from autopts.ptsprojects import ptstypes
 from autopts.ptsprojects.ptstypes import E_FATAL_ERROR
-from autopts.utils import PTS_WORKSPACE_FILE_EXT, get_own_workspaces, count_script_instances, ResultWithFlag
+from autopts.utils import PTS_WORKSPACE_FILE_EXT, ResultWithFlag, count_script_instances, get_own_workspaces
 from autopts.winutils import get_pid_by_window_title, kill_all_processes
+
 
 logging = root_logging.getLogger('server')
 log = logging.debug

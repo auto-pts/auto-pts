@@ -14,16 +14,18 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
+import copy
 import logging
 import signal
 import sys
 import threading
 import time
+
 import schedule
-import copy
 
 from autopts.bot.common import get_absolute_module_path, load_module_from_path
-from autopts.utils import log_running_threads, have_admin_rights, set_global_end
+from autopts.utils import have_admin_rights, log_running_threads, set_global_end
+
 
 log = logging.debug
 

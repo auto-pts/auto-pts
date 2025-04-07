@@ -24,19 +24,20 @@ ipy ./tools/create-workspace.py ./workspaces/pts_file.pts ./workspaces
 
 """
 
+import argparse
+import fileinput
+import logging
 import os
 import re
 import sys
 import time
-import logging
-import argparse
-import fileinput
 
-import Interop.PTSControl as PTSControl
 import clr
+import Interop.PTSControl as PTSControl
 import System
 
 from autopts.ptsprojects import ptstypes
+
 
 # load the PTS interop assembly
 clr.AddReferenceToFile("Interop.PTSControl.dll")

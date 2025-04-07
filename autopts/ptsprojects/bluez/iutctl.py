@@ -14,14 +14,15 @@
 # more details.
 #
 
-import subprocess
 import logging
 import shlex
 import socket
+import subprocess
 
 from autopts.pybtp import defs
+from autopts.pybtp.iutctl_common import BTP_ADDRESS, BTPSocketSrv, BTPWorker
 from autopts.pybtp.types import BTPError
-from autopts.pybtp.iutctl_common import BTPSocketSrv, BTPWorker, BTP_ADDRESS
+
 
 log = logging.debug
 IUT = None

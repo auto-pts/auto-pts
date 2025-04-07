@@ -15,8 +15,8 @@
 # more details.
 #
 
-import sys
 import subprocess
+import sys
 
 
 def remove_paired_devices():

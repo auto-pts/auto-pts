@@ -18,11 +18,12 @@ import struct
 import time
 from binascii import hexlify
 
-from autopts.wid import generic_wid_hdl
+from autopts.ptsprojects.stack import get_stack
+from autopts.ptsprojects.testcase import MMI
 from autopts.pybtp import btp
 from autopts.pybtp.types import Perm, WIDParams
-from autopts.ptsprojects.testcase import MMI
-from autopts.ptsprojects.stack import get_stack
+from autopts.wid import generic_wid_hdl
+
 
 log = logging.debug
 

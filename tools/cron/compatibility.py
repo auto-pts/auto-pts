@@ -30,7 +30,8 @@ The rows have to be sorted so the first row after header contains the latest ver
 
 import subprocess
 import sys
-from os.path import dirname, abspath
+from os.path import abspath, dirname
+
 from dateutil import parser
 
 

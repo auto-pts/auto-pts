@@ -15,8 +15,9 @@
 
 import logging
 
-from autopts.wid import generic_wid_hdl
 from autopts.pybtp.types import WIDParams
+from autopts.wid import generic_wid_hdl
+
 
 log = logging.debug
 

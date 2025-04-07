@@ -12,14 +12,16 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
+import logging
 import os
 import sys
-import logging
 from datetime import timedelta
-from tools.cron.common import parse_yaml, catch_exceptions, load_config
+
 from autopts.client import run_or_not
 from autopts.ptsprojects.testcase_db import TestCaseTable
+from tools.cron.common import catch_exceptions, load_config, parse_yaml
 from tools.cron.remote_terminal import RemoteTerminalClientProxy
+
 
 log = logging.info
 

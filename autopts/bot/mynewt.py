@@ -24,10 +24,10 @@ from pathlib import Path
 
 from autopts import bot
 from autopts.bot.common import BuildAndFlashException
-from autopts.client import Client
-from autopts.ptsprojects.boards import get_build_and_flash, get_board_type
-from autopts.ptsprojects.mynewt.iutctl import get_iut, log
 from autopts.bot.common_features import report
+from autopts.client import Client
+from autopts.ptsprojects.boards import get_board_type, get_build_and_flash
+from autopts.ptsprojects.mynewt.iutctl import get_iut, log
 
 
 PROJECT_NAME = Path(__file__).stem

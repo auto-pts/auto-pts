@@ -16,14 +16,13 @@
 """GAP test cases"""
 import binascii
 
-from autopts.pybtp import btp
-from autopts.pybtp.types import Addr, IOCap, AdType, AdFlags, Prop, Perm, UUID, UriScheme
-from autopts.pybtp.types import L2CAPConnectionResponse
 from autopts.client import get_unique_name
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
-from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
 from autopts.ptsprojects.zephyr.gap_wid import gap_wid_hdl
+from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
+from autopts.pybtp import btp
+from autopts.pybtp.types import UUID, Addr, AdFlags, AdType, IOCap, L2CAPConnectionResponse, Perm, Prop, UriScheme
 
 
 class SVC:

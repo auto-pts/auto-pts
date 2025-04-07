@@ -16,13 +16,14 @@
 
 """AICS test cases"""
 
-from autopts.pybtp import btp
-from autopts.pybtp.types import Addr
 from autopts.client import get_unique_name
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.aics_wid import aics_wid_hdl
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
+from autopts.pybtp import btp
+from autopts.pybtp.types import Addr
+
 
 def set_pixits(ptses):
     """Setup AICS profile PIXITS for workspace. Those values are used for test

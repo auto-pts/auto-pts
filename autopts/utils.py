@@ -22,9 +22,10 @@ import sys
 import threading
 import traceback
 import xmlrpc.client
+from time import sleep
+
 import hid
 import psutil
-from time import sleep
 
 
 PTS_WORKSPACE_FILE_EXT = ".pqw6"

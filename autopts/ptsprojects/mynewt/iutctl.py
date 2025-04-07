@@ -13,23 +13,27 @@
 # more details.
 #
 
+import logging
+import os
+import shlex
 import socket
 import subprocess
-import logging
-import shlex
-import os
 import sys
+
 import serial
 
-from autopts.pybtp import defs, btp
 from autopts.ptsprojects.boards import Board, get_debugger_snr, tty_to_com
+from autopts.pybtp import btp, defs
+from autopts.pybtp.iutctl_common import BTP_ADDRESS, BTPSocketSrv, BTPWorker
 from autopts.pybtp.types import BTPError
-from autopts.pybtp.iutctl_common import BTPWorker, BTP_ADDRESS, BTPSocketSrv
-from autopts.rtt import RTTLogger, BTMON
+from autopts.rtt import BTMON, RTTLogger
+
 
 log = logging.debug
 MYNEWT = None
 import importlib
+
+
 IUT_LOG_FO = None
 SERIAL_BAUDRATE = 115200
 CLI_SUPPORT = ['tty']

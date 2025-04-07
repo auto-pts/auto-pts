@@ -16,7 +16,7 @@
 import logging
 
 from autopts.ptsprojects.stack.common import Property, wait_for_event
-from autopts.pybtp.types import AdType, IOCap, Addr
+from autopts.pybtp.types import Addr, AdType, IOCap
 
 
 class ConnParams:

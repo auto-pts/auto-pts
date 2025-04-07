@@ -22,16 +22,18 @@ import os
 import sys
 import time
 import traceback
-import serial
 from pathlib import Path
 
+import serial
+
 from autopts import bot
-from autopts.ptsprojects.zephyr import ZEPHYR_PROJECT_URL
 from autopts import client as autoptsclient
-from autopts.bot.common import BotConfigArgs, BotClient, BuildAndFlashException
-from autopts.ptsprojects.boards import tty_to_com, get_build_and_flash, get_board_type
-from autopts.ptsprojects.zephyr.iutctl import get_iut, log
+from autopts.bot.common import BotClient, BotConfigArgs, BuildAndFlashException
 from autopts.bot.common_features import report
+from autopts.ptsprojects.boards import get_board_type, get_build_and_flash, tty_to_com
+from autopts.ptsprojects.zephyr import ZEPHYR_PROJECT_URL
+from autopts.ptsprojects.zephyr.iutctl import get_iut, log
+
 
 PROJECT_NAME = Path(__file__).stem
 

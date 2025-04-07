@@ -26,20 +26,22 @@ If last_bad_commit is empty, then takes HEAD commit.
 """
 import copy
 import importlib
+import mimetypes
 import os
 import re
 import subprocess
 import sys
 import time
 import traceback
-import mimetypes
-from os.path import dirname, abspath
+from os.path import abspath, dirname
+
 
 AUTOPTS_REPO = dirname(dirname(dirname(abspath(__file__))))
 sys.path.insert(0, AUTOPTS_REPO)
 
-from autopts.bot.common_features.mail import send_mail
 from autopts.bot.common import get_absolute_module_path, load_module_from_path
+from autopts.bot.common_features.mail import send_mail
+
 
 mimetypes.add_type('text/plain', '.log')
 

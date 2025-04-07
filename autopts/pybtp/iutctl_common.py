@@ -13,24 +13,23 @@
 # more details.
 #
 
+import binascii
 import logging
 import os
 import queue
+import re
 import socket
 import sys
 import threading
-import binascii
-import re
-
-
 from abc import abstractmethod
+from datetime import datetime
 
 from autopts.pybtp import defs
 from autopts.pybtp.defs import *
-from datetime import datetime
+from autopts.pybtp.parser import HDR_LEN, dec_data, dec_hdr, enc_frame, repr_hdr
 from autopts.pybtp.types import BTPError
-from autopts.pybtp.parser import enc_frame, dec_hdr, repr_hdr, dec_data, HDR_LEN
 from autopts.utils import get_global_end, raise_on_global_end
+
 
 log = logging.debug
 

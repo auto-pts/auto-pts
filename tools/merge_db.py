@@ -18,10 +18,11 @@
 Usage:
 $ python ./merge_db.py path/to/input1.db path/to/input2.db ... -o path/to/output.db
 """
-import sqlite3
 import argparse
-import sys
 import os
+import sqlite3
+import sys
+
 
 DATABASE_FILE = 'Merge_database.db'
 

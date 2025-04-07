@@ -14,18 +14,18 @@
 #
 
 """HAP test cases"""
-from enum import IntEnum
 import struct
+from enum import IntEnum
 
-from autopts.pybtp import btp
 from autopts.client import get_unique_name
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.hap_wid import hap_wid_hdl
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
+from autopts.pybtp import btp
+from autopts.pybtp.defs import HAS_TSPX_available_presets_indices, HAS_TSPX_unavailable_presets_indices
 from autopts.pybtp.types import Addr, AdType, Context
-from autopts.pybtp.defs import HAS_TSPX_available_presets_indices, \
-                               HAS_TSPX_unavailable_presets_indices
+
 
 # Options aligned with the overlay-le-audio.conf options
 BTP_HAP_HA_OPTS_DEFAULT = (btp.defs.HAP_HA_OPT_PRESETS_DYNAMIC |

@@ -15,21 +15,22 @@
 
 """PTS test case python implementation"""
 
-import shlex
-import os
-import subprocess
-import re
-import sys
-import time
-import logging
 import datetime
 import errno
+import logging
+import os
 import queue
+import re
+import shlex
+import subprocess
+import sys
+import time
 
+from ..utils import ResultWithFlag, get_global_end
+from . import ptstypes
 from .stack import get_stack
 from .utils import exec_iut_cmd
-from . import ptstypes
-from ..utils import get_global_end, ResultWithFlag
+
 
 log = logging.debug
 

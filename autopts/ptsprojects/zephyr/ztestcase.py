@@ -15,8 +15,8 @@
 
 """Test case that manages Zephyr IUT"""
 
-from autopts.ptsprojects.testcase import TestCaseLT1, TestCaseLT2, TestCaseLT3, TestFunc, TestFuncCleanUp
 from autopts.ptsprojects.stack import get_stack
+from autopts.ptsprojects.testcase import TestCaseLT1, TestCaseLT2, TestCaseLT3, TestFunc, TestFuncCleanUp
 from autopts.ptsprojects.zephyr.iutctl import get_iut
 
 

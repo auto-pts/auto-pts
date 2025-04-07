@@ -23,7 +23,7 @@ def fix_style():
     isort_log = logs_dir / "isort_fix.log"
 
     # ruff_code = run_tool("Ruff (fix)", ["poetry", "run", "ruff", "check", ".", "--fix"], ruff_log)
-    isort_code = run_tool("isort (fix)", ["poetry", "run", "isort", ".", "--diff", "--verbose"], isort_log)
+    isort_code = run_tool("isort (fix)", ["poetry", "run", "isort", "."], isort_log)
 
     print("\n Summary:")
     # print(f"• Ruff exit code:  {ruff_code}")
@@ -50,3 +50,18 @@ def check_isort():
         print("\n isort check passed.")
     else:
         print("\n isort check find a errors. See log for details.")
+
+if __name__ == "__main__":
+    import sys
+
+    if len(sys.argv) < 2:
+        print("Use: python poetry_tools.py [check|fix]")
+        sys.exit(1)
+
+    if sys.argv[1] == "check":
+        check_isort()
+    elif sys.argv[1] == "fix":
+        fix_style()
+    else:
+        print(f"Unknow command: {sys.argv[1]}")
+        sys.exit(1)

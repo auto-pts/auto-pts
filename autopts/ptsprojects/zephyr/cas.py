@@ -15,12 +15,12 @@
 
 """CAS test cases"""
 
-from autopts.pybtp import btp
 from autopts.client import get_unique_name
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.cas_wid import cas_wid_hdl
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
+from autopts.pybtp import btp
 from autopts.pybtp.types import Addr
 
 

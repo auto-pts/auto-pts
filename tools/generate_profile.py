@@ -14,7 +14,8 @@
 #
 
 from datetime import datetime
-from os.path import dirname, abspath, basename
+from os.path import abspath, basename, dirname
+
 
 AUTOPTS_REPO = dirname(dirname(abspath(__file__)))
 print(AUTOPTS_REPO)

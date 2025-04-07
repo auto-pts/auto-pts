@@ -15,18 +15,20 @@
 
 """Wrapper around btp messages. The functions are added as needed."""
 
-from collections import namedtuple
-from uuid import UUID
 import logging
+import math
 import re
 import struct
-import math
+from collections import namedtuple
+from uuid import UUID
 
-from autopts.pybtp.common import supported_svcs_cmds, reg_unreg_service
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import MMI
-from .. import defs
+from autopts.pybtp.common import reg_unreg_service, supported_svcs_cmds
 from autopts.pybtp.types import BTPError, att_rsp_str
+
+from .. import defs
+
 
 #  get IUT global method from iutctl
 get_iut = None
@@ -683,35 +685,38 @@ def init(get_iut_method):
     set_event_handler(event_handler)
 
 
-from .gap import GAP_EV
-from .gatt import GATT_EV
-from .l2cap import L2CAP_EV
-from .mesh import MESH_EV
-from .gatt_cl import GATTC_EV
+from autopts.pybtp.iutctl_common import set_event_handler
+
 from .aics import AICS_EV
-from .vocs import VOCS_EV
-from .vcs import VCS_EV
-from .ias import IAS_EV
-from .pacs import PACS_EV
 from .ascs import ASCS_EV
 from .bap import BAP_EV
-from .core import CORE_EV
-from .micp import MICP_EV
-from .mics import MICS_EV
+from .cap import CAP_EV
 from .ccp import CCP_EV
-from .vcp import VCP_EV
-from .mcp import MCP_EV
+from .core import CORE_EV
+from .csip import CSIP_EV
+from .gap import GAP_EV
+from .gatt import GATT_EV
+from .gatt_cl import GATTC_EV
 from .gmcs import GMCS_EV
 from .hap import HAP_EV
-from .cap import CAP_EV
-from .csip import CSIP_EV
+from .ias import IAS_EV
+from .l2cap import L2CAP_EV
+from .mcp import MCP_EV
+from .mesh import MESH_EV
+from .micp import MICP_EV
+from .mics import MICS_EV
+from .ots import OTS_EV
+from .pacs import PACS_EV
+from .pbp import PBP_EV
 from .tbs import TBS_EV
 from .tmap import TMAP_EV
-from .ots import OTS_EV
-from .pbp import PBP_EV
+from .vcp import VCP_EV
+from .vcs import VCS_EV
+from .vocs import VOCS_EV
+
+
 # GENERATOR append 2
 
-from autopts.pybtp.iutctl_common import set_event_handler
 
 
 def event_handler(hdr, data):
