@@ -24,7 +24,7 @@ from autopts.pybtp.btp import lt2_addr_get, lt2_addr_type_get, lt3_addr_get, lt3
 from autopts.pybtp.btp.cap import announcements
 from autopts.pybtp.btp.pacs import pacs_set_available_contexts
 from autopts.pybtp.defs import AUDIO_METADATA_CCID_LIST, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS
-from autopts.pybtp.types import Addr, ASCSState, BTPError, PaSyncState, WIDParams
+from autopts.pybtp.types import Addr, ASCSState, BTPError, WIDParams
 from autopts.wid import generic_wid_hdl
 from autopts.wid.bap import (
     BAS_CONFIG_SETTINGS,
@@ -201,7 +201,7 @@ def hdl_wid_202(_: WIDParams):
         stack = get_stack()
         # Check whether streaming was strated
         ev = stack.ascs.wait_ascs_ase_state_changed_ev(addr_type, addr, ase_id, ASCSState.STREAMING, 200)
-        return not ev is None
+        return ev is not None
 
     return False
 

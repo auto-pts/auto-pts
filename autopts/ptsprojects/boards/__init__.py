@@ -83,7 +83,7 @@ class Board:
         else:
             try:
                 return Jlink(self.iutctl.debugger_snr, self.iutctl.device_core).reset_command
-            except Exception as e:
+            except Exception:
                 raise Exception("Board name %s is not supported! and failed to reset with Jlink." % self.name)
 
 

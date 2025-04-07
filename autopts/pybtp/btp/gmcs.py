@@ -14,7 +14,6 @@
 #
 
 """Wrapper around btp messages. The functions are added as needed."""
-import binascii
 import logging
 import struct
 

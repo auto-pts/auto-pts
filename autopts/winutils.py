@@ -30,10 +30,7 @@
 #
 
 """Windows utilities"""
-import ctypes
 import logging
-import os
-import sys
 
 import win32gui
 import win32process

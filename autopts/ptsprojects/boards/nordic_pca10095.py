@@ -58,7 +58,7 @@ def build_and_flash(project_path, board, overlay=None, debugger_snr=None):
     check_call('rm -rf bin/'.split(), cwd=project_path)
     check_call(f'rm -rf targets/{board}_boot/'.split(), cwd=project_path)
     check_call(f'rm -rf targets/{board}_net_boot/'.split(), cwd=project_path)
-    check_call(f'rm -rf targets/bttester/'.split(), cwd=project_path)
+    check_call('rm -rf targets/bttester/'.split(), cwd=project_path)
 
     check_call(f'newt target create {board}_boot'.split(), cwd=project_path)
     check_call(f'newt target create {board}_net_boot'.split(), cwd=project_path)
@@ -77,7 +77,7 @@ def build_and_flash(project_path, board, overlay=None, debugger_snr=None):
 
     check_call(f'newt target set bttester bsp=@apache-mynewt-core/hw/bsp/{board}'
                .split(), cwd=project_path)
-    check_call(f'newt target set bttester app=@apache-mynewt-nimble/apps/bttester'
+    check_call('newt target set bttester app=@apache-mynewt-nimble/apps/bttester'
                .split(), cwd=project_path)
 
     config = 'NRF5340_EMBED_NET_CORE=1:BSP_NRF5340_NET_ENABLE=1:MYNEWT_DOWNLOADER=nrfjprog'

@@ -45,7 +45,6 @@ from functools import partial
 from os.path import abspath, dirname
 from pathlib import Path
 from queue import Empty, Queue
-from time import sleep
 
 import pythoncom
 import serial.tools.list_ports

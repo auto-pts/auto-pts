@@ -13,7 +13,6 @@
 # more details.
 #
 
-import struct
 
 from autopts.client import get_unique_name
 from autopts.ptsprojects.stack import get_stack

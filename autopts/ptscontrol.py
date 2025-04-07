@@ -537,7 +537,7 @@ class PyPTS:
                 if exception >= args.dongle_init_retry:
                     # This stops PTS from restarting indefinitely when PTS
                     # dongle is unplugged
-                    print(f"Please check your dongle connection! Aborting")
+                    print("Please check your dongle connection! Aborting")
                     kill_all_processes('PTS.exe')
                     self.terminate()
                     break
@@ -597,8 +597,8 @@ class PyPTS:
         self._ready = False
 
         if self._pts_logger:
-            log(f"Closing PTSLogger")
-            log(f"Closing PTSSender")
+            log("Closing PTSLogger")
+            log("Closing PTSSender")
             # No new calls to the PTS callbacks after closing
             self._pts_logger.close()
             self._pts_sender.close()
@@ -641,9 +641,9 @@ class PyPTS:
                     self._pts_proc = None
             else:
                 try:
-                    log(f"Terminating with ExitPTS command")
+                    log("Terminating with ExitPTS command")
                     self._pts.ExitPTS()
-                except Exception as e:
+                except Exception:
                     # The COM timeout exception is a valid behavior here,
                     # since the PTS closes itself within ExitPTS(). It takes
                     # exactly 5 seconds to receive the exception, because
@@ -1094,7 +1094,7 @@ class PyPTS:
             device_to_connect = selected_device.replace(r'InUse', r'Free')
         else:
             # The selected_device should be empty string here.
-            log(f'First random dongle selection')
+            log('First random dongle selection')
 
         if device_to_connect and device_to_connect == selected_device.replace(r'InUse', r'Free'):
             log(f'PTS already connected to the right dongle: {device_to_connect}')
@@ -1122,7 +1122,7 @@ class PyPTS:
                 self._disconnect_dongle()
 
         if not address:
-            raise Exception(f'Failed to connect dongle after 4 iterations')
+            raise Exception('Failed to connect dongle after 4 iterations')
 
         return address
 

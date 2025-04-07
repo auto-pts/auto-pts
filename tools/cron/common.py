@@ -68,7 +68,7 @@ from tools.merge_db import TestCaseTable
 
 
 if sys.platform == 'win32':
-    import wmi
+    pass
 
 log = logging.info
 CRON_CFG = {}
@@ -449,7 +449,7 @@ def start_vm(config, checkout_repos=False):
 
         while True:
             try:
-                log(client.run_command(f"echo Connected", None))
+                log(client.run_command("echo Connected", None))
                 break
             except BaseException:
                 if timeout_flag.is_set():
@@ -492,13 +492,13 @@ def close_vm(config):
                                        ) as client:
             log(client.run_command(config['vm']['vm_close_cmd'], None))
         sleep(config['vm']['max_close_time'])
-    except BaseException as e:
+    except BaseException:
         log(f"Remote server at IP {config['remote_machine']['terminal_ip']} "
             f"port {config['remote_machine']['terminal_port']} is not reachable")
 
 
 def close_remote_autoptsserver(config):
-    log(f"Closing remote autoptsserver and PTS")
+    log("Closing remote autoptsserver and PTS")
     try:
         config = config['cron']['remote_machine']
         with RemoteTerminalClientProxy(config['terminal_ip'],
@@ -508,7 +508,7 @@ def close_remote_autoptsserver(config):
             client.terminate_process(None, 'PTS', None)
             client.terminate_process(None, 'FTS', None)
             client.terminate_process(None, None, 'autoptsserver.py')
-    except BaseException as e:
+    except BaseException:
         log(f"Remote server at IP {config['terminal_ip']} port {config['terminal_port']} is not reachable")
 
 

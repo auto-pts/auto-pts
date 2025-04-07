@@ -19,7 +19,7 @@ import time
 
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp
-from autopts.pybtp.types import UUID, MeshVals, Perm, WIDParams
+from autopts.pybtp.types import MeshVals, Perm, WIDParams
 
 
 # Mesh ATS ver. 1.0

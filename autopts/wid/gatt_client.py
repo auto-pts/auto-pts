@@ -16,25 +16,14 @@
 
 import logging
 import re
-import socket
-import struct
-from binascii import hexlify
-from random import randint
 from time import sleep
 
 from autopts.ptsprojects.stack import (
-    GattCharacteristic,
-    GattCharacteristicDescriptor,
-    GattDB,
-    GattPrimary,
-    GattSecondary,
-    GattService,
-    GattServiceIncluded,
     get_stack,
 )
 from autopts.ptsprojects.testcase import MMI
 from autopts.pybtp import btp
-from autopts.pybtp.types import UUID, GATTErrorCodes, IOCap, Perm, Prop, WIDParams
+from autopts.pybtp.types import GATTErrorCodes, IOCap, WIDParams
 from autopts.wid import generic_wid_hdl
 
 

@@ -92,7 +92,7 @@ def start_server():
     while True:
         try:
             server.handle_request()
-        except KeyboardInterrupt as e:
+        except KeyboardInterrupt:
             return
         except BaseException as e:
             traceback.print_exception(e)

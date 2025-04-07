@@ -13,12 +13,8 @@
 # more details.
 #
 
-import binascii
 import logging
 import re
-import struct
-import sys
-import time
 from enum import IntEnum, IntFlag
 
 from autopts.ptsprojects.stack import get_stack

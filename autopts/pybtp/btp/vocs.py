@@ -19,7 +19,6 @@ import binascii
 import logging
 import struct
 
-from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import defs
 from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check
 from autopts.pybtp.btp.btp import get_iut_method as get_iut

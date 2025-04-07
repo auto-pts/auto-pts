@@ -15,7 +15,6 @@
 #
 
 """CAP test cases"""
-import struct
 
 from autopts.client import get_unique_name
 from autopts.ptsprojects.stack import SynchPoint, get_stack
@@ -24,7 +23,7 @@ from autopts.ptsprojects.zephyr.cap_wid import cap_wid_hdl
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
 from autopts.pybtp import btp
 from autopts.pybtp.btp.cap import announcements
-from autopts.pybtp.defs import PACS_AUDIO_CONTEXT_TYPE_CONVERSATIONAL, PACS_AUDIO_CONTEXT_TYPE_MEDIA
+from autopts.pybtp.defs import PACS_AUDIO_CONTEXT_TYPE_CONVERSATIONAL
 from autopts.pybtp.types import Addr, Context
 from autopts.utils import ResultWithFlag
 

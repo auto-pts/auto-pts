@@ -261,7 +261,7 @@ def schedule_pr_job(cron, pr_info, job_config):
                 estimations += (f'<details><summary>Test cases skipped due to limit, count: {len(skipped_test_cases)}</summary>'
                                 f'{"<br>".join(skipped_test_cases)}</details>\n')
         else:
-            estimations = f', test case count: estimation not available'
+            estimations = ', test case count: estimation not available'
 
         job_config.pop('test_case_limit')
         job_config['estimated_duration'] = est_duration

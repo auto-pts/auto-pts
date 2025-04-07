@@ -14,11 +14,8 @@
 #
 
 import logging
-import re
-import struct
 import sys
 
-from autopts.pybtp import btp
 from autopts.pybtp.types import WIDParams
 from autopts.wid.micp import micp_wid_hdl as gen_wid_hdl
 

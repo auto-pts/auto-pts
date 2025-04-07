@@ -29,7 +29,6 @@ import shutil
 import signal
 import socket
 import sys
-import tempfile
 import threading
 import time
 import traceback
@@ -129,7 +128,7 @@ class FakeProxy:
     Usefull when testing code locally and auto-pts server is not needed"""
 
     def __init__(self):
-        self.info = f"mock"
+        self.info = "mock"
 
     def __getattr__(self, item):
         return '_generic'
@@ -472,7 +471,7 @@ def init_pts_thread_entry(proxy, args, exceptions, finish_count):
         raise Exception("Failed to restart PTS!")
 
     err = proxy.callback.get_result('restart_pts', timeout=args.max_server_restart_time)
-    if err != True:
+    if not err:
         raise Exception(f"Failed to restart PTS, err {err}")
 
     proxy.set_call_timeout(TEST_CASE_TIMEOUT_MS)  # milliseconds
@@ -1052,9 +1051,11 @@ class LTThread(InterruptableThread):
             except BaseException as test_case_error:
                 try:
                     self.locked = self.interrupt_lock.acquire(blocking=False)
-                except:
-                    # In case KeyboardInterrupt was injected
+                except KeyboardInterrupt:
+                    # In case KeyboardInterrupt was injected, we deliberately ignore it here
                     pass
+                except Exception as e:
+                    log(f"Unexpected error while acquiring interrupt lock: {e}")
 
                 if isinstance(test_case_error, threading.BrokenBarrierError):
                     log(f'SYNCH: Cancelled waiting at a barrier, tc {test_case.name}')
@@ -1286,7 +1287,7 @@ def run_test_cases(ptses, test_case_instances, args, stats, **kwargs):
 
     approx = ''
     if stats.est_duration:
-        approx = f" in approximately: " + str(datetime.timedelta(seconds=stats.est_duration))
+        approx = " in approximately: " + str(datetime.timedelta(seconds=stats.est_duration))
     print(f"Number of test cases to run: {stats.num_test_cases}{approx}")
 
     for test_case in test_cases:
@@ -1577,7 +1578,7 @@ def run_recovery(args, ptses):
                     pts.recover_pts()
                     req_sent = True
                     err = pts.callback.get_result('recover_pts', timeout=args.max_server_restart_time)
-                    if err == True:
+                    if err:
                         log('PTS recovered')
                         break
 

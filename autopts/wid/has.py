@@ -15,7 +15,6 @@
 
 import logging
 import re
-import sys
 from enum import IntFlag
 
 from autopts.ptsprojects.stack import get_stack

@@ -14,7 +14,6 @@
 #
 
 import logging
-import socket
 
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import MMI

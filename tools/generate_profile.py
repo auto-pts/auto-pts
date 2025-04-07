@@ -49,9 +49,9 @@ def create_file(path, content):
         file.write(content)
 
 
-project_name = input('Enter project name (e.g. zephyr): ').strip() or f'zephyr'
+project_name = input('Enter project name (e.g. zephyr): ').strip() or 'zephyr'
 project_path = f'{AUTOPTS_REPO}/autopts/ptsprojects/{project_name}'
-profile_name = input('Enter profile name: ').strip() or f'profile'
+profile_name = input('Enter profile name: ').strip() or 'profile'
 profile_id = input('Enter new BTP service ID: ').strip() or 0xff
 code_owner = input('Enter code owner name (e.g. Codecoup): ').strip() or 'Codecoup'
 profile_name_lower = profile_name.lower()

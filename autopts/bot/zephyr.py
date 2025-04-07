@@ -17,7 +17,6 @@
 #
 
 import importlib
-import logging
 import os
 import sys
 import time
@@ -108,11 +107,11 @@ class ZephyrBotClient(BotClient):
 
     def apply_config(self, args, config, value):
         pre_overlay = value.get('pre_overlay', [])
-        if type(pre_overlay) == str:
+        if isinstance(pre_overlay, str):
             pre_overlay = [pre_overlay]
 
         post_overlay = value.get('post_overlay', [])
-        if type(post_overlay) == str:
+        if isinstance(pre_overlay, str):
             post_overlay = [post_overlay]
 
         configs = []

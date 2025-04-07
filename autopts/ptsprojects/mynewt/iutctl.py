@@ -31,7 +31,6 @@ from autopts.rtt import BTMON, RTTLogger
 
 log = logging.debug
 MYNEWT = None
-import importlib
 
 
 IUT_LOG_FO = None

@@ -16,7 +16,6 @@
 #
 import logging
 import os
-import sys
 
 from autopts.bot.common import check_call
 from autopts.ptsprojects.boards import Jlink

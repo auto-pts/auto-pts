@@ -14,7 +14,6 @@
 #
 
 """Wrapper around btp messages. The functions are added as needed."""
-import binascii
 import logging
 import struct
 
@@ -22,7 +21,7 @@ from autopts.pybtp import defs
 from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.btp.btp import pts_addr_get, pts_addr_type_get
-from autopts.pybtp.types import BTPError, addr2btp_ba
+from autopts.pybtp.types import addr2btp_ba
 
 
 TBS = {

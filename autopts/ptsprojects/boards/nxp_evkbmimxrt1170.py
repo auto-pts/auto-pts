@@ -15,8 +15,6 @@
 # more details.
 #
 import logging
-import os
-import sys
 
 from autopts.ptsprojects.boards import Jlink
 

@@ -16,7 +16,6 @@ import logging
 import re
 import socket
 import struct
-import threading
 from binascii import hexlify
 from time import sleep
 
@@ -1701,7 +1700,7 @@ def hdl_wid_130(params: WIDParams):
 
     # This is needed until ES-27410 is incorporated
     if params.test_case_name in ['GATT/SR/GAI/BV-01-C', 'GATT/SR/GAN/BV-01-C']:
-       btp.gap_set_bondable_off();
+       btp.gap_set_bondable_off()
 
     return True
 

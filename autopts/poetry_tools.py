@@ -18,18 +18,18 @@ def fix_style():
     logs_dir = Path("./logs/pep8")
     logs_dir.mkdir(parents=True, exist_ok=True)
 
-    # ruff_log = logs_dir / "ruff_fix.log"
+    ruff_log = logs_dir / "ruff_fix.log"
     isort_log = logs_dir / "isort_fix.log"
 
-    # ruff_code = run_tool("Ruff (fix)", ["poetry", "run", "ruff", "check", ".", "--fix"], ruff_log)
+    ruff_code = run_tool("ruff (fix)", ["poetry", "run", "ruff", "check", ".", "--fix"], ruff_log)
     isort_code = run_tool("isort (fix)", ["poetry", "run", "isort", "."], isort_log)
 
     print("\n Summary:")
-    # print(f"• Ruff exit code:  {ruff_code}")
+    print(f"• ruff exit code:  {ruff_code}")
     print(f"• isort exit code: {isort_code}")
 
-    # if isort_code == 0 and ruff_code == 0:
-    if isort_code == 0:
+    if isort_code == 0 and ruff_code == 0:
+    # if isort_code == 0:
         print("\n All formatting and style fixes applied successfully!")
     else:
         print("\n Some tools reported issues. See logs in logs/pep8/ for details.")
@@ -49,3 +49,18 @@ def check_isort():
         print("\n isort check passed.")
     else:
         print("\n isort check find a errors. See log for details.")
+
+def check_ruff():
+    logs_dir = Path("./logs/pep8")
+    logs_dir.mkdir(parents=True, exist_ok=True)
+
+    ruff_check_log = logs_dir / "ruff_check.log"
+    check_ruff = run_tool("ruff (check-only)", ["poetry", "run", "ruff", "check", "."], ruff_check_log)
+
+    print("\n Summary:")
+    print(f"• Check ruff exit code:  {check_ruff}")
+
+    if check_ruff == 0:
+        print("\n ruff check passed.")
+    else:
+        print("\n ruff check find a errors. See log for details.")

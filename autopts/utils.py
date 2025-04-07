@@ -327,7 +327,7 @@ else:
             try:
                 if serial_address in device.get('DEVNAME'):
                     return True
-            except BaseException as e:
+            except BaseException:
                 pass
         return False
 

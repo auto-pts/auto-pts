@@ -27,7 +27,6 @@ from autopts.ptsprojects.boards import Board, get_debugger_snr, tty_to_com
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import defs
 from autopts.pybtp.iutctl_common import BTP_ADDRESS, BTPSocketSrv, BTPWorker
-from autopts.pybtp.types import BTPError
 from autopts.rtt import BTMON, RTTLogger
 from autopts.utils import get_global_end
 

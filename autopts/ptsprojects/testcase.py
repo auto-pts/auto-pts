@@ -26,7 +26,7 @@ import subprocess
 import sys
 import time
 
-from ..utils import ResultWithFlag, get_global_end
+from ..utils import get_global_end
 from . import ptstypes
 from .stack import get_stack
 from .utils import exec_iut_cmd

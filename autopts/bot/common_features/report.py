@@ -280,19 +280,19 @@ def make_report_diff(old_report_txt, report_diff_txt_path, results,
         if tc not in test_cases:
             deleted_cases.append(tc)
 
-    f.write(f"Regressions:\n")
+    f.write("Regressions:\n")
     for tc in regressions:
         f.write(f"{tc}\n")
 
-    f.write(f"\nProgresses:\n")
+    f.write("\nProgresses:\n")
     for tc in progresses:
         f.write(f"{tc}\n")
 
-    f.write(f"\nNew cases:\n")
+    f.write("\nNew cases:\n")
     for tc in new_cases:
         f.write(f"{tc}\n")
 
-    f.write(f"\nDeleted cases:\n")
+    f.write("\nDeleted cases:\n")
     for tc in deleted_cases:
         f.write(f"{tc}\n")
 
@@ -451,7 +451,7 @@ def pull_server_logs(args, tmp_dir, xml_folder):
                 # Include PTS .xml logs of test cases with PASS verdict
                 # into a separate "XMLs" folder. Those will have reference
                 # entries in report.xlsx
-                if file_path.endswith('.xml') and not 'tc_log' in file_path \
+                if file_path.endswith('.xml') and 'tc_log' not in file_path \
                         and b'Final Verdict:PASS' in file_bin.data:
                     (test_name, timestamp) = split_xml_filename(file_path)
                     if test_name in last_xml[0]:

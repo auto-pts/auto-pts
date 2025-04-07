@@ -25,7 +25,6 @@ $ python3 autopts_bisect.py config_zephyr_bisect SM/CEN/JW/BV-05-C 7ab16c457b304
 If last_bad_commit is empty, then takes HEAD commit.
 """
 import copy
-import importlib
 import mimetypes
 import os
 import re

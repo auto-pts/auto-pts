@@ -468,7 +468,7 @@ def hdl_wid_489(_: WIDParams):
         btp.bap_broadcast_sink_sync(id, sid, 5, 600, False, 0, addr_type, addr)
         ev = stack.bap.wait_bis_found_ev(id, 50)
 
-    return not ev is None
+    return ev is not None
 
 
 def hdl_wid_490(_: WIDParams):

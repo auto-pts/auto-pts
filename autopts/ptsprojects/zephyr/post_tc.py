@@ -15,8 +15,6 @@
 # more details.
 #
 
-import atexit
-import subprocess
 import sys
 
 

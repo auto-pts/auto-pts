@@ -14,7 +14,6 @@
 #
 
 import logging
-import socket
 from time import sleep
 
 from autopts.ptsprojects.stack import get_stack

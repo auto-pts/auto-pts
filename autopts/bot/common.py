@@ -50,7 +50,7 @@ def get_deepest_dirs(logs_tree, dst_tree, max_depth):
                     dst_file = os.path.join(dst_tree, file.name)
                     try:
                         shutil.move(file.path, dst_file)
-                    except BaseException as e:  # skip waiting for BPV to release the file
+                    except BaseException:  # skip waiting for BPV to release the file
                         try:
                             shutil.copy(file.path, dst_file)
                         except BaseException as e2:
@@ -336,7 +336,7 @@ class BotClient(Client):
                 if self.args.test_case_limit:
                     limit = self.args.test_case_limit - limit_counter
                     if limit == 0:
-                        log(f'Limit of test cases reached. No more test cases will be run.')
+                        log('Limit of test cases reached. No more test cases will be run.')
                         break
 
                     if test_case_number > limit:
@@ -425,10 +425,10 @@ class BotClient(Client):
         # End of bot run - all test cases completed
 
         if all_stats.num_test_cases == 0:
-            print(f'\nNo test cases were run. Please verify your config.\n')
+            print('\nNo test cases were run. Please verify your config.\n')
             return all_stats
 
-        print(f'\nFinal Bot Summary:\n')
+        print('\nFinal Bot Summary:\n')
         all_stats.print_summary()
 
         if self.args.use_backup:
@@ -446,8 +446,8 @@ class BotClient(Client):
                     project_name = mapping.get(project_name, project_name)
                     descriptions[test_case_name] = \
                         self.ptses[0].get_test_case_description(project_name, test_case_name)
-                except:
-                    log(f'Failed to get description of {test_case_name}')
+                except Exception as e:
+                    log(f'Failed to get description of {test_case_name}: {e}')
 
             all_stats.update_descriptions(descriptions)
             all_stats.pts_ver = str(self.ptses[0].get_version())
@@ -667,15 +667,15 @@ class BotClient(Client):
                     try:
                         shutil.move(src_file, dst_file)
                         continue
-                    except:  # skip waiting for BPV to release the file
-                        pass
+                    except Exception as e:
+                        log(f"Failed to move directory {src_file} → {dst_file}: {e}")
 
                 try:
                     shutil.copy(src_file, dst_file)
-                except:
-                    pass
+                except Exception as e:
+                    log(f"Failed to copy file {src_file} → {dst_file}: {e}")
 
-            except BaseException as e:
+            except Exception as e:
                 traceback.print_exception(e)
 
     def upload_logs_to_github(self, report_data):
@@ -693,13 +693,13 @@ class BotClient(Client):
         board_name = self.bot_config['auto_pts']['board']
         gdrive_config = self.bot_config['gdrive']
 
-        log(f'Archiving the report folder ...')
+        log('Archiving the report folder ...')
         report.archive_testcases(self.file_paths['REPORT_DIR'], depth=2)
 
-        log(f'Connecting to GDrive ...')
+        log('Connecting to GDrive ...')
         drive = google_drive.Drive(gdrive_config)
 
-        log(f'Creating GDrive directory ...')
+        log('Creating GDrive directory ...')
         report_data['gdrive_url'] = drive.new_workdir(board_name)
         log(report_data['gdrive_url'])
 
@@ -1014,5 +1014,5 @@ def save_files(files_to_save, save_dir: str):
             if os.path.exists(file_path):
                 dst_file_path = os.path.join(save_dir, os.path.basename(file_path))
                 shutil.move(file_path, dst_file_path)
-    except OSError as e:
+    except OSError:
         pass
