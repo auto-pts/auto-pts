@@ -16,9 +16,9 @@
 #
 
 import os
-import sys
-import subprocess
 import shlex
+import subprocess
+import sys
 
 
 def run_checks(py_files):

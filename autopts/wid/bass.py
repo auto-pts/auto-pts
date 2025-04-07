@@ -15,11 +15,12 @@
 
 import logging
 
-from autopts.ptsprojects.stack import get_stack, WildCard
+from autopts.ptsprojects.stack import WildCard, get_stack
 from autopts.pybtp import btp, defs
-from autopts.pybtp.btp import pts_addr_get, pts_addr_type_get, ascs_add_ase_to_cis, lt2_addr_get, lt2_addr_type_get
-from autopts.pybtp.types import WIDParams, UUID, gap_settings_btp2txt, AdType, AdFlags
+from autopts.pybtp.btp import ascs_add_ase_to_cis, lt2_addr_get, lt2_addr_type_get, pts_addr_get, pts_addr_type_get
+from autopts.pybtp.types import UUID, AdFlags, AdType, WIDParams, gap_settings_btp2txt
 from autopts.wid import generic_wid_hdl
+
 
 log = logging.debug
 

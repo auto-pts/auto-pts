@@ -15,4 +15,6 @@
 
 import autopts.ptsprojects.bluez.gap
 import autopts.ptsprojects.bluez.sm
+
+
 # GENERATOR append 1

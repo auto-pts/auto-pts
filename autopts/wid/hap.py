@@ -17,13 +17,14 @@ import logging
 import re
 from argparse import Namespace
 
-from autopts.pybtp import btp
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import MMI
+from autopts.pybtp import btp
+from autopts.pybtp.btp.btp import lt2_addr_get, lt2_addr_type_get, pts_addr_get, pts_addr_type_get
 from autopts.pybtp.defs import AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS
 from autopts.pybtp.types import *
-from autopts.pybtp.btp.btp import pts_addr_get, pts_addr_type_get, lt2_addr_get, lt2_addr_type_get
 from autopts.wid import generic_wid_hdl
+
 
 log = logging.debug
 

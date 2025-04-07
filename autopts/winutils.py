@@ -30,13 +30,14 @@
 #
 
 """Windows utilities"""
+import ctypes
 import logging
 import os
 import sys
-import ctypes
-import wmi
+
 import win32gui
 import win32process
+import wmi
 
 
 def get_pid_by_window_title(title):

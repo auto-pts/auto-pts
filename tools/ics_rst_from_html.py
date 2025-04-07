@@ -28,9 +28,10 @@ python3 ics_rst_from_html.py GAP path/to/Launch-Studio-ICS-Selection.html
 In directory of run will be created gap-pics.rst file.
 """
 
-import sys
 import os
 import re
+import sys
+
 import pandas as pd
 
 

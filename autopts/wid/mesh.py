@@ -17,10 +17,11 @@ import logging
 import re
 import time
 
-from autopts.pybtp import btp
-from autopts.pybtp.types import Perm, MeshVals, WIDParams, UUID
 from autopts.ptsprojects.stack import get_stack
+from autopts.pybtp import btp
+from autopts.pybtp.types import UUID, MeshVals, Perm, WIDParams
 from autopts.wid import generic_wid_hdl
+
 
 # Mesh ATS ver. 1.0
 log = logging.debug

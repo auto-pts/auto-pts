@@ -13,9 +13,10 @@
 # more details.
 #
 
-import os
 import logging
+import os
 import subprocess
+
 
 supported_projects = ["zephyr"]
 

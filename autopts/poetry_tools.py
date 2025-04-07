@@ -23,7 +23,7 @@ def fix_style():
     isort_log = logs_dir / "isort_fix.log"
 
     # ruff_code = run_tool("Ruff (fix)", ["poetry", "run", "ruff", "check", ".", "--fix"], ruff_log)
-    isort_code = run_tool("isort (fix)", ["poetry", "run", "isort", ".", "--diff", "--verbose"], isort_log)
+    isort_code = run_tool("isort (fix)", ["poetry", "run", "isort", "."], isort_log)
 
     print("\n Summary:")
     # print(f"• Ruff exit code:  {ruff_code}")

@@ -19,8 +19,9 @@ import re
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp
 from autopts.pybtp.types import WIDParams
-from autopts.wid.bap import create_lc3_ltvs_bytes
 from autopts.wid import generic_wid_hdl
+from autopts.wid.bap import create_lc3_ltvs_bytes
+
 
 log = logging.debug
 

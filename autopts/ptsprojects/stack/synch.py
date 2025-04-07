@@ -16,7 +16,9 @@
 import logging
 import threading
 from time import sleep
+
 from autopts.utils import ResultWithFlag
+
 
 log = logging.debug
 

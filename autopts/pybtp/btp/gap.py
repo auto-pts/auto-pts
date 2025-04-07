@@ -21,12 +21,27 @@ import re
 import struct
 from random import randint
 
-from autopts.ptsprojects.stack import get_stack, ConnParams
+from autopts.ptsprojects.stack import ConnParams, get_stack
 from autopts.pybtp import defs
-from autopts.pybtp.types import BTPError, gap_settings_btp2txt, addr2btp_ba, Addr, OwnAddrType, AdDuration, AdType
-from autopts.pybtp.btp.btp import pts_addr_get, pts_addr_type_get, lt2_addr_get, lt2_addr_type_get, btp_hdr_check, \
-    CONTROLLER_INDEX, set_pts_addr, set_lt2_addr, LeAdv, get_iut_method as get_iut, lt3_addr_type_get, lt3_addr_get, \
-    set_lt3_addr
+from autopts.pybtp.btp.btp import (
+    CONTROLLER_INDEX,
+    LeAdv,
+    btp_hdr_check,
+)
+from autopts.pybtp.btp.btp import get_iut_method as get_iut
+from autopts.pybtp.btp.btp import (
+    lt2_addr_get,
+    lt2_addr_type_get,
+    lt3_addr_get,
+    lt3_addr_type_get,
+    pts_addr_get,
+    pts_addr_type_get,
+    set_lt2_addr,
+    set_lt3_addr,
+    set_pts_addr,
+)
+from autopts.pybtp.types import Addr, AdDuration, AdType, BTPError, OwnAddrType, addr2btp_ba, gap_settings_btp2txt
+
 
 GAP = {
     "start_adv": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_START_ADVERTISING,

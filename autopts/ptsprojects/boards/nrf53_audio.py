@@ -15,8 +15,10 @@
 
 import os
 
-from .nrf5x import *
 from autopts.bot.common import check_call
+
+from .nrf5x import *
+
 
 board_type = 'nrf5340_audio_dk/nrf5340/cpuapp'
 

@@ -15,16 +15,17 @@
 
 import binascii
 import logging
-import sys
 import re
 import struct
+import sys
 import time
-
 from enum import IntEnum, IntFlag
-from autopts.pybtp import btp, defs
+
 from autopts.ptsprojects.stack import get_stack
+from autopts.pybtp import btp, defs
 from autopts.pybtp.types import WIDParams
 from autopts.wid import generic_wid_hdl
+
 
 log = logging.debug
 

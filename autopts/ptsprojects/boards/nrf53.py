@@ -14,10 +14,12 @@
 #
 import logging
 import os
+from subprocess import CalledProcessError
+
+from autopts.bot.common import check_call
 
 from .nrf5x import *
-from autopts.bot.common import check_call
-from subprocess import CalledProcessError
+
 
 board_type = 'nrf5340dk/nrf5340/cpuapp'
 

@@ -23,8 +23,9 @@ $ python3 mynewt "path\to\auto-pts\workspaces\nimble-master\nimble-master.pqw6"
 """
 
 import importlib
-import sys
 import os
+import sys
+
 import win32com
 import wmi
 

@@ -37,20 +37,31 @@ import xml.etree.ElementTree as ElementTree
 import xmlrpc.client
 from os.path import dirname
 from xmlrpc.server import SimpleXMLRPCServer
+
 from termcolor import colored
 
 from autopts.config import FILE_PATHS
-from autopts.ptsprojects import ptstypes
-from autopts.ptsprojects import stack
+from autopts.ptsprojects import ptstypes, stack
 from autopts.ptsprojects.boards import get_available_boards, tty_to_com
 from autopts.ptsprojects.ptstypes import E_FATAL_ERROR
 from autopts.ptsprojects.testcase import PTSCallback, TestCaseLT1, TestCaseLT2, TestCaseLT3
 from autopts.ptsprojects.testcase_db import TestCaseTable
 from autopts.pybtp import btp, defs
-from autopts.pybtp.types import BTPError, SynchError, MissingWIDError
-from autopts.utils import InterruptableThread, ResultWithFlag, CounterWithFlag, set_global_end, \
-    raise_on_global_end, RunEnd, get_global_end, have_admin_rights, ykush_replug_usb, active_hub_server_replug_usb
+from autopts.pybtp.types import BTPError, MissingWIDError, SynchError
+from autopts.utils import (
+    CounterWithFlag,
+    InterruptableThread,
+    ResultWithFlag,
+    RunEnd,
+    active_hub_server_replug_usb,
+    get_global_end,
+    have_admin_rights,
+    raise_on_global_end,
+    set_global_end,
+    ykush_replug_usb,
+)
 from cliparser import CliParser
+
 
 log = logging.debug
 log_lock = threading.RLock()

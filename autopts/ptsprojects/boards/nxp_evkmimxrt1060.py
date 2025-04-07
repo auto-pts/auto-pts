@@ -14,12 +14,12 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
+import logging
 import os
 import sys
-import logging
-
 
 from autopts.ptsprojects.boards import Jlink
+
 
 log = logging.debug
 

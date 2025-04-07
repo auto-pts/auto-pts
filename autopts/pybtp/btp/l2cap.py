@@ -21,9 +21,12 @@ import struct
 
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import defs
-from autopts.pybtp.types import addr2btp_ba, L2CAPConnectionResponse
-from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, pts_addr_get, pts_addr_type_get, get_iut_method as get_iut
+from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check
+from autopts.pybtp.btp.btp import get_iut_method as get_iut
+from autopts.pybtp.btp.btp import pts_addr_get, pts_addr_type_get
 from autopts.pybtp.btp.gap import gap_wait_for_connection
+from autopts.pybtp.types import L2CAPConnectionResponse, addr2btp_ba
+
 
 L2CAP = {
     "read_supp_cmds": (defs.BTP_SERVICE_ID_L2CAP,

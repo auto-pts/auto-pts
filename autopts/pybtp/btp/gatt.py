@@ -21,11 +21,12 @@ import struct
 
 from autopts.ptsprojects.stack import GattCharacteristic, GattCharacteristicDescriptor, GattService
 from autopts.pybtp import defs
-from autopts.pybtp.btp.btp import btp_hdr_check, CONTROLLER_INDEX, get_iut_method as get_iut, btp2uuid, \
-    clear_verify_values, add_to_verify_values, get_verify_values, pts_addr_get, pts_addr_type_get
+from autopts.pybtp.btp.btp import CONTROLLER_INDEX, add_to_verify_values, btp2uuid, btp_hdr_check, clear_verify_values
+from autopts.pybtp.btp.btp import get_iut_method as get_iut
+from autopts.pybtp.btp.btp import get_verify_values, pts_addr_get, pts_addr_type_get
 from autopts.pybtp.btp.gap import gap_wait_for_connection
-from autopts.pybtp.types import BTPError, addr2btp_ba
-from autopts.pybtp.types import Perm, att_rsp_str
+from autopts.pybtp.types import BTPError, Perm, addr2btp_ba, att_rsp_str
+
 
 #  Global temporary objects
 GATT_SVCS = None

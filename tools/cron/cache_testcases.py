@@ -19,8 +19,10 @@ Usage:
 $ python3 cache_testcases.py path/to/workspace.pqw6 path/to/cached_testcases.yaml
 """
 import sys
+from os.path import abspath, dirname, isfile
+
 import yaml
-from os.path import dirname, abspath, isfile
+
 
 if __name__ == '__main__':
     AUTOPTS_REPO = dirname(dirname(dirname(abspath(__file__))))

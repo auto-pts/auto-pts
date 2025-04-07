@@ -17,12 +17,13 @@ import re
 from argparse import Namespace
 from time import sleep
 
-from autopts.ptsprojects.stack import get_stack, WildCard
+from autopts.ptsprojects.stack import WildCard, get_stack
 from autopts.ptsprojects.testcase import MMI
 from autopts.pybtp import btp
-from autopts.pybtp.btp import pts_addr_get, pts_addr_type_get, ascs_add_ase_to_cis, lt2_addr_get, lt2_addr_type_get
+from autopts.pybtp.btp import ascs_add_ase_to_cis, lt2_addr_get, lt2_addr_type_get, pts_addr_get, pts_addr_type_get
 from autopts.pybtp.types import *
 from autopts.wid import generic_wid_hdl
+
 
 log = logging.debug
 
