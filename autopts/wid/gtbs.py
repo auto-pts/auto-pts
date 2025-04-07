@@ -16,13 +16,13 @@
 import logging
 
 from autopts.pybtp.types import WIDParams
-from autopts.wid import generic_wid_hdl
 
 
 log = logging.debug
 
 
 def gtbs_wid_hdl(wid, description, test_case_name):
+    from autopts.wid import generic_wid_hdl
     log(f'{gtbs_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
     return generic_wid_hdl(wid, description, test_case_name, [__name__])
 

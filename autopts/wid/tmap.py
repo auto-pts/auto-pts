@@ -23,7 +23,6 @@ from autopts.pybtp import btp
 from autopts.pybtp.btp.btp import lt2_addr_get, lt2_addr_type_get, pts_addr_get, pts_addr_type_get
 from autopts.pybtp.defs import AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS
 from autopts.pybtp.types import *
-from autopts.wid import generic_wid_hdl
 from autopts.wid.bap import BAS_CONFIG_SETTINGS, create_default_config, get_audio_locations_from_pac
 from autopts.wid.ccp import BT_TBS_GTBS_INDEX
 
@@ -55,6 +54,7 @@ def trigger_discovery_if_needed(params):
 
 
 def tmap_wid_hdl(wid, description, test_case_name):
+    from autopts.wid import generic_wid_hdl
     log(f'{tmap_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
     return generic_wid_hdl(wid, description, test_case_name, [__name__])
 

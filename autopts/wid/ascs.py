@@ -19,7 +19,6 @@ import re
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp
 from autopts.pybtp.types import WIDParams
-from autopts.wid import generic_wid_hdl
 from autopts.wid.bap import create_lc3_ltvs_bytes
 
 
@@ -27,6 +26,7 @@ log = logging.debug
 
 
 def ascs_wid_hdl(wid, description, test_case_name):
+    from autopts.wid import generic_wid_hdl
     log(f'{ascs_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
     return generic_wid_hdl(wid, description, test_case_name, [__name__])
 

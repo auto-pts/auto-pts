@@ -19,13 +19,13 @@ from autopts.ptsprojects.stack import WildCard, get_stack
 from autopts.pybtp import btp, defs
 from autopts.pybtp.btp import ascs_add_ase_to_cis, lt2_addr_get, lt2_addr_type_get, pts_addr_get, pts_addr_type_get
 from autopts.pybtp.types import UUID, AdFlags, AdType, WIDParams, gap_settings_btp2txt
-from autopts.wid import generic_wid_hdl
 
 
 log = logging.debug
 
 
 def bass_wid_hdl(wid, description, test_case_name):
+    from autopts.wid import generic_wid_hdl
     log(f'{bass_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
     return generic_wid_hdl(wid, description, test_case_name, [__name__])
 
