@@ -21,7 +21,6 @@ from autopts.ptsprojects.stack import WildCard, get_stack
 from autopts.pybtp import btp, defs
 from autopts.pybtp.defs import AUDIO_METADATA_PROGRAM_INFO, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS
 from autopts.pybtp.types import CODEC_CONFIG_SETTINGS, BTPError, WIDParams, create_lc3_ltvs_bytes
-from autopts.wid import generic_wid_hdl
 from autopts.wid.bap import BAS_CONFIG_SETTINGS
 
 
@@ -29,6 +28,7 @@ log = logging.debug
 
 
 def pbp_wid_hdl(wid, description, test_case_name):
+    from autopts.wid import generic_wid_hdl
     log(f'{pbp_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
     return generic_wid_hdl(wid, description, test_case_name, [__name__])
 

@@ -22,13 +22,13 @@ from autopts.ptsprojects.testcase import MMI
 from autopts.pybtp import btp
 from autopts.pybtp.btp import ascs_add_ase_to_cis, lt2_addr_get, lt2_addr_type_get, pts_addr_get, pts_addr_type_get
 from autopts.pybtp.types import *
-from autopts.wid import generic_wid_hdl
 
 
 log = logging.debug
 
 
 def bap_wid_hdl(wid, description, test_case_name):
+    from autopts.wid import generic_wid_hdl
     log(f'{bap_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
     return generic_wid_hdl(wid, description, test_case_name, [__name__])
 
