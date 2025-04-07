@@ -66,7 +66,7 @@ iut_appearance = '1111'
 iut_svc_data = '1111'
 iut_flags = '11'
 iut_svcs = '1111'
-iut_uri = UriScheme.https + 'github.com/auto-pts'.encode()
+iut_uri = UriScheme.https + b'github.com/auto-pts'
 iut_le_supp_feat = 'FF'
 
 br_psm = 0x1001
@@ -255,12 +255,12 @@ def test_cases(ptses):
                  L2CAPConnectionResponse.insufficient_secure_authentication),
     ]
 
-    br_l2cap_keysize = br_l2cap + [
+    br_l2cap_keysize = br_l2cap + [ # noqa: F841 # br_l2cap_keysize is not used
         TestFunc(btp.l2cap_br_listen, br_psm, br_initial_mtu,
                  L2CAPConnectionResponse.insufficient_encryption_key_size),
     ]
 
-    br_l2cap_author = br_l2cap + [
+    br_l2cap_author = br_l2cap + [ # noqa: F841 # br_l2cap_author is not used
         TestFunc(btp.l2cap_br_listen, br_psm, br_initial_mtu,
                  L2CAPConnectionResponse.insufficient_authorization),
     ]

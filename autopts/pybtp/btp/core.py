@@ -14,14 +14,9 @@
 #
 
 """Wrapper around btp messages. The functions are added as needed."""
-import binascii
 import logging
-import struct
 
-from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import defs
-from autopts.pybtp.btp.btp import CONTROLLER_INDEX
-from autopts.pybtp.types import BTPError
 
 
 def core_iut_ready_ev(core, data, data_len):

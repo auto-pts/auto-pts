@@ -4,7 +4,6 @@ import sys
 import unittest
 from os.path import abspath, dirname
 from pathlib import Path
-from test.mocks.mocked_test_cases import mock_workspace_test_cases, test_case_list_generation_samples
 from unittest.mock import patch
 
 from autopts.bot.common_features import report
@@ -12,7 +11,7 @@ from autopts.client import FakeProxy, TestCaseRunStats
 from autopts.config import FILE_PATHS
 from autopts.ptsprojects.testcase_db import TestCaseTable
 from autoptsclient_bot import import_bot_module, import_bot_projects
-
+from test.mocks.mocked_test_cases import mock_workspace_test_cases, test_case_list_generation_samples
 
 DATABASE_FILE = 'test/mocks/zephyr_database.db'
 
@@ -23,7 +22,7 @@ def delete_file(file_path):
             os.remove(file_path)
         elif os.path.isdir(file_path):
             shutil.rmtree(file_path, ignore_errors=True)
-    except:
+    except Exception:
         pass
 
 

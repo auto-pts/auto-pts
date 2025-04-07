@@ -20,7 +20,6 @@
 # Workaround for Exception: unknown encoding: idna
 # that appears randomly in embedded Python distribution.
 # Issue #1021.
-import encodings.idna
 import importlib
 
 from autopts import client as autoptsclient

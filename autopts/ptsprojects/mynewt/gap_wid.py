@@ -14,7 +14,6 @@
 #
 
 import logging
-import socket
 from time import sleep
 
 from autopts.ptsprojects.stack import get_stack
@@ -22,7 +21,6 @@ from autopts.pybtp import btp
 from autopts.pybtp.types import WIDParams
 from autopts.wid import generic_wid_hdl
 from autopts.wid.gap import hdl_wid_139_mode1_lvl2, hdl_wid_139_mode1_lvl4
-
 
 log = logging.debug
 

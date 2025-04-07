@@ -13,41 +13,77 @@
 # more details.
 #
 
+from . import (
+               aics,
+               ascs,
+               bap,
+               bass,
+               cap,
+               cas,
+               ccp,
+               csip,
+               csis,
+               dfum,
+               dis,
+               gap,
+               gatt,
+               hap,
+               has,
+               ias,
+               l2cap,
+               mbtm,
+               mcp,
+               mcs,
+               mesh,
+               micp,
+               mics,
+               mmdl,
+               ots,
+               pacs,
+               pbp,
+               sm,
+               tbs,
+               tmap,
+               vcp,
+               vcs,
+               vocs,
+)
 
-import autopts.ptsprojects.zephyr.aics
-import autopts.ptsprojects.zephyr.ascs
-import autopts.ptsprojects.zephyr.bap
-import autopts.ptsprojects.zephyr.bass
-import autopts.ptsprojects.zephyr.cap
-import autopts.ptsprojects.zephyr.cas
-import autopts.ptsprojects.zephyr.ccp
-import autopts.ptsprojects.zephyr.csip
-import autopts.ptsprojects.zephyr.csis
-import autopts.ptsprojects.zephyr.dfum
-import autopts.ptsprojects.zephyr.dis
-import autopts.ptsprojects.zephyr.gap
-import autopts.ptsprojects.zephyr.gatt
-import autopts.ptsprojects.zephyr.hap
-import autopts.ptsprojects.zephyr.has
-import autopts.ptsprojects.zephyr.ias
-import autopts.ptsprojects.zephyr.l2cap
-import autopts.ptsprojects.zephyr.mbtm
-import autopts.ptsprojects.zephyr.mcp
-import autopts.ptsprojects.zephyr.mcs
-import autopts.ptsprojects.zephyr.mesh
-import autopts.ptsprojects.zephyr.micp
-import autopts.ptsprojects.zephyr.mics
-import autopts.ptsprojects.zephyr.mmdl
-import autopts.ptsprojects.zephyr.ots
-import autopts.ptsprojects.zephyr.pacs
-import autopts.ptsprojects.zephyr.pbp
-import autopts.ptsprojects.zephyr.sm
-import autopts.ptsprojects.zephyr.tbs
-import autopts.ptsprojects.zephyr.tmap
-import autopts.ptsprojects.zephyr.vcp
-import autopts.ptsprojects.zephyr.vcs
-import autopts.ptsprojects.zephyr.vocs
-
+__all__ = [
+    "aics",
+    "ascs",
+    "bap",
+    "bass",
+    "cap",
+    "cas",
+    "ccp",
+    "csip",
+    "csis",
+    "dfum",
+    "dis",
+    "gap",
+    "gatt",
+    "hap",
+    "has",
+    "ias",
+    "l2cap",
+    "mbtm",
+    "mcp",
+    "mcs",
+    "mesh",
+    "micp",
+    "mics",
+    "mmdl",
+    "ots",
+    "pacs",
+    "pbp",
+    "sm",
+    "tbs",
+    "tmap",
+    "vcp",
+    "vcs",
+    "vocs",
+]
 
 # GENERATOR append 1
 

@@ -17,10 +17,8 @@ import logging
 import re
 
 from autopts.ptsprojects.stack import get_stack
-from autopts.pybtp import btp, defs
-from autopts.pybtp.btp import pts_addr_get, pts_addr_type_get
+from autopts.pybtp import btp
 from autopts.pybtp.types import WIDParams
-
 
 log = logging.debug
 

@@ -22,7 +22,6 @@ from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.vcs_wid import vcs_wid_hdl
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
 from autopts.pybtp import btp
-from autopts.pybtp.types import Addr
 
 
 def set_pixits(ptses):

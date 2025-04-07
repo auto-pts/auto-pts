@@ -54,7 +54,6 @@ from autopts.ptsprojects.ptstypes import E_FATAL_ERROR
 from autopts.utils import PTS_WORKSPACE_FILE_EXT, ResultWithFlag, count_script_instances, get_own_workspaces
 from autopts.winutils import get_pid_by_window_title, kill_all_processes
 
-
 logging = root_logging.getLogger('server')
 log = logging.debug
 
@@ -175,7 +174,7 @@ class PTSLogger(win32com.server.connect.ConnectableServer):
                         elif "FAIL" in log_message:
                             new_status = "FAIL"
                         else:
-                            new_status = "UNKNOWN VERDICT: %s" % log_message.strip()
+                            new_status = f"UNKNOWN VERDICT: {log_message.strip()}"
 
                         self._tc_status.set(new_status)
                         log(f"Final verdict found: {self._test_case_name} {new_status}")
@@ -537,7 +536,7 @@ class PyPTS:
                 if exception >= args.dongle_init_retry:
                     # This stops PTS from restarting indefinitely when PTS
                     # dongle is unplugged
-                    print(f"Please check your dongle connection! Aborting")
+                    print("Please check your dongle connection! Aborting")
                     kill_all_processes('PTS.exe')
                     self.terminate()
                     break
@@ -584,7 +583,7 @@ class PyPTS:
 
         log("PTS Version: %s", self.get_version())
         log(f'PTS Bluetooth Address: {self.get_bluetooth_address()}')
-        log("PTS BD_ADDR: %s" % self.bd_addr())
+        log(f"PTS BD_ADDR: {self.bd_addr()}")
         log(f'PTS daemon PID: {self._get_process_pid()}')
 
         self._ready = True
@@ -597,8 +596,8 @@ class PyPTS:
         self._ready = False
 
         if self._pts_logger:
-            log(f"Closing PTSLogger")
-            log(f"Closing PTSSender")
+            log("Closing PTSLogger")
+            log("Closing PTSSender")
             # No new calls to the PTS callbacks after closing
             self._pts_logger.close()
             self._pts_sender.close()
@@ -641,9 +640,9 @@ class PyPTS:
                     self._pts_proc = None
             else:
                 try:
-                    log(f"Terminating with ExitPTS command")
+                    log("Terminating with ExitPTS command")
                     self._pts.ExitPTS()
-                except Exception as e:
+                except Exception:
                     # The COM timeout exception is a valid behavior here,
                     # since the PTS closes itself within ExitPTS(). It takes
                     # exactly 5 seconds to receive the exception, because
@@ -686,14 +685,13 @@ class PyPTS:
             log("Using %s workspace: %s", workspace_name, workspace_path)
 
         if not os.path.isfile(workspace_path):
-            raise Exception("Workspace file '%s' does not exist" %
-                            (workspace_path,))
+            raise Exception(f"Workspace file '{workspace_path}' does not exist")
 
         specified_ext = os.path.splitext(workspace_path)[1]
         if PTS_WORKSPACE_FILE_EXT != specified_ext:
             raise Exception(
-                "Workspace file '%s' extension is wrong, should be %s" %
-                (workspace_path, PTS_WORKSPACE_FILE_EXT))
+                f"Workspace file '{workspace_path}' extension is wrong, should be {PTS_WORKSPACE_FILE_EXT}"
+            )
 
         # Workaround CASE0044114 PTS issue
         # Do not open original workspace file that can become broken by
@@ -1094,7 +1092,7 @@ class PyPTS:
             device_to_connect = selected_device.replace(r'InUse', r'Free')
         else:
             # The selected_device should be empty string here.
-            log(f'First random dongle selection')
+            log('First random dongle selection')
 
         if device_to_connect and device_to_connect == selected_device.replace(r'InUse', r'Free'):
             log(f'PTS already connected to the right dongle: {device_to_connect}')
@@ -1122,7 +1120,7 @@ class PyPTS:
                 self._disconnect_dongle()
 
         if not address:
-            raise Exception(f'Failed to connect dongle after 4 iterations')
+            raise Exception('Failed to connect dongle after 4 iterations')
 
         return address
 

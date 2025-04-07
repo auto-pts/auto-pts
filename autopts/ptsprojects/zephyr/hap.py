@@ -26,7 +26,6 @@ from autopts.pybtp import btp
 from autopts.pybtp.defs import HAS_TSPX_available_presets_indices, HAS_TSPX_unavailable_presets_indices
 from autopts.pybtp.types import Addr, AdType, Context
 
-
 # Options aligned with the overlay-le-audio.conf options
 BTP_HAP_HA_OPTS_DEFAULT = (btp.defs.HAP_HA_OPT_PRESETS_DYNAMIC |
                            btp.defs.HAP_HA_OPT_PRESETS_WRITABLE)

@@ -26,11 +26,10 @@ import subprocess
 import sys
 import time
 
-from ..utils import ResultWithFlag, get_global_end
+from ..utils import get_global_end
 from . import ptstypes
 from .stack import get_stack
 from .utils import exec_iut_cmd
-
 
 log = logging.debug
 
@@ -42,7 +41,7 @@ class ResponseWithPostWID:
 
 
 class MmiParser:
-    """"Interface to parsing arguments from description of MMI
+    """Interface to parsing arguments from description of MMI
 
     It is assumed that all arguments in description are enclosed in single
     quotes.
@@ -89,7 +88,7 @@ class MmiParser:
         to the PTS.
 
         Description: Verify that the Implementation Under Test (IUT) can send
-        data according to negotiate MTU size."
+        data according to negotiate MTU size.
 
         """
         log("%s %r", self.parse_description.__name__, description)
@@ -157,7 +156,7 @@ class TestCmd:
 
         self.__started = True
 
-        log("starting child process %s" % self)
+        log(f"starting child process {self}")
         self.process = exec_iut_cmd(self.command)
 
     def stop(self):
@@ -165,12 +164,12 @@ class TestCmd:
         if not self.__started:
             return
 
-        log("stopping child process %s" % self)
+        log(f"stopping child process {self}")
         self.process.kill()
 
     def __str__(self):
         """Returns string representation"""
-        return "%s %s %s" % (self.command, self.start_wid, self.stop_wid)
+        return f"{self.command} {self.start_wid} {self.stop_wid}"
 
 
 class TestFunc:
@@ -251,7 +250,7 @@ class TestFunc:
     def start(self):
         """Starts the function"""
         self.call_count += 1
-        log("Starting test function: %s" % str(self))
+        log(f"Starting test function: {self}")
 
         if isinstance(self.skip_call, tuple):  # is None if not set
             if self.call_count in self.skip_call:
@@ -272,11 +271,11 @@ class TestFunc:
 
     def __str__(self):
         """Returns string representation"""
-        return ("class=%s, func=%s start_wid=%s stop_wid=%s post_wid=%s "
-                "skip_call=%s call_count=%s args=%s kwds=%s" %
-                (self.__class__, self.func, self.start_wid, self.stop_wid,
-                 self.post_wid, self.skip_call, self.call_count, self.args,
-                 self.kwds))
+        return (
+            f"class={self.__class__}, func={self.func} start_wid={self.start_wid} "
+            f"stop_wid={self.stop_wid} post_wid={self.post_wid} skip_call={self.skip_call} "
+            f"call_count={self.call_count} args={self.args} kwds={self.kwds}"
+        )
 
 
 class TestFuncCleanUp(TestFunc):
@@ -284,7 +283,7 @@ class TestFuncCleanUp(TestFunc):
 
 
 def is_cleanup_func(func):
-    """'Retruns True if func is an in an instance of TestFuncCleanUp"""
+    """Retruns True if func is an in an instance of TestFuncCleanUp"""
     return isinstance(func, TestFuncCleanUp)
 
 
@@ -393,17 +392,13 @@ class TestCase(PTSCallback):
 
         # catch test case implementation syntax errors
         if no_wid:
-            assert isinstance(no_wid, int), \
-                "no_wid should be int, and not %r" % no_wid
+            assert isinstance(no_wid, int), f"no_wid should be int, and not {no_wid!r}"
         if edit1_wids:
-            assert isinstance(edit1_wids, dict), \
-                "edit1_wids should be dict, and not %r" % edit1_wids
+            assert isinstance(edit1_wids, dict), f"edit1_wids should be dict, and not {edit1_wids!r}"
         if verify_wids:
-            assert isinstance(verify_wids, dict), \
-                "verify_wids should be dict, and not %r" % verify_wids
+            assert isinstance(verify_wids, dict), f"verify_wids should be dict, and not {verify_wids!r}"
         if ok_cancel_wids:
-            assert isinstance(ok_cancel_wids, dict), \
-                "ok_cancel_wids should be dict, and not %r" % ok_cancel_wids
+            assert isinstance(ok_cancel_wids, dict), f"ok_cancel_wids should be dict, and not {ok_cancel_wids!r}"
 
         self.no_wid = no_wid
         self.edit1_wids = edit1_wids
@@ -432,12 +427,12 @@ class TestCase(PTSCallback):
 
     def __str__(self):
         """Returns string representation"""
-        return "%s %s" % (self.project_name, self.name)
+        return f"{self.project_name} {self.name}"
 
     def initialize_logging(self, session_logging_dir):
         now = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
         normalized_name = self.name.replace('/', '_')
-        timestamp_name = "%s_%s" % (normalized_name, now)
+        timestamp_name = f"{normalized_name}_{now}"
         test_log_dir = os.path.join(session_logging_dir, timestamp_name)
         try:
             os.makedirs(test_log_dir)
@@ -710,19 +705,18 @@ class TestCase(PTSCallback):
 
     def pre_run(self):
         """Method called before test case is run in PTS"""
-        log("%s %s %s" % (self.pre_run.__name__, self.project_name, self.name))
+        log(f"{self.pre_run.__name__} {self.project_name} {self.name}")
 
-        log("About to run test case %s %s with commands:" %
-            (self.project_name, self.name))
+        log(f"About to run test case {self.project_name} {self.name} with commands:")
         for index, cmd in enumerate(self.cmds):
-            log("%d) %s", index, cmd)
+            log(f"{index}) {cmd}")
 
         subproc_dir = (os.path.dirname(os.path.abspath(__file__)) + "/" +
                        self.ptsproject_name + "/")
         subproc_path = subproc_dir + "pre_tc.py"
 
         if self.run_pre_and_post_sp and os.path.exists(subproc_path):
-            log("%s, run pre test case script" % self.pre_run.__name__)
+            log(f"{self.pre_run.__name__}, run pre test case script")
             self.lf_subproc = open(subproc_dir + "sp_pre_stdout.log", "w")
 
             if sys.platform == "win32":
@@ -750,14 +744,13 @@ class TestCase(PTSCallback):
 
         error_code -- String code of an error that occured during test run
         """
-        log("%s %s %s %s" % (self.post_run.__name__, self.project_name,
-                             self.name, error_code))
+        log(f"{self.post_run.__name__} {self.project_name} {self.name} {error_code}")
 
         if error_code in list(ptstypes.PTSCONTROL_E_STRING.values()):
             self.status = error_code
 
         elif error_code:
-            raise Exception("Unknown error code %r!" % error_code)
+            raise Exception(f"Unknown error code {error_code!r}!")
 
         # run the clean-up commands
         for cmd in self.cmds:
@@ -779,17 +772,15 @@ class TestCase(PTSCallback):
 
         # Cleanup pre created subproc
         if self.tc_subproc is not None:
-            log("%s, cleanup running post test case script" %
-                self.post_run.__name__)
+            log(f"{self.post_run.__name__}, cleanup running post test case script")
             self.tc_subproc.communicate(input=b'#close\n')
             self.lf_subproc.close()
-
         subproc_dir = (os.path.dirname(os.path.abspath(__file__)) + "/" +
                        self.ptsproject_name + "/")
         subproc_path = subproc_dir + "post_tc.py"
 
         if os.path.exists(subproc_path):
-            log("%s, run post test case script" % self.post_run.__name__)
+            log(f"{self.post_run.__name__}, run post test case script")
             self.lf_subproc = open(subproc_dir + "sp_post_stdout.log", "w")
 
             if sys.platform == "win32":

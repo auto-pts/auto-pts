@@ -23,11 +23,9 @@ from time import sleep
 
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import defs
-from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check
+from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, pts_addr_get, pts_addr_type_get
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
-from autopts.pybtp.btp.btp import pts_addr_get, pts_addr_type_get
 from autopts.pybtp.types import BTPError, addr2btp_ba
-
 
 CCP = {
     'read_supported_cmds': ( defs.BTP_SERVICE_ID_CCP,
@@ -614,11 +612,12 @@ def ccp_ev_call_states(ccp, data, data_len):
         event_dict['states'].append(states)
 
         states_fmt = states_fmt + ',' if len(states_fmt) > 1 else states_fmt
-        states_fmt += ' index:%u %s flags:%s' % (index, CallState(state), ccp_fmt_flags(flags))
-    states_fmt += ' }'
+        states_fmt += f" index:{index} {CallState(state)} flags:{ccp_fmt_flags(flags)}"
+        states_fmt += " }"
 
-    logging.debug(f"{ccp_ev_call_states.__name__} status: %u index: 0x%02x calls: %u %s" % \
-                  (status, index, call_count, states_fmt))
+    logging.debug(
+        f"{ccp_ev_call_states.__name__} status: {status} index: 0x{index:02x} calls: {call_count} {states_fmt}"
+    )
 
     ccp.event_received(defs.BTP_CCP_EV_CALL_STATES, event_dict)
 

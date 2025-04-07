@@ -18,7 +18,6 @@ import logging
 
 from autopts.bot.mynewt import check_call
 
-
 # Note: always specify tty or COM in 'tty_file' of app core in config.py.
 # Otherwise, net core could be selected and BTP timeouts will occur.
 
@@ -34,9 +33,9 @@ def reset_cmd(iutctl):
     with_srn = ''
 
     if iutctl.debugger_snr:
-        with_srn = ' -s {}'.format(iutctl.debugger_snr)
+        with_srn = f' -s {iutctl.debugger_snr}'
 
-    return 'nrfjprog -r {}'.format(with_srn)
+    return f'nrfjprog -r {with_srn}'
 
 
 def build_and_flash(project_path, board, overlay=None, debugger_snr=None):
@@ -58,7 +57,7 @@ def build_and_flash(project_path, board, overlay=None, debugger_snr=None):
     check_call('rm -rf bin/'.split(), cwd=project_path)
     check_call(f'rm -rf targets/{board}_boot/'.split(), cwd=project_path)
     check_call(f'rm -rf targets/{board}_net_boot/'.split(), cwd=project_path)
-    check_call(f'rm -rf targets/bttester/'.split(), cwd=project_path)
+    check_call('rm -rf targets/bttester/'.split(), cwd=project_path)
 
     check_call(f'newt target create {board}_boot'.split(), cwd=project_path)
     check_call(f'newt target create {board}_net_boot'.split(), cwd=project_path)
@@ -77,7 +76,7 @@ def build_and_flash(project_path, board, overlay=None, debugger_snr=None):
 
     check_call(f'newt target set bttester bsp=@apache-mynewt-core/hw/bsp/{board}'
                .split(), cwd=project_path)
-    check_call(f'newt target set bttester app=@apache-mynewt-nimble/apps/bttester'
+    check_call('newt target set bttester app=@apache-mynewt-nimble/apps/bttester'
                .split(), cwd=project_path)
 
     config = 'NRF5340_EMBED_NET_CORE=1:BSP_NRF5340_NET_ENABLE=1:MYNEWT_DOWNLOADER=nrfjprog'
@@ -86,7 +85,8 @@ def build_and_flash(project_path, board, overlay=None, debugger_snr=None):
     check_call(f'newt target set bttester syscfg={config}'
                .split(), cwd=project_path)
     check_call(f'newt target set {board}_boot syscfg=MYNEWT_DOWNLOADER=nrfjprog'.split(), cwd=project_path)
-    check_call(f'newt target set {board}_net_boot syscfg=BOOTUTIL_OVERWRITE_ONLY=1:MYNEWT_DOWNLOADER=nrfjprog'.split(), cwd=project_path)
+    check_call(f'newt target set {board}_net_boot syscfg=BOOTUTIL_OVERWRITE_ONLY=1:MYNEWT_DOWNLOADER=nrfjprog'
+               .split(), cwd=project_path)
 
     check_call(f'newt build {board}_boot'.split(), cwd=project_path)
     check_call(f'newt build {board}_net_boot'.split(), cwd=project_path)

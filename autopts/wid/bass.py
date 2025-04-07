@@ -17,9 +17,8 @@ import logging
 
 from autopts.ptsprojects.stack import WildCard, get_stack
 from autopts.pybtp import btp, defs
-from autopts.pybtp.btp import ascs_add_ase_to_cis, lt2_addr_get, lt2_addr_type_get, pts_addr_get, pts_addr_type_get
+from autopts.pybtp.btp import pts_addr_get, pts_addr_type_get
 from autopts.pybtp.types import UUID, AdFlags, AdType, WIDParams, gap_settings_btp2txt
-
 
 log = logging.debug
 
@@ -98,7 +97,7 @@ def hdl_wid_102(_: WIDParams):
     broadcast_id = ev['broadcast_id']
     ev = stack.bap.wait_bis_found_ev(broadcast_id, 10, False)
     if ev is None:
-        log(f'BIS not found')
+        log('BIS not found')
         return False
 
     bis_id = ev['bis_id']

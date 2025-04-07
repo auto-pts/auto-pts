@@ -18,8 +18,8 @@
 Run under Windows.
 
 Usage:
-$ python3 zephyr path\to\auto-pts\workspaces\zephyr\zephyr-master\zephyr-master.pqw6
-$ python3 mynewt "path\to\auto-pts\workspaces\nimble-master\nimble-master.pqw6"
+$ python3 zephyr path\to\auto-pts\\workspaces\\zephyr\\zephyr-master\\zephyr-master.pqw6
+$ python3 mynewt "path\to\auto-pts\\workspaces\nimble-master\nimble-master.pqw6"
 """
 
 import importlib
@@ -61,7 +61,7 @@ class PyPTSControl(PyPTS):
 
         self._pts_proc = pts_ps_list[0]
 
-        print("Started new PTS daemon with pid: %d" % self._pts_proc.ProcessId)
+        print(f"Started new PTS daemon with pid: {self._pts_proc.ProcessId}")
 
     def get_bluetooth_address(self):
         return '123445567890'
@@ -70,7 +70,7 @@ class PyPTSControl(PyPTS):
 if __name__ == '__main__':
 
     if len(sys.argv) < 3:
-        sys.exit('Usage:\n$ python3 {} <project_name> path/to/workspace.pqw6'.format(sys.argv[0]))
+        sys.exit(f'Usage:\n$ python3 {sys.argv[0]} <project_name> path/to/workspace.pqw6')
 
     project = sys.argv[1]
     mod = importlib.import_module('autopts.bot.iut_config.' + project)
@@ -85,7 +85,7 @@ if __name__ == '__main__':
     workspace_path = sys.argv[2]
 
     if not os.path.isfile(workspace_path) or not workspace_path.endswith('.pqw6'):
-        sys.exit('{} is not a file or workspace (*.pqw6)!'.format(workspace_path))
+        sys.exit(f'{workspace_path} is not a file or workspace (*.pqw6)!')
 
     print('Starting PTS needed to workspace parsing ...')
     pts = PyPTSControl()

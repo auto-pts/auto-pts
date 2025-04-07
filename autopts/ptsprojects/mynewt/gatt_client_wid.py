@@ -14,14 +14,12 @@
 #
 
 import logging
-import socket
 
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import MMI
 from autopts.pybtp import btp
 from autopts.pybtp.types import WIDParams
 from autopts.wid import generic_wid_hdl
-
 
 log = logging.debug
 

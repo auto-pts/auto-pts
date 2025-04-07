@@ -16,13 +16,12 @@
 from datetime import datetime
 from os.path import abspath, basename, dirname
 
-
 AUTOPTS_REPO = dirname(dirname(abspath(__file__)))
 print(AUTOPTS_REPO)
 
 
 def append_lines(file_path, change_id, new_lines):
-    with open(file_path, 'r') as file:
+    with open(file_path) as file:
         lines = file.readlines()
 
     # Find the index of the line with the "#GENERATOR" tag
@@ -49,9 +48,9 @@ def create_file(path, content):
         file.write(content)
 
 
-project_name = input('Enter project name (e.g. zephyr): ').strip() or f'zephyr'
+project_name = input('Enter project name (e.g. zephyr): ').strip() or 'zephyr'
 project_path = f'{AUTOPTS_REPO}/autopts/ptsprojects/{project_name}'
-profile_name = input('Enter profile name: ').strip() or f'profile'
+profile_name = input('Enter profile name: ').strip() or 'profile'
 profile_id = input('Enter new BTP service ID: ').strip() or 0xff
 code_owner = input('Enter code owner name (e.g. Codecoup): ').strip() or 'Codecoup'
 profile_name_lower = profile_name.lower()
@@ -300,10 +299,18 @@ Events:
 }
 
 changes_to_prepend = {
-    f'{project_path}/__init__.py': {1: f"import autopts.ptsprojects.{basename(project_path)}.{profile_name_lower}\n"},
-    f'{AUTOPTS_REPO}/autopts/pybtp/defs.py': {
+    f"{project_path}/__init__.py": {
+        1: (
+            f"import autopts.ptsprojects."
+            f"{basename(project_path)}.{profile_name_lower}\n"
+        )
+    },
+    f"{AUTOPTS_REPO}/autopts/pybtp/defs.py": {
         1: f"BTP_SERVICE_ID_{profile_name_upper} = {profile_id}\n",
-        2: f"BTP_{profile_name_upper}_CMD_READ_SUPPORTED_COMMANDS = 0x01\nBTP_{profile_name_upper}_EV_DUMMY_COMPLETED = 0x80\n\n",
+        2: (
+            f"BTP_{profile_name_upper}_CMD_READ_SUPPORTED_COMMANDS = 0x01\n"
+            f"BTP_{profile_name_upper}_EV_DUMMY_COMPLETED = 0x80\n\n"
+        ),
     },
     f'{AUTOPTS_REPO}/autopts/ptsprojects/stack/layers/__init__.py': {1: f"from .{profile_name_lower} import *\n"},
     f'{AUTOPTS_REPO}/autopts/ptsprojects/stack/stack.py': {
@@ -328,9 +335,13 @@ changes_to_prepend = {
         "supported_commands": defs.BTP_{profile_name_upper}_CMD_READ_SUPPORTED_COMMANDS
     {'}'},
 """,
-        2: f"""    "{profile_name_lower}_reg": (defs.BTP_SERVICE_ID_{profile_name_upper}, defs.BTP_{profile_name_upper}_CMD_REGISTER_SERVICE,
-                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_{profile_name_upper}),
-""",
+        2: f"""    "{profile_name_lower}_reg": (
+                defs.BTP_SERVICE_ID_{profile_name_upper},
+                defs.BTP_{profile_name_upper}_CMD_REGISTER_SERVICE,
+                defs.BTP_INDEX_NONE,
+                defs.BTP_SERVICE_ID_{profile_name_upper}
+            ),
+        """,
     },
 }
 

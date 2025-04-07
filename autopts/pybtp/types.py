@@ -20,7 +20,6 @@ from typing import NamedTuple
 
 from autopts.pybtp import defs
 
-
 gap_settings_btp2txt = {
     defs.GAP_SETTINGS_POWERED: "Powered",
     defs.GAP_SETTINGS_CONNECTABLE: "Connectable",

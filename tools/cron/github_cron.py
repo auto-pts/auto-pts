@@ -27,7 +27,6 @@ from requests.structures import CaseInsensitiveDict
 
 from autopts.utils import get_global_end
 
-
 log = logging.info
 
 
@@ -161,7 +160,7 @@ class GitHubCron(Thread):
         resp = self.get(url, params)
         try:
             comments = resp.json()
-        except:
+        except Exception:
             comments = []
 
         for comment in comments:
@@ -221,7 +220,7 @@ class GitHubCron(Thread):
         resp = self.get(url, params)
         try:
             pr = resp.json()
-        except:
+        except Exception:
             return None
 
         pr_info = {

@@ -38,7 +38,6 @@ import System
 
 from autopts.ptsprojects import ptstypes
 
-
 # load the PTS interop assembly
 clr.AddReferenceToFile("Interop.PTSControl.dll")
 
@@ -143,7 +142,7 @@ def parse_args():
 def file_line_count(file_name):
     """Return line count of a file"""
     with open(file_name) as f:
-        for i, l in enumerate(f):
+        for i, line in enumerate(f):
             pass
     return i + 1
 
@@ -218,7 +217,7 @@ def main():
     # if workspace exits PTS throws:
     # PTSCONTROL_E_FAILED_TO_CREATE_WORKSPACE 0x849C0003
     if os.path.exists(workspace_dir):
-        sys.exit("Workspace %r exist!" % workspace_file)
+        sys.exit(f"Workspace {workspace_file!r} exists!")
 
     pts_control = PyPTSControl()
     pts = pts_control.pts

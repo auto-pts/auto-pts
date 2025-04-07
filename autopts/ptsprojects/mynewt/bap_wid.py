@@ -17,10 +17,8 @@ import logging
 
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp
-from autopts.pybtp.types import *
-from autopts.pybtp.types import WIDParams
+from autopts.pybtp.types import WIDParams, create_lc3_ltvs_bytes
 from autopts.wid import generic_wid_hdl
-
 
 log = logging.debug
 
@@ -44,9 +42,9 @@ def hdl_wid_380(_: WIDParams):
     coding_format = 0x06
     vid = 0x0000
     cid = 0x0000
-    qos_set_name = '16_1_1'
+    qos_set_name = '16_1_1' # noqa: F841 # qos_set_name is not used
 
-    codec_set_name, *qos_config = ('16_1', 7500, 0x00, 30, 2, 8)
+    codec_set_name, *qos_config = ('16_1', 7500, 0x00, 30, 2, 8) # noqa: F841 # codec_set_name is not used
     audio_locations = 0x01
     frames_per_sdu = 0x01
 

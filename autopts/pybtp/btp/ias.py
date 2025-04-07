@@ -17,8 +17,6 @@ import logging
 
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import defs
-from autopts.pybtp.btp.btp import CONTROLLER_INDEX
-from autopts.pybtp.btp.btp import get_iut_method as get_iut
 
 
 def ias_ev_out_alert_action(ias, data, data_len):

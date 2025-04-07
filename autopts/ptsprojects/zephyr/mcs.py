@@ -24,7 +24,6 @@ from autopts.pybtp import btp
 from autopts.pybtp.types import Addr, IOCap
 from autopts.utils import ResultWithFlag
 
-
 iut_addr = ResultWithFlag()
 
 

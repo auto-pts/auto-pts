@@ -14,8 +14,5 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
-
-from .nrf5x import *
-
-
+supported_projects = ['zephyr']
 board_type = 'nrf52840dk/nrf52840'

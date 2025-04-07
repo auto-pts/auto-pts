@@ -17,12 +17,10 @@ import logging
 import random
 import re
 import sys
-import time
 
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp, defs
 from autopts.pybtp.types import WIDParams
-
 
 log = logging.debug
 
@@ -333,10 +331,10 @@ def hdl_wid_20206(params: WIDParams):
 
     if params.test_case_name == "MICP/CL/CGGIT/SER/BV-01-C":
         chars = (stack.micp.event_queues[defs.BTP_MICP_EV_DISCOVERED][0][3])
-        chrc_list = ['{:04X}'.format(chars).upper()]
+        chrc_list = [f'{chars:04X}'.upper()]
     else:
         chars = (stack.micp.event_queues[defs.BTP_MICP_EV_DISCOVERED][0][4:])
-        chrc_list = ['{:04X}'.format(chrc).upper() for chrc in chars]
+        chrc_list = [f'{chrc:04X}'.upper() for chrc in chars]
 
     pattern = re.compile(r"0x([0-9a-fA-F]+)")
     params = pattern.findall(params.description)
