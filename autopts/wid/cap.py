@@ -18,18 +18,24 @@ import re
 import struct
 from argparse import Namespace
 
+from autopts.ptsprojects.stack import WildCard, get_stack
 from autopts.pybtp import btp, defs
-from autopts.ptsprojects.stack import get_stack, WildCard
-from autopts.pybtp.btp import pts_addr_get, pts_addr_type_get, lt2_addr_get, lt2_addr_type_get, lt3_addr_get, \
-    lt3_addr_type_get
-from autopts.pybtp.btp.pacs import pacs_set_available_contexts
-from autopts.pybtp.defs import AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, AUDIO_METADATA_CCID_LIST
-from autopts.pybtp.types import WIDParams, ASCSState, BTPError, PaSyncState, Addr
+from autopts.pybtp.btp import lt2_addr_get, lt2_addr_type_get, lt3_addr_get, lt3_addr_type_get, pts_addr_get, pts_addr_type_get
 from autopts.pybtp.btp.cap import announcements
+from autopts.pybtp.btp.pacs import pacs_set_available_contexts
+from autopts.pybtp.defs import AUDIO_METADATA_CCID_LIST, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS
+from autopts.pybtp.types import Addr, ASCSState, BTPError, PaSyncState, WIDParams
 from autopts.wid import generic_wid_hdl
-from autopts.wid.bap import (create_default_config, AudioDir, get_audio_locations_from_pac,
-                             create_lc3_ltvs_bytes, CODEC_CONFIG_SETTINGS, QOS_CONFIG_SETTINGS,
-                             BAS_CONFIG_SETTINGS)
+from autopts.wid.bap import (
+    BAS_CONFIG_SETTINGS,
+    CODEC_CONFIG_SETTINGS,
+    QOS_CONFIG_SETTINGS,
+    AudioDir,
+    create_default_config,
+    create_lc3_ltvs_bytes,
+    get_audio_locations_from_pac,
+)
+
 
 log = logging.debug
 

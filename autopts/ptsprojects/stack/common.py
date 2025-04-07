@@ -13,7 +13,7 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
-from threading import Lock, Event, Timer
+from threading import Event, Lock, Timer
 from time import sleep
 
 from autopts.utils import raise_on_global_end

@@ -18,9 +18,10 @@
 Usage:
 $ python3 testplan_vs_workspace.py path/to/workspace.pqw6
 """
-import sys
 import os
-from os.path import dirname, abspath
+import sys
+from os.path import abspath, dirname
+
 
 AUTOPTS_REPO = dirname(dirname(abspath(__file__)))
 sys.path.insert(0, AUTOPTS_REPO)

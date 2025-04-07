@@ -21,7 +21,9 @@ import struct
 
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import defs
-from autopts.pybtp.btp.btp import CONTROLLER_INDEX, get_iut_method as get_iut
+from autopts.pybtp.btp.btp import CONTROLLER_INDEX
+from autopts.pybtp.btp.btp import get_iut_method as get_iut
+
 
 MMDL = {
     "read_supp_cmds": (defs.BTP_SERVICE_ID_MMDL,

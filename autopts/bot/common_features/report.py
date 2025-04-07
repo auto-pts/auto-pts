@@ -13,24 +13,25 @@
 # more details.
 #
 
+import datetime
 import logging
 import os
 import re
-import datetime
-import zipfile
 import shutil
+import zipfile
 from pathlib import Path
+from typing import List, Optional
 from xmlrpc.client import ServerProxy
 
 import git
-import yaml
 import xlsxwriter
+import yaml
 
-from autopts.bot.common_features import github
 from autopts.bot import common
+from autopts.bot.common_features import github
 from autopts.client import PtsServer
 from autopts.config import AUTOPTS_ROOT_DIR
-from typing import List, Optional
+
 
 log = logging.debug
 

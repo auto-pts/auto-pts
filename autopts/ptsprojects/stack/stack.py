@@ -14,9 +14,11 @@
 # more details.
 #
 import logging
+
 from autopts.ptsprojects.stack.layers import *
 from autopts.ptsprojects.stack.synch import Synch
 from autopts.pybtp import common
+
 
 STACK = None
 log = logging.debug

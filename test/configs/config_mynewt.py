@@ -18,6 +18,7 @@
 
 from autopts.bot.iut_config.mynewt import iut_config
 
+
 BotProjects = []
 
 m = mynewt_nrf52 = {

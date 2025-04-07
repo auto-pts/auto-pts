@@ -13,12 +13,12 @@
 # more details.
 #
 
+from autopts.client import get_unique_name
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
+from autopts.ptsprojects.zephyr.ots_wid import ots_wid_hdl
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
 from autopts.pybtp import btp
-from autopts.ptsprojects.zephyr.ots_wid import ots_wid_hdl
-from autopts.client import get_unique_name
 from autopts.pybtp.types import Addr
 
 

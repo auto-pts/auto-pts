@@ -15,14 +15,15 @@
 
 """BAP test cases"""
 
-from autopts.pybtp import btp
 from autopts.client import get_unique_name
-from autopts.ptsprojects.stack import get_stack, SynchPoint
+from autopts.ptsprojects.stack import SynchPoint, get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.bap_wid import bap_wid_hdl
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
-from autopts.pybtp.types import Addr, AdType, UUID, AdFlags
+from autopts.pybtp import btp
+from autopts.pybtp.types import UUID, Addr, AdFlags, AdType
 from autopts.utils import ResultWithFlag
+
 
 BROADCAST_CODE = '0102680553F1415AA265BBAFC6EA03B8'
 BROADCAST_ID = 0x123456

@@ -20,9 +20,9 @@ import sys
 import time
 
 from autopts.ptsprojects.stack import get_stack
-from autopts.pybtp import btp
-from autopts.pybtp import defs
+from autopts.pybtp import btp, defs
 from autopts.pybtp.types import WIDParams
+
 
 log = logging.debug
 

@@ -14,18 +14,17 @@
 #
 
 """MESH test cases"""
-from binascii import hexlify
 import random
+from binascii import hexlify
 from uuid import uuid4
 
-from autopts.pybtp import btp
-from autopts.pybtp import defs
-from autopts.pybtp.types import MeshVals
 from autopts.client import get_unique_name
-from autopts.wid import mesh_wid_hdl
-from autopts.ptsprojects.stack import get_stack, SynchPoint
-from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.mynewt.ztestcase import ZTestCase, ZTestCaseSlave
+from autopts.ptsprojects.stack import SynchPoint, get_stack
+from autopts.ptsprojects.testcase import TestFunc
+from autopts.pybtp import btp, defs
+from autopts.pybtp.types import MeshVals
+from autopts.wid import mesh_wid_hdl
 
 
 def set_pixits(ptses):

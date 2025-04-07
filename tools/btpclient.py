@@ -15,25 +15,25 @@
 # more details.
 #
 
-import os
-import sys
-import socket
-import errno
-import shlex
-import struct
-import logging
-import readline
-import binascii
 import argparse
-import threading
+import binascii
+import errno
+import logging
+import os
+import readline
+import shlex
+import socket
+import struct
 import subprocess
+import sys
+import threading
 from distutils.spawn import find_executable
 
-from autopts.pybtp import btp
-from autopts.pybtp import defs
-from autopts.pybtp.iutctl_common import BTPSocket
-from autopts.ptsprojects.zephyr.iutctl import get_qemu_cmd, BTP_ADDRESS
 from autopts.ptsprojects.testcase import AbstractMethodException
+from autopts.ptsprojects.zephyr.iutctl import BTP_ADDRESS, get_qemu_cmd
+from autopts.pybtp import btp, defs
+from autopts.pybtp.iutctl_common import BTPSocket
+
 
 BTP_SOCKET = None
 QEMU_PROCESS = None

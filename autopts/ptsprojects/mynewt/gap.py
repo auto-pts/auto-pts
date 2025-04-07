@@ -15,16 +15,17 @@
 
 """GAP test cases"""
 import binascii
+from time import sleep
 
-from autopts.pybtp import btp
-from autopts.pybtp.types import Addr, IOCap, AdType, AdFlags, Prop, Perm, UUID
 from autopts.client import get_unique_name
+from autopts.ptsprojects.mynewt import gatt
+from autopts.ptsprojects.mynewt.gap_wid import gap_wid_hdl, gap_wid_hdl_mode1_lvl2, gap_wid_hdl_mode1_lvl4
+from autopts.ptsprojects.mynewt.ztestcase import ZTestCase
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
-from autopts.ptsprojects.mynewt import gatt
-from autopts.ptsprojects.mynewt.ztestcase import ZTestCase
-from autopts.ptsprojects.mynewt.gap_wid import gap_wid_hdl, gap_wid_hdl_mode1_lvl2, gap_wid_hdl_mode1_lvl4
-from time import sleep
+from autopts.pybtp import btp
+from autopts.pybtp.types import UUID, Addr, AdFlags, AdType, IOCap, Perm, Prop
+
 
 class SVC:
     gap = (None, None, UUID.gap_svc)

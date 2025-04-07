@@ -18,10 +18,11 @@ import re
 import struct
 import time
 
-from autopts.pybtp import btp
 from autopts.ptsprojects.stack import get_stack
+from autopts.pybtp import btp
 from autopts.pybtp.types import WIDParams
 from autopts.wid import generic_wid_hdl
+
 
 # MMDL ATS ver. 1.0
 log = logging.debug

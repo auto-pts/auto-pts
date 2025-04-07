@@ -25,37 +25,44 @@ $ eval `ssh-agent`
 $ ssh-add path/to/id_rsa
 """
 import copy
+import functools
 import json
 import logging
+import mimetypes
 import os
 import re
 import shlex
-import sys
 import shutil
-import threading
-import schedule
-import requests
-import mimetypes
-import functools
-import traceback
 import subprocess
+import sys
+import threading
+import traceback
+from datetime import date, datetime, timedelta
 from os import listdir
+from os.path import abspath, dirname
 from pathlib import Path
 from time import sleep, time
-from os.path import dirname, abspath
-from datetime import datetime, date, timedelta
+
+import requests
+import schedule
+
 
 AUTOPTS_REPO = dirname(dirname(dirname(abspath(__file__))))
 sys.path.insert(0, AUTOPTS_REPO)
 
-from autopts.utils import get_global_end, terminate_process
-from tools.cron.autopts_bisect import Bisect, set_run_test_fun
 from autopts.bot.common import load_module_from_path, save_files
 from autopts.bot.common_features.github import update_repos
 from autopts.bot.common_features.mail import send_mail
-from autopts.config import generate_file_paths, FILE_PATHS
-from tools.cron.compatibility import find_latest, find_by_project_hash, find_by_autopts_hash, find_by_pts_ver, \
-    get_hash_from_reference
+from autopts.config import FILE_PATHS, generate_file_paths
+from autopts.utils import get_global_end, terminate_process
+from tools.cron.autopts_bisect import Bisect, set_run_test_fun
+from tools.cron.compatibility import (
+    find_by_autopts_hash,
+    find_by_project_hash,
+    find_by_pts_ver,
+    find_latest,
+    get_hash_from_reference,
+)
 from tools.cron.remote_terminal import RemoteTerminalClientProxy
 from tools.merge_db import TestCaseTable
 

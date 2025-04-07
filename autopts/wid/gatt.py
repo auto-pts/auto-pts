@@ -12,20 +12,29 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
-import threading
-from binascii import hexlify
-from time import sleep
 import logging
 import re
 import socket
 import struct
+import threading
+from binascii import hexlify
+from time import sleep
 
-from autopts.pybtp import btp
-from autopts.pybtp.types import Prop, Perm, IOCap, UUID, WIDParams, BTPError
+from autopts.ptsprojects.stack import (
+    GattCharacteristic,
+    GattCharacteristicDescriptor,
+    GattDB,
+    GattPrimary,
+    GattSecondary,
+    GattService,
+    GattServiceIncluded,
+    get_stack,
+)
 from autopts.ptsprojects.testcase import MMI
-from autopts.ptsprojects.stack import get_stack, GattPrimary, GattService, GattSecondary, GattServiceIncluded, \
-    GattCharacteristic, GattCharacteristicDescriptor, GattDB
+from autopts.pybtp import btp
+from autopts.pybtp.types import UUID, BTPError, IOCap, Perm, Prop, WIDParams
 from autopts.wid import generic_wid_hdl
+
 
 log = logging.debug
 

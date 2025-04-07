@@ -16,22 +16,24 @@ import collections
 import copy
 import datetime
 import importlib
+import json
 import logging
 import os
+import shutil
 import subprocess
 import sys
-import shutil
 import time
-import json
 import traceback
-from pathlib import Path
 from argparse import Namespace
+from pathlib import Path
+
 from autopts import client as autoptsclient
-from autopts.bot.common_features import github, report, mail, google_drive
-from autopts.client import CliParser, Client, TestCaseRunStats, init_logging
-from autopts.config import MAX_SERVER_RESTART_TIME, AUTOPTS_ROOT_DIR, generate_file_paths
-from autopts.ptsprojects.boards import get_free_device, get_tty, get_debugger_snr, release_device
+from autopts.bot.common_features import github, google_drive, mail, report
+from autopts.client import Client, CliParser, TestCaseRunStats, init_logging
+from autopts.config import AUTOPTS_ROOT_DIR, MAX_SERVER_RESTART_TIME, generate_file_paths
+from autopts.ptsprojects.boards import get_debugger_snr, get_free_device, get_tty, release_device
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
+
 
 log = logging.debug
 

@@ -17,10 +17,11 @@ import logging
 import re
 import struct
 
-from autopts.pybtp import btp, defs
 from autopts.ptsprojects.stack import get_stack
+from autopts.pybtp import btp, defs
 from autopts.pybtp.types import AdType, OwnAddrType, WIDParams, gap_settings_btp2txt
 from autopts.wid import generic_wid_hdl
+
 
 log = logging.debug
 
