@@ -33,7 +33,7 @@ def run_checks(py_files):
 
     total_files = len(py_files)
     total_files_width = len(str(total_files))
-    print("Will run check for %d files" % total_files)
+    print(f"Will run check for {total_files} files")
 
     for count, fl in enumerate(py_files):
         cmd = "pycodestyle"

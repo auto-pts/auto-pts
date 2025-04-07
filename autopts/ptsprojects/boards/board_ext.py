@@ -17,7 +17,6 @@ import logging
 import os
 import subprocess
 
-
 supported_projects = ["zephyr"]
 
 def reset_cmd(iutctl):

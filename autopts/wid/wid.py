@@ -3,7 +3,6 @@ import logging
 
 from ..pybtp.types import MissingWIDError, WIDParams
 
-
 log = logging.debug
 
 

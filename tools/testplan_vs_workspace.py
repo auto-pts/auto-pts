@@ -57,7 +57,7 @@ class PyPTSControl(PyPTS):
 
         self._pts_proc = pts_ps_list[0]
 
-        print("Started new PTS daemon with pid: %d" % self._pts_proc.ProcessId)
+        print(f"Started new PTS daemon with pid: {self._pts_proc.ProcessId}")
 
     def get_bluetooth_address(self):
         return '123445567890'
@@ -66,16 +66,16 @@ class PyPTSControl(PyPTS):
 if __name__ == '__main__':
 
     if len(sys.argv) < 3:
-        sys.exit('Usage:\n$ python3 {} path/to/workspace path/to/test_plan.xlsx'.format(sys.argv[0]))
+        sys.exit(f'Usage:\n$ python3 {sys.argv[0]} path/to/workspace path/to/test_plan.xlsx')
 
     workspace_path = sys.argv[1]
     testplan_path = sys.argv[2]
 
     if not os.path.isfile(workspace_path) or not workspace_path.endswith('.pqw6'):
-        sys.exit('{} is not a file or workspace (*.pqw6)!'.format(workspace_path))
+        sys.exit(f'{workspace_path} is not a file or workspace (*.pqw6)!')
 
     if not os.path.isfile(testplan_path) or not testplan_path.endswith('.xlsx'):
-        sys.exit('{} is not a file or test plan (*.xlsx)!'.format(testplan_path))
+        sys.exit(f'{testplan_path} is not a file or test plan (*.xlsx)!')
 
     print('Starting PTS needed to workspace parsing ...')
     pts = PyPTSControl()

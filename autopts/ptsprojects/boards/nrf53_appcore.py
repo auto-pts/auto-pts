@@ -13,11 +13,12 @@
 # more details.
 #
 
+import logging
+import os
+
 from autopts.bot.common import check_call
 
-from .nrf5x import *
-
-
+supported_projects = ['zephyr']
 board_type = 'nrf5340dk/nrf5340/cpuapp'
 
 

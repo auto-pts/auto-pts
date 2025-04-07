@@ -16,7 +16,6 @@ import logging
 import re
 import socket
 import struct
-import threading
 from binascii import hexlify
 from time import sleep
 
@@ -34,7 +33,6 @@ from autopts.ptsprojects.testcase import MMI
 from autopts.pybtp import btp
 from autopts.pybtp.types import UUID, BTPError, IOCap, Perm, Prop, WIDParams
 from autopts.wid import generic_wid_hdl
-
 
 log = logging.debug
 
@@ -103,7 +101,7 @@ def gatt_server_fetch_db():
             hdr_len = struct.calcsize(hdr)
             uuid_len = val_len - hdr_len
 
-            prop, value_handle, uuid = struct.unpack("<BH%ds" % uuid_len, val)
+            prop, value_handle, uuid = struct.unpack(f"<BH{uuid_len}s", val)
             uuid = btp.btp2uuid(uuid_len, uuid)
 
             db.attr_add(handle, GattCharacteristic(handle, perm, uuid, att_rsp, prop, value_handle))
@@ -111,7 +109,7 @@ def gatt_server_fetch_db():
             hdr = "<HH"
             hdr_len = struct.calcsize(hdr)
             uuid_len = val_len - hdr_len
-            incl_svc_hdl, end_grp_hdl, uuid = struct.unpack(hdr + "%ds" % uuid_len, val)
+            incl_svc_hdl, end_grp_hdl, uuid = struct.unpack(hdr + f"{uuid_len}s", val)
             uuid = btp.btp2uuid(uuid_len, uuid)
 
             db.attr_add(handle, GattServiceIncluded(handle, perm, uuid, att_rsp, incl_svc_hdl, end_grp_hdl))
@@ -572,7 +570,7 @@ def hdl_wid_36(params: WIDParams):
         hdr = "<HH"
         hdr_len = struct.calcsize(hdr)
         uuid_len = val_len - hdr_len
-        incl_svc_hdl, end_grp_hdl, uuid = struct.unpack(hdr + "%ds" % uuid_len, val)
+        incl_svc_hdl, end_grp_hdl, uuid = struct.unpack(hdr + f"{uuid_len}s", val)
         uuid = btp.btp2uuid(uuid_len, uuid)
 
         iut_service = [start_handle, incl_svc_hdl, end_grp_hdl, uuid]
@@ -713,7 +711,7 @@ def hdl_wid_52(params: WIDParams):
 
     if attr.uuid == UUID.CEP:
         (value_read,) = struct.unpack("<H", attr.value)
-        value_read_str = '{0:04x}'.format(value_read)
+        value_read = f'{value_read:04x}'
     else:
         value_read = hexlify(attr.value).upper()
         value_read_str = value_read.decode('utf-8')
@@ -1351,7 +1349,7 @@ def hdl_wid_110(_: WIDParams):
         hdr_len = struct.calcsize(hdr)
         uuid_len = val_len - hdr_len
 
-        prop, handle, chrc_uuid = struct.unpack("<BH%ds" % uuid_len, val)
+        prop, handle, chrc_uuid = struct.unpack(f"<BH{uuid_len}s", val)
         chrc_value_attr = btp.gatts_get_attrs(start_handle=handle,
                                               end_handle=handle)
         if not chrc_value_attr:
@@ -1359,7 +1357,7 @@ def hdl_wid_110(_: WIDParams):
 
         handle, perm, type_uuid = chrc_value_attr[0]
         if not perm & Perm.read or not prop & Prop.read:
-            return '{0:04x}'.format(handle)
+            return f'{handle:04x}'
 
     return '0000'
 
@@ -1381,7 +1379,7 @@ def hdl_wid_111(_: WIDParams):
         hdr_len = struct.calcsize(hdr)
         uuid_len = val_len - hdr_len
 
-        prop, handle, chrc_uuid = struct.unpack("<BH%ds" % uuid_len, val)
+        prop, handle, chrc_uuid = struct.unpack(f"<BH{uuid_len}s", val)
         chrc_value_attr = btp.gatts_get_attrs(start_handle=handle,
                                               end_handle=handle)
         if not chrc_value_attr:
@@ -1411,7 +1409,7 @@ def hdl_wid_112(_: WIDParams):
         hdr_len = struct.calcsize(hdr)
         uuid_len = val_len - hdr_len
 
-        prop, handle, chrc_uuid = struct.unpack("<BH%ds" % uuid_len, val)
+        prop, handle, chrc_uuid = struct.unpack(f"<BH{uuid_len}s", val)
         chrc_value_attr = btp.gatts_get_attrs(start_handle=handle,
                                               end_handle=handle)
         if not chrc_value_attr:
@@ -1428,7 +1426,7 @@ def hdl_wid_112(_: WIDParams):
         if att_rsp != 8:
             continue
 
-        return '{0:04x}'.format(handle)
+        return f'{handle:04x}'
 
     return '0000'
 
@@ -1450,7 +1448,7 @@ def hdl_wid_113(_: WIDParams):
         hdr_len = struct.calcsize(hdr)
         uuid_len = val_len - hdr_len
 
-        prop, handle, chrc_uuid = struct.unpack("<BH%ds" % uuid_len, val)
+        prop, handle, chrc_uuid = struct.unpack(f"<BH{uuid_len}s", val)
         chrc_value_attr = btp.gatts_get_attrs(start_handle=handle,
                                               end_handle=handle)
         if not chrc_value_attr:
@@ -1490,7 +1488,7 @@ def hdl_wid_114(_: WIDParams):
         hdr_len = struct.calcsize(hdr)
         uuid_len = val_len - hdr_len
 
-        prop, handle, chrc_uuid = struct.unpack("<BH%ds" % uuid_len, val)
+        prop, handle, chrc_uuid = struct.unpack(f"<BH{uuid_len}s", val)
         chrc_value_attr = btp.gatts_get_attrs(start_handle=handle,
                                               end_handle=handle)
         if not chrc_value_attr:
@@ -1498,7 +1496,7 @@ def hdl_wid_114(_: WIDParams):
 
         handle, perm, type_uuid = chrc_value_attr[0]
         if perm & Perm.read_authn:
-            return '{0:04x}'.format(handle)
+            return f'{handle:04x}'
 
     return '0000'
 
@@ -1520,7 +1518,7 @@ def hdl_wid_115(_: WIDParams):
         hdr_len = struct.calcsize(hdr)
         uuid_len = val_len - hdr_len
 
-        prop, handle, chrc_uuid = struct.unpack("<BH%ds" % uuid_len, val)
+        prop, handle, chrc_uuid = struct.unpack(f"<BH{uuid_len}s", val)
         chrc_value_attr = btp.gatts_get_attrs(start_handle=handle,
                                               end_handle=handle)
         if not chrc_value_attr:
@@ -1545,7 +1543,7 @@ def hdl_wid_118(_: WIDParams):
         logging.error("No attribute found!")
         return "0000"
 
-    return '{0:04x}'.format(handle + 1)
+    return f'{handle + 1:04x}'
 
 
 def hdl_wid_119(_: WIDParams):
@@ -1567,7 +1565,7 @@ def hdl_wid_119(_: WIDParams):
         hdr_len = struct.calcsize(hdr)
         uuid_len = val_len - hdr_len
 
-        prop, handle, uuid = struct.unpack("<BH%ds" % uuid_len, val)
+        prop, handle, uuid = struct.unpack(f"<BH{uuid_len}s", val)
         uuid_list.append(btp.btp2uuid(uuid_len, uuid))
 
     if len(uuid_list) == 0:
@@ -1603,7 +1601,7 @@ def hdl_wid_120(_: WIDParams):
         hdr_len = struct.calcsize(hdr)
         uuid_len = val_len - hdr_len
 
-        prop, handle, chrc_uuid = struct.unpack("<BH%ds" % uuid_len, val)
+        prop, handle, chrc_uuid = struct.unpack(f"<BH{uuid_len}s", val)
         chrc_value_attr = btp.gatts_get_attrs(start_handle=handle,
                                               end_handle=handle)
         if not chrc_value_attr:
@@ -1611,7 +1609,7 @@ def hdl_wid_120(_: WIDParams):
 
         handle, perm, type_uuid = chrc_value_attr[0]
         if not perm & Perm.write or not prop & Prop.write:
-            return '{0:04x}'.format(handle)
+            return f'{handle:04x}'
 
     return '0000'
 
@@ -1633,7 +1631,7 @@ def hdl_wid_121(_: WIDParams):
         hdr_len = struct.calcsize(hdr)
         uuid_len = val_len - hdr_len
 
-        prop, handle, chrc_uuid = struct.unpack("<BH%ds" % uuid_len, val)
+        prop, handle, chrc_uuid = struct.unpack(f"<BH{uuid_len}s", val)
         chrc_value_attr = btp.gatts_get_attrs(start_handle=handle,
                                               end_handle=handle)
         if not chrc_value_attr:
@@ -1650,7 +1648,7 @@ def hdl_wid_121(_: WIDParams):
         if att_rsp != 0x0c:
             continue
 
-        return '{0:04x}'.format(handle)
+        return f'{handle:04x}'
 
     return '0000'
 
@@ -1672,7 +1670,7 @@ def hdl_wid_122(_: WIDParams):
         hdr_len = struct.calcsize(hdr)
         uuid_len = val_len - hdr_len
 
-        prop, handle, chrc_uuid = struct.unpack("<BH%ds" % uuid_len, val)
+        prop, handle, chrc_uuid = struct.unpack(f"<BH{uuid_len}s", val)
         chrc_value_attr = btp.gatts_get_attrs(start_handle=handle,
                                               end_handle=handle)
         if not chrc_value_attr:
@@ -1701,7 +1699,7 @@ def hdl_wid_130(params: WIDParams):
 
     # This is needed until ES-27410 is incorporated
     if params.test_case_name in ['GATT/SR/GAI/BV-01-C', 'GATT/SR/GAN/BV-01-C']:
-       btp.gap_set_bondable_off();
+       btp.gap_set_bondable_off()
 
     return True
 
@@ -1936,7 +1934,7 @@ def hdl_wid_151(_: WIDParams):
         hdr_len = struct.calcsize(hdr)
         uuid_len = val_len - hdr_len
 
-        prop, handle, chrc_uuid = struct.unpack("<BH%ds" % uuid_len, val)
+        prop, handle, chrc_uuid = struct.unpack(f"<BH{uuid_len}s", val)
         chrc_value_attr = btp.gatts_get_attrs(start_handle=handle,
                                               end_handle=handle)
         if not chrc_value_attr:
@@ -1956,7 +1954,7 @@ def hdl_wid_151(_: WIDParams):
 
         _, val_len, _ = chrc_value_data
         if val_len > 0:
-            return '{0:04x}'.format(handle)
+            return f'{handle:04x}'
 
     return False
 
@@ -1977,7 +1975,7 @@ def hdl_wid_152(_: WIDParams):
         hdr_len = struct.calcsize(hdr)
         uuid_len = val_len - hdr_len
 
-        prop, handle, chrc_uuid = struct.unpack("<BH%ds" % uuid_len, val)
+        prop, handle, chrc_uuid = struct.unpack(f"<BH{uuid_len}s", val)
         chrc_value_attr = btp.gatts_get_attrs(start_handle=handle,
                                               end_handle=handle)
         if not chrc_value_attr:
@@ -1994,7 +1992,7 @@ def hdl_wid_152(_: WIDParams):
 
         _, val_len, _ = chrc_value_data
         if val_len > 64:
-            return '{0:04x}'.format(handle)
+            return f'{handle:04x}'
 
     return False
 

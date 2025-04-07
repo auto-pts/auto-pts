@@ -20,9 +20,8 @@ from autopts.ptsprojects.mynewt.ztestcase import ZTestCase
 from autopts.ptsprojects.stack import L2cap, get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.pybtp import btp
-from autopts.pybtp.types import Addr, L2CAPConnectionResponse
+from autopts.pybtp.types import Addr
 from autopts.wid import l2cap_wid_hdl
-
 
 le_psm = 128
 psm_unsupported = 241

@@ -14,34 +14,31 @@
 #
 
 """Wrapper around btp messages. The functions are added as needed."""
-import binascii
 import logging
 import struct
 
 from autopts.pybtp import defs
-from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check
+from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, pts_addr_get, pts_addr_type_get
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
-from autopts.pybtp.btp.btp import pts_addr_get, pts_addr_type_get
-from autopts.pybtp.types import BTPError, addr2btp_ba
-
+from autopts.pybtp.types import addr2btp_ba
 
 HAS = {
     'read_supported_cmds': ( defs.BTP_SERVICE_ID_HAS,
                              defs.BTP_HAS_CMD_READ_SUPPORTED_COMMANDS,
                              CONTROLLER_INDEX),
-    'set_active_index':    ( defs.BTP_SERVICE_ID_HAS, 
+    'set_active_index':    ( defs.BTP_SERVICE_ID_HAS,
                              defs.BTP_HAS_CMD_SET_ACTIVE_INDEX,
                              CONTROLLER_INDEX),
-    'set_preset_name':     ( defs.BTP_SERVICE_ID_HAS, 
+    'set_preset_name':     ( defs.BTP_SERVICE_ID_HAS,
                              defs.BTP_HAS_CMD_SET_PRESET_NAME,
                              CONTROLLER_INDEX),
-    'remove_preset':       ( defs.BTP_SERVICE_ID_HAS, 
+    'remove_preset':       ( defs.BTP_SERVICE_ID_HAS,
                              defs.BTP_HAS_CMD_REMOVE_PRESET,
                              CONTROLLER_INDEX),
-    'add_preset':          ( defs.BTP_SERVICE_ID_HAS, 
+    'add_preset':          ( defs.BTP_SERVICE_ID_HAS,
                              defs.BTP_HAS_CMD_ADD_PRESET,
                              CONTROLLER_INDEX),
-    'set_properties':      ( defs.BTP_SERVICE_ID_HAS, 
+    'set_properties':      ( defs.BTP_SERVICE_ID_HAS,
                              defs.BTP_HAS_CMD_SET_PROPERTIES,
                              CONTROLLER_INDEX)
 }

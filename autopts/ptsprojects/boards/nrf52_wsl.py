@@ -21,7 +21,6 @@ import sys
 
 from autopts.bot.common import check_call
 
-
 supported_projects = ['zephyr']
 
 
@@ -50,7 +49,7 @@ def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None, *args):
 
     cmd = ['west', 'build', '-p', 'auto', '-b', board]
     if conf_file and conf_file != 'default' and conf_file != 'prj.conf':
-        cmd.extend(('--', '-DEXTRA_CONF_FILE=\'{}\''.format(conf_file)))
+        cmd.extend(('--', f'-DEXTRA_CONF_FILE=\'{conf_file}\''))
 
     shell = True
     if sys.platform == 'win32':

@@ -39,16 +39,15 @@ from time import sleep
 
 import schedule
 
-
-# Needed if autopts is not installed as a module
-AUTOPTS_REPO=dirname(dirname(dirname(abspath(__file__))))
-sys.path.extend([AUTOPTS_REPO])
-
 from autopts.bot.common import load_module_from_path
 from autopts.utils import get_global_end, have_admin_rights, set_global_end, terminate_process
 from tools.cron.common import load_config, set_cron_cfg
 from tools.cron.cron_gui import CronGUI, RequestPuller
 from tools.cron.estimations import get_estimations
+
+# Needed if autopts is not installed as a module
+AUTOPTS_REPO=dirname(dirname(dirname(abspath(__file__))))
+sys.path.extend([AUTOPTS_REPO])
 
 
 if sys.platform == 'win32':
@@ -259,10 +258,15 @@ def schedule_pr_job(cron, pr_info, job_config):
             estimations += f'<details><summary>Test cases to be run</summary>{"<br>".join(test_cases)}</details>\n'
 
             if skipped_test_cases:
-                estimations += (f'<details><summary>Test cases skipped due to limit, count: {len(skipped_test_cases)}</summary>'
-                                f'{"<br>".join(skipped_test_cases)}</details>\n')
+                estimations += (
+                    f"<details>"
+                    f"<summary>Test cases skipped due to limit, count: {len(skipped_test_cases)}</summary>"
+                    f"{'<br>'.join(skipped_test_cases)}"
+                    f"</details>\n"
+                )
+
         else:
-            estimations = f', test case count: estimation not available'
+            estimations = ', test case count: estimation not available'
 
         job_config.pop('test_case_limit')
         job_config['estimated_duration'] = est_duration

@@ -18,7 +18,6 @@ import logging
 
 from autopts.bot.mynewt import check_call
 
-
 supported_projects = ['mynewt']
 board_type = 'nordic_pca10056'
 
@@ -31,9 +30,9 @@ def reset_cmd(iutctl):
     with_srn = ''
 
     if iutctl.debugger_snr:
-        with_srn = ' -s {}'.format(iutctl.debugger_snr)
+        with_srn = f' -s {iutctl.debugger_snr}'
 
-    return 'nrfjprog -f nrf52 -r {}'.format(with_srn)
+    return f'nrfjprog -f nrf52 -r {with_srn}'
 
 
 def build_and_flash(project_path, board, overlay=None, debugger_snr=None):
@@ -48,40 +47,37 @@ def build_and_flash(project_path, board, overlay=None, debugger_snr=None):
                   board, overlay)
 
     check_call('rm -rf bin/'.split(), cwd=project_path)
-    check_call('rm -rf targets/{}_boot/'.format(board).split(),
+    check_call(f'rm -rf targets/{board}_boot/'.split(),
                cwd=project_path)
     check_call('rm -rf targets/bttester/'.split(), cwd=project_path)
 
-    check_call('newt target create {}_boot'.format(board).split(),
+    check_call(f'newt target create {board}_boot'.split(),
                cwd=project_path)
     check_call('newt target create bttester'.split(), cwd=project_path)
 
     check_call(
-        'newt target set {0}_boot bsp=@apache-mynewt-core/hw/bsp/{0}'.format(
-            board).split(), cwd=project_path)
+        f'newt target set {board}_boot bsp=@apache-mynewt-core/hw/bsp/{board}'.split(), cwd=project_path)
     check_call(
-        'newt target set {}_boot app=@mcuboot/boot/mynewt'.format(
-            board).split(), cwd=project_path)
+        f'newt target set {board}_boot app=@mcuboot/boot/mynewt'.split(), cwd=project_path)
     check_call(f'newt target set {board}_boot syscfg=MYNEWT_DOWNLOADER=nrfjprog'.split(),
                cwd=project_path)
 
     check_call(
-        'newt target set bttester bsp=@apache-mynewt-core/hw/bsp/{}'.format(
-            board).split(), cwd=project_path)
+        f'newt target set bttester bsp=@apache-mynewt-core/hw/bsp/{board}'.split(), cwd=project_path)
     check_call(
         'newt target set bttester app=@apache-mynewt-nimble/apps/bttester'.split(),
         cwd=project_path)
 
     config = 'MYNEWT_DOWNLOADER=nrfjprog'
     if overlay:
-        config += ':' + ':'.join(['{}={}'.format(k, v) for k, v in list(overlay.items())])
+        config += ':' + ':'.join([f'{k}={v}' for k, v in list(overlay.items())])
 
-    check_call('newt target set bttester syscfg={}'.format(config).split(), cwd=project_path)
+    check_call(f'newt target set bttester syscfg={config}'.split(), cwd=project_path)
 
-    check_call('newt build {}_boot'.format(board).split(), cwd=project_path)
+    check_call(f'newt build {board}_boot'.split(), cwd=project_path)
     check_call('newt build bttester'.split(), cwd=project_path)
 
-    check_call('newt create-image -2 {}_boot timestamp'.format(board).split(),
+    check_call(f'newt create-image -2 {board}_boot timestamp'.split(),
                cwd=project_path)
     check_call('newt create-image -2 bttester timestamp'.split(), cwd=project_path)
 

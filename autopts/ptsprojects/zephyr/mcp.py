@@ -25,7 +25,6 @@ from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
 from autopts.pybtp import btp
 from autopts.pybtp.types import Addr, IOCap
 
-
 queue = Queue()
 
 

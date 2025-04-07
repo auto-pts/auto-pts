@@ -19,7 +19,6 @@ import sys
 
 from autopts.bot.common import check_call
 
-
 supported_projects = ['mynewt']
 
 
@@ -40,8 +39,7 @@ def reset_cmd(iutctl):
         with open(reset_jlink, 'x') as f:
             f.write('r\nq')
 
-    return '{} -nogui 1 -if swd -speed 4000 -device CORTEX-M33 -commanderscript {}' \
-        .format(jlink, reset_jlink)
+    return f'{jlink} -nogui 1 -if swd -speed 4000 -device CORTEX-M33 -commanderscript {reset_jlink}'
 
 
 def build_and_flash(project_path, board, overlay=None):
@@ -69,13 +67,12 @@ def build_and_flash(project_path, board, overlay=None):
     check_call('newt target create da1469x_bttester'.split(), cwd=project_path)
 
     check_call(
-        'newt target set da1469x_boot bsp=@apache-mynewt-core/hw/bsp/{0}'.format(
-            board).split(), cwd=project_path)
+        f'newt target set da1469x_boot bsp=@apache-mynewt-core/hw/bsp/{board}'.split(), cwd=project_path)
     check_call(
         'newt target set da1469x_boot app=@mcuboot/boot/mynewt'.split(), cwd=project_path)
 
     check_call(
-        'newt target set da1469x_flash_loader bsp=@apache-mynewt-core/hw/bsp/{}'.format(board).split(),
+        f'newt target set da1469x_flash_loader bsp=@apache-mynewt-core/hw/bsp/{board}'.split(),
         cwd=project_path)
     check_call(
         'newt target set da1469x_flash_loader app=@apache-mynewt-core/apps/flash_loader'.split(), cwd=project_path)
@@ -114,7 +111,7 @@ def build_and_flash(project_path, board, overlay=None):
 ''')
 
     check_call(
-        'newt target set da1469x_bttester bsp=@apache-mynewt-core/hw/bsp/{}'.format(board).split(), cwd=project_path)
+        f'newt target set da1469x_bttester bsp=@apache-mynewt-core/hw/bsp/{board}'.split(), cwd=project_path)
     check_call(
         'newt target set da1469x_bttester app=@apache-mynewt-nimble/apps/bttester'.split(),
         cwd=project_path)
@@ -124,8 +121,8 @@ def build_and_flash(project_path, board, overlay=None):
                'CMAC_IMAGE_TARGET_NAME=dialog_cmac'.split(), cwd=project_path)
 
     if overlay is not None:
-        config = ':'.join(['{}={}'.format(k, v) for k, v in list(overlay.items())])
-        check_call('newt target set da1469x_bttester syscfg={}'.format(config).split(),
+        config = ':'.join([f'{k}={v}' for k, v in list(overlay.items())])
+        check_call(f'newt target set da1469x_bttester syscfg={config}'.split(),
                    cwd=project_path)
 
     check_call('newt build dialog_cmac'.split(), cwd=project_path)

@@ -18,11 +18,10 @@ import re
 import struct
 
 from autopts.ptsprojects.stack import WildCard, get_stack
-from autopts.pybtp import btp, defs
+from autopts.pybtp import btp
 from autopts.pybtp.defs import AUDIO_METADATA_PROGRAM_INFO, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS
 from autopts.pybtp.types import CODEC_CONFIG_SETTINGS, BTPError, WIDParams, create_lc3_ltvs_bytes
 from autopts.wid.bap import BAS_CONFIG_SETTINGS
-
 
 log = logging.debug
 
@@ -48,7 +47,7 @@ def hdl_wid_100(_: WIDParams):
         log('No advertisement with Public Broadcast Announcement and Broadcast Name found')
         return False
 
-    log(f'Public Broadcast Announcement and Broadcast Name found')
+    log('Public Broadcast Announcement and Broadcast Name found')
 
     encrypted = (ev['pba_features'] & 1 ) != 0
     broadcast_id = ev['broadcast_id']
@@ -74,7 +73,7 @@ def hdl_wid_100(_: WIDParams):
         log(f'BIS not found for broadcast ID {broadcast_id}')
         return False
 
-    log(f'BIS found')
+    log('BIS found')
 
     return True
 
@@ -132,7 +131,7 @@ def hdl_wid_551(params: WIDParams):
     if match:
         pba_features =  int(match.group(), 16)
     else:
-        log(f'Cannot find expected PBP Features')
+        log('Cannot find expected PBP Features')
         return False
 
     stack = get_stack()
@@ -147,7 +146,7 @@ def hdl_wid_551(params: WIDParams):
         log('No advertisement with Public Broadcast Announcement and Broadcast Name found')
         return False
 
-    log(f'Public Broadcast Announcement with feature %u and Broadcast Name found' % ev['pba_features'])
+    log(f"Public Broadcast Announcement with feature {ev['pba_features']} and Broadcast Name found")
 
     return ev['pba_features'] == pba_features
 
@@ -174,7 +173,7 @@ def hdl_wid_378(_: WIDParams):
         log(f'BIS Sync failed for broadcast ID {broadcast_id}, bis-id {bis_id}')
         return False
 
-    log(f'BIS Synced')
+    log('BIS Synced')
     return True
 
 

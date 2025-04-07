@@ -28,10 +28,8 @@ from autopts.pybtp.iutctl_common import BTP_ADDRESS, BTPSocketSrv, BTPWorker
 from autopts.pybtp.types import BTPError
 from autopts.rtt import BTMON, RTTLogger
 
-
 log = logging.debug
 MYNEWT = None
-import importlib
 
 
 IUT_LOG_FO = None
@@ -90,12 +88,13 @@ class MynewtCtl:
             mode_cmd = (">nul 2>nul cmd.exe /c \"mode " + com + "BAUD=115200 PARITY=n DATA=8 STOP=1\"")
             os.system(mode_cmd)
 
-            socat_cmd = ("socat.exe -x -v tcp:" + socket.gethostbyname(socket.gethostname()) +
-                         ":%s,retry=100,interval=1 %s,raw,b115200" %
-                         (self.socket_srv.sock.getsockname()[1], self.tty_file))
+            socat_cmd = (
+                f"socat.exe -x -v tcp:{socket.gethostbyname(socket.gethostname())}:"
+                f"{self.socket_srv.sock.getsockname()[1]},retry=100,interval=1 "
+                f"{self.tty_file},raw,b115200"
+            )
         else:
-            socat_cmd = ("socat -x -v %s,rawer,b115200 UNIX-CONNECT:%s" %
-                         (self.tty_file, self.btp_address))
+            socat_cmd = f"socat -x -v {self.tty_file},rawer,b115200 UNIX-CONNECT:{self.btp_address}"
 
         log("Starting socat process: %s", socat_cmd)
 

@@ -23,7 +23,6 @@ import os
 import sqlite3
 import sys
 
-
 DATABASE_FILE = 'Merge_database.db'
 
 
@@ -52,15 +51,15 @@ class TestCaseTable:
 
             for table in tables:
                 self.cursor_merge.execute(
-                    "CREATE TABLE IF NOT EXISTS {} (name TEXT, duration REAL, "
-                    "count INTEGER, result TEXT);".format(table[0]))
+                    f"CREATE TABLE IF NOT EXISTS {table[0]} (name TEXT, duration REAL, "
+                    "count INTEGER, result TEXT);")
 
-                source_cursor.execute("SELECT DISTINCT name FROM {};".format(table[0]))
+                source_cursor.execute(f"SELECT DISTINCT name FROM {table[0]};")
                 source_test_cases = [row[0] for row in source_cursor.fetchall()]
 
                 for test_case_name in source_test_cases:
                     source_cursor.execute(
-                        "SELECT duration, count, result FROM {} WHERE name=:name;".format(table[0]),
+                        f"SELECT duration, count, result FROM {table[0]} WHERE name=:name;",
                         {"name": test_case_name}
                     )
                     source_data = source_cursor.fetchall()
@@ -69,7 +68,7 @@ class TestCaseTable:
                         max_count = max(row[1] for row in source_data)
 
                         self.cursor_merge.execute(
-                            "SELECT count FROM {} WHERE name=:name;".format(table[0]),
+                            f"SELECT count FROM {table[0]} WHERE name=:name;",
                             {"name": test_case_name}
                         )
                         current_count = self.cursor_merge.fetchone()
@@ -78,11 +77,11 @@ class TestCaseTable:
                             continue
 
                         self.cursor_merge.execute(
-                            "DELETE FROM {} WHERE name=:name;".format(table[0]),
+                            f"DELETE FROM {table[0]} WHERE name=:name;",
                             {"name": test_case_name}
                         )
                         self.cursor_merge.executemany(
-                            "INSERT INTO {} (name, duration, count, result) VALUES (?, ?, ?, ?);".format(table[0]),
+                            f"INSERT INTO {table[0]} (name, duration, count, result) VALUES (?, ?, ?, ?);",
                             [(test_case_name, row[0], row[1], row[2]) for row in source_data]
                         )
                         self.conn_merge.commit()
@@ -104,7 +103,7 @@ class MergeParser(argparse.ArgumentParser):
 if __name__ == "__main__":
     if len(sys.argv) < 2:
         sys.exit(
-            'Usage:\n$ python3 {} path/to/input1.db path/to/input2.db ... -o path/to/output.db'.format(sys.argv[0]))
+            f'Usage:\n$ python3 {sys.argv[0]} path/to/input1.db path/to/input2.db ... -o path/to/output.db')
 
     parser = MergeParser()
     arg = parser.parse_args()

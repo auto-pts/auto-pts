@@ -23,7 +23,6 @@ from autopts.pybtp import btp
 from autopts.pybtp.types import Addr, L2CAPConnectionResponse
 from autopts.wid import l2cap_wid_hdl
 
-
 le_psm = 128
 psm_unsupported = 241
 le_initial_mtu = 120

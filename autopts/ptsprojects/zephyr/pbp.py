@@ -13,7 +13,6 @@
 # more details.
 #
 
-import struct
 
 from autopts.client import get_unique_name
 from autopts.ptsprojects.stack import get_stack
@@ -23,7 +22,6 @@ from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
 from autopts.pybtp import btp
 from autopts.pybtp.types import Addr
 from autopts.utils import ResultWithFlag
-
 
 PROGRAM_INFO = '00112233445566778899AABBCCDDEEFF'
 BROADCAST_CODE = '0102680553F1415AA265BBAFC6EA03B8'

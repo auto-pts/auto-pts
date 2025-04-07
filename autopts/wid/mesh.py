@@ -19,8 +19,7 @@ import time
 
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp
-from autopts.pybtp.types import UUID, MeshVals, Perm, WIDParams
-
+from autopts.pybtp.types import MeshVals, Perm, WIDParams
 
 # Mesh ATS ver. 1.0
 log = logging.debug
@@ -3690,7 +3689,7 @@ def hdl_wid_920(params: WIDParams):
     description: Please send SUBNET_BRIDGE_GET:
 
     MeshApplicationData::Network Header
-    Network Header: 
+    Network Header:
         NID: <WildCard: Exists>
         IVI: <WildCard: Exists>
         TTL: <WildCard: Exists>
@@ -3716,7 +3715,7 @@ def hdl_wid_921(params: WIDParams):
     description: Please send SUBNET_BRIDGE_SET:
 
     MeshApplicationData::Network Header
-    Network Header: 
+    Network Header:
         NID: <WildCard: Exists>
         IVI: <WildCard: Exists>
         TTL: <WildCard: Exists>
@@ -3868,7 +3867,7 @@ def hdl_wid_926(params: WIDParams):
     description: Please send BRIDGE_CAPABILITY_GET:
 
     MeshApplicationData::Network Header
-    Network Header: 
+    Network Header:
         NID: <WildCard: Exists>
         IVI: <WildCard: Exists>
         TTL: <WildCard: Exists>

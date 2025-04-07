@@ -14,33 +14,32 @@
 # more details.
 #
 
-from .aics import *
-from .ascs import *
-from .bap import *
-from .cap import *
-from .ccp import *
-from .core import *
-from .csip import *
-from .gap import *
-from .gatt import *
-from .gattcl import *
-from .gmcs import *
-from .gtbs import *
-from .hap import *
-from .ias import *
-from .l2cap import *
-from .mcp import *
-from .mesh import *
-from .micp import *
-from .mics import *
-from .ots import *
-from .pacs import *
-from .pbp import *
-from .tbs import *
-from .tmap import *
-from .vcp import *
-from .vcs import *
-from .vocs import *
-
+from .aics import *  # noqa: F403 # used in many files : TODO import directly in files not with *
+from .ascs import *  # noqa: F403 # used in many files : TODO import directly in files not with *
+from .bap import *  # noqa: F403 # used in many files : TODO import directly in files not with *
+from .cap import *  # noqa: F403 # used in many files : TODO import directly in files not with *
+from .ccp import *  # noqa: F403 # used in many files : TODO import directly in files not with *
+from .core import *  # noqa: F403 # used in many files : TODO import directly in files not with *
+from .csip import *  # noqa: F403 # used in many files : TODO import directly in files not with *
+from .gap import *  # noqa: F403 # used in many files : TODO import directly in files not with *
+from .gatt import *  # noqa: F403 # used in many files : TODO import directly in files not with *
+from .gattcl import *  # noqa: F403 # used in many files : TODO import directly in files not with *
+from .gmcs import *  # noqa: F403 # used in many files : TODO import directly in files not with *
+from .gtbs import *  # noqa: F403 # used in many files : TODO import directly in files not with *
+from .hap import *  # noqa: F403 # used in many files : TODO import directly in files not with *
+from .ias import *  # noqa: F403 # used in many files : TODO import directly in files not with *
+from .l2cap import *  # noqa: F403 # used in many files : TODO import directly in files not with *
+from .mcp import *  # noqa: F403 # used in many files : TODO import directly in files not with *
+from .mesh import *  # noqa: F403 # used in many files : TODO import directly in files not with *
+from .micp import *  # noqa: F403 # used in many files : TODO import directly in files not with *
+from .mics import *  # noqa: F403 # used in many files : TODO import directly in files not with *
+from .ots import *  # noqa: F403 # used in many files : TODO import directly in files not with *
+from .pacs import *  # noqa: F403 # used in many files : TODO import directly in files not with *
+from .pbp import *  # noqa: F403 # used in many files : TODO import directly in files not with *
+from .tbs import *  # noqa: F403 # used in many files : TODO import directly in files not with *
+from .tmap import *  # noqa: F403 # used in many files : TODO import directly in files not with *
+from .vcp import *  # noqa: F403 # used in many files : TODO import directly in files not with *
+from .vcs import *  # noqa: F403 # used in many files : TODO import directly in files not with *
+from .vocs import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 
 # GENERATOR append 1

@@ -18,7 +18,6 @@
 
 from autopts.bot.iut_config.zephyr import iut_config
 
-
 BotProjects = []
 
 z = external_nrf52 = {
@@ -84,7 +83,7 @@ z['mail'] = {
 # ****************************************************************************
 # Github configuration
 #
-# To commit and push logs to Github.
+# To commit and push logs to GitHub.
 # Configured ssh-agent must be started earlier.
 # ****************************************************************************
 z['githubdrive'] = {

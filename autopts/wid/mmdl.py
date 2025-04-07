@@ -22,7 +22,6 @@ from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp
 from autopts.pybtp.types import WIDParams
 
-
 # MMDL ATS ver. 1.0
 log = logging.debug
 

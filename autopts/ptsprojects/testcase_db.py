@@ -1,6 +1,5 @@
 import sqlite3
 
-
 DATABASE_FILE = 'TestCase.db'
 
 
@@ -11,8 +10,8 @@ class TestCaseTable:
         self.name = name
 
         self.cursor.execute(
-            "CREATE TABLE IF NOT EXISTS {} (name TEXT, duration REAL, "
-            "count INTEGER, result TEXT);".format(self.name))
+            f"CREATE TABLE IF NOT EXISTS {self.name} (name TEXT, duration REAL, "
+            "count INTEGER, result TEXT);")
         self.conn.commit()
 
         self._close()
@@ -29,12 +28,12 @@ class TestCaseTable:
         self._open()
 
         self.cursor.execute(
-            "SELECT duration, count FROM {} "
-            "WHERE name=:name;".format(self.name), {"name": test_case_name})
+            f"SELECT duration, count FROM {self.name} "
+            "WHERE name=:name;", {"name": test_case_name})
         row = self.cursor.fetchall()
         if len(row) == 0:
             self.cursor.execute(
-                "INSERT INTO {} VALUES(?, ?, ?, ?);".format(self.name),
+                f"INSERT INTO {self.name} VALUES(?, ?, ?, ?);",
                 (test_case_name, duration, 1, result))
             self.conn.commit()
             self._close()
@@ -49,8 +48,8 @@ class TestCaseTable:
         mean += (duration - mean) // count
 
         self.cursor.execute(
-            "UPDATE {} SET duration=:duration, count=:count, result=:result "
-            "WHERE name=:name".format(self.name), {"duration": mean,
+            f"UPDATE {self.name} SET duration=:duration, count=:count, result=:result "
+            "WHERE name=:name", {"duration": mean,
                                                    "count": count,
                                                    "name": test_case_name,
                                                    "result": result})
@@ -61,8 +60,8 @@ class TestCaseTable:
         self._open()
 
         self.cursor.execute(
-            "SELECT duration FROM {} "
-            "WHERE name=:name;".format(self.name), {"name": test_case_name})
+            f"SELECT duration FROM {self.name} "
+            "WHERE name=:name;", {"name": test_case_name})
         row = self.cursor.fetchone()
         self._close()
 
@@ -75,8 +74,8 @@ class TestCaseTable:
         self._open()
 
         self.cursor.execute(
-            "SELECT result FROM {} "
-            "WHERE name=:name".format(self.name), {"name": test_case_name})
+            f"SELECT result FROM {self.name} "
+            "WHERE name=:name", {"name": test_case_name})
         row = self.cursor.fetchone()
         self._close()
 

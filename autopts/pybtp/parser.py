@@ -16,7 +16,6 @@
 import struct
 from collections import namedtuple
 
-
 HDR_LEN = 5
 
 
@@ -36,12 +35,18 @@ def dec_hdr(frame):
 
 
 def repr_hdr(header):
-    return f"Header(svc_id=0x{header.svc_id:02x}, op=0x{header.op:02x}, ctrl_index=0x{header.ctrl_index:02x}, data_len=0x{header.data_len:02x})"
+    return (
+        f"Header(svc_id=0x{header.svc_id:02x}, "
+        f"op=0x{header.op:02x}, "
+        f"ctrl_index=0x{header.ctrl_index:02x}, "
+        f"data_len=0x{header.data_len:02x})"
+    )
+
 
 def dec_data(frame):
     data_len = len(frame)
 
-    return struct.unpack('<%ds' % data_len, frame)
+    return struct.unpack(f"<{data_len}s", frame)
 
 
 def enc_frame(svc_id, op, ctrl_index, data):
@@ -51,4 +56,4 @@ def enc_frame(svc_id, op, ctrl_index, data):
         data = data.to_bytes(1, "little")
     int_len = len(data)
 
-    return struct.pack('<3Bh%ds' % int_len, svc_id, op, ctrl_index, int_len, data)
+    return struct.pack(f"<3Bh{int_len}s", svc_id, op, ctrl_index, int_len, data)

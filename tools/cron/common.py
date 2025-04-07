@@ -46,10 +46,6 @@ from time import sleep, time
 import requests
 import schedule
 
-
-AUTOPTS_REPO = dirname(dirname(dirname(abspath(__file__))))
-sys.path.insert(0, AUTOPTS_REPO)
-
 from autopts.bot.common import load_module_from_path, save_files
 from autopts.bot.common_features.github import update_repos
 from autopts.bot.common_features.mail import send_mail
@@ -66,9 +62,11 @@ from tools.cron.compatibility import (
 from tools.cron.remote_terminal import RemoteTerminalClientProxy
 from tools.merge_db import TestCaseTable
 
+AUTOPTS_REPO = dirname(dirname(dirname(abspath(__file__))))
+sys.path.insert(0, AUTOPTS_REPO)
 
 if sys.platform == 'win32':
-    import wmi
+    pass
 
 log = logging.info
 CRON_CFG = {}
@@ -86,7 +84,7 @@ def catch_exceptions(cancel_on_failure=False):
         def __catch_exceptions(*args, **kwargs):
             try:
                 return job_func(*args, **kwargs)
-            except:
+            except Exception:
                 log(traceback.format_exc())
                 if hasattr(CRON_CFG, 'email'):
                     magic_tag = kwargs['magic_tag'] if 'magic_tag' in kwargs else None
@@ -129,7 +127,7 @@ def report_to_review_msg(report_path):
     passed = []
     msg = 'AutoPTS Bot results:\n'
 
-    with open(report_path, 'r') as f:
+    with open(report_path) as f:
         f.readline()
 
         while True:
@@ -162,7 +160,7 @@ def error_to_review_msg(config):
         msg += 'Reason unknown'
         return msg
 
-    with open(error_txt_path, 'r') as f:
+    with open(error_txt_path) as f:
         while True:
             line = f.readline()
 
@@ -180,10 +178,10 @@ def send_mail_exception(conf_name, email_cfg, exception, magic_tag=None):
         return
 
     iso_cal = date.today().isocalendar()
-    ww_dd_str = 'WW%s.%s' % (iso_cal[1], iso_cal[2])
+    ww_dd_str = f"WW{iso_cal[1]}.{iso_cal[2]}"
 
     if magic_tag is not None:
-        job_type_info = '<p>Session was triggered with magic sentence: {}</p>'.format(magic_tag)
+        job_type_info = f'<p>Session was triggered with magic sentence: {magic_tag}</p>'
     else:
         job_type_info = '<p>Session was triggered with cyclical schedule</p>'
 
@@ -216,7 +214,7 @@ def clear_workspace(workspace_dir):
                     try:
                         if not f.name.endswith(('.pqw6', '.pts', '.gitignore', '.xlsx', '.bls', '.bqw')):
                             os.remove(f)
-                    except:
+                    except Exception:
                         pass
 
 
@@ -359,7 +357,7 @@ def pre_cleanup_files(config):
                     shutil.rmtree(file_path, ignore_errors=True)
 
         save_files(files_to_save, save_dir)
-    except:
+    except Exception:
         pass
 
 
@@ -379,7 +377,7 @@ def git_reset_head(cwd):
 
 
 def git_checkout(branch, cwd):
-    cmd = 'git checkout {}'.format(branch)
+    cmd = f'git checkout {branch}'
     log(f'Running: {cmd}')
     check_call(cmd.split(), cwd=cwd)
 
@@ -391,13 +389,11 @@ def git_rebase_abort(cwd):
 
 
 def merge_pr_branch(pr_source_repo_owner, pr_source_branch, repo_name, project_repo):
-    cmd = 'git fetch https://github.com/{}/{}.git'.format(
-        pr_source_repo_owner, repo_name)
+    cmd = f'git fetch https://github.com/{pr_source_repo_owner}/{repo_name}.git'
     log(f'Running: {cmd}')
     check_call(cmd.split(), cwd=project_repo)
 
-    cmd = 'git pull --rebase https://github.com/{}/{}.git {}'.format(
-        pr_source_repo_owner, repo_name, pr_source_branch)
+    cmd = f'git pull --rebase https://github.com/{pr_source_repo_owner}/{repo_name}.git {pr_source_branch}'
     log(f'Running: {cmd}')
     check_call(cmd.split(), cwd=project_repo)
 
@@ -407,7 +403,7 @@ def parse_yaml(file_path):
     parsed_dict = {}
 
     if os.path.exists(file_path):
-        with open(file_path, 'r') as stream:
+        with open(file_path) as stream:
             parsed_dict = yaml.safe_load(stream)
 
     return parsed_dict
@@ -449,7 +445,7 @@ def start_vm(config, checkout_repos=False):
 
         while True:
             try:
-                log(client.run_command(f"echo Connected", None))
+                log(client.run_command("echo Connected", None))
                 break
             except BaseException:
                 if timeout_flag.is_set():
@@ -492,13 +488,13 @@ def close_vm(config):
                                        ) as client:
             log(client.run_command(config['vm']['vm_close_cmd'], None))
         sleep(config['vm']['max_close_time'])
-    except BaseException as e:
+    except BaseException:
         log(f"Remote server at IP {config['remote_machine']['terminal_ip']} "
             f"port {config['remote_machine']['terminal_port']} is not reachable")
 
 
 def close_remote_autoptsserver(config):
-    log(f"Closing remote autoptsserver and PTS")
+    log("Closing remote autoptsserver and PTS")
     try:
         config = config['cron']['remote_machine']
         with RemoteTerminalClientProxy(config['terminal_ip'],
@@ -508,7 +504,7 @@ def close_remote_autoptsserver(config):
             client.terminate_process(None, 'PTS', None)
             client.terminate_process(None, 'FTS', None)
             client.terminate_process(None, None, 'autoptsserver.py')
-    except BaseException as e:
+    except BaseException:
         log(f"Remote server at IP {config['terminal_ip']} port {config['terminal_port']} is not reachable")
 
 
@@ -651,7 +647,7 @@ def _run_test(config):
                 timedelta(seconds=current_time - os.path.getmtime(results_file_path)) > timedelta(seconds=timeguard)):
             if os.path.exists(all_stats_file_path):
                 try:
-                    with open(all_stats_file_path, 'r') as f:
+                    with open(all_stats_file_path) as f:
                         data = json.load(f)
                         test_cases_completed = data.get('test_run_completed', False)
                 except BaseException as e:
@@ -673,7 +669,7 @@ def run_test(config):
 
     try:
         _run_test(config)
-    except:
+    except Exception:
         log(traceback.format_exc())
     finally:
         terminate_processes(config)
@@ -802,7 +798,7 @@ def _generic_pr_job(cron, cfg, pr_cfg, **kwargs):
     try:
         merge_pr_branch(pr_cfg['source_repo_owner'], pr_cfg['source_branch'],
                         pr_cfg['repo_name'], repo_path)
-    except:
+    except Exception:
         git_rebase_abort(repo_path)
         return 'Failed to merge the PR branch'
 

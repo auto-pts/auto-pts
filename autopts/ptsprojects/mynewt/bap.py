@@ -24,7 +24,6 @@ from autopts.pybtp import btp
 from autopts.pybtp.types import Addr
 from autopts.utils import ResultWithFlag
 
-
 broadcast_code = '0102680553F1415AA265BBAFC6EA03B8'
 
 

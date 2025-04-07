@@ -15,16 +15,24 @@
 
 import logging
 import re
+import struct
 from argparse import Namespace
 
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import MMI
-from autopts.pybtp import btp
+from autopts.pybtp import btp, defs
 from autopts.pybtp.btp.btp import lt2_addr_get, lt2_addr_type_get, pts_addr_get, pts_addr_type_get
 from autopts.pybtp.defs import AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS
-from autopts.pybtp.types import *
+from autopts.pybtp.types import (
+    CODEC_CONFIG_SETTINGS,
+    QOS_CONFIG_SETTINGS,
+    UUID,
+    ASCSState,
+    AudioDir,
+    WIDParams,
+    create_lc3_ltvs_bytes,
+)
 from autopts.wid import generic_wid_hdl
-
 
 log = logging.debug
 
@@ -468,7 +476,7 @@ def hdl_wid_489(_: WIDParams):
         btp.bap_broadcast_sink_sync(id, sid, 5, 600, False, 0, addr_type, addr)
         ev = stack.bap.wait_bis_found_ev(id, 50)
 
-    return not ev is None
+    return ev is not None
 
 
 def hdl_wid_490(_: WIDParams):

@@ -17,7 +17,6 @@ import logging
 
 from autopts.pybtp.types import WIDParams
 
-
 log = logging.debug
 
 

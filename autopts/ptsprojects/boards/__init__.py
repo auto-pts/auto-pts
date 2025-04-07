@@ -22,11 +22,9 @@ import pkgutil
 import shlex
 import subprocess
 import sys
-from collections import defaultdict
 
 import pylink
 import serial.tools.list_ports
-
 
 # For each new board just create a <new-board-name>.py file that contains reset_cmd() function and list
 # of supported boards.
@@ -50,7 +48,7 @@ class Board:
         """
         log(f"About to reset DUT: {self.reset_cmd}")
 
-        if type(self.reset_cmd) == str:
+        if isinstance(self.reset_cmd, str):
             reset_process = subprocess.Popen(shlex.split(self.reset_cmd),
                                              shell=False,
                                              stdout=subprocess.DEVNULL,
@@ -63,7 +61,7 @@ class Board:
             self.reset_cmd()
 
     def get_reset_cmd(self):
-        """Get and Return Board reset command, 
+        """Get and Return Board reset command,
         which will be executed in Board.reset() with subprocess.
 
         Returns:
@@ -78,13 +76,13 @@ class Board:
             board_mod = importlib.import_module(__package__ + '.' + self.name)
 
             if board_mod is None:
-                raise Exception("Board name %s is not supported!" % self.name)
+                raise Exception(f"Board name {self.name} is not supported!")
             return board_mod.reset_cmd(self.iutctl)
         else:
             try:
                 return Jlink(self.iutctl.debugger_snr, self.iutctl.device_core).reset_command
-            except Exception as e:
-                raise Exception("Board name %s is not supported! and failed to reset with Jlink." % self.name)
+            except Exception:
+                raise Exception(f"Board name {self.name} is not supported! and failed to reset with Jlink.")
 
 
 def pylink_reset(debugger_snr, device_core):
@@ -107,7 +105,7 @@ def get_build_and_flash(board_name):
     board_mod = importlib.import_module(__package__ + '.' + board_name)
 
     if board_mod is None:
-        raise Exception("Board name %s is not supported!" % board_name)
+        raise Exception(f"Board name {board_name} is not supported!")
 
     try:
         return getattr(board_mod, 'build_and_flash')
@@ -119,7 +117,7 @@ def get_board_type(board_name):
     board_mod = importlib.import_module(__package__ + '.' + board_name)
 
     if board_mod is None:
-        raise Exception("Board name %s is not supported!" % board_name)
+        raise Exception(f"Board name {board_name} is not supported!")
 
     try:
         return getattr(board_mod, 'board_type')
@@ -142,17 +140,18 @@ def get_available_boards(project):
 def get_openocd_reset_cmd(openocd_bin, openocd_scripts, openocd_cfg):
     """Compute openocd reset command"""
     if not os.path.isfile(openocd_bin):
-        raise Exception("openocd {} not found!".format(openocd_bin))
+        raise Exception(f"openocd {openocd_bin} not found!")
 
     if not os.path.isdir(openocd_scripts):
-        raise Exception("openocd scripts {} not found!".format(openocd_scripts))
+        raise Exception(f"openocd scripts {openocd_scripts} not found!")
 
     if not os.path.isfile(openocd_cfg):
-        raise Exception("openocd config {} not found!".format(openocd_cfg))
+        raise Exception(f"openocd config {openocd_cfg} not found!")
 
-    reset_cmd = ('%s -s %s -f %s -c "init" -c "targets 1" '
-                 '-c "reset halt" -c "reset run" -c "shutdown"' %
-                 (openocd_bin, openocd_scripts, openocd_cfg))
+    reset_cmd = (
+        f'{openocd_bin} -s {openocd_scripts} -f {openocd_cfg} -c "init" -c "targets 1" '
+        f'-c "reset halt" -c "reset run" -c "shutdown"'
+    )
 
     return reset_cmd
 
@@ -187,7 +186,7 @@ def get_free_device(board=None):
     if ret_tty is not None:
         devices_in_use.append(ret_tty)
 
-    log("Got free rtt for device {}: {}".format(ret_snr, ret_tty))
+    log(f"Got free rtt for device {ret_snr}: {ret_tty}")
     return ret_tty, ret_snr
 
 
@@ -220,7 +219,7 @@ def get_tty(debugger_snr, board=None):
             if board != 'nrf53_audio':
                 break
 
-    log("Got tty for device {}: {}".format(debugger_snr, tty))
+    log(f"Got tty for device {debugger_snr}: {tty}")
     return tty
 
 
@@ -260,28 +259,32 @@ def tty_to_com(tty):
     return None
 
 
-class Jlink(object):
+class Jlink:
     """
     A wrapper for SEGGER-JLink.
     """
 
     def __init__(self, sn, device):
-        """Create an instance of the JLink debugger class.
+        """
+        Create an instance of the JLink debugger class.
 
         Arguments:
             sn {str} -- serial number of Jlink device.
             device {str} -- device core name to be connected with jlink
         """
-        super(Jlink, self).__init__()
+        super().__init__()
         self.sn = sn
         self.device = device
-        self._reset_seqs =  "si 1\n" \
-                            "speed 4000\n" \
-                            "h\n" \
-                            "RSetType 2\n" \
-                            "r\n" \
-                            "g\n" \
-                            "q\n"
+        self._reset_seqs = (
+            "si 1\n"
+            "speed 4000\n"
+            "h\n"
+            "RSetType 2\n"
+            "r\n"
+            "g\n"
+            "q\n"
+        )
+
 
     @property
     def reset_command(self):

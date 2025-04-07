@@ -22,7 +22,6 @@ from autopts.ptsprojects.testcase_db import TestCaseTable
 from tools.cron.common import catch_exceptions, load_config, parse_yaml
 from tools.cron.remote_terminal import RemoteTerminalClientProxy
 
-
 log = logging.info
 
 if sys.platform == 'win32':

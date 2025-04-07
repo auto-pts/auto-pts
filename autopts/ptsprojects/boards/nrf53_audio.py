@@ -13,13 +13,12 @@
 # more details.
 #
 
+import logging
 import os
 
 from autopts.bot.common import check_call
 
-from .nrf5x import *
-
-
+supported_projects = ['zephyr']
 board_type = 'nrf5340_audio_dk/nrf5340/cpuapp'
 
 
@@ -33,10 +32,10 @@ def build_and_flash_core(zephyr_wd, build_dir, board, debugger_snr, configs, rec
     cmd = ['west', 'build', '--no-sysbuild', '-b', board]
     cmd.extend(overlay.split())
     check_call(cmd, cwd=build_dir)
-    
+
     build_name = str(build_dir).split('/')[-1]
-    check_call("rm ./build_{}.zip || exit 0".format(build_name).split(), cwd=zephyr_wd)
-    check_call("zip -r {}/build_{}.zip build -i '*.hex' '*.config'".format(zephyr_wd, build_name).split(), cwd=build_dir)
+    check_call(f"rm ./build_{build_name}.zip || exit 0".split(), cwd=zephyr_wd)
+    check_call(f"zip -r {zephyr_wd}/build_{build_name}.zip build -i '*.hex' '*.config'".split(), cwd=build_dir)
 
     cmd = ['west', 'flash', '--skip-rebuild', '-i', debugger_snr]
     if recover:
@@ -70,8 +69,8 @@ def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None, *args):
 
     config_dir_net = os.getenv("AUTOPTS_SOURCE_DIR_NET")
     if config_dir_net is None:
-        net_core_configs = [f'EXTRA_CONF_FILE=\'nrf5340_cpunet_iso-bt_ll_sw_split.conf;'
-                            f'../../../tests/bluetooth/tester/hci_ipc_cpunet.conf\'']
+        net_core_configs = ['EXTRA_CONF_FILE=\'nrf5340_cpunet_iso-bt_ll_sw_split.conf;'
+                            '../../../tests/bluetooth/tester/hci_ipc_cpunet.conf\'']
     else:
         conf_path = os.path.join(zephyr_wd, config_dir_net, 'hci_ipc.conf')
         net_core_configs = [f'EXTRA_CONF_FILE=\'{conf_path}\'']

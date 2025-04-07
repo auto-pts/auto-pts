@@ -29,7 +29,6 @@ import shutil
 import signal
 import socket
 import sys
-import tempfile
 import threading
 import time
 import traceback
@@ -61,7 +60,6 @@ from autopts.utils import (
     ykush_replug_usb,
 )
 from cliparser import CliParser
-
 
 log = logging.debug
 log_lock = threading.RLock()
@@ -129,7 +127,7 @@ class FakeProxy:
     Usefull when testing code locally and auto-pts server is not needed"""
 
     def __init__(self):
-        self.info = f"mock"
+        self.info = "mock"
 
     def __getattr__(self, item):
         return '_generic'
@@ -238,8 +236,7 @@ class ClientCallback(PTSCallback):
                          usage.
         """
 
-        logger = logging.getLogger("{}.{}".format(self.__class__.__name__,
-                                                  self.log.__name__))
+        logger = logging.getLogger(f"{self.__class__.__name__}.{self.log.__name__}")
         logger.info("%s %s %s %s %s", ptstypes.PTS_LOGTYPE_STRING[log_type],
                     logtype_string, log_time, test_case_name,
                     log_message)
@@ -261,8 +258,7 @@ class ClientCallback(PTSCallback):
         };
         """
 
-        logger = logging.getLogger("{}.{}".format(
-            self.__class__.__name__, self.on_implicit_send.__name__))
+        logger = logging.getLogger(f"{self.__class__.__name__}.{self.on_implicit_send.__name__}")
 
         logger.info(f"""
     {"*" * 20}
@@ -434,7 +430,7 @@ def init_logging(tag="", log_filename=None):
     else:
         script_name = os.path.basename(sys.argv[0])  # in case it is full path
         script_name_no_ext = os.path.splitext(script_name)[0]
-        log_filename = "%s%s.log" % (script_name_no_ext, tag)
+        log_filename = f"{script_name_no_ext}{tag}.log"
 
     format_template = ("%(asctime)s %(threadName)s %(name)s %(levelname)s %(filename)-25s "
                        "%(lineno)-5s %(funcName)-25s : %(message)s")
@@ -472,7 +468,7 @@ def init_pts_thread_entry(proxy, args, exceptions, finish_count):
         raise Exception("Failed to restart PTS!")
 
     err = proxy.callback.get_result('restart_pts', timeout=args.max_server_restart_time)
-    if err != True:
+    if not err:
         raise Exception(f"Failed to restart PTS, err {err}")
 
     proxy.set_call_timeout(TEST_CASE_TIMEOUT_MS)  # milliseconds
@@ -610,7 +606,7 @@ class TestCaseRunStats:
 
     @staticmethod
     def load_from_backup(backup_file):
-        with open(backup_file, 'r') as f:
+        with open(backup_file) as f:
             data = json.load(f)
             stats = TestCaseRunStats([], [], 0, None)
             stats.__dict__.update(data)
@@ -638,7 +634,7 @@ class TestCaseRunStats:
         tree = ElementTree.parse(self.xml_results)
         root = tree.getroot()
 
-        elem = root.find("./test_case[@name='%s']" % test_case_name)
+        elem = root.find(f"./test_case[@name='{test_case_name}']")
         if elem is None:
             elem = ElementTree.SubElement(root, 'test_case')
             elem.attrib["new"] = '0'
@@ -663,12 +659,12 @@ class TestCaseRunStats:
             run_count = int(elem.attrib["run_count"])
 
         elem.attrib["status"] = status
-        
+
         if test_start_time is not None:
             elem.attrib["test_start_time"] = test_start_time.strftime('%Y-%m-%d %H:%M:%S')
         if test_end_time is not None:
             elem.attrib["test_end_time"] = test_end_time.strftime('%Y-%m-%d %H:%M:%S')
-            
+
         regression = bool(elem.attrib["status"] != "PASS" and elem.attrib["status_previous"] == "PASS")
         progress = bool(elem.attrib["status"] == "PASS" and elem.attrib["status_previous"] != "PASS" \
                         and elem.attrib["status_previous"] != "None")
@@ -686,7 +682,7 @@ class TestCaseRunStats:
         root = tree.getroot()
 
         for tc in descriptions.keys():
-            elem = root.find("./test_case[@name='%s']" % tc)
+            elem = root.find(f"./test_case[@name='{tc}']")
             if elem is None:
                 continue
 
@@ -862,7 +858,7 @@ def run_test_case_wrapper(func):
 
         retries_max = run_count_max - 1
         if run_count:
-            retries_msg = "#{}".format(run_count)
+            retries_msg = f"#{run_count}"
         else:
             retries_msg = ""
 
@@ -876,9 +872,9 @@ def run_test_case_wrapper(func):
         end_time_str = str(round(datetime.timedelta(
             seconds=duration).total_seconds(), 3))
 
-        result = ("{} ".format(status).ljust(15) +
+        result = (f"{status} ".ljust(15) +
                   end_time_str.rjust(len(end_time_str)) +
-                  retries_msg.rjust(len("#{}".format(retries_max)) + margin) +
+                  retries_msg.rjust(len(f"#{retries_max}") + margin) +
                   regression_msg.rjust(len("REGRESSION") + margin))
 
         if sys.stdout.isatty():
@@ -1052,9 +1048,11 @@ class LTThread(InterruptableThread):
             except BaseException as test_case_error:
                 try:
                     self.locked = self.interrupt_lock.acquire(blocking=False)
-                except:
-                    # In case KeyboardInterrupt was injected
+                except KeyboardInterrupt:
+                    # In case KeyboardInterrupt was injected, we deliberately ignore it here
                     pass
+                except Exception as e:
+                    log(f"Unexpected error while acquiring interrupt lock: {e}")
 
                 if isinstance(test_case_error, threading.BrokenBarrierError):
                     log(f'SYNCH: Cancelled waiting at a barrier, tc {test_case.name}')
@@ -1286,7 +1284,7 @@ def run_test_cases(ptses, test_case_instances, args, stats, **kwargs):
 
     approx = ''
     if stats.est_duration:
-        approx = f" in approximately: " + str(datetime.timedelta(seconds=stats.est_duration))
+        approx = " in approximately: " + str(datetime.timedelta(seconds=stats.est_duration))
     print(f"Number of test cases to run: {stats.num_test_cases}{approx}")
 
     for test_case in test_cases:
@@ -1577,7 +1575,7 @@ def run_recovery(args, ptses):
                     pts.recover_pts()
                     req_sent = True
                     err = pts.callback.get_result('recover_pts', timeout=args.max_server_restart_time)
-                    if err == True:
+                    if err:
                         log('PTS recovered')
                         break
 

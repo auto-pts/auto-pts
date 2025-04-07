@@ -19,11 +19,10 @@ import xmlrpc.client
 import xmlrpc.server
 from os.path import abspath, dirname
 
+from autopts.utils import hid_gpio_hub_set_usb_power, ykush_set_usb_power
 
 AUTOPTS_REPO = dirname(dirname(abspath(__file__)))
 sys.path.insert(0, AUTOPTS_REPO)
-
-from autopts.utils import hid_gpio_hub_set_usb_power, ykush_set_usb_power
 
 
 SRN = None
@@ -53,7 +52,7 @@ class StartArgumentParser(argparse.ArgumentParser):
     def check_args(arg):
         """Sanity check command line arguments"""
         if not 49152 <= arg.port <= 65535:
-            sys.exit("Invalid server port number=%s, expected range <49152,65535> " % (arg.port,))
+            sys.exit(f"Invalid server port number={arg.port}, expected range <49152,65535>")
 
     def parse_args(self, args=None, namespace=None):
         arg = super().parse_args(args, namespace)
@@ -83,7 +82,7 @@ def start_server():
         VID = int(VID, 16)
         PID = int(PID, 16)
 
-    print("Active USB hub serving on port {} ...".format(args.port))
+    print(f"Active USB hub serving on port {args.port} ...")
     server = xmlrpc.server.SimpleXMLRPCServer((args.ip, args.port), allow_none=True)
     server.register_function(set_usb_power, 'set_usb_power')
     server.register_introspection_functions()
@@ -92,7 +91,7 @@ def start_server():
     while True:
         try:
             server.handle_request()
-        except KeyboardInterrupt as e:
+        except KeyboardInterrupt:
             return
         except BaseException as e:
             traceback.print_exception(e)

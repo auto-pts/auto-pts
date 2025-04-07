@@ -20,7 +20,7 @@ import re
 import shutil
 import zipfile
 from pathlib import Path
-from typing import List, Optional
+from typing import Optional
 from xmlrpc.client import ServerProxy
 
 import git
@@ -32,7 +32,6 @@ from autopts.bot.common_features import github
 from autopts.client import PtsServer
 from autopts.config import AUTOPTS_ROOT_DIR
 
-
 log = logging.debug
 
 
@@ -41,7 +40,7 @@ def get_errata(errata_files):
 
     for file in errata_files:
         if os.path.exists(file):
-            with open(file, 'r') as stream:
+            with open(file) as stream:
                 loaded_errata = yaml.safe_load(stream)
                 if loaded_errata:
                     errata.update(loaded_errata)
@@ -70,7 +69,15 @@ def make_repo_status(repos_info):
 # ****************************************************************************
 # .xlsx spreadsheet file
 # ****************************************************************************
-def find_matching_xml_filename(test_case: str, xml_list: Optional[List[os.DirEntry]]) -> Optional[str]:
+# include List depending on python version
+try:
+    from typing import List # noqa: UP035, I001
+    T_LIST = List # noqa: UP006
+except ImportError:
+    #version below 3.9
+    T_LIST = list
+
+def find_matching_xml_filename(test_case: str, xml_list: Optional['T_LIST[os.DirEntry]']) -> Optional[str]:
     """
     Finds first XML filename in `xml_list` matching the test_case string.
     Matching is based on replacing '/' and '-' with '_' in test_case.
@@ -190,7 +197,7 @@ def make_report_xlsx(report_xlsx_path: str,
     total_count = len(results_dict)
     worksheet.write(end_row + 2, summary_col, "Total")
     worksheet.write(end_row + 2, summary_col + 1, f"{total_count}")
-    
+
     worksheet.write(end_row + 3, summary_col, "PassRate", bold_format)
     pass_count = status_dict.get("PASS", 0)
     if total_count > 0:
@@ -198,7 +205,7 @@ def make_report_xlsx(report_xlsx_path: str,
     else:
         pass_rate = "0.00%"
     worksheet.write(end_row + 3, summary_col + 1, pass_rate, bold_format)
-    
+
     chart.set_title({'name': 'AutoPTS test results'})
     chart.add_series({
         'categories': ['Report', summary_row + 1, summary_col, end_row, summary_col],
@@ -251,7 +258,7 @@ def report_parse_test_cases(report):
 
     test_cases = []
 
-    with open(report, 'r') as f:
+    with open(report) as f:
         while True:
             line = f.readline()
 
@@ -280,19 +287,19 @@ def make_report_diff(old_report_txt, report_diff_txt_path, results,
         if tc not in test_cases:
             deleted_cases.append(tc)
 
-    f.write(f"Regressions:\n")
+    f.write("Regressions:\n")
     for tc in regressions:
         f.write(f"{tc}\n")
 
-    f.write(f"\nProgresses:\n")
+    f.write("\nProgresses:\n")
     for tc in progresses:
         f.write(f"{tc}\n")
 
-    f.write(f"\nNew cases:\n")
+    f.write("\nNew cases:\n")
     for tc in new_cases:
         f.write(f"{tc}\n")
 
-    f.write(f"\nDeleted cases:\n")
+    f.write("\nDeleted cases:\n")
     for tc in deleted_cases:
         f.write(f"{tc}\n")
 
@@ -334,7 +341,7 @@ def github_push_report(report_folder, log_git_conf, commit_msg):
     repo_name = re.findall(r'(?<=/).+(?=\.git)', remote_url)[0]
     repo_owner = re.findall(r'(?<=\/|:).+(?=\/.+?\.git)', remote_url)[0]
 
-    return 'https://github.com/{}/{}/tree/{}'.format(repo_owner, repo_name, head_sha), dst_folder
+    return f'https://github.com/{repo_owner}/{repo_name}/tree/{head_sha}', dst_folder
 
 
 def archive_recursive(dir_path):
@@ -451,7 +458,7 @@ def pull_server_logs(args, tmp_dir, xml_folder):
                 # Include PTS .xml logs of test cases with PASS verdict
                 # into a separate "XMLs" folder. Those will have reference
                 # entries in report.xlsx
-                if file_path.endswith('.xml') and not 'tc_log' in file_path \
+                if file_path.endswith('.xml') and 'tc_log' not in file_path \
                         and b'Final Verdict:PASS' in file_bin.data:
                     (test_name, timestamp) = split_xml_filename(file_path)
                     if test_name in last_xml[0]:

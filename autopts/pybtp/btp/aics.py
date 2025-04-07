@@ -3,59 +3,12 @@ import logging
 import struct
 
 from autopts.pybtp import defs
-from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check
+from autopts.pybtp.btp.btp import btp_hdr_check, pts_addr_get, pts_addr_type_get
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
-from autopts.pybtp.btp.btp import pts_addr_get, pts_addr_type_get
+from autopts.pybtp.common import aics_btp
 from autopts.pybtp.types import BTPError, addr2btp_ba
 
-
-AICS = {
-    "read_supported_cmds": (defs.BTP_SERVICE_ID_AICS,
-                            defs.BTP_AICS_CMD_READ_SUPPORTED_COMMANDS,
-                            CONTROLLER_INDEX, ""),
-    "set_gain":            (defs.BTP_SERVICE_ID_AICS,
-                            defs.BTP_AICS_CMD_SET_GAIN,
-                            CONTROLLER_INDEX),
-    "mute":                (defs.BTP_SERVICE_ID_AICS,
-                            defs.BTP_AICS_CMD_MUTE,
-                            CONTROLLER_INDEX),
-    "unmute":              (defs.BTP_SERVICE_ID_AICS,
-                            defs.BTP_AICS_CMD_UNMUTE,
-                            CONTROLLER_INDEX),
-    "auto_gain":           (defs.BTP_SERVICE_ID_AICS,
-                            defs.BTP_AICS_CMD_AUTO_GAIN_SET,
-                            CONTROLLER_INDEX),
-    "man_gain":            (defs.BTP_SERVICE_ID_AICS,
-                            defs.BTP_AICS_CMD_MAN_GAIN_SET,
-                            CONTROLLER_INDEX),
-    "man_gain_only":       (defs.BTP_SERVICE_ID_AICS,
-                            defs.BTP_AICS_CMD_SET_MAN_GAIN_ONLY,
-                            CONTROLLER_INDEX, ""),
-    "auto_gain_only":      (defs.BTP_SERVICE_ID_AICS,
-                            defs.BTP_AICS_CMD_SET_AUTO_GAIN_ONLY,
-                            CONTROLLER_INDEX, ""),
-    "desc_set":            (defs.BTP_SERVICE_ID_AICS,
-                            defs.BTP_AICS_CMD_AUDIO_DESC_SET,
-                            CONTROLLER_INDEX),
-    "mute_disable":        (defs.BTP_SERVICE_ID_AICS,
-                            defs.BTP_AICS_CMD_MUTE_DISABLE,
-                            CONTROLLER_INDEX, ""),
-    "aics_state":          (defs.BTP_SERVICE_ID_AICS,
-                            defs.BTP_AICS_CMD_STATE_GET,
-                            CONTROLLER_INDEX),
-    "status":              (defs.BTP_SERVICE_ID_AICS,
-                            defs.BTP_AICS_CMD_STATUS_GET,
-                            CONTROLLER_INDEX),
-    "type":                (defs.BTP_SERVICE_ID_AICS,
-                            defs.BTP_AICS_CMD_TYPE_GET,
-                            CONTROLLER_INDEX),
-    "gain_setting_prop":   (defs.BTP_SERVICE_ID_AICS,
-                            defs.BTP_AICS_CMD_GAIN_SETTING_PROP_GET,
-                            CONTROLLER_INDEX),
-    "description":         (defs.BTP_SERVICE_ID_AICS,
-                            defs.BTP_AICS_CMD_DESCRIPTION_GET,
-                            CONTROLLER_INDEX)
-}
+AICS = aics_btp
 
 
 def aics_command_rsp_succ(op=None):

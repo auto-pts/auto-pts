@@ -16,7 +16,6 @@
 import logging
 import os
 import re
-import signal
 import socket
 import subprocess
 import sys
@@ -27,7 +26,6 @@ import pylink
 
 from autopts.config import BTMON_PORT
 from autopts.utils import get_global_end
-
 
 log = logging.debug
 

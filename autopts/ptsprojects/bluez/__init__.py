@@ -13,8 +13,8 @@
 # more details.
 #
 
-import autopts.ptsprojects.bluez.gap
-import autopts.ptsprojects.bluez.sm
+from . import gap, sm
 
+__all__ = ["gap", "sm"]
 
 # GENERATOR append 1

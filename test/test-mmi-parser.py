@@ -25,7 +25,6 @@ case a new description parsing is added.
 
 from autopts.ptsprojects.testcase import MmiParser
 
-
 descriptions = [
 
     # project_name: GATT
@@ -136,9 +135,10 @@ if __name__ == '__main__':
 
     for item in descriptions:
         description, args = item
-        print("\nParsing: %r\nExpecting: %r" % (description, args))
+        print(f"\nParsing: {description!r}\nExpecting: {args!r}")
         MMI.parse_description(description)
         print("Got:", 5 * " ", MMI.args)
-        assert args == MMI.args, \
-            "Error parsing description found=%r, expected=%r" % (MMI.args, args)
+        assert args == MMI.args, (
+            f"Error parsing description found={MMI.args!r}, expected={args!r}"
+        )
         print("OK")

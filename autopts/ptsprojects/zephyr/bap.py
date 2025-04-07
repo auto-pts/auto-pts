@@ -24,7 +24,6 @@ from autopts.pybtp import btp
 from autopts.pybtp.types import UUID, Addr, AdFlags, AdType
 from autopts.utils import ResultWithFlag
 
-
 BROADCAST_CODE = '0102680553F1415AA265BBAFC6EA03B8'
 BROADCAST_ID = 0x123456
 BROADCAST_ID_2 = 0x234567
