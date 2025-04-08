@@ -23,7 +23,6 @@ from autopts.pybtp import btp
 from autopts.pybtp.types import Addr
 from autopts.utils import ResultWithFlag
 
-
 PROGRAM_INFO = '00112233445566778899AABBCCDDEEFF'
 BROADCAST_CODE = '0102680553F1415AA265BBAFC6EA03B8'
 BROADCAST_NAME = 'Broadcaster'

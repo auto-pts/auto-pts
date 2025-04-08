@@ -23,7 +23,6 @@ import os
 import sqlite3
 import sys
 
-
 DATABASE_FILE = 'Merge_database.db'
 
 

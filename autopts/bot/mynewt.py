@@ -28,7 +28,6 @@ from autopts.client import Client
 from autopts.ptsprojects.boards import get_board_type, get_build_and_flash
 from autopts.ptsprojects.mynewt.iutctl import get_iut, log
 
-
 PROJECT_NAME = Path(__file__).stem
 
 

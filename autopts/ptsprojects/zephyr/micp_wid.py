@@ -19,7 +19,6 @@ import sys
 from autopts.pybtp.types import WIDParams
 from autopts.wid.micp import micp_wid_hdl as gen_wid_hdl
 
-
 log = logging.debug
 
 

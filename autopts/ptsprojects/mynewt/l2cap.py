@@ -23,7 +23,6 @@ from autopts.pybtp import btp
 from autopts.pybtp.types import Addr
 from autopts.wid import l2cap_wid_hdl
 
-
 le_psm = 128
 psm_unsupported = 241
 psm_authentication_required = 242

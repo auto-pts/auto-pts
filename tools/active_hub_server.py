@@ -19,11 +19,10 @@ import xmlrpc.client
 import xmlrpc.server
 from os.path import abspath, dirname
 
+from autopts.utils import hid_gpio_hub_set_usb_power, ykush_set_usb_power
 
 AUTOPTS_REPO = dirname(dirname(abspath(__file__)))
 sys.path.insert(0, AUTOPTS_REPO)
-
-from autopts.utils import hid_gpio_hub_set_usb_power, ykush_set_usb_power
 
 
 SRN = None

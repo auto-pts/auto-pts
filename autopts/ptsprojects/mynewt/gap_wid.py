@@ -22,7 +22,6 @@ from autopts.pybtp.types import WIDParams
 from autopts.wid import generic_wid_hdl
 from autopts.wid.gap import hdl_wid_139_mode1_lvl2, hdl_wid_139_mode1_lvl4
 
-
 log = logging.debug
 
 

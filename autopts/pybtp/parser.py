@@ -16,7 +16,6 @@
 import struct
 from collections import namedtuple
 
-
 HDR_LEN = 5
 
 
@@ -36,7 +35,13 @@ def dec_hdr(frame):
 
 
 def repr_hdr(header):
-    return f"Header(svc_id=0x{header.svc_id:02x}, op=0x{header.op:02x}, ctrl_index=0x{header.ctrl_index:02x}, data_len=0x{header.data_len:02x})"
+    return (
+        f"Header(svc_id=0x{header.svc_id:02x}, "
+        f"op=0x{header.op:02x}, "
+        f"ctrl_index=0x{header.ctrl_index:02x}, "
+        f"data_len=0x{header.data_len:02x})"
+    )
+
 
 def dec_data(frame):
     data_len = len(frame)

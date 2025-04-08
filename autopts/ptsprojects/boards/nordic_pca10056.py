@@ -18,7 +18,6 @@ import logging
 
 from autopts.bot.mynewt import check_call
 
-
 supported_projects = ['mynewt']
 board_type = 'nordic_pca10056'
 

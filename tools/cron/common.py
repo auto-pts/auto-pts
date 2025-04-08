@@ -46,10 +46,6 @@ from time import sleep, time
 import requests
 import schedule
 
-
-AUTOPTS_REPO = dirname(dirname(dirname(abspath(__file__))))
-sys.path.insert(0, AUTOPTS_REPO)
-
 from autopts.bot.common import load_module_from_path, save_files
 from autopts.bot.common_features.github import update_repos
 from autopts.bot.common_features.mail import send_mail
@@ -66,6 +62,8 @@ from tools.cron.compatibility import (
 from tools.cron.remote_terminal import RemoteTerminalClientProxy
 from tools.merge_db import TestCaseTable
 
+AUTOPTS_REPO = dirname(dirname(dirname(abspath(__file__))))
+sys.path.insert(0, AUTOPTS_REPO)
 
 if sys.platform == 'win32':
     pass
@@ -86,7 +84,7 @@ def catch_exceptions(cancel_on_failure=False):
         def __catch_exceptions(*args, **kwargs):
             try:
                 return job_func(*args, **kwargs)
-            except:
+            except Exception:
                 log(traceback.format_exc())
                 if hasattr(CRON_CFG, 'email'):
                     magic_tag = kwargs['magic_tag'] if 'magic_tag' in kwargs else None
@@ -216,7 +214,7 @@ def clear_workspace(workspace_dir):
                     try:
                         if not f.name.endswith(('.pqw6', '.pts', '.gitignore', '.xlsx', '.bls', '.bqw')):
                             os.remove(f)
-                    except:
+                    except Exception:
                         pass
 
 
@@ -359,7 +357,7 @@ def pre_cleanup_files(config):
                     shutil.rmtree(file_path, ignore_errors=True)
 
         save_files(files_to_save, save_dir)
-    except:
+    except Exception:
         pass
 
 
@@ -666,7 +664,7 @@ def run_test(config):
 
     try:
         _run_test(config)
-    except:
+    except Exception:
         log(traceback.format_exc())
     finally:
         terminate_processes(config)
@@ -795,7 +793,7 @@ def _generic_pr_job(cron, cfg, pr_cfg, **kwargs):
     try:
         merge_pr_branch(pr_cfg['source_repo_owner'], pr_cfg['source_branch'],
                         pr_cfg['repo_name'], repo_path)
-    except:
+    except Exception:
         git_rebase_abort(repo_path)
         return 'Failed to merge the PR branch'
 

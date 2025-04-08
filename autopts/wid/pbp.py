@@ -23,7 +23,6 @@ from autopts.pybtp.defs import AUDIO_METADATA_PROGRAM_INFO, AUDIO_METADATA_STREA
 from autopts.pybtp.types import CODEC_CONFIG_SETTINGS, BTPError, WIDParams, create_lc3_ltvs_bytes
 from autopts.wid.bap import BAS_CONFIG_SETTINGS
 
-
 log = logging.debug
 
 

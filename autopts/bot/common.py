@@ -34,7 +34,6 @@ from autopts.config import AUTOPTS_ROOT_DIR, MAX_SERVER_RESTART_TIME, generate_f
 from autopts.ptsprojects.boards import get_debugger_snr, get_free_device, get_tty, release_device
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
 
-
 log = logging.debug
 
 

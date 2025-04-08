@@ -228,7 +228,7 @@ def test_cases_server(ptses):
 
 
     pts2 = ptses[1]
-    iut_device_name2 = get_unique_name(pts2)
+    iut_device_name2 = get_unique_name(pts2) # noqa: F841 # iut_device_name2 is not used
 
     pre_conditions_lt2 = [
                         TestFunc(lambda: pts2.update_pixit_param(

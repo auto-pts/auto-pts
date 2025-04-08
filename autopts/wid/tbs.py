@@ -20,7 +20,6 @@ from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp
 from autopts.pybtp.types import WIDParams
 
-
 log = logging.debug
 
 def tbs_wid_hdl(wid, description, test_case_name):

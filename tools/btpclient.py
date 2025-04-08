@@ -34,7 +34,6 @@ from autopts.ptsprojects.zephyr.iutctl import BTP_ADDRESS, get_qemu_cmd
 from autopts.pybtp import btp, defs
 from autopts.pybtp.iutctl_common import BTPSocket
 
-
 BTP_SOCKET = None
 QEMU_PROCESS = None
 

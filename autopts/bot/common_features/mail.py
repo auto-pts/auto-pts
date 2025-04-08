@@ -22,7 +22,6 @@ from email.mime.text import MIMEText
 
 import autopts.bot.common as common
 
-
 COMMASPACE = ', '
 
 

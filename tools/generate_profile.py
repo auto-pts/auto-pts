@@ -16,7 +16,6 @@
 from datetime import datetime
 from os.path import abspath, basename, dirname
 
-
 AUTOPTS_REPO = dirname(dirname(abspath(__file__)))
 print(AUTOPTS_REPO)
 
@@ -300,10 +299,18 @@ Events:
 }
 
 changes_to_prepend = {
-    f'{project_path}/__init__.py': {1: f"import autopts.ptsprojects.{basename(project_path)}.{profile_name_lower}\n"},
-    f'{AUTOPTS_REPO}/autopts/pybtp/defs.py': {
+    f"{project_path}/__init__.py": {
+        1: (
+            f"import autopts.ptsprojects."
+            f"{basename(project_path)}.{profile_name_lower}\n"
+        )
+    },
+    f"{AUTOPTS_REPO}/autopts/pybtp/defs.py": {
         1: f"BTP_SERVICE_ID_{profile_name_upper} = {profile_id}\n",
-        2: f"BTP_{profile_name_upper}_CMD_READ_SUPPORTED_COMMANDS = 0x01\nBTP_{profile_name_upper}_EV_DUMMY_COMPLETED = 0x80\n\n",
+        2: (
+            f"BTP_{profile_name_upper}_CMD_READ_SUPPORTED_COMMANDS = 0x01\n"
+            f"BTP_{profile_name_upper}_EV_DUMMY_COMPLETED = 0x80\n\n"
+        ),
     },
     f'{AUTOPTS_REPO}/autopts/ptsprojects/stack/layers/__init__.py': {1: f"from .{profile_name_lower} import *\n"},
     f'{AUTOPTS_REPO}/autopts/ptsprojects/stack/stack.py': {
@@ -328,9 +335,13 @@ changes_to_prepend = {
         "supported_commands": defs.BTP_{profile_name_upper}_CMD_READ_SUPPORTED_COMMANDS
     {'}'},
 """,
-        2: f"""    "{profile_name_lower}_reg": (defs.BTP_SERVICE_ID_{profile_name_upper}, defs.BTP_{profile_name_upper}_CMD_REGISTER_SERVICE,
-                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_{profile_name_upper}),
-""",
+        2: f"""    "{profile_name_lower}_reg": (
+                defs.BTP_SERVICE_ID_{profile_name_upper},
+                defs.BTP_{profile_name_upper}_CMD_REGISTER_SERVICE,
+                defs.BTP_INDEX_NONE,
+                defs.BTP_SERVICE_ID_{profile_name_upper}
+            ),
+        """,
     },
 }
 

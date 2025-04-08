@@ -21,7 +21,6 @@ from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp, defs
 from autopts.pybtp.types import WIDParams
 
-
 log = logging.debug
 
 class OpCode(IntEnum):
@@ -60,7 +59,7 @@ class CallFlags(IntFlag):
 class Uuid(IntEnum):
     TBS                     = 0x184b # Telephone Bearer service
     GTBS                    = 0x184c # Generic Telephone Bearer service
-    CCC                     = 0x2902 # Client Characteristic Configuration 
+    CCC                     = 0x2902 # Client Characteristic Configuration
     CALLSC                  = 0x2bbd # Call State Characteristic
     CALLCPC                 = 0x2bbe # Call Control Point Characteristic
 
@@ -148,7 +147,7 @@ def dump_services(attrs):
             print("\tCharacteristic: %s handles [%d, %d]" % (char.uuid, char.handle, char.value_handle))
             for desc in attrs[service][char]:
                 print("\t\tDescriptor: %s handle %d" % (desc.uuid, desc.handle))
-    
+
 
 def hdl_wid_104(params: WIDParams):
     """

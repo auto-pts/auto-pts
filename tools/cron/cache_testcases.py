@@ -23,7 +23,6 @@ from os.path import abspath, dirname
 
 import yaml
 
-
 if __name__ == '__main__':
     AUTOPTS_REPO = dirname(dirname(dirname(abspath(__file__))))
     sys.path.insert(0, AUTOPTS_REPO)

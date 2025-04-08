@@ -26,7 +26,6 @@ from autopts.pybtp import btp
 from autopts.pybtp.btp import lt2_addr_get
 from autopts.pybtp.types import UUID, Addr, AdFlags, AdType
 
-
 broadcast_code = '0102680553F1415AA265BBAFC6EA03B8'
 
 

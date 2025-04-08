@@ -33,7 +33,6 @@ from autopts.ptsprojects.boards import get_board_type, get_build_and_flash, tty_
 from autopts.ptsprojects.zephyr import ZEPHYR_PROJECT_URL
 from autopts.ptsprojects.zephyr.iutctl import get_iut, log
 
-
 PROJECT_NAME = Path(__file__).stem
 
 

@@ -16,7 +16,6 @@
 import logging
 import subprocess
 
-
 # make sure adb is in path or modify this variable
 ADB = "adb"
 USE_ADB = True

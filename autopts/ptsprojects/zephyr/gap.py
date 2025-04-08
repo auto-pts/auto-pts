@@ -255,12 +255,12 @@ def test_cases(ptses):
                  L2CAPConnectionResponse.insufficient_secure_authentication),
     ]
 
-    br_l2cap_keysize = br_l2cap + [
+    br_l2cap_keysize = br_l2cap + [ # noqa: F841 # br_l2cap_keysize is not used
         TestFunc(btp.l2cap_br_listen, br_psm, br_initial_mtu,
                  L2CAPConnectionResponse.insufficient_encryption_key_size),
     ]
 
-    br_l2cap_author = br_l2cap + [
+    br_l2cap_author = br_l2cap + [ # noqa: F841 # br_l2cap_author is not used
         TestFunc(btp.l2cap_br_listen, br_psm, br_initial_mtu,
                  L2CAPConnectionResponse.insufficient_authorization),
     ]

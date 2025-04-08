@@ -54,7 +54,6 @@ from autopts.ptsprojects.ptstypes import E_FATAL_ERROR
 from autopts.utils import PTS_WORKSPACE_FILE_EXT, ResultWithFlag, count_script_instances, get_own_workspaces
 from autopts.winutils import get_pid_by_window_title, kill_all_processes
 
-
 logging = root_logging.getLogger('server')
 log = logging.debug
 

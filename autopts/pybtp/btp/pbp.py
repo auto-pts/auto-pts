@@ -22,7 +22,6 @@ from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.types import BTPError
 
-
 log = logging.debug
 
 PBP = {

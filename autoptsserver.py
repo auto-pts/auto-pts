@@ -64,7 +64,6 @@ from autopts.utils import (
 )
 from autopts.winutils import kill_all_processes
 
-
 logging = root_logging.getLogger('server')
 log = root_logging.debug
 log_inited = False

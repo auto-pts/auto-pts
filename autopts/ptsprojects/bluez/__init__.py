@@ -13,8 +13,7 @@
 # more details.
 #
 
-from . import gap
-from . import sm  # re-export: allows `from bluez import sm`
+from . import gap, sm
 
 __all__ = ["gap", "sm"]
 

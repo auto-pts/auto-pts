@@ -67,14 +67,12 @@ This project uses:
 - [`isort`](https://pycqa.github.io/isort/) – for sorting import statements
 
 ### Run style checks and fixes
-To automatically check isort
-
+To automatically check by isort and ruff
 ```bash
-poetry run check-isort
+poetry run check-style
 ``` 
 This will:
-
-- Run `isort` check
+- Run `ruff` check
 
 To automatically fix and format your code, use the custom alias:
 
@@ -85,7 +83,7 @@ poetry run fix-style
 This will:
 
 - Run `ruff` with auto-fix
-- Sort imports using `isort`
+
 ### Manual usage (optional)
 
 ```bash

@@ -24,7 +24,6 @@ from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
 from autopts.pybtp import btp
 from autopts.pybtp.types import Addr
 
-
 iut_manufacturer_data = 'ABCD'
 iut_appearance = '1111'
 iut_svc_data = '1111'

@@ -31,7 +31,6 @@ from . import ptstypes
 from .stack import get_stack
 from .utils import exec_iut_cmd
 
-
 log = logging.debug
 
 
@@ -42,7 +41,7 @@ class ResponseWithPostWID:
 
 
 class MmiParser:
-    """"Interface to parsing arguments from description of MMI
+    """Interface to parsing arguments from description of MMI
 
     It is assumed that all arguments in description are enclosed in single
     quotes.
@@ -89,7 +88,7 @@ class MmiParser:
         to the PTS.
 
         Description: Verify that the Implementation Under Test (IUT) can send
-        data according to negotiate MTU size."
+        data according to negotiate MTU size.
 
         """
         log("%s %r", self.parse_description.__name__, description)
@@ -284,7 +283,7 @@ class TestFuncCleanUp(TestFunc):
 
 
 def is_cleanup_func(func):
-    """'Retruns True if func is an in an instance of TestFuncCleanUp"""
+    """Retruns True if func is an in an instance of TestFuncCleanUp"""
     return isinstance(func, TestFuncCleanUp)
 
 

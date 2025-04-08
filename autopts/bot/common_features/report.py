@@ -32,7 +32,6 @@ from autopts.bot.common_features import github
 from autopts.client import PtsServer
 from autopts.config import AUTOPTS_ROOT_DIR
 
-
 log = logging.debug
 
 
@@ -190,7 +189,7 @@ def make_report_xlsx(report_xlsx_path: str,
     total_count = len(results_dict)
     worksheet.write(end_row + 2, summary_col, "Total")
     worksheet.write(end_row + 2, summary_col + 1, f"{total_count}")
-    
+
     worksheet.write(end_row + 3, summary_col, "PassRate", bold_format)
     pass_count = status_dict.get("PASS", 0)
     if total_count > 0:
@@ -198,7 +197,7 @@ def make_report_xlsx(report_xlsx_path: str,
     else:
         pass_rate = "0.00%"
     worksheet.write(end_row + 3, summary_col + 1, pass_rate, bold_format)
-    
+
     chart.set_title({'name': 'AutoPTS test results'})
     chart.add_series({
         'categories': ['Report', summary_row + 1, summary_col, end_row, summary_col],

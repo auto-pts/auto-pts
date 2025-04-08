@@ -27,7 +27,6 @@ import pylink
 from autopts.config import BTMON_PORT
 from autopts.utils import get_global_end
 
-
 log = logging.debug
 
 

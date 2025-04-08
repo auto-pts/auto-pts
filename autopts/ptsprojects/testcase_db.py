@@ -1,6 +1,5 @@
 import sqlite3
 
-
 DATABASE_FILE = 'TestCase.db'
 
 

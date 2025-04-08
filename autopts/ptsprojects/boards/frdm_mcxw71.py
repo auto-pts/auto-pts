@@ -20,7 +20,6 @@ import os
 from autopts.bot.common import check_call
 from autopts.ptsprojects.boards import Jlink
 
-
 log = logging.debug
 
 supported_projects = ['zephyr']

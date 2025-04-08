@@ -417,7 +417,7 @@ def test_cases(ptses):
                             out_size, rand_out_actions,
                             random.randint(1, 2), random.choice(in_actions), crpl_size, auth_metod))],
                   generic_wid_hdl=mesh_wid_hdl),
-        ZTestCase("MESH", "MESH/NODE/PROV/BV-18-C", cmds=pre_conditions_pub_priv_key_sha256 + 
+        ZTestCase("MESH", "MESH/NODE/PROV/BV-18-C", cmds=pre_conditions_pub_priv_key_sha256 +
                   [TestFunc(lambda: stack.mesh.set_prov_data(oob_sha256, out_size, rand_out_actions,
                             random.randint(1, 2), random.choice(in_actions), crpl_size, auth_metod))],
                   generic_wid_hdl=mesh_wid_hdl),

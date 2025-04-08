@@ -25,11 +25,9 @@ from abc import abstractmethod
 from datetime import datetime
 
 from autopts.pybtp import defs
-from autopts.pybtp.defs import *
 from autopts.pybtp.parser import HDR_LEN, dec_data, dec_hdr, enc_frame, repr_hdr
 from autopts.pybtp.types import BTPError
 from autopts.utils import get_global_end, raise_on_global_end
-
 
 log = logging.debug
 
@@ -194,7 +192,8 @@ class BTPSocket:
                 break
 
         indent = "\n" + (" " * 17)
-        to_hex = lambda x: "0x{:02x}".format(int(x))
+        def to_hex(x):
+            return "0x{:02x}".format(int(x))
         btp_command = get_btp_cmd_name(svc_name, to_hex(opc))
         parsed_data += f'{btp_command} ({to_hex(svc_id)}|{to_hex(opc)}|{to_hex(ctrl_idx)}){indent} ' \
                        f'raw data ({data_len}):'

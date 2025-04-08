@@ -17,7 +17,6 @@
 
 import sys
 
-
 CONFIG_PROC = None
 # XXX: Fill me - nrfjprog path example: /home/user/tool/nrfjprog
 CONFIG_PATH = 'nrfjprog'

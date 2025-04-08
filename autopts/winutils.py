@@ -46,8 +46,8 @@ def get_pid_by_window_title(title):
                 try:
                     _, pid = win32process.GetWindowThreadProcessId(hwnd)
                     hwnd_list.append(pid)
-                except:
-                    pass
+                except Exception as e:
+                    logging.warning(f"Failed to get PID for hwnd {hwnd}: {e}")
 
     hwnd_list = []
     win32gui.EnumWindows(callback, hwnd_list)

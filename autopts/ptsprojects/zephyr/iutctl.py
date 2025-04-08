@@ -30,7 +30,6 @@ from autopts.pybtp.iutctl_common import BTP_ADDRESS, BTPSocketSrv, BTPWorker
 from autopts.rtt import BTMON, RTTLogger
 from autopts.utils import get_global_end
 
-
 log = logging.debug
 ZEPHYR = None
 

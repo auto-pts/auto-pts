@@ -25,7 +25,6 @@ case a new description parsing is added.
 
 from autopts.ptsprojects.testcase import MmiParser
 
-
 descriptions = [
 
     # project_name: GATT

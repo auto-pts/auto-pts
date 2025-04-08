@@ -22,7 +22,6 @@ from autopts.pybtp import defs
 from autopts.pybtp.iutctl_common import BTP_ADDRESS, BTPSocketSrv, BTPWorker
 from autopts.pybtp.types import BTPError
 
-
 log = logging.debug
 IUT = None
 

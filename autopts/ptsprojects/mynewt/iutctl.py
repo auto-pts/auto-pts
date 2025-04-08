@@ -28,7 +28,6 @@ from autopts.pybtp.iutctl_common import BTP_ADDRESS, BTPSocketSrv, BTPWorker
 from autopts.pybtp.types import BTPError
 from autopts.rtt import BTMON, RTTLogger
 
-
 log = logging.debug
 MYNEWT = None
 

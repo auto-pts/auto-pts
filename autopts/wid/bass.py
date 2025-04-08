@@ -20,7 +20,6 @@ from autopts.pybtp import btp, defs
 from autopts.pybtp.btp import pts_addr_get, pts_addr_type_get
 from autopts.pybtp.types import UUID, AdFlags, AdType, WIDParams, gap_settings_btp2txt
 
-
 log = logging.debug
 
 

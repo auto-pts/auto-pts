@@ -13,13 +13,12 @@
 # more details.
 #
 
+import logging
 import os
 
 from autopts.bot.common import check_call
 
-from .nrf5x import *
-
-
+supported_projects = ['zephyr']
 board_type = 'nrf5340_audio_dk/nrf5340/cpuapp'
 
 
@@ -33,7 +32,7 @@ def build_and_flash_core(zephyr_wd, build_dir, board, debugger_snr, configs, rec
     cmd = ['west', 'build', '--no-sysbuild', '-b', board]
     cmd.extend(overlay.split())
     check_call(cmd, cwd=build_dir)
-    
+
     build_name = str(build_dir).split('/')[-1]
     check_call("rm ./build_{}.zip || exit 0".format(build_name).split(), cwd=zephyr_wd)
     check_call("zip -r {}/build_{}.zip build -i '*.hex' '*.config'".format(zephyr_wd, build_name).split(), cwd=build_dir)

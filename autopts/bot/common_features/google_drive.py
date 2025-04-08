@@ -24,7 +24,6 @@ from googleapiclient.http import MediaFileUpload
 from httplib2 import Http
 from oauth2client import client, file, tools
 
-
 SCOPES = 'https://www.googleapis.com/auth/drive'
 CLIENT_SECRET_FILE = 'client_secret.json'
 

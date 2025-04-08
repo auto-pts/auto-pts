@@ -22,11 +22,9 @@ import pkgutil
 import shlex
 import subprocess
 import sys
-from collections import defaultdict
 
 import pylink
 import serial.tools.list_ports
-
 
 # For each new board just create a <new-board-name>.py file that contains reset_cmd() function and list
 # of supported boards.
@@ -50,7 +48,7 @@ class Board:
         """
         log(f"About to reset DUT: {self.reset_cmd}")
 
-        if type(self.reset_cmd) == str:
+        if isinstance(self.reset_cmd, str):
             reset_process = subprocess.Popen(shlex.split(self.reset_cmd),
                                              shell=False,
                                              stdout=subprocess.DEVNULL,
@@ -63,7 +61,7 @@ class Board:
             self.reset_cmd()
 
     def get_reset_cmd(self):
-        """Get and Return Board reset command, 
+        """Get and Return Board reset command,
         which will be executed in Board.reset() with subprocess.
 
         Returns:

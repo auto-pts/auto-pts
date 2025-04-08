@@ -18,7 +18,6 @@ import logging
 
 from autopts.ptsprojects.boards import Jlink
 
-
 log = logging.debug
 
 DEVICE_NAME = 'kw45b41z83'

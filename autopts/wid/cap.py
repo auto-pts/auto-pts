@@ -36,7 +36,6 @@ from autopts.wid.bap import (
     get_audio_locations_from_pac,
 )
 
-
 log = logging.debug
 
 
@@ -88,7 +87,7 @@ def hdl_wid_100(params: WIDParams):
 
 
 def hdl_wid_104(_: WIDParams):
-    """Please send non connectable advertise with periodic info."""
+    """Please send non-connectable advertise with periodic info."""
 
     # Periodic adv started within cap_broadcast_adv_start at hdl_wid_114.
 
@@ -125,8 +124,11 @@ wid_114_settings = {
     'CAP/INI/UTB/BV-01-C': (2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
     'CAP/INI/UTB/BV-02-C': (2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0004) +
                         struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
-    'CAP/INI/UTB/BV-03-C': (2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
-                        struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
+    'CAP/INI/UTB/BV-03-C': (
+        2,
+        struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)
+        + struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)
+    ),
     'CAP/INI/UTB/BV-04-C': (2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
                         struct.pack('<BBBB', 3, AUDIO_METADATA_CCID_LIST, 0x00, 0x01)),
     'CAP/INI/BTU/BV-01-C': (1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
@@ -782,7 +784,9 @@ def hdl_wid_405(params: WIDParams):
 
 def hdl_wid_406(params: WIDParams):
     """
-        Please perform Unicast Audio Ending procedure, and initiate Broadcast Audio Reception Start procedure for Unicast Handover procedure.
+        Please perform Unicast Audio Ending procedure,
+        and initiate Broadcast Audio Reception Start
+        procedure for Unicast Handover procedure.
     """
 
     # Stop Unicast
@@ -917,7 +921,7 @@ def hdl_wid_413(params: WIDParams):
 
 
 def hdl_wid_414(params: WIDParams):
-    """"Please click OK when IUT received notification."""
+    """Please click OK when IUT received notification."""
     stack = get_stack()
 
     # get pts address and lt1 test name

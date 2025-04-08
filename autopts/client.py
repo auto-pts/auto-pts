@@ -61,7 +61,6 @@ from autopts.utils import (
 )
 from cliparser import CliParser
 
-
 log = logging.debug
 log_lock = threading.RLock()
 
@@ -662,12 +661,12 @@ class TestCaseRunStats:
             run_count = int(elem.attrib["run_count"])
 
         elem.attrib["status"] = status
-        
+
         if test_start_time is not None:
             elem.attrib["test_start_time"] = test_start_time.strftime('%Y-%m-%d %H:%M:%S')
         if test_end_time is not None:
             elem.attrib["test_end_time"] = test_end_time.strftime('%Y-%m-%d %H:%M:%S')
-            
+
         regression = bool(elem.attrib["status"] != "PASS" and elem.attrib["status_previous"] == "PASS")
         progress = bool(elem.attrib["status"] == "PASS" and elem.attrib["status_previous"] != "PASS" \
                         and elem.attrib["status_previous"] != "None")

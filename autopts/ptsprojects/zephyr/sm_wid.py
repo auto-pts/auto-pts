@@ -19,7 +19,6 @@ from autopts.ptsprojects.zephyr.iutctl import get_iut
 from autopts.pybtp import btp
 from autopts.wid import generic_wid_hdl
 
-
 log = logging.debug
 
 
