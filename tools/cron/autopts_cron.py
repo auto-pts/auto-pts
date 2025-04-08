@@ -247,6 +247,7 @@ def schedule_pr_job(cron, pr_info, job_config):
                 test_case_count = job_config['test_case_limit_per_comment']
                 skipped_test_cases = test_cases[test_case_count:]
                 test_cases = test_cases[:test_case_count]
+                job_config['included'] = test_cases
 
             if job_config['test_case_limit']:
                 job_config['included'] = test_cases
