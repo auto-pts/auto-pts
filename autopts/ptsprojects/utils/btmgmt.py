@@ -59,7 +59,7 @@ def discoverable_off():
 
 
 def discoverable_limited(limit):
-    exec_iut_cmd("btmgmt discov limited %d" % limit, True)
+    exec_iut_cmd(f"btmgmt discov limited {limit}", True)
 
 
 def bredr_on():

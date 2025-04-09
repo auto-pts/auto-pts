@@ -612,11 +612,12 @@ def ccp_ev_call_states(ccp, data, data_len):
         event_dict['states'].append(states)
 
         states_fmt = states_fmt + ',' if len(states_fmt) > 1 else states_fmt
-        states_fmt += ' index:%u %s flags:%s' % (index, CallState(state), ccp_fmt_flags(flags))
-    states_fmt += ' }'
+        states_fmt += f" index:{index} {CallState(state)} flags:{ccp_fmt_flags(flags)}"
+        states_fmt += " }"
 
-    logging.debug(f"{ccp_ev_call_states.__name__} status: %u index: 0x%02x calls: %u %s" % \
-                  (status, index, call_count, states_fmt))
+    logging.debug(
+        f"{ccp_ev_call_states.__name__} status: {status} index: 0x{index:02x} calls: {call_count} {states_fmt}"
+    )
 
     ccp.event_received(defs.BTP_CCP_EV_CALL_STATES, event_dict)
 

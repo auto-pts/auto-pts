@@ -61,7 +61,7 @@ def gatt_cl_dec_svc_attr(data):
     hdr_len = struct.calcsize(hdr)
 
     start_hdl, end_hdl, uuid_len = struct.unpack_from(hdr, data)
-    (uuid,) = struct.unpack_from('%ds' % uuid_len, data, hdr_len)
+    (uuid,) = struct.unpack_from(f"{uuid_len}s", data, hdr_len)
     uuid = btp2uuid(uuid_len, uuid)
 
     return (start_hdl, end_hdl, uuid), hdr_len + uuid_len
@@ -100,7 +100,7 @@ def gatt_cl_dec_chrc_attr(data):
     hdr_len = struct.calcsize(hdr)
 
     chrc_hdl, val_hdl, props, uuid_len = struct.unpack_from(hdr, data)
-    (uuid,) = struct.unpack_from('%ds' % uuid_len, data, hdr_len)
+    (uuid,) = struct.unpack_from(f"{uuid_len}s", data, hdr_len)
     uuid = btp2uuid(uuid_len, uuid)
 
     return (chrc_hdl, val_hdl, props, uuid), hdr_len + uuid_len
@@ -120,7 +120,7 @@ def gatt_cl_dec_desc_attr(data):
     hdr_len = struct.calcsize(hdr)
 
     hdl, uuid_len = struct.unpack_from(hdr, data)
-    (uuid,) = struct.unpack_from('%ds' % uuid_len, data, hdr_len)
+    (uuid,) = struct.unpack_from(f"{uuid_len}s", data, hdr_len)
     uuid = btp2uuid(uuid_len, uuid)
 
     return (hdl, uuid), hdr_len + uuid_len
@@ -137,7 +137,7 @@ def gatt_cl_dec_disc_rsp(data, attr_type):
 
     """
     attrs_len = len(data) - 1
-    attr_cnt, attrs = struct.unpack('B%ds' % attrs_len, data)
+    attr_cnt, attrs = struct.unpack(f"B{attrs_len}s", data)
     attrs_list = []
     offset = 0
 
@@ -197,8 +197,8 @@ def gatt_cl_disc_all_prim_rsp_ev_(gatt_cl, data, data_len):
     logging.debug("%s %r", gatt_cl_disc_all_prim_rsp_ev_.__name__, svcs)
 
     for svc in svcs:
-        start_handle = "%04X" % (svc[0],)
-        end_handle = "%04X" % (svc[1],)
+        start_handle = f"{svc[0]:04X}"
+        end_handle = f"{svc[1]:04X}"
         uuid = svc[2].upper()
 
         # avoid repeated service uuid, it should be verified only once
@@ -234,9 +234,8 @@ def gatt_cl_disc_prim_uuid_rsp_ev_(gatt_cl, data, data_len):
 
 
     for svc in svcs:
-        start_handle = "%04X" % (svc[0],)
-        end_handle = "%04X" % (svc[1],)
-
+        start_handle = f"{svc[0]:04X}"
+        end_handle = f"{svc[1]:04X}"
         uuid = svc[2]
 
         # add hyphens to long uuid: 0000-1157-0000-0000-0123-4567-89AB-CDEF
@@ -271,9 +270,9 @@ def gatt_cl_find_incld_rsp_ev_(gatt_cl, data, data_len):
 
 
     for incl in incl_tuples:
-        att_handle = "%04X" % (incl[0][0],)
-        inc_svc_handle = "%04X" % (incl[1][0],)
-        end_grp_handle = "%04X" % (incl[1][1],)
+        att_handle = f"{incl[0][0]:04X}"
+        inc_svc_handle = f"{incl[1][0]:04X}"
+        end_grp_handle = f"{incl[1][1]:04X}"
         uuid = incl[1][2]
 
         gatt_cl.incl_svcs.append((att_handle,
@@ -386,7 +385,7 @@ def gatt_cl_disc_all_desc_rsp_ev_(gatt_cl, data, data_len):
     gatt_cl.dscs_cnt = char_cnt
 
     for desc in descs:
-        handle = "%04X" % (desc[0],)
+        handle = f"{desc[0]:04X}"
         uuid = desc[1]
         gatt_cl.dscs.append((handle, uuid))
 
@@ -410,7 +409,7 @@ def gatt_cl_read_rsp_ev_(gatt_cl, data, data_len):
 
     rp_data = data[struct.calcsize(fmt):]
 
-    (value,) = struct.unpack_from('%ds' % data_length, rp_data)
+    (value,) = struct.unpack_from(f"{data_length}s", rp_data)
 
     logging.debug("%s %r %r", gatt_cl_read_rsp_ev_.__name__, status, value)
 
@@ -437,7 +436,7 @@ def gatt_cl_read_uuid_rsp_ev_(gatt_cl, data, data_len):
         add_to_verify_values(att_rsp_str[status])
         return
 
-    data_fmt = '>H%ds' % value_length
+    data_fmt = f">H{value_length}s"
     tuple_len = struct.calcsize(data_fmt)
     tuple_data = data[struct.calcsize(fmt):]
     chrc_count = data_length // tuple_len
@@ -486,7 +485,7 @@ def gatt_cl_read_long_rsp_ev_(gatt_cl, data, data_len):
 
     rp_data = data[struct.calcsize(fmt):]
 
-    (value,) = struct.unpack_from('%ds' % data_length, rp_data)
+    (value,) = struct.unpack_from(f"{data_length}s", rp_data)
 
     logging.debug("%s %r %r", gatt_cl_read_long_rsp_ev_.__name__, status, value)
 
@@ -520,7 +519,7 @@ def gatt_cl_read_mult_rsp_ev_(gatt_cl, data, data_len):
         logging.debug("No data in response")
         return
 
-    (value, ) = struct.unpack_from('%ds' % data_length, rp_data)
+    (value,) = struct.unpack_from(f"{data_length}s", rp_data)
 
     logging.debug("%s %r %r", gatt_cl_read_mult_rsp_ev_.__name__, status, value)
 
@@ -554,7 +553,7 @@ def gatt_cl_read_mult_var_rsp_ev_(gatt_cl, data, data_len):
         logging.debug("Set verify values to: %r", get_verify_values())
         return
 
-    (value, ) = struct.unpack_from('%ds' % data_length, rp_data)
+    (value,) = struct.unpack_from(f"{data_length}s", rp_data)
 
     logging.debug("%s %r %r", gatt_cl_read_mult_rsp_ev_.__name__, status, value)
 

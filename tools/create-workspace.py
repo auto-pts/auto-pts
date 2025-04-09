@@ -217,7 +217,7 @@ def main():
     # if workspace exits PTS throws:
     # PTSCONTROL_E_FAILED_TO_CREATE_WORKSPACE 0x849C0003
     if os.path.exists(workspace_dir):
-        sys.exit("Workspace %r exist!" % workspace_file)
+        sys.exit(f"Workspace {workspace_file!r} exists!")
 
     pts_control = PyPTSControl()
     pts = pts_control.pts

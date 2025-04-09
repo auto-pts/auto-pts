@@ -146,7 +146,7 @@ def hdl_wid_551(params: WIDParams):
         log('No advertisement with Public Broadcast Announcement and Broadcast Name found')
         return False
 
-    log('Public Broadcast Announcement with feature %u and Broadcast Name found' % ev['pba_features'])
+    log(f"Public Broadcast Announcement with feature {ev['pba_features']} and Broadcast Name found")
 
     return ev['pba_features'] == pba_features
 

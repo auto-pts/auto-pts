@@ -56,5 +56,5 @@ def hdl_wid_98(_: WIDParams):
 
 
 def hdl_wid_118(_: WIDParams):
-    return '{0:04x}'.format(65000)
+    return f'{65000:04x}'
 

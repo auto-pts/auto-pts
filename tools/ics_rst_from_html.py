@@ -42,7 +42,7 @@ def make_table(table, profile):
         new_row = []
         parameter_name = 'TSPC_{}_{}'.format(profile, table.Item[i].replace('/', '_'))
         selected = 'True' if table.Support[i] else 'False'
-        description = '{} ({})'.format(table.Capability[i], table.Status[i])
+        description = f'{table.Capability[i]} ({table.Status[i]})'
 
         new_row.append(parameter_name)
         new_row.append(selected)
@@ -96,9 +96,9 @@ if __name__ == '__main__':
 
     if len(sys.argv) < 3:
         sys.exit('Please pass profile name and html file path as arguments, e.g.:\n'
-                 '$ python3 {} GAP path/to/Launch-Studio-ICS-Selection.html\n'
+                 f'$ python3 {sys.argv[0]} GAP path/to/Launch-Studio-ICS-Selection.html\n'
                  'html file - save https://launchstudio.bluetooth.com/ICS/<some id> '
-                 'page as html file'.format(sys.argv[0]))
+                 'page as html file')
 
     profile_name = sys.argv[1]
     path = sys.argv[2]
@@ -106,7 +106,7 @@ if __name__ == '__main__':
     if not os.path.isfile(path):
         sys.exit(path + ' is not a file!')
 
-    with open(path, 'r') as f:
+    with open(path) as f:
         content = f.read()
 
     tcrl_ver = re.findall(r'(?<="TCRLVersionName":").+?(?=")', content)[0]

@@ -1401,7 +1401,7 @@ def gap_padv_set_data(data):
     if isinstance(data, str):
         data = data.encode()
 
-    data_ba = bytearray(struct.pack("<H%ds" % len(data), len(data), data))
+    data_ba = bytearray(struct.pack(f"<H{len(data)}s", len(data), data))
 
     iutctl.btp_socket.send(*GAP['padv_set_data'], data=data_ba)
 

@@ -34,8 +34,8 @@ def build_and_flash_core(zephyr_wd, build_dir, board, debugger_snr, configs, rec
     check_call(cmd, cwd=build_dir)
 
     build_name = str(build_dir).split('/')[-1]
-    check_call("rm ./build_{}.zip || exit 0".format(build_name).split(), cwd=zephyr_wd)
-    check_call("zip -r {}/build_{}.zip build -i '*.hex' '*.config'".format(zephyr_wd, build_name).split(), cwd=build_dir)
+    check_call(f"rm ./build_{build_name}.zip || exit 0".split(), cwd=zephyr_wd)
+    check_call(f"zip -r {zephyr_wd}/build_{build_name}.zip build -i '*.hex' '*.config'".split(), cwd=build_dir)
 
     cmd = ['west', 'flash', '--skip-rebuild', '-i', debugger_snr]
     if recover:

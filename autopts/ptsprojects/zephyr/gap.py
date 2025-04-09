@@ -66,7 +66,7 @@ iut_appearance = '1111'
 iut_svc_data = '1111'
 iut_flags = '11'
 iut_svcs = '1111'
-iut_uri = UriScheme.https + 'github.com/auto-pts'.encode()
+iut_uri = UriScheme.https + b'github.com/auto-pts'
 iut_le_supp_feat = 'FF'
 
 br_psm = 0x1001

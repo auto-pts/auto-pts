@@ -33,9 +33,9 @@ def reset_cmd(iutctl):
     with_srn = ''
 
     if iutctl.debugger_snr:
-        with_srn = ' -s {}'.format(iutctl.debugger_snr)
+        with_srn = f' -s {iutctl.debugger_snr}'
 
-    return 'nrfjprog -r {}'.format(with_srn)
+    return f'nrfjprog -r {with_srn}'
 
 
 def build_and_flash(project_path, board, overlay=None, debugger_snr=None):

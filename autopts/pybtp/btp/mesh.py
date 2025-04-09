@@ -263,9 +263,8 @@ def mesh_health_generate_faults():
 
     (test_id, cur_faults_cnt, reg_faults_cnt) = \
         struct.unpack_from(hdr_fmt, rsp)
-    (cur_faults,) = struct.unpack_from('<%ds' % cur_faults_cnt, rsp, hdr_len)
-    (reg_faults,) = struct.unpack_from('<%ds' % reg_faults_cnt, rsp,
-                                       hdr_len + cur_faults_cnt)
+    (cur_faults,) = struct.unpack_from(f"<{cur_faults_cnt}s", rsp, hdr_len)
+    (reg_faults,) = struct.unpack_from(f"<{reg_faults_cnt}s", rsp, hdr_len + cur_faults_cnt)
 
     cur_faults = binascii.hexlify(cur_faults)
     reg_faults = binascii.hexlify(reg_faults)
@@ -506,7 +505,7 @@ def mesh_out_string_action_ev(mesh, data, data_len):
     hdr_len = struct.calcsize(hdr_fmt)
 
     (str_len,) = struct.unpack_from(hdr_fmt, data)
-    (string,) = struct.unpack_from('<%ds' % str_len, data, hdr_len)
+    (string,) = struct.unpack_from(f"<{str_len}s", data, hdr_len)
 
     mesh.oob_data.data = string
 
@@ -576,7 +575,7 @@ def mesh_net_rcv_ev(mesh, data, data_len):
     hdr_len = struct.calcsize(hdr_fmt)
 
     (ttl, ctl, src, dst, payload_len) = struct.unpack_from(hdr_fmt, data, 0)
-    (payload,) = struct.unpack_from('<%ds' % payload_len, data, hdr_len)
+    (payload,) = struct.unpack_from(f"<{payload_len}s", data, hdr_len)
     payload = binascii.hexlify(payload)
 
     stack.mesh.net_recv_ev_data.data = (ttl, ctl, src, dst, payload)
@@ -1785,7 +1784,7 @@ def mesh_model_recv_ev(mesh, data, data_len):
     hdr_len = struct.calcsize(hdr_fmt)
 
     (src, dst, payload_len) = struct.unpack_from(hdr_fmt, data, 0)
-    (payload,) = struct.unpack_from('<%ds' % payload_len, data, hdr_len)
+    (payload,) = struct.unpack_from(f"<{payload_len}s", data, hdr_len)
     payload = binascii.hexlify(payload)
 
     if payload.startswith(b'66'):

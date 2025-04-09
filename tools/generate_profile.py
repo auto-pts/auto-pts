@@ -21,7 +21,7 @@ print(AUTOPTS_REPO)
 
 
 def append_lines(file_path, change_id, new_lines):
-    with open(file_path, 'r') as file:
+    with open(file_path) as file:
         lines = file.readlines()
 
     # Find the index of the line with the "#GENERATOR" tag

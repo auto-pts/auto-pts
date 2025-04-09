@@ -39,15 +39,15 @@ iut_attr_db_off = 0x000b
 
 
 def hdl_str(hdl):
-    return '{0:x}'.format(hdl)
+    return f'{hdl:x}'
 
 
 def u16_hdl_str(hdl):
-    return '{0:04x}'.format(hdl)
+    return f'{hdl:04x}'
 
 
 def u16_hdl_uc_str(hdl):
-    return '{0:04x}'.format(hdl)
+    return f'{hdl:04x}'
 
 
 class PTS_DB:

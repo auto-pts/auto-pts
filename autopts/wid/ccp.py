@@ -142,11 +142,11 @@ def descriptor_handle(attrs, serv_uuid, char_uuid, desc_uuid):
 def dump_services(attrs):
     print()
     for service in attrs:
-        print("Service: %s handles [%d, %d]" % (service.uuid, service.handle, service.end_handle))
+        print(f"Service: {service.uuid} handles [{service.handle}, {service.end_handle}]")
         for char in attrs[service]:
-            print("\tCharacteristic: %s handles [%d, %d]" % (char.uuid, char.handle, char.value_handle))
+            print(f"\tCharacteristic: {char.uuid} handles [{char.handle}, {char.value_handle}]")
             for desc in attrs[service][char]:
-                print("\t\tDescriptor: %s handle %d" % (desc.uuid, desc.handle))
+                print(f"\t\tDescriptor: {desc.uuid} handle {desc.handle}")
 
 
 def hdl_wid_104(params: WIDParams):

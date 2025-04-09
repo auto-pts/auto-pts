@@ -236,8 +236,7 @@ class ClientCallback(PTSCallback):
                          usage.
         """
 
-        logger = logging.getLogger("{}.{}".format(self.__class__.__name__,
-                                                  self.log.__name__))
+        logger = logging.getLogger(f"{self.__class__.__name__}.{self.log.__name__}")
         logger.info("%s %s %s %s %s", ptstypes.PTS_LOGTYPE_STRING[log_type],
                     logtype_string, log_time, test_case_name,
                     log_message)
@@ -259,8 +258,7 @@ class ClientCallback(PTSCallback):
         };
         """
 
-        logger = logging.getLogger("{}.{}".format(
-            self.__class__.__name__, self.on_implicit_send.__name__))
+        logger = logging.getLogger(f"{self.__class__.__name__}.{self.on_implicit_send.__name__}")
 
         logger.info(f"""
     {"*" * 20}
@@ -432,7 +430,7 @@ def init_logging(tag="", log_filename=None):
     else:
         script_name = os.path.basename(sys.argv[0])  # in case it is full path
         script_name_no_ext = os.path.splitext(script_name)[0]
-        log_filename = "%s%s.log" % (script_name_no_ext, tag)
+        log_filename = f"{script_name_no_ext}{tag}.log"
 
     format_template = ("%(asctime)s %(threadName)s %(name)s %(levelname)s %(filename)-25s "
                        "%(lineno)-5s %(funcName)-25s : %(message)s")
@@ -608,7 +606,7 @@ class TestCaseRunStats:
 
     @staticmethod
     def load_from_backup(backup_file):
-        with open(backup_file, 'r') as f:
+        with open(backup_file) as f:
             data = json.load(f)
             stats = TestCaseRunStats([], [], 0, None)
             stats.__dict__.update(data)
@@ -636,7 +634,7 @@ class TestCaseRunStats:
         tree = ElementTree.parse(self.xml_results)
         root = tree.getroot()
 
-        elem = root.find("./test_case[@name='%s']" % test_case_name)
+        elem = root.find(f"./test_case[@name='{test_case_name}']")
         if elem is None:
             elem = ElementTree.SubElement(root, 'test_case')
             elem.attrib["new"] = '0'
@@ -684,7 +682,7 @@ class TestCaseRunStats:
         root = tree.getroot()
 
         for tc in descriptions.keys():
-            elem = root.find("./test_case[@name='%s']" % tc)
+            elem = root.find(f"./test_case[@name='{tc}']")
             if elem is None:
                 continue
 
@@ -860,7 +858,7 @@ def run_test_case_wrapper(func):
 
         retries_max = run_count_max - 1
         if run_count:
-            retries_msg = "#{}".format(run_count)
+            retries_msg = f"#{run_count}"
         else:
             retries_msg = ""
 
@@ -874,9 +872,9 @@ def run_test_case_wrapper(func):
         end_time_str = str(round(datetime.timedelta(
             seconds=duration).total_seconds(), 3))
 
-        result = ("{} ".format(status).ljust(15) +
+        result = (f"{status} ".ljust(15) +
                   end_time_str.rjust(len(end_time_str)) +
-                  retries_msg.rjust(len("#{}".format(retries_max)) + margin) +
+                  retries_msg.rjust(len(f"#{retries_max}") + margin) +
                   regression_msg.rjust(len("REGRESSION") + margin))
 
         if sys.stdout.isatty():

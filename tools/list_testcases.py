@@ -36,7 +36,7 @@ if __name__ == '__main__':
     workspace_path = sys.argv[1]
 
     if not os.path.isfile(workspace_path) or not workspace_path.endswith('.pqw6'):
-        sys.exit('{} is not a file or workspace (*.pqw6)!'.format(workspace_path))
+        sys.exit(f'{workspace_path} is not a file or workspace (*.pqw6)!')
 
     pts = PyPTS(lite_start=True)
     pts.start_pts()

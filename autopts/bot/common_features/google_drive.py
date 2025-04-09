@@ -74,7 +74,7 @@ class GDrive:
         while True:
             try:
                 response = self.service.files().list(
-                    q="'{}' in parents".format(self.pwd()),
+                    q=f"'{self.pwd()}' in parents",
                     spaces='drive',
                     fields='nextPageToken, files(id, name)',
                     pageToken=page_token).execute()
@@ -146,7 +146,7 @@ class Drive(GDrive):
         return "{}".format(dir_.get('webViewLink'))
 
     def upload(self, f):
-        print("Uploading {} ...".format(f))
+        print(f"Uploading {f} ...")
         self.cp(f)
         print("Done")
 

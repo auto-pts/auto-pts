@@ -20,7 +20,7 @@ import re
 import shutil
 import zipfile
 from pathlib import Path
-from typing import List, Optional
+from typing import Optional
 from xmlrpc.client import ServerProxy
 
 import git
@@ -40,7 +40,7 @@ def get_errata(errata_files):
 
     for file in errata_files:
         if os.path.exists(file):
-            with open(file, 'r') as stream:
+            with open(file) as stream:
                 loaded_errata = yaml.safe_load(stream)
                 if loaded_errata:
                     errata.update(loaded_errata)
@@ -69,7 +69,7 @@ def make_repo_status(repos_info):
 # ****************************************************************************
 # .xlsx spreadsheet file
 # ****************************************************************************
-def find_matching_xml_filename(test_case: str, xml_list: Optional[List[os.DirEntry]]) -> Optional[str]:
+def find_matching_xml_filename(test_case: str, xml_list: Optional[list[os.DirEntry]]) -> Optional[str]:
     """
     Finds first XML filename in `xml_list` matching the test_case string.
     Matching is based on replacing '/' and '-' with '_' in test_case.
@@ -250,7 +250,7 @@ def report_parse_test_cases(report):
 
     test_cases = []
 
-    with open(report, 'r') as f:
+    with open(report) as f:
         while True:
             line = f.readline()
 
@@ -333,7 +333,7 @@ def github_push_report(report_folder, log_git_conf, commit_msg):
     repo_name = re.findall(r'(?<=/).+(?=\.git)', remote_url)[0]
     repo_owner = re.findall(r'(?<=\/|:).+(?=\/.+?\.git)', remote_url)[0]
 
-    return 'https://github.com/{}/{}/tree/{}'.format(repo_owner, repo_name, head_sha), dst_folder
+    return f'https://github.com/{repo_owner}/{repo_name}/tree/{head_sha}', dst_folder
 
 
 def archive_recursive(dir_path):

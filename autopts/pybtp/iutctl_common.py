@@ -115,7 +115,7 @@ class BTPSocket:
             nbytes = self.conn.recv_into(hdr_memview, toread_hdr_len)
             if nbytes == 0 and toread_hdr_len != 0:
                 # The connection is closed and the BTPSocket should be reinited
-                raise socket.error
+                raise OSError
             logging.debug("Read %d bytes", nbytes)
             hdr_memview = hdr_memview[nbytes:]
             toread_hdr_len -= nbytes
@@ -134,7 +134,7 @@ class BTPSocket:
             nbytes = self.conn.recv_into(data_memview, toread_data_len)
             logging.debug("Read %d bytes data", nbytes)
             if nbytes == 0 and toread_data_len != 0:
-                raise socket.error
+                raise OSError
             data_memview = data_memview[nbytes:]
             toread_data_len -= nbytes
 
@@ -193,7 +193,7 @@ class BTPSocket:
 
         indent = "\n" + (" " * 17)
         def to_hex(x):
-            return "0x{:02x}".format(int(x))
+            return f"0x{int(x):02x}"
         btp_command = get_btp_cmd_name(svc_name, to_hex(opc))
         parsed_data += f'{btp_command} ({to_hex(svc_id)}|{to_hex(opc)}|{to_hex(ctrl_idx)}){indent} ' \
                        f'raw data ({data_len}):'
@@ -305,7 +305,7 @@ class BTPWorker:
             except socket.timeout:
                 # this one is expected so ignore
                 pass
-            except socket.error:
+            except OSError:
                 if socket_ok:
                     socket_ok = False
                     log('socket.error: BTPSocket is closed')
@@ -357,16 +357,16 @@ class BTPWorker:
 
             if tuple_hdr.svc_id != svc_id:
                 raise BTPError(
-                    "Incorrect service ID %s in the response, expected %s!" %
-                    (tuple_hdr.svc_id, svc_id))
+                    f"Incorrect service ID {tuple_hdr.svc_id} in the response, expected {svc_id}!"
+                )
 
             if tuple_hdr.op == defs.BTP_STATUS:
                 raise BTPError("Error opcode in response!")
 
             if op != tuple_hdr.op:
                 raise BTPError(
-                    "Invalid opcode 0x%.2x in the response, expected 0x%.2x!" %
-                    (tuple_hdr.op, op))
+                    f"Invalid opcode 0x{tuple_hdr.op:02x} in the response, expected 0x{op:02x}!"
+                )
 
             return tuple_data
         finally:

@@ -469,7 +469,7 @@ class BotClient(Client):
             print(f'Continuing the previous terminated test run '
                   f'(remove {self.file_paths["TMP_DIR"]} to start freshly)')
 
-            with open(self.file_paths['BOT_STATE_JSON_FILE'], "r") as f:
+            with open(self.file_paths['BOT_STATE_JSON_FILE']) as f:
                 data = f.read()
                 bot_state = json.loads(data)
                 self.bot_config = bot_state['bot_config']
@@ -769,7 +769,7 @@ class BotClient(Client):
         """ Create a email body
         """
         iso_cal = datetime.date.today().isocalendar()
-        ww_dd_str = "WW%s.%s" % (iso_cal[1], iso_cal[2])
+        ww_dd_str = f"WW{iso_cal[1]}.{iso_cal[2]}"
 
         body = '''
     <p>This is automated email and do not reply.</p>
@@ -963,7 +963,7 @@ def get_tty_path(name):
     for device, serial in list(serial_devices.items()):
         if name in device:
             tty = os.path.basename(serial)
-            return "/dev/{}".format(tty)
+            return f"/dev/{tty}"
 
     return None
 
@@ -990,7 +990,7 @@ def get_absolute_module_path(config_path):
 def load_module_from_path(cfg):
     config_path = get_absolute_module_path(cfg)
     if not os.path.isfile(config_path):
-        log('{} does not exists!'.format(config_path))
+        log(f'{config_path} does not exists!')
         return None
 
     config_dirname = os.path.dirname(config_path)

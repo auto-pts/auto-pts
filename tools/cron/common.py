@@ -127,7 +127,7 @@ def report_to_review_msg(report_path):
     passed = []
     msg = 'AutoPTS Bot results:\n'
 
-    with open(report_path, 'r') as f:
+    with open(report_path) as f:
         f.readline()
 
         while True:
@@ -160,7 +160,7 @@ def error_to_review_msg(config):
         msg += 'Reason unknown'
         return msg
 
-    with open(error_txt_path, 'r') as f:
+    with open(error_txt_path) as f:
         while True:
             line = f.readline()
 
@@ -178,10 +178,10 @@ def send_mail_exception(conf_name, email_cfg, exception, magic_tag=None):
         return
 
     iso_cal = date.today().isocalendar()
-    ww_dd_str = 'WW%s.%s' % (iso_cal[1], iso_cal[2])
+    ww_dd_str = f"WW{iso_cal[1]}.{iso_cal[2]}"
 
     if magic_tag is not None:
-        job_type_info = '<p>Session was triggered with magic sentence: {}</p>'.format(magic_tag)
+        job_type_info = f'<p>Session was triggered with magic sentence: {magic_tag}</p>'
     else:
         job_type_info = '<p>Session was triggered with cyclical schedule</p>'
 
@@ -377,7 +377,7 @@ def git_reset_head(cwd):
 
 
 def git_checkout(branch, cwd):
-    cmd = 'git checkout {}'.format(branch)
+    cmd = f'git checkout {branch}'
     log(f'Running: {cmd}')
     check_call(cmd.split(), cwd=cwd)
 
@@ -389,13 +389,11 @@ def git_rebase_abort(cwd):
 
 
 def merge_pr_branch(pr_source_repo_owner, pr_source_branch, repo_name, project_repo):
-    cmd = 'git fetch https://github.com/{}/{}.git'.format(
-        pr_source_repo_owner, repo_name)
+    cmd = f'git fetch https://github.com/{pr_source_repo_owner}/{repo_name}.git'
     log(f'Running: {cmd}')
     check_call(cmd.split(), cwd=project_repo)
 
-    cmd = 'git pull --rebase https://github.com/{}/{}.git {}'.format(
-        pr_source_repo_owner, repo_name, pr_source_branch)
+    cmd = f'git pull --rebase https://github.com/{pr_source_repo_owner}/{repo_name}.git {pr_source_branch}'
     log(f'Running: {cmd}')
     check_call(cmd.split(), cwd=project_repo)
 
@@ -405,7 +403,7 @@ def parse_yaml(file_path):
     parsed_dict = {}
 
     if os.path.exists(file_path):
-        with open(file_path, 'r') as stream:
+        with open(file_path) as stream:
             parsed_dict = yaml.safe_load(stream)
 
     return parsed_dict
@@ -642,7 +640,7 @@ def _run_test(config):
                 timedelta(seconds=current_time - os.path.getmtime(results_file_path)) > timedelta(seconds=timeguard)):
             if os.path.exists(all_stats_file_path):
                 try:
-                    with open(all_stats_file_path, 'r') as f:
+                    with open(all_stats_file_path) as f:
                         data = json.load(f)
                         test_cases_completed = data.get('test_run_completed', False)
                 except BaseException as e:

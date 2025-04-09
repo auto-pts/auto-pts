@@ -33,7 +33,7 @@ CLI_SUPPORT = ['btpclient_path']
 def get_iut_cmd(btpclient_path):
     """Returns command to start IUT"""
 
-    iut_cmd = ("%s -s %s" % (btpclient_path, BTP_ADDRESS))
+    iut_cmd = f"{btpclient_path} -s {BTP_ADDRESS}"
 
     return iut_cmd
 

@@ -71,7 +71,7 @@ def apply_overlay(zephyr_wd, cfg_name, overlay):
 
     with open(cfg_name, 'w') as config:
         for k, v in list(overlay.items()):
-            config.write("{}={}\n".format(k, v))
+            config.write(f"{k}={v}\n")
 
     os.chdir(cwd)
 
@@ -81,8 +81,7 @@ def zephyr_hash_url(commit):
     :param commit: Commit ID to append
     :return: URL of commit
     """
-    return "{}/commit/{}".format(ZEPHYR_PROJECT_URL,
-                                 commit)
+    return f"{ZEPHYR_PROJECT_URL}/commit/{commit}"
 
 
 class ZephyrBotConfigArgs(BotConfigArgs):
@@ -128,7 +127,7 @@ class ZephyrBotClient(BotClient):
         # The order is used in the -DEXTRA_CONF_FILE="<overlay1>;<...>" option.
         overlays = ';'.join(configs)
 
-        log("TTY path: %s" % args.tty_file)
+        log(f"TTY path: {args.tty_file}")
 
         if not args.no_build:
             build_and_flash = get_build_and_flash(args.board_name)

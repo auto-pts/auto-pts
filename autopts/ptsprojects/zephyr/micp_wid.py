@@ -28,7 +28,7 @@ def micp_wid_hdl(wid, description, test_case_name):
     module = sys.modules[__name__]
 
     try:
-        handler = getattr(module, "hdl_wid_%d" % wid)
+        handler = getattr(module, f"hdl_wid_{wid}")
         return handler(WIDParams(wid, description, test_case_name))
     except AttributeError:
         return gen_wid_hdl(wid, description, test_case_name, False)

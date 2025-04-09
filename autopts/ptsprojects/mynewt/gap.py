@@ -33,7 +33,7 @@ class CHAR:
     name = (None, None, None, UUID.device_name)
 
 
-iut_manufacturer_data = 'ABCD'.encode('utf-8')
+iut_manufacturer_data = b'ABCD'
 iut_ad_uri = '000168747470733A2F2F7777772E626C7565746F'
 iut_appearance = '1111'
 iut_svc_data = '1111'
@@ -44,7 +44,7 @@ iut_svcs = '1111'
 # Advertising data
 ad = [(AdType.uuid16_some, '1111'),
       (AdType.gap_appearance, '1111'),
-      (AdType.name_full, bytes.hex('Tester'.encode('utf-8'))),
+      (AdType.name_full, bytes.hex(b'Tester')),
       (AdType.manufacturer_data, '11111111'),
       (AdType.uuid16_svc_data, '111111')]
 

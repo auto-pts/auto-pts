@@ -314,7 +314,7 @@ def hdl_wid_345(params: WIDParams):
             broadcaster_addr = lt2_addr_get()
             broadcaster_addr_type = lt2_addr_type_get()
 
-        log('Wait for BAA for %s' % broadcaster_addr)
+        log(f"Wait for BAA for {broadcaster_addr}")
         ev = stack.bap.wait_baa_found_ev(broadcaster_addr_type, broadcaster_addr, 10, False)
         if ev is None:
             log('No BAA found')

@@ -738,7 +738,7 @@ def hdl_wid_139(params: WIDParams):
         hdr_len = struct.calcsize(hdr)
         uuid_len = val_len - hdr_len
 
-        (props, handle, chrc_uuid) = struct.unpack("<BH%ds" % uuid_len, val)
+        (props, handle, chrc_uuid) = struct.unpack(f"<BH{uuid_len}s", val)
         chrc_value_attr = btp.gatts_get_attrs(start_handle=handle,
                                               end_handle=handle)
         if not chrc_value_attr:
@@ -771,7 +771,7 @@ def hdl_wid_139_mode1_lvl2(_: WIDParams):
         hdr_len = struct.calcsize(hdr)
         uuid_len = val_len - hdr_len
 
-        (props, handle, chrc_uuid) = struct.unpack("<BH%ds" % uuid_len, val)
+        (props, handle, chrc_uuid) = struct.unpack(f"<BH{uuid_len}s", val)
         chrc_value_attr = btp.gatts_get_attrs(start_handle=handle,
                                               end_handle=handle)
         if not chrc_value_attr:
@@ -804,7 +804,7 @@ def hdl_wid_139_mode1_lvl4(_: WIDParams):
         hdr_len = struct.calcsize(hdr)
         uuid_len = val_len - hdr_len
 
-        (props, handle, chrc_uuid) = struct.unpack("<BH%ds" % uuid_len, val)
+        (props, handle, chrc_uuid) = struct.unpack(f"<BH{uuid_len}s", val)
         chrc_value_attr = btp.gatts_get_attrs(start_handle=handle,
                                               end_handle=handle)
         if not chrc_value_attr:
@@ -855,7 +855,7 @@ def hdl_wid_144(params: WIDParams):
         hdr_len = struct.calcsize(hdr)
         uuid_len = val_len - hdr_len
 
-        (props, handle, chrc_uuid) = struct.unpack("<BH%ds" % uuid_len, val)
+        (props, handle, chrc_uuid) = struct.unpack(f"<BH{uuid_len}s", val)
         chrc_value_attr = btp.gatts_get_attrs(start_handle=handle,
                                               end_handle=handle)
         if not chrc_value_attr:
@@ -989,8 +989,7 @@ def hdl_wid_161(params: WIDParams):
     hdr_len = struct.calcsize(hdr)
     uuid_len = val_len - hdr_len
 
-    (properties, value_handle, chrc_uuid) = struct.unpack("<BH%ds" % uuid_len,
-                                                          val)
+    (properties, value_handle, chrc_uuid) = struct.unpack(f"<BH{uuid_len}s", val)
 
     if properties & Prop.auth_swrite == 0:
         return None

@@ -358,16 +358,13 @@ def parse_handle_description(description):
 
 def btp_hdr_check(rcv_hdr, exp_svc_id, exp_op=None):
     if rcv_hdr.svc_id != exp_svc_id:
-        raise BTPError("Incorrect service ID %s in the response, expected %s!"
-                       % (rcv_hdr.svc_id, exp_svc_id))
+        raise BTPError(f"Incorrect service ID {rcv_hdr.svc_id} in the response, expected {exp_svc_id}!")
 
     if rcv_hdr.op == defs.BTP_STATUS:
         raise BTPError("Error opcode in response!")
 
     if exp_op and exp_op != rcv_hdr.op:
-        raise BTPError(
-            "Invalid opcode 0x%.2x in the response, expected 0x%.2x!" %
-            (rcv_hdr.op, exp_op))
+        raise BTPError(f"Invalid opcode 0x{rcv_hdr.op:02x} in the response, expected 0x{exp_op:02x}!")
 
 
 def bd_addr_convert(bdaddr):

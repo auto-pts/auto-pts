@@ -168,11 +168,8 @@ def hdl_wid_311(params: WIDParams):
         wid_311_settings[settings_name]
 
     log(
-        'Looking for %u LTs, num Sink ASEs %u, Sink locations %u, '
-        'num Source ASEs %u, QoS Config %s' % (
-            lt_count, num_sink_ases, sink_locations,
-            num_source_ases, qos_set_name
-        )
+        f"Looking for {lt_count} LTs, num Sink ASEs {num_sink_ases}, Sink locations {sink_locations}, "
+        f"num Source ASEs {num_source_ases}, QoS Config {qos_set_name}"
     )
 
     metadata = b''
@@ -452,13 +449,8 @@ def hdl_wid_504(params: WIDParams):
         iut_sink_streams, iut_sink_channels, metadata = wid_504_settings[settings_name]
 
     log(
-        'Look for %u Source ASEs (%u channels) and %u Sink ASEs (%u channels) on Lower Tester'
-        % (
-            iut_sink_streams,
-            iut_sink_channels,
-            iut_source_streams,
-            iut_source_channels,
-        )
+        f"Look for {iut_sink_streams} Source ASEs ({iut_sink_channels} channels) and "
+        f"{iut_source_streams} Sink ASEs ({iut_source_channels} channels) on Lower Tester"
     )
 
     default_config.codec_set_name = '_'.join(default_config.qos_set_name.split('_')[:-1])

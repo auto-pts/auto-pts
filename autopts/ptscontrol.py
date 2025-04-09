@@ -174,7 +174,7 @@ class PTSLogger(win32com.server.connect.ConnectableServer):
                         elif "FAIL" in log_message:
                             new_status = "FAIL"
                         else:
-                            new_status = "UNKNOWN VERDICT: %s" % log_message.strip()
+                            new_status = f"UNKNOWN VERDICT: {log_message.strip()}"
 
                         self._tc_status.set(new_status)
                         log(f"Final verdict found: {self._test_case_name} {new_status}")
@@ -583,7 +583,7 @@ class PyPTS:
 
         log("PTS Version: %s", self.get_version())
         log(f'PTS Bluetooth Address: {self.get_bluetooth_address()}')
-        log("PTS BD_ADDR: %s" % self.bd_addr())
+        log(f"PTS BD_ADDR: {self.bd_addr()}")
         log(f'PTS daemon PID: {self._get_process_pid()}')
 
         self._ready = True
@@ -685,14 +685,13 @@ class PyPTS:
             log("Using %s workspace: %s", workspace_name, workspace_path)
 
         if not os.path.isfile(workspace_path):
-            raise Exception("Workspace file '%s' does not exist" %
-                            (workspace_path,))
+            raise Exception(f"Workspace file '{workspace_path}' does not exist")
 
         specified_ext = os.path.splitext(workspace_path)[1]
         if PTS_WORKSPACE_FILE_EXT != specified_ext:
             raise Exception(
-                "Workspace file '%s' extension is wrong, should be %s" %
-                (workspace_path, PTS_WORKSPACE_FILE_EXT))
+                f"Workspace file '{workspace_path}' extension is wrong, should be {PTS_WORKSPACE_FILE_EXT}"
+            )
 
         # Workaround CASE0044114 PTS issue
         # Do not open original workspace file that can become broken by

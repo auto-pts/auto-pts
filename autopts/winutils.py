@@ -63,7 +63,7 @@ def kill_all_processes(name):
     for ps in c.Win32_Process(name=name):
         try:
             ps.Terminate()
-            logging.debug("%s process (PID %d) terminated successfully" % (name, ps.ProcessId))
+            logging.debug(f"{name} process (PID {ps.ProcessId}) terminated successfully")
         except BaseException as exc:
             logging.exception(exc)
-            logging.debug("There is no %s process running with id: %d" % (name, ps.ProcessId))
+            logging.debug(f"There is no {name} process running with id: {ps.ProcessId}")

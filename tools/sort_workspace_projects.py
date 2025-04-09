@@ -49,7 +49,7 @@ def sort_projects_by_name(xml_file):
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Sort Projects (protocols/profiles) in PTS Workspace by name")
-        print("Usage: ./%s <path_to_pts_workspace>/<workspace>.pqw6" % sys.argv[0])
+        print(f"Usage: ./{sys.argv[0]} <path_to_pts_workspace>/<workspace>.pqw6")
         sys.exit(1)
 
     xml_file_path = sys.argv[1]
