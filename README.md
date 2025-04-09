@@ -64,7 +64,6 @@ Or prefix commands with `poetry run` (e.g. `poetry run check-style`).
 This project uses:
 
 - [`Ruff`](https://docs.astral.sh/ruff/) – for fast PEP8 linting and auto-fixing
-- [`isort`](https://pycqa.github.io/isort/) – for sorting import statements
 
 ### Run style checks and fixes
 To automatically check by isort and ruff
@@ -88,7 +87,6 @@ This will:
 
 ```bash
 poetry run ruff check . --fix
-poetry run isort .
 ```
 
 ---
@@ -108,7 +106,7 @@ poetry run pre-commit install
 git commit -m "Your message"
 ```
 
-Ruff, isort, and black will run automatically before the commit is accepted.
+Ruff will run automatically before the commit is accepted.
 
 ---
 
@@ -118,7 +116,6 @@ A workflow is configured in `.github/workflows/style-check.yml` to automatically
 
 ### What it does:
 - Checks code with `ruff`
-- Verifies import order with `isort`
 
 This ensures consistent code quality across all contributions.
 

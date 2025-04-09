@@ -69,7 +69,15 @@ def make_repo_status(repos_info):
 # ****************************************************************************
 # .xlsx spreadsheet file
 # ****************************************************************************
-def find_matching_xml_filename(test_case: str, xml_list: Optional[list[os.DirEntry]]) -> Optional[str]:
+# include List depending on python version
+try:
+    from typing import List # noqa: UP035, I001
+    T_LIST = List # noqa: UP006
+except ImportError:
+    #version below 3.9
+    T_LIST = list
+
+def find_matching_xml_filename(test_case: str, xml_list: Optional['T_LIST[os.DirEntry]']) -> Optional[str]:
     """
     Finds first XML filename in `xml_list` matching the test_case string.
     Matching is based on replacing '/' and '-' with '_' in test_case.
