@@ -39,16 +39,20 @@ from time import sleep
 
 import schedule
 
-from autopts.bot.common import load_module_from_path
-from autopts.utils import get_global_end, have_admin_rights, set_global_end, terminate_process
-from tools.cron.common import load_config, set_cron_cfg
-from tools.cron.cron_gui import CronGUI, RequestPuller
-from tools.cron.estimations import get_estimations
-
 # Needed if autopts is not installed as a module
 AUTOPTS_REPO=dirname(dirname(dirname(abspath(__file__))))
 sys.path.extend([AUTOPTS_REPO])
 
+from autopts.bot.common import load_module_from_path  # noqa: E402 # the order of import is very important here
+from autopts.utils import (  # noqa: E402 # the order of import is very important here
+    get_global_end,
+    have_admin_rights,
+    set_global_end,
+    terminate_process,
+)
+from tools.cron.common import load_config, set_cron_cfg  # noqa: E402 # the order of import is very important here
+from tools.cron.cron_gui import CronGUI, RequestPuller  # noqa: E402 # the order of import is very important here
+from tools.cron.estimations import get_estimations  # noqa: E402 # the order of import is very important here
 
 if sys.platform == 'win32':
     import pythoncom
