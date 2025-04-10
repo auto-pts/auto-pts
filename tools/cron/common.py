@@ -46,24 +46,24 @@ from time import sleep, time
 import requests
 import schedule
 
-from autopts.bot.common import load_module_from_path, save_files
-from autopts.bot.common_features.github import update_repos
-from autopts.bot.common_features.mail import send_mail
-from autopts.config import FILE_PATHS, generate_file_paths
-from autopts.utils import get_global_end, terminate_process
-from tools.cron.autopts_bisect import Bisect, set_run_test_fun
-from tools.cron.compatibility import (
+AUTOPTS_REPO = dirname(dirname(dirname(abspath(__file__))))
+sys.path.insert(0, AUTOPTS_REPO)
+
+from autopts.bot.common import load_module_from_path, save_files  # noqa: E402 # the order of import is very important here
+from autopts.bot.common_features.github import update_repos  # noqa: E402 # the order of import is very important here
+from autopts.bot.common_features.mail import send_mail  # noqa: E402 # the order of import is very important here
+from autopts.config import FILE_PATHS, generate_file_paths  # noqa: E402 # the order of import is very important here
+from autopts.utils import get_global_end, terminate_process  # noqa: E402 # the order of import is very important here
+from tools.cron.autopts_bisect import Bisect, set_run_test_fun  # noqa: E402 # the order of import is very important here
+from tools.cron.compatibility import (  # noqa: E402 # the order of import is very important here
     find_by_autopts_hash,
     find_by_project_hash,
     find_by_pts_ver,
     find_latest,
     get_hash_from_reference,
 )
-from tools.cron.remote_terminal import RemoteTerminalClientProxy
-from tools.merge_db import TestCaseTable
-
-AUTOPTS_REPO = dirname(dirname(dirname(abspath(__file__))))
-sys.path.insert(0, AUTOPTS_REPO)
+from tools.cron.remote_terminal import RemoteTerminalClientProxy  # noqa: E402 # the order of import is very important here
+from tools.merge_db import TestCaseTable  # noqa: E402 # the order of import is very important here
 
 if sys.platform == 'win32':
     pass
