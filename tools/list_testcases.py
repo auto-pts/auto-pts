@@ -22,11 +22,11 @@ import os
 import sys
 from os.path import abspath, dirname
 
-from autopts.client import get_test_cases
-from autopts.ptscontrol import PyPTS
-
 AUTOPTS_REPO = dirname(dirname(abspath(__file__)))
 sys.path.insert(0, AUTOPTS_REPO)
+
+from autopts.client import get_test_cases  # noqa: E402 # the order of import is very important here
+from autopts.ptscontrol import PyPTS  # noqa: E402 # the order of import is very important here
 
 if __name__ == '__main__':
 
