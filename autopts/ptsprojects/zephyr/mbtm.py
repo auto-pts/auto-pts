@@ -85,7 +85,6 @@ def test_cases(ptses):
 
     stack = get_stack()
 
-
     device_uuid = hexlify(uuid4().bytes)
     device_uuid2 = hexlify(uuid4().bytes)
 

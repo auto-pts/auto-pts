@@ -57,4 +57,5 @@ def ots_command_rsp_succ(timeout=20.0):
 
     return tuple_data
 
+
 OTS_EV = {}

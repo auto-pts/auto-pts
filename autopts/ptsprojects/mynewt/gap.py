@@ -53,6 +53,7 @@ ad = [(AdType.uuid16_some, '1111'),
 # Value: shortened name
 periodic_data = (0x08, "PADV_Tester")
 
+
 def set_pixits(ptses):
     """Setup GAP profile PIXITS for workspace. Those values are used for test
     case if not updated within test case.

@@ -86,6 +86,7 @@ def set_pixits(ptses):
 SINK_CONTEXTS = Context.LIVE | Context.CONVERSATIONAL | Context.MEDIA | Context.RINGTONE
 SOURCE_CONTEXTS = Context.LIVE | Context.CONVERSATIONAL
 
+
 def test_cases(ptses):
     """Returns a list of CAP Server test cases"""
 

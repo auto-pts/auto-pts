@@ -146,7 +146,7 @@ def hdl_wid_41(params: WIDParams):
         if not l2cap.is_connected(0):
             btp.l2cap_conn(None, None, stack.l2cap.psm, l2cap.initial_mtu)
         else:
-            pass # skip second wid call
+            pass  # skip second wid call
     else:
         btp.l2cap_conn(None, None, stack.l2cap.psm, l2cap.initial_mtu)
 
@@ -421,11 +421,9 @@ def hdl_wid_112(_: WIDParams):
     for x in data_0:
         data_0_unfolded.extend(x)
 
-
     data_1_unfolded = []
     for x in data_1:
         data_1_unfolded.extend(x)
-
 
     expected = [0xaa] * len(data_0_unfolded)
     if not data_0_unfolded == expected:

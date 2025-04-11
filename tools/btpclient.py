@@ -242,7 +242,6 @@ class StartZephyrCmd(Cmd):
             example=f"{self.name} ./microkernel.elf"
         )
 
-
     def run(self, kernel_image):
         global QEMU_PROCESS
 
@@ -289,7 +288,6 @@ class StopZephyrCmd(Cmd):
             description="Stop Zephyr QEMU process"
         )
 
-
     def run(self):
 
         global QEMU_PROCESS
@@ -323,7 +321,6 @@ class SendCmd(Cmd):
             example=f"{self.name} 0 1 0 01"
         )
 
-
     def run(self, svc_id, op, ctrl_index, data=""):
         # TODO: should data be None and later check be done to append or not
         # append data to the frame?
@@ -346,7 +343,6 @@ class ReceiveCmd(Cmd):
                 "\nCan be interrupted with Ctrl-C."
             )
         )
-
 
     def run(self, *args, **kwds):
         receive(*args, **kwds)

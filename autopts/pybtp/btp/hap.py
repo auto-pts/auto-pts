@@ -32,6 +32,7 @@ def address_to_ba(bd_addr_type=None, bd_addr=None):
     data.extend(bd_addr_ba)
     return data
 
+
 HAP = {
     'read_supported_cmds': (defs.BTP_SERVICE_ID_HAP,
                             defs.BTP_HAP_CMD_READ_SUPPORTED_COMMANDS,
@@ -74,6 +75,7 @@ HAP = {
                       CONTROLLER_INDEX),
 }
 
+
 def hap_command_rsp_succ(timeout=20.0, exp_op=None):
     logging.debug(f"{hap_command_rsp_succ.__name__}")
 
@@ -85,6 +87,7 @@ def hap_command_rsp_succ(timeout=20.0, exp_op=None):
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_HAP, exp_op)
     return tuple_data
 
+
 def hap_read_supported_cmds():
     logging.debug(f"{hap_read_supported_cmds.__name__}")
 
@@ -93,6 +96,7 @@ def hap_read_supported_cmds():
 
     tuple_data = hap_command_rsp_succ()
     logging.debug("supported cmds %r", tuple_data)
+
 
 def hap_ha_init(type, options):
     logging.debug(f"{hap_ha_init.__name__}")
@@ -106,6 +110,7 @@ def hap_ha_init(type, options):
 
     hap_command_rsp_succ()
 
+
 def hap_harc_init():
     logging.debug(f"{hap_harc_init.__name__}")
 
@@ -113,6 +118,7 @@ def hap_harc_init():
     iutctl.btp_socket.send(*HAP['harc_init'])
 
     hap_command_rsp_succ()
+
 
 def hap_hauc_init():
     logging.debug(f"{hap_hauc_init.__name__}")
@@ -122,6 +128,7 @@ def hap_hauc_init():
 
     hap_command_rsp_succ()
 
+
 def hap_iac_init():
     logging.debug(f"{hap_iac_init.__name__}")
 
@@ -129,6 +136,7 @@ def hap_iac_init():
     iutctl.btp_socket.send(*HAP['iac_init'])
 
     hap_command_rsp_succ()
+
 
 def hap_iac_discover(bd_addr_type=None, bd_addr=None):
     logging.debug(f"{hap_iac_discover.__name__}")
@@ -140,6 +148,7 @@ def hap_iac_discover(bd_addr_type=None, bd_addr=None):
 
     hap_command_rsp_succ()
 
+
 def hap_iac_set_alert(bd_addr_type=None, bd_addr=None, alert=None):
     logging.debug(f"{hap_iac_set_alert.__name__}")
 
@@ -150,6 +159,7 @@ def hap_iac_set_alert(bd_addr_type=None, bd_addr=None, alert=None):
     iutctl.btp_socket.send(*HAP['iac_set_alert'], data=data)
 
     hap_command_rsp_succ()
+
 
 def hap_hauc_discover(bd_addr_type=None, bd_addr=None):
     logging.debug(f"{hap_hauc_discover.__name__}")

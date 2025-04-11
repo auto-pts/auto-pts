@@ -40,7 +40,7 @@ from time import sleep
 import schedule
 
 # Needed if autopts is not installed as a module
-AUTOPTS_REPO=dirname(dirname(dirname(abspath(__file__))))
+AUTOPTS_REPO = dirname(dirname(dirname(abspath(__file__))))
 sys.path.extend([AUTOPTS_REPO])
 
 from autopts.bot.common import load_module_from_path  # noqa: E402 # the order of import is very important here

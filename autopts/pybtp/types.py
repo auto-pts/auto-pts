@@ -291,6 +291,7 @@ class WIDParams(NamedTuple):
     description: str
     test_case_name: str
 
+
 att_rsp_str = {0: "",
                1: "Invalid handle error",
                2: "read is not permitted error",
@@ -305,6 +306,7 @@ att_rsp_str = {0: "",
                15: "insufficient encryption",
                128: "Application error",
                }
+
 
 class GATTErrorCodes:
     invalid_handle = 0x01
@@ -329,31 +331,30 @@ class GATTErrorCodes:
 
 
 class ASCSState(IntEnum):
-    IDLE                = 0x00
-    CODEC_CONFIGURED    = 0x01
-    QOS_CONFIGURED      = 0x02
-    ENABLING            = 0x03
-    STREAMING           = 0x04
-    DISABLING           = 0x05
-    RELEASING           = 0x06
+    IDLE = 0x00
+    CODEC_CONFIGURED = 0x01
+    QOS_CONFIGURED = 0x02
+    ENABLING = 0x03
+    STREAMING = 0x04
+    DISABLING = 0x05
+    RELEASING = 0x06
 
 
 class Context(IntFlag):
-    PROHIBITED          = 0x0000
-    UNSPECIFIED         = 0x0001
-    CONVERSATIONAL      = 0x0002
-    MEDIA               = 0x0004
-    GAME                = 0x0008
-    INSTRUCTIONAL       = 0x0010
-    VOICE_ASSISTANTS    = 0x0020
-    LIVE                = 0x0040
-    SOUND_EFFECTS       = 0x0080
-    NOTIFICATIONS       = 0x0100
-    RINGTONE            = 0x0200
-    ALERTS              = 0x0400
-    EMERGENCY_ALARM     = 0x0800
-    ANY_CONTEXT         = 0x0FFF
-
+    PROHIBITED = 0x0000
+    UNSPECIFIED = 0x0001
+    CONVERSATIONAL = 0x0002
+    MEDIA = 0x0004
+    GAME = 0x0008
+    INSTRUCTIONAL = 0x0010
+    VOICE_ASSISTANTS = 0x0020
+    LIVE = 0x0040
+    SOUND_EFFECTS = 0x0080
+    NOTIFICATIONS = 0x0100
+    RINGTONE = 0x0200
+    ALERTS = 0x0400
+    EMERGENCY_ALARM = 0x0800
+    ANY_CONTEXT = 0x0FFF
 
 
 class AudioDir:
@@ -484,15 +485,15 @@ def create_lc3_ltvs_bytes(sampling_freq, frame_duration, audio_locations,
 
 
 class PaSyncState:
-    NOT_SYNCED     = 0x00
-    SYNC_INFO_REQ  = 0x01
-    SYNCED         = 0x02
+    NOT_SYNCED = 0x00
+    SYNC_INFO_REQ = 0x01
+    SYNCED = 0x02
     FAILED_TO_SYNC = 0x03
-    NO_PAST        = 0x04
+    NO_PAST = 0x04
 
 
 class BIGEncryption:
-    NOT_ENCRYPTED           = 0x00
+    NOT_ENCRYPTED = 0x00
     BROADCAST_CODE_REQUIRED = 0x01
-    DECRYPTING              = 0x02
-    BAD_CODE                = 0x03
+    DECRYPTING = 0x02
+    BAD_CODE = 0x03

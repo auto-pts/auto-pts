@@ -213,6 +213,7 @@ def tbs_set_status_flags(index, flags):
 
     tbs_command_rsp_succ()
 
+
 def tbs_terminate_call(index):
     logging.debug(f"{tbs_terminate_call.__name__}")
 
@@ -223,6 +224,7 @@ def tbs_terminate_call(index):
     iutctl.btp_socket.send(*TBS['terminate_call'], data=data)
 
     tbs_command_rsp_succ()
+
 
 TBS_EV = {
 }

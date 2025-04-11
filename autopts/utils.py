@@ -305,7 +305,6 @@ if sys.platform == 'win32':
 
         return False
 
-
     def have_admin_rights():
         """"Check if the process has Administrator rights"""
         try:

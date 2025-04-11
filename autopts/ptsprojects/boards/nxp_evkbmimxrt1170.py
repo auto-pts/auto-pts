@@ -26,6 +26,3 @@ supported_projects = ['zephyr']
 
 def reset_cmd(iutctl):
     return Jlink(iutctl.debugger_snr, iutctl.device_core).reset_command
-
-
-

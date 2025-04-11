@@ -88,6 +88,7 @@ def hdl_wid_10(_: WIDParams):
 
 def hdl_wid_11(_: WIDParams):
     global pacs_update_fun
+
     def pacs_update_fun():
         btp.pacs_set_available_contexts(
             PACS_AUDIO_CONTEXT_TYPE_CONVERSATIONAL,

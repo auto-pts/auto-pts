@@ -136,6 +136,7 @@ wid_114_settings = {
                         struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
 }
 
+
 def hdl_wid_114(params: WIDParams):
     """Please advertise with Broadcast Audio Announcement (0x1852) service data"""
 
@@ -280,7 +281,7 @@ def hdl_wid_345(params: WIDParams):
     if params.test_case_name.endswith('LT2'):
         addr = lt2_addr_get()
         addr_type = lt2_addr_type_get()
-        lt1_test_name = params.test_case_name.replace('_LT2','')
+        lt1_test_name = params.test_case_name.replace('_LT2', '')
     else:
         addr = pts_addr_get()
         addr_type = pts_addr_type_get()
@@ -378,6 +379,7 @@ def hdl_wid_345(params: WIDParams):
 
     return True
 
+
 def hdl_wid_347(params: WIDParams):
     """1. Please ADD Broadcast Source from Lower Tester 2 to
           Lower Tester 1 with PA SYNC: 0x00, BIS INDEX: 0x00000000
@@ -402,7 +404,7 @@ def hdl_wid_347(params: WIDParams):
     broadcast_id = ev['broadcast_id']
 
     # stop sync to free resources on Controller
-    btp.bap_broadcast_sink_stop( broadcast_id, addr_type, addr)
+    btp.bap_broadcast_sink_stop(broadcast_id, addr_type, addr)
 
     advertiser_sid = ev['advertiser_sid']
     padv_interval = ev['padv_interval']
@@ -463,6 +465,7 @@ def hdl_wid_347(params: WIDParams):
         return False
 
     return True
+
 
 def hdl_wid_353(params: WIDParams):
     """Wait for Broadcast ISO request."""
@@ -602,7 +605,7 @@ wid_400_settings = {
     'CAP/INI/UTB/BV-01-C': (1, 0, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
     'CAP/INI/UTB/BV-02-C': (1, 0, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0004) +
                             struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
-    'CAP/INI/UTB/BV-03-C': (1, 0, 2,  struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
+    'CAP/INI/UTB/BV-03-C': (1, 0, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
                             struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
     'CAP/INI/UTB/BV-04-C': (1, 0, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
                             struct.pack('<BBBB', 3, AUDIO_METADATA_CCID_LIST, 0x00, 0x01)),
@@ -782,6 +785,7 @@ def hdl_wid_405(params: WIDParams):
 
     return True
 
+
 def hdl_wid_406(params: WIDParams):
     """
         Please perform Unicast Audio Ending procedure,
@@ -805,13 +809,14 @@ def hdl_wid_406(params: WIDParams):
 
     return True
 
+
 def hdl_wid_408(params: WIDParams):
     """Please write Mute Characteristic."""
 
     if params.test_case_name.endswith('LT2'):
         addr = lt2_addr_get()
         addr_type = lt2_addr_type_get()
-        lt1_test_name = params.test_case_name.replace('_LT2','')
+        lt1_test_name = params.test_case_name.replace('_LT2', '')
     else:
         addr = pts_addr_get()
         addr_type = pts_addr_type_get()
@@ -820,6 +825,7 @@ def hdl_wid_408(params: WIDParams):
     btp.micp_mute(addr_type, addr)
 
     return True
+
 
 def hdl_wid_409(_: WIDParams):
     """Please update metadata in BASE. Then click OK when IUT is ready
@@ -950,6 +956,7 @@ def hdl_wid_414(params: WIDParams):
 
     return True
 
+
 def hdl_wid_415(_: WIDParams):
     """
         Please stop broadcast, and wait for 10 seconds.
@@ -970,17 +977,20 @@ def hdl_wid_416(_: WIDParams):
 
     return True
 
+
 def hdl_wid_418(_: WIDParams):
     """
        Please confirm the other tester successfully added broadcast source.
     """
     return True
 
+
 def hdl_wid_419(params: WIDParams):
     """
         Please configure to Streaming state.
     """
     return hdl_wid_400(params)
+
 
 def hdl_wid_420(params: WIDParams):
     """
@@ -989,6 +999,7 @@ def hdl_wid_420(params: WIDParams):
     btp.gap_set_bondable_off();
 
     return True
+
 
 def hdl_wid_421(params: WIDParams):
     """
@@ -1004,6 +1015,7 @@ def hdl_wid_421(params: WIDParams):
     pacs_set_available_contexts(0, 0)
 
     return True
+
 
 def hdl_wid_20001(_: WIDParams):
     """
@@ -1071,7 +1083,7 @@ def hdl_wid_20110(params: WIDParams):
     if params.test_case_name.endswith('LT2'):
         addr = lt2_addr_get()
         addr_type = lt2_addr_type_get()
-        lt1_test_name = params.test_case_name.replace('_LT2','')
+        lt1_test_name = params.test_case_name.replace('_LT2', '')
     else:
         addr = pts_addr_get()
         addr_type = pts_addr_type_get()

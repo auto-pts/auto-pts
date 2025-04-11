@@ -102,6 +102,7 @@ def set_pixits(ptses):
     pts.set_pixit("L2CAP", "TSPX_l2ca_cbmtu_min", "0040")
     pts.set_pixit("L2CAP", "TSPX_l2ca_cbmtu_max", "00E6")
 
+
 def test_cases(ptses):
     """Returns a list of L2CAP test cases
     ptses -- list of PyPTS instances"""
