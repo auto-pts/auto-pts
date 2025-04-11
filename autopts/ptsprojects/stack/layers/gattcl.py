@@ -101,7 +101,6 @@ class GattCl:
     def wait_for_write_rsp(self, timeout=30):
         return wait_for_event(timeout, self.is_write_completed)
 
-
     def is_verified_val_rxed(self, expected_count):
         if expected_count > 0:
             return len(self.verify_values) == expected_count

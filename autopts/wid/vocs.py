@@ -35,9 +35,11 @@ def hdl_wid_20001(_: WIDParams):
     btp.gap_adv_ind_on(ad=stack.gap.ad)
     return True
 
+
 def hdl_wid_13(_: WIDParams):
     btp.vocs_audio_desc("description")
     return True
+
 
 def hdl_wid_12(_: WIDParams):
     btp.vocs_audio_desc("description")

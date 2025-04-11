@@ -27,6 +27,7 @@ def ias_ev_out_alert_action(ias, data, data_len):
 
     stack.ias.alert_lvl = alert_lvl
 
+
 IAS_EV = {
     defs.BTP_IAS_EV_OUT_ALERT_ACTION: ias_ev_out_alert_action,
 }

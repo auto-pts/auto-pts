@@ -23,9 +23,10 @@ from autopts.pybtp.types import WIDParams
 
 
 class PresetProperty(IntFlag):
-    BT_HAS_PROP_NONE      = 0
-    BT_HAS_PROP_WRITABLE  = 1<<0
-    BT_HAS_PROP_AVAILABLE = 1<<1
+    BT_HAS_PROP_NONE = 0
+    BT_HAS_PROP_WRITABLE = 1 << 0
+    BT_HAS_PROP_AVAILABLE = 1 << 1
+
 
 log = logging.debug
 

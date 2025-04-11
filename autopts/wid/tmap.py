@@ -667,6 +667,7 @@ def hdl_wid_511(params: WIDParams):
 
     return True
 
+
 def hdl_wid_512(params: WIDParams):
     """
     Please terminate the call using CCP Terminate Call
@@ -682,6 +683,7 @@ def hdl_wid_512(params: WIDParams):
     btp.ccp_terminate_call(BT_TBS_GTBS_INDEX, call_id, addr_type, addr)
 
     return True
+
 
 def hdl_wid_514(params: WIDParams):
     """
@@ -734,6 +736,7 @@ def hdl_wid_522(params: WIDParams):
 
     return True
 
+
 # Copy & paste from wid/gap.py
 def hdl_wid_2004(params: WIDParams):
     """
@@ -755,6 +758,7 @@ def hdl_wid_2004(params: WIDParams):
     stack.gap.passkey.data = None
 
     return match
+
 
 def hdl_wid_20001(_: WIDParams):
     """
@@ -849,6 +853,7 @@ def hdl_wid_20107(params: WIDParams):
 
     return True
 
+
 def hdl_wid_20110(params: WIDParams):
     """
         Please send write request to handle 0x024A with following value.
@@ -891,6 +896,7 @@ def hdl_wid_20116(_: WIDParams):
         return False
 
     return True
+
 
 def hdl_wid_20206(_: WIDParams):
     """

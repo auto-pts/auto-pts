@@ -19,6 +19,7 @@ import subprocess
 
 supported_projects = ["zephyr"]
 
+
 def reset_cmd(iutctl):
     """Return reset command for DUT
     """

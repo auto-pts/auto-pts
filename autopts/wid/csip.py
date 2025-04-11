@@ -184,7 +184,7 @@ def hdl_wid_20100(params: WIDParams):
         btp.gap_pair(addr, addr_type)
         stack.gap.gap_wait_for_sec_lvl_change(level=2, timeout=30, addr=addr)
 
-    #CSIP/CL/SP/BV-07-C will receive the WID 20101. Hence, no need to perform discovery here.
+    # CSIP/CL/SP/BV-07-C will receive the WID 20101. Hence, no need to perform discovery here.
 
     if 'CSIP/CL/SP/BV-03-C' in params.test_case_name or\
             'CSIP/CL/SP/BV-04-C' in params.test_case_name or\

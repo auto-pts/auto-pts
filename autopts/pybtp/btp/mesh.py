@@ -789,7 +789,7 @@ def mesh_cfg_friend_get(net_idx, addr):
     stack = get_stack()
     iutctl = get_iut()
 
-    data = bytearray(struct.pack("<HH",net_idx, addr))
+    data = bytearray(struct.pack("<HH", net_idx, addr))
 
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MESH['cfg_friend_get'], data)
 
@@ -1187,7 +1187,7 @@ def mesh_cfg_model_app_get(net_idx, addr, el_address, model_id):
     stack = get_stack()
     iutctl = get_iut()
 
-    data = bytearray(struct.pack("<HHHH",net_idx, addr, el_address, model_id))
+    data = bytearray(struct.pack("<HHHH", net_idx, addr, el_address, model_id))
 
     (rsp,) = iutctl.btp_socket.send_wait_rsp(*MESH['cfg_model_app_get'], data)
 
@@ -1378,6 +1378,7 @@ def mesh_health_fault_clear(addr, app_idx, cid, ack):
     if ack:
         (test_id,) = struct.unpack_from('<B', rsp)
         stack.mesh.model_data = test_id
+
 
 def mesh_health_fault_test(addr, app_idx, cid, test_id, ack):
     logging.debug("%s", mesh_health_fault_test.__name__)
@@ -1789,9 +1790,10 @@ def mesh_model_recv_ev(mesh, data, data_len):
 
     if payload.startswith(b'66'):
         # do not count OP code and chunk number (1 + 2 = 3 bytes)
-        stack.mesh.blob_rxed_bytes += (len(payload)-6)//2
+        stack.mesh.blob_rxed_bytes += (len(payload) - 6) // 2
 
     stack.mesh.model_recv_ev_data.data = (src, dst, payload)
+
 
 def mesh_blob_lost_target_ev(mesh, data, data_len):
     logging.debug("%s %r %r", mesh_blob_lost_target_ev.__name__, data, data_len)
@@ -1802,6 +1804,7 @@ def mesh_blob_lost_target_ev(mesh, data, data_len):
         return
 
     stack.mesh.blob_lost_target = True
+
 
 MESH_EV = {
     defs.BTP_MESH_EV_OUT_NUMBER_ACTION: mesh_out_number_action_ev,

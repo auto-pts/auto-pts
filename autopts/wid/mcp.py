@@ -254,7 +254,6 @@ def hdl_wid_20106(params: WIDParams):
     if ev is None:
         return False
 
-
     return True
 
 
@@ -537,7 +536,7 @@ def hdl_wid_20206(params: WIDParams):
     return False
 
 
-def hdl_wid_20144(params:WIDParams):
+def hdl_wid_20144(params: WIDParams):
     """Please click Yes if IUT support Write Command(without response), otherwise click No."""
 
     return False

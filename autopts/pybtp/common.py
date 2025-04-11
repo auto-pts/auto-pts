@@ -352,7 +352,7 @@ mesh_btp = {
 }
 
 
-gatt_cl ={
+gatt_cl = {
     "read_supp_cmds": (defs.BTP_SERVICE_ID_GATTC,
                        defs.BTP_GATTC_CMD_READ_SUPPORTED_COMMANDS,
                        defs.BTP_INDEX_NONE, ""),

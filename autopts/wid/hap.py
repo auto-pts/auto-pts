@@ -36,6 +36,7 @@ from autopts.wid import generic_wid_hdl
 
 log = logging.debug
 
+
 def create_default_config():
     return Namespace(addr=pts_addr_get(),
                      addr_type=pts_addr_type_get(),
@@ -53,9 +54,11 @@ def create_default_config():
                      metadata_ltvs=None,
                      mono=None)
 
+
 def hap_wid_hdl(wid, description, test_case_name):
     log(f'{hap_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
     return generic_wid_hdl(wid, description, test_case_name, [__name__])
+
 
 def hap_start_hap_discovery(addr_type, addr):
     stack = get_stack()
@@ -160,6 +163,7 @@ def hdl_wid_466(params: WIDParams):
     btp.hap_read_presets(start_index, num_presets, addr_type, addr)
 
     return True
+
 
 def hdl_wid_467(params: WIDParams):
     """
@@ -297,6 +301,7 @@ def hdl_wid_474(_: WIDParams):
 
     return True
 
+
 def hdl_wid_476(_: WIDParams):
     """
         Please send exchange MTU command to the PTS with MTU size greater than 49.
@@ -318,6 +323,7 @@ def hdl_wid_477(_: WIDParams):
     stack.ias.wait_for_high_alert()
 
     return stack.ias.alert_lvl == 2
+
 
 def hdl_wid_478(params: WIDParams):
     """
@@ -405,7 +411,7 @@ def hdl_wid_482(_: WIDParams):
      default_config.retransmission_number,
      default_config.max_transport_latency) = QOS_CONFIG_SETTINGS[default_config.qos_set_name]
 
-    ases= []
+    ases = []
     cig_id = 0x00
     cis_id = 0x00
 
@@ -598,6 +604,7 @@ def hdl_wid_20106(params: WIDParams):
 
     return True
 
+
 def hdl_wid_20107(params: WIDParams):
     """
        Please send Read Request to read X characteristic with handle = Y.
@@ -620,6 +627,7 @@ def hdl_wid_20107(params: WIDParams):
     btp.gattc_read_rsp()
 
     return True
+
 
 def hdl_wid_20116(_: WIDParams):
     """

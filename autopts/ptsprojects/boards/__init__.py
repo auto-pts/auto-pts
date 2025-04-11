@@ -285,7 +285,6 @@ class Jlink:
             "q\n"
         )
 
-
     @property
     def reset_command(self):
         """Return Jlink reset command, executed on the console.

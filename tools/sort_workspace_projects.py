@@ -46,6 +46,7 @@ def sort_projects_by_name(xml_file):
 
     print(f"Sorted PTS Workspace written to: {sorted_xml_file}")
 
+
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Sort Projects (protocols/profiles) in PTS Workspace by name")

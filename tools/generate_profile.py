@@ -354,4 +354,3 @@ for file in changes_to_prepend:
     for change_id in changes_to_prepend[file]:
         lines_to_prepend = changes_to_prepend[file][change_id]
         append_lines(file, change_id, lines_to_prepend)
-

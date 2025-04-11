@@ -22,6 +22,7 @@ from autopts.pybtp.types import WIDParams
 
 log = logging.debug
 
+
 def tbs_wid_hdl(wid, description, test_case_name):
     from autopts.wid import generic_wid_hdl
     log(f'{tbs_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')

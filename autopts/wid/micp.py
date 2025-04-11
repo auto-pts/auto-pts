@@ -89,7 +89,7 @@ def hdl_wid_6(params: WIDParams):
     return ev[3] == 2
 
 
-def hdl_wid_7(params:WIDParams):
+def hdl_wid_7(params: WIDParams):
     """
     Please write to Audio Input Control Point characteristic with the Mute Op Code.
     """
@@ -356,5 +356,3 @@ def hdl_wid_20145(params: WIDParams):
     """
 
     return True
-
-

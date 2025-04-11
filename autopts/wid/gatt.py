@@ -536,6 +536,7 @@ def hdl_wid_32(params: WIDParams):
 def hdl_wid_34(_: WIDParams):
     return True
 
+
 def hdl_wid_35(params: WIDParams):
     # Partial matches are allowed for WID 35 as the verify values may be truncated to ATT_MTU
     return btp.verify_description_truncated(params.description)
@@ -586,6 +587,7 @@ def hdl_wid_36(params: WIDParams):
         return False
 
     return True
+
 
 def hdl_wid_40(params: WIDParams):
     return btp.verify_att_error(params.description)
@@ -991,12 +993,12 @@ def hdl_wid_77(params: WIDParams):
         # offset larger than the value in description.
         btp.gattc_write_long(btp.pts_addr_type_get(),
                              btp.pts_addr_get(),
-                             hdl, length+1, '12', length+2)
+                             hdl, length + 1, '12', length + 2)
         btp.gattc_write_long_rsp(True)
     else:
         btp.gattc_write_reliable(btp.pts_addr_type_get(),
                                  btp.pts_addr_get(),
-                                 hdl, length+1, '12', length+2)
+                                 hdl, length + 1, '12', length + 2)
         btp.gattc_write_reliable_rsp(True)
 
     return True
@@ -1699,7 +1701,7 @@ def hdl_wid_130(params: WIDParams):
 
     # This is needed until ES-27410 is incorporated
     if params.test_case_name in ['GATT/SR/GAI/BV-01-C', 'GATT/SR/GAN/BV-01-C']:
-       btp.gap_set_bondable_off()
+        btp.gap_set_bondable_off()
 
     return True
 

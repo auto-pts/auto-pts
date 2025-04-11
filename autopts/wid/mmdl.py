@@ -2371,6 +2371,7 @@ def hdl_wid_990(params: WIDParams):
 
     return True
 
+
 def hdl_wid_991(_: WIDParams):
     """
     Please send FIRMWARE_UPDATE_APPLY.
@@ -2381,6 +2382,7 @@ def hdl_wid_991(_: WIDParams):
     time.sleep(20)
     btp.mmdl_dfu_update_firmware_apply()
     return True
+
 
 def hdl_wid_992(_: WIDParams):
     btp.mmdl_dfu_update_firmware_get()
