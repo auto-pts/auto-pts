@@ -990,7 +990,7 @@ def get_absolute_module_path(config_path):
 def load_module_from_path(cfg):
     config_path = get_absolute_module_path(cfg)
     if not os.path.isfile(config_path):
-        log(f'{config_path} does not exists!')
+        log(f'{config_path} does not exist!')
         return None
 
     config_dirname = os.path.dirname(config_path)

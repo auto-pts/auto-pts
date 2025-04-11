@@ -109,7 +109,7 @@ class ZephyrBotClient(BotClient):
             pre_overlay = [pre_overlay]
 
         post_overlay = value.get('post_overlay', [])
-        if isinstance(pre_overlay, str):
+        if isinstance(post_overlay, str):
             post_overlay = [post_overlay]
 
         configs = []

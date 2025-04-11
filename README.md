@@ -2,33 +2,6 @@
 Follow the steps below to set up the project, install dependencies, 
 and enable automatic code formatting and linting.
 
-### Install Poetry (Recommended: Git Bash on Windows)
-To install Poetry using `pip` (works on all platforms):
-
-```bash
-pip install --user poetry
-```
-
-If you're on **Windows**, we recommend using **Git Bash** instead of PowerShell or CMD for better compatibility.
-
-After installation, make sure Poetry is available in your `PATH`. If not, you may need to add this line to your shell configuration (e.g. `~/.bashrc`, `~/.zshrc`, or Git Bash startup file):
-
-```bash
-export PATH="$HOME/.local/bin:$PATH"
-```
-
-Then reload your shell or run:
-
-```bash
-source ~/.bashrc    # or ~/.zshrc / ~/.bash_profile depending on your system
-```
-
-Finally, verify the installation:
-
-```bash
-poetry --version
-```
-
 ---
 
 ### Clone the Repository
@@ -37,82 +10,81 @@ poetry --version
 git clone https://github.com/your-username/your-repo.git
 cd your-repo
 ```
-
 ---
-### 3. Install Dependencies
 
-This will install both main and development dependencies:
+### 2. Install Dependencies
+
+Install dependencies listed in `requirements_ci.txt`:
 
 ```bash
-poetry install
+pip install -r requirements_ci.txt
+```
+
+We recommend using a virtual environment:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate    # On Windows: .venv\Scripts\activate
 ```
 
 ---
-### 4. (Optional) Activate Virtual Environment
 
-To work inside the Poetry-managed environment:
-
-```bash
-poetry shell
-```
-
-Or prefix commands with `poetry run` (e.g. `poetry run check-style`).
-
----
 ## Code Style & Formatting
 
 This project uses:
 
 - [`Ruff`](https://docs.astral.sh/ruff/) – for fast PEP8 linting and auto-fixing
 
-### Run style checks and fixes
-To automatically check by isort and ruff
-```bash
-poetry run check-style
-``` 
-This will:
-- Run `ruff` check
+Ruff is configured via `pyproject.toml`, so no additional config files are needed.
 
-To automatically fix and format your code, use the custom alias:
+### Style Checks and Auto-Fixing
+Two helper scripts are provided for working with code style:
 
+#### Check style:
 ```bash
-poetry run fix-style
+python autopts/style_tools.py check
 ```
+This will run `ruff check` and log the output to `logs/pep8/ruff_check.log`.
 
-This will:
+#### Auto-fix style issues:
+```bash
+python autopts/style_tools.py fix
+```
+This will run `ruff check --fix` and apply fixes. Output is logged to `logs/pep8/ruff_fix.log`.
 
-- Run `ruff` with auto-fix
+---
 
-### Manual usage (optional)
+### Manual Usage
+
+You can also run `ruff` directly:
 
 ```bash
-poetry run ruff check . --fix
+ruff check .
+ruff check . --fix
 ```
 
 ---
-### Pre-commit Hook (Optional)
+### (Optional) Pre-commit Hook
 
-To automatically check and fix code **before every commit**:
+To automatically check code style before each commit:
 
-1. Install pre-commit hooks:
-
+1. Install `pre-commit`:
 ```bash
-poetry run pre-commit install
+pip install pre-commit
+pre-commit install
 ```
 
-2. Now, every time you commit code:
+2. Now each commit will trigger `ruff` automatically:
 
 ```bash
 git commit -m "Your message"
 ```
-
-Ruff will run automatically before the commit is accepted.
-
 ---
+
 
 ###  GitHub Actions – Automatic Style Check
 
-A workflow is configured in `.github/workflows/style-check.yml` to automatically check code style on every push or pull request to `main` or `master`.
+A workflow is configured in `.github/workflows/full-style-matrix.yml` to automatically check code style on every push or pull request to `main` or `master`.
 
 ### What it does:
 - Checks code with `ruff`
