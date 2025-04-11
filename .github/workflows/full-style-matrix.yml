@@ -31,7 +31,6 @@ jobs:
 
     - name: Install base test dependencies
       run: |
-        pip install -r requirements_ci.txt
         pip install flake8 pytest wheel
         cat autoptsclient_requirements.txt | xargs -n 1 pip install || true
         cat autoptsserver_requirements.txt | xargs -n 1 pip install || true
@@ -40,7 +39,9 @@ jobs:
 
     - name: Run Ruff (Python >= 3.9)
       if: startsWith(matrix.python-version, '3.9') || startsWith(matrix.python-version, '3.10') || startsWith(matrix.python-version, '3.11') || startsWith(matrix.python-version, '3.12') || startsWith(matrix.python-version, '3.13')
-      run: ruff check .
+      run: |
+        pip install -r requirements_ci.txt
+        ruff check .
 
     - name: Compile (only if file exists)
       run: |
