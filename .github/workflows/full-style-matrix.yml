@@ -31,21 +31,16 @@ jobs:
 
     - name: Install base test dependencies
       run: |
+        pip install -r requirements_ci.txt
         pip install flake8 pytest wheel
         cat autoptsclient_requirements.txt | xargs -n 1 pip install || true
         cat autoptsserver_requirements.txt | xargs -n 1 pip install || true
 
-    - name: Install Poetry & dependencies (only Python >= 3.9)
-      if: startsWith(matrix.python-version, '3.9') || startsWith(matrix.python-version, '3.10') || startsWith(matrix.python-version, '3.11') || startsWith(matrix.python-version, '3.12') || startsWith(matrix.python-version, '3.13')
-      run: |
-        pip install poetry==2.1.2
-        poetry lock
-        poetry install --no-root --no-interaction
 
 
     - name: Run Ruff (Python >= 3.9)
       if: startsWith(matrix.python-version, '3.9') || startsWith(matrix.python-version, '3.10') || startsWith(matrix.python-version, '3.11') || startsWith(matrix.python-version, '3.12') || startsWith(matrix.python-version, '3.13')
-      run: poetry run ruff check .
+      run: ruff check .
 
     - name: Compile (only if file exists)
       run: |
