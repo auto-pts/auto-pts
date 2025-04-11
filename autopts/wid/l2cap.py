@@ -21,12 +21,12 @@ import time
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp
 from autopts.pybtp.types import BTPError, WIDParams
-from autopts.wid import generic_wid_hdl
 
 log = logging.debug
 
 
 def l2cap_wid_hdl(wid, description, test_case_name):
+    from autopts.wid import generic_wid_hdl
     log(f'{l2cap_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
     return generic_wid_hdl(wid, description, test_case_name, [__name__])
 
@@ -146,7 +146,7 @@ def hdl_wid_41(params: WIDParams):
         if not l2cap.is_connected(0):
             btp.l2cap_conn(None, None, stack.l2cap.psm, l2cap.initial_mtu)
         else:
-            pass # skip second wid call
+            pass  # skip second wid call
     else:
         btp.l2cap_conn(None, None, stack.l2cap.psm, l2cap.initial_mtu)
 
@@ -421,11 +421,9 @@ def hdl_wid_112(_: WIDParams):
     for x in data_0:
         data_0_unfolded.extend(x)
 
-
     data_1_unfolded = []
     for x in data_1:
         data_1_unfolded.extend(x)
-
 
     expected = [0xaa] * len(data_0_unfolded)
     if not data_0_unfolded == expected:

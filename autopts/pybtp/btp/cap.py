@@ -19,58 +19,43 @@ import logging
 import struct
 from enum import IntEnum
 
-from autopts.pybtp import defs, btp
 from autopts.ptsprojects.stack import get_stack
-from autopts.pybtp.btp.btp import CONTROLLER_INDEX, get_iut_method as get_iut,\
-    btp_hdr_check, pts_addr_get, pts_addr_type_get
+from autopts.pybtp import btp, defs
+from autopts.pybtp.btp.btp import btp_hdr_check, pts_addr_get, pts_addr_type_get
+from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.btp.gap import __gap_current_settings_update
-from autopts.pybtp.types import addr2btp_ba, BTPError, AdType
+from autopts.pybtp.common import cap_btp
+from autopts.pybtp.types import AdType, BTPError, addr2btp_ba
+
 
 class Uuid(IntEnum):
     ASCS = 0x184E
     BASS = 0x184F
     PACS = 0x1850
     BAAS = 0x1852
-    CAS  = 0x1853
+    CAS = 0x1853
 
-CAP = {
-    'read_supported_cmds': (defs.BTP_SERVICE_ID_CAP,
-                            defs.BTP_CAP_CMD_READ_SUPPORTED_COMMANDS,
-                            CONTROLLER_INDEX),
-    'discover': (defs.BTP_SERVICE_ID_CAP, defs.BTP_CAP_CMD_DISCOVER, CONTROLLER_INDEX),
-    'unicast_setup_ase': (defs.BTP_SERVICE_ID_CAP, defs.BTP_CAP_CMD_UNICAST_SETUP_ASE, CONTROLLER_INDEX),
-    'unicast_audio_start': (defs.BTP_SERVICE_ID_CAP, defs.BTP_CAP_CMD_UNICAST_AUDIO_START, CONTROLLER_INDEX),
-    'unicast_audio_update': (defs.BTP_SERVICE_ID_CAP, defs.BTP_CAP_CMD_UNICAST_AUDIO_UPDATE, CONTROLLER_INDEX),
-    'unicast_audio_stop': (defs.BTP_SERVICE_ID_CAP, defs.BTP_CAP_CMD_UNICAST_AUDIO_STOP, CONTROLLER_INDEX),
-    'broadcast_source_setup_stream': (defs.BTP_SERVICE_ID_CAP,
-        defs.BTP_CAP_CMD_BROADCAST_SOURCE_SETUP_STREAM, CONTROLLER_INDEX),
-    'broadcast_source_setup_subgroup': (defs.BTP_SERVICE_ID_CAP,
-        defs.BTP_CAP_CMD_BROADCAST_SOURCE_SETUP_SUBGROUP, CONTROLLER_INDEX),
-    'broadcast_source_setup': (defs.BTP_SERVICE_ID_CAP,
-        defs.BTP_CAP_CMD_BROADCAST_SOURCE_SETUP, CONTROLLER_INDEX),
-    'broadcast_source_release': (defs.BTP_SERVICE_ID_CAP,
-        defs.BTP_CAP_CMD_BROADCAST_SOURCE_RELEASE, CONTROLLER_INDEX),
-    'broadcast_adv_start': (defs.BTP_SERVICE_ID_CAP,
-        defs.BTP_CAP_CMD_BROADCAST_ADV_START, CONTROLLER_INDEX),
-    'broadcast_adv_stop': (defs.BTP_SERVICE_ID_CAP,
-        defs.BTP_CAP_CMD_BROADCAST_ADV_STOP, CONTROLLER_INDEX),
-    'broadcast_source_start': (defs.BTP_SERVICE_ID_CAP,
-        defs.BTP_CAP_CMD_BROADCAST_SOURCE_START, CONTROLLER_INDEX),
-    'broadcast_source_stop': (defs.BTP_SERVICE_ID_CAP,
-        defs.BTP_CAP_CMD_BROADCAST_SOURCE_STOP, CONTROLLER_INDEX),
-    'broadcast_source_update': (defs.BTP_SERVICE_ID_CAP,
-        defs.BTP_CAP_CMD_BROADCAST_SOURCE_UPDATE, CONTROLLER_INDEX),
-}
+
+CAP = cap_btp
 
 
 def announcements(adv_data, rsp_data, targeted, sink_contexts, source_contexts):
     """Setup Announcements"""
 
     # CAP General/Targeted Announcement
-    adv_data[AdType.uuid16_svc_data] = [struct.pack('<HB', Uuid.CAS, 1 if targeted else 0) ]
+    adv_data[AdType.uuid16_svc_data] = [struct.pack('<HB', Uuid.CAS, 1 if targeted else 0)]
 
     # BAP General/Targeted Announcement
-    adv_data[AdType.uuid16_svc_data] += [struct.pack('<HBHHB', Uuid.ASCS, 1 if targeted else 0, sink_contexts, source_contexts, 0) ]
+    adv_data[AdType.uuid16_svc_data] += [
+        struct.pack(
+            "<HBHHB",
+            Uuid.ASCS,
+            1 if targeted else 0,
+            sink_contexts,
+            source_contexts,
+            0,
+        )
+    ]
 
     # Generate the Resolvable Set Identifier (RSI)
     rsi = btp.cas_get_member_rsi()
@@ -149,6 +134,7 @@ def cap_unicast_audio_update(metadata_tuple):
 
 
 BTP_CAP_UNICAST_AUDIO_STOP_FLAG_RELEASE = 0b00000001
+
 
 def cap_unicast_audio_stop(cig_id, release):
     logging.debug(f"{cap_unicast_audio_stop.__name__}")

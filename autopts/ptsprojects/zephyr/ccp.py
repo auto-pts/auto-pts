@@ -15,12 +15,12 @@
 
 """CCP test cases"""
 
-from autopts.pybtp import btp
 from autopts.client import get_unique_name
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.ccp_wid import ccp_wid_hdl
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
+from autopts.pybtp import btp
 from autopts.pybtp.types import Addr
 
 
@@ -50,7 +50,7 @@ def set_pixits(ptses):
     pts.set_pixit("CCP", "TSPX_security_enabled", "TRUE")
     pts.set_pixit("CCP", "TSPX_iut_GAP_connection_role", "Peripheral")
     pts.set_pixit("CCP", "TSPX_iut_ATT_transport", "ATT Bearer on LE Transport")
-    
+
 
 def test_cases(ptses):
     """Returns a list of CCP test cases"""

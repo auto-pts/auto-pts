@@ -21,12 +21,12 @@ import sys
 import traceback
 import xmlrpc.client
 import xmlrpc.server
-from os.path import dirname, abspath
+from os.path import abspath, dirname
 
 AUTOPTS_REPO = dirname(dirname(dirname(abspath(__file__))))
 sys.path.insert(0, AUTOPTS_REPO)
 
-from autopts.utils import terminate_process as utils_terminate_process
+from autopts.utils import terminate_process as utils_terminate_process  # noqa: E402, I001 # the order of import is very important here
 
 
 class StartArgumentParser(argparse.ArgumentParser):
@@ -43,7 +43,7 @@ class StartArgumentParser(argparse.ArgumentParser):
     def check_args(arg):
         """Sanity check command line arguments"""
         if not 49152 <= arg.port <= 65535:
-            sys.exit("Invalid server port number=%s, expected range <49152,65535> " % (arg.port,))
+            sys.exit(f"Invalid server port number={arg.port}, expected range <49152,65535>")
 
     def parse_args(self, args=None, namespace=None):
         arg = super().parse_args(args, namespace)
@@ -101,7 +101,7 @@ def copy_file(file_path):
 def start_server():
     args = StartArgumentParser().parse_args()
 
-    print("Serving on port {} ...".format(args.port))
+    print(f"Serving on port {args.port} ...")
     server = xmlrpc.server.SimpleXMLRPCServer((args.ip, args.port), allow_none=True)
     server.register_function(run_command, 'run_command')
     server.register_function(open_process, 'open_process')
@@ -113,7 +113,7 @@ def start_server():
     while True:
         try:
             server.handle_request()
-        except KeyboardInterrupt as e:
+        except KeyboardInterrupt:
             return
         except BaseException as e:
             traceback.print_exception(e)

@@ -83,7 +83,7 @@ z['mail'] = {
 # ****************************************************************************
 # Github configuration
 #
-# To commit and push logs to Github.
+# To commit and push logs to GitHub.
 # Configured ssh-agent must be started earlier.
 # ****************************************************************************
 z['githubdrive'] = {

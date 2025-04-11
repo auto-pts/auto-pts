@@ -13,60 +13,61 @@
 # more details.
 #
 
-import binascii
 import logging
-import sys
 import re
-import struct
-import time
-
 from enum import IntEnum, IntFlag
-from autopts.pybtp import btp, defs
+
 from autopts.ptsprojects.stack import get_stack
+from autopts.pybtp import btp, defs
 from autopts.pybtp.types import WIDParams
-from autopts.wid import generic_wid_hdl
 
 log = logging.debug
 
+
 class OpCode(IntEnum):
-    ACCEPT                  = 0x00
-    TERMINATE               = 0x01
-    LOCAL_HOLD              = 0x02
-    LOCAL_RETRIEVE          = 0x03
-    ORIGINATE               = 0x04
-    JOIN                    = 0x05
-    ILLEGAL                 = 0x06
+    ACCEPT = 0x00
+    TERMINATE = 0x01
+    LOCAL_HOLD = 0x02
+    LOCAL_RETRIEVE = 0x03
+    ORIGINATE = 0x04
+    JOIN = 0x05
+    ILLEGAL = 0x06
+
 
 class ResultCode(IntEnum):
-    SUCCESS                 = 0x00
-    OPCODE_NOT_SUPPORTED    = 0x01
-    OPERATION_NOT_POSSIBLE  = 0x02
-    INVALID_CALL_INDEX      = 0x03
-    STATE_MISMATCH          = 0x04
-    LACK_OF_RESOURCES       = 0x05
-    INVALID_OUTGOING_URI    = 0x06
+    SUCCESS = 0x00
+    OPCODE_NOT_SUPPORTED = 0x01
+    OPERATION_NOT_POSSIBLE = 0x02
+    INVALID_CALL_INDEX = 0x03
+    STATE_MISMATCH = 0x04
+    LACK_OF_RESOURCES = 0x05
+    INVALID_OUTGOING_URI = 0x06
+
 
 class CallState(IntEnum):
-    INCOMING                = 0x00
-    DIALING                 = 0x01
-    ALERTING                = 0x02
-    ACTIVE                  = 0x03
-    LOCALLY_HELD            = 0x04
-    REMOTELY_HELD           = 0x05
-    LOCALLY_REMOTELY_HELD   = 0x06
+    INCOMING = 0x00
+    DIALING = 0x01
+    ALERTING = 0x02
+    ACTIVE = 0x03
+    LOCALLY_HELD = 0x04
+    REMOTELY_HELD = 0x05
+    LOCALLY_REMOTELY_HELD = 0x06
+
 
 class CallFlags(IntFlag):
-    INCOMING                = 0x00
-    OUTGOING                = 0x01
-    WITHHELD                = 0x02
-    WITHHELD_BY_NETWORK     = 0x04
+    INCOMING = 0x00
+    OUTGOING = 0x01
+    WITHHELD = 0x02
+    WITHHELD_BY_NETWORK = 0x04
+
 
 class Uuid(IntEnum):
-    TBS                     = 0x184b # Telephone Bearer service
-    GTBS                    = 0x184c # Generic Telephone Bearer service
-    CCC                     = 0x2902 # Client Characteristic Configuration 
-    CALLSC                  = 0x2bbd # Call State Characteristic
-    CALLCPC                 = 0x2bbe # Call Control Point Characteristic
+    TBS = 0x184b  # Telephone Bearer service
+    GTBS = 0x184c  # Generic Telephone Bearer service
+    CCC = 0x2902  # Client Characteristic Configuration
+    CALLSC = 0x2bbd  # Call State Characteristic
+    CALLCPC = 0x2bbe  # Call Control Point Characteristic
+
 
 BT_TBS_GTBS_INDEX = 0xff
 # 0x00 is TBS Service index instance
@@ -75,7 +76,9 @@ global __gtbs_ccpc_handle, __round
 
 __gtbs_ccpc_handle, __round = None, None
 
+
 def ccp_wid_hdl(wid, description, test_case_name):
+    from autopts.wid import generic_wid_hdl
     log(f'{ccp_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
     return generic_wid_hdl(wid, description, test_case_name, [__name__])
 
@@ -115,7 +118,7 @@ def disc_full(svc_uuid=None, ch_uuid=None):
 
             btp.gattc_disc_all_desc(btp.pts_addr_type_get(),
                                     btp.pts_addr_get(),
-                                    start_hdl, start_hdl+1)
+                                    start_hdl, start_hdl + 1)
 
             descs = btp.gattc_disc_all_desc_rsp()
             attrs[svc][chars[i]] = descs
@@ -146,12 +149,12 @@ def descriptor_handle(attrs, serv_uuid, char_uuid, desc_uuid):
 def dump_services(attrs):
     print()
     for service in attrs:
-        print("Service: %s handles [%d, %d]" % (service.uuid, service.handle, service.end_handle))
+        print(f"Service: {service.uuid} handles [{service.handle}, {service.end_handle}]")
         for char in attrs[service]:
-            print("\tCharacteristic: %s handles [%d, %d]" % (char.uuid, char.handle, char.value_handle))
+            print(f"\tCharacteristic: {char.uuid} handles [{char.handle}, {char.value_handle}]")
             for desc in attrs[service][char]:
-                print("\t\tDescriptor: %s handle %d" % (desc.uuid, desc.handle))
-    
+                print(f"\t\tDescriptor: {desc.uuid} handle {desc.handle}")
+
 
 def hdl_wid_104(params: WIDParams):
     """
@@ -489,5 +492,6 @@ def hdl_wid_20206(params: WIDParams):
         return True
 
     return False
+
 
 hdl_wid_20106.count = 0

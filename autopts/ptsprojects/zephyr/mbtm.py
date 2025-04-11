@@ -16,17 +16,16 @@
 
 """MMDL test cases"""
 
+import random
 from binascii import hexlify
 from uuid import uuid4
-import random
 
-from autopts.client import get_unique_name, get_test_data_path
-from autopts.pybtp import btp
-from autopts.pybtp import defs
-from autopts.wid import mmdl_wid_hdl
+from autopts.client import get_test_data_path, get_unique_name
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
+from autopts.pybtp import btp, defs
+from autopts.wid import mmdl_wid_hdl
 
 
 def set_pixits(ptses):
@@ -85,7 +84,6 @@ def test_cases(ptses):
         return []
 
     stack = get_stack()
-
 
     device_uuid = hexlify(uuid4().bytes)
     device_uuid2 = hexlify(uuid4().bytes)

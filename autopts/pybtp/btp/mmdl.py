@@ -21,7 +21,8 @@ import struct
 
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import defs
-from autopts.pybtp.btp.btp import CONTROLLER_INDEX, get_iut_method as get_iut
+from autopts.pybtp.btp.btp import CONTROLLER_INDEX
+from autopts.pybtp.btp.btp import get_iut_method as get_iut
 
 MMDL = {
     "read_supp_cmds": (defs.BTP_SERVICE_ID_MMDL,
@@ -947,7 +948,7 @@ def mmdl_sensor_column_get(sensor_id, raw_value):
     (rsp,) = iutctl.btp_socket.send_wait_rsp(
         *MMDL['sensor_column_get'], data=data)
 
-    hdr_fmt = '<H%ds' % (len(rsp) - 2)
+    hdr_fmt = f"<H{len(rsp) - 2}s"
     (prop_id, column_data) = struct.unpack_from(hdr_fmt, rsp)
     column_data = int.from_bytes(column_data, byteorder='big')
     stack = get_stack()
@@ -968,7 +969,7 @@ def mmdl_sensor_series_get(sensor_id, raw_values):
 
     (rsp,) = iutctl.btp_socket.send_wait_rsp(
         *MMDL['sensor_series_get'], data=data)
-    hdr_fmt = '<%dsH' % (len(rsp) - 2)
+    hdr_fmt = f"<{len(rsp) - 2}sH"
     (column_data, prop_id) = struct.unpack_from(hdr_fmt, rsp)
     column_data = int.from_bytes(column_data, byteorder='big')
     stack = get_stack()

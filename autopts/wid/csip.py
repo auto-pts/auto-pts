@@ -17,15 +17,15 @@ import logging
 import re
 import struct
 
-from autopts.pybtp import btp, defs
 from autopts.ptsprojects.stack import get_stack
+from autopts.pybtp import btp, defs
 from autopts.pybtp.types import AdType, OwnAddrType, WIDParams, gap_settings_btp2txt
-from autopts.wid import generic_wid_hdl
 
 log = logging.debug
 
 
 def csip_wid_hdl(wid, description, test_case_name):
+    from autopts.wid import generic_wid_hdl
     log(f'{csip_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
     return generic_wid_hdl(wid, description, test_case_name, [__name__])
 
@@ -182,7 +182,7 @@ def hdl_wid_20100(params: WIDParams):
         btp.gap_pair(addr, addr_type)
         stack.gap.gap_wait_for_sec_lvl_change(level=2, timeout=30, addr=addr)
 
-    #CSIP/CL/SP/BV-07-C will receive the WID 20101. Hence, no need to perform discovery here.
+    # CSIP/CL/SP/BV-07-C will receive the WID 20101. Hence, no need to perform discovery here.
 
     if 'CSIP/CL/SP/BV-03-C' in params.test_case_name or\
             'CSIP/CL/SP/BV-04-C' in params.test_case_name or\

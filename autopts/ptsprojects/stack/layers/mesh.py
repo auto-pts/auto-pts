@@ -14,6 +14,7 @@
 # more details.
 #
 import logging
+
 from autopts.ptsprojects.stack.common import Property, wait_for_event
 
 

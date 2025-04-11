@@ -29,25 +29,30 @@ import copy
 import json
 import logging
 import re
-import sys
 import signal
-import schedule
+import sys
 import threading
 from argparse import Namespace
-from datetime import timedelta, datetime
+from datetime import datetime, timedelta
+from os.path import abspath, dirname
 from time import sleep
-from os.path import dirname, abspath
+
+import schedule
 
 # Needed if autopts is not installed as a module
-AUTOPTS_REPO=dirname(dirname(dirname(abspath(__file__))))
+AUTOPTS_REPO = dirname(dirname(dirname(abspath(__file__))))
 sys.path.extend([AUTOPTS_REPO])
 
-from autopts.utils import get_global_end, set_global_end, have_admin_rights, terminate_process
-from autopts.bot.common import load_module_from_path
-from tools.cron.estimations import get_estimations
-from tools.cron.common import set_cron_cfg, load_config
-from tools.cron.cron_gui import CronGUI, RequestPuller
-
+from autopts.bot.common import load_module_from_path  # noqa: E402 # the order of import is very important here
+from autopts.utils import (  # noqa: E402 # the order of import is very important here
+    get_global_end,
+    have_admin_rights,
+    set_global_end,
+    terminate_process,
+)
+from tools.cron.common import load_config, set_cron_cfg  # noqa: E402 # the order of import is very important here
+from tools.cron.cron_gui import CronGUI, RequestPuller  # noqa: E402 # the order of import is very important here
+from tools.cron.estimations import get_estimations  # noqa: E402 # the order of import is very important here
 
 if sys.platform == 'win32':
     import pythoncom
@@ -257,10 +262,15 @@ def schedule_pr_job(cron, pr_info, job_config):
             estimations += f'<details><summary>Test cases to be run</summary>{"<br>".join(test_cases)}</details>\n'
 
             if skipped_test_cases:
-                estimations += (f'<details><summary>Test cases skipped due to limit, count: {len(skipped_test_cases)}</summary>'
-                                f'{"<br>".join(skipped_test_cases)}</details>\n')
+                estimations += (
+                    f"<details>"
+                    f"<summary>Test cases skipped due to limit, count: {len(skipped_test_cases)}</summary>"
+                    f"{'<br>'.join(skipped_test_cases)}"
+                    f"</details>\n"
+                )
+
         else:
-            estimations = f', test case count: estimation not available'
+            estimations = ', test case count: estimation not available'
 
         job_config.pop('test_case_limit')
         job_config['estimated_duration'] = est_duration

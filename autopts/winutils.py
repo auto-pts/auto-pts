@@ -31,12 +31,10 @@
 
 """Windows utilities"""
 import logging
-import os
-import sys
-import ctypes
-import wmi
+
 import win32gui
 import win32process
+import wmi
 
 
 def get_pid_by_window_title(title):
@@ -48,8 +46,8 @@ def get_pid_by_window_title(title):
                 try:
                     _, pid = win32process.GetWindowThreadProcessId(hwnd)
                     hwnd_list.append(pid)
-                except:
-                    pass
+                except Exception as e:
+                    logging.warning(f"Failed to get PID for hwnd {hwnd}: {e}")
 
     hwnd_list = []
     win32gui.EnumWindows(callback, hwnd_list)
@@ -65,7 +63,7 @@ def kill_all_processes(name):
     for ps in c.Win32_Process(name=name):
         try:
             ps.Terminate()
-            logging.debug("%s process (PID %d) terminated successfully" % (name, ps.ProcessId))
+            logging.debug(f"{name} process (PID {ps.ProcessId}) terminated successfully")
         except BaseException as exc:
             logging.exception(exc)
-            logging.debug("There is no %s process running with id: %d" % (name, ps.ProcessId))
+            logging.debug(f"There is no {name} process running with id: {ps.ProcessId}")

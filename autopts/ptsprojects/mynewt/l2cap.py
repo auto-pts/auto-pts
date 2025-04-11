@@ -16,13 +16,12 @@
 """L2CAP test cases"""
 
 from autopts.client import get_unique_name
-from autopts.pybtp import btp
-from autopts.pybtp.types import Addr, L2CAPConnectionResponse
-from autopts.wid import l2cap_wid_hdl
-from autopts.ptsprojects.stack import get_stack, L2cap
-from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.mynewt.ztestcase import ZTestCase
-
+from autopts.ptsprojects.stack import L2cap, get_stack
+from autopts.ptsprojects.testcase import TestFunc
+from autopts.pybtp import btp
+from autopts.pybtp.types import Addr
+from autopts.wid import l2cap_wid_hdl
 
 le_psm = 128
 psm_unsupported = 241
@@ -102,6 +101,7 @@ def set_pixits(ptses):
     pts.set_pixit("L2CAP", "TSPX_l2ca_cbmps_max", "0064")
     pts.set_pixit("L2CAP", "TSPX_l2ca_cbmtu_min", "0040")
     pts.set_pixit("L2CAP", "TSPX_l2ca_cbmtu_max", "00E6")
+
 
 def test_cases(ptses):
     """Returns a list of L2CAP test cases

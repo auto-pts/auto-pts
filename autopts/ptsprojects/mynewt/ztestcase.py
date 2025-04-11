@@ -15,10 +15,9 @@
 
 """Test case that manages Mynewt IUT"""
 
-from autopts.ptsprojects.testcase import TestCaseLT1, TestCaseLT2, TestFunc, \
-    TestFuncCleanUp
-from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.mynewt.iutctl import get_iut
+from autopts.ptsprojects.stack import get_stack
+from autopts.ptsprojects.testcase import TestCaseLT1, TestCaseLT2, TestFunc, TestFuncCleanUp
 
 
 class ZTestCase(TestCaseLT1):

@@ -13,8 +13,8 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
-from autopts.ptsprojects.stack.layers import Property
 from autopts.ptsprojects.stack.common import wait_for_event
+from autopts.ptsprojects.stack.layers import Property
 
 
 def is_procedure_done(list, cnt):
@@ -100,7 +100,6 @@ class GattCl:
 
     def wait_for_write_rsp(self, timeout=30):
         return wait_for_event(timeout, self.is_write_completed)
-
 
     def is_verified_val_rxed(self, expected_count):
         if expected_count > 0:

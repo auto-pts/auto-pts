@@ -18,16 +18,16 @@ import re
 import struct
 import time
 
-from autopts.pybtp import btp
 from autopts.ptsprojects.stack import get_stack
+from autopts.pybtp import btp
 from autopts.pybtp.types import WIDParams
-from autopts.wid import generic_wid_hdl
 
 # MMDL ATS ver. 1.0
 log = logging.debug
 
 
 def mmdl_wid_hdl(wid, description, test_case_name):
+    from autopts.wid import generic_wid_hdl
     log(f'{mmdl_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
     return generic_wid_hdl(wid, description, test_case_name, [__name__])
 
@@ -2371,6 +2371,7 @@ def hdl_wid_990(params: WIDParams):
 
     return True
 
+
 def hdl_wid_991(_: WIDParams):
     """
     Please send FIRMWARE_UPDATE_APPLY.
@@ -2381,6 +2382,7 @@ def hdl_wid_991(_: WIDParams):
     time.sleep(20)
     btp.mmdl_dfu_update_firmware_apply()
     return True
+
 
 def hdl_wid_992(_: WIDParams):
     btp.mmdl_dfu_update_firmware_get()

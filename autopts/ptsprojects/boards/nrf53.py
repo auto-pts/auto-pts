@@ -14,12 +14,13 @@
 #
 import logging
 import os
-
-from .nrf5x import *
-from autopts.bot.common import check_call
 from subprocess import CalledProcessError
 
+from autopts.bot.common import check_call
+
+supported_projects = ['zephyr']
 board_type = 'nrf5340dk/nrf5340/cpuapp'
+
 
 def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None, *args):
     """Build and flash Zephyr binary

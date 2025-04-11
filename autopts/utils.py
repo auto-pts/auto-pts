@@ -22,10 +22,10 @@ import sys
 import threading
 import traceback
 import xmlrpc.client
-import hid
-import psutil
 from time import sleep
 
+import hid
+import psutil
 
 PTS_WORKSPACE_FILE_EXT = ".pqw6"
 
@@ -102,9 +102,13 @@ class ResultWithFlag:
 
         If timeout, will throw an exception: TimeoutError
         """
+
+        def _default_predicate():
+            return True
+
         # Ctrl+C friendly under Windows
         if predicate is None:
-            predicate = lambda: True
+            predicate = _default_predicate
 
         raise_timeout = False
 
@@ -206,7 +210,7 @@ pykush_installed = False
 try:
     import pykush.pykush as pykush
     pykush_installed = True
-except:
+except ImportError:
     pass
 
 
@@ -301,7 +305,6 @@ if sys.platform == 'win32':
 
         return False
 
-
     def have_admin_rights():
         """"Check if the process has Administrator rights"""
         try:
@@ -326,7 +329,7 @@ else:
             try:
                 if serial_address in device.get('DEVNAME'):
                     return True
-            except BaseException as e:
+            except BaseException:
                 pass
         return False
 

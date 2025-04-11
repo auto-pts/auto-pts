@@ -14,20 +14,36 @@
 #
 import logging
 import re
+import struct
 from argparse import Namespace
 from time import sleep
 
-from autopts.ptsprojects.stack import get_stack, WildCard
+from autopts.ptsprojects.stack import WildCard, get_stack
 from autopts.ptsprojects.testcase import MMI
-from autopts.pybtp import btp
-from autopts.pybtp.btp import pts_addr_get, pts_addr_type_get, ascs_add_ase_to_cis, lt2_addr_get, lt2_addr_type_get
-from autopts.pybtp.types import *
-from autopts.wid import generic_wid_hdl
+from autopts.pybtp import btp, defs
+from autopts.pybtp.btp import ascs_add_ase_to_cis, lt2_addr_get, lt2_addr_type_get, pts_addr_get, pts_addr_type_get
+from autopts.pybtp.types import (
+    CODEC_CONFIG_SETTINGS,
+    FRAME_DURATION_STR_TO_CODE,
+    QOS_CONFIG_SETTINGS,
+    SAMPLING_FREQ_STR_TO_CODE,
+    UUID,
+    AdFlags,
+    AdType,
+    ASCSState,
+    AudioDir,
+    BTPError,
+    PaSyncState,
+    WIDParams,
+    create_lc3_ltvs_bytes,
+    gap_settings_btp2txt,
+)
 
 log = logging.debug
 
 
 def bap_wid_hdl(wid, description, test_case_name):
+    from autopts.wid import generic_wid_hdl
     log(f'{bap_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
     return generic_wid_hdl(wid, description, test_case_name, [__name__])
 
@@ -159,7 +175,7 @@ def hdl_wid_100(params: WIDParams):
 
 def hdl_wid_104(params: WIDParams):
     """
-    Please send non connectable advertise with periodic info.
+    Please send non-connectable advertise with periodic info.
     """
     # Advertising started at hdl_wid_114
 
@@ -284,7 +300,7 @@ def hdl_wid_114(params: WIDParams):
     elif stack.bap.hdl_wid_114_cnt == 1:
         broadcast_id = stack.bap.broadcast_id_2
     else:
-        raise ValuError("hdl_wid_114 is not 0 or 1")
+        raise ValueError("hdl_wid_114 is not 0 or 1")
 
     if params.test_case_name in configurations:
         qos_set_name = configurations[params.test_case_name]
@@ -503,7 +519,7 @@ def parse_pac_char_value(data):
 
     try:
         for n in range(0, number_of_pac_records):
-            codec_id = data[i:i+5]
+            codec_id = data[i:i + 5]
             i += 5
 
             ltvs[codec_id] = {}
@@ -523,10 +539,10 @@ def parse_pac_char_value(data):
             i += ltvs_len + 1
 
             ltvs[codec_id] = (capabilities, metadata)
-    except:
+    except (IndexError, ValueError) as e:
         # If MTU was so small that PAC records are truncated, lets
         # parse as much as possible and try to continue the test case.
-        log(f'PAC records truncated, parsed ltvs: {ltvs}')
+        log(f'PAC records truncated, parsed ltvs: {ltvs}. Error: {e}')
 
     return ltvs
 

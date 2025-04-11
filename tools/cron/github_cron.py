@@ -18,10 +18,11 @@
 import json
 import logging
 import re
-import requests
 from datetime import datetime, timedelta
 from threading import Thread
 from time import sleep
+
+import requests
 from requests.structures import CaseInsensitiveDict
 
 from autopts.utils import get_global_end
@@ -159,7 +160,7 @@ class GitHubCron(Thread):
         resp = self.get(url, params)
         try:
             comments = resp.json()
-        except:
+        except Exception:
             comments = []
 
         for comment in comments:
@@ -219,7 +220,7 @@ class GitHubCron(Thread):
         resp = self.get(url, params)
         try:
             pr = resp.json()
-        except:
+        except Exception:
             return None
 
         pr_info = {

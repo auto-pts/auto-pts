@@ -13,11 +13,9 @@
 # more details.
 #
 
-import autopts.ptsprojects.mynewt.gap
-import autopts.ptsprojects.mynewt.gatt
-import autopts.ptsprojects.mynewt.sm
-import autopts.ptsprojects.mynewt.l2cap
-import autopts.ptsprojects.mynewt.mesh
-import autopts.ptsprojects.mynewt.bap
-import autopts.ptsprojects.mynewt.pacs
+from . import bap, gap, gatt, l2cap, mesh, pacs, sm
+
+__all__ = ["bap", "gap", "gatt", "l2cap", "mesh", "pacs", "sm"]
+
+
 # GENERATOR append 1
