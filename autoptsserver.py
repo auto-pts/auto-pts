@@ -69,6 +69,7 @@ log = root_logging.debug
 log_inited = False
 PROJECT_DIR = dirname(abspath(__file__))
 
+
 def _com_port_exists(port_name):
     """Check if the COM port exists."""
     ports = serial.tools.list_ports.comports()
@@ -76,6 +77,7 @@ def _com_port_exists(port_name):
         if port.device == port_name:
             return True
     return False
+
 
 def init_logging(_args):
     """Initialize server logging"""

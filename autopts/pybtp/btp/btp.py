@@ -33,7 +33,7 @@ from .. import defs
 #  get IUT global method from iutctl
 get_iut = None
 
-#loading as CORE to maintain backward compatibility with older code snippet
+# loading as CORE to maintain backward compatibility with older code snippet
 CORE = reg_unreg_service
 
 # Address
@@ -65,6 +65,7 @@ def read_supp_svcs():
                   tuple_hdr, tuple_data)
 
     stack.supported_svcs = int.from_bytes(tuple_data[0], 'little')
+
 
 def read_supported_commands(service):
     iutctl = get_iut()
@@ -511,6 +512,7 @@ def core_unreg_svc_gatt_cl():
 def core_reg_svc_vcs():
     core_reg_svc_univ("vcs_reg", "VCS")
 
+
 def core_reg_svc_vocs():
     core_reg_svc_univ("vocs_reg", "VOCS")
 
@@ -680,7 +682,6 @@ def init(get_iut_method):
 
     get_iut = get_iut_method
     set_event_handler(event_handler)
-
 
 
 def event_handler(hdr, data):

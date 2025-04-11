@@ -49,7 +49,7 @@ def hdl_wid_100(_: WIDParams):
 
     log('Public Broadcast Announcement and Broadcast Name found')
 
-    encrypted = (ev['pba_features'] & 1 ) != 0
+    encrypted = (ev['pba_features'] & 1) != 0
     broadcast_id = ev['broadcast_id']
     addr_type = ev['addr_type']
     addr = ev['addr']
@@ -129,7 +129,7 @@ def hdl_wid_551(params: WIDParams):
 
     # Extract and print the hex value
     if match:
-        pba_features =  int(match.group(), 16)
+        pba_features = int(match.group(), 16)
     else:
         log('Cannot find expected PBP Features')
         return False

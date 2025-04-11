@@ -18,5 +18,4 @@ from . import bap, gap, gatt, l2cap, mesh, pacs, sm
 __all__ = ["bap", "gap", "gatt", "l2cap", "mesh", "pacs", "sm"]
 
 
-
 # GENERATOR append 1

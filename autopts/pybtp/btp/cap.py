@@ -33,7 +33,8 @@ class Uuid(IntEnum):
     BASS = 0x184F
     PACS = 0x1850
     BAAS = 0x1852
-    CAS  = 0x1853
+    CAS = 0x1853
+
 
 CAP = cap_btp
 
@@ -42,7 +43,7 @@ def announcements(adv_data, rsp_data, targeted, sink_contexts, source_contexts):
     """Setup Announcements"""
 
     # CAP General/Targeted Announcement
-    adv_data[AdType.uuid16_svc_data] = [struct.pack('<HB', Uuid.CAS, 1 if targeted else 0) ]
+    adv_data[AdType.uuid16_svc_data] = [struct.pack('<HB', Uuid.CAS, 1 if targeted else 0)]
 
     # BAP General/Targeted Announcement
     adv_data[AdType.uuid16_svc_data] += [
@@ -133,6 +134,7 @@ def cap_unicast_audio_update(metadata_tuple):
 
 
 BTP_CAP_UNICAST_AUDIO_STOP_FLAG_RELEASE = 0b00000001
+
 
 def cap_unicast_audio_stop(cig_id, release):
     logging.debug(f"{cap_unicast_audio_stop.__name__}")

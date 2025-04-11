@@ -27,6 +27,7 @@ PROGRAM_INFO = '00112233445566778899AABBCCDDEEFF'
 BROADCAST_CODE = '0102680553F1415AA265BBAFC6EA03B8'
 BROADCAST_NAME = 'Broadcaster'
 
+
 def set_pixits(ptses):
     pts = ptses[0]
 
@@ -35,6 +36,7 @@ def set_pixits(ptses):
     pts.set_pixit("PBP", "TSPX_broadcast_code", BROADCAST_CODE)
     pts.set_pixit("PBP", "TSPX_Program_Info", PROGRAM_INFO)
     pts.set_pixit("PBP", "TSPX_Broadcast_Name", BROADCAST_NAME)
+
 
 def test_cases(ptses):
     """

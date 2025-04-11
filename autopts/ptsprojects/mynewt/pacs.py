@@ -92,5 +92,3 @@ def test_cases(ptses):
         tc_list.append(instance)
 
     return tc_list
-
-

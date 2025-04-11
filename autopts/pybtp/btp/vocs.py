@@ -75,7 +75,7 @@ def vocs_audio_desc(string):
     data = bytearray(struct.pack("<B", string_len))
     data.extend(string.encode('UTF-8'))
 
-    iutctl.btp_socket.send(*VOCS['audio_desc'], data = data)
+    iutctl.btp_socket.send(*VOCS['audio_desc'], data=data)
     vocs_command_rsp_succ()
 
 

@@ -498,7 +498,6 @@ def gap_adv_ind_on(ad=None, sd=None, duration=AdDuration.forever, own_addr_type=
     sd_ba = bytearray()
     data = bytearray()
 
-
     for ad_type, ad_data in list(ad.items()):
         if isinstance(ad_data, list):
             for item in ad_data:
@@ -1251,6 +1250,7 @@ def gap_set_sc_off():
     tuple_data = gap_command_rsp_succ()
     __gap_current_settings_update(tuple_data)
 
+
 def gap_set_extended_advertising_on():
     logging.debug("%s", gap_set_extended_advertising_on.__name__)
 
@@ -1292,8 +1292,8 @@ def parse_eir_data(eir):
     i = 0
     while i < eir_len:
         data_len = eir[i]
-        data_type = eir[i+1]
-        data[data_type] = eir[i+2:i+data_len+1]
+        data_type = eir[i + 1]
+        data[data_type] = eir[i + 2:i + data_len + 1]
         i += 1 + data_len
 
     return data

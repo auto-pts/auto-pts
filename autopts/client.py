@@ -501,7 +501,7 @@ def init_pts(args, ptses):
     finish_count = CounterWithFlag(init_count=0)
 
     init_logging('_' + '_'.join(str(x) for x in args.cli_port))
-    server_count = getattr(args, 'server_count',  len(args.cli_port))
+    server_count = getattr(args, 'server_count', len(args.cli_port))
 
     # PtsServer.finish_count.clear()
     for i in range(0, server_count):
@@ -514,14 +514,14 @@ def init_pts(args, ptses):
                 proxy = PtsServer.factory_get_instance(args.server_args[i], args.max_server_restart_time)
             else:
                 proxy = PtsServerProxy.factory_get_instance(
-                    i+1, args.ip_addr[i], args.srv_port[i],
+                    i + 1, args.ip_addr[i], args.srv_port[i],
                     args.local_addr[i], args.cli_port[i],
                     args.max_server_restart_time)
 
             proxy_list.append(proxy)
 
         thread = InterruptableThread(target=init_pts_thread_entry,
-                                     name=f'LT{i+1}-server-init',
+                                     name=f'LT{i + 1}-server-init',
                                      args=(proxy, args, exceptions, finish_count))
 
         thread_list.append(thread)
@@ -666,7 +666,7 @@ class TestCaseRunStats:
             elem.attrib["test_end_time"] = test_end_time.strftime('%Y-%m-%d %H:%M:%S')
 
         regression = bool(elem.attrib["status"] != "PASS" and elem.attrib["status_previous"] == "PASS")
-        progress = bool(elem.attrib["status"] == "PASS" and elem.attrib["status_previous"] != "PASS" \
+        progress = bool(elem.attrib["status"] == "PASS" and elem.attrib["status_previous"] != "PASS"
                         and elem.attrib["status_previous"] != "None")
 
         elem.attrib["regression"] = str(regression)

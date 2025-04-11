@@ -22,7 +22,7 @@ supported_projects = ['zephyr']
 board_type = 'nrf5340_audio_dk/nrf5340/cpuapp'
 
 
-def build_and_flash_core(zephyr_wd, build_dir, board, debugger_snr, configs, recover = False):
+def build_and_flash_core(zephyr_wd, build_dir, board, debugger_snr, configs, recover=False):
     build_dir = os.path.join(zephyr_wd, build_dir)
     check_call('rm -rf build/'.split(), cwd=build_dir)
 
@@ -41,6 +41,7 @@ def build_and_flash_core(zephyr_wd, build_dir, board, debugger_snr, configs, rec
     if recover:
         cmd.append('--recover')
     check_call(cmd, cwd=build_dir)
+
 
 def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None, *args):
     """Build and flash Zephyr binary

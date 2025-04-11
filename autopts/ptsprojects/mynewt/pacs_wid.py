@@ -23,4 +23,3 @@ log = logging.debug
 def pacs_wid_hdl(wid, description, test_case_name):
     log(f'{pacs_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
     return generic_wid_hdl(wid, description, test_case_name, [__name__, 'autopts.wid.pacs'])
-

@@ -23,21 +23,22 @@ from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
 
 VCS = {
-    "set_vol":(defs.BTP_SERVICE_ID_VCS, defs.BTP_VCS_CMD_SET_VOL,
+    "set_vol": (defs.BTP_SERVICE_ID_VCS, defs.BTP_VCS_CMD_SET_VOL,
                CONTROLLER_INDEX),
-    "vol_up":(defs.BTP_SERVICE_ID_VCS, defs.BTP_VCS_CMD_VOL_UP,
+    "vol_up": (defs.BTP_SERVICE_ID_VCS, defs.BTP_VCS_CMD_VOL_UP,
                CONTROLLER_INDEX, ""),
-    "vol_down":(defs.BTP_SERVICE_ID_VCS, defs.BTP_VCS_CMD_VOL_DOWN,
+    "vol_down": (defs.BTP_SERVICE_ID_VCS, defs.BTP_VCS_CMD_VOL_DOWN,
                CONTROLLER_INDEX, ""),
-    "mute":(defs.BTP_SERVICE_ID_VCS, defs.BTP_VCS_CMD_MUTE,
+    "mute": (defs.BTP_SERVICE_ID_VCS, defs.BTP_VCS_CMD_MUTE,
                CONTROLLER_INDEX, ""),
-    "unmute":(defs.BTP_SERVICE_ID_VCS, defs.BTP_VCS_CMD_UNMUTE,
+    "unmute": (defs.BTP_SERVICE_ID_VCS, defs.BTP_VCS_CMD_UNMUTE,
                CONTROLLER_INDEX, "")
 }
 
 VCS_EV = {
-    ### For future testing purposes ###
+    # For future testing purposes ###
 }
+
 
 def vcs_command_rsp_succ(op=None):
     logging.debug("%s", vcs_command_rsp_succ.__name__)
@@ -50,6 +51,7 @@ def vcs_command_rsp_succ(op=None):
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_VCS, op)
 
     return tuple_data
+
 
 def vcs_set_vol(vol):
     logging.debug("%s %r", vcs_set_vol.__name__, vol)
@@ -64,6 +66,7 @@ def vcs_set_vol(vol):
     iutctl.btp_socket.send(*VCS['set_vol'], data=data)
     vcs_command_rsp_succ()
 
+
 def vcs_mute():
     logging.debug("%s", vcs_mute.__name__)
 
@@ -71,6 +74,7 @@ def vcs_mute():
 
     iutctl.btp_socket.send(*VCS['mute'])
     vcs_command_rsp_succ()
+
 
 def vcs_unmute():
     logging.debug("%s", vcs_unmute.__name__)
@@ -80,6 +84,7 @@ def vcs_unmute():
     iutctl.btp_socket.send(*VCS['unmute'])
     vcs_command_rsp_succ()
 
+
 def vcs_vol_down():
     logging.debug("%s", vcs_vol_down.__name__)
 
@@ -87,6 +92,7 @@ def vcs_vol_down():
 
     iutctl.btp_socket.send(*VCS['vol_down'])
     vcs_command_rsp_succ()
+
 
 def vcs_vol_up():
     logging.debug("%s", vcs_vol_up.__name__)

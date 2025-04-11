@@ -270,6 +270,7 @@ def gatts_change_database(start_hdl, end_hdl, vis):
 
     gatt_command_rsp_succ()
 
+
 def gatts_notify_mult(bd_addr_type, bd_addr, cnt, handles):
     logging.debug("%s %r %r", gatts_notify_mult.__name__, cnt, handles)
 
@@ -874,6 +875,7 @@ def _create_read_multiple_req(bd_addr_type, bd_addr, *hdls):
     data_ba.extend(chr(len(hdls)).encode('utf-8'))
     data_ba.extend(hdls_ba)
     return data_ba
+
 
 def gattc_read_multiple(bd_addr_type, bd_addr, *hdls):
     logging.debug("%s %r %r %r", gattc_read_multiple.__name__, bd_addr_type,
@@ -1692,6 +1694,7 @@ def gattc_read_multiple_rsp(store_val=False, store_rsp=False):
         if store_val:
             add_to_verify_values((binascii.hexlify(values[0])).decode().upper())
 
+
 def gattc_read_multiple_var_rsp(store_val=False, store_rsp=False):
     iutctl = get_iut()
 
@@ -1713,6 +1716,7 @@ def gattc_read_multiple_var_rsp(store_val=False, store_rsp=False):
 
         if store_val:
             add_to_verify_values((binascii.hexlify(values[0])).decode().upper())
+
 
 def gattc_write_rsp(store_rsp=False, timeout=None):
     iutctl = get_iut()
@@ -1768,6 +1772,7 @@ def gattc_write_reliable_rsp(store_rsp=False):
     if store_rsp:
         clear_verify_values()
         add_to_verify_values(att_rsp_str[rsp])
+
 
 def eatt_conn(bd_addr, bd_addr_type, num=1):
     logging.debug("%s %r %r", eatt_conn.__name__, bd_addr, bd_addr_type)

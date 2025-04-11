@@ -26,7 +26,8 @@ from os.path import abspath, dirname
 AUTOPTS_REPO = dirname(dirname(dirname(abspath(__file__))))
 sys.path.insert(0, AUTOPTS_REPO)
 
-from autopts.utils import terminate_process as utils_terminate_process # noqa: E402, I001 # the order of import is very important here
+from autopts.utils import terminate_process as utils_terminate_process  # noqa: E402, I001 # the order of import is very important here
+
 
 class StartArgumentParser(argparse.ArgumentParser):
     def __init__(self):
