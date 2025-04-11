@@ -71,11 +71,12 @@ def make_repo_status(repos_info):
 # ****************************************************************************
 # include List depending on python version
 try:
-    from typing import List # noqa: UP035, I001
-    T_LIST = List # noqa: UP006
+    from typing import List  # noqa: UP035, I001
+    T_LIST = List  # noqa: UP006
 except ImportError:
-    #version below 3.9
+    # version below 3.9
     T_LIST = list
+
 
 def find_matching_xml_filename(test_case: str, xml_list: Optional['T_LIST[os.DirEntry]']) -> Optional[str]:
     """

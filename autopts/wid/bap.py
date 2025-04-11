@@ -519,7 +519,7 @@ def parse_pac_char_value(data):
 
     try:
         for n in range(0, number_of_pac_records):
-            codec_id = data[i:i+5]
+            codec_id = data[i:i + 5]
             i += 5
 
             ltvs[codec_id] = {}

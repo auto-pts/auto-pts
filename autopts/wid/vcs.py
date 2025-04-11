@@ -35,18 +35,22 @@ def hdl_wid_20001(_: WIDParams):
     btp.gap_adv_ind_on(ad=stack.gap.ad)
     return True
 
+
 def hdl_wid_1(_: WIDParams):
     btp.vcs_set_vol(2)
     return True
+
 
 def hdl_wid_2(_: WIDParams):
     btp.vcs_set_vol(2)
     btp.vcs_mute()
     return True
 
+
 def hdl_wid_3(_: WIDParams):
     btp.vcs_set_vol(255)
     return True
+
 
 def hdl_wid_4(_: WIDParams):
     btp.vcs_set_vol(255)

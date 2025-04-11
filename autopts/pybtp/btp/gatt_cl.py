@@ -232,7 +232,6 @@ def gatt_cl_disc_prim_uuid_rsp_ev_(gatt_cl, data, data_len):
 
     logging.debug("%s %r", gatt_cl_disc_prim_uuid_rsp_ev_.__name__, svcs)
 
-
     for svc in svcs:
         start_handle = f"{svc[0]:04X}"
         end_handle = f"{svc[1]:04X}"
@@ -267,7 +266,6 @@ def gatt_cl_find_incld_rsp_ev_(gatt_cl, data, data_len):
     incl_tuples = gatt_cl_dec_disc_rsp(svcs_data, 'include')
 
     logging.debug("%s %r", gatt_cl_find_incld_rsp_ev_.__name__, incl_tuples)
-
 
     for incl in incl_tuples:
         att_handle = f"{incl[0][0]:04X}"

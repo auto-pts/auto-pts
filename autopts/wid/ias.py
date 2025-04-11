@@ -34,12 +34,14 @@ def hdl_wid_20001(_: WIDParams):
     btp.gap_adv_ind_on(ad=stack.gap.ad)
     return True
 
+
 def hdl_wid_1(params: WIDParams):
     stack = get_stack()
 
     stack.ias.wait_for_high_alert()
 
     return stack.ias.alert_lvl == 2
+
 
 def hdl_wid_2(params: WIDParams):
     stack = get_stack()
@@ -48,12 +50,14 @@ def hdl_wid_2(params: WIDParams):
 
     return stack.ias.alert_lvl == 0
 
+
 def hdl_wid_0(params: WIDParams):
     stack = get_stack()
 
     stack.ias.wait_for_mild_alert()
 
     return stack.ias.alert_lvl == 1
+
 
 def hdl_wid_20207(params: WIDParams):
     stack = get_stack()

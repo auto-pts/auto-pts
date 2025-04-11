@@ -30,7 +30,7 @@ def cas_wid_hdl(wid, description, test_case_name):
 
 # wid handlers section begin
 
-def hdl_wid_20001(_:WIDParams):
+def hdl_wid_20001(_: WIDParams):
     """
         Please prepare IUT into a connectable mode.
         Description: Verify that the Implementation Under Test (IUT) can accept GATT connect request from PTS.
@@ -40,7 +40,8 @@ def hdl_wid_20001(_:WIDParams):
     btp.gap_adv_ind_on(ad=stack.gap.ad)
     return True
 
-def hdl_wid_20128(_:WIDParams):
+
+def hdl_wid_20128(_: WIDParams):
     """
         Please remove LTK from IUT before proceeding.
     """

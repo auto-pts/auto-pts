@@ -30,7 +30,7 @@ m = mynewt_nrf52 = {
 m['auto_pts'] = {
     'server_ip': ['192.168.0.2'],
     'client_port': 6001,
-    'local_ip' : ['192.168.0.100'],
+    'local_ip': ['192.168.0.100'],
     'project_path': '/path/to/project',
     'workspace': 'nimble-master',
     'debugger_snr': 'xxxxxxxx',

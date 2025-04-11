@@ -1186,6 +1186,7 @@ def hdl_wid_232(_: WIDParams):
 
     return True
 
+
 def hdl_wid_234(params: WIDParams):
     stack = get_stack()
     pattern = re.compile(r"0x([0-9a-fA-F]+)")
@@ -1260,6 +1261,7 @@ def hdl_wid_237(_: WIDParams):
         return True
 
     return False
+
 
 def hdl_wid_238(_: WIDParams):
     # Please confirm that IUT does not send a GATT_HandleValueNotification  to the Upper Tester
@@ -1389,6 +1391,7 @@ def hdl_wid_267(_: WIDParams):
     stack = get_stack()
     return stack.gap.pair_user_interaction
 
+
 def hdl_wid_300(_: WIDParams):
     # Please send non-connectable advertise with periodic info.
     stack = get_stack()
@@ -1400,10 +1403,12 @@ def hdl_wid_300(_: WIDParams):
     btp.gap_padv_start()
     return True
 
+
 def hdl_wid_301(_: WIDParams):
     # Please click OK if IUT did not receive periodic advertising report.
     stack = get_stack()
     return stack.gap.wait_periodic_report(10)
+
 
 def hdl_wid_302(_: WIDParams):
     # Perform Periodic Advertising Synchronization Establishment Procedure
@@ -1415,6 +1420,7 @@ def hdl_wid_302(_: WIDParams):
     btp.gap_padv_create_sync(0, 0, 100, 0)
     return stack.gap.wait_periodic_established(10)
 
+
 def hdl_wid_303(_: WIDParams):
     # Perform Periodic Advertising Synchronization Establishment Procedure
     # Without Listening for Periodic Advertising.
@@ -1425,10 +1431,12 @@ def hdl_wid_303(_: WIDParams):
     btp.gap_padv_create_sync(0, 0, 100, 1)
     return stack.gap.wait_periodic_established(10)
 
+
 def hdl_wid_304(_: WIDParams):
     # Please click OK if IUT did not receive periodic advertising report.
     stack = get_stack()
     return not stack.gap.wait_periodic_report(10)
+
 
 def hdl_wid_305(_: WIDParams):
     # Please enter Periodic Advertising Synchronizability mode,
@@ -1443,12 +1451,14 @@ def hdl_wid_305(_: WIDParams):
     btp.gap_padv_sync_transfer_set_info(0)
     return True
 
+
 def hdl_wid_307(_: WIDParams):
     # Click OK when IUT is ready to perform Periodic Advertising Synchronization
     # Establishment Procedure without listening for periodic advertising events.
 
     btp.gap_padv_sync_transfer_recv(0, 10, 1)
     return True
+
 
 def hdl_wid_308(_: WIDParams):
     # Click OK when IUT is ready to perform Periodic Advertising Synchronization
@@ -1457,11 +1467,13 @@ def hdl_wid_308(_: WIDParams):
     btp.gap_padv_sync_transfer_recv(0, 10, 0)
     return True
 
+
 def hdl_wid_309(_: WIDParams):
     # Click OK when IUT receives periodic advertising synchronization
     # information.
     stack = get_stack()
     return stack.gap.wait_periodic_transfer_received(10)
+
 
 def hdl_wid_400(_: WIDParams):
     btp.set_filter_accept_list()
@@ -1794,6 +1806,7 @@ def hdl_wid_165(params: WIDParams):
 
 
 GAP_TEST_WID_102_ROUND = 0
+
 
 def hdl_wid_102(params: WIDParams):
     """

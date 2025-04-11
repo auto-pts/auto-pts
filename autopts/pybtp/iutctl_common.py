@@ -122,7 +122,7 @@ class BTPSocket:
             hdr_memview = hdr_memview[nbytes:]
             toread_hdr_len -= nbytes
 
-        hex_hdr = ' '.join(hdr.hex()[i:i+2] for i in range(0, len(hdr.hex()), 2))
+        hex_hdr = ' '.join(hdr.hex()[i:i + 2] for i in range(0, len(hdr.hex()), 2))
         tuple_hdr = dec_hdr(hdr)
         toread_data_len = tuple_hdr.data_len
 
@@ -141,7 +141,7 @@ class BTPSocket:
             toread_data_len -= nbytes
 
         data_string = binascii.hexlify(data).decode('utf-8')
-        data_string = ' '.join(f'{data_string[i:i+2]}' for i in range(0, len(data_string), 2))
+        data_string = ' '.join(f'{data_string[i:i + 2]}' for i in range(0, len(data_string), 2))
         raw_data = hex_hdr if data_string == '' else hex_hdr + ' ' + data_string
 
         if tuple_hdr.op == 0:
@@ -163,8 +163,8 @@ class BTPSocket:
 
         logging.debug("sending frame %r", frame.hex())
 
-        hex_data = ' '.join(frame.hex()[i:i+2] for i in range(0, len(frame.hex()), 2))
-        tuple_data = (svc_id, op, ctrl_index, len(data) if isinstance(data, (str,  bytearray)) else data)
+        hex_data = ' '.join(frame.hex()[i:i + 2] for i in range(0, len(frame.hex()), 2))
+        tuple_data = (svc_id, op, ctrl_index, len(data) if isinstance(data, (str, bytearray)) else data)
         # 0 for logging response, 1 for command
         self.write_to_log(1, tuple_data, hex_data)
         self.conn.send(frame)
@@ -194,6 +194,7 @@ class BTPSocket:
                 break
 
         indent = "\n" + (" " * 17)
+
         def to_hex(x):
             return f"0x{int(x):02x}"
         btp_command = get_btp_cmd_name(svc_name, to_hex(opc))

@@ -24,6 +24,7 @@ from autopts.pybtp.types import BTPError, addr2btp_ba
 
 log = logging.debug
 
+
 def address_to_ba(bd_addr_type=None, bd_addr=None):
     data = bytearray()
     bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
@@ -31,6 +32,7 @@ def address_to_ba(bd_addr_type=None, bd_addr=None):
     data.extend(bd_addr_type_ba)
     data.extend(bd_addr_ba)
     return data
+
 
 TMAP = {
     'read_supported_cmds': (defs.BTP_SERVICE_ID_TMAP,
@@ -40,6 +42,7 @@ TMAP = {
                       defs.BTP_TMAP_CMD_DISCOVER,
                       CONTROLLER_INDEX),
 }
+
 
 def tmap_command_rsp_succ(timeout=20.0):
     logging.debug("%s", tmap_command_rsp_succ.__name__)
@@ -52,6 +55,7 @@ def tmap_command_rsp_succ(timeout=20.0):
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_TMAP)
 
     return tuple_data
+
 
 def tmap_read_supported_cmds():
     logging.debug(f"{tmap_read_supported_cmds.__name__}")
@@ -72,6 +76,7 @@ def tmap_discover(bd_addr_type=None, bd_addr=None):
     iutctl.btp_socket.send(*TMAP['discover'], data=data)
 
     tmap_command_rsp_succ()
+
 
 def tmap_ev_discovery_completed(tmap, data, data_len):
     logging.debug('%s %r', tmap_ev_discovery_completed.__name__, data)

@@ -27,6 +27,7 @@ def bap_wid_hdl(wid, description, test_case_name):
     log(f'{bap_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
     return generic_wid_hdl(wid, description, test_case_name, [__name__, 'autopts.wid.bap'])
 
+
 def hdl_wid_380(_: WIDParams):
     """
     Please reconfigure BASE with different settings. Then click OK when
@@ -42,9 +43,9 @@ def hdl_wid_380(_: WIDParams):
     coding_format = 0x06
     vid = 0x0000
     cid = 0x0000
-    qos_set_name = '16_1_1' # noqa: F841 # qos_set_name is not used
+    qos_set_name = '16_1_1'  # noqa: F841 # qos_set_name is not used
 
-    codec_set_name, *qos_config = ('16_1', 7500, 0x00, 30, 2, 8) # noqa: F841 # codec_set_name is not used
+    codec_set_name, *qos_config = ('16_1', 7500, 0x00, 30, 2, 8)  # noqa: F841 # codec_set_name is not used
     audio_locations = 0x01
     frames_per_sdu = 0x01
 
@@ -66,4 +67,3 @@ def hdl_wid_380(_: WIDParams):
     btp.bap_broadcast_source_start(broadcast_id)
 
     return True
-

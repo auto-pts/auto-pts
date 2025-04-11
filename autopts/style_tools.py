@@ -43,6 +43,7 @@ def check_style():
     else:
         print("\nStyle issues detected. Please check the logs in logs/pep8/.")
 
+
 if __name__ == "__main__":
     import sys
 

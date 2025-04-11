@@ -226,9 +226,8 @@ def test_cases_server(ptses):
     if len(ptses) < 2:
         return tc_list
 
-
     pts2 = ptses[1]
-    iut_device_name2 = get_unique_name(pts2) # noqa: F841 # iut_device_name2 is not used
+    iut_device_name2 = get_unique_name(pts2)  # noqa: F841 # iut_device_name2 is not used
 
     pre_conditions_lt2 = [
                         TestFunc(lambda: pts2.update_pixit_param(
