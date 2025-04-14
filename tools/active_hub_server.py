@@ -73,6 +73,16 @@ def set_usb_power(port, on):
         return traceback.format_exception(e)
 
 
+def _handle_usb_request(server):
+    try:
+        server.handle_request()
+    except KeyboardInterrupt:
+        return False
+    except BaseException as e:
+        traceback.print_exception(e)
+    return True
+
+
 def start_server():
     global SRN, VID, PID
     args = StartArgumentParser().parse_args()
@@ -90,13 +100,8 @@ def start_server():
     server.register_introspection_functions()
     server.timeout = 1.0
 
-    while True:
-        try:
-            server.handle_request()
-        except KeyboardInterrupt:
-            return
-        except BaseException as e:
-            traceback.print_exception(e)
+    while _handle_usb_request(server):
+        pass
 
 
 if __name__ == "__main__":

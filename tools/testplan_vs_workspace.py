@@ -37,18 +37,14 @@ class PyPTSControl(PyPTS):
         """Overwrite to enable running without dongle"""
         # Get PTS process list before running new PTS daemon
         c = wmi.WMI()
-        pts_ps_list_pre = []
-        pts_ps_list_post = []
 
-        for ps in c.Win32_Process(name="PTS.exe"):
-            pts_ps_list_pre.append(ps)
+        # Get PTS process list before running new PTS daemon
+        pts_ps_list_pre = list(c.Win32_Process(name="PTS.exe"))
 
         self._pts = win32com.client.Dispatch('ProfileTuningSuite_6.PTSControlServer')
 
-        # Get PTS process list after running new PTS daemon to get PID of
-        # new instance
-        for ps in c.Win32_Process(name="PTS.exe"):
-            pts_ps_list_post.append(ps)
+        # Get PTS process list after running new PTS daemon to get PID of new instance
+        pts_ps_list_post = list(c.Win32_Process(name="PTS.exe"))
 
         pts_ps_list = list(set(pts_ps_list_post) - set(pts_ps_list_pre))
         if not pts_ps_list:
@@ -87,8 +83,7 @@ if __name__ == '__main__':
     for profile in pts.get_project_list():
         profiles.append(profile)
 
-        for test_case in pts.get_test_case_list(profile):
-            workspace_test_cases.append(test_case)
+        workspace_test_cases += list(pts.get_test_case_list(profile))
 
     test_plan_test_cases = []
     test_plan = pd.read_excel(testplan_path, sheet_name='TestPlan')

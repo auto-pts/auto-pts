@@ -132,10 +132,10 @@ def test_cases2html(title, not_found_msg, test_cases, descriptions):
     """
     msg = f"<h3>{title}</h3>"
 
-    progresses_list = []
-    for name in test_cases:
-        progresses_list.append(
-            name + " - " + descriptions.get(name, "no description"))
+    progresses_list = [
+        name + " - " + descriptions.get(name, "no description")
+        for name in test_cases
+    ]
 
     if progresses_list:
         for name in progresses_list:

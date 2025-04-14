@@ -150,11 +150,11 @@ def extend_verify_values(item):
 def verify_att_error(description):
     logging.debug("description=%r", description)
 
-    description_values = []
-
-    for err_code, err_string in att_rsp_str.items():
-        if err_string and err_string in description:
-            description_values.append(err_string)
+    description_values = [
+        err_string
+        for err_string in att_rsp_str.values()
+        if err_string and err_string in description
+    ]
 
     verify_values = get_verify_values()
     logging.debug("Verifying values: %r", verify_values)
@@ -274,13 +274,9 @@ def verify_description_truncated(description):
 
 def verify_multiple_read_description(description):
     """A function to verify that merged multiple read att values are in
-
     PTS MMI description.
-
     Returns True if verification is successful, False if not.
-
     description -- MMI description
-
     """
     logging.debug("description=%r", description)
 
@@ -296,14 +292,15 @@ def verify_multiple_read_description(description):
 
     # verify_values shall not be a string: all its characters will be verified
     assert isinstance(verify_values, list), "verify_values should be a list!"
-
-    exp_mtp_read = ""
+    # Pre-transform all values to str
+    processed_values = []
     for value in verify_values:
-        try:
-            exp_mtp_read = exp_mtp_read.join(value)
-        except TypeError:
-            value = value.decode("utf-8")
-            exp_mtp_read = exp_mtp_read.join(value)
+        if isinstance(value, bytes):
+            processed_values.append(value.decode("utf-8"))
+        else:
+            processed_values.append(str(value))
+
+    exp_mtp_read = ''.join(processed_values)
 
     if exp_mtp_read not in got_mtp_read:
         logging.debug("Verification failed, value not in description")

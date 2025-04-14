@@ -55,12 +55,16 @@ def get_pid_by_window_title(title):
         return None
 
 
+def _terminate_process_safely(process, name):
+    try:
+        process.Terminate()
+        logging.debug(f"{name} process (PID {process.ProcessId}) terminated successfully")
+    except BaseException as exc:
+        logging.exception(exc)
+        logging.debug(f"There is no {name} process running with id: {process.ProcessId}")
+
+
 def kill_all_processes(name):
     c = wmi.WMI()
     for ps in c.Win32_Process(name=name):
-        try:
-            ps.Terminate()
-            logging.debug(f"{name} process (PID {ps.ProcessId}) terminated successfully")
-        except BaseException as exc:
-            logging.exception(exc)
-            logging.debug(f"There is no {name} process running with id: {ps.ProcessId}")
+        _terminate_process_safely(ps, name)
