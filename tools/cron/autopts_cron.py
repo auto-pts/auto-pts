@@ -257,8 +257,10 @@ def schedule_pr_job(cron, pr_info, job_config):
             if job_config['test_case_limit']:
                 job_config['included'] = test_cases
 
-            estimations = f', test case count: {test_case_count}, ' \
-                          f'estimated duration: {est_duration}'
+            estimations = (
+                f', test case count: {test_case_count}, '
+                f'estimated duration: {est_duration}'
+            )
             estimations += f'<details><summary>Test cases to be run</summary>{"<br>".join(test_cases)}</details>\n'
 
             if skipped_test_cases:
@@ -282,8 +284,10 @@ def schedule_pr_job(cron, pr_info, job_config):
 
     start_time = pr_choose_start_time(job_config)
     start_time_str = start_time.strftime('%H:%M:%S')
-    post_text = f'Scheduled PR {pr_info["html_url"]}, board: {job_config["board"]}, ' \
-                f'estimated start time: {start_time_str}{estimations}'
+    post_text = (
+        f'Scheduled PR {pr_info["html_url"]}, board: {job_config["board"]}, '
+        f'estimated start time: {start_time_str}{estimations}'
+    )
 
     pr_number = pr_info['pr_number']
     rsp = cron_comment(cron, pr_number, post_text)
@@ -297,11 +301,13 @@ def schedule_pr_job(cron, pr_info, job_config):
     if pr_info['html_url'].startswith('https://github.com/auto-pts/auto-pts'):
         try:
             vm_autopts = job_config['remote_machine']['git']['autopts']
-            vm_autopts['checkout_cmd'] = f"git fetch {vm_autopts['remote']} & " \
-                                         f"git fetch {vm_autopts['remote']} pull/{pr_number}/head & " \
-                                         f"git checkout FETCH_HEAD & " \
-                                         f"set GIT_COMMITTER_NAME=Name & set GIT_COMMITTER_EMAIL=temp@example.com & " \
-                                         f"git pull --rebase {vm_autopts['remote']} {vm_autopts['branch']} > NUL 2>&1"
+            vm_autopts['checkout_cmd'] = (
+                f"git fetch {vm_autopts['remote']} & "
+                f"git fetch {vm_autopts['remote']} pull/{pr_number}/head & "
+                f"git checkout FETCH_HEAD & "
+                f"set GIT_COMMITTER_NAME=Name & set GIT_COMMITTER_EMAIL=temp@example.com & "
+                f"git pull --rebase {vm_autopts['remote']} {vm_autopts['branch']} > NUL 2>&1"
+            )
         except KeyError:
             pass
 

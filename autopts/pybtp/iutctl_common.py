@@ -198,8 +198,10 @@ class BTPSocket:
         def to_hex(x):
             return f"0x{int(x):02x}"
         btp_command = get_btp_cmd_name(svc_name, to_hex(opc))
-        parsed_data += f'{btp_command} ({to_hex(svc_id)}|{to_hex(opc)}|{to_hex(ctrl_idx)}){indent} ' \
-                       f'raw data ({data_len}):'
+        parsed_data += (
+            f'{btp_command} ({to_hex(svc_id)}|{to_hex(opc)}|{to_hex(ctrl_idx)}){indent} '
+            f'raw data ({data_len}):'
+        )
 
         return parsed_data
 
