@@ -324,13 +324,17 @@ else:
         if os.path.islink(serial_address):
             serial_address = os.path.realpath(serial_address)
 
+        def _device_has_serial(device, serial_address):
+            try:
+                return serial_address in device.get('DEVNAME')
+            except BaseException:
+                return False
+
         context = _pyudev.Context()
         for device in context.list_devices(subsystem=subsystem):
-            try:
-                if serial_address in device.get('DEVNAME'):
-                    return True
-            except BaseException:
-                pass
+            if _device_has_serial(device, serial_address):
+                return True
+
         return False
 
     def have_admin_rights():

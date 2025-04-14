@@ -24,7 +24,7 @@ from autopts.pybtp.btp import lt2_addr_get, lt2_addr_type_get, lt3_addr_get, lt3
 from autopts.pybtp.btp.cap import announcements
 from autopts.pybtp.btp.pacs import pacs_set_available_contexts
 from autopts.pybtp.defs import AUDIO_METADATA_CCID_LIST, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS
-from autopts.pybtp.types import Addr, ASCSState, BTPError, WIDParams
+from autopts.pybtp.types import Addr, ASCSState, WIDParams
 from autopts.wid import generic_wid_hdl
 from autopts.wid.bap import (
     BAS_CONFIG_SETTINGS,
@@ -35,6 +35,7 @@ from autopts.wid.bap import (
     create_lc3_ltvs_bytes,
     get_audio_locations_from_pac,
 )
+from autopts.wid.common import _safe_bap_send
 
 log = logging.debug
 
@@ -183,12 +184,8 @@ def hdl_wid_114(params: WIDParams):
 
     # PTS does not send an explicit message, but for each
     # configured SINK it expects to receive any ISO data.
-    for i in range(1, 10):
-        try:
-            btp.bap_send(0, data)
-        except BTPError:
-            # Buffer full
-            pass
+    for _ in range(1, 10):
+        _safe_bap_send(0, data)
 
     return True
 
@@ -247,10 +244,10 @@ def hdl_wid_310(params: WIDParams):
 
     stack = get_stack()
     metadata = wid_310_settings[params.test_case_name]
-    update_metadata = []
-
-    for config in stack.bap.ase_configs:
-        update_metadata.append((config.addr_type, config.addr, config.ase_id, metadata))
+    update_metadata = [
+        (config.addr_type, config.addr, config.ase_id, metadata)
+        for config in stack.bap.ase_configs
+    ]
 
     btp.cap_unicast_audio_update(update_metadata)
 

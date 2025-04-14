@@ -110,13 +110,13 @@ def start_server():
     server.register_introspection_functions()
     server.timeout = 1.0
 
-    while True:
-        try:
+    try:
+        while True:
             server.handle_request()
-        except KeyboardInterrupt:
-            return
-        except BaseException as e:
-            traceback.print_exception(e)
+    except KeyboardInterrupt:
+        return
+    except BaseException as e:
+        traceback.print_exception(e)
 
 
 class TimeoutTransport (xmlrpc.client.Transport):

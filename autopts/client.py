@@ -351,10 +351,16 @@ class ClientCallbackServer(threading.Thread):
         self.current_test_case = None
         self.end = False
 
+    def safe_handle_request(self):
+        """Calls handle_request and logs exceptions."""
+        try:
+            self.server.handle_request()
+        except Exception as e:
+            logging.exception(e)
+
     def run(self):
         """Starts the xmlrpc callback server"""
         log("%s.%s", self.__class__.__name__, self.run.__name__)
-
         log("Client callback serving on port %s ...", self.port)
 
         self.server = SimpleXMLRPCServer(("", self.port),
@@ -365,10 +371,7 @@ class ClientCallbackServer(threading.Thread):
 
         try:
             while not self.end and not get_global_end():
-                try:
-                    self.server.handle_request()
-                except Exception as e:
-                    logging.exception(e)
+                self.safe_handle_request()
         except BaseException as e2:
             logging.exception(e2)
         finally:
@@ -517,13 +520,11 @@ def init_pts(args, ptses):
                     i + 1, args.ip_addr[i], args.srv_port[i],
                     args.local_addr[i], args.cli_port[i],
                     args.max_server_restart_time)
-
             proxy_list.append(proxy)
 
         thread = InterruptableThread(target=init_pts_thread_entry,
                                      name=f'LT{i + 1}-server-init',
                                      args=(proxy, args, exceptions, finish_count))
-
         thread_list.append(thread)
         thread.start()
 
@@ -541,11 +542,8 @@ def init_pts(args, ptses):
                 log(f"({id(proxy_list[i])}) init failed")
 
     exeption_msg = ''
-    while not exceptions.empty():
-        try:
-            exeption_msg += str(exceptions.get_nowait()) + '\n'
-        except queue.Empty:
-            break
+    for _ in range(exceptions.qsize()):
+        exeption_msg += str(exceptions.get_nowait()) + '\n'
 
     if exeption_msg:
         raise Exception(exeption_msg)
@@ -596,10 +594,9 @@ class TestCaseRunStats:
                                                              self.run_count_max)
 
     def save_to_backup(self, filename):
-        data_to_save = {}
-        for key, value in self.__dict__.items():
-            if isinstance(value, (int, str, bool)):
-                data_to_save[key] = value
+        data_to_save = {key: value
+                        for key, value in self.__dict__.items()
+                        if isinstance(value, (int, str, bool))}
 
         with open(filename, 'w') as json_file:
             json.dump(data_to_save, json_file, indent=4)
@@ -1305,15 +1302,13 @@ def run_test_cases(ptses, test_case_instances, args, stats, **kwargs):
 
             raise_on_global_end()
 
-            exeption_msg = ''
-            while not exceptions.empty():
-                try:
-                    exeption_msg += str(exceptions.get_nowait()) + '\n'
-                except BaseException as e:
-                    logging.exception(e)
-                    traceback.print_exc()
-                finally:
-                    log(f'exception_msg: {exeption_msg}')
+            num_exceptions = exceptions.qsize()
+            if num_exceptions:
+                exception_messages = [str(exceptions.get_nowait()) for _ in range(num_exceptions)]
+                exeption_msg = "\n".join(exception_messages) + "\n"
+            else:
+                exeption_msg = ""
+            log(f'exception_msg: {exeption_msg}')
 
             if args.recovery and (exeption_msg != '' or status not in args.not_recover):
                 run_recovery(args, ptses)
@@ -1526,26 +1521,35 @@ def recover_at_exception(func):
     """The ultimate recovery of recovery, in case of server
      jammed/crashed, but there is still a chance it will be recovered."""
 
+    def _attempt_func(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            return e
+
     def _recover_at_exception(*args, **kwargs):
         restart_time = args[0].max_server_restart_time
 
         while not get_global_end():
-            try:
-                return func(*args, **kwargs)
-            except Exception as e:
-                logging.exception(e)
-                traceback.print_exc()
+            result = _attempt_func(*args, **kwargs)
+            if not isinstance(result, Exception):
+                return result
 
-                if isinstance(e, RunEnd):
-                    # Stopped with SIGINT
-                    break
+            logging.exception(result)
+            traceback.print_exc()
 
-                time.sleep(restart_time)
+            if isinstance(result, RunEnd):
+                # Stopped with SIGINT
+                break
 
-                if args[0].superguard:
-                    # Wait longer next time. Hopefully the server
-                    # superguard will work and trigger the restart.
-                    restart_time = args[0].superguard
+            time.sleep(restart_time)
+
+            if args[0].superguard:
+                # Wait longer next time. Hopefully the server
+                # superguard will work and trigger the restart.
+                restart_time = args[0].superguard
+
+        return None
 
     return _recover_at_exception
 

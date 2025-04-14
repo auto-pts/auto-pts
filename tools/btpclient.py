@@ -667,10 +667,11 @@ def print_controller_info(data):
 
     def get_settings_names(settings):
         """Return settings in human-readable format"""
-        settings_names = []
-        for i in list(settings2txt.keys()):
-            if settings & (1 << i):
-                settings_names.append(settings2txt[i])
+        settings_names = [
+            settings2txt[i]
+            for i in settings2txt
+            if settings & (1 << i)
+        ]
         return " ".join(settings_names)
 
     fmt = '<6sII3s249s11s'
@@ -765,11 +766,8 @@ def generic_srvc_cmd_handler(svc, cmd):
         print("Command not yet defined")
         return
 
-    frame = []
-
     # 3 cause: service id, opcode, controller index
-    for i in range(3):
-        frame.append(str(btp_cmd[i]))
+    frame = [str(btp_cmd[i]) for i in range(3)]
 
     # add data if there is any
     if len(btp_cmd) > 3:
