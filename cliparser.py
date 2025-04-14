@@ -241,15 +241,18 @@ class CliParser(argparse.ArgumentParser):
 
     def check_args_btpclient_path(self, args):
         if not os.path.exists(args.btpclient_path):
-            return f'btpclient: Path {repr(args.btpclient_path)} of btp client ' \
-                   ' does not exist!\n'
-
+            return (
+                f'btpclient: Path {repr(args.btpclient_path)} of btp client '
+                'does not exist!\n'
+            )
         return ''
 
     def check_args_btp_tcp(self, args):
         if not 49152 <= args.btp_tcp_port <= 65535:
-            return f'btp_tcp mode: Invalid server port number={args.btp_tcp_port}, expected' \
-                   ' range <49152,65535>'
+            return (
+                f'btp_tcp mode: Invalid server port number={args.btp_tcp_port}, expected '
+                'range <49152,65535>'
+            )
         return ''
 
     def parse(self, arg_ns=None):
