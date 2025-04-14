@@ -138,9 +138,13 @@ class MyTestCase(unittest.TestCase):
                     bot_client.ptses.append(fake_pts)
 
                     bot_client.iut_config = iut_config
-                    bot_client.apply_config = lambda _args, config_name, *_: \
-                        self.assertTrue(set(_args.test_cases) == set(expected[config_name]),
-                                        f'mock_iut_config_{i} use case failed')
+
+                    def fake_apply_config(_args, config_name, *_):
+                        assert set(_args.test_cases) == set(expected[config_name]), \
+                            f'mock_iut_config_{i} use case failed'
+
+                    bot_client.apply_config = fake_apply_config
+
                     bot_client.run_test_cases()
 
     def test_generate_stats(self):
