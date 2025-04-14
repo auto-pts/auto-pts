@@ -515,7 +515,7 @@ def parse_pac_char_value(data):
     i = 1
 
     try:
-        for n in range(0, number_of_pac_records):
+        for _n in range(0, number_of_pac_records):
             codec_id = data[i:i + 5]
             i += 5
 
@@ -1242,7 +1242,7 @@ def get_audio_locations_from_pac(addr_type, addr, audio_dir):
     channel_counts = last_1_bit_index(ev[7]) + 1
 
     audio_locations = 0x00
-    for i in range(0, channel_counts):
+    for _i in range(0, channel_counts):
         audio_locations = (audio_locations << 1) + 0x01
 
     return audio_locations
@@ -1430,7 +1430,7 @@ def hdl_wid_311(params: WIDParams):
 
     # PTS does not send an explicit message, but for each
     # configured SINK it expects to receive any ISO data.
-    for i in range(1, 10):
+    for _i in range(1, 10):
         for config in stack.bap.ase_configs:
             if config.audio_dir == AudioDir.SINK:
                 try:

@@ -710,7 +710,7 @@ def hdl_wid_52(params: WIDParams):
 
     if attr.uuid == UUID.CEP:
         (value_read,) = struct.unpack("<H", attr.value)
-        value_read = f'{value_read:04x}'
+        value_read_str = f'{value_read:04x}'
     else:
         value_read = hexlify(attr.value).upper()
         value_read_str = value_read.decode('utf-8')

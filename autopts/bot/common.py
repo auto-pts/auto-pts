@@ -939,7 +939,7 @@ def check_call(cmd, env=None, cwd=None, shell=True):
 
 
 def get_workspace(workspace):
-    for root, dirs, files in os.walk(os.path.join(AUTOPTS_ROOT_DIR, 'autopts/workspaces'),
+    for root, dirs, _files in os.walk(os.path.join(AUTOPTS_ROOT_DIR, 'autopts/workspaces'),
                                      topdown=True):
         for name in dirs:
             if name == workspace:

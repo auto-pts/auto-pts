@@ -412,7 +412,7 @@ class SvrArgumentParser(argparse.ArgumentParser):
 
 
 def get_workspace(workspace):
-    for root, dirs, files in os.walk(os.path.join(PROJECT_DIR, 'autopts/workspaces'),
+    for root, dirs, _files in os.walk(os.path.join(PROJECT_DIR, 'autopts/workspaces'),
                                      topdown=True):
         for name in dirs:
             if name == workspace:
@@ -612,7 +612,7 @@ class Server(threading.Thread):
             logs_root = get_workspace(workspace_dir)
 
         file_list = []
-        for root, dirs, files in os.walk(logs_root,
+        for root, _dirs, files in os.walk(logs_root,
                                          topdown=False):
             file_list.extend([os.path.join(root, name) for name in files])
 

@@ -73,7 +73,7 @@ if __name__ == '__main__':
     iut_config = mod.iut_config
     test_case_prefixes = []
 
-    for config, value in list(iut_config.items()):
+    for _config, value in list(iut_config.items()):
         if 'test_cases' not in value:
             continue
         test_case_prefixes.extend(value['test_cases'])
