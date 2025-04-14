@@ -46,7 +46,8 @@ class MynewtCtl:
             self.__class__, self.__init__.__name__, args.tty_file,
             args.board_name)
 
-        assert args.tty_file and args.board_name
+        assert args.tty_file, "Expected args.tty_file to be provided"
+        assert args.board_name, "Expected args.board_name to be provided"
 
         self.tty_file = args.tty_file
         self.pylink_reset = args.pylink_reset
