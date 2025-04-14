@@ -141,7 +141,7 @@ def gatt_cl_dec_disc_rsp(data, attr_type):
     attrs_list = []
     offset = 0
 
-    for x in range(attr_cnt):
+    for _x in range(attr_cnt):
         if attr_type == "service":
             attr, attr_len = gatt_cl_dec_svc_attr(attrs[offset:])
         elif attr_type == "include":
@@ -444,7 +444,7 @@ def gatt_cl_read_uuid_rsp_ev_(gatt_cl, data, data_len):
     if chrc_count > 1:
         # received several pairs of {handle, data}
         clear_verify_values()
-        for x in range(chrc_count):
+        for _x in range(chrc_count):
             handle, value = struct.unpack_from(data_fmt, tuple_data, offset)
             logging.debug("%s %r %r",
                           gatt_cl_read_uuid_rsp_ev_.__name__,

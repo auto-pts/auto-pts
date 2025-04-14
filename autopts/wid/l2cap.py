@@ -279,7 +279,7 @@ def hdl_wid_57(_: WIDParams):
     if not channel:
         return False
 
-    for i in range(4):
+    for _i in range(4):
         btp.l2cap_send_data(0, '00')
         time.sleep(2)
     return True

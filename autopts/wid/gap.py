@@ -665,7 +665,7 @@ def hdl_wid_130(params: WIDParams):
     # we don't know if any of those were already handled so just wait for up to
     # 3 writes and then verify if only 2 occured.
     if params.test_case_name == "GAP/SEC/CSIGN/BI-02-C":
-        for i in range(gatt.attr_value_get_changed_cnt(handle=gatt.signed_write_handle), 3):
+        for _i in range(gatt.attr_value_get_changed_cnt(handle=gatt.signed_write_handle), 3):
             gatt.wait_attr_value_changed(handle=gatt.signed_write_handle, timeout=5)
 
         return gatt.attr_value_get_changed_cnt(handle=gatt.signed_write_handle) == 2

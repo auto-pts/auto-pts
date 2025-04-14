@@ -130,7 +130,7 @@ class MynewtBotClient(bot.common.BotClient):
             except BaseException as e:
                 traceback.print_exception(e)
                 report.make_error_txt('Build and flash step failed', self.file_paths['ERROR_TXT_FILE'])
-                raise BuildAndFlashException
+                raise BuildAndFlashException from e
 
             time.sleep(10)
 

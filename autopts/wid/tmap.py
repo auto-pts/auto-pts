@@ -192,7 +192,7 @@ def hdl_wid_311(params: WIDParams):
      default_config.max_transport_latency) = QOS_CONFIG_SETTINGS[default_config.qos_set_name]
 
     sinks = []
-    for i in range(0, num_sink_ases):
+    for _i in range(0, num_sink_ases):
         config = Namespace(**vars(default_config))
         config.audio_dir = AudioDir.SINK
         config.max_sdu_size = default_config.max_sdu_size
@@ -212,7 +212,7 @@ def hdl_wid_311(params: WIDParams):
         sinks.append(config)
 
     sources = []
-    for i in range(0, num_source_ases):
+    for _i in range(0, num_source_ases):
         config = Namespace(**vars(default_config))
         config.audio_dir = AudioDir.SOURCE
         config.max_sdu_size = default_config.max_sdu_size
@@ -469,7 +469,7 @@ def hdl_wid_504(params: WIDParams):
      default_config.max_transport_latency) = QOS_CONFIG_SETTINGS[default_config.qos_set_name]
 
     sinks = []
-    for i in range(0, iut_source_streams):
+    for _i in range(0, iut_source_streams):
         config = Namespace(**vars(default_config))
         config.audio_dir = AudioDir.SINK
         config.max_sdu_size = default_config.max_sdu_size * iut_source_channels
@@ -489,7 +489,7 @@ def hdl_wid_504(params: WIDParams):
         sinks.append(config)
 
     sources = []
-    for i in range(0, iut_sink_streams):
+    for _i in range(0, iut_sink_streams):
         config = Namespace(**vars(default_config))
         config.audio_dir = AudioDir.SOURCE
         config.max_sdu_size = default_config.max_sdu_size * iut_sink_channels
@@ -615,7 +615,7 @@ def hdl_wid_506(params: WIDParams):
     subgroup_id = 0x00
     presentation_delay = 40000
 
-    for i in range(source_num):
+    for _i in range(source_num):
         btp.cap_broadcast_source_setup_stream(source_id, subgroup_id, coding_format, vid, cid,
                                               codec_ltvs_bytes, metadata)
 

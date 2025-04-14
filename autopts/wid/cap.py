@@ -163,7 +163,7 @@ def hdl_wid_114(params: WIDParams):
     subgroup_id = 0x00
     presentation_delay = 40000
 
-    for i in range(source_num):
+    for _i in range(source_num):
         btp.cap_broadcast_source_setup_stream(source_id, subgroup_id, coding_format, vid, cid,
                                               codec_ltvs_bytes, metadata)
 
@@ -660,7 +660,7 @@ def hdl_wid_400(params: WIDParams):
      default_config.max_transport_latency) = QOS_CONFIG_SETTINGS[default_config.qos_set_name]
 
     sinks = []
-    for i in range(0, sink_num):
+    for _i in range(0, sink_num):
         config = Namespace(**vars(default_config))
         config.audio_dir = AudioDir.SINK
         config.audio_locations = get_audio_locations_from_pac(
@@ -673,7 +673,7 @@ def hdl_wid_400(params: WIDParams):
         sinks.append(config)
 
     sources = []
-    for i in range(0, source_num):
+    for _i in range(0, source_num):
         config = Namespace(**vars(default_config))
         config.audio_dir = AudioDir.SOURCE
         config.audio_locations = get_audio_locations_from_pac(

@@ -106,7 +106,7 @@ class Synch:
         synch_point = None
         elem = None
 
-        for i, elem in enumerate(self._synch_table):
+        for _i, elem in enumerate(self._synch_table):
             synch_point = elem.find_matching(tc_name, wid)
             if synch_point:
                 # Found a sync point matching the test case and wid

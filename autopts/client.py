@@ -536,7 +536,7 @@ def init_pts(args, ptses):
         logging.exception(e)
         raise
     finally:
-        for i, thread in enumerate(thread_list):
+        for _i, thread in enumerate(thread_list):
             if thread.is_alive():
                 thread.interrupt()
                 log(f"({id(proxy_list[i])}) init failed")
@@ -1185,7 +1185,7 @@ def run_test_case(ptses, test_case_instances, test_case_name, stats,
 
         while True:
             alive_threads = []
-            for i, thread in enumerate(thread_list):
+            for _i, thread in enumerate(thread_list):
                 if thread.is_alive():
                     alive_threads.append(thread)
 
