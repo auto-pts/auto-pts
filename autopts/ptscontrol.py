@@ -604,7 +604,7 @@ class PyPTS:
 
             # Wait until the PTS callbacks are out of fn call to decrease
             # a chance of breaking the log file handler lock
-            for i in range(10):
+            for _i in range(10):
                 if not self._pts_logger.in_call and not self._pts_sender.in_call:
                     break
                 time.sleep(1)
@@ -806,7 +806,7 @@ class PyPTS:
             # PTS server can detect that the PTS dongle had been corrupted
             # by calling GetPTSBluetoothAddress() before test case started.
             address = None
-            for i in range(10):
+            for _i in range(10):
                 try:
                     address = self._pts.GetPTSBluetoothAddress()
                     log(f"GetPTSBluetoothAddress(): {address}")
@@ -1007,7 +1007,7 @@ class PyPTS:
         pts_window_title = f'PTS - {address.upper()}'
         pid = None
 
-        for i in range(retry):
+        for _i in range(retry):
             pid = get_pid_by_window_title(pts_window_title)
 
             if pid is None:
@@ -1045,7 +1045,7 @@ class PyPTS:
         address = None
         if self._device:
             # The dongle already connected. Try to read the address.
-            for i in range(10):
+            for _i in range(10):
                 try:
                     # As described in the PTS CONTROL API documentation, the
                     # GetPTSBluetoothAddress() may not be immediately available
@@ -1099,7 +1099,7 @@ class PyPTS:
             self._device = device_to_connect
             return address
 
-        for i in range(4):
+        for _i in range(4):
             try:
                 port = self._get_connectable_dongle(device_to_connect)
                 if not port:

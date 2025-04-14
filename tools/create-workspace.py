@@ -142,9 +142,9 @@ def parse_args():
 def file_line_count(file_name):
     """Return line count of a file"""
     with open(file_name) as f:
-        for i, line in enumerate(f):
+        for _i, _line in enumerate(f):
             pass
-    return i + 1
+    return _i + 1
 
 
 def patch_workspace_file(workspace_file):

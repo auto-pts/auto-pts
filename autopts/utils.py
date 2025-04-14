@@ -238,7 +238,7 @@ def get_own_workspaces():
     script_path = os.path.split(os.path.abspath(__file__))[0]
     workspaces = {}
 
-    for root, dirs, files in os.walk(os.path.join(script_path, "workspaces")):
+    for root, _dirs, files in os.walk(os.path.join(script_path, "workspaces")):
         for file in files:
             if file.endswith(PTS_WORKSPACE_FILE_EXT):
                 name = os.path.splitext(file)[0]
@@ -309,8 +309,9 @@ if sys.platform == 'win32':
         """"Check if the process has Administrator rights"""
         try:
             return ctypes.windll.shell32.IsUserAnAdmin() == 1
-        except AttributeError:
-            raise AdminStateUnknownError
+        except AttributeError as e:
+            raise AdminStateUnknownError from e
+
 
 else:
     _pyudev = False
@@ -341,8 +342,8 @@ else:
         """"Check if the process has Administrator rights"""
         try:
             return os.getuid() == 0
-        except AttributeError:
-            raise AdminStateUnknownError
+        except AttributeError as e:
+            raise AdminStateUnknownError from e
 
 
 def ykush_replug_usb(ykush_config, device_id=None, delay=0, end_flag=None):

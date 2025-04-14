@@ -1253,7 +1253,7 @@ def gatt_dec_disc_rsp(data, attr_type):
 
     # TODO: Use types instead of tuples
 
-    for x in range(attr_cnt):
+    for _x in range(attr_cnt):
         if attr_type == "service":
             attr, attr_len = gatt_dec_svc_attr(attrs[offset:])
         elif attr_type == "include":
@@ -1300,7 +1300,7 @@ def gatt_dec_read_uuid_rsp(data):
     offset += hdr_len
     char_values = []
 
-    for i in range(val_count):
+    for _i in range(val_count):
         hdr = '<HB'
         hdr_len = struct.calcsize(hdr)
         handle, data_len = struct.unpack_from(hdr, data, offset)

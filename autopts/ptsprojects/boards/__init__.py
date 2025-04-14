@@ -81,8 +81,8 @@ class Board:
         else:
             try:
                 return Jlink(self.iutctl.debugger_snr, self.iutctl.device_core).reset_command
-            except Exception:
-                raise Exception(f"Board name {self.name} is not supported! and failed to reset with Jlink.")
+            except Exception as e:
+                raise Exception(f"Board name {self.name} is not supported! and failed to reset with Jlink.") from e
 
 
 def pylink_reset(debugger_snr, device_core):
@@ -108,7 +108,7 @@ def get_build_and_flash(board_name):
         raise Exception(f"Board name {board_name} is not supported!")
 
     try:
-        return getattr(board_mod, 'build_and_flash')
+        return board_mod.build_and_flash
     except AttributeError:
         return None
 
@@ -120,7 +120,7 @@ def get_board_type(board_name):
         raise Exception(f"Board name {board_name} is not supported!")
 
     try:
-        return getattr(board_mod, 'board_type')
+        return board_mod.board_type
     except AttributeError:
         return None
 

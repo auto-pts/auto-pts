@@ -139,11 +139,14 @@ class MyTestCase(unittest.TestCase):
 
                     bot_client.iut_config = iut_config
 
-                    def fake_apply_config(_args, config_name, *_):
-                        assert set(_args.test_cases) == set(expected[config_name]), \
-                            f'mock_iut_config_{i} use case failed'
+                    def make_fake_apply_config(expected, i):
+                        def fake_apply_config(_args, config_name, value):
+                            assert set(_args.test_cases) == set(expected[config_name]), \
+                                f'mock_iut_config_{i} use case failed'
 
-                    bot_client.apply_config = fake_apply_config
+                        return fake_apply_config
+
+                    bot_client.apply_config = make_fake_apply_config(expected, i)
 
                     bot_client.run_test_cases()
 

@@ -227,7 +227,7 @@ def hdl_wid_552(params: WIDParams):
     subgroup_id = 0x00
     presentation_delay = 40000
 
-    for i in range(bis_count):
+    for _i in range(bis_count):
         btp.cap_broadcast_source_setup_stream(source_id, subgroup_id, coding_format, vid, cid,
                                               codec_ltvs_bytes, metadata)
 
