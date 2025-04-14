@@ -624,8 +624,8 @@ def set_filter_accept_list(address_list=None):
     addr_cnt_ba = chr(len(address_list)).encode('utf-8')
     data_ba.extend(addr_cnt_ba)
 
-    for type, addr in address_list:
-        bd_addr_type_ba = chr(type).encode('utf-8')
+    for addr_type, addr in address_list:
+        bd_addr_type_ba = chr(addr_type).encode('utf-8')
         bd_addr_ba = addr2btp_ba(addr)
         data_ba.extend(bd_addr_type_ba)
         data_ba.extend(bd_addr_ba)

@@ -1071,10 +1071,10 @@ def hdl_wid_76(params: WIDParams):
         return False
 
     handle = params[0]
-    len = int(params[1])
+    length = int(params[1])
 
     btp.gatt_cl_write_long(btp.pts_addr_type_get(), btp.pts_addr_get(),
-                           handle, 0, '12', len)
+                           handle, 0, '12', length)
 
     stack = get_stack()
     stack.gatt_cl.prepared_write_hdl = handle

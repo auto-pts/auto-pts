@@ -2195,7 +2195,7 @@ def hdl_wid_850(params: WIDParams):
     timeout_base = stack.mesh.timeout_base_get()
     ttl = stack.mesh.transfer_ttl_get()
     addr = ["0001"]
-    id = 0x1100000000000011
+    blob_id = 0x1100000000000011
     block_size = 6
     chunk_size = 8
     blob_data_size = 80
@@ -2204,7 +2204,7 @@ def hdl_wid_850(params: WIDParams):
 
     time.sleep(5)
 
-    btp.mmdl_blob_transfer_start(id, block_size, chunk_size, timeout_base, ttl, blob_data_size)
+    btp.mmdl_blob_transfer_start(blob_id, block_size, chunk_size, timeout_base, ttl, blob_data_size)
 
     return True
 
@@ -2217,7 +2217,7 @@ def hdl_wid_851(_: WIDParams):
     timeout_base = stack.mesh.timeout_base_get()
     ttl = stack.mesh.transfer_ttl_get()
     addr = ["0001"]
-    id = 0x1100000000000011
+    blob_id = 0x1100000000000011
     block_size = 6
     chunk_size = 65
     blob_data_size = 80
@@ -2226,7 +2226,7 @@ def hdl_wid_851(_: WIDParams):
 
     time.sleep(5)
 
-    btp.mmdl_blob_transfer_start(id, block_size, chunk_size, timeout_base, ttl, blob_data_size)
+    btp.mmdl_blob_transfer_start(blob_id, block_size, chunk_size, timeout_base, ttl, blob_data_size)
 
     return True
 
@@ -2248,10 +2248,10 @@ def hdl_wid_853(_: WIDParams):
     stack = get_stack()
     timeout_base = stack.mesh.timeout_base_get()
     ttl = stack.mesh.transfer_ttl_get()
-    id = 0x1100000000000011
+    blob_id = 0x1100000000000011
 
     btp.mesh_store_model_data()
-    btp.mmdl_blob_srv_recv(id, timeout_base, ttl)
+    btp.mmdl_blob_srv_recv(blob_id, timeout_base, ttl)
 
     return True
 
@@ -2279,14 +2279,14 @@ def hdl_wid_856(params: WIDParams):
     ttl = stack.mesh.transfer_ttl_get()
     addrs = re.findall(r'(0x[0-9a-fA-F]{1,2})', params.description)
     addrs = [e[2:].rjust(4, '0') for e in addrs]
-    id = 0x1100000000000011
+    blob_id = 0x1100000000000011
     block_size = 18
     chunk_size = 11
     blob_data_size = 80
 
     btp.mmdl_blob_info_get(addrs)
     time.sleep(5)
-    btp.mmdl_blob_transfer_start(id, block_size, chunk_size, timeout_base, ttl, blob_data_size)
+    btp.mmdl_blob_transfer_start(blob_id, block_size, chunk_size, timeout_base, ttl, blob_data_size)
 
     return True
 

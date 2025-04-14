@@ -584,12 +584,12 @@ def gatt_cl_notification_rxed_ev_(gatt_cl, data, data_len):
 
     fmt = '<B6sBHH'
 
-    addr_type, addr, type, handle, data_length = \
+    addr_type, addr, value_type, handle, data_length = \
         struct.unpack_from(fmt, data[:struct.calcsize(fmt)])
     logging.debug("%s received addr_type=%r addr=%r"
-                  "type=%r handle=%r data_length=%r",
+                  "value_type=%r handle=%r data_length=%r",
                   gatt_cl_notification_rxed_ev_.__name__,
-                  addr_type, addr, type, handle, data_length)
+                  addr_type, addr, value_type, handle, data_length)
 
     if data_length == 0:
         logging.debug("No data in response")
@@ -598,7 +598,7 @@ def gatt_cl_notification_rxed_ev_(gatt_cl, data, data_len):
     notification_data = binascii.hexlify(data[struct.calcsize(fmt):]).upper()
 
     # save type, handle, data
-    gatt_cl.notifications.append((type, handle, notification_data))
+    gatt_cl.notifications.append((value_type, handle, notification_data))
 
 
 GATTC_EV = {
