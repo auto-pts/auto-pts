@@ -1653,13 +1653,13 @@ def mesh_subnet_bridge_set(dst, val):
     iutctl.btp_socket.send_wait_rsp(*MESH['subnet_bridge_set'], data)
 
 
-def mesh_bridging_table_add(dst, dir, net_idx1, net_idx2, addr1, addr2):
+def mesh_bridging_table_add(dst, direction, net_idx1, net_idx2, addr1, addr2):
     logging.debug("%s", mesh_bridging_table_add.__name__)
 
     stack = get_stack()
     iutctl = get_iut()
 
-    data = bytearray(struct.pack("<HBHHHH", dst, dir, net_idx1, net_idx2, addr1, addr2))
+    data = bytearray(struct.pack("<HBHHHH", dst, direction, net_idx1, net_idx2, addr1, addr2))
 
     iutctl.btp_socket.send_wait_rsp(*MESH['bridging_table_add'], data)
 
@@ -1675,13 +1675,13 @@ def mesh_bridging_table_remove(dst, net_idx1, net_idx2, addr1, addr2):
     iutctl.btp_socket.send_wait_rsp(*MESH['bridging_table_remove'], data)
 
 
-def mesh_bridged_subnets_get(dst, filter, net_idx, start_idx):
+def mesh_bridged_subnets_get(dst, filter_mesh, net_idx, start_idx):
     logging.debug("%s", mesh_bridged_subnets_get.__name__)
 
     stack = get_stack()
     iutctl = get_iut()
 
-    data = bytearray(struct.pack("<HBHB", dst, filter, net_idx, start_idx))
+    data = bytearray(struct.pack("<HBHB", dst, filter_mesh, net_idx, start_idx))
 
     iutctl.btp_socket.send_wait_rsp(*MESH['bridged_subnets_get'], data)
 
