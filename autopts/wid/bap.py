@@ -38,6 +38,7 @@ from autopts.pybtp.types import (
     create_lc3_ltvs_bytes,
     gap_settings_btp2txt,
 )
+from autopts.wid.common import _safe_bap_send
 
 log = logging.debug
 
@@ -348,12 +349,8 @@ def hdl_wid_114(params: WIDParams):
 
     data = bytearray([j for j in range(0, 41)])
 
-    for i in range(1, 100):
-        try:
-            btp.bap_send(0, data)
-        except BTPError:
-            # Buffer full
-            pass
+    for _ in range(1, 100):
+        _safe_bap_send(0, data)
 
     stack.bap.hdl_wid_114_cnt += 1
 
@@ -1980,13 +1977,9 @@ def hdl_wid_377(_: WIDParams):
 
     data = bytearray([j for j in range(0, 41)])
 
-    for i in range(1, 10):
+    for _ in range(1, 10):
         for ase_id in sources:
-            try:
-                btp.bap_send(ase_id, data)
-            except BTPError:
-                # Buffer full
-                pass
+            _safe_bap_send(ase_id, data)
 
     return True
 
@@ -2096,13 +2089,9 @@ def hdl_wid_387(_: WIDParams):
 
     data = bytearray([j for j in range(0, 41)])
 
-    for i in range(1, 10):
+    for _ in range(1, 10):
         for ase_id in sources:
-            try:
-                btp.bap_send(ase_id, data)
-            except BTPError:
-                # Buffer full
-                pass
+            _safe_bap_send(ase_id, data)
 
     return True
 

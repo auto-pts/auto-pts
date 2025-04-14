@@ -28,12 +28,12 @@ from autopts.pybtp.types import (
     QOS_CONFIG_SETTINGS,
     ASCSState,
     AudioDir,
-    BTPError,
     WIDParams,
     create_lc3_ltvs_bytes,
 )
 from autopts.wid.bap import BAS_CONFIG_SETTINGS, create_default_config, get_audio_locations_from_pac
 from autopts.wid.ccp import BT_TBS_GTBS_INDEX
+from autopts.wid.common import _safe_bap_send
 
 log = logging.debug
 
@@ -636,12 +636,8 @@ def hdl_wid_506(params: WIDParams):
 
     # PTS does not send an explicit message, but for each
     # configured SINK it expects to receive any ISO data.
-    for i in range(1, 10):
-        try:
-            btp.bap_send(0, data)
-        except BTPError:
-            # Buffer full
-            pass
+    for _ in range(1, 10):
+        _safe_bap_send(0, data)
 
     return True
 

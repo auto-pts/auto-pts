@@ -224,16 +224,22 @@ class PyPTSWithCallback(ptscontrol.PyPTS, threading.Thread):
         self.ptscontrol_request_queue.put((method_name, False, args))
         return "WAIT"
 
+    def _get_response_safely(queue, timeout):
+        try:
+            result = queue.get(block=True, timeout=timeout)
+            queue.task_done()
+            return result
+        except Empty:
+            return None
+
     def _dispatch_blocking(self, method_name, *args):
         self.ptscontrol_request_queue.put((method_name, True, args))
         result = None
+
         while not self._end.is_set():
-            try:
-                result = self.ptscontrol_response_queue.get(block=True, timeout=1)
-                self.ptscontrol_response_queue.task_done()
-                return result
-            except Empty:
-                pass
+            response = self._get_response_safely(self.ptscontrol_response_queue, timeout=1)
+            if response is not None:
+                return response
 
         return result
 
@@ -473,6 +479,32 @@ class Server(threading.Thread):
 
         return 0
 
+    def _handle_xmlrpc_request(self):
+        try:
+            # Init
+            if self._args.superguard and \
+                    self._args.superguard < time.time() - self.last_request_time:
+                log('Superguard timeout, reinitializing XMLRPC')
+                print_thread_stack_trace()
+                self.server_init()
+
+            # Main work
+            self.server.handle_request()
+
+        except KeyboardInterrupt:
+            print("Keyboard Interrupt. Single-instance termination")
+            raise
+
+        except BaseException as e:
+            logging.exception(e)
+
+    def _xmlrpc_thread_iteration(self):
+        try:
+            self._handle_xmlrpc_request()
+        except KeyboardInterrupt:
+            return False  # zakończ pętlę
+        return True
+
     def _xmlrpc_thread_work(self):
         """
         This thread accepts and queues the client calls to
@@ -493,26 +525,9 @@ class Server(threading.Thread):
 
         self.server_init()
 
-        while not self.end.is_set() and not self.pts._end.is_set() \
-                and not get_global_end():
-            try:
-                # Init
-                if self._args.superguard and \
-                        self._args.superguard < time.time() - self.last_request_time:
-                    log('Superguard timeout, reinitializing XMLRPC')
-                    print_thread_stack_trace()
-                    self.server_init()
-
-                # Main work
-                self.server.handle_request()
-
-            except KeyboardInterrupt:
-                # Ctrl-C termination for single instance mode
-                print("Keyboard Interrupt. Single-instance termination")
+        while not self.end.is_set() and not self.pts._end.is_set() and not get_global_end():
+            if not self._xmlrpc_thread_iteration():
                 break
-
-            except BaseException as e:
-                logging.exception(e)
 
         if threading.current_thread().name != 'MainThread':
             pythoncom.CoUninitialize()
@@ -599,8 +614,7 @@ class Server(threading.Thread):
         file_list = []
         for root, dirs, files in os.walk(logs_root,
                                          topdown=False):
-            for name in files:
-                file_list.append(os.path.join(root, name))
+            file_list.extend([os.path.join(root, name) for name in files])
 
             file_list.append(root)
 

@@ -15,12 +15,12 @@
 import binascii
 import logging
 import re
-import socket
 import time
 
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp
-from autopts.pybtp.types import BTPError, WIDParams
+from autopts.pybtp.types import WIDParams
+from autopts.wid.common import _l2cap_send_forever, _safe_l2cap_disconnect
 
 log = logging.debug
 
@@ -319,23 +319,14 @@ def hdl_wid_61(_: WIDParams):
 def hdl_wid_100(_: WIDParams):
     l2cap = get_stack().l2cap
     for channel in l2cap.channels:
-        try:
-            while True:
-                btp.l2cap_send_data(channel.id, '00')
-        except BTPError:
-            pass
-        except socket.timeout:
-            pass
+        _l2cap_send_forever(channel.id)
     return True
 
 
 def hdl_wid_101(_: WIDParams):
     l2cap = get_stack().l2cap
     for channel in l2cap.channels:
-        try:
-            btp.l2cap_disconn(channel.id)
-        except BTPError:
-            logging.debug("Ignoring expected error on L2CAP disconnect")
+        _safe_l2cap_disconnect(channel.id)
     return True
 
 

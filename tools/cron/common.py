@@ -99,12 +99,19 @@ def catch_exceptions(cancel_on_failure=False):
 def catch_connection_error(func):
     def _catch_exceptions(*args, **kwargs):
         while not get_global_end():
+            response = None
+            error_occurred = False
             try:
-                return func(*args, **kwargs)
+                response = func(*args, **kwargs)
             except requests.exceptions.ConnectionError:
                 log('Internet connection error')
+                error_occurred = True
                 sleep(1)
-    return _catch_exceptions
+
+            if not error_occurred:
+                return response
+
+        return _catch_exceptions
 
 
 def sleep_job(cancel_object, delay):
@@ -195,10 +202,7 @@ def send_mail_exception(conf_name, email_cfg, exception, magic_tag=None):
     <p> {}</p>
     '''.format(ww_dd_str, job_type_info, conf_name, exception, email_cfg['name'])
 
-    attachments = []
-    for file in ['stdout_autoptsbot.log', 'stdout_autoptsserver.log']:
-        if os.path.exists(file):
-            attachments.append(file)
+    attachments = [file for file in ['stdout_autoptsbot.log', 'stdout_autoptsserver.log'] if os.path.exists(file)]
 
     subject = 'AutoPTS session FAILED - fail logs'
     send_mail(email_cfg, subject, body, attachments)
@@ -581,12 +585,12 @@ def _start_processes(config, checkout_repos):
 
 
 def _restart_processes(config):
-    while not config['cron']['cancel_job'].canceled:
-        try:
+    try:
+        while not config['cron']['cancel_job'].canceled:
             terminate_processes(config)
             return _start_processes(config, checkout_repos=False)
-        except OSError:
-            log(traceback.format_exc())
+    except OSError:
+        log(traceback.format_exc())
 
 
 def _run_test(config):

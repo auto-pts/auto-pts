@@ -586,16 +586,23 @@ class TestCase(PTSCallback):
         for index, cmd in enumerate(self.post_wid_queue):
             log("%d) %s", index, cmd)
 
-        for cmd in self.post_wid_queue:
+        # Define a helper function to safely start a command.
+        def safe_start(cmd):
             try:
                 cmd.start()
+                return True
             except Exception as e:
                 logging.exception(e)
+                return False
+
+        # Use the helper function in the loop.
+        for cmd in self.post_wid_queue:
+            if not safe_start(cmd):
                 break
 
         del self.post_wid_queue[:]
 
-        # No PTS response
+        # No PTS response.
         return None
 
     def handle_mmi_generic(self, wid, description, style, test_case_name):

@@ -164,12 +164,12 @@ def check_supported_profiles(test_case_prefixes, job_config):
 
     job_config_prefixes = re.sub(r'\s+', r' ', job_config['included']).strip().split(' ')
 
-    test_cases_to_run = []
-    for prefix in test_case_prefixes:
-        for profile in job_config_prefixes:
-            if prefix.startswith(profile):
-                # At least one prefix matched
-                test_cases_to_run.append(prefix)
+    test_cases_to_run = [
+        prefix
+        for prefix in test_case_prefixes
+        for profile in job_config_prefixes
+        if prefix.startswith(profile)
+    ]
 
     if test_cases_to_run:
         return True, test_cases_to_run

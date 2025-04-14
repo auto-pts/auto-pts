@@ -273,10 +273,7 @@ def hdl_wid_22(params: WIDParams):
     MMI.reset()
     MMI.parse_description(params.description)
 
-    parsed_args = []
-
-    for arg in MMI.args:
-        parsed_args.append([char for char in arg if char != "-"])
+    parsed_args = [[char for char in arg if char != "-"] for arg in MMI.args]
 
     handles = []
     uuids = []
@@ -1107,7 +1104,6 @@ def hdl_wid_93(params: WIDParams):
     # Please send an Handle Value MULTIPLE Notification to PTS.
     # Description: Verify that the Implementation Under Test (IUT) can send
     # handle value multiple notification to the PTS.
-    handles = []
 
     if 'LT2' in params.test_case_name:
         addr_type, addr = (btp.lt2_addr_type_get(), btp.lt2_addr_get())
@@ -1115,9 +1111,11 @@ def hdl_wid_93(params: WIDParams):
         addr_type, addr = (btp.pts_addr_type_get(), btp.pts_addr_get())
 
     db = gatt_server_fetch_db().db
-    for i in range(1, len(db) + 1):
-        if isinstance(db[i], GattCharacteristic) and db[i].prop & Prop.notify:
-            handles.append(db[i].handle + 1)
+    handles = [
+        db[i].handle + 1
+        for i in range(1, len(db) + 1)
+        if isinstance(db[i], GattCharacteristic) and db[i].prop & Prop.notify
+    ]
 
     btp.gatts_notify_mult(addr_type, addr, len(handles), handles)
     return True
@@ -2015,7 +2013,6 @@ def hdl_wid_308(params: WIDParams):
 
     # PTS description is bit odd because in test spec UT is expected to request sending
     # ATT_Handle_value_Multiple_notification and IUT should ignore that.
-    handles = []
 
     if 'LT2' in params.test_case_name:
         addr_type, addr = (btp.lt2_addr_type_get(), btp.lt2_addr_get())
@@ -2023,9 +2020,11 @@ def hdl_wid_308(params: WIDParams):
         addr_type, addr = (btp.pts_addr_type_get(), btp.pts_addr_get())
 
     db = gatt_server_fetch_db().db
-    for i in range(1, len(db) + 1):
-        if isinstance(db[i], GattCharacteristic) and db[i].prop & Prop.notify:
-            handles.append(db[i].handle + 1)
+    handles = [
+        db[i].handle + 1
+        for i in range(1, len(db) + 1)
+        if isinstance(db[i], GattCharacteristic) and db[i].prop & Prop.notify
+    ]
 
     # IUT may fail here (or silently ignore and return success)
     try:
