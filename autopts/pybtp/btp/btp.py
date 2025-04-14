@@ -24,11 +24,10 @@ from uuid import UUID
 
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import MMI
+from autopts.pybtp import defs
 from autopts.pybtp.common import CONTROLLER_INDEX, CONTROLLER_INDEX_NONE, reg_unreg_service, supported_svcs_cmds
 from autopts.pybtp.iutctl_common import set_event_handler
 from autopts.pybtp.types import BTPError, att_rsp_str
-
-from .. import defs
 
 #  get IUT global method from iutctl
 get_iut = None
