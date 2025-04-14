@@ -123,10 +123,10 @@ class BTMON:
         self.btmon_process = None
         self.socat_process = None
 
-    def _on_line_read_callback(self, bytes, user_data):
+    def _on_line_read_callback(self, data, user_data):
         sock, = user_data
         try:
-            sock.sendall(bytes)
+            sock.sendall(data)
         except UnicodeDecodeError:
             pass
 
@@ -222,10 +222,10 @@ class RTTLogger:
         self.rtt_reader = RTT()
         self.log_file = None
 
-    def _on_line_read_callback(self, bytes, user_data):
+    def _on_line_read_callback(self, data, user_data):
         file, = user_data
         try:
-            file.write(bytes)
+            file.write(data)
             file.flush()
         except UnicodeDecodeError:
             pass
