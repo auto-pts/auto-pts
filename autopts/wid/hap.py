@@ -478,9 +478,9 @@ def hdl_wid_489(_: WIDParams):
     ev = stack.bap.wait_baa_found_ev(addr_type, addr, 30)
     btp.bap_broadcast_scan_stop()
     if ev:
-        id, sid, addr_type, addr = ev['broadcast_id'], ev['advertiser_sid'], ev['addr_type'], ev['addr']
-        btp.bap_broadcast_sink_sync(id, sid, 5, 600, False, 0, addr_type, addr)
-        ev = stack.bap.wait_bis_found_ev(id, 50)
+        broadcast_id, sid, addr_type, addr = ev['broadcast_id'], ev['advertiser_sid'], ev['addr_type'], ev['addr']
+        btp.bap_broadcast_sink_sync(broadcast_id, sid, 5, 600, False, 0, addr_type, addr)
+        ev = stack.bap.wait_bis_found_ev(broadcast_id, 50)
 
     return ev is not None
 

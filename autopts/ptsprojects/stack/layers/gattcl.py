@@ -17,14 +17,14 @@ from autopts.ptsprojects.stack.common import wait_for_event
 from autopts.ptsprojects.stack.layers import Property
 
 
-def is_procedure_done(list, cnt):
+def is_procedure_done(lst, cnt):
     if cnt is None:
         return False
 
     if cnt <= 0:
         return True
 
-    return len(list) == cnt
+    return len(lst) == cnt
 
 
 class GattCl:

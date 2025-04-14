@@ -98,12 +98,12 @@ def hap_read_supported_cmds():
     logging.debug("supported cmds %r", tuple_data)
 
 
-def hap_ha_init(type, options):
+def hap_ha_init(hap_type, options):
     logging.debug(f"{hap_ha_init.__name__}")
 
     iutctl = get_iut()
     data = bytearray()
-    data += struct.pack('B', type)
+    data += struct.pack('B', hap_type)
     data += struct.pack('<H', options)
 
     iutctl.btp_socket.send(*HAP['ha_init'], data=data)
