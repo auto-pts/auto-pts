@@ -15,7 +15,7 @@
 import logging
 import os
 from subprocess import CalledProcessError
-
+from autopts.ptsprojects.boards.nrf5x import reset_cmd # noqa: F401
 from autopts.bot.common import check_call
 
 supported_projects = ['zephyr']

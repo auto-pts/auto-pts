@@ -2366,7 +2366,7 @@ def hdl_wid_990(params: WIDParams):
 
     btp.mmdl_dfu_update_firmware_start(addrs, slot_idx, slot_size, block_size, chunk_size, fwid, metadata)
     # wait for Firmware Update Status for every address
-    for e in addrs:
+    for _e in addrs:
         stack.mesh.wait_for_model_added_op(5, b'b72b')
 
     return True

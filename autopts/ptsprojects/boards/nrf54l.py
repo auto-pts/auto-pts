@@ -13,6 +13,6 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
-
+from autopts.ptsprojects.boards.nrf5x import reset_cmd, build_and_flash # noqa: F401
 board_type = 'nrf54l15dk/nrf54l15/cpuapp'
 supported_projects = ['zephyr']

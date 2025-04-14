@@ -569,11 +569,11 @@ def parse_service_id(svc_id):
     }
     try:
         int_svc_id = int(svc_id)
-    except ValueError:
+    except ValueError as e:
         raise SyntaxWarning(
             "Wrong service ID format, possible values: "
             f"{list(service_ids.values())}"
-        )
+        ) from e
 
     if int_svc_id not in service_ids.values():
         raise SyntaxWarning(
@@ -589,8 +589,8 @@ def parse_opcode(opcode):
     Return -- integer opcode"""
     try:
         int_opcode = int(opcode)
-    except ValueError:
-        raise SyntaxWarning('Wrong opcode format, should be an int: "0-255"')
+    except ValueError as e:
+        raise SyntaxWarning('Wrong opcode format, should be an int: "0-255"') from e
     return int_opcode
 
 
@@ -600,9 +600,8 @@ def parse_ctrl_index(ctrl_index):
     Return -- integer controller index"""
     try:
         int_ctrl_index = int(ctrl_index)
-    except ValueError:
-        raise SyntaxWarning('Wrong Controler Index format, should be an int: '
-                            '"0-255"')
+    except ValueError as e:
+        raise SyntaxWarning('Wrong Controller Index format, should be an int: "0-255"') from e
     return int_ctrl_index
 
 
@@ -612,8 +611,8 @@ def parse_data(data):
     Return -- data in binary format"""
     try:
         hex_data = binascii.unhexlify(data)
-    except TypeError:
-        raise SyntaxWarning('Wrong data type, should be e.g.: "0011223344ff"')
+    except TypeError as e:
+        raise SyntaxWarning('Wrong data type, should be e.g.: "0011223344ff"') from e
     return hex_data
 
 
