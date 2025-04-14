@@ -277,16 +277,13 @@ def make_report_diff(old_report_txt, report_diff_txt_path, results,
                      regressions, progresses, new_cases):
     f = open(report_diff_txt_path, "w")
 
-    deleted_cases = []
-    old_test_cases = []
     test_cases = list(results.keys())
+    old_test_cases = []
 
     if os.path.exists(old_report_txt):
         old_test_cases = report_parse_test_cases(old_report_txt)
 
-    for tc in old_test_cases:
-        if tc not in test_cases:
-            deleted_cases.append(tc)
+    deleted_cases = [tc for tc in old_test_cases if tc not in test_cases]
 
     f.write("Regressions:\n")
     for tc in regressions:

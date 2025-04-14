@@ -65,9 +65,9 @@ def hdl_wid_24(params: WIDParams):
         return False
 
     # split MMI args into tuples (att_hdl, incl_svc_hdl, end_gp_hdl, svc_uuid)
-    mmi_args_tupled = []
-    for i in range(0, len(MMI.args), 4):
-        mmi_args_tupled.append(tuple(MMI.args[i:i + 4]))
+    mmi_args_tupled = [
+        tuple(MMI.args[i:i + 4]) for i in range(0, len(MMI.args), 4)
+    ]
 
     stack = get_stack()
     # TODO: there is no way to access included service handle wit current API.

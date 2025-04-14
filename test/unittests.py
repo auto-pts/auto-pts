@@ -157,10 +157,11 @@ class MyTestCase(unittest.TestCase):
         duration = 30  # seconds
         end_time = start_time + duration
 
-        test_cases = []
-        for project in mock_workspace_test_cases:
-            for tc in mock_workspace_test_cases[project]:
-                test_cases.append(tc)
+        test_cases = [
+            tc
+            for project in mock_workspace_test_cases
+            for tc in mock_workspace_test_cases[project]
+        ]
 
         regressions_id = [5, 6, 7, 8]
         progresses_id = [9, 10, 11, 12]

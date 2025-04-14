@@ -34,11 +34,22 @@ def catch_connection_error(func):
     """Reruns REST API request in case of ConnectionError"""
     def _catch_exceptions(*args, **kwargs):
         while not get_global_end():
+            result = None
+            connection_error_occurred = False
+
             try:
-                return func(*args, **kwargs)
+                result = func(*args, **kwargs)
             except requests.exceptions.ConnectionError:
-                log('Internet connection error')
-                sleep(1)
+                connection_error_occurred = True
+
+            if not connection_error_occurred:
+                return result
+
+            log('Internet connection error')
+            sleep(1)
+
+        return None
+
     return _catch_exceptions
 
 

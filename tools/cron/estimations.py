@@ -80,12 +80,12 @@ def update_cached_test_cases_job(cfg, **kwargs):
 
 def estimate_test_cases(config, included, excluded):
     profiles = parse_yaml(config['cron']['test_case_estimation']['cache_file_path'])
-    test_cases = []
-
-    for profile in profiles:
-        for tc in profiles[profile]:
-            if run_or_not(tc, included, excluded):
-                test_cases.append(tc)
+    test_cases = [
+        tc
+        for profile in profiles
+        for tc in profiles[profile]
+        if run_or_not(tc, included, excluded)
+    ]
 
     return test_cases
 

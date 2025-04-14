@@ -371,6 +371,16 @@ class BotClient(Client):
         if os.path.exists(self.file_paths['TC_STATS_JSON_FILE']):
             os.remove(self.file_paths['TC_STATS_JSON_FILE'])
 
+    def _safe_get_test_case_description(self, project_name, test_case_name):
+        """
+        Tries to get a test case description. In case of an error, logs a message and returns None.
+        """
+        try:
+            return self.ptses[0].get_test_case_description(project_name, test_case_name)
+        except Exception as e:
+            log(f'Failed to get description of {test_case_name}: {e}')
+            return None
+
     def run_test_cases(self):
         all_stats = self.backup['all_stats']
         stats = self.backup['tc_stats']
@@ -409,7 +419,6 @@ class BotClient(Client):
 
             except BuildAndFlashException:
                 log(f'Build and flash step failed for config {config}')
-
                 for tc in config_args.test_cases:
                     status = 'BUILD_OR_FLASH ERROR'
                     stats.update(tc, time.time(), status)
@@ -422,7 +431,6 @@ class BotClient(Client):
                 all_stats.save_to_backup(self.file_paths['ALL_STATS_JSON_FILE'])
 
         # End of bot run - all test cases completed
-
         if all_stats.num_test_cases == 0:
             print('\nNo test cases were run. Please verify your config.\n')
             return all_stats
@@ -440,13 +448,11 @@ class BotClient(Client):
             results = all_stats.get_results()
             descriptions = {}
             for test_case_name in list(results.keys()):
-                try:
-                    project_name = test_case_name.split('/')[0]
-                    project_name = mapping.get(project_name, project_name)
-                    descriptions[test_case_name] = \
-                        self.ptses[0].get_test_case_description(project_name, test_case_name)
-                except Exception as e:
-                    log(f'Failed to get description of {test_case_name}: {e}')
+                project_name = test_case_name.split('/')[0]
+                project_name = mapping.get(project_name, project_name)
+                desc = self._safe_get_test_case_description(project_name, test_case_name)
+                if desc is not None:
+                    descriptions[test_case_name] = desc
 
             all_stats.update_descriptions(descriptions)
             all_stats.pts_ver = str(self.ptses[0].get_version())
