@@ -178,6 +178,8 @@ def hdl_wid_20100(params: WIDParams):
     btp.gap_conn(addr, addr_type)
     stack.gap.wait_for_connection(timeout=10, addr=addr)
     sec_lvl = stack.gap.gap_wait_for_sec_lvl_change(level=2, timeout=10, addr=addr)
+
+    # Workaround for issue described by PTS Request ID 170874
     if sec_lvl != 2:
         btp.gap_pair(addr, addr_type)
         stack.gap.gap_wait_for_sec_lvl_change(level=2, timeout=30, addr=addr)

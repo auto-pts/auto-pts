@@ -39,14 +39,12 @@ import wmi
 
 def get_pid_by_window_title(title):
     def callback(hwnd, hwnd_list):
-        if win32gui.IsWindowVisible(hwnd):
-            window_title = win32gui.GetWindowText(hwnd)
-
-            if window_title.startswith(title):
-                try:
-                    _, pid = win32process.GetWindowThreadProcessId(hwnd)
-                    hwnd_list.append(pid)
-                except Exception as e:
+        window_title = win32gui.GetWindowText(hwnd)
+        if window_title.startswith(title):
+            try:
+                _, pid = win32process.GetWindowThreadProcessId(hwnd)
+                hwnd_list.append(pid)
+            except Exception as e:
                     logging.warning(f"Failed to get PID for hwnd {hwnd}: {e}")
 
     hwnd_list = []
