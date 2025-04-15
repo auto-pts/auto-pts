@@ -22,10 +22,10 @@ import sys
 import threading
 import traceback
 import xmlrpc.client
-import hid
-import psutil
 from time import sleep
 
+import hid
+import psutil
 
 PTS_WORKSPACE_FILE_EXT = ".pqw6"
 
@@ -102,9 +102,13 @@ class ResultWithFlag:
 
         If timeout, will throw an exception: TimeoutError
         """
+
+        def _default_predicate():
+            return True
+
         # Ctrl+C friendly under Windows
         if predicate is None:
-            predicate = lambda: True
+            predicate = _default_predicate
 
         raise_timeout = False
 
@@ -206,7 +210,7 @@ pykush_installed = False
 try:
     import pykush.pykush as pykush
     pykush_installed = True
-except:
+except ImportError:
     pass
 
 
@@ -234,7 +238,7 @@ def get_own_workspaces():
     script_path = os.path.split(os.path.abspath(__file__))[0]
     workspaces = {}
 
-    for root, dirs, files in os.walk(os.path.join(script_path, "workspaces")):
+    for root, _dirs, files in os.walk(os.path.join(script_path, "workspaces")):
         for file in files:
             if file.endswith(PTS_WORKSPACE_FILE_EXT):
                 name = os.path.splitext(file)[0]
@@ -301,13 +305,13 @@ if sys.platform == 'win32':
 
         return False
 
-
     def have_admin_rights():
         """"Check if the process has Administrator rights"""
         try:
             return ctypes.windll.shell32.IsUserAnAdmin() == 1
-        except AttributeError:
-            raise AdminStateUnknownError
+        except AttributeError as e:
+            raise AdminStateUnknownError from e
+
 
 else:
     _pyudev = False
@@ -321,21 +325,25 @@ else:
         if os.path.islink(serial_address):
             serial_address = os.path.realpath(serial_address)
 
+        def _device_has_serial(device, serial_address):
+            try:
+                return serial_address in device.get('DEVNAME')
+            except BaseException:
+                return False
+
         context = _pyudev.Context()
         for device in context.list_devices(subsystem=subsystem):
-            try:
-                if serial_address in device.get('DEVNAME'):
-                    return True
-            except BaseException as e:
-                pass
+            if _device_has_serial(device, serial_address):
+                return True
+
         return False
 
     def have_admin_rights():
         """"Check if the process has Administrator rights"""
         try:
             return os.getuid() == 0
-        except AttributeError:
-            raise AdminStateUnknownError
+        except AttributeError as e:
+            raise AdminStateUnknownError from e
 
 
 def ykush_replug_usb(ykush_config, device_id=None, delay=0, end_flag=None):

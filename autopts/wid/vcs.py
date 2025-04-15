@@ -14,16 +14,16 @@
 #
 
 import logging
+
+from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp
-from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp.types import WIDParams
-from autopts.ptsprojects.stack import get_stack
-from autopts.wid import generic_wid_hdl
 
 log = logging.debug
 
 
 def vcs_wid_hdl(wid, description, test_case_name):
+    from autopts.wid import generic_wid_hdl
     log(f'{vcs_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
     return generic_wid_hdl(wid, description, test_case_name, [__name__])
 
@@ -35,18 +35,22 @@ def hdl_wid_20001(_: WIDParams):
     btp.gap_adv_ind_on(ad=stack.gap.ad)
     return True
 
+
 def hdl_wid_1(_: WIDParams):
     btp.vcs_set_vol(2)
     return True
+
 
 def hdl_wid_2(_: WIDParams):
     btp.vcs_set_vol(2)
     btp.vcs_mute()
     return True
 
+
 def hdl_wid_3(_: WIDParams):
     btp.vcs_set_vol(255)
     return True
+
 
 def hdl_wid_4(_: WIDParams):
     btp.vcs_set_vol(255)

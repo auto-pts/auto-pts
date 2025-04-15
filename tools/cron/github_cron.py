@@ -18,10 +18,11 @@
 import json
 import logging
 import re
-import requests
 from datetime import datetime, timedelta
 from threading import Thread
 from time import sleep
+
+import requests
 from requests.structures import CaseInsensitiveDict
 
 from autopts.utils import get_global_end
@@ -33,11 +34,22 @@ def catch_connection_error(func):
     """Reruns REST API request in case of ConnectionError"""
     def _catch_exceptions(*args, **kwargs):
         while not get_global_end():
+            result = None
+            connection_error_occurred = False
+
             try:
-                return func(*args, **kwargs)
+                result = func(*args, **kwargs)
             except requests.exceptions.ConnectionError:
-                log('Internet connection error')
-                sleep(1)
+                connection_error_occurred = True
+
+            if not connection_error_occurred:
+                return result
+
+            log('Internet connection error')
+            sleep(1)
+
+        return None
+
     return _catch_exceptions
 
 
@@ -159,7 +171,7 @@ class GitHubCron(Thread):
         resp = self.get(url, params)
         try:
             comments = resp.json()
-        except:
+        except Exception:
             comments = []
 
         for comment in comments:
@@ -219,7 +231,7 @@ class GitHubCron(Thread):
         resp = self.get(url, params)
         try:
             pr = resp.json()
-        except:
+        except Exception:
             return None
 
         pr_info = {

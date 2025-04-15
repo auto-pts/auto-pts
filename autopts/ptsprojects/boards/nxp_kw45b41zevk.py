@@ -14,10 +14,7 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
-import os
-import sys
 import logging
-
 
 from autopts.ptsprojects.boards import Jlink
 
@@ -29,5 +26,3 @@ supported_projects = ['zephyr']
 
 def reset_cmd(iutctl):
     return Jlink(iutctl.debugger_snr, iutctl.device_core).reset_command
-
-

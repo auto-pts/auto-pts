@@ -15,23 +15,24 @@
 
 """Wrapper around btp messages. The functions are added as needed."""
 
-from collections import namedtuple
-from uuid import UUID
 import logging
+import math
 import re
 import struct
-import math
+from collections import namedtuple
+from uuid import UUID
 
-from autopts.pybtp.common import supported_svcs_cmds, reg_unreg_service
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import MMI
-from .. import defs
+from autopts.pybtp import defs
+from autopts.pybtp.common import CONTROLLER_INDEX, CONTROLLER_INDEX_NONE, reg_unreg_service, supported_svcs_cmds
+from autopts.pybtp.iutctl_common import set_event_handler
 from autopts.pybtp.types import BTPError, att_rsp_str
 
 #  get IUT global method from iutctl
 get_iut = None
 
-#loading as CORE to maintain backward compatibility with older code snippet
+# loading as CORE to maintain backward compatibility with older code snippet
 CORE = reg_unreg_service
 
 # Address
@@ -43,8 +44,8 @@ LT3_BD_ADDR = LeAddress(addr_type=0, addr='000000000000')
 # Devices found
 LeAdv = namedtuple('LeAdv', 'addr_type addr rssi flags eir')
 
-CONTROLLER_INDEX = 0
-CONTROLLER_INDEX_NONE = 0xff
+CONTROLLER_INDEX = CONTROLLER_INDEX
+CONTROLLER_INDEX_NONE = CONTROLLER_INDEX_NONE
 
 
 def read_supp_svcs():
@@ -63,6 +64,7 @@ def read_supp_svcs():
                   tuple_hdr, tuple_data)
 
     stack.supported_svcs = int.from_bytes(tuple_data[0], 'little')
+
 
 def read_supported_commands(service):
     iutctl = get_iut()
@@ -148,11 +150,11 @@ def extend_verify_values(item):
 def verify_att_error(description):
     logging.debug("description=%r", description)
 
-    description_values = []
-
-    for err_code, err_string in att_rsp_str.items():
-        if err_string and err_string in description:
-            description_values.append(err_string)
+    description_values = [
+        err_string
+        for err_string in att_rsp_str.values()
+        if err_string and err_string in description
+    ]
 
     verify_values = get_verify_values()
     logging.debug("Verifying values: %r", verify_values)
@@ -272,13 +274,9 @@ def verify_description_truncated(description):
 
 def verify_multiple_read_description(description):
     """A function to verify that merged multiple read att values are in
-
     PTS MMI description.
-
     Returns True if verification is successful, False if not.
-
     description -- MMI description
-
     """
     logging.debug("description=%r", description)
 
@@ -294,14 +292,15 @@ def verify_multiple_read_description(description):
 
     # verify_values shall not be a string: all its characters will be verified
     assert isinstance(verify_values, list), "verify_values should be a list!"
-
-    exp_mtp_read = ""
+    # Pre-transform all values to str
+    processed_values = []
     for value in verify_values:
-        try:
-            exp_mtp_read = exp_mtp_read.join(value)
-        except TypeError:
-            value = value.decode("utf-8")
-            exp_mtp_read = exp_mtp_read.join(value)
+        if isinstance(value, bytes):
+            processed_values.append(value.decode("utf-8"))
+        else:
+            processed_values.append(str(value))
+
+    exp_mtp_read = ''.join(processed_values)
 
     if exp_mtp_read not in got_mtp_read:
         logging.debug("Verification failed, value not in description")
@@ -356,16 +355,13 @@ def parse_handle_description(description):
 
 def btp_hdr_check(rcv_hdr, exp_svc_id, exp_op=None):
     if rcv_hdr.svc_id != exp_svc_id:
-        raise BTPError("Incorrect service ID %s in the response, expected %s!"
-                       % (rcv_hdr.svc_id, exp_svc_id))
+        raise BTPError(f"Incorrect service ID {rcv_hdr.svc_id} in the response, expected {exp_svc_id}!")
 
     if rcv_hdr.op == defs.BTP_STATUS:
         raise BTPError("Error opcode in response!")
 
     if exp_op and exp_op != rcv_hdr.op:
-        raise BTPError(
-            "Invalid opcode 0x%.2x in the response, expected 0x%.2x!" %
-            (rcv_hdr.op, exp_op))
+        raise BTPError(f"Invalid opcode 0x{rcv_hdr.op:02x} in the response, expected 0x{exp_op:02x}!")
 
 
 def bd_addr_convert(bdaddr):
@@ -512,6 +508,7 @@ def core_unreg_svc_gatt_cl():
 def core_reg_svc_vcs():
     core_reg_svc_univ("vcs_reg", "VCS")
 
+
 def core_reg_svc_vocs():
     core_reg_svc_univ("vocs_reg", "VOCS")
 
@@ -555,7 +552,7 @@ def core_reg_svc_mics():
 def core_reg_svc_ccp():
     core_reg_svc_univ("ccp_reg", "CCP")
 
-    
+
 def core_reg_svc_cas():
     core_reg_svc_univ("cas_reg", "CAS")
 
@@ -586,7 +583,7 @@ def core_reg_svc_csip():
 
 def core_reg_svc_tmap():
     core_reg_svc_univ("tmap_reg", "TMAP")
-    
+
 
 def core_reg_svc_tbs():
     core_reg_svc_univ("tbs_reg", "TBS")
@@ -683,40 +680,36 @@ def init(get_iut_method):
     set_event_handler(event_handler)
 
 
-from .gap import GAP_EV
-from .gatt import GATT_EV
-from .l2cap import L2CAP_EV
-from .mesh import MESH_EV
-from .gatt_cl import GATTC_EV
-from .aics import AICS_EV
-from .vocs import VOCS_EV
-from .vcs import VCS_EV
-from .ias import IAS_EV
-from .pacs import PACS_EV
-from .ascs import ASCS_EV
-from .bap import BAP_EV
-from .core import CORE_EV
-from .micp import MICP_EV
-from .mics import MICS_EV
-from .ccp import CCP_EV
-from .vcp import VCP_EV
-from .mcp import MCP_EV
-from .gmcs import GMCS_EV
-from .hap import HAP_EV
-from .cap import CAP_EV
-from .csip import CSIP_EV
-from .tbs import TBS_EV
-from .tmap import TMAP_EV
-from .ots import OTS_EV
-from .pbp import PBP_EV
-# GENERATOR append 2
-
-from autopts.pybtp.iutctl_common import set_event_handler
-
-
 def event_handler(hdr, data):
     logging.debug("%s %r %r", event_handler.__name__, hdr, data)
-
+    from .event_map import (
+        AICS_EV,
+        ASCS_EV,
+        BAP_EV,
+        CAP_EV,
+        CCP_EV,
+        CORE_EV,
+        CSIP_EV,
+        GAP_EV,
+        GATT_EV,
+        GATTC_EV,
+        GMCS_EV,
+        HAP_EV,
+        IAS_EV,
+        L2CAP_EV,
+        MCP_EV,
+        MESH_EV,
+        MICP_EV,
+        MICS_EV,
+        OTS_EV,
+        PACS_EV,
+        PBP_EV,
+        TBS_EV,
+        TMAP_EV,
+        VCP_EV,
+        VCS_EV,
+        VOCS_EV,
+    )
     stack = get_stack()
     if not stack:
         logging.info("Stack not initialized")

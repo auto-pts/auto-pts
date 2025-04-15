@@ -21,11 +21,19 @@ import struct
 
 from autopts.ptsprojects.stack import GattCharacteristic, GattCharacteristicDescriptor, GattService
 from autopts.pybtp import defs
-from autopts.pybtp.btp.btp import btp_hdr_check, CONTROLLER_INDEX, get_iut_method as get_iut, btp2uuid, \
-    clear_verify_values, add_to_verify_values, get_verify_values, pts_addr_get, pts_addr_type_get
+from autopts.pybtp.btp.btp import (
+    CONTROLLER_INDEX,
+    add_to_verify_values,
+    btp2uuid,
+    btp_hdr_check,
+    clear_verify_values,
+    get_verify_values,
+    pts_addr_get,
+    pts_addr_type_get,
+)
+from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.btp.gap import gap_wait_for_connection
-from autopts.pybtp.types import BTPError, addr2btp_ba
-from autopts.pybtp.types import Perm, att_rsp_str
+from autopts.pybtp.types import BTPError, Perm, addr2btp_ba, att_rsp_str
 
 #  Global temporary objects
 GATT_SVCS = None
@@ -262,6 +270,7 @@ def gatts_change_database(start_hdl, end_hdl, vis):
 
     gatt_command_rsp_succ()
 
+
 def gatts_notify_mult(bd_addr_type, bd_addr, cnt, handles):
     logging.debug("%s %r %r", gatts_notify_mult.__name__, cnt, handles)
 
@@ -341,7 +350,7 @@ def gatts_dec_attr_value_changed_ev_data(frame):
     hdr_len = struct.calcsize(hdr)
 
     (handle, data_len) = struct.unpack_from(hdr, frame)
-    data = struct.unpack_from('%ds' % data_len, frame, hdr_len)
+    data = struct.unpack_from(f"{data_len}s", frame, hdr_len)
 
     return handle, data
 
@@ -370,7 +379,7 @@ def dec_gatts_get_attrs_rp(data, data_len):
     hdr_len = struct.calcsize(hdr)
     data_len = data_len - hdr_len
 
-    (attr_count, attrs) = struct.unpack(hdr + '%ds' % data_len, data)
+    (attr_count, attrs) = struct.unpack(hdr + f"{data_len}s", data)
 
     attributes = []
 
@@ -379,13 +388,11 @@ def dec_gatts_get_attrs_rp(data, data_len):
         hdr_len = struct.calcsize(hdr)
         data_len = data_len - hdr_len
 
-        (handle, permission, type_uuid_len, frag) = \
-            struct.unpack(hdr + '%ds' % data_len, attrs)
+        (handle, permission, type_uuid_len, frag) = struct.unpack(hdr + f"{data_len}s", attrs)
 
         data_len = data_len - type_uuid_len
 
-        (type_uuid, attrs) = struct.unpack('%ds%ds' % (type_uuid_len,
-                                                       data_len), frag)
+        (type_uuid, attrs) = struct.unpack(f"{type_uuid_len}s{data_len}s", frag)
 
         type_uuid = btp2uuid(type_uuid_len, type_uuid)
 
@@ -468,7 +475,7 @@ def gatts_get_attr_val(bd_addr_type, bd_addr, handle):
     hdr_len = struct.calcsize(hdr)
     data_len = tuple_hdr.data_len - hdr_len
 
-    return struct.unpack(hdr + '%ds' % data_len, tuple_data[0])
+    return struct.unpack(hdr + f"{data_len}s", tuple_data[0])
 
 
 def gattc_exchange_mtu(bd_addr_type, bd_addr):
@@ -565,9 +572,9 @@ def _gattc_find_included_rsp():
     logging.debug("%s %r", gattc_find_included_rsp.__name__, incls_list)
 
     for incl in incls_list:
-        att_handle = "%04X" % (incl[0][0],)
-        inc_svc_handle = "%04X" % (incl[1][0],)
-        end_grp_handle = "%04X" % (incl[1][1],)
+        att_handle = f"{incl[0][0]:04X}"
+        inc_svc_handle = f"{incl[1][0]:04X}"
+        end_grp_handle = f"{incl[1][1]:04X}"
         uuid = incl[1][2]
 
         add_to_verify_values(att_handle)
@@ -869,6 +876,7 @@ def _create_read_multiple_req(bd_addr_type, bd_addr, *hdls):
     data_ba.extend(hdls_ba)
     return data_ba
 
+
 def gattc_read_multiple(bd_addr_type, bd_addr, *hdls):
     logging.debug("%s %r %r %r", gattc_read_multiple.__name__, bd_addr_type,
                   bd_addr, hdls)
@@ -1162,7 +1170,7 @@ def gatt_dec_svc_attr(data):
     hdr_len = struct.calcsize(hdr)
 
     start_hdl, end_hdl, uuid_len = struct.unpack_from(hdr, data)
-    (uuid,) = struct.unpack_from('%ds' % uuid_len, data, hdr_len)
+    (uuid,) = struct.unpack_from(f"{uuid_len}s", data, hdr_len)
     uuid = btp2uuid(uuid_len, uuid)
 
     return (start_hdl, end_hdl, uuid), hdr_len + uuid_len
@@ -1201,7 +1209,7 @@ def gatt_dec_chrc_attr(data):
     hdr_len = struct.calcsize(hdr)
 
     chrc_hdl, val_hdl, props, uuid_len = struct.unpack_from(hdr, data)
-    (uuid,) = struct.unpack_from('%ds' % uuid_len, data, hdr_len)
+    (uuid,) = struct.unpack_from(f"{uuid_len}s", data, hdr_len)
     uuid = btp2uuid(uuid_len, uuid)
 
     return (chrc_hdl, val_hdl, props, uuid), hdr_len + uuid_len
@@ -1221,7 +1229,7 @@ def gatt_dec_desc_attr(data):
     hdr_len = struct.calcsize(hdr)
 
     hdl, uuid_len = struct.unpack_from(hdr, data)
-    (uuid,) = struct.unpack_from('%ds' % uuid_len, data, hdr_len)
+    (uuid,) = struct.unpack_from(f"{uuid_len}s", data, hdr_len)
     uuid = btp2uuid(uuid_len, uuid)
 
     return (hdl, uuid), hdr_len + uuid_len
@@ -1238,14 +1246,14 @@ def gatt_dec_disc_rsp(data, attr_type):
 
     """
     attrs_len = len(data) - 1
-    attr_cnt, attrs = struct.unpack('B%ds' % attrs_len, data)
+    attr_cnt, attrs = struct.unpack(f"B{attrs_len}s", data)
 
     attrs_list = []
     offset = 0
 
     # TODO: Use types instead of tuples
 
-    for x in range(attr_cnt):
+    for _x in range(attr_cnt):
         if attr_type == "service":
             attr, attr_len = gatt_dec_svc_attr(attrs[offset:])
         elif attr_type == "include":
@@ -1275,7 +1283,7 @@ def gatt_dec_read_rsp(data):
     hdr_len = struct.calcsize(hdr)
 
     att_rsp, val_len = struct.unpack_from(hdr, data)
-    val = struct.unpack_from('%ds' % val_len, data, hdr_len)
+    val = struct.unpack_from(f"{val_len}s", data, hdr_len)
 
     return att_rsp, val
 
@@ -1292,12 +1300,12 @@ def gatt_dec_read_uuid_rsp(data):
     offset += hdr_len
     char_values = []
 
-    for i in range(val_count):
+    for _i in range(val_count):
         hdr = '<HB'
         hdr_len = struct.calcsize(hdr)
         handle, data_len = struct.unpack_from(hdr, data, offset)
         offset += hdr_len
-        val = struct.unpack_from('%ds' % data_len, data, offset)[0]
+        val = struct.unpack_from(f"{data_len}s", data, offset)[0]
         offset += data_len
 
         char_values.append((handle, val))
@@ -1422,8 +1430,8 @@ def gattc_disc_prim_uuid_rsp(store_rsp=False):
         clear_verify_values()
 
         for svc in svcs:
-            start_handle = "%04X" % (svc.handle,)
-            end_handle = "%04X" % (svc.end_handle,)
+            start_handle = f"{svc.handle:04X}"
+            end_handle = f"{svc.end_handle:04X}"
             uuid = svc.uuid
 
             # add hyphens to long uuid: 0000-1157-0000-0000-0123-4567-89AB-CDEF
@@ -1463,9 +1471,9 @@ def gattc_find_included_rsp(store_rsp=False):
         clear_verify_values()
 
         for incl in incls_tuple:
-            att_handle = "%04X" % (incl[0][0],)
-            inc_svc_handle = "%04X" % (incl[1][0],)
-            end_grp_handle = "%04X" % (incl[1][1],)
+            att_handle = f"{incl[0][0]:04X}"
+            inc_svc_handle = f"{incl[1][0]:04X}"
+            end_grp_handle = f"{incl[1][1]:04X}"
             uuid = incl[1][2]
 
             add_to_verify_values(att_handle)
@@ -1503,7 +1511,7 @@ def gattc_disc_all_chrc_rsp(store_rsp=False):
         clear_verify_values()
 
         for attr in attrs:
-            add_to_verify_values("%04X" % attr.handle)
+            add_to_verify_values(f"{attr.handle:04X}")
 
         logging.debug("Set verify values to: %r", get_verify_values())
 
@@ -1537,7 +1545,7 @@ def gattc_disc_chrc_uuid_rsp(store_rsp=False):
         clear_verify_values()
 
         for chrc in chrcs:
-            handle = "%04X" % (chrc.value_handle,)
+            handle = f"{chrc.value_handle:04X}"
             uuid = chrc.uuid
 
             # add hyphens to long uuid: 0000-1157-0000-0000-0123-4567-89AB-CDEF
@@ -1638,7 +1646,7 @@ def gattc_read_uuid_rsp(store_rsp=False, store_val=False):
 
         for char_handle, char_data in char_values:
             char_data = binascii.hexlify(char_data).decode().upper()
-            add_to_verify_values('{0:0>4X}'.format(char_handle))
+            add_to_verify_values(f'{char_handle:0>4X}')
             add_to_verify_values(char_data)
 
 
@@ -1686,6 +1694,7 @@ def gattc_read_multiple_rsp(store_val=False, store_rsp=False):
         if store_val:
             add_to_verify_values((binascii.hexlify(values[0])).decode().upper())
 
+
 def gattc_read_multiple_var_rsp(store_val=False, store_rsp=False):
     iutctl = get_iut()
 
@@ -1707,6 +1716,7 @@ def gattc_read_multiple_var_rsp(store_val=False, store_rsp=False):
 
         if store_val:
             add_to_verify_values((binascii.hexlify(values[0])).decode().upper())
+
 
 def gattc_write_rsp(store_rsp=False, timeout=None):
     iutctl = get_iut()
@@ -1762,6 +1772,7 @@ def gattc_write_reliable_rsp(store_rsp=False):
     if store_rsp:
         clear_verify_values()
         add_to_verify_values(att_rsp_str[rsp])
+
 
 def eatt_conn(bd_addr, bd_addr_type, num=1):
     logging.debug("%s %r %r", eatt_conn.__name__, bd_addr, bd_addr_type)

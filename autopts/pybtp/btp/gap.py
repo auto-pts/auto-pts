@@ -21,12 +21,24 @@ import re
 import struct
 from random import randint
 
-from autopts.ptsprojects.stack import get_stack, ConnParams
+from autopts.ptsprojects.stack import ConnParams, get_stack
 from autopts.pybtp import defs
-from autopts.pybtp.types import BTPError, gap_settings_btp2txt, addr2btp_ba, Addr, OwnAddrType, AdDuration, AdType
-from autopts.pybtp.btp.btp import pts_addr_get, pts_addr_type_get, lt2_addr_get, lt2_addr_type_get, btp_hdr_check, \
-    CONTROLLER_INDEX, set_pts_addr, set_lt2_addr, LeAdv, get_iut_method as get_iut, lt3_addr_type_get, lt3_addr_get, \
-    set_lt3_addr
+from autopts.pybtp.btp.btp import (
+    CONTROLLER_INDEX,
+    LeAdv,
+    btp_hdr_check,
+    lt2_addr_get,
+    lt2_addr_type_get,
+    lt3_addr_get,
+    lt3_addr_type_get,
+    pts_addr_get,
+    pts_addr_type_get,
+    set_lt2_addr,
+    set_lt3_addr,
+    set_pts_addr,
+)
+from autopts.pybtp.btp.btp import get_iut_method as get_iut
+from autopts.pybtp.types import Addr, AdDuration, AdType, BTPError, OwnAddrType, addr2btp_ba, gap_settings_btp2txt
 
 GAP = {
     "start_adv": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_START_ADVERTISING,
@@ -486,7 +498,6 @@ def gap_adv_ind_on(ad=None, sd=None, duration=AdDuration.forever, own_addr_type=
     sd_ba = bytearray()
     data = bytearray()
 
-
     for ad_type, ad_data in list(ad.items()):
         if isinstance(ad_data, list):
             for item in ad_data:
@@ -613,8 +624,8 @@ def set_filter_accept_list(address_list=None):
     addr_cnt_ba = chr(len(address_list)).encode('utf-8')
     data_ba.extend(addr_cnt_ba)
 
-    for type, addr in address_list:
-        bd_addr_type_ba = chr(type).encode('utf-8')
+    for addr_type, addr in address_list:
+        bd_addr_type_ba = chr(addr_type).encode('utf-8')
         bd_addr_ba = addr2btp_ba(addr)
         data_ba.extend(bd_addr_type_ba)
         data_ba.extend(bd_addr_ba)
@@ -1239,6 +1250,7 @@ def gap_set_sc_off():
     tuple_data = gap_command_rsp_succ()
     __gap_current_settings_update(tuple_data)
 
+
 def gap_set_extended_advertising_on():
     logging.debug("%s", gap_set_extended_advertising_on.__name__)
 
@@ -1280,8 +1292,8 @@ def parse_eir_data(eir):
     i = 0
     while i < eir_len:
         data_len = eir[i]
-        data_type = eir[i+1]
-        data[data_type] = eir[i+2:i+data_len+1]
+        data_type = eir[i + 1]
+        data[data_type] = eir[i + 2:i + data_len + 1]
         i += 1 + data_len
 
     return data
@@ -1389,7 +1401,7 @@ def gap_padv_set_data(data):
     if isinstance(data, str):
         data = data.encode()
 
-    data_ba = bytearray(struct.pack("<H%ds" % len(data), len(data), data))
+    data_ba = bytearray(struct.pack(f"<H{len(data)}s", len(data), data))
 
     iutctl.btp_socket.send(*GAP['padv_set_data'], data=data_ba)
 

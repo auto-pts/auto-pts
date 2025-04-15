@@ -14,22 +14,23 @@
 #
 
 """MESH test cases"""
-from binascii import hexlify
 import random
 import time
+from binascii import hexlify
 from uuid import uuid4
 
-from autopts.pybtp import btp
-from autopts.pybtp import defs
-from autopts.pybtp.types import Addr
-from autopts.pybtp.types import MeshVals
 from autopts.client import get_unique_name
-from autopts.wid import mesh_wid_hdl, mesh_wid_hdl_rpr_2ptses,\
-    mesh_wid_hdl_rpr_persistent_storage,\
-    mesh_wid_hdl_rpr_persistent_storage_alt
-from autopts.ptsprojects.stack import get_stack, SynchPoint
+from autopts.ptsprojects.stack import SynchPoint, get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
+from autopts.pybtp import btp, defs
+from autopts.pybtp.types import Addr, MeshVals
+from autopts.wid import (
+    mesh_wid_hdl,
+    mesh_wid_hdl_rpr_2ptses,
+    mesh_wid_hdl_rpr_persistent_storage,
+    mesh_wid_hdl_rpr_persistent_storage_alt,
+)
 
 
 def set_pixits(ptses):
@@ -416,7 +417,7 @@ def test_cases(ptses):
                             out_size, rand_out_actions,
                             random.randint(1, 2), random.choice(in_actions), crpl_size, auth_metod))],
                   generic_wid_hdl=mesh_wid_hdl),
-        ZTestCase("MESH", "MESH/NODE/PROV/BV-18-C", cmds=pre_conditions_pub_priv_key_sha256 + 
+        ZTestCase("MESH", "MESH/NODE/PROV/BV-18-C", cmds=pre_conditions_pub_priv_key_sha256 +
                   [TestFunc(lambda: stack.mesh.set_prov_data(oob_sha256, out_size, rand_out_actions,
                             random.randint(1, 2), random.choice(in_actions), crpl_size, auth_metod))],
                   generic_wid_hdl=mesh_wid_hdl),

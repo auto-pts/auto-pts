@@ -13,16 +13,16 @@
 # more details.
 #
 
+import datetime
 import logging
+import mimetypes
 import os
 import sys
-import mimetypes
-import datetime
 
 from googleapiclient import discovery, errors
 from googleapiclient.http import MediaFileUpload
 from httplib2 import Http
-from oauth2client import file, client, tools
+from oauth2client import client, file, tools
 
 SCOPES = 'https://www.googleapis.com/auth/drive'
 CLIENT_SECRET_FILE = 'client_secret.json'
@@ -74,7 +74,7 @@ class GDrive:
         while True:
             try:
                 response = self.service.files().list(
-                    q="'{}' in parents".format(self.pwd()),
+                    q=f"'{self.pwd()}' in parents",
                     spaces='drive',
                     fields='nextPageToken, files(id, name)',
                     pageToken=page_token).execute()
@@ -146,7 +146,7 @@ class Drive(GDrive):
         return "{}".format(dir_.get('webViewLink'))
 
     def upload(self, f):
-        print("Uploading {} ...".format(f))
+        print(f"Uploading {f} ...")
         self.cp(f)
         print("Done")
 

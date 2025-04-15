@@ -18,8 +18,9 @@
 Usage:
 $ python3 testplan_vs_workspace.py path/to/workspace path/to/test_plan.xlsx
 """
-import sys
 import os
+import sys
+
 import pandas as pd
 import win32com
 import wmi
@@ -36,18 +37,14 @@ class PyPTSControl(PyPTS):
         """Overwrite to enable running without dongle"""
         # Get PTS process list before running new PTS daemon
         c = wmi.WMI()
-        pts_ps_list_pre = []
-        pts_ps_list_post = []
 
-        for ps in c.Win32_Process(name="PTS.exe"):
-            pts_ps_list_pre.append(ps)
+        # Get PTS process list before running new PTS daemon
+        pts_ps_list_pre = list(c.Win32_Process(name="PTS.exe"))
 
         self._pts = win32com.client.Dispatch('ProfileTuningSuite_6.PTSControlServer')
 
-        # Get PTS process list after running new PTS daemon to get PID of
-        # new instance
-        for ps in c.Win32_Process(name="PTS.exe"):
-            pts_ps_list_post.append(ps)
+        # Get PTS process list after running new PTS daemon to get PID of new instance
+        pts_ps_list_post = list(c.Win32_Process(name="PTS.exe"))
 
         pts_ps_list = list(set(pts_ps_list_post) - set(pts_ps_list_pre))
         if not pts_ps_list:
@@ -56,7 +53,7 @@ class PyPTSControl(PyPTS):
 
         self._pts_proc = pts_ps_list[0]
 
-        print("Started new PTS daemon with pid: %d" % self._pts_proc.ProcessId)
+        print(f"Started new PTS daemon with pid: {self._pts_proc.ProcessId}")
 
     def get_bluetooth_address(self):
         return '123445567890'
@@ -65,16 +62,16 @@ class PyPTSControl(PyPTS):
 if __name__ == '__main__':
 
     if len(sys.argv) < 3:
-        sys.exit('Usage:\n$ python3 {} path/to/workspace path/to/test_plan.xlsx'.format(sys.argv[0]))
+        sys.exit(f'Usage:\n$ python3 {sys.argv[0]} path/to/workspace path/to/test_plan.xlsx')
 
     workspace_path = sys.argv[1]
     testplan_path = sys.argv[2]
 
     if not os.path.isfile(workspace_path) or not workspace_path.endswith('.pqw6'):
-        sys.exit('{} is not a file or workspace (*.pqw6)!'.format(workspace_path))
+        sys.exit(f'{workspace_path} is not a file or workspace (*.pqw6)!')
 
     if not os.path.isfile(testplan_path) or not testplan_path.endswith('.xlsx'):
-        sys.exit('{} is not a file or test plan (*.xlsx)!'.format(testplan_path))
+        sys.exit(f'{testplan_path} is not a file or test plan (*.xlsx)!')
 
     print('Starting PTS needed to workspace parsing ...')
     pts = PyPTSControl()
@@ -86,8 +83,7 @@ if __name__ == '__main__':
     for profile in pts.get_project_list():
         profiles.append(profile)
 
-        for test_case in pts.get_test_case_list(profile):
-            workspace_test_cases.append(test_case)
+        workspace_test_cases += list(pts.get_test_case_list(profile))
 
     test_plan_test_cases = []
     test_plan = pd.read_excel(testplan_path, sheet_name='TestPlan')

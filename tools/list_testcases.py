@@ -18,16 +18,15 @@
 Usage:
 $ python3 testplan_vs_workspace.py path/to/workspace.pqw6
 """
-import sys
 import os
-from os.path import dirname, abspath
+import sys
+from os.path import abspath, dirname
 
 AUTOPTS_REPO = dirname(dirname(abspath(__file__)))
 sys.path.insert(0, AUTOPTS_REPO)
 
-from autopts.client import get_test_cases
-from autopts.ptscontrol import PyPTS
-
+from autopts.client import get_test_cases  # noqa: E402 # the order of import is very important here
+from autopts.ptscontrol import PyPTS  # noqa: E402 # the order of import is very important here
 
 if __name__ == '__main__':
 
@@ -37,7 +36,7 @@ if __name__ == '__main__':
     workspace_path = sys.argv[1]
 
     if not os.path.isfile(workspace_path) or not workspace_path.endswith('.pqw6'):
-        sys.exit('{} is not a file or workspace (*.pqw6)!'.format(workspace_path))
+        sys.exit(f'{workspace_path} is not a file or workspace (*.pqw6)!')
 
     pts = PyPTS(lite_start=True)
     pts.start_pts()

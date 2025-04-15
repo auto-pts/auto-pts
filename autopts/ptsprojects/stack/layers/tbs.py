@@ -14,9 +14,6 @@
 # more details.
 #
 
-from autopts.ptsprojects.stack.common import wait_for_queue_event
-from autopts.pybtp import defs
-
 
 class TBS:
     def __init__(self):

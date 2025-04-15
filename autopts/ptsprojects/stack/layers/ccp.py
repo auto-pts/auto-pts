@@ -22,8 +22,8 @@ from autopts.pybtp import defs
 class CCP:
     def __init__(self):
         self.events = {
-            defs.BTP_CCP_EV_DISCOVERED:  { 'count': 0, 'status': 0, 'tbs_count': 0, 'gtbs': False },
-            defs.BTP_CCP_EV_CALL_STATES: { 'count': 0, 'status': 0, 'index': 0, 'call_count': 0, 'states': [] },
+            defs.BTP_CCP_EV_DISCOVERED:  {'count': 0, 'status': 0, 'tbs_count': 0, 'gtbs': False},
+            defs.BTP_CCP_EV_CALL_STATES: {'count': 0, 'status': 0, 'index': 0, 'call_count': 0, 'states': []},
             defs.BTP_CCP_EV_CHRC_HANDLES: [],
             defs.BTP_CCP_EV_CHRC_VAL: [],
             defs.BTP_CCP_EV_CHRC_STR: [],
@@ -34,7 +34,7 @@ class CCP:
     def event_received(self, event_type, event_dict):
         count = self.events[event_type]['count']
         self.events[event_type] = copy.deepcopy(event_dict)
-        self.events[event_type]['count'] = count+1
+        self.events[event_type]['count'] = count + 1
 
     def event_received_2(self, event_type, event_data_tuple):
         self.events[event_type].append(event_data_tuple)
