@@ -38,7 +38,7 @@ def hdl_wid_14(params: WIDParams):
     Implements: TSC_MMI_iut_disable_connection
     description: Initiate an L2CAP disconnection from the IUT to the PTS.
     """
-    if params.test_case_name in ['L2CAP/COS/CED/BV-09-C']:
+    if params.test_case_name in ['L2CAP/COS/CED/BV-09-C', 'L2CAP/COS/CFD/BV-08-C']:
         l2cap = get_stack().l2cap
         for channel in l2cap.channels:
             try:
@@ -72,7 +72,7 @@ def hdl_wid_22(params: WIDParams):
     """
     btp.gap_wait_for_connection()
 
-    if params.test_case_name in ['L2CAP/COS/CED/BV-09-C']:
+    if params.test_case_name in ['L2CAP/COS/CED/BV-09-C', 'L2CAP/COS/CFD/BV-08-C']:
         btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
         return True
 
@@ -668,11 +668,15 @@ def hdl_wid_20128(_: WIDParams):
     return True
 
 
-def hdl_wid_49(_: WIDParams):
+def hdl_wid_49(params: WIDParams):
     '''
     Using the Implementation Under Test(IUT), initiate ACL Create Connection Request to the PTS.
     '''
     btp.gap_conn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
+    if params.test_case_name in ['L2CAP/COS/CFD/BV-08-C']:
+        btp.gap_wait_for_connection()
+        l2cap = btp.get_stack().l2cap
+        btp.l2cap_conn(None, defs.BTP_BR_ADDRESS_TYPE, l2cap.psm, l2cap.initial_mtu)
     return True
 
 
