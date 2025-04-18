@@ -32,14 +32,30 @@ def l2cap_wid_hdl(wid, description, test_case_name):
 
 
 # wid handlers section begin
-def hdl_wid_14(_: WIDParams):
+def hdl_wid_14(params: WIDParams):
     """
     Implements: TSC_MMI_iut_disable_connection
     description: Initiate an L2CAP disconnection from the IUT to the PTS.
     """
+    if params.test_case_name in ['L2CAP/COS/CED/BV-09-C']:
+        l2cap = get_stack().l2cap
+        for channel in l2cap.channels:
+            _l2cap_chan_disconn_safely(channel.id)
+        return True
+
     btp.l2cap_disconn(0)
 
     return True
+
+
+def _l2cap_chan_disconn_safely(chan_id):
+    """
+    Safely disconnect L2CAP channel with error handling
+    """
+    try:
+        btp.l2cap_disconn(chan_id)
+    except BTPError:
+        log("Safely ignored L2CAP disconnect error")
 
 
 def hdl_wid_15(_: WIDParams):
@@ -55,12 +71,17 @@ def hdl_wid_15(_: WIDParams):
     return True
 
 
-def hdl_wid_22(_: WIDParams):
+def hdl_wid_22(params: WIDParams):
     """
     Implements: TSC_MMI_iut_disable_acl_connection
     description: Initiate an ACL disconnection from the IUT to the PTS.
     """
     btp.gap_wait_for_connection()
+
+    if params.test_case_name in ['L2CAP/COS/CED/BV-09-C']:
+        btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
+        return True
+
     btp.gap_disconn()
 
     return True
@@ -653,5 +674,12 @@ def hdl_wid_49(_: WIDParams):
 def hdl_wid_113(_: WIDParams):
     '''
     Please send Configure Request.
+    '''
+    return True
+
+
+def hdl_wid_116(_: WIDParams):
+    '''
+    Please send Configure Response.
     '''
     return True
