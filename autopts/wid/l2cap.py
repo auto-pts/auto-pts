@@ -697,3 +697,13 @@ def hdl_wid_23(_: WIDParams):
     for channel in l2cap.channels:
         btp.l2cap_send_data(channel.id, '00')
     return True
+
+
+def hdl_wid_276(_: WIDParams):
+    '''
+    Please confirm the IUT sent the L2CAP Data to the Upper Tester.
+    '''
+    l2cap = get_stack().l2cap
+    for channel in l2cap.channels:
+        btp.l2cap_send_data(channel.id, '00')
+    return True
