@@ -687,3 +687,13 @@ def hdl_wid_116(_: WIDParams):
     Please send Configure Response.
     '''
     return True
+
+
+def hdl_wid_23(_: WIDParams):
+    '''
+    Using the Implementation Under Test(IUT), send L2CAP_Data over the assigned channel with correct DCID to the PTS.
+    '''
+    l2cap = get_stack().l2cap
+    for channel in l2cap.channels:
+        btp.l2cap_send_data(channel.id, '00')
+    return True
