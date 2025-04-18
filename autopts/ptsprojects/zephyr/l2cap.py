@@ -16,7 +16,7 @@
 """L2CAP test cases"""
 
 from autopts.pybtp import btp
-from autopts.pybtp.types import Addr, L2CAPConnectionResponse
+from autopts.pybtp.types import Addr,IOCap, L2CAPConnectionResponse
 from autopts.client import get_unique_name
 from autopts.wid import l2cap_wid_hdl
 from autopts.ptsprojects.stack import get_stack
@@ -29,6 +29,8 @@ psm_unsupported = 241
 le_initial_mtu = 120
 le_initial_mtu_equal_mps = 96
 
+br_psm = 0x1001
+br_initial_mtu = 120
 
 def set_pixits(ptses):
     """Setup L2CAP profile PIXITS for workspace. Those values are used for test
@@ -163,6 +165,24 @@ def test_cases(ptses):
                                       TestFunc(btp.l2cap_le_listen, le_psm, le_initial_mtu,
                                                L2CAPConnectionResponse.insufficient_authorization)]
 
+
+    br_pre_cond = common + [
+        TestFunc(lambda: pts.update_pixit_param("L2CAP", "TSPX_psm", format(br_psm, '04x'))),
+        TestFunc(lambda: pts.update_pixit_param("L2CAP", "TSPX_delete_link_key", "FALSE")),
+        TestFunc(lambda: pts.update_pixit_param("L2CAP", "TSPX_delete_ltk", "FALSE")),
+        TestFunc(lambda: pts.update_pixit_param("L2CAP", "TSPX_iut_role_initiator", "False")),
+        TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
+    ]
+
+    br_l2cap = br_pre_cond + [
+        TestFunc(stack.l2cap_init, br_psm, br_initial_mtu),
+    ]
+
+    br_l2cap_success = br_l2cap + [
+        TestFunc(btp.l2cap_br_listen, br_psm, br_initial_mtu,
+                 L2CAPConnectionResponse.insufficient_encryption),
+    ]
+
     custom_test_cases = [
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-04-C",
                   pre_conditions +
@@ -226,6 +246,9 @@ def test_cases(ptses):
                   pre_conditions_success +
                   [TestFunc(lambda: pts.update_pixit_param("L2CAP", "TSPX_iut_role_initiator", "False")),
                    TestFunc(btp.core_reg_svc_gatt)],
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/COS/CED/BV-07-C",
+                  br_l2cap_success,
                   generic_wid_hdl=l2cap_wid_hdl),
     ]
 

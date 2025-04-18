@@ -20,6 +20,7 @@ import time
 
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp
+from autopts.pybtp import defs
 from autopts.pybtp.types import BTPError, WIDParams
 from autopts.wid import generic_wid_hdl
 
@@ -650,4 +651,19 @@ def hdl_wid_20100(_: WIDParams):
 
 
 def hdl_wid_20128(_: WIDParams):
+    return True
+
+
+def hdl_wid_49(_: WIDParams):
+    '''
+    Using the Implementation Under Test(IUT), initiate ACL Create Connection Request to the PTS.
+    '''
+    btp.gap_conn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
+    return True
+
+
+def hdl_wid_113(_: WIDParams):
+    '''
+    Please send Configure Request.
+    '''
     return True
