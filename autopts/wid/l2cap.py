@@ -707,3 +707,27 @@ def hdl_wid_276(_: WIDParams):
     for channel in l2cap.channels:
         btp.l2cap_send_data(channel.id, '00')
     return True
+
+
+def hdl_wid_277(params: WIDParams):
+    '''
+    Please confirm the Upper Tester received values are %s.
+    Click Yes if it is, otherwise click No.
+    '''
+    pattern = re.compile(r'values\s+are\s+([0-9a-fA-F]+)')
+    value = pattern.findall(params.description)
+    if not value:
+        return False
+
+    l2cap = get_stack().l2cap
+    for channel in l2cap.channels:
+        rx_data = l2cap.rx_data_get(channel.id, 10)
+
+        if rx_data is None:
+            return False
+
+        for data in rx_data:
+            if value[0] in data.hex():
+                return True
+
+    return False
