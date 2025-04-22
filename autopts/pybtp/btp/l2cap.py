@@ -44,6 +44,7 @@ L2CAP = {
                               CONTROLLER_INDEX),
     "credits": (defs.BTP_SERVICE_ID_L2CAP, defs.BTP_L2CAP_CMD_CREDITS,
                 CONTROLLER_INDEX),
+    "echo_req": (defs.BTP_SERVICE_ID_L2CAP, defs.BTP_L2CAP_CMD_ECHO_REQ, CONTROLLER_INDEX),
 }
 
 
@@ -228,6 +229,32 @@ def l2cap_credits(chan_id):
     iutctl.btp_socket.send(*L2CAP['credits'], data=data_ba)
 
     l2cap_command_rsp_succ(defs.BTP_L2CAP_CMD_CREDITS)
+
+
+def l2cap_echo_req(bd_addr, bd_addr_type, val, val_mtp=None):
+    logging.debug("%s %r %r %r %r", l2cap_echo_req.__name__, bd_addr, bd_addr_type, val, val_mtp)
+
+    iutctl = get_iut()
+
+    if val_mtp:
+        val *= int(val_mtp)
+
+    data_ba = bytearray()
+
+    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
+    bd_addr_type = pts_addr_type_get(bd_addr_type)
+
+    val_ba = bytes.fromhex(val)
+    val_len_ba = struct.pack('H', len(val_ba))
+
+    data_ba.extend(struct.pack('B', bd_addr_type))
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(val_len_ba)
+    data_ba.extend(val_ba)
+
+    iutctl.btp_socket.send(*L2CAP['echo_req'], data=data_ba)
+
+    l2cap_command_rsp_succ(defs.BTP_L2CAP_CMD_ECHO_REQ)
 
 
 def l2cap_connected_ev(l2cap, data, data_len):
