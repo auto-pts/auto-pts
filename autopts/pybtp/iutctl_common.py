@@ -215,14 +215,14 @@ class BTPSocketSrv(BTPSocket):
         super().__init__(log_dir)
         self.sock = None
 
-    def open(self, addres=BTP_ADDRESS):
+    def open(self, addres=BTP_ADDRESS, port=0):
         """Open BTP socket for IUT"""
         if os.path.exists(addres):
             os.remove(addres)
 
         if sys.platform == "win32":
             self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.sock.bind((socket.gethostname(), 0))
+            self.sock.bind((socket.gethostname(), port))
         else:
             self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
             self.sock.bind(addres)
