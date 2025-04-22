@@ -14,6 +14,7 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
-from autopts.ptsprojects.boards.nrf5x import reset_cmd, build_and_flash # noqa: F401
+from autopts.ptsprojects.boards.nrf5x import build_and_flash, reset_cmd  # noqa: F401
+
 supported_projects = ['zephyr']
 board_type = 'nrf52840dk/nrf52840'
