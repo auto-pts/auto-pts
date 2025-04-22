@@ -753,3 +753,13 @@ def hdl_wid_26(params: WIDParams):
     '''
     btp.l2cap_echo_req(None, defs.BTP_BR_ADDRESS_TYPE, '00')
     return True
+
+
+def hdl_wid_1(_: WIDParams):
+    '''
+    Using the Implementation Under Test(IUT), send an I - Frame(data) to the PTS.
+    '''
+    l2cap = get_stack().l2cap
+    for channel in l2cap.channels:
+        btp.l2cap_send_data(channel.id, '00')
+    return True
