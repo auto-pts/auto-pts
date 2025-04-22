@@ -158,6 +158,21 @@ Commands and responses:
 
                 In case of an error, the error response will be returned.
 
+        Opcode 0x0a - ECHO Request
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Data_Length (2 octets)
+                                        Data (Data_Length octets)
+                Return parameters:    <none>
+
+                This command is used to send ECHO data over L2CAP signaling channel.
+                Address is the peer address. The command can only be transformed over Classic
+                transport.
+
+                In case of an error, the error response will be returned.
+
 Events:
         Opcode 0x80 - Connection Request Event
 
