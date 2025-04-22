@@ -32,6 +32,8 @@ L2CAP = {
                        defs.BTP_INDEX_NONE, ""),
     "connect": (defs.BTP_SERVICE_ID_L2CAP, defs.BTP_L2CAP_CMD_CONNECT,
                 CONTROLLER_INDEX),
+    "connect_v2": (defs.BTP_SERVICE_ID_L2CAP, defs.BTP_L2CAP_CMD_CONNECT_V2,
+                CONTROLLER_INDEX),
     "disconnect": (defs.BTP_SERVICE_ID_L2CAP, defs.BTP_L2CAP_CMD_DISCONNECT,
                    CONTROLLER_INDEX),
     "send_data": (defs.BTP_SERVICE_ID_L2CAP, defs.BTP_L2CAP_CMD_SEND_DATA,
@@ -90,6 +92,59 @@ def l2cap_conn(bd_addr, bd_addr_type, psm, mtu=0, num=1, ecfc=0, hold_credit=0):
     iutctl.btp_socket.send(*L2CAP['connect'], data=data_ba)
 
     chan_ids = l2cap_conn_rsp()
+    logging.debug("id %r", chan_ids)
+
+
+def l2cap_conn_v2_rsp():
+    logging.debug("%s", l2cap_conn_v2_rsp.__name__)
+
+    iutctl = get_iut()
+
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
+    logging.debug("received %r %r", tuple_hdr, tuple_data)
+
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_L2CAP, defs.BTP_L2CAP_CMD_CONNECT_V2)
+    num = struct.unpack_from('<B', tuple_data[0])[0]
+    channels = struct.unpack_from(f'{num}s', tuple_data[0], 1)[0]
+    return list(channels)
+
+
+def l2cap_conn_v2(bd_addr, bd_addr_type, psm, mtu=0, num=1, ecfc=0, hold_credit=0, mode=0,
+                  options=0):
+    logging.debug("%s %r %r %r %r %r", l2cap_conn_v2.__name__, bd_addr, bd_addr_type, psm, mode,
+                  options)
+
+    iutctl = get_iut()
+    gap_wait_for_connection()
+
+    if isinstance(psm, str):
+        psm = int(psm, 16)
+
+    bd_addr = pts_addr_get(bd_addr)
+    bd_addr_type = pts_addr_type_get(bd_addr_type)
+
+    bd_addr_ba = addr2btp_ba(bd_addr)
+    data_ba = bytearray(struct.pack('B', bd_addr_type))
+    data_ba.extend(bd_addr_ba)
+    data_ba.extend(struct.pack('H', psm))
+    data_ba.extend(struct.pack('H', mtu))
+    data_ba.extend(struct.pack('B', num))
+
+    opts = 0
+    if ecfc:
+        opts |= defs.L2CAP_CONNECT_V2_OPT_ECFC
+
+    if hold_credit:
+        opts |= defs.L2CAP_CONNECT_V2_OPT_HOLD_CREDIT
+
+    opts |= options
+
+    data_ba.extend(struct.pack('B', mode))
+    data_ba.extend(struct.pack('I', opts))
+
+    iutctl.btp_socket.send(*L2CAP['connect_v2'], data=data_ba)
+
+    chan_ids = l2cap_conn_v2_rsp()
     logging.debug("id %r", chan_ids)
 
 
