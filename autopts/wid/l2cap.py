@@ -635,7 +635,7 @@ def hdl_wid_275(params: WIDParams):
     # Did the Upper Tester issue a warning for incorrect PDU length?
 
     if params.test_case_name in ['L2CAP/COS/CED/BI-04-C', 'L2CAP/COS/CED/BI-08-C',
-                                 'L2CAP/COS/CED/BI-10-C']:
+                                 'L2CAP/COS/CED/BI-10-C', 'L2CAP/COS/CED/BI-15-C']:
         return True
 
     return False
