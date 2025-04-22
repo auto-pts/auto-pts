@@ -38,7 +38,7 @@ def hdl_wid_14(params: WIDParams):
     description: Initiate an L2CAP disconnection from the IUT to the PTS.
     """
     if params.test_case_name in ['L2CAP/COS/CED/BV-09-C', 'L2CAP/COS/CFD/BV-08-C',
-                                 'L2CAP/COS/CED/BV-04-C']:
+                                 'L2CAP/COS/CED/BV-04-C', 'L2CAP/COS/IEX/BV-01-C']:
         l2cap = get_stack().l2cap
         for channel in l2cap.channels:
             _l2cap_chan_disconn_safely(channel.id)
@@ -80,7 +80,8 @@ def hdl_wid_22(params: WIDParams):
     btp.gap_wait_for_connection()
 
     if params.test_case_name in ['L2CAP/COS/CED/BV-09-C', 'L2CAP/COS/CFD/BV-08-C',
-                                 'L2CAP/COS/CED/BV-04-C', 'L2CAP/COS/ECH/BV-02-C']:
+                                 'L2CAP/COS/CED/BV-04-C', 'L2CAP/COS/ECH/BV-02-C',
+                                 'L2CAP/COS/IEX/BV-01-C']:
         btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
         return True
 
