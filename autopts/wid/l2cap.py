@@ -74,7 +74,7 @@ def hdl_wid_22(params: WIDParams):
     btp.gap_wait_for_connection()
 
     if params.test_case_name in ['L2CAP/COS/CED/BV-09-C', 'L2CAP/COS/CFD/BV-08-C',
-                                 'L2CAP/COS/CED/BV-04-C']:
+                                 'L2CAP/COS/CED/BV-04-C', 'L2CAP/COS/ECH/BV-02-C']:
         btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
         return True
 
@@ -742,3 +742,11 @@ def hdl_wid_277(params: WIDParams):
                 return True
 
     return False
+
+
+def hdl_wid_26(params: WIDParams):
+    '''
+    Using the Implementation Under Test(IUT), send an Echo Request to the PTS.
+    '''
+    btp.l2cap_echo_req(None, defs.BTP_BR_ADDRESS_TYPE, '00')
+    return True
