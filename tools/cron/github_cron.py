@@ -205,7 +205,7 @@ class GitHubCron(Thread):
                 github_pr_number = int(re.findall(r'(?<=pull\/)\d+?(?=#)', comment['html_url'])[0])
                 comment_info = {
                     'pr_number': github_pr_number,
-                    'comment_body': comment['body'],
+                    'comment_body': comment['body'].strip(),
                     'magic_tag': comment['magic_tag'],
                     'html_url': comment['html_url'],
                 }
