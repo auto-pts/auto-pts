@@ -796,3 +796,10 @@ def hdl_wid_134(_: WIDParams):
         for channel in l2cap.channels:
             _l2cap_chann_send_safely(channel.id, '00', 1)
     return True
+
+
+def hdl_wid_114(_: WIDParams):
+    '''
+    Please send Configure Request with Enhanced Retransmission Mode.
+    '''
+    return True
