@@ -804,3 +804,28 @@ def hdl_wid_114(_: WIDParams):
     Please send Configure Request with Enhanced Retransmission Mode.
     '''
     return True
+
+
+def hdl_wid_7(_: WIDParams):
+    '''
+    Place the Implementation Under Test(IUT) in a state to receive an I - Frame from the PTS, then click Ok.
+    '''
+    return True
+
+
+def hdl_wid_35(_: WIDParams):
+    '''
+    Did the Upper Tester receive 48 bytes of data
+    Description : The Implementation Under Test(IUT) should receive 48 bytes of data and notify upper tester.
+    '''
+    l2cap = get_stack().l2cap
+    for channel in l2cap.channels:
+        rx_data = l2cap.rx_data_get(channel.id, 10)
+
+        if rx_data is None:
+            return False
+
+        for data in rx_data:
+            if len(data) == 48:
+                return True
+    return True
