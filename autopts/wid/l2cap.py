@@ -849,3 +849,10 @@ def hdl_wid_9(_: WIDParams):
     Place the Implementation Under Test(IUT) in a state to receive an S - Frame with Poll bit set(P = 1) from the PTS.
     '''
     return True
+
+
+def hdl_wid_129(_: WIDParams):
+    '''
+    Please send a Poll BIT(P=1) using S-Frame when every monitor timer is expired.
+    '''
+    return True
