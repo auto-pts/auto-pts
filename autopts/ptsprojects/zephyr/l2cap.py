@@ -188,6 +188,11 @@ def test_cases(ptses):
                  L2CAPConnectionResponse.insufficient_encryption, defs.L2CAP_LISTEN_OPT_RET),
     ]
 
+    br_l2cap_success_fc = br_l2cap + [
+        TestFunc(btp.l2cap_br_listen_v2, br_psm, br_initial_mtu,
+                 L2CAPConnectionResponse.insufficient_encryption, defs.L2CAP_LISTEN_OPT_FC),
+    ]
+
     custom_test_cases = [
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-04-C",
                   pre_conditions +
@@ -344,6 +349,9 @@ def test_cases(ptses):
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/COS/RTX/BV-03-C",
                   br_l2cap_success_ret,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/COS/CED/BV-10-C",
+                  br_l2cap_success_fc,
                   generic_wid_hdl=l2cap_wid_hdl),
     ]
 
