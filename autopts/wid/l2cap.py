@@ -782,3 +782,17 @@ def hdl_wid_1(_: WIDParams):
     for channel in l2cap.channels:
         btp.l2cap_send_data(channel.id, '00')
     return True
+
+
+def hdl_wid_134(_: WIDParams):
+    '''
+    Using the Implementation Under Test(IUT), send an I - Frame(data) to the PTS until TxWindow is full.
+    '''
+    l2cap = get_stack().l2cap
+    for i in range(0,5):
+        for channel in l2cap.channels:
+            try:
+                btp.l2cap_send_data(channel.id, '00')
+            except BTPError:
+                logging.debug("Ignoring expected error on L2CAP sending")
+    return True
