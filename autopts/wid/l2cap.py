@@ -797,3 +797,10 @@ def hdl_wid_134(_: WIDParams):
             except BTPError:
                 logging.debug("Ignoring expected error on L2CAP sending")
     return True
+
+
+def hdl_wid_114(_: WIDParams):
+    '''
+    Please send Configure Request with Enhanced Retransmission Mode.
+    '''
+    return True
