@@ -784,3 +784,14 @@ def hdl_wid_1(_: WIDParams):
     for channel in l2cap.channels:
         btp.l2cap_send_data(channel.id, '00')
     return True
+
+
+def hdl_wid_134(_: WIDParams):
+    '''
+    Using the Implementation Under Test(IUT), send an I - Frame(data) to the PTS until TxWindow is full.
+    '''
+    l2cap = get_stack().l2cap
+    for _ in range(0, 5):
+        for channel in l2cap.channels:
+            _l2cap_chann_send_safely(channel.id, '00', 1)
+    return True
