@@ -40,7 +40,8 @@ def hdl_wid_14(params: WIDParams):
     """
     if params.test_case_name in ['L2CAP/COS/CED/BV-09-C', 'L2CAP/COS/CFD/BV-08-C',
                                  'L2CAP/COS/CED/BV-04-C', 'L2CAP/COS/IEX/BV-01-C',
-                                 'L2CAP/COS/CFD/BV-10-C', 'L2CAP/COS/CED/BV-10-C']:
+                                 'L2CAP/COS/CFD/BV-10-C', 'L2CAP/COS/CED/BV-10-C',
+                                 'L2CAP/COS/CFD/BV-13-C']:
         l2cap = get_stack().l2cap
         for channel in l2cap.channels:
             try:
@@ -77,7 +78,7 @@ def hdl_wid_22(params: WIDParams):
     if params.test_case_name in ['L2CAP/COS/CED/BV-09-C', 'L2CAP/COS/CFD/BV-08-C',
                                  'L2CAP/COS/CED/BV-04-C', 'L2CAP/COS/ECH/BV-02-C',
                                  'L2CAP/COS/IEX/BV-01-C', 'L2CAP/COS/CFD/BV-10-C',
-                                 'L2CAP/COS/CED/BV-10-C']:
+                                 'L2CAP/COS/CED/BV-10-C', 'L2CAP/COS/CFD/BV-13-C']:
         btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
         return True
 
@@ -692,7 +693,7 @@ def hdl_wid_49(params: WIDParams):
         btp.l2cap_conn_v2(None, defs.BTP_BR_ADDRESS_TYPE, l2cap.psm, l2cap.initial_mtu,
                           options=defs.L2CAP_CONNECT_V2_OPT_RET)
 
-    if params.test_case_name in ['L2CAP/COS/CED/BV-10-C']:
+    if params.test_case_name in ['L2CAP/COS/CED/BV-10-C', 'L2CAP/COS/CFD/BV-13-C']:
         time.sleep(2)
         btp.l2cap_conn_v2(None, defs.BTP_BR_ADDRESS_TYPE, l2cap.psm, l2cap.initial_mtu,
                           options=defs.L2CAP_CONNECT_V2_OPT_FC)
