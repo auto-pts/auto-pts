@@ -829,3 +829,10 @@ def hdl_wid_35(_: WIDParams):
             if len(data) == 48:
                 return True
     return True
+
+
+def hdl_wid_128(_: WIDParams):
+    '''
+    Please send a Poll BIT(P=1) using S-Frame.
+    '''
+    return True
