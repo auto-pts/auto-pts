@@ -432,6 +432,9 @@ def test_cases(ptses):
         ZTestCase("L2CAP", "L2CAP/FOC/BV-06-C",
                   br_l2cap_success_eret,
                   generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/FOC/BV-08-C",
+                  br_l2cap_success_eret,
+                  generic_wid_hdl=l2cap_wid_hdl),
     ]
 
     test_case_name_list = pts.get_test_case_list('L2CAP')
