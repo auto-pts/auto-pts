@@ -141,7 +141,7 @@ class ZephyrBotClient(BotClient):
                 flush_serial(args.tty_file)
             except BaseException as e:
                 traceback.print_exception(e)
-                report.make_error_txt('Build and flash step failed', self.file_paths['ERROR_TXT_FILE'])
+                self.error_txt_content += "Build and flash step failed\n"
                 raise BuildAndFlashException from e
 
             time.sleep(10)
