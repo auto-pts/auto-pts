@@ -867,3 +867,21 @@ def hdl_wid_32(_: WIDParams):
     sending a disconnect request to PTS after monitor timer expired.
     '''
     return True
+
+
+def hdl_wid_34(_: WIDParams):
+    '''
+    Did the Upper Tester receive 4 bytes of data
+    Description : The Implementation Under Test(IUT) should receive 4 bytes of data and notify upper tester.
+    '''
+    l2cap = get_stack().l2cap
+    for channel in l2cap.channels:
+        rx_data = l2cap.rx_data_get(channel.id, 10)
+
+        if rx_data is None:
+            return False
+
+        for data in rx_data:
+            if len(data) == 4:
+                return True
+    return True
