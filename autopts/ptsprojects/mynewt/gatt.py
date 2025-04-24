@@ -15,14 +15,14 @@
 
 """GATT test cases"""
 
+from autopts.client import get_unique_name
+from autopts.ptsprojects.mynewt.gatt_client_wid import gattc_wid_hdl
+from autopts.ptsprojects.mynewt.gatt_wid import gatt_wid_hdl
+from autopts.ptsprojects.mynewt.ztestcase import ZTestCase, ZTestCaseSlave
+from autopts.ptsprojects.stack import SynchPoint, get_stack
+from autopts.ptsprojects.testcase import TestFunc
 from autopts.pybtp import btp
 from autopts.pybtp.types import Addr
-from autopts.client import get_unique_name
-from autopts.ptsprojects.stack import get_stack, SynchPoint
-from autopts.ptsprojects.testcase import TestFunc
-from autopts.ptsprojects.mynewt.ztestcase import ZTestCase, ZTestCaseSlave
-from autopts.ptsprojects.mynewt.gatt_wid import gatt_wid_hdl
-from autopts.ptsprojects.mynewt.gatt_client_wid import gattc_wid_hdl
 from autopts.utils import ResultWithFlag
 
 
@@ -39,15 +39,15 @@ iut_attr_db_off = 0x000b
 
 
 def hdl_str(hdl):
-    return '{0:x}'.format(hdl)
+    return f'{hdl:x}'
 
 
 def u16_hdl_str(hdl):
-    return '{0:04x}'.format(hdl)
+    return f'{hdl:04x}'
 
 
 def u16_hdl_uc_str(hdl):
-    return '{0:04x}'.format(hdl)
+    return f'{hdl:04x}'
 
 
 class PTS_DB:
@@ -226,9 +226,8 @@ def test_cases_server(ptses):
     if len(ptses) < 2:
         return tc_list
 
-
     pts2 = ptses[1]
-    iut_device_name2 = get_unique_name(pts2)
+    iut_device_name2 = get_unique_name(pts2)  # noqa: F841 # iut_device_name2 is not used
 
     pre_conditions_lt2 = [
                         TestFunc(lambda: pts2.update_pixit_param(

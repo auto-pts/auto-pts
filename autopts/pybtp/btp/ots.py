@@ -13,14 +13,12 @@
 # more details.
 #
 
-import binascii
 import logging
 import struct
 
 from autopts.pybtp import defs
-from autopts.pybtp.btp.btp import CONTROLLER_INDEX, CONTROLLER_INDEX_NONE, get_iut_method as get_iut, \
-    btp_hdr_check
-from autopts.pybtp.types import BTPError
+from autopts.pybtp.btp.btp import CONTROLLER_INDEX, CONTROLLER_INDEX_NONE, btp_hdr_check
+from autopts.pybtp.btp.btp import get_iut_method as get_iut
 
 log = logging.debug
 
@@ -58,5 +56,6 @@ def ots_command_rsp_succ(timeout=20.0):
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_OTS)
 
     return tuple_data
+
 
 OTS_EV = {}

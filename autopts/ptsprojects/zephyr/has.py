@@ -15,18 +15,21 @@
 
 """HAS test cases"""
 
-from autopts.pybtp import btp
 from autopts.client import get_unique_name
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.has_wid import has_wid_hdl
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
+from autopts.pybtp import btp
+from autopts.pybtp.defs import (
+    HAS_TSPX_available_presets_indices,
+    HAS_TSPX_unavailable_presets_indices,
+    HAS_TSPX_unwritable_preset_indices,
+    HAS_TSPX_writable_preset_indices,
+)
 from autopts.pybtp.types import Addr
 from autopts.wid.has import PresetProperty
-from autopts.pybtp.defs import HAS_TSPX_available_presets_indices, \
-                               HAS_TSPX_unavailable_presets_indices, \
-                               HAS_TSPX_writable_preset_indices, \
-                               HAS_TSPX_unwritable_preset_indices
+
 
 def set_pixits(ptses):
     """Setup HAS profile PIXITS for workspace. Those values are used for test

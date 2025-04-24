@@ -14,6 +14,7 @@
 # more details.
 #
 import logging
+
 from autopts.ptsprojects.stack.common import wait_for_event
 
 
@@ -202,12 +203,7 @@ class L2cap:
         return chan.rx_data_get(timeout)
 
     def rx_data_get_all(self, timeout):
-        data = []
-
-        for chan in self.channels:
-            data.append(chan.rx_data_get(timeout))
-
-        return data
+        return [chan.rx_data_get(timeout) for chan in self.channels]
 
     def tx_data_get(self, chan_id):
         chan = self.chan_lookup_id(chan_id)
@@ -218,9 +214,4 @@ class L2cap:
         return chan.tx_data_get()
 
     def tx_data_get_all(self):
-        data = []
-
-        for chan in self.channels:
-            data.append(chan.tx_data_get())
-
-        return data
+        return [chan.tx_data_get() for chan in self.channels]

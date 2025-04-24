@@ -14,23 +14,22 @@
 #
 
 """Wrapper around btp messages. The functions are added as needed."""
-import binascii
 import logging
 import struct
 
 from autopts.pybtp import defs
-from autopts.pybtp.btp.btp import CONTROLLER_INDEX, get_iut_method as get_iut,\
-    btp_hdr_check, pts_addr_get, pts_addr_type_get
-from autopts.pybtp.types import addr2btp_ba, BTPError
+from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, pts_addr_get, pts_addr_type_get
+from autopts.pybtp.btp.btp import get_iut_method as get_iut
+from autopts.pybtp.types import addr2btp_ba
 
 CAS = {
-    'read_supported_cmds': ( defs.BTP_SERVICE_ID_CAS,
+    'read_supported_cmds': (defs.BTP_SERVICE_ID_CAS,
                              defs.BTP_CAS_CMD_READ_SUPPORTED_COMMANDS,
                              CONTROLLER_INDEX),
-    'set_member_lock':     ( defs.BTP_SERVICE_ID_CAS,
+    'set_member_lock':     (defs.BTP_SERVICE_ID_CAS,
                              defs.BTP_CAS_CMD_SET_MEMBER_LOCK,
                              CONTROLLER_INDEX),
-    'get_member_rsi':      ( defs.BTP_SERVICE_ID_CAS,
+    'get_member_rsi':      (defs.BTP_SERVICE_ID_CAS,
                              defs.BTP_CAS_CMD_GET_MEMBER_RSI,
                              CONTROLLER_INDEX)
 }

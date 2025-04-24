@@ -18,31 +18,32 @@ import binascii
 import logging
 import struct
 from enum import IntEnum, IntFlag
-from threading import Timer, Event
+from threading import Event, Timer
 from time import sleep
 
-from autopts.pybtp import defs
-from autopts.pybtp.btp.btp import CONTROLLER_INDEX, get_iut_method as get_iut, btp_hdr_check, pts_addr_get, pts_addr_type_get
 from autopts.ptsprojects.stack import get_stack
-from autopts.pybtp.types import addr2btp_ba, BTPError
+from autopts.pybtp import defs
+from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, pts_addr_get, pts_addr_type_get
+from autopts.pybtp.btp.btp import get_iut_method as get_iut
+from autopts.pybtp.types import BTPError, addr2btp_ba
 
 CCP = {
-    'read_supported_cmds': ( defs.BTP_SERVICE_ID_CCP,
+    'read_supported_cmds': (defs.BTP_SERVICE_ID_CCP,
                              defs.BTP_CCP_CMD_READ_SUPPORTED_COMMANDS,
                              CONTROLLER_INDEX),
-    'discover_tbs':        ( defs.BTP_SERVICE_ID_CCP,
+    'discover_tbs':        (defs.BTP_SERVICE_ID_CCP,
                              defs.BTP_CCP_CMD_DISCOVER_TBS,
                              CONTROLLER_INDEX),
-    'accept_call':         ( defs.BTP_SERVICE_ID_CCP,
+    'accept_call':         (defs.BTP_SERVICE_ID_CCP,
                              defs.BTP_CCP_CMD_ACCEPT_CALL,
                              CONTROLLER_INDEX),
-    'terminate_call':      ( defs.BTP_SERVICE_ID_CCP,
+    'terminate_call':      (defs.BTP_SERVICE_ID_CCP,
                              defs.BTP_CCP_CMD_TERMINATE_CALL,
                              CONTROLLER_INDEX),
-    'originate_call':      ( defs.BTP_SERVICE_ID_CCP,
+    'originate_call':      (defs.BTP_SERVICE_ID_CCP,
                              defs.BTP_CCP_CMD_ORIGINATE_CALL,
                              CONTROLLER_INDEX),
-    'read_call_state':     ( defs.BTP_SERVICE_ID_CCP,
+    'read_call_state':     (defs.BTP_SERVICE_ID_CCP,
                              defs.BTP_CCP_CMD_READ_CALL_STATE,
                              CONTROLLER_INDEX),
     'read_bearer_name':    (defs.BTP_SERVICE_ID_CCP,
@@ -75,7 +76,7 @@ CCP = {
     'read_status_flags':    (defs.BTP_SERVICE_ID_CCP,
                              defs.BTP_CCP_CMD_READ_STATUS_FLAGS,
                              CONTROLLER_INDEX),
-    'read_optional_opcodes':(defs.BTP_SERVICE_ID_CCP,
+    'read_optional_opcodes': (defs.BTP_SERVICE_ID_CCP,
                              defs.BTP_CCP_CMD_READ_OPTIONAL_OPCODES,
                              CONTROLLER_INDEX),
     'read_friendly_name':   (defs.BTP_SERVICE_ID_CCP,
@@ -98,22 +99,24 @@ CCP = {
                              CONTROLLER_INDEX),
 }
 
+
 class CallState(IntEnum):
-    INCOMING            = 0x00
-    DIALING             = 0x01
-    ALERTING            = 0x02
-    ACTIVE              = 0x03
-    LOCALLY_HELD        = 0x04
-    REMOTELY_HELD       = 0x05
+    INCOMING = 0x00
+    DIALING = 0x01
+    ALERTING = 0x02
+    ACTIVE = 0x03
+    LOCALLY_HELD = 0x04
+    REMOTELY_HELD = 0x05
     LOCALLY_AND_REMOTELY_HELD = 0x06
 
     def __str__(self):
         return f'{self.name}'
 
+
 class CallFlags(IntFlag):
-    INCOMING            = 0x00
-    OUTGOING            = 0x01
-    WITHHELD            = 0x02
+    INCOMING = 0x00
+    OUTGOING = 0x01
+    WITHHELD = 0x02
     WITHHELD_BY_NETWORK = 0x04
 
     def __str__(self):
@@ -422,13 +425,13 @@ def ccp_await_event(ccp, event, timeout):
     flag.set()
 
     initial = ccp.events[event]['count']
-    timer = Timer(timeout/1000.0, ccp_timeout, [flag])
+    timer = Timer(timeout / 1000.0, ccp_timeout, [flag])
     timer.start()
 
     while flag.is_set():
         if ccp.events[event]['count'] > initial:
-                timer.cancel()
-                flag.clear()
+            timer.cancel()
+            flag.clear()
         else:
             sleep(0.25)
 
@@ -602,7 +605,7 @@ def ccp_ev_call_states(ccp, data, data_len):
 
     states_fmt = '{'
     for n in range(call_count):
-        index, state, flags = struct.unpack('<BBB', data[6+3*n:9+3*n])
+        index, state, flags = struct.unpack('<BBB', data[6 + 3 * n:9 + 3 * n])
         states = {
             'index': index,
             'state': state,
@@ -611,11 +614,12 @@ def ccp_ev_call_states(ccp, data, data_len):
         event_dict['states'].append(states)
 
         states_fmt = states_fmt + ',' if len(states_fmt) > 1 else states_fmt
-        states_fmt += ' index:%u %s flags:%s' % (index, CallState(state), ccp_fmt_flags(flags))
-    states_fmt += ' }'
+        states_fmt += f" index:{index} {CallState(state)} flags:{ccp_fmt_flags(flags)}"
+        states_fmt += " }"
 
-    logging.debug(f"{ccp_ev_call_states.__name__} status: %u index: 0x%02x calls: %u %s" % \
-                  (status, index, call_count, states_fmt))
+    logging.debug(
+        f"{ccp_ev_call_states.__name__} status: {status} index: 0x{index:02x} calls: {call_count} {states_fmt}"
+    )
 
     ccp.event_received(defs.BTP_CCP_EV_CALL_STATES, event_dict)
 

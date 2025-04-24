@@ -15,18 +15,18 @@
 import binascii
 import logging
 import re
-import socket
 import time
 
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp
-from autopts.pybtp.types import BTPError, WIDParams
-from autopts.wid import generic_wid_hdl
+from autopts.pybtp.types import WIDParams
+from autopts.wid.common import _l2cap_send_forever, _safe_l2cap_disconnect
 
 log = logging.debug
 
 
 def l2cap_wid_hdl(wid, description, test_case_name):
+    from autopts.wid import generic_wid_hdl
     log(f'{l2cap_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
     return generic_wid_hdl(wid, description, test_case_name, [__name__])
 
@@ -146,7 +146,7 @@ def hdl_wid_41(params: WIDParams):
         if not l2cap.is_connected(0):
             btp.l2cap_conn(None, None, stack.l2cap.psm, l2cap.initial_mtu)
         else:
-            pass # skip second wid call
+            pass  # skip second wid call
     else:
         btp.l2cap_conn(None, None, stack.l2cap.psm, l2cap.initial_mtu)
 
@@ -279,7 +279,7 @@ def hdl_wid_57(_: WIDParams):
     if not channel:
         return False
 
-    for i in range(4):
+    for _i in range(4):
         btp.l2cap_send_data(0, '00')
         time.sleep(2)
     return True
@@ -319,23 +319,14 @@ def hdl_wid_61(_: WIDParams):
 def hdl_wid_100(_: WIDParams):
     l2cap = get_stack().l2cap
     for channel in l2cap.channels:
-        try:
-            while True:
-                btp.l2cap_send_data(channel.id, '00')
-        except BTPError:
-            pass
-        except socket.timeout:
-            pass
+        _l2cap_send_forever(channel.id)
     return True
 
 
 def hdl_wid_101(_: WIDParams):
     l2cap = get_stack().l2cap
     for channel in l2cap.channels:
-        try:
-            btp.l2cap_disconn(channel.id)
-        except BTPError:
-            logging.debug("Ignoring expected error on L2CAP disconnect")
+        _safe_l2cap_disconnect(channel.id)
     return True
 
 
@@ -421,11 +412,9 @@ def hdl_wid_112(_: WIDParams):
     for x in data_0:
         data_0_unfolded.extend(x)
 
-
     data_1_unfolded = []
     for x in data_1:
         data_1_unfolded.extend(x)
-
 
     expected = [0xaa] * len(data_0_unfolded)
     if not data_0_unfolded == expected:

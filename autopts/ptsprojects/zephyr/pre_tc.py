@@ -15,9 +15,9 @@
 # more details.
 #
 
+import atexit
 import os
 import sys
-import atexit
 
 PROFILE = None
 TEST_CASE = None

@@ -18,11 +18,12 @@ import logging
 import struct
 
 from autopts.pybtp import defs
-from autopts.pybtp.btp.btp import CONTROLLER_INDEX, get_iut_method as get_iut,\
-    btp_hdr_check, pts_addr_get, pts_addr_type_get
+from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, pts_addr_get, pts_addr_type_get
+from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.types import BTPError, addr2btp_ba
 
 log = logging.debug
+
 
 def address_to_ba(bd_addr_type=None, bd_addr=None):
     data = bytearray()
@@ -32,6 +33,7 @@ def address_to_ba(bd_addr_type=None, bd_addr=None):
     data.extend(bd_addr_ba)
     return data
 
+
 TMAP = {
     'read_supported_cmds': (defs.BTP_SERVICE_ID_TMAP,
                             defs.BTP_TMAP_CMD_READ_SUPPORTED_COMMANDS,
@@ -40,6 +42,7 @@ TMAP = {
                       defs.BTP_TMAP_CMD_DISCOVER,
                       CONTROLLER_INDEX),
 }
+
 
 def tmap_command_rsp_succ(timeout=20.0):
     logging.debug("%s", tmap_command_rsp_succ.__name__)
@@ -52,6 +55,7 @@ def tmap_command_rsp_succ(timeout=20.0):
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_TMAP)
 
     return tuple_data
+
 
 def tmap_read_supported_cmds():
     logging.debug(f"{tmap_read_supported_cmds.__name__}")
@@ -72,6 +76,7 @@ def tmap_discover(bd_addr_type=None, bd_addr=None):
     iutctl.btp_socket.send(*TMAP['discover'], data=data)
 
     tmap_command_rsp_succ()
+
 
 def tmap_ev_discovery_completed(tmap, data, data_len):
     logging.debug('%s %r', tmap_ev_discovery_completed.__name__, data)

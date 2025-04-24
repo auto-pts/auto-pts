@@ -18,18 +18,24 @@ import re
 import struct
 from argparse import Namespace
 
+from autopts.ptsprojects.stack import WildCard, get_stack
 from autopts.pybtp import btp, defs
-from autopts.ptsprojects.stack import get_stack, WildCard
-from autopts.pybtp.btp import pts_addr_get, pts_addr_type_get, lt2_addr_get, lt2_addr_type_get, lt3_addr_get, \
-    lt3_addr_type_get
-from autopts.pybtp.btp.pacs import pacs_set_available_contexts
-from autopts.pybtp.defs import AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, AUDIO_METADATA_CCID_LIST
-from autopts.pybtp.types import WIDParams, ASCSState, BTPError, PaSyncState, Addr
+from autopts.pybtp.btp import lt2_addr_get, lt2_addr_type_get, lt3_addr_get, lt3_addr_type_get, pts_addr_get, pts_addr_type_get
 from autopts.pybtp.btp.cap import announcements
+from autopts.pybtp.btp.pacs import pacs_set_available_contexts
+from autopts.pybtp.defs import AUDIO_METADATA_CCID_LIST, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS
+from autopts.pybtp.types import Addr, ASCSState, WIDParams
 from autopts.wid import generic_wid_hdl
-from autopts.wid.bap import (create_default_config, AudioDir, get_audio_locations_from_pac,
-                             create_lc3_ltvs_bytes, CODEC_CONFIG_SETTINGS, QOS_CONFIG_SETTINGS,
-                             BAS_CONFIG_SETTINGS)
+from autopts.wid.bap import (
+    BAS_CONFIG_SETTINGS,
+    CODEC_CONFIG_SETTINGS,
+    QOS_CONFIG_SETTINGS,
+    AudioDir,
+    create_default_config,
+    create_lc3_ltvs_bytes,
+    get_audio_locations_from_pac,
+)
+from autopts.wid.common import _safe_bap_send
 
 log = logging.debug
 
@@ -82,7 +88,7 @@ def hdl_wid_100(params: WIDParams):
 
 
 def hdl_wid_104(_: WIDParams):
-    """Please send non connectable advertise with periodic info."""
+    """Please send non-connectable advertise with periodic info."""
 
     # Periodic adv started within cap_broadcast_adv_start at hdl_wid_114.
 
@@ -119,14 +125,18 @@ wid_114_settings = {
     'CAP/INI/UTB/BV-01-C': (2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
     'CAP/INI/UTB/BV-02-C': (2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0004) +
                         struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
-    'CAP/INI/UTB/BV-03-C': (2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
-                        struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
+    'CAP/INI/UTB/BV-03-C': (
+        2,
+        struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)
+        + struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)
+    ),
     'CAP/INI/UTB/BV-04-C': (2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
                         struct.pack('<BBBB', 3, AUDIO_METADATA_CCID_LIST, 0x00, 0x01)),
     'CAP/INI/BTU/BV-01-C': (1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
     'CAP/INI/BTU/BV-02-C': (1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
                         struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
 }
+
 
 def hdl_wid_114(params: WIDParams):
     """Please advertise with Broadcast Audio Announcement (0x1852) service data"""
@@ -153,7 +163,7 @@ def hdl_wid_114(params: WIDParams):
     subgroup_id = 0x00
     presentation_delay = 40000
 
-    for i in range(source_num):
+    for _i in range(source_num):
         btp.cap_broadcast_source_setup_stream(source_id, subgroup_id, coding_format, vid, cid,
                                               codec_ltvs_bytes, metadata)
 
@@ -174,12 +184,8 @@ def hdl_wid_114(params: WIDParams):
 
     # PTS does not send an explicit message, but for each
     # configured SINK it expects to receive any ISO data.
-    for i in range(1, 10):
-        try:
-            btp.bap_send(0, data)
-        except BTPError:
-            # Buffer full
-            pass
+    for _ in range(1, 10):
+        _safe_bap_send(0, data)
 
     return True
 
@@ -195,7 +201,7 @@ def hdl_wid_202(_: WIDParams):
         stack = get_stack()
         # Check whether streaming was strated
         ev = stack.ascs.wait_ascs_ase_state_changed_ev(addr_type, addr, ase_id, ASCSState.STREAMING, 200)
-        return not ev is None
+        return ev is not None
 
     return False
 
@@ -238,10 +244,10 @@ def hdl_wid_310(params: WIDParams):
 
     stack = get_stack()
     metadata = wid_310_settings[params.test_case_name]
-    update_metadata = []
-
-    for config in stack.bap.ase_configs:
-        update_metadata.append((config.addr_type, config.addr, config.ase_id, metadata))
+    update_metadata = [
+        (config.addr_type, config.addr, config.ase_id, metadata)
+        for config in stack.bap.ase_configs
+    ]
 
     btp.cap_unicast_audio_update(update_metadata)
 
@@ -272,7 +278,7 @@ def hdl_wid_345(params: WIDParams):
     if params.test_case_name.endswith('LT2'):
         addr = lt2_addr_get()
         addr_type = lt2_addr_type_get()
-        lt1_test_name = params.test_case_name.replace('_LT2','')
+        lt1_test_name = params.test_case_name.replace('_LT2', '')
     else:
         addr = pts_addr_get()
         addr_type = pts_addr_type_get()
@@ -306,7 +312,7 @@ def hdl_wid_345(params: WIDParams):
             broadcaster_addr = lt2_addr_get()
             broadcaster_addr_type = lt2_addr_type_get()
 
-        log('Wait for BAA for %s' % broadcaster_addr)
+        log(f"Wait for BAA for {broadcaster_addr}")
         ev = stack.bap.wait_baa_found_ev(broadcaster_addr_type, broadcaster_addr, 10, False)
         if ev is None:
             log('No BAA found')
@@ -370,6 +376,7 @@ def hdl_wid_345(params: WIDParams):
 
     return True
 
+
 def hdl_wid_347(params: WIDParams):
     """1. Please ADD Broadcast Source from Lower Tester 2 to
           Lower Tester 1 with PA SYNC: 0x00, BIS INDEX: 0x00000000
@@ -394,7 +401,7 @@ def hdl_wid_347(params: WIDParams):
     broadcast_id = ev['broadcast_id']
 
     # stop sync to free resources on Controller
-    btp.bap_broadcast_sink_stop( broadcast_id, addr_type, addr)
+    btp.bap_broadcast_sink_stop(broadcast_id, addr_type, addr)
 
     advertiser_sid = ev['advertiser_sid']
     padv_interval = ev['padv_interval']
@@ -455,6 +462,7 @@ def hdl_wid_347(params: WIDParams):
         return False
 
     return True
+
 
 def hdl_wid_353(params: WIDParams):
     """Wait for Broadcast ISO request."""
@@ -594,7 +602,7 @@ wid_400_settings = {
     'CAP/INI/UTB/BV-01-C': (1, 0, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
     'CAP/INI/UTB/BV-02-C': (1, 0, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0004) +
                             struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
-    'CAP/INI/UTB/BV-03-C': (1, 0, 2,  struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
+    'CAP/INI/UTB/BV-03-C': (1, 0, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
                             struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
     'CAP/INI/UTB/BV-04-C': (1, 0, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
                             struct.pack('<BBBB', 3, AUDIO_METADATA_CCID_LIST, 0x00, 0x01)),
@@ -652,7 +660,7 @@ def hdl_wid_400(params: WIDParams):
      default_config.max_transport_latency) = QOS_CONFIG_SETTINGS[default_config.qos_set_name]
 
     sinks = []
-    for i in range(0, sink_num):
+    for _i in range(0, sink_num):
         config = Namespace(**vars(default_config))
         config.audio_dir = AudioDir.SINK
         config.audio_locations = get_audio_locations_from_pac(
@@ -665,7 +673,7 @@ def hdl_wid_400(params: WIDParams):
         sinks.append(config)
 
     sources = []
-    for i in range(0, source_num):
+    for _i in range(0, source_num):
         config = Namespace(**vars(default_config))
         config.audio_dir = AudioDir.SOURCE
         config.audio_locations = get_audio_locations_from_pac(
@@ -774,9 +782,12 @@ def hdl_wid_405(params: WIDParams):
 
     return True
 
+
 def hdl_wid_406(params: WIDParams):
     """
-        Please perform Unicast Audio Ending procedure, and initiate Broadcast Audio Reception Start procedure for Unicast Handover procedure.
+        Please perform Unicast Audio Ending procedure,
+        and initiate Broadcast Audio Reception Start
+        procedure for Unicast Handover procedure.
     """
 
     # Stop Unicast
@@ -795,13 +806,14 @@ def hdl_wid_406(params: WIDParams):
 
     return True
 
+
 def hdl_wid_408(params: WIDParams):
     """Please write Mute Characteristic."""
 
     if params.test_case_name.endswith('LT2'):
         addr = lt2_addr_get()
         addr_type = lt2_addr_type_get()
-        lt1_test_name = params.test_case_name.replace('_LT2','')
+        lt1_test_name = params.test_case_name.replace('_LT2', '')
     else:
         addr = pts_addr_get()
         addr_type = pts_addr_type_get()
@@ -810,6 +822,7 @@ def hdl_wid_408(params: WIDParams):
     btp.micp_mute(addr_type, addr)
 
     return True
+
 
 def hdl_wid_409(_: WIDParams):
     """Please update metadata in BASE. Then click OK when IUT is ready
@@ -911,7 +924,7 @@ def hdl_wid_413(params: WIDParams):
 
 
 def hdl_wid_414(params: WIDParams):
-    """"Please click OK when IUT received notification."""
+    """Please click OK when IUT received notification."""
     stack = get_stack()
 
     # get pts address and lt1 test name
@@ -940,6 +953,7 @@ def hdl_wid_414(params: WIDParams):
 
     return True
 
+
 def hdl_wid_415(_: WIDParams):
     """
         Please stop broadcast, and wait for 10 seconds.
@@ -960,17 +974,20 @@ def hdl_wid_416(_: WIDParams):
 
     return True
 
+
 def hdl_wid_418(_: WIDParams):
     """
        Please confirm the other tester successfully added broadcast source.
     """
     return True
 
+
 def hdl_wid_419(params: WIDParams):
     """
         Please configure to Streaming state.
     """
     return hdl_wid_400(params)
+
 
 def hdl_wid_421(params: WIDParams):
     """
@@ -986,6 +1003,7 @@ def hdl_wid_421(params: WIDParams):
     pacs_set_available_contexts(0, 0)
 
     return True
+
 
 def hdl_wid_20001(_: WIDParams):
     """
@@ -1053,7 +1071,7 @@ def hdl_wid_20110(params: WIDParams):
     if params.test_case_name.endswith('LT2'):
         addr = lt2_addr_get()
         addr_type = lt2_addr_type_get()
-        lt1_test_name = params.test_case_name.replace('_LT2','')
+        lt1_test_name = params.test_case_name.replace('_LT2', '')
     else:
         addr = pts_addr_get()
         addr_type = pts_addr_type_get()

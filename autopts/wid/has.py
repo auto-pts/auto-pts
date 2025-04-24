@@ -15,23 +15,24 @@
 
 import logging
 import re
-import sys
-
 from enum import IntFlag
-from autopts.pybtp import btp, defs
+
 from autopts.ptsprojects.stack import get_stack
+from autopts.pybtp import btp, defs
 from autopts.pybtp.types import WIDParams
-from autopts.wid import generic_wid_hdl
+
 
 class PresetProperty(IntFlag):
-    BT_HAS_PROP_NONE      = 0
-    BT_HAS_PROP_WRITABLE  = 1<<0
-    BT_HAS_PROP_AVAILABLE = 1<<1
+    BT_HAS_PROP_NONE = 0
+    BT_HAS_PROP_WRITABLE = 1 << 0
+    BT_HAS_PROP_AVAILABLE = 1 << 1
+
 
 log = logging.debug
 
 
 def has_wid_hdl(wid, description, test_case_name):
+    from autopts.wid import generic_wid_hdl
     log(f'{has_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
     return generic_wid_hdl(wid, description, test_case_name, [__name__])
 

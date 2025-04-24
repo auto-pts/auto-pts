@@ -16,6 +16,7 @@
 import logging
 import threading
 from time import sleep
+
 from autopts.utils import ResultWithFlag
 
 log = logging.debug
@@ -105,7 +106,7 @@ class Synch:
         synch_point = None
         elem = None
 
-        for i, elem in enumerate(self._synch_table):
+        for _i, elem in enumerate(self._synch_table):
             synch_point = elem.find_matching(tc_name, wid)
             if synch_point:
                 # Found a sync point matching the test case and wid
@@ -142,10 +143,9 @@ class Synch:
         # Remove the synch element
         try:
             self._synch_table.remove(synch_elem)
-        except:
+        except ValueError:
             # Already cleaned up by other thread
             pass
-
         return None
 
     def cancel_synch(self):

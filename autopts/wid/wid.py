@@ -1,7 +1,7 @@
 import importlib
 import logging
 
-from ..pybtp.types import WIDParams, MissingWIDError
+from autopts.pybtp.types import MissingWIDError, WIDParams
 
 log = logging.debug
 

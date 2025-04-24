@@ -18,16 +18,16 @@ import re
 import struct
 import time
 
-from autopts.pybtp import btp
 from autopts.ptsprojects.stack import get_stack
+from autopts.pybtp import btp
 from autopts.pybtp.types import WIDParams
-from autopts.wid import generic_wid_hdl
 
 # MMDL ATS ver. 1.0
 log = logging.debug
 
 
 def mmdl_wid_hdl(wid, description, test_case_name):
+    from autopts.wid import generic_wid_hdl
     log(f'{mmdl_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
     return generic_wid_hdl(wid, description, test_case_name, [__name__])
 
@@ -2195,7 +2195,7 @@ def hdl_wid_850(params: WIDParams):
     timeout_base = stack.mesh.timeout_base_get()
     ttl = stack.mesh.transfer_ttl_get()
     addr = ["0001"]
-    id = 0x1100000000000011
+    blob_id = 0x1100000000000011
     block_size = 6
     chunk_size = 8
     blob_data_size = 80
@@ -2204,7 +2204,7 @@ def hdl_wid_850(params: WIDParams):
 
     time.sleep(5)
 
-    btp.mmdl_blob_transfer_start(id, block_size, chunk_size, timeout_base, ttl, blob_data_size)
+    btp.mmdl_blob_transfer_start(blob_id, block_size, chunk_size, timeout_base, ttl, blob_data_size)
 
     return True
 
@@ -2217,7 +2217,7 @@ def hdl_wid_851(_: WIDParams):
     timeout_base = stack.mesh.timeout_base_get()
     ttl = stack.mesh.transfer_ttl_get()
     addr = ["0001"]
-    id = 0x1100000000000011
+    blob_id = 0x1100000000000011
     block_size = 6
     chunk_size = 65
     blob_data_size = 80
@@ -2226,7 +2226,7 @@ def hdl_wid_851(_: WIDParams):
 
     time.sleep(5)
 
-    btp.mmdl_blob_transfer_start(id, block_size, chunk_size, timeout_base, ttl, blob_data_size)
+    btp.mmdl_blob_transfer_start(blob_id, block_size, chunk_size, timeout_base, ttl, blob_data_size)
 
     return True
 
@@ -2248,10 +2248,10 @@ def hdl_wid_853(_: WIDParams):
     stack = get_stack()
     timeout_base = stack.mesh.timeout_base_get()
     ttl = stack.mesh.transfer_ttl_get()
-    id = 0x1100000000000011
+    blob_id = 0x1100000000000011
 
     btp.mesh_store_model_data()
-    btp.mmdl_blob_srv_recv(id, timeout_base, ttl)
+    btp.mmdl_blob_srv_recv(blob_id, timeout_base, ttl)
 
     return True
 
@@ -2279,14 +2279,14 @@ def hdl_wid_856(params: WIDParams):
     ttl = stack.mesh.transfer_ttl_get()
     addrs = re.findall(r'(0x[0-9a-fA-F]{1,2})', params.description)
     addrs = [e[2:].rjust(4, '0') for e in addrs]
-    id = 0x1100000000000011
+    blob_id = 0x1100000000000011
     block_size = 18
     chunk_size = 11
     blob_data_size = 80
 
     btp.mmdl_blob_info_get(addrs)
     time.sleep(5)
-    btp.mmdl_blob_transfer_start(id, block_size, chunk_size, timeout_base, ttl, blob_data_size)
+    btp.mmdl_blob_transfer_start(blob_id, block_size, chunk_size, timeout_base, ttl, blob_data_size)
 
     return True
 
@@ -2366,10 +2366,11 @@ def hdl_wid_990(params: WIDParams):
 
     btp.mmdl_dfu_update_firmware_start(addrs, slot_idx, slot_size, block_size, chunk_size, fwid, metadata)
     # wait for Firmware Update Status for every address
-    for e in addrs:
+    for _e in addrs:
         stack.mesh.wait_for_model_added_op(5, b'b72b')
 
     return True
+
 
 def hdl_wid_991(_: WIDParams):
     """
@@ -2381,6 +2382,7 @@ def hdl_wid_991(_: WIDParams):
     time.sleep(20)
     btp.mmdl_dfu_update_firmware_apply()
     return True
+
 
 def hdl_wid_992(_: WIDParams):
     btp.mmdl_dfu_update_firmware_get()

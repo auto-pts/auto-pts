@@ -32,7 +32,7 @@ def exec_iut_cmd(iut_cmd, wait=False, use_adb_shell=USE_ADB):
 
     """
     if use_adb_shell:
-        cmd = "%s shell %s" % (ADB, iut_cmd)
+        cmd = f"{ADB} shell {iut_cmd}"
     else:
         cmd = iut_cmd
 
@@ -42,7 +42,7 @@ def exec_iut_cmd(iut_cmd, wait=False, use_adb_shell=USE_ADB):
                                stdout=subprocess.PIPE,
                                stderr=subprocess.STDOUT)
 
-    process_desc = "%s pid %s" % (repr(cmd), process.pid)
+    process_desc = f"{repr(cmd)} pid {process.pid}"
 
     log("started child process %s", process_desc)
 

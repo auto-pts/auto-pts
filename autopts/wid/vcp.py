@@ -16,18 +16,16 @@
 import logging
 import random
 import re
-import time
 
-from autopts.pybtp import btp
-from autopts.pybtp import defs
-from autopts.pybtp.types import WIDParams
 from autopts.ptsprojects.stack import get_stack
-from autopts.wid import generic_wid_hdl
+from autopts.pybtp import btp, defs
+from autopts.pybtp.types import WIDParams
 
 log = logging.debug
 
 
 def vcp_wid_hdl(wid, description, test_case_name):
+    from autopts.wid import generic_wid_hdl
     log(f'{vcp_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
     return generic_wid_hdl(wid, description, test_case_name, [__name__])
 
@@ -379,13 +377,13 @@ def hdl_wid_20206(params: WIDParams):
 
     if params.test_case_name == "VCP/VC/CGGIT/SER/BV-01-C":
         chars = (stack.vcp.event_queues[defs.BTP_VCP_EV_DISCOVERED][0][3:6])
-        chrc_list = ['{:04X}'.format(chrc).upper() for chrc in chars]
+        chrc_list = [f'{chrc:04X}'.upper() for chrc in chars]
     elif params.test_case_name == "VCP/VC/CGGIT/SER/BV-02-C":
         chars = (stack.vcp.event_queues[defs.BTP_VCP_EV_DISCOVERED][0][6:10])
-        chrc_list = ['{:04X}'.format(chrc).upper() for chrc in chars]
+        chrc_list = [f'{chrc:04X}'.upper() for chrc in chars]
     elif params.test_case_name == "VCP/VC/CGGIT/SER/BV-03-C":
         chars = (stack.vcp.event_queues[defs.BTP_VCP_EV_DISCOVERED][0][10:])
-        chrc_list = ['{:04X}'.format(chrc).upper() for chrc in chars]
+        chrc_list = [f'{chrc:04X}'.upper() for chrc in chars]
 
     pattern = re.compile(r"0x([0-9a-fA-F]+)")
     params = pattern.findall(params.description)
@@ -399,4 +397,3 @@ def hdl_wid_20206(params: WIDParams):
         return True
 
     return False
-

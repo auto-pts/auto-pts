@@ -19,8 +19,8 @@ import logging
 import struct
 
 from autopts.pybtp import defs
-from autopts.pybtp.btp.btp import CONTROLLER_INDEX, get_iut_method as get_iut,\
-    btp_hdr_check
+from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check
+from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.types import BTPError
 
 PACS = {
@@ -82,12 +82,12 @@ def pacs_command_rsp_succ(timeout=20.0):
     return tuple_data
 
 
-def pacs_set_location(dir, location):
-    logging.debug(f"{pacs_set_location.__name__} {dir} {location}")
+def pacs_set_location(direction, location):
+    logging.debug(f"{pacs_set_location.__name__} {direction} {location}")
 
     iutctl = get_iut()
 
-    data = bytearray(struct.pack("<BI", dir, location))
+    data = bytearray(struct.pack("<BI", direction, location))
 
     iutctl.btp_socket.send(*PACS['set_location'], data=data)
 

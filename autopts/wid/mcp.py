@@ -14,20 +14,17 @@
 #
 
 import logging
-import random
 import re
-import time
 
 from autopts.ptsprojects.stack import get_stack
-from autopts.pybtp import btp
-from autopts.pybtp import defs
+from autopts.pybtp import btp, defs
 from autopts.pybtp.types import WIDParams
-from autopts.wid import generic_wid_hdl
 
 log = logging.debug
 
 
 def mcp_wid_hdl(wid, description, test_case_name):
+    from autopts.wid import generic_wid_hdl
     log(f'{mcp_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
     return generic_wid_hdl(wid, description, test_case_name, [__name__])
 
@@ -256,7 +253,6 @@ def hdl_wid_20106(params: WIDParams):
     ev = stack.mcp.wait_discovery_completed_ev(addr_type, addr, 20, remove=False)
     if ev is None:
         return False
-
 
     return True
 
@@ -540,7 +536,7 @@ def hdl_wid_20206(params: WIDParams):
     return False
 
 
-def hdl_wid_20144(params:WIDParams):
+def hdl_wid_20144(params: WIDParams):
     """Please click Yes if IUT support Write Command(without response), otherwise click No."""
 
     return False
