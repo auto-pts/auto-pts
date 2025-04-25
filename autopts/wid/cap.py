@@ -972,6 +972,14 @@ def hdl_wid_419(params: WIDParams):
     """
     return hdl_wid_400(params)
 
+def hdl_wid_420(params: WIDParams):
+    """
+        Please put the IUT in Non-Bondable mode.
+    """
+    btp.gap_set_bondable_off();
+    
+    return True
+
 def hdl_wid_421(params: WIDParams):
     """
         Please make sure the IUT is a BAP Unicast Server that is in an Idle state
