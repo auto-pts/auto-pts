@@ -1000,3 +1000,14 @@ def hdl_wid_20(_: WIDParams):
     2.  The PIXIT setting for TSPX_IUT_SDU_SIZE_N_BYTES is set correctly.
     '''
     return True
+
+
+def hdl_wid_2(_: WIDParams):
+    '''
+    Using the Implementation Under Test(IUT), queue up and send two I - Frames(data) to the PTS.
+    '''
+    l2cap = get_stack().l2cap
+    for _ in range(0, 2):
+        for channel in l2cap.channels:
+            _l2cap_chann_send_safely(channel.id, '00', 1)
+    return True
