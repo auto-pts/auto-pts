@@ -785,13 +785,16 @@ def hdl_wid_26(params: WIDParams):
     return True
 
 
-def hdl_wid_1(_: WIDParams):
+def hdl_wid_1(params: WIDParams):
     '''
     Using the Implementation Under Test(IUT), send an I - Frame(data) to the PTS.
     '''
     l2cap = get_stack().l2cap
     for channel in l2cap.channels:
-        btp.l2cap_send_data(channel.id, '00')
+        if params.test_case_name in ['L2CAP/ERM/BV-23-C']:
+            _l2cap_chann_send_safely(channel.id, '00', 120)
+        else:
+            _l2cap_chann_send_safely(channel.id, '00', 1)
     return True
 
 
@@ -985,4 +988,13 @@ def hdl_wid_119(params: WIDParams):
         btp.l2cap_conn_v2(None, defs.BTP_BR_ADDRESS_TYPE, l2cap.psm, l2cap.initial_mtu,
                           mode=defs.L2CAP_CONNECT_V2_MODE_ERET,
                           options=defs.L2CAP_CONNECT_V2_OPT_MODE_OPTIONAL)
+    return True
+
+
+def hdl_wid_20(_: WIDParams):
+    '''
+    Verify that the following test conditions are true :
+    1. The implementation Under Test(IUT) must specify the capability of sending SDUs of N bytes.
+    2.  The PIXIT setting for TSPX_IUT_SDU_SIZE_N_BYTES is set correctly.
+    '''
     return True
