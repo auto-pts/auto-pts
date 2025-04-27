@@ -43,7 +43,7 @@ def hdl_wid_14(params: WIDParams):
                                  'L2CAP/COS/CFD/BV-13-C', 'L2CAP/ERM/BV-11-C',
                                  'L2CAP/ERM/BV-12-C', 'L2CAP/CMC/BI-01-C',
                                  'L2CAP/CMC/BI-02-C', 'L2CAP/CMC/BI-03-C',
-                                 'L2CAP/CMC/BI-04-C']:
+                                 'L2CAP/CMC/BI-04-C', 'L2CAP/CMC/BV-10-C']:
         l2cap = get_stack().l2cap
         for channel in l2cap.channels:
             _l2cap_chan_disconn_safely(channel.id)
@@ -90,7 +90,8 @@ def hdl_wid_22(params: WIDParams):
                                  'L2CAP/COS/CED/BV-10-C', 'L2CAP/COS/CFD/BV-13-C',
                                  'L2CAP/ERM/BV-11-C', 'L2CAP/ERM/BV-12-C',
                                  'L2CAP/CMC/BI-01-C', 'L2CAP/CMC/BI-02-C',
-                                 'L2CAP/CMC/BI-03-C', 'L2CAP/CMC/BI-04-C']:
+                                 'L2CAP/CMC/BI-03-C', 'L2CAP/CMC/BI-04-C',
+                                 'L2CAP/CMC/BV-10-C']:
         btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
         return True
 
@@ -966,4 +967,16 @@ def hdl_wid_115(_: WIDParams):
     '''
     Please send Configure Request with Streaming Mode.
     '''
+    return True
+
+
+def hdl_wid_119(_: WIDParams):
+    '''
+    Please send L2CAP Information Request with InfoType to Extended Features(0x0002).
+    '''
+    btp.gap_wait_for_connection()
+    l2cap = get_stack().l2cap
+    btp.l2cap_conn_v2(None, defs.BTP_BR_ADDRESS_TYPE, l2cap.psm, l2cap.initial_mtu,
+                      mode=defs.L2CAP_CONNECT_V2_MODE_ERET,
+                      options=defs.L2CAP_CONNECT_V2_OPT_MODE_OPTIONAL)
     return True
