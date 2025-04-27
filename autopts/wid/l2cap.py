@@ -932,3 +932,23 @@ def hdl_wid_131(_: WIDParams):
     Please send a RR using S-Frame.
     '''
     return True
+
+
+def hdl_wid_121(_: WIDParams):
+    '''
+    Please initiate Information Request procedure to discover supported features and configure connection.
+    '''
+    return True
+
+
+def hdl_wid_6(_: WIDParams):
+    '''
+    Did the Implementation Under Test(IUT) inform the Upper Tester the connection attempt failed?
+    '''
+    l2cap = btp.get_stack().l2cap
+    try:
+        btp.l2cap_conn_v2(None, defs.BTP_BR_ADDRESS_TYPE, l2cap.psm, l2cap.initial_mtu,
+                          options=defs.L2CAP_CONNECT_V2_OPT_ERET)
+    except:
+        return True
+    return False
