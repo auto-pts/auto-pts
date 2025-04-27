@@ -790,7 +790,7 @@ def hdl_wid_1(params: WIDParams):
     l2cap = get_stack().l2cap
     for channel in l2cap.channels:
         try:
-            if params.test_case_name in ['L2CAP/ERM/BV-23-C']:
+            if params.test_case_name in ['L2CAP/ERM/BV-23-C', 'L2CAP/STM/BV-03-C']:
                 btp.l2cap_send_data(channel.id, '00', 120)
             else:
                 btp.l2cap_send_data(channel.id, '00')
