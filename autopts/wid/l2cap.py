@@ -794,6 +794,9 @@ def hdl_wid_1(params: WIDParams):
         try:
             if params.test_case_name in ['L2CAP/ERM/BV-23-C', 'L2CAP/STM/BV-03-C']:
                 btp.l2cap_send_data(channel.id, '00', 120)
+            elif params.test_case_name in ['L2CAP/ERM/BV-15-C']:
+                for _ in range(0, 4):
+                    btp.l2cap_send_data(channel.id, '00')
             else:
                 btp.l2cap_send_data(channel.id, '00')
         except BTPError:
