@@ -43,7 +43,7 @@ def hdl_wid_14(params: WIDParams):
                                  'L2CAP/COS/CFD/BV-10-C', 'L2CAP/COS/CED/BV-10-C',
                                  'L2CAP/COS/CFD/BV-13-C', 'L2CAP/ERM/BV-11-C',
                                  'L2CAP/ERM/BV-12-C', 'L2CAP/CMC/BI-01-C',
-                                 'L2CAP/CMC/BI-02-C']:
+                                 'L2CAP/CMC/BI-02-C', 'L2CAP/CMC/BI-03-C']:
         l2cap = get_stack().l2cap
         for channel in l2cap.channels:
             try:
@@ -82,7 +82,8 @@ def hdl_wid_22(params: WIDParams):
                                  'L2CAP/COS/IEX/BV-01-C', 'L2CAP/COS/CFD/BV-10-C',
                                  'L2CAP/COS/CED/BV-10-C', 'L2CAP/COS/CFD/BV-13-C',
                                  'L2CAP/ERM/BV-11-C', 'L2CAP/ERM/BV-12-C',
-                                 'L2CAP/CMC/BI-01-C', 'L2CAP/CMC/BI-02-C']:
+                                 'L2CAP/CMC/BI-01-C', 'L2CAP/CMC/BI-02-C',
+                                 'L2CAP/CMC/BI-03-C']:
         btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
         return True
 
@@ -952,3 +953,10 @@ def hdl_wid_6(_: WIDParams):
     except:
         return True
     return False
+
+
+def hdl_wid_115(_: WIDParams):
+    '''
+    Please send Configure Request with Streaming Mode.
+    '''
+    return True
