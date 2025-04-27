@@ -765,7 +765,7 @@ def hdl_wid_277(params: WIDParams):
             return False
 
         for data in rx_data:
-            if value[0] in data.hex():
+            if value[0].upper() in data.hex().upper():
                 return True
 
     return False
