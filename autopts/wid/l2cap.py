@@ -885,3 +885,17 @@ def hdl_wid_34(_: WIDParams):
             if len(data) == 4:
                 return True
     return True
+
+
+def hdl_wid_17(_: WIDParams):
+    '''
+    Place the Implementation Under Test(IUT) into the Local Busy Condition, such that an RNR S - Frame will be sent to the PTS.
+    '''
+    return True
+
+
+def hdl_wid_8(_: WIDParams):
+    '''
+    Place the Implementation Under Test(IUT) in a state to receive I - Frames from the PTS.
+    '''
+    return True

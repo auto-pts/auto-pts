@@ -215,6 +215,12 @@ def test_cases(ptses):
                  defs.L2CAP_LISTEN_OPT_NO_FCS),
     ]
 
+    br_l2cap_success_eret_hold_credit = br_l2cap + [
+        TestFunc(btp.l2cap_br_listen_v2, br_psm, br_initial_mtu,
+                 L2CAPConnectionResponse.insufficient_encryption, defs.L2CAP_LISTEN_OPT_ERET |
+                 defs.L2CAP_LISTEN_OPT_HOLD_CREDIT),
+    ]
+
     custom_test_cases = [
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-04-C",
                   pre_conditions +
@@ -482,6 +488,10 @@ def test_cases(ptses):
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/OFS/BV-04-C",
                   br_l2cap_success_stream_no_fcs,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ERM/BV-07-C",
+                  br_l2cap_success_eret_hold_credit +
+                  [TestFunc(lambda: pts.update_pixit_param("L2CAP", "TSPX_generate_local_busy", "False"))],
                   generic_wid_hdl=l2cap_wid_hdl),
     ]
 
