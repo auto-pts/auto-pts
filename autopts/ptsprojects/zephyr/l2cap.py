@@ -233,6 +233,12 @@ def test_cases(ptses):
                  defs.L2CAP_LISTEN_OPT_MODE_OPTIONAL),
     ]
 
+    br_l2cap_success_eret_extended_control = br_l2cap + [
+        TestFunc(btp.l2cap_br_listen_v2, br_psm, br_initial_mtu,
+                 L2CAPConnectionResponse.insufficient_encryption, defs.L2CAP_LISTEN_OPT_ERET |
+                 defs.L2CAP_LISTEN_OPT_EXT_WIN_SIZE),
+    ]
+
     custom_test_cases = [
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-04-C",
                   pre_conditions +
@@ -595,6 +601,9 @@ def test_cases(ptses):
                   generic_wid_hdl=l2cap_wid_hdl),
         ZTestCase("L2CAP", "L2CAP/ERM/BV-15-C",
                   br_l2cap_success_eret,
+                  generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/EWC/BV-01-C",
+                  br_l2cap_success_eret_extended_control,
                   generic_wid_hdl=l2cap_wid_hdl),
     ]
 
