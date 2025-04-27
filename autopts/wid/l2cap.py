@@ -728,10 +728,16 @@ def hdl_wid_113(_: WIDParams):
     return True
 
 
-def hdl_wid_116(_: WIDParams):
+def hdl_wid_116(params: WIDParams):
     '''
     Please send Configure Response.
     '''
+    btp.gap_wait_for_connection()
+    l2cap = btp.get_stack().l2cap
+
+    for channel in l2cap.channels:
+        if params.test_case_name in ['L2CAP/EWC/BV-02-C']:
+            _l2cap_chann_send_safely(channel.id, '00', 1)
     return True
 
 
@@ -1031,4 +1037,21 @@ def hdl_wid_124(_: WIDParams):
     '''
     Please send L2CAP Configuration Request with EWS Option Bit set to 1.
     '''
+    return True
+
+
+def hdl_wid_125(_: WIDParams):
+    '''
+    Please send L2CAP Configuration Request with EWS Option Bit set to 0.
+    '''
+    return True
+
+
+def hdl_wid_4(_: WIDParams):
+    '''
+    Using the Implementation Under Test(IUT) send extended control I - Frame data to the PTS.
+    '''
+    l2cap = get_stack().l2cap
+    for channel in l2cap.channels:
+        _l2cap_chann_send_safely(channel.id, '00', 1)
     return True
