@@ -42,7 +42,7 @@ def hdl_wid_14(params: WIDParams):
                                  'L2CAP/COS/CED/BV-04-C', 'L2CAP/COS/IEX/BV-01-C',
                                  'L2CAP/COS/CFD/BV-10-C', 'L2CAP/COS/CED/BV-10-C',
                                  'L2CAP/COS/CFD/BV-13-C', 'L2CAP/ERM/BV-11-C',
-                                 'L2CAP/ERM/BV-12-C']:
+                                 'L2CAP/ERM/BV-12-C', 'L2CAP/CMC/BI-01-C']:
         l2cap = get_stack().l2cap
         for channel in l2cap.channels:
             try:
@@ -80,7 +80,8 @@ def hdl_wid_22(params: WIDParams):
                                  'L2CAP/COS/CED/BV-04-C', 'L2CAP/COS/ECH/BV-02-C',
                                  'L2CAP/COS/IEX/BV-01-C', 'L2CAP/COS/CFD/BV-10-C',
                                  'L2CAP/COS/CED/BV-10-C', 'L2CAP/COS/CFD/BV-13-C',
-                                 'L2CAP/ERM/BV-11-C', 'L2CAP/ERM/BV-12-C']:
+                                 'L2CAP/ERM/BV-11-C', 'L2CAP/ERM/BV-12-C',
+                                 'L2CAP/CMC/BI-01-C']:
         btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
         return True
 
