@@ -1025,3 +1025,10 @@ def hdl_wid_3(_: WIDParams):
         for channel in l2cap.channels:
             _l2cap_chann_send_safely(channel.id, '00', 1)
     return True
+
+
+def hdl_wid_124(_: WIDParams):
+    '''
+    Please send L2CAP Configuration Request with EWS Option Bit set to 1.
+    '''
+    return True
