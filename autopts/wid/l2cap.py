@@ -1033,3 +1033,10 @@ def hdl_wid_3(_: WIDParams):
             except BTPError:
                 logging.debug("Ignoring expected error on L2CAP sending")
     return True
+
+
+def hdl_wid_124(_: WIDParams):
+    '''
+    Please send L2CAP Configuration Request with EWS Option Bit set to 1.
+    '''
+    return True
