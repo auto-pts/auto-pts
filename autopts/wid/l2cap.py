@@ -943,15 +943,20 @@ def hdl_wid_121(_: WIDParams):
     return True
 
 
-def hdl_wid_6(_: WIDParams):
+def hdl_wid_6(params: WIDParams):
     '''
     Did the Implementation Under Test(IUT) inform the Upper Tester the connection attempt failed?
     '''
     l2cap = btp.get_stack().l2cap
     try:
-        btp.l2cap_conn_v2(None, defs.BTP_BR_ADDRESS_TYPE, l2cap.psm, l2cap.initial_mtu,
-                          options=defs.L2CAP_CONNECT_V2_OPT_ERET)
+        if params.test_case_name in ['L2CAP/CMC/BV-13-C']:
+            btp.l2cap_conn_v2(None, defs.BTP_BR_ADDRESS_TYPE, l2cap.psm, l2cap.initial_mtu,
+                              options=defs.L2CAP_CONNECT_V2_OPT_STREAM)
+        else:
+            btp.l2cap_conn_v2(None, defs.BTP_BR_ADDRESS_TYPE, l2cap.psm, l2cap.initial_mtu,
+                              options=defs.L2CAP_CONNECT_V2_OPT_ERET)
     except:
+        # L2CAP channel connection failed, which matches the test case scenario
         return True
     return False
 
