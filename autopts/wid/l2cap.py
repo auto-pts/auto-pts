@@ -1059,14 +1059,17 @@ def hdl_wid_125(_: WIDParams):
     return True
 
 
-def hdl_wid_4(_: WIDParams):
+def hdl_wid_4(params: WIDParams):
     '''
     Using the Implementation Under Test(IUT) send extended control I - Frame data to the PTS.
     '''
     l2cap = get_stack().l2cap
     for channel in l2cap.channels:
         try:
-            btp.l2cap_send_data(channel.id, '00')
+            if params.test_case_name in ['L2CAP/ECF/BV-08-C']:
+                btp.l2cap_send_data(channel.id, '00', 120)
+            else:
+                btp.l2cap_send_data(channel.id, '00')
         except BTPError:
             logging.debug("Ignoring expected error on L2CAP sending")
     return True
