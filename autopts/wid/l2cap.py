@@ -751,6 +751,14 @@ def hdl_wid_23(params: WIDParams):
     Using the Implementation Under Test(IUT), send L2CAP_Data over the assigned channel with correct DCID to the PTS.
     '''
     l2cap = get_stack().l2cap
+
+    if params.test_case_name in ['L2CAP/LE/CID/BV-01-C', 'L2CAP/LE/CID/BV-02-C']:
+        channel = l2cap.chan_lookup_id(2)
+        if not channel:
+            return False
+        btp.l2cap_send_data(channel.id, '00')
+        return True
+
     for channel in l2cap.channels:
         if params.test_case_name in ['L2CAP/COS/CFD/BV-09-C']:
             btp.l2cap_send_data(channel.id, '00', 48)
@@ -1106,4 +1114,16 @@ def hdl_wid_25(_: WIDParams):
                 btp.l2cap_send_data(channel.id, '00')
             except BTPError:
                 logging.debug("Ignoring expected error on L2CAP sending")
+    return True
+
+
+br_psm = 0x1001
+br_initial_mtu = 120
+
+
+def hdl_wid_263(_: WIDParams):
+    '''
+    Please send L2CAP Connection REQ to PTS.
+    '''
+    btp.l2cap_conn(None, defs.BTP_BR_ADDRESS_TYPE, br_psm, br_initial_mtu)
     return True
