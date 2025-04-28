@@ -45,7 +45,8 @@ def hdl_wid_14(params: WIDParams):
                                  'L2CAP/CMC/BI-02-C', 'L2CAP/CMC/BI-03-C',
                                  'L2CAP/CMC/BI-04-C', 'L2CAP/CMC/BV-10-C',
                                  'L2CAP/CMC/BV-11-C', 'L2CAP/CMC/BI-05-C',
-                                 'L2CAP/CMC/BI-06-C', 'L2CAP/EWC/BV-03-C']:
+                                 'L2CAP/CMC/BI-06-C', 'L2CAP/EWC/BV-03-C',
+                                 'L2CAP/COS/CFD/BV-09-C']:
         l2cap = get_stack().l2cap
         for channel in l2cap.channels:
             _l2cap_chan_disconn_safely(channel.id)
@@ -95,7 +96,7 @@ def hdl_wid_22(params: WIDParams):
                                  'L2CAP/CMC/BI-03-C', 'L2CAP/CMC/BI-04-C',
                                  'L2CAP/CMC/BV-10-C', 'L2CAP/CMC/BV-11-C',
                                  'L2CAP/CMC/BI-05-C', 'L2CAP/CMC/BI-06-C',
-                                 'L2CAP/EWC/BV-03-C']:
+                                 'L2CAP/EWC/BV-03-C', 'L2CAP/COS/CFD/BV-09-C']:
         btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
         return True
 
@@ -702,7 +703,7 @@ def hdl_wid_49(params: WIDParams):
     btp.gap_wait_for_connection()
     l2cap = btp.get_stack().l2cap
 
-    if params.test_case_name in ['L2CAP/COS/CFD/BV-08-C']:
+    if params.test_case_name in ['L2CAP/COS/CFD/BV-08-C', 'L2CAP/COS/CFD/BV-09-C']:
         btp.l2cap_conn(None, defs.BTP_BR_ADDRESS_TYPE, l2cap.psm, l2cap.initial_mtu)
 
     if params.test_case_name in ['L2CAP/COS/CFD/BV-10-C']:
@@ -742,13 +743,16 @@ def hdl_wid_116(params: WIDParams):
     return True
 
 
-def hdl_wid_23(_: WIDParams):
+def hdl_wid_23(params: WIDParams):
     '''
     Using the Implementation Under Test(IUT), send L2CAP_Data over the assigned channel with correct DCID to the PTS.
     '''
     l2cap = get_stack().l2cap
     for channel in l2cap.channels:
-        btp.l2cap_send_data(channel.id, '00')
+        if params.test_case_name in ['L2CAP/COS/CFD/BV-09-C']:
+            btp.l2cap_send_data(channel.id, '00', 48)
+        else:
+            btp.l2cap_send_data(channel.id, '00')
     return True
 
 
