@@ -1127,3 +1127,11 @@ def hdl_wid_263(_: WIDParams):
     '''
     btp.l2cap_conn(None, defs.BTP_BR_ADDRESS_TYPE, br_psm, br_initial_mtu)
     return True
+
+
+def hdl_wid_264(_: WIDParams):
+    '''
+    Please place the IUT in L2CAP connectable mode.
+    Description: PTS requires that the IUT be in L2CAP connectable mode. The PTS will open an L2CAP channel.
+    '''
+    return True
