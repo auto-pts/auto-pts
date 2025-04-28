@@ -1070,3 +1070,17 @@ def hdl_wid_4(_: WIDParams):
         except BTPError:
             logging.debug("Ignoring expected error on L2CAP sending")
     return True
+
+
+def hdl_wid_24(_: WIDParams):
+    '''
+    Using the Implementation Under Test(IUT), queue up and send two(2) extended control field data(I - Frames) to the PTS.
+    '''
+    l2cap = get_stack().l2cap
+    for i in range(0,2):
+        for channel in l2cap.channels:
+            try:
+                btp.l2cap_send_data(channel.id, '00')
+            except BTPError:
+                logging.debug("Ignoring expected error on L2CAP sending")
+    return True
