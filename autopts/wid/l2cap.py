@@ -1056,3 +1056,15 @@ def hdl_wid_4(_: WIDParams):
     for channel in l2cap.channels:
         _l2cap_chann_send_safely(channel.id, '00', 1)
     return True
+
+
+def hdl_wid_24(_: WIDParams):
+    '''
+    Using the Implementation Under Test(IUT), queue up and send two(2) extended control field
+    data(I - Frames) to the PTS.
+    '''
+    l2cap = get_stack().l2cap
+    for _ in range(0, 2):
+        for channel in l2cap.channels:
+            _l2cap_chann_send_safely(channel.id, '00', 1)
+    return True
