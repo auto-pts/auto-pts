@@ -345,6 +345,35 @@ iut_config = {
             'GAP/SEC/SEM/BI-08-C',
         ]
     },
+    "br_l2cap_ret_fc.conf": {
+        "overlay": {
+            'CONFIG_BT_CLASSIC': 'y',
+            'CONFIG_BT_CENTRAL': 'y',
+            'CONFIG_BT_PERIPHERAL': 'y',
+            'CONFIG_BT_SMP': 'y',
+            'CONFIG_BT_L2CAP_DYNAMIC_CHANNEL': 'y',
+            'CONFIG_BT_PAGE_TIMEOUT': '0xFFFF',
+            'CONFIG_BT_L2CAP_RET': 'y',
+            'CONFIG_BT_L2CAP_FC': 'y',
+            'CONFIG_BT_L2CAP_ENH_RET': 'n',
+            'CONFIG_BT_L2CAP_STREAM': 'n',
+            'CONFIG_BT_L2CAP_FCS': 'n',
+            'CONFIG_BT_L2CAP_EXT_WIN_SIZE': 'n',
+            'CONFIG_BT_L2CAP_MAX_WINDOW_SIZE': '5',
+        },
+        "test_cases": [
+            'L2CAP/COS/CFD/BV-10-C',
+            'L2CAP/COS/RTX/BV-01-C',
+            'L2CAP/COS/RTX/BV-02-C',
+            'L2CAP/COS/RTX/BV-03-C',
+            'L2CAP/COS/CED/BV-10-C',
+            'L2CAP/COS/FLC/BV-01-C',
+            'L2CAP/COS/FLC/BV-02-C',
+            'L2CAP/COS/FLC/BV-03-C',
+            'L2CAP/COS/FLC/BV-04-C',
+            'L2CAP/COS/CFD/BV-13-C',
+        ]
+    },
 }
 
 retry_config = {
