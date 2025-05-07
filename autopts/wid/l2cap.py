@@ -917,3 +917,17 @@ def hdl_wid_18(_: WIDParams):
     for channel in l2cap.channels:
         btp.l2cap_credits(channel.id)
     return True
+
+
+def hdl_wid_10(_: WIDParams):
+    '''
+    Place the Implementation Under Test(IUT) in a state to receive data from the PTS.
+    '''
+    return True
+
+
+def hdl_wid_131(_: WIDParams):
+    '''
+    Please send a RR using S-Frame.
+    '''
+    return True
