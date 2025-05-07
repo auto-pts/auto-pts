@@ -493,6 +493,10 @@ def test_cases(ptses):
                   br_l2cap_success_eret_hold_credit +
                   [TestFunc(lambda: pts.update_pixit_param("L2CAP", "TSPX_generate_local_busy", "False"))],
                   generic_wid_hdl=l2cap_wid_hdl),
+        ZTestCase("L2CAP", "L2CAP/ERM/BV-22-C",
+                  br_l2cap_success_eret_hold_credit +
+                  [TestFunc(lambda: pts.update_pixit_param("L2CAP", "TSPX_generate_local_busy", "False"))],
+                  generic_wid_hdl=l2cap_wid_hdl),
     ]
 
     test_case_name_list = pts.get_test_case_list('L2CAP')
