@@ -17,7 +17,7 @@ import logging
 import re
 
 from autopts.ptsprojects.stack import get_stack
-from autopts.pybtp import btp
+from autopts.pybtp import btp, defs
 from autopts.pybtp.types import IOCap, WIDParams
 from autopts.wid import generic_wid_hdl
 
@@ -33,6 +33,10 @@ def hdl_wid_100(params: WIDParams):
     btp.gap_conn()
     get_stack().gap.wait_for_connection(30)
 
+    if params.test_case_name in ['SM/CEN/SCCT/BV-03-C', 'SM/CEN/SCCT/BV-05-C',
+                                 'SM/CEN/SCCT/BV-07-C', 'SM/CEN/SCCT/BV-09-C']:
+        btp.gap_pair()
+
     return True
 
 
@@ -41,8 +45,26 @@ def hdl_wid_101(_: WIDParams):
     return True
 
 
-def hdl_wid_102(_: WIDParams):
-    btp.gap_disconn()
+SM_ACL_DISCONN_ROUND = 0
+
+
+def hdl_wid_102(params: WIDParams):
+    global SM_ACL_DISCONN_ROUND
+    if params.test_case_name in ['SM/CEN/SCCT/BV-03-C', 'SM/CEN/SCCT/BV-05-C']:
+        if SM_ACL_DISCONN_ROUND == 1:
+            btp.gap_disconn()
+        else:
+            btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
+    elif params.test_case_name in ['SM/CEN/SCCT/BV-07-C', 'SM/CEN/SCCT/BV-09-C']:
+        if SM_ACL_DISCONN_ROUND == 1:
+            btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
+        else:
+            btp.gap_disconn()
+    else:
+        btp.gap_disconn()
+
+    SM_ACL_DISCONN_ROUND = SM_ACL_DISCONN_ROUND + 1
+
     return get_stack().gap.wait_for_disconnection(30)
 
 
@@ -238,4 +260,38 @@ def hdl_wid_20011(params: WIDParams):
 
 def hdl_wid_20115(_: WIDParams):
     btp.gap_disconn()
+    return True
+
+
+def hdl_wid_172(_: WIDParams):
+    '''
+    Please initiate a connection over BR/EDR to the PTS, and initiate pairing process.
+    '''
+    btp.gap_conn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
+    btp.gap_wait_for_connection()
+    btp.gap_pair(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
+    return True
+
+
+def hdl_wid_20117(_: WIDParams):
+    '''
+    Please start encryption. Use previously distributed key if available.
+    Description: Verify that the Implementation Under Test (IUT) can successfully start and complete encryption.
+    '''
+    return True
+
+
+def hdl_wid_112(_: WIDParams):
+    '''
+    Please start pairing feature exchange over BR/EDR.
+    '''
+    return True
+
+
+def hdl_wid_171(_: WIDParams):
+    '''
+    Please prepare IUT into a connectable mode in BR/EDR.
+    '''
+    btp.gap_set_conn()
+    btp.gap_set_gendiscov()
     return True
