@@ -899,3 +899,20 @@ def hdl_wid_8(_: WIDParams):
     Place the Implementation Under Test(IUT) in a state to receive I - Frames from the PTS.
     '''
     return True
+
+
+def hdl_wid_19(_: WIDParams):
+    '''
+    Is the Upper Tester of the Implementation Under Test able to force the IUT into a Local Busy Condition
+    '''
+    return True
+
+
+def hdl_wid_18(_: WIDParams):
+    '''
+    The Upper Tester should now clear the Local Busy Condition which should cause the Implementation Under Test(IUT) to send an RR S - Frame.
+    '''
+    l2cap = get_stack().l2cap
+    for channel in l2cap.channels:
+        btp.l2cap_credits(channel.id)
+    return True
