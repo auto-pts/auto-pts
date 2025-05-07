@@ -286,3 +286,12 @@ def hdl_wid_112(_: WIDParams):
     Please start pairing feature exchange over BR/EDR.
     '''
     return True
+
+
+def hdl_wid_171(_: WIDParams):
+    '''
+    Please prepare IUT into a connectable mode in BR/EDR.
+    '''
+    btp.gap_set_conn()
+    btp.gap_set_gendiscov()
+    return True
