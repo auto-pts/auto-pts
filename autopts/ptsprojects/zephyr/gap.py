@@ -18,6 +18,7 @@ import binascii
 
 from autopts.pybtp import btp
 from autopts.pybtp.types import Addr, IOCap, AdType, AdFlags, Prop, Perm, UUID, UriScheme
+from autopts.pybtp.types import L2CAPConnectionResponse
 from autopts.client import get_unique_name
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
@@ -68,6 +69,10 @@ iut_flags = '11'
 iut_svcs = '1111'
 iut_uri = UriScheme.https + 'github.com/auto-pts'.encode()
 iut_le_supp_feat = 'FF'
+
+br_psm = 0x1001
+br_psm_2 = 0x2001
+br_initial_mtu = 120
 
 # Ad data for periodic advertising in format (type, data)
 # Value: shortened name
@@ -219,9 +224,375 @@ def test_cases(ptses):
         # TODO: Get PTS address type
         TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public)]
 
+    br_pre_cond = pre_conditions + [
+        TestFunc(lambda: pts.update_pixit_param(
+            "GAP", "TSPX_psm", format(br_psm, '04x'))),
+        TestFunc(lambda: pts.update_pixit_param(
+            "GAP", "TSPX_psm_2", format(br_psm_2, '04x'))),
+        TestFunc(lambda: pts.update_pixit_param(
+            "GAP", "TSPX_delete_link_key", "FALSE")),
+        TestFunc(lambda: pts.update_pixit_param(
+            "GAP", "TSPX_delete_ltk", "FALSE")),
+        TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
+    ]
+
+    br_l2cap = br_pre_cond + [
+        TestFunc(btp.core_reg_svc_l2cap),
+        TestFunc(stack.l2cap_init, br_psm, br_initial_mtu),
+    ]
+
+    br_l2cap_success = br_l2cap + [
+        TestFunc(btp.l2cap_br_listen, br_psm, br_initial_mtu,
+                 L2CAPConnectionResponse.insufficient_encryption),
+    ]
+
+    br_l2cap_authen = br_l2cap + [
+        TestFunc(btp.l2cap_br_listen, br_psm, br_initial_mtu,
+                 L2CAPConnectionResponse.insufficient_authentication),
+    ]
+
+    br_l2cap_secure_authen = br_l2cap + [
+        TestFunc(btp.l2cap_br_listen, br_psm, br_initial_mtu,
+                 L2CAPConnectionResponse.insufficient_secure_authentication),
+    ]
+
+    br_l2cap_keysize = br_l2cap + [
+        TestFunc(btp.l2cap_br_listen, br_psm, br_initial_mtu,
+                 L2CAPConnectionResponse.insufficient_encryption_key_size),
+    ]
+
+    br_l2cap_author = br_l2cap + [
+        TestFunc(btp.l2cap_br_listen, br_psm, br_initial_mtu,
+                 L2CAPConnectionResponse.insufficient_authorization),
+    ]
+
     custom_test_cases = [
         ZTestCase("GAP", "GAP/SEC/CSIGN/BI-04-C",
                   cmds=pre_conditions + init_gatt_db2,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/MOD/NBON/BV-03-C",
+                  cmds=br_pre_cond,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-02-C",
+                  cmds=br_l2cap_success,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/IDLE/BON/BV-03-C",
+                  cmds=br_l2cap,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/IDLE/BON/BV-04-C",
+                  cmds=br_l2cap + [
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/IDLE/BON/BV-05-C",
+                  cmds=br_l2cap,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/IDLE/BON/BV-06-C",
+                  cmds=br_l2cap + [
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/EST/LIE/BV-02-C",
+                  cmds=br_pre_cond,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-04-C",
+                  cmds=br_l2cap_success + [
+                      TestFunc(btp.gap_set_gendiscov),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-08-C",
+                  cmds=br_l2cap,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-05-C",
+                  cmds=br_l2cap + [
+                      TestFunc(btp.gap_set_bondable_off),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-50-C",
+                  cmds=br_l2cap + [
+                      TestFunc(btp.gap_set_bondable_off),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-06-C",
+                  cmds=br_l2cap + [
+                      TestFunc(btp.gap_set_bondable_off),
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-07-C",
+                  cmds=br_l2cap + [
+                      TestFunc(btp.gap_set_bondable_off),
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-51-C",
+                  cmds=br_l2cap + [
+                      TestFunc(btp.gap_set_bondable_off),
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-52-C",
+                  cmds=br_l2cap + [
+                      TestFunc(btp.gap_set_bondable_off),
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-09-C",
+                  cmds=br_l2cap + [
+                      TestFunc(btp.gap_set_bondable_off),
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-53-C",
+                  cmds=br_l2cap + [
+                      TestFunc(btp.gap_set_bondable_off),
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-10-C",
+                  cmds=br_l2cap_success + [
+                      TestFunc(btp.gap_set_bondable_off),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BI-24-C",
+                  cmds=br_l2cap_success + [
+                      TestFunc(btp.gap_set_bondable_off),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/DM/NCON/BV-01-C",
+                  cmds=br_pre_cond,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/DM/NBON/BV-01-C",
+                  cmds=br_pre_cond + [
+                      TestFunc(btp.gap_set_conn),
+                      TestFunc(btp.gap_set_gendiscov),
+                      TestFunc(btp.gap_set_bondable_off),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/DM/BON/BV-01-C",
+                  cmds=br_pre_cond,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-11-C",
+                  cmds=br_l2cap_authen + [
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-12-C",
+                  cmds=br_l2cap_authen + [
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-13-C",
+                  cmds=br_l2cap_authen + [
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-14-C",
+                  cmds=br_l2cap_authen + [
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-15-C",
+                  cmds=br_l2cap_secure_authen + [
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-47-C",
+                  cmds=br_l2cap_authen + [
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-48-C",
+                  cmds=br_l2cap_authen + [
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-49-C",
+                  cmds=br_l2cap_secure_authen + [
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-16-C",
+                  cmds=br_l2cap + [
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-17-C",
+                  cmds=br_l2cap + [
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-18-C",
+                  cmds=br_l2cap + [
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-19-C",
+                  cmds=br_l2cap + [
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-20-C",
+                  cmds=br_l2cap + [
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-54-C",
+                  cmds=br_l2cap + [
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-55-C",
+                  cmds=br_l2cap + [
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BI-11-C",
+                  cmds=br_l2cap_success,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BI-12-C",
+                  cmds=br_l2cap,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BI-02-C",
+                  cmds=br_l2cap_success,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BI-06-C",
+                  cmds=br_l2cap,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BI-03-C",
+                  cmds=br_l2cap_authen + [
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BI-07-C",
+                  cmds=br_l2cap + [
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BI-31-C",
+                  cmds=br_l2cap_secure_authen + [
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BI-14-C",
+                  cmds=br_l2cap_success,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BI-15-C",
+                  cmds=br_l2cap_success,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BI-16-C",
+                  cmds=br_l2cap_authen + [
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BI-04-C",
+                  cmds=br_l2cap_secure_authen + [
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BI-17-C",
+                  cmds=br_l2cap,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BI-18-C",
+                  cmds=br_l2cap,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BI-19-C",
+                  cmds=br_l2cap + [
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BI-08-C",
+                  cmds=br_l2cap + [
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/DM/LEP/BV-08-C",
+                  cmds=br_pre_cond + [
+                      TestFunc(btp.gap_set_gendiscov),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/DM/LEP/BV-09-C",
+                  cmds=br_pre_cond,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/DM/LEP/BV-10-C",
+                  cmds=br_pre_cond,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/DM/LEP/BV-11-C",
+                  cmds=br_pre_cond,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/DM/LEP/BV-12-C",
+                  cmds=br_pre_cond,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/DM/LEP/BV-15-C",
+                  cmds=br_pre_cond,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/DM/LEP/BV-20-C",
+                  cmds=br_pre_cond,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/DM/LEP/BV-14-C",
+                  cmds=br_pre_cond,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/DM/LEP/BV-16-C",
+                  cmds=br_pre_cond,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/DM/LEP/BV-21-C",
+                  cmds=br_pre_cond,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/DM/LEP/BV-17-C",
+                  cmds=br_pre_cond,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/DM/LEP/BI-01-C",
+                  cmds=br_pre_cond,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/DM/LEP/BV-22-C",
+                  cmds=br_pre_cond,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/DM/LEP/BV-19-C",
+                  cmds=br_pre_cond,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/DM/LEP/BI-02-C",
+                  cmds=br_pre_cond,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/DM/LEP/BV-23-C",
+                  cmds=br_pre_cond,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/DM/LEP/BV-18-C",
+                  cmds=br_pre_cond + [
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/DM/LEP/BV-13-C",
+                  cmds=br_pre_cond + [
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BI-27-C",
+                  cmds=br_l2cap + [
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BI-32-C",
+                  cmds=br_l2cap + [
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BI-26-C",
+                  cmds=br_l2cap + [
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BI-25-C",
+                  cmds=br_l2cap,
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-25-C",
+                  cmds=br_l2cap + [
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BV-30-C",
+                  cmds=br_l2cap + [
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
                   generic_wid_hdl=gap_wid_hdl),
     ]
 

@@ -102,7 +102,7 @@ def hdl_wid_11(_: WIDParams):
     addr = btp.pts_addr_get()
 
     btp.csip_discover(addr_type, addr)
-    ev = stack.csip.wait_sirk_ev(addr_type, addr, 30, remove=False)
+    ev = stack.csip.wait_sirk_ev(addr_type, addr, 30)
     if ev is None:
         return False
 
@@ -177,7 +177,12 @@ def hdl_wid_20100(params: WIDParams):
 
     btp.gap_conn(addr, addr_type)
     stack.gap.wait_for_connection(timeout=10, addr=addr)
-    stack.gap.gap_wait_for_sec_lvl_change(level=2, timeout=30, addr=addr)
+    sec_lvl = stack.gap.gap_wait_for_sec_lvl_change(level=2, timeout=10, addr=addr)
+
+    # Workaround for issue described by PTS Request ID 170874
+    if sec_lvl != 2:
+        btp.gap_pair(addr, addr_type)
+        stack.gap.gap_wait_for_sec_lvl_change(level=2, timeout=30, addr=addr)
 
     #CSIP/CL/SP/BV-07-C will receive the WID 20101. Hence, no need to perform discovery here.
 
@@ -187,7 +192,7 @@ def hdl_wid_20100(params: WIDParams):
             'CSIP/CL/SPE/BI-02-C' in params.test_case_name or\
             'CSIP/CL/SPE/BI-03-C' in params.test_case_name:
         btp.csip_discover(addr_type, addr)
-        ev = stack.csip.wait_sirk_ev(addr_type, addr, 30, remove=False)
+        ev = stack.csip.wait_sirk_ev(addr_type, addr, 30)
         if ev is None:
             return False
         stack.csip.member_cnt += 1
@@ -212,7 +217,7 @@ def hdl_wid_20101(params: WIDParams):
         addr = btp.pts_addr_get()
 
     btp.csip_discover(addr_type, addr)
-    ev = stack.csip.wait_sirk_ev(addr_type, addr, 30, remove=False)
+    ev = stack.csip.wait_sirk_ev(addr_type, addr, 30)
     if ev is None:
         return False
 
@@ -233,7 +238,7 @@ def hdl_wid_20103(_: WIDParams):
     addr = btp.pts_addr_get()
 
     btp.csip_discover(addr_type, addr)
-    ev = stack.csip.wait_sirk_ev(addr_type, addr, 30, remove=False)
+    ev = stack.csip.wait_sirk_ev(addr_type, addr, 30)
     if ev is None:
         return False
 
@@ -376,7 +381,7 @@ def hdl_wid_20116(params: WIDParams):
     addr = btp.pts_addr_get()
 
     btp.csip_discover(addr_type, addr)
-    ev = stack.csip.wait_sirk_ev(addr_type, addr, 30, remove=False)
+    ev = stack.csip.wait_sirk_ev(addr_type, addr, 30)
     if ev is None:
         return False
 

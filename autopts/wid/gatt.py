@@ -704,15 +704,15 @@ def hdl_wid_52(params: WIDParams):
 
     if attr.uuid == UUID.CEP:
         (value_read,) = struct.unpack("<H", attr.value)
-        value_read = '{0:04x}'.format(value_read)
+        value_read_str = '{0:04x}'.format(value_read)
     else:
         value_read = hexlify(attr.value).upper()
+        value_read_str = value_read.decode('utf-8')
 
-    value_read = value_read.decode('utf-8')
     # PTS may select characteristic with value bigger than MTU but asks to
     # verify only MTU bytes of data
-    if value_read != value:
-        if not value_read.startswith(value):
+    if value_read_str != value:
+        if not value_read_str.startswith(value):
             return False
 
     return True
@@ -1686,7 +1686,14 @@ def hdl_wid_122(_: WIDParams):
     return '0000'
 
 
-def hdl_wid_130(_: WIDParams):
+def hdl_wid_130(params: WIDParams):
+    # Please delete security key before connecting to PTS if IUT was bonded previously.
+    btp.gap_unpair()
+
+    # This is needed until ES-27410 is incorporated
+    if params.test_case_name in ['GATT/SR/GAI/BV-01-C', 'GATT/SR/GAN/BV-01-C']:
+       btp.gap_set_bondable_off();
+
     return True
 
 

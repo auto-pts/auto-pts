@@ -204,6 +204,7 @@ Commands and responses:
                         3 = Use active scan type
                         4 = Use observation procedure
                         5 = Use own ID address
+                        6 = Use filter accept list
 
                 This command is used to start discovery.
 
@@ -213,6 +214,8 @@ Commands and responses:
                 discoverable). This procedure can use either passive or active
                 scan type. If "Use observation procedure" (bit 4) is set,
                 "Use limited discovery procedure" (bit 2) is excluded.
+                If "Use filter accept list" (bit 6) is set, then the filter
+                accept list will be used to filter discovered devices.
 
                 In case of an error, the error response will be returned.
 
@@ -658,6 +661,42 @@ Commands and responses:
 
                 In case of an error, the error response will be returned.
 
+        Opcode 0x2a - Pair V2 command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Mode (1 octet)
+                                        Level (1 octet)
+                                        Flags (1 octet)
+                Return Parameters:      <none>
+
+                This command is used to initiate security with remote. If
+                peer is already paired IUT is expected to enable security
+                (encryption) with peer. If peer is not paired IUT shall
+                start pairing process.
+
+                Valid Mode:
+                        0x01 = Security Mode 1
+                        0x02 = Security Mode 2
+                        0x03 = Security Mode 3
+                        0x04 = Security Mode 4
+                        0xFF = Any Mode
+
+                Valid Level:
+                        0x00 = Security Level 0
+                        0x01 = Security Level 1
+                        0x02 = Security Level 2
+                        0x03 = Security Level 3
+                        0x04 = Security Level 4
+                        0xFF = Any Level
+
+                Possible values for the Flags parameter are a bit-wise OR
+                of the following bits:
+                        0 = Force pairing procedure
+
+                In case of an error, the error response will be returned.
+
 Events:
         Opcode 0x80 - New Settings event
 
@@ -853,3 +892,14 @@ Events:
 
                 This event can be sent after IUT received Periodic Advertising Sync
                 Transfer was received.
+
+        Opcode 0x91 - Encryption Change Received event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Enabled (1 octet)
+                                        Key_Size (1 octet)
+
+                This event can be sent after IUT received encryption change event was received.
+                The parameter `Enabled` is the flag whether the link is encrypted.

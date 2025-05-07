@@ -79,7 +79,7 @@ class AutoPTSMagicTagParser(argparse.ArgumentParser):
     def __init__(self, add_help=True):
         super().__init__(description='Github Magic Tag parser', add_help=add_help)
 
-        self.add_argument("included", nargs='+', default=None,
+        self.add_argument("included", nargs='*', default=[],
                           help="abc")
 
         self.add_argument("-e", "--excluded", nargs='+', default=[],
@@ -192,6 +192,8 @@ def autopts_magic_tag_cb(cron, comment_info):
         parser = config.get('magic_tag_parser', AutoPTSMagicTagParser)()
         try:
             parsed_args = parser.parse_args(command_args)
+            if len(parsed_args.included) == 0 and 'default_test_cases' in config:
+                parsed_args.included = config['default_test_cases'].split()
         except BaseException as e:
             log(e)
             continue
@@ -239,12 +241,24 @@ def schedule_pr_job(cron, pr_info, job_config):
         test_case_count = len(test_cases)
 
         if test_case_count > 0:
+            skipped_test_cases = []
+            if ('test_case_limit_per_comment' in job_config and
+                    job_config['test_case_limit_per_comment'] < test_case_count):
+                test_case_count = job_config['test_case_limit_per_comment']
+                skipped_test_cases = test_cases[test_case_count:]
+                test_cases = test_cases[:test_case_count]
+                job_config['included'] = test_cases
+
             if job_config['test_case_limit']:
                 job_config['included'] = test_cases
 
             estimations = f', test case count: {test_case_count}, ' \
                           f'estimated duration: {est_duration}'
             estimations += f'<details><summary>Test cases to be run</summary>{"<br>".join(test_cases)}</details>\n'
+
+            if skipped_test_cases:
+                estimations += (f'<details><summary>Test cases skipped due to limit, count: {len(skipped_test_cases)}</summary>'
+                                f'{"<br>".join(skipped_test_cases)}</details>\n')
         else:
             estimations = f', test case count: estimation not available'
 

@@ -306,7 +306,6 @@ changes_to_prepend = {
     },
     f'{AUTOPTS_REPO}/autopts/ptsprojects/stack/layers/__init__.py': {1: f"from .{profile_name_lower} import *\n"},
     f'{AUTOPTS_REPO}/autopts/ptsprojects/stack/stack.py': {
-        1: f'    "{profile_name_upper}": 1 << defs.BTP_SERVICE_ID_{profile_name_upper},\n',
         2: f"        self.{profile_name_lower} = None\n",
         3: f"    def {profile_name_lower}_init(self):\n        self.{profile_name_lower} = {profile_name_upper}()\n\n",
         4: f"        if self.{profile_name_lower}:\n            self.{profile_name_lower}_init()\n\n",
@@ -314,20 +313,24 @@ changes_to_prepend = {
     f'{AUTOPTS_REPO}/autopts/wid/__init__.py': {1: f"from .{profile_name_lower} import {profile_name_lower}_wid_hdl\n"},
     f'{AUTOPTS_REPO}/autopts/pybtp/btp/btp.py': {
         1: f"""def core_reg_svc_{profile_name_lower}():
-    logging.debug("%s", core_reg_svc_{profile_name_lower}.__name__)
-
-    iutctl = get_iut()
-    iutctl.btp_socket.send_wait_rsp(*CORE['{profile_name_lower}_reg'])
+    core_reg_svc_univ("{profile_name_lower}_reg", "{profile_name_upper}")
 
 
 """,
         2: f"from .{profile_name_lower} import {profile_name_upper}_EV\n",
         3: f"        defs.BTP_SERVICE_ID_{profile_name_upper}: ({profile_name_upper}_EV, stack.{profile_name_lower}),\n",
-        4: f"    \"{profile_name_lower}_reg\": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,\n"
-           f"                defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_{profile_name_upper}),\n",
     },
     f'{AUTOPTS_REPO}/autopts/pybtp/btp/__init__.py': {1: f"from autopts.pybtp.btp.{profile_name_lower} import *\n"},
     f'{AUTOPTS_REPO}/doc/overview.txt': {1: f" {profile_id} {profile_name_upper} Service\n"},
+    f'{AUTOPTS_REPO}/autopts/pybtp/common.py': {
+        1: f"""    "{profile_name_upper}": {'{'}
+        "supported_commands": defs.BTP_{profile_name_upper}_CMD_READ_SUPPORTED_COMMANDS
+    {'}'},
+""",
+        2: f"""    "{profile_name_lower}_reg": (defs.BTP_SERVICE_ID_{profile_name_upper}, defs.BTP_{profile_name_upper}_CMD_REGISTER_SERVICE,
+                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_{profile_name_upper}),
+""",
+    },
 }
 
 

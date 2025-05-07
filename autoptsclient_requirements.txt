@@ -12,3 +12,4 @@ openpyxl
 pyyaml
 yepkit-pykush
 hidapi
+pyudev

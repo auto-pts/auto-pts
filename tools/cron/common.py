@@ -590,6 +590,7 @@ def _run_test(config):
     test_cases_completed = False
     backup = config['auto_pts'].get('use_backup', False)
     timeguard = config['cron']['test_run_timeguard']
+    startup_fail_count = config['cron'].get('startup_fail_max_count', 2)
     results_file_path = config['file_paths']['TC_STATS_JSON_FILE']
     all_stats_file_path = config['file_paths']['ALL_STATS_JSON_FILE']
     report_file_path = config['file_paths']['REPORT_TXT_FILE']
@@ -626,11 +627,17 @@ def _run_test(config):
 
         if not test_cases_completed and not os.path.exists(results_file_path):
             if timedelta(seconds=current_time - last_check_time) > timedelta(seconds=timeguard):
+                if startup_fail_count == 0:
+                    log("Test run has not been started on time. No more retries...")
+                    break
+
+                startup_fail_count -= 1
                 log("Test run has not been started on time. Restarting processes...")
                 srv_process, bot_process = _restart_processes(config)
 
             continue
 
+        startup_fail_count = config['cron'].get('startup_fail_max_count', 2)
         last_check_time = current_time
 
         if (not test_cases_completed and

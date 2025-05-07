@@ -14,7 +14,6 @@ MCP/CL/CGGIT/CHA/BV-12-C: Request ID 28478
 MCP/CL/CGGIT/CHA/BV-14-C: Request ID 28478
 MCP/CL/CGGIT/CHA/BV-15-C: Request ID 28478
 
-BASS/SR/CP/BV-21-C:  https://github.com/zephyrproject-rtos/zephyr/issues/64871 No API to request the Broadcast Code without sync
 TBS/SR/CP/BV-10-C: https://github.com/zephyrproject-rtos/zephyr/issues/41738 Disallow Join not possible at runtime
 TBS/SR/SPE/BI-05-C: TSE24847
 GTBS/SR/CP/BV-10-C: https://github.com/zephyrproject-rtos/zephyr/issues/41738 Disallow Join not possible at runtime
