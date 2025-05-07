@@ -46,10 +46,17 @@ def hdl_wid_101(_: WIDParams):
 
 
 SM_ACL_DISCONN_ROUND = 0
+SM_TEST_CASE_NAME = None
 
 
 def hdl_wid_102(params: WIDParams):
     global SM_ACL_DISCONN_ROUND
+    global SM_TEST_CASE_NAME
+
+    if SM_TEST_CASE_NAME != params.test_case_name:
+        SM_TEST_CASE_NAME = params.test_case_name
+        SM_ACL_DISCONN_ROUND = 0
+
     if params.test_case_name in ['SM/CEN/SCCT/BV-03-C', 'SM/CEN/SCCT/BV-05-C']:
         if SM_ACL_DISCONN_ROUND == 1:
             btp.gap_disconn()
