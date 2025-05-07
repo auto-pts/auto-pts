@@ -33,7 +33,7 @@ def hdl_wid_100(params: WIDParams):
     btp.gap_conn()
     get_stack().gap.wait_for_connection(30)
 
-    if params.test_case_name in ['SM/CEN/SCCT/BV-03-C']:
+    if params.test_case_name in ['SM/CEN/SCCT/BV-03-C', 'SM/CEN/SCCT/BV-05-C']:
         btp.gap_pair()
 
     return True
@@ -49,7 +49,7 @@ SM_ACL_DISCONN_ROUND = 0
 
 def hdl_wid_102(params: WIDParams):
     global SM_ACL_DISCONN_ROUND
-    if params.test_case_name in ['SM/CEN/SCCT/BV-03-C']:
+    if params.test_case_name in ['SM/CEN/SCCT/BV-03-C', 'SM/CEN/SCCT/BV-05-C']:
         if SM_ACL_DISCONN_ROUND == 1:
             btp.gap_disconn()
         else:
