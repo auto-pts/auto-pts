@@ -53,3 +53,10 @@ def hdl_wid_6003(_: WIDParams):
     If necessary take action to respond to the Service Search Attribute operation appropriately.
     '''
     return True
+
+
+def hdl_wid_1(_: WIDParams):
+    '''
+    Are all browsable service classes listed below?
+    '''
+    return True
