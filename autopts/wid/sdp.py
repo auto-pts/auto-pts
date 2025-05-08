@@ -27,3 +27,15 @@ def sdp_wid_hdl(wid, description, test_case_name):
 
 
 # wid handlers section begin
+def hdl_wid_6000(_: WIDParams):
+    '''
+    If necessary take action to accept the SDP channel connection.
+    '''
+    return True
+
+
+def hdl_wid_6002(_: WIDParams):
+    '''
+    If necessary take action to accept the Service Search operation.
+    '''
+    return True
