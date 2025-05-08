@@ -46,3 +46,10 @@ def hdl_wid_6001(_: WIDParams):
     If necessary take action to respond to the Service Attribute operation appropriately.
     '''
     return True
+
+
+def hdl_wid_6003(_: WIDParams):
+    '''
+    If necessary take action to respond to the Service Search Attribute operation appropriately.
+    '''
+    return True
