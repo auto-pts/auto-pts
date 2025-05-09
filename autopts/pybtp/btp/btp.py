@@ -600,6 +600,10 @@ def core_reg_svc_pbp():
     core_reg_svc_univ("pbp_reg", "PBP")
 
 
+def core_reg_svc_rfcomm():
+    core_reg_svc_univ("rfcomm_reg", "RFCOMM")
+
+
 # GENERATOR append 1
 
 def core_reg_svc_rsp_succ(service_name):
@@ -709,6 +713,7 @@ from .tbs import TBS_EV
 from .tmap import TMAP_EV
 from .ots import OTS_EV
 from .pbp import PBP_EV
+from .rfcomm import RFCOMM_EV
 # GENERATOR append 2
 
 from autopts.pybtp.iutctl_common import set_event_handler
@@ -749,6 +754,7 @@ def event_handler(hdr, data):
         defs.BTP_SERVICE_ID_TMAP: (TMAP_EV, stack.tmap),
         defs.BTP_SERVICE_ID_OTS: (OTS_EV, stack.ots),
         defs.BTP_SERVICE_ID_PBP: (PBP_EV, stack.pbp),
+        defs.BTP_SERVICE_ID_RFCOMM: (RFCOMM_EV, stack.rfcomm),
         # GENERATOR append 3
     }
 
