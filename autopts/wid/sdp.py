@@ -102,3 +102,10 @@ def hdl_wid_6007(_: WIDParams):
     else:
         return False
     return True
+
+
+def hdl_wid_6008(_: WIDParams):
+    '''
+    Please order IUT to send SDP_SERVICE_SEARCH_ATTR_REQ to the Lower Tester.
+    '''
+    return True
