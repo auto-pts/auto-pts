@@ -82,6 +82,8 @@ class BTPSocket:
         f = self.log_file
         indent = ' ' * 18
 
+        hex_data = hex_data[:14] + "|" + hex_data[14 + 1:]
+
         if len(hex_data) > 47:
             # This ensures clean text indentation for longer raw data, with 16 bytes per line
             hex_data = '\n' + indent + re.sub(r'(.{48})', r'\1\n' + indent, hex_data)
