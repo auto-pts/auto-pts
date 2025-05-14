@@ -240,7 +240,10 @@ def hdl_wid_50(_: WIDParams):
     return True
 
 
-def hdl_wid_51(_: WIDParams):
+def hdl_wid_51(params: WIDParams):
+    if params.test_case_name not in ['GAP/DISC/GENM/BV-02-C']:
+        return True
+
     stack = get_stack()
 
     btp.gap_set_nonconn()
