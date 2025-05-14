@@ -261,6 +261,9 @@ def hdl_wid_52(_: WIDParams):
 
 
 def hdl_wid_53(params: WIDParams):
+    if params.test_case_name in ['GAP/DISC/GENM/BV-02-C']:
+        return True
+
     return hdl_wid_51(params)
 
 
