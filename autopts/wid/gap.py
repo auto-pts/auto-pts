@@ -24,7 +24,8 @@ from autopts.ptsprojects.stack import get_stack, ConnParams
 from autopts.pybtp import types
 from autopts.pybtp import btp
 from autopts.pybtp import defs
-from autopts.pybtp.types import Prop, Perm, UUID, AdType, bdaddr_reverse, WIDParams, IOCap, OwnAddrType
+from autopts.pybtp.btp import pts_addr_get, pts_addr_type_get
+from autopts.pybtp.types import *
 from autopts.wid import generic_wid_hdl
 
 log = logging.debug
@@ -1358,7 +1359,7 @@ def hdl_wid_267(_: WIDParams):
     stack = get_stack()
     return stack.gap.pair_user_interaction
 
-def hdl_wid_300(_: WIDParams):
+def hdl_wid_300(params: WIDParams):
     # Please send non connectable advertise with periodic info.
     stack = get_stack()
     btp.gap_padv_configure(1, 150, 200)
@@ -1367,6 +1368,18 @@ def hdl_wid_300(_: WIDParams):
                                chr(stack.gap.periodic_data[0]) +
                                stack.gap.periodic_data[1]).encode())
     btp.gap_padv_start()
+
+    if params.test_case_name in ['GAP/SEC/SEM/BV-34-C', 'GAP/SEC/SEM/BV-35-C']:
+        broadcast_code = None
+        if params.test_case_name in ['GAP/SEC/SEM/BV-35-C']:
+            # broadcast code from TSPX_broadcast_code in ptsproject/x/gap.py
+            broadcast_code = '0102680553F1415AA265BBAFC6EA03B8'
+        btp.gap_create_big(0, 1, 10000, 20, 0, 0, broadcast_code)
+
+        if not stack.gap.wait_bis_setup(None, 10):
+            log(f'Failed to setup BIS')
+            return False
+
     return True
 
 def hdl_wid_301(_: WIDParams):
@@ -2165,3 +2178,85 @@ def hdl_wid_273(params: WIDParams):
 
     btp.gap_pair_v2(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE, level=defs.BTP_GAP_CMD_PAIR_V2_LEVEL_4)
     return True
+
+
+def hdl_wid_352(params: WIDParams):
+    '''
+    Please click OK when IUT establishes BIG sync, and ready to receive ISO data.
+    '''
+    addr = pts_addr_get()
+    addr_type = pts_addr_type_get()
+
+    # Do not call `btp.bap_broadcast_scan_start()` to discover peer. Because the `Broadcast_ID` is
+    # not inclued in the extended advertising report.
+    # Just calling GAP discovery to find the PTS device
+    btp.gap_start_discov(transport='le', discov_type='passive', mode='observe')
+    sleep(10)
+    btp.gap_stop_discov()
+    if not btp.check_discov_results(addr_type=addr_type, addr=addr):
+        log('Peer device not found.')
+        return False
+
+    stack = get_stack()
+
+    log(f'Synchronizing to broadcast')
+    btp.gap_padv_create_sync(0, 0, 0x200, 0)
+    if not stack.gap.wait_periodic_established(10):
+        log(f'Failed to periodic sync established')
+        return False
+
+    if params.test_case_name in ['GAP/SEC/SEM/BV-32-C']:
+        # broadcast code from TSPX_broadcast_code in ptsproject/x/gap.py
+        broadcast_code = '0102680553F1415AA265BBAFC6EA03B8'
+    else:
+        broadcast_code = None
+
+    btp.gap_big_create_sync(0, 1, 1, 0, 255, broadcast_code)
+    if not stack.gap.wait_big_established(10):
+        log(f'BIG sync establishment failed')
+        return False
+
+    if not stack.gap.wait_bis_setup(None, 10):
+        log(f'Failed to setup BIS')
+        return False
+
+    return True
+
+
+def hdl_wid_351(_: WIDParams):
+    '''
+    Wait for Broadcast ISO request.
+    '''
+    return True
+
+
+def hdl_wid_356(_: WIDParams):
+    '''
+    Please broadcast valid ISO data packets (more than 3 packets).
+    '''
+    for _ in range(1, 100):
+        try:
+            btp.gap_bis_broadcast(0, '00')
+        except BTPError:
+            # Buffer full
+            pass
+    return True
+
+
+def hdl_wid_355(_: WIDParams):
+    '''
+    Please verify that IUT received BIS data of 0x01, 0x02, 0x03, 0x04, 0x05, and 0x06
+    '''
+    data = get_stack().gap.read_bis_stream_received_data(None, timeout=10)
+
+    if not data:
+        log('No BIS data received')
+        return False
+
+    value = bytes([0x01, 0x02, 0x03, 0x04, 0x05, 0x06])
+    for v in data:
+        if value in v:
+            return True
+
+    log('Incorrect BIS data received')
+    return False
