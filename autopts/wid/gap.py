@@ -22,6 +22,7 @@ from time import sleep
 
 from autopts.ptsprojects.stack import ConnParams, get_stack
 from autopts.pybtp import btp, defs, types
+from autopts.pybtp.btp.btp import pts_addr_get, pts_addr_type_get
 from autopts.pybtp.types import UUID, AdType, IOCap, OwnAddrType, Perm, Prop, WIDParams, bdaddr_reverse
 from autopts.wid import generic_wid_hdl
 
@@ -1396,7 +1397,7 @@ def hdl_wid_267(_: WIDParams):
     return stack.gap.pair_user_interaction
 
 
-def hdl_wid_300(_: WIDParams):
+def hdl_wid_300(params: WIDParams):
     # Please send non-connectable advertise with periodic info.
     stack = get_stack()
     btp.gap_padv_configure(1, 150, 200)
@@ -1405,6 +1406,18 @@ def hdl_wid_300(_: WIDParams):
                                chr(stack.gap.periodic_data[0]) +
                                stack.gap.periodic_data[1]).encode())
     btp.gap_padv_start()
+
+    if params.test_case_name in ['GAP/SEC/SEM/BV-34-C', 'GAP/SEC/SEM/BV-35-C']:
+        broadcast_code = None
+        if params.test_case_name in ['GAP/SEC/SEM/BV-35-C']:
+            # broadcast code from TSPX_broadcast_code in ptsproject/x/gap.py
+            broadcast_code = stack.gap.big_broadcast_code
+        btp.gap_create_big(0, 1, 10000, 20, 0, 0, broadcast_code)
+
+        if not stack.gap.wait_bis_data_path_setup(None, 10):
+            log('Failed to setup BIS')
+            return False
+
     return True
 
 
@@ -2226,3 +2239,92 @@ def hdl_wid_274(_: WIDParams):
     Please send L2CAP G-Frame with unicast data. Expect to perform link encryption before sending G-Frame.
     '''
     return True
+
+
+def hdl_wid_352(params: WIDParams):
+    '''
+    Please click OK when IUT establishes BIG sync, and ready to receive ISO data.
+    '''
+    addr = pts_addr_get()
+    addr_type = pts_addr_type_get()
+
+    # Do not call `btp.bap_broadcast_scan_start()` to discover peer. Because the `Broadcast_ID` is
+    # not inclued in the extended advertising report.
+    # Just calling GAP discovery to find the PTS device
+    btp.gap_start_discov(transport='le', discov_type='passive', mode='observe')
+    sleep(10)
+    btp.gap_stop_discov()
+    if not btp.check_discov_results(addr_type=addr_type, addr=addr):
+        log('Peer device not found.')
+        return False
+
+    stack = get_stack()
+
+    log('Synchronizing to broadcast')
+    btp.gap_padv_create_sync(0, 0, 0x200, 0)
+    if not stack.gap.wait_periodic_established(10):
+        log('Failed to periodic sync established')
+        return False
+
+    if params.test_case_name in ['GAP/SEC/SEM/BV-32-C']:
+        # broadcast code from TSPX_broadcast_code in ptsproject/x/gap.py
+        broadcast_code = stack.gap.big_broadcast_code
+    else:
+        broadcast_code = None
+
+    btp.gap_big_create_sync(0, 1, 1, 0, 255, broadcast_code)
+    if not stack.gap.wait_big_established(10):
+        log('BIG sync establishment failed')
+        return False
+
+    if not stack.gap.wait_bis_data_path_setup(None, 10):
+        log('Failed to setup BIS')
+        return False
+
+    return True
+
+
+def hdl_wid_351(_: WIDParams):
+    '''
+    Wait for Broadcast ISO request.
+    '''
+    return True
+
+
+def _gap_bis_broadcast_safely(bis_id, data, data_length):
+    """
+    Safely broadcast BIS data with error handling.
+    """
+    try:
+        btp.gap_bis_broadcast(bis_id, data * data_length)
+        return True
+    except types.BTPError:
+        log("Ignore BIS broadcast failure")
+
+
+def hdl_wid_356(_: WIDParams):
+    '''
+    Please broadcast valid ISO data packets (more than 3 packets).
+    '''
+    for _ in range(1, 100):
+        _gap_bis_broadcast_safely(0, '00', 1)
+    return True
+
+
+def hdl_wid_355(_: WIDParams):
+    '''
+    Please verify that IUT received BIS data of 0x01, 0x02, 0x03, 0x04, 0x05, and 0x06
+    '''
+    data = get_stack().gap.read_bis_stream_received_data(None, timeout=10)
+
+    if not data:
+        log('No BIS data received')
+        return False
+
+    value = bytes([0x01, 0x02, 0x03, 0x04, 0x05, 0x06])
+    for v in data:
+        if value in v['data']:
+            return True
+
+    log('Incorrect BIS data received')
+    return False
