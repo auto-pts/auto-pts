@@ -695,6 +695,55 @@ Commands and responses:
 
                 In case of an error, the error response will be returned.
 
+        Opcode 0x2b - Synchronize to a BIG
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        SID (1 octet)
+                                        Num_Bis (1 octet)
+                                        Bis_Bitfield (1 octet)
+                                        Mse (4 octets)
+                                        Sync_Timeout (2 octets)
+                                        Encryption (1 octet)
+                                        Broadcast_Code (16 octets)
+                Return Parameters:      <none>
+
+		This command is used to synchronize to a BIG.
+
+                In case of an error, the error response will be returned.
+                In case of a success, the IUT continues processing the command asynchronously.
+
+        Opcode 0x2c - Create BIG
+
+                Controller Index:       <controller id>
+                Command parameters:     Id (1 octet)
+                                        Num_Bis (1 octet)
+                                        Interval (4 octets)
+                                        Latency (2 octets)
+                                        Packing (1 octet)
+                                        Framing (1 octet)
+                                        Encryption (1 octet)
+                                        Broadcast_Code (16 octets)
+                Return Parameters:      <none>
+
+		This command is used to create a BIG.
+
+                In case of an error, the error response will be returned.
+
+
+        Opcode 0x2d - BIS Broadcast
+
+                Controller Index:       <controller id>
+                Command parameters:     Bis_Id (1 octet)
+                                        Data Length (1 octet)
+                                        Data (variable)
+                Return Parameters:      <none>
+
+		This command is used to send a broadcast data over a specific BIS.
+
+                In case of an error, the error response will be returned.
+
 Events:
         Opcode 0x80 - New Settings event
 
@@ -892,3 +941,32 @@ Events:
 
                 This event can be sent after IUT received encryption change event was received.
                 The parameter `Enabled` is the flag whether the link is encrypted.
+
+        Opcode 0x92 - BIG Sync Established event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+
+                This event can be sent after IUT received the BIG sync established event was
+                received.
+
+        Opcode 0x93 - BIS Setup Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Bis_Id (1 octet)
+
+                This event can be sent after IUT received the BIS setup event was received.
+
+        Opcode 0x94 - BIS Stream Received Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Bis_Id (1 octet)
+                                        Data Length (1 octet)
+                                        Data (variable)
+
+                This event can be sent after IUT received the BIS synced event was received.
