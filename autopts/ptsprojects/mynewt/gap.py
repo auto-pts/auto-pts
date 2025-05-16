@@ -40,6 +40,7 @@ iut_appearance = '1111'
 iut_svc_data = '1111'
 iut_flags = '11'
 iut_svcs = '1111'
+iut_le_supp_feat = 'FF'
 
 
 # Advertising data
@@ -158,7 +159,7 @@ def test_cases(ptses):
         TestFunc(btp.core_reg_svc_gatt_cl),
         TestFunc(stack.gap_init, iut_device_name,
                  iut_manufacturer_data, iut_appearance, iut_svc_data, iut_flags,
-                 iut_svcs, iut_ad_uri, periodic_data),
+                 iut_svcs, iut_ad_uri, periodic_data, iut_le_supp_feat),
         TestFunc(stack.gatt_init),
         TestFunc(stack.gatt_cl_init),
         TestFunc(btp.gap_read_ctrl_info),
