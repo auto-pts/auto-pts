@@ -1336,6 +1336,40 @@ def hdl_wid_243(_: WIDParams):
 
     return True
 
+def hdl_wid_248(_: WIDParams):
+    attrs = btp.gatts_get_attrs(type_uuid='2803')
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
+    perm = Perm.write_enc
+
+    for attr in attrs:
+        if not attr:
+            continue
+
+        (handle, permission, type_uuid) = attr
+        data = btp.gatts_get_attr_val(bd_addr_type, bd_addr, handle)
+        if not data:
+            continue
+
+        (att_rsp, val_len, val) = data
+
+        hdr = '<BH'
+        hdr_len = struct.calcsize(hdr)
+        uuid_len = val_len - hdr_len
+
+        (props, handle, chrc_uuid) = struct.unpack("<BH%ds" % uuid_len, val)
+        chrc_value_attr = btp.gatts_get_attrs(start_handle=handle,
+                                              end_handle=handle)
+        if not chrc_value_attr:
+            continue
+
+        (handle, permission, type_uuid) = chrc_value_attr[0]
+        if permission & perm:
+            return format(handle, 'x').zfill(4)
+
+    return False
+
 
 def hdl_wid_265(params: WIDParams):
     # Please initiate a link encryption with the Lower Tester.

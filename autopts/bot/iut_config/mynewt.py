@@ -89,6 +89,7 @@ iut_config = {
             'BLE_SM_SC': '1',
             'BLE_SM_SC_ONLY': '0',
             'BLE_SM_LVL': '2',
+            'BTTESTER_LEAUDIO': '0',
         },
         "test_cases": [
             'GAP/SEC/SEM/BV-37-C',
