@@ -977,7 +977,7 @@ def hdl_wid_420(params: WIDParams):
         Please put the IUT in Non-Bondable mode.
     """
     btp.gap_set_bondable_off();
-    
+
     return True
 
 def hdl_wid_421(params: WIDParams):
