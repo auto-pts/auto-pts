@@ -73,6 +73,10 @@ class RTT:
         if RTT.jlink:
             return
 
+        if not RTT.lib and (dllpath := os.environ.get("AUTOPTS_RTT_OVERRIDE_JLINK_DLLPATH")):
+            # Allow for the J-Link DLL to be specified
+            RTT.lib = pylink.library.Library(dllpath=dllpath)
+
         RTT.jlink = pylink.JLink(lib=RTT.lib)
         # Pylink loads a new cache of J-Link DLL at its __init__,
         # but the __del__ does not unload it. Luckily we can reuse
