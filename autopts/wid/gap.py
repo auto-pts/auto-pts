@@ -1443,9 +1443,8 @@ def hdl_wid_305(_: WIDParams):
                                chr(stack.gap.periodic_data[0]) +
                                stack.gap.periodic_data[1]).encode())
     btp.gap_padv_start()
-    btp.gap_padv_create_sync(0, 0, 10, 1)
     btp.gap_padv_sync_transfer_set_info(0)
-    return stack.gap.wait_periodic_established(10)
+    return True
 
 def hdl_wid_307(_: WIDParams):
     # Click OK when IUT is ready to perform Periodic Advertising Synchronization
