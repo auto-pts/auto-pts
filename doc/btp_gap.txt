@@ -871,13 +871,12 @@ Events:
         Opcode 0x90 - Periodic Transfer Received event
 
                 Controller Index:       <controller id>
-                Event parameters:       Sync Handle (2 octet)
-                                        TX_Power (1 octet)
-                                        RSSI (1 octet)
-                                        CTE Type (1 octet)
-                                        Data Status (1 octet)
-                                        Data Length (1 octet)
-                                        Data (variable)
+                Event parameters:       Adveriser_Address_Type (1 octet)
+                                        Advertiser_Address (6 octets)
+                                        Sync Handle (2 octets)
+                                        Status (1 octet)
+                                        Peer Address_Type (1 octet)
+                                        Peer Address (6 octets)
 
                 This event can be sent after IUT received Periodic Advertising Sync
                 Transfer was received.
