@@ -1415,7 +1415,7 @@ def hdl_wid_302(_: WIDParams):
     # Periodic Advertising Synchronization Information.
     stack = get_stack()
 
-    btp.gap_padv_create_sync(0, 0, 10, 0)
+    btp.gap_padv_create_sync(0, 0, 100, 0)
     return stack.gap.wait_periodic_established(10)
 
 def hdl_wid_303(_: WIDParams):
@@ -1425,7 +1425,7 @@ def hdl_wid_303(_: WIDParams):
     # Periodic Advertising Synchronization Information.
     stack = get_stack()
 
-    btp.gap_padv_create_sync(0, 0, 10, 1)
+    btp.gap_padv_create_sync(0, 0, 100, 1)
     return stack.gap.wait_periodic_established(10)
 
 def hdl_wid_304(_: WIDParams):
