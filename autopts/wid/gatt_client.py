@@ -23,6 +23,7 @@ import socket
 import struct
 
 from autopts.pybtp import btp
+from autopts.pybtp import defs
 from autopts.pybtp.types import Prop, Perm, IOCap, UUID, WIDParams, GATTErrorCodes
 from autopts.ptsprojects.testcase import MMI
 from autopts.ptsprojects.stack import get_stack, GattPrimary, GattService, GattSecondary, GattServiceIncluded, \
@@ -1289,6 +1290,49 @@ def hdl_wid_109(params: WIDParams):
     return True
 
 
+def hdl_wid_130(params: WIDParams):
+    """
+    Please delete security key before connecting to PTS if IUT was bonded previously.
+    """
+    btp.gap_unpair()
+
+    return True
+
+
+def hdl_wid_135(params: WIDParams):
+    """
+    Please write to client support feature handle = 'XXXX'O to enable Robust Caching.
+    Discover all characteristics if needed.
+    """
+
+    pattern = re.compile(r"'([0-9a-fA-F]+)'")
+    params = pattern.findall(params.description)
+    if not params:
+        logging.error("parsing error")
+        return False
+
+    handle = params[0]
+
+    # First read the existing value in Client Supported Features.
+    btp.gatt_cl_read(btp.pts_addr_type_get(), btp.pts_addr_get(), handle)
+    stack = get_stack()
+    stack.gatt_cl.wait_for_verify_values()
+    client_support_features = int(btp.get_verify_values()[1])
+
+    # Set Robust Caching bit in features.
+    value = (
+        client_support_features
+        | defs.GATT_CLIENT_SUPPORTED_FEATURES_ROBUST_CACHING
+    )
+
+    btp.gatt_cl_write(btp.pts_addr_type_get(), btp.pts_addr_get(), handle,
+                      f'{value:02x}', 1)
+
+    stack.gatt_cl.wait_for_write_rsp()
+
+    return stack.gatt_cl.write_status == 0
+
+
 def hdl_wid_140(params: WIDParams):
     """
     Please send Read Multiple Variable Length characteristic requests on the "ATT" using these handles:
@@ -1352,6 +1396,49 @@ def hdl_wid_150(params: WIDParams):
         # We must initiate security for this test case
         btp.gap_pair()
 
+    return True
+
+
+def hdl_wid_153(params: WIDParams):
+    """
+    Please write to client support feature handle = 'XXXX'O to enable EATT and Robust Caching.
+    Discover all characteristics if needed.
+    """
+
+    pattern = re.compile(r"'([0-9a-fA-F]+)'")
+    params = pattern.findall(params.description)
+    if not params:
+        logging.error("parsing error")
+        return False
+
+    handle = params[0]
+
+    # First read the existing value in Client Supported Features.
+    btp.gatt_cl_read(btp.pts_addr_type_get(), btp.pts_addr_get(), handle)
+    stack = get_stack()
+    stack.gatt_cl.wait_for_verify_values()
+    client_support_features = int(btp.get_verify_values()[1])
+
+    # Set Robust Caching and EATT bit in features
+    value = (
+        client_support_features
+        | defs.GATT_CLIENT_SUPPORTED_FEATURES_EATT
+        |  defs.GATT_CLIENT_SUPPORTED_FEATURES_ROBUST_CACHING
+    )
+
+    btp.gatt_cl_write(btp.pts_addr_type_get(), btp.pts_addr_get(), handle,
+                      f'{value:02x}', 1)
+    stack.gatt_cl.wait_for_write_rsp()
+
+    return stack.gatt_cl.write_status == 0
+
+
+def hdl_wid_165(params: WIDParams):
+    """
+    Please delete the bond if IUT was bonded previously.
+    """
+
+    btp.gap_unpair()
     return True
 
 
