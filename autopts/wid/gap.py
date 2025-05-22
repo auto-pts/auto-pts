@@ -240,7 +240,10 @@ def hdl_wid_50(_: WIDParams):
     return True
 
 
-def hdl_wid_51(_: WIDParams):
+def hdl_wid_51(params: WIDParams):
+    if params.test_case_name not in ['GAP/DISC/GENM/BV-02-C']:
+        return True
+
     stack = get_stack()
 
     btp.gap_set_nonconn()
@@ -1591,7 +1594,8 @@ def hdl_wid_2001(params: WIDParams):
                                  'GAP/SEC/SEM/BI-04-C', 'GAP/SEC/SEM/BI-19-C',
                                  'GAP/SEC/SEM/BI-08-C', 'GAP/SEC/SEM/BI-27-C',
                                  'GAP/SEC/SEM/BI-32-C', 'GAP/SEC/SEM/BI-26-C',
-                                 'GAP/DM/LEP/BV-13-C']:
+                                 'GAP/DM/LEP/BV-13-C', 'GAP/SEC/SEM/BI-29-C',
+                                 'GAP/SEC/SEM/BI-30-C', 'GAP/SEC/SEM/BI-33-C']:
         bd_addr_type = defs.BTP_BR_ADDRESS_TYPE
 
     if stack.gap.get_passkey() is None:
@@ -1640,7 +1644,8 @@ def hdl_wid_20001(_: WIDParams):
 
 
 def hdl_wid_20115(params: WIDParams):
-    if params.test_case_name in ['GAP/DM/LEP/BI-01-C', 'GAP/SEC/SEM/BI-32-C']:
+    if params.test_case_name in ['GAP/DM/LEP/BI-01-C', 'GAP/SEC/SEM/BI-32-C',
+                                 'GAP/SEC/SEM/BI-33-C']:
         btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
         return True
 
@@ -2197,4 +2202,11 @@ def hdl_wid_273(params: WIDParams):
         return True
 
     btp.gap_pair_v2(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE, level=defs.BTP_GAP_CMD_PAIR_V2_LEVEL_4)
+    return True
+
+
+def hdl_wid_274(_: WIDParams):
+    '''
+    Please send L2CAP G-Frame with unicast data. Expect to perform link encryption before sending G-Frame.
+    '''
     return True
