@@ -91,7 +91,8 @@ def hdl_wid_22(params: WIDParams):
                                  'L2CAP/CMC/BV-10-C', 'L2CAP/CMC/BV-11-C',
                                  'L2CAP/CMC/BI-05-C', 'L2CAP/CMC/BI-06-C',
                                  'L2CAP/EWC/BV-03-C', 'L2CAP/COS/CFD/BV-09-C',
-                                 'L2CAP/COS/CED/BV-01-C']:
+                                 'L2CAP/COS/CED/BV-01-C', 'L2CAP/CLS/CLR/BV-01-C',
+                                 'L2CAP/CLS/UCD/BV-02-C', 'L2CAP/CLS/UCD/BV-03-C']:
         btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
         return True
 
@@ -1133,5 +1134,52 @@ def hdl_wid_264(_: WIDParams):
     '''
     Please place the IUT in L2CAP connectable mode.
     Description: PTS requires that the IUT be in L2CAP connectable mode. The PTS will open an L2CAP channel.
+    '''
+    return True
+
+
+def hdl_wid_49(_: WIDParams):
+    '''
+    Using the Implementation Under Test(IUT), initiate ACL Create Connection Request to the PTS.
+    Description : The Implementation Under Test(IUT) should create ACL connection request to PTS.
+    '''
+    btp.gap_conn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
+    btp.gap_wait_for_connection()
+    return True
+
+
+def hdl_wid_50(_: WIDParams):
+    '''
+    Using the Implementation Under Test(IUT), send connectionless data to the PTS using connectionless channel.
+    Description : The Implementation Under Test(IUT) should send connectionless data to PTS through connectionless channel.
+    '''
+    btp.l2cap_cls_send(None, defs.BTP_BR_ADDRESS_TYPE, 0x1001, '00')
+    return True
+
+
+def hdl_wid_62(_: WIDParams):
+    '''
+    Using the Implementation Under Test(IUT), send unencrypted connectionless data to the PTS using connectionless channel.
+    Description : The Implementation Under Test(IUT) should send unencrypted connectionless data to PTS through connectionless channel.
+    '''
+    btp.l2cap_cls_send(None, defs.BTP_BR_ADDRESS_TYPE, 0x1001, '00')
+    return True
+
+
+def hdl_wid_33(_: WIDParams):
+    '''
+    Using the Implementation Under Test(IUT), initiate security procedure to send encrypted data to the PTS using connectionless channel.
+    Description : The Implementation Under Test(IUT) should initiate the security procedure before sending encrypted data to PTS through connectionless channel.
+    '''
+    btp.gap_pair_v2(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE, level=defs.BTP_GAP_CMD_PAIR_V2_LEVEL_2)
+    btp.gap_wait_for_sec_lvl_change(level=2)
+    btp.l2cap_cls_send(None, defs.BTP_BR_ADDRESS_TYPE, 0x1001, '00')
+    return True
+
+
+def hdl_wid_265(_: WIDParams):
+    '''
+    Please confirm the Upper Tester did receive no data.
+    Click Yes if Upper Tester received no data, otherwise click No.
     '''
     return True
