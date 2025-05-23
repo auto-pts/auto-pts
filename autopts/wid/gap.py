@@ -2195,11 +2195,14 @@ def hdl_wid_217(_: WIDParams):
     return True
 
 
-def hdl_wid_216(_: WIDParams):
+def hdl_wid_216(params: WIDParams):
     """
     Please initiate security after upgrade the BR/EDR link key to authenticated.
     Click OK when ready.
     """
+    if params.test_case_name in ['GAP/DM/LEP/BV-13-C']:
+        btp.gap_pair_v2(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE, level=defs.BTP_GAP_CMD_PAIR_V2_LEVEL_4)
+
     return True
 
 
