@@ -47,6 +47,7 @@ L2CAP = {
     "credits": (defs.BTP_SERVICE_ID_L2CAP, defs.BTP_L2CAP_CMD_CREDITS,
                 CONTROLLER_INDEX),
     "echo_req": (defs.BTP_SERVICE_ID_L2CAP, defs.BTP_L2CAP_CMD_ECHO_REQ, CONTROLLER_INDEX),
+    "listen_v2": (defs.BTP_SERVICE_ID_L2CAP, defs.BTP_L2CAP_CMD_LISTEN_V2, CONTROLLER_INDEX),
 }
 
 
@@ -226,6 +227,28 @@ def l2cap_listen(psm, transport, mtu=0, response=L2CAPConnectionResponse.success
     l2cap_command_rsp_succ(defs.BTP_L2CAP_CMD_LISTEN)
 
 
+def l2cap_listen_v2(psm, transport, mtu=0, response=L2CAPConnectionResponse.success, mode=0,
+                    options=0):
+    logging.debug("%s %r %r %r %r %r %r", l2cap_listen_v2.__name__, psm, transport, mtu, response,
+                  mode, options)
+
+    iutctl = get_iut()
+
+    if isinstance(psm, str):
+        psm = int(psm, 16)
+
+    data_ba = bytearray(struct.pack('H', psm))
+    data_ba.extend(struct.pack('B', transport))
+    data_ba.extend(struct.pack('H', mtu))
+    data_ba.extend(struct.pack('H', response))
+    data_ba.extend(struct.pack('B', mode))
+    data_ba.extend(struct.pack('I', options))
+
+    iutctl.btp_socket.send(*L2CAP['listen_v2'], data=data_ba)
+
+    l2cap_command_rsp_succ(defs.BTP_L2CAP_CMD_LISTEN_V2)
+
+
 def l2cap_disconn_eatt_chans(bd_addr, bd_addr_type, channel_count):
     logging.debug("%s %r", l2cap_disconn_eatt_chans.__name__, channel_count)
 
@@ -250,6 +273,14 @@ def l2cap_le_listen(psm, mtu=0, response=0):
 
 def l2cap_br_listen(psm, mtu=0, response=0):
     l2cap_listen(psm, defs.L2CAP_TRANSPORT_BREDR, mtu, response)
+
+
+def l2cap_le_listen_v2(psm, mtu=0, response=0, mode=0, options=0):
+    l2cap_listen_v2(psm, defs.L2CAP_TRANSPORT_LE, mtu, response, mode, options)
+
+
+def l2cap_br_listen_v2(psm, mtu=0, response=0, mode=0, options=0):
+    l2cap_listen_v2(psm, defs.L2CAP_TRANSPORT_BREDR, mtu, response, mode, options)
 
 
 def l2cap_reconfigure(bd_addr, bd_addr_type, mtu, channels):

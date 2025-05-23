@@ -216,6 +216,66 @@ Commands and responses:
                 bit 3 - Extend windows size - It is only valid if Transport is BR/EDR.
                 bit 4 - No FCS - It is only valid if Transport is BR/EDR.
 
+        Opcode 0x0c - Listen v2 command
+
+                Controller Index:       <controller id>
+                Command parameters:     PSM (2 octets)
+                                        Transport (1 octet)
+                                        MTU (2 octets)
+                                        Security_Type (1 octet)
+                                        Key_Size (1 octet)
+                                        Response (2 octets)
+                                        Mode (1 octet)
+                                        Options (4 octets)
+                Response parameters:    <none>
+
+                Valid Transport parameter values:
+                                        0x00 = BR/EDR
+                                        0x01 = LE
+
+                This command is used to register L2CAP PSM and listen for
+                incoming data.
+
+                The MTU parameter is used to specify initial MTU for channels.
+
+                Security_Type defines if security is required for establishing
+                connection. Key_Size defines authentication key size required for
+                security of connection.
+
+                Response parameter can be used to specify a response value used in
+                L2CAP Connection Response to send non-success responses like
+                Insufficient Authentication. If device bases its security requirements
+                for creating L2CAP connection on PSM, this value should be 0x00.
+
+                Valid Response values:
+                        0x00 = Success
+                        0x01 = Insufficient authentication
+                        0x02 = Insufficient authorization
+                        0x03 = Insufficient encryption key size
+                        0x04 = Insufficient encryption
+                        0x05 = Insufficient secure authentication
+
+                Available modes:
+                0 - Basic mode or None.
+                1 - Retransmission mode - It is only valid if Transport is BR/EDR.
+                2 - Flow-control mode - It is only valid if Transport is BR/EDR.
+                3 - Enhance retransmission mode - It is only valid if Transport is BR/EDR.
+                4 - Stream mode - It is only valid if Transport is BR/EDR.
+
+                Available options:
+                bit 0 - ECFC - If set then Enhanced Credit Based L2CAP channel
+                        shall be created even if Num == 1. This is used to
+                        create single Enhanced CFC channel. This flag must be
+                        set to 1 when Num > 1.
+                bit 1 - Hold Credit - If set IUT is required to hold returning at
+                        least 1 credit until Credits command is received.
+                bit 2 - Mode optional - It is only valid if Transport is BR/EDR. If it is true, the
+                        mode can be negotiated during channel configuration.
+                bit 3 - Extend windows size - It is only valid if Transport is BR/EDR.
+                bit 4 - No FCS - It is only valid if Transport is BR/EDR.
+
+                In case of an error, the error response will be returned.
+
 Events:
         Opcode 0x80 - Connection Request Event
 
