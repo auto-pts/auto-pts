@@ -695,6 +695,29 @@ Commands and responses:
 
                 In case of an error, the error response will be returned.
 
+        Opcode 0x31 - Set Discovery Parameters command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Interval (2 octets)
+                                        Window (2 octets)
+                                        Flags (1 octet)
+                Return Parameters:      <none>
+
+                This command is used to set scanning parameters for discovery.
+                Interval: The time interval when the device starts its last scan
+                until it begins the subsequent scan.
+                Valid range is from 0x0004 to 0xffff.
+                Time = 0.625 ms x Interval
+
+                Window: Duration of single scan, must less than or equal
+                to the Interval.
+                Valid range is from 0x0004 to 0xffff.
+                Time = 0.625 ms x Interval
+
+                Default values are implementation specific.
+
+                In case of an error, the error response will be returned.
+
 Events:
         Opcode 0x80 - New Settings event
 
