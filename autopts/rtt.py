@@ -196,10 +196,9 @@ class BTMON:
 
             self.rtt_reader.start(buffer_name, device_core, debugger_snr, self._on_line_read_callback, (sock,))
         else:
-            cmd = ['btmon', '-C', str(130), '-J', f'{device_core},{debugger_snr}',
-                   '-w', log_filename, '>', plain_log_filename]
+            cmd = f"btmon -C 130 -J {device_core},{debugger_snr} -w {log_filename} > {plain_log_filename}"
             self.btmon_process = subprocess.Popen(cmd, cwd=log_filecwd,
-                                                  shell=False,
+                                                  shell=True,
                                                   stdout=subprocess.PIPE,
                                                   stderr=subprocess.PIPE)
 
