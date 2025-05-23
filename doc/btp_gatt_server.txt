@@ -20,9 +20,25 @@ Commands and responses:
 
                 In case of an error, the error response will be returned.
 
-        Opcode 0x02 - Get Attributes
+        Opcode 0x02 - Initialize GATT database
 
-                Controller Index:       <controller id>
+                Controller Index:       <non-controller>
+                Command parameters:     Database_ID (1 octet)
+                                        Flags (4 octets)
+                Response parameters:    <none>
+
+                This command is used to initialize GATT server with specified
+                database. Database_ID is used to identify which database shall
+                be initialized. Flags are used for behaviour tuning (currently
+                none are defined and shall be set to all zero). Details of
+                initialized database are IUT specific and shall allow for
+                testing IUT's supported features.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x03 - Get Attributes
+
+                Controller Index:       <non-controller>
                 Command parameters:     Start Handle (2 octets)
                                         End Handle (2 octets)
                                         Type_Length (1 octet)
@@ -46,7 +62,7 @@ Commands and responses:
 
                 In case of an error, the error response will be returned.
 
-        Opcode 0x03 - Get Attribute Value
+        Opcode 0x04 - Get Attribute Value
 
                 Controller Index:       <controller id>
                 Command parameters:     Address_Type (1 octet)
@@ -59,7 +75,7 @@ Commands and responses:
 
                 In case of an error, the error response will be returned.
 
-        Opcode 0x04 - Set Characteristic/Descriptor Value
+        Opcode 0x05 - Set Characteristic/Descriptor Value
 
                 Controller Index:       <controller id>
                 Command parameters:     Address_Type (1 octet)
@@ -74,7 +90,7 @@ Commands and responses:
 
                 In case of an error, the error response will be returned.
 
-        Opcode 0x05 - Change Database
+        Opcode 0x06 - Change Database
 
                 Controller Index:       <controller id>
                 Command parameters:     <none>
