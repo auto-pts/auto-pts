@@ -371,16 +371,6 @@ class BotClient(Client):
         if os.path.exists(self.file_paths['TC_STATS_JSON_FILE']):
             os.remove(self.file_paths['TC_STATS_JSON_FILE'])
 
-    def _safe_get_test_case_description(self, project_name, test_case_name):
-        """
-        Tries to get a test case description. In case of an error, logs a message and returns None.
-        """
-        try:
-            return self.ptses[0].get_test_case_description(project_name, test_case_name)
-        except Exception as e:
-            log(f'Failed to get description of {test_case_name}: {e}')
-            return None
-
     def run_test_cases(self):
         all_stats = self.backup['all_stats']
         stats = self.backup['tc_stats']
@@ -448,11 +438,13 @@ class BotClient(Client):
             results = all_stats.get_results()
             descriptions = {}
             for test_case_name in list(results.keys()):
-                project_name = test_case_name.split('/')[0]
-                project_name = mapping.get(project_name, project_name)
-                desc = self._safe_get_test_case_description(project_name, test_case_name)
-                if desc is not None:
-                    descriptions[test_case_name] = desc
+                try:
+                    project_name = test_case_name.split('/')[0]
+                    project_name = mapping.get(project_name, project_name)
+                    descriptions[test_case_name] = \
+                        self.ptses[0].get_test_case_description(project_name, test_case_name)
+                except:
+                    log(f'Failed to get description of {test_case_name}')
 
             all_stats.update_descriptions(descriptions)
             all_stats.pts_ver = str(self.ptses[0].get_version())
@@ -939,7 +931,7 @@ def check_call(cmd, env=None, cwd=None, shell=True):
 
 
 def get_workspace(workspace):
-    for root, dirs, _files in os.walk(os.path.join(AUTOPTS_ROOT_DIR, 'autopts/workspaces'),
+    for root, dirs, _ in os.walk(os.path.join(AUTOPTS_ROOT_DIR, 'autopts/workspaces'),
                                      topdown=True):
         for name in dirs:
             if name == workspace:

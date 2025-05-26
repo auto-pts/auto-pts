@@ -425,7 +425,8 @@ def pull_server_logs(args, tmp_dir, xml_folder):
         if args.cron_optim:
             _pts.shutdown_pts_bpv()
 
-        if len(file_list) == 0:
+        if not file_list:
+            log(f"No files found in workspace: {workspace_dir}")
             return
 
         # Last path will be workspace directory

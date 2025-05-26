@@ -224,22 +224,17 @@ class PyPTSWithCallback(ptscontrol.PyPTS, threading.Thread):
         self.ptscontrol_request_queue.put((method_name, False, args))
         return "WAIT"
 
-    def _get_response_safely(self, queue, timeout):
-        try:
-            result = queue.get(block=True, timeout=timeout)
-            queue.task_done()
-            return result
-        except Empty:
-            return None
 
     def _dispatch_blocking(self, method_name, *args):
         self.ptscontrol_request_queue.put((method_name, True, args))
         result = None
-
         while not self._end.is_set():
-            response = self._get_response_safely(self.ptscontrol_response_queue, timeout=1)
-            if response is not None:
-                return response
+            try:
+                result = self.ptscontrol_response_queue.get(block=True, timeout=1)
+                self.ptscontrol_response_queue.task_done()
+                return result
+            except Empty:
+                pass
 
         return result
 
@@ -412,7 +407,7 @@ class SvrArgumentParser(argparse.ArgumentParser):
 
 
 def get_workspace(workspace):
-    for root, dirs, _files in os.walk(os.path.join(PROJECT_DIR, 'autopts/workspaces'),
+    for root, dirs, files in os.walk(os.path.join(PROJECT_DIR, 'autopts/workspaces'),
                                      topdown=True):
         for name in dirs:
             if name == workspace:
@@ -479,41 +474,15 @@ class Server(threading.Thread):
 
         return 0
 
-    def _handle_xmlrpc_request(self):
-        try:
-            # Init
-            if self._args.superguard and \
-                    self._args.superguard < time.time() - self.last_request_time:
-                log('Superguard timeout, reinitializing XMLRPC')
-                print_thread_stack_trace()
-                self.server_init()
 
-            # Main work
-            self.server.handle_request()
-
-        except KeyboardInterrupt:
-            print("Keyboard Interrupt. Single-instance termination")
-            raise
-
-        except BaseException as e:
-            logging.exception(e)
-
-    def _xmlrpc_thread_iteration(self):
-        try:
-            self._handle_xmlrpc_request()
-        except KeyboardInterrupt:
-            return False  # zakończ pętlę
-        return True
 
     def _xmlrpc_thread_work(self):
         """
         This thread accepts and queues the client calls to
         the PyPTSWithCallback, does not process them.
-
         The PyPTSWithCallback methods should be processed in the
         same context as its instance was initialized.
         """
-
         if threading.current_thread().name != 'MainThread':
             # Should be called only in threads other than the main one.
             pythoncom.CoInitialize()
@@ -521,13 +490,30 @@ class Server(threading.Thread):
 
         c = wmi.WMI()
         for iface in c.Win32_NetworkAdapterConfiguration(IPEnabled=True):
-            print(f"Local IP address: {iface.IPAddress} DNS {iface.DNSDomain!r}")
+            print(f"Local IP address: {iface.IPAddress} DNS {iface.DNSDomain}")
 
         self.server_init()
 
-        while not self.end.is_set() and not self.pts._end.is_set() and not get_global_end():
-            if not self._xmlrpc_thread_iteration():
+        while not self.end.is_set() and not self.pts._end.is_set() \
+                and not get_global_end():
+            try:
+                # Init
+                if self._args.superguard and \
+                        self._args.superguard < time.time() - self.last_request_time:
+                    log('Superguard timeout, reinitializing XMLRPC')
+                    print_thread_stack_trace()
+                    self.server_init()
+
+                # Main work
+                self.server.handle_request()
+
+            except KeyboardInterrupt:
+                # Ctrl-C termination for single instance mode
+                print("Keyboard Interrupt. Single-instance termination")
                 break
+
+            except BaseException as e:
+                logging.exception(e)
 
         if threading.current_thread().name != 'MainThread':
             pythoncom.CoUninitialize()
@@ -612,13 +598,12 @@ class Server(threading.Thread):
             logs_root = get_workspace(workspace_dir)
 
         file_list = []
-        for root, _dirs, files in os.walk(logs_root,
+        for root, _, files in os.walk(logs_root,
                                          topdown=False):
-            file_list.extend([os.path.join(root, name) for name in files])
+            for name in files:
+                file_list.append(os.path.join(root, name))
 
             file_list.append(root)
-
-        return file_list
 
     def copy_file(self, file_path):
         self._update_request_time()
