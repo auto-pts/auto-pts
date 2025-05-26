@@ -2,6 +2,7 @@
 # auto-pts - The Bluetooth PTS Automation Framework
 #
 # Copyright (c) 2017, Intel Corporation.
+# Copyright (c) 2025, Atmosic.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms and conditions of the GNU General Public License,
@@ -36,7 +37,7 @@ ZEPHYR = None
 # qemu binary should be installed in shell PATH
 QEMU_BIN = "qemu-system-arm"
 
-SERIAL_BAUDRATE = 115200
+SERIAL_BAUDRATE = int(os.getenv("AUTOPTS_SERIAL_BAUDRATE", "115200"))
 CLI_SUPPORT = ['tty', 'hci', 'qemu']
 
 
@@ -120,14 +121,14 @@ class ZephyrCtl:
                 # On windows socat.exe does not support setting serial baud rate.
                 # Set it with 'mode' from cmd.exe
                 com = tty_to_com(self.tty_file)
-                mode_cmd = (">nul 2>nul cmd.exe /c \"mode " + com + "BAUD=115200 PARITY=n DATA=8 STOP=1\"")
+                mode_cmd = (">nul 2>nul cmd.exe /c \"mode " + com + f"BAUD={SERIAL_BAUDRATE} PARITY=n DATA=8 STOP=1\"")
                 os.system(mode_cmd)
 
                 socat_cmd = ("socat.exe -x -v tcp:" + socket.gethostbyname(socket.gethostname()) +
-                             ":%s,retry=100,interval=1 %s,raw,b115200" %
+                             f":%s,retry=100,interval=1 %s,raw,b{SERIAL_BAUDRATE}" %
                              (self.socket_srv.sock.getsockname()[1], self.tty_file))
             else:
-                socat_cmd = ("socat -x -v %s,rawer,b115200 UNIX-CONNECT:%s" %
+                socat_cmd = (f"socat -x -v %s,rawer,b{SERIAL_BAUDRATE} UNIX-CONNECT:%s" %
                              (self.tty_file, self.btp_address))
 
             log("Starting socat process: %s", socat_cmd)
@@ -139,7 +140,7 @@ class ZephyrCtl:
                                                   stderr=subprocess.DEVNULL)
         elif self.hci is not None:
             self.iut_log_file = open(os.path.join(test_case.log_dir, "autopts-iutctl-zephyr.log"), "a")
-            socat_cmd = ("socat -x -v %%s,rawer,b115200 UNIX-CONNECT:%s &" %
+            socat_cmd = (f"socat -x -v %%s,rawer,b{SERIAL_BAUDRATE} UNIX-CONNECT:%s &" %
                          self.btp_address)
 
             native_cmd = ("%s --bt-dev=hci%d --attach_uart_cmd=\"%s\"" %
