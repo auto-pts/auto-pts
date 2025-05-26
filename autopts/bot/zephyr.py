@@ -5,6 +5,7 @@
 #
 # Copyright (c) 2018, Intel Corporation.
 # Copyright (c) 2021, Nordic Semiconductor ASA.
+# Copyright (c) 2025, Atmosic.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms and conditions of the GNU General Public License,
@@ -46,7 +47,7 @@ def flush_serial(tty):
 
     if sys.platform == 'win32':
         com = tty_to_com(tty)
-        ser = serial.Serial(com, 115200, timeout=5)
+        ser = serial.Serial(com, int(os.getenv("AUTOPTS_SERIAL_BAUDRATE", "115200")), timeout=5)
         ser.flushInput()
         ser.flushOutput()
     else:
