@@ -224,7 +224,7 @@ class PyPTSWithCallback(ptscontrol.PyPTS, threading.Thread):
         self.ptscontrol_request_queue.put((method_name, False, args))
         return "WAIT"
 
-    def _get_response_safely(queue, timeout):
+    def _get_response_safely(self, queue, timeout):
         try:
             result = queue.get(block=True, timeout=timeout)
             queue.task_done()
