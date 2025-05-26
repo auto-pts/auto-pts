@@ -19,7 +19,8 @@
 from autopts.client import get_unique_name
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
-from autopts.ptsprojects.zephyr.aics_wid import aics_wid_hdl
+# from autopts.ptsprojects.zephyr.aics_wid import aics_wid_hdl
+from autopts.ptsprojects.common_wid import profile_wid_hdl
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
 from autopts.pybtp import btp
 from autopts.pybtp.types import Addr
@@ -82,7 +83,7 @@ def test_cases(ptses):
     for tc_name in test_case_name_list:
         instance = ZTestCase("AICS", tc_name,
                              cmds=pre_conditions,
-                             generic_wid_hdl=aics_wid_hdl)
+                             generic_wid_hdl=lambda wid, desc, tc: profile_wid_hdl("zephyr", "aics", wid, desc, tc))
         tc_list.append(instance)
 
     return tc_list
