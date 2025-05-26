@@ -20,7 +20,7 @@ def fix_style():
 
     ruff_log = logs_dir / "ruff_fix.log"
 
-    ruff_code = run_tool("ruff (fix)", ["poetry", "run", "ruff", "check", ".", "--fix"], ruff_log)
+    ruff_code = run_tool("ruff (fix)", ["ruff", "check", ".", "--fix"], ruff_log)
 
     print("\n Summary:")
     print(f"• ruff exit code:  {ruff_code}")
@@ -30,17 +30,20 @@ def fix_style():
     else:
         print("\n Some tools reported issues. See logs in logs/pep8/ for details.")
 
+
 def check_style():
     logs_dir = Path("./logs/pep8")
     logs_dir.mkdir(parents=True, exist_ok=True)
 
     ruff_check_log = logs_dir / "ruff_check.log"
-    check_ruff = run_tool("ruff (check-only)", ["poetry", "run", "ruff", "check", "."], ruff_check_log)
+
+    check_ruff = run_tool("ruff (check-only)", ["ruff", "check", "."], ruff_check_log)
 
     if check_ruff == 0:
         print("\n All style checks passed.")
     else:
         print("\nStyle issues detected. Please check the logs in logs/pep8/.")
+
 
 if __name__ == "__main__":
     import sys
