@@ -55,6 +55,7 @@ class Stack:
         self.tmap = None
         self.ots = None
         self.pbp = None
+        self.rfcomm = None
         # GENERATOR append 2
         self.supported_svcs_cmds = common.supported_svcs_cmds
 
@@ -159,6 +160,9 @@ class Stack:
     def pbp_init(self):
         self.pbp = PBP()
 
+    def rfcomm_init(self):
+        self.rfcomm = RFCOMM()
+
     # GENERATOR append 3
 
     def cleanup(self):
@@ -242,6 +246,9 @@ class Stack:
 
         if self.pbp:
             self.pbp_init()
+
+        if self.rfcomm:
+            self.rfcomm_init()
 
         # GENERATOR append 4
 
