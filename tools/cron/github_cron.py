@@ -171,8 +171,12 @@ class GitHubCron(Thread):
         resp = self.get(url, params)
         try:
             comments = resp.json()
-        except Exception:
-            comments = []
+            if type(comments) is not list:
+                log(comments)
+                return []
+        except Exception as e:
+            log(e)
+            return []
 
         for comment in comments:
             comment_id = comment['id']
