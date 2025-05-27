@@ -14,15 +14,12 @@
 #
 
 import logging
-import struct
 import time
-from binascii import hexlify
 
-from autopts.wid import generic_wid_hdl
-from autopts.pybtp import btp
-from autopts.pybtp.types import Perm, WIDParams
-from autopts.ptsprojects.testcase import MMI
 from autopts.ptsprojects.stack import get_stack
+from autopts.pybtp import btp
+from autopts.pybtp.types import WIDParams
+from autopts.wid import generic_wid_hdl
 
 log = logging.debug
 
@@ -43,6 +40,7 @@ def hdl_wid_3(_: WIDParams):
     btp.gap_disconn(btp.pts_addr_get(), btp.pts_addr_type_get())
     return True
 
+
 def hdl_wid_49(_: WIDParams):
     time.sleep(30)
     return True
@@ -59,5 +57,4 @@ def hdl_wid_98(_: WIDParams):
 
 
 def hdl_wid_118(_: WIDParams):
-    return '{0:04x}'.format(65000)
-
+    return f'{65000:04x}'

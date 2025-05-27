@@ -15,9 +15,9 @@
 
 import logging
 
-from autopts.pybtp import defs
 from autopts.ptsprojects.stack import get_stack
-from autopts.pybtp.btp.btp import CONTROLLER_INDEX, get_iut_method as get_iut
+from autopts.pybtp import defs
+
 
 def ias_ev_out_alert_action(ias, data, data_len):
     logging.debug("%s %r", ias_ev_out_alert_action.__name__, data)
@@ -26,6 +26,7 @@ def ias_ev_out_alert_action(ias, data, data_len):
     alert_lvl = int.from_bytes(data, "little")
 
     stack.ias.alert_lvl = alert_lvl
+
 
 IAS_EV = {
     defs.BTP_IAS_EV_OUT_ALERT_ACTION: ias_ev_out_alert_action,

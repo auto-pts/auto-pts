@@ -17,17 +17,18 @@ import logging
 import re
 import struct
 
-from autopts.ptsprojects.stack import get_stack, WildCard
-from autopts.pybtp.defs import AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, AUDIO_METADATA_PROGRAM_INFO
-from autopts.pybtp.types import WIDParams, CODEC_CONFIG_SETTINGS, create_lc3_ltvs_bytes, BTPError
-from autopts.wid import generic_wid_hdl
-from autopts.pybtp import btp, defs
+from autopts.ptsprojects.stack import WildCard, get_stack
+from autopts.pybtp import btp
+from autopts.pybtp.defs import AUDIO_METADATA_PROGRAM_INFO, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS
+from autopts.pybtp.types import CODEC_CONFIG_SETTINGS, WIDParams, create_lc3_ltvs_bytes
 from autopts.wid.bap import BAS_CONFIG_SETTINGS
+from autopts.wid.common import _safe_bap_send
 
 log = logging.debug
 
 
 def pbp_wid_hdl(wid, description, test_case_name):
+    from autopts.wid import generic_wid_hdl
     log(f'{pbp_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
     return generic_wid_hdl(wid, description, test_case_name, [__name__])
 
@@ -47,9 +48,9 @@ def hdl_wid_100(_: WIDParams):
         log('No advertisement with Public Broadcast Announcement and Broadcast Name found')
         return False
 
-    log(f'Public Broadcast Announcement and Broadcast Name found')
+    log('Public Broadcast Announcement and Broadcast Name found')
 
-    encrypted = (ev['pba_features'] & 1 ) != 0
+    encrypted = (ev['pba_features'] & 1) != 0
     broadcast_id = ev['broadcast_id']
     addr_type = ev['addr_type']
     addr = ev['addr']
@@ -73,7 +74,7 @@ def hdl_wid_100(_: WIDParams):
         log(f'BIS not found for broadcast ID {broadcast_id}')
         return False
 
-    log(f'BIS found')
+    log('BIS found')
 
     return True
 
@@ -129,9 +130,9 @@ def hdl_wid_551(params: WIDParams):
 
     # Extract and print the hex value
     if match:
-        pba_features =  int(match.group(), 16)
+        pba_features = int(match.group(), 16)
     else:
-        log(f'Cannot find expected PBP Features')
+        log('Cannot find expected PBP Features')
         return False
 
     stack = get_stack()
@@ -146,7 +147,7 @@ def hdl_wid_551(params: WIDParams):
         log('No advertisement with Public Broadcast Announcement and Broadcast Name found')
         return False
 
-    log(f'Public Broadcast Announcement with feature %u and Broadcast Name found' % ev['pba_features'])
+    log(f"Public Broadcast Announcement with feature {ev['pba_features']} and Broadcast Name found")
 
     return ev['pba_features'] == pba_features
 
@@ -173,7 +174,7 @@ def hdl_wid_378(_: WIDParams):
         log(f'BIS Sync failed for broadcast ID {broadcast_id}, bis-id {bis_id}')
         return False
 
-    log(f'BIS Synced')
+    log('BIS Synced')
     return True
 
 
@@ -226,7 +227,7 @@ def hdl_wid_552(params: WIDParams):
     subgroup_id = 0x00
     presentation_delay = 40000
 
-    for i in range(bis_count):
+    for _i in range(bis_count):
         btp.cap_broadcast_source_setup_stream(source_id, subgroup_id, coding_format, vid, cid,
                                               codec_ltvs_bytes, metadata)
 
@@ -256,11 +257,7 @@ def hdl_wid_552(params: WIDParams):
 
     # PTS does not send an explicit message, but for each
     # configured SINK it expects to receive any ISO data.
-    for i in range(1, 10):
-        try:
-            btp.bap_send(0, data)
-        except BTPError:
-            # Buffer full
-            pass
+    for _ in range(1, 10):
+        _safe_bap_send(0, data)
 
     return True

@@ -14,9 +14,8 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
-import os
-import sys
 import logging
+import os
 
 from autopts.bot.common import check_call
 from autopts.ptsprojects.boards import Jlink

@@ -14,19 +14,14 @@
 # more details.
 #
 
-from binascii import hexlify
-from random import randint
-from time import sleep
 import logging
 import re
-import socket
-import struct
+from time import sleep
 
-from autopts.pybtp import btp
-from autopts.pybtp.types import Prop, Perm, IOCap, UUID, WIDParams, GATTErrorCodes
+from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import MMI
-from autopts.ptsprojects.stack import get_stack, GattPrimary, GattService, GattSecondary, GattServiceIncluded, \
-    GattCharacteristic, GattCharacteristicDescriptor, GattDB
+from autopts.pybtp import btp
+from autopts.pybtp.types import GATTErrorCodes, IOCap, WIDParams
 from autopts.wid import generic_wid_hdl
 
 log = logging.debug
@@ -39,7 +34,7 @@ def gatt_cl_wid_hdl(wid, description, test_case_name):
     return generic_wid_hdl(wid, description, test_case_name, [__name__])
 
 
-#TODO: port all GATT wids to GATT Client service
+# TODO: port all GATT wids to GATT Client service
 # wid handlers section begin
 def hdl_wid_1(_: WIDParams):
     """
@@ -174,6 +169,7 @@ def hdl_wid_17(params: WIDParams):
 
     return True
 
+
 def hdl_wid_18(params: WIDParams):
     """
     Please send discover primary services with UUID value set to '1800'O
@@ -286,9 +282,7 @@ def hdl_wid_24(params: WIDParams):
         return False
 
     # split MMI args into tuples (att_hdl, incl_svc_hdl, end_gp_hdl, svc_uuid)
-    mmi_args_tupled = []
-    for i in range(0, len(MMI.args), 4):
-        mmi_args_tupled.append(tuple(MMI.args[i:i + 4]))
+    mmi_args_tupled = [tuple(MMI.args[i:i + 4]) for i in range(0, len(MMI.args), 4)]
 
     stack = get_stack()
     return set(stack.gatt_cl.incl_svcs).issubset(set(mmi_args_tupled))
@@ -484,7 +478,7 @@ def hdl_wid_35(params: WIDParams):
             # value checking is limited by ATT MTU (23 octets)
             # allow partial check by limiting attribute value to 19 octets
             params[i] = params[i].encode()[0:38]
-            to_verify.append((params[i-1], params[i]))
+            to_verify.append((params[i - 1], params[i]))
 
     stack = get_stack()
 
@@ -658,16 +652,14 @@ def hdl_wid_50(params: WIDParams):
     MMI.parse_description(params.description)
     stack = get_stack()
     stack.gatt_cl.wait_for_read()
-    MMI.args.pop(0) # get rid of parsing artifact
-    for i in range(len(MMI.args)//2):
-        comparing = (int(MMI.args[i], 16), bytes(MMI.args[i+1], 'utf-8'))
+    MMI.args.pop(0)  # get rid of parsing artifact
+    for i in range(len(MMI.args) // 2):
+        comparing = (int(MMI.args[i], 16), bytes(MMI.args[i + 1], 'utf-8'))
         if comparing not in btp.get_verify_values():
             btp.clear_verify_values()
             return False
     btp.clear_verify_values()
     return True
-
-
 
 
 def hdl_wid_51(params: WIDParams):
@@ -1077,10 +1069,10 @@ def hdl_wid_76(params: WIDParams):
         return False
 
     handle = params[0]
-    len = int(params[1])
+    length = int(params[1])
 
     btp.gatt_cl_write_long(btp.pts_addr_type_get(), btp.pts_addr_get(),
-                           handle, 0, '12', len)
+                           handle, 0, '12', length)
 
     stack = get_stack()
     stack.gatt_cl.prepared_write_hdl = handle
@@ -1322,6 +1314,7 @@ def hdl_wid_141(params: WIDParams):
 
     # No response expected
     return True
+
 
 def hdl_wid_147(params: WIDParams):
     """

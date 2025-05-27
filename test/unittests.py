@@ -2,17 +2,16 @@ import os
 import shutil
 import sys
 import unittest
-from os.path import dirname, abspath
+from os.path import abspath, dirname
 from pathlib import Path
 from unittest.mock import patch
 
+from autopts.bot.common_features import report
 from autopts.client import FakeProxy, TestCaseRunStats
 from autopts.config import FILE_PATHS
 from autopts.ptsprojects.testcase_db import TestCaseTable
-from autoptsclient_bot import import_bot_projects, import_bot_module
+from autoptsclient_bot import import_bot_module, import_bot_projects
 from test.mocks.mocked_test_cases import mock_workspace_test_cases, test_case_list_generation_samples
-from autopts.bot.common_features import report
-
 
 DATABASE_FILE = 'test/mocks/zephyr_database.db'
 
@@ -23,7 +22,7 @@ def delete_file(file_path):
             os.remove(file_path)
         elif os.path.isdir(file_path):
             shutil.rmtree(file_path, ignore_errors=True)
-    except:
+    except Exception:
         pass
 
 
@@ -139,9 +138,16 @@ class MyTestCase(unittest.TestCase):
                     bot_client.ptses.append(fake_pts)
 
                     bot_client.iut_config = iut_config
-                    bot_client.apply_config = lambda _args, config_name, *_: \
-                        self.assertTrue(set(_args.test_cases) == set(expected[config_name]),
-                                        f'mock_iut_config_{i} use case failed')
+
+                    def make_fake_apply_config(expected, i):
+                        def fake_apply_config(_args, config_name, value):
+                            assert set(_args.test_cases) == set(expected[config_name]), \
+                                f'mock_iut_config_{i} use case failed'
+
+                        return fake_apply_config
+
+                    bot_client.apply_config = make_fake_apply_config(expected, i)
+
                     bot_client.run_test_cases()
 
     def test_generate_stats(self):
@@ -154,10 +160,11 @@ class MyTestCase(unittest.TestCase):
         duration = 30  # seconds
         end_time = start_time + duration
 
-        test_cases = []
-        for project in mock_workspace_test_cases:
-            for tc in mock_workspace_test_cases[project]:
-                test_cases.append(tc)
+        test_cases = [
+            tc
+            for project in mock_workspace_test_cases
+            for tc in mock_workspace_test_cases[project]
+        ]
 
         regressions_id = [5, 6, 7, 8]
         progresses_id = [9, 10, 11, 12]

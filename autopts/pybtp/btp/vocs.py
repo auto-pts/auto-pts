@@ -20,11 +20,9 @@ import logging
 import struct
 
 from autopts.pybtp import defs
-from autopts.ptsprojects.stack import get_stack
+from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, pts_addr_get, pts_addr_type_get
+from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.types import BTPError, addr2btp_ba
-from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, get_iut_method as get_iut, pts_addr_get, \
-    pts_addr_type_get
-
 
 VOCS = {
     'read_supported_cmds': (defs.BTP_SERVICE_ID_VCP,
@@ -77,7 +75,7 @@ def vocs_audio_desc(string):
     data = bytearray(struct.pack("<B", string_len))
     data.extend(string.encode('UTF-8'))
 
-    iutctl.btp_socket.send(*VOCS['audio_desc'], data = data)
+    iutctl.btp_socket.send(*VOCS['audio_desc'], data=data)
     vocs_command_rsp_succ()
 
 

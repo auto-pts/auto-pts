@@ -16,13 +16,13 @@
 import logging
 import os
 import re
-import signal
+import socket
 import subprocess
+import sys
 import threading
 import time
+
 import pylink
-import sys
-import socket
 
 from autopts.config import BTMON_PORT
 from autopts.utils import get_global_end
@@ -123,10 +123,10 @@ class BTMON:
         self.btmon_process = None
         self.socat_process = None
 
-    def _on_line_read_callback(self, bytes, user_data):
+    def _on_line_read_callback(self, data, user_data):
         sock, = user_data
         try:
-            sock.sendall(bytes)
+            sock.sendall(data)
         except UnicodeDecodeError:
             pass
 
@@ -196,10 +196,9 @@ class BTMON:
 
             self.rtt_reader.start(buffer_name, device_core, debugger_snr, self._on_line_read_callback, (sock,))
         else:
-            cmd = ['btmon', '-C', str(130), '-J', f'{device_core},{debugger_snr}',
-                   '-w', log_filename, '>', plain_log_filename]
+            cmd = f"btmon -C 130 -J {device_core},{debugger_snr} -w {log_filename} > {plain_log_filename}"
             self.btmon_process = subprocess.Popen(cmd, cwd=log_filecwd,
-                                                  shell=False,
+                                                  shell=True,
                                                   stdout=subprocess.PIPE,
                                                   stderr=subprocess.PIPE)
 
@@ -223,10 +222,10 @@ class RTTLogger:
         self.rtt_reader = RTT()
         self.log_file = None
 
-    def _on_line_read_callback(self, bytes, user_data):
+    def _on_line_read_callback(self, data, user_data):
         file, = user_data
         try:
-            file.write(bytes)
+            file.write(data)
             file.flush()
         except UnicodeDecodeError:
             pass

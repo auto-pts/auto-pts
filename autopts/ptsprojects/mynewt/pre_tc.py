@@ -133,7 +133,7 @@ def run_cat():
     log_file = LOGS_DIR + PROFILE + "/" + TEST_CASE + "_iut.log"
 
     cmd = 'cat {} | tee {}'.format('./iut_console', log_file)
-    print("Executing command: {}".format(cmd))
+    print(f"Executing command: {cmd}")
 
     CAT_PROC = popen_and_call(
         cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)

@@ -6,6 +6,7 @@ L2CAP/ECFC/BI-02-C: Request ID 103343
 GAP/SEC/SEM/BV-26-C: Request ID 136305
 GAP/SEC/SEM/BV-42-C: Request ID 136305
 L2CAP/COS/ECFC/BV-01-C: Request ID 145333
+GATT/SR/GAN/BV-03-C: Request ID 172623
 GAP/BROB/BCST/BV-04-C: https://github.com/apache/mynewt-nimble/issues/1029
 GATT/CL/GAR/BV-11-C: https://github.com/apache/mynewt-nimble/issues/2002
 GATT/SR/GAW/BV-12-C: https://github.com/apache/mynewt-nimble/issues/2002

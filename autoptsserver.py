@@ -41,28 +41,34 @@ import time
 import traceback
 import xmlrpc.client
 import xmlrpc.server
-
 from functools import partial
-from os.path import dirname, abspath
+from os.path import abspath, dirname
 from pathlib import Path
-from queue import Queue, Empty
-from time import sleep
+from queue import Empty, Queue
 
 import pythoncom
-import wmi
-
 import serial.tools.list_ports
+import wmi
 
 from autopts import ptscontrol
 from autopts.config import SERVER_PORT
-from autopts.utils import CounterWithFlag, get_global_end, exit_if_admin, ykush_replug_usb, ykush_set_usb_power, \
-    print_thread_stack_trace, active_hub_server_replug_usb, active_hub_server_set_usb_power
+from autopts.utils import (
+    CounterWithFlag,
+    active_hub_server_replug_usb,
+    active_hub_server_set_usb_power,
+    exit_if_admin,
+    get_global_end,
+    print_thread_stack_trace,
+    ykush_replug_usb,
+    ykush_set_usb_power,
+)
 from autopts.winutils import kill_all_processes
 
 logging = root_logging.getLogger('server')
 log = root_logging.debug
 log_inited = False
 PROJECT_DIR = dirname(abspath(__file__))
+
 
 def _com_port_exists(port_name):
     """Check if the COM port exists."""
@@ -71,6 +77,7 @@ def _com_port_exists(port_name):
         if port.device == port_name:
             return True
     return False
+
 
 def init_logging(_args):
     """Initialize server logging"""
@@ -217,6 +224,7 @@ class PyPTSWithCallback(ptscontrol.PyPTS, threading.Thread):
         self.ptscontrol_request_queue.put((method_name, False, args))
         return "WAIT"
 
+
     def _dispatch_blocking(self, method_name, *args):
         self.ptscontrol_request_queue.put((method_name, True, args))
         result = None
@@ -353,7 +361,7 @@ class SvrArgumentParser(argparse.ArgumentParser):
 
         for srv_port in arg.srv_port:
             if not 49152 <= srv_port <= 65535:
-                sys.exit("Invalid server port number=%s, expected range <49152,65535> " % (srv_port,))
+                sys.exit(f"Invalid server port number={srv_port}, expected range <49152,65535>")
 
         arg.superguard = 60 * arg.superguard
 
@@ -466,15 +474,15 @@ class Server(threading.Thread):
 
         return 0
 
+
+
     def _xmlrpc_thread_work(self):
         """
         This thread accepts and queues the client calls to
         the PyPTSWithCallback, does not process them.
-
         The PyPTSWithCallback methods should be processed in the
         same context as its instance was initialized.
         """
-
         if threading.current_thread().name != 'MainThread':
             # Should be called only in threads other than the main one.
             pythoncom.CoInitialize()
@@ -482,7 +490,7 @@ class Server(threading.Thread):
 
         c = wmi.WMI()
         for iface in c.Win32_NetworkAdapterConfiguration(IPEnabled=True):
-            print("Local IP address: %s DNS %r" % (iface.IPAddress, iface.DNSDomain))
+            print(f"Local IP address: {iface.IPAddress} DNS {iface.DNSDomain}")
 
         self.server_init()
 
@@ -517,7 +525,7 @@ class Server(threading.Thread):
             del self.server
             self.server = None
 
-        print("Serving on port {} ...".format(self._args.srv_port))
+        print(f"Serving on port {self._args.srv_port} ...")
 
         self.server = xmlrpc.server.SimpleXMLRPCServer(("", self._args.srv_port), allow_none=True)
         # These methods will be run in the XMLRPC context
@@ -590,14 +598,12 @@ class Server(threading.Thread):
             logs_root = get_workspace(workspace_dir)
 
         file_list = []
-        for root, dirs, files in os.walk(logs_root,
+        for root, _, files in os.walk(logs_root,
                                          topdown=False):
             for name in files:
                 file_list.append(os.path.join(root, name))
 
             file_list.append(root)
-
-        return file_list
 
     def copy_file(self, file_path):
         self._update_request_time()

@@ -14,18 +14,17 @@
 #
 
 """HAP test cases"""
-from enum import IntEnum
 import struct
+from enum import IntEnum
 
-from autopts.pybtp import btp
 from autopts.client import get_unique_name
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.hap_wid import hap_wid_hdl
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
+from autopts.pybtp import btp
+from autopts.pybtp.defs import HAS_TSPX_available_presets_indices, HAS_TSPX_unavailable_presets_indices
 from autopts.pybtp.types import Addr, AdType, Context
-from autopts.pybtp.defs import HAS_TSPX_available_presets_indices, \
-                               HAS_TSPX_unavailable_presets_indices
 
 # Options aligned with the overlay-le-audio.conf options
 BTP_HAP_HA_OPTS_DEFAULT = (btp.defs.HAP_HA_OPT_PRESETS_DYNAMIC |
@@ -34,12 +33,13 @@ BTP_HAP_HA_OPTS_BINAURAL = (btp.defs.HAP_HA_OPT_PRESETS_INDEPENDENT |
                             btp.defs.HAP_HA_OPT_PRESETS_DYNAMIC |
                             btp.defs.HAP_HA_OPT_PRESETS_WRITABLE)
 
+
 class Uuid(IntEnum):
     ASCS = 0x184E
     BASS = 0x184F
     PACS = 0x1850
     BAAS = 0x1852
-    CAS  = 0x1853
+    CAS = 0x1853
 
 
 def set_pixits(ptses):
@@ -88,12 +88,12 @@ def announcements(advData, targeted):
     """
         CAP General/Targeted Announcement
     """
-    advData[AdType.uuid16_svc_data] = [ struct.pack('<HB', Uuid.CAS, 1 if targeted else 0) ]
+    advData[AdType.uuid16_svc_data] = [struct.pack('<HB', Uuid.CAS, 1 if targeted else 0)]
     """
         BAP General/Targeted Announcement
     """
-    advData[AdType.uuid16_svc_data] += [ struct.pack('<HBHHB', Uuid.ASCS, 1 if targeted else 0, \
-        Context.LIVE | Context.MEDIA, Context.LIVE, 0) ]
+    advData[AdType.uuid16_svc_data] += [struct.pack('<HBHHB', Uuid.ASCS, 1 if targeted else 0,
+        Context.LIVE | Context.MEDIA, Context.LIVE, 0)]
     """
         RSI
     """
@@ -110,6 +110,7 @@ test_cases_banded = [
     'HAP/HA/DISC/BV-02-C',
     'HAP/HA/DISC/BV-06-C',
 ]
+
 
 def test_cases(ptses):
     """Returns a list of HAP Server test cases"""

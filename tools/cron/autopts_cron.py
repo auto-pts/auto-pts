@@ -29,25 +29,30 @@ import copy
 import json
 import logging
 import re
-import sys
 import signal
-import schedule
+import sys
 import threading
 from argparse import Namespace
-from datetime import timedelta, datetime
+from datetime import datetime, timedelta
+from os.path import abspath, dirname
 from time import sleep
-from os.path import dirname, abspath
+
+import schedule
 
 # Needed if autopts is not installed as a module
-AUTOPTS_REPO=dirname(dirname(dirname(abspath(__file__))))
+AUTOPTS_REPO = dirname(dirname(dirname(abspath(__file__))))
 sys.path.extend([AUTOPTS_REPO])
 
-from autopts.utils import get_global_end, set_global_end, have_admin_rights, terminate_process
-from autopts.bot.common import load_module_from_path
-from tools.cron.estimations import get_estimations
-from tools.cron.common import set_cron_cfg, load_config
-from tools.cron.cron_gui import CronGUI, RequestPuller
-
+from autopts.bot.common import load_module_from_path  # noqa: E402 # the order of import is very important here
+from autopts.utils import (  # noqa: E402 # the order of import is very important here
+    get_global_end,
+    have_admin_rights,
+    set_global_end,
+    terminate_process,
+)
+from tools.cron.common import load_config, set_cron_cfg  # noqa: E402 # the order of import is very important here
+from tools.cron.cron_gui import CronGUI, RequestPuller  # noqa: E402 # the order of import is very important here
+from tools.cron.estimations import get_estimations  # noqa: E402 # the order of import is very important here
 
 if sys.platform == 'win32':
     import pythoncom
@@ -159,12 +164,12 @@ def check_supported_profiles(test_case_prefixes, job_config):
 
     job_config_prefixes = re.sub(r'\s+', r' ', job_config['included']).strip().split(' ')
 
-    test_cases_to_run = []
-    for prefix in test_case_prefixes:
-        for profile in job_config_prefixes:
-            if prefix.startswith(profile):
-                # At least one prefix matched
-                test_cases_to_run.append(prefix)
+    test_cases_to_run = [
+        prefix
+        for prefix in test_case_prefixes
+        for profile in job_config_prefixes
+        if prefix.startswith(profile)
+    ]
 
     if test_cases_to_run:
         return True, test_cases_to_run
@@ -252,15 +257,22 @@ def schedule_pr_job(cron, pr_info, job_config):
             if job_config['test_case_limit']:
                 job_config['included'] = test_cases
 
-            estimations = f', test case count: {test_case_count}, ' \
-                          f'estimated duration: {est_duration}'
+            estimations = (
+                f', test case count: {test_case_count}, '
+                f'estimated duration: {est_duration}'
+            )
             estimations += f'<details><summary>Test cases to be run</summary>{"<br>".join(test_cases)}</details>\n'
 
             if skipped_test_cases:
-                estimations += (f'<details><summary>Test cases skipped due to limit, count: {len(skipped_test_cases)}</summary>'
-                                f'{"<br>".join(skipped_test_cases)}</details>\n')
+                estimations += (
+                    f"<details>"
+                    f"<summary>Test cases skipped due to limit, count: {len(skipped_test_cases)}</summary>"
+                    f"{'<br>'.join(skipped_test_cases)}"
+                    f"</details>\n"
+                )
+
         else:
-            estimations = f', test case count: estimation not available'
+            estimations = ', test case count: estimation not available'
 
         job_config.pop('test_case_limit')
         job_config['estimated_duration'] = est_duration
@@ -272,8 +284,10 @@ def schedule_pr_job(cron, pr_info, job_config):
 
     start_time = pr_choose_start_time(job_config)
     start_time_str = start_time.strftime('%H:%M:%S')
-    post_text = f'Scheduled PR {pr_info["html_url"]}, board: {job_config["board"]}, ' \
-                f'estimated start time: {start_time_str}{estimations}'
+    post_text = (
+        f'Scheduled PR {pr_info["html_url"]}, board: {job_config["board"]}, '
+        f'estimated start time: {start_time_str}{estimations}'
+    )
 
     pr_number = pr_info['pr_number']
     rsp = cron_comment(cron, pr_number, post_text)
@@ -287,11 +301,13 @@ def schedule_pr_job(cron, pr_info, job_config):
     if pr_info['html_url'].startswith('https://github.com/auto-pts/auto-pts'):
         try:
             vm_autopts = job_config['remote_machine']['git']['autopts']
-            vm_autopts['checkout_cmd'] = f"git fetch {vm_autopts['remote']} & " \
-                                         f"git fetch {vm_autopts['remote']} pull/{pr_number}/head & " \
-                                         f"git checkout FETCH_HEAD & " \
-                                         f"set GIT_COMMITTER_NAME=Name & set GIT_COMMITTER_EMAIL=temp@example.com & " \
-                                         f"git pull --rebase {vm_autopts['remote']} {vm_autopts['branch']} > NUL 2>&1"
+            vm_autopts['checkout_cmd'] = (
+                f"git fetch {vm_autopts['remote']} & "
+                f"git fetch {vm_autopts['remote']} pull/{pr_number}/head & "
+                f"git checkout FETCH_HEAD & "
+                f"set GIT_COMMITTER_NAME=Name & set GIT_COMMITTER_EMAIL=temp@example.com & "
+                f"git pull --rebase {vm_autopts['remote']} {vm_autopts['branch']} > NUL 2>&1"
+            )
         except KeyError:
             pass
 

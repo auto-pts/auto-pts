@@ -18,12 +18,12 @@ import argparse
 import logging
 import os
 import time
-
 from distutils.spawn import find_executable
-from autopts.config import SERVER_PORT, CLIENT_PORT, MAX_SERVER_RESTART_TIME
-from autopts.ptsprojects.boards import tty_exists, com_to_tty, get_debugger_snr
+
+from autopts.config import CLIENT_PORT, MAX_SERVER_RESTART_TIME, SERVER_PORT
+from autopts.ptsprojects.boards import com_to_tty, get_debugger_snr, tty_exists
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
-from autopts.utils import ykush_replug_usb, raise_on_global_end, active_hub_server_replug_usb
+from autopts.utils import active_hub_server_replug_usb, raise_on_global_end, ykush_replug_usb
 
 log = logging.debug
 
@@ -207,13 +207,13 @@ class CliParser(argparse.ArgumentParser):
                 args.debugger_snr = get_debugger_snr(args.tty_file)
 
         if not tty_exists(args.tty_file):
-            return 'TTY mode: {} serial port does not exist!\n'.format(repr(args.tty_file))
+            return f'TTY mode: {repr(args.tty_file)} serial port does not exist!\n'
 
         if args.tty_file.startswith("COM"):
             try:
                 args.tty_file = com_to_tty(args.tty_file)
             except ValueError:
-                return 'TTY mode: Port {} is not a valid COM port!\n'.format(args.tty_file)
+                return f'TTY mode: Port {args.tty_file} is not a valid COM port!\n'
 
         return ''
 
@@ -221,10 +221,10 @@ class CliParser(argparse.ArgumentParser):
         msg = ''
 
         if args.qemu_bin and not find_executable(args.qemu_bin):
-            msg += 'QEMU mode: {} is needed but not found!\n'.format(args.qemu_bin)
+            msg += f'QEMU mode: {args.qemu_bin} is needed but not found!\n'
 
         if args.kernel_image is None or not os.path.isfile(args.kernel_image):
-            msg += 'QEMU mode: kernel_image {} is not a file!\n'.format(repr(args.kernel_image))
+            msg += f'QEMU mode: kernel_image {repr(args.kernel_image)} is not a file!\n'
 
         return msg
 
@@ -233,8 +233,7 @@ class CliParser(argparse.ArgumentParser):
             return 'HCI mode: hci port was not specified!\n'
 
         if args.kernel_image is None or not os.path.isfile(args.kernel_image):
-            return 'HCI mode: kernel_image {} is not a file!\n'.format(
-                repr(args.kernel_image))
+            return f'HCI mode: kernel_image {repr(args.kernel_image)} is not a file!\n'
 
         args.sudo = True
 
@@ -242,15 +241,18 @@ class CliParser(argparse.ArgumentParser):
 
     def check_args_btpclient_path(self, args):
         if not os.path.exists(args.btpclient_path):
-            return 'btpclient: Path {} of btp client ' \
-                   ' does not exist!\n'.format(repr(args.btpclient_path))
-
+            return (
+                f'btpclient: Path {repr(args.btpclient_path)} of btp client '
+                'does not exist!\n'
+            )
         return ''
 
     def check_args_btp_tcp(self, args):
         if not 49152 <= args.btp_tcp_port <= 65535:
-            return 'btp_tcp mode: Invalid server port number={}, expected' \
-                   ' range <49152,65535>'.format(args.btp_tcp_port)
+            return (
+                f'btp_tcp mode: Invalid server port number={args.btp_tcp_port}, expected '
+                'range <49152,65535>'
+            )
         return ''
 
     def parse(self, arg_ns=None):
@@ -277,7 +279,7 @@ class CliParser(argparse.ArgumentParser):
             args.local_addr = ['127.0.0.1'] * len(args.cli_port)
 
         for cli in self.cli_support:
-            check_method = getattr(self, 'check_args_{}'.format(cli))
+            check_method = getattr(self, f'check_args_{cli}')
             msg = check_method(args)
 
             if msg != '':

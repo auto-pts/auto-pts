@@ -1,3 +1,98 @@
+# Getting Started
+Follow the steps below to set up the project, install dependencies, 
+and enable automatic code formatting and linting.
+
+---
+
+### Clone the Repository
+
+```bash
+git clone https://github.com/your-username/your-repo.git
+cd your-repo
+```
+---
+
+### 2. Install Dependencies
+
+Install dependencies listed in `requirements_ci.txt`:
+
+```bash
+pip install -r requirements_ci.txt
+```
+
+We recommend using a virtual environment:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate    # On Windows: .venv\Scripts\activate
+```
+
+---
+
+## Code Style & Formatting
+
+This project uses:
+
+- [`Ruff`](https://docs.astral.sh/ruff/) – for fast PEP8 linting and auto-fixing
+
+Ruff is configured via `pyproject.toml`, so no additional config files are needed.
+
+### Style Checks and Auto-Fixing
+Two helper scripts are provided for working with code style:
+
+#### Check style:
+```bash
+python autopts/style_tools.py check
+```
+This will run `ruff check` and log the output to `logs/pep8/ruff_check.log`.
+
+#### Auto-fix style issues:
+```bash
+python autopts/style_tools.py fix
+```
+This will run `ruff check --fix` and apply fixes. Output is logged to `logs/pep8/ruff_fix.log`.
+
+---
+
+### Manual Usage
+
+You can also run `ruff` directly:
+
+```bash
+ruff check .
+ruff check . --fix
+```
+
+---
+### (Optional) Pre-commit Hook
+
+To automatically check code style before each commit:
+
+1. Install `pre-commit`:
+```bash
+pip install pre-commit
+pre-commit install
+```
+
+2. Now each commit will trigger `ruff` automatically:
+
+```bash
+git commit -m "Your message"
+```
+---
+
+
+###  GitHub Actions – Automatic Style Check
+
+A workflow is configured in `.github/workflows/full-style-matrix.yml` to automatically check code style on every push or pull request to `main` or `master`.
+
+### What it does:
+- Checks code with `ruff`
+
+This ensures consistent code quality across all contributions.
+
+---
+
 # Table of Contents
 
    * [Introduction](#introduction)

@@ -29,7 +29,6 @@ import shutil
 import signal
 import socket
 import sys
-import tempfile
 import threading
 import time
 import traceback
@@ -37,19 +36,29 @@ import xml.etree.ElementTree as ElementTree
 import xmlrpc.client
 from os.path import dirname
 from xmlrpc.server import SimpleXMLRPCServer
+
 from termcolor import colored
 
 from autopts.config import FILE_PATHS
-from autopts.ptsprojects import ptstypes
-from autopts.ptsprojects import stack
+from autopts.ptsprojects import ptstypes, stack
 from autopts.ptsprojects.boards import get_available_boards, tty_to_com
 from autopts.ptsprojects.ptstypes import E_FATAL_ERROR
 from autopts.ptsprojects.testcase import PTSCallback, TestCaseLT1, TestCaseLT2, TestCaseLT3
 from autopts.ptsprojects.testcase_db import TestCaseTable
 from autopts.pybtp import btp, defs
-from autopts.pybtp.types import BTPError, SynchError, MissingWIDError
-from autopts.utils import InterruptableThread, ResultWithFlag, CounterWithFlag, set_global_end, \
-    raise_on_global_end, RunEnd, get_global_end, have_admin_rights, ykush_replug_usb, active_hub_server_replug_usb
+from autopts.pybtp.types import BTPError, MissingWIDError, SynchError
+from autopts.utils import (
+    CounterWithFlag,
+    InterruptableThread,
+    ResultWithFlag,
+    RunEnd,
+    active_hub_server_replug_usb,
+    get_global_end,
+    have_admin_rights,
+    raise_on_global_end,
+    set_global_end,
+    ykush_replug_usb,
+)
 from cliparser import CliParser
 
 log = logging.debug
@@ -118,7 +127,7 @@ class FakeProxy:
     Usefull when testing code locally and auto-pts server is not needed"""
 
     def __init__(self):
-        self.info = f"mock"
+        self.info = "mock"
 
     def __getattr__(self, item):
         return '_generic'
@@ -227,8 +236,7 @@ class ClientCallback(PTSCallback):
                          usage.
         """
 
-        logger = logging.getLogger("{}.{}".format(self.__class__.__name__,
-                                                  self.log.__name__))
+        logger = logging.getLogger(f"{self.__class__.__name__}.{self.log.__name__}")
         logger.info("%s %s %s %s %s", ptstypes.PTS_LOGTYPE_STRING[log_type],
                     logtype_string, log_time, test_case_name,
                     log_message)
@@ -250,8 +258,7 @@ class ClientCallback(PTSCallback):
         };
         """
 
-        logger = logging.getLogger("{}.{}".format(
-            self.__class__.__name__, self.on_implicit_send.__name__))
+        logger = logging.getLogger(f"{self.__class__.__name__}.{self.on_implicit_send.__name__}")
 
         logger.info(f"""
     {"*" * 20}
@@ -344,10 +351,16 @@ class ClientCallbackServer(threading.Thread):
         self.current_test_case = None
         self.end = False
 
+    def safe_handle_request(self):
+        """Calls handle_request and logs exceptions."""
+        try:
+            self.server.handle_request()
+        except Exception as e:
+            logging.exception(e)
+
     def run(self):
         """Starts the xmlrpc callback server"""
         log("%s.%s", self.__class__.__name__, self.run.__name__)
-
         log("Client callback serving on port %s ...", self.port)
 
         self.server = SimpleXMLRPCServer(("", self.port),
@@ -358,10 +371,7 @@ class ClientCallbackServer(threading.Thread):
 
         try:
             while not self.end and not get_global_end():
-                try:
-                    self.server.handle_request()
-                except Exception as e:
-                    logging.exception(e)
+                self.safe_handle_request()
         except BaseException as e2:
             logging.exception(e2)
         finally:
@@ -423,7 +433,7 @@ def init_logging(tag="", log_filename=None):
     else:
         script_name = os.path.basename(sys.argv[0])  # in case it is full path
         script_name_no_ext = os.path.splitext(script_name)[0]
-        log_filename = "%s%s.log" % (script_name_no_ext, tag)
+        log_filename = f"{script_name_no_ext}{tag}.log"
 
     format_template = ("%(asctime)s %(threadName)s %(name)s %(levelname)s %(filename)-25s "
                        "%(lineno)-5s %(funcName)-25s : %(message)s")
@@ -461,7 +471,7 @@ def init_pts_thread_entry(proxy, args, exceptions, finish_count):
         raise Exception("Failed to restart PTS!")
 
     err = proxy.callback.get_result('restart_pts', timeout=args.max_server_restart_time)
-    if err != True:
+    if not err:
         raise Exception(f"Failed to restart PTS, err {err}")
 
     proxy.set_call_timeout(TEST_CASE_TIMEOUT_MS)  # milliseconds
@@ -494,7 +504,7 @@ def init_pts(args, ptses):
     finish_count = CounterWithFlag(init_count=0)
 
     init_logging('_' + '_'.join(str(x) for x in args.cli_port))
-    server_count = getattr(args, 'server_count',  len(args.cli_port))
+    server_count = getattr(args, 'server_count', len(args.cli_port))
 
     # PtsServer.finish_count.clear()
     for i in range(0, server_count):
@@ -507,16 +517,14 @@ def init_pts(args, ptses):
                 proxy = PtsServer.factory_get_instance(args.server_args[i], args.max_server_restart_time)
             else:
                 proxy = PtsServerProxy.factory_get_instance(
-                    i+1, args.ip_addr[i], args.srv_port[i],
+                    i + 1, args.ip_addr[i], args.srv_port[i],
                     args.local_addr[i], args.cli_port[i],
                     args.max_server_restart_time)
-
             proxy_list.append(proxy)
 
         thread = InterruptableThread(target=init_pts_thread_entry,
-                                     name=f'LT{i+1}-server-init',
+                                     name=f'LT{i + 1}-server-init',
                                      args=(proxy, args, exceptions, finish_count))
-
         thread_list.append(thread)
         thread.start()
 
@@ -528,17 +536,14 @@ def init_pts(args, ptses):
         logging.exception(e)
         raise
     finally:
-        for i, thread in enumerate(thread_list):
+        for _i, thread in enumerate(thread_list):
             if thread.is_alive():
                 thread.interrupt()
                 log(f"({id(proxy_list[i])}) init failed")
 
     exeption_msg = ''
-    while not exceptions.empty():
-        try:
-            exeption_msg += str(exceptions.get_nowait()) + '\n'
-        except queue.Empty:
-            break
+    for _ in range(exceptions.qsize()):
+        exeption_msg += str(exceptions.get_nowait()) + '\n'
 
     if exeption_msg:
         raise Exception(exeption_msg)
@@ -589,17 +594,16 @@ class TestCaseRunStats:
                                                              self.run_count_max)
 
     def save_to_backup(self, filename):
-        data_to_save = {}
-        for key, value in self.__dict__.items():
-            if isinstance(value, (int, str, bool)):
-                data_to_save[key] = value
+        data_to_save = {key: value
+                        for key, value in self.__dict__.items()
+                        if isinstance(value, (int, str, bool))}
 
         with open(filename, 'w') as json_file:
             json.dump(data_to_save, json_file, indent=4)
 
     @staticmethod
     def load_from_backup(backup_file):
-        with open(backup_file, 'r') as f:
+        with open(backup_file) as f:
             data = json.load(f)
             stats = TestCaseRunStats([], [], 0, None)
             stats.__dict__.update(data)
@@ -627,7 +631,7 @@ class TestCaseRunStats:
         tree = ElementTree.parse(self.xml_results)
         root = tree.getroot()
 
-        elem = root.find("./test_case[@name='%s']" % test_case_name)
+        elem = root.find(f"./test_case[@name='{test_case_name}']")
         if elem is None:
             elem = ElementTree.SubElement(root, 'test_case')
             elem.attrib["new"] = '0'
@@ -652,14 +656,14 @@ class TestCaseRunStats:
             run_count = int(elem.attrib["run_count"])
 
         elem.attrib["status"] = status
-        
+
         if test_start_time is not None:
             elem.attrib["test_start_time"] = test_start_time.strftime('%Y-%m-%d %H:%M:%S')
         if test_end_time is not None:
             elem.attrib["test_end_time"] = test_end_time.strftime('%Y-%m-%d %H:%M:%S')
-            
+
         regression = bool(elem.attrib["status"] != "PASS" and elem.attrib["status_previous"] == "PASS")
-        progress = bool(elem.attrib["status"] == "PASS" and elem.attrib["status_previous"] != "PASS" \
+        progress = bool(elem.attrib["status"] == "PASS" and elem.attrib["status_previous"] != "PASS"
                         and elem.attrib["status_previous"] != "None")
 
         elem.attrib["regression"] = str(regression)
@@ -675,7 +679,7 @@ class TestCaseRunStats:
         root = tree.getroot()
 
         for tc in descriptions.keys():
-            elem = root.find("./test_case[@name='%s']" % tc)
+            elem = root.find(f"./test_case[@name='{tc}']")
             if elem is None:
                 continue
 
@@ -851,7 +855,7 @@ def run_test_case_wrapper(func):
 
         retries_max = run_count_max - 1
         if run_count:
-            retries_msg = "#{}".format(run_count)
+            retries_msg = f"#{run_count}"
         else:
             retries_msg = ""
 
@@ -865,9 +869,9 @@ def run_test_case_wrapper(func):
         end_time_str = str(round(datetime.timedelta(
             seconds=duration).total_seconds(), 3))
 
-        result = ("{} ".format(status).ljust(15) +
+        result = (f"{status} ".ljust(15) +
                   end_time_str.rjust(len(end_time_str)) +
-                  retries_msg.rjust(len("#{}".format(retries_max)) + margin) +
+                  retries_msg.rjust(len(f"#{retries_max}") + margin) +
                   regression_msg.rjust(len("REGRESSION") + margin))
 
         if sys.stdout.isatty():
@@ -1041,9 +1045,11 @@ class LTThread(InterruptableThread):
             except BaseException as test_case_error:
                 try:
                     self.locked = self.interrupt_lock.acquire(blocking=False)
-                except:
-                    # In case KeyboardInterrupt was injected
+                except KeyboardInterrupt:
+                    # In case KeyboardInterrupt was injected, we deliberately ignore it here
                     pass
+                except Exception as e:
+                    log(f"Unexpected error while acquiring interrupt lock: {e}")
 
                 if isinstance(test_case_error, threading.BrokenBarrierError):
                     log(f'SYNCH: Cancelled waiting at a barrier, tc {test_case.name}')
@@ -1179,7 +1185,7 @@ def run_test_case(ptses, test_case_instances, test_case_name, stats,
 
         while True:
             alive_threads = []
-            for i, thread in enumerate(thread_list):
+            for _i, thread in enumerate(thread_list):
                 if thread.is_alive():
                     alive_threads.append(thread)
 
@@ -1275,7 +1281,7 @@ def run_test_cases(ptses, test_case_instances, args, stats, **kwargs):
 
     approx = ''
     if stats.est_duration:
-        approx = f" in approximately: " + str(datetime.timedelta(seconds=stats.est_duration))
+        approx = " in approximately: " + str(datetime.timedelta(seconds=stats.est_duration))
     print(f"Number of test cases to run: {stats.num_test_cases}{approx}")
 
     for test_case in test_cases:
@@ -1296,15 +1302,13 @@ def run_test_cases(ptses, test_case_instances, args, stats, **kwargs):
 
             raise_on_global_end()
 
-            exeption_msg = ''
-            while not exceptions.empty():
-                try:
-                    exeption_msg += str(exceptions.get_nowait()) + '\n'
-                except BaseException as e:
-                    logging.exception(e)
-                    traceback.print_exc()
-                finally:
-                    log(f'exception_msg: {exeption_msg}')
+            num_exceptions = exceptions.qsize()
+            if num_exceptions:
+                exception_messages = [str(exceptions.get_nowait()) for _ in range(num_exceptions)]
+                exeption_msg = "\n".join(exception_messages) + "\n"
+            else:
+                exeption_msg = ""
+            log(f'exception_msg: {exeption_msg}')
 
             if args.recovery and (exeption_msg != '' or status not in args.not_recover):
                 run_recovery(args, ptses)
@@ -1517,26 +1521,35 @@ def recover_at_exception(func):
     """The ultimate recovery of recovery, in case of server
      jammed/crashed, but there is still a chance it will be recovered."""
 
+    def _attempt_func(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception as e:
+            return e
+
     def _recover_at_exception(*args, **kwargs):
         restart_time = args[0].max_server_restart_time
 
         while not get_global_end():
-            try:
-                return func(*args, **kwargs)
-            except Exception as e:
-                logging.exception(e)
-                traceback.print_exc()
+            result = _attempt_func(*args, **kwargs)
+            if not isinstance(result, Exception):
+                return result
 
-                if isinstance(e, RunEnd):
-                    # Stopped with SIGINT
-                    break
+            logging.exception(result)
+            traceback.print_exc()
 
-                time.sleep(restart_time)
+            if isinstance(result, RunEnd):
+                # Stopped with SIGINT
+                break
 
-                if args[0].superguard:
-                    # Wait longer next time. Hopefully the server
-                    # superguard will work and trigger the restart.
-                    restart_time = args[0].superguard
+            time.sleep(restart_time)
+
+            if args[0].superguard:
+                # Wait longer next time. Hopefully the server
+                # superguard will work and trigger the restart.
+                restart_time = args[0].superguard
+
+        return None
 
     return _recover_at_exception
 
@@ -1566,7 +1579,7 @@ def run_recovery(args, ptses):
                     pts.recover_pts()
                     req_sent = True
                     err = pts.callback.get_result('recover_pts', timeout=args.max_server_restart_time)
-                    if err == True:
+                    if err:
                         log('PTS recovered')
                         break
 

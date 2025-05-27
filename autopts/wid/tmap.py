@@ -14,19 +14,26 @@
 #
 
 import logging
-
 import re
+import struct
 from argparse import Namespace
 
 from autopts.ptsprojects.stack import get_stack
-from autopts.pybtp import btp
-from autopts.pybtp.defs import AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS
-from autopts.wid import generic_wid_hdl
-from autopts.pybtp.types import *
-from autopts.pybtp.btp.btp import pts_addr_get, pts_addr_type_get, lt2_addr_get, lt2_addr_type_get
 from autopts.ptsprojects.testcase import MMI
-from autopts.wid.bap import create_default_config, get_audio_locations_from_pac, BAS_CONFIG_SETTINGS
+from autopts.pybtp import btp, defs
+from autopts.pybtp.btp.btp import lt2_addr_get, lt2_addr_type_get, pts_addr_get, pts_addr_type_get
+from autopts.pybtp.defs import AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS
+from autopts.pybtp.types import (
+    CODEC_CONFIG_SETTINGS,
+    QOS_CONFIG_SETTINGS,
+    ASCSState,
+    AudioDir,
+    WIDParams,
+    create_lc3_ltvs_bytes,
+)
+from autopts.wid.bap import BAS_CONFIG_SETTINGS, create_default_config, get_audio_locations_from_pac
 from autopts.wid.ccp import BT_TBS_GTBS_INDEX
+from autopts.wid.common import _safe_bap_send
 
 log = logging.debug
 
@@ -55,6 +62,7 @@ def trigger_discovery_if_needed(params):
 
 
 def tmap_wid_hdl(wid, description, test_case_name):
+    from autopts.wid import generic_wid_hdl
     log(f'{tmap_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
     return generic_wid_hdl(wid, description, test_case_name, [__name__])
 
@@ -108,7 +116,7 @@ def hdl_wid_100(params: WIDParams):
 
 
 def hdl_wid_104(_: WIDParams):
-    """Please send non connectable advertise with periodic info."""
+    """Please send non-connectable advertise with periodic info."""
 
     # Periodic adv started within cap_broadcast_adv_start at hdl_wid_114.
 
@@ -156,8 +164,13 @@ def hdl_wid_311(params: WIDParams):
         settings_name = params.test_case_name
         cis_id = 0x00
 
-    lt_count, num_sink_ases, sink_locations, num_source_ases, qos_set_name = wid_311_settings[settings_name]
-    log('Looking for %u LTs, num Sink ASEs %u, Sink locations %u, num Source ASEs %u, QoS Config %s' % (lt_count, num_sink_ases, sink_locations, num_source_ases, qos_set_name))
+    lt_count, num_sink_ases, sink_locations, num_source_ases, qos_set_name = \
+        wid_311_settings[settings_name]
+
+    log(
+        f"Looking for {lt_count} LTs, num Sink ASEs {num_sink_ases}, Sink locations {sink_locations}, "
+        f"num Source ASEs {num_source_ases}, QoS Config {qos_set_name}"
+    )
 
     metadata = b''
     default_config = create_default_config()
@@ -179,7 +192,7 @@ def hdl_wid_311(params: WIDParams):
      default_config.max_transport_latency) = QOS_CONFIG_SETTINGS[default_config.qos_set_name]
 
     sinks = []
-    for i in range(0, num_sink_ases):
+    for _i in range(0, num_sink_ases):
         config = Namespace(**vars(default_config))
         config.audio_dir = AudioDir.SINK
         config.max_sdu_size = default_config.max_sdu_size
@@ -199,7 +212,7 @@ def hdl_wid_311(params: WIDParams):
         sinks.append(config)
 
     sources = []
-    for i in range(0, num_source_ases):
+    for _i in range(0, num_source_ases):
         config = Namespace(**vars(default_config))
         config.audio_dir = AudioDir.SOURCE
         config.max_sdu_size = default_config.max_sdu_size
@@ -326,12 +339,15 @@ def hdl_wid_384(_: WIDParams):
 
 
 def hdl_wid_500(_: WIDParams):
-    """Please click ok when the tester is ready to discover Generic Telephone Bearer Service"""
+    """Please click ok when the tester is ready to
+    discover Generic Telephone Bearer Service"""
     return True
 
 
 def hdl_wid_501(params: WIDParams):
-    """Please discover Generic Telephone Bearer Service and click ok when the tester is ready to start CAP Unicast Audio Starting procedure"""
+    """Please discover Generic Telephone Bearer Service and
+    click ok when the tester is ready to start CAP
+    Unicast Audio Starting procedure"""
 
     # get peer addr
     if params.test_case_name.endswith('LT2'):
@@ -376,7 +392,8 @@ def hdl_wid_503(params: WIDParams):
 
 
 wid_504_settings = {
-    # test_case_name: (lt count, iut as audio source: streams + channels, sink locations (0 - don't care), iut as audio sink streams, metadata)
+    # test_case_name: (lt count, iut as audio source: streams + channels,
+    # sink locations (0 - don't care), iut as audio sink streams, metadata)
     'TMAP/CG/VRC/BV-01-C': (1, 1, 1, 0, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
     'TMAP/CG/VRC/BV-05-C': (1, 2, 1, 0, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
     'TMAP/CG/VRC/BV-06-C': (1, 1, 2, 0, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
@@ -388,7 +405,8 @@ wid_504_settings = {
     'TMAP/CG/ASC/BV-02-C': (1, 1, 1, 2, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
     'TMAP/CG/ASC/BV-03-C': (1, 1, 1, 3, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
 
-    # According to TMAP.TS.p1 LT1 provides audio source and LT2 provides audio sink, however, PTS 8.5.3 seem to have this the other way round
+    # According to TMAP.TS.p1 LT1 provides audio source and
+    # LT2 provides audio sink, however, PTS 8.5.3 seem to have this the other way round
     'TMAP/CG/VRC/BV-02-C':     (2, 1, 1, 0, 0, 0, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
     'TMAP/CG/VRC/BV-02-C_LT2': (2, 0, 0, 0, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
     'TMAP/CG/VRC/BV-03-C':     (2, 1, 1, 0, 0, 0, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
@@ -427,8 +445,13 @@ def hdl_wid_504(params: WIDParams):
     default_config = create_default_config()
     default_config.qos_set_name = '16_2_1'
 
-    lt_count, iut_source_streams, iut_source_channels, pts_sink_locations, iut_sink_streams, iut_sink_channels, metadata = wid_504_settings[settings_name]
-    log('Look for %u Source ASEs (%u channels) and %u Sink ASEs (%u channels) on Lower Tester' % (iut_sink_streams, iut_sink_channels, iut_source_streams, iut_source_channels))
+    lt_count, iut_source_streams, iut_source_channels, pts_sink_locations, \
+        iut_sink_streams, iut_sink_channels, metadata = wid_504_settings[settings_name]
+
+    log(
+        f"Look for {iut_sink_streams} Source ASEs ({iut_sink_channels} channels) and "
+        f"{iut_source_streams} Sink ASEs ({iut_source_channels} channels) on Lower Tester"
+    )
 
     default_config.codec_set_name = '_'.join(default_config.qos_set_name.split('_')[:-1])
     default_config.addr = addr
@@ -446,7 +469,7 @@ def hdl_wid_504(params: WIDParams):
      default_config.max_transport_latency) = QOS_CONFIG_SETTINGS[default_config.qos_set_name]
 
     sinks = []
-    for i in range(0, iut_source_streams):
+    for _i in range(0, iut_source_streams):
         config = Namespace(**vars(default_config))
         config.audio_dir = AudioDir.SINK
         config.max_sdu_size = default_config.max_sdu_size * iut_source_channels
@@ -466,7 +489,7 @@ def hdl_wid_504(params: WIDParams):
         sinks.append(config)
 
     sources = []
-    for i in range(0, iut_sink_streams):
+    for _i in range(0, iut_sink_streams):
         config = Namespace(**vars(default_config))
         config.audio_dir = AudioDir.SOURCE
         config.max_sdu_size = default_config.max_sdu_size * iut_sink_channels
@@ -551,7 +574,7 @@ def hdl_wid_504(params: WIDParams):
 
 def hdl_wid_506(params: WIDParams):
     """
-    Please click OK when the IUT is ready to to broadcast Basic Audio Announcements with Audio Location Front xxx
+    Please click OK when the IUT is ready to broadcast Basic Audio Announcements with Audio Location Front xxx
     """
 
     # There's no explicit 'stop broadcast / advertising' dialog for TMAP/BMS/ASC/BV-01-I in PTS, therefore,
@@ -592,7 +615,7 @@ def hdl_wid_506(params: WIDParams):
     subgroup_id = 0x00
     presentation_delay = 40000
 
-    for i in range(source_num):
+    for _i in range(source_num):
         btp.cap_broadcast_source_setup_stream(source_id, subgroup_id, coding_format, vid, cid,
                                               codec_ltvs_bytes, metadata)
 
@@ -613,12 +636,8 @@ def hdl_wid_506(params: WIDParams):
 
     # PTS does not send an explicit message, but for each
     # configured SINK it expects to receive any ISO data.
-    for i in range(1, 10):
-        try:
-            btp.bap_send(0, data)
-        except BTPError:
-            # Buffer full
-            pass
+    for _ in range(1, 10):
+        _safe_bap_send(0, data)
 
     return True
 
@@ -644,6 +663,7 @@ def hdl_wid_511(params: WIDParams):
 
     return True
 
+
 def hdl_wid_512(params: WIDParams):
     """
     Please terminate the call using CCP Terminate Call
@@ -659,6 +679,7 @@ def hdl_wid_512(params: WIDParams):
     btp.ccp_terminate_call(BT_TBS_GTBS_INDEX, call_id, addr_type, addr)
 
     return True
+
 
 def hdl_wid_514(params: WIDParams):
     """
@@ -711,10 +732,11 @@ def hdl_wid_522(params: WIDParams):
 
     return True
 
+
 # Copy & paste from wid/gap.py
 def hdl_wid_2004(params: WIDParams):
     """
-    Please confirm that 6 digit number is matched with [passkey].
+    Please confirm that 6-digit number is matched with [passkey].
     """
     pattern = r'[\d]{6}'
     passkey = re.search(pattern, params.description)[0]
@@ -732,6 +754,7 @@ def hdl_wid_2004(params: WIDParams):
     stack.gap.passkey.data = None
 
     return match
+
 
 def hdl_wid_20001(_: WIDParams):
     """
@@ -826,6 +849,7 @@ def hdl_wid_20107(params: WIDParams):
 
     return True
 
+
 def hdl_wid_20110(params: WIDParams):
     """
         Please send write request to handle 0x024A with following value.
@@ -869,9 +893,12 @@ def hdl_wid_20116(_: WIDParams):
 
     return True
 
+
 def hdl_wid_20206(_: WIDParams):
     """
-    Please verify that for each supported characteristic, attribute handle/UUID pair(s) is returned to the upper tester.TMAP Role: Attribute Handle = 0x0321
+    Please verify that for each supported characteristic,
+    attribute handle/UUID pair(s) is returned to the upper tester.
+    TMAP Role: Attribute Handle = 0x0321
     """
 
     # BTstack uses GATT Read Value by Type without first searching for TMAP Service and finding TMAP Characteristics
