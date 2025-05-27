@@ -68,10 +68,14 @@ class CliParser(argparse.ArgumentParser):
                           help="Repeat every test even if previous result was PASS")
 
         self.add_argument("-S", "--srv_port", type=int, nargs="+", default=[SERVER_PORT],
-                          help="Specify the server port number")
+                          help="Specify the server port number."
+                            " If running with three dongles, this may be on the form:"
+                            " \"-S 65000 65002 65004\"")
 
         self.add_argument("-C", "--cli_port", type=int, nargs="+", default=[CLIENT_PORT],
-                          help="Specify the client port number")
+                          help="Specify the client port number."
+                            " If running with three dongles, this may be on the form:"
+                            " \"-C 65001 65003 65005\"")
 
         self.add_argument("--recovery", action='store_true', default=False,
                           help="Specify if autoptsclient should try to recover"
