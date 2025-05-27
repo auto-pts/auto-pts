@@ -795,6 +795,9 @@ def hdl_wid_1(params: WIDParams):
     for channel in l2cap.channels:
         if params.test_case_name in ['L2CAP/ERM/BV-23-C', 'L2CAP/STM/BV-03-C']:
             _l2cap_chann_send_safely(channel.id, '00', 120)
+        elif params.test_case_name in ['L2CAP/ERM/BV-15-C']:
+            for _ in range(0, 4):
+                _l2cap_chann_send_safely(channel.id, '00', 1)
         else:
             _l2cap_chann_send_safely(channel.id, '00', 1)
     return True
