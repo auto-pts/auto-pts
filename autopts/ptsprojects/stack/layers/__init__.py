@@ -36,10 +36,10 @@ from .mics import *  # noqa: F403 # used in many files : TODO import directly in
 from .ots import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from .pacs import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from .pbp import *  # noqa: F403 # used in many files : TODO import directly in files not with *
+from .sdp import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from .tbs import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from .tmap import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from .vcp import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from .vcs import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from .vocs import *  # noqa: F403 # used in many files : TODO import directly in files not with *
-
 # GENERATOR append 1

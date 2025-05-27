@@ -37,6 +37,7 @@ from .mmdl import mmdl_wid_hdl
 from .ots import ots_wid_hdl
 from .pacs import pacs_wid_hdl
 from .pbp import pbp_wid_hdl
+from .sdp import sdp_wid_hdl
 from .tbs import tbs_wid_hdl
 from .tmap import tmap_wid_hdl
 from .vcp import vcp_wid_hdl
@@ -68,6 +69,7 @@ __all__ = [
     "ots_wid_hdl",
     "pacs_wid_hdl",
     "pbp_wid_hdl",
+    "sdp_wid_hdl",
     "tbs_wid_hdl",
     "tmap_wid_hdl",
     "vcp_wid_hdl",
