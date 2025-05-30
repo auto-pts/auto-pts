@@ -310,7 +310,7 @@ def test_cases(ptses):
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/SEM/BV-50-C",
                   cmds=br_l2cap + [
-                      TestFunc(btp.gap_set_bondable_off),
+                      TestFunc(btp.gap_set_bondable_on),
                   ],
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/SEM/BV-06-C",
@@ -327,13 +327,13 @@ def test_cases(ptses):
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/SEM/BV-51-C",
                   cmds=br_l2cap + [
-                      TestFunc(btp.gap_set_bondable_off),
+                      TestFunc(btp.gap_set_bondable_on),
                       TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
                   ],
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/SEM/BV-52-C",
                   cmds=br_l2cap + [
-                      TestFunc(btp.gap_set_bondable_off),
+                      TestFunc(btp.gap_set_bondable_on),
                       TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
                   ],
                   generic_wid_hdl=gap_wid_hdl),
@@ -345,7 +345,7 @@ def test_cases(ptses):
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/SEM/BV-53-C",
                   cmds=br_l2cap + [
-                      TestFunc(btp.gap_set_bondable_off),
+                      TestFunc(btp.gap_set_bondable_on),
                       TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
                   ],
                   generic_wid_hdl=gap_wid_hdl),
