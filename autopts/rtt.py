@@ -16,6 +16,7 @@
 import logging
 import os
 import re
+import signal
 import socket
 import subprocess
 import sys
@@ -200,13 +201,17 @@ class BTMON:
             self.btmon_process = subprocess.Popen(cmd, cwd=log_filecwd,
                                                   shell=True,
                                                   stdout=subprocess.PIPE,
-                                                  stderr=subprocess.PIPE)
+                                                  stderr=subprocess.PIPE,
+                                                  preexec_fn=os.setsid)
 
     def stop(self):
         log("%s.%s", self.__class__, self.stop.__name__)
         self.rtt_reader.stop()
 
         if self.btmon_process and self.btmon_process.poll() is None:
+            if sys.platform != 'win32':
+                os.killpg(os.getpgid(self.btmon_process.pid), signal.SIGTERM)
+
             self.btmon_process.terminate()
             self.btmon_process.wait()
             self.btmon_process = None
