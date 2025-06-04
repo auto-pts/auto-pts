@@ -110,6 +110,7 @@ class Gap:
 
         # Used for MMI handling
         self.delay_mmi = False
+        self.mmi_round = {}
 
     def add_connection(self, addr, addr_type):
         self.connections[addr] = GapConnection(addr=addr,
@@ -218,6 +219,17 @@ class Gap:
             wait_for_event(timeout, lambda: self.passkey.data)
 
         return self.passkey.data
+
+    def get_mmi_round(self, mmi):
+        if mmi in self.mmi_round.keys():
+            return self.mmi_round[mmi]
+        return 0
+
+    def increase_mmi_round(self, mmi):
+        if mmi in self.mmi_round.keys():
+            self.mmi_round[mmi] += 1
+        else:
+            self.mmi_round[mmi] = 1
 
     def gap_wait_for_pairing_fail(self, timeout=5):
         if self.pairing_failed_rcvd.data is None:
