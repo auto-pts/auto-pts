@@ -390,10 +390,16 @@ def hdl_wid_76(_: WIDParams):
 
 
 GAP_DISCONN_ROUND = 0
+GAP_DISCONN_TEST_CASE_NAME = None
 
 
 def hdl_wid_77(params: WIDParams):
     global GAP_DISCONN_ROUND
+    global GAP_DISCONN_TEST_CASE_NAME
+
+    if GAP_DISCONN_TEST_CASE_NAME != params.test_case_name:
+        GAP_DISCONN_TEST_CASE_NAME = params.test_case_name
+        GAP_DISCONN_ROUND = 0
 
     if params.test_case_name.startswith("GAP/BOND/BON/BV-04-C"):
         # PTS sends WID before IUT finishes encryption
@@ -1710,6 +1716,7 @@ def hdl_wid_145(_: WIDParams):
 
 
 GAP_TEST_WID_33_ROUND = 0
+GAP_TEST_WID_33_TEST_CASE_NAME = None
 
 
 def hdl_wid_33(params: WIDParams):
@@ -1717,6 +1724,11 @@ def hdl_wid_33(params: WIDParams):
     Please make IUT general discoverable.
     """
     global GAP_TEST_WID_33_ROUND
+    global GAP_TEST_WID_33_TEST_CASE_NAME
+
+    if GAP_TEST_WID_33_TEST_CASE_NAME != params.test_case_name:
+        GAP_TEST_WID_33_TEST_CASE_NAME = params.test_case_name
+        GAP_TEST_WID_33_ROUND = 0
 
     btp.gap_set_nondiscov()
     btp.gap_set_gendiscov()
@@ -1813,6 +1825,7 @@ def hdl_wid_165(params: WIDParams):
 
 
 GAP_TEST_WID_102_ROUND = 0
+GAP_TEST_WID_102_TEST_CASE_NAME = None
 
 
 def hdl_wid_102(params: WIDParams):
@@ -1822,6 +1835,11 @@ def hdl_wid_102(params: WIDParams):
     """
 
     global GAP_TEST_WID_102_ROUND
+    global GAP_TEST_WID_102_TEST_CASE_NAME
+
+    if GAP_TEST_WID_102_TEST_CASE_NAME != params.test_case_name:
+        GAP_TEST_WID_102_TEST_CASE_NAME = params.test_case_name
+        GAP_TEST_WID_102_ROUND = 0
 
     if params.test_case_name in ['GAP/SEC/SEM/BI-11-C', 'GAP/SEC/SEM/BI-02-C',
                                  'GAP/SEC/SEM/BI-03-C', 'GAP/SEC/SEM/BI-14-C',
@@ -1910,6 +1928,7 @@ def hdl_wid_231(_: WIDParams):
 
 
 GAP_TEST_WID_103_ROUND = 0
+GAP_TEST_WID_103_TEST_CASE_NAME = None
 
 
 def hdl_wid_103(params: WIDParams):
@@ -1919,6 +1938,11 @@ def hdl_wid_103(params: WIDParams):
     After that, please create the service channel using L2CAP Connection Request.
     """
     global GAP_TEST_WID_103_ROUND
+    global GAP_TEST_WID_103_TEST_CASE_NAME
+
+    if GAP_TEST_WID_103_TEST_CASE_NAME != params.test_case_name:
+        GAP_TEST_WID_103_TEST_CASE_NAME = params.test_case_name
+        GAP_TEST_WID_103_ROUND = 0
 
     stack = get_stack()
     br_psm = 0x1001
