@@ -599,11 +599,13 @@ class Server(threading.Thread):
 
         file_list = []
         for root, _, files in os.walk(logs_root,
-                                         topdown=False):
+                                      topdown=False):
             for name in files:
                 file_list.append(os.path.join(root, name))
 
             file_list.append(root)
+
+        return file_list
 
     def copy_file(self, file_path):
         self._update_request_time()
