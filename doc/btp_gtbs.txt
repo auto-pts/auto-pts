@@ -7,7 +7,7 @@ Commands and responses:
 
         Opcode 0x01 - Read Supported Commands command/response
 
-                Controller Index:       <controller id>
+                Controller Index:       <non-controller>
                 Command parameters:     <none>
                 Response parameters:    <supported commands> (variable)
 
