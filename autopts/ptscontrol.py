@@ -671,7 +671,7 @@ class PyPTS:
             os.remove(self._temp_workspace_path)
 
     @pts_lock_wrapper(PTS_START_LOCK)
-    def open_workspace(self, workspace_path):
+    def open_workspace(self, workspace_path, copy):
         """Opens existing workspace"""
 
         log(f"open_workspace {workspace_path}")
@@ -696,23 +696,27 @@ class PyPTS:
         # Workaround CASE0044114 PTS issue
         # Do not open original workspace file that can become broken by
         # TestCase. Instead use a copy of this file
-        if self._temp_workspace_path and \
-                os.path.exists(self._temp_workspace_path):
-            os.unlink(self._temp_workspace_path)
+        if copy:
+            if self._temp_workspace_path and \
+                    os.path.exists(self._temp_workspace_path):
+                os.unlink(self._temp_workspace_path)
 
-        workspace_dir = os.path.dirname(workspace_path)
-        workspace_name = os.path.basename(workspace_path)
+            workspace_dir = os.path.dirname(workspace_path)
+            workspace_name = os.path.basename(workspace_path)
 
-        temp_workspace_dir = os.path.join(workspace_dir, "_" + self.get_bluetooth_address())
-        Path(temp_workspace_dir).mkdir(parents=False, exist_ok=True)
+            temp_workspace_dir = os.path.join(workspace_dir, "_" + self.get_bluetooth_address())
+            Path(temp_workspace_dir).mkdir(parents=False, exist_ok=True)
 
-        self._temp_workspace_path = \
-            os.path.join(temp_workspace_dir, "temp_" + workspace_name)
-        shutil.copy2(workspace_path, self._temp_workspace_path)
-        log("Using temporary workspace: %s", self._temp_workspace_path)
+            self._temp_workspace_path = \
+                os.path.join(temp_workspace_dir, "temp_" + workspace_name)
+            shutil.copy2(workspace_path, self._temp_workspace_path)
+            log("Using temporary workspace: %s", self._temp_workspace_path)
 
-        self._pts.OpenWorkspace(self._temp_workspace_path)
-        self.add_recov(self.open_workspace, workspace_path)
+            self._pts.OpenWorkspace(self._temp_workspace_path)
+        else:
+            self._pts.OpenWorkspace(workspace_path)
+
+        self.add_recov(self.open_workspace, workspace_path, copy)
         self._cache_test_cases()
 
     def _cache_test_cases(self):

@@ -483,7 +483,7 @@ def init_pts_thread_entry(proxy, args, exceptions, finish_count):
     log("PTS BD_ADDR: %s", proxy.q_bd_addr)
 
     log("Opening workspace: %s", args.workspace)
-    proxy.open_workspace(args.workspace)
+    proxy.open_workspace(args.workspace, args.copy)
 
     if args.bd_addr:
         projects = proxy.get_project_list()

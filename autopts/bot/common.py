@@ -72,6 +72,10 @@ class BotCliParser(CliParser):
         self.add_argument('--simple', action='store_true',
                           help='Skip build and flash in bot mode.', default=False)
 
+        self.add_argument('--nc', dest='copy', action='store_false',
+                          help='Do not copy workspace, open original one. '
+                               'Warning: workspace file might be modified', default=True)
+
     def add_positional_args(self):
         self.add_argument("config_path", nargs='?', default='config.py',
                           help="Path to config.py to use for testing.")
@@ -125,6 +129,7 @@ class BotConfigArgs(Namespace):
         self.no_build = args.get('no_build', False)
         self.dongle_init_retry = args.get('dongle_init_retry', 5)
         self.build_env_cmd = args.get('build_env_cmd', None)
+        self.copy = args.get('copy', True)
 
         if self.ykush or self.active_hub_server:
             self.usb_replug_available = True
