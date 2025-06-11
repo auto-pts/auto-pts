@@ -308,13 +308,13 @@
           <Row>
             <Name>TSPC_ASCS_4_2</Name>
             <Description>Support Multiple Sink ASEs (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_ASCS_4_3</Name>
             <Description>Support Multiple Source ASEs (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4877,13 +4877,13 @@
           <Row>
             <Name>TSPC_BAP_90_14</Name>
             <Description>Periodic Advertising Synchronization Transfer procedure (Peripheral) (C.6)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_90_15</Name>
             <Description>Periodic Advertising Synchronization Transfer procedure (Central) (C.7)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4931,7 +4931,7 @@
           <Row>
             <Name>TSPC_BAP_90_23</Name>
             <Description>LE security mode 1 level 4 (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -6192,7 +6192,7 @@
           <Row>
             <Name>TSPC_BASS_3_3</Name>
             <Description>Periodic Advertising Synchronization Transfer procedure (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -7051,7 +7051,7 @@
           <Row>
             <Name>TSPC_CAP_27_1</Name>
             <Description>Multiple Broadcast Stream Support (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -7105,7 +7105,7 @@
           <Row>
             <Name>TSPC_CAP_28_5</Name>
             <Description>Distribute Broadcast Code procedure (C.4)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -9187,13 +9187,13 @@
           <Row>
             <Name>TSPC_CSIS_2a_1</Name>
             <Description>Notifiable Set Identity Resolving Key Characteristic (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_CSIS_2a_2</Name>
             <Description>Notifiable Coordinated Set Size Characteristic (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -13847,7 +13847,7 @@
           <Row>
             <Name>TSPC_GMAP_11_1</Name>
             <Description>GMAP v1.0.1 (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -14777,7 +14777,7 @@
           <Row>
             <Name>TSPC_GMAP_21_2</Name>
             <Description>Unicast Audio Updating procedure with Game Context Type (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -14795,7 +14795,7 @@
           <Row>
             <Name>TSPC_GMAP_31_1</Name>
             <Description>GMAP v1.0.1 (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -15515,7 +15515,7 @@
           <Row>
             <Name>TSPC_GMAP_51_1</Name>
             <Description>GMAP v1.0.1 (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -15701,7 +15701,7 @@
           <Row>
             <Name>TSPC_GMAP_60_2</Name>
             <Description>Unicast Audio Updating procedure with Game Context Type (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -15719,7 +15719,7 @@
           <Row>
             <Name>TSPC_GMAP_71_1</Name>
             <Description>GMAP v1.0.1 (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -15941,7 +15941,7 @@
           <Row>
             <Name>TSPC_GMAP_111_1</Name>
             <Description>Game (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -15965,7 +15965,7 @@
           <Row>
             <Name>TSPC_GMAP_91_1</Name>
             <Description>GMAP v1.0.1 (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -16067,7 +16067,7 @@
           <Row>
             <Name>TSPC_GMAP_101_1</Name>
             <Description>GMAP v1.0.1 (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -25462,7 +25462,7 @@
           <Row>
             <Name>TSPC_PBP_1_3</Name>
             <Description>Public Broadcast Assistant (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -25780,25 +25780,25 @@
           <Row>
             <Name>TSPC_PBP_15_1</Name>
             <Description>PBP v1.0 (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_PBP_16_1</Name>
             <Description>PBP v1.0.1 (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_PBP_17_1</Name>
             <Description>Commander (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_PBP_17_2</Name>
             <Description>BAP Broadcast Assistant (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
