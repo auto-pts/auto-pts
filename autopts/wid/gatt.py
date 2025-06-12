@@ -1919,6 +1919,8 @@ def hdl_wid_150(params: WIDParams):
 
 
 def hdl_wid_151(_: WIDParams):
+    stack = get_stack()
+
     chrcs = btp.gatts_get_attrs(type_uuid='2803')
     for chrc in chrcs:
         handle, perm, type_uuid = chrc
@@ -1954,12 +1956,15 @@ def hdl_wid_151(_: WIDParams):
 
         _, val_len, _ = chrc_value_data
         if val_len > 0:
+            stack.gatt.value_len = val_len
             return f'{handle:04x}'
 
     return False
 
 
 def hdl_wid_152(_: WIDParams):
+    stack = get_stack()
+
     chrcs = btp.gatts_get_attrs(type_uuid='2803')
     for chrc in chrcs:
         handle, perm, type_uuid = chrc
@@ -1992,9 +1997,18 @@ def hdl_wid_152(_: WIDParams):
 
         _, val_len, _ = chrc_value_data
         if val_len > 64:
+            stack.gatt.value_len = val_len
             return f'{handle:04x}'
 
     return False
+
+
+def hdl_wid_154(_: WIDParams):
+    # description: Enter size of handle value based on previous mmi requirement.
+
+    stack = get_stack()
+
+    return stack.gatt.value_len
 
 
 def hdl_wid_304(params: WIDParams):
