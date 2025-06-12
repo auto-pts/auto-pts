@@ -33,6 +33,43 @@ def gap_wid_hdl(wid, description, test_case_name):
     return generic_wid_hdl(wid, description, test_case_name, [__name__])
 
 
+def _get_hdl_mode1(level):
+    attrs = btp.gatts_get_attrs(type_uuid='2803')
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
+    for attr in attrs:
+        if not attr:
+            continue
+
+        (handle, permission, type_uuid) = attr
+        data = btp.gatts_get_attr_val(bd_addr_type, bd_addr, handle)
+        if not data:
+            continue
+
+        (att_rsp, val_len, val) = data
+
+        hdr = '<BH'
+        hdr_len = struct.calcsize(hdr)
+        uuid_len = val_len - hdr_len
+
+        (props, handle, chrc_uuid) = struct.unpack(f"<BH{uuid_len}s", val)
+        chrc_value_attr = btp.gatts_get_attrs(start_handle=handle,
+                                              end_handle=handle)
+        if not chrc_value_attr:
+            continue
+
+        (handle, permission, type_uuid) = chrc_value_attr[0]
+        if level == 4 and permission and Perm.write_authn:
+            return format(handle, 'x').zfill(4)
+        if level == 3 and permission and Perm.write_authz:
+            return format(handle, 'x').zfill(4)
+        if level == 2 and permission and Perm.write_enc:
+            return format(handle, 'x').zfill(4)
+
+    return False
+
+
 # wid handlers section begin
 def hdl_wid_4(_: WIDParams):
     sleep(10)  # Give some time to discover devices
@@ -1339,39 +1376,28 @@ def hdl_wid_243(_: WIDParams):
     return True
 
 
+def hdl_wid_246(_: WIDParams):
+    """
+        Please enter the 2-octet handle of the characteristic in the IUT that requires
+        Secure Connections with Mode 1, Level 4. :
+    """
+    return _get_hdl_mode1(level=4)
+
+
+def hdl_wid_247(_: WIDParams):
+    """
+        Please enter the 2-octet handle of the characteristic in the IUT that requires
+        Secure Connections with Mode 1, Level 3. :
+    """
+    return _get_hdl_mode1(level=3)
+
+
 def hdl_wid_248(_: WIDParams):
-    attrs = btp.gatts_get_attrs(type_uuid='2803')
-    bd_addr = btp.pts_addr_get()
-    bd_addr_type = btp.pts_addr_type_get()
-
-    perm = Perm.write_enc
-
-    for attr in attrs:
-        if not attr:
-            continue
-
-        (handle, permission, type_uuid) = attr
-        data = btp.gatts_get_attr_val(bd_addr_type, bd_addr, handle)
-        if not data:
-            continue
-
-        (att_rsp, val_len, val) = data
-
-        hdr = '<BH'
-        hdr_len = struct.calcsize(hdr)
-        uuid_len = val_len - hdr_len
-
-        (props, handle, chrc_uuid) = struct.unpack(f"<BH{uuid_len}s", val)
-        chrc_value_attr = btp.gatts_get_attrs(start_handle=handle,
-                                              end_handle=handle)
-        if not chrc_value_attr:
-            continue
-
-        (handle, permission, type_uuid) = chrc_value_attr[0]
-        if permission & perm:
-            return format(handle, 'x').zfill(4)
-
-    return False
+    """
+        Please enter the 2-octet handle of the characteristic in the IUT that requires
+        Secure Connections with Mode 1, Level 2. :
+    """
+    return _get_hdl_mode1(level=2)
 
 
 def hdl_wid_265(params: WIDParams):
