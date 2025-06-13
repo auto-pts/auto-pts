@@ -1959,7 +1959,7 @@ def hdl_wid_151(_: WIDParams):
             stack.gatt.value_len = val_len
             return f'{handle:04x}'
 
-    return False
+    return 0
 
 
 def hdl_wid_152(_: WIDParams):
@@ -2000,7 +2000,7 @@ def hdl_wid_152(_: WIDParams):
             stack.gatt.value_len = val_len
             return f'{handle:04x}'
 
-    return False
+    return 0
 
 
 def hdl_wid_154(_: WIDParams):
