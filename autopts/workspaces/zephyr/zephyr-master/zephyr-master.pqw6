@@ -9355,6 +9355,320 @@
         </Rows>
       </PIXIT>
     </PROJECT_INFORMATION>
+    <PROJECT_INFORMATION NAME="DFUM" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
+      <PICS>
+        <Name>DFUM</Name>
+        <Version />
+        <Rows>
+          <Row>
+            <Name>TSPC_DFUM_ALL</Name>
+            <Description>Enables all test cases when set.</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DFUM_0_1</Name>
+            <Description>Mesh Device Firmware Update Model v1.0 (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DFUM_3_1</Name>
+            <Description>Firmware Update Server model (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DFUM_3_2</Name>
+            <Description>Firmware Distribution Server model (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DFUM_3_3</Name>
+            <Description>Firmware Update Client model (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DFUM_3_4</Name>
+            <Description>Firmware Distribution Client model (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DFUM_10_1</Name>
+            <Description>BLOB Transfer Server model (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DFUM_11_1</Name>
+            <Description>Pull BLOB Transfer Mode (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DFUM_11_2</Name>
+            <Description>Push BLOB Transfer Mode (C.2)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DFUM_20_1</Name>
+            <Description>BLOB Transfer Server model (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DFUM_21_1</Name>
+            <Description>Pull BLOB Transfer Mode (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DFUM_21_2</Name>
+            <Description>Push BLOB Transfer Mode (C.2)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DFUM_22_1</Name>
+            <Description>Store Firmware OOB procedure (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DFUM_22_2</Name>
+            <Description>Firmware Retrieval Over HTTPS procedure (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DFUM_22_3</Name>
+            <Description>Multiple Firmware Image Support (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DFUM_30_1</Name>
+            <Description>BLOB Transfer Client model (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DFUM_40_1</Name>
+            <Description>BLOB Transfer Client model (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DFUM_41_1</Name>
+            <Description>Upload Firmware OOB procedure (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_ALL</Name>
+            <Description>Enables all test cases when set.</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+        </Rows>
+      </PICS>
+      <PIXIT>
+        <Name>DFUM</Name>
+        <Version>1.0</Version>
+        <Rows>
+          <Row>
+            <Name>TSPX_bd_addr_iut</Name>
+            <Description>The unique 48-bit Bluetooth device address (BD_ADDR) of the IUT. This was filled in during workspace creation.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>000000000000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_time_guard</Name>
+            <Description>The time in milliseconds, to break PTS from waiting for a required event, if time guard is used by the test case. (Default: 300000)</Description>
+            <Type>INTEGER</Type>
+            <Value>300000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_use_implicit_send</Name>
+            <Description>Whether to receive a message via Implicit Send when an action or attention is needed by test operator. (Default: TRUE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>TRUE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_tester_database_file</Name>
+            <Description>Location of SIG database file. (Default: C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_SMPP_db.xml)</Description>
+            <Type>IA5STRING</Type>
+            <Value>C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_SMPP_db.xml</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_mtu_size</Name>
+            <Description>MTU size. (Default: 23)</Description>
+            <Type>INTEGER</Type>
+            <Value>23</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_delete_link_key</Name>
+            <Description>Whether to delete link key or not. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_delete_ltk</Name>
+            <Description>Whether to delete Long Term Key or not. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_security_enabled</Name>
+            <Description>Whether to set security for the test suite. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_iut_setup_att_over_br_edr</Name>
+            <Description>IUT can optionally test ATT over BR/EDR connection when this flag is set when applicable. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_scan_interval</Name>
+            <Description>The scan interval value N*0.625ms. Default is setto fast scan interval.(Default: 30)</Description>
+            <Type>INTEGER</Type>
+            <Value>30</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_scan_window</Name>
+            <Description>The scan window value N*0.625ms. Default is set to fast scan window.(Default: 30)</Description>
+            <Type>INTEGER</Type>
+            <Value>30</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_scan_filter</Name>
+            <Description>The scan filter setting to allow accept filter accept list only device.(Default: 0 - Fileter none)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>00</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_advertising_interval_min</Name>
+            <Description>The minimum advertising interval value N*0.625ms. PTS will using this value to set advertising parameters.(Default: 160)</Description>
+            <Type>INTEGER</Type>
+            <Value>160</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_advertising_interval_max</Name>
+            <Description>The maximum advertising interval value N*0.625ms. PTS will using this value to set advertising parameters.(Default: 160)</Description>
+            <Type>INTEGER</Type>
+            <Value>160</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_tester_OOB_information</Name>
+            <Description>The 16-bit tester OOB information value. PTS will advertise using this value when in peripheral role.(Default: F87F)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>F87F</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_device_uuid</Name>
+            <Description>used for mesh beacon. (Default: 001BDC0810210B0E0A0C000B0E0A0C00)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>001BDC0810210B0E0A0C000B0E0A0C00</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_device_uuid2</Name>
+            <Description>used for tester2 mesh beacon. (Default: 00000000000000000000000000000000)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>00000000000000000000000000000000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_use_pb_gatt_bearer</Name>
+            <Description>PB ADV or PB GATT bearer for PROT test cases. (Default: TRUE - PB-ADV)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_iut_comp_data_page</Name>
+            <Description>The page number of the composition data (Default: 0)</Description>
+            <Type>INTEGER</Type>
+            <Value>0</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_oob_state_change</Name>
+            <Description>Indicates if the IUT supports out-of-band triggered state changes. If set to TRUE, then the IUT supports Upper Tester commands to trigger a state change. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_enable_IUT_provisioner</Name>
+            <Description>Indicates if the IUT performs provisioning for client cases. If set to TRUE, PTS expects to get provisioned by the IUT. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_Procedure_Timeout</Name>
+            <Description>The time in seconds. (Default: 60)</Description>
+            <Type>INTEGER</Type>
+            <Value>60</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_Client_BLOB_ID</Name>
+            <Description>Unique identifier for the BLOB being transferred by the BLOB Transfer Client IUT. (Default: 1)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>1100000000000011</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_Client_BLOB_Data</Name>
+            <Description>BLOB being transferred by the IUT.</Description>
+            <Type>IA5STRING</Type>
+            <Value />
+          </Row>
+          <Row>
+            <Name>TSPX_TTL</Name>
+            <Description>TTL. (Default: 2)</Description>
+            <Type>INTEGER</Type>
+            <Value>2</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_Server_Timeout_Base</Name>
+            <Description>Server Timeout Base state. (Default: 5)</Description>
+            <Type>INTEGER</Type>
+            <Value>5</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_Firmware_ID</Name>
+            <Description>Firmware_ID used by device to varify firmware.(Default: 1)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>11000011</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_Firmware_Metadata</Name>
+            <Description>Firmware metadata for the incoming firmware on the IUT. (Default: )</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>1100000000000011</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_Firmware_Update_URI</Name>
+            <Description>URI used for test case execution. (Default: http://www.dummy.com)</Description>
+            <Type>IA5STRING</Type>
+            <Value>http://www.dummy.com</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_New_Firmware_Image</Name>
+            <Description>Firmware being transferred by the IUT.</Description>
+            <Type>IA5STRING</Type>
+            <Value />
+          </Row>
+          <Row>
+            <Name>TSPX_Update_Firmware_Image_Index</Name>
+            <Description>Firmware Image Index value to identiy firmware used for testing. (Default: 0)</Description>
+            <Type>INTEGER</Type>
+            <Value>0</Value>
+          </Row>
+        </Rows>
+      </PIXIT>
+    </PROJECT_INFORMATION>
     <PROJECT_INFORMATION NAME="DIS" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
       <PICS>
         <Name>DIS</Name>
@@ -20213,6 +20527,266 @@
             <Description>A list of supported configuration options in the L2CAP_CONFIGURATION_REQ that result in a 0x0000 response. (Default: 01020304050607)</Description>
             <Type>OCTETSTRING</Type>
             <Value>01020304050607</Value>
+          </Row>
+        </Rows>
+      </PIXIT>
+    </PROJECT_INFORMATION>
+    <PROJECT_INFORMATION NAME="MBTM" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
+      <PICS>
+        <Name>MBTM</Name>
+        <Version />
+        <Rows>
+          <Row>
+            <Name>TSPC_MBTM_ALL</Name>
+            <Description>Enables all test cases when set.</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MBTM_0_1</Name>
+            <Description>Mesh Binary Large Object Transfer Model v1.0 (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MBTM_3_1</Name>
+            <Description>BLOB Transfer Server model (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MBTM_3_2</Name>
+            <Description>BLOB Transfer Client model (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MBTM_10_1</Name>
+            <Description>Pull BLOB Transfer Mode (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MBTM_10_2</Name>
+            <Description>Push BLOB Transfer Mode (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MBTM_20_1</Name>
+            <Description>Pull BLOB Transfer Mode (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MBTM_20_2</Name>
+            <Description>Push BLOB Transfer Mode (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_ALL</Name>
+            <Description>Enables all test cases when set.</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+        </Rows>
+      </PICS>
+      <PIXIT>
+        <Name>MBTM</Name>
+        <Version>1.0</Version>
+        <Rows>
+          <Row>
+            <Name>TSPX_bd_addr_iut</Name>
+            <Description>The unique 48-bit Bluetooth device address (BD_ADDR) of the IUT. This was filled in during workspace creation.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>000000000000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_time_guard</Name>
+            <Description>The time in milliseconds, to break PTS from waiting for a required event, if time guard is used by the test case. (Default: 300000)</Description>
+            <Type>INTEGER</Type>
+            <Value>300000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_use_implicit_send</Name>
+            <Description>Whether to receive a message via Implicit Send when an action or attention is needed by test operator. (Default: TRUE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>TRUE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_tester_database_file</Name>
+            <Description>Location of SIG database file. (Default: C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_SMPP_db.xml)</Description>
+            <Type>IA5STRING</Type>
+            <Value>C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_SMPP_db.xml</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_mtu_size</Name>
+            <Description>MTU size. (Default: 23)</Description>
+            <Type>INTEGER</Type>
+            <Value>23</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_delete_link_key</Name>
+            <Description>Whether to delete link key or not. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_delete_ltk</Name>
+            <Description>Whether to delete Long Term Key or not. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_security_enabled</Name>
+            <Description>Whether to set security for the test suite. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_iut_setup_att_over_br_edr</Name>
+            <Description>IUT can optionally test ATT over BR/EDR connection when this flag is set when applicable. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_scan_interval</Name>
+            <Description>The scan interval value N*0.625ms. Default is setto fast scan interval.(Default: 30)</Description>
+            <Type>INTEGER</Type>
+            <Value>30</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_scan_window</Name>
+            <Description>The scan window value N*0.625ms. Default is set to fast scan window.(Default: 30)</Description>
+            <Type>INTEGER</Type>
+            <Value>30</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_scan_filter</Name>
+            <Description>The scan filter setting to allow accept filter accept list only device.(Default: 0 - Fileter none)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>00</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_advertising_interval_min</Name>
+            <Description>The minimum advertising interval value N*0.625ms. PTS will using this value to set advertising parameters.(Default: 160)</Description>
+            <Type>INTEGER</Type>
+            <Value>160</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_advertising_interval_max</Name>
+            <Description>The maximum advertising interval value N*0.625ms. PTS will using this value to set advertising parameters.(Default: 160)</Description>
+            <Type>INTEGER</Type>
+            <Value>160</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_tester_OOB_information</Name>
+            <Description>The 16-bit tester OOB information value. PTS will advertise using this value when in peripheral role.(Default: F87F)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>F87F</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_device_uuid</Name>
+            <Description>used for mesh beacon. (Default: 001BDC0810210B0E0A0C000B0E0A0C00)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>001BDC0810210B0E0A0C000B0E0A0C00</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_device_uuid2</Name>
+            <Description>used for tester2 mesh beacon. (Default: 00000000000000000000000000000000)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>00000000000000000000000000000000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_use_pb_gatt_bearer</Name>
+            <Description>PB ADV or PB GATT bearer for PROT test cases. (Default: TRUE - PB-ADV)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_iut_comp_data_page</Name>
+            <Description>The page number of the composition data (Default: 0)</Description>
+            <Type>INTEGER</Type>
+            <Value>0</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_oob_state_change</Name>
+            <Description>Indicates if the IUT supports out-of-band triggered state changes. If set to TRUE, then the IUT supports Upper Tester commands to trigger a state change. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_enable_IUT_provisioner</Name>
+            <Description>Indicates if the IUT performs provisioning for client cases. If set to TRUE, PTS expects to get provisioned by the IUT. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_Procedure_Timeout</Name>
+            <Description>The time in seconds. (Default: 60)</Description>
+            <Type>INTEGER</Type>
+            <Value>60</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_Client_BLOB_ID</Name>
+            <Description>Unique identifier for the BLOB being transferred by the BLOB Transfer Client IUT. (Default: 1)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>1100000000000011</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_Client_BLOB_Data</Name>
+            <Description>BLOB being transferred by the IUT.</Description>
+            <Type>IA5STRING</Type>
+            <Value />
+          </Row>
+          <Row>
+            <Name>TSPX_Transfer_TTL</Name>
+            <Description>TTL. (Default: 3)</Description>
+            <Type>INTEGER</Type>
+            <Value>3</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_Client_Timeout_Base</Name>
+            <Description>Client Timeout Base state. (Default: 5)</Description>
+            <Type>INTEGER</Type>
+            <Value>4</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_Server_Timeout_Base</Name>
+            <Description>Server Timeout Base state. (Default: 5)</Description>
+            <Type>INTEGER</Type>
+            <Value>5</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_Firmware_ID</Name>
+            <Description>Firmware_ID used by device to varify firmware.(Default: 1)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>11000011</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_Firmware_Metadata</Name>
+            <Description>Firmware metadata for the incoming firmware on the IUT. (Default: )</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>1100000000000011</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_Firmware_Update_URI</Name>
+            <Description>URI used for test case execution. (Default: http://www.dummy.com)</Description>
+            <Type>IA5STRING</Type>
+            <Value>http://www.dummy.com</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_New_Firmware_Image</Name>
+            <Description>Firmware being transferred by the IUT.</Description>
+            <Type>IA5STRING</Type>
+            <Value />
+          </Row>
+          <Row>
+            <Name>TSPX_Update_Firmware_Image_Index</Name>
+            <Description>Firmware Image Index value to identiy firmware used for testing. (Default: 0)</Description>
+            <Type>INTEGER</Type>
+            <Value>0</Value>
           </Row>
         </Rows>
       </PIXIT>
