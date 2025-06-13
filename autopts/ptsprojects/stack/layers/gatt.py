@@ -82,6 +82,7 @@ class Gatt:
         self.notification_events = []
         self.notification_ev_received = Event()
         self.signed_write_handle = 0
+        self.value_len = 0
 
     def attr_value_set(self, handle, value):
         attr = self.server_db.attr_lookup_handle(handle)
