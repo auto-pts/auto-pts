@@ -25,12 +25,6 @@ from autopts.wid.common import _l2cap_send_forever, _safe_l2cap_disconnect
 log = logging.debug
 
 
-def l2cap_wid_hdl(wid, description, test_case_name):
-    from autopts.wid import generic_wid_hdl
-    log(f'{l2cap_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
-    return generic_wid_hdl(wid, description, test_case_name, [__name__])
-
-
 # wid handlers section begin
 def hdl_wid_14(params: WIDParams):
     """
