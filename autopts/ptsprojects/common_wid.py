@@ -1,11 +1,13 @@
 import importlib
 import logging
+
 from autopts.wid import generic_wid_hdl
 
 log = logging.debug
 
 # List of supported backends; please add more in the future
 BACKENDS = ["zephyr", "mynewt", "bluez"]
+
 
 def profile_wid_hdl(backend: str,
                     profile: str,
