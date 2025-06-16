@@ -16,8 +16,7 @@
 """GATT test cases"""
 
 from autopts.client import get_unique_name
-from autopts.ptsprojects.mynewt.gatt_client_wid import gattc_wid_hdl
-from autopts.ptsprojects.mynewt.gatt_wid import gatt_wid_hdl
+from autopts.ptsprojects.common_wid import get_wid_handler
 from autopts.ptsprojects.mynewt.ztestcase import ZTestCase, ZTestCaseSlave
 from autopts.ptsprojects.stack import SynchPoint, get_stack
 from autopts.ptsprojects.testcase import TestFunc
@@ -177,7 +176,7 @@ def test_cases_server(ptses):
                            SynchPoint("GATT/SR/GAN/BV-02-C_LT2", 308),
                            SynchPoint("GATT/SR/GAN/BV-02-C", 93)]),
                   ],
-                  generic_wid_hdl=gatt_wid_hdl,
+                  generic_wid_hdl=get_wid_handler("mynewt", "gatt"),
                   lt2="GATT/SR/GAN/BV-02-C_LT2"),
         ZTestCase("GATT", "GATT/SR/GAS/BV-01-C",
                   edit1_wids={2000: btp.var_store_get_passkey},
@@ -192,12 +191,12 @@ def test_cases_server(ptses):
                             post_wid=96)]),
         ZTestCase("GATT", "GATT/SR/UNS/BI-02-C",
                   pre_conditions_2,
-                  generic_wid_hdl=gatt_wid_hdl),
+                  generic_wid_hdl=get_wid_handler("mynewt", "gatt")),
     ]
 
     test_case_name_list = pts.get_test_case_list('GATT')
     tc_list = []
-
+    gatt_wid_hdl = get_wid_handler("mynewt", "gatt")
     for tc_name in test_case_name_list:
         if not tc_name.startswith('GATT/SR'):
             continue
@@ -226,7 +225,7 @@ def test_cases_server(ptses):
     test_cases_lt2 = [
         ZTestCaseSlave("GATT", "GATT/SR/GAN/BV-02-C_LT2",
                        cmds=pre_conditions_lt2,
-                       generic_wid_hdl=gatt_wid_hdl),
+                       generic_wid_hdl=get_wid_handler("mynewt", "gatt")),
     ]
     return tc_list + test_cases_lt2
 
@@ -260,7 +259,7 @@ def test_cases_client(pts):
 
     test_case_name_list = pts.get_test_case_list('GATT')
     tc_list = []
-
+    gattc_wid_hdl = get_wid_handler("mynewt", "gattc")
     for tc_name in test_case_name_list:
         if not tc_name.startswith('GATT/CL'):
             continue

@@ -42,7 +42,7 @@ def gap_wid_hdl_mode1_lvl2(wid, description, test_case_name):
 # For tests in SC only, mode 1 level 4
 def gap_wid_hdl_mode1_lvl4(wid, description, test_case_name):
     if wid == 139:
-        log("%s, %r, %r, %s", gap_wid_hdl_mode1_lvl2.__name__, wid, description,
+        log("%s, %r, %r, %s", gap_wid_hdl_mode1_lvl4.__name__, wid, description,
             test_case_name)
         return hdl_wid_139_mode1_lvl4(description)
     return gap_wid_hdl(wid, description, test_case_name)
