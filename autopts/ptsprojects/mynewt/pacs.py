@@ -16,7 +16,7 @@
 """PACS test cases"""
 
 from autopts.client import get_unique_name
-from autopts.ptsprojects.mynewt.pacs_wid import pacs_wid_hdl
+from autopts.ptsprojects.common_wid import get_wid_handler
 from autopts.ptsprojects.mynewt.ztestcase import ZTestCase
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
@@ -78,7 +78,7 @@ def test_cases(ptses):
     test_case_name_list = pts.get_test_case_list('PACS')
     tc_list = []
     custom_test_cases = []
-
+    pacs_wid_hdl = get_wid_handler("mynewt", "pacs")
     for tc_name in test_case_name_list:
         instance = ZTestCase("PACS", tc_name,
                              cmds=pre_conditions,
