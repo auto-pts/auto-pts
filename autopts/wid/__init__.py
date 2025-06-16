@@ -23,7 +23,6 @@ from .gmcs import gmcs_wid_hdl
 from .gtbs import gtbs_wid_hdl
 from .has import has_wid_hdl
 from .ias import ias_wid_hdl
-from .l2cap import l2cap_wid_hdl
 from .mcp import mcp_wid_hdl
 from .mesh import (
                    mesh_wid_hdl,
@@ -35,7 +34,6 @@ from .micp import micp_wid_hdl
 from .mics import mics_wid_hdl
 from .mmdl import mmdl_wid_hdl
 from .ots import ots_wid_hdl
-from .pacs import pacs_wid_hdl
 from .pbp import pbp_wid_hdl
 from .rfcomm import rfcomm_wid_hdl
 from .sdp import sdp_wid_hdl
@@ -60,7 +58,6 @@ __all__ = [
     "gtbs_wid_hdl",
     "has_wid_hdl",
     "ias_wid_hdl",
-    "l2cap_wid_hdl",
     "mcp_wid_hdl",
     "mesh_wid_hdl",
     "mesh_wid_hdl_rpr_2ptses",
@@ -70,7 +67,6 @@ __all__ = [
     "mics_wid_hdl",
     "mmdl_wid_hdl",
     "ots_wid_hdl",
-    "pacs_wid_hdl",
     "pbp_wid_hdl",
     "sdp_wid_hdl",
     "tbs_wid_hdl",

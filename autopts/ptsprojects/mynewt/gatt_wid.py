@@ -15,18 +15,5 @@
 
 import logging
 
-from autopts.ptsprojects.stack import get_stack
-from autopts.wid import generic_wid_hdl
 
 log = logging.debug
-
-
-def gatt_wid_hdl(wid, description, test_case_name):
-    stack = get_stack()
-    if stack.is_svc_supported('GATT_CL') and 'GATT/CL' in test_case_name:
-        return generic_wid_hdl(wid, description, test_case_name,
-                               [__name__, 'autopts.wid.gatt_client'])
-
-    log(f'{gatt_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
-    return generic_wid_hdl(wid, description, test_case_name,
-                           [__name__, 'autopts.wid.gatt'])

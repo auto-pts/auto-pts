@@ -16,7 +16,7 @@
 """BAP test cases"""
 
 from autopts.client import get_unique_name
-from autopts.ptsprojects.mynewt.bap_wid import bap_wid_hdl
+from autopts.ptsprojects.common_wid import get_wid_handler
 from autopts.ptsprojects.mynewt.ztestcase import ZTestCase
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
@@ -108,7 +108,7 @@ def test_cases(ptses):
 
     test_case_name_list = pts.get_test_case_list('BAP')
     tc_list = []
-
+    wid_handler = get_wid_handler("mynewt", "gap")
     custom_test_cases = [
 
         ]
@@ -116,7 +116,7 @@ def test_cases(ptses):
     for tc_name in test_case_name_list:
         instance = ZTestCase("BAP", tc_name,
                              cmds=pre_conditions,
-                             generic_wid_hdl=bap_wid_hdl)
+                             generic_wid_hdl=wid_handler)
 
         for custom_tc in custom_test_cases:
             if tc_name == custom_tc.name:
