@@ -16,12 +16,12 @@
 """L2CAP test cases"""
 
 from autopts.client import get_unique_name
+from autopts.ptsprojects.common_wid import get_wid_handler
 from autopts.ptsprojects.mynewt.ztestcase import ZTestCase
 from autopts.ptsprojects.stack import L2cap, get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.pybtp import btp
 from autopts.pybtp.types import Addr
-from autopts.wid import l2cap_wid_hdl
 
 le_psm = 128
 psm_unsupported = 241
@@ -148,69 +148,69 @@ def test_cases(ptses):
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-04-C",
                   pre_conditions +
                   [TestFunc(lambda: stack.l2cap.psm_set(psm_unsupported))],
-                  generic_wid_hdl=l2cap_wid_hdl),
+                  generic_wid_hdl=get_wid_handler("mynewt", "l2cap")),
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-10-C",
                   pre_conditions +
                   [TestFunc(lambda: stack.l2cap.psm_set(psm_authentication_required))],
-                  generic_wid_hdl=l2cap_wid_hdl),
+                  generic_wid_hdl=get_wid_handler("mynewt", "l2cap")),
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-11-C",
                   pre_conditions_auth,
-                  generic_wid_hdl=l2cap_wid_hdl),
+                  generic_wid_hdl=get_wid_handler("mynewt", "l2cap")),
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-12-C",
                   pre_conditions +
                   [TestFunc(lambda: stack.l2cap.psm_set(psm_authorization_required))],
-                  generic_wid_hdl=l2cap_wid_hdl),
+                  generic_wid_hdl=get_wid_handler("mynewt", "l2cap")),
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-13-C",
                   pre_conditions_author,
-                  generic_wid_hdl=l2cap_wid_hdl),
+                  generic_wid_hdl=get_wid_handler("mynewt", "l2cap")),
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-14-C",
                   pre_conditions +
                   [TestFunc(lambda: stack.l2cap.psm_set(psm_encryption_key_size_required))],
-                  generic_wid_hdl=l2cap_wid_hdl),
+                  generic_wid_hdl=get_wid_handler("mynewt", "l2cap")),
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-15-C",
                   pre_conditions_keysize,
-                  generic_wid_hdl=l2cap_wid_hdl),
+                  generic_wid_hdl=get_wid_handler("mynewt", "l2cap")),
         ZTestCase("L2CAP", "L2CAP/LE/CFC/BV-25-C",
                   pre_conditions_encryption,
-                  generic_wid_hdl=l2cap_wid_hdl),
+                  generic_wid_hdl=get_wid_handler("mynewt", "l2cap")),
         # Enhanced Credit Based Flow Control Channel
         ZTestCase("L2CAP", "L2CAP/ECFC/BV-11-C",
                   pre_conditions_auth,
-                  generic_wid_hdl=l2cap_wid_hdl),
+                  generic_wid_hdl=get_wid_handler("mynewt", "l2cap")),
         ZTestCase("L2CAP", "L2CAP/ECFC/BV-13-C",
                   pre_conditions_author,
-                  generic_wid_hdl=l2cap_wid_hdl),
+                  generic_wid_hdl=get_wid_handler("mynewt", "l2cap")),
         ZTestCase("L2CAP", "L2CAP/ECFC/BV-15-C",
                   pre_conditions_keysize,
-                  generic_wid_hdl=l2cap_wid_hdl),
+                  generic_wid_hdl=get_wid_handler("mynewt", "l2cap")),
         ZTestCase("L2CAP", "L2CAP/ECFC/BV-27-C",
                   pre_conditions_unacceptable_parameters,
-                  generic_wid_hdl=l2cap_wid_hdl),
+                  generic_wid_hdl=get_wid_handler("mynewt", "l2cap")),
         ZTestCase("L2CAP", "L2CAP/ECFC/BV-29-C",
                   pre_conditions +
                   [TestFunc(lambda: stack.l2cap.num_channels_set(1))],
-                  generic_wid_hdl=l2cap_wid_hdl),
+                  generic_wid_hdl=get_wid_handler("mynewt", "l2cap")),
         ZTestCase("L2CAP", "L2CAP/ECFC/BV-32-C",
                   pre_conditions_encryption,
-                  generic_wid_hdl=l2cap_wid_hdl),
+                  generic_wid_hdl=get_wid_handler("mynewt", "l2cap")),
         ZTestCase("L2CAP", "L2CAP/ECFC/BI-02-C",
                   pre_conditions +
                   [TestFunc(lambda: stack.l2cap.hold_credits_set(1))],
-                  generic_wid_hdl=l2cap_wid_hdl),
+                  generic_wid_hdl=get_wid_handler("mynewt", "l2cap")),
         ZTestCase("L2CAP", "L2CAP/ECFC/BI-06-C",
                   pre_conditions +
                   [TestFunc(lambda: pts.update_pixit_param(
                       "L2CAP", "TSPX_l2ca_cbmps_min", "0040"))],
-                  generic_wid_hdl=l2cap_wid_hdl),
+                  generic_wid_hdl=get_wid_handler("mynewt", "l2cap")),
         # Collision mitigation handling
         ZTestCase("L2CAP", "L2CAP/TIM/BV-03-C",
                   pre_conditions_gatt,
-                  generic_wid_hdl=l2cap_wid_hdl),
+                  generic_wid_hdl=get_wid_handler("mynewt", "l2cap")),
     ]
 
     test_case_name_list = pts.get_test_case_list('L2CAP')
     tc_list = []
-
+    l2cap_wid_hdl = get_wid_handler("mynewt", "l2cap")
     for tc_name in test_case_name_list:
         if tc_name.startswith(('L2CAP/COS', 'L2CAP/ECFC', 'L2CAP/LE/CFC')):
             instance = ZTestCase('L2CAP', tc_name,
