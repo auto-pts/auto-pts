@@ -22,6 +22,9 @@ OTS/SR/SGGIT/CHA/BV-15-C: https://github.com/zephyrproject-rtos/zephyr/issues/71
 OTS/SR/CON/BV-03-C: https://github.com/zephyrproject-rtos/zephyr/issues/71754
 OTS/SR/OC/BV-01-C: https://github.com/zephyrproject-rtos/zephyr/issues/71754
 
+OTS/SR/OTD/BI-04-C: https://github.com/zephyrproject-rtos/zephyr/issues/72951
+OTS/SR/OTD/BI-05-C: https://github.com/zephyrproject-rtos/zephyr/issues/72951
+
 MESH/CL/DPROX/BV-02-C: ES-24237
 MESH/CL/PROX/BV-11-C: ES-24124
 MESH/CL/PROX/BV-12-C: ES-24124
