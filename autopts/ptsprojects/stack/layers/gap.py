@@ -107,6 +107,10 @@ class Gap:
         self.periodic_report_rxed = False
         self.periodic_sync_established_rxed = False
         self.periodic_transfer_received = False
+        self.big_sync_established_rxed = False
+        self.big_bis_data_path_setup = []
+        self.big_bis_stream_rx = {}
+        self.big_broadcast_code = None
 
         # Used for MMI handling
         self.delay_mmi = False
@@ -156,6 +160,48 @@ class Gap:
             return True
 
         return False
+
+    def wait_big_established(self, timeout=10):
+        if self.big_sync_established_rxed:
+            return True
+
+        if wait_for_event(timeout, lambda: self.big_sync_established_rxed):
+            self.big_sync_established_rxed = False
+            return True
+
+        return False
+
+    def wait_bis_data_path_setup(self, bis_id=None, timeout=10):
+        if bis_id is None:
+            if len(self.big_bis_data_path_setup) > 0:
+                return True
+
+            if wait_for_event(timeout, lambda: len(self.big_bis_data_path_setup) > 0):
+                return True
+        else:
+            if bis_id in self.big_bis_data_path_setup:
+                return True
+
+            if wait_for_event(timeout, lambda: bis_id in self.big_bis_data_path_setup):
+                return True
+
+        return False
+
+    def read_bis_stream_received_data(self, bis_id=None, timeout=10):
+        if bis_id is None:
+            if len(self.big_bis_stream_rx) > 0:
+                return self.big_bis_stream_rx[list(self.big_bis_stream_rx.keys())[0]].pop(0)
+
+            if wait_for_event(timeout, lambda: len(self.big_bis_stream_rx) > 0):
+                return self.big_bis_stream_rx[list(self.big_bis_stream_rx.keys())[0]].pop(0)
+        else:
+            if bis_id in self.big_bis_stream_rx.keys():
+                return self.big_bis_stream_rx[bis_id].pop(0)
+
+            if wait_for_event(timeout, lambda: bis_id in self.big_bis_stream_rx.keys()):
+                return self.big_bis_stream_rx[bis_id].pop(0)
+
+        return None
 
     def wait_periodic_transfer_received(self, timeout):
         if self.periodic_transfer_received:
