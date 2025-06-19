@@ -403,6 +403,19 @@ def hdl_wid_20206(params: WIDParams):
     """
     stack = get_stack()
 
+    # Fix: Check if the event queue is empty
+    # Workaround for PTS Request ID 173881
+    discovered_events = stack.csip.event_queues[defs.BTP_CSIP_EV_DISCOVERED]
+    if not discovered_events:
+        addr_type = btp.pts_addr_type_get()
+        addr = btp.pts_addr_get()
+
+        btp.csip_discover(addr_type, addr)
+        ev = stack.csip.wait_discovery_completed_ev(addr_type, addr, 30, False)
+        if ev is None:
+            logging.error("No CSIP discovery events received")
+            return False
+
     chars = stack.csip.event_queues[defs.BTP_CSIP_EV_DISCOVERED][0][3:]
     chrc_list = [f'{chrc:04X}' for chrc in chars]
 
