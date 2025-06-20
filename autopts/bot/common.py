@@ -124,6 +124,7 @@ class BotConfigArgs(Namespace):
         self.use_backup = args.get('use_backup', False)
         self.no_build = args.get('no_build', False)
         self.dongle_init_retry = args.get('dongle_init_retry', 5)
+        self.build_env_cmd = args.get('build_env_cmd', None)
 
         if self.ykush or self.active_hub_server:
             self.usb_replug_available = True

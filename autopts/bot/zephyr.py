@@ -136,7 +136,7 @@ class ZephyrBotClient(BotClient):
 
             try:
                 build_and_flash(args.project_path, board_type, args.debugger_snr,
-                                overlays, args.project_repos)
+                                overlays, args.project_repos, args.build_env_cmd)
 
                 flush_serial(args.tty_file)
             except BaseException as e:
