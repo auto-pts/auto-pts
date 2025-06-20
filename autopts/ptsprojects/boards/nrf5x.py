@@ -31,15 +31,24 @@ def reset_cmd(iutctl):
     return f'nrfjprog -r -s {iutctl.debugger_snr}'
 
 
-def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None, *args):
+def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None, project_repos=None,
+                    env_cmd=None, *args):
     """Build and flash Zephyr binary
     :param zephyr_wd: Zephyr source path
     :param board: IUT
     :param debugger_snr serial number
     :param conf_file: configuration file to be used
+    :param project_repos: a list of repo paths
+    :param env_cmd: a command to for environment activation, e.g. source /path/to/venv/activate
     """
     logging.debug("%s: %s %s %s", build_and_flash.__name__, zephyr_wd,
                   board, conf_file)
+
+    if env_cmd:
+        env_cmd = env_cmd.split() + ['&&']
+    else:
+        env_cmd = []
+
     tester_dir = os.path.join(zephyr_wd, "tests", "bluetooth", "tester")
 
     check_call('rm -rf build/'.split(), cwd=tester_dir)
@@ -50,6 +59,6 @@ def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None, *args):
             conf_file += ';overlay-le-audio-ctlr.conf'
         cmd.extend(('--', f'-DEXTRA_CONF_FILE=\'{conf_file}\''))
 
-    check_call(cmd, cwd=tester_dir)
-    check_call(['west', 'flash', '--skip-rebuild', '--recover',
-                '-i', debugger_snr], cwd=tester_dir)
+    check_call(env_cmd + cmd, cwd=tester_dir)
+    check_call(env_cmd + ['west', 'flash', '--skip-rebuild', '--recover',
+                          '-i', debugger_snr], cwd=tester_dir)
