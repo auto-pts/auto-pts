@@ -451,12 +451,16 @@ def active_hub_server_set_usb_power(config, on):
 
 
 def print_thread_stack_trace():
-    logging.debug("Printing stack trace for each thread:")
-    for thread_id, thread_obj in threading._active.items():
-        stack = sys._current_frames().get(thread_id)
-        if stack is not None:
-            logging.debug(f"Thread ID: {thread_id}, Thread Name: {thread_obj.name}")
-            logging.debug(traceback.extract_stack(stack))
+    try:
+        logging.debug("Printing stack trace for each thread:")
+        for thread_id, thread_obj in threading._active.items():
+            stack = sys._current_frames().get(thread_id)
+            if stack is not None:
+                logging.debug(f"Thread ID: {thread_id}, Thread Name: {thread_obj.name}")
+                logging.debug(traceback.extract_stack(stack))
+    except RuntimeError as e:
+        # threading._active dictionary can change size during iteration
+        logging.debug(e)
 
 
 def exit_if_admin():
