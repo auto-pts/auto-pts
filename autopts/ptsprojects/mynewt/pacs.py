@@ -24,6 +24,8 @@ from autopts.pybtp import btp
 from autopts.pybtp.types import Addr
 from autopts.utils import ResultWithFlag
 
+pacs_wid_hdl = get_wid_handler("mynewt", "pacs")
+
 
 def set_pixits(ptses):
     """Setup PACS profile PIXITS for workspace. Those values are used for test
@@ -78,7 +80,7 @@ def test_cases(ptses):
     test_case_name_list = pts.get_test_case_list('PACS')
     tc_list = []
     custom_test_cases = []
-    pacs_wid_hdl = get_wid_handler("mynewt", "pacs")
+
     for tc_name in test_case_name_list:
         instance = ZTestCase("PACS", tc_name,
                              cmds=pre_conditions,

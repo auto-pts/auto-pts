@@ -25,6 +25,8 @@ from autopts.ptsprojects.testcase import TestFunc
 from autopts.pybtp import btp
 from autopts.pybtp.types import UUID, Addr, AdFlags, AdType, IOCap
 
+gap_wid_hdl = get_wid_handler("mynewt", "gap")
+
 
 class SVC:
     gap = (None, None, UUID.gap_svc)
@@ -206,48 +208,48 @@ def test_cases(ptses):
         ZTestCase("GAP", "GAP/BROB/BCST/BV-03-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/BROB/OBSV/BV-06-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/CONN/UCON/BV-06-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/BOND/BON/BV-01-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/BOND/BON/BV-03-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/BOND/BON/BV-04-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/AUT/BV-11-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/AUT/BV-12-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/AUT/BV-13-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/AUT/BV-14-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.keyboard_display)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/AUT/BV-19-C",
                   cmds=pre_conditions +
                   [TestFunc(lambda: pts.update_pixit_param(
                    "GAP", "TSPX_encryption_before_service_request", "TRUE"))],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/AUT/BV-24-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
@@ -255,14 +257,14 @@ def test_cases(ptses):
                       "GAP", "TSPX_encryption_before_service_request", "TRUE")),
                    TestFunc(lambda:
                             stack.gap.gap_set_pair_user_interaction(False))],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/AUT/BV-25-C",
                   cmds=pre_conditions +
                   [TestFunc(lambda: pts.update_pixit_param(
                       "GAP", "TSPX_encryption_before_service_request", "TRUE")),
                    TestFunc(lambda:
                             stack.gap.gap_set_pair_user_interaction(False))],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/AUT/BV-27-C",
                   cmds=pre_conditions +
                   [TestFunc(lambda: pts.update_pixit_param(
@@ -270,24 +272,24 @@ def test_cases(ptses):
                    TestFunc(lambda: btp.gap_set_mitm_on()),
                    TestFunc(lambda:
                             stack.gap.gap_set_pair_user_interaction(False))],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/CONN/PRDA/BV-02-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output),
                    TestFunc(btp.gap_pair, post_wid=108)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/SEM/BV-21-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/SEM/BV-22-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/SEM/BV-23-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/SEM/BV-24-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
@@ -295,43 +297,43 @@ def test_cases(ptses):
         ZTestCase("GAP", "GAP/SEC/SEM/BV-26-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/SEM/BV-27-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/SEM/BV-28-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/SEM/BV-29-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/SEM/BV-37-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/SEM/BV-38-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/SEM/BV-39-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/SEM/BV-40-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/SEM/BV-41-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/SEM/BV-42-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/SEM/BV-43-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
@@ -339,44 +341,44 @@ def test_cases(ptses):
         ZTestCase("GAP", "GAP/SEC/SEM/BV-44-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/SEM/BV-45-C",
                   cmds=pre_conditions +
                   [TestFunc(lambda:
                             stack.gap.gap_set_pair_user_interaction(False))],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/SEM/BI-09-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/SEM/BI-10-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/SEM/BI-20-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/SEM/BI-21-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/SEM/BI-22-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/SEM/BI-23-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/PRIV/CONN/BV-10-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/PRIV/CONN/BI-01-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gap")),
+                  generic_wid_hdl=gap_wid_hdl),
         # GAP/GAT/BV-01-C
         # wid: 158 description: IUT support both Central and Peripheral roles.
         # Click Yes if IUT act as Central role to execute this test otherwise
@@ -385,12 +387,11 @@ def test_cases(ptses):
 
     test_case_name_list = pts.get_test_case_list('GAP')
     tc_list = []
-    wid_handler = get_wid_handler("mynewt", "gap")
 
     for tc_name in test_case_name_list:
         instance = ZTestCase("GAP", tc_name,
                              cmds=pre_conditions,
-                             generic_wid_hdl=wid_handler)
+                             generic_wid_hdl=gap_wid_hdl)
 
         for custom_tc in custom_test_cases:
             if tc_name == custom_tc.name:

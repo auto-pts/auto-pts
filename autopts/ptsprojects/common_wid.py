@@ -1,7 +1,6 @@
 import logging
 
 from autopts.ptsprojects.stack import get_stack
-from autopts.wid import generic_wid_hdl
 
 log = logging.debug
 
@@ -15,6 +14,7 @@ def get_wid_handler(backend: str, profile: str):
     - in other cases uses only [__name__, autopts.wid.<profile>]
     """
     def handler(wid, description, test_case_name):
+        from autopts.wid import generic_wid_hdl
         log(f"{backend}.{profile} handler, wid={wid}, tc={test_case_name}")
         if profile == "gatt":
             stack = get_stack()
