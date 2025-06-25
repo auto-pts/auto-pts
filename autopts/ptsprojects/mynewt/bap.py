@@ -24,7 +24,7 @@ from autopts.pybtp import btp
 from autopts.pybtp.types import Addr
 from autopts.utils import ResultWithFlag
 
-wid_handler = get_wid_handler("mynewt", "gap")
+bap_wid_hdl = get_wid_handler("mynewt", "bap")
 broadcast_code = '0102680553F1415AA265BBAFC6EA03B8'
 
 
@@ -116,7 +116,7 @@ def test_cases(ptses):
     for tc_name in test_case_name_list:
         instance = ZTestCase("BAP", tc_name,
                              cmds=pre_conditions,
-                             generic_wid_hdl=wid_handler)
+                             generic_wid_hdl=bap_wid_hdl)
 
         for custom_tc in custom_test_cases:
             if tc_name == custom_tc.name:
