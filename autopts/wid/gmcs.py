@@ -21,14 +21,8 @@ from autopts.pybtp.types import WIDParams
 
 log = logging.debug
 
-
-def gmcs_wid_hdl(wid, description, test_case_name):
-    from autopts.wid import generic_wid_hdl
-    log(f'{gmcs_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
-    return generic_wid_hdl(wid, description, test_case_name, [__name__])
-
-
 # wid handlers section begin
+
 
 def hdl_wid_4(params: WIDParams):
     """Please configure an initial state to Inactive state"""
