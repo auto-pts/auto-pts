@@ -20,17 +20,19 @@ from binascii import hexlify
 from uuid import uuid4
 
 from autopts.client import get_unique_name
+from autopts.ptsprojects.common_wid import get_wid_handler
 from autopts.ptsprojects.stack import SynchPoint, get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
 from autopts.pybtp import btp, defs
 from autopts.pybtp.types import Addr, MeshVals
 from autopts.wid import (
-    mesh_wid_hdl,
     mesh_wid_hdl_rpr_2ptses,
     mesh_wid_hdl_rpr_persistent_storage,
     mesh_wid_hdl_rpr_persistent_storage_alt,
 )
+
+mesh_wid_hdl = get_wid_handler("zephyr", "mesh")
 
 
 def set_pixits(ptses):

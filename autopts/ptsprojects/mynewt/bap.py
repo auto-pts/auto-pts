@@ -24,6 +24,7 @@ from autopts.pybtp import btp
 from autopts.pybtp.types import Addr
 from autopts.utils import ResultWithFlag
 
+wid_handler = get_wid_handler("mynewt", "gap")
 broadcast_code = '0102680553F1415AA265BBAFC6EA03B8'
 
 
@@ -108,7 +109,6 @@ def test_cases(ptses):
 
     test_case_name_list = pts.get_test_case_list('BAP')
     tc_list = []
-    wid_handler = get_wid_handler("mynewt", "gap")
     custom_test_cases = [
 
         ]

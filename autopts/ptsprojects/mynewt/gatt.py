@@ -24,6 +24,9 @@ from autopts.pybtp import btp
 from autopts.pybtp.types import Addr
 from autopts.utils import ResultWithFlag
 
+gatt_wid_hdl = get_wid_handler("mynewt", "gatt")
+gattc_wid_hdl = get_wid_handler("mynewt", "gattc")
+
 
 class Value:
     one_byte = '01'
@@ -187,7 +190,7 @@ def test_cases_server(ptses):
                            SynchPoint("GATT/SR/GAN/BV-02-C_LT2", 308),
                            SynchPoint("GATT/SR/GAN/BV-02-C", 93)]),
                   ],
-                  generic_wid_hdl=get_wid_handler("mynewt", "gatt"),
+                  generic_wid_hdl=gatt_wid_hdl,
                   lt2="GATT/SR/GAN/BV-02-C_LT2"),
         ZTestCase("GATT", "GATT/SR/GAS/BV-01-C",
                   edit1_wids={2000: btp.var_store_get_passkey},
@@ -202,12 +205,11 @@ def test_cases_server(ptses):
                             post_wid=96)]),
         ZTestCase("GATT", "GATT/SR/UNS/BI-02-C",
                   pre_conditions_2,
-                  generic_wid_hdl=get_wid_handler("mynewt", "gatt")),
+                  generic_wid_hdl=gatt_wid_hdl),
     ]
 
     test_case_name_list = pts.get_test_case_list('GATT')
     tc_list = []
-    gatt_wid_hdl = get_wid_handler("mynewt", "gatt")
     for tc_name in test_case_name_list:
         if not tc_name.startswith('GATT/SR'):
             continue
@@ -239,7 +241,7 @@ def test_cases_server(ptses):
     test_cases_lt2 = [
         ZTestCaseSlave("GATT", "GATT/SR/GAN/BV-02-C_LT2",
                        cmds=pre_conditions_lt2,
-                       generic_wid_hdl=get_wid_handler("mynewt", "gatt")),
+                       generic_wid_hdl=gatt_wid_hdl),
     ]
     return tc_list + test_cases_lt2
 
@@ -273,7 +275,6 @@ def test_cases_client(pts):
 
     test_case_name_list = pts.get_test_case_list('GATT')
     tc_list = []
-    gattc_wid_hdl = get_wid_handler("mynewt", "gattc")
     for tc_name in test_case_name_list:
         if not tc_name.startswith('GATT/CL'):
             continue

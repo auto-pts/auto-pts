@@ -15,13 +15,15 @@
 
 
 from autopts.client import get_unique_name
+from autopts.ptsprojects.common_wid import get_wid_handler
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
-from autopts.ptsprojects.zephyr.pbp_wid import pbp_wid_hdl
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
 from autopts.pybtp import btp
 from autopts.pybtp.types import Addr
 from autopts.utils import ResultWithFlag
+
+pbp_wid_hdl = get_wid_handler("zephyr", "pbp")
 
 PROGRAM_INFO = '00112233445566778899AABBCCDDEEFF'
 BROADCAST_CODE = '0102680553F1415AA265BBAFC6EA03B8'
