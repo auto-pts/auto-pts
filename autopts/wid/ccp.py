@@ -77,14 +77,6 @@ global __gtbs_ccpc_handle, __round
 __gtbs_ccpc_handle, __round = None, None
 
 
-def ccp_wid_hdl(wid, description, test_case_name):
-    from autopts.wid import generic_wid_hdl
-    log(f'{ccp_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
-    return generic_wid_hdl(wid, description, test_case_name, [__name__])
-
-
-# wid handlers section begin
-
 def disc_full(svc_uuid=None, ch_uuid=None):
     attrs = {}
     bd_addr = btp.pts_addr_get()
