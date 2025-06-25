@@ -34,7 +34,6 @@ from autopts.pybtp.btp.cap import announcements
 from autopts.pybtp.btp.gap import gap_set_uuid16_svc_data
 from autopts.pybtp.btp.pacs import pacs_set_available_contexts
 from autopts.pybtp.types import BASS_PA_INTERVAL_UNKNOWN, UUID, Addr, ASCSState, BAPAnnouncement, CAPAnnouncement, WIDParams
-from autopts.wid import generic_wid_hdl
 from autopts.wid.bap import (
     BAS_CONFIG_SETTINGS,
     CODEC_CONFIG_SETTINGS,
@@ -48,13 +47,6 @@ from autopts.wid.common import _safe_bap_send
 
 log = logging.debug
 
-
-def cap_wid_hdl(wid, description, test_case_name):
-    log(f'{cap_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
-    return generic_wid_hdl(wid, description, test_case_name, [__name__])
-
-
-# wid handlers section begin
 
 def hdl_wid_100(params: WIDParams):
     """
