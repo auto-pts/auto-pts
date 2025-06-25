@@ -64,6 +64,9 @@ class CliParser(argparse.ArgumentParser):
                           help="Repeat test if failed. Parameter specifies "
                                "maximum repeat count per test")
 
+        self.add_argument("--repeat_until_fail", action='store_true', default=False,
+                          help="Repeat test case until non-pass verdict")
+
         self.add_argument("--stress_test", action='store_true', default=False,
                           help="Repeat every test even if previous result was PASS")
 
