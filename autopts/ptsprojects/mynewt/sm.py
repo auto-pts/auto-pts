@@ -23,6 +23,8 @@ from autopts.ptsprojects.testcase import TestFunc
 from autopts.pybtp import btp
 from autopts.pybtp.types import Addr, IOCap
 
+sm_wid_hdl = get_wid_handler("mynewt", "sm")
+
 
 def set_pixits(ptses):
     """Setup SM profile PIXITS for workspace. Those values are used for test
@@ -81,133 +83,133 @@ def test_cases(ptses):
     custom_test_cases = [
         ZTestCase("SM", "SM/CEN/PROT/BV-01-C",
                   pre_conditions,
-                  generic_wid_hdl=get_wid_handler("mynewt", "sm")),
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/PER/PROT/BV-02-C",
                   pre_conditions,
-                  generic_wid_hdl=get_wid_handler("mynewt", "sm")),
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/PER/JW/BV-02-C",
                   pre_conditions,
-                  generic_wid_hdl=get_wid_handler("mynewt", "sm")),
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/PER/JW/BI-02-C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "sm")),
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/PER/JW/BI-03-C",
                   pre_conditions,
-                  generic_wid_hdl=get_wid_handler("mynewt", "sm")),
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/CEN/PKE/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                    TestFunc(btp.gap_set_mitm_off),
                    TestFunc(btp.gap_set_bondable_off)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "sm")),
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/CEN/OOB/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                    TestFunc(btp.gap_oob_legacy_set_data, stack.gap.oob_legacy)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "sm")),
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/CEN/OOB/BV-03-C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                    TestFunc(btp.gap_oob_legacy_set_data, stack.gap.oob_legacy)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "sm")),
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/CEN/OOB/BV-05-C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "sm")),
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/CEN/OOB/BV-07-C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "sm")),
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/CEN/OOB/BV-09-C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                    TestFunc(btp.gap_oob_legacy_set_data, stack.gap.oob_legacy)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "sm")),
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/CEN/OOB/BI-01-C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                    TestFunc(btp.gap_oob_legacy_set_data, stack.gap.oob_legacy)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "sm")),
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/PER/OOB/BV-02-C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                    TestFunc(btp.gap_oob_legacy_set_data, stack.gap.oob_legacy)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "sm")),
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/PER/OOB/BV-04-C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                    TestFunc(btp.gap_oob_legacy_set_data, stack.gap.oob_legacy)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "sm")),
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/PER/OOB/BV-06-C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "sm")),
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/PER/OOB/BV-08-C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "sm")),
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/PER/OOB/BV-10-C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                    TestFunc(btp.gap_oob_legacy_set_data, stack.gap.oob_legacy)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "sm")),
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/PER/OOB/BI-02-C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                    TestFunc(btp.gap_oob_legacy_set_data, stack.gap.oob_legacy)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "sm")),
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/PER/SIP/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.keyboard_display)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "sm")),
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/CEN/SIP/BV-02-C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.keyboard_display),
                    TestFunc(btp.gap_set_mitm_off)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "sm")),
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/PER/SIE/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.no_input_output)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "sm")),
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/CEN/SCJW/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                    TestFunc(btp.gap_set_mitm_off),
                    TestFunc(btp.gap_set_bondable_off)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "sm")),
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/CEN/SCPK/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                    TestFunc(btp.gap_set_mitm_off),
                    TestFunc(btp.gap_set_bondable_off)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "sm")),
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/CEN/SCPK/BI-02-C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                    TestFunc(btp.gap_set_bondable_on)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "sm")),
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/PER/SCJW/BV-02-C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only),
                    TestFunc(btp.gap_set_mitm_off),
                    TestFunc(btp.gap_set_bondable_off)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "sm")),
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/PER/SCPK/BI-04-C",
                   pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.keyboard_only)],
-                  generic_wid_hdl=get_wid_handler("mynewt", "sm")),
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/CEN/SCOB/BV-04-C",
                   pre_conditions,
-                  generic_wid_hdl=get_wid_handler("mynewt", "sm")),
+                  generic_wid_hdl=sm_wid_hdl),
         ZTestCase("SM", "SM/PER/SCOB/BV-03-C",
                   pre_conditions,
-                  generic_wid_hdl=get_wid_handler("mynewt", "sm")),
+                  generic_wid_hdl=sm_wid_hdl),
     ]
 
     test_case_name_list = pts.get_test_case_list('SM')
     tc_list = []
-    sm_wid_hdl = get_wid_handler("mynewt", "sm")
+
     for tc_name in test_case_name_list:
         instance = ZTestCase('SM', tc_name,
                              pre_conditions +
