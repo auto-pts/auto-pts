@@ -16,18 +16,15 @@
 import logging
 from time import sleep
 
+from autopts.ptsprojects.common_wid import get_wid_handler
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp
 from autopts.pybtp.types import WIDParams
-from autopts.wid import generic_wid_hdl
 from autopts.wid.gap import hdl_wid_139_mode1_lvl2, hdl_wid_139_mode1_lvl4
 
 log = logging.debug
 
-
-def gap_wid_hdl(wid, description, test_case_name):
-    log(f'{gap_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
-    return generic_wid_hdl(wid, description, test_case_name, [__name__, 'autopts.wid.gap'])
+gap_wid_hdl = get_wid_handler("mynewt", "gap")
 
 
 # For tests in SC only, mode 1 level 3
