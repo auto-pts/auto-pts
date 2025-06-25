@@ -341,13 +341,13 @@ Synch Points mechanism.
                       TestFunc(get_stack().synch.add_synch_element,
                                [SynchPoint("BAP/BA/BASS/BV-04-C_LT2", 384),
                                 SynchPoint("BAP/BA/BASS/BV-04-C", 345)])],
-                  generic_wid_hdl=bap_wid_hdl,
+                  generic_wid_hdl=get_wid_handler("zephyr", "bap"),
                   lt2="BAP/BA/BASS/BV-04-C_LT2"),
     ]
 
     test_cases_lt2 = [
         ZTestCaseSlave("BAP", "BAP/BA/BASS/BV-04-C_LT2",
                        cmds=pre_conditions_lt2,
-                       generic_wid_hdl=bap_wid_hdl),
+                       generic_wid_hdl=get_wid_handler("zephyr", "bap")),
     ]
 ```

@@ -34,14 +34,8 @@ from autopts.pybtp.types import (
     addr_str_to_le_bytes,
     gap_settings_btp2txt,
 )
-from autopts.wid import generic_wid_hdl
 
 log = logging.debug
-
-
-def gap_wid_hdl(wid, description, test_case_name):
-    log(f'{gap_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
-    return generic_wid_hdl(wid, description, test_case_name, [__name__])
 
 
 # wid handlers section begin
