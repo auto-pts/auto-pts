@@ -78,6 +78,8 @@ br_initial_mtu = 120
 # Value: shortened name
 periodic_data = (0x08, "PADV_Tester")
 
+BROADCAST_CODE = '0102680553F1415AA265BBAFC6EA03B8'
+
 
 def set_pixits(ptses):
     """Setup GAP profile PIXITS for workspace. Those values are used for test
@@ -155,7 +157,7 @@ def set_pixits(ptses):
                   binascii.hexlify((chr(len(periodic_data[1]) + 1) + chr(periodic_data[0]) +
                                     periodic_data[1]).encode()))
     pts.set_pixit("GAP", "TSPX_Min_Encryption_Key_Size", "07")
-    pts.set_pixit("GAP", "TSPX_broadcast_code", "8ED03323D1205E2D58191BF6285C3182")
+    pts.set_pixit("GAP", "TSPX_broadcast_code", BROADCAST_CODE)
     pts.set_pixit("GAP", "TSPX_gap_iut_role", "Peripheral")
 
 
@@ -216,6 +218,7 @@ def test_cases(ptses):
         TestFunc(btp.core_reg_svc_gatt),
         TestFunc(stack.gatt_init),
         TestFunc(btp.gap_set_io_cap, IOCap.keyboard_display),
+        TestFunc(btp.gap_set_broadcast_code, BROADCAST_CODE),
 
         # We do this on test case, because previous one could update
         # this if RPA was used by PTS
