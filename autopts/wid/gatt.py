@@ -19,6 +19,7 @@ import struct
 from binascii import hexlify
 from time import sleep
 
+from autopts.ptsprojects.common_wid import get_wid_handler
 from autopts.ptsprojects.stack import (
     GattCharacteristic,
     GattCharacteristicDescriptor,
@@ -32,16 +33,11 @@ from autopts.ptsprojects.stack import (
 from autopts.ptsprojects.testcase import MMI
 from autopts.pybtp import btp
 from autopts.pybtp.types import UUID, BTPError, IOCap, Perm, Prop, WIDParams
-from autopts.wid import generic_wid_hdl
 
 log = logging.debug
 
 indication_subbed_already = False
-
-
-def gatt_wid_hdl(wid, description, test_case_name):
-    log(f'{gatt_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
-    return generic_wid_hdl(wid, description, test_case_name, [__name__])
+gatt_wid_hdl = get_wid_handler("mynewt", "gatt")
 
 
 def gattc_wid_hdl_multiple_indications(wid, description, test_case_name):
