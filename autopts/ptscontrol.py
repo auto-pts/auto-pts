@@ -513,6 +513,8 @@ class PyPTS:
 
         log("restart_pts")
         exception = 0
+        dongle_init_retry = getattr(args, "dongle_init_retry", 5)
+
         while not self._end.is_set():
             try:
                 self.stop_pts()
@@ -530,10 +532,10 @@ class PyPTS:
                 # the only running instance of autoptsserver.py
                 if count_script_instances('autoptsserver.py') <= 1:
                     kill_all_processes('PTS.exe')
-                if args.dongle_init_retry == 0:
+                if dongle_init_retry == 0:
                     continue
                 exception += 1
-                if exception >= args.dongle_init_retry:
+                if exception >= dongle_init_retry:
                     # This stops PTS from restarting indefinitely when PTS
                     # dongle is unplugged
                     print("Please check your dongle connection! Aborting")
