@@ -5,6 +5,7 @@
 #
 # Copyright (c) 2017, Intel Corporation.
 # Copyright (c) 2024, Codecoup.
+# Copyright (c) 2025, Atmosic.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms and conditions of the GNU General Public License,
@@ -483,6 +484,7 @@ def init_pts_thread_entry(proxy, args, exceptions, finish_count):
     log("PTS BD_ADDR: %s", proxy.q_bd_addr)
 
     log("Opening workspace: %s", args.workspace)
+    log("Copy workspace: %s", args.copy)
     proxy.open_workspace(args.workspace, args.copy)
 
     if args.bd_addr:
