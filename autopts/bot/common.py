@@ -2,6 +2,7 @@
 # auto-pts - The Bluetooth PTS Automation Framework
 #
 # Copyright (c) 2018, Intel Corporation.
+# Copyright (c) 2025, Atmosic.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms and conditions of the GNU General Public License,
@@ -71,10 +72,6 @@ class BotCliParser(CliParser):
 
         self.add_argument('--simple', action='store_true',
                           help='Skip build and flash in bot mode.', default=False)
-
-        self.add_argument('--nc', dest='copy', action='store_false',
-                          help='Do not copy workspace, open original one. '
-                               'Warning: workspace file might be modified', default=True)
 
     def add_positional_args(self):
         self.add_argument("config_path", nargs='?', default='config.py',

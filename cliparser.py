@@ -4,6 +4,7 @@
 # auto-pts - The Bluetooth PTS Automation Framework
 #
 # Copyright (c) 2017, Intel Corporation.
+# Copyright (c) 2025, Atmosic.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms and conditions of the GNU General Public License,
@@ -95,6 +96,10 @@ class CliParser(argparse.ArgumentParser):
 
         self.add_argument("--pylink_reset", action='store_true', default=False,
                           help="Use pylink reset.")
+
+        self.add_argument('--nc', dest='copy', action='store_false',
+                          help='Do not copy workspace, open original one. '
+                               'Warning: workspace file might be modified', default=True)
 
         # Hidden option to save test cases data in TestCase.db
         self.add_argument("-s", "--store", action="store_true",
