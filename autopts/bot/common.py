@@ -170,6 +170,8 @@ class BotClient(Client):
                        'create': False,
                        'all_stats': None,
                        'tc_stats': None}
+        # Parser for more informative test failure information
+        self.fail_info_parser = None
 
     def parse_or_find_tty(self, args):
         if args.tty_alias:
@@ -511,6 +513,9 @@ class BotClient(Client):
             raise
         finally:
             release_device(self.args.tty_file)
+
+        if (self.fail_info_parser):
+            stats.additional_fail_info_cb = self.fail_info_parser
 
         report_data = bot_state
         report_data['end_time'] = time.time()
