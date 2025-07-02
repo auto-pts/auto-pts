@@ -17,6 +17,7 @@
 # more details.
 #
 
+import glob
 import importlib
 import os
 import shutil
@@ -30,6 +31,7 @@ import serial
 from autopts import bot
 from autopts import client as autoptsclient
 from autopts.bot.common import BotClient, BotConfigArgs, BuildAndFlashException, check_call
+from autopts.config import FILE_PATHS
 from autopts.ptsprojects.boards import get_board_type, get_build_and_flash, tty_to_com
 from autopts.ptsprojects.zephyr import ZEPHYR_PROJECT_URL
 from autopts.ptsprojects.zephyr.iutctl import get_iut, log
@@ -113,6 +115,21 @@ def zephyr_hash_url(commit):
     return f"{ZEPHYR_PROJECT_URL}/commit/{commit}"
 
 
+def zephyr_get_assertion_info(test_case_name):
+    logs_dir = FILE_PATHS['IUT_LOGS_DIR']
+    pattern = test_case_name.replace('/', '_')
+    search_pattern = os.path.join(logs_dir, '**', f'{pattern}_*', f'{pattern}_iutctl.log')
+    log_files = glob.glob(search_pattern, recursive=True)
+
+    for log_file in log_files:
+        with open(log_file, encoding='utf-8') as f:
+            for line in f:
+                if 'ASSERTION' in line:
+                    return line.strip()
+
+    return None
+
+
 class ZephyrBotConfigArgs(BotConfigArgs):
     def __init__(self, args):
         super().__init__(args)
@@ -129,6 +146,7 @@ class ZephyrBotClient(BotClient):
         super().__init__(get_iut, project, 'zephyr', ZephyrBotConfigArgs,
                          ZephyrBotCliParser)
         self.config_default = "prj.conf"
+        self.fail_info_parser = zephyr_get_assertion_info
 
     def apply_config(self, args, config, value):
         pre_overlay = value.get('pre_overlay', [])
