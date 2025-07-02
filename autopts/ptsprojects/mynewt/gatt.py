@@ -17,6 +17,7 @@
 
 from autopts.client import get_unique_name
 from autopts.ptsprojects.mynewt.gatt_client_wid import gattc_wid_hdl
+from autopts.ptsprojects.mynewt.gatt_server_wid import gatt_sr_wid_hdl
 from autopts.ptsprojects.mynewt.gatt_wid import gatt_wid_hdl
 from autopts.ptsprojects.mynewt.ztestcase import ZTestCase, ZTestCaseSlave
 from autopts.ptsprojects.stack import SynchPoint, get_stack
@@ -150,7 +151,8 @@ def test_cases_server(ptses):
     pts_bd_addr = pts.q_bd_addr
 
     pre_conditions_1 = [TestFunc(btp.core_reg_svc_gap),
-                        TestFunc(btp.core_reg_svc_gatt),
+                        # TestFunc(btp.core_reg_svc_gatt),
+                        TestFunc(btp.core_reg_svc_gatts),
                         TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public),
                         TestFunc(btp.gap_read_ctrl_info),
                         TestFunc(lambda: pts.update_pixit_param(
@@ -160,10 +162,13 @@ def test_cases_server(ptses):
                             "GATT", "TSPX_iut_use_dynamic_bd_addr",
                             "TRUE" if stack.gap.iut_addr_is_random()
                             else "FALSE")),
-                        TestFunc(stack.gatt_init)]
+                        TestFunc(stack.gatt_init),
+                        TestFunc(btp.gatt_sr_initialize_database, 0),
+                        TestFunc(stack.gatts_init)]
 
     pre_conditions_2 = [TestFunc(btp.core_reg_svc_gap),
-                        TestFunc(btp.core_reg_svc_gatt),
+                        # TestFunc(btp.core_reg_svc_gatt),
+                        TestFunc(btp.core_reg_svc_gatts),
                         TestFunc(btp.gap_read_ctrl_info),
                         TestFunc(lambda: pts.update_pixit_param(
                             "GATT", "TSPX_bd_addr_iut",
@@ -214,7 +219,7 @@ def test_cases_server(ptses):
             continue
         instance = ZTestCase('GATT', tc_name,
                              cmds=pre_conditions_1,
-                             generic_wid_hdl=gatt_wid_hdl)
+                             generic_wid_hdl=gatt_sr_wid_hdl)
 
         for custom_tc in custom_test_cases:
             if tc_name == custom_tc.name:

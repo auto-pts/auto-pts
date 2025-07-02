@@ -29,6 +29,9 @@ def gatt_wid_hdl(wid, description, test_case_name):
     if stack.is_svc_supported('GATT_CL') and 'GATT/CL' in test_case_name:
         return generic_wid_hdl(wid, description, test_case_name,
                                [__name__, 'autopts.wid.gatt_client'])
+    if stack.is_svc_supported('GATTS') and 'GATT/SR' in test_case_name:
+        return generic_wid_hdl(wid, description, test_case_name,
+                               [__name__, 'autopts.wid.gatt_server'])
 
     log(f'{gatt_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
     return generic_wid_hdl(wid, description, test_case_name,
