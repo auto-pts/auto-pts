@@ -218,6 +218,12 @@ class CliParser(argparse.ArgumentParser):
             except ValueError:
                 return f'TTY mode: Port {args.tty_file} is not a valid COM port!\n'
 
+        if args.net_tty_file.startswith("COM"):
+            try:
+                args.net_tty_file = com_to_tty(args.net_tty_file)
+            except ValueError:
+                return f'TTY mode: Port {args.net_tty_file} is not a valid COM port!\n'
+
         return ''
 
     def check_args_qemu(self, args):

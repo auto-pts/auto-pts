@@ -97,6 +97,7 @@ class BotConfigArgs(Namespace):
         self.local_addr = args.get('local_ip', ['127.0.0.1'] * len(self.cli_port))
         self.server_count = args.get('server_count', len(self.cli_port))
         self.tty_file = args.get('tty_file', None)
+        self.net_tty_file = args.get('net_tty_file', None)
         self.tty_alias = args.get('tty_alias', None)
         self.debugger_snr = args.get('debugger_snr', None)
         self.kernel_image = args.get('kernel_image', None)

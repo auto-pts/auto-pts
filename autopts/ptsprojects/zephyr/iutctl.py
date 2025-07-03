@@ -27,7 +27,7 @@ import serial
 from autopts.ptsprojects.boards import Board, get_debugger_snr, tty_to_com
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import defs
-from autopts.pybtp.iutctl_common import BTP_ADDRESS, BTPSocketSrv, BTPWorker
+from autopts.pybtp.iutctl_common import BTP_ADDRESS, UART, BTPSocketSrv, BTPWorker
 from autopts.rtt import BTMON, RTTLogger
 from autopts.utils import get_global_end
 
@@ -71,6 +71,7 @@ class ZephyrCtl:
         self.debugger_snr = args.debugger_snr
         self.kernel_image = args.kernel_image
         self.tty_file = args.tty_file
+        self.net_tty_file = args.net_tty_file
         self.hci = args.hci
         self.native = None
         self.gdb = args.gdb
@@ -86,11 +87,15 @@ class ZephyrCtl:
         self.qemu_process = None
         self.native_process = None
         self.socat_process = None
+        self.net_socat_process = None
         self.socket_srv = None
+        self.socket_srv_net = None
         self.btp_socket = None
+        self.socket_net = None
         self.test_case = None
         self.iut_log_file = None
         self.rtt_logger = None
+        self.uart = None
         self.btmon = None
 
         if self.debugger_snr:
@@ -170,6 +175,9 @@ class ZephyrCtl:
 
         self.btp_socket.accept()
 
+        if self.net_tty_file:
+            self.uart_logger_start()
+
     def flush_serial(self):
         log("%s.%s", self.__class__, self.flush_serial.__name__)
         # Try to read data or timeout
@@ -200,6 +208,10 @@ class ZephyrCtl:
     def btmon_stop(self):
         if self.btmon:
             self.btmon.stop()
+
+    def uart_logger_start(self):
+        self.uart = UART(self.test_case.log_dir) if self.net_tty_file else None
+        self.uart.start(BTP_ADDRESS + '_NET', self.net_tty_file, SERIAL_BAUDRATE)
 
     def rtt_logger_start(self):
         if self.rtt_logger:
@@ -276,6 +288,10 @@ class ZephyrCtl:
         if self.btp_socket:
             self.btp_socket.close()
             self.btp_socket = None
+
+        if self.net_tty_file:
+            self.uart.socket.close()
+            self.uart = None
 
         if self.native_process and self.native_process.poll() is None:
             self.native_process.terminate()

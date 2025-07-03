@@ -18,12 +18,15 @@ import logging
 import os
 import queue
 import re
+import shlex
 import socket
+import subprocess
 import sys
 import threading
 from abc import abstractmethod
 from datetime import datetime
 
+from autopts.ptsprojects.boards import tty_to_com
 from autopts.pybtp import defs
 from autopts.pybtp.parser import HDR_LEN, dec_data, dec_hdr, enc_frame, repr_hdr
 from autopts.pybtp.types import BTPError
@@ -410,3 +413,178 @@ class BTPWorker:
 
     def register_event_handler(self, event_handler):
         self.event_handler_cb = event_handler
+
+
+class Socket:
+
+    def __init__(self, log_dir):
+        self.conn = None
+        self.addr = None
+        self.log_file = open(os.path.join(log_dir, "autopts-iut-nectore.log"), "a")
+
+    @abstractmethod
+    def open(self, address):
+        pass
+
+    @abstractmethod
+    def accept(self, timeout=10.0):
+        pass
+
+    def read(self, timeout=20.0):
+        """Read data from socket"""
+        self.conn.settimeout(timeout)
+        all_bytes = bytearray()
+        try:
+            while True:
+                chunk = self.conn.recv(4096)
+                if not chunk:
+                    # peer closed the connection
+                    break
+                all_bytes.extend(chunk)
+        except socket.timeout:
+            # timed out waiting for more data
+            pass
+
+        # hex‑dump and write
+        text = all_bytes.decode('utf-8', errors='replace')
+        self.log_file.write(text)
+
+        # restore blocking mode and return
+        self.conn.settimeout(None)
+
+    @abstractmethod
+    def close(self):
+        self.log_file.close()
+        self.log_file = None
+        pass
+
+
+class SocketSrv(Socket):
+
+    def __init__(self, log_dir=None):
+        super().__init__(log_dir)
+        self.sock = None
+
+    def open(self, addres, port=0):
+        """Open data socket for IUT UART logging"""
+        if os.path.exists(addres):
+            os.remove(addres)
+
+        if sys.platform == "win32":
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.sock.bind((socket.gethostname(), port))
+        else:
+            self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+            self.sock.bind(addres)
+
+        # queue only one connection
+        self.sock.listen(1)
+
+    def accept(self, timeout=10.0):
+        """Accept incomming IUT connection timeout - accept timeout in seconds"""
+
+        self.sock.settimeout(timeout)
+        self.conn, self.addr = self.sock.accept()
+        self.sock.settimeout(None)
+
+    def close(self):
+        super().close()
+        try:
+            self.conn.shutdown(socket.SHUT_RDWR)
+            self.conn.close()
+            self.sock.close()
+        except BaseException as e:
+            logging.exception(e)
+        self.sock = None
+        self.conn = None
+        self.addr = None
+
+
+class UART(SocketSrv):
+
+    def __init__(self, log_dir=None):
+        super().__init__(log_dir=log_dir)
+        self.addr = None
+        self.socat_process = None
+        self.log_dir = log_dir
+        self.socket_srv = None
+        self.socket = None
+
+    def start(self, address, net_tty_file, serial_baudrate):
+        log("%s.%s", self.__class__, self.start.__name__)
+        self.socket_srv = SocketSrv(self.log_dir)
+        self.socket_srv.open(address)
+        self.socket = UARTWorker(self.socket_srv)
+        self.addr = address
+
+        if sys.platform == "win32":
+            com_net = tty_to_com(net_tty_file)
+            mode_cmd = (
+                    ">nul 2>nul cmd.exe /c \"mode " + com_net + f"BAUD={serial_baudrate} PARITY=n DATA=8 STOP=1\"")
+            os.system(mode_cmd)
+            socat_cmd_net = (
+                f"socat.exe -x -v tcp:{socket.gethostbyname(socket.gethostname())}:"
+                f"{self.socket_srv.sock.getsockname()[1]},retry=100,interval=1 "
+                f"{net_tty_file},raw,b{serial_baudrate}"
+            )
+        else:
+            socat_cmd_net = f"socat -x -v {net_tty_file},rawer,b{serial_baudrate} " \
+                            f"UNIX-CONNECT:{self.addr + '_NET'}"
+
+        log("Starting socat uart process: %s", socat_cmd_net)
+
+        self.socat_process = subprocess.Popen(shlex.split(socat_cmd_net),
+                                              shell=False,
+                                              stdout=subprocess.DEVNULL,
+                                              stderr=subprocess.DEVNULL)
+
+        self.socket.accept()
+
+
+class UARTWorker:
+
+    def __init__(self, sock):
+        super().__init__()
+
+        self._socket = sock
+        self._running = threading.Event()
+        self._rx_worker = threading.Thread(target=self._rx_task)
+        self._rx_worker.name = f'UART_log_Worker{self._rx_worker.name}'
+
+    def _rx_task(self):
+        log(f'{threading.current_thread().name} started')
+        socket_ok = True
+        while self._running.is_set() and not get_global_end():
+            try:
+                self._socket.read(timeout=1.0)
+                socket_ok = True
+            except socket.timeout:
+                # this one is expected so ignore
+                pass
+            except OSError:
+                if socket_ok:
+                    socket_ok = False
+                    log('socket.error: Socket is closed')
+            except Exception as e:
+                logging.error("%r", e)
+        log(f'{threading.current_thread().name} finishing...')
+
+    def accept(self, timeout=10.0):
+        logging.debug("%s", self.accept.__name__)
+
+        self._socket.accept(timeout)
+
+        self._running.set()
+        self._rx_worker.start()
+
+    def close(self):
+        if self._running.is_set():
+            self._running.clear()
+
+            # is_alive returns True if a thread has not been started
+            # and may result in deadlock here.
+            while self._rx_worker.is_alive() and not get_global_end():
+                log('Waiting for _rx_worker to finish ...')
+                self._rx_worker.join(timeout=1)
+
+        self._socket.close()
