@@ -170,6 +170,7 @@ class BotClient(Client):
                        'create': False,
                        'all_stats': None,
                        'tc_stats': None}
+        self.error_txt_content = ""
 
     def parse_or_find_tty(self, args):
         if args.tty_alias:
@@ -507,10 +508,11 @@ class BotClient(Client):
         try:
             stats = self.run_tests()
         except:
-            report.make_error_txt(traceback.format_exc(), self.file_paths['ERROR_TXT_FILE'])
+            self.error_txt_content += traceback.format_exc() + "\n"
             raise
         finally:
             release_device(self.args.tty_file)
+            report.make_error_txt(self.error_txt_content, self.file_paths['ERROR_TXT_FILE'])
 
         report_data = bot_state
         report_data['end_time'] = time.time()
@@ -573,6 +575,9 @@ class BotClient(Client):
             self.send_email(report_data)
 
         self.bot_post_cleanup()
+
+        if self.error_txt_content:
+            report.make_error_txt(self.error_txt_content, self.file_paths['ERROR_TXT_FILE'])
 
         print("Done")
 

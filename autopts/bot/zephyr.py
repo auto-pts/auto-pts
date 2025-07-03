@@ -29,7 +29,6 @@ import serial
 from autopts import bot
 from autopts import client as autoptsclient
 from autopts.bot.common import BotClient, BotConfigArgs, BuildAndFlashException
-from autopts.bot.common_features import report
 from autopts.ptsprojects.boards import get_board_type, get_build_and_flash, tty_to_com
 from autopts.ptsprojects.zephyr import ZEPHYR_PROJECT_URL
 from autopts.ptsprojects.zephyr.iutctl import get_iut, log
@@ -141,7 +140,7 @@ class ZephyrBotClient(BotClient):
                 flush_serial(args.tty_file)
             except BaseException as e:
                 traceback.print_exception(e)
-                report.make_error_txt('Build and flash step failed', self.file_paths['ERROR_TXT_FILE'])
+                self.error_txt_content += "Build and flash step failed\n"
                 raise BuildAndFlashException from e
 
             time.sleep(10)
