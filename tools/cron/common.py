@@ -572,7 +572,7 @@ def _start_processes(config, checkout_repos):
         if srv_process and srv_process.poll() is None:
             srv_process.terminate()
 
-        return
+        return None, None
 
     log(f"Running: {config['bot_start_cmd']}")
     bot_process = subprocess.Popen(config['bot_start_cmd'],
@@ -593,78 +593,177 @@ def _restart_processes(config):
         log(traceback.format_exc())
 
 
-def _run_test(config):
-    test_cases_completed = False
-    backup = config['auto_pts'].get('use_backup', False)
-    timeguard = config['cron']['test_run_timeguard']
-    startup_fail_count = config['cron'].get('startup_fail_max_count', 2)
-    results_file_path = config['file_paths']['TC_STATS_JSON_FILE']
-    all_stats_file_path = config['file_paths']['ALL_STATS_JSON_FILE']
-    report_file_path = config['file_paths']['REPORT_TXT_FILE']
-    error_file_path = config['file_paths']['ERROR_TXT_FILE']
+def _run_test_without_backup(config):
+    cancel_job = config['cron']['cancel_job']
+    check_interval = config['cron']['check_interval']
+    report_file = config['file_paths']['REPORT_TXT_FILE']
+    error_file = config['file_paths']['ERROR_TXT_FILE']
 
-    srv_process, bot_process = _start_processes(config, checkout_repos=True)
-    last_check_time = time()
+    srv_proc, bot_proc = _start_processes(config, checkout_repos=True)
 
     # Main thread waits for at least one of subprocesses to finish
-    while not config['cron']['cancel_job'].canceled:
-        sleep_job(config['cron']['cancel_job'], config['cron']['check_interval'])
+    while not cancel_job.canceled:
+        sleep_job(cancel_job, check_interval)
 
-        if os.path.exists(error_file_path):
+        if os.path.exists(error_file):
             break
 
-        if srv_process and srv_process.poll() is not None:
+        if srv_proc and srv_proc.poll() is not None:
             log('server process finished.')
             break
 
-        if bot_process.poll() is not None:
+        if bot_proc.poll() is not None:
             log('bot process finished.')
-            if os.path.exists(report_file_path):
-                break
+            if not os.path.exists(report_file):
+                log("AutoPTS bot terminated before report creation. Restarting processes...")
 
-            elif backup:
-                log("Autopts bot terminated before report creation. Restarting processes...")
-                srv_process, bot_process = _restart_processes(config)
-                sleep_job(config['cron']['cancel_job'], timeguard)
+            break
 
-        if not backup:
-            continue
 
+def _await_test_run_start(config):
+    cancel_job = config['cron']['cancel_job']
+    results_file = config['file_paths']['TC_STATS_JSON_FILE']
+    error_file = config['file_paths']['ERROR_TXT_FILE']
+    timeguard = config['cron']['test_run_timeguard']
+    check_interval = config['cron']['check_interval']
+    startup_fail_count = config['cron'].get('startup_fail_max_count', 2)
+
+    srv_proc, bot_proc = _start_processes(config, checkout_repos=True)
+    last_check = time()
+
+    while not cancel_job.canceled:
+        sleep_job(cancel_job, check_interval)
         current_time = time()
 
-        if not test_cases_completed and not os.path.exists(results_file_path):
-            if timedelta(seconds=current_time - last_check_time) > timedelta(seconds=timeguard):
-                if startup_fail_count == 0:
-                    log("Test run has not been started on time. No more retries...")
-                    break
+        if os.path.exists(results_file):
+            log("Bot has started producing results.")
+            return srv_proc, bot_proc
 
-                startup_fail_count -= 1
-                log("Test run has not been started on time. Restarting processes...")
-                srv_process, bot_process = _restart_processes(config)
+        startup_timeout = timedelta(seconds=current_time - last_check) > timedelta(seconds=timeguard)
+        bot_died = bot_proc.poll() is not None
+        critical_error = os.path.exists(error_file)
 
+        if startup_timeout or bot_died or critical_error:
+            log("Bot failed before initialization complete.")
+
+            if startup_fail_count <= 0:
+                log("Bot did not start the test run in time. No more retries.")
+                return None, None
+
+            startup_fail_count -= 1
+            log(f"Startup timeout. Restarting... ({startup_fail_count} retries left)")
+
+            if critical_error:
+                os.remove(error_file)
+
+            srv_proc, bot_proc = _restart_processes(config)
+            last_check = current_time
+
+    log("Job was cancelled during startup wait.")
+    return None, None
+
+
+def _is_test_run_completed(all_stats_file):
+    completed = False
+
+    if os.path.exists(all_stats_file):
+        try:
+            with open(all_stats_file) as f:
+                data = json.load(f)
+                completed = data.get('test_run_completed', False)
+        except BaseException as e:
+            log(e)
+
+    return completed
+
+
+def _await_test_run_end(config, srv_proc, bot_proc):
+    cancel_job = config['cron']['cancel_job']
+    results_file = config['file_paths']['TC_STATS_JSON_FILE']
+    error_file = config['file_paths']['ERROR_TXT_FILE']
+    all_stats_file = config['file_paths']['ALL_STATS_JSON_FILE']
+    timeguard = config['cron']['test_run_timeguard']
+    check_interval = config['cron']['check_interval']
+    critical_error_max_count = config['cron'].get('critical_error_max_count', 2)
+    critical_error_count = 0
+
+    while not cancel_job.canceled:
+        sleep_job(cancel_job, check_interval)
+        current_time = time()
+
+        if _is_test_run_completed(all_stats_file):
+            log("Bot completed running the test cases. Waiting for the report to be generated ...")
+            return srv_proc, bot_proc
+
+        timeout = None
+        if os.path.exists(results_file):
+            # After each completed test case the result file should be updated.
+            # If it is not, it means the bot is stuck on some test case.
+            timeout = (timedelta(seconds=current_time - os.path.getmtime(results_file))
+                       > timedelta(seconds=timeguard))
+
+        bot_died = bot_proc.poll() is not None
+        critical_error = os.path.exists(error_file)
+
+        if timeout or bot_died or critical_error:
+            if timeout:
+                log("Test run results have not been updated for a while.")
+
+            if bot_died:
+                if not os.path.exists(all_stats_file) and not os.path.exists(results_file):
+                    log("Bot completed running the test cases.")
+                    return srv_proc, bot_proc
+
+                log("AutoPTS bot probably crashed.")
+
+            if critical_error:
+                log("Bot generated error file.")
+                if critical_error_count == critical_error_max_count:
+                    log("No more retries.")
+                    return None, None
+
+                critical_error_count += 1
+                log(f"Retry {critical_error_count}")
+                os.remove(error_file)
+
+            log("Restarting processes...")
+            srv_proc, bot_proc = _restart_processes(config)
+            sleep_job(config['cron']['cancel_job'], timeguard)
             continue
 
-        startup_fail_count = config['cron'].get('startup_fail_max_count', 2)
-        last_check_time = current_time
+        critical_error_count = 0
 
-        if (not test_cases_completed and
-                timedelta(seconds=current_time - os.path.getmtime(results_file_path)) > timedelta(seconds=timeguard)):
-            if os.path.exists(all_stats_file_path):
-                try:
-                    with open(all_stats_file_path) as f:
-                        data = json.load(f)
-                        test_cases_completed = data.get('test_run_completed', False)
-                except BaseException as e:
-                    log(e)
+    log("Job was cancelled during test run.")
+    return None, None
 
-            # Do not restart bot if test_run_completed, because pulling PTS logs at the end
-            # of the bot run takes a while, and it should not be interrupted.
-            if test_cases_completed:
-                log("Bot completed running the test cases. Waiting for report to be generated ...")
-            else:
-                log("Test run results have not been updated for a while. Restarting processes...")
-                srv_process, bot_process = _restart_processes(config)
-                sleep_job(config['cron']['cancel_job'], timeguard)
+
+def _await_bot_cleanup_end(config, srv_proc, bot_proc):
+    cancel_job = config['cron']['cancel_job']
+
+    while not cancel_job.canceled and bot_proc.poll() is None:
+        pass
+
+
+def _run_test(config):
+    backup = config['auto_pts'].get('use_backup', False)
+
+    if not backup:
+        _run_test_without_backup(config)
+        return
+
+    srv_proc, bot_proc = _await_test_run_start(config)
+    bot_died = bot_proc.poll() is not None
+    srv_died = srv_proc and srv_proc.poll() is not None
+    if srv_died or bot_died:
+        return
+
+    srv_proc, bot_proc = _await_test_run_end(config, srv_proc, bot_proc)
+    bot_died = bot_proc.poll() is not None
+    srv_died = srv_proc and srv_proc.poll() is not None
+    if srv_died or bot_died:
+        return
+
+    _await_bot_cleanup_end(config, srv_proc, bot_proc)
 
 
 def run_test(config):
