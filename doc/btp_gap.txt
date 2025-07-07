@@ -684,6 +684,24 @@ Commands and responses:
 
                 In case of an error, the error response will be returned.
 
+        Opcode 0x2b - Connection Subrate command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Subrate_Min (2 octets)
+                                        Subrate_Max (2 octets)
+                                        Conn_Latency (2 octets)
+                                        Continuation_Number (2 octets)
+                                        Supervision_timeout (2 octets)
+                Return Parameters:      <none>
+
+                This command is used to send a subrate request to a connected
+                LE peer device. If procedure is successful subrate change event
+                is sent by peer device.
+
+                In case of an error, the error response will be returned.
+
         Opcode 0x30 - Set RPA Timeout command/response
 
                 Controller Index: <controller id>
@@ -893,3 +911,18 @@ Events:
 
                 This event can be sent after IUT received encryption change event was received.
                 The parameter `Enabled` is the flag whether the link is encrypted.
+
+        Opcode 0x92 - Subrate change event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Status (1 octet)
+                                        Conn_Handle (2 octets)
+                                        Subrate_Factor (2 octets)
+                                        Peripheral_Latency (2 octets)
+                                        Continuation_number (2 octets)
+                                        Supervision_Timeout (2 octets)
+
+                This event is used to indicate that a Connection Subrate Update procedure has
+                completed and some parameters of the specified connection have changed.
