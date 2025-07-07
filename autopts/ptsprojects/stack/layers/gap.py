@@ -112,6 +112,11 @@ class Gap:
         self.delay_mmi = False
         self.mmi_round = {}
 
+        # Used for subrating procedures
+        self.subrate_min = 10
+        self.subrate_max = 20
+        self.continuation_number = 5
+
     def add_connection(self, addr, addr_type):
         self.connections[addr] = GapConnection(addr=addr,
                                                addr_type=addr_type)

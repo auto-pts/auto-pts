@@ -145,6 +145,8 @@ GAP = {
     "padv_sync_transfer_recv": (defs.BTP_SERVICE_ID_GAP,
                                 defs.BTP_GAP_CMD_PADV_SYNC_TRANSFER_RECV,
                                 CONTROLLER_INDEX),
+    "subrate_request": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_SUBRATE_REQUEST,
+                        CONTROLLER_INDEX),
 }
 
 
@@ -1474,4 +1476,34 @@ def gap_padv_sync_transfer_recv(skip, sync_timeout, flags, addr_type=None, addr=
 
     iutctl.btp_socket.send(*GAP['padv_sync_transfer_recv'], data=data_ba)
 
+    gap_command_rsp_succ()
+
+
+def gap_subrate_request(bd_addr, bd_addr_type, subrate_min, subrate_max,
+                        conn_latency, cont_num, supervision_timeout):
+    logging.debug("%s", gap_subrate_request.__name__)
+
+    iutctl = get_iut()
+
+    data_ba = bytearray()
+    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
+
+    data_ba.extend(struct.pack('B', pts_addr_type_get(bd_addr_type)))
+    data_ba.extend(bd_addr_ba)
+
+    subrate_min_ba = struct.pack('H', subrate_min)
+    subrate_max_ba = struct.pack('H', subrate_max)
+    conn_latency_ba = struct.pack('H', conn_latency)
+    cont_num_ba = struct.pack('H', cont_num)
+    supervision_timeout_ba = struct.pack('H', supervision_timeout)
+
+    data_ba.extend(subrate_min_ba)
+    data_ba.extend(subrate_max_ba)
+    data_ba.extend(conn_latency_ba)
+    data_ba.extend(cont_num_ba)
+    data_ba.extend(supervision_timeout_ba)
+
+    iutctl.btp_socket.send(*GAP['subrate_request'], data=data_ba)
+
+    # Expected result
     gap_command_rsp_succ()
