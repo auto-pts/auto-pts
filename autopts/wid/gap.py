@@ -1809,6 +1809,58 @@ def hdl_wid_406(_: WIDParams):
     return True
 
 
+def hdl_wid_450(_: WIDParams):
+    # Please perform LE subrate request procedure.
+
+    stack = get_stack()
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
+    params = copy.deepcopy(stack.gap.conn_params.data)
+
+    conn_latency = params.conn_latency
+    supervision_timeout = params.supervision_timeout
+
+    subrate_min = stack.gap.subrate_min
+    subrate_max = stack.gap.subrate_max
+    cont_num = stack.gap.continuation_number
+
+    btp.gap_subrate_request(bd_addr, bd_addr_type,
+                            subrate_min,
+                            subrate_max,
+                            conn_latency,
+                            cont_num,
+                            supervision_timeout)
+
+    return True
+
+
+def hdl_wid_451(_: WIDParams):
+    # Please perform LE subrate update procedure.
+
+    stack = get_stack()
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
+    params = copy.deepcopy(stack.gap.conn_params.data)
+
+    conn_latency = params.conn_latency
+    supervision_timeout = params.supervision_timeout
+
+    subrate_min = stack.gap.subrate_min
+    subrate_max = stack.gap.subrate_max
+    cont_num = stack.gap.continuation_number
+
+    btp.gap_subrate_request(bd_addr, bd_addr_type,
+                            subrate_min,
+                            subrate_max,
+                            conn_latency,
+                            cont_num,
+                            supervision_timeout)
+
+    return True
+
+
 def hdl_wid_1000(params: WIDParams):
     # Please have IUT enter GAP Discoverable Mode and generate Advertising Packets.
     # Note: need to advertise with RPAs
