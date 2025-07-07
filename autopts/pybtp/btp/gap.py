@@ -408,6 +408,29 @@ def gap_encryption_change_ev_(gap, data, data_len):
     stack.gap.encryption_change_rcvd.data = (_addr_t, _addr, _encrypted, _key_size)
 
 
+def gap_subrate_change_ev_(gap, data, data_len):
+    stack = get_stack()
+    logging.debug("%s", gap_subrate_change_ev_.__name__)
+
+    logging.debug("Subrate change received %r", data)
+
+    fmt = '<B6sBHHHHH'
+    if len(data) != struct.calcsize(fmt):
+        raise BTPError("Invalid data length")
+
+    _addr_t, _addr, _status, _conn_hdl, _sub_fact, _per_lat, _cont_num, _sup_tmo = struct.unpack_from(fmt, data)
+    _addr = binascii.hexlify(_addr[::-1]).lower()
+
+    if _addr_t != pts_addr_type_get() or _addr.decode('utf-8') != pts_addr_get():
+        raise BTPError("Received data mismatch")
+
+    logging.debug("received %r", (_addr_t, _addr, _status, _conn_hdl,
+                                  _sub_fact, _per_lat, _cont_num, _sup_tmo))
+
+    stack.gap.subrate_change_received = (_addr_t, _addr, _status, _conn_hdl,
+                                         _sub_fact, _per_lat, _cont_num, _sup_tmo)
+
+
 GAP_EV = {
     defs.BTP_GAP_EV_NEW_SETTINGS: gap_new_settings_ev_,
     defs.BTP_GAP_EV_DEVICE_FOUND: gap_device_found_ev_,
@@ -427,6 +450,7 @@ GAP_EV = {
     defs.BTP_GAP_EV_PERIODIC_REPORT: gap_padv_report_ev_,
     defs.BTP_GAP_EV_PERIODIC_TRANSFER_RECEIVED: gap_padv_transfer_received_ev_,
     defs.BTP_GAP_EV_ENCRYPTION_CHANGE: gap_encryption_change_ev_,
+    defs.BTP_GAP_EV_SUBRATE_CHANGE: gap_subrate_change_ev_,
 }
 
 
