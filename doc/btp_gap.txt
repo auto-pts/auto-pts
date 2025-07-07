@@ -648,17 +648,6 @@ Commands and responses:
 
                 In case of an error, the error response will be returned.
 
-        Opcode 0x30 - Set RPA Timeout command/response
-
-                Controller Index: <controller id>
-                Command parameters: RPA Timeout in seconds (2 octets)
-                Return Parameters: <none>
-
-                This command is used to set RPA timeout. The new RPA timeout value will be
-                used for the next RPA rotation. Valid range is 1s - 3600s.
-
-                In case of an error, the error response will be returned.
-
         Opcode 0x2a - Pair V2 command/response
 
                 Controller Index:       <controller id>
@@ -694,6 +683,19 @@ Commands and responses:
                         0 = Force pairing procedure
 
                 In case of an error, the error response will be returned.
+
+        Opcode 0x30 - Set RPA Timeout command/response
+
+                Controller Index: <controller id>
+                Command parameters: RPA Timeout in seconds (2 octets)
+                Return Parameters: <none>
+
+                This command is used to set RPA timeout. The new RPA timeout value will be
+                used for the next RPA rotation. Valid range is 1s - 3600s.
+
+                In case of an error, the error response will be returned.
+
+
 
 Events:
         Opcode 0x80 - New Settings event
