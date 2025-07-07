@@ -116,6 +116,7 @@ class Gap:
         self.subrate_min = 10
         self.subrate_max = 20
         self.continuation_number = 5
+        self.subrate_change_received = Property(None)
 
     def add_connection(self, addr, addr_type):
         self.connections[addr] = GapConnection(addr=addr,
@@ -168,6 +169,16 @@ class Gap:
 
         if wait_for_event(timeout, lambda: self.periodic_transfer_received):
             self.periodic_transfer_received = False
+            return True
+
+        return False
+
+    def wait_subrate_change_received(self, timeout):
+        if self.subrate_change_received:
+            return True
+
+        if wait_for_event(timeout, lambda: self.subrate_change_received):
+            self.subrate_change_received = False
             return True
 
         return False
