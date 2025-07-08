@@ -31,7 +31,7 @@ from pathlib import Path
 from autopts import client as autoptsclient
 from autopts.bot.common_features import github, google_drive, mail, report
 from autopts.client import Client, CliParser, TestCaseRunStats, init_logging
-from autopts.config import AUTOPTS_ROOT_DIR, MAX_SERVER_RESTART_TIME, generate_file_paths
+from autopts.config import AUTOPTS_ROOT_DIR, MAX_SERVER_RESTART_TIME, generate_file_paths, SERIAL_BAUDRATE
 from autopts.ptsprojects.boards import get_debugger_snr, get_free_device, get_tty, release_device
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
 
@@ -96,6 +96,7 @@ class BotConfigArgs(Namespace):
         self.tty_file = args.get('tty_file', None)
         self.tty_alias = args.get('tty_alias', None)
         self.net_tty_file = args.get('net_tty_file', None)
+        self.tty_baudrate = int(args.get('tty_baudrate', SERIAL_BAUDRATE))
         self.debugger_snr = args.get('debugger_snr', None)
         self.kernel_image = args.get('kernel_image', None)
         self.database_file = args.get('database_file', DATABASE_FILE)

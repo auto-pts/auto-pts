@@ -21,7 +21,7 @@ import os
 import time
 from distutils.spawn import find_executable
 
-from autopts.config import CLIENT_PORT, MAX_SERVER_RESTART_TIME, SERVER_PORT
+from autopts.config import CLIENT_PORT, MAX_SERVER_RESTART_TIME, SERIAL_BAUDRATE, SERVER_PORT
 from autopts.ptsprojects.boards import com_to_tty, get_debugger_snr, tty_exists
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
 from autopts.utils import active_hub_server_replug_usb, raise_on_global_end, ykush_replug_usb
@@ -92,6 +92,9 @@ class CliParser(argparse.ArgumentParser):
                           "If running with multiple servers(PTS dongles), "
                           "specify the ports separated by a space, "
                           "e.g. \"-C 65001 65003 65005\"")
+
+        self.add_argument("--tty-baudrate", "--tty_baudrate", type=int, default=SERIAL_BAUDRATE,
+                          help="The TTY baudrate.")
 
         self.add_argument("--recovery", action='store_true', default=False,
                           help="Specify if autoptsclient should try to recover"

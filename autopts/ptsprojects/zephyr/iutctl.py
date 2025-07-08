@@ -38,7 +38,6 @@ ZEPHYR = None
 # qemu binary should be installed in shell PATH
 QEMU_BIN = "qemu-system-arm"
 
-SERIAL_BAUDRATE = int(os.getenv("AUTOPTS_SERIAL_BAUDRATE", "115200"))
 CLI_SUPPORT = ['tty', 'hci', 'qemu']
 
 
@@ -73,6 +72,7 @@ class ZephyrCtl:
         self.kernel_image = args.kernel_image
         self.tty_file = args.tty_file
         self.net_tty_file = args.net_tty_file
+        self.tty_baudrate = args.tty_baudrate
         self.hci = args.hci
         self.native = None
         self.gdb = args.gdb
@@ -132,18 +132,18 @@ class ZephyrCtl:
                 handshake_mode = "hs" if self.rtscts else "off"
                 mode_cmd = (
                     f'>nul 2>nul cmd.exe /c "mode {com} '
-                    f'BAUD={SERIAL_BAUDRATE} PARITY=n DATA=8 STOP=1 RTS={handshake_mode}"'
+                    f'BAUD={self.tty_baudrate} PARITY=n DATA=8 STOP=1 RTS={handshake_mode}"'
                 )
                 os.system(mode_cmd)
 
                 socat_cmd = (
                     f"socat.exe -x -v tcp:{socket.gethostbyname(socket.gethostname())}:"
                     f"{self.socket_srv.sock.getsockname()[1]},retry=100,interval=1 "
-                    f"{self.tty_file},raw,b{SERIAL_BAUDRATE},{flow_control}"
+                    f"{self.tty_file},raw,b{self.tty_baudrate},{flow_control}"
                 )
             else:
                 socat_cmd = (
-                    f"socat -x -v {self.tty_file},rawer,b{SERIAL_BAUDRATE},{flow_control} UNIX-CONNECT:{self.btp_address}"
+                    f"socat -x -v {self.tty_file},rawer,b{self.tty_baudrate},{flow_control} UNIX-CONNECT:{self.btp_address}"
                 )
 
             log("Starting socat process: %s", socat_cmd)
@@ -155,7 +155,7 @@ class ZephyrCtl:
                                                   stderr=subprocess.DEVNULL)
         elif self.hci is not None:
             self.iut_log_file = open(test_case.log_dir / "autopts-iutctl-zephyr.log", "a")
-            socat_cmd = f"socat -x -v %%s,rawer,b{SERIAL_BAUDRATE},{flow_control} UNIX-CONNECT:{self.btp_address} &"
+            socat_cmd = f"socat -x -v %%s,rawer,b{self.tty_baudrate},{flow_control} UNIX-CONNECT:{self.btp_address} &"
 
             native_cmd = (
                 f"{self.kernel_image} --bt-dev=hci{self.hci} "
@@ -184,7 +184,7 @@ class ZephyrCtl:
         self.btp_socket.accept()
 
         if self.net_tty_file:
-            self.uart_logger = LoggerWorker(self.net_tty_file, SERIAL_BAUDRATE,
+            self.uart_logger = LoggerWorker(self.net_tty_file, self.tty_baudrate,
                                             self.test_case.log_dir)
             self.uart_logger.start()
 
@@ -202,7 +202,7 @@ class ZephyrCtl:
             # BTPWorker/BTPSocket. Although we can still use it for
             # flushing serial if the data does not matter.
             ser = serial.Serial(port=tty,
-                                baudrate=SERIAL_BAUDRATE,
+                                baudrate=self.tty_baudrate,
                                 rtscts=rtscts,
                                 timeout=1)
             ser.read(99999)
