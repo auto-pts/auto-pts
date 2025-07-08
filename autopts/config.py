@@ -23,6 +23,8 @@ BTMON_PORT = 65432
 
 MAX_SERVER_RESTART_TIME = 120
 
+SERIAL_BAUDRATE = int(os.getenv("AUTOPTS_SERIAL_BAUDRATE", "115200"))
+
 AUTOPTS_ROOT_DIR = os.path.dirname(  # auto-pts repo directory
                 os.path.dirname(  # autopts module directory
                     os.path.abspath(__file__)))  # this file directory
