@@ -36,7 +36,7 @@ from autopts.ptsprojects.zephyr.iutctl import get_iut, log
 PROJECT_NAME = Path(__file__).stem
 
 
-def flush_serial(tty, rtscts=False):
+def flush_serial(tty, rtscts=False, baudrate=115200):
     """Clear the serial port buffer
     :param tty: file path of the terminal
     :return: None
@@ -47,7 +47,7 @@ def flush_serial(tty, rtscts=False):
     if sys.platform == 'win32':
         com = tty_to_com(tty)
         ser = serial.Serial(com,
-                            int(os.getenv("AUTOPTS_SERIAL_BAUDRATE", "115200")),
+                            baudrate,
                             rtscts=rtscts,
                             timeout=5)
         ser.flushInput()
@@ -140,7 +140,7 @@ class ZephyrBotClient(BotClient):
                 build_and_flash(args.project_path, board_type, args.debugger_snr,
                                 overlays, args.project_repos, args.build_env_cmd)
 
-                flush_serial(args.tty_file, rtscts=args.rtscts)
+                flush_serial(args.tty_file, rtscts=args.rtscts, baudrate=args.tty_baudrate)
             except BaseException as e:
                 traceback.print_exception(e)
                 self.error_txt_content += "Build and flash step failed\n"
