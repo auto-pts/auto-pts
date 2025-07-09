@@ -27,7 +27,7 @@ import serial
 from autopts.ptsprojects.boards import Board, get_debugger_snr, tty_to_com
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import defs
-from autopts.pybtp.iutctl_common import BTP_ADDRESS, BTPSocketSrv, BTPWorker
+from autopts.pybtp.iutctl_common import BTP_ADDRESS, BTPSocketSrv, BTPWorker, LoggerWorker
 from autopts.rtt import BTMON, RTTLogger
 from autopts.utils import get_global_end
 
@@ -71,6 +71,7 @@ class ZephyrCtl:
         self.debugger_snr = args.debugger_snr
         self.kernel_image = args.kernel_image
         self.tty_file = args.tty_file
+        self.net_tty_file = args.net_tty_file
         self.hci = args.hci
         self.native = None
         self.gdb = args.gdb
@@ -92,6 +93,7 @@ class ZephyrCtl:
         self.iut_log_file = None
         self.rtt_logger = None
         self.btmon = None
+        self.uart_logger = None
 
         if self.debugger_snr:
             self.btp_address = BTP_ADDRESS + self.debugger_snr
@@ -169,6 +171,11 @@ class ZephyrCtl:
                                                  stderr=self.iut_log_file)
 
         self.btp_socket.accept()
+
+        if self.net_tty_file:
+            self.uart_logger = LoggerWorker(self.net_tty_file, SERIAL_BAUDRATE,
+                                            self.test_case.log_dir)
+            self.uart_logger.start()
 
     def flush_serial(self):
         log("%s.%s", self.__class__, self.flush_serial.__name__)
@@ -276,6 +283,9 @@ class ZephyrCtl:
         if self.btp_socket:
             self.btp_socket.close()
             self.btp_socket = None
+
+        if self.net_tty_file:
+            self.uart_logger.close()
 
         if self.native_process and self.native_process.poll() is None:
             self.native_process.terminate()
