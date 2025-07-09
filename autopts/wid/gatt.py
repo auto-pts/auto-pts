@@ -1049,7 +1049,9 @@ def hdl_wid_90(_: WIDParams):
 
     gatt.wait_notification_ev(timeout=5)
 
-    assert gatt.notification_events
+    if len(gatt.notification_events) == 0:
+        return False
+
     addr_type, addr, notif_type, _, _ = gatt.notification_events[0]
 
     return (addr_type, addr, notif_type) == (btp.pts_addr_type_get(), btp.pts_addr_get(), 1)
@@ -1127,7 +1129,9 @@ def hdl_wid_95(_: WIDParams):
 
     gatt.wait_notification_ev(timeout=5)
 
-    assert gatt.notification_events
+    if len(gatt.notification_events) == 0:
+        return False
+
     addr_type, addr, notif_type, _, _ = gatt.notification_events[0]
 
     return (addr_type, addr, notif_type) == (btp.pts_addr_type_get(), btp.pts_addr_get(), 2)
