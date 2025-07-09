@@ -140,6 +140,13 @@ class CliParser(argparse.ArgumentParser):
                                    "with OS running on hardware will be done over "
                                    "this TTY. Hence, QEMU will not be used.")
 
+            self.add_argument("--net-tty-file", dest='net_tty_file', type=str, default=None,
+                              help="This can be used to log output from network core of IUT "
+                                   "(if additional port is available). Value should match "
+                                   "the COM/tty file port that outputs log from the network core. "
+                                   "There's no indication which COM port maps to the network "
+                                   "core.")
+
             self.add_argument("-j", "--jlink", dest="debugger_snr", type=str, default=None,
                               help="Specify jlink serial number manually.")
 
