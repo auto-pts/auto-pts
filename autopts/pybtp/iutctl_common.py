@@ -24,6 +24,8 @@ import threading
 from abc import abstractmethod
 from datetime import datetime
 
+import serial
+
 from autopts.pybtp import defs
 from autopts.pybtp.parser import HDR_LEN, dec_data, dec_hdr, enc_frame, repr_hdr
 from autopts.pybtp.types import BTPError
@@ -410,3 +412,41 @@ class BTPWorker:
 
     def register_event_handler(self, event_handler):
         self.event_handler_cb = event_handler
+
+
+class LoggerWorker:
+
+    def __init__(self, com, baud, log_dir):
+        self._running = threading.Event()
+        self._rx_worker = threading.Thread(target=self._rx_task)
+        self._rx_worker.name = f'LoggerWorker{self._rx_worker.name}'
+        self._log_file = open(os.path.join(log_dir, "autopts-iutctl_net.log"), "a")
+        self._ser = serial.Serial(port=com, baudrate=baud, timeout=1)
+
+    def _rx_task(self):
+        log(f'{threading.current_thread().name} started')
+        while self._running.is_set() and not get_global_end():
+            try:
+                data = self._ser.read(99999)
+            except serial.SerialException:
+                pass
+            text = data.decode('utf-8', errors='replace')
+            self._log_file.write(text)
+
+        log(f'{threading.current_thread().name} finishing...')
+
+    def start(self):
+        self._running.set()
+        self._rx_worker.start()
+
+    def close(self):
+        if self._running.is_set():
+            self._running.clear()
+
+            # is_alive returns True if a thread has not been started
+            # and may result in deadlock here.
+            while self._rx_worker.is_alive() and not get_global_end():
+                log('Waiting for _rx_worker to finish ...')
+                self._rx_worker.join(timeout=1)
+
+        self._ser.close()
