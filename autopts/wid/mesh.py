@@ -1731,8 +1731,7 @@ def hdl_wid_332(_: WIDParams):
                  Tester 2 to IUT, and then send Friend Poll from IUT to Lower Tester 1.
     """
     stack = get_stack()
-    assert stack.mesh.wait_for_lpn_established(timeout=60)
-    return True
+    return stack.mesh.wait_for_lpn_established(timeout=60)
 
 
 def hdl_wid_333(_: WIDParams):
@@ -1742,9 +1741,7 @@ def hdl_wid_333(_: WIDParams):
                  Please click OK when friendship is terminated.
     """
     stack = get_stack()
-    assert stack.mesh.wait_for_lpn_terminated(timeout=60)
-
-    return True
+    return stack.mesh.wait_for_lpn_terminated(timeout=60)
 
 
 def hdl_wid_335(_: WIDParams):
@@ -2852,9 +2849,7 @@ def hdl_wid_560(_: WIDParams):
     description: Lower Tester 2 is waiting for IUT's heartbeat triggered by friendship termination.
     """
     stack = get_stack()
-    assert stack.mesh.wait_for_lpn_terminated(timeout=60)
-
-    return True
+    return stack.mesh.wait_for_lpn_terminated(timeout=60)
 
 
 def hdl_wid_561(_: WIDParams):
@@ -2863,9 +2858,7 @@ def hdl_wid_561(_: WIDParams):
     description: Lower Tester 2 is waiting for IUT's heartbeat triggered by friendship establishment.
     """
     stack = get_stack()
-    assert stack.mesh.wait_for_lpn_established(timeout=60)
-
-    return True
+    return stack.mesh.wait_for_lpn_established(timeout=60)
 
 
 def hdl_wid_562(_: WIDParams):
@@ -2885,8 +2878,7 @@ def hdl_wid_563(_: WIDParams):
                  to IUT (Low Power Node).
     """
     stack = get_stack()
-    assert stack.mesh.wait_for_lpn_established(timeout=60)
-    return True
+    return stack.mesh.wait_for_lpn_established(timeout=60)
 
 
 def hdl_wid_564(_: WIDParams):
@@ -2897,9 +2889,7 @@ def hdl_wid_564(_: WIDParams):
                  to IUT (Low Power Node).
     """
     stack = get_stack()
-    assert stack.mesh.wait_for_lpn_established(timeout=60)
-
-    return True
+    return stack.mesh.wait_for_lpn_established(timeout=60)
 
 
 def hdl_wid_600(_: WIDParams):
