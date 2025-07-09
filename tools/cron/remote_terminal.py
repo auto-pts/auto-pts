@@ -13,6 +13,7 @@
 # more details.
 #
 import argparse
+import logging
 import os
 import shlex
 import socket
@@ -27,6 +28,8 @@ AUTOPTS_REPO = dirname(dirname(dirname(abspath(__file__))))
 sys.path.insert(0, AUTOPTS_REPO)
 
 from autopts.utils import terminate_process as utils_terminate_process  # noqa: E402, I001 # the order of import is very important here
+
+log = logging.info
 
 
 class StartArgumentParser(argparse.ArgumentParser):
@@ -54,7 +57,7 @@ class StartArgumentParser(argparse.ArgumentParser):
 def run_command(command, cwd):
     """Run a command as a subprocess and return the output."""
     try:
-        print(f'Running command: {command}')
+        log(f'Running command: {command}')
         output = subprocess.check_output(command, shell=True,
                                          cwd=cwd, stderr=subprocess.STDOUT)
         return output.decode()
@@ -66,7 +69,7 @@ def run_command(command, cwd):
 def open_process(command, cwd):
     """Run a command as a subprocess and skip the output."""
     try:
-        print(f'Running command: {command}')
+        log(f'Running command: {command}')
         subprocess.Popen(shlex.split(command),
                          shell=True,
                          cwd=cwd)
@@ -101,7 +104,7 @@ def copy_file(file_path):
 def start_server():
     args = StartArgumentParser().parse_args()
 
-    print(f"Serving on port {args.port} ...")
+    log(f"Serving on port {args.port} ...")
     server = xmlrpc.server.SimpleXMLRPCServer((args.ip, args.port), allow_none=True)
     server.register_function(run_command, 'run_command')
     server.register_function(open_process, 'open_process')
@@ -142,7 +145,7 @@ class RemoteTerminalClientProxy(xmlrpc.client.ServerProxy):
                          use_datetime=False, use_builtin_types=False,
                          headers=(), context=None)
 
-        print(f"{self.__init__.__name__}, uri={self.uri}")
+        log(f"{self.__init__.__name__}, uri={self.uri}")
 
         self.client_address = client_address
         self.client_port = client_port
