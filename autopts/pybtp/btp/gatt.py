@@ -1788,3 +1788,5 @@ def eatt_conn(bd_addr, bd_addr_type, num=1):
     data_ba.extend(struct.pack('B', num))
 
     iutctl.btp_socket.send(*GATTC['eatt_connect'], data=data_ba)
+
+    gatt_command_rsp_succ()
