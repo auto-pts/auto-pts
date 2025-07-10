@@ -18,17 +18,9 @@ import logging
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp
 from autopts.pybtp.types import WIDParams
-from autopts.wid import generic_wid_hdl
 
 log = logging.debug
 
-
-def cas_wid_hdl(wid, description, test_case_name):
-    log(f'{cas_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
-    return generic_wid_hdl(wid, description, test_case_name, [__name__])
-
-
-# wid handlers section begin
 
 def hdl_wid_20001(_: WIDParams):
     """
