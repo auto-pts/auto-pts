@@ -695,6 +695,81 @@ Commands and responses:
 
                 In case of an error, the error response will be returned.
 
+        Opcode 0x2b - Synchronize to a BIG
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        SID (1 octet)
+                                        Num_BIS (1 octet)
+                                        BIS_Bitfield (4 octets)
+                                        MSE (4 octets)
+                                        Sync_Timeout (2 octets)
+                                        Encryption (1 octet)
+                                        Broadcast_Code (0 octet or 16 octets)
+                Return Parameters:      <none>
+
+                This command is used to synchronize to a BIG. Before executing this command, the
+                IUT should be synced to a PADV. It means the `Periodic Sync Established event`
+                (opcode 0x8d) should be received before executing this command.
+
+                Possible values for the BIS_Bitfield parameter are a bit-wise OR of the bits 0-31.
+                Such as, bit 0 represents BIS index 1, bit 1 represents BIS index 2, and so on.
+                And the number of bits set by the BIS_Bitfield parameter should be consistent with
+                the Num_BIS parameter.
+
+                Available Encryption:
+                0 - The BIS will be unencrypted. The Broadcast_Code parameter should be omitted.
+                1 - The BIS will be encrypted. The Broadcast_Code parameter should be existing and
+                    the length should be 16 octets.
+
+                In case of an error, the error response will be returned.
+                In case of a success, the IUT continues processing the command asynchronously.
+
+                After the command is processed, the IUT shall setup the Data Path for all the BIS,
+                and generate a "BIS Data Path Setup Event" for each BIS.
+
+        Opcode 0x2c - Create BIG
+
+                Controller Index:       <controller id>
+                Command parameters:     ID (1 octet)
+                                        Num_BIS (1 octet)
+                                        Interval (4 octets)
+                                        Latency (2 octets)
+                                        Packing (1 octet)
+                                        Framing (1 octet)
+                                        Encryption (1 octet)
+                                        Broadcast_Code (0 octet or 16 octets)
+                Return Parameters:      <none>
+
+                This command is used to create a BIG. The parameter ID is corresponding to a
+                specific periodic advertising.
+
+                Available Encryption:
+                0 - The BIS will be unencrypted. The Broadcast_Code parameter should be omitted.
+                1 - The BIS will be encrypted. The Broadcast_Code parameter should be existing and
+                    the length should be 16 octets.
+
+                In case of an error, the error response will be returned.
+                In case of a success, the IUT continues processing the command asynchronously.
+
+                After the command is processed, the IUT shall setup the Data Path for all the BIS,
+                and generate a "BIS Data Path Setup Event" for each BIS.
+
+        Opcode 0x2d - BIS Broadcast
+
+                Controller Index:       <controller id>
+                Command parameters:     BIS_ID (1 octet)
+                                        Data Length (1 octet)
+                                        Data (variable)
+                Return Parameters:      <none>
+
+                This command is used to send a broadcast data over a specific BIS. Before executing
+                this command, the `BIS Data Path Setup Event` (opcode 0x94) should be received
+                before executing this command.
+
+                In case of an error, the error response will be returned.
+
 Events:
         Opcode 0x80 - New Settings event
 
@@ -891,3 +966,89 @@ Events:
 
                 This event can be sent after IUT received encryption change event was received.
                 The parameter `Enabled` is the flag whether the link is encrypted.
+
+        Opcode 0x92 - BIG Sync Established event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Latency (4 octets)
+                                        NSE (1 octet)
+                                        BN (1 octet)
+                                        PTO (4 octets)
+                                        IRC (1 octet)
+                                        Max_PDU (2 octets)
+                                        ISO_Interval (2 octets)
+
+                This event can be sent after IUT received the BIG sync established event was
+                received.
+
+        Opcode 0x93 - BIG Sync Lost event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Reason (1 octet)
+
+                This event can be sent after IUT received the BIG sync lost event was received.
+
+        Opcode 0x94 - BIS Data Path Setup Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        BIS_ID (1 octet)
+
+                This event can be sent after IUT has been setup the data path for the specific BIS.
+                The parameter BIS_ID is corresponding to specific BIS.
+                The BIS data path should be setup when the BIG sync is established or BIG has
+                been created. And the BIS data path setup event indicates the successful
+                configuration of data transmission path for a specific Broadcast Isochronous
+                Stream (BIS).
+
+        Opcode 0x95 - BIS Stream Received Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        BIS_ID (1 octet)
+                                        Flags (1 octet)
+                                        Timestamp (4 octets)
+                                        Sequence_Number (2 octets)
+                                        Data Length (1 octet)
+                                        Data (variable)
+
+                This event can be sent after IUT received the stream data from the specific BIS.
+
+                Available Flags:
+                        Bit 0: The packet is valid
+                        Bit 1: The packet may possibly contain errors
+                        Bit 2: The Packet was lost
+                        Bit 3: The Timestamp parameter is valid
+
+        Opcode 0x96 - Periodic BIGInfo Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Sync Handle (2 octets)
+                                        SID (1 octet)
+                                        Num_BIS (1 octet)
+                                        NSE (1 octet)
+                                        ISO_Interval (2 octets)
+                                        BN (1 octet)
+                                        PTO (1 octet)
+                                        IRC (1 octet)
+                                        Max_PDU (2 octets)
+                                        SDU_Interval (4 octets)
+                                        Max_SDU (2 octets)
+                                        PHY (1 octet)
+                                        Framing (1 octet)
+                                        Encryption (1 octet)
+
+                This event can be sent after IUT received the periodic BIGInfo Advertising Report
+                on established sync.
+
+                Available Encryption:
+                0 - The BIS is unencrypted.
+                1 - The BIS is encrypted.

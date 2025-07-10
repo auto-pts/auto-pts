@@ -145,6 +145,10 @@ GAP = {
     "padv_sync_transfer_recv": (defs.BTP_SERVICE_ID_GAP,
                                 defs.BTP_GAP_CMD_PADV_SYNC_TRANSFER_RECV,
                                 CONTROLLER_INDEX),
+    "big_create_sync": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_BIG_CREATE_SYNC,
+                        CONTROLLER_INDEX),
+    "create_big": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_CREATE_BIG, CONTROLLER_INDEX),
+    "bis_broadcast": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_BIS_BROADCAST, CONTROLLER_INDEX),
 }
 
 
@@ -357,6 +361,62 @@ def gap_padv_transfer_received_ev_(gap, data, data_len):
     stack.gap.periodic_transfer_received = True
 
 
+def gap_big_sync_established_ev_(gap, data, data_len):
+    logging.debug("%s", gap_big_sync_established_ev_.__name__)
+    stack = get_stack()
+
+    fmt = '<B6sIBBIBHH'
+    if len(data) < struct.calcsize(fmt):
+        raise BTPError(f"Short packet {len(data)} < {struct.calcsize(fmt)}")
+
+    addr_t, addr, latency, nse, bn, pto, irc, max_pdu, interval = struct.unpack_from(fmt, data)
+    logging.debug("BIG synced %r", (addr_t, addr, latency, nse, bn, pto, irc, max_pdu, interval))
+
+    stack.gap.big_sync_established = True
+
+
+def gap_big_sync_lost_ev_(gap, data, data_len):
+    logging.debug("%s", gap_big_sync_lost_ev_.__name__)
+    stack = get_stack()
+
+    stack.gap.big_sync_established = False
+    stack.gap.big_bis_data_path_setup = []
+    # clear the received BIS stream if the BIG sync is lost.
+    stack.gap.big_bis_stream_rx = {}
+
+
+def gap_bis_data_path_setup_ev_(gap, data, data_len):
+    logging.debug("%s", gap_bis_data_path_setup_ev_.__name__)
+    stack = get_stack()
+
+    fmt = '<B6sB'
+    _, _, bis_id = struct.unpack(fmt, data)
+
+    stack.gap.big_bis_data_path_setup.append(bis_id)
+
+
+def gap_bis_stream_received_ev_(gap, data, data_len):
+    logging.debug("%s", gap_bis_stream_received_ev_.__name__)
+    stack = get_stack()
+
+    fmt = '<B6sBBIHB'
+    if len(data) < struct.calcsize(fmt):
+        raise BTPError(f"Short packet {len(data)} < {struct.calcsize(fmt)}")
+
+    _, _, bis_id, flags, ts, seq_num, stream_data_len = struct.unpack_from(fmt, data)
+    stream_data = data[struct.calcsize(fmt):]
+
+    if len(stream_data) != stream_data_len:
+        raise BTPError(f"Data length mismatch ({len(stream_data)} != {stream_data_len})")
+
+    if len(stream_data) < 1:
+        return
+
+    stream_data = struct.unpack_from(f'{stream_data_len}s', data, struct.calcsize(fmt))[0]
+
+    stack.gap.write_bis_stream_received_data(bis_id, flags, ts, seq_num, stream_data)
+
+
 def gap_passkey_confirm_req_ev_(gap, data, data_len):
     logging.debug("%s", gap_passkey_confirm_req_ev_.__name__)
     iutctl = get_iut()
@@ -406,6 +466,26 @@ def gap_encryption_change_ev_(gap, data, data_len):
     stack.gap.encryption_change_rcvd.data = (_addr_t, _addr, _encrypted, _key_size)
 
 
+def gap_padv_biginfo_ev_(gap, data, data_len):
+    logging.debug("%s %r", gap_padv_biginfo_ev_.__name__, data)
+
+    fmt = '<B6sHBBBHBBBHIHBBB'
+    if len(data) < struct.calcsize(fmt):
+        raise BTPError("Invalid data length")
+
+    addr_type, addr, sync_handle, sid, num_bis, _, iso_interval, _, _, _, max_pdu, sdu_interval, \
+            max_sdu, phy, framing, encryption = struct.unpack_from(fmt, data)
+
+    addr = binascii.hexlify(addr[::-1]).lower()
+
+    logging.debug("biginfo %r type %r sync_handle %r sid %r num_bis %r encryption %r",
+                  addr, addr_type, sync_handle, sid, num_bis, encryption)
+
+    stack = get_stack()
+    stack.gap.write_periodic_biginfo(addr, addr_type, sync_handle, sid, num_bis, iso_interval,
+                                     max_pdu, sdu_interval, max_sdu, phy, framing, encryption)
+
+
 GAP_EV = {
     defs.BTP_GAP_EV_NEW_SETTINGS: gap_new_settings_ev_,
     defs.BTP_GAP_EV_DEVICE_FOUND: gap_device_found_ev_,
@@ -425,6 +505,11 @@ GAP_EV = {
     defs.BTP_GAP_EV_PERIODIC_REPORT: gap_padv_report_ev_,
     defs.BTP_GAP_EV_PERIODIC_TRANSFER_RECEIVED: gap_padv_transfer_received_ev_,
     defs.BTP_GAP_EV_ENCRYPTION_CHANGE: gap_encryption_change_ev_,
+    defs.BTP_GAP_EV_BIG_SYNC_ESTABLISHED: gap_big_sync_established_ev_,
+    defs.BTP_GAP_EV_BIG_SYNC_LOST: gap_big_sync_lost_ev_,
+    defs.BTP_GAP_EV_BIS_DATA_PATH_SETUP: gap_bis_data_path_setup_ev_,
+    defs.BTP_GAP_EV_BIS_STREAM_RECEIVED: gap_bis_stream_received_ev_,
+    defs.BTP_GAP_EV_PERIODIC_BIGINFO: gap_padv_biginfo_ev_,
 }
 
 
@@ -1475,3 +1560,83 @@ def gap_padv_sync_transfer_recv(skip, sync_timeout, flags, addr_type=None, addr=
     iutctl.btp_socket.send(*GAP['padv_sync_transfer_recv'], data=data_ba)
 
     gap_command_rsp_succ()
+
+
+def gap_big_create_sync(adv_sid, num_bis, bis_bitfield, sync_timeout, broadcast_code=None, mse=0x00,
+                        addr_type=None, addr=None):
+    logging.debug("%s", gap_big_create_sync.__name__)
+
+    addr_type = pts_addr_type_get(addr_type)
+    addr = addr2btp_ba(pts_addr_get(addr))
+
+    iutctl = get_iut()
+
+    data_ba = bytearray(struct.pack("<B6s", addr_type, addr))
+    data_ba.extend(bytearray(struct.pack("<BBIIH", adv_sid, num_bis, bis_bitfield, mse,
+                                         sync_timeout)))
+    encryption = 1 if broadcast_code is not None else 0
+    data_ba.extend(struct.pack('B', encryption))
+
+    if broadcast_code is not None:
+        if isinstance(broadcast_code, str):
+            # The default broadcast code string from PTS is in big endian
+            broadcast_code = bytes.fromhex(broadcast_code)[::-1]
+
+        if len(broadcast_code) != defs.BTP_GAP_CMD_BIG_CREATE_SYNC_BCODE_SIZE:
+            raise Exception(f'Invalid Broadcast Code length {len(broadcast_code)}')
+
+        data_ba.extend(broadcast_code)
+
+    iutctl.btp_socket.send(*GAP['big_create_sync'], data=data_ba)
+
+    gap_command_rsp_succ()
+
+
+def gap_create_big(bis_id, num_bis, interval, latency, packing, framing, broadcast_code=None):
+    logging.debug("%s", gap_create_big.__name__)
+
+    iutctl = get_iut()
+
+    data_ba = bytearray(struct.pack("<BBIHBB", bis_id, num_bis, interval, latency, packing, framing))
+    encryption = 1 if broadcast_code is not None else 0
+    data_ba.extend(struct.pack('B', encryption))
+
+    if broadcast_code is not None:
+        if isinstance(broadcast_code, str):
+            # The default broadcast code string from PTS is in big endian
+            broadcast_code = bytes.fromhex(broadcast_code)[::-1]
+
+        if len(broadcast_code) != defs.BTP_GAP_CMD_BIG_CREATE_SYNC_BCODE_SIZE:
+            raise Exception(f'Invalid Broadcast Code length {len(broadcast_code)}')
+
+        data_ba.extend(broadcast_code)
+
+    iutctl.btp_socket.send(*GAP['create_big'], data=data_ba)
+
+    gap_command_rsp_succ()
+
+
+def gap_bis_broadcast(bis_id, val, val_mtp=None):
+    logging.debug("%s", gap_bis_broadcast.__name__)
+
+    iutctl = get_iut()
+
+    if val_mtp:
+        val *= int(val_mtp)
+
+    val_ba = bytes.fromhex(val)
+    val_len_ba = struct.pack('B', len(val_ba))
+
+    data_ba = bytearray(struct.pack('B', bis_id))
+    data_ba.extend(val_len_ba)
+    data_ba.extend(val_ba)
+
+    iutctl.btp_socket.send(*GAP['bis_broadcast'], data=data_ba)
+
+    gap_command_rsp_succ()
+
+
+def gap_set_broadcast_code(broadcast_code):
+    logging.debug("%s %r", gap_set_broadcast_code.__name__, broadcast_code)
+    stack = get_stack()
+    stack.gap.big_broadcast_code = broadcast_code
