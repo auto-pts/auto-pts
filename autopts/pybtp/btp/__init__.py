@@ -47,4 +47,5 @@ from autopts.pybtp.btp.tmap import *  # noqa: F403 # used in many files : TODO i
 from autopts.pybtp.btp.vcp import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from autopts.pybtp.btp.vcs import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from autopts.pybtp.btp.vocs import *  # noqa: F403 # used in many files : TODO import directly in files not with *
+from autopts.pybtp.btp.rfcomm import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 # GENERATOR append 1
