@@ -101,6 +101,9 @@ class CliParser(argparse.ArgumentParser):
                           help='Do not copy workspace, open original one. '
                                'Warning: workspace file might be modified', default=True)
 
+        self.add_argument("--rtscts", dest='rtscts', action="store_true", default=False,
+                          help="Enable UART hardware flow control.")
+
         # Hidden option to save test cases data in TestCase.db
         self.add_argument("-s", "--store", action="store_true",
                           default=False, help=argparse.SUPPRESS)
