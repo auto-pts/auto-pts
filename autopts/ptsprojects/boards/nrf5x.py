@@ -53,11 +53,10 @@ def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None, project_repo
 
     check_call('rm -rf build/'.split(), cwd=tester_dir)
 
-    bttester_overlay = 'overlay-bt_ll_sw_split.conf'
-    if conf_file and conf_file != 'default' and conf_file != 'prj.conf':
-        bttester_overlay += f';{conf_file}'
-
-    cmd = ['west', 'build', '-p', 'auto', '-b', board, '--', f'-DEXTRA_CONF_FILE=\'{bttester_overlay}\'']
+    cmd = ['west', 'build', '-p', 'auto', '-b', board]
+    if conf_file and conf_file not in ["default", "prj.conf"]:
+        cmd.extend(('--', f'-DEXTRA_CONF_FILE=\'{conf_file}\''))
 
     check_call(env_cmd + cmd, cwd=tester_dir)
-    check_call(env_cmd + ['west', 'flash', '--skip-rebuild', '--recover', '-i', debugger_snr], cwd=tester_dir)
+    check_call(env_cmd + ['west', 'flash', '--skip-rebuild', '--recover',
+                          '-i', debugger_snr], cwd=tester_dir)
