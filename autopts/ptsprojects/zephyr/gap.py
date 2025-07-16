@@ -228,6 +228,12 @@ def test_cases(ptses):
         TestFunc(lambda: pts.update_pixit_param(
             "GAP", "TSPX_psm_2", format(br_psm_2, '04x'))),
         TestFunc(lambda: pts.update_pixit_param(
+            "GAP", "TSPX_psm_sm4l2", format(br_psm, '04x'))),
+        TestFunc(lambda: pts.update_pixit_param(
+            "GAP", "TSPX_psm_sm4l3", format(br_psm, '04x'))),
+        TestFunc(lambda: pts.update_pixit_param(
+            "GAP", "TSPX_psm_sm4l4", format(br_psm, '04x'))),
+        TestFunc(lambda: pts.update_pixit_param(
             "GAP", "TSPX_delete_link_key", "FALSE")),
         TestFunc(lambda: pts.update_pixit_param(
             "GAP", "TSPX_delete_ltk", "FALSE")),
