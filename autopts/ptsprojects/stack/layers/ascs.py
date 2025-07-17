@@ -13,7 +13,7 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
-from autopts.ptsprojects.stack.common import wait_for_queue_event
+from autopts.ptsprojects.stack.common import wait_event_with_condition
 from autopts.pybtp import defs
 
 
@@ -29,19 +29,19 @@ class ASCS:
         self.event_queues[event_type].append(event_data_tuple)
 
     def wait_ascs_operation_complete_ev(self, addr_type, addr, ase_id, timeout, remove=True):
-        return wait_for_queue_event(
+        return wait_event_with_condition(
             self.event_queues[defs.BTP_ASCS_EV_OPERATION_COMPLETED],
             lambda _addr_type, _addr, _ase_id, *_: (addr_type, addr, ase_id) == (_addr_type, _addr, _ase_id),
             timeout, remove)
 
     def wait_ascs_characteristic_subscribed_ev(self, addr_type, addr, timeout, remove=True):
-        return wait_for_queue_event(
+        return wait_event_with_condition(
             self.event_queues[defs.BTP_ASCS_EV_CHARACTERISTIC_SUBSCRIBED],
             lambda _addr_type, _addr, *_: (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_ascs_ase_state_changed_ev(self, addr_type, addr, ase_id, state, timeout, remove=True):
-        return wait_for_queue_event(
+        return wait_event_with_condition(
             self.event_queues[defs.BTP_ASCS_EV_ASE_STATE_CHANGED],
             lambda _addr_type, _addr, _ase_id, _state, *_:
             (addr_type, addr, ase_id, state) == (_addr_type, _addr, _ase_id, _state),
