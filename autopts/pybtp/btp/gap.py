@@ -40,6 +40,9 @@ from autopts.pybtp.btp.btp import (
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.types import Addr, AdDuration, AdType, BTPError, OwnAddrType, addr2btp_ba, gap_settings_btp2txt
 
+# Broadcast Code
+gap_broadcast_code = '8ED03323D1205E2D58191BF6285C3182'
+
 GAP = {
     "start_adv": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_START_ADVERTISING,
                   CONTROLLER_INDEX),

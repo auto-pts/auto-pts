@@ -155,7 +155,7 @@ def set_pixits(ptses):
                   binascii.hexlify((chr(len(periodic_data[1]) + 1) + chr(periodic_data[0]) +
                                     periodic_data[1]).encode()))
     pts.set_pixit("GAP", "TSPX_Min_Encryption_Key_Size", "07")
-    pts.set_pixit("GAP", "TSPX_broadcast_code", "8ED03323D1205E2D58191BF6285C3182")
+    pts.set_pixit("GAP", "TSPX_broadcast_code", btp.gap_broadcast_code)
     pts.set_pixit("GAP", "TSPX_gap_iut_role", "Peripheral")
 
 
@@ -603,6 +603,15 @@ def test_cases(ptses):
                       TestFunc(btp.gap_set_bondable_off),
                   ],
                   generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/BIS/BSE/BV-01-C",
+                  cmds=pre_conditions + [TestFunc(btp.core_reg_svc_iso),
+                                         TestFunc(stack.iso_init)],
+                  generic_wid_hdl=gap_wid_hdl),
+        ZTestCase("GAP", "GAP/SEC/SEM/BI-13-C",
+                  cmds=pre_conditions + [TestFunc(btp.core_reg_svc_iso),
+                                         TestFunc(stack.iso_init)],
+                  generic_wid_hdl=gap_wid_hdl),
+
     ]
 
     test_case_name_list = pts.get_test_case_list('GAP')

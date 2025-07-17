@@ -1474,9 +1474,11 @@ def hdl_wid_300(_: WIDParams):
 
 
 def hdl_wid_301(_: WIDParams):
-    # Please click OK if IUT did not receive periodic advertising report.
+    # Please click OK when IUT received periodic advertisement report.
     stack = get_stack()
-    return stack.gap.wait_periodic_report(10)
+
+    btp.gap_padv_create_sync(0, 10, 1000, 0)
+    return stack.gap.wait_periodic_established(10)
 
 
 def hdl_wid_302(_: WIDParams):
@@ -1542,6 +1544,50 @@ def hdl_wid_309(_: WIDParams):
     # information.
     stack = get_stack()
     return stack.gap.wait_periodic_transfer_received(10)
+
+
+def hdl_wid_350(_: WIDParams):
+    # Please synchronize with Broadcast ISO request.
+    stack = get_stack()
+
+    btp.iso_big_sync(1, 0, 1000, btp.gap_broadcast_code)
+
+    return True
+
+
+def hdl_wid_352(_: WIDParams):
+    # Please click OK when IUT establishes BIG sync, and ready to receive ISO data
+    stack = get_stack()
+
+    btp.iso_big_sync(1, 0, 1000)
+
+    ev = stack.iso.wait_connected_ev(10)
+    if not ev:
+        log("BIG sync timed out!")
+        return False
+
+    if not stack.iso.wait_recv_ev(ev['handle'], 10):
+        log("No ISO data received!")
+        return False
+
+    return True
+
+
+def hdl_wid_353(_: WIDParams):
+    # Please configure IUT security to Mode 3 Level 2 or Level 3
+    return True
+
+
+def hdl_wid_354(_: WIDParams):
+    # Please synchronize to lower tester in Security Mode 3 Level 2 or 3.
+    # If IUT failed to synchnorize to the lower tester, please click ok.
+    stack = get_stack()
+
+    ev = stack.iso.wait_disconnected_ev(0x25, 10)
+    if not ev:
+        return False
+
+    return True
 
 
 def hdl_wid_400(_: WIDParams):
