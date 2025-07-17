@@ -94,6 +94,7 @@ class ZephyrCtl:
         self.rtt_logger = None
         self.btmon = None
         self.uart_logger = None
+        self.rtscts = args.rtscts
 
         if self.debugger_snr:
             self.btp_address = BTP_ADDRESS + self.debugger_snr
@@ -113,27 +114,36 @@ class ZephyrCtl:
         # We will reset HW after BTP socket is open. If the board was
         # reset before this happened, it is possible to receive none,
         # partial or whole IUT ready event. Flush serial to ignore it.
-        self.flush_serial()
+        self.flush_serial(self.rtscts)
 
         self.socket_srv = BTPSocketSrv(test_case.log_dir)
         self.socket_srv.open(self.btp_address)
         self.btp_socket = BTPWorker(self.socket_srv)
+        flow_control = "crtscts" if self.rtscts else ""
 
         if self.tty_file:
             if sys.platform == "win32":
                 # On windows socat.exe does not support setting serial baud rate.
                 # Set it with 'mode' from cmd.exe
                 com = tty_to_com(self.tty_file)
-                mode_cmd = (">nul 2>nul cmd.exe /c \"mode " + com + f"BAUD={SERIAL_BAUDRATE} PARITY=n DATA=8 STOP=1\"")
+                # RTS=HS -> (Hardware Handshaking)
+                # RTS=OFF
+                handshake_mode = "hs" if self.rtscts else "off"
+                mode_cmd = (
+                    f'>nul 2>nul cmd.exe /c "mode {com} '
+                    f'BAUD={SERIAL_BAUDRATE} PARITY=n DATA=8 STOP=1 RTS={handshake_mode}"'
+                )
                 os.system(mode_cmd)
 
                 socat_cmd = (
                     f"socat.exe -x -v tcp:{socket.gethostbyname(socket.gethostname())}:"
                     f"{self.socket_srv.sock.getsockname()[1]},retry=100,interval=1 "
-                    f"{self.tty_file},raw,b{SERIAL_BAUDRATE}"
+                    f"{self.tty_file},raw,b{SERIAL_BAUDRATE},{flow_control}"
                 )
             else:
-                socat_cmd = f"socat -x -v {self.tty_file},rawer,b{SERIAL_BAUDRATE} UNIX-CONNECT:{self.btp_address}"
+                socat_cmd = (
+                    f"socat -x -v {self.tty_file},rawer,b{SERIAL_BAUDRATE},{flow_control} UNIX-CONNECT:{self.btp_address}"
+                )
 
             log("Starting socat process: %s", socat_cmd)
 
@@ -144,7 +154,7 @@ class ZephyrCtl:
                                                   stderr=subprocess.DEVNULL)
         elif self.hci is not None:
             self.iut_log_file = open(test_case.log_dir / "autopts-iutctl-zephyr.log", "a")
-            socat_cmd = f"socat -x -v %%s,rawer,b{SERIAL_BAUDRATE} UNIX-CONNECT:{self.btp_address} &"
+            socat_cmd = f"socat -x -v %%s,rawer,b{SERIAL_BAUDRATE},{flow_control} UNIX-CONNECT:{self.btp_address} &"
 
             native_cmd = (
                 f"{self.kernel_image} --bt-dev=hci{self.hci} "
@@ -177,7 +187,7 @@ class ZephyrCtl:
                                             self.test_case.log_dir)
             self.uart_logger.start()
 
-    def flush_serial(self):
+    def flush_serial(self, rtscts=False):
         log("%s.%s", self.__class__, self.flush_serial.__name__)
         # Try to read data or timeout
         try:
@@ -191,7 +201,9 @@ class ZephyrCtl:
             # BTPWorker/BTPSocket. Although we can still use it for
             # flushing serial if the data does not matter.
             ser = serial.Serial(port=tty,
-                                baudrate=SERIAL_BAUDRATE, timeout=1)
+                                baudrate=SERIAL_BAUDRATE,
+                                rtscts=rtscts,
+                                timeout=1)
             ser.read(99999)
             ser.close()
         except serial.SerialException:
