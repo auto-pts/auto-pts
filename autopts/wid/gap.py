@@ -41,6 +41,9 @@ def hdl_wid_4(_: WIDParams):
 
 
 def hdl_wid_5(_: WIDParams):
+    """
+        Please prepare IUT into non-discoverable and non-connectable mode and send an advertising report.
+    """
     stack = get_stack()
 
     btp.gap_set_nonconn()
@@ -94,6 +97,9 @@ def hdl_wid_20(_: WIDParams):
 
 
 def hdl_wid_21(_: WIDParams):
+    """
+        Please prepare IUT into non-discoverable and non-connectable mode and send an advertising report.
+    """
     stack = get_stack()
 
     btp.gap_set_conn()
@@ -109,6 +115,9 @@ def hdl_wid_23(_: WIDParams):
 
 
 def hdl_wid_24(_: WIDParams):
+    """
+        Please prepare IUT to send an advertising report with Local Name.
+    """
     stack = get_stack()
 
     btp.gap_adv_ind_on(ad=stack.gap.ad)
@@ -117,6 +126,9 @@ def hdl_wid_24(_: WIDParams):
 
 
 def hdl_wid_25(_: WIDParams):
+    """
+        Please prepare IUT to send an advertising report with Local Name.
+    """
     stack = get_stack()
 
     if stack.gap.flags:
@@ -128,6 +140,9 @@ def hdl_wid_25(_: WIDParams):
 
 
 def hdl_wid_26(_: WIDParams):
+    """
+        Please prepare IUT to send an advertising report with Manufacture Specific Data.
+    """
     stack = get_stack()
 
     stack.gap.ad[AdType.manufacturer_data] = stack.gap.manufacturer_data
@@ -138,6 +153,9 @@ def hdl_wid_26(_: WIDParams):
 
 
 def hdl_wid_27(_: WIDParams):
+    """
+        Please prepare IUT to send an advertising report with Manufacture Specific Data.
+    """
     stack = get_stack()
 
     stack.gap.ad[AdType.tx_power] = '00'
@@ -148,6 +166,9 @@ def hdl_wid_27(_: WIDParams):
 
 
 def hdl_wid_29(_: WIDParams):
+    """
+        Please prepare IUT to send an advertising report with Peripheral Preferred Connection Interval Range.
+    """
     stack = get_stack()
 
     stack.gap.ad[AdType.slave_conn_interval_range] = 'ffffffff'
@@ -158,6 +179,9 @@ def hdl_wid_29(_: WIDParams):
 
 
 def hdl_wid_35(_: WIDParams):
+    """
+        Please prepare IUT to send an advertising report with Peripheral Preferred Connection Interval Range.
+    """
     stack = get_stack()
 
     if stack.gap.svcs:
@@ -183,8 +207,7 @@ def hdl_wid_44(params: WIDParams):
 
 def hdl_wid_46(_: WIDParams):
     """
-    :params.desc: Please send an L2CAP Connection Parameter Update request using valid parameters.
-    :return:
+        Please start a Connection Update procedure using valid parameters.
     """
     btp.gap_wait_for_connection()
 
@@ -217,6 +240,11 @@ def hdl_wid_47(_: WIDParams):
 
 
 def hdl_wid_49(_: WIDParams):
+    """
+        Please prepare IUT into limited discoverable mode and send an advertising report
+        using either non-directed advertising or discoverable undirected advertising.
+        Waiting for TSPX_lim_adv_timeout to timeout.
+    """
     stack = get_stack()
 
     btp.gap_set_limdiscov()
@@ -227,6 +255,11 @@ def hdl_wid_49(_: WIDParams):
 
 
 def hdl_wid_50(_: WIDParams):
+    """
+        Please prepare IUT into limited discoverable mode and send an advertising report
+        using either non-directed advertising or discoverable undirected advertising.
+        Waiting for TSPX_lim_adv_timeout to timeout.
+    """
     stack = get_stack()
 
     btp.gap_adv_off()
@@ -239,6 +272,10 @@ def hdl_wid_50(_: WIDParams):
 
 
 def hdl_wid_51(_: WIDParams):
+    """
+        Please prepare IUT into general discoverable mode and send an advertising report
+        using either non - directed advertising or discoverable undirected advertising.
+    """
     stack = get_stack()
 
     btp.gap_set_nonconn()
@@ -249,6 +286,10 @@ def hdl_wid_51(_: WIDParams):
 
 
 def hdl_wid_52(_: WIDParams):
+    """
+        Please prepare IUT into general discoverable mode and send an advertising report
+        using either non - directed advertising or discoverable undirected advertising.
+    """
     stack = get_stack()
 
     btp.gap_adv_off()
@@ -261,6 +302,10 @@ def hdl_wid_52(_: WIDParams):
 
 
 def hdl_wid_53(params: WIDParams):
+    """
+        Please prepare IUT into general discoverable mode and send an advertising report.
+        Press OK to continue.
+    """
     if params.test_case_name in ['GAP/DISC/GENM/BV-02-C']:
         return True
 
@@ -268,6 +313,10 @@ def hdl_wid_53(params: WIDParams):
 
 
 def hdl_wid_54(_: WIDParams):
+    """
+        Please prepare IUT into general discoverable mode and send an advertising report.
+        Press OK to continue.
+    """
     stack = get_stack()
 
     btp.gap_set_nonconn()
@@ -279,6 +328,10 @@ def hdl_wid_54(_: WIDParams):
 
 
 def hdl_wid_55(_: WIDParams):
+    """
+        Please send non-connectable undirected advertising report or
+        discoverable undirected advertising report with limited discoverable flags turned on.
+    """
     stack = get_stack()
 
     btp.gap_set_nonconn()
@@ -290,6 +343,10 @@ def hdl_wid_55(_: WIDParams):
 
 
 def hdl_wid_56(_: WIDParams):
+    """
+        Please send non-connectable undirected advertising report or
+        discoverable undirected advertising report with limited discoverable flags turned on.
+    """
     stack = get_stack()
 
     stack.gap.ad[AdType.uuid16_svc_solicit] = stack.gap.svc_data
@@ -300,6 +357,9 @@ def hdl_wid_56(_: WIDParams):
 
 
 def hdl_wid_57(_: WIDParams):
+    """
+        Please prepare IUT to send an advertising report with Service Data.
+    """
     stack = get_stack()
 
     if stack.gap.svc_data:
@@ -311,6 +371,9 @@ def hdl_wid_57(_: WIDParams):
 
 
 def hdl_wid_59(_: WIDParams):
+    """
+        Please prepare IUT to send an advertising report with Service Data.
+    """
     stack = get_stack()
 
     btp.gap_set_nonconn()
@@ -322,6 +385,9 @@ def hdl_wid_59(_: WIDParams):
 
 
 def hdl_wid_60(_: WIDParams):
+    """
+        Please start sending Directed connectable advertising report event to the PTS.
+    """
     btp.gap_set_conn()
     btp.gap_set_gendiscov()
 
@@ -334,6 +400,10 @@ def hdl_wid_60(_: WIDParams):
 
 
 def hdl_wid_72(_: WIDParams):
+    """
+        Please start sending Directed connectable advertising report event to the PTS.
+    """
+
     stack = get_stack()
 
     btp.gap_set_conn()
@@ -345,6 +415,9 @@ def hdl_wid_72(_: WIDParams):
 
 
 def hdl_wid_73(_: WIDParams):
+    """
+        Please start the Name Discovery Procedure to retrieve Device Name from the PTS.
+    """
     bd_addr = btp.pts_addr_get()
     bd_addr_type = btp.pts_addr_type_get()
 
@@ -364,10 +437,18 @@ def hdl_wid_73(_: WIDParams):
 
 
 def hdl_wid_74(params: WIDParams):
+    """
+        Please prepare IUT into non-discoverable mode and send an advertising report
+        using connectable undirected advertising.
+    """
     return hdl_wid_72(params)
 
 
 def hdl_wid_75(_: WIDParams):
+    """
+        Please prepare IUT into non-discoverable mode and send an advertising report
+        using connectable undirected advertising.
+    """
     stack = get_stack()
 
     btp.gap_set_conn()
@@ -379,6 +460,10 @@ def hdl_wid_75(_: WIDParams):
 
 
 def hdl_wid_76(_: WIDParams):
+    """
+        Please prepare IUT into limited discoverable mode and send an advertising report
+        using connectable undirected advertising.
+    """
     stack = get_stack()
 
     btp.gap_set_conn()
@@ -390,7 +475,11 @@ def hdl_wid_76(_: WIDParams):
 
 
 def hdl_wid_77(params: WIDParams):
+    """
+        Please send a disconnect request to terminate connection.
+    """
     if params.test_case_name.startswith("GAP/BOND/BON/BV-04-C"):
+
         # PTS sends WID before IUT finishes encryption
         # This is a temporary workaround. Ultimately
         # we should wait for an event here or submit a PTS Issue.
@@ -491,6 +580,9 @@ def hdl_wid_89(_: WIDParams):
 
 
 def hdl_wid_90(_: WIDParams):
+    """
+        Please send connectable undirected advertising report with resolvable private address.
+    """
     stack = get_stack()
 
     btp.gap_adv_off()
@@ -503,6 +595,9 @@ def hdl_wid_90(_: WIDParams):
 
 
 def hdl_wid_91(_: WIDParams):
+    """
+        Please send connectable undirected advertising report with resolvable private address.
+    """
     stack = get_stack()
 
     btp.gap_set_conn()
@@ -519,12 +614,18 @@ def hdl_wid_100(_: WIDParams):
 
 
 def hdl_wid_104(_: WIDParams):
+    """
+        Please set IUT into non - bondable mode.
+        Press OK to continue.
+    """
     btp.gap_set_bondable_off()
     return True
 
 
 def hdl_wid_106(params: WIDParams):
-    # description: Waiting for HCI_ENCRYPTION_CHANGE_EVENT...
+    """
+        Waiting for HCI_ENCRYPTION_CHANGE_EVENT.
+    """
     # Depending on test, PTS seems to start pairing on its own here or not
     if params.test_case_name in ['GAP/SEC/AUT/BV-19-C']:
         btp.gap_pair()
@@ -534,6 +635,9 @@ def hdl_wid_106(params: WIDParams):
 
 
 def hdl_wid_108(params: WIDParams):
+    """
+        Waiting for HCI_ENCRYPTION_CHANGE_EVENT.
+    """
     if params.test_case_name in ['GAP/BOND/BON/BV-02-C', 'GAP/SEC/AUT/BV-19-C']:
         if params.description.startswith('Please configure the IUT into LE Security and start pairing process.'):
             return True
@@ -563,6 +667,10 @@ def hdl_wid_108(params: WIDParams):
 
 
 def hdl_wid_112(params: WIDParams):
+    """
+        Please send an ATT service request - read or write request with handle 0007 (octet).
+        Discover services if needed.
+    """
     stack = get_stack()
 
     bd_addr = btp.pts_addr_get()
@@ -582,18 +690,31 @@ def hdl_wid_112(params: WIDParams):
 
 
 def hdl_wid_114(params: WIDParams):
+    """
+        Please send an ATT service request - read or write request with handle 0007 (octet).
+        Discover services if needed.
+    """
     return hdl_wid_46(params)
 
 
 def hdl_wid_118(_: WIDParams):
+    """
+        Please press ok to disconnect the link.
+    """
     return True
 
 
 def hdl_wid_120(_: WIDParams):
+    """
+        Please press ok to disconnect the link.
+    """
     return True
 
 
 def hdl_wid_121(_: WIDParams):
+    """
+        Please enter Limited Discoverable and Non-Connectable mode.
+    """
     btp.gap_set_limdiscov()
     btp.gap_set_nonconn()
 
@@ -601,6 +722,9 @@ def hdl_wid_121(_: WIDParams):
 
 
 def hdl_wid_122(_: WIDParams):
+    """
+        Please enter Limited Discoverable and Non-Connectable mode.
+    """
     btp.gap_set_nonconn()
     btp.gap_set_gendiscov()
 
@@ -656,10 +780,15 @@ def hdl_wid_127(params: WIDParams):
 
 
 def hdl_wid_130(params: WIDParams):
+    """
+        Please confirm that following occurred:
+        - The IUT received signed data from Lower Tester and ignored the received signed data.
+        - The IUT does not forward the received signed data to the Upper Tester.
+    """
     stack = get_stack()
     gatt = stack.gatt
 
-    # GAP/SEC/CSIGN/BI-02-C expects two successes and fail
+    # GAP/SEC/CSIGN/BI-02-C expects two successes and one failure (invalid sign-counter)
     # we don't know if any of those were already handled so just wait for up to
     # 3 writes and then verify if only 2 occured.
     if params.test_case_name == "GAP/SEC/CSIGN/BI-02-C":
@@ -678,6 +807,11 @@ def hdl_wid_135(_: WIDParams):
 
 
 def hdl_wid_136(_: WIDParams):
+    """
+        Please prepare a characteristic that is sign writable which requires also requires authentication.
+        (Security mode 2 level 2)
+        Press OK to continue.
+    """
     btp.gatts_add_svc(0, UUID.VND16_1)
     btp.gatts_add_char(0, Prop.read | Prop.auth_swrite,
                        Perm.read | Perm.write_authn, UUID.VND16_2)
@@ -687,6 +821,11 @@ def hdl_wid_136(_: WIDParams):
 
 
 def hdl_wid_137(params: WIDParams):
+    """
+        Please prepare a characteristic that is sign writable which requires also requires authentication.
+        (Security mode 2 level 2)
+        Press OK to continue.
+    """
     stack = get_stack()
     gatt = stack.gatt
 
@@ -876,6 +1015,9 @@ def hdl_wid_148(_: WIDParams):
 
 
 def hdl_wid_149(_: WIDParams):
+    """
+        Please prepare IUT to send an advertising report with Appearance Data.
+    """
     stack = get_stack()
 
     if stack.gap.appearance:
@@ -887,6 +1029,9 @@ def hdl_wid_149(_: WIDParams):
 
 
 def hdl_wid_152(_: WIDParams):
+    """
+        Please prepare IUT to send an advertising report with Appearance Data.
+    """
     stack = get_stack()
 
     stack.gap.ad[AdType.public_target_addr] = bdaddr_reverse(btp.pts_addr_get())
@@ -897,6 +1042,9 @@ def hdl_wid_152(_: WIDParams):
 
 
 def hdl_wid_153(_: WIDParams):
+    """
+        Please prepare IUT to send an advertising report with Random Target Address Data.
+    """
     stack = get_stack()
 
     stack.gap.ad[AdType.random_target_addr] = bdaddr_reverse(btp.pts_addr_get())
@@ -907,6 +1055,9 @@ def hdl_wid_153(_: WIDParams):
 
 
 def hdl_wid_154(_: WIDParams):
+    """
+        Please prepare IUT to send an advertising report with Random Target Address Data.
+    """
     stack = get_stack()
 
     stack.gap.ad[AdType.advertising_interval] = "0030"
@@ -964,6 +1115,10 @@ def hdl_wid_159(_: WIDParams):
 
 
 def hdl_wid_161(params: WIDParams):
+    """
+        Please enter the number of bytes in integer format for the length
+        of the signed write characteristic handle 0x003C. ex: 1, 2 or 3.
+    """
     match = re.findall(r'(0[xX])?([0-9a-fA-F]{4})', params.description)
     handle = int(match[0][1], 16)
 
@@ -1035,6 +1190,10 @@ def hdl_wid_169(_: WIDParams):
 
 
 def hdl_wid_173(_: WIDParams):
+    """
+        Please enter the number of bytes in integer format for the length
+        of the signed write characteristic handle 0x003C. ex: 1, 2 or 3.
+    """
     stack = get_stack()
 
     if stack.gap.uri is None:
@@ -1081,6 +1240,9 @@ def hdl_wid_204(_: WIDParams):
 
 
 def hdl_wid_206(params: WIDParams):
+    """
+        The Secure ID is <passkey>
+    """
     passkey = btp.parse_passkey_description(params.description)
     bd_addr = btp.pts_addr_get()
     bd_addr_type = btp.pts_addr_type_get()
@@ -1115,27 +1277,55 @@ def hdl_wid_208(params: WIDParams):
 
 
 def hdl_wid_209(_: WIDParams):
+    """
+        Please make sure the IUT does not initiate the security.
+        Click OK when ready.
+    """
     return True
 
 
 def hdl_wid_210(_: WIDParams):
+    """
+        After timer expires, the IUT either:
+            1. Restarts the Connection Update procedure.
+            2. disconnects.
+            3. Ignores the error case and continues without disconnecting or resending.
+    """
     return True
 
 
 def hdl_wid_224(_: WIDParams):
+    """
+        After timer expires, the IUT either:
+            1. Restarts the Connection Update procedure.
+            2. disconnects.
+            3. Ignores the error case and continues without disconnecting or resending.
+    """
     btp.gap_set_mitm_off()
     return True
 
 
 def hdl_wid_225(_: WIDParams):
+    """
+        Please configures the IUT into LE Secure Connections Only: Mode 1 Level 3.
+        Press OK to continue.
+    """
     return True
 
 
 def hdl_wid_226(_: WIDParams):
+    """
+        Please configures the IUT into LE Secure Connections Only: Mode 1 Level 3.
+        Press OK to continue.
+    """
     return True
 
 
 def hdl_wid_227(params: WIDParams, desc_handle=None):
+    """
+        Please triggers the authentication procedure on the IUT,
+        by an L2CAP channel establishment or a GATT service request(Write Request to handle 0x0007).
+    """
     # There seems to be issue in PTS regarding using WID112 and WID227 in that test
     # Should be removed if PTS fix this.
     stack = get_stack()
@@ -1178,6 +1368,10 @@ def hdl_wid_227(params: WIDParams, desc_handle=None):
 
 
 def hdl_wid_232(_: WIDParams):
+    """
+        Please triggers the authentication procedure on the IUT,
+        by an L2CAP channel establishment or a GATT service request(Write Request to handle 0x0007).
+    """
     stack = get_stack()
     stack.gap.ad[AdType.advertising_interval_long] = "000030"
     btp.gap_adv_ind_on(ad=stack.gap.ad)
@@ -1186,6 +1380,10 @@ def hdl_wid_232(_: WIDParams):
 
 
 def hdl_wid_234(params: WIDParams):
+    """
+        Please send ATT_WRITE_REQUEST to handle 0x000D with CCCD set to 0x0002 to enable indication.
+        Discover services if needed.
+    """
     stack = get_stack()
     pattern = re.compile(r"0x([0-9a-fA-F]+)")
     params = pattern.findall(params.description)
@@ -1207,6 +1405,10 @@ def hdl_wid_234(params: WIDParams):
 
 
 def hdl_wid_235(params: WIDParams):
+    """
+        Please send ATT_WRITE_REQUEST to handle 0x000D with CCCD set to 0x0002 to enable indication.
+        Discover services if needed.
+    """
     stack = get_stack()
 
     pattern = re.compile(r"0x([0-9a-fA-F]+)")
@@ -1229,7 +1431,9 @@ def hdl_wid_235(params: WIDParams):
 
 
 def hdl_wid_236(_: WIDParams):
-    # Please confirm that IUT does not send a GATT_HandleValueIndication to the Upper Tester
+    """
+        Please confirm that IUT does not send a GATT_HandleValueIndication to the Upper Tester
+    """
     stack = get_stack()
     gatt = stack.gatt
 
@@ -1245,7 +1449,9 @@ def hdl_wid_236(_: WIDParams):
 
 
 def hdl_wid_237(_: WIDParams):
-    # Please confirm that IUT send a GATT_HandleValueIndication to the Upper Tester
+    """
+        Please confirm that IUT does not send a GATT_HandleValueIndication to the Upper Tester
+    """
     stack = get_stack()
 
     if stack.is_svc_supported('GATT_CL'):
@@ -1262,7 +1468,9 @@ def hdl_wid_237(_: WIDParams):
 
 
 def hdl_wid_238(_: WIDParams):
-    # Please confirm that IUT does not send a GATT_HandleValueNotification  to the Upper Tester
+    """
+        Please confirm that IUT does not send a GATT_HandleValueNotification  to the Upper Tester
+    """
     stack = get_stack()
     gatt = stack.gatt
 
@@ -1278,7 +1486,9 @@ def hdl_wid_238(_: WIDParams):
 
 
 def hdl_wid_239(_: WIDParams):
-    # Please confirm that IUT send a GATT_HandleValueNotification  to the Upper Tester
+    """
+        Please confirm that IUT send a GATT_HandleValueNotification to the Upper Tester
+    """
     stack = get_stack()
     gatt = stack.gatt
 
@@ -1294,20 +1504,26 @@ def hdl_wid_239(_: WIDParams):
 
 
 def hdl_wid_240(_: WIDParams):
-    # confirm IUT in sec mode 1 level 2
+    """
+        Please configures the IUT into LE Security Mode 1 Level 2.
+        Press OK to continue.
+    """
     btp.gap_set_io_cap(IOCap.no_input_output)
     return True
 
 
 def hdl_wid_241(_: WIDParams):
-    # confirm IUT in sec mode 1 level 3
+    """
+        Please configures the IUT into LE Security Mode 1 Level 3.
+        Press OK to continue.
+    """
     btp.gap_set_io_cap(IOCap.keyboard_display)
     return True
 
 
 def hdl_wid_242(_: WIDParams):
     """
-    Please send a Security Request.
+        Please send a Security Request.
     """
     # This is done by PTS
     return False
@@ -1315,7 +1531,7 @@ def hdl_wid_242(_: WIDParams):
 
 def hdl_wid_243(_: WIDParams):
     """
-    Please prepare IUT to send an advertising report with LE Supported Features type.
+        Please prepare IUT to send an advertising report with LE Supported Features type.
     """
     stack = get_stack()
 
@@ -1613,7 +1829,7 @@ def hdl_wid_1002(_: WIDParams):
 
 def hdl_wid_1003(params: WIDParams):
     """
-    Please confirm the following number matches IUT: [passkey]
+        Please confirm the following number matches IUT: <passkey>
     """
     pattern = r'[\d]{6}'
     passkey = re.search(pattern, params.description)[0]
@@ -1686,7 +1902,7 @@ def hdl_wid_2001(params: WIDParams):
 
 def hdl_wid_2004(params: WIDParams):
     """
-    Please confirm that 6 digit number is matched with [passkey].
+        Please confirm that 6 digit number is matched with <passkey>.
     """
     pattern = r'[\d]{6}'
     passkey = re.search(pattern, params.description)[0]
@@ -1707,6 +1923,9 @@ def hdl_wid_2004(params: WIDParams):
 
 
 def hdl_wid_20001(_: WIDParams):
+    """
+        Please prepare IUT into a connectable mode.
+    """
     stack = get_stack()
     btp.gap_set_conn()
 
@@ -1720,6 +1939,9 @@ def hdl_wid_20001(_: WIDParams):
 
 
 def hdl_wid_20115(params: WIDParams):
+    """
+        Please initiate a GATT disconnection to the PTS.
+    """
     if params.test_case_name in ['GAP/DM/LEP/BI-01-C', 'GAP/SEC/SEM/BI-32-C',
                                  'GAP/SEC/SEM/BI-33-C']:
         btp.gap_disconn(bd_addr_type=defs.BTP_BR_ADDRESS_TYPE)
