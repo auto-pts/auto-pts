@@ -29,6 +29,7 @@ from autopts.ptsprojects.stack.layers.gmcs import GMCS
 from autopts.ptsprojects.stack.layers.gtbs import GTBS
 from autopts.ptsprojects.stack.layers.hap import HAP
 from autopts.ptsprojects.stack.layers.ias import IAS
+from autopts.ptsprojects.stack.layers.iso import ISO
 from autopts.ptsprojects.stack.layers.l2cap import L2cap
 from autopts.ptsprojects.stack.layers.mcp import MCP
 from autopts.ptsprojects.stack.layers.mesh import Mesh
@@ -84,6 +85,7 @@ class Stack:
         self.ots = None
         self.pbp = None
         self.sdp = None
+        self.iso = None
         # GENERATOR append 2
         self.supported_svcs_cmds = common.supported_svcs_cmds
 
@@ -121,6 +123,9 @@ class Stack:
 
     def ias_init(self):
         self.ias = IAS()
+
+    def iso_init(self):
+        self.iso = ISO()
 
     def pacs_init(self):
         self.pacs = PACS()
@@ -277,6 +282,9 @@ class Stack:
 
         if self.sdp:
             self.sdp_init()
+
+        if self.iso:
+            self.iso_init()
 
         # GENERATOR append 4
 
