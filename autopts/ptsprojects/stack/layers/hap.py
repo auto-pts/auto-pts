@@ -13,7 +13,7 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
-from autopts.ptsprojects.stack.common import wait_for_queue_event
+from autopts.ptsprojects.stack.common import wait_event_with_condition
 from autopts.pybtp import defs
 
 
@@ -52,14 +52,14 @@ class HAP:
         self.event_queues[event_type].append(event_data_tuple)
 
     def wait_iac_discovery_complete_ev(self, addr_type, addr, timeout, remove=True):
-        return wait_for_queue_event(
+        return wait_event_with_condition(
             self.event_queues[defs.BTP_HAP_EV_IAC_DISCOVERY_COMPLETE],
             lambda _addr_type, _addr, *_:
                 (addr_type, addr) == (_addr_type, _addr),
             timeout, remove)
 
     def wait_hauc_discovery_complete_ev(self, addr_type, addr, timeout, remove=True):
-        return wait_for_queue_event(
+        return wait_event_with_condition(
             self.event_queues[defs.BTP_HAP_EV_HAUC_DISCOVERY_COMPLETE],
             lambda _addr_type, _addr, *_:
                 (addr_type, addr) == (_addr_type, _addr),
@@ -79,7 +79,7 @@ class HAP:
         peer.discovery_completed = (status == defs.BTP_STATUS_SUCCESS)
 
     def wait_preset_changed_ev(self, addr_type, addr, timeout, change_id, remove=True):
-        return wait_for_queue_event(
+        return wait_event_with_condition(
             self.event_queues[defs.BTP_HAP_EV_PRESET_CHANGED],
             lambda _addr_type, _addr, _change_id, *_:
                 (addr_type, addr, change_id) == (_addr_type, _addr, _change_id),

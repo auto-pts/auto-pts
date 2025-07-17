@@ -13,7 +13,7 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
-from autopts.ptsprojects.stack.common import wait_for_queue_event
+from autopts.ptsprojects.stack.common import wait_event_with_condition
 from autopts.pybtp import defs
 
 
@@ -28,6 +28,6 @@ class MICS:
         self.event_queues[event_type].append(event_data_tuple)
 
     def wait_mute_state_ev(self, timeout, remove=True):
-        return wait_for_queue_event(
+        return wait_event_with_condition(
             self.event_queues[defs.BTP_MICS_EV_MUTE_STATE],
             lambda *_: True, timeout, remove)

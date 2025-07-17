@@ -238,7 +238,7 @@ def {profile_name_lower}_ev_dummy_completed({profile_name_lower}, data, data_len
     # START of autopts/ptsprojects/stack/layers/profile.py
     f'{AUTOPTS_REPO}/autopts/ptsprojects/stack/layers/{profile_name_lower}.py':
 f"""{license_text}
-from autopts.ptsprojects.stack.common import wait_for_queue_event
+from autopts.ptsprojects.stack.common import wait_event_with_condition
 from autopts.pybtp import defs
 
 
@@ -252,7 +252,7 @@ class {profile_name_upper}:
         self.event_queues[event_type].append(event_data)
 
     def wait_dummyevent_completed_ev(self, addr_type, addr, timeout, remove=True):
-        return wait_for_queue_event(
+        return wait_event_with_condition(
             self.event_queues[defs.BTP_{profile_name_upper}_EV_DUMMY_COMPLETED],
             lambda _addr_type, _addr, *_:
                 (addr_type, addr) == (_addr_type, _addr),
