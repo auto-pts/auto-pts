@@ -21,7 +21,7 @@ SERVER_PORT = 65000
 CLIENT_PORT = 65001
 BTMON_PORT = 65432
 
-MAX_SERVER_RESTART_TIME = 60
+MAX_SERVER_RESTART_TIME = 120
 
 AUTOPTS_ROOT_DIR = os.path.dirname(  # auto-pts repo directory
                 os.path.dirname(  # autopts module directory

@@ -93,3 +93,55 @@ def wait_for_event(timeout, test, *args, **kwargs):
             return result
 
     return False
+
+
+def wait_event_with_condition(event_queue, condition_cb, timeout, remove):
+    flag = Event()
+    flag.set()
+
+    t = Timer(timeout, timeout_cb, [flag])
+    t.start()
+
+    while flag.is_set():
+        raise_on_global_end()
+
+        for ev in event_queue:
+            if isinstance(ev, tuple):
+                result = condition_cb(*ev)
+            else:
+                result = condition_cb(ev)
+
+            if result:
+                t.cancel()
+                if ev and remove:
+                    event_queue.remove(ev)
+
+                return ev
+
+        # TODO: Use wait() and notify() from threading.Condition
+        #  instead of sleep()
+        sleep(0.5)
+
+    return None
+
+
+def wait_for_event_iut(event_queue, timeout, remove):
+    flag = Event()
+    flag.set()
+
+    t = Timer(timeout, timeout_cb, [flag])
+    t.start()
+
+    while flag.is_set():
+        raise_on_global_end()
+
+        for ev in event_queue:
+            if ev:
+                t.cancel()
+                if ev and remove:
+                    event_queue.remove(ev)
+                return ev
+
+            sleep(0.5)
+
+    return None
