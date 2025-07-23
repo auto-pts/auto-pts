@@ -1,4 +1,4 @@
-<WORKSPACE_INFORMATION NAME="zephyr-master" PATH="zephyr-master" CREATED_WITH="Profile Tuning Suite, 8.9.1, 6" BD_ADDR="000000000000" SWITCH_TTCN="FALSE" QDID="347313">
+<WORKSPACE_INFORMATION NAME="zephyr-master" PATH="zephyr-master" CREATED_WITH="Profile Tuning Suite, 8.10.0, 10" BD_ADDR="000000000000" SWITCH_TTCN="FALSE" QDID="347313">
   <PROJECTS_INFORMATION>
     <PROJECT_INFORMATION NAME="AICS" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
       <PICS>
@@ -18,13 +18,13 @@
           </Row>
           <Row>
             <Name>TSPC_AICS_1_1</Name>
-            <Description>Service supported over BR/EDR (C.1)</Description>
+            <Description>Service supported over BR/EDR (C.1, C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_AICS_1_2</Name>
-            <Description>Service supported over LE (C.1)</Description>
+            <Description>Service supported over LE (C.2, C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -283,13 +283,13 @@
           </Row>
           <Row>
             <Name>TSPC_ASCS_2_1</Name>
-            <Description>Service supported over BR/EDR (C.1)</Description>
+            <Description>Service supported over BR/EDR (C.1, C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_ASCS_2_2</Name>
-            <Description>Service supported over LE (C.1)</Description>
+            <Description>Service supported over LE (C.2, C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -694,13 +694,13 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_3_1</Name>
-            <Description>LE (C.1)</Description>
+            <Description>LE Host (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_3_2</Name>
-            <Description>BR/EDR/LE (C.1)</Description>
+            <Description>BR/EDR/LE Host (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -2182,7 +2182,7 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_33a_3</Name>
-            <Description>Sink ASE - Enabling, Source ASE - Not Bound (C.2)</Description>
+            <Description>Sink ASE - Enabling, Source ASE - Not Bound (C.5)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -2200,19 +2200,19 @@
           </Row>
           <Row>
             <Name>TSPC_BAP_33a_6</Name>
-            <Description>Sink ASE - QoS Configured, Source ASE - Not Bound (C.4)</Description>
+            <Description>Sink ASE - QoS Configured, Source ASE - Not Bound (C.6)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_33a_7</Name>
-            <Description>Sink ASE - Not bound, Source ASE - Enabling (C.5)</Description>
+            <Description>Sink ASE - Not bound, Source ASE - Enabling (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAP_33a_8</Name>
-            <Description>Sink ASE -Not bound, Source ASE - QoS Configured (C.6)</Description>
+            <Description>Sink ASE -Not bound, Source ASE - QoS Configured (C.4)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -5566,13 +5566,13 @@
           </Row>
           <Row>
             <Name>TSPC_BAS_1_1</Name>
-            <Description>Service supported over BR/EDR (C.1)</Description>
+            <Description>Service supported over BR/EDR (C.1, C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BAS_1_2</Name>
-            <Description>Service supported over LE (C.1)</Description>
+            <Description>Service supported over LE (C.2, C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -5597,6 +5597,12 @@
           <Row>
             <Name>TSPC_BAS_2_4</Name>
             <Description>Battery Level Characteristic Presentation Format Descriptor (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_BAS_2_5</Name>
+            <Description>No longer used (N/A)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -5961,6 +5967,12 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_BAS_3_1</Name>
+            <Description>No longer used (N/A)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_BAS_3_2</Name>
             <Description>GATT Server over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
@@ -6034,7 +6046,7 @@
           </Row>
           <Row>
             <Name>TSPC_ALL</Name>
-            <Description>Enables all test cases when set</Description>
+            <Description>Enables all test cases when set.</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -6161,13 +6173,13 @@
           </Row>
           <Row>
             <Name>TSPC_BASS_2_1</Name>
-            <Description>Service supported over BR/EDR (C.1)</Description>
+            <Description>Service supported over BR/EDR (C.1, C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_BASS_2_2</Name>
-            <Description>Service supported over LE (C.1)</Description>
+            <Description>Service supported over LE (C.2, C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -6456,19 +6468,19 @@
           </Row>
           <Row>
             <Name>TSPC_CAP_2_2</Name>
-            <Description>Profile supported over LE (M)</Description>
+            <Description>Profile supported over LE (C.2, C.3)</Description>
             <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_CAP_3_1</Name>
-            <Description>LE (C.1)</Description>
+            <Description>LE Host (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_CAP_3_2</Name>
-            <Description>BR/EDR/LE (C.1)</Description>
+            <Description>BR/EDR/LE Host (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -6541,6 +6553,18 @@
           <Row>
             <Name>TSPC_CAP_6a_2</Name>
             <Description>CAP General Announcement Support (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CAP_6b_1</Name>
+            <Description>Audio Source (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CAP_6b_2</Name>
+            <Description>Audio Sink (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -6893,6 +6917,12 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_CAP_20_9</Name>
+            <Description>No longer used (N/A)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_CAP_21_1</Name>
             <Description>BAP Available Audio Contexts discovery procedure (C.1)</Description>
             <Value>TRUE</Value>
@@ -6993,6 +7023,30 @@
             <Description>Central (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CAP_23a_1</Name>
+            <Description>GATT Client over LE (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CAP_23a_2</Name>
+            <Description>Discover All Primary Services (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CAP_23a_3</Name>
+            <Description>Discover Primary Services by Service UUID (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CAP_23a_4</Name>
+            <Description>Find Included Services (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_CAP_24_1</Name>
@@ -7223,8 +7277,32 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_CAP_33a_1</Name>
+            <Description>GATT Client over LE (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CAP_33a_2</Name>
+            <Description>Discover All Primary Services (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CAP_33a_3</Name>
+            <Description>Discover Primary Services by Service UUID (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CAP_33a_4</Name>
+            <Description>Find Included Services (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_ALL</Name>
-            <Description>Turn on all test cases (O)</Description>
+            <Description>Enables all test cases when set.</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -7582,13 +7660,13 @@
           </Row>
           <Row>
             <Name>TSPC_CAS_2_1</Name>
-            <Description>Service supported over BR/EDR (C.1)</Description>
+            <Description>Service supported over BR/EDR (C.1, C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_CAS_2_2</Name>
-            <Description>Service supported over LE (C.1)</Description>
+            <Description>Service supported over LE (C.2, C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -7618,7 +7696,7 @@
           </Row>
           <Row>
             <Name>TSPC_ALL</Name>
-            <Description>Turn on all test cases (O)</Description>
+            <Description>Enables all test cases when set.</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -7739,13 +7817,13 @@
           </Row>
           <Row>
             <Name>TSPC_CCP_2_1</Name>
-            <Description>Profile supported over BR/EDR (C.1)</Description>
+            <Description>Profile supported over BR/EDR (C.1, C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_CCP_2_2</Name>
-            <Description>Profile supported over LE (C.1)</Description>
+            <Description>Profile supported over LE (C.2, C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -8434,6 +8512,96 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_CCP_17_1</Name>
+            <Description>GATT Client over BR/EDR (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CCP_17_2</Name>
+            <Description>GATT Client over LE (C.2)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CCP_17_3</Name>
+            <Description>Discover All Primary Services (C.3)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CCP_17_4</Name>
+            <Description>Discover Primary Services by Service UUID (C.3)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CCP_17_5</Name>
+            <Description>Find Included Services (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CCP_17_6</Name>
+            <Description>Discover All Characteristics of a Service (C.4)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CCP_17_7</Name>
+            <Description>Discover Characteristics by UUID (C.4)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CCP_17_8</Name>
+            <Description>Discover All Characteristic Descriptors (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CCP_17_9</Name>
+            <Description>Single Notification (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CCP_17_10</Name>
+            <Description>Read Characteristic Value (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CCP_17_11</Name>
+            <Description>Read Long Characteristic Values (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CCP_17_12</Name>
+            <Description>Write Characteristic Value (C.5)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CCP_17_13</Name>
+            <Description>Write without Response (C.5)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CCP_17_14</Name>
+            <Description>Read Characteristic Descriptors (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CCP_17_15</Name>
+            <Description>Write Characteristic Descriptors (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_GATT_1a_4</Name>
             <Description>GATT Server over BR/EDR (C.4)</Description>
             <Value>FALSE</Value>
@@ -8567,13 +8735,13 @@
           </Row>
           <Row>
             <Name>TSPC_CSIP_2_1</Name>
-            <Description>Profile supported over BR/EDR (C.1)</Description>
+            <Description>Profile supported over BR/EDR (C.1, C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_CSIP_2_2</Name>
-            <Description>Profile supported over LE (C.1)</Description>
+            <Description>Profile supported over LE (C.2, C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -8581,6 +8749,12 @@
             <Name>TSPC_CSIP_3_1</Name>
             <Description>CSIP v1.0 (C.1, C.2)</Description>
             <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CSIP_4_1</Name>
+            <Description>No longer used (N/A)</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -8731,6 +8905,12 @@
             <Name>TSPC_CSIP_8_1</Name>
             <Description>CSIP v1.0 (C.1, C.2)</Description>
             <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CSIP_9_1</Name>
+            <Description>No longer used (N/A)</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -9125,6 +9305,12 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_CSIS_0a_1</Name>
+            <Description>No longer used (N/A)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_CSIS_0a_2</Name>
             <Description>CSIS v1.0.1 (C.1)</Description>
             <Value>TRUE</Value>
@@ -9132,13 +9318,13 @@
           </Row>
           <Row>
             <Name>TSPC_CSIS_1_1</Name>
-            <Description>Service supported over BR/EDR (C.1)</Description>
+            <Description>Service supported over BR/EDR (C.1, C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_CSIS_1_2</Name>
-            <Description>Service supported over LE (C.1)</Description>
+            <Description>Service supported over LE (C.2, C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -9687,14 +9873,20 @@
           </Row>
           <Row>
             <Name>TSPC_DIS_1_1</Name>
-            <Description>Service supported over BR/EDR (C.1)</Description>
+            <Description>Service supported over BR/EDR (C.1, C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_DIS_1_2</Name>
-            <Description>Service supported over LE (C.1)</Description>
+            <Description>Service supported over LE (C.2, C.3)</Description>
             <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DIS_1_3</Name>
+            <Description>No longer used (N/A)</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -9771,7 +9963,7 @@
           </Row>
           <Row>
             <Name>TSPC_DIS_3_1</Name>
-            <Description>No longer used</Description>
+            <Description>No longer used (N/A)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -9807,7 +9999,7 @@
           </Row>
           <Row>
             <Name>TSPC_ALL</Name>
-            <Description>Turn on all test cases (O)</Description>
+            <Description>Enables all test cases when set.</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -16891,9 +17083,9 @@
           </Row>
           <Row>
             <Name>TSPC_HAP_2_2</Name>
-            <Description>Profile supported over LE (M)</Description>
+            <Description>Profile supported over LE (C.2, C.3)</Description>
             <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_HAP_10_1</Name>
@@ -17053,7 +17245,7 @@
           </Row>
           <Row>
             <Name>TSPC_HAP_24_2</Name>
-            <Description>Minimum 128 Bit entropy key (M)</Description>
+            <Description>Minimum 128-bit entropy key (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -17170,6 +17362,12 @@
             <Description>Discover Primary Services by Service UUID (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_HAP_50_3</Name>
+            <Description>GATT Client over LE (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_HAP_51_1</Name>
@@ -17322,6 +17520,12 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_HAP_83_2</Name>
+            <Description>GATT Client over LE (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_HAP_90_1</Name>
             <Description>HAP v1.0 (M)</Description>
             <Value>TRUE</Value>
@@ -17338,6 +17542,36 @@
             <Description>Immediate Alert Service (IAS) (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_HAP_93_1</Name>
+            <Description>GATT Client over LE (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_HAP_93_2</Name>
+            <Description>Discover All Primary Services (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_HAP_93_3</Name>
+            <Description>Discover Primary Services by Service UUID (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_HAP_93_4</Name>
+            <Description>Discover All Characteristics of a Service (C.2)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_HAP_93_5</Name>
+            <Description>Discover Characteristics by UUID (C.2)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_ALL</Name>
@@ -17538,9 +17772,9 @@
           </Row>
           <Row>
             <Name>TSPC_HAS_2_2</Name>
-            <Description>Service supported over LE (M)</Description>
+            <Description>Service supported over LE (C.2, C.3)</Description>
             <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_HAS_3_1</Name>
@@ -17727,6 +17961,12 @@
             <Description>Enhanced ATT bearer over LE (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_HAS_5_7</Name>
+            <Description>GATT Server over LE (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_ALL</Name>
@@ -20809,13 +21049,13 @@
           </Row>
           <Row>
             <Name>TSPC_MCP_2_1</Name>
-            <Description>Profile supported over BR/EDR (C.1)</Description>
+            <Description>Profile supported over BR/EDR (C.1, C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MCP_2_2</Name>
-            <Description>Profile supported over LE (C.1)</Description>
+            <Description>Profile supported over LE (C.2, C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -21504,6 +21744,12 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_MCP_18_1</Name>
+            <Description>No longer used (N/A)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_MCP_18_2</Name>
             <Description>LE security mode 1 (C.1)</Description>
             <Value>TRUE</Value>
@@ -21592,6 +21838,90 @@
             <Description>Out-of-Band (BR/EDR) (C.7)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MCP_18a_1</Name>
+            <Description>GATT Client over BR/EDR (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MCP_18a_2</Name>
+            <Description>GATT Client over LE (C.2)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MCP_18a_3</Name>
+            <Description>Discover All Primary Services (C.3)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MCP_18a_4</Name>
+            <Description>Discover Primary Services by Service UUID (C.3)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MCP_18a_5</Name>
+            <Description>Find Included Services (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MCP_18a_6</Name>
+            <Description>Discover All Characteristics of a Service (C.4)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MCP_18a_7</Name>
+            <Description>Discover Characteristics by UUID (C.4)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MCP_18a_8</Name>
+            <Description>Discover All Characteristic Descriptors (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MCP_18a_9</Name>
+            <Description>Single Notification (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MCP_18a_10</Name>
+            <Description>Read Characteristic Value (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MCP_18a_11</Name>
+            <Description>Write Characteristic Value (C.5)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MCP_18a_12</Name>
+            <Description>Write without Response (C.5)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MCP_18a_13</Name>
+            <Description>Read Characteristic Descriptors (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MCP_18a_14</Name>
+            <Description>Write Characteristic Descriptors (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MCP_20_1</Name>
@@ -21769,13 +22099,13 @@
           </Row>
           <Row>
             <Name>TSPC_MCS_1_1</Name>
-            <Description>Service supported over BR/EDR (C.1)</Description>
+            <Description>Service supported over BR/EDR (C.1, C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MCS_1_2</Name>
-            <Description>Service supported over LE (C.1)</Description>
+            <Description>Service supported over LE (C.2, C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -22141,13 +22471,13 @@
           </Row>
           <Row>
             <Name>TSPC_MCS_21_1</Name>
-            <Description>Service supported over BR/EDR (C.1)</Description>
+            <Description>Service supported over BR/EDR (C.1, C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MCS_21_2</Name>
-            <Description>Service supported over LE (C.1)</Description>
+            <Description>Service supported over LE (C.2, C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -23781,13 +24111,13 @@
           </Row>
           <Row>
             <Name>TSPC_MICP_2_1</Name>
-            <Description>Profile supported over BR/EDR (C.1)</Description>
+            <Description>Profile supported over BR/EDR (C.1, C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MICP_2_2</Name>
-            <Description>Profile supported over LE (C.1)</Description>
+            <Description>Profile supported over LE (C.2, C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -24111,7 +24441,7 @@
           </Row>
           <Row>
             <Name>TSPC_MICP_15_9</Name>
-            <Description>Notifications (M)</Description>
+            <Description>Single Notification (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -24126,6 +24456,18 @@
             <Description>Write Characteristic Descriptors (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MICP_15_12</Name>
+            <Description>GATT Client over BR/EDR (C.4)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MICP_15_13</Name>
+            <Description>GATT Client over LE (C.5)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MICP_16_1</Name>
@@ -24345,13 +24687,13 @@
           </Row>
           <Row>
             <Name>TSPC_MICS_1_1</Name>
-            <Description>Service supported over BR/EDR (C.1)</Description>
+            <Description>Service supported over BR/EDR (C.1, C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_MICS_1_2</Name>
-            <Description>Service supported over LE (C.1)</Description>
+            <Description>Service supported over LE (C.2, C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -24369,7 +24711,7 @@
           </Row>
           <Row>
             <Name>TSPC_MICS_3_2</Name>
-            <Description>Notifications (M)</Description>
+            <Description>Single Notification (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -24514,7 +24856,7 @@
           </Row>
           <Row>
             <Name>TSPC_OTP_0_1</Name>
-            <Description>OTP 1.0 (M)</Description>
+            <Description>OTP v1.0 (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -24976,19 +25318,19 @@
           </Row>
           <Row>
             <Name>TSPC_OTP_9_1</Name>
-            <Description>Generic Attribute Profile (GATT) Client (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Description>No longer used (N/A)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_OTP_9_2</Name>
-            <Description>Attribute Protocol Supported over BR/EDR (L2CAP fixed channel support) (C.1)</Description>
+            <Description>GATT Client over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_OTP_9_3</Name>
-            <Description>Attribute Protocol Supported over LE (C.2)</Description>
+            <Description>GATT Client over LE (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -25012,7 +25354,7 @@
           </Row>
           <Row>
             <Name>TSPC_OTP_9_7</Name>
-            <Description>Discover GATT Services using Service Discovery Profile (C.1)</Description>
+            <Description>No longer used (N/A)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -25728,13 +26070,13 @@
           </Row>
           <Row>
             <Name>TSPC_PACS_2_1</Name>
-            <Description>Service supported over BR/EDR (C.1)</Description>
+            <Description>Service supported over BR/EDR (C.1, C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_PACS_2_2</Name>
-            <Description>Service supported over LE (C.1)</Description>
+            <Description>Service supported over LE (C.2, C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -26047,9 +26389,9 @@
           </Row>
           <Row>
             <Name>TSPC_PBP_2_2</Name>
-            <Description>Profile supported over LE (M)</Description>
+            <Description>Profile supported over LE (C.2, C.3)</Description>
             <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_PBP_3_1</Name>
@@ -26377,7 +26719,7 @@
           </Row>
           <Row>
             <Name>TSPC_ALL</Name>
-            <Description>Turn on all test cases (O)</Description>
+            <Description>Enables all test cases when set.</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -26871,13 +27213,13 @@
           </Row>
           <Row>
             <Name>TSPC_TBS_1_1</Name>
-            <Description>Service supported over BR/EDR (C.1)</Description>
+            <Description>Service supported over BR/EDR (C.1, C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TBS_1_2</Name>
-            <Description>Service supported over LE (C.1)</Description>
+            <Description>Service supported over LE (C.2, C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -27032,6 +27374,12 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_TBS_2_26</Name>
+            <Description>Server-side Call States (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_TBS_3_1</Name>
             <Description>Accept (M)</Description>
             <Value>TRUE</Value>
@@ -27045,13 +27393,13 @@
           </Row>
           <Row>
             <Name>TSPC_TBS_3_3</Name>
-            <Description>Local Hold (O)</Description>
+            <Description>Local Hold (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TBS_3_4</Name>
-            <Description>Local Retrieve (O)</Description>
+            <Description>Local Retrieve (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -27123,13 +27471,13 @@
           </Row>
           <Row>
             <Name>TSPC_TBS_21_1</Name>
-            <Description>Service supported over BR/EDR (C.1)</Description>
+            <Description>Service supported over BR/EDR (C.1, C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TBS_21_2</Name>
-            <Description>Service supported over LE (C.1)</Description>
+            <Description>Service supported over LE (C.2, C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -27284,6 +27632,12 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_TBS_22_26</Name>
+            <Description>Server-side Call states (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_TBS_23_1</Name>
             <Description>Accept (M)</Description>
             <Value>TRUE</Value>
@@ -27297,13 +27651,13 @@
           </Row>
           <Row>
             <Name>TSPC_TBS_23_3</Name>
-            <Description>Local Hold (O)</Description>
+            <Description>Local Hold (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TBS_23_4</Name>
-            <Description>Local Retrieve (O)</Description>
+            <Description>Local Retrieve (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -29542,13 +29896,13 @@
           </Row>
           <Row>
             <Name>TSPC_VCP_2_1</Name>
-            <Description>Profile supported over BR/EDR (C.1)</Description>
+            <Description>Profile supported over BR/EDR (C.1, C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_VCP_2_2</Name>
-            <Description>Profile supported over LE (C.1)</Description>
+            <Description>Profile supported over LE (C.2, C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -30039,6 +30393,18 @@
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_VCP_17_12</Name>
+            <Description>GATT Client over BR/EDR (C.4)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_VCP_17_13</Name>
+            <Description>GATT Client over LE (C.5)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_VCP_18_1</Name>
             <Description>Central (C.2)</Description>
             <Value>TRUE</Value>
@@ -30281,13 +30647,13 @@
           </Row>
           <Row>
             <Name>TSPC_VCS_1_1</Name>
-            <Description>Service supported over BR/EDR (C.1)</Description>
+            <Description>Service supported over BR/EDR (C.1, C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_VCS_1_2</Name>
-            <Description>Service supported over LE (C.1)</Description>
+            <Description>Service supported over LE (C.2, C.3)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -30365,7 +30731,7 @@
           </Row>
           <Row>
             <Name>TSPC_VCS_4_2</Name>
-            <Description>Notifications (M)</Description>
+            <Description>Single Notification (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
