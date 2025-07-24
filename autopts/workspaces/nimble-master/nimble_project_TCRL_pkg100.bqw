@@ -1,12 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Qualification xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" DN="Q331839" DesignName="NimBLE host" PathType="NewDesignNoDns" TCRL="86" xmlns="http://qualification.bluetooth.com">
+<Qualification xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" DN="Q331839" DesignName="NimBLE host" PathType="NewDesignNoDns" TCRL="88" xmlns="http://qualification.bluetooth.com">
   <References />
   <Products>
-    <Product Name="NimBLE host" Description="1" Model="1" Website="" PublishDate="2025-02-28T00:00:00" />
+    <Product Name="NimBLE host" Description="1" Model="1" Website="" PublishDate="2025-07-31T00:00:00" />
   </Products>
   <Layers>
     <Layer Layer="GAP">
       <Features>
+        <Feature>GAP 11b/3</Feature>
+        <Feature>GAP 37c/2</Feature>
+        <Feature>GAP 37/7</Feature>
+        <Feature>GAP 37a/5</Feature>
+        <Feature>GAP 20A/14a</Feature>
+        <Feature>GAP 37b/2</Feature>
+        <Feature>GAP 30a/12</Feature>
+        <Feature>GAP 17a/5</Feature>
+        <Feature>GAP 14a/4</Feature>
+        <Feature>GAP 14a/14</Feature>
+        <Feature>GAP 26/5</Feature>
+        <Feature>GAP 30a/7</Feature>
+        <Feature>GAP 37b/7</Feature>
+        <Feature>GAP 17/3</Feature>
+        <Feature>GAP 19/2</Feature>
+        <Feature>GAP 19/3</Feature>
+        <Feature>GAP 20A/10</Feature>
+        <Feature>GAP 20A/12</Feature>
+        <Feature>GAP 20A/17</Feature>
+        <Feature>GAP 21/3</Feature>
+        <Feature>GAP 25/7</Feature>
+        <Feature>GAP 29/1</Feature>
+        <Feature>GAP 29/2</Feature>
+        <Feature>GAP 35/1</Feature>
+        <Feature>GAP 35/4</Feature>
+        <Feature>GAP 35/9</Feature>
+        <Feature>GAP 36/3</Feature>
+        <Feature>GAP 37a/1</Feature>
+        <Feature>GAP 5/1</Feature>
+        <Feature>GAP 8/1</Feature>
+        <Feature>GAP 8/4</Feature>
+        <Feature>GAP 8a/6</Feature>
+        <Feature>GAP 8a/7</Feature>
+        <Feature>GAP 10/4</Feature>
+        <Feature>GAP 16/2</Feature>
+        <Feature>GAP 16/4</Feature>
         <Feature>GAP 27c/1</Feature>
         <Feature>GAP 35/11</Feature>
         <Feature>GAP 25/13b</Feature>
@@ -49,45 +85,6 @@
         <Feature>GAP 8a/9</Feature>
         <Feature>GAP 10/2</Feature>
         <Feature>GAP 33/8</Feature>
-        <Feature>GAP 37/3a</Feature>
-        <Feature>GAP 27b/10</Feature>
-        <Feature>GAP 25/12</Feature>
-        <Feature>GAP 30a/18</Feature>
-        <Feature>GAP 30a/14</Feature>
-        <Feature>GAP 37a/6</Feature>
-        <Feature>GAP 14a/11</Feature>
-        <Feature>GAP 25/13a</Feature>
-        <Feature>GAP 14a/9</Feature>
-        <Feature>GAP 30a/9</Feature>
-        <Feature>GAP 33/8a</Feature>
-        <Feature>GAP 14a/14a</Feature>
-        <Feature>GAP 11/3</Feature>
-        <Feature>GAP 13/2</Feature>
-        <Feature>GAP 15/1</Feature>
-        <Feature>GAP 17/1</Feature>
-        <Feature>GAP 17a/2</Feature>
-        <Feature>GAP 18/1</Feature>
-        <Feature>GAP 18/2</Feature>
-        <Feature>GAP 20/4</Feature>
-        <Feature>GAP 20/6</Feature>
-        <Feature>GAP 20A/5</Feature>
-        <Feature>GAP 20A/8</Feature>
-        <Feature>GAP 21/5</Feature>
-        <Feature>GAP 23/2</Feature>
-        <Feature>GAP 25/1</Feature>
-        <Feature>GAP 27/7</Feature>
-        <Feature>GAP 28/2</Feature>
-        <Feature>GAP 33/4</Feature>
-        <Feature>GAP 34/1</Feature>
-        <Feature>GAP 35/10</Feature>
-        <Feature>GAP 36/1</Feature>
-        <Feature>GAP 37/3</Feature>
-        <Feature>GAP 6/2</Feature>
-        <Feature>GAP 7/1</Feature>
-        <Feature>GAP 8a/12</Feature>
-        <Feature>GAP 8a/14</Feature>
-        <Feature>GAP 17b/1</Feature>
-        <Feature>GAP 23/6</Feature>
         <Feature>GAP 11c/1</Feature>
         <Feature>GAP 27b/7</Feature>
         <Feature>GAP 33/9</Feature>
@@ -114,156 +111,6 @@
         <Feature>GAP 5/4</Feature>
         <Feature>GAP 8a/1</Feature>
         <Feature>GAP 8a/4</Feature>
-        <Feature>GAP 35/14</Feature>
-        <Feature>GAP 17a/4</Feature>
-        <Feature>GAP 14a/7</Feature>
-        <Feature>GAP 23/7a</Feature>
-        <Feature>GAP 30a/17</Feature>
-        <Feature>GAP 27a/5</Feature>
-        <Feature>GAP 27b/5</Feature>
-        <Feature>GAP 30a/8</Feature>
-        <Feature>GAP 14a/5</Feature>
-        <Feature>GAP 27a/4</Feature>
-        <Feature>GAP 20A/18</Feature>
-        <Feature>GAP 30a/6</Feature>
-        <Feature>GAP 27c/2</Feature>
-        <Feature>GAP 14a/6</Feature>
-        <Feature>GAP 25/14</Feature>
-        <Feature>GAP 14a/3</Feature>
-        <Feature>GAP 27c/3</Feature>
-        <Feature>GAP 11a/2</Feature>
-        <Feature>GAP 16/1</Feature>
-        <Feature>GAP 17a/1</Feature>
-        <Feature>GAP 19/1</Feature>
-        <Feature>GAP 20/3</Feature>
-        <Feature>GAP 20/5</Feature>
-        <Feature>GAP 20A/7</Feature>
-        <Feature>GAP 23/3</Feature>
-        <Feature>GAP 26/3</Feature>
-        <Feature>GAP 27/5</Feature>
-        <Feature>GAP 27a/1</Feature>
-        <Feature>GAP 27a/3</Feature>
-        <Feature>GAP 31/3</Feature>
-        <Feature>GAP 37a/2</Feature>
-        <Feature>GAP 6/1</Feature>
-        <Feature>GAP 8a/11</Feature>
-        <Feature>GAP 8a/15</Feature>
-        <Feature>GAP 8a/16</Feature>
-        <Feature>GAP 9/1</Feature>
-        <Feature>GAP 10/3</Feature>
-        <Feature>GAP 23/7</Feature>
-        <Feature>GAP 7/3</Feature>
-        <Feature>GAP 11b/3</Feature>
-        <Feature>GAP 37c/2</Feature>
-        <Feature>GAP 37/7</Feature>
-        <Feature>GAP 37a/5</Feature>
-        <Feature>GAP 20A/14a</Feature>
-        <Feature>GAP 37b/2</Feature>
-        <Feature>GAP 30a/12</Feature>
-        <Feature>GAP 17a/5</Feature>
-        <Feature>GAP 14a/4</Feature>
-        <Feature>GAP 14a/14</Feature>
-        <Feature>GAP 26/5</Feature>
-        <Feature>GAP 30a/7</Feature>
-        <Feature>GAP 37b/7</Feature>
-        <Feature>GAP 17/3</Feature>
-        <Feature>GAP 19/2</Feature>
-        <Feature>GAP 19/3</Feature>
-        <Feature>GAP 20A/10</Feature>
-        <Feature>GAP 20A/12</Feature>
-        <Feature>GAP 20A/17</Feature>
-        <Feature>GAP 21/3</Feature>
-        <Feature>GAP 25/7</Feature>
-        <Feature>GAP 29/1</Feature>
-        <Feature>GAP 29/2</Feature>
-        <Feature>GAP 35/1</Feature>
-        <Feature>GAP 35/4</Feature>
-        <Feature>GAP 35/9</Feature>
-        <Feature>GAP 36/3</Feature>
-        <Feature>GAP 37a/1</Feature>
-        <Feature>GAP 5/1</Feature>
-        <Feature>GAP 8/1</Feature>
-        <Feature>GAP 8/4</Feature>
-        <Feature>GAP 8a/6</Feature>
-        <Feature>GAP 8a/7</Feature>
-        <Feature>GAP 10/4</Feature>
-        <Feature>GAP 16/2</Feature>
-        <Feature>GAP 16/4</Feature>
-        <Feature>GAP 8a/14a</Feature>
-        <Feature>GAP 14a/16</Feature>
-        <Feature>GAP 27b/2</Feature>
-        <Feature>GAP 35/13b</Feature>
-        <Feature>GAP 17b/3</Feature>
-        <Feature>GAP 25/13</Feature>
-        <Feature>GAP 14a/2</Feature>
-        <Feature>GAP 27/9a</Feature>
-        <Feature>GAP 35/13a</Feature>
-        <Feature>GAP 30a/11</Feature>
-        <Feature>GAP 30a/14a</Feature>
-        <Feature>GAP 37b/5</Feature>
-        <Feature>GAP 14a/8</Feature>
-        <Feature>GAP 14a/12</Feature>
-        <Feature>GAP 10/1</Feature>
-        <Feature>GAP 14/1</Feature>
-        <Feature>GAP 20A/6</Feature>
-        <Feature>GAP 21/1</Feature>
-        <Feature>GAP 21/11</Feature>
-        <Feature>GAP 21/12</Feature>
-        <Feature>GAP 21/4</Feature>
-        <Feature>GAP 22/4</Feature>
-        <Feature>GAP 24/1</Feature>
-        <Feature>GAP 24/3</Feature>
-        <Feature>GAP 25/10</Feature>
-        <Feature>GAP 26/1</Feature>
-        <Feature>GAP 26/2</Feature>
-        <Feature>GAP 26/4</Feature>
-        <Feature>GAP 29/3</Feature>
-        <Feature>GAP 31/12</Feature>
-        <Feature>GAP 31/8</Feature>
-        <Feature>GAP 32/3</Feature>
-        <Feature>GAP 33/2</Feature>
-        <Feature>GAP 34/2</Feature>
-        <Feature>GAP 5/2</Feature>
-        <Feature>GAP 8/3</Feature>
-        <Feature>GAP 8a/5</Feature>
-        <Feature>GAP 10/5</Feature>
-        <Feature>GAP 11b/1</Feature>
-        <Feature>GAP 16/3</Feature>
-        <Feature>GAP 37c/3</Feature>
-        <Feature>GAP 37/6</Feature>
-        <Feature>GAP 35/15</Feature>
-        <Feature>GAP 14a/17</Feature>
-        <Feature>GAP 11/4</Feature>
-        <Feature>GAP 37b/9</Feature>
-        <Feature>GAP 37c/1</Feature>
-        <Feature>GAP 17b/4</Feature>
-        <Feature>GAP 11b/4</Feature>
-        <Feature>GAP 37b/3</Feature>
-        <Feature>GAP 30a/15</Feature>
-        <Feature>GAP 11b/2</Feature>
-        <Feature>GAP 14a/15</Feature>
-        <Feature>GAP 30a/16</Feature>
-        <Feature>GAP 14a/10</Feature>
-        <Feature>GAP 27b/3</Feature>
-        <Feature>GAP 27b/6</Feature>
-        <Feature>GAP 25/11</Feature>
-        <Feature>GAP 11/1</Feature>
-        <Feature>GAP 20/2</Feature>
-        <Feature>GAP 20A/4</Feature>
-        <Feature>GAP 21/6</Feature>
-        <Feature>GAP 21/8</Feature>
-        <Feature>GAP 23/4</Feature>
-        <Feature>GAP 25/3</Feature>
-        <Feature>GAP 25/8</Feature>
-        <Feature>GAP 31/11</Feature>
-        <Feature>GAP 31/2</Feature>
-        <Feature>GAP 31/5</Feature>
-        <Feature>GAP 33/6</Feature>
-        <Feature>GAP 35/7</Feature>
-        <Feature>GAP 37/2</Feature>
-        <Feature>GAP 37a/3</Feature>
-        <Feature>GAP 7/2</Feature>
-        <Feature>GAP 8/2</Feature>
         <Feature>GAP 17b/2</Feature>
         <Feature>GAP 30a/5</Feature>
         <Feature>GAP 17/5</Feature>
@@ -304,84 +151,186 @@
         <Feature>GAP 8a/3</Feature>
         <Feature>GAP 8a/8</Feature>
         <Feature>GAP 33/7</Feature>
+        <Feature>GAP 27b/10</Feature>
+        <Feature>GAP 25/12</Feature>
+        <Feature>GAP 30a/18</Feature>
+        <Feature>GAP 30a/14</Feature>
+        <Feature>GAP 37a/6</Feature>
+        <Feature>GAP 14a/11</Feature>
+        <Feature>GAP 25/13a</Feature>
+        <Feature>GAP 14a/9</Feature>
+        <Feature>GAP 30a/9</Feature>
+        <Feature>GAP 33/8a</Feature>
+        <Feature>GAP 14a/14a</Feature>
+        <Feature>GAP 11/3</Feature>
+        <Feature>GAP 13/2</Feature>
+        <Feature>GAP 15/1</Feature>
+        <Feature>GAP 17/1</Feature>
+        <Feature>GAP 17a/2</Feature>
+        <Feature>GAP 18/1</Feature>
+        <Feature>GAP 18/2</Feature>
+        <Feature>GAP 20/4</Feature>
+        <Feature>GAP 20/6</Feature>
+        <Feature>GAP 20A/5</Feature>
+        <Feature>GAP 20A/8</Feature>
+        <Feature>GAP 21/5</Feature>
+        <Feature>GAP 23/2</Feature>
+        <Feature>GAP 25/1</Feature>
+        <Feature>GAP 27/7</Feature>
+        <Feature>GAP 28/2</Feature>
+        <Feature>GAP 33/4</Feature>
+        <Feature>GAP 34/1</Feature>
+        <Feature>GAP 35/10</Feature>
+        <Feature>GAP 36/1</Feature>
+        <Feature>GAP 37/3</Feature>
+        <Feature>GAP 6/2</Feature>
+        <Feature>GAP 7/1</Feature>
+        <Feature>GAP 8a/12</Feature>
+        <Feature>GAP 8a/14</Feature>
+        <Feature>GAP 17b/1</Feature>
+        <Feature>GAP 23/6</Feature>
+        <Feature>GAP 37c/3</Feature>
+        <Feature>GAP 37/6</Feature>
+        <Feature>GAP 35/15</Feature>
+        <Feature>GAP 14a/17</Feature>
+        <Feature>GAP 11/4</Feature>
+        <Feature>GAP 37b/9</Feature>
+        <Feature>GAP 37c/1</Feature>
+        <Feature>GAP 17b/4</Feature>
+        <Feature>GAP 11b/4</Feature>
+        <Feature>GAP 37b/3</Feature>
+        <Feature>GAP 30a/15</Feature>
+        <Feature>GAP 11b/2</Feature>
+        <Feature>GAP 14a/15</Feature>
+        <Feature>GAP 30a/16</Feature>
+        <Feature>GAP 14a/10</Feature>
+        <Feature>GAP 27b/3</Feature>
+        <Feature>GAP 27b/6</Feature>
+        <Feature>GAP 25/11</Feature>
+        <Feature>GAP 11/1</Feature>
+        <Feature>GAP 20/2</Feature>
+        <Feature>GAP 20A/4</Feature>
+        <Feature>GAP 21/6</Feature>
+        <Feature>GAP 21/8</Feature>
+        <Feature>GAP 23/4</Feature>
+        <Feature>GAP 25/3</Feature>
+        <Feature>GAP 25/8</Feature>
+        <Feature>GAP 31/11</Feature>
+        <Feature>GAP 31/2</Feature>
+        <Feature>GAP 31/5</Feature>
+        <Feature>GAP 33/6</Feature>
+        <Feature>GAP 35/7</Feature>
+        <Feature>GAP 37/2</Feature>
+        <Feature>GAP 37a/3</Feature>
+        <Feature>GAP 7/2</Feature>
+        <Feature>GAP 8/2</Feature>
+        <Feature>GAP 35/14</Feature>
+        <Feature>GAP 17a/4</Feature>
+        <Feature>GAP 14a/7</Feature>
+        <Feature>GAP 23/7a</Feature>
+        <Feature>GAP 30a/17</Feature>
+        <Feature>GAP 27a/5</Feature>
+        <Feature>GAP 27b/5</Feature>
+        <Feature>GAP 30a/8</Feature>
+        <Feature>GAP 14a/5</Feature>
+        <Feature>GAP 27a/4</Feature>
+        <Feature>GAP 20A/18</Feature>
+        <Feature>GAP 30a/6</Feature>
+        <Feature>GAP 27c/2</Feature>
+        <Feature>GAP 14a/6</Feature>
+        <Feature>GAP 25/14</Feature>
+        <Feature>GAP 14a/3</Feature>
+        <Feature>GAP 27c/3</Feature>
+        <Feature>GAP 11a/2</Feature>
+        <Feature>GAP 16/1</Feature>
+        <Feature>GAP 17a/1</Feature>
+        <Feature>GAP 19/1</Feature>
+        <Feature>GAP 20/3</Feature>
+        <Feature>GAP 20/5</Feature>
+        <Feature>GAP 20A/7</Feature>
+        <Feature>GAP 23/3</Feature>
+        <Feature>GAP 26/3</Feature>
+        <Feature>GAP 27/5</Feature>
+        <Feature>GAP 27a/1</Feature>
+        <Feature>GAP 27a/3</Feature>
+        <Feature>GAP 31/3</Feature>
+        <Feature>GAP 37a/2</Feature>
+        <Feature>GAP 6/1</Feature>
+        <Feature>GAP 8a/11</Feature>
+        <Feature>GAP 8a/15</Feature>
+        <Feature>GAP 8a/16</Feature>
+        <Feature>GAP 9/1</Feature>
+        <Feature>GAP 10/3</Feature>
+        <Feature>GAP 23/7</Feature>
+        <Feature>GAP 7/3</Feature>
+        <Feature>GAP 8a/14a</Feature>
+        <Feature>GAP 14a/16</Feature>
+        <Feature>GAP 27b/2</Feature>
+        <Feature>GAP 35/13b</Feature>
+        <Feature>GAP 17b/3</Feature>
+        <Feature>GAP 25/13</Feature>
+        <Feature>GAP 14a/2</Feature>
+        <Feature>GAP 35/13a</Feature>
+        <Feature>GAP 30a/11</Feature>
+        <Feature>GAP 30a/14a</Feature>
+        <Feature>GAP 37b/5</Feature>
+        <Feature>GAP 14a/8</Feature>
+        <Feature>GAP 14a/12</Feature>
+        <Feature>GAP 10/1</Feature>
+        <Feature>GAP 14/1</Feature>
+        <Feature>GAP 20A/6</Feature>
+        <Feature>GAP 21/1</Feature>
+        <Feature>GAP 21/11</Feature>
+        <Feature>GAP 21/12</Feature>
+        <Feature>GAP 21/4</Feature>
+        <Feature>GAP 22/4</Feature>
+        <Feature>GAP 24/1</Feature>
+        <Feature>GAP 24/3</Feature>
+        <Feature>GAP 25/10</Feature>
+        <Feature>GAP 26/1</Feature>
+        <Feature>GAP 26/2</Feature>
+        <Feature>GAP 26/4</Feature>
+        <Feature>GAP 29/3</Feature>
+        <Feature>GAP 31/12</Feature>
+        <Feature>GAP 31/8</Feature>
+        <Feature>GAP 32/3</Feature>
+        <Feature>GAP 33/2</Feature>
+        <Feature>GAP 34/2</Feature>
+        <Feature>GAP 5/2</Feature>
+        <Feature>GAP 8/3</Feature>
+        <Feature>GAP 8a/5</Feature>
+        <Feature>GAP 10/5</Feature>
+        <Feature>GAP 11b/1</Feature>
+        <Feature>GAP 16/3</Feature>
       </Features>
     </Layer>
     <Layer Layer="L2CAP">
       <Features>
-        <Feature>L2CAP 3/16</Feature>
-        <Feature>L2CAP 0/2</Feature>
-        <Feature>L2CAP 2/49</Feature>
-        <Feature>L2CAP 1/3</Feature>
-        <Feature>L2CAP 4/3</Feature>
-        <Feature>L2CAP 1/5</Feature>
         <Feature>L2CAP 2/40</Feature>
         <Feature>L2CAP 2/42</Feature>
         <Feature>L2CAP 2/47</Feature>
-        <Feature>L2CAP 2/48b</Feature>
-        <Feature>L2CAP 4/2</Feature>
-        <Feature>L2CAP 2/41</Feature>
-        <Feature>L2CAP 2/46</Feature>
-        <Feature>L2CAP 3/1</Feature>
-        <Feature>L2CAP 2/45a</Feature>
-        <Feature>L2CAP 1/6</Feature>
+        <Feature>L2CAP 3/16</Feature>
+        <Feature>L2CAP 0/2</Feature>
+        <Feature>L2CAP 1/3</Feature>
         <Feature>L2CAP 4/1</Feature>
         <Feature>L2CAP 2/43</Feature>
         <Feature>L2CAP 3/12</Feature>
         <Feature>L2CAP 1/4</Feature>
         <Feature>L2CAP 2/48</Feature>
+        <Feature>L2CAP 2/49</Feature>
+        <Feature>L2CAP 2/45a</Feature>
+        <Feature>L2CAP 1/6</Feature>
+        <Feature>L2CAP 4/3</Feature>
+        <Feature>L2CAP 1/5</Feature>
+        <Feature>L2CAP 2/48b</Feature>
+        <Feature>L2CAP 4/2</Feature>
+        <Feature>L2CAP 2/41</Feature>
+        <Feature>L2CAP 2/46</Feature>
+        <Feature>L2CAP 3/1</Feature>
       </Features>
     </Layer>
     <Layer Layer="GATT">
       <Features>
-        <Feature>GATT 10/1</Feature>
-        <Feature>GATT 9/4</Feature>
-        <Feature>GATT 10/3</Feature>
-        <Feature>GATT 4a/2</Feature>
-        <Feature>GATT 10/4</Feature>
-        <Feature>GATT 3/25</Feature>
-        <Feature>GATT 3/6</Feature>
-        <Feature>GATT 4/17</Feature>
-        <Feature>GATT 4/19</Feature>
-        <Feature>GATT 4/24</Feature>
-        <Feature>GATT 4/4</Feature>
-        <Feature>GATT 9/15</Feature>
-        <Feature>GATT 2/5</Feature>
-        <Feature>GATT 9/11</Feature>
-        <Feature>GATT 1/2</Feature>
-        <Feature>GATT 3/12</Feature>
-        <Feature>GATT 3/14</Feature>
-        <Feature>GATT 3/19</Feature>
-        <Feature>GATT 3/2</Feature>
-        <Feature>GATT 3/20</Feature>
-        <Feature>GATT 3/26</Feature>
-        <Feature>GATT 3/3</Feature>
-        <Feature>GATT 3/8</Feature>
-        <Feature>GATT 4/5</Feature>
-        <Feature>GATT 4/6</Feature>
-        <Feature>GATT 8/8</Feature>
-        <Feature>GATT 10/5</Feature>
-        <Feature>GATT 9/6</Feature>
-        <Feature>GATT 9/5</Feature>
-        <Feature>GATT 3/1</Feature>
-        <Feature>GATT 3/7</Feature>
-        <Feature>GATT 4/14</Feature>
-        <Feature>GATT 4/25</Feature>
-        <Feature>GATT 4/8</Feature>
-        <Feature>GATT 7/7</Feature>
-        <Feature>GATT 9/3</Feature>
-        <Feature>GATT 8/2</Feature>
-        <Feature>GATT 10/2</Feature>
-        <Feature>GATT 9/13</Feature>
-        <Feature>GATT 7/8</Feature>
-        <Feature>GATT 10/9</Feature>
-        <Feature>GATT 3/25a</Feature>
-        <Feature>GATT 9/9</Feature>
-        <Feature>GATT 3/10</Feature>
-        <Feature>GATT 3/11</Feature>
-        <Feature>GATT 3/18</Feature>
-        <Feature>GATT 3/27</Feature>
-        <Feature>GATT 4/20</Feature>
-        <Feature>GATT 4/23</Feature>
         <Feature>GATT 10/7</Feature>
         <Feature>GATT 10/12</Feature>
         <Feature>GATT 9/8</Feature>
@@ -395,14 +344,51 @@
         <Feature>GATT 4/21</Feature>
         <Feature>GATT 4/22</Feature>
         <Feature>GATT 7/4</Feature>
-        <Feature>GATT 3a/1</Feature>
-        <Feature>GATT 9/12</Feature>
-        <Feature>GATT 1a/1</Feature>
-        <Feature>GATT 1a/3</Feature>
-        <Feature>GATT 4/11</Feature>
-        <Feature>GATT 4/12</Feature>
-        <Feature>GATT 4/9</Feature>
-        <Feature>GATT 7/2</Feature>
+        <Feature>GATT 10/1</Feature>
+        <Feature>GATT 9/4</Feature>
+        <Feature>GATT 10/3</Feature>
+        <Feature>GATT 4a/2</Feature>
+        <Feature>GATT 10/4</Feature>
+        <Feature>GATT 3/25</Feature>
+        <Feature>GATT 3/6</Feature>
+        <Feature>GATT 4/17</Feature>
+        <Feature>GATT 4/19</Feature>
+        <Feature>GATT 4/24</Feature>
+        <Feature>GATT 4/4</Feature>
+        <Feature>GATT 8/8</Feature>
+        <Feature>GATT 10/5</Feature>
+        <Feature>GATT 9/6</Feature>
+        <Feature>GATT 9/5</Feature>
+        <Feature>GATT 3/1</Feature>
+        <Feature>GATT 3/7</Feature>
+        <Feature>GATT 4/14</Feature>
+        <Feature>GATT 4/25</Feature>
+        <Feature>GATT 4/8</Feature>
+        <Feature>GATT 7/7</Feature>
+        <Feature>GATT 4a/1</Feature>
+        <Feature>GATT 1/1</Feature>
+        <Feature>GATT 3/29</Feature>
+        <Feature>GATT 3/21</Feature>
+        <Feature>GATT 3/22</Feature>
+        <Feature>GATT 3/23</Feature>
+        <Feature>GATT 3/5</Feature>
+        <Feature>GATT 4/10</Feature>
+        <Feature>GATT 4/15</Feature>
+        <Feature>GATT 4/7</Feature>
+        <Feature>GATT 9/15</Feature>
+        <Feature>GATT 2/5</Feature>
+        <Feature>GATT 9/11</Feature>
+        <Feature>GATT 1/2</Feature>
+        <Feature>GATT 3/12</Feature>
+        <Feature>GATT 3/14</Feature>
+        <Feature>GATT 3/19</Feature>
+        <Feature>GATT 3/2</Feature>
+        <Feature>GATT 3/20</Feature>
+        <Feature>GATT 3/3</Feature>
+        <Feature>GATT 3/8</Feature>
+        <Feature>GATT 4/27</Feature>
+        <Feature>GATT 4/5</Feature>
+        <Feature>GATT 4/6</Feature>
         <Feature>GATT 10/11</Feature>
         <Feature>GATT 2/3a</Feature>
         <Feature>GATT 9/2</Feature>
@@ -419,48 +405,78 @@
         <Feature>GATT 4/1</Feature>
         <Feature>GATT 4/18</Feature>
         <Feature>GATT 4/3</Feature>
-        <Feature>GATT 4a/1</Feature>
-        <Feature>GATT 1/1</Feature>
-        <Feature>GATT 3/29</Feature>
-        <Feature>GATT 3/21</Feature>
-        <Feature>GATT 3/22</Feature>
-        <Feature>GATT 3/23</Feature>
-        <Feature>GATT 3/5</Feature>
-        <Feature>GATT 4/10</Feature>
-        <Feature>GATT 4/15</Feature>
-        <Feature>GATT 4/7</Feature>
+        <Feature>GATT 9/3</Feature>
+        <Feature>GATT 8/2</Feature>
+        <Feature>GATT 10/2</Feature>
+        <Feature>GATT 9/13</Feature>
+        <Feature>GATT 7/8</Feature>
+        <Feature>GATT 10/9</Feature>
+        <Feature>GATT 9/9</Feature>
+        <Feature>GATT 3/10</Feature>
+        <Feature>GATT 3/11</Feature>
+        <Feature>GATT 3/18</Feature>
+        <Feature>GATT 4/20</Feature>
+        <Feature>GATT 4/23</Feature>
+        <Feature>GATT 4/26</Feature>
+        <Feature>GATT 3a/1</Feature>
+        <Feature>GATT 9/12</Feature>
+        <Feature>GATT 1a/1</Feature>
+        <Feature>GATT 1a/3</Feature>
+        <Feature>GATT 4/11</Feature>
+        <Feature>GATT 4/12</Feature>
+        <Feature>GATT 4/9</Feature>
+        <Feature>GATT 7/2</Feature>
       </Features>
     </Layer>
     <Layer Layer="SM">
       <Features>
-        <Feature>SM 7b/2</Feature>
-        <Feature>SM 3/1</Feature>
-        <Feature>SM 5/2</Feature>
+        <Feature>SM 4/1</Feature>
+        <Feature>SM 5/3</Feature>
         <Feature>SM 7a/2</Feature>
         <Feature>SM 2/2</Feature>
         <Feature>SM 5/1</Feature>
         <Feature>SM 5/4</Feature>
+        <Feature>SM 7b/1</Feature>
+        <Feature>SM 4/3</Feature>
+        <Feature>SM 7b/2</Feature>
+        <Feature>SM 3/1</Feature>
+        <Feature>SM 5/2</Feature>
+        <Feature>SM 1/1</Feature>
+        <Feature>SM 2/1</Feature>
         <Feature>SM 1/2</Feature>
-        <Feature>SM 4/1</Feature>
-        <Feature>SM 5/3</Feature>
         <Feature>SM 7a/1</Feature>
         <Feature>SM 2/3</Feature>
         <Feature>SM 2/5</Feature>
         <Feature>SM 4/2</Feature>
-        <Feature>SM 1/1</Feature>
-        <Feature>SM 2/1</Feature>
-        <Feature>SM 7b/1</Feature>
-        <Feature>SM 4/3</Feature>
       </Features>
     </Layer>
     <Layer Layer="ATT">
       <Features>
+        <Feature>ATT 3/10</Feature>
+        <Feature>ATT 3/16</Feature>
         <Feature>ATT 6/1</Feature>
         <Feature>ATT 3/12</Feature>
         <Feature>ATT 3/15</Feature>
         <Feature>ATT 3/18</Feature>
         <Feature>ATT 4/10</Feature>
         <Feature>ATT 4/20</Feature>
+        <Feature>ATT 7/1</Feature>
+        <Feature>ATT 3/30</Feature>
+        <Feature>ATT 3/32</Feature>
+        <Feature>ATT 4/12</Feature>
+        <Feature>ATT 4/22</Feature>
+        <Feature>ATT 4/24</Feature>
+        <Feature>ATT 4/27</Feature>
+        <Feature>ATT 4/7</Feature>
+        <Feature>ATT 4/8</Feature>
+        <Feature>ATT 7/2</Feature>
+        <Feature>ATT 3/23</Feature>
+        <Feature>ATT 3/8</Feature>
+        <Feature>ATT 4/14</Feature>
+        <Feature>ATT 4/17</Feature>
+        <Feature>ATT 4/23</Feature>
+        <Feature>ATT 4/4</Feature>
+        <Feature>ATT 4/5</Feature>
         <Feature>ATT 7/3</Feature>
         <Feature>ATT 4/32</Feature>
         <Feature>ATT 2/2</Feature>
@@ -472,22 +488,24 @@
         <Feature>ATT 4/3</Feature>
         <Feature>ATT 4/6</Feature>
         <Feature>ATT 4/9</Feature>
-        <Feature>ATT 7/1</Feature>
-        <Feature>ATT 3/30</Feature>
-        <Feature>ATT 3/32</Feature>
-        <Feature>ATT 4/12</Feature>
-        <Feature>ATT 4/22</Feature>
-        <Feature>ATT 4/24</Feature>
-        <Feature>ATT 4/27</Feature>
-        <Feature>ATT 4/7</Feature>
-        <Feature>ATT 4/8</Feature>
+        <Feature>ATT 1/2</Feature>
+        <Feature>ATT 3/1</Feature>
+        <Feature>ATT 3/13</Feature>
+        <Feature>ATT 3/2</Feature>
+        <Feature>ATT 3/20</Feature>
+        <Feature>ATT 3/24</Feature>
+        <Feature>ATT 3/27</Feature>
+        <Feature>ATT 3/5</Feature>
+        <Feature>ATT 4/11</Feature>
+        <Feature>ATT 4/15</Feature>
+        <Feature>ATT 4/18</Feature>
+        <Feature>ATT 4/25</Feature>
+        <Feature>ATT 4/28</Feature>
         <Feature>ATT 1/1</Feature>
         <Feature>ATT 4/31</Feature>
         <Feature>ATT 3/26</Feature>
         <Feature>ATT 4/1</Feature>
         <Feature>ATT 4/13</Feature>
-        <Feature>ATT 3/10</Feature>
-        <Feature>ATT 3/16</Feature>
         <Feature>ATT 2/3a</Feature>
         <Feature>ATT 3/31</Feature>
         <Feature>ATT 4/33</Feature>
@@ -502,57 +520,37 @@
         <Feature>ATT 4/16</Feature>
         <Feature>ATT 4/2</Feature>
         <Feature>ATT 4/26</Feature>
-        <Feature>ATT 1/2</Feature>
-        <Feature>ATT 3/1</Feature>
-        <Feature>ATT 3/13</Feature>
-        <Feature>ATT 3/2</Feature>
-        <Feature>ATT 3/20</Feature>
-        <Feature>ATT 3/24</Feature>
-        <Feature>ATT 3/27</Feature>
-        <Feature>ATT 3/5</Feature>
-        <Feature>ATT 4/11</Feature>
-        <Feature>ATT 4/15</Feature>
-        <Feature>ATT 4/18</Feature>
-        <Feature>ATT 4/25</Feature>
-        <Feature>ATT 4/28</Feature>
-        <Feature>ATT 7/2</Feature>
-        <Feature>ATT 3/23</Feature>
-        <Feature>ATT 3/8</Feature>
-        <Feature>ATT 4/14</Feature>
-        <Feature>ATT 4/17</Feature>
-        <Feature>ATT 4/23</Feature>
-        <Feature>ATT 4/4</Feature>
-        <Feature>ATT 4/5</Feature>
       </Features>
     </Layer>
     <Layer Layer="CORE">
       <Features>
-        <Feature>CORE 12/3</Feature>
-        <Feature>CORE 11/2</Feature>
-        <Feature>CORE 11/1</Feature>
-        <Feature>CORE 2a/60</Feature>
-        <Feature>CORE 12/1</Feature>
-        <Feature>CORE 11/6</Feature>
-        <Feature>CORE 20a/1</Feature>
-        <Feature>CORE 2b/60</Feature>
-        <Feature>CORE 20/4</Feature>
-        <Feature>CORE 2a/50</Feature>
-        <Feature>CORE 2a/53</Feature>
-        <Feature>CORE 31/2</Feature>
         <Feature>CORE 2a/54</Feature>
         <Feature>CORE 2a/51</Feature>
         <Feature>CORE 41/2</Feature>
         <Feature>CORE 11/5</Feature>
         <Feature>CORE 2a/52</Feature>
-        <Feature>CORE 2/60</Feature>
-        <Feature>CORE 2/1</Feature>
+        <Feature>CORE 2b/61</Feature>
+        <Feature>CORE 12/3</Feature>
+        <Feature>CORE 11/6</Feature>
+        <Feature>CORE 20a/1</Feature>
+        <Feature>CORE 20/4</Feature>
+        <Feature>CORE 2a/50</Feature>
         <Feature>CORE 40/2</Feature>
         <Feature>CORE 11/3</Feature>
+        <Feature>CORE 11/2</Feature>
+        <Feature>CORE 11/1</Feature>
+        <Feature>CORE 2a/60</Feature>
+        <Feature>CORE 12/1</Feature>
+        <Feature>CORE 2/61</Feature>
+        <Feature>CORE 2/1</Feature>
+        <Feature>CORE 2a/53</Feature>
+        <Feature>CORE 2a/61</Feature>
+        <Feature>CORE 31/2</Feature>
       </Features>
     </Layer>
     <Layer Layer="UHCI">
       <Features>
-        <Feature>UHCI 0/60</Feature>
+        <Feature>UHCI 0/61</Feature>
       </Features>
     </Layer>
   </Layers>
