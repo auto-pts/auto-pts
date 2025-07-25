@@ -123,6 +123,7 @@ def set_pixits(ptses):
     pts.set_pixit("GAP", "TSPX_iut_valid_connection_interval_max", "03C0")
     pts.set_pixit("GAP", "TSPX_iut_valid_connection_latency", "0006")
     pts.set_pixit("GAP", "TSPX_iut_valid_timeout_multiplier", "0962")
+    pts.set_pixit("GAP", "TSPX_Tgap_conn_param_timeout", "30000")
     pts.set_pixit("GAP", "TSPX_iut_invalid_connection_interval_min", "0008")
     pts.set_pixit("GAP", "TSPX_iut_invalid_connection_interval_max", "00AA")
     pts.set_pixit("GAP", "TSPX_iut_invalid_connection_latency", "0000")
