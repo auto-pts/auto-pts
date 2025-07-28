@@ -15,19 +15,32 @@
 #
 
 """Utilities"""
+import csv
 import ctypes
 import logging
 import os
+import re
 import sys
 import threading
 import traceback
 import xmlrpc.client
+from collections import defaultdict
+from pathlib import Path
 from time import sleep
 
 import hid
 import psutil
 
 PTS_WORKSPACE_FILE_EXT = ".pqw6"
+
+# Global paths for wid report
+BASE_DIR = Path(__file__).parent.parent.resolve()
+LOG_DIR = BASE_DIR / "logs"
+OUTPUT_CSV_PATH = BASE_DIR / "wid_usage_report.csv"
+
+# Regex patterns for log field parsing in wid report
+WID_REGEX = re.compile(r"^wid:\s*(\S+)")
+TC_NAME_REGEX = re.compile(r"^test_case_name:\s*(.+)")
 
 # A mechanism for safely terminating threads
 # after interrupt triggered with Ctrl+C
@@ -475,6 +488,81 @@ def log_memory_usage():
 
     mem_usage = mem_info.rss / (1024 ** 2)
     logging.debug(f"Memory usage: {mem_usage:.2f} MB")
+
+
+def extract_wid_testcases_to_csv():
+
+    # Example log block format:
+    # BEGIN OnImplicitSend:
+    # wid: 35
+    # test_case_name: GAP/ADV/BV-01-C
+    # ...
+    # END OnImplicitSend
+
+    profile_wid_map = defaultdict(lambda: defaultdict(set))
+
+    for log_file in LOG_DIR.rglob("*.log"):
+        logging.debug(f"Processing log file: {log_file}")
+        try:
+            with log_file.open(encoding='utf-8', errors='ignore') as f:
+                lines = f.readlines()
+        except Exception as e:
+            logging.warning(f"Failed to read {log_file}: {e}")
+            continue
+
+        # Track wheter inside an OnImplicitSend block
+        in_implicit_send_block = False
+        wid = None
+        test_case_name = None
+
+        for line in lines:
+            stripped = line.strip()
+
+            # Detect start of a new block
+            if not in_implicit_send_block and stripped.startswith("BEGIN OnImplicitSend:"):
+                in_implicit_send_block = True
+                wid = None
+                test_case_name = None
+
+            elif in_implicit_send_block:
+                # Match and extractWID and TC fields
+                wid_match = WID_REGEX.match(stripped)
+                tc_name_match = TC_NAME_REGEX.match(stripped)
+
+                if wid_match:
+                    wid = wid_match.group(1)
+                elif tc_name_match:
+                    test_case_name = tc_name_match.group(1)
+                elif stripped == "END OnImplicitSend":
+                    # End of block - store data if complete
+                    if wid and test_case_name:
+                        if '/' in test_case_name:
+                            profile = test_case_name.split('/')[0]
+                        else:
+                            profile = "UNKNOWN"
+                            logging.warning(f"Missing profile prefix in test_case_name: '{test_case_name}'")
+
+                        profile_wid_map[profile][wid].add(test_case_name)
+                    else:
+                        logging.error(
+                            "INCOMPLETE BLOCK:\n"
+                            f"  File           : {log_file.name}\n"
+                            f"  WID            : {wid!r}\n"
+                            f"  TestCase Name  : {test_case_name!r}"
+                        )
+                    in_implicit_send_block = False
+                    wid = None
+                    test_case_name = None
+
+    # Output results to CSV grouped by profile and wid
+    with OUTPUT_CSV_PATH.open('w', newline='', encoding='utf-8') as csvfile:
+        writer = csv.writer(csvfile)
+        for profile in sorted(profile_wid_map.keys()):
+            writer.writerow([f'{profile}'])
+            for wid in sorted(profile_wid_map[profile], key=lambda x: int(x)):
+                testcases = sorted(profile_wid_map[profile][wid])
+                testcases_combined = " ".join(testcases)
+                writer.writerow([wid, testcases_combined])
 
 
 def main():

@@ -54,6 +54,7 @@ from autopts.utils import (
     ResultWithFlag,
     RunEnd,
     active_hub_server_replug_usb,
+    extract_wid_testcases_to_csv,
     get_global_end,
     have_admin_rights,
     raise_on_global_end,
@@ -699,6 +700,9 @@ class TestCaseRunStats:
             descriptions[tc_xml.attrib["name"]] = tc_xml.attrib["description"]
 
         return descriptions
+
+    def get_wid_usage(self):
+        extract_wid_testcases_to_csv()
 
     def get_results(self):
         tree = ElementTree.parse(self.xml_results)

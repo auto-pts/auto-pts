@@ -128,6 +128,7 @@ class BotConfigArgs(Namespace):
         self.dongle_init_retry = args.get('dongle_init_retry', 5)
         self.build_env_cmd = args.get('build_env_cmd', None)
         self.copy = args.get('copy', True)
+        self.wid_usage = args.get('wid_usage', False)
 
         if self.ykush or self.active_hub_server:
             self.usb_replug_available = True
@@ -531,6 +532,9 @@ class BotClient(Client):
         report_data['platform'] = stats.platform
         report_data['system_version'] = stats.system_version
         report_data['database_file'] = self.bot_config['auto_pts'].get('database_file', DATABASE_FILE)
+
+        if self.args.wid_usage:
+            stats.get_wid_usage()
 
         report_data['tc_results'] = collections.OrderedDict(sorted(report_data['tc_results'].items()))
 
