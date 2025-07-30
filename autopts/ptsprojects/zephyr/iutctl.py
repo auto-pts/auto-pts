@@ -284,7 +284,7 @@ class ZephyrCtl:
             self.btp_socket.close()
             self.btp_socket = None
 
-        if self.net_tty_file:
+        if self.uart_logger:
             self.uart_logger.close()
 
         if self.native_process and self.native_process.poll() is None:

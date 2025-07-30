@@ -429,7 +429,7 @@ class LoggerWorker:
             try:
                 data = self._ser.read(99999)
             except serial.SerialException:
-                pass
+                continue
             text = data.decode('utf-8', errors='replace')
             self._log_file.write(text)
 
@@ -449,4 +449,8 @@ class LoggerWorker:
                 log('Waiting for _rx_worker to finish ...')
                 self._rx_worker.join(timeout=1)
 
-        self._ser.close()
+        if self._ser:
+            self._ser.close()
+
+        if self._log_file:
+            self._log_file.close()
