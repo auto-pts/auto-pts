@@ -86,8 +86,9 @@ class TestCaseTable:
                         )
                         self.conn_merge.commit()
 
-        source_cursor.close()
-        source_conn.close()
+            source_cursor.close()
+            source_conn.close()
+
         self._close()
 
 
