@@ -26,6 +26,7 @@ import serial
 from autopts.ptsprojects.boards import Board, get_debugger_snr, tty_to_com
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.utils.btproxy import Btproxy, find_hci_device, btmgmt_power_off_hci
+from autopts.ptsprojects.utils.btattach import Btattach
 from autopts.ptsprojects.utils.native import NativeIUT
 from autopts.ptsprojects.utils.qemu import QEMU
 from autopts.pybtp import defs
@@ -68,6 +69,10 @@ def get_native_cmd(kernel_image, hci, tty_baudrate, btp_address):
     )
 
 
+def get_btattach_cmd(btattach_bin, tty, tty_baudrate):
+    return f"{btattach_bin} -B {tty} -S {tty_baudrate} -R"
+
+
 def get_btproxy_cmd(btproxy_bin, hci):
     return f"{btproxy_bin} -u -i {hci} -z"
 
@@ -89,6 +94,7 @@ class ZephyrCtl:
         self.tty_file = args.tty_file
         self.net_tty_file = args.net_tty_file
         self.tty_baudrate = args.tty_baudrate
+        self.btattach_bin = args.btattach_bin
         self.btproxy_bin = args.btproxy_bin
         self.qemu_bin = args.qemu_bin
         self.qemu_options = args.qemu_options
@@ -133,11 +139,13 @@ class ZephyrCtl:
             self._start_mode = self._start_qemu_mode
             self._stop_mode = self._stop_qemu_mode
             self._btproxy = Btproxy() if self.btproxy_bin else None
+            self._btattach = Btattach() if self.btattach_bin else None
 
         elif self.mode == "hci":
             self._native = NativeIUT()
             self._start_mode = self._start_native_mode
             self._stop_mode = self._stop_native_mode
+            self._btattach = Btattach() if self.btattach_bin else None
 
         else:
             raise Exception(f"Mode {self.mode} is not supported.")
@@ -221,6 +229,10 @@ class ZephyrCtl:
         self.socket_srv.open_as_unix(self.btp_address)
         self.btp_socket = BTPWorker(self.socket_srv)
 
+        if self._btattach:
+            btattach_cmd = get_btattach_cmd(self.btattach_bin, self.tty_file, self.tty_baudrate)
+            self.hci = self._btattach.start(btattach_cmd, log_dir=test_case.log_dir)
+
         if self._btproxy:
             if self.hid_serial:
                 self.hci = find_hci_device(self.hid_vid, self.hid_pid, self.hid_serial)
@@ -243,6 +255,10 @@ class ZephyrCtl:
         self.socket_srv = BTPSocketSrv(test_case.log_dir)
         self.socket_srv.open_as_unix(self.btp_address)
         self.btp_socket = BTPWorker(self.socket_srv)
+
+        if self._btattach:
+            btattach_cmd = get_btattach_cmd(self.btattach_bin, self.tty_file, self.tty_baudrate)
+            self.hci = self._btattach.start(btattach_cmd, log_dir=test_case.log_dir)
 
         if self.hid_serial:
             self.hci = find_hci_device(self.hid_vid, self.hid_pid, self.hid_serial)
@@ -385,6 +401,9 @@ class ZephyrCtl:
             self.btp_socket.close()
             self.btp_socket = None
 
+        if self._btattach:
+            self._btattach.close()
+
         if self._qemu:
             self._qemu.close()
 
@@ -395,6 +414,9 @@ class ZephyrCtl:
         if self.btp_socket:
             self.btp_socket.close()
             self.btp_socket = None
+
+        if self._btattach:
+            self._btattach.close()
 
         if self._native:
             self._native.close()
