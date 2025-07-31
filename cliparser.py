@@ -30,8 +30,14 @@ log = logging.debug
 
 
 class CliParser(argparse.ArgumentParser):
-    def __init__(self, cli_support=None, board_names=None, add_help=True):
+    def __init__(self, cli_support, board_names=None, add_help=True):
         super().__init__(description='PTS automation client', add_help=add_help)
+
+        self.cli_support = cli_support
+
+        self.add_argument("--mode", type=str, choices=cli_support, default=None,
+                          help="Specify the IUT mode. If the option is not provided, "
+                               "mode will be inferred from the parameters.")
 
         self.add_argument("-i", "--ip_addr", nargs="+",
                           help="IP address of the PTS automation servers")
@@ -123,19 +129,30 @@ class CliParser(argparse.ArgumentParser):
 
         self.add_argument("--active-hub-server", type=str, help=argparse.SUPPRESS)
 
-        if cli_support is None:
-            return
+        self.add_argument("--project_path", type=str, help=argparse.SUPPRESS)
 
-        self.cli_support = cli_support
+        self.add_argument("--btproxy-bin", "--btproxy_bin", default=None,
+                          help="The path to the btproxy executable, e.g. /usr/bin/btproxy")
+        self.add_argument("--qemu-bin", "--qemu_bin", default=None,
+                          help="The path to the QEMU executable, e.g. /usr/bin/qemu-system-arm")
+        self.add_argument("--qemu-options", "--qemu_options", type=str, nargs='+', default="",
+                          help="Additional options for the qemu, e.g. -cpu cortex-m3 -machine lm3s6965evb")
+        self.add_argument("--kernel-cpu", "--kernel_cpu", default="qemu_cortex_m3",
+                          help="The type of CPU that will be used for building an image, e.g. qemu_cortex_m3")
 
-        if 'qemu' in self.cli_support:
-            self.add_argument("--qemu_bin", default=None)
-
-        if 'hci' in self.cli_support:
-            self.add_argument("--hci", type=int, default=None,
-                              help="Specify the number of the"
-                                   " HCI controller(currently only used "
-                                   "under native posix)")
+        self.add_argument("--hci", type=int, default=None,
+                          help="Specify the number of the HCI controller")
+        self.add_argument("--hid-vid", "--hid_vid", type=int, default=None,
+                          help="Specify the VID of the USB device used as a HCI controller")
+        self.add_argument("--hid-pid", "--hid_pid", type=int, default=None,
+                          help="Specify the PID of the USB device used as a HCI controller")
+        self.add_argument("--hid-serial", "--hid_serial", type=int, default=None,
+                          help="Specify the serial number of the USB device used as a HCI controller")
+        self.add_argument("--setcap-cmd", "--setcap_cmd", type=str, default=None,
+                          help="Command to set HCI access permissions for zephyr.exe in native mode, "
+                          "e.g. sudo /usr/sbin/setcap cap_net_raw,cap_net_admin,cap_sys_admin+ep /path/to/zephyr.exe "
+                          "To allow sudo setcap without password, add to visudo a line like this: "
+                          "youruser ALL=(ALL) NOPASSWD: /usr/sbin/setcap")
 
         if 'tty' in self.cli_support and board_names:
             self.add_argument("-t", "--tty-file",
@@ -241,19 +258,19 @@ class CliParser(argparse.ArgumentParser):
         if args.qemu_bin and not find_executable(args.qemu_bin):
             msg += f'QEMU mode: {args.qemu_bin} is needed but not found!\n'
 
-        if args.kernel_image is None or not os.path.isfile(args.kernel_image):
+        if not args.project_path and (args.kernel_image is None or not os.path.isfile(args.kernel_image)):
             msg += f'QEMU mode: kernel_image {repr(args.kernel_image)} is not a file!\n'
 
         return msg
 
     def check_args_hci(self, args):
-        if args.hci is None:
+        if args.hci is None and not all([args.hid_vid, args.hid_pid, args.hid_serial]):
             return 'HCI mode: hci port was not specified!\n'
 
-        if args.kernel_image is None or not os.path.isfile(args.kernel_image):
+        if not args.project_path and (args.kernel_image is None or not os.path.isfile(args.kernel_image)):
             return f'HCI mode: kernel_image {repr(args.kernel_image)} is not a file!\n'
 
-        args.sudo = True
+        # args.sudo = True
 
         return ''
 
@@ -296,14 +313,17 @@ class CliParser(argparse.ArgumentParser):
         if not args.local_addr:
             args.local_addr = ['127.0.0.1'] * len(args.cli_port)
 
-        for cli in self.cli_support:
-            check_method = getattr(self, f'check_args_{cli}')
+        modes = [args.mode] if args.mode else self.cli_support
+
+        for mode in modes:
+            check_method = getattr(self, f'check_args_{mode}')
             msg = check_method(args)
 
             if msg != '':
                 errmsg += msg
             else:
                 errmsg = ''
+                args.mode = mode
                 break
 
         return args, errmsg
