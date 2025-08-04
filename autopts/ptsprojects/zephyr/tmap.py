@@ -47,7 +47,7 @@ def set_pixits(ptses):
     pts.set_pixit("TMAP", "TSPX_Extended_Adv_Interval_max", "1200")
     pts.set_pixit("TMAP", "TSPX_Periodic_Adv_Interval_min", "600")
     pts.set_pixit("TMAP", "TSPX_Periodic_Adv_Interval_max", "600")
-    pts.set_pixit("TMAP", "TSPX_TARGET_LATENCY", "TARGET_LOWER_LATENCY")
+    pts.set_pixit("TMAP", "TSPX_TARGET_LATENCY", "TARGET_BALANCED_LATENCY_RELIABILITY")
     pts.set_pixit("TMAP", "TSPX_TARGET_PHY", "LE_2M_PHY")
 
 
