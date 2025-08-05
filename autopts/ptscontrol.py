@@ -673,7 +673,7 @@ class PyPTS:
             os.remove(self._temp_workspace_path)
 
     @pts_lock_wrapper(PTS_START_LOCK)
-    def open_workspace(self, workspace_path, copy):
+    def open_workspace(self, workspace_path, copy=False):
         """Opens existing workspace"""
 
         log(f"open_workspace {workspace_path}")
