@@ -141,9 +141,9 @@ if __name__ == "__main__":
 
     rc = 1
 
-    if have_admin_rights():  # root privileges are not needed
-        print("Please do not run this program as root.")
-        sys.exit(1)
+    # if have_admin_rights():  # root privileges are not needed
+    #     print("Please do not run this program as root.")
+    #     sys.exit(1)
 
     try:
         prev_sigint_handler = signal.getsignal(signal.SIGINT)

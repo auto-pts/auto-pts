@@ -17,7 +17,6 @@
 import logging
 import os
 import shlex
-import socket
 import subprocess
 import sys
 import time
@@ -26,6 +25,10 @@ import serial
 
 from autopts.ptsprojects.boards import Board, get_debugger_snr, tty_to_com
 from autopts.ptsprojects.stack import get_stack
+from autopts.ptsprojects.utils.btproxy import Btproxy, find_hci_device, btmgmt_power_off_hci
+from autopts.ptsprojects.utils.btattach import Btattach
+from autopts.ptsprojects.utils.native import NativeIUT
+from autopts.ptsprojects.utils.qemu import QEMU
 from autopts.pybtp import defs
 from autopts.pybtp.iutctl_common import BTP_ADDRESS, BTPSocketSrv, BTPWorker, LoggerWorker
 from autopts.rtt import BTMON, RTTLogger
@@ -37,24 +40,41 @@ ZEPHYR = None
 # qemu binary should be installed in shell PATH
 QEMU_BIN = "qemu-system-arm"
 
-SERIAL_BAUDRATE = int(os.getenv("AUTOPTS_SERIAL_BAUDRATE", "115200"))
 CLI_SUPPORT = ['tty', 'hci', 'qemu']
 
 
-def get_qemu_cmd(kernel_image):
+def get_qemu_cmd(kernel_image, qemu_bin, btp_address=BTP_ADDRESS, qemu_options=""):
     """Returns qemu command to start Zephyr
 
     kernel_image -- Path to Zephyr kernel image"""
 
     qemu_cmd = (
-        f"{QEMU_BIN} -cpu cortex-m3 -machine lm3s6965evb -nographic "
+        f"{qemu_bin} -nographic "
         f"-serial mon:stdio "
-        f"-serial unix:{BTP_ADDRESS} "
+        f"-serial unix:{btp_address} "
         f"-serial unix:/tmp/bt-server-bredr "
-        f"-kernel {kernel_image}"
+        f"-kernel {kernel_image} "
+        f"{qemu_options}"
     )
 
     return qemu_cmd
+
+
+def get_native_cmd(kernel_image, hci, tty_baudrate, btp_address):
+    """Return native command"""
+
+    return (
+        f"{kernel_image} --bt-dev=hci{hci} "
+        f'--attach_uart_cmd="socat -x -v %s,rawer,b{tty_baudrate} UNIX-CONNECT:{btp_address} &"'
+    )
+
+
+def get_btattach_cmd(btattach_bin, tty, tty_baudrate):
+    return f"{btattach_bin} -B {tty} -S {tty_baudrate} -R"
+
+
+def get_btproxy_cmd(btproxy_bin, hci):
+    return f"{btproxy_bin} -u -i {hci} -z"
 
 
 class ZephyrCtl:
@@ -66,27 +86,27 @@ class ZephyrCtl:
             self.__class__, self.__init__.__name__, args.kernel_image,
             args.tty_file, args.board_name)
 
+        self.mode = args.mode
         self.pylink_reset = args.pylink_reset
         self.device_core = args.device_core
         self.debugger_snr = args.debugger_snr
         self.kernel_image = args.kernel_image
         self.tty_file = args.tty_file
         self.net_tty_file = args.net_tty_file
+        self.tty_baudrate = args.tty_baudrate
+        self.btattach_bin = args.btattach_bin
+        self.btproxy_bin = args.btproxy_bin
+        self.qemu_bin = args.qemu_bin
+        self.qemu_options = args.qemu_options
+        self.btmgmt_bin = args.btmgmt_bin
+        self.hid_vid = args.hid_vid
+        self.hid_pid = args.hid_pid
+        self.hid_serial = args.hid_serial
         self.hci = args.hci
-        self.native = None
         self.gdb = args.gdb
         self.is_running = False
-
-        if self.tty_file and args.board_name:  # DUT is a hardware board, not QEMU
-            if self.debugger_snr is None:
-                self.debugger_snr = get_debugger_snr(self.tty_file)
-            self.board = Board(args.board_name, self)
-        else:  # DUT is QEMU or a board that won't be reset
-            self.board = None
-
-        self.qemu_process = None
-        self.native_process = None
-        self.socat_process = None
+        self.board = None
+        self.btp_address = BTP_ADDRESS
         self.socket_srv = None
         self.btp_socket = None
         self.test_case = None
@@ -94,88 +114,168 @@ class ZephyrCtl:
         self.rtt_logger = None
         self.btmon = None
         self.uart_logger = None
+        self._start_mode = None
 
-        if self.debugger_snr:
-            self.btp_address = BTP_ADDRESS + self.debugger_snr
-            self.rtt_logger = RTTLogger() if args.rtt_log else None
-            self.btmon = BTMON() if args.btmon else None
+        if self.mode == "tty":
+            if self.debugger_snr is None:
+                self.debugger_snr = get_debugger_snr(self.tty_file)
+
+            self.board = Board(args.board_name, self)
+
+            if self.debugger_snr:
+                self.btp_address = BTP_ADDRESS + self.debugger_snr
+                self.rtt_logger = RTTLogger() if args.rtt_log else None
+                self.btmon = BTMON() if args.btmon else None
+
+            if sys.platform == "win32":
+                self._start_mode = self._start_tty_mode_windows
+            else:
+                self._start_mode = self._start_tty_mode_linux
+
+            self._stop_mode = self._stop_tty_mode
+
+        elif self.mode == "qemu":
+            self._qemu = QEMU()
+            self._start_mode = self._start_qemu_mode
+            self._stop_mode = self._stop_qemu_mode
+            self._btproxy = Btproxy() if self.btproxy_bin else None
+            self._btattach = Btattach() if self.btattach_bin else None
+
+        elif self.mode == "hci":
+            self._native = NativeIUT()
+            self._start_mode = self._start_native_mode
+            self._stop_mode = self._stop_native_mode
+            self._btattach = Btattach() if self.btattach_bin else None
+
         else:
-            self.btp_address = BTP_ADDRESS
+            raise Exception(f"Mode {self.mode} is not supported.")
 
     def start(self, test_case):
         """Starts the Zephyr OS"""
 
-        log("%s.%s", self.__class__, self.start.__name__)
+        log(f"{self.__class__}.{self.start.__name__}")
 
         self.is_running = True
         self.test_case = test_case
 
+        self._start_mode(test_case)
+
+    def _start_tty_mode_linux(self, test_case):
         # We will reset HW after BTP socket is open. If the board was
         # reset before this happened, it is possible to receive none,
         # partial or whole IUT ready event. Flush serial to ignore it.
         self.flush_serial()
 
         self.socket_srv = BTPSocketSrv(test_case.log_dir)
-        self.socket_srv.open(self.btp_address)
+        self.socket_srv.open_as_unix(self.btp_address)
         self.btp_socket = BTPWorker(self.socket_srv)
 
-        if self.tty_file:
-            if sys.platform == "win32":
-                # On windows socat.exe does not support setting serial baud rate.
-                # Set it with 'mode' from cmd.exe
-                com = tty_to_com(self.tty_file)
-                mode_cmd = (">nul 2>nul cmd.exe /c \"mode " + com + f"BAUD={SERIAL_BAUDRATE} PARITY=n DATA=8 STOP=1\"")
-                os.system(mode_cmd)
+        socat_cmd = f"socat -x -v {self.tty_file},rawer,b{self.tty_baudrate} UNIX-CONNECT:{self.btp_address}"
 
-                socat_cmd = (
-                    f"socat.exe -x -v tcp:{socket.gethostbyname(socket.gethostname())}:"
-                    f"{self.socket_srv.sock.getsockname()[1]},retry=100,interval=1 "
-                    f"{self.tty_file},raw,b{SERIAL_BAUDRATE}"
-                )
-            else:
-                socat_cmd = f"socat -x -v {self.tty_file},rawer,b{SERIAL_BAUDRATE} UNIX-CONNECT:{self.btp_address}"
+        log(f"Starting socat process: {socat_cmd}")
 
-            log("Starting socat process: %s", socat_cmd)
-
-            # socat dies after socket is closed, so no need to kill it
-            self.socat_process = subprocess.Popen(shlex.split(socat_cmd),
-                                                  shell=False,
-                                                  stdout=subprocess.DEVNULL,
-                                                  stderr=subprocess.DEVNULL)
-        elif self.hci is not None:
-            self.iut_log_file = open(test_case.log_dir / "autopts-iutctl-zephyr.log", "a")
-            socat_cmd = f"socat -x -v %%s,rawer,b{SERIAL_BAUDRATE} UNIX-CONNECT:{self.btp_address} &"
-
-            native_cmd = (
-                f"{self.kernel_image} --bt-dev=hci{self.hci} "
-                f'--attach_uart_cmd="{socat_cmd}"'
-            )
-
-            log("Starting native zephyr process: %s", native_cmd)
-
-            # TODO check if zephyr process has started correctly
-            self.native_process = subprocess.Popen(shlex.split(native_cmd),
-                                                   shell=False,
-                                                   stdout=self.iut_log_file,
-                                                   stderr=self.iut_log_file)
-        else:
-            self.iut_log_file = open(test_case.log_dir / "autopts-iutctl-zephyr.log", "a")
-            qemu_cmd = get_qemu_cmd(self.kernel_image)
-
-            log("Starting QEMU zephyr process: %s", qemu_cmd)
-
-            # TODO check if zephyr process has started correctly
-            self.qemu_process = subprocess.Popen(shlex.split(qemu_cmd),
-                                                 shell=False,
-                                                 stdout=self.iut_log_file,
-                                                 stderr=self.iut_log_file)
+        # socat dies after socket is closed, so no need to kill it
+        self._socat_process = subprocess.Popen(shlex.split(socat_cmd),
+                                               shell=False,
+                                               stdout=subprocess.DEVNULL,
+                                               stderr=subprocess.DEVNULL)
 
         self.btp_socket.accept()
 
         if self.net_tty_file:
-            self.uart_logger = LoggerWorker(self.net_tty_file, SERIAL_BAUDRATE,
+            self.uart_logger = LoggerWorker(self.net_tty_file, self.tty_baudrate,
                                             self.test_case.log_dir)
             self.uart_logger.start()
+
+    def _start_tty_mode_windows(self, test_case):
+        # We will reset HW after BTP socket is open. If the board was
+        # reset before this happened, it is possible to receive none,
+        # partial or whole IUT ready event. Flush serial to ignore it.
+        self.flush_serial()
+
+        self.socket_srv = BTPSocketSrv(test_case.log_dir)
+        self.socket_srv.open_as_tcp()
+        self.btp_socket = BTPWorker(self.socket_srv)
+
+        # On windows socat.exe does not support setting serial baud rate.
+        # Set it with 'mode' from cmd.exe
+        com = tty_to_com(self.tty_file)
+        mode_cmd = (">nul 2>nul cmd.exe /c \"mode " + com + f"BAUD={self.tty_baudrate} PARITY=n DATA=8 STOP=1\"")
+        os.system(mode_cmd)
+
+        socat_cmd = (
+            f"socat.exe -x -v tcp:{self.socket_srv.tcp_ip}:"
+            f"{self.socket_srv.tcp_port},retry=100,interval=1 "
+            f"{self.tty_file},raw,b{self.tty_baudrate}"
+        )
+
+        log(f"Starting socat process: {socat_cmd}")
+
+        # socat dies after socket is closed, so no need to kill it
+        self._socat_process = subprocess.Popen(shlex.split(socat_cmd),
+                                               shell=False,
+                                               stdout=subprocess.DEVNULL,
+                                               stderr=subprocess.DEVNULL)
+
+        self.btp_socket.accept()
+
+        if self.net_tty_file:
+            self.uart_logger = LoggerWorker(self.net_tty_file, self.tty_baudrate,
+                                            self.test_case.log_dir)
+            self.uart_logger.start()
+
+    def _start_qemu_mode(self, test_case):
+        self.socket_srv = BTPSocketSrv(test_case.log_dir)
+        self.socket_srv.open_as_unix(self.btp_address)
+        self.btp_socket = BTPWorker(self.socket_srv)
+
+        if self._btattach:
+            btattach_cmd = get_btattach_cmd(self.btattach_bin, self.tty_file, self.tty_baudrate)
+            self.hci = self._btattach.start(btattach_cmd, log_dir=test_case.log_dir)
+
+        if self._btproxy:
+            if self.hid_serial:
+                self.hci = find_hci_device(self.hid_vid, self.hid_pid, self.hid_serial)
+                if self.hci is None:
+                    raise Exception(f"Could not find the device: VID={self.hid_vid} "
+                                    f"PID={self.hid_pid} SN={self.hid_serial}")
+
+            btproxy_cmd = get_btproxy_cmd(self.btproxy_bin, self.hci)
+            self._btproxy.start(btproxy_cmd, self.hci, test_case.log_dir, self.btmgmt_bin)
+
+        qemu_cmd = get_qemu_cmd(self.kernel_image, self.qemu_bin, self.btp_address, self.qemu_options)
+
+        log(f"Starting QEMU zephyr process: {qemu_cmd}")
+
+        self._qemu.start(qemu_cmd, "Booting Zephyr OS build", test_case.log_dir)
+
+        self.btp_socket.accept()
+
+    def _start_native_mode(self, test_case):
+        self.socket_srv = BTPSocketSrv(test_case.log_dir)
+        self.socket_srv.open_as_unix(self.btp_address)
+        self.btp_socket = BTPWorker(self.socket_srv)
+
+        if self._btattach:
+            btattach_cmd = get_btattach_cmd(self.btattach_bin, self.tty_file, self.tty_baudrate)
+            self.hci = self._btattach.start(btattach_cmd, log_dir=test_case.log_dir)
+
+        if self.hid_serial:
+            self.hci = find_hci_device(self.hid_vid, self.hid_pid, self.hid_serial)
+            if self.hci is None:
+                raise Exception(f"Could not find the device: VID={self.hid_vid} "
+                                f"PID={self.hid_pid} SN={self.hid_serial}")
+
+        if self.btmgmt_bin:
+            btmgmt_power_off_hci(self.btmgmt_bin, self.hci)
+
+        native_cmd = get_native_cmd(self.kernel_image, self.hci, self.tty_baudrate, self.btp_address)
+
+        log(f"Starting native zephyr process: {native_cmd}")
+
+        self._native.start(native_cmd, test_case.log_dir)
+
+        self.btp_socket.accept()
 
     def flush_serial(self):
         log("%s.%s", self.__class__, self.flush_serial.__name__)
@@ -191,7 +291,7 @@ class ZephyrCtl:
             # BTPWorker/BTPSocket. Although we can still use it for
             # flushing serial if the data does not matter.
             ser = serial.Serial(port=tty,
-                                baudrate=SERIAL_BAUDRATE, timeout=1)
+                                baudrate=self.tty_baudrate, timeout=1)
             ser.read(99999)
             ser.close()
         except serial.SerialException:
@@ -245,7 +345,7 @@ class ZephyrCtl:
             self.btmon_start()
 
     def hw_reset(self):
-        if not self.gdb and self.board:
+        if not self.gdb and self.mode == "tty":
             stack = get_stack()
 
             # For HW, the IUT ready event is triggered at its reset.
@@ -263,12 +363,16 @@ class ZephyrCtl:
         if not self.is_running:
             return
 
+        self._stop_mode()
+
+        self.is_running = False
+
+    def _stop_tty_mode(self):
         self.rtt_logger_stop()
         self.btmon_stop()
 
         stack = get_stack()
-        if not self.gdb and self.board and \
-                stack.core and not get_global_end():
+        if not self.gdb and stack.core and not get_global_end():
 
             stack.core.event_queues[defs.BTP_CORE_EV_IUT_READY].clear()
             self.board.reset()
@@ -287,27 +391,35 @@ class ZephyrCtl:
         if self.net_tty_file:
             self.uart_logger.close()
 
-        if self.native_process and self.native_process.poll() is None:
-            self.native_process.terminate()
-            self.native_process.wait()  # do not let zombies take over
-            self.native_process = None
+        if self._socat_process:
+            self._socat_process.terminate()
+            self._socat_process.wait()
+            self._socat_process = None
 
-        if self.qemu_process and self.qemu_process.poll() is None:
-            time.sleep(1)
-            self.qemu_process.terminate()
-            self.qemu_process.wait()  # do not let zombies take over
-            self.qemu_process = None
+    def _stop_qemu_mode(self):
+        if self.btp_socket:
+            self.btp_socket.close()
+            self.btp_socket = None
 
-        if self.iut_log_file:
-            self.iut_log_file.close()
-            self.iut_log_file = None
+        if self._btattach:
+            self._btattach.close()
 
-        if self.socat_process:
-            self.socat_process.terminate()
-            self.socat_process.wait()
-            self.socat_process = None
+        if self._qemu:
+            self._qemu.close()
 
-        self.is_running = False
+        if self._btproxy:
+            self._btproxy.close()
+
+    def _stop_native_mode(self):
+        if self.btp_socket:
+            self.btp_socket.close()
+            self.btp_socket = None
+
+        if self._btattach:
+            self._btattach.close()
+
+        if self._native:
+            self._native.close()
 
 
 class ZephyrCtlStub:

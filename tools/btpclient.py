@@ -37,6 +37,9 @@ from autopts.pybtp.iutctl_common import BTPSocket
 BTP_SOCKET = None
 QEMU_PROCESS = None
 
+# qemu binary should be installed in shell PATH
+QEMU_BIN = "qemu-system-arm"
+
 # ANSI escape codes for Select Graphic Rendition (SGR) parameters
 sgr_reset = "\x1B[0m"
 sgr_fg_blue = "\x1B[94m"
@@ -257,7 +260,7 @@ class StartZephyrCmd(Cmd):
             print("xterm is needed but not found!")
             return
 
-        qemu_cmd = get_qemu_cmd(kernel_image)
+        qemu_cmd = get_qemu_cmd(kernel_image, QEMU_BIN)
 
         # why running under xterm? cause of -serial mon:stdio: running qemu as
         # subprocess make terminal input impossible in the parent application,

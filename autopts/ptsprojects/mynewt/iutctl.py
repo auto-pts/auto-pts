@@ -35,7 +35,6 @@ MYNEWT = None
 
 IUT_LOG_FO = None
 
-SERIAL_BAUDRATE = int(os.getenv("AUTOPTS_SERIAL_BAUDRATE", "115200"))
 CLI_SUPPORT = ['tty']
 
 
@@ -52,6 +51,7 @@ class MynewtCtl:
         assert args.board_name, "Expected args.board_name to be provided"
 
         self.tty_file = args.tty_file
+        self.tty_baudrate = args.tty_baudrate
         self.pylink_reset = args.pylink_reset
         self.device_core = args.device_core
         self.debugger_snr = get_debugger_snr(self.tty_file) \
@@ -88,16 +88,16 @@ class MynewtCtl:
             # On windows socat.exe does not support setting serial baud rate.
             # Set it with 'mode' from cmd.exe
             com = tty_to_com(self.tty_file)
-            mode_cmd = (">nul 2>nul cmd.exe /c \"mode " + com + f"BAUD={SERIAL_BAUDRATE} PARITY=n DATA=8 STOP=1\"")
+            mode_cmd = (">nul 2>nul cmd.exe /c \"mode " + com + f"BAUD={self.tty_baudrate} PARITY=n DATA=8 STOP=1\"")
             os.system(mode_cmd)
 
             socat_cmd = (
                 f"socat.exe -x -v tcp:{socket.gethostbyname(socket.gethostname())}:"
                 f"{self.socket_srv.sock.getsockname()[1]},retry=100,interval=1 "
-                f"{self.tty_file},raw,b{SERIAL_BAUDRATE}"
+                f"{self.tty_file},raw,b{self.tty_baudrate}"
             )
         else:
-            socat_cmd = f"socat -x -v {self.tty_file},rawer,b{SERIAL_BAUDRATE} UNIX-CONNECT:{self.btp_address}"
+            socat_cmd = f"socat -x -v {self.tty_file},rawer,b{self.tty_baudrate} UNIX-CONNECT:{self.btp_address}"
 
         log("Starting socat process: %s", socat_cmd)
 
@@ -119,7 +119,7 @@ class MynewtCtl:
                 tty = self.tty_file
 
             ser = serial.Serial(port=tty,
-                                baudrate=SERIAL_BAUDRATE, timeout=1)
+                                baudrate=self.tty_baudrate, timeout=1)
             ser.read(99999)
             ser.close()
         except serial.SerialException:
