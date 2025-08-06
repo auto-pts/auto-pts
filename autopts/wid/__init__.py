@@ -78,5 +78,4 @@ __all__ = [
     "generic_wid_hdl",
 ]
 
-
 # GENERATOR append 1
