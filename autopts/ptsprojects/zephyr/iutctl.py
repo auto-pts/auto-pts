@@ -416,29 +416,8 @@ class ZephyrCtl:
             self.board.reset()
 
 
-class ZephyrCtlStub:
-    """Zephyr OS Control Class with stubs for testing"""
-
-    def __init__(self):
-        """Constructor."""
-
-    def start(self):
-        """Starts the Zephyr OS"""
-        log("%s.%s", self.__class__, self.start.__name__)
-
-    def stop(self):
-        """Powers off the Zephyr OS"""
-        log("%s.%s", self.__class__, self.stop.__name__)
-
-
 def get_iut():
     return ZEPHYR
-
-
-def init_stub():
-    """IUT init routine for testings"""
-    global ZEPHYR
-    ZEPHYR = ZephyrCtlStub()
 
 
 def init(args):
