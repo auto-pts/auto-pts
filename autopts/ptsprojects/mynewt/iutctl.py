@@ -224,29 +224,8 @@ class MynewtCtl:
             self.socat_process = None
 
 
-class MynewtCtlStub:
-    """Mynewt OS Control Class with stubs for testing"""
-
-    def __init__(self):
-        """Constructor."""
-
-    def start(self):
-        """Starts the Mynewt OS"""
-        log("%s.%s", self.__class__, self.start.__name__)
-
-    def stop(self):
-        """Powers off the Mynewt OS"""
-        log("%s.%s", self.__class__, self.stop.__name__)
-
-
 def get_iut():
     return MYNEWT
-
-
-def init_stub():
-    """IUT init routine for testings"""
-    global MYNEWT
-    MYNEWT = MynewtCtlStub()
 
 
 def init(args):
