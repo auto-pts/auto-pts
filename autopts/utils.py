@@ -441,26 +441,41 @@ def hid_gpio_hub_set_usb_power(vid, pid, port, on):
 
 
 def active_hub_server_replug_usb(config):
+    if isinstance(config["usb_port"], list):
+        ports = config["usb_port"]
+    else:
+        ports = [config["usb_port"]]
+
     with xmlrpc.client.ServerProxy(uri=f"http://{config['ip']}:{config['tcp_port']}/",
                                    allow_none=True, transport=None,
                                    encoding=None, verbose=False,
                                    use_datetime=False, use_builtin_types=False,
                                    headers=(), context=None) as proxy:
-        logging.debug(f'Power down USB port: {config["usb_port"]}')
-        proxy.set_usb_power(config['usb_port'], False)
+        for port in ports:
+            logging.debug(f'Power down USB port: {port}')
+            proxy.set_usb_power(port, False)
+
         sleep(config['replug_delay'])
-        logging.debug(f'Power up USB port: {config["usb_port"]}')
-        proxy.set_usb_power(config['usb_port'], True)
+
+        for port in ports:
+            logging.debug(f'Power up USB port: {port}')
+            proxy.set_usb_power(port, True)
 
 
 def active_hub_server_set_usb_power(config, on):
+    if isinstance(config["usb_port"], list):
+        ports = config["usb_port"]
+    else:
+        ports = [config["usb_port"]]
+
     with xmlrpc.client.ServerProxy(uri=f"http://{config['ip']}:{config['tcp_port']}/",
                                    allow_none=True, transport=None,
                                    encoding=None, verbose=False,
                                    use_datetime=False, use_builtin_types=False,
                                    headers=(), context=None) as proxy:
 
-        proxy.set_usb_power(config['usb_port'], on)
+        for port in ports:
+            proxy.set_usb_power(port, on)
 
 
 def print_thread_stack_trace():
