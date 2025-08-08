@@ -421,7 +421,7 @@ def hid_gpio_hub_set_usb_power(vid, pid, port, on):
 
     if 1 <= index <= len(cmd) - 1:
         cmd_list = list(cmd)
-        cmd_list[index] = ord('0' if on else '1')
+        cmd_list[index] = ord('1' if on else '0')
         cmd = bytes(cmd_list)
 
     for device in hid.enumerate(vid, pid):
