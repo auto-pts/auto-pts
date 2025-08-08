@@ -1371,7 +1371,7 @@ class Client:
         # Namespace with parsed command line arguments (and bot config)
         self.args = None
         # Command line arguments parser
-        self.arg_parser = parser_class(cli_support=autoprojects.iutctl.CLI_SUPPORT, board_names=self.boards)
+        self.arg_parser = parser_class(board_names=self.boards)
         self.prev_sigint_handler = None
         self.test_case_database = None
 
@@ -1380,13 +1380,6 @@ class Client:
             args_namespace = self.args
 
         self.args, errmsg = self.arg_parser.parse(args_namespace)
-
-        # Workaround for args.usb_replug_available not being set.
-        # See autopts/bot/common.py BotConfigArgs for inspiration.
-        if self.args.ykush or self.args.active_hub_server:
-            self.args.usb_replug_available = True
-        else:
-            self.args.usb_replug_available = False
 
         return errmsg
 
@@ -1445,12 +1438,8 @@ class Client:
         if errmsg != '':
             sys.exit(errmsg)
 
-        # root privileges only needed for native mode.
-        if have_admin_rights():
-            if not self.args.sudo:
-                sys.exit("Please do not run this program as root.")
-        elif self.args.sudo:
-            sys.exit("Please run this program as root.")
+        if not self.args.sudo and have_admin_rights():
+            sys.exit("root privileges detected. Use --sudo to skip this check.")
 
         os.makedirs(self.file_paths["TMP_DIR"], exist_ok=True)
 
@@ -1638,16 +1627,16 @@ def replug_usb(args):
 
         ykush_replug_usb(args.ykush, device_id=device_id, delay=args.ykush_replug_delay)
 
-        if args.tty_alias:
-            while not os.path.islink(args.tty_alias) and not os.path.exists(os.path.realpath(args.tty_alias)):
-                raise_on_global_end()
-                log(f'Waiting for TTY {args.tty_alias} to appear...\n')
-                time.sleep(1)
-
-            args.tty_file = os.path.realpath(args.tty_alias)
-
     elif args.active_hub_server:
         active_hub_server_replug_usb(args.active_hub_server)
+
+    if args.tty_alias:
+        while not os.path.islink(args.tty_alias) and not os.path.exists(os.path.realpath(args.tty_alias)):
+            raise_on_global_end()
+            log(f'Waiting for TTY {args.tty_alias} to appear...\n')
+            time.sleep(1)
+
+        args.tty_file = os.path.realpath(args.tty_alias)
 
 
 def setup_project_name(project):
