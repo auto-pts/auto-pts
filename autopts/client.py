@@ -1377,6 +1377,14 @@ class Client:
             args_namespace = self.args
 
         self.args, errmsg = self.arg_parser.parse(args_namespace)
+
+        # Workaround for args.usb_replug_available not being set.
+        # See autopts/bot/common.py BotConfigArgs for inspiration.
+        if self.args.ykush or self.args.active_hub_server:
+            self.args.usb_replug_available = True
+        else:
+            self.args.usb_replug_available = False
+
         return errmsg
 
     def load_test_case_database(self):
@@ -1443,7 +1451,10 @@ class Client:
 
         os.makedirs(self.file_paths["TMP_DIR"], exist_ok=True)
 
-        self.load_test_case_database()
+        if self.args.test_cases_file:
+            tests = [line.strip() for line in self.args.test_cases_file.readlines() if line.strip()
+                and not line.strip().startswith("#")]
+            self.args.test_cases.extend(tests)
 
         init_pts(self.args, self.ptses)
 

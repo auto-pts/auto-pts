@@ -54,6 +54,9 @@ class CliParser(argparse.ArgumentParser):
                                "test cases can be specified by profile names."
                                 "Option can be used multiple times.")
 
+        self.add_argument("--test-cases-file",
+                          help="", type=argparse.FileType('r'))
+
         self.add_argument("-e", "--excluded", nargs='+', default=[],
                           help="Names of test cases to exclude. Groups of "
                                "test cases can be specified by profile names")
@@ -172,6 +175,11 @@ class CliParser(argparse.ArgumentParser):
                               help="Capture iut logs from device over RTT. "
                               "Requires rtt support on IUT.",
                               action='store_true', default=False)
+
+            self.add_argument("--rtt-log-syncto",
+                              help="Specify the number of seconds that the RTT logging"
+                              "should continue after the test has finished executing.",
+                              type=float, default=0)
 
             self.add_argument("--gdb",
                               help="Skip board resets to avoid gdb server disconnection.",
