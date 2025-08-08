@@ -19,6 +19,7 @@
 
 import importlib
 import os
+import shutil
 import sys
 import time
 import traceback
@@ -28,12 +29,37 @@ import serial
 
 from autopts import bot
 from autopts import client as autoptsclient
-from autopts.bot.common import BotClient, BotConfigArgs, BuildAndFlashException
+from autopts.bot.common import BotClient, BotConfigArgs, BuildAndFlashException, check_call
 from autopts.ptsprojects.boards import get_board_type, get_build_and_flash, tty_to_com
 from autopts.ptsprojects.zephyr import ZEPHYR_PROJECT_URL
 from autopts.ptsprojects.zephyr.iutctl import get_iut, log
 
 PROJECT_NAME = Path(__file__).stem
+
+
+def build_image(zephyr_wd, cpu_type, conf_file=None, env_cmd=None):
+    """Build and flash Zephyr binary
+    :param zephyr_wd: Zephyr source path
+    :param cpu_type: IUT
+    :param conf_file: configuration file to be used
+    :param env_cmd: a command to for environment activation, e.g. source /path/to/venv/activate
+    """
+    log(f"{build_image.__name__}: {zephyr_wd} {cpu_type} {conf_file} {env_cmd}")
+
+    if env_cmd:
+        env_cmd = env_cmd.split() + ['&&']
+    else:
+        env_cmd = []
+
+    tester_dir = os.path.join(zephyr_wd, "tests/bluetooth/tester")
+
+    shutil.rmtree(os.path.join(tester_dir, 'build'), ignore_errors=True)
+
+    cmd = ['west', 'build', '-p', 'auto', '-b', cpu_type]
+    if conf_file and conf_file != 'default' and conf_file != 'prj.conf':
+        cmd.extend(('--', f'-DEXTRA_CONF_FILE=\'{conf_file}\''))
+
+    check_call(env_cmd + cmd, cwd=tester_dir)
 
 
 def flush_serial(tty, rtscts=False, baudrate=115200):
@@ -90,8 +116,6 @@ def zephyr_hash_url(commit):
 class ZephyrBotConfigArgs(BotConfigArgs):
     def __init__(self, args):
         super().__init__(args)
-        self.board_name = args['board']
-        self.tty_file = args.get('tty_file', None)
 
 
 class ZephyrBotCliParser(bot.common.BotCliParser):
@@ -132,7 +156,21 @@ class ZephyrBotClient(BotClient):
 
         log(f"TTY path: {args.tty_file}")
 
-        if not args.no_build:
+        if args.iut_mode != 'tty':
+            iut = self.get_iut()
+            iut.kernel_image = os.path.join(args.project_path, "tests/bluetooth/tester/build/zephyr/zephyr")
+            if args.iut_mode == 'qemu':
+                iut.kernel_image += '.elf'
+            else:
+                iut.kernel_image += '.exe'
+
+        if args.no_build:
+            if args.setcap_cmd:
+                check_call(args.setcap_cmd.split())
+
+            return
+
+        if args.iut_mode == 'tty':
             build_and_flash = get_build_and_flash(args.board_name)
             board_type = get_board_type(args.board_name)
 
@@ -147,6 +185,10 @@ class ZephyrBotClient(BotClient):
                 raise BuildAndFlashException from e
 
             time.sleep(10)
+        else:
+            build_image(args.project_path, args.kernel_cpu, overlays, args.build_env_cmd)
+            if args.setcap_cmd:
+                check_call(args.setcap_cmd.split())
 
     def start(self, args=None):
         super().start(args)

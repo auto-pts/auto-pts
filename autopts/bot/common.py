@@ -67,9 +67,6 @@ class BotCliParser(CliParser):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
 
-        self.add_argument('--nb', dest='no_build', action='store_true',
-                          help='Skip build and flash in bot mode.', default=False)
-
         self.add_argument('--simple', action='store_true',
                           help='Skip build and flash in bot mode.', default=False)
 
@@ -86,6 +83,7 @@ class BotConfigArgs(Namespace):
 
     def __init__(self, args, **kwargs):
         super().__init__(**kwargs)
+        self.iut_mode = args.get('iut_mode', None)
         self.workspace = args['workspace']
         self.project_path = args['project_path']
         self.srv_port = args.get('srv_port', [65000])
@@ -94,6 +92,7 @@ class BotConfigArgs(Namespace):
         self.local_addr = args.get('local_ip', ['127.0.0.1'] * len(self.cli_port))
         self.server_count = args.get('server_count', len(self.cli_port))
         self.tty_file = args.get('tty_file', None)
+        self.board_name = args.get('board', None)
         self.tty_alias = args.get('tty_alias', None)
         self.net_tty_file = args.get('net_tty_file', None)
         self.tty_baudrate = int(args.get('tty_baudrate', SERIAL_BAUDRATE))
@@ -104,8 +103,19 @@ class BotConfigArgs(Namespace):
         self.rtt_log = args.get('rtt_log', False)
         self.btmon = args.get('btmon', False)
         self.device_core = args.get('device_core', 'NRF52840_XXAA')
-        self.test_cases = []
-        self.excluded = []
+        self.qemu_bin = args.get('qemu_bin', None)
+        self.qemu_options = args.get('qemu_options', '-cpu cortex-m3 -machine lm3s6965evb')
+        self.btattach_bin = args.get('btattach_bin', None)
+        self.btproxy_bin = args.get('btproxy_bin', None)
+        self.btmgmt_bin = args.get('btmgmt_bin', None)
+        self.hid_vid = args.get('hid_vid', None)
+        self.hid_pid = args.get('hid_pid', None)
+        self.hid_serial = args.get('hid_serial', None)
+        self.kernel_cpu = args.get('kernel_cpu', 'qemu_cortex_m3')
+        self.setcap_cmd = args.get('setcap_cmd', None)
+        self.hci = args.get('hci', None)
+        self.test_cases = args.get('test_cases', [])
+        self.excluded = args.get('excluded', [])
 
         self.bd_addr = args.get('bd_addr', '')
         self.enable_max_logs = args.get('enable_max_logs', False)
@@ -130,11 +140,6 @@ class BotConfigArgs(Namespace):
         self.build_env_cmd = args.get('build_env_cmd', None)
         self.copy = args.get('copy', True)
         self.wid_usage = args.get('wid_usage', False)
-
-        if self.ykush or self.active_hub_server:
-            self.usb_replug_available = True
-        else:
-            self.usb_replug_available = False
 
         if self.server_args is not None:
             from autoptsserver import SvrArgumentParser
@@ -262,7 +267,7 @@ class BotClient(Client):
         self.bot_config = bot_config_dict
         self.iut_config = bot_config_dict.get('iut_config', {})
         bot_config_namespace = self.parse_config(bot_config_dict['auto_pts'])
-        self.parse_or_find_tty(bot_config_namespace)
+
         self.args, errmsg = self.arg_parser.parse(bot_config_namespace)
         self.args.retry_config = bot_config_dict.get('retry_config', None)
 
