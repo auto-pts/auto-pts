@@ -46,7 +46,7 @@ from autopts.ptsprojects.boards import get_available_boards, tty_to_com
 from autopts.ptsprojects.ptstypes import E_FATAL_ERROR
 from autopts.ptsprojects.testcase import PTSCallback, TestCaseLT1, TestCaseLT2, TestCaseLT3
 from autopts.ptsprojects.testcase_db import TestCaseTable
-from autopts.pybtp import btp, defs
+from autopts.pybtp import btp
 from autopts.pybtp.types import BTPError, BTPInitError, MissingWIDError, SynchError
 from autopts.utils import (
     CounterWithFlag,
@@ -1606,12 +1606,6 @@ def run_recovery(args, ptses):
 
     stack_inst = stack.get_stack()
     stack_inst.cleanup()
-
-    if args.usb_replug_available:
-        # mynewt project has not been refactored yet to reduce the number of
-        # IUT board resets.
-        if stack_inst.core:
-            stack_inst.core.event_received(defs.BTP_CORE_EV_IUT_READY, True)
 
     log('Recovery finished')
 

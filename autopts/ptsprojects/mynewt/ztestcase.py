@@ -31,10 +31,13 @@ class ZTestCase(TestCaseLT1):
         self.stack = get_stack()
         self.mynewtctl = get_iut()
 
-        # first command is to start QEMU or HW
-        self.cmds.insert(0, TestFunc(self.mynewtctl.start, self))
-        self.cmds.insert(1, TestFunc(self.mynewtctl.wait_iut_ready_event))
-        self.cmds.insert(2, TestFunc(self.mynewtctl.get_supported_svcs))
+        # Init stack.core to be able to receive IUT ready event
+        self.cmds.insert(0, TestFunc(self.stack.core_init))
+        # Open BTP socket and start IUT
+        self.cmds.insert(1, TestFunc(self.mynewtctl.start, self))
+        # Await IUT ready event
+        self.cmds.insert(2, TestFunc(self.mynewtctl.wait_iut_ready_event, False))
+        self.cmds.insert(3, TestFunc(self.mynewtctl.get_supported_svcs))
 
         self.cmds.append(TestFuncCleanUp(self.stack.cleanup))
         # last command is to stop QEMU or HW

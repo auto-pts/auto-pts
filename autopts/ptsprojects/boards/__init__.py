@@ -52,7 +52,7 @@ class Board:
             reset_process = subprocess.Popen(shlex.split(self.reset_cmd),
                                              shell=False,
                                              stdout=subprocess.DEVNULL,
-                                             stderr=self.iutctl.iut_log_file)
+                                             stderr=subprocess.DEVNULL)
 
             if reset_process.wait(20):
                 logging.error("reset failed")
