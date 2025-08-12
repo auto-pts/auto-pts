@@ -813,7 +813,48 @@ Commands and responses:
 
                 In case of an error, the error response will be returned.
 
+        Opcode 0x31 - Set EAD keymaterial
 
+                Controller Index:       <controller id>
+                Command parameters:     Session Key (16 octets)
+                                        Initialization Vector (8 octets)
+                Return Parameters:      <none>
+
+                This command initializes the encryption key material used by the
+                peripheral for Encrypted Advertisement Data (EAD). The session key
+                 and IV are required to enable secure encryption and decryption
+                 of advertisement payloads.
+
+                If the operation fails, an error response will be returned.
+
+        Opcode 0x32 - Encrypt EAD Data
+
+                Controller Index:       <controller id>
+                Command parameters:     Adv_Data_Len (1 octet)
+                                        Adv_Data (0-255 octets)
+                Return Parameters:      Encrypted_Data_Len (1 octet)
+                                        Encrypted_Data (0-255 octets)
+
+                This command encrypts the provided advertisement data using the
+                previously set session key and IV. The resulting encrypted data
+                is intended for inclusion in the encrypted portion of the
+                advertisement payload.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x33 - Decrypt EAD Data
+
+                Controller Index:       <controller id>
+                Command parameters:     Encrypted_Data_Len (1 octet)
+                                        Encrypted_Data (0-255 octets)
+                Return Parameters:      Decrypted_Data_Len (1 octet)
+                                        Decrypted_Data (0-255 octets)
+
+                This command decrypts data extracted from the encrypted portion
+                of a received advertisement. It uses the session key and IV
+                previously set via command 'Set EAD keymaterial'
+
+                In case of an error, the error response will be returned.
 
 Events:
         Opcode 0x80 - New Settings event
