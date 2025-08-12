@@ -747,11 +747,11 @@ class PyPTS:
     def get_test_case_list(self, project_name):
         """Returns list of active test cases of the specified project"""
 
-        test_case_list = []
-
-        for test_case_name in list(self._pts_projects[project_name].keys()):
-            if self._pts.IsActiveTestCase(project_name, test_case_name):
-                test_case_list.append(test_case_name)
+        test_case_list = [
+            test_case_name
+            for test_case_name in self._pts_projects[project_name].keys()
+            if self._pts.IsActiveTestCase(project_name, test_case_name)
+        ]
 
         return tuple(test_case_list)
 
