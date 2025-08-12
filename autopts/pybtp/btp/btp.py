@@ -601,6 +601,10 @@ def core_reg_svc_sdp():
     core_reg_svc_univ("sdp_reg", "SDP")
 
 
+def core_reg_svc_iso():
+    core_reg_svc_univ("iso_reg", "ISO")
+
+
 # GENERATOR append 1
 
 def core_reg_svc_rsp_succ(service_name):
@@ -700,6 +704,7 @@ def event_handler(hdr, data):
         GMCS_EV,
         HAP_EV,
         IAS_EV,
+        ISO_EV,
         L2CAP_EV,
         MCP_EV,
         MESH_EV,
@@ -727,6 +732,7 @@ def event_handler(hdr, data):
         defs.BTP_SERVICE_ID_GATT: (GATT_EV, stack.gatt),
         defs.BTP_SERVICE_ID_GATTC: (GATTC_EV, stack.gatt_cl),
         defs.BTP_SERVICE_ID_IAS: (IAS_EV, stack.ias),
+        defs.BTP_SERVICE_ID_ISO: (ISO_EV, stack.iso),
         defs.BTP_SERVICE_ID_VCS: (VCS_EV, stack.vcs),
         defs.BTP_SERVICE_ID_AICS: (AICS_EV, stack.aics),
         defs.BTP_SERVICE_ID_VOCS: (VOCS_EV, stack.vocs),
