@@ -411,7 +411,7 @@ def hdl_wid_108(_: WIDParams):
 
 def hdl_wid_111(params: WIDParams):
     """
-    description: Please confirm the length of assembled segmentations is 260 and received data
+    description: Please confirm the length of assembled segmentations is _X_ and received data
     is in sequence staring from 0 in 8-bit range.
     """
     pattern = re.compile(r"\s([0-9]+)\s")
