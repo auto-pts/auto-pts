@@ -410,6 +410,10 @@ def hdl_wid_108(_: WIDParams):
 
 
 def hdl_wid_111(params: WIDParams):
+    """
+    description: Please confirm the length of assembled segmentations is 260 and received data
+    is in sequence staring from 0 in 8-bit range.
+    """
     pattern = re.compile(r"\s([0-9]+)\s")
     data = pattern.findall(params.description)
     if not data:
@@ -431,7 +435,7 @@ def hdl_wid_111(params: WIDParams):
     if not len(data_packet) == int(data[0]):
         return False
 
-    comp_data = bytearray(list(range(len(data_packet))))
+    comp_data = bytearray([i % 256 for i in range(len(data_packet))])
     if not data_packet == comp_data:
         return False
 
