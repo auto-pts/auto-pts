@@ -31,6 +31,7 @@ psm_encryption_key_size_required = 244
 psm_encryption_required = 245
 le_initial_mtu = 120
 le_mps = 100
+le_mtu = 260
 
 
 def set_pixits(ptses):
@@ -96,6 +97,10 @@ def test_cases(ptses):
                   stack.gap.iut_addr_get_str())),
               TestFunc(lambda: pts.update_pixit_param(
                   "L2CAP", "TSPX_iut_supported_max_channels", "2")),
+              TestFunc(lambda: pts.update_pixit_param(
+                  "L2CAP", "TSPX_tester_mps", format(le_mps, '04x'))),
+              TestFunc(lambda: pts.update_pixit_param(
+                  "L2CAP", "TSPX_tester_mtu", format(le_mtu, '04x'))),
               TestFunc(lambda: pts.update_pixit_param(
                   "L2CAP", "TSPX_spsm", format(le_psm, '04x'))),
               TestFunc(lambda: pts.update_pixit_param(
