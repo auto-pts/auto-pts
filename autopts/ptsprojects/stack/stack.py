@@ -84,6 +84,7 @@ class Stack:
         self.ots = None
         self.pbp = None
         self.sdp = None
+        self.bas = None
         # GENERATOR append 2
         self.supported_svcs_cmds = common.supported_svcs_cmds
 
