@@ -15,5 +15,6 @@
 #
 from autopts.ptsprojects.boards.nrf5x import build_and_flash, reset_cmd  # noqa: F401
 
-board_type = 'nrf54l15dk/nrf54l15/cpuapp'
 supported_projects = ['zephyr']
+board_type = 'nrf54l15dk/nrf54l15/cpuapp'
+version = 'PCA10156'

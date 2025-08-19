@@ -21,6 +21,7 @@ from autopts.ptsprojects.boards.nrf5x import reset_cmd  # noqa: F401
 
 supported_projects = ['zephyr']
 board_type = 'nrf5340_audio_dk/nrf5340/cpuapp'
+version = 'PCA10121'
 
 
 def build_and_flash_core(zephyr_wd, build_dir, board, debugger_snr, configs,
