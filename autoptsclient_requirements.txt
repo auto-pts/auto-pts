@@ -13,3 +13,4 @@ pyyaml
 yepkit-pykush
 hidapi
 pyudev
+nrfutil

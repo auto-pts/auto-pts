@@ -21,6 +21,7 @@ from autopts.ptsprojects.boards.nrf5x import reset_cmd  # noqa: F401
 
 supported_projects = ['zephyr']
 board_type = 'nrf5340dk/nrf5340/cpuapp'
+version = 'PCA10095'
 
 
 def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None, project_repos=None,

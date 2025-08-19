@@ -152,6 +152,10 @@ For auto-pts client under Linux:
 
         python3 -m pip install --user -r autoptsclient_requirements.txt
 
+3. Install `nrfutil device` command with:
+
+        nrfutil install device
+
 The rest of the setup is platform/mode specific:
 
 ### BlueZ
