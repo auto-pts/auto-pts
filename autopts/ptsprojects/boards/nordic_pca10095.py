@@ -15,14 +15,17 @@
 #
 
 import logging
+import os
 
 from autopts.bot.mynewt import check_call
+from autopts.ptsprojects.boards import NrfUtil
 
 # Note: always specify tty or COM in 'tty_file' of app core in config.py.
 # Otherwise, net core could be selected and BTP timeouts will occur.
 
 supported_projects = ['mynewt']
 board_type = 'nordic_pca10095'
+version = 'PCA10095'
 
 
 def reset_cmd(iutctl):
@@ -49,11 +52,14 @@ def build_and_flash(project_path, board, overlay=None, debugger_snr=None):
     logging.debug("%s: %s %s %s", build_and_flash.__name__, project_path,
                   board, overlay)
 
-    nrfjprog_snr = f" -s {debugger_snr}" if debugger_snr else ""
-    check_call(f'nrfjprog --recover {nrfjprog_snr}'.split(), cwd=project_path)
-    check_call(f'nrfjprog --recover --coprocessor CP_NETWORK  {nrfjprog_snr}'.split(), cwd=project_path)
-    check_call(f'nrfjprog --eraseall {nrfjprog_snr}'.split(), cwd=project_path)
-    check_call(f'nrfjprog -r {nrfjprog_snr}'.split(), cwd=project_path)
+    nrfutil = NrfUtil(board, debugger_snr)
+    if debugger_snr is None:
+        debugger_snr = nrfutil.get_debugger_snr()
+
+    device_protection = nrfutil.device_protection_get()
+    if device_protection:
+        nrfutil.device_protection_disable()
+
     check_call('rm -rf bin/'.split(), cwd=project_path)
     check_call(f'rm -rf targets/{board}_boot/'.split(), cwd=project_path)
     check_call(f'rm -rf targets/{board}_net_boot/'.split(), cwd=project_path)
@@ -99,12 +105,10 @@ def build_and_flash(project_path, board, overlay=None, debugger_snr=None):
     load_boot_cmd = f'newt load {board}_boot'.split()
     load_net_boot_cmd = f'newt load {board}_net_boot'.split()
     load_app_cmd = 'newt load bttester'.split()
-    if debugger_snr:
-        snr = f'JLINK_SN={debugger_snr}'
-        load_boot_cmd.insert(0, snr)
-        load_net_boot_cmd.insert(0, snr)
-        load_app_cmd.insert(0, snr)
 
-    check_call(load_boot_cmd, cwd=project_path)
-    check_call(load_app_cmd, cwd=project_path)
-    check_call(load_net_boot_cmd, cwd=project_path)
+    env = os.environ.copy()
+    env["JLINK_SN"] = debugger_snr
+
+    check_call(load_boot_cmd, cwd=project_path, env=env)
+    check_call(load_app_cmd, cwd=project_path, env=env)
+    check_call(load_net_boot_cmd, cwd=project_path, env=env)

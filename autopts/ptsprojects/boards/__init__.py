@@ -16,6 +16,7 @@
 #
 
 import importlib
+import json
 import logging
 import os
 import pkgutil
@@ -309,3 +310,162 @@ class Jlink:
                 f.write(self._reset_seqs)
                 f.close()
         return file_path
+
+
+class NrfUtil:
+    """
+    Provides utility wrapper functions for nRF Util command line tool.
+    """
+    _FAMILY_TO_JSON = {
+        "nrf52": "NRF52_FAMILY",
+        "nrf53": "NRF53_FAMILY",
+        "nrf54h": "NRF54H_FAMILY",
+        "nrf54l": "NRF54L_FAMILY",
+    }
+
+    _JSON_TO_FAMILY = {v: k for k, v in _FAMILY_TO_JSON.items()}
+
+    # nRF Util commands required by this wrapper
+    _NRFUTIL_CMDS = (
+        "device",
+    )
+
+    def __init__(self, board_name, debugger_snr):
+        self._check_nrfutil()
+        self._check_nrfjprog()
+
+        if debugger_snr is None:
+            debugger_snr = self.find_debugger(board_name)
+
+        self.debugger_snr = debugger_snr
+        self.family = self._get_family(self.debugger_snr)
+
+    @staticmethod
+    def _check_nrfutil():
+        from autopts.bot.common import check_call
+
+        try:
+            check_call(["nrfutil", "--version"], stdout=False, stderr=False)
+        except subprocess.CalledProcessError:
+            raise Exception("nrfutil not found!") from None
+
+        def check_nrfutil_cmd(c):
+            try:
+                check_call(["nrfutil", c], stdout=False, stderr=False)
+            except subprocess.CalledProcessError:
+                raise Exception(f"nrfutil {c} not found!") from None
+
+        for cmd in NrfUtil._NRFUTIL_CMDS:
+            check_nrfutil_cmd(cmd)
+
+    @staticmethod
+    def _check_nrfjprog():
+        from autopts.bot.common import check_call
+
+        try:
+            check_call(["nrfjprog", "--version"], stdout=False, stderr=False)
+        except subprocess.CalledProcessError:
+            raise Exception("nrfjprog not found!") from None
+
+    @staticmethod
+    def _family2json(family):
+        try:
+            return NrfUtil._FAMILY_TO_JSON[family.lower()]
+        except (AttributeError, KeyError):
+            raise ValueError(f"Unsupported family: {family}") from None
+
+    @staticmethod
+    def _json2family(family):
+        try:
+            return NrfUtil._JSON_TO_FAMILY[family]
+        except KeyError:
+            raise ValueError(f"Unsupported family: {family}") from None
+
+    @staticmethod
+    def _board_name2version(board_name):
+        module_name = importlib.import_module(__package__ + '.' + board_name)
+
+        version = getattr(module_name, 'version', None)
+        if not version:
+            raise ValueError(f"Unspecified {board_name} version. Please add \"version = 'VERSION'\"") from None
+
+        return version
+
+    @staticmethod
+    def _is_multi_core(family):
+        return family in ["nrf53"]
+
+    @staticmethod
+    def _get_family(sn):
+        from autopts.bot.common import check_output
+
+        output = check_output(["nrfutil", "device", "list", "--json", "--skip-overhead"])
+        stdout = output.decode("utf-8")
+        devices = json.loads(stdout)["devices"]
+
+        for device in devices:
+            if device["serialNumber"] == sn and "devkit" in device:
+                family = device["devkit"]["deviceFamily"]
+                return NrfUtil._json2family(family)
+
+        return None
+
+    @staticmethod
+    def find_debugger(board_name):
+        """Return the first found non-protected nRF5x DUT serial number
+
+        :param board_name: board name
+        :return: debugger serial number
+        """
+        from autopts.bot.common import check_output
+
+        output = check_output(["nrfutil", "device", "list", "--json", "--skip-overhead"])
+        stdout = output.decode("utf-8")
+        devices = json.loads(stdout)["devices"]
+        version = NrfUtil._board_name2version(board_name)
+
+        for device in devices:
+            if "devkit" not in device:
+                continue
+
+            if version and device["devkit"]["boardVersion"] != version:
+                continue
+
+            return device["serialNumber"]
+
+        raise Exception("Could not find debugger")
+
+    def get_debugger_snr(self):
+        return self.debugger_snr
+
+    def device_protection_get(self):
+        """Return device protection state
+
+        :return: True if device protection is enabled, False otherwise
+        """
+        from autopts.bot.common import check_output
+
+        cmd = ["nrfutil", "device", "protection-get", "--json", "--skip-overhead", "--serial-number", self.debugger_snr]
+        output = check_output(cmd)
+        stdout = output.decode("utf-8")
+        devices = json.loads(stdout)["devices"]
+
+        for device in devices:
+            device_protection = device["protectionStatus"]
+            return "None" not in device_protection
+
+        raise Exception("Could not check device protection state")
+
+    def device_protection_disable(self):
+        """Disable device protection
+
+        Erases user code and UICR flash areas.
+        :return: None
+        """
+        from autopts.bot.common import check_call
+
+        # For multicore devices like nRF53 Series, make sure to recover the network core before the application core:
+        if self._is_multi_core(self.family):
+            check_call(f'nrfjprog --recover --coprocessor CP_NETWORK -s {self.debugger_snr}')
+
+        check_call(f'nrfjprog --recover -s {self.debugger_snr}')
