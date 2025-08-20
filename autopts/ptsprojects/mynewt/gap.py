@@ -17,12 +17,15 @@
 import binascii
 
 from autopts.client import get_unique_name
-from autopts.ptsprojects.mynewt.gap_wid import gap_wid_hdl, gap_wid_hdl_mode1_lvl2, gap_wid_hdl_mode1_lvl4
+from autopts.ptsprojects.common_wid import get_wid_handler
+from autopts.ptsprojects.mynewt.gap_wid import gap_wid_hdl_mode1_lvl2, gap_wid_hdl_mode1_lvl4
 from autopts.ptsprojects.mynewt.ztestcase import ZTestCase
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.pybtp import btp
 from autopts.pybtp.types import UUID, Addr, AdFlags, AdType, IOCap
+
+gap_wid_hdl = get_wid_handler("mynewt", "gap")
 
 
 class SVC:
@@ -318,7 +321,7 @@ def test_cases(ptses):
         ZTestCase("GAP", "GAP/SEC/SEM/BV-39-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
-                  generic_wid_hdl=gap_wid_hdl_mode1_lvl2),
+                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/SEC/SEM/BV-40-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
