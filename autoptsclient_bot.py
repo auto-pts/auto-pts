@@ -47,10 +47,16 @@ def run_scheduler():
         time.sleep(60)
 
 
-def import_bot_projects():
+def parse_config_path():
+    config_path = None
     if len(sys.argv) >= 2 and not sys.argv[1].startswith('-'):
         config_path = sys.argv[1]
-    else:
+    return config_path
+
+
+def import_bot_projects():
+    config_path = parse_config_path()
+    if not config_path:
         config_path = 'config'
 
     # Path to the config file can be specified as 'config',
@@ -100,12 +106,24 @@ def get_client(module, project):
     return bot_client
 
 
+def print_bad_config_message():
+    text = 'Could not load any BotProjects. '
+    config_path = parse_config_path()
+
+    if not config_path:
+        text += 'Please provide a path/to/bot_config.py file.'
+    else:
+        text += f'Is the {config_path} a valid config file?'
+
+    print(text)
+
+
 def main():
     logging.basicConfig(level=logging.DEBUG)
 
-    bot_projects, config_path = import_bot_projects()
+    bot_projects, _ = import_bot_projects()
     if not bot_projects:
-        print(f'Could not load any BotProjects. Please check your {config_path} file.')
+        print_bad_config_message()
         return 1
 
     bot_clients = []
