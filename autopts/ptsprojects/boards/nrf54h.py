@@ -20,8 +20,8 @@ from subprocess import CalledProcessError
 from autopts.bot.common import check_call
 
 supported_projects = ['zephyr']
-
 board_type = 'nrf54h20dk/nrf54h20/cpuapp'
+version = 'PCA10175'
 
 
 def reset_cmd(iutctl):
