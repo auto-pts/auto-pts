@@ -103,7 +103,7 @@ class BTPSocket:
             4: 'Invalid Index'
         }
         err_status = status_values[int(status)]
-        f.write(f'{current_time[:-3]}    <- Response:  {self.parse_data(data)} {hex_data} {err_status}\n')
+        f.write(f'{current_time[:-3]}    < {self.parse_data(data, err_status)} {hex_data}\n')
 
     def read(self, timeout=20.0):
         """Read BTP data from socket
@@ -171,7 +171,7 @@ class BTPSocket:
         self.write_to_log(1, tuple_data, hex_data)
         self.conn.send(frame)
 
-    def parse_data(self, data):
+    def parse_data(self, data, extra=None):
         def get_btp_cmd_name(prefix, op_code):
             """Looks for BTP Command variables from the defs.py"""
             if op_code in ('0x0', '0x00'):
@@ -200,10 +200,10 @@ class BTPSocket:
         def to_hex(x):
             return f"0x{int(x):02x}"
         btp_command = get_btp_cmd_name(svc_name, to_hex(opc))
-        parsed_data += (
-            f'{btp_command} ({to_hex(svc_id)}|{to_hex(opc)}|{to_hex(ctrl_idx)}){indent} '
-            f'raw data ({data_len}):'
-        )
+        parsed_data += f'{btp_command} ({to_hex(svc_id)}|{to_hex(opc)}|{to_hex(ctrl_idx)})'
+        if extra:
+            parsed_data += f' {extra}'
+        parsed_data += f'{indent} raw data ({data_len}):'
 
         return parsed_data
 
