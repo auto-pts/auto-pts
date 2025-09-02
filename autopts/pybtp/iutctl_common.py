@@ -88,9 +88,9 @@ class BTPSocket:
             hex_data = '\n' + indent + re.sub(r'(.{48})', r'\1\n' + indent, hex_data)
 
         if req:
-            f.write(f'{current_time[:-3]}\t> {self.parse_data(data)} {hex_data}\n')
+            f.write(f'{current_time[:-3]}    > {self.parse_data(data)} {hex_data}\n')
         else:
-            f.write(f'{current_time[:-3]}\t< {self.parse_data(data)} {hex_data}\n')
+            f.write(f'{current_time[:-3]}    < {self.parse_data(data)} {hex_data}\n')
 
     def write_err_status(self, data, hex_data, status):
         """Log command status value for error response"""
@@ -103,7 +103,7 @@ class BTPSocket:
             4: 'Invalid Index'
         }
         err_status = status_values[int(status)]
-        f.write(f'{current_time[:-3]}\t<- Response:  {self.parse_data(data)} {hex_data} {err_status}\n')
+        f.write(f'{current_time[:-3]}    <- Response:  {self.parse_data(data)} {hex_data} {err_status}\n')
 
     def read(self, timeout=20.0):
         """Read BTP data from socket
