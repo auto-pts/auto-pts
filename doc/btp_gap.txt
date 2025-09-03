@@ -835,7 +835,7 @@ Commands and responses:
                 Command parameters:     Adv_Data_Len (1 octet)
                                         Adv_Data (0-255 octets)
                 Return Parameters:      Encrypted_Data_Len (1 octet)
-                                        Encrypted_Data_Len (0-255 octets)
+                                        Encrypted_Data (0-255 octets)
 
                 This command encrypts the provided advertisement data using the 
                 previously set session key and IV. The resulting encrypted data 
