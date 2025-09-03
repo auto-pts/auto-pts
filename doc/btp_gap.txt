@@ -824,7 +824,7 @@ Commands and responses:
                 Window: Duration of single scan, must be less than or equal
                 to the Interval.
                 Valid range is from 0x0004 to 0xffff.
-                Time = 0.625 ms x Interval
+                Time = 0.625 ms x Window
 
                 Phy: Select Phy to be used in the discovery. 
                         0: 1 mbps
