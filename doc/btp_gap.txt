@@ -812,7 +812,7 @@ Commands and responses:
                 Return Parameters:      <none>
 
                 This command is used to set scanning parameters for discovery.
-                Comman should be issued before  the 'Start Discovery' command.
+                Command should be issued before the 'Start Discovery' command.
                 If command is issued during ongoing discovery process it should 
                 be considered as an error.
 
