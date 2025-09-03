@@ -848,7 +848,7 @@ Commands and responses:
 
                 Controller Index:       <controller id>
                 Command parameters:     Encrypted_Data_Len (1 octet)
-                                        Encrypted_Data_Len (0-255 octets)
+                                        Encrypted_Data (0-255 octets)
                 Return Parameters:      Decrypted_Data_Len (1 octet)
                                         Decrypted_Data (0-255 octets)
 
