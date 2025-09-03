@@ -831,7 +831,7 @@ Commands and responses:
                         1: Coded Phy
 
                 Flags: Possible values for the Flags parameter are a bit-wise OR.
-                Currently this field is reseved for future use and shall be set to 0.
+                Currently this field is reserved for future use and shall be set to 0.
 
                 Default values are implementation specific.
 
