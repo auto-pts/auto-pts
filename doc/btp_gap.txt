@@ -837,9 +837,9 @@ Commands and responses:
                 Return Parameters:      Encrypted_Data_Len (1 octet)
                                         Encrypted_Data (0-255 octets)
 
-                This command encrypts the provided advertisement data using the 
-                previously set session key and IV. The resulting encrypted data 
-                is intended for inclusion in the encrypted portion of the 
+                This command encrypts the provided advertisement data using the
+                previously set session key and IV. The resulting encrypted data
+                is intended for inclusion in the encrypted portion of the
                 advertisement payload.
 
                 In case of an error, the error response will be returned.
