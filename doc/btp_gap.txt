@@ -853,7 +853,7 @@ Commands and responses:
                                         Decrypted_Data (0-255 octets)
 
                 This command decrypts data extracted from the encrypted portion
-                of a received advertisement. It uses the session key and IV 
+                of a received advertisement. It uses the session key and IV
                 previously set via command 'Set EAD keymaterial'
 
                 In case of an error, the error response will be returned.
