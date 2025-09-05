@@ -59,6 +59,10 @@ class BTPError(Exception):
     """
 
 
+class BTPInitError(Exception):
+    """Exception raised for IUT ready event non-occurence"""
+
+
 class SynchError(Exception):
     """Exception raised if cannot synchronize"""
 
