@@ -979,6 +979,7 @@ class PyPTS:
         log("%s %s", self.enable_maximum_logging.__name__, enable)
         self._pts.EnableMaximumLogging(enable)
         self._pts_logger.enable_maximum_logging(enable)
+        self.add_recov(self.enable_maximum_logging, enable)
 
     def set_call_timeout(self, timeout):
         """Sets a timeout period in milliseconds for the RunTestCase() calls
