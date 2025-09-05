@@ -47,7 +47,7 @@ from autopts.ptsprojects.ptstypes import E_FATAL_ERROR
 from autopts.ptsprojects.testcase import PTSCallback, TestCaseLT1, TestCaseLT2, TestCaseLT3
 from autopts.ptsprojects.testcase_db import TestCaseTable
 from autopts.pybtp import btp, defs
-from autopts.pybtp.types import BTPError, MissingWIDError, SynchError
+from autopts.pybtp.types import BTPError, BTPInitError, MissingWIDError, SynchError
 from autopts.utils import (
     CounterWithFlag,
     InterruptableThread,
@@ -908,6 +908,9 @@ def get_error_code(exc):
 
     elif isinstance(exc, MissingWIDError):
         error_code = ptstypes.E_MISSING_WID_ERROR
+
+    elif isinstance(exc, BTPInitError):
+        error_code = ptstypes.E_IUT_INIT_ERROR
 
     elif error_code is None:
         error_code = ptstypes.E_FATAL_ERROR
