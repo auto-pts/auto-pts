@@ -28,6 +28,7 @@ from autopts.ptsprojects.boards import Board, get_debugger_snr, tty_to_com
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import defs
 from autopts.pybtp.iutctl_common import BTP_ADDRESS, BTPSocketSrv, BTPWorker, LoggerWorker
+from autopts.pybtp.types import BTPInitError
 from autopts.rtt import BTMON, RTTLogger
 from autopts.utils import get_global_end
 
@@ -250,7 +251,7 @@ class ZephyrCtl:
                 stack.core.event_queues[defs.BTP_CORE_EV_IUT_READY].clear()
                 if not ev:
                     self.stop()
-                    raise Exception('IUT ready event NOT received!')
+                    raise BTPInitError("Failed to get ready event")
 
             log("IUT ready event received OK")
             self.rtt_logger_start()

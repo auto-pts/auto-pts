@@ -26,7 +26,7 @@ import serial
 from autopts.ptsprojects.boards import Board, get_debugger_snr, tty_to_com
 from autopts.pybtp import btp, defs
 from autopts.pybtp.iutctl_common import BTP_ADDRESS, BTPSocketSrv, BTPWorker
-from autopts.pybtp.types import BTPError
+from autopts.pybtp.types import BTPError, BTPInitError
 from autopts.rtt import BTMON, RTTLogger
 
 log = logging.debug
@@ -181,7 +181,7 @@ class MynewtCtl:
             try:
                 if (tuple_hdr.svc_id != defs.BTP_SERVICE_ID_CORE or
                         tuple_hdr.op != defs.BTP_CORE_EV_IUT_READY):
-                    raise BTPError("Failed to get ready event")
+                    raise BTPInitError("Failed to get ready event")
             except BTPError as err:
                 log("Unexpected event received (%s), expected IUT ready!", err)
                 self.stop()
