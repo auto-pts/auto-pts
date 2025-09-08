@@ -1249,7 +1249,7 @@ def get_audio_locations_from_pac(addr_type, addr, audio_dir):
 
 
 ac_configs = {
-    # test_case_name: ([CIS_1, CIS_2, ...], num_of_servers)
+    # test_case_name: ([CIS_1, CIS_2, ...], num_of_servers, mono)
     # where CIS_x is a tuple like (sink_available, source_available)
     # In Enabling state, 1 CIS
     'BAP/UCL/STR/BV-523-C':     ([(1, 1)], 1),          # AC 3
@@ -1312,6 +1312,34 @@ ac_configs = {
     'BAP/UCL/STR/BV-565-C':     ([(1, 0)], 1, True),          # AC 1, Generic, QoS, Mono, Default Ch Count
     'BAP/UCL/STR/BV-566-C':     ([(1, 0)], 1, True),          # AC 1, Generic, QoS, Mono, No PACS
     'BAP/UCL/STR/BV-567-C':     ([(1, 0)], 1, True),          # AC 1, Generic, QoS, Mono, Default Ch Count, No PACS
+
+    # Channels and Locations in Enabled
+    'BAP/UCL/STR/BV-568-C': ([(0, 1)], 1),              # AC 2, Generic, Multi Channels
+    'BAP/UCL/STR/BV-569-C': ([(0, 1)], 1),              # AC 2, Generic, Multi Location
+    'BAP/UCL/STR/BV-570-C': ([(0, 1)], 1),              # AC 2, Generic, Multi Channels and Location
+    'BAP/UCL/STR/BV-571-C': ([(0, 1)], 1),              # AC 10, Generic, Multi Channels
+    'BAP/UCL/STR/BV-572-C': ([(0, 1)], 1),              # AC 10, Generic, Multi Location
+    'BAP/UCL/STR/BV-573-C': ([(0, 1)], 1),              # AC 10, Generic, Multi Channels and Location
+    'BAP/UCL/STR/BV-574-C': ([(1, 0)], 1),              # AC 1, Generic, Multi Channels
+    'BAP/UCL/STR/BV-575-C': ([(1, 0)], 1),              # AC 1, Generic, Multi Location
+    'BAP/UCL/STR/BV-576-C': ([(1, 0)], 1),              # AC 1, Generic, Multi Channels and Location
+    'BAP/UCL/STR/BV-577-C': ([(1, 0)], 1),              # AC 4, Generic, Multi Channels
+    'BAP/UCL/STR/BV-578-C': ([(1, 0)], 1),              # AC 4, Generic, Multi Location
+    'BAP/UCL/STR/BV-579-C': ([(1, 0)], 1),              # AC 4, Generic, Multi Channels and Location
+
+    # Channels and Locations in QoS Configured
+    'BAP/UCL/STR/BV-580-C': ([(0, 1)], 1),              # AC 2, Generic, QoS, Multi Channels
+    'BAP/UCL/STR/BV-581-C': ([(0, 1)], 1),              # AC 2, Generic, QoS, Multi Location
+    'BAP/UCL/STR/BV-582-C': ([(0, 1)], 1),              # AC 2, Generic, QoS, Multi Channels and Location
+    'BAP/UCL/STR/BV-583-C': ([(0, 1)], 1),              # AC 10, Generic, QoS, Multi Channels
+    'BAP/UCL/STR/BV-584-C': ([(0, 1)], 1),              # AC 10, Generic, QoS, Multi Location
+    'BAP/UCL/STR/BV-585-C': ([(0, 1)], 1),              # AC 10, Generic, QoS, Multi Channels and Location
+    'BAP/UCL/STR/BV-586-C': ([(1, 0)], 1),              # AC 1, Generic, QoS, Multi Channels
+    'BAP/UCL/STR/BV-587-C': ([(1, 0)], 1),              # AC 1, Generic, QoS, Multi Location
+    'BAP/UCL/STR/BV-588-C': ([(1, 0)], 1),              # AC 1, Generic, QoS, Multi Channels and Location
+    'BAP/UCL/STR/BV-589-C': ([(0, 1)], 1),              # AC 4, Generic, QoS, Multi Channels
+    'BAP/UCL/STR/BV-590-C': ([(0, 1)], 1),              # AC 4, Generic, QoS, Multi Location
+    'BAP/UCL/STR/BV-591-C': ([(0, 1)], 1),              # AC 4, Generic, QoS, Multi Channels and Location
 }
 
 
@@ -1366,6 +1394,8 @@ def hdl_wid_311(params: WIDParams):
                                              audio_dir, 30, remove=True)
             if ev is None:
                 return False
+
+            btp.pacs_set_location(audio_dir, config.audio_locations)
 
             _, _, audio_dir, ase_id = ev
             config.ase_id = ase_id
