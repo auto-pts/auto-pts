@@ -219,6 +219,9 @@ class BTPSocketSrv(BTPSocket):
     def __init__(self, log_dir=None):
         super().__init__(log_dir)
         self.sock = None
+        self.tcp_ip = None
+        self.tcp_port = None
+        self.unix_address = None
 
     def open(self, addres=BTP_ADDRESS, port=0):
         """Open BTP socket for IUT"""
@@ -226,11 +229,39 @@ class BTPSocketSrv(BTPSocket):
             os.remove(addres)
 
         if sys.platform == "win32":
-            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.sock.bind((socket.gethostname(), port))
+            self.open_as_tcp(socket.gethostname(), port)
         else:
-            self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-            self.sock.bind(addres)
+            self.open_as_unix(addres)
+
+    def open_as_tcp(self, tcp_ip=None, tcp_port=None):
+        """Open the socket as TCP socket
+        :param tcp_ip: IP address
+        :param tcp_port: port numer
+        """
+        if tcp_ip is None:
+            tcp_ip = socket.gethostname()
+
+        if tcp_port is None:
+            tcp_ip = 0
+
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.sock.bind((tcp_ip, tcp_port))
+        self.tcp_ip = socket.gethostbyname(tcp_ip)
+        self.tcp_port = tcp_port
+
+        # queue only one connection
+        self.sock.listen(1)
+
+    def open_as_unix(self, address):
+        """Open the socket as UNIX socket
+        :param address: e.g. /dev/ttyACM0
+        """
+        if os.path.exists(address):
+            os.remove(address)
+
+        self.sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+        self.sock.bind(address)
+        self.unix_address = address
 
         # queue only one connection
         self.sock.listen(1)
@@ -248,9 +279,12 @@ class BTPSocketSrv(BTPSocket):
     def close(self):
         super().close()
         try:
-            self.conn.shutdown(socket.SHUT_RDWR)
-            self.conn.close()
-            self.sock.close()
+            if self.conn:
+                self.conn.shutdown(socket.SHUT_RDWR)
+                self.conn.close()
+
+            if self.sock:
+                self.sock.close()
         except BaseException as e:
             logging.exception(e)
         self.sock = None
