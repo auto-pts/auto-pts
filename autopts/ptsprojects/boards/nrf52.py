@@ -18,3 +18,4 @@ from autopts.ptsprojects.boards.nrf5x import build_and_flash, reset_cmd  # noqa:
 
 supported_projects = ['zephyr']
 board_type = 'nrf52840dk/nrf52840'
+version = 'PCA10056'

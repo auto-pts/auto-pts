@@ -22,9 +22,8 @@ import sys
 from autopts.bot.common import check_call
 
 supported_projects = ['zephyr']
-
-
 board_type = 'nrf52840dk/nrf52840'
+version = 'PCA10056'
 
 
 def reset_cmd(iutctl):

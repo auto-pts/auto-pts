@@ -929,24 +929,64 @@ def get_tc_res_data(tc_results, test_groups):
 # ****************************************************************************
 
 
+def _prepare_command(cmd, cwd, shell):
+    """
+    Normalize command across platforms.
+
+    :param cmd: command to run
+    :param cwd: working directory
+    :param shell: if true, the command will be executed through the shell
+    :return: tuple (cmd, cwd, shell, executable)
+    """
+    executable = None
+
+    if isinstance(cmd, (list, tuple)):
+        cmd = subprocess.list2cmdline(cmd)
+
+    if sys.platform == 'win32':
+        if isinstance(cwd, str) and cwd.startswith('wsl:'):
+            cmd = ["wsl.exe", "--cd", cwd.removeprefix('wsl:'), "--", "/bin/bash", "-i", "-c", cmd]
+            cwd = None
+        else:
+            cmd = [os.path.expandvars('$MSYS2_BASH_PATH'), '-c', cmd]
+
+        shell = False
+    else:
+        executable = '/bin/bash' if shell else None
+
+    return cmd, cwd, shell, executable
+
+
 def check_call(cmd, env=None, cwd=None, shell=True):
-    """Run command with arguments.  Wait for command to complete.
+    """Run command with arguments. Wait for the command to complete.
     :param cmd: command to run
     :param env: environment variables for the new process
-    :param cwd: sets current directory before execution
+    :param cwd: sets the current directory before execution
     :param shell: if true, the command will be executed through the shell
     :return: returncode
     """
-    executable = '/bin/bash'
-    cmd = subprocess.list2cmdline(cmd)
-
-    if sys.platform == 'win32':
-        executable = None
+    cmd, cwd, shell, executable = _prepare_command(cmd, cwd, shell)
 
     logging.debug(f'Running cmd: {cmd}')
     sys.stdout.flush()
 
     return subprocess.check_call(cmd, env=env, cwd=cwd, shell=shell, executable=executable)
+
+
+def check_output(cmd, env=None, cwd=None, shell=True):
+    """Run command with arguments. Capture standard output. Wait for the command to complete.
+    :param cmd: command to run
+    :param env: environment variables for the new process
+    :param cwd: sets the current directory before execution
+    :param shell: if true, the command will be executed through the shell
+    :return: stdout as bytes
+    """
+    cmd, cwd, shell, executable = _prepare_command(cmd, cwd, shell)
+
+    logging.debug(f'Running cmd: {cmd}')
+    sys.stdout.flush()
+
+    return subprocess.check_output(cmd, cwd=cwd, shell=shell, env=env, executable=executable)
 
 
 def get_workspace(workspace):
