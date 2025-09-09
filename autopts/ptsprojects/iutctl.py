@@ -27,10 +27,6 @@ import serial
 
 from autopts.ptsprojects.boards import Board, tty_to_com
 from autopts.ptsprojects.stack import get_stack
-from autopts.ptsprojects.utils.btattach import Btattach
-from autopts.ptsprojects.utils.btproxy import Btproxy, btmgmt_power_off_hci, find_hci_device
-from autopts.ptsprojects.utils.native import NativeIUT
-from autopts.ptsprojects.utils.qemu import QEMU
 from autopts.pybtp import btp, defs
 from autopts.pybtp.iutctl_common import BTP_ADDRESS, BTPSocketSrv, BTPWorker, LoggerWorker
 from autopts.pybtp.types import BTPInitError
@@ -136,6 +132,9 @@ class IutCtl:
             self._stop_mode = self._stop_tty_mode
 
         elif self.iut_mode == "qemu":
+            from autopts.ptsprojects.utils.btattach import Btattach
+            from autopts.ptsprojects.utils.btproxy import Btproxy
+            from autopts.ptsprojects.utils.qemu import QEMU
             self._qemu = QEMU()
             self._start_mode = self._start_qemu_mode
             self._stop_mode = self._stop_qemu_mode
@@ -143,6 +142,8 @@ class IutCtl:
             self._btattach = Btattach() if self.btattach_bin else None
 
         elif self.iut_mode == "native":
+            from autopts.ptsprojects.utils.btattach import Btattach
+            from autopts.ptsprojects.utils.native import NativeIUT
             self._native = NativeIUT()
             self._start_mode = self._start_native_mode
             self._stop_mode = self._stop_native_mode
@@ -234,6 +235,7 @@ class IutCtl:
 
         if self._btproxy:
             if self.hid_serial:
+                from autopts.ptsprojects.utils.btproxy import find_hci_device
                 self.hci = find_hci_device(self.hid_vid, self.hid_pid, self.hid_serial)
                 if self.hci is None:
                     raise Exception(f"Could not find the device: VID={self.hid_vid} "
@@ -266,12 +268,14 @@ class IutCtl:
             self.hci = self._btattach.start(btattach_cmd, log_dir=test_case.log_dir)
 
         if self.hid_serial:
+            from autopts.ptsprojects.utils.btproxy import find_hci_device
             self.hci = find_hci_device(self.hid_vid, self.hid_pid, self.hid_serial)
             if self.hci is None:
                 raise Exception(f"Could not find the device: VID={self.hid_vid} "
                                 f"PID={self.hid_pid} SN={self.hid_serial}")
 
         if self.btmgmt_bin:
+            from autopts.ptsprojects.utils.btproxy import btmgmt_power_off_hci
             btmgmt_power_off_hci(self.btmgmt_bin, self.hci)
 
         native_cmd = self.get_native_cmd(kernel_image=self.kernel_image,
