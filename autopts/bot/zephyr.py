@@ -158,11 +158,12 @@ class ZephyrBotClient(BotClient):
 
         if args.iut_mode != 'tty':
             iut = self.get_iut()
-            iut.kernel_image = os.path.join(args.project_path, "tests/bluetooth/tester/build/zephyr/zephyr")
-            if args.iut_mode == 'qemu':
-                iut.kernel_image += '.elf'
-            else:
-                iut.kernel_image += '.exe'
+            if not iut.kernel_image:
+                iut.kernel_image = os.path.join(args.project_path, "tests/bluetooth/tester/build/zephyr/zephyr")
+                if args.iut_mode == 'qemu':
+                    iut.kernel_image += '.elf'
+                else:
+                    iut.kernel_image += '.exe'
 
         if args.no_build:
             if args.setcap_cmd:
