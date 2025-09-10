@@ -339,10 +339,7 @@ class CliParser(argparse.ArgumentParser):
         if args.kernel_image:
             if not os.path.isfile(args.kernel_image):
                 return f'Native IUT mode: kernel_image {repr(args.kernel_image)} is not a file!\n'
-        elif args.project_path:
-            if args.no_build:
-                return 'Native IUT mode: Specify a kernel_image if the --nb option is used.\n'
-        else:
+        elif not args.project_path:
             return 'Native IUT mode: specify kernel_image or project_path to use this IUT mode\n'
 
         if args.tty_file or args.tty_alias or args.debugger_snr:
