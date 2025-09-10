@@ -1702,9 +1702,14 @@ def hdl_wid_300(params: WIDParams):
     return True
 
 
-def hdl_wid_301(_: WIDParams):
-    # Please click OK if IUT did not receive periodic advertising report.
+def hdl_wid_301(params: WIDParams):
+    # Please click OK when IUT received periodic advertisement report.
     stack = get_stack()
+
+    # GAP/PADV/PASE/BV-02-C starts PA Sync in WID 302 which comes first
+    if params.test_case_name not in ['GAP/PADV/PASE/BV-02-C']:
+        btp.gap_padv_create_sync(0, 0, 10, 0)
+
     return stack.gap.wait_periodic_report(10)
 
 
@@ -2564,29 +2569,46 @@ def hdl_wid_274(_: WIDParams):
     return True
 
 
+def hdl_wid_350(_: WIDParams):
+    '''
+    Wait for Broadcast ISO request.
+    '''
+    return True
+
+
+def hdl_wid_351(_: WIDParams):
+    '''
+    Wait for Broadcast ISO request.
+    '''
+    return True
+
+
 def hdl_wid_352(params: WIDParams):
     '''
     Please click OK when IUT establishes BIG sync, and ready to receive ISO data.
     '''
-    addr = pts_addr_get()
-    addr_type = pts_addr_type_get()
-
-    btp.gap_start_discov(transport='le', discov_type='passive', mode='observe')
-    sleep(10)
-    btp.gap_stop_discov()
-    if not btp.check_discov_results(addr_type=addr_type, addr=addr):
-        log('Peer device not found.')
-        return False
-
     stack = get_stack()
 
-    log('Synchronizing to broadcast')
-    btp.gap_padv_create_sync(0, 0, 0x200, 0)
-    if not stack.gap.wait_periodic_established(10):
-        log('Failed to periodic sync established')
-        return False
+    # create PA sync, except for tests that create it as part of WID 301
+    if params.test_case_name not in ['GAP/BIS/BSE/BV-01-C', 'GAP/SEC/SEM/BI-13-C']:
+        addr = pts_addr_get()
+        addr_type = pts_addr_type_get()
+
+        btp.gap_start_discov(transport='le', discov_type='passive', mode='observe')
+        sleep(10)
+        btp.gap_stop_discov()
+        if not btp.check_discov_results(addr_type=addr_type, addr=addr):
+            log('Peer device not found.')
+            return False
+
+        log('Synchronizing to broadcast')
+        btp.gap_padv_create_sync(0, 0, 0x200, 0)
+        if not stack.gap.wait_periodic_established(10):
+            log('Failed to periodic sync established')
+            return False
 
     biginfo = stack.gap.read_periodic_biginfo()
+    log(f'Big Info: {biginfo}')
     if not biginfo:
         log('Failed to read periodic biginfo')
         return False
@@ -2609,26 +2631,33 @@ def hdl_wid_352(params: WIDParams):
     return True
 
 
-def hdl_wid_351(_: WIDParams):
+def hdl_wid_353(_: WIDParams):
     '''
-    Wait for Broadcast ISO request.
+    Please configure IUT security to Mode 3 Level 2 or Level 3.
     '''
     return True
 
 
-def hdl_wid_356(_: WIDParams):
+def hdl_wid_354(params: WIDParams):
     '''
-    Please broadcast valid ISO data packets (more than 3 packets).
+    Please synchronize to lower tester in Security Mode 3 Level 2 or 3.
+    If IUT failed to synchnorize to the lower tester, please click ok.
     '''
     stack = get_stack()
-    try:
-        for _ in range(1, 100):
-            for bis_id in stack.gap.big_bis_data_path_setup:
-                btp.gap_bis_broadcast(bis_id, '00')
-    except types.BTPError:
-        log("Ignore BIS broadcast failure")
 
-    return True
+    biginfo = stack.gap.read_periodic_biginfo()
+    if not biginfo:
+        log('Failed to read periodic biginfo')
+        return False
+
+    broadcast_code = stack.gap.big_broadcast_code if biginfo.encryption else None
+
+    btp.gap_big_create_sync(biginfo.sid, biginfo.num_bis, 1, 255, broadcast_code)
+    if not stack.gap.wait_big_established():
+        log('Sync failed on BIG with low security level')
+        return True
+    else:
+        return False
 
 
 def hdl_wid_355(params: WIDParams):
@@ -2658,3 +2687,34 @@ def hdl_wid_355(params: WIDParams):
 
     log('Incorrect BIS data received')
     return False
+
+
+def hdl_wid_356(params: WIDParams):
+    '''
+    Please broadcast valid ISO data packets (more than 3 packets).
+    '''
+    stack = get_stack()
+    try:
+        match = re.search(r'(\d+)\W+packets', params.description)
+        pkt_cnt = int(match[1]) * 2 if match else 100
+        for _ in range(1, pkt_cnt):
+            for bis_id in stack.gap.big_bis_data_path_setup:
+                btp.gap_bis_broadcast(bis_id, '00')
+    except types.BTPError:
+        log("Ignore BIS broadcast failure")
+
+    return True
+
+
+def hdl_wid_357(_: WIDParams):
+    '''
+    Please send LE BIGInfo Advertising Report.
+    '''
+    btp.gap_create_big(0, 1, 10000, 20)
+
+    stack = get_stack()
+    if not stack.gap.wait_bis_data_path_setup():
+        log('Failed to setup BIS data path')
+        return False
+
+    return True
