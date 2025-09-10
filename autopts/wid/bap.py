@@ -158,7 +158,7 @@ def hdl_wid_100(params: WIDParams):
     if params.test_case_name.startswith('BAP/BSNK/STR') or \
             params.test_case_name.startswith('BAP/BSRC/STR'):
         tc_num = int(re.findall(r'\d+', params.test_case_name)[0])
-        if tc_num >= 18:
+        if tc_num >= 18 and tc_num <= 34:
             requested_bis_sync |= 2
             bis_ids.append(2)
 
