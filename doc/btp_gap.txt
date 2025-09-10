@@ -1394,12 +1394,10 @@ Events:
 
 		Controller Index:	<controller id>
 		Event parameters:	Advertising Set ID (1 octet)
-                                        Connection handle (1 octet)
                                         Peer Address (6 octets)
 
 		This event is sent when an advertising set is terminated by the timeout
 		or maximum events mechanism, or when a connection establishment causes
 		the set to stop. This event is not sent when the set is stopped with
 		Stop Advertising Set command.
-                The Peer Address field contains the address if a connection was established
-                and the connection handle is non-zero.
+                The Peer Address field contains the address if a connection was established.
