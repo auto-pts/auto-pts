@@ -24,7 +24,7 @@ from distutils.spawn import find_executable
 from autopts.config import CLIENT_PORT, MAX_SERVER_RESTART_TIME, SERIAL_BAUDRATE, SERVER_PORT
 from autopts.ptsprojects.boards import com_to_tty, get_debugger_snr, get_free_device, get_tty, tty_exists
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
-from autopts.utils import active_hub_server_replug_usb, raise_on_global_end, ykush_replug_usb
+from autopts.utils import active_hub_server_replug_usb, get_tc_from_wid, load_wid_report, raise_on_global_end, ykush_replug_usb
 
 log = logging.debug
 IUT_MODES = ['tty', 'qemu', 'native', 'btpclient_path']
@@ -242,6 +242,9 @@ class CliParser(argparse.ArgumentParser):
         self.add_argument("--btpclient_path", type=str, default=None,
                           help="Path to btpclient.")
 
+        self.add_argument("--wid_run", nargs=2, metavar=("SERVICE", "WID"),
+                          help="Run testcases based on service and wid")
+
         self.add_positional_args()
 
     def add_positional_args(self):
@@ -283,6 +286,32 @@ class CliParser(argparse.ArgumentParser):
             return False
 
         return True
+
+    def wid_run_tcs(self, args):
+        """
+        If --wid_run SERVICE WID was provided:
+        - load the CSV mapping
+        - lookup testcases for (service, wid)
+        - print them before execution
+        - and append to args.test_cases so they get executed like normal.
+        """
+        if not args.wid_run:
+            return
+
+        mapping = load_wid_report()
+        service, wid = args.wid_run
+
+        tcs = get_tc_from_wid(service, wid, mapping)
+        if not tcs:
+            print(f"No testcases found for service={service}, wid={wid}")
+            return
+
+        print(f"Testcases for {service} {wid}:")
+        for tc in tcs:
+            print(tc)
+
+        # Append found test cases to test cases list
+        args.test_cases = list(args.test_cases) + tcs
 
     def find_tty(self, args):
         log(f'{self.find_tty.__name__}')
@@ -423,6 +452,9 @@ class CliParser(argparse.ArgumentParser):
 
         check_method = getattr(self, f'check_args_{args.iut_mode}')
         errmsg = check_method(args)
+
+        if args.wid_run:
+            self.wid_run_tcs(args)
 
         return args, errmsg
 
