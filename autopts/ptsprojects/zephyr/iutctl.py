@@ -15,7 +15,9 @@
 #
 
 import logging
+import os
 
+from autopts.config import AUTOPTS_ROOT_DIR
 from autopts.ptsprojects.iutctl import IutCtl
 
 log = logging.debug
@@ -31,6 +33,14 @@ class ZephyrCtl(IutCtl):
         super().__init__(args)
         self._rtt_logger_name = "Logger"
         self.boot_log = "Booting Zephyr OS build"
+
+    def stop(self):
+        super().stop()
+
+        if self.iut_mode == "native":
+            flash_bin = os.path.join(AUTOPTS_ROOT_DIR, 'flash.bin')
+            if os.path.exists(flash_bin):
+                os.remove(flash_bin)
 
 
 def get_iut():
