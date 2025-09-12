@@ -43,6 +43,7 @@ from autopts.ptsprojects.stack.layers.tmap import TMAP
 from autopts.ptsprojects.stack.layers.vcp import VCP
 from autopts.ptsprojects.stack.layers.vcs import VCS
 from autopts.ptsprojects.stack.layers.vocs import VOCS
+from autopts.ptsprojects.stack.layers.rfcomm import RFCOMM
 from autopts.ptsprojects.stack.synch import Synch
 from autopts.pybtp import common
 
@@ -84,6 +85,7 @@ class Stack:
         self.ots = None
         self.pbp = None
         self.sdp = None
+        self.rfcomm = None
         # GENERATOR append 2
         self.supported_svcs_cmds = common.supported_svcs_cmds
 
@@ -191,6 +193,9 @@ class Stack:
     def sdp_init(self):
         self.sdp = SDP()
 
+    def rfcomm_init(self):
+        self.rfcomm = RFCOMM()
+
     # GENERATOR append 3
 
     def cleanup(self):
@@ -277,6 +282,9 @@ class Stack:
 
         if self.sdp:
             self.sdp_init()
+
+        if self.rfcomm:
+            self.rfcomm_init()
 
         # GENERATOR append 4
 

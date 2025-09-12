@@ -25,6 +25,7 @@ from .tmap import TMAP_EV
 from .vcp import VCP_EV
 from .vcs import VCS_EV
 from .vocs import VOCS_EV
+from .rfcomm import RFCOMM_EV
 
 __all__ = [
     "AICS_EV",
