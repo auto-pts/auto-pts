@@ -384,7 +384,7 @@ iut_config = {
             'CONFIG_BT_SMP': 'y',
             'CONFIG_BT_L2CAP_DYNAMIC_CHANNEL': 'y',
             'CONFIG_BT_PAGE_TIMEOUT': '0xFFFF',
-            'CONFIG_BT_L2CAP_CLS': 'y',
+            'CONFIG_BT_L2CAP_CONNLESS': 'y',
         },
         "test_cases": [
             'L2CAP/CLS/CLR/BV-01-C',
