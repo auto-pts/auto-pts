@@ -25,6 +25,7 @@ import time
 
 import serial
 
+from autopts.config import FILE_PATHS
 from autopts.ptsprojects.boards import Board, tty_to_com
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp, defs
@@ -89,6 +90,7 @@ class IutCtl:
         self._net_tty_file = args.net_tty_file
         self.tty_baudrate = args.tty_baudrate
         self.btattach_bin = args.btattach_bin
+        self._btattach_at_every_test_case = args.btattach_at_every_test_case
         self.btproxy_bin = args.btproxy_bin
         self.qemu_bin = args.qemu_bin
         self.qemu_options = args.qemu_options
@@ -141,6 +143,8 @@ class IutCtl:
             self._btproxy = Btproxy() if self.btproxy_bin else None
             self._btattach = Btattach() if self.btattach_bin else None
 
+            if not self._btattach_at_every_test_case:
+                self.btattach_start()
         elif self.iut_mode == "native":
             from autopts.ptsprojects.utils.btattach import Btattach
             from autopts.ptsprojects.utils.native import NativeIUT
@@ -149,6 +153,8 @@ class IutCtl:
             self._stop_mode = self._stop_native_mode
             self._btattach = Btattach() if self.btattach_bin else None
 
+            if not self._btattach_at_every_test_case:
+                self.btattach_start()
         else:
             raise Exception(f"Mode {self.iut_mode} is not supported.")
 
@@ -161,6 +167,32 @@ class IutCtl:
         self.test_case = test_case
 
         self._start_mode(test_case)
+
+    def btattach_start(self, log_dir=FILE_PATHS['TMP_DIR']):
+        if self._btattach is None:
+            return
+
+        log(f"{self.__class__}.{self.btattach_start.__name__}")
+
+        self.flush_serial(self.rtscts)
+        btattach_cmd = self.get_btattach_cmd(btattach_bin=self.btattach_bin,
+                                             tty=self.tty_file,
+                                             tty_baudrate=self.tty_baudrate)
+        self.hci = self._btattach.start(btattach_cmd, log_dir=log_dir)
+
+        if self.btmgmt_bin:
+            from autopts.ptsprojects.utils.btproxy import btmgmt_power_off_hci
+            btmgmt_power_off_hci(self.btmgmt_bin, self.hci)
+
+    def btattach_stop(self):
+        if self._btattach is None:
+            return
+
+        log(f"{self.__class__}.{self.btattach_stop.__name__}")
+
+        self._btattach.close()
+        if self.board:
+            self.board.reset()
 
     def _start_tty_mode(self, test_case):
         do_reset = not self.gdb
@@ -227,11 +259,8 @@ class IutCtl:
         self.socket_srv.open(self.btp_address)
         self.btp_socket = BTPWorker(self.socket_srv)
 
-        if self._btattach:
-            btattach_cmd = self.get_btattach_cmd(btattach_bin=self.btattach_bin,
-                                                 tty=self.tty_file,
-                                                 tty_baudrate=self.tty_baudrate)
-            self.hci = self._btattach.start(btattach_cmd, log_dir=test_case.log_dir)
+        if self._btattach and self._btattach_at_every_test_case:
+            self.btattach_start(test_case.log_dir)
 
         if self._btproxy:
             if self.hid_serial:
@@ -261,22 +290,14 @@ class IutCtl:
         self.socket_srv.open(self.btp_address)
         self.btp_socket = BTPWorker(self.socket_srv)
 
-        if self._btattach:
-            btattach_cmd = self.get_btattach_cmd(btattach_bin=self.btattach_bin,
-                                                 tty=self.tty_file,
-                                                 tty_baudrate=self.tty_baudrate)
-            self.hci = self._btattach.start(btattach_cmd, log_dir=test_case.log_dir)
-
-        if self.hid_serial:
+        if self._btattach and self._btattach_at_every_test_case:
+            self.btattach_start(test_case.log_dir)
+        elif self.hid_serial:
             from autopts.ptsprojects.utils.btproxy import find_hci_device
             self.hci = find_hci_device(self.hid_vid, self.hid_pid, self.hid_serial)
             if self.hci is None:
                 raise Exception(f"Could not find the device: VID={self.hid_vid} "
                                 f"PID={self.hid_pid} SN={self.hid_serial}")
-
-        if self.btmgmt_bin:
-            from autopts.ptsprojects.utils.btproxy import btmgmt_power_off_hci
-            btmgmt_power_off_hci(self.btmgmt_bin, self.hci)
 
         native_cmd = self.get_native_cmd(kernel_image=self.kernel_image,
                                          hci=self.hci,
@@ -424,8 +445,8 @@ class IutCtl:
             self.btp_socket.close()
             self.btp_socket = None
 
-        if self._btattach:
-            self._btattach.close()
+        if self._btattach and self._btattach_at_every_test_case:
+            self.btattach_stop()
 
         if self._qemu:
             self._qemu.close()
@@ -433,19 +454,13 @@ class IutCtl:
         if self._btproxy:
             self._btproxy.close()
 
-        if self.board:
-            self.board.reset()
-
     def _stop_native_mode(self):
         if self.btp_socket:
             self.btp_socket.close()
             self.btp_socket = None
 
-        if self._btattach:
-            self._btattach.close()
+        if self._btattach and self._btattach_at_every_test_case:
+            self.btattach_stop()
 
         if self._native:
             self._native.close()
-
-        if self.board:
-            self.board.reset()

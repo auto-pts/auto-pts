@@ -160,6 +160,9 @@ class CliParser(argparse.ArgumentParser):
 
         self.add_argument("--btattach-bin", "--btattach_bin", default=None,
                           help="The path to the btattach executable, e.g. /usr/bin/btattach")
+        self.add_argument("--btattach-at-every-test-case", "--btattach_at_every_test_case",
+                          action='store_true', default=False,
+                          help="The path to the btattach executable, e.g. /usr/bin/btattach")
         self.add_argument("--btproxy-bin", "--btproxy_bin", default=None,
                           help="The path to the btproxy executable, e.g. /usr/bin/btproxy")
         self.add_argument("--qemu-bin", "--qemu_bin", default=None,

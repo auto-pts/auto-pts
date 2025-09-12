@@ -1573,7 +1573,9 @@ def run_recovery(args, ptses):
     iut.stop()
 
     if args.usb_replug_available:
+        iut.btattach_stop()
         replug_usb(args)
+        iut.btattach_start()
 
     for pts in ptses:
         req_sent = False
