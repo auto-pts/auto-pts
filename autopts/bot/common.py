@@ -106,6 +106,7 @@ class BotConfigArgs(Namespace):
         self.qemu_bin = args.get('qemu_bin', None)
         self.qemu_options = args.get('qemu_options', '-cpu cortex-m3 -machine lm3s6965evb')
         self.btattach_bin = args.get('btattach_bin', None)
+        self.btattach_at_every_test_case = args.get('btattach_at_every_test_case', False)
         self.btproxy_bin = args.get('btproxy_bin', None)
         self.btmgmt_bin = args.get('btmgmt_bin', None)
         self.hid_vid = args.get('hid_vid', None)
