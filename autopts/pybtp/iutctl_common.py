@@ -248,9 +248,10 @@ class BTPSocketSrv(BTPSocket):
     def close(self):
         super().close()
         try:
-            self.conn.shutdown(socket.SHUT_RDWR)
-            self.conn.close()
-            self.sock.close()
+            if self.conn is not None:
+                self.conn.shutdown(socket.SHUT_RDWR)
+                self.conn.close()
+                self.sock.close()
         except BaseException as e:
             logging.exception(e)
         self.sock = None
