@@ -25,6 +25,7 @@ import time
 
 import serial
 
+from autopts.config import FILE_PATHS
 from autopts.ptsprojects.boards import Board, tty_to_com
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp, defs
@@ -53,13 +54,16 @@ def get_qemu_cmd(kernel_image, qemu_bin, btp_address=BTP_ADDRESS, qemu_options="
     return qemu_cmd
 
 
-def get_native_cmd(kernel_image, hci, tty_baudrate, btp_address, rtscts, **kwargs):
+def get_native_cmd(kernel_image, hci, tty_baudrate, btp_address, rtscts, log_dir, **kwargs):
     """Return native command"""
 
     flow_control = "crtscts" if rtscts else ""
 
+    flash_bin_dir = os.path.join(FILE_PATHS['FLASH_BIN_DIR'], os.path.basename(log_dir), 'flash.bin')
+    os.makedirs(os.path.dirname(flash_bin_dir), exist_ok=True)
+
     return (
-        f"{kernel_image} --bt-dev=hci{hci} "
+        f"{kernel_image} --bt-dev=hci{hci} --flash={flash_bin_dir} "
         f'--attach_uart_cmd="socat %s,rawer,b{tty_baudrate},{flow_control} UNIX-CONNECT:{btp_address} &"'
     )
 
@@ -282,7 +286,8 @@ class IutCtl:
                                          hci=self.hci,
                                          tty_baudrate=self.tty_baudrate,
                                          btp_address=self.btp_address,
-                                         rtscts=self.rtscts)
+                                         rtscts=self.rtscts,
+                                         log_dir=test_case.log_dir)
 
         log(f"Starting native process: {native_cmd}")
 
