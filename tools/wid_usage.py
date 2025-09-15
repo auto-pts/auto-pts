@@ -14,9 +14,23 @@
 # more details.
 #
 
+import argparse
+from pathlib import Path
+
 from autopts.utils import extract_wid_testcases_to_csv
 
-# USE: Simply  run python3 -m tools.wid_usage in auto-pts directory
+#   USE:
+#   python3 -m tools.wid_usage
+#   python3 -m tools.wid_usage --log-dir /path/to/logs
 
 if __name__ == '__main__':
-    extract_wid_testcases_to_csv()
+    parser = argparse.ArgumentParser(
+        description="Generate WID usage report from logs"
+    )
+    parser.add_argument(
+        "--log-dir", type=Path, default=None,
+        help="Optional path to logs directory. Defaults to autopts/logs"
+    )
+    args = parser.parse_args()
+
+    extract_wid_testcases_to_csv(log_dir=args.log_dir)

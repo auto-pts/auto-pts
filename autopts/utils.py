@@ -505,7 +505,7 @@ def log_memory_usage():
     logging.debug(f"Memory usage: {mem_usage:.2f} MB")
 
 
-def extract_wid_testcases_to_csv():
+def extract_wid_testcases_to_csv(log_dir: Path = None):
 
     # Example log block format:
     # BEGIN OnImplicitSend:
@@ -514,9 +514,11 @@ def extract_wid_testcases_to_csv():
     # ...
     # END OnImplicitSend
 
+    target_log_dir = log_dir if log_dir else LOG_DIR
+
     profile_wid_map = defaultdict(lambda: defaultdict(set))
 
-    for log_file in LOG_DIR.rglob("*.log"):
+    for log_file in target_log_dir.rglob("*.log"):
         logging.debug(f"Processing log file: {log_file}")
         try:
             with log_file.open(encoding='utf-8', errors='ignore') as f:
@@ -578,6 +580,8 @@ def extract_wid_testcases_to_csv():
                 testcases = sorted(profile_wid_map[profile][wid])
                 testcases_combined = " ".join(testcases)
                 writer.writerow([wid, testcases_combined])
+
+    print(f"WID usage report saved to: {OUTPUT_CSV_PATH.resolve()}")
 
 
 def main():
