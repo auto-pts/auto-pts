@@ -141,7 +141,7 @@ class IutCtl:
             self._start_mode = self._start_qemu_mode
             self._stop_mode = self._stop_qemu_mode
             self._btproxy = Btproxy() if self.btproxy_bin else None
-            self._btattach = Btattach() if self.btattach_bin else None
+            self._btattach = Btattach(self.btmgmt_bin) if self.btattach_bin else None
 
             if not self._btattach_at_every_test_case:
                 self.btattach_start()
@@ -151,7 +151,7 @@ class IutCtl:
             self._native = NativeIUT()
             self._start_mode = self._start_native_mode
             self._stop_mode = self._stop_native_mode
-            self._btattach = Btattach() if self.btattach_bin else None
+            self._btattach = Btattach(self.btmgmt_bin) if self.btattach_bin else None
 
             if not self._btattach_at_every_test_case:
                 self.btattach_start()
