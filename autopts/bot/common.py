@@ -269,11 +269,11 @@ class BotClient(Client):
         self.iut_config = bot_config_dict.get('iut_config', {})
         bot_config_namespace = self.parse_config(bot_config_dict['auto_pts'])
 
-        self.args, errmsg = self.arg_parser.parse(bot_config_namespace)
-        self.args.retry_config = bot_config_dict.get('retry_config', None)
-
         if 'file_paths' in self.bot_config:
             generate_file_paths(self.bot_config['file_paths'])
+
+        self.args, errmsg = self.arg_parser.parse(bot_config_namespace)
+        self.args.retry_config = bot_config_dict.get('retry_config', None)
 
         if errmsg:
             return errmsg
