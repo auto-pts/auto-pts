@@ -56,6 +56,7 @@ def generate_file_paths(file_paths=None, autopts_root_dir=AUTOPTS_ROOT_DIR):
         'REPORT_TXT_FILE': os.path.join(autopts_root_dir, "report.txt"),
         'REPORT_DIFF_TXT_FILE': os.path.join(FILE_PATHS['TMP_DIR'], "report-diff.txt"),
         'ERROR_TXT_FILE': os.path.join(FILE_PATHS['TMP_DIR'], 'error.txt'),
+        'WID_USE_CSV_FILE': os.path.join(AUTOPTS_ROOT_DIR, 'wid_usage_report.csv'),
         # 'BOT_LOG_FILE': os.path.join(autopts_root_dir, 'autoptsclient_bot.log'),
     })
 

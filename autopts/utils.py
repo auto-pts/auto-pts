@@ -31,12 +31,13 @@ from time import sleep
 import hid
 import psutil
 
+from autopts.config import FILE_PATHS
+
 PTS_WORKSPACE_FILE_EXT = ".pqw6"
 
 # Global paths for wid report
 BASE_DIR = Path(__file__).parent.parent.resolve()
 LOG_DIR = BASE_DIR / "logs"
-OUTPUT_CSV_PATH = BASE_DIR / "tmp" / "wid_usage_report.csv"
 
 # Regex patterns for log field parsing in wid report
 WID_REGEX = re.compile(r"^wid:\s*(\S+)")
@@ -572,6 +573,7 @@ def extract_wid_testcases_to_csv(log_dir: Path = None):
                     test_case_name = None
 
     # Output results to CSV grouped by profile and wid
+    OUTPUT_CSV_PATH = Path(FILE_PATHS['WID_USE_CSV_FILE'])
     with OUTPUT_CSV_PATH.open('w', newline='', encoding='utf-8') as csvfile:
         writer = csv.writer(csvfile)
         for profile in sorted(profile_wid_map.keys()):
