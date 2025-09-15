@@ -1613,6 +1613,7 @@ def run_recovery(args, ptses):
 
 
 def replug_usb(args):
+    log(f'{replug_usb.__name__}')
     if args.ykush:
         if sys.platform == 'win32':
             device_id = tty_to_com(args.tty_file)
@@ -1633,6 +1634,10 @@ def replug_usb(args):
             time.sleep(1)
 
         args.tty_file = os.path.realpath(args.tty_alias)
+        iut = autoprojects.iutctl.get_iut()
+        if iut:
+            iut.tty_file = args.tty_file
+        log(f'TTY {args.tty_alias} mounted as {args.tty_file}\n')
 
 
 def setup_project_name(project):
