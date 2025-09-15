@@ -27,10 +27,22 @@ from autopts.utils import get_global_end
 log = logging.debug
 
 
+def btmgmt_power_info_hci(btmgmt_bin, hci):
+    cmd = subprocess.run([btmgmt_bin, '-i', str(hci), 'info'],
+                         stdout=subprocess.PIPE)
+    result = cmd.stdout.decode()
+    if 'Invalid Index' in result:
+        log(f'[btmgmt info] {result}')
+        return False
+
+    return True
+
+
 class Btattach:
-    def __init__(self):
+    def __init__(self, btmgmt_bin=None):
         self._btattach_process = None
         self._log_file = None
+        self._btmgmt_bin = btmgmt_bin
 
     def _btattach(self, btattach_cmd, timeout):
         master_fd, slave_fd = pty.openpty()
@@ -47,13 +59,11 @@ class Btattach:
         os.close(slave_fd)
 
         start_time = time()
-        attach_time = False
         buffer = b''
         hci = None
         error_detected = False
-        post_attach_wait = 2
 
-        while time() - start_time < timeout:
+        while hci is None and time() - start_time < timeout and not get_global_end():
             rlist, _, _ = select.select([master_fd], [], [], 0.5)
             if master_fd in rlist:
                 try:
@@ -73,20 +83,28 @@ class Btattach:
                     match = re.search(r'Device index (\d+)', text)
                     if match and hci is None:
                         hci = int(match.group(1))
-                        attach_time = time()
 
                     if 'Unable to create user channel socket' in text or 'Device or resource busy' in text:
                         log(text)
                         error_detected = True
                         break
 
-            # We already have hci, wait a few seconds for a possible socket error
-            if hci is not None and time() - attach_time > post_attach_wait:
-                break
-
             if error_detected:
                 hci = None
                 break
+
+        if hci is not None and self._btmgmt_bin:
+            start_time = time()
+            while not get_global_end():
+                if btmgmt_power_info_hci(self._btmgmt_bin, hci):
+                    break
+
+                if time() - start_time > timeout:
+                    log('btmgmt info failed')
+                    hci = None
+                    break
+
+                sleep(1)
 
         os.close(master_fd)
 
