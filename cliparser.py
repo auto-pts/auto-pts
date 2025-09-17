@@ -429,6 +429,9 @@ class CliParser(argparse.ArgumentParser):
         """
         args = self.parse_args(None, arg_ns)
 
+        from autopts.client import init_logging
+        init_logging('_' + '_'.join(str(x) for x in args.cli_port))
+
         if args.btproxy_bin and not is_executable(args.btproxy_bin):
             return args, f'The btproxy_bin={args.btproxy_bin} is not an executable file'
 
