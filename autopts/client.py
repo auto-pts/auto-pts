@@ -506,7 +506,6 @@ def init_pts(args, ptses):
     thread_count = len(args.cli_port)
     finish_count = CounterWithFlag(init_count=0)
 
-    init_logging('_' + '_'.join(str(x) for x in args.cli_port))
     server_count = getattr(args, 'server_count', len(args.cli_port))
 
     # PtsServer.finish_count.clear()
