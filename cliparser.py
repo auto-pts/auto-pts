@@ -18,6 +18,7 @@
 import argparse
 import logging
 import os
+import sys
 import time
 from distutils.spawn import find_executable
 
@@ -449,6 +450,9 @@ class CliParser(argparse.ArgumentParser):
             args.local_addr = ['127.0.0.1'] * len(args.cli_port)
 
         args.iut_mode = self.get_iut_mode(args)
+        if sys.platform == "win32" and args.iut_mode in ['qemu', 'native']:
+            errmsg = f'The {args.iut_mode} mode is not supported under Windows!'
+            return args, errmsg
 
         check_method = getattr(self, f'check_args_{args.iut_mode}')
         errmsg = check_method(args)
