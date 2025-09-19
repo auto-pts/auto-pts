@@ -111,6 +111,8 @@ class IutCtl:
         self._rtt_logger_name = 'Logger'
         self._btmon_rtt_name = 'btmonitor'
         self._btmon = None
+        self._btattach = None
+        self._btproxy = None
         self._uart_logger = None
         self.rtscts = args.rtscts
         self._start_mode = None
