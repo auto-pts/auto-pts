@@ -1314,7 +1314,7 @@ ac_configs = {
     'BAP/UCL/STR/BV-567-C':     ([(1, 0)], 1, True),    # AC 1, Generic, QoS, Mono, Default Ch Count, No PACS
 
     # Channels and Locations in Enabled
-    'BAP/UCL/STR/BV-568-C': ([(0, 1)], 1),              # AC 2, Generic, Multi Channels
+    'BAP/UCL/STR/BV-568-C': ([(0, 1)], 1, True),        # AC 2, Generic, Multi Channels
     'BAP/UCL/STR/BV-569-C': ([(0, 1)], 1),              # AC 2, Generic, Multi Location
     'BAP/UCL/STR/BV-570-C': ([(0, 1)], 1),              # AC 2, Generic, Multi Channels and Location
     'BAP/UCL/STR/BV-571-C': ([(0, 1)], 1),              # AC 10, Generic, Multi Channels
