@@ -186,6 +186,29 @@ def hdl_wid_44(params: WIDParams):
     return True
 
 
+def hdl_wid_45(params: WIDParams):
+    """Please configure that current track position is greater than 0 and less than
+    the duration of the track."""
+
+    MEDIA_PROXY_OP_STOP = 0x05
+    btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_STOP, 0)
+    MEDIA_PROXY_OP_MOVE_RELATIVE = 0x10
+    btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_MOVE_RELATIVE, 1, 1)
+
+    # PTS seems to also expect IUT to set initial state in this WID
+    # (although in test spec this is separate step)
+    if params.test_case_name == 'GMCS/SR/MCP/BV-12-C ':
+        MEDIA_PROXY_OP_PLAY = 0x01
+        btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_PLAY, 0)
+    elif params.test_case_name == 'GMCS/SR/MCP/BV-14-C':
+        MEDIA_PROXY_OP_FAST_FORWARD = 0x04
+        btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_FAST_FORWARD, 0)
+    elif params.test_case_name == 'GMCS/SR/MCP/BV-75-C':
+        btp.gmcs_inactive_state_set()
+
+    return True
+
+
 def hdl_wid_20001(params: WIDParams):
     """Please prepare IUT into a connectable mode. Verify that the
     Implementation Under Test (IUT) can accept GATT connect request from PTS."""
