@@ -15,9 +15,9 @@
 # more details.
 #
 import logging
-import os
 import subprocess
 import sys
+from pathlib import PurePosixPath
 
 from autopts.bot.common import check_call
 
@@ -36,27 +36,38 @@ def reset_cmd(iutctl):
     return f'nrfjprog -r -s {iutctl.debugger_snr}'
 
 
-def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None, *args):
+def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None, env_cmd=None, *args):
     """Build and flash Zephyr binary
     :param zephyr_wd: Zephyr source path
     :param board: IUT
     :param debugger_snr serial number
     :param conf_file: configuration file to be used
+    :param env_cmd: a command to for environment activation, e.g. source /path/to/venv/activate
     """
     logging.debug("%s: %s %s %s", build_and_flash.__name__, zephyr_wd,
                   board, conf_file)
-    tester_dir = os.path.join(zephyr_wd, "tests", "bluetooth", "tester")
+
+    if env_cmd:
+        env_cmd = env_cmd.split() + ['&&']
+    else:
+        env_cmd = []
+
+    tester_dir = PurePosixPath(zephyr_wd, 'tests', 'bluetooth', 'tester').as_posix()
+
+    check_call('rm -rf build/'.split(), cwd=tester_dir)
 
     cmd = ['west', 'build', '-p', 'auto', '-b', board]
-    if conf_file and conf_file != 'default' and conf_file != 'prj.conf':
+    if conf_file and conf_file not in ["default", "prj.conf"]:
         cmd.extend(('--', f'-DEXTRA_CONF_FILE=\'{conf_file}\''))
+
+    check_call(env_cmd + cmd, cwd=tester_dir)
 
     shell = True
     if sys.platform == 'win32':
         shell = False
+        cmd = ['west', 'flash', '--skip-rebuild', '--recover', '--snr',
+               debugger_snr]
         cmd = subprocess.list2cmdline(cmd)
         cmd = ['bash.exe', '-c', '-i', cmd]  # bash.exe == wsl
 
-    check_call(cmd, cwd=tester_dir, shell=shell)
-    check_call(['west', 'flash', '--skip-rebuild', '--recover',
-                '--snr', debugger_snr], cwd=tester_dir)
+    check_call(env_cmd + cmd, cwd=tester_dir, shell=shell)
