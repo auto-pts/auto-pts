@@ -157,15 +157,6 @@ iut_config = {
         ]
     },
 
-    "overlay-mesh.conf": {
-        "overlay": {
-            # The overlay file exists in zephyr repo. Leave this empty.
-        },
-        "test_cases": [
-            'MESH'
-        ]
-    },
-
     "mesh_rpr_persistent_storage.conf": {
         "pre_overlay": "overlay-mesh.conf",
         "overlay": {
@@ -295,6 +286,15 @@ iut_config = {
         },
         "test_cases": [
             'MBTM/CL/BT'
+        ]
+    },
+
+    "overlay-mesh.conf": {
+        "overlay": {
+            # The overlay file exists in zephyr repo. Leave this empty.
+        },
+        "test_cases": [
+            'MESH'
         ]
     },
 
