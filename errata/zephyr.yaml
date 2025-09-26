@@ -2,8 +2,6 @@
 # GAP/CONN/NCON/BV-01-C: CASE00xxxxx
 # GAP/CONN/NCON/BV-02-C: CASE00xxxxx
 
-BAP/BSRC/SCC/BV-34-C: https://github.com/zephyrproject-rtos/zephyr/issues/92153
-
 BAP/UCL/STR/BV-539-C: https://github.com/zephyrproject-rtos/zephyr/issues/96012
 BAP/UCL/STR/BV-580-C: https://github.com/zephyrproject-rtos/zephyr/issues/96012
 BAP/UCL/STR/BV-581-C: https://github.com/zephyrproject-rtos/zephyr/issues/96012
@@ -34,8 +32,6 @@ BAP/UCL/STR/BV-545-C: https://github.com/zephyrproject-rtos/zephyr/issues/96012
 BAP/UCL/STR/BV-549-C: https://github.com/zephyrproject-rtos/zephyr/issues/96012
 BAP/UCL/STR/BV-550-C: https://github.com/zephyrproject-rtos/zephyr/issues/96012
 BAP/UCL/STR/BV-551-C: https://github.com/zephyrproject-rtos/zephyr/issues/96012
-
-CSIP/CL/CGGIT/CHA/BV-01-C: https://github.com/zephyrproject-rtos/zephyr/issues/91813
 
 DFUM/SR/FD/BV-28-C: https://github.com/zephyrproject-rtos/zephyr/issues/92159
 DFUM/SR/FD/BV-29-C: https://github.com/zephyrproject-rtos/zephyr/issues/92159
@@ -68,5 +64,3 @@ OTS/SR/OTD/BI-05-C: https://github.com/zephyrproject-rtos/zephyr/issues/72951
 OTS/SR/SGGIT/CHA/BV-15-C: https://github.com/zephyrproject-rtos/zephyr/issues/71754
 
 TBS/SR/SPE/BI-05-C: TSE24847
-
-TMAP/BMS/ASC/BV-01-C: https://github.com/zephyrproject-rtos/zephyr/issues/92153
