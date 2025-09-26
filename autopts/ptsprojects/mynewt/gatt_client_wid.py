@@ -19,22 +19,8 @@ from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import MMI
 from autopts.pybtp import btp
 from autopts.pybtp.types import WIDParams
-from autopts.wid import generic_wid_hdl
 
 log = logging.debug
-
-
-def gattc_wid_hdl(wid, description, test_case_name):
-    log(f'{gattc_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
-    stack = get_stack()
-    if stack.is_svc_supported('GATT_CL') and 'GATT/CL' in test_case_name:
-        return generic_wid_hdl(wid, description, test_case_name,
-                               [__name__, 'autopts.ptsprojects.mynewt.gatt_client_wid',
-                                'autopts.wid.gatt_client'])
-
-    return generic_wid_hdl(wid, description, test_case_name,
-                           [__name__, 'autopts.ptsprojects.mynewt.gatt_wid',
-                            'autopts.wid.gatt'])
 
 
 def hdl_wid_24(params: WIDParams):
