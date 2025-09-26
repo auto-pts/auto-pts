@@ -238,7 +238,7 @@ iut_config = {
             'CONFIG_BT_MESH_BLOB_BLOCK_SIZE_MAX': '256'
         },
         "test_cases": [
-            'DFU/SR-CL/GEN/BV-01-C',
+            'DFUM/SR-CL/GEN/BV-01-C',
             'DFUM/CL/FU',
             'DFUM/SR/FD',
             'MBTM/SR/BT',
