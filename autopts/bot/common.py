@@ -117,6 +117,7 @@ class BotConfigArgs(Namespace):
         self.hci = args.get('hci', None)
         self.test_cases = args.get('test_cases', [])
         self.excluded = args.get('excluded', [])
+        self.valgrind = args.get('valgrind', False)
 
         self.bd_addr = args.get('bd_addr', '')
         self.enable_max_logs = args.get('enable_max_logs', False)

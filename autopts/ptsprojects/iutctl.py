@@ -25,6 +25,7 @@ import time
 
 import serial
 
+from autopts.bot.common import check_call
 from autopts.config import FILE_PATHS
 from autopts.ptsprojects.boards import Board, tty_to_com
 from autopts.ptsprojects.stack import get_stack
@@ -54,15 +55,24 @@ def get_qemu_cmd(kernel_image, qemu_bin, btp_address=BTP_ADDRESS, qemu_options="
     return qemu_cmd
 
 
-def get_native_cmd(kernel_image, hci, tty_baudrate, btp_address, rtscts, **kwargs):
+def get_native_cmd(kernel_image, hci, tty_baudrate, btp_address, rtscts, valgrind, log_dir, **kwargs):
     """Return native command"""
 
     flow_control = "crtscts" if rtscts else ""
 
-    return (
-        f"{kernel_image} --bt-dev=hci{hci} "
-        f'--attach_uart_cmd="socat %s,rawer,b{tty_baudrate},{flow_control} UNIX-CONNECT:{btp_address} &"'
-    )
+    if valgrind:
+        setcap_valgrind = "sudo /usr/sbin/setcap cap_net_raw,cap_net_admin,cap_sys_admin+ep /usr/bin/valgrind"
+        check_call(setcap_valgrind.split())
+        return (
+            f"valgrind --leak-check=full --log-file={os.path.join(log_dir, 'valgrind.log')} {kernel_image} "
+            f'--bt-dev=hci{hci} --attach_uart_cmd="socat %s,rawer,b{tty_baudrate},{flow_control} '
+            f'UNIX-CONNECT:{btp_address} &"'
+        )
+    else:
+        return (
+            f"{kernel_image} --bt-dev=hci{hci} "
+            f'--attach_uart_cmd="socat %s,rawer,b{tty_baudrate},{flow_control} UNIX-CONNECT:{btp_address} &"'
+        )
 
 
 def get_btattach_cmd(btattach_bin, tty, tty_baudrate, **kwargs):
@@ -122,6 +132,7 @@ class IutCtl:
         self.get_btattach_cmd = get_btattach_cmd
         self.get_native_cmd = get_native_cmd
         self.boot_log = ''
+        self.valgrind = args.valgrind
 
         if args.board_name:
             self.board = Board(args.board_name, self)
@@ -305,7 +316,9 @@ class IutCtl:
                                          hci=self.hci,
                                          tty_baudrate=self.tty_baudrate,
                                          btp_address=self.btp_address,
-                                         rtscts=self.rtscts)
+                                         rtscts=self.rtscts,
+                                         valgrind=self.valgrind,
+                                         log_dir=test_case.log_dir)
 
         log(f"Starting native process: {native_cmd}")
 
