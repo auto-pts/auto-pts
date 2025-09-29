@@ -129,7 +129,7 @@ class IutCtl:
             if self.debugger_snr:
                 self.btp_address = BTP_ADDRESS + self.debugger_snr
                 self._rtt_logger = RTTLogger(args.rtt_log_syncto) if args.rtt_log else None
-                self._btmon = BTMON() if args.btmon else None
+        self._btmon = BTMON() if args.btmon else None
 
         if self.iut_mode == "tty":
             self._start_mode = self._start_tty_mode
@@ -301,6 +301,9 @@ class IutCtl:
                 raise Exception(f"Could not find the device: VID={self.hid_vid} "
                                 f"PID={self.hid_pid} SN={self.hid_serial}")
 
+        if self._btmon:
+            self.btmon_start()
+
         native_cmd = self.get_native_cmd(kernel_image=self.kernel_image,
                                          hci=self.hci,
                                          tty_baudrate=self.tty_baudrate,
@@ -340,7 +343,7 @@ class IutCtl:
             log_file = os.path.join(self.test_case.log_dir,
                                     self.test_case.name.replace('/', '_') +
                                     '_btmon.log')
-            self._btmon.start(self._btmon_rtt_name, log_file, self.device_core, self.debugger_snr)
+            self._btmon.start(self._btmon_rtt_name, log_file, self.device_core, self.debugger_snr, self.hci)
 
     def btmon_stop(self):
         if self._btmon:
@@ -466,3 +469,6 @@ class IutCtl:
 
         if self._native:
             self._native.close()
+
+        if self._btmon:
+            self.btmon_stop()

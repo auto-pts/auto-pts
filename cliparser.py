@@ -212,10 +212,11 @@ class CliParser(argparse.ArgumentParser):
                                "each test case. If board is not specified DUT "
                                "will not be reset.")
 
-        self.add_argument("--btmon",
-                          help="Capture iut btsnoop logs from device over RTT"
-                          "and catch them with btmon. Requires rtt support"
-                          "on IUT.", action='store_true', default=False)
+        self.add_argument("--btmon", action='store_true', default=False,
+                          help="Capture iut btsnoop logs from device over RTT and catch them with btmon. Requires rtt "
+                               "support on IUT. When using with native linux build CAP_NET_RAW,CAP_NET_ADMIN and "
+                               "CAP_SYS_ADMIN permissions are required. "
+                               "e.g. sudo setcap cap_net_raw,cap_net_admin,cap_sys_admin+ep /usr/bin/btmon ")
 
         self.add_argument("--device_core", default='NRF52840_XXAA',
                           help="Specify the device core for JLink related features, "
