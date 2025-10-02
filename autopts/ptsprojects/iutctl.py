@@ -399,8 +399,10 @@ class IutCtl:
                                                  self.test_case.log_dir)
                 self._uart_logger.start()
 
-            self.rtt_logger_start()
-            self.btmon_start()
+            if not self.iut_mode == "native":
+                # For native mode btmon has been already started
+                self.rtt_logger_start()
+                self.btmon_start()
 
     def get_supported_svcs(self):
         btp.read_supp_svcs()
