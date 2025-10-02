@@ -406,7 +406,7 @@ class CliParser(argparse.ArgumentParser):
         if args.qemu_bin:
             return 'qemu'
 
-        if args.kernel_image or args.hid_serial or args.hci:
+        if args.kernel_image or args.hid_serial or args.hci is not None:
             return 'native'
 
         if args.btpclient_path:
