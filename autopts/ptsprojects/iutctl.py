@@ -30,7 +30,7 @@ from autopts.ptsprojects.boards import Board, tty_to_com
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp, defs
 from autopts.pybtp.iutctl_common import BTP_ADDRESS, BTPSocketSrv, BTPWorker, LoggerWorker
-from autopts.pybtp.types import BTPError, BTPInitError
+from autopts.pybtp.types import BTPInitError
 from autopts.rtt import BTMON, RTTLogger
 from autopts.utils import get_global_end
 
@@ -466,7 +466,8 @@ class IutCtl:
             # Ignore any errors eg. if GAP was not registered or already powered down
             try:
                 btp.gap.gap_set_powered_off()
-            except BTPError:
+            except Exception as e:
+                log(f'gap_set_powered_off failed {e}')
                 pass
 
             self.btp_socket.close()
