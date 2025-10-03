@@ -116,8 +116,14 @@ class RTT:
             self.read_thread.join()
             self.read_thread = None
             if RTT.jlink:
-                RTT.jlink.rtt_stop()
-                RTT.jlink.close()
+                try:
+                    RTT.jlink.rtt_stop()
+                except (pylink.errors.JLinkRTTException, pylink.errors.JLinkException) as err:
+                    log(f'Failed to stop RTT, err: {err}')
+                try:
+                    RTT.jlink.close()
+                except pylink.errors.JLinkException as err:
+                    log(f'Failed to close J-Link connection, err: {err}')
                 del RTT.jlink
                 RTT.jlink = None
 
