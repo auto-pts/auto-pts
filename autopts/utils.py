@@ -36,7 +36,11 @@ from autopts.config import FILE_PATHS
 PTS_WORKSPACE_FILE_EXT = ".pqw6"
 
 # Global paths for wid report
-BASE_DIR = Path(__file__).parent.parent.resolve()
+BASE_DIR = Path(__file__).parent.parent
+try:
+    BASE_DIR = BASE_DIR.resolve()
+except OSError:
+    BASE_DIR = BASE_DIR.absolute()
 LOG_DIR = BASE_DIR / "logs"
 
 # Regex patterns for log field parsing in wid report
@@ -583,7 +587,11 @@ def extract_wid_testcases_to_csv(log_dir: Path = None):
                 testcases_combined = " ".join(testcases)
                 writer.writerow([wid, testcases_combined])
 
-    print(f"WID usage report saved to: {OUTPUT_CSV_PATH.resolve()}")
+    try:
+        wid_path = OUTPUT_CSV_PATH.resolve()
+    except OSError:
+        wid_path = OUTPUT_CSV_PATH.absolute()
+    print(f"WID usage report saved to: {wid_path}")
 
 
 Sep = re.compile(r'[,\s;|]+')
