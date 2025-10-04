@@ -469,3 +469,17 @@ class NrfUtil:
             check_call(f'nrfjprog --recover --coprocessor CP_NETWORK -s {self.debugger_snr}')
 
         check_call(f'nrfjprog --recover -s {self.debugger_snr}')
+
+    @staticmethod
+    def device_list():
+        """Return list of connected devices
+
+        :return: list of connected devices
+        """
+        from autopts.bot.common import check_output
+
+        output = check_output(["nrfutil", "device", "list", "--json", "--skip-overhead"])
+        stdout = output.decode("utf-8")
+        devices = json.loads(stdout)["devices"]
+
+        return devices
