@@ -25,10 +25,12 @@ from autopts.pybtp.types import MeshVals, Perm, WIDParams
 log = logging.debug
 
 
-def mesh_wid_hdl(wid, description, test_case_name):
-    from autopts.wid import generic_wid_hdl
-    log(f'{mesh_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
-    return generic_wid_hdl(wid, description, test_case_name, [__name__])
+def _make_mesh_handler():
+    from autopts.ptsprojects.common_wid import get_wid_handler
+    return get_wid_handler("zephyr", "mesh")
+
+
+mesh_wid_hdl = _make_mesh_handler()
 
 
 def mesh_wid_hdl_rpr_2ptses(wid, description, test_case_name):

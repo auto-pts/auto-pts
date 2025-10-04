@@ -18,11 +18,13 @@
 
 from autopts.client import get_unique_name
 from autopts.ptsprojects.bluez.btestcase import BTestCase
-from autopts.ptsprojects.bluez.sm_wid import sm_wid_hdl
+from autopts.ptsprojects.common_wid import get_wid_handler
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.pybtp import btp
 from autopts.pybtp.types import Addr, IOCap
+
+sm_wid_hdl = get_wid_handler("mynewt", "sm")
 
 
 def set_pixits(ptses):
