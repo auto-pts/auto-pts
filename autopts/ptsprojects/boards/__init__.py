@@ -469,3 +469,17 @@ class NrfUtil:
             check_call(f'nrfjprog --recover --coprocessor CP_NETWORK -s {self.debugger_snr}')
 
         check_call(f'nrfjprog --recover -s {self.debugger_snr}')
+
+    def device_protection_disable_alt(self):
+        """Disable device protection
+
+        Erases user code and UICR flash areas.
+        :return: None
+        """
+        from autopts.bot.common import check_call
+
+        # For multicore devices like nRF53 Series, make sure to recover the network core before the application core:
+        if self._is_multi_core(self.family):
+            check_call(f'nrfutil device recover --core Network --serial-number {self.debugger_snr}')
+
+        check_call(f'nrfutil device recover --serial-number {self.debugger_snr}')

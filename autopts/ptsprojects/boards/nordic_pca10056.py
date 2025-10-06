@@ -55,7 +55,7 @@ def build_and_flash(project_path, board, overlay=None, debugger_snr=None):
 
     device_protection = nrfutil.device_protection_get()
     if device_protection:
-        nrfutil.device_protection_disable()
+        nrfutil.device_protection_disable_alt()
 
     check_call('rm -rf bin/'.split(), cwd=project_path)
     check_call(f'rm -rf targets/{board}_boot/'.split(),
