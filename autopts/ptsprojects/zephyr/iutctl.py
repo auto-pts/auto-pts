@@ -37,10 +37,10 @@ class ZephyrCtl(IutCtl):
     def stop(self):
         super().stop()
 
-        if self.iut_mode == "native":
-            flash_bin = os.path.join(AUTOPTS_ROOT_DIR, 'flash.bin')
-            if os.path.exists(flash_bin):
-                os.remove(flash_bin)
+    def remove_flash_bin(self):
+        flash_bin = os.path.join(AUTOPTS_ROOT_DIR, 'flash.bin')
+        if os.path.exists(flash_bin):
+            os.remove(flash_bin)
 
 
 def get_iut():

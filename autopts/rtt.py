@@ -150,7 +150,7 @@ class BTMON:
     def is_running(self):
         return not self.rtt_reader.stop_thread.is_set()
 
-    def start(self, buffer_name, log_file, device_core, debugger_snr):
+    def start(self, buffer_name, log_file, device_core, debugger_snr, hci):
         log("%s.%s", self.__class__, self.start.__name__)
 
         log_filecwd = os.path.dirname(os.path.abspath(log_file))
@@ -201,7 +201,13 @@ class BTMON:
 
             self.rtt_reader.start(buffer_name, device_core, debugger_snr, self._on_line_read_callback, (sock,))
         else:
-            cmd = f"btmon -C 130 -J {device_core},{debugger_snr} -w {log_filename} | grep -v '^= bt:' > {plain_log_filename}"
+            if hci is not None:
+                cmd = f"btmon -C 130 -i {hci} -w {log_filename} | grep -v '^= bt:' > {plain_log_filename}"
+            else:
+                cmd = (
+                    f"btmon -C 130 -J {device_core},{debugger_snr} "
+                    f"-w {log_filename} | grep -v '^= bt:' > {plain_log_filename}"
+                )
             self.btmon_process = subprocess.Popen(cmd, cwd=log_filecwd,
                                                   shell=True,
                                                   stdout=subprocess.PIPE,

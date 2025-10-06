@@ -157,15 +157,6 @@ iut_config = {
         ]
     },
 
-    "overlay-mesh.conf": {
-        "overlay": {
-            # The overlay file exists in zephyr repo. Leave this empty.
-        },
-        "test_cases": [
-            'MESH'
-        ]
-    },
-
     "mesh_rpr_persistent_storage.conf": {
         "pre_overlay": "overlay-mesh.conf",
         "overlay": {
@@ -247,7 +238,7 @@ iut_config = {
             'CONFIG_BT_MESH_BLOB_BLOCK_SIZE_MAX': '256'
         },
         "test_cases": [
-            'DFU/SR-CL/GEN/BV-01-C',
+            'DFUM/SR-CL/GEN/BV-01-C',
             'DFUM/CL/FU',
             'DFUM/SR/FD',
             'MBTM/SR/BT',
@@ -295,6 +286,15 @@ iut_config = {
         },
         "test_cases": [
             'MBTM/CL/BT'
+        ]
+    },
+
+    "overlay-mesh.conf": {
+        "overlay": {
+            # The overlay file exists in zephyr repo. Leave this empty.
+        },
+        "test_cases": [
+            'MESH'
         ]
     },
 

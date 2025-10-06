@@ -129,7 +129,7 @@ class IutCtl:
             if self.debugger_snr:
                 self.btp_address = BTP_ADDRESS + self.debugger_snr
                 self._rtt_logger = RTTLogger(args.rtt_log_syncto) if args.rtt_log else None
-                self._btmon = BTMON() if args.btmon else None
+        self._btmon = BTMON() if args.btmon else None
 
         if self.iut_mode == "tty":
             self._start_mode = self._start_tty_mode
@@ -301,6 +301,9 @@ class IutCtl:
                 raise Exception(f"Could not find the device: VID={self.hid_vid} "
                                 f"PID={self.hid_pid} SN={self.hid_serial}")
 
+        if self._btmon:
+            self.btmon_start()
+
         native_cmd = self.get_native_cmd(kernel_image=self.kernel_image,
                                          hci=self.hci,
                                          tty_baudrate=self.tty_baudrate,
@@ -340,7 +343,7 @@ class IutCtl:
             log_file = os.path.join(self.test_case.log_dir,
                                     self.test_case.name.replace('/', '_') +
                                     '_btmon.log')
-            self._btmon.start(self._btmon_rtt_name, log_file, self.device_core, self.debugger_snr)
+            self._btmon.start(self._btmon_rtt_name, log_file, self.device_core, self.debugger_snr, self.hci)
 
     def btmon_stop(self):
         if self._btmon:
@@ -396,8 +399,10 @@ class IutCtl:
                                                  self.test_case.log_dir)
                 self._uart_logger.start()
 
-            self.rtt_logger_start()
-            self.btmon_start()
+            if not self.iut_mode == "native":
+                # For native mode btmon has been already started
+                self.rtt_logger_start()
+                self.btmon_start()
 
     def get_supported_svcs(self):
         btp.read_supp_svcs()
@@ -458,6 +463,13 @@ class IutCtl:
 
     def _stop_native_mode(self):
         if self.btp_socket:
+            # Ignore any errors eg. if GAP was not registered or already powered down
+            try:
+                btp.gap.gap_set_powered_off()
+            except Exception as e:
+                log(f'gap_set_powered_off failed {e}')
+                pass
+
             self.btp_socket.close()
             self.btp_socket = None
 
@@ -466,3 +478,6 @@ class IutCtl:
 
         if self._native:
             self._native.close()
+
+        if self._btmon:
+            self.btmon_stop()

@@ -38,6 +38,9 @@ class ZTestCase(TestCaseLT1):
         # Await IUT ready event
         self.cmds.insert(2, TestFunc(self.zephyrctl.wait_iut_ready_event, False))
 
+        if self.zephyrctl.iut_mode == "native":
+            self.cmds.insert(0, TestFunc(self.zephyrctl.remove_flash_bin))
+
         self.cmds.append(TestFuncCleanUp(self.stack.cleanup))
 
         # Last command is to stop QEMU or HW.

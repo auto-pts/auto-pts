@@ -802,6 +802,42 @@ Commands and responses:
 
                 In case of an error, the error response will be returned.
 
+        Opcode 0x2f - Set LE Discovery Parameters command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Interval (2 octets)
+                                        Window (2 octets)
+                                        Phy (1 octet)
+                                        Flags (1 octet)
+                Return Parameters:      <none>
+
+                This command is used to set scanning parameters for discovery.
+                Command should be issued before the 'Start Discovery' command.
+                If command is issued during ongoing discovery process it should 
+                be considered as an error.
+
+                Interval: The time interval when the device starts its last scan
+                until it begins the subsequent scan.
+                Valid range is from 0x0004 to 0xffff.
+                Time = 0.625 ms x Interval
+
+                Window: Duration of single scan, must be less than or equal
+                to the Interval.
+                Valid range is from 0x0004 to 0xffff.
+                Time = 0.625 ms x Window
+
+                Phy: Bitfield to select Phys to be used in the discovery.
+                Possible values for the Flags parameter are a bit-wise OR
+                of the following bits: 
+                        0 = PHY 1M
+                        1 = PHY Coded
+
+                Flags: This field is reserved for future use and shall be set to 0.
+
+                Default values are implementation specific.
+
+                In case of an error, the error response will be returned.
+
         Opcode 0x30 - Set RPA Timeout command/response
 
                 Controller Index: <controller id>

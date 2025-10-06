@@ -22,7 +22,7 @@ import sys
 import time
 from distutils.spawn import find_executable
 
-from autopts.config import CLIENT_PORT, MAX_SERVER_RESTART_TIME, SERIAL_BAUDRATE, SERVER_PORT
+from autopts.config import CLIENT_PORT, FILE_PATHS, MAX_SERVER_RESTART_TIME, SERIAL_BAUDRATE, SERVER_PORT
 from autopts.ptsprojects.boards import com_to_tty, get_debugger_snr, get_free_device, get_tty, tty_exists
 from autopts.ptsprojects.testcase_db import DATABASE_FILE
 from autopts.utils import active_hub_server_replug_usb, get_tc_from_wid, load_wid_report, raise_on_global_end, ykush_replug_usb
@@ -212,10 +212,11 @@ class CliParser(argparse.ArgumentParser):
                                "each test case. If board is not specified DUT "
                                "will not be reset.")
 
-        self.add_argument("--btmon",
-                          help="Capture iut btsnoop logs from device over RTT"
-                          "and catch them with btmon. Requires rtt support"
-                          "on IUT.", action='store_true', default=False)
+        self.add_argument("--btmon", action='store_true', default=False,
+                          help="Capture iut btsnoop logs from device over RTT and catch them with btmon. Requires rtt "
+                               "support on IUT. When using with native linux build CAP_NET_RAW,CAP_NET_ADMIN and "
+                               "CAP_SYS_ADMIN permissions are required. "
+                               "e.g. sudo setcap cap_net_raw,cap_net_admin,cap_sys_admin+ep /usr/bin/btmon ")
 
         self.add_argument("--device_core", default='NRF52840_XXAA',
                           help="Specify the device core for JLink related features, "
@@ -405,7 +406,7 @@ class CliParser(argparse.ArgumentParser):
         if args.qemu_bin:
             return 'qemu'
 
-        if args.kernel_image or args.hid_serial or args.hci:
+        if args.kernel_image or args.hid_serial or args.hci is not None:
             return 'native'
 
         if args.btpclient_path:
@@ -431,7 +432,8 @@ class CliParser(argparse.ArgumentParser):
         args = self.parse_args(None, arg_ns)
 
         from autopts.client import init_logging
-        init_logging('_' + '_'.join(str(x) for x in args.cli_port))
+        init_logging('_' + '_'.join(str(x) for x in args.cli_port),
+                     FILE_PATHS.get('BOT_LOG_FILE', None))
 
         if args.btproxy_bin and not is_executable(args.btproxy_bin):
             return args, f'The btproxy_bin={args.btproxy_bin} is not an executable file'

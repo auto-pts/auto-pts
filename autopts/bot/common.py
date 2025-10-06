@@ -272,6 +272,8 @@ class BotClient(Client):
         if 'file_paths' in self.bot_config:
             generate_file_paths(self.bot_config['file_paths'])
 
+        # Remove default root handler that was created at the first logging.debug
+        logging.getLogger().handlers.clear()
         self.args, errmsg = self.arg_parser.parse(bot_config_namespace)
         self.args.retry_config = bot_config_dict.get('retry_config', None)
 
@@ -282,11 +284,6 @@ class BotClient(Client):
             self.load_backup_of_previous_run()
         else:
             self.bot_pre_cleanup()
-
-        # Remove default root handler that was created at the first logging.debug
-        logging.getLogger().handlers.clear()
-        init_logging('_' + '_'.join(str(x) for x in self.args.cli_port),
-                     self.file_paths.get('BOT_LOG_FILE', None))
 
         return errmsg
 

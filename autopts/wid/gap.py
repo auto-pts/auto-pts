@@ -1707,8 +1707,10 @@ def hdl_wid_301(params: WIDParams):
     stack = get_stack()
 
     # GAP/PADV/PASE/BV-02-C starts PA Sync in WID 302 which comes first
-    if params.test_case_name not in ['GAP/PADV/PASE/BV-02-C']:
-        btp.gap_padv_create_sync(0, 0, 10, 0)
+    if params.test_case_name not in ['GAP/PADV/PASE/BV-02-C',
+                                     'GAP/PADV/PASE/BV-04-C',
+                                     'GAP/PADV/PASE/BV-06-C']:
+        btp.gap_padv_create_sync(0, 0, 500, 0)
 
     return stack.gap.wait_periodic_report(10)
 
