@@ -16,7 +16,6 @@
 import importlib
 import os
 import sys
-import time
 import traceback
 from pathlib import Path
 
@@ -120,8 +119,6 @@ class MynewtBotClient(bot.common.BotClient):
                 traceback.print_exception(e)
                 self.error_txt_content += "Build and flash step failed\n"
                 raise BuildAndFlashException from e
-
-            time.sleep(10)
 
     def start(self, args=None):
         print("Mynewt bot start!")
