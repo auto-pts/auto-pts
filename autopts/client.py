@@ -584,6 +584,7 @@ class TestCaseRunStats:
         self.pending_test_case = None
         self.test_run_completed = False
         self.session_log_dir = None
+        self.fail_info_cb = None
 
         if self.xml_results and not os.path.exists(self.xml_results):
             os.makedirs(dirname(self.xml_results), exist_ok=True)
@@ -716,6 +717,8 @@ class TestCaseRunStats:
             duration = tc_xml.attrib.get("duration")
 
             patterns = ["UNKNOWN VERDICT"]
+            if (self.fail_info_cb):
+                patterns.extend(["BTP TIMEOUT", "FAIL", "INDCSV", "INCONC"])
             parsed_result = status
             additional_info = ""
 
@@ -724,6 +727,15 @@ class TestCaseRunStats:
                     additional_info = status.replace(pattern, "").strip()
                     parsed_result = pattern
                     break
+
+            if (self.fail_info_cb):
+                if parsed_result in patterns:
+                    assertion_line = self.fail_info_cb(tc_xml.attrib["name"])
+                    if assertion_line:
+                        if additional_info:
+                            additional_info += " | " + assertion_line
+                        else:
+                            additional_info = assertion_line
 
             results[tc_xml.attrib["name"]] = {
                 "status": status,

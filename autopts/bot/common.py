@@ -176,6 +176,8 @@ class BotClient(Client):
                        'create': False,
                        'all_stats': None,
                        'tc_stats': None}
+        # Parser for more informative test failure information
+        self.fail_info_parser = None
         self.error_txt_content = ""
 
     def parse_or_find_tty(self, args):
@@ -516,6 +518,9 @@ class BotClient(Client):
         finally:
             release_device(self.args.tty_file)
             report.make_error_txt(self.error_txt_content, self.file_paths['ERROR_TXT_FILE'])
+
+        if (self.fail_info_parser):
+            stats.additional_fail_info_cb = self.fail_info_parser
 
         report_data = bot_state
         report_data['end_time'] = time.time()
