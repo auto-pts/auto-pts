@@ -250,7 +250,7 @@ def hdl_wid_20106(params: WIDParams):
     addr = btp.pts_addr_get()
     stack = get_stack()
     btp.mcp_discover(addr_type, addr)
-    ev = stack.mcp.wait_discovery_completed_ev(addr_type, addr, 20, remove=False)
+    ev = stack.mcp.wait_discovery_completed_ev(addr_type, addr, 20, remove=True)
     if ev is None:
         return False
 
