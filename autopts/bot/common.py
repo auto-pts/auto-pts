@@ -121,6 +121,7 @@ class BotConfigArgs(Namespace):
         self.bd_addr = args.get('bd_addr', '')
         self.enable_max_logs = args.get('enable_max_logs', False)
         self.retry = args.get('retry', 0)
+        self.no_retry_on_regression = args.get('no_retry_on_regression')
         self.repeat_until_fail = args.get('repeat_until_fail', False)
         self.stress_test = args.get('stress_test', False)
         self.ykush = args.get('ykush', None)

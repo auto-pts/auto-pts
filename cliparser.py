@@ -85,6 +85,12 @@ class CliParser(argparse.ArgumentParser):
                           help="Repeat test if failed. Parameter specifies "
                                "maximum repeat count per test")
 
+        self.add_argument("--no_retry_on_regression", type=bool,
+                          help="When no_retry_on_regression is used, failed test cases are handled as follows: if test"
+                               " failure is not a regression, test case will not be retried (i.e. retry is ignored). If"
+                               " the failure is regression, test case  will be retried for retry number of times. If"
+                               " you set retry to zero, no failed test cases will be retried.")
+
         self.add_argument("--repeat_until_fail", action='store_true', default=False,
                           help="Repeat test case until non-pass verdict")
 
