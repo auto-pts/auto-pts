@@ -16,13 +16,14 @@
 """L2CAP test cases"""
 
 from autopts.client import get_unique_name
+from autopts.ptsprojects.common_wid import get_wid_handler
 from autopts.ptsprojects.mynewt.ztestcase import ZTestCase
 from autopts.ptsprojects.stack import L2cap, get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.pybtp import btp
 from autopts.pybtp.types import Addr
-from autopts.wid import l2cap_wid_hdl
 
+l2cap_wid_hdl = get_wid_handler("mynewt", "l2cap")
 le_psm = 128
 psm_unsupported = 241
 psm_authentication_required = 242
@@ -210,7 +211,6 @@ def test_cases(ptses):
 
     test_case_name_list = pts.get_test_case_list('L2CAP')
     tc_list = []
-
     for tc_name in test_case_name_list:
         if tc_name.startswith(('L2CAP/COS', 'L2CAP/ECFC', 'L2CAP/LE/CFC')):
             instance = ZTestCase('L2CAP', tc_name,

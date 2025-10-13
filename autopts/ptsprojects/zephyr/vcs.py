@@ -17,11 +17,13 @@
 """VCS test cases"""
 
 from autopts.client import get_unique_name
+from autopts.ptsprojects.common_wid import get_wid_handler
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
-from autopts.ptsprojects.zephyr.vcs_wid import vcs_wid_hdl
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
 from autopts.pybtp import btp
+
+vcs_wid_hdl = get_wid_handler("zephyr", "vcs")
 
 
 def set_pixits(ptses):
