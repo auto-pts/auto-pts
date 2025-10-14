@@ -23,7 +23,7 @@ from time import sleep
 from autopts.ptsprojects.stack import ConnParams, get_stack
 from autopts.pybtp import btp, defs, types
 from autopts.pybtp.btp.btp import pts_addr_get, pts_addr_type_get
-from autopts.pybtp.types import UUID, AdType, IOCap, OwnAddrType, Perm, Prop, WIDParams, bdaddr_reverse
+from autopts.pybtp.types import UUID, AdType, IOCap, OwnAddrType, Perm, Prop, WIDParams, bdaddr_reverse, gap_settings_btp2txt
 from autopts.wid import generic_wid_hdl
 
 log = logging.debug
@@ -1917,6 +1917,55 @@ def hdl_wid_451(_: WIDParams):
                             supervision_timeout)
 
     return True
+
+
+def _send_ead_adv(payload):
+    """Helper function to send Encrypted Advertising Data (EAD) packets.
+
+    Arguments:
+    payload -- bytes data to encrypt and send in EAD advertising packets.
+    """
+    stack = get_stack()
+    adv_data = {}
+    encrypted = btp.create_ead_adv(payload)
+    # Only stop advertising if it's currently running
+    if stack.gap.current_settings_get(gap_settings_btp2txt[defs.GAP_SETTINGS_ADVERTISING]):
+        btp.gap_adv_off()
+    adv_data[AdType.encrypted_data] = struct.pack(f'<{len(encrypted)}B', *encrypted)
+    btp.gap_adv_ind_on(ad=adv_data)
+    return True
+
+
+def hdl_wid_500(_: WIDParams):
+    """
+    Please prepare IUT to send an advertising report using Encrypted Advertising Data with payload 1.
+    """
+    return _send_ead_adv(b'payload 1')
+
+
+def hdl_wid_501(_: WIDParams):
+    """
+    Please prepare IUT to send an advertising report using Encrypted Advertising Data with payload 2.
+    """
+    return _send_ead_adv(b'payload 2')
+
+
+def hdl_wid_502(params: WIDParams):
+    """
+    Please confirm that IUT has received an unencrypted advertising data %s. click OK.
+    """
+    payload_candidates = re.findall(r"\b([0-9a-fA-F]{8,})\b", params.description)
+    if not payload_candidates:
+        logging.error("No expected payload found in WID description")
+        return False
+    expected_payload = max(payload_candidates, key=len)
+    log(f'expected payload: {expected_payload}')
+    # scan for a while to get encrypted adv packet
+    btp.gap_start_discov(discov_type='passive', mode='observe')
+    sleep(5)
+    btp.gap_stop_discov()
+    decrypted = btp.decrypt_ead_from_devices()
+    return btp.verify_ead_payload(decrypted, expected_payload)
 
 
 def hdl_wid_1000(params: WIDParams):

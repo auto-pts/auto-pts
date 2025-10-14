@@ -40,6 +40,11 @@ from autopts.pybtp.btp.btp import (
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.types import Addr, AdDuration, AdType, BTPError, OwnAddrType, addr2btp_ba, gap_settings_btp2txt
 
+# EAD key material constants
+# These values correspond to TSPX_encrypted_data_key and TSPX_initialization_vector
+EAD_ENCRYPTION_KEY = "00112233445566778899AABBCCDDEEFF"
+EAD_INITIALIZATION_VECTOR = "0001020304050607"
+
 GAP = {
     "start_adv": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_START_ADVERTISING,
                   CONTROLLER_INDEX),
@@ -151,6 +156,9 @@ GAP = {
                         CONTROLLER_INDEX),
     "create_big": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_CREATE_BIG, CONTROLLER_INDEX),
     "bis_broadcast": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_BIS_BROADCAST, CONTROLLER_INDEX),
+    "set_ead_key_material": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_SET_EAD_KEY_MATERIAL, CONTROLLER_INDEX),
+    "encrypt_ead_data": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_ENCRYPT_EAD_DATA, CONTROLLER_INDEX),
+    "decrypt_ead_data": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_DECRYPT_EAD_DATA, CONTROLLER_INDEX),
 }
 
 
@@ -1497,6 +1505,89 @@ def check_scan_rep_and_rsp(report, response):
         if report in eir and response in eir:
             return True
     return False
+
+
+def _setup_ead_key_material():
+    """
+    Set up EAD key material (key and IV) for encryption/decryption.
+    The values must match the IXIT configuration used by PTS.
+    """
+    iutctl = get_iut()
+    key = bytes.fromhex(EAD_ENCRYPTION_KEY)
+    # PTS considers IV to be a number big-endian format hence the [::-1]
+    iv = bytes.fromhex(EAD_INITIALIZATION_VECTOR)[::-1]
+    material_ba = bytearray(key) + iv
+    iutctl.btp_socket.send(*GAP['set_ead_key_material'], data=material_ba)
+    gap_command_rsp_succ(defs.BTP_GAP_CMD_SET_EAD_KEY_MATERIAL)
+
+
+def decrypt_ead_from_devices():
+    """Decrypt EAD data from discovered devices.
+
+    Sets up EAD key material and decrypts EAD data from discovered devices.
+    Returns the first successfully decrypted payload found.
+
+    Returns decrypted payload bytes if found, None otherwise.
+    """
+    logging.debug("decrypt_ead_from_devices")
+    stack = get_stack()
+    devices = stack.gap.found_devices.data
+
+    _setup_ead_key_material()
+    iutctl = get_iut()
+
+    for device in devices:
+        if not device.eir:
+            continue
+
+        eir_data = parse_eir_data(device.eir)
+        if AdType.encrypted_data not in eir_data:
+            continue
+
+        payload = eir_data[AdType.encrypted_data]
+        payload_ba = bytearray(struct.pack("B", len(payload))) + payload
+        iutctl.btp_socket.send(*GAP['decrypt_ead_data'], data=payload_ba)
+        try:
+            tuple_data = gap_command_rsp_succ(defs.BTP_GAP_CMD_DECRYPT_EAD_DATA)
+            return tuple_data[0][1:]
+        except BTPError as e:
+            logging.error(f"Failed to decrypt EAD data: {e}")
+            continue
+    return None
+
+
+def verify_ead_payload(decrypted, expected):
+    """Verify that decrypted EAD payload matches expected hex value.
+
+    Arguments:
+    decrypted -- bytes of decrypted EAD payload.
+    expected -- hex string representing the expected payload value.
+
+    Returns True if decrypted payload matches expected hex value, False otherwise.
+    """
+    if decrypted is None:
+        return False
+    if not expected:
+        return False
+    return decrypted == b''.fromhex(expected)
+
+
+def create_ead_adv(payload):
+    """Create Encrypted Advertising Data (EAD) by encrypting the given payload.
+
+    Arguments:
+    payload -- bytes data to encrypt.
+
+    Returns encrypted EAD data (without length byte).
+    """
+    logging.debug("create_ead_adv %r", payload)
+    iutctl = get_iut()
+    payload_ba = bytearray(struct.pack("B", len(payload))) + payload
+    _setup_ead_key_material()
+    iutctl.btp_socket.send(*GAP['encrypt_ead_data'], data=payload_ba)
+    # Remove length byte from response
+    tuple_data = gap_command_rsp_succ(defs.BTP_GAP_CMD_ENCRYPT_EAD_DATA)[0][1:]
+    return tuple_data
 
 
 def gap_padv_configure(include_tx_power, intvl_min, intvl_max):

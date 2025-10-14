@@ -22,6 +22,7 @@ from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.gap_wid import gap_wid_hdl
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
 from autopts.pybtp import btp
+from autopts.pybtp.btp.gap import EAD_ENCRYPTION_KEY, EAD_INITIALIZATION_VECTOR
 from autopts.pybtp.types import UUID, Addr, AdFlags, AdType, IOCap, L2CAPConnectionResponse, Perm, Prop, UriScheme
 
 
@@ -147,6 +148,9 @@ def set_pixits(ptses):
     pts.set_pixit("GAP", "TSPX_Min_Encryption_Key_Size", "07")
     pts.set_pixit("GAP", "TSPX_broadcast_code", BROADCAST_CODE)
     pts.set_pixit("GAP", "TSPX_gap_iut_role", "Peripheral")
+    pts.set_pixit("GAP", "TSPX_ead_keys_sharing_method", "keys_shared_via_ixit")
+    pts.set_pixit("GAP", "TSPX_encrypted_data_key", EAD_ENCRYPTION_KEY)
+    pts.set_pixit("GAP", "TSPX_initialization_vector", EAD_INITIALIZATION_VECTOR)
 
 
 def test_cases(ptses):
