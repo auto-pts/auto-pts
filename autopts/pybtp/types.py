@@ -100,6 +100,7 @@ class AdType:
     uri = 0x24
     le_supp_feat = 0x27
     rsi = 0x2e
+    encrypted_data = 0x31
 
 
 class AdFlags:
