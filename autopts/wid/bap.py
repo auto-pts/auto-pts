@@ -1322,7 +1322,7 @@ ac_configs = {
     'BAP/UCL/STR/BV-573-C': ([(0, 1)], 1),              # AC 10, Generic, Multi Channels and Location
     'BAP/UCL/STR/BV-574-C': ([(1, 0)], 1, True),        # AC 1, Generic, Multi Channels
     'BAP/UCL/STR/BV-575-C': ([(1, 0)], 1),              # AC 1, Generic, Multi Location
-    'BAP/UCL/STR/BV-576-C': ([(1, 0)], 1),              # AC 1, Generic, Multi Channels and Location
+    'BAP/UCL/STR/BV-576-C': ([(1, 0)], 1, True),        # AC 1, Generic, Multi Channels and Location
     'BAP/UCL/STR/BV-577-C': ([(1, 0)], 1),              # AC 4, Generic, Multi Channels
     'BAP/UCL/STR/BV-578-C': ([(1, 0)], 1),              # AC 4, Generic, Multi Location
     'BAP/UCL/STR/BV-579-C': ([(1, 0)], 1),              # AC 4, Generic, Multi Channels and Location
