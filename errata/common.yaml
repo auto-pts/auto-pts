@@ -2,6 +2,9 @@
 # GAP/CONN/NCON/BV-01-C: CASE00xxxxx
 # GAP/CONN/NCON/BV-02-C: CASE00xxxxx
 
+GAP/CONN/CPUP/BV-08-C: Laird PTS LE-only dongle required
+GAP/CONN/CPUP/BV-10-C: Laird PTS LE-only dongle required
+
 GATT/CL/GAS/BV-01-C: Request ID 172942
 GATT/SR/GAN/BV-01-C: ES-27410
 GATT/SR/GAI/BV-01-C: ES-27410
