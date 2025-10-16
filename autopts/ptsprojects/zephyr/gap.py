@@ -33,6 +33,11 @@ class CHAR:
     name = (None, None, None, UUID.device_name)
 
 
+
+# Used for Encrypted ADV
+SESSION_KEY = '0102030405060708090A0B0C0D0E0F10'#16 octets
+IV = '0102030405060708'#8 octets
+
 init_gatt_db = [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                 TestFunc(btp.gatts_add_char, 0, Prop.read,
                          Perm.read | Perm.read_authn,
@@ -52,7 +57,15 @@ init_gatt_db = [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                          Perm.read_authn | Perm.write_authn,
                          UUID.VND16_5),
                 TestFunc(btp.gatts_set_val, 0, '04'),
-                TestFunc(btp.gatts_start_server)]
+
+                #add encrypted data key value
+                TestFunc(btp.gatts_add_svc, 0, '0018'),
+                TestFunc(btp.gatts_add_char, 0,
+                         Prop.read, Perm.read, UUID.EDKM),
+                TestFunc(btp.gatts_set_val, 0, SESSION_KEY+IV),
+
+                # Start server
+                TestFunc(btp.gatts_start_server),]
 
 init_gatt_db2 = [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                  TestFunc(btp.gatts_add_char, 0,
@@ -79,6 +92,7 @@ br_initial_mtu = 120
 periodic_data = (0x08, "PADV_Tester")
 
 BROADCAST_CODE = '0102680553F1415AA265BBAFC6EA03B8'
+
 
 
 def set_pixits(ptses):
@@ -185,7 +199,7 @@ def test_cases(ptses):
         TestFunc(btp.core_reg_svc_gap),
         TestFunc(stack.gap_init, iut_device_name,
                  iut_manufacturer_data, iut_appearance, iut_svc_data, iut_flags,
-                 iut_svcs, iut_uri, periodic_data, iut_le_supp_feat),
+                 iut_svcs, iut_uri, periodic_data, iut_le_supp_feat, SESSION_KEY, IV),
         TestFunc(btp.gap_read_ctrl_info),
         TestFunc(lambda: pts.update_pixit_param(
             "GAP", "TSPX_bd_addr_iut",
