@@ -1336,6 +1336,12 @@ def run_test_cases(ptses, test_case_instances, args, stats, **kwargs):
 
                 break
 
+            if args.no_retry_on_regression and status != 'PASS' and test_case not in stats.get_regressions():
+                # skip retrying if test fails and this is not regression
+                if stats.db:
+                    stats.db.update_statistics(test_case, duration, status)
+                break
+
             stats.run_count += 1
 
         stats.index += 1
