@@ -93,9 +93,9 @@ class Stack:
 
     def gap_init(self, name=None, manufacturer_data=None, appearance=None,
                  svc_data=None, flags=None, svcs=None, uri=None, periodic_data=None,
-                 le_supp_feat=None):
+                 le_supp_feat=None, session_key=None, iv=None):
         self.gap = Gap(name, manufacturer_data, appearance, svc_data, flags,
-                       svcs, uri, periodic_data, le_supp_feat)
+                       svcs, uri, periodic_data, le_supp_feat, session_key, iv)
 
     def mesh_init(self, uuid, uuid_lt2=None):
         if self.mesh:

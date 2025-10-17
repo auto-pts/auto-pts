@@ -151,6 +151,9 @@ GAP = {
                         CONTROLLER_INDEX),
     "create_big": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_CREATE_BIG, CONTROLLER_INDEX),
     "bis_broadcast": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_BIS_BROADCAST, CONTROLLER_INDEX),
+    "set_ead_key_material": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_SET_EAD_KEY_MATERIAL, CONTROLLER_INDEX),
+    "get_enc_adv_data": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_GET_ENC_ADV_DATA, CONTROLLER_INDEX),
+    "get_dec_adv_data": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_GET_DECRYPT_ADV_DATA, CONTROLLER_INDEX),
 }
 
 
@@ -1700,3 +1703,87 @@ def gap_set_broadcast_code(broadcast_code):
     logging.debug("%s %r", gap_set_broadcast_code.__name__, broadcast_code)
     stack = get_stack()
     stack.gap.big_broadcast_code = broadcast_code
+
+
+def gap_set_ead_key_material(session_key:str, iv:str):
+    logging.debug("%s", gap_set_ead_key_material.__name__)
+
+    iutctl = get_iut()
+
+    #Make sure session_key and iv are hex strings of correct length
+    if not isinstance(session_key, str) or not isinstance(iv, str):
+        raise ValueError("session_key and iv must be hex strings")
+    if len(session_key) != 32 or len(iv) != 16:
+        raise ValueError("session_key must be 16 bytes (32 hex chars) and iv must be 8 bytes (16 hex chars) long")
+
+    data_ba = bytearray()
+    data_ba.extend(bytes.fromhex(session_key))
+    data_ba.extend(bytes.fromhex(iv))
+
+    iutctl.btp_socket.send(*GAP['set_ead_key_material'], data=data_ba)
+
+    gap_command_rsp_succ()
+
+def gap_get_encrypted_adv_data(adv_data_len:int, adv_data:str):
+    logging.debug("%s", gap_get_encrypted_adv_data.__name__)
+
+    iutctl = get_iut()
+
+    # Make sure adv_data is a hex string of correct length
+    if not isinstance(adv_data, str):
+        raise ValueError("adv_data must be a hex string")
+    if len(adv_data) != adv_data_len * 2:
+        raise ValueError("adv_data length does not match adv_data_len")
+
+    data_ba = bytearray()
+    data_ba.extend(struct.pack('B', adv_data_len))
+    data_ba.extend(bytes.fromhex(adv_data))
+
+    iutctl.btp_socket.send(*GAP['get_enc_adv_data'], data=data_ba)
+
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
+    logging.debug("%s received %r %r", gap_get_encrypted_adv_data.__name__,
+                  tuple_hdr, tuple_data)
+    complete_data = binascii.hexlify(tuple_data[0]).decode('utf-8')
+
+    #print all bytes in the tuple data
+    logging.debug("Encrypted adv data: %s", complete_data)
+
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GAP,
+                  defs.BTP_GAP_CMD_GET_ENC_ADV_DATA)
+    # the first byte of tuple of length of data.
+    # the 2nd byte onwards is the data
+    # get int from first byte
+    return tuple_data[0], complete_data[2:]
+
+def gap_get_decrypted_adv_data(enc_adv_data_len:int, enc_adv_data:str):
+    logging.debug("%s", gap_get_decrypted_adv_data.__name__)
+
+    iutctl = get_iut()
+
+    # Make sure enc_adv_data is a hex string of correct length
+    if not isinstance(enc_adv_data, str):
+        raise ValueError("enc_adv_data must be a hex string")
+    if len(enc_adv_data) != enc_adv_data_len * 2:
+        raise ValueError("enc_adv_data length does not match enc_adv_data_len")
+
+    data_ba = bytearray()
+    data_ba.extend(struct.pack('B', enc_adv_data_len))
+    data_ba.extend(bytes.fromhex(enc_adv_data))
+
+    iutctl.btp_socket.send(*GAP['get_dec_adv_data'], data=data_ba)
+
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
+    logging.debug("%s received %r %r", gap_get_decrypted_adv_data.__name__,
+                  tuple_hdr, tuple_data)
+    complete_data = binascii.hexlify(tuple_data[0]).decode('utf-8')
+
+    #print all bytes in the tuple data
+    logging.debug("Decrypted adv data: %s", complete_data)
+
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GAP,
+                  defs.BTP_GAP_CMD_GET_DECRYPT_ADV_DATA)
+    # the first byte of tuple of length of data.
+    # the 2nd byte onwards is the data
+    # get int from first byte
+    return tuple_data[0], complete_data[2:]

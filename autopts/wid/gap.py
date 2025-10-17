@@ -2720,3 +2720,55 @@ def hdl_wid_357(_: WIDParams):
         return False
 
     return True
+
+
+def hdl_wid_503(_: WIDParams):
+    '''
+    Please authorize that PTS to read Encrypted Data Key value.
+    '''
+    return True
+
+def hdl_wid_500(_: WIDParams):
+    '''
+    Please prepare IUT to send an advertising report using Encrypted Advertising Data with payload 1.
+    '''
+    stack = get_stack()
+
+    if not stack.gap.ead_key_material_set:
+        btp.gap_set_ead_key_material(stack.gap.session_key, stack.gap.iv)
+        stack.gap.ead_key_material_set = True
+
+    PAYLOAD_1 = '07094848656c6c6f'
+    PAYLOAD_LEN = 8
+    data_len, data = btp.gap_get_encrypted_adv_data(PAYLOAD_LEN, PAYLOAD_1)
+    stack.gap.ad[types.AdType.encrypted_adv] = data
+
+    btp.gap_adv_off()
+    btp.gap_set_conn()
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
+
+    return True
+
+
+def hdl_wid_501(_: WIDParams):
+    '''
+    Please prepare IUT to send an advertising report using Encrypted Advertising Data with payload 2.
+    '''
+    stack = get_stack()
+
+    # It's unlikely that the key material is not set and we have to handle wid 501
+    # still adding this check to protect from pts flow changes in future
+    if not stack.gap.ead_key_material_set:
+        btp.gap_set_ead_key_material(stack.gap.session_key, stack.gap.iv)
+        stack.gap.ead_key_material_set = True
+
+    PAYLOAD_2 = '07094848656c6c6e'
+    PAYLOAD_LEN = 8
+    data_len, data = btp.gap_get_encrypted_adv_data(PAYLOAD_LEN, PAYLOAD_2)
+
+    stack.gap.ad[types.AdType.encrypted_adv] = data
+    btp.gap_adv_off()
+    btp.gap_set_conn()
+    btp.gap_adv_ind_on(ad=stack.gap.ad)
+
+    return True

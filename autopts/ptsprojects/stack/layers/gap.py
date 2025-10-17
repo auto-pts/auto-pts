@@ -97,7 +97,7 @@ class BisRx:
 
 class Gap:
     def __init__(self, name, manufacturer_data, appearance, svc_data, flags,
-                 svcs, uri=None, periodic_data=None, le_supp_feat=None):
+                 svcs, uri=None, periodic_data=None, le_supp_feat=None, session_key=None, iv=None):
 
         self.ad = {}
         self.sd = {}
@@ -183,6 +183,11 @@ class Gap:
         self.subrate_max = 20
         self.continuation_number = 5
         self.subrate_change_received = Property(None)
+        if session_key:
+           self.session_key = ''.join([session_key[i:i+2] for i in range(0, len(session_key), 2)][::-1])
+        self.iv = iv
+        self.ead_key_material_set = False
+
 
     def add_connection(self, addr, addr_type):
         self.connections[addr] = GapConnection(addr=addr,
