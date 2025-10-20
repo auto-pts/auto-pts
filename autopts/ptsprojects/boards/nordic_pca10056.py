@@ -49,6 +49,9 @@ def build_and_flash(project_path, board, overlay=None, debugger_snr=None):
     logging.debug("%s: %s %s %s", build_and_flash.__name__, project_path,
                   board, overlay)
 
+    devices = NrfUtil(board, debugger_snr)
+    logging.debug(f"Available devices: {devices}")
+
     nrfutil = NrfUtil(board, debugger_snr)
     if debugger_snr is None:
         debugger_snr = nrfutil.get_debugger_snr()
