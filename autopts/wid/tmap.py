@@ -756,12 +756,31 @@ def hdl_wid_2004(params: WIDParams):
     return match
 
 
-def hdl_wid_20001(_: WIDParams):
+wid_20001_settings = {
+    # sink locations (0 - don't care)
+    'TMAP/UMR/ASC/BV-04-C':     (1),
+    'TMAP/UMR/ASC/BV-05-C':     (2),
+    'TMAP/UMR/ASC/BV-06-C':     (3),
+}
+
+
+def hdl_wid_20001(params: WIDParams):
     """
         Please prepare IUT into a connectable mode.
         Description: Verify that the Implementation Under Test (IUT) can accept GATT connect request from PTS.
     """
+    settings_name = params.test_case_name
+
     stack = get_stack()
+
+    try:
+        location = wid_20001_settings[settings_name]
+    except KeyError:
+        location = None
+
+    if location is not None:
+        btp.pacs_set_location(AudioDir.SINK, location)
+
     btp.gap_set_conn()
     btp.gap_adv_ind_on(ad=stack.gap.ad)
     return True

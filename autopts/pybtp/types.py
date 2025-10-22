@@ -116,6 +116,7 @@ class UUID:
     ASCS = '184E'
     BASS = '184F'
     PACS = '1850'
+    CAS = '1853'
     ASE_CP = '2BC6'
     CEP = '2900'
     CUD = '2901'
