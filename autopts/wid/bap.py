@@ -1911,15 +1911,22 @@ def hdl_wid_363(params: WIDParams):
     return True
 
 
-def hdl_wid_364(_: WIDParams):
+def hdl_wid_364(params: WIDParams):
     """
     After processed audio stream data, please click OK.
     """
+    if params.test_case_name.endswith('LT2'):
+        addr = lt2_addr_get()
+        addr_type = lt2_addr_type_get()
+    else:
+        addr = pts_addr_get()
+        addr_type = pts_addr_type_get()
+
     stack = get_stack()
 
     for config in stack.bap.ase_configs:
         if config.audio_dir == AudioDir.SOURCE:
-            if config.addr_type == pts_addr_type_get() and config.addr == pts_addr_get():
+            if config.addr_type == addr_type and config.addr == addr:
                 ev = stack.bap.wait_stream_received_ev(config.addr_type,
                                                        config.addr,
                                                        config.ase_id,
