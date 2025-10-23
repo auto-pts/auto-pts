@@ -133,7 +133,7 @@ class CliParser(argparse.ArgumentParser):
         self.add_argument("--pylink_reset", action='store_true', default=False,
                           help="Use pylink reset.")
 
-        self.add_argument('--nc', dest='copy', action='store_false',
+        self.add_argument('--nc', dest='copy_workspace', action='store_false',
                           help='Do not copy workspace, open original one. '
                                'Warning: workspace file might be modified', default=True)
 

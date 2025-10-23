@@ -92,7 +92,7 @@ def make_report_xlsx(report_xlsx_path: str,
                      regressions_list: list,
                      progresses_list: list,
                      descriptions: dict,
-                     xmls: str,
+                     xmls: str | None,
                      errata: dict):
     """
     Creates xlsx file containing test cases results and summary pie chart.
@@ -107,7 +107,7 @@ def make_report_xlsx(report_xlsx_path: str,
     """
 
     try:
-        xml_list = list(os.scandir(xmls))
+        xml_list = list(os.scandir(xmls)) if xmls is not None else None
     except FileNotFoundError:
         log("No XMLs found")
         xml_list = None
