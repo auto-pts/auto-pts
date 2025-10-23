@@ -139,7 +139,7 @@ class BotConfigArgs(Namespace):
         self.no_build = args.get('no_build', False)
         self.dongle_init_retry = args.get('dongle_init_retry', 5)
         self.build_env_cmd = args.get('build_env_cmd', None)
-        self.copy = args.get('copy', True)
+        self.copy_workspace = args.get('copy_workspace', True)
         self.wid_usage = args.get('wid_usage', False)
 
         if self.server_args is not None:

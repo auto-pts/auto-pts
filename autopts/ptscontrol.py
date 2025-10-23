@@ -673,7 +673,7 @@ class PyPTS:
             os.remove(self._temp_workspace_path)
 
     @pts_lock_wrapper(PTS_START_LOCK)
-    def open_workspace(self, workspace_path, copy=False):
+    def open_workspace(self, workspace_path, copy_workspace=False):
         """Opens existing workspace"""
 
         log(f"open_workspace {workspace_path}")
@@ -698,7 +698,7 @@ class PyPTS:
         # Workaround CASE0044114 PTS issue
         # Do not open original workspace file that can become broken by
         # TestCase. Instead use a copy of this file
-        if copy:
+        if copy_workspace:
             if self._temp_workspace_path and \
                     os.path.exists(self._temp_workspace_path):
                 os.unlink(self._temp_workspace_path)
@@ -718,7 +718,7 @@ class PyPTS:
         else:
             self._pts.OpenWorkspace(workspace_path)
 
-        self.add_recov(self.open_workspace, workspace_path, copy)
+        self.add_recov(self.open_workspace, workspace_path, copy_workspace)
         self._cache_test_cases()
 
     def _cache_test_cases(self):
