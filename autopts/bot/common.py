@@ -139,7 +139,7 @@ class BotConfigArgs(Namespace):
         self.no_build = args.get('no_build', False)
         self.dongle_init_retry = args.get('dongle_init_retry', 5)
         self.build_env_cmd = args.get('build_env_cmd', None)
-        self.copy = args.get('copy', True)
+        self.copy_workspace = args.get('copy_workspace', True)
         self.wid_usage = args.get('wid_usage', False)
 
         if self.server_args is not None:
@@ -547,10 +547,11 @@ class BotClient(Client):
             os.path.join(AUTOPTS_ROOT_DIR, f'errata/{self.autopts_project_name}.yaml')
         ])
 
-        report_data['pts_logs_folder'], report_data['pts_xml_folder'] = \
-            report.pull_server_logs(self.args,
-                                    self.file_paths['TMP_DIR'],
-                                    self.file_paths['PTS_XMLS_DIR'])
+        if self.args.copy_workspace:
+            report_data['pts_logs_folder'], report_data['pts_xml_folder'] = \
+                report.pull_server_logs(self.args,
+                                        self.file_paths['TMP_DIR'],
+                                        self.file_paths['PTS_XMLS_DIR'])
 
         report.make_report_xlsx(self.file_paths['REPORT_XLSX_FILE'],
                                 report_data['tc_results'],
@@ -558,7 +559,7 @@ class BotClient(Client):
                                 report_data['regressions'],
                                 report_data['progresses'],
                                 report_data['descriptions'],
-                                report_data['pts_xml_folder'],
+                                getattr(report_data, 'pts_xml_folder', None),
                                 report_data['errata'])
 
         report.make_report_txt(self.file_paths['REPORT_TXT_FILE'],
@@ -645,13 +646,17 @@ class BotClient(Client):
             (self.file_paths['REPORT_XLSX_FILE'], f'report_{report_data["start_time_stamp"]}.xlsx'),
             self.file_paths['REPORT_README_MD_FILE'],
             report_data['database_file'],
-            report_data['pts_xml_folder'],
         ]
 
+        if 'pts_xml_folder' in report_data:
+            attachments.append(report_data['pts_xml_folder'])
+
         iut_logs_new = os.path.join(self.file_paths['REPORT_DIR'], 'iut_logs')
-        pts_logs_new = os.path.join(self.file_paths['REPORT_DIR'], 'pts_logs')
         get_deepest_dirs(self.file_paths['IUT_LOGS_DIR'], iut_logs_new, 3)
-        get_deepest_dirs(report_data['pts_logs_folder'], pts_logs_new, 3)
+
+        if 'pts_logs_folder' in report_data:
+            pts_logs_new = os.path.join(self.file_paths['REPORT_DIR'], 'pts_logs')
+            get_deepest_dirs(report_data['pts_logs_folder'], pts_logs_new, 3)
 
         self.generate_attachments(report_data, attachments)
 
