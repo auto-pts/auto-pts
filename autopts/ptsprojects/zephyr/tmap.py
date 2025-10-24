@@ -80,6 +80,7 @@ def test_cases(ptses):
         TestFunc(btp.core_reg_svc_cap),
         TestFunc(btp.core_reg_svc_tmap),
         TestFunc(btp.core_reg_svc_vcp),
+        TestFunc(btp.core_reg_svc_vcs),
         TestFunc(btp.core_reg_svc_tbs),
         TestFunc(btp.core_reg_svc_csip),
         TestFunc(stack.ascs_init),
@@ -87,6 +88,7 @@ def test_cases(ptses):
         TestFunc(stack.cap_init),
         TestFunc(stack.tmap_init),
         TestFunc(stack.vcp_init),
+        TestFunc(stack.vcs_init),
         TestFunc(stack.tbs_init),
         TestFunc(stack.csip_init),
     ]
