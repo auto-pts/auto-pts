@@ -38,9 +38,11 @@ def hdl_wid_20001(_: WIDParams):
 
 def hdl_wid_13(_: WIDParams):
     btp.vocs_audio_desc("description")
+    btp.vocs_audio_loc(0x01)
     return True
 
 
 def hdl_wid_12(_: WIDParams):
     btp.vocs_audio_desc("description")
+    btp.vocs_audio_loc(0x01)
     return True
