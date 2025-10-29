@@ -1,5 +1,5 @@
 # Getting Started
-Follow the steps below to set up the project, install dependencies, 
+ Follow the steps below to set up the project, install dependencies, 
 and enable automatic code formatting and linting.
 
 ---
