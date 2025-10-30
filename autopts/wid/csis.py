@@ -53,6 +53,24 @@ def hdl_wid_7(_: WIDParams):
     return True
 
 
+def hdl_wid_20(params: WIDParams):
+    """
+        Please update the characteristic Set Identity Resolving Key value with different data and send a notification.
+    """
+    btp.csis_set_sirk("012345689ABCDEF0")
+    btp.csis_set_set_size(3, 1)
+    return True
+
+
+def hdl_wid_21(_: WIDParams):
+    """
+        Please update the characteristic Set Identity Resolving Key value with different data and enter connectable mode.
+    """
+    btp.csis_set_sirk("012345689ABCDEF0")
+    btp.csis_set_set_size(3, 1)
+    return True
+
+
 def hdl_wid_20001(params: WIDParams):
     """
         Please prepare IUT into a connectable mode.
