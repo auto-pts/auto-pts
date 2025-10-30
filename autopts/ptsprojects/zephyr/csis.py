@@ -71,7 +71,9 @@ def test_cases(ptses):
                       TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public),
                       TestFunc(btp.gap_set_conn),
                       TestFunc(btp.gap_set_gendiscov),
-                      TestFunc(btp.core_reg_svc_csis)]
+                      TestFunc(btp.core_reg_svc_csis),
+                      TestFunc(stack.csis_init, 2),
+                      TestFunc(lambda: btp.csis_set_set_size(stack.csis.set_size, 1))]
 
     test_case_name_list = pts.get_test_case_list('CSIS')
     tc_list = []

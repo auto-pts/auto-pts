@@ -21,6 +21,7 @@ from .cap import *  # noqa: F403 # used in many files : TODO import directly in 
 from .ccp import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from .core import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from .csip import *  # noqa: F403 # used in many files : TODO import directly in files not with *
+from .csis import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from .gap import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from .gatt import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from .gattcl import *  # noqa: F403 # used in many files : TODO import directly in files not with *

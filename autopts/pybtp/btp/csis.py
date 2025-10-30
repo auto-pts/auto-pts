@@ -34,7 +34,13 @@ CSIS = {
                             CONTROLLER_INDEX),
     'set_sirk_type':       (defs.BTP_SERVICE_ID_CSIS,
                             defs.BTP_CSIS_CMD_SET_SIRK_TYPE,
-                            CONTROLLER_INDEX)
+                            CONTROLLER_INDEX),
+    'set_sirk':            (defs.BTP_SERVICE_ID_CSIS,
+                            defs.BTP_CSIS_CMD_SET_SIRK,
+                            CONTROLLER_INDEX),
+    'set_set_size':        (defs.BTP_SERVICE_ID_CSIS,
+                            defs.BTP_CSIS_CMD_SET_SET_SIZE,
+                            CONTROLLER_INDEX),
 }
 
 
@@ -93,5 +99,32 @@ def csis_set_sirk_type(sirk_type):
     iutctl = get_iut()
 
     iutctl.btp_socket.send(*CSIS['set_sirk_type'], data=data)
+
+    csis_command_rsp_succ()
+
+
+def csis_set_sirk(sirk):
+    logging.debug(f"{csis_set_sirk.__name__}")
+
+    data = bytearray()
+    # Send SIRK as 16 bytes hex string
+    data.extend(struct.pack('<16s', bytes.fromhex(sirk)))
+
+    iutctl = get_iut()
+
+    iutctl.btp_socket.send(*CSIS['set_sirk'], data=data)
+
+    csis_command_rsp_succ()
+
+
+def csis_set_set_size(size, rank):
+    logging.debug(f"{csis_set_set_size.__name__}")
+
+    data = bytearray()
+    data.extend(struct.pack('<BB', size, rank))
+
+    iutctl = get_iut()
+
+    iutctl.btp_socket.send(*CSIS['set_set_size'], data=data)
 
     csis_command_rsp_succ()

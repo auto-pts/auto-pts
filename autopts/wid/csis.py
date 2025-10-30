@@ -14,6 +14,7 @@
 #
 
 import logging
+import secrets
 
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp, defs
@@ -51,6 +52,45 @@ def hdl_wid_7(_: WIDParams):
         Please wait for time out.
     """
     return True
+
+
+def hdl_wid_20(params: WIDParams):
+    """
+        Please update the characteristic Set Identity Resolving Key value with different data and send a notification.
+        Please update the characteristic Coordinated Set Size value with different data and send a notification.
+    """
+    # The same wid is used for two different test cases, with different descriptions, so we check the description.
+    if 'Set Identity Resolving Key' in params.description:
+        # Generate 16 random characters for SIRK
+        sirk = secrets.token_hex(8)
+        btp.csis_set_sirk(sirk)
+
+    elif 'Coordinated Set Size' in params.description:
+        # Increase the Coordinated Set Size by 1
+        stack = get_stack()
+
+        if stack.csis is None:
+            logging.error("hdl_wid_20: stack.csis is not initialized")
+            return False
+
+        stack.csis.set_size += 1
+        btp.csis_set_set_size(stack.csis.set_size, 1)
+
+    else:
+        logging.error(f"hdl_wid_20: Unknown description: {params.description}")
+        return False
+
+    return True
+
+
+def hdl_wid_21(params: WIDParams):
+    """
+        Please update the characteristic Set Identity Resolving Key value with different data and enter connectable mode.
+        Please update the characteristic Coordinated Set Size value with different data and enter connectable mode.
+    """
+
+    # The IUT is already in connectable mode from previous WID.
+    return hdl_wid_20(params)
 
 
 def hdl_wid_20001(params: WIDParams):
