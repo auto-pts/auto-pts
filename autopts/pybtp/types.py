@@ -117,6 +117,7 @@ class UUID:
     BASS = '184F'
     PACS = '1850'
     CAS = '1853'
+    TMAP = '1855'
     ASE_CP = '2BC6'
     CEP = '2900'
     CUD = '2901'
@@ -125,6 +126,7 @@ class UUID:
     CPF = '2904'
     CAF = '2905'
     CSF = '2B29'
+    CAS = '1853'
     device_name = '2A00'
     appearance = '2A01'
     service_changed = '2A05'
@@ -502,3 +504,12 @@ class BIGEncryption:
     BROADCAST_CODE_REQUIRED = 0x01
     DECRYPTING = 0x02
     BAD_CODE = 0x03
+
+
+class TMAPRole(IntEnum):
+    CALL_GATEWAY = 0x01
+    CALL_TERMINAL = 0x02
+    UNICAST_MEDIA_SENDER = 0x04
+    UNICAST_MEDIA_RECEIVER = 0x08
+    BROADCAST_MEDIA_SENDER = 0x10
+    BROADCAST_MEDIA_RECEIVER = 0x20
