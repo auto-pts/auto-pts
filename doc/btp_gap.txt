@@ -1206,3 +1206,16 @@ Events:
                 Available Encryption:
                         0 - The BIS is unencrypted.
                         1 - The BIS is encrypted.
+
+        Opcode 0x98 - GAP Peer Central Address Resolution Attribute Received
+
+                Controller Index:       <controler id>
+                Event Parameter:        Address_Type (1 octet)
+                                        Address (6 octets)
+                                        CAR status (1 octet)
+
+                This event is sent by IUT upon receving CAR state from central.
+
+                CAR status can be:
+                        1 - supported
+                        0 - not supported
