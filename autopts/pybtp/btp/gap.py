@@ -468,6 +468,19 @@ def gap_encryption_change_ev_(gap, data, data_len):
     stack.gap.encryption_change_rcvd.data = (_addr_t, _addr, _encrypted, _key_size)
 
 
+def gap_peer_car_status_ev_(gap, data, data_len):
+    logging.debug("%s", gap_peer_car_status_ev_.__name__)
+    stack = get_stack()
+    fmt = '<B6sB'
+    _addr_t, _addr, _car = struct.unpack_from(fmt, data)
+
+    _addr = binascii.hexlify(_addr[::-1]).decode()
+
+    logging.debug("received %r", (_addr_t, _addr, _car))
+    stack.gap.peer_car.data = {'received': True,
+                               'support': True if _car != 0 else False}
+
+
 def gap_subrate_change_ev_(gap, data, data_len):
     stack = get_stack()
     logging.debug("%s", gap_subrate_change_ev_.__name__)
@@ -530,6 +543,7 @@ GAP_EV = {
     defs.BTP_GAP_EV_PERIODIC_REPORT: gap_padv_report_ev_,
     defs.BTP_GAP_EV_PERIODIC_TRANSFER_RECEIVED: gap_padv_transfer_received_ev_,
     defs.BTP_GAP_EV_ENCRYPTION_CHANGE: gap_encryption_change_ev_,
+    defs.BTP_GAP_EV_PEER_CAR_RECEIVED: gap_peer_car_status_ev_,
     defs.BTP_GAP_EV_SUBRATE_CHANGE: gap_subrate_change_ev_,
     defs.BTP_GAP_EV_BIG_SYNC_ESTABLISHED: gap_big_sync_established_ev_,
     defs.BTP_GAP_EV_BIG_SYNC_LOST: gap_big_sync_lost_ev_,
@@ -556,6 +570,11 @@ def __gap_current_settings_update(settings):
             stack.gap.current_settings_set(gap_settings_btp2txt[bit])
         else:
             stack.gap.current_settings_clear(gap_settings_btp2txt[bit])
+
+
+def gap_wait_for_car_receive(timeout=5):
+    stack = get_stack()
+    return stack.gap.wait_for_peer_car_status(timeout)
 
 
 def gap_wait_for_connection(timeout=30):

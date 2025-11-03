@@ -150,6 +150,11 @@ class Gap:
             "address": None,
             "type": None,
         })
+        self.peer_car = Property({
+            "received": False,
+            "support": False,
+        })
+
         self.discoverying = Property(False)
         self.found_devices = Property([])  # List of found devices
 
@@ -208,6 +213,12 @@ class Gap:
             return addr in self.connections
 
         return len(self.connections) >= conn_count
+
+    def wait_for_peer_car_status(self, timeout):
+        return wait_for_event(timeout, self.car_received)
+
+    def car_received(self):
+        return self.peer_car.data['received']
 
     def wait_periodic_report(self, timeout):
         if self.periodic_report_rxed:
