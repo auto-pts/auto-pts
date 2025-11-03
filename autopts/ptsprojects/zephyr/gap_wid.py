@@ -15,6 +15,7 @@
 
 import logging
 
+from autopts.pybtp import btp
 from autopts.pybtp.types import WIDParams
 from autopts.wid import generic_wid_hdl
 
@@ -31,6 +32,21 @@ def hdl_wid_104(_: WIDParams):
 
 
 def hdl_wid_114(_: WIDParams):
+    return True
+
+
+def hdl_wid_118(params: WIDParams):
+    """
+    Please press ok to disconnect the link.
+    """
+
+    # Directed connection test cases with privacy needs to
+    # make sure that Central Address Resolution attribute is
+    # received.
+    if params.test_case_name in ['GAP/CONN/DCON/BV-04-C',
+                                 'GAP/CONN/DCON/BV-05-C']:
+        return btp.gap_wait_for_car_receive()
+
     return True
 
 
