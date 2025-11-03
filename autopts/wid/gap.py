@@ -1826,18 +1826,13 @@ def hdl_wid_405(_: WIDParams):
 
 
 def hdl_wid_406(_: WIDParams):
-    # Please enter General Connectable Mode using private addresses.
-    # Note: IUT is expected to do directed advertising with target address set
-    # to peer RPA...when WID 403 is received
+    # Please enter Direct Connectable Mode targeting the PTS by its identity
+    # address.
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
 
-    stack = get_stack()
-
-    if stack.gap.iut_has_privacy():
-        addr_type = OwnAddrType.le_resolvable_private_address
-    else:
-        addr_type = OwnAddrType.le_identity_address
-
-    btp.gap_adv_ind_on(ad=stack.gap.ad, own_addr_type=addr_type)
+    btp.gap_set_conn()
+    btp.gap_direct_adv_on(bd_addr, bd_addr_type, high_duty=0, peer_rpa=1)
 
     return True
 

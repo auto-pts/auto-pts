@@ -688,7 +688,8 @@ def gap_adv_off():
 
 
 def gap_direct_adv_on(addr, addr_type, high_duty=0, peer_rpa=0):
-    logging.debug("%s %r %r", gap_direct_adv_on.__name__, addr, high_duty)
+    logging.debug("%s %r %r %r %r", gap_direct_adv_on.__name__, addr,
+                  addr_type, high_duty, peer_rpa)
 
     stack = get_stack()
 
