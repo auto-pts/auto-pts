@@ -1394,6 +1394,7 @@ Events:
 
 		Controller Index:	<controller id>
 		Event parameters:	Advertising Set ID (1 octet)
+                                        Address Type (1 octet)
                                         Peer Address (6 octets)
 
 		This event is sent when an advertising set is terminated by the timeout
