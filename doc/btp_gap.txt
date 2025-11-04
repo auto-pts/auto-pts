@@ -1014,7 +1014,7 @@ Commands and responses:
 
 		In case of an error, the error response will be returned.
 
-	Opcode 0x37 - Update Advertising Set Data
+	Opcode 0x36 - Update Advertising Set Data
 
 		Controller Index:	<controller id>
 		Command parameters:	Advertising Set Id (1 octet)
@@ -1043,7 +1043,7 @@ Commands and responses:
 
 		In case of an error, the error response will be returned.
 
-	Opcode 0x38 - Start Advertising Set
+	Opcode 0x37 - Start Advertising Set
 
 		Controller Index:	<controller id>
 		Command parameters:	Advertising Set Id (1 octet)
@@ -1062,7 +1062,7 @@ Commands and responses:
 
 		In case of an error, the error response will be returned.
 
-	Opcode 0x39 - Stop Advertising Set
+	Opcode 0x38 - Stop Advertising Set
 
 		Controller Index:	<controller id>
 		Command parameters:	Advertising Set Id (1 octet)
