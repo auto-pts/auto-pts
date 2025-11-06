@@ -29,30 +29,54 @@ def vcs_wid_hdl(wid, description, test_case_name):
 
 
 # wid handlers section begin
-def hdl_wid_20001(_: WIDParams):
+def hdl_wid_20001(params: WIDParams):
     stack = get_stack()
     btp.gap_set_conn()
     btp.gap_adv_ind_on(ad=stack.gap.ad)
+
+    delayed_vcs_reg_tc = [
+        'VCS/SR/CP/BV-01-C',
+        'VCS/SR/CP/BV-02-C',
+        'VCS/SR/CP/BV-03-C',
+        'VCS/SR/CP/BV-04-C',
+    ]
+
+    if params.test_case_name not in delayed_vcs_reg_tc:
+        btp.vcs_register(1, False, 100)
+
     return True
 
 
-def hdl_wid_1(_: WIDParams):
-    btp.vcs_set_vol(2)
+def hdl_wid_1(params: WIDParams):
+
+    if params.test_case_name == 'VCS/SR/CP/BV-01-C':
+        btp.vcs_register(1, False, 2)
+    else:
+        btp.vcs_set_vol(2)
     return True
 
 
-def hdl_wid_2(_: WIDParams):
-    btp.vcs_set_vol(2)
-    btp.vcs_mute()
+def hdl_wid_2(params: WIDParams):
+    if params.test_case_name == 'VCS/SR/CP/BV-03-C':
+        btp.vcs_register(1, True, 2)
+    else:
+        btp.vcs_set_vol(2)
+        btp.vcs_mute()
     return True
 
 
-def hdl_wid_3(_: WIDParams):
-    btp.vcs_set_vol(255)
+def hdl_wid_3(params: WIDParams):
+    if params.test_case_name == 'VCS/SR/CP/BV-02-C':
+        btp.vcs_register(1, False, 255 - 2)
+    else:
+        btp.vcs_set_vol(255 - 2)
     return True
 
 
-def hdl_wid_4(_: WIDParams):
-    btp.vcs_set_vol(255)
-    btp.vcs_mute()
+def hdl_wid_4(params: WIDParams):
+    if params.test_case_name == 'VCS/SR/CP/BV-04-C':
+        btp.vcs_register(1, True, 255 - 2)
+    else:
+        btp.vcs_set_vol(255 - 2)
+        btp.vcs_mute()
     return True
