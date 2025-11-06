@@ -8,6 +8,7 @@ from .csip import CSIP_EV
 from .gap import GAP_EV
 from .gatt import GATT_EV
 from .gatt_cl import GATTC_EV
+from .gatts import GATTS_EV
 from .gmcs import GMCS_EV
 from .hap import HAP_EV
 from .ias import IAS_EV
@@ -37,6 +38,7 @@ __all__ = [
     "GAP_EV",
     "GATT_EV",
     "GATTC_EV",
+    "GATTS_EV",
     "GMCS_EV",
     "HAP_EV",
     "IAS_EV",

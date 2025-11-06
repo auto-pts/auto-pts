@@ -502,6 +502,10 @@ supported_svcs_cmds = {
         "service": 1 << defs.BTP_SERVICE_ID_GATTC,
         "supported_commands": defs.BTP_GATTC_CMD_READ_SUPPORTED_COMMANDS
     },
+    "GATTS": {
+        "service": 1 << defs.BTP_SERVICE_ID_GATTS,
+        "supported_commands": defs.BTP_GATTS_CMD_READ_SUPPORTED_COMMANDS
+    },
     "VCS": {
         "service": 1 << defs.BTP_SERVICE_ID_VCS,
         "supported_commands": defs.BTP_VCS_CMD_READ_SUPPORTED_COMMANDS
@@ -627,6 +631,10 @@ reg_unreg_service = {
                     defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GATTC),
     "gatt_cl_unreg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_UNREGISTER_SERVICE,
                       defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GATTC),
+    "gatts_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
+                    defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GATTS),
+    "gatts_unreg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_UNREGISTER_SERVICE,
+                      defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_GATTS),
     "vcs_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
                  defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_VCS),
     "vocs_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
