@@ -32,7 +32,9 @@ VCS = {
     "mute": (defs.BTP_SERVICE_ID_VCS, defs.BTP_VCS_CMD_MUTE,
                CONTROLLER_INDEX, ""),
     "unmute": (defs.BTP_SERVICE_ID_VCS, defs.BTP_VCS_CMD_UNMUTE,
-               CONTROLLER_INDEX, "")
+               CONTROLLER_INDEX, ""),
+    "register": (defs.BTP_SERVICE_ID_VCS, defs.BTP_VCS_CMD_REGISTER,
+               CONTROLLER_INDEX),
 }
 
 VCS_EV = {
@@ -64,6 +66,25 @@ def vcs_set_vol(vol):
     data = bytearray(struct.pack("<B", vol))
 
     iutctl.btp_socket.send(*VCS['set_vol'], data=data)
+    vcs_command_rsp_succ()
+
+
+def vcs_register(step, mute, vol):
+    logging.debug("%s", vcs_register.__name__)
+
+    iutctl = get_iut()
+    flags = 0
+
+    if isinstance(step, str):
+        step = int(step)
+    if mute:
+        flags |= defs.VCS_REGISTER_FLAG_MUTED
+    if isinstance(vol, str):
+        vol = int(vol)
+
+    data = bytearray(struct.pack("<BBB", step, flags, vol))
+
+    iutctl.btp_socket.send(*VCS['register'], data=data)
     vcs_command_rsp_succ()
 
 
