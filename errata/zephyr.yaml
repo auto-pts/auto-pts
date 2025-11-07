@@ -34,9 +34,6 @@ BAP/UCL/STR/BV-550-C: https://github.com/zephyrproject-rtos/zephyr/issues/96012
 BAP/UCL/STR/BV-551-C: https://github.com/zephyrproject-rtos/zephyr/issues/96012
 
 GMCS/SR/MCP/BV-09-C: https://github.com/zephyrproject-rtos/zephyr/issues/67312
-GMCS/SR/MCP/BV-17-C: Request ID 31410
-GMCS/SR/MCP/BV-20-C: Request ID 31410
-GMCS/SR/MCP/BV-26-C: Request ID 31410
 GMCS/SR/SPN/BV-01-C: https://github.com/zephyrproject-rtos/zephyr/issues/65062
 GMCS/SR/SPN/BV-02-C: https://github.com/zephyrproject-rtos/zephyr/issues/65062
 
