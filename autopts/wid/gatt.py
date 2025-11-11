@@ -1841,6 +1841,19 @@ def hdl_wid_144(_: WIDParams):
     return True
 
 
+def hdl_wid_145(_: WIDParams):
+    """
+    description: Please input a handle(0x)(Range 0x0001-0xFFFF) that does support write long.
+    """
+
+    # Using a characteristic with UUID VND16_0 for write long.
+    # With read write permissions.
+    handle = btp.gatts_get_handle_from_uuid(UUID.VND16_0)
+    logging.debug(f"handle to write long: {handle}")
+
+    return f'{handle:04x}'
+
+
 def hdl_wid_147(params: WIDParams):
     """
     Please send two Read Multiple Variable Length characteristic requests using these handles: 'XXXX'O 'XXXX'O
@@ -2013,6 +2026,19 @@ def hdl_wid_154(_: WIDParams):
     stack = get_stack()
 
     return stack.gatt.value_len
+
+
+def hdl_wid_167(params: WIDParams):
+    """
+    description: Please change IUT's GATT database by removing the handle 'XXXX'O
+    """
+    MMI.reset()
+    MMI.parse_description(params.description)
+
+    hdl = MMI.args[0]
+    btp.remove_handle_from_db(hdl)
+
+    return True
 
 
 def hdl_wid_304(params: WIDParams):

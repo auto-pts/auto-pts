@@ -61,6 +61,10 @@ GATTS = {
                         defs.BTP_GATT_CMD_CHANGE_DATABASE, CONTROLLER_INDEX),
     "notify_mult": (defs.BTP_SERVICE_ID_GATT,
                     defs.BTP_GATT_CMD_NOTIFY_MULTIPLE, CONTROLLER_INDEX),
+    "get_handle_from_uuid": (defs.BTP_SERVICE_ID_GATT,
+                             defs.BTP_GATT_CMD_GET_HANDLE_FROM_UUID, CONTROLLER_INDEX),
+    "remove_handle_from_db": (defs.BTP_SERVICE_ID_GATT,
+                              defs.BTP_GATT_CMD_REMOVE_HANDLE_FROM_DB, CONTROLLER_INDEX),
 }
 
 GATTC = {
@@ -296,6 +300,47 @@ def gatts_start_server():
 
     iutctl = get_iut()
     iutctl.btp_socket.send(*GATTS['start_server'])
+
+    gatt_command_rsp_succ()
+
+
+def gatts_get_handle_from_uuid(uuid):
+    logging.debug("%s %r", gatts_get_handle_from_uuid.__name__, uuid)
+
+    iutctl = get_iut()
+    data_ba = bytearray()
+
+    uuid_ba = bytes.fromhex(uuid.replace("-", ""))
+    data_ba.extend(chr(len(uuid_ba)).encode('utf-8'))
+    data_ba.extend(uuid_ba)
+
+    iutctl.btp_socket.send(*GATTS['get_handle_from_uuid'], data=data_ba)
+
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
+
+    logging.debug("received %r %r", tuple_hdr, tuple_data)
+
+    btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_GATT,
+                  defs.BTP_GATT_CMD_GET_HANDLE_FROM_UUID)
+    hdr = '<H'
+    (handle,) = struct.unpack(hdr, tuple_data[0])
+
+    return handle
+
+
+def remove_handle_from_db(hdl):
+    logging.debug("%s %r", remove_handle_from_db.__name__, hdl)
+
+    iutctl = get_iut()
+
+    if isinstance(hdl, str):
+        hdl = int(hdl, 16)
+
+    data_ba = bytearray()
+    hdl_ba = struct.pack('H', hdl)
+    data_ba.extend(hdl_ba)
+
+    iutctl.btp_socket.send(*GATTS['remove_handle_from_db'], data=data_ba)
 
     gatt_command_rsp_succ()
 
