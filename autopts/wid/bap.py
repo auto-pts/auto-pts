@@ -16,7 +16,10 @@ import logging
 import re
 import struct
 from argparse import Namespace
+from dataclasses import dataclass
+from enum import Enum, auto
 from time import sleep
+from typing import Final
 
 from autopts.ptsprojects.stack import WildCard, get_stack
 from autopts.ptsprojects.testcase import MMI
@@ -41,6 +44,282 @@ from autopts.pybtp.types import (
 from autopts.wid.common import _safe_bap_send
 
 log = logging.debug
+
+
+class AudioConfigId(Enum):
+    """
+    Enum class that represents unique IDs for each audio configuration from the BAP spec.
+    """
+
+    AC_1 = auto()
+    AC_2 = auto()
+    AC_3 = auto()
+    AC_4 = auto()
+    AC_5 = auto()
+    AC_6_i = auto()
+    AC_6_ii = auto()
+    AC_7_i = auto()
+    AC_7_ii = auto()
+    AC_8_i = auto()
+    AC_8_ii = auto()
+    AC_9_i = auto()
+    AC_9_ii = auto()
+    AC_10 = auto()
+    AC_11_i = auto()
+    AC_11_ii = auto()
+
+
+@dataclass(frozen=True)
+class AudioConfigCis:
+    """
+    Class that represents a CIS with one or more channels in each direction
+
+    Attributes:
+        sink_channels (int): Number of channels for the sink direction (client -> server)
+                             (0 indicates unidirectional CIS)
+        source_channels (int): Number of channels for the source direction (server -> client)
+                               (0 indicates unidirectional CIS)
+    """
+
+    sink_channels: int
+    source_channels: int
+
+
+@dataclass(frozen=True)
+class AudioConfigServer:
+    """
+    Class that represents an Audio Configuration remote server
+
+    Attributes:
+        cises (list[AudioConfigCis]): A list of CISes
+    """
+
+    cises: list[AudioConfigCis]
+
+
+@dataclass(frozen=True)
+class AudioConfig:
+    """
+    Class that represents a unicast Audio Configuration
+
+    Attributes:
+        audio_config_id (AudioConfigId): Enum that represents an ID for the audio configuration
+        servers (list[AudioConfigServer]): List of server configurations
+    """
+
+    audio_config_id: AudioConfigId
+    servers: list[AudioConfigServer]
+
+
+class BapAudioConfig(Enum):
+    """
+    Enum class that represents the defined Audio Configurations from the BAP spec
+    """
+
+    AC_1 = AudioConfig(AudioConfigId.AC_1, [AudioConfigServer([AudioConfigCis(1, 0)])])
+    AC_2 = AudioConfig(AudioConfigId.AC_2, [AudioConfigServer([AudioConfigCis(0, 1)])])
+    AC_3 = AudioConfig(AudioConfigId.AC_3, [AudioConfigServer([AudioConfigCis(1, 1)])])
+    AC_4 = AudioConfig(AudioConfigId.AC_4, [AudioConfigServer([AudioConfigCis(2, 0)])])
+    AC_5 = AudioConfig(AudioConfigId.AC_5, [AudioConfigServer([AudioConfigCis(2, 1)])])
+    AC_6_i = AudioConfig(
+        AudioConfigId.AC_6_i, [AudioConfigServer([AudioConfigCis(1, 0), AudioConfigCis(1, 0)])]
+    )
+    AC_6_ii = AudioConfig(
+        AudioConfigId.AC_6_ii,
+        [AudioConfigServer([AudioConfigCis(1, 0)]), AudioConfigServer([AudioConfigCis(1, 0)])],
+    )
+    AC_7_i = AudioConfig(
+        AudioConfigId.AC_7_i, [AudioConfigServer([AudioConfigCis(1, 0), AudioConfigCis(0, 1)])]
+    )
+    AC_7_ii = AudioConfig(
+        AudioConfigId.AC_7_ii,
+        [AudioConfigServer([AudioConfigCis(1, 0)]), AudioConfigServer([AudioConfigCis(0, 1)])],
+    )
+    AC_8_i = AudioConfig(
+        AudioConfigId.AC_8_i, [AudioConfigServer([AudioConfigCis(1, 0), AudioConfigCis(1, 1)])]
+    )
+    AC_8_ii = AudioConfig(
+        AudioConfigId.AC_8_ii,
+        [AudioConfigServer([AudioConfigCis(1, 0)]), AudioConfigServer([AudioConfigCis(1, 1)])],
+    )
+    AC_9_i = AudioConfig(
+        AudioConfigId.AC_9_i, [AudioConfigServer([AudioConfigCis(0, 1), AudioConfigCis(0, 1)])]
+    )
+    AC_9_ii = AudioConfig(
+        AudioConfigId.AC_9_ii,
+        [AudioConfigServer([AudioConfigCis(0, 1)]), AudioConfigServer([AudioConfigCis(0, 1)])],
+    )
+    AC_10 = AudioConfig(AudioConfigId.AC_10, [AudioConfigServer([AudioConfigCis(0, 2)])])
+    AC_11_i = AudioConfig(
+        AudioConfigId.AC_11_i, [AudioConfigServer([AudioConfigCis(1, 1), AudioConfigCis(1, 1)])]
+    )
+    AC_11_ii = AudioConfig(
+        AudioConfigId.AC_11_ii,
+        [AudioConfigServer([AudioConfigCis(1, 1)]), AudioConfigServer([AudioConfigCis(1, 1)])],
+    )
+
+
+@dataclass(frozen=True)
+class AudioConfigTest:
+    """
+    Class that represents a unicast Audio Configuration test case
+
+    Attributes:
+        test_case_str (str): String that represents a test case, e.g. "BAP/UCL/STR/BV-523-C"
+        audio_config (BapAudioConfig): A BAP audio configuration
+        mono (bool): Whether the test will setup a mono stream or not
+        connect_sink_in_qos (bool): Whether the test will connect the sink CIS in the QoS configured
+                                    state (True) or in the enabling state (False).
+        connect_source_in_qos (bool): Whether the test will connect the source CIS in the QoS
+                                      configured state (True) or in the enabling state (False).
+    """
+
+    test_case_str: str
+    audio_config: BapAudioConfig
+    mono: bool = False
+    connect_sink_in_qos: bool = False
+    connect_source_in_qos: bool = False
+
+    @property
+    def connect_cis_in_qos(self) -> bool:
+        # If both the sink and the source ASEs are connecting in the QoS configured state,
+        # we set a shorthand check for that
+        return self.connect_sink_in_qos and self.connect_source_in_qos
+
+    @property
+    def server_count(self) -> int:
+        return len(self.audio_config.value.servers)
+
+    def get_server(self, test_case: str) -> AudioConfigServer:
+        if test_case.removesuffix("_LT2") != self.test_case_str:
+            raise ValueError(f"Invalid testcase {test_case} for object with {self.test_case_str}")
+
+        server_idx = 0 if "LT2" not in test_case else 1
+
+        if server_idx >= len(self.audio_config.value.servers):
+            raise ValueError(
+                f"Test case {test_case} requires server index {server_idx} but config only "
+                f"has {len(self.audio_config.value.servers)} server(s)"
+            )
+
+        return self.audio_config.value.servers[server_idx]
+
+
+# Configuration used for Unicast Client tests, that indicate which audio configuration to use
+# for each test, as well as which state we should connect the CIS for that direction.
+# If a test has multiple lower testers,
+# then the audio configuration shall also have multiple servers.
+# To access the right server,
+# the user can do something like server = audio_config_test.get_server(test_case)
+AC_CONFIGS: Final[list[AudioConfigTest]] = [
+    AudioConfigTest("BAP/UCL/STR/BV-523-C", BapAudioConfig.AC_3),
+    AudioConfigTest("BAP/UCL/STR/BV-524-C", BapAudioConfig.AC_5),
+    AudioConfigTest("BAP/UCL/STR/BV-525-C", BapAudioConfig.AC_7_i),
+    AudioConfigTest("BAP/UCL/STR/BV-526-C", BapAudioConfig.AC_7_ii),
+    AudioConfigTest("BAP/UCL/STR/BV-527-C", BapAudioConfig.AC_6_i),
+    AudioConfigTest("BAP/UCL/STR/BV-528-C", BapAudioConfig.AC_6_ii),
+    AudioConfigTest("BAP/UCL/STR/BV-529-C", BapAudioConfig.AC_9_i),
+    AudioConfigTest("BAP/UCL/STR/BV-530-C", BapAudioConfig.AC_9_ii),
+    AudioConfigTest("BAP/UCL/STR/BV-531-C", BapAudioConfig.AC_8_i),
+    AudioConfigTest("BAP/UCL/STR/BV-532-C", BapAudioConfig.AC_8_ii),
+    AudioConfigTest("BAP/UCL/STR/BV-533-C", BapAudioConfig.AC_11_i),
+    AudioConfigTest("BAP/UCL/STR/BV-534-C", BapAudioConfig.AC_11_ii),
+    AudioConfigTest("BAP/UCL/STR/BV-535-C", BapAudioConfig.AC_2),
+    AudioConfigTest("BAP/UCL/STR/BV-536-C", BapAudioConfig.AC_10),
+    AudioConfigTest("BAP/UCL/STR/BV-537-C", BapAudioConfig.AC_1),
+    AudioConfigTest("BAP/UCL/STR/BV-538-C", BapAudioConfig.AC_4),
+    AudioConfigTest("BAP/UCL/STR/BV-539-C", BapAudioConfig.AC_2, connect_source_in_qos=True),
+    AudioConfigTest("BAP/UCL/STR/BV-540-C", BapAudioConfig.AC_10, connect_source_in_qos=True),
+    AudioConfigTest("BAP/UCL/STR/BV-541-C", BapAudioConfig.AC_1, connect_sink_in_qos=True),
+    AudioConfigTest("BAP/UCL/STR/BV-542-C", BapAudioConfig.AC_4, connect_sink_in_qos=True),
+    AudioConfigTest("BAP/UCL/STR/BV-543-C", BapAudioConfig.AC_3, connect_source_in_qos=True),
+    AudioConfigTest("BAP/UCL/STR/BV-544-C", BapAudioConfig.AC_5, connect_source_in_qos=True),
+    AudioConfigTest("BAP/UCL/STR/BV-545-C", BapAudioConfig.AC_7_i, connect_source_in_qos=True),
+    AudioConfigTest("BAP/UCL/STR/BV-546-C", BapAudioConfig.AC_3, connect_sink_in_qos=True),
+    AudioConfigTest("BAP/UCL/STR/BV-547-C", BapAudioConfig.AC_5, connect_sink_in_qos=True),
+    AudioConfigTest("BAP/UCL/STR/BV-548-C", BapAudioConfig.AC_7_i, connect_sink_in_qos=True),
+    AudioConfigTest(
+        "BAP/UCL/STR/BV-549-C",
+        BapAudioConfig.AC_3,
+        connect_sink_in_qos=True,
+        connect_source_in_qos=True,
+    ),
+    AudioConfigTest(
+        "BAP/UCL/STR/BV-550-C",
+        BapAudioConfig.AC_5,
+        connect_sink_in_qos=True,
+        connect_source_in_qos=True,
+    ),
+    AudioConfigTest(
+        "BAP/UCL/STR/BV-551-C",
+        BapAudioConfig.AC_7_i,
+        connect_sink_in_qos=True,
+        connect_source_in_qos=True,
+    ),
+    AudioConfigTest("BAP/UCL/STR/BV-552-C", BapAudioConfig.AC_2, mono=True),
+    AudioConfigTest("BAP/UCL/STR/BV-553-C", BapAudioConfig.AC_2, mono=True),
+    AudioConfigTest("BAP/UCL/STR/BV-554-C", BapAudioConfig.AC_2, mono=True),
+    AudioConfigTest("BAP/UCL/STR/BV-555-C", BapAudioConfig.AC_2, mono=True),
+    AudioConfigTest("BAP/UCL/STR/BV-556-C", BapAudioConfig.AC_1, mono=True),
+    AudioConfigTest("BAP/UCL/STR/BV-557-C", BapAudioConfig.AC_1, mono=True),
+    AudioConfigTest("BAP/UCL/STR/BV-558-C", BapAudioConfig.AC_1, mono=True),
+    AudioConfigTest("BAP/UCL/STR/BV-559-C", BapAudioConfig.AC_1, mono=True),
+    AudioConfigTest(
+        "BAP/UCL/STR/BV-560-C", BapAudioConfig.AC_2, mono=True, connect_source_in_qos=True
+    ),
+    AudioConfigTest(
+        "BAP/UCL/STR/BV-561-C", BapAudioConfig.AC_2, mono=True, connect_source_in_qos=True
+    ),
+    AudioConfigTest(
+        "BAP/UCL/STR/BV-562-C", BapAudioConfig.AC_2, mono=True, connect_source_in_qos=True
+    ),
+    AudioConfigTest(
+        "BAP/UCL/STR/BV-563-C", BapAudioConfig.AC_2, mono=True, connect_source_in_qos=True
+    ),
+    AudioConfigTest(
+        "BAP/UCL/STR/BV-564-C", BapAudioConfig.AC_1, mono=True, connect_sink_in_qos=True
+    ),
+    AudioConfigTest(
+        "BAP/UCL/STR/BV-565-C", BapAudioConfig.AC_1, mono=True, connect_sink_in_qos=True
+    ),
+    AudioConfigTest(
+        "BAP/UCL/STR/BV-566-C", BapAudioConfig.AC_1, mono=True, connect_sink_in_qos=True
+    ),
+    AudioConfigTest(
+        "BAP/UCL/STR/BV-567-C", BapAudioConfig.AC_1, mono=True, connect_sink_in_qos=True
+    ),
+    # mono shouldn't need to be set for BAP/UCL/STR/BV-568-C, but it seems that it's required
+    AudioConfigTest("BAP/UCL/STR/BV-568-C", BapAudioConfig.AC_2, mono=True),
+    AudioConfigTest("BAP/UCL/STR/BV-569-C", BapAudioConfig.AC_2),
+    # mono shouldn't need to be set for BAP/UCL/STR/BV-570-C, but it seems that it's required
+    AudioConfigTest("BAP/UCL/STR/BV-570-C", BapAudioConfig.AC_2, mono=True),
+    AudioConfigTest("BAP/UCL/STR/BV-571-C", BapAudioConfig.AC_10),
+    AudioConfigTest("BAP/UCL/STR/BV-572-C", BapAudioConfig.AC_10),
+    AudioConfigTest("BAP/UCL/STR/BV-573-C", BapAudioConfig.AC_10),
+    # mono shouldn't need to be set for BAP/UCL/STR/BV-574-C, but it seems that it's required
+    AudioConfigTest("BAP/UCL/STR/BV-574-C", BapAudioConfig.AC_1, mono=True),
+    AudioConfigTest("BAP/UCL/STR/BV-575-C", BapAudioConfig.AC_1),
+    # mono shouldn't need to be set for BAP/UCL/STR/BV-576-C, but it seems that it's required
+    AudioConfigTest("BAP/UCL/STR/BV-576-C", BapAudioConfig.AC_1, mono=True),
+    AudioConfigTest("BAP/UCL/STR/BV-577-C", BapAudioConfig.AC_4),
+    AudioConfigTest("BAP/UCL/STR/BV-578-C", BapAudioConfig.AC_4),
+    AudioConfigTest("BAP/UCL/STR/BV-579-C", BapAudioConfig.AC_4),
+    AudioConfigTest("BAP/UCL/STR/BV-580-C", BapAudioConfig.AC_2, connect_source_in_qos=True),
+    AudioConfigTest("BAP/UCL/STR/BV-581-C", BapAudioConfig.AC_2, connect_source_in_qos=True),
+    AudioConfigTest("BAP/UCL/STR/BV-582-C", BapAudioConfig.AC_2, connect_source_in_qos=True),
+    AudioConfigTest("BAP/UCL/STR/BV-583-C", BapAudioConfig.AC_10, connect_source_in_qos=True),
+    AudioConfigTest("BAP/UCL/STR/BV-584-C", BapAudioConfig.AC_10, connect_source_in_qos=True),
+    AudioConfigTest("BAP/UCL/STR/BV-585-C", BapAudioConfig.AC_10, connect_source_in_qos=True),
+    AudioConfigTest("BAP/UCL/STR/BV-586-C", BapAudioConfig.AC_1, connect_sink_in_qos=True),
+    AudioConfigTest("BAP/UCL/STR/BV-587-C", BapAudioConfig.AC_1, connect_sink_in_qos=True),
+    AudioConfigTest("BAP/UCL/STR/BV-588-C", BapAudioConfig.AC_1, connect_sink_in_qos=True),
+    AudioConfigTest("BAP/UCL/STR/BV-589-C", BapAudioConfig.AC_4, connect_sink_in_qos=True),
+    AudioConfigTest("BAP/UCL/STR/BV-590-C", BapAudioConfig.AC_4, connect_sink_in_qos=True),
+    AudioConfigTest("BAP/UCL/STR/BV-591-C", BapAudioConfig.AC_4, connect_sink_in_qos=True),
+]
+
+# Dictionary representing the above list for easier and O(1) lookup
+AC_CONFIGS_DICT: Final[dict[str, AudioConfigTest]] = {cfg.test_case_str: cfg for cfg in AC_CONFIGS}
 
 
 def bap_wid_hdl(wid, description, test_case_name):
@@ -1152,8 +1431,9 @@ def preconfig_qos(config):
          config.retransmission_number, config.max_transport_latency) = \
             QOS_CONFIG_SETTINGS[config.qos_set_name]
 
-        # Adjust max sdu size to the number of channels
-        config.max_sdu_size = config.max_sdu_size * count_1_bits(config.audio_locations)
+        # Adjust max sdu size to the number of channels unless configured for mono
+        if not config.mono:
+            config.max_sdu_size = config.max_sdu_size * config.chan_cnt
 
     ascs_add_ase_to_cis(config.ase_id, config.cis_id, config.cig_id,
                         config.addr_type, config.addr)
@@ -1248,99 +1528,58 @@ def get_audio_locations_from_pac(addr_type, addr, audio_dir):
     return audio_locations
 
 
-ac_configs = {
-    # test_case_name: ([CIS_1, CIS_2, ...], num_of_servers, mono)
-    # where CIS_x is a tuple like (sink_available, source_available)
-    # In Enabling state, 1 CIS
-    'BAP/UCL/STR/BV-523-C':     ([(1, 1)], 1),          # AC 3
-    'BAP/UCL/STR/BV-524-C':     ([(1, 1)], 1),          # AC 5, (2 channels)
+def create_ase_config(
+    default_config: Namespace,
+    cig_id: int,
+    cis_id: int,
+    audio_dir: AudioDir,
+    chan_cnt: int,
+    audio_config_test: AudioConfigTest,
+) -> Namespace:
+    """
+    Args:
+        default_config (Namespace): A Namespace representing the default_configuration this new
+                                    configuration derives from. Typically created from
+                                    create_default_config()
+        cig_id (int): The CIG ID to use for the config
+        cis_id (int): The CIS ID to use for the config
+        audio_dir (AudioDir): The audio direction of the config
+        chan_cnt (int): Number of audio channels the config will use
+        audio_config_test (AudioConfigTest): Reference to the Audio Configuration that is used with
+                                             this config
+    """
 
-    # In Enabling state, 2 CISes
-    'BAP/UCL/STR/BV-525-C':     ([(1, 0), (0, 1)], 1),  # AC 7(i)
-    'BAP/UCL/STR/BV-526-C':     ([(1, 0),], 2),         # AC 7(ii)
-    'BAP/UCL/STR/BV-526-C_LT2': ([(0, 1),], 2),
-    'BAP/UCL/STR/BV-527-C':     ([(1, 0), (1, 0)], 1),  # AC 6(i)
-    'BAP/UCL/STR/BV-528-C':     ([(1, 0)], 2),          # AC 6(ii)
-    'BAP/UCL/STR/BV-528-C_LT2': ([(1, 0)], 2),
-    'BAP/UCL/STR/BV-529-C':     ([(0, 1), (0, 1)], 1),  # AC 9(i)
-    'BAP/UCL/STR/BV-530-C':     ([(0, 1)], 2),          # AC 9(ii)
-    'BAP/UCL/STR/BV-530-C_LT2': ([(0, 1)], 2),
-    'BAP/UCL/STR/BV-531-C':     ([(1, 0), (1, 1)], 1),  # AC 8(i)
-    'BAP/UCL/STR/BV-532-C':     ([(1, 0)], 2),          # AC 8(ii)
-    'BAP/UCL/STR/BV-532-C_LT2': ([(1, 1)], 2),
-    'BAP/UCL/STR/BV-533-C':     ([(1, 1), (1, 1)], 1),  # AC 11(i)
-    'BAP/UCL/STR/BV-534-C':     ([(1, 1)], 2),          # AC 11(ii)
-    'BAP/UCL/STR/BV-534-C_LT2': ([(1, 1)], 2),
+    config = Namespace(**vars(default_config))
+    config.audio_dir = audio_dir
+    config.audio_locations = get_audio_locations_from_pac(
+        default_config.addr_type, default_config.addr, audio_dir
+    )
 
-    # In Enabling state, 1 CIS
-    'BAP/UCL/STR/BV-535-C':     ([(0, 1)], 1),          # AC 2
-    'BAP/UCL/STR/BV-536-C':     ([(0, 1)], 1),          # AC 10, (2 channels)
-    'BAP/UCL/STR/BV-537-C':     ([(1, 0)], 1),          # AC 1
-    'BAP/UCL/STR/BV-538-C':     ([(1, 0)], 1),          # AC 4, (2 channels)
+    stack = get_stack()
 
-    # In QoS Configured state (optional, not supported yet)
-    'BAP/UCL/STR/BV-539-C':     ([(0, 1)], 1),          # AC 2
-    'BAP/UCL/STR/BV-540-C':     ([(0, 1)], 1),          # AC 10
-    'BAP/UCL/STR/BV-541-C':     ([(1, 0)], 1),          # AC 1
-    'BAP/UCL/STR/BV-542-C':     ([(1, 0)], 1),          # AC 4
-    'BAP/UCL/STR/BV-543-C':     ([(1, 1)], 1),          # AC 3
-    'BAP/UCL/STR/BV-544-C':     ([(1, 1)], 1),          # AC 5
-    'BAP/UCL/STR/BV-545-C':     ([(1, 0), (0, 1)], 1),  # AC 7(i)
-    'BAP/UCL/STR/BV-546-C':     ([(1, 1)], 1),          # AC 3
-    'BAP/UCL/STR/BV-547-C':     ([(1, 1)], 1),          # AC 5
-    'BAP/UCL/STR/BV-548-C':     ([(1, 0), (0, 1)], 1),  # AC 7(i)
-    'BAP/UCL/STR/BV-549-C':     ([(1, 1)], 1),          # AC 3
-    'BAP/UCL/STR/BV-550-C':     ([(1, 1)], 1),          # AC 5
-    'BAP/UCL/STR/BV-551-C':     ([(1, 0), (0, 1)], 1),  # AC 7(i)
+    ev = stack.bap.wait_ase_found_ev(
+        default_config.addr_type, default_config.addr, audio_dir, 30, remove=True
+    )
+    if ev is None:
+        return None
 
-    # Mono
-    # test_case_name: ([CIS_1, CIS_2, ...], num_of_servers, if_mono)
-    'BAP/UCL/STR/BV-552-C':     ([(0, 1)], 1, True),    # AC 2, Mono
-    'BAP/UCL/STR/BV-553-C':     ([(0, 1)], 1, True),    # AC 2, Mono, Default Ch Count
-    'BAP/UCL/STR/BV-554-C':     ([(0, 1)], 1, True),    # AC 2, Mono, No PACS
-    'BAP/UCL/STR/BV-555-C':     ([(0, 1)], 1, True),    # AC 2, Mono, No PACS, Default Ch Count
-    'BAP/UCL/STR/BV-556-C':     ([(1, 0)], 1, True),    # AC 10, Mono
-    'BAP/UCL/STR/BV-557-C':     ([(1, 0)], 1, True),    # AC 10, Mono, Default Ch Count
-    'BAP/UCL/STR/BV-558-C':     ([(1, 0)], 1, True),    # AC 10, Mono, No PACS
-    'BAP/UCL/STR/BV-559-C':     ([(1, 0)], 1, True),    # AC 10, Mono, No PACS, Default Ch Count
-    # Mono in QoS Configured state
-    'BAP/UCL/STR/BV-560-C':     ([(0, 1)], 1, True),    # AC 2, Generic, QoS, Mono
-    'BAP/UCL/STR/BV-561-C':     ([(0, 1)], 1, True),    # AC 2, Generic, QoS, Mono, Default Ch Count
-    'BAP/UCL/STR/BV-562-C':     ([(0, 1)], 1, True),    # AC 2, Generic, QoS, Mono, No PACS
-    'BAP/UCL/STR/BV-563-C':     ([(0, 1)], 1, True),    # AC 2, Generic, QoS, Mono, Default Ch Count, No PACS
-    'BAP/UCL/STR/BV-564-C':     ([(1, 0)], 1, True),    # AC 1, Generic, QoS, Mono
-    'BAP/UCL/STR/BV-565-C':     ([(1, 0)], 1, True),    # AC 1, Generic, QoS, Mono, Default Ch Count
-    'BAP/UCL/STR/BV-566-C':     ([(1, 0)], 1, True),    # AC 1, Generic, QoS, Mono, No PACS
-    'BAP/UCL/STR/BV-567-C':     ([(1, 0)], 1, True),    # AC 1, Generic, QoS, Mono, Default Ch Count, No PACS
+    btp.pacs_set_location(audio_dir, config.audio_locations)
 
-    # Channels and Locations in Enabled
-    'BAP/UCL/STR/BV-568-C': ([(0, 1)], 1, True),        # AC 2, Generic, Multi Channels
-    'BAP/UCL/STR/BV-569-C': ([(0, 1)], 1),              # AC 2, Generic, Multi Location
-    'BAP/UCL/STR/BV-570-C': ([(0, 1)], 1, True),        # AC 2, Generic, Multi Channels and Location
-    'BAP/UCL/STR/BV-571-C': ([(0, 1)], 1),              # AC 10, Generic, Multi Channels
-    'BAP/UCL/STR/BV-572-C': ([(0, 1)], 1),              # AC 10, Generic, Multi Location
-    'BAP/UCL/STR/BV-573-C': ([(0, 1)], 1),              # AC 10, Generic, Multi Channels and Location
-    'BAP/UCL/STR/BV-574-C': ([(1, 0)], 1, True),        # AC 1, Generic, Multi Channels
-    'BAP/UCL/STR/BV-575-C': ([(1, 0)], 1),              # AC 1, Generic, Multi Location
-    'BAP/UCL/STR/BV-576-C': ([(1, 0)], 1, True),        # AC 1, Generic, Multi Channels and Location
-    'BAP/UCL/STR/BV-577-C': ([(1, 0)], 1),              # AC 4, Generic, Multi Channels
-    'BAP/UCL/STR/BV-578-C': ([(1, 0)], 1),              # AC 4, Generic, Multi Location
-    'BAP/UCL/STR/BV-579-C': ([(1, 0)], 1),              # AC 4, Generic, Multi Channels and Location
+    _, _, _, ase_id = ev
+    config.ase_id = ase_id
+    config.cig_id = cig_id
+    config.cis_id = cis_id
+    config.mono = audio_config_test.mono
 
-    # Channels and Locations in QoS Configured
-    'BAP/UCL/STR/BV-580-C': ([(0, 1)], 1),              # AC 2, Generic, QoS, Multi Channels
-    'BAP/UCL/STR/BV-581-C': ([(0, 1)], 1),              # AC 2, Generic, QoS, Multi Location
-    'BAP/UCL/STR/BV-582-C': ([(0, 1)], 1),              # AC 2, Generic, QoS, Multi Channels and Location
-    'BAP/UCL/STR/BV-583-C': ([(0, 1)], 1),              # AC 10, Generic, QoS, Multi Channels
-    'BAP/UCL/STR/BV-584-C': ([(0, 1)], 1),              # AC 10, Generic, QoS, Multi Location
-    'BAP/UCL/STR/BV-585-C': ([(0, 1)], 1),              # AC 10, Generic, QoS, Multi Channels and Location
-    'BAP/UCL/STR/BV-586-C': ([(1, 0)], 1),              # AC 1, Generic, QoS, Multi Channels
-    'BAP/UCL/STR/BV-587-C': ([(1, 0)], 1),              # AC 1, Generic, QoS, Multi Location
-    'BAP/UCL/STR/BV-588-C': ([(1, 0)], 1),              # AC 1, Generic, QoS, Multi Channels and Location
-    'BAP/UCL/STR/BV-589-C': ([(0, 1)], 1),              # AC 4, Generic, QoS, Multi Channels
-    'BAP/UCL/STR/BV-590-C': ([(0, 1)], 1),              # AC 4, Generic, QoS, Multi Location
-    'BAP/UCL/STR/BV-591-C': ([(0, 1)], 1),              # AC 4, Generic, QoS, Multi Channels and Location
-}
+    config.chan_cnt = chan_cnt
+
+    config_codec(config)
+
+    preconfig_qos(config)
+
+    config.audio_config_test = audio_config_test
+
+    return config
 
 
 def hdl_wid_311(params: WIDParams):
@@ -1351,7 +1590,7 @@ def hdl_wid_311(params: WIDParams):
     stack = get_stack()
     cig_id = 0x00
 
-    if params.test_case_name.endswith('LT2'):
+    if params.test_case_name.endswith("LT2"):
         addr = lt2_addr_get()
         addr_type = lt2_addr_type_get()
         # This WID 311 for LT2 is synchronized to arrived as a second one.
@@ -1378,43 +1617,52 @@ def hdl_wid_311(params: WIDParams):
     default_config.qos_config = QOS_CONFIG_SETTINGS[default_config.qos_set_name]
 
     ase_configs = []
-    ac, lt_count, *mono = ac_configs[params.test_case_name]
-    for sink, source in ac:
-        for ase, audio_dir in [(sink, AudioDir.SINK), (source, AudioDir.SOURCE)]:
-            if not ase:
-                continue
+    try:
+        audio_config_test: AudioConfigTest = AC_CONFIGS_DICT[
+            params.test_case_name.removesuffix("_LT2")
+        ]
+    except KeyError as e:
+        raise KeyError(
+            f"Test case '{params.test_case_name.removesuffix('_LT2')}' not found in "
+            f"AC_CONFIGS_DICT. Please check your configuration."
+        ) from e
 
-            config = Namespace(**vars(default_config))
-            config.audio_dir = audio_dir
-            config.audio_locations = get_audio_locations_from_pac(
-                default_config.addr_type, default_config.addr, audio_dir)
+    lt_server: AudioConfigServer = audio_config_test.get_server(params.test_case_name)
 
-            ev = stack.bap.wait_ase_found_ev(default_config.addr_type,
-                                             default_config.addr,
-                                             audio_dir, 30, remove=True)
-            if ev is None:
+    cis: AudioConfigCis
+    for cis in lt_server.cises:
+        if cis.sink_channels > 0:
+            config = create_ase_config(
+                default_config, cig_id, cis_id, AudioDir.SINK, cis.sink_channels, audio_config_test
+            )
+
+            if config is None:
                 return False
 
-            btp.pacs_set_location(audio_dir, config.audio_locations)
-
-            _, _, audio_dir, ase_id = ev
-            config.ase_id = ase_id
-            config.cig_id = cig_id
-            config.cis_id = cis_id
             ase_configs.append(config)
 
-            if mono:
-                config.mono = True
+        if cis.source_channels > 0:
+            config = create_ase_config(
+                default_config,
+                cig_id,
+                cis_id,
+                AudioDir.SOURCE,
+                cis.source_channels,
+                audio_config_test,
+            )
 
-            config_codec(config)
+            if config is None:
+                return False
 
-            preconfig_qos(config)
+            ase_configs.append(config)
 
         cis_id += 1
 
     stack.bap.ase_configs.extend(ase_configs)
 
-    if lt_count == 2 and not params.test_case_name.endswith('LT2'):
+    lt_count = audio_config_test.server_count
+
+    if lt_count == 2 and not params.test_case_name.endswith("LT2"):
         return True
 
     # Configure QoS for the CIG.
@@ -1439,6 +1687,9 @@ def hdl_wid_311(params: WIDParams):
     for config in stack.bap.ase_configs:
         data = [j for j in range(0, config.octets_per_frame)]
         stream_data[config.ase_id] = bytearray(data)
+
+    # TODO: For tests where audio_config_test.connect_sink_in_qos is True, we need to connect the CIS in
+    # the QoS configured state, else we need to connect the CIS in the enabling state.
 
     for config in stack.bap.ase_configs:
         enable(config)
