@@ -111,13 +111,6 @@ def hdl_wid_109(_: WIDParams):
     return True
 
 
-def hdl_wid_110(_: WIDParams):
-    pts_bd_addr = btp.pts_addr_get()
-    pts_bd_addr_type = btp.pts_addr_type_get()
-    btp.gattc_signed_write(pts_bd_addr_type, pts_bd_addr, "0001", "01")
-    return True
-
-
 def hdl_wid_111(_: WIDParams):
     # TODO: Verify if the MAC and signed counter has been received correctly
     return True

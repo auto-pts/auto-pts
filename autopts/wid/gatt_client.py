@@ -1009,28 +1009,6 @@ def hdl_wid_71(_: WIDParams):
     return True
 
 
-def hdl_wid_72(params: WIDParams):
-    """
-    Please send signed write command with handle = '00B1'O with one byte
-    of any octet value to the PTS.
-
-    Description: Verify that the Implementation Under Test (IUT) can send
-    Signed write command.
-    """
-    MMI.reset()
-    MMI.parse_description(params.description)
-
-    hdl = MMI.args[0]
-
-    if not hdl:
-        logging.error("parsing error")
-        return False
-
-    btp.gatt_cl_signed_write(btp.pts_addr_type_get(), btp.pts_addr_get(),
-                             hdl, '12', None)
-    return True
-
-
 def hdl_wid_74(params: WIDParams):
     """
     Please send write request with characteristic handle = '0052'O

@@ -1051,45 +1051,6 @@ def gatt_cl_write_without_rsp(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
     gatt_cl_command_rsp_succ()
 
 
-def gatt_cl_signed_write(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
-    logging.debug("%s %r %r %r %r %r", gatt_cl_signed_write.__name__,
-                  bd_addr_type, bd_addr, hdl, val, val_mtp)
-    iutctl = get_iut()
-
-    gap_wait_for_connection()
-
-    if isinstance(hdl, str):
-        hdl = int(hdl, 16)
-
-    if val_mtp:
-        val *= int(val_mtp)
-
-    data_ba = bytearray()
-
-    bd_addr_ba = addr2btp_ba(bd_addr)
-    hdl_ba = struct.pack('H', hdl)
-    if isinstance(val, str):
-        val_ba = binascii.unhexlify(bytearray(val, 'utf-8'))
-    elif isinstance(val, bytearray):
-        val_ba = binascii.unhexlify(val)
-    else:
-        val_ba = binascii.unhexlify(bytearray(val.encode('utf-8')))
-    val_len_ba = struct.pack('H', len(val_ba))
-
-    data_ba.extend(chr(bd_addr_type).encode('utf-8'))
-    data_ba.extend(bd_addr_ba)
-    data_ba.extend(hdl_ba)
-    data_ba.extend(val_len_ba)
-    data_ba.extend(val_ba)
-
-    iutctl.btp_socket.send(*GATTC['signed_write'], data=data_ba)
-
-    stack = get_stack()
-    stack.gatt_cl.set_event_to_await(stack.gatt_cl.is_write_completed)
-
-    gatt_cl_command_rsp_succ()
-
-
 def gatt_cl_write(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
     logging.debug("%s %r %r %r %r %r", gatt_cl_write.__name__, bd_addr_type,
                   bd_addr, hdl, val, val_mtp)

@@ -380,8 +380,6 @@ gatt_cl = {
                       CONTROLLER_INDEX),
     "write_without_rsp": (defs.BTP_SERVICE_ID_GATTC,
                           defs.BTP_GATTC_CMD_WRITE_WITHOUT_RSP, CONTROLLER_INDEX),
-    "signed_write": (defs.BTP_SERVICE_ID_GATTC,
-                     defs.BTP_GATTC_CMD_SIGNED_WRITE_WITHOUT_RSP, CONTROLLER_INDEX),
     "write": (defs.BTP_SERVICE_ID_GATTC, defs.BTP_GATTC_CMD_WRITE, CONTROLLER_INDEX),
     "write_long": (defs.BTP_SERVICE_ID_GATTC, defs.BTP_GATTC_CMD_WRITE_LONG,
                    CONTROLLER_INDEX),
