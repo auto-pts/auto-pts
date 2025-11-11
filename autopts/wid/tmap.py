@@ -28,6 +28,7 @@ from autopts.pybtp.types import (
     QOS_CONFIG_SETTINGS,
     ASCSState,
     AudioDir,
+    Context,
     WIDParams,
     create_lc3_ltvs_bytes,
 )
@@ -127,6 +128,8 @@ def hdl_wid_114(params: WIDParams):
     """Please advertise with Broadcast Audio Announcement (0x1852) service data"""
 
     # advertisement started in hdl_wid_506
+    if params.test_case_name == 'TMAP/BMS/CTXT/BV-01-C':
+        hdl_wid_506(params)
 
     return True
 
@@ -295,6 +298,12 @@ def hdl_wid_311(params: WIDParams):
     return True
 
 
+def hdl_wid_353(params: WIDParams):
+    """Wait for Broadcast ISO request."""
+
+    return True
+
+
 def hdl_wid_364(_: WIDParams):
     """
     After processed audio stream data, please click OK.
@@ -326,6 +335,16 @@ def hdl_wid_376(_: WIDParams):
             ev = stack.bap.wait_stream_received_ev(addr_type, addr, ase_id, 10)
             if ev is None:
                 return False
+
+    return True
+
+
+def hdl_wid_377(_: WIDParams):
+    """
+    Please confirm sent streaming data
+    """
+
+    # The IUT is expected to send autonomously
 
     return True
 
@@ -597,7 +616,7 @@ def hdl_wid_506(params: WIDParams):
     # based on cap/hdl_wid_114 using fixed configuration
 
     source_num = 1
-    metadata = struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)
+    metadata = struct.pack("<BBH", 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, Context.CONVERSATIONAL | Context.MEDIA)
     qos_set_name = '48_2_1'
     coding_format = 0x06
     vid = 0x0000
