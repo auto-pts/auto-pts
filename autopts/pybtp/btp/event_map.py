@@ -1,5 +1,7 @@
 from .aics import AICS_EV
 from .ascs import ASCS_EV
+from .avctp import AVCTP_EV
+from .avrcp import AVRCP_EV
 from .bap import BAP_EV
 from .cap import CAP_EV
 from .ccp import CCP_EV
@@ -31,6 +33,8 @@ from .vocs import VOCS_EV
 __all__ = [
     "AICS_EV",
     "ASCS_EV",
+    "AVCTP_EV",
+    "AVRCP_EV",
     "BAP_EV",
     "CAP_EV",
     "CCP_EV",
