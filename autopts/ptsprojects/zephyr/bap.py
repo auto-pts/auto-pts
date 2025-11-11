@@ -239,7 +239,7 @@ def test_cases(ptses):
                                 SynchPoint("BAP/UCL/STR/BV-532-C_LT2", 20100)]),
                       TestFunc(get_stack().synch.add_synch_element,
                                [SynchPoint("BAP/UCL/STR/BV-532-C", 311),
-                                SynchPoint("BAP/UCL/STR/BV-532-C_LT2", 311)]),
+                                SynchPoint("BAP/UCL/STR/BV-532-C_LT2", 313)]),
                       # More SyncPoint will be needed, but for now Zephyr does not reach the next wid
                   ],
                   generic_wid_hdl=bap_wid_hdl,
@@ -250,8 +250,8 @@ def test_cases(ptses):
                                [SynchPoint("BAP/UCL/STR/BV-534-C", 20100),
                                 SynchPoint("BAP/UCL/STR/BV-534-C_LT2", 20100)]),
                       TestFunc(get_stack().synch.add_synch_element,
-                               [SynchPoint("BAP/UCL/STR/BV-534-C", 311),
-                                SynchPoint("BAP/UCL/STR/BV-534-C_LT2", 311)]),
+                               [SynchPoint("BAP/UCL/STR/BV-534-C", 313),
+                                SynchPoint("BAP/UCL/STR/BV-534-C_LT2", 313)]),
                       # More SyncPoint will be needed, but for now Zephyr does not reach the next wid
                   ],
                   generic_wid_hdl=bap_wid_hdl,

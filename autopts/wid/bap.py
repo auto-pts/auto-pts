@@ -1266,8 +1266,8 @@ ac_configs = {
     'BAP/UCL/STR/BV-530-C':     ([(0, 1)], 2),          # AC 9(ii)
     'BAP/UCL/STR/BV-530-C_LT2': ([(0, 1)], 2),
     'BAP/UCL/STR/BV-531-C':     ([(1, 0), (1, 1)], 1),  # AC 8(i)
-    'BAP/UCL/STR/BV-532-C':     ([(1, 1)], 2),          # AC 8(ii)
-    'BAP/UCL/STR/BV-532-C_LT2': ([(1, 0)], 2),
+    'BAP/UCL/STR/BV-532-C':     ([(1, 0)], 2),          # AC 8(ii)
+    'BAP/UCL/STR/BV-532-C_LT2': ([(1, 1)], 2),
     'BAP/UCL/STR/BV-533-C':     ([(1, 1), (1, 1)], 1),  # AC 11(i)
     'BAP/UCL/STR/BV-534-C':     ([(1, 1)], 2),          # AC 11(ii)
     'BAP/UCL/STR/BV-534-C_LT2': ([(1, 1)], 2),
