@@ -13,6 +13,8 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
+import inspect
+import logging
 from threading import Event, Lock, Timer
 from time import sleep
 
@@ -38,7 +40,11 @@ class WildCard:
         return True
 
 
-def timeout_cb(flag):
+def timeout_cb(timeout, flag, condition):
+    logging.error(
+        f"Timeout after {timeout} seconds while waiting for event {flag} "
+        f"with condition {inspect.getsource(condition)}"
+    )
     flag.clear()
 
 
@@ -49,7 +55,7 @@ def wait_for_event(timeout, test, *args, **kwargs):
     flag = Event()
     flag.set()
 
-    t = Timer(timeout, timeout_cb, [flag])
+    t = Timer(timeout, timeout_cb, [timeout, flag, test])
     t.name = f'EventTimer{t.name}'
     t.start()
 
@@ -68,7 +74,7 @@ def wait_event_with_condition(event_queue, condition_cb, timeout, remove):
     flag = Event()
     flag.set()
 
-    t = Timer(timeout, timeout_cb, [flag])
+    t = Timer(timeout, timeout_cb, [timeout, flag, condition_cb])
     t.start()
 
     while flag.is_set():
