@@ -1812,6 +1812,19 @@ def hdl_wid_403(_: WIDParams):
     return True
 
 
+def hdl_wid_405(_: WIDParams):
+    """
+    Please change private addresse and enter Undirected Connectable Mode.
+    """
+
+    # We don't need to do anything, RPA will change automatically after RPA
+    # timeout. We should not change the RPA by any other means because this
+    # WID is used by test cases that checks the RPA change according to the
+    # RPA timeout. WID 405 exists only for PTS itself.
+
+    return True
+
+
 def hdl_wid_406(_: WIDParams):
     # Please enter General Connectable Mode using private addresses.
     # Note: IUT is expected to do directed advertising with target address set
