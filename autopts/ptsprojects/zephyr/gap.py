@@ -535,7 +535,9 @@ def test_cases(ptses):
                   cmds=br_pre_cond,
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/DM/LEP/BV-20-C",
-                  cmds=br_pre_cond,
+                  cmds=br_pre_cond + [
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/DM/LEP/BV-14-C",
                   cmds=br_pre_cond,
@@ -544,7 +546,9 @@ def test_cases(ptses):
                   cmds=br_pre_cond,
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/DM/LEP/BV-21-C",
-                  cmds=br_pre_cond,
+                  cmds=br_pre_cond + [
+                      TestFunc(btp.gap_set_io_cap, IOCap.display_yesno),
+                  ],
                   generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/DM/LEP/BV-17-C",
                   cmds=br_pre_cond,
