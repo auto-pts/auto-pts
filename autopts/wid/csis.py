@@ -16,7 +16,7 @@
 import logging
 
 from autopts.ptsprojects.stack import get_stack
-from autopts.pybtp import btp
+from autopts.pybtp import btp, defs
 from autopts.pybtp.types import WIDParams
 
 log = logging.debug
@@ -59,12 +59,12 @@ def hdl_wid_20001(params: WIDParams):
         Description: Verify that the Implementation Under Test (IUT) can accept GATT connect request from PTS.
     """
 
-    if params.test_case_name == "CSIS/SR/SP/BV-08-C":
-        # Encrypted SIRK
-        btp.csis_set_sirk_type(1)
+    if params.test_case_name == "CSIS/SR/SP/BV-07-C":
+        btp.csis_set_sirk_type(defs.CSIS_SIRK_TYPE_OOB_ONLY)
+    elif params.test_case_name == "CSIS/SR/SP/BV-08-C":
+        btp.csis_set_sirk_type(defs.CSIS_SIRK_TYPE_ENCRYPTED)
     else:
-        # Plain Text SIRK
-        btp.csis_set_sirk_type(0)
+        btp.csis_set_sirk_type(defs.CSIS_SIRK_TYPE_PLAINTEXT)
 
     stack = get_stack()
     btp.gap_set_conn()

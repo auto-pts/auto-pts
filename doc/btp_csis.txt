@@ -65,3 +65,4 @@ Commands and responses:
                 This command is used to set SIRK type.
                         0 - Plain text SIRK
                         1 - Encrypted SIRK
+                        2 - OOB procedure SIRK only
