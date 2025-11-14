@@ -89,8 +89,6 @@ GATTC = {
                           CONTROLLER_INDEX),
     "write_without_rsp": (defs.BTP_SERVICE_ID_GATT,
                           defs.BTP_GATT_CMD_WRITE_WITHOUT_RSP, CONTROLLER_INDEX),
-    "signed_write": (defs.BTP_SERVICE_ID_GATT,
-                     defs.BTP_GATT_CMD_SIGNED_WRITE_WITHOUT_RSP, CONTROLLER_INDEX),
     "write": (defs.BTP_SERVICE_ID_GATT, defs.BTP_GATT_CMD_WRITE, CONTROLLER_INDEX),
     "write_long": (defs.BTP_SERVICE_ID_GATT, defs.BTP_GATT_CMD_WRITE_LONG,
                    CONTROLLER_INDEX),
@@ -926,42 +924,6 @@ def gattc_write_without_rsp(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
     data_ba.extend(val_ba)
 
     iutctl.btp_socket.send(*GATTC['write_without_rsp'], data=data_ba)
-
-    gatt_command_rsp_succ()
-
-
-def gattc_signed_write(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
-    logging.debug("%s %r %r %r %r %r", gattc_signed_write.__name__,
-                  bd_addr_type, bd_addr, hdl, val, val_mtp)
-    iutctl = get_iut()
-
-    gap_wait_for_connection()
-
-    if isinstance(hdl, str):
-        hdl = int(hdl, 16)
-
-    if val_mtp:
-        val *= int(val_mtp)
-
-    data_ba = bytearray()
-
-    bd_addr_ba = addr2btp_ba(bd_addr)
-    hdl_ba = struct.pack('H', hdl)
-    if isinstance(val, str):
-        val_ba = binascii.unhexlify(bytearray(val, 'utf-8'))
-    elif isinstance(val, bytearray):
-        val_ba = binascii.unhexlify(val)
-    else:
-        val_ba = binascii.unhexlify(bytearray(val.encode('utf-8')))
-    val_len_ba = struct.pack('H', len(val_ba))
-
-    data_ba.extend(chr(bd_addr_type).encode('utf-8'))
-    data_ba.extend(bd_addr_ba)
-    data_ba.extend(hdl_ba)
-    data_ba.extend(val_len_ba)
-    data_ba.extend(val_ba)
-
-    iutctl.btp_socket.send(*GATTC['signed_write'], data=data_ba)
 
     gatt_command_rsp_succ()
 

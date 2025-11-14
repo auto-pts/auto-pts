@@ -886,22 +886,6 @@ def hdl_wid_71(_: WIDParams):
     return True
 
 
-def hdl_wid_72(params: WIDParams):
-    MMI.reset()
-    MMI.parse_description(params.description)
-
-    hdl = MMI.args[0]
-
-    if not hdl:
-        logging.error("parsing error")
-        return False
-
-    btp.gattc_signed_write(btp.pts_addr_type_get(), btp.pts_addr_get(),
-                           hdl, '12', None)
-
-    return True
-
-
 def hdl_wid_74(params: WIDParams):
     MMI.reset()
     MMI.parse_description(params.description)
