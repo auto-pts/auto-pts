@@ -24,14 +24,8 @@ from autopts.ptsprojects.stack import ConnParams, get_stack
 from autopts.pybtp import btp, defs, types
 from autopts.pybtp.btp.btp import pts_addr_get, pts_addr_type_get
 from autopts.pybtp.types import UUID, AdType, IOCap, OwnAddrType, Perm, Prop, WIDParams, bdaddr_reverse
-from autopts.wid import generic_wid_hdl
 
 log = logging.debug
-
-
-def gap_wid_hdl(wid, description, test_case_name):
-    log(f'{gap_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
-    return generic_wid_hdl(wid, description, test_case_name, [__name__])
 
 
 # wid handlers section begin

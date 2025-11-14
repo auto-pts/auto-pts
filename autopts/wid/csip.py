@@ -24,12 +24,6 @@ from autopts.pybtp.types import AdType, OwnAddrType, WIDParams, gap_settings_btp
 log = logging.debug
 
 
-def csip_wid_hdl(wid, description, test_case_name):
-    from autopts.wid import generic_wid_hdl
-    log(f'{csip_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
-    return generic_wid_hdl(wid, description, test_case_name, [__name__])
-
-
 def hdl_wid_3(_: WIDParams):
     """Please create different workspaces and run this test case with 3 instances of PTS."""
 

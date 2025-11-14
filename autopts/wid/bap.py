@@ -43,12 +43,6 @@ from autopts.wid.common import _safe_bap_send
 log = logging.debug
 
 
-def bap_wid_hdl(wid, description, test_case_name):
-    from autopts.wid import generic_wid_hdl
-    log(f'{bap_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
-    return generic_wid_hdl(wid, description, test_case_name, [__name__])
-
-
 # wid handlers section begin
 def hdl_wid_20100(params: WIDParams):
     if params.test_case_name.endswith('LT2'):
