@@ -17,6 +17,8 @@ import logging
 
 from autopts.ptsprojects.stack.layers.aics import AICS
 from autopts.ptsprojects.stack.layers.ascs import ASCS
+from autopts.ptsprojects.stack.layers.avctp import AVCTP
+from autopts.ptsprojects.stack.layers.avrcp import AVRCP
 from autopts.ptsprojects.stack.layers.bap import BAP
 from autopts.ptsprojects.stack.layers.cap import CAP
 from autopts.ptsprojects.stack.layers.ccp import CCP
@@ -84,6 +86,8 @@ class Stack:
         self.ots = None
         self.pbp = None
         self.sdp = None
+        self.avrcp = None
+        self.avctp = None
         # GENERATOR append 2
         self.supported_svcs_cmds = common.supported_svcs_cmds
 
@@ -191,6 +195,12 @@ class Stack:
     def sdp_init(self):
         self.sdp = SDP()
 
+    def avrcp_init(self):
+        self.avrcp = AVRCP()
+
+    def avctp_init(self):
+        self.avctp = AVCTP()
+
     # GENERATOR append 3
 
     def cleanup(self):
@@ -277,6 +287,12 @@ class Stack:
 
         if self.sdp:
             self.sdp_init()
+
+        if self.avrcp:
+            self.avrcp_init()
+
+        if self.avctp:
+            self.avctp_init()
 
         # GENERATOR append 4
 
