@@ -269,8 +269,46 @@ def ascs_ev_ase_state_changed_(ascs, data, data_len):
                         (addr_type, addr, ase_id, state))
 
 
+def ascs_ev_cis_connected_(ascs, data, data_len):
+    logging.debug("%s %r", ascs_ev_cis_connected_.__name__, data)
+
+    fmt = "<B6sBB"
+    header_size = struct.calcsize(fmt)
+    if len(data) != header_size:
+        raise BTPError(f"Invalid data length ({len(data)} != {header_size})")
+
+    addr_type, addr, ase_id, cis_id = struct.unpack_from(fmt, data)
+
+    addr = binascii.hexlify(addr[::-1]).lower().decode("utf-8")
+
+    logging.debug(f"CIS connected: ase_id {ase_id}, cis_id {cis_id}")
+
+    ascs.event_received(defs.BTP_ASCS_EV_CIS_CONNECTED, (addr_type, addr, ase_id, cis_id))
+
+
+def ascs_ev_cis_disconnected_(ascs, data, data_len):
+    logging.debug("%s %r", ascs_ev_cis_disconnected_.__name__, data)
+
+    fmt = "<B6sBBB"
+    header_size = struct.calcsize(fmt)
+    if len(data) != header_size:
+        raise BTPError(f"Invalid data length ({len(data)} != {header_size})")
+
+    addr_type, addr, ase_id, cis_id, reason = struct.unpack_from(fmt, data)
+
+    addr = binascii.hexlify(addr[::-1]).lower().decode("utf-8")
+
+    logging.debug(f"CIS disconnected: ase_id {ase_id}, cis_id {cis_id}, reason {reason}")
+
+    ascs.event_received(
+        defs.BTP_ASCS_EV_CIS_DISCONNECTED, (addr_type, addr, ase_id, cis_id, reason)
+    )
+
+
 ASCS_EV = {
     defs.BTP_ASCS_EV_OPERATION_COMPLETED: ascs_ev_operation_completed_,
     defs.BTP_ASCS_EV_CHARACTERISTIC_SUBSCRIBED: ascs_ev_characteristic_subscribed_,
     defs.BTP_ASCS_EV_ASE_STATE_CHANGED: ascs_ev_ase_state_changed_,
+    defs.BTP_ASCS_EV_CIS_CONNECTED: ascs_ev_cis_connected_,
+    defs.BTP_ASCS_EV_CIS_DISCONNECTED: ascs_ev_cis_disconnected_,
 }
