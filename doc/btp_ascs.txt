@@ -241,3 +241,26 @@ Events:
                                         State (1 octet)
 
                 This event indicates that ASE state has been changed.
+
+        Opcode 0x83 - CIS connected
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        ASE_ID (1 octet)
+                                        CIS_ID (1 octet)
+
+                This event indicates that CIS for an ASE has been connected.
+                If two ASEs share the same CIS, this event shall be generated once for each ASE.
+
+        Opcode 0x84 - CIS disconnected
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        ASE_ID (1 octet)
+                                        CIS_ID (1 octet)
+                                        Reason (1 octet)
+
+                This event indicates that CIS for an ASE has been disconnected.
+                If two ASEs share the same CIS, this event shall be generated once for each ASE.
