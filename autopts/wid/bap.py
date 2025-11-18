@@ -24,7 +24,13 @@ from typing import Final
 from autopts.ptsprojects.stack import WildCard, get_stack
 from autopts.ptsprojects.testcase import MMI
 from autopts.pybtp import btp, defs
-from autopts.pybtp.btp import ascs_add_ase_to_cis, lt2_addr_get, lt2_addr_type_get, pts_addr_get, pts_addr_type_get
+from autopts.pybtp.btp import (
+    ascs_add_ase_to_cis,
+    lt2_addr_get,
+    lt2_addr_type_get,
+    pts_addr_get,
+    pts_addr_type_get,
+)
 from autopts.pybtp.types import (
     CODEC_CONFIG_SETTINGS,
     FRAME_DURATION_STR_TO_CODE,
@@ -1469,6 +1475,19 @@ def enable(config):
                                                config.ase_id, 30)
 
 
+def connect(config):
+    stack = get_stack()
+
+    btp.ascs_receiver_start_ready(config.ase_id, config.addr_type, config.addr)
+
+    return stack.ascs.wait_ascs_cis_connected_ev(
+        config.addr_type,
+        config.addr,
+        config.ase_id,
+        config.cis_id,
+    )
+
+
 def start_streaming(config):
     stack = get_stack()
     btp.ascs_receiver_start_ready(config.ase_id, config.addr_type, config.addr)
@@ -1572,6 +1591,22 @@ def create_ase_config(
     config.mono = audio_config_test.mono
 
     config.chan_cnt = chan_cnt
+
+    # Determine when we should perform the CIS connection and enable operation
+    config.connect_sink_in_qos = audio_config_test.connect_sink_in_qos
+    config.connect_source_in_qos = audio_config_test.connect_source_in_qos
+    config.connect_cis_in_qos = audio_config_test.connect_cis_in_qos
+
+    # If we are not connecting in the QoS state, then we should enable the ASEs before connecting
+    # the CIS
+    if audio_dir == AudioDir.SINK:
+        config.enable_before_cis_connection = (
+            not audio_config_test.connect_sink_in_qos and not config.connect_cis_in_qos
+        )
+    else:
+        config.enable_before_cis_connection = (
+            not audio_config_test.connect_source_in_qos and not config.connect_cis_in_qos
+        )
 
     config_codec(config)
 
@@ -1688,15 +1723,29 @@ def hdl_wid_311(params: WIDParams):
         data = [j for j in range(0, config.octets_per_frame)]
         stream_data[config.ase_id] = bytearray(data)
 
-    # TODO: For tests where audio_config_test.connect_sink_in_qos is True, we need to connect the CIS in
-    # the QoS configured state, else we need to connect the CIS in the enabling state.
+    # If both ASEs need to be connected in QoS configured state, do it now
+    if audio_config_test.connect_cis_in_qos:
+        for config in stack.bap.ase_configs:
+            if connect(config) is None:
+                return False
 
+    # If there are ASEs that are not connecting the CIS in the QoS state,
+    # enable the ASEs that should be in the enabling state before CIS connection now
     for config in stack.bap.ase_configs:
-        enable(config)
+        if config.enable_before_cis_connection:
+            enable(config)
 
+    # Connect CISes if not already done in the QoS configured state
+    if not audio_config_test.connect_cis_in_qos:
+        for config in stack.bap.ase_configs:
+            if connect(config) is None:
+                return False
+
+    # If there are ASEs that are not connecting the CIS in the QoS state,
+    # move the ASEs that should be in the enabling state after CIS connection now
     for config in stack.bap.ase_configs:
-        # Start streaming
-        btp.ascs_receiver_start_ready(config.ase_id, config.addr_type, config.addr)
+        if not config.enable_before_cis_connection:
+            enable(config)
 
     # PTS will change ASE states to streaming when all CISes are established
     for config in stack.bap.ase_configs:
