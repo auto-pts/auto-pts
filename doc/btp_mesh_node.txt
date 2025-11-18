@@ -1532,7 +1532,7 @@ Events:
                 Controller Index:       <controller id>
                 Event parameters:       SRC (2 octets)
                                         DST (2 octets)
-                                        Payload_Len (1 octet)
+                                        Payload_Len (2 octets)
                                         Payload (variable)
 
                 This event indicates that the IUT has received an Access layer message.

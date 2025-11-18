@@ -1781,7 +1781,7 @@ def mesh_model_recv_ev(mesh, data, data_len):
     if not stack.mesh.model_recv_ev_store.data:
         return
 
-    hdr_fmt = '<HHB'
+    hdr_fmt = '<HHH'
     hdr_len = struct.calcsize(hdr_fmt)
 
     (src, dst, payload_len) = struct.unpack_from(hdr_fmt, data, 0)
