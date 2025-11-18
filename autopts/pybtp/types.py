@@ -92,6 +92,7 @@ class AdType:
     uri = 0x24
     le_supp_feat = 0x27
     rsi = 0x2e
+    encrypted_adv = 0x31
 
 
 class AdFlags:
@@ -156,6 +157,7 @@ class UUID:
     VND128_1 = 'F000BB5004514000B123456789ABCDEF'
     VND128_2 = 'F000BB5104514000B123456789ABCDEF'
     VND128_3 = 'F000BB5204514000B123456789ABCDEF'
+    EDKM = '882B'
 
 
 class IOCap:

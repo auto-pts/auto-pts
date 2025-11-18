@@ -858,8 +858,8 @@ Commands and responses:
 
                 This command initializes the encryption key material used by the
                 peripheral for Encrypted Advertisement Data (EAD). The session key
-                 and IV are required to enable secure encryption and decryption
-                 of advertisement payloads.
+                and IV are required to enable secure encryption and decryption
+                of advertisement payloads.
 
                 If the operation fails, an error response will be returned.
 
