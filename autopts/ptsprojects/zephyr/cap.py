@@ -15,6 +15,7 @@
 #
 
 """CAP test cases"""
+import struct
 
 from autopts.client import get_unique_name
 from autopts.ptsprojects.stack import SynchPoint, get_stack
@@ -23,8 +24,9 @@ from autopts.ptsprojects.zephyr.cap_wid import cap_wid_hdl
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
 from autopts.pybtp import btp
 from autopts.pybtp.btp.cap import announcements
+from autopts.pybtp.btp.gap import gap_set_uuid16_svc_data
 from autopts.pybtp.defs import PACS_AUDIO_CONTEXT_TYPE_CONVERSATIONAL
-from autopts.pybtp.types import Addr, Context
+from autopts.pybtp.types import UUID, Addr, BAPAnnouncement, CAPAnnouncement, Context
 from autopts.utils import ResultWithFlag
 
 
@@ -147,12 +149,20 @@ def test_cases(ptses):
     ]
 
     general_conditions = [
-        TestFunc(announcements, adv_data, rsp_data, False, SINK_CONTEXTS, SOURCE_CONTEXTS),
+        TestFunc(gap_set_uuid16_svc_data, adv_data, UUID.CAS,
+                          struct.pack('<B', CAPAnnouncement.GENERAL)),
+        TestFunc(gap_set_uuid16_svc_data, adv_data, UUID.ASCS,
+                          struct.pack('<BHHB', BAPAnnouncement.GENERAL, SINK_CONTEXTS, SOURCE_CONTEXTS, 0)),
+        TestFunc(announcements, adv_data),
         TestFunc(btp.gap_adv_ind_on, ad=adv_data, sd=rsp_data),
     ]
 
     targeted_conditions = [
-        TestFunc(announcements, adv_data, rsp_data, True, SINK_CONTEXTS, SOURCE_CONTEXTS),
+        TestFunc(gap_set_uuid16_svc_data, adv_data, UUID.CAS,
+                          struct.pack('<B', CAPAnnouncement.TARGETED)),
+        TestFunc(gap_set_uuid16_svc_data, adv_data, UUID.ASCS,
+                          struct.pack('<BHHB', BAPAnnouncement.TARGETED, SINK_CONTEXTS, SOURCE_CONTEXTS, 0)),
+        TestFunc(announcements, adv_data),
         TestFunc(btp.gap_adv_ind_on, ad=adv_data, sd=rsp_data),
     ]
 

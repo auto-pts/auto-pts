@@ -22,9 +22,10 @@ from autopts.ptsprojects.stack import WildCard, get_stack
 from autopts.pybtp import btp, defs
 from autopts.pybtp.btp import lt2_addr_get, lt2_addr_type_get, lt3_addr_get, lt3_addr_type_get, pts_addr_get, pts_addr_type_get
 from autopts.pybtp.btp.cap import announcements
+from autopts.pybtp.btp.gap import gap_set_uuid16_svc_data
 from autopts.pybtp.btp.pacs import pacs_set_available_contexts
 from autopts.pybtp.defs import AUDIO_METADATA_CCID_LIST, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS
-from autopts.pybtp.types import Addr, ASCSState, WIDParams
+from autopts.pybtp.types import UUID, Addr, ASCSState, BAPAnnouncement, CAPAnnouncement, WIDParams
 from autopts.wid import generic_wid_hdl
 from autopts.wid.bap import (
     BAS_CONFIG_SETTINGS,
@@ -1005,7 +1006,10 @@ def hdl_wid_421(params: WIDParams):
     adv_data, rsp_data = {}, {}
 
     # Set available contexts to 0
-    announcements(adv_data, rsp_data, True, 0, 0)
+    gap_set_uuid16_svc_data(adv_data, UUID.CAS, struct.pack('<B', CAPAnnouncement.TARGETED))
+    gap_set_uuid16_svc_data(adv_data, UUID.ASCS, struct.pack('<BHHB', BAPAnnouncement.TARGETED, 0, 0, 0))
+
+    announcements(adv_data)
     btp.gap_adv_ind_on(ad=adv_data, sd=rsp_data)
 
     # Set available contexts to 0

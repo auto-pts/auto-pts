@@ -15,7 +15,6 @@
 
 """HAP test cases"""
 import struct
-from enum import IntEnum
 
 from autopts.client import get_unique_name
 from autopts.ptsprojects.stack import get_stack
@@ -23,8 +22,9 @@ from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.hap_wid import hap_wid_hdl
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
 from autopts.pybtp import btp
+from autopts.pybtp.btp.gap import gap_set_uuid16_svc_data
 from autopts.pybtp.defs import HAS_TSPX_available_presets_indices, HAS_TSPX_unavailable_presets_indices
-from autopts.pybtp.types import Addr, AdType, Context
+from autopts.pybtp.types import UUID, Addr, AdType, BAPAnnouncement, CAPAnnouncement, Context
 
 # Options aligned with the overlay-le-audio.conf options
 BTP_HAP_HA_OPTS_DEFAULT = (btp.defs.HAP_HA_OPT_PRESETS_DYNAMIC |
@@ -32,14 +32,6 @@ BTP_HAP_HA_OPTS_DEFAULT = (btp.defs.HAP_HA_OPT_PRESETS_DYNAMIC |
 BTP_HAP_HA_OPTS_BINAURAL = (btp.defs.HAP_HA_OPT_PRESETS_INDEPENDENT |
                             btp.defs.HAP_HA_OPT_PRESETS_DYNAMIC |
                             btp.defs.HAP_HA_OPT_PRESETS_WRITABLE)
-
-
-class Uuid(IntEnum):
-    ASCS = 0x184E
-    BASS = 0x184F
-    PACS = 0x1850
-    BAAS = 0x1852
-    CAS = 0x1853
 
 
 def set_pixits(ptses):
@@ -84,16 +76,7 @@ def set_pixits(ptses):
     pts.set_pixit("HAP", "TSPX_num_presets", str(num_presets))
 
 
-def announcements(advData, targeted):
-    """
-        CAP General/Targeted Announcement
-    """
-    advData[AdType.uuid16_svc_data] = [struct.pack('<HB', Uuid.CAS, 1 if targeted else 0)]
-    """
-        BAP General/Targeted Announcement
-    """
-    advData[AdType.uuid16_svc_data] += [struct.pack('<HBHHB', Uuid.ASCS, 1 if targeted else 0,
-        Context.LIVE | Context.MEDIA, Context.LIVE, 0)]
+def set_member_rsi(advData, targeted):
     """
         RSI
     """
@@ -152,7 +135,10 @@ def test_cases(ptses):
     ]
 
     adv_conditions = [
-        TestFunc(announcements, advData, True),
+        TestFunc(gap_set_uuid16_svc_data, advData, UUID.CAS, struct.pack('<B', CAPAnnouncement.TARGETED)),
+        TestFunc(gap_set_uuid16_svc_data, advData, UUID.ASCS, struct.pack('<BHHB', BAPAnnouncement.TARGETED,
+                Context.LIVE | Context.MEDIA, Context.LIVE, 0)),
+        TestFunc(set_member_rsi, advData, True),
         TestFunc(btp.gap_set_extended_advertising_on),
         TestFunc(btp.gap_adv_ind_on, ad=advData),
     ]
