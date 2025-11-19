@@ -17,7 +17,6 @@
 import binascii
 import logging
 import struct
-from enum import IntEnum
 
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp, defs
@@ -27,35 +26,11 @@ from autopts.pybtp.btp.gap import __gap_current_settings_update
 from autopts.pybtp.common import cap_btp
 from autopts.pybtp.types import AdType, BTPError, addr2btp_ba
 
-
-class Uuid(IntEnum):
-    ASCS = 0x184E
-    BASS = 0x184F
-    PACS = 0x1850
-    BAAS = 0x1852
-    CAS = 0x1853
-
-
 CAP = cap_btp
 
 
-def announcements(adv_data, rsp_data, targeted, sink_contexts, source_contexts):
+def announcements(adv_data):
     """Setup Announcements"""
-
-    # CAP General/Targeted Announcement
-    adv_data[AdType.uuid16_svc_data] = [struct.pack('<HB', Uuid.CAS, 1 if targeted else 0)]
-
-    # BAP General/Targeted Announcement
-    adv_data[AdType.uuid16_svc_data] += [
-        struct.pack(
-            "<HBHHB",
-            Uuid.ASCS,
-            1 if targeted else 0,
-            sink_contexts,
-            source_contexts,
-            0,
-        )
-    ]
 
     # Generate the Resolvable Set Identifier (RSI)
     rsi = btp.cas_get_member_rsi()

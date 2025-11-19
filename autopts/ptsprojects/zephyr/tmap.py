@@ -21,7 +21,8 @@ from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.tmap_wid import tmap_wid_hdl
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
 from autopts.pybtp import btp
-from autopts.pybtp.types import UUID, Addr, AdType, Context
+from autopts.pybtp.btp.gap import gap_set_uuid16_svc_data
+from autopts.pybtp.types import UUID, Addr, AdType, BAPAnnouncement, CAPAnnouncement, Context, TMAPRole
 
 
 def set_pixits(ptses):
@@ -52,16 +53,8 @@ def set_pixits(ptses):
     pts.set_pixit("TMAP", "TSPX_TARGET_PHY", "LE_2M_PHY")
 
 
-def announcements(advData, targeted):
-    """
-        CAS General/Targeted Announcement
-    """
-    advData[AdType.uuid16_svc_data] = [struct.pack('<HB', int(UUID.CAS, 16), 1 if targeted else 0)]
-    """
-        ASCS General/Targeted Announcement
-    """
-    advData[AdType.uuid16_svc_data] += [struct.pack('<HBHHB', int(UUID.ASCS, 16), 1 if targeted else 0,
-        Context.LIVE | Context.MEDIA, Context.LIVE, 0)]
+def adv_init(advData):
+    advData[AdType.uuid16_svc_data] = []
 
 
 def test_cases(ptses):
@@ -108,19 +101,57 @@ def test_cases(ptses):
         TestFunc(stack.csip_init),
     ]
 
-    adv_conditions = [
-        TestFunc(announcements, advData, True),
+    adv_end = [
         TestFunc(btp.gap_set_extended_advertising_on),
         TestFunc(btp.gap_adv_ind_on, ad=advData),
     ]
 
     custom_test_cases = [
-        ZTestCase('TMAP', 'TMAP/UMR/ASC/BV-04-C', cmds=pre_conditions + adv_conditions,
-                  generic_wid_hdl=tmap_wid_hdl),
-        ZTestCase('TMAP', 'TMAP/UMR/ASC/BV-05-C', cmds=pre_conditions + adv_conditions,
-                  generic_wid_hdl=tmap_wid_hdl),
-        ZTestCase('TMAP', 'TMAP/UMR/ASC/BV-06-C', cmds=pre_conditions + adv_conditions,
-                  generic_wid_hdl=tmap_wid_hdl),
+        ZTestCase('TMAP', 'TMAP/UMR/ASC/BV-04-C', cmds=pre_conditions + [
+                TestFunc(adv_init, advData),
+                TestFunc(gap_set_uuid16_svc_data, advData, UUID.CAS,
+                           struct.pack('<B', CAPAnnouncement.TARGETED)),
+                TestFunc(gap_set_uuid16_svc_data, advData, UUID.ASCS,
+                           struct.pack('<BHHB', BAPAnnouncement.TARGETED,
+                Context.LIVE | Context.MEDIA, Context.LIVE, 0))] +
+                adv_end,
+                generic_wid_hdl=tmap_wid_hdl),
+        ZTestCase('TMAP', 'TMAP/UMR/ASC/BV-05-C', cmds=pre_conditions + [
+                TestFunc(adv_init, advData),
+                TestFunc(gap_set_uuid16_svc_data, advData, UUID.CAS,
+                          struct.pack('<B', CAPAnnouncement.TARGETED)),
+                TestFunc(gap_set_uuid16_svc_data, advData, UUID.ASCS,
+                          struct.pack('<BHHB', BAPAnnouncement.TARGETED,
+                Context.LIVE | Context.MEDIA, Context.LIVE, 0))] +
+                adv_end,
+                generic_wid_hdl=tmap_wid_hdl),
+        ZTestCase('TMAP', 'TMAP/UMR/ASC/BV-06-C', cmds=pre_conditions + [
+                TestFunc(adv_init, advData),
+                TestFunc(gap_set_uuid16_svc_data, advData, UUID.CAS,
+                          struct.pack('<B', CAPAnnouncement.TARGETED)),
+                TestFunc(gap_set_uuid16_svc_data, advData, UUID.ASCS,
+                          struct.pack('<BHHB', BAPAnnouncement.TARGETED,
+                Context.LIVE | Context.MEDIA, Context.LIVE, 0))] +
+                adv_end,
+                generic_wid_hdl=tmap_wid_hdl),
+        ZTestCase('TMAP', 'TMAP/BMR/DDI/BV-01-C', cmds=pre_conditions + [
+                TestFunc(adv_init, advData),
+                TestFunc(gap_set_uuid16_svc_data, advData, UUID.TMAP,
+                        struct.pack('<H', TMAPRole.BROADCAST_MEDIA_RECEIVER))] +
+                adv_end,
+                generic_wid_hdl=tmap_wid_hdl),
+        ZTestCase('TMAP', 'TMAP/UMR/DDI/BV-01-C', cmds=pre_conditions + [
+                TestFunc(adv_init, advData),
+                TestFunc(gap_set_uuid16_svc_data, advData, UUID.TMAP,
+                        struct.pack('<H', TMAPRole.UNICAST_MEDIA_RECEIVER))] +
+                adv_end,
+                generic_wid_hdl=tmap_wid_hdl),
+        ZTestCase('TMAP', 'TMAP/BMS/DDI/BV-01-C', cmds=pre_conditions + [
+                TestFunc(adv_init, advData),
+                TestFunc(gap_set_uuid16_svc_data, advData, UUID.TMAP,
+                        struct.pack('<H', TMAPRole.BROADCAST_MEDIA_SENDER))] +
+                adv_end,
+                generic_wid_hdl=tmap_wid_hdl),
     ]
 
     test_case_name_list = pts.get_test_case_list('TMAP')
@@ -130,7 +161,6 @@ def test_cases(ptses):
     for tc_name in test_case_name_list:
         instance = ZTestCase('TMAP', tc_name, cmds=pre_conditions,
                              generic_wid_hdl=tmap_wid_hdl)
-
         for custom_tc in custom_test_cases:
             if tc_name == custom_tc.name:
                 instance = custom_tc
