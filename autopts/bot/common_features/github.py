@@ -85,7 +85,9 @@ def update_repos(project_path, git_config):
         repos_dict[repo] = repo_dict
 
         if conf.get('west_update', False):
-            bot.common.check_call(['west', 'update'], cwd=repo_path)
+            env_cmd = conf.get('west_update_env', None)
+            env_cmd = env_cmd.split() + ['&&'] if env_cmd else []
+            bot.common.check_call(env_cmd + ['west', 'update'], cwd=repo_path)
 
         if conf.get('rm_pycache', False):
             for p in pathlib.Path(repo_path).rglob('*.py[co]'):
