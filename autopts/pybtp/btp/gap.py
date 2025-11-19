@@ -1700,3 +1700,35 @@ def gap_set_broadcast_code(broadcast_code):
     logging.debug("%s %r", gap_set_broadcast_code.__name__, broadcast_code)
     stack = get_stack()
     stack.gap.big_broadcast_code = broadcast_code
+
+
+def gap_set_uuid16_svc_data(advData, uuid, service_data=None):
+    """Update service data. Will overwrite existing UUID16 service data if present"""
+    # Convert uuid to integer if it's a string
+    if not isinstance(uuid, int):
+        try:
+            uuid = int(uuid, 16)
+        except ValueError as err:
+            raise ValueError("Invalid UUID string format") from err
+
+    if (uuid < 0) or (uuid > 0xFFFF):
+        raise ValueError("Invalid UUID16 value")
+
+    if service_data is not None:
+        # Check if service_data is bytes (result of struct.pack)
+        if not isinstance(service_data, bytes):
+            raise TypeError(f"service_data must be bytes, got {type(service_data).__name__}")
+
+    # Initialize uuid16_svc_data if it doesn't exist
+    if AdType.uuid16_svc_data not in advData:
+        advData[AdType.uuid16_svc_data] = []
+
+    for entry in advData[AdType.uuid16_svc_data]:
+        existing_uuid = struct.unpack_from('<H', entry[:2])[0]
+        if existing_uuid == uuid:
+            advData[AdType.uuid16_svc_data].remove(entry)
+            break
+    if service_data is None:
+        advData[AdType.uuid16_svc_data] += [struct.pack('<H', uuid)]
+    else:
+        advData[AdType.uuid16_svc_data] += [struct.pack('<H', uuid) + service_data]

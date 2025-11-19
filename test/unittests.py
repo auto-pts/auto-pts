@@ -1,15 +1,20 @@
 import os
 import shutil
+import struct
 import sys
 import unittest
 from os.path import abspath, dirname
 from pathlib import Path
 from unittest.mock import patch
 
+import pytest
+
 from autopts.bot.common_features import report
 from autopts.client import FakeProxy, TestCaseRunStats
 from autopts.config import FILE_PATHS
 from autopts.ptsprojects.testcase_db import TestCaseTable
+from autopts.pybtp.btp.gap import gap_set_uuid16_svc_data
+from autopts.pybtp.types import AdType
 from autoptsclient_bot import import_bot_module, import_bot_projects
 from test.mocks.mocked_test_cases import mock_workspace_test_cases, test_case_list_generation_samples
 
@@ -249,6 +254,36 @@ class MyTestCase(unittest.TestCase):
         report.make_report_diff('', FILE_PATHS['REPORT_DIFF_TXT_FILE'],
                                 results, regressions, progresses, new_cases)
         assert os.path.exists(FILE_PATHS['REPORT_DIFF_TXT_FILE'])
+
+    def test_gap_set_uuid16_svc_data(self):
+        advData = {}
+        # Test invalid inputs
+        with pytest.raises(ValueError, match="Invalid UUID16 value"):
+            gap_set_uuid16_svc_data(advData, 0xFFFF1, None)
+        with pytest.raises(ValueError, match="Invalid UUID16 value"):
+            gap_set_uuid16_svc_data(advData, -1, None)
+        with pytest.raises(TypeError):
+            gap_set_uuid16_svc_data(advData, 0xAAAA, 4)
+
+        # Test valid input
+        try:
+            gap_set_uuid16_svc_data(advData, 0x0000, None)
+            gap_set_uuid16_svc_data(advData, 0xFFFF, None)
+            gap_set_uuid16_svc_data(advData, 0xAABB, struct.pack('<B', 1))
+
+        except Exception as e:
+            self.fail(f"Function raised unexpected exception: {e}")
+
+        assert advData[AdType.uuid16_svc_data][0] == struct.pack('<H', 0x0000)
+        assert advData[AdType.uuid16_svc_data][1] == struct.pack('<H', 0xFFFF)
+        assert advData[AdType.uuid16_svc_data][2] == struct.pack('<HB', 0xAABB, 1)
+
+        # Update a value in advData
+        gap_set_uuid16_svc_data(advData, 0xFFFF, struct.pack('<H', 0xABCD))
+
+        assert advData[AdType.uuid16_svc_data][0] == struct.pack('<H', 0x0000)
+        assert advData[AdType.uuid16_svc_data][1] == struct.pack('<HB', 0xAABB, 1)
+        assert advData[AdType.uuid16_svc_data][2] == struct.pack('<HH', 0xFFFF, 0xABCD)
 
 
 if __name__ == '__main__':
