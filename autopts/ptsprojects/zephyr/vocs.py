@@ -69,6 +69,7 @@ def test_cases(ptses):
                       TestFunc(btp.gap_set_gendiscov),
                       TestFunc(btp.core_reg_svc_vocs),
                       TestFunc(btp.core_reg_svc_vcs),
+                      TestFunc(btp.vcs_register, 1, False, 100),
                       TestFunc(stack.vocs_init),
                       TestFunc(stack.vcs_init)]
 
