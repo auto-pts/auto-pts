@@ -118,8 +118,6 @@ def test_cases(ptses):
                       TestFunc(stack.ascs_init),
                       TestFunc(stack.bap_init),
                       TestFunc(lambda: stack.bap.set_broadcast_code(broadcast_code)),
-                      TestFunc(btp.gap_set_extended_advertising_on),
-                      TestFunc(lambda: btp.gap_adv_ind_on(ad=ad)),
                       TestFunc(btp.bap_broadcast_sink_setup),
                       TestFunc(lambda: set_addr(
                           stack.gap.iut_addr_get_str())),
