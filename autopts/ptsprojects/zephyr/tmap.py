@@ -89,6 +89,7 @@ def test_cases(ptses):
         TestFunc(btp.core_reg_svc_tmap),
         TestFunc(btp.core_reg_svc_vcp),
         TestFunc(btp.core_reg_svc_vcs),
+        TestFunc(btp.vcs_register, 1, False, 100),
         TestFunc(btp.core_reg_svc_tbs),
         TestFunc(btp.core_reg_svc_csip),
         TestFunc(stack.ascs_init),
