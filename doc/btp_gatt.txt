@@ -699,6 +699,33 @@ Commands and responses:
 
                 In case of error, the error response will be returned.
 
+        Opcode 0x22 - Get attribute handle by UUID of a local attribute
+
+                Controller Index:       <controller id>
+                Command parameters:     UUID_Length (1 octet)
+                                        UUID (2 or 16 octets)
+                Response parameters:    Handle (2 octets)
+
+                Valid UUID_Length parameter values:
+                                        0x02 = UUID16
+                                        0x10 = UUID128
+
+                This procedure is used to get attribute handle by UUID of a
+                local attribute.
+
+                In case of error, the error response will be returned.
+
+        Opcode 0x23 - Remove a local service which the requested handle belongs to
+
+                Controller Index:       <controller id>
+                Command parameters:     Handle (2 octets)
+                Response parameters:    <none>
+
+                This procedure is used to remove a local service which the
+                requested handle belongs to.
+
+                In case of error, the error response will be returned.
+
 Events:
         Opcode 0x80 - Notification/Indication Received
 
