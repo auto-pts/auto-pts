@@ -362,6 +362,23 @@ Commands and responses:
         In case of a success, the IUT continues processing the command
         asynchronously.
 
+    Opcode 0x1a - Scan Delegator Add Source
+
+                Controller Index:       <controller id>
+                Command parameters:     Broadcaster Address Type (1 octet)
+                                        Broadcaster Address (6 octets)
+                                        Advertiser SID (1 octet)
+                                        Broadcast ID (3 octets)
+                                        PA Sync State (1 octet)
+                                        BIG Encryption (1 octet)
+                                        Num Subgroups (1 octet)
+                                        Subgroups (varies): For each subgroup - BIS Sync bitfield (4 octets), Metadata Length (1 octet), Metadata (varies)
+                Response parameters:    Source ID (1 octet)
+
+                This command is used by the Scan Delegator to add a receive state for a broadcast source.
+                In case of an error, the error status response will be returned.
+                In case of a success, the IUT continues processing the command asynchronously.
+
 Events:
         Opcode 0x80 - Discover and Subscribe Completed event
 

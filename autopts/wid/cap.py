@@ -343,7 +343,7 @@ def hdl_wid_345(params: WIDParams):
 
     ev = stack.bap.wait_broadcast_receive_state_ev(
         broadcast_id, addr_type, addr, broadcaster_addr_type,
-        broadcaster_addr, WildCard(), 10, True)
+        broadcaster_addr, WildCard(), timeout=10, remove=True)
 
     if ev is None:
         log('No broadcast receive state event 1')
@@ -356,7 +356,7 @@ def hdl_wid_345(params: WIDParams):
     # note: it would be better to wait for PA SYNC == 0x02 with BIS SYNC = 1
     ev = stack.bap.wait_broadcast_receive_state_ev(
         broadcast_id, addr_type, addr, broadcaster_addr_type,
-        broadcaster_addr, WildCard(), 10, True)
+        broadcaster_addr, WildCard(), timeout=10, remove=True)
 
     if ev is None:
         log('No broadcast receive state event 2')
@@ -373,7 +373,7 @@ def hdl_wid_345(params: WIDParams):
         # wait for BIS sync
         stack.bap.wait_broadcast_receive_state_ev(
             broadcast_id, addr_type, addr, broadcaster_addr_type,
-            broadcaster_addr, WildCard(), 10, True)
+            broadcaster_addr, WildCard(), timeout=10, remove=True)
 
     return True
 
@@ -421,7 +421,7 @@ def hdl_wid_347(params: WIDParams):
 
     ev = stack.bap.wait_broadcast_receive_state_ev(
         broadcast_id, addr_type, addr, broadcaster_addr_type,
-        broadcaster_addr, WildCard(), 10, True)
+        broadcaster_addr, WildCard(), timeout=10, remove=True)
 
     if ev is None:
         log('No broadcast receive state event 1')
@@ -434,7 +434,7 @@ def hdl_wid_347(params: WIDParams):
     # note: it would be better to wait for PA SYNC == 0x02 with BIS SYNC = 1
     ev = stack.bap.wait_broadcast_receive_state_ev(
         broadcast_id, addr_type, addr, broadcaster_addr_type,
-        broadcaster_addr, WildCard(), 10, True)
+        broadcaster_addr, WildCard(), timeout=10, remove=True)
 
     # stop sync with Modify Source
     padv_sync = 0x0
@@ -445,7 +445,7 @@ def hdl_wid_347(params: WIDParams):
 
     ev = stack.bap.wait_broadcast_receive_state_ev(
         broadcast_id, addr_type, addr, broadcaster_addr_type,
-        broadcaster_addr, padv_sync, 10, False)
+        broadcaster_addr, padv_sync, timeout=10, remove=False)
 
     if ev is None:
         log('No broadcast receive state event 3')
@@ -456,7 +456,7 @@ def hdl_wid_347(params: WIDParams):
 
     ev = stack.bap.wait_broadcast_receive_state_ev(
         broadcast_id, addr_type, addr, broadcaster_addr_type,
-        broadcaster_addr, padv_sync, 10, False)
+        broadcaster_addr, padv_sync, timeout=10, remove=False)
 
     if ev is None:
         log('No broadcast receive state event 4')
@@ -907,7 +907,7 @@ def hdl_wid_413(params: WIDParams):
     pa_sync_state = 0x0
     ev = stack.bap.wait_broadcast_receive_state_ev(
         broadcast_id, addr_type, addr, broadcaster_addr_type,
-        broadcaster_addr, pa_sync_state, 10, True)
+        broadcaster_addr, pa_sync_state, timeout=10, remove=True)
 
     if ev is None:
         log('No broadcast receive state event 1')
@@ -946,7 +946,7 @@ def hdl_wid_414(params: WIDParams):
     padv_sync = 0x02
     ev = stack.bap.wait_broadcast_receive_state_ev(
         broadcast_id, addr_type, addr, broadcaster_addr_type,
-        broadcaster_addr, padv_sync, 10, False)
+        broadcaster_addr, padv_sync, timeout=10, remove=False)
 
     if ev is None:
         log('No broadcast receive state event 4')
