@@ -1945,7 +1945,7 @@ def hdl_wid_345(params: WIDParams):
 
     ev = stack.bap.wait_broadcast_receive_state_ev(
         broadcast_id, addr_type, addr, broadcaster_addr_type,
-        broadcaster_addr, WildCard(), 10, True)
+        broadcaster_addr, WildCard(), timeout=10, remove=True)
 
     if ev is None:
         return False
@@ -1955,7 +1955,7 @@ def hdl_wid_345(params: WIDParams):
 
         ev = stack.bap.wait_broadcast_receive_state_ev(
             broadcast_id, addr_type, addr, broadcaster_addr_type,
-            broadcaster_addr, WildCard(), 10, True)
+            broadcaster_addr, WildCard(), timeout=10, remove=True)
 
         if ev is None:
             return False
@@ -1998,7 +1998,7 @@ def hdl_wid_346(params: WIDParams):
 
     ev = stack.bap.wait_broadcast_receive_state_ev(
         broadcast_id, addr_type, addr, broadcaster_addr_type,
-        broadcaster_addr, WildCard(), 10, True)
+        broadcaster_addr, WildCard(), timeout=10, remove=True)
 
     if ev is None:
         return False
@@ -2008,7 +2008,7 @@ def hdl_wid_346(params: WIDParams):
 
         ev = stack.bap.wait_broadcast_receive_state_ev(
             broadcast_id, addr_type, addr, broadcaster_addr_type,
-            broadcaster_addr, WildCard(), 10, True)
+            broadcaster_addr, WildCard(), timeout=10, remove=True)
 
         if ev is None:
             return False
@@ -2023,7 +2023,7 @@ def hdl_wid_346(params: WIDParams):
 
     ev = stack.bap.wait_broadcast_receive_state_ev(
         broadcast_id, addr_type, addr, broadcaster_addr_type,
-        broadcaster_addr, WildCard(), 10, True)
+        broadcaster_addr, WildCard(), timeout=10, remove=True)
 
     if ev is None:
         return False
@@ -2066,7 +2066,7 @@ def hdl_wid_347(params: WIDParams):
 
     ev = stack.bap.wait_broadcast_receive_state_ev(
         broadcast_id, addr_type, addr, broadcaster_addr_type,
-        broadcaster_addr, WildCard(), 10, True)
+        broadcaster_addr, WildCard(), timeout=10, remove=True)
 
     if ev is None:
         return False
@@ -2076,7 +2076,7 @@ def hdl_wid_347(params: WIDParams):
 
         ev = stack.bap.wait_broadcast_receive_state_ev(
             broadcast_id, addr_type, addr, broadcaster_addr_type,
-            broadcaster_addr, WildCard(), 10, True)
+            broadcaster_addr, WildCard(), timeout=10, remove=True)
 
         if ev is None:
             return False
@@ -2085,7 +2085,7 @@ def hdl_wid_347(params: WIDParams):
 
     ev = stack.bap.wait_broadcast_receive_state_ev(
         broadcast_id, addr_type, addr, broadcaster_addr_type,
-        broadcaster_addr, padv_sync, 10, False)
+        broadcaster_addr, padv_sync, timeout=10, remove=False)
 
     if ev is None:
         return False
@@ -2127,7 +2127,7 @@ def hdl_wid_348(params: WIDParams):
 
     ev = stack.bap.wait_broadcast_receive_state_ev(
         broadcast_id, addr_type, addr, broadcaster_addr_type,
-        broadcaster_addr, WildCard(), 10, True)
+        broadcaster_addr, WildCard(), timeout=10, remove=True)
 
     if ev is None:
         return False
@@ -2139,7 +2139,7 @@ def hdl_wid_348(params: WIDParams):
 
         ev = stack.bap.wait_broadcast_receive_state_ev(
             broadcast_id, addr_type, addr, broadcaster_addr_type,
-            broadcaster_addr, WildCard(), 10, True)
+            broadcaster_addr, WildCard(), timeout=10, remove=True)
 
         if ev is None:
             return False
@@ -2181,7 +2181,7 @@ def hdl_wid_349(params: WIDParams):
 
     ev = stack.bap.wait_broadcast_receive_state_ev(
         broadcast_id, addr_type, addr, broadcaster_addr_type,
-        broadcaster_addr, padv_sync, 10, False)
+        broadcaster_addr, padv_sync, timeout=10, remove=False)
 
     if ev is None:
         return False

@@ -13,7 +13,7 @@
 # FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
 # more details.
 #
-from autopts.ptsprojects.stack.common import wait_event_with_condition
+from autopts.ptsprojects.stack.common import WildCard, wait_event_with_condition
 from autopts.pybtp import defs
 
 
@@ -129,15 +129,29 @@ class BAP:
 
     def wait_broadcast_receive_state_ev(self, broadcast_id, peer_addr_type, peer_addr,
                                         broadcaster_addr_type, broadcaster_addr,
-                                        pa_sync_state, timeout, remove=False):
+                                        pa_sync_state, advertiser_sid=None,
+                                        big_encryption=None, subgroups=None,
+                                        timeout=10, remove=False):
+        def _matches(expected, value):
+            if expected is None:
+                return True
+            if isinstance(expected, WildCard):
+                return True
+            return expected == value
+
         return wait_event_with_condition(
             self.event_queues[defs.BTP_BAP_EV_BROADCAST_RECEIVE_STATE],
-            lambda ev: (broadcast_id, peer_addr_type, peer_addr,
-                        broadcaster_addr_type, broadcaster_addr,
-                        pa_sync_state) ==
-                       (ev["broadcast_id"], ev["addr_type"], ev["addr"],
-                        ev["broadcaster_addr_type"], ev["broadcaster_addr"],
-                        ev['pa_sync_state']),
+            lambda ev: all((
+                _matches(broadcast_id, ev["broadcast_id"]),
+                _matches(peer_addr_type, ev["addr_type"]),
+                _matches(peer_addr, ev["addr"]),
+                _matches(broadcaster_addr_type, ev["broadcaster_addr_type"]),
+                _matches(broadcaster_addr, ev["broadcaster_addr"]),
+                _matches(pa_sync_state, ev['pa_sync_state']),
+                _matches(advertiser_sid, ev.get("advertiser_sid")),
+                _matches(big_encryption, ev.get("big_encryption")),
+                _matches(subgroups, ev.get("subgroups")),
+            )),
             timeout, remove)
 
     def wait_pa_sync_req_ev(self, addr_type, addr, timeout, remove=False):

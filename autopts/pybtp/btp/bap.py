@@ -22,7 +22,7 @@ from autopts.pybtp import defs
 from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, pts_addr_get, pts_addr_type_get
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.btp.gap import __gap_current_settings_update
-from autopts.pybtp.types import BTPError, addr2btp_ba
+from autopts.pybtp.types import BASSPASyncState, BIGEncryption, BTPError, addr2btp_ba
 
 BAP = {
     'read_supported_cmds': (defs.BTP_SERVICE_ID_BAP,
@@ -74,6 +74,8 @@ BAP = {
     'set_broadcast_code': (defs.BTP_SERVICE_ID_BAP, defs.BTP_BAP_CMD_SET_BROADCAST_CODE,
                            CONTROLLER_INDEX),
     'bap_send_past': (defs.BTP_SERVICE_ID_BAP, defs.BTP_BAP_CMD_SEND_PAST, CONTROLLER_INDEX),
+    'scan_delegator_add_src': (defs.BTP_SERVICE_ID_BAP,
+                               defs.BTP_BAP_CMD_SCAN_DELEGATOR_ADD_SRC, CONTROLLER_INDEX),
     'broadcast_source_setup_v2': (defs.BTP_SERVICE_ID_BAP, defs.BTP_BAP_CMD_BROADCAST_SOURCE_SETUP_V2,
                                   CONTROLLER_INDEX),
 }
@@ -346,6 +348,37 @@ def bap_broadcast_sink_bis_sync(broadcast_id, requested_bis_sync,
     iutctl.btp_socket.send(*BAP['broadcast_sink_bis_sync'], data=data)
 
     bap_command_rsp_succ()
+
+
+def bap_scan_delegator_add_src(broadcaster_addr_type, broadcaster_addr,
+                               advertiser_sid, broadcast_id, pa_sync_state,
+                               big_encryption, num_subgroups, subgroups):
+    logging.debug(f"{bap_scan_delegator_add_src.__name__}")
+
+    if not BASSPASyncState.NOT_SYNCED <= pa_sync_state <= BASSPASyncState.NO_PAST:
+        raise BTPError(f'Invalid pa_sync_state {pa_sync_state}')
+
+    if not BIGEncryption.NOT_ENCRYPTED <= big_encryption <= BIGEncryption.BAD_CODE:
+        raise BTPError(f'Invalid big_encryption {big_encryption}')
+
+    iutctl = get_iut()
+
+    data = address_to_ba(broadcaster_addr_type, broadcaster_addr)
+    data += struct.pack('B', advertiser_sid)
+    data += int.to_bytes(broadcast_id, 3, 'little')
+    data += struct.pack('B', pa_sync_state)
+    data += struct.pack('B', big_encryption)
+    data += struct.pack('B', num_subgroups)
+    data += subgroups
+
+    iutctl.btp_socket.send(*BAP['scan_delegator_add_src'], data=data)
+
+    tuple_data = bap_command_rsp_succ()[0]
+    if len(tuple_data) < 1:
+        raise BTPError('Invalid response length for scan_delegator_add_src')
+
+    # Return the src_id (Source ID) assigned to the newly added broadcast source
+    return tuple_data[0]
 
 
 def bap_discover_scan_delegator(bd_addr_type=None, bd_addr=None):
