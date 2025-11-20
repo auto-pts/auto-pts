@@ -14,8 +14,10 @@
 #
 
 import logging
+import struct
 
 from autopts.ptsprojects.stack import WildCard, get_stack
+from autopts.ptsprojects.stack.common import wait_event_with_condition
 from autopts.pybtp import btp, defs
 from autopts.pybtp.btp import pts_addr_get, pts_addr_type_get
 from autopts.pybtp.types import UUID, AdFlags, AdType, WIDParams, gap_settings_btp2txt
@@ -214,6 +216,28 @@ def hdl_wid_116(_: WIDParams):
     Please expose a Broadcast Receive State with BIG_Encryption
     field indicating Broadcast_Code required.
     """
+
+    stack = get_stack()
+    broadcaster_addr_type = 0x00  # Public address
+    broadcaster_addr = '001122334455'
+    advertiser_sid = 0x01
+    broadcast_id = 0x123456
+
+    bis_sync = 0
+    metadata_len = 0
+    subgroups = struct.pack('<IB', bis_sync, metadata_len)
+    btp.bap_add_broadcast_receive_state(
+        broadcaster_addr_type, broadcaster_addr,
+        advertiser_sid, broadcast_id,
+        0x01, 1, subgroups)
+
+    ev = wait_event_with_condition(stack.bap.event_queues[defs.BTP_BAP_EV_BROADCAST_RECEIVE_STATE],
+                                   lambda ev: ev.get('big_encryption') == 0x01, 30, True)
+    if ev is None:
+        log('Broadcast Receive State notification with BIG_Encryption=0x01 not received.')
+        return False
+
+    log(f'Received Broadcast Receive State with Broadcast_Code required: {ev}')
     return True
 
 
