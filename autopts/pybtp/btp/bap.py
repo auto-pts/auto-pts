@@ -74,6 +74,8 @@ BAP = {
     'set_broadcast_code': (defs.BTP_SERVICE_ID_BAP, defs.BTP_BAP_CMD_SET_BROADCAST_CODE,
                            CONTROLLER_INDEX),
     'bap_send_past': (defs.BTP_SERVICE_ID_BAP, defs.BTP_BAP_CMD_SEND_PAST, CONTROLLER_INDEX),
+    'add_receive_state': (defs.BTP_SERVICE_ID_BAP,
+                          defs.BTP_BAP_CMD_ADD_BROADCAST_RECEIVE_STATE, CONTROLLER_INDEX),
     'broadcast_source_setup_v2': (defs.BTP_SERVICE_ID_BAP, defs.BTP_BAP_CMD_BROADCAST_SOURCE_SETUP_V2,
                                   CONTROLLER_INDEX),
 }
@@ -348,6 +350,33 @@ def bap_broadcast_sink_bis_sync(broadcast_id, requested_bis_sync,
     bap_command_rsp_succ()
 
 
+def bap_add_broadcast_receive_state(broadcaster_addr_type, broadcaster_addr,
+                                    advertiser_sid, broadcast_id, big_encryption,
+                                    num_subgroups, subgroups):
+    logging.debug(f"{bap_add_broadcast_receive_state.__name__}")
+
+    if len(subgroups) == 0:
+        raise BTPError('At least one subgroup entry must be provided')
+
+    iutctl = get_iut()
+
+    data = bytearray()
+    data += address_to_ba(broadcaster_addr_type, broadcaster_addr)
+    data += struct.pack('B', advertiser_sid)
+    data += int.to_bytes(broadcast_id, 3, 'little')
+    data += struct.pack('B', big_encryption)
+    data += struct.pack('B', num_subgroups)
+    data += subgroups
+
+    iutctl.btp_socket.send(*BAP['add_receive_state'], data=data)
+
+    tuple_data = bap_command_rsp_succ()[0]
+    if len(tuple_data) < 1:
+        raise BTPError('Invalid response length for add_receive_state')
+
+    return tuple_data[0]
+
+
 def bap_discover_scan_delegator(bd_addr_type=None, bd_addr=None):
     logging.debug(f"{bap_discover_scan_delegator.__name__}")
 
@@ -497,8 +526,8 @@ def bap_ev_codec_cap_found_(bap, data, data_len):
     if len(data) < struct.calcsize(fmt):
         raise BTPError('Invalid data length')
 
-    addr_type, addr, pac_dir, coding_format, frequencies, frame_durations,\
-        octets_per_frame, channel_counts = struct.unpack_from(fmt, data)
+    (addr_type, addr, pac_dir, coding_format, frequencies, frame_durations,
+     octets_per_frame, channel_counts) = struct.unpack_from(fmt, data)
 
     addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
 
