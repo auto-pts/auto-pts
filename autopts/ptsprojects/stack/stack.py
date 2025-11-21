@@ -15,6 +15,7 @@
 #
 import logging
 
+from autopts.ptsprojects.stack.layers.a2dp import A2DP
 from autopts.ptsprojects.stack.layers.aics import AICS
 from autopts.ptsprojects.stack.layers.ascs import ASCS
 from autopts.ptsprojects.stack.layers.bap import BAP
@@ -86,6 +87,7 @@ class Stack:
         self.pbp = None
         self.sdp = None
         self.csis = None
+        self.a2dp = None
         # GENERATOR append 2
         self.supported_svcs_cmds = common.supported_svcs_cmds
 
@@ -196,6 +198,9 @@ class Stack:
     def csis_init(self, size):
         self.csis = CSIS(size)
 
+    def a2dp_init(self):
+        self.a2dp = A2DP()
+
     # GENERATOR append 3
 
     def cleanup(self):
@@ -285,6 +290,9 @@ class Stack:
 
         if self.csis:
             self.csis_init(self.csis.set_size)
+
+        if self.a2dp:
+            self.a2dp_init()
 
         # GENERATOR append 4
 
