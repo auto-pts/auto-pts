@@ -1812,6 +1812,19 @@ def hdl_wid_403(_: WIDParams):
     return True
 
 
+def hdl_wid_405(_: WIDParams):
+    """
+    Please change private addresse and enter Undirected Connectable Mode.
+    """
+
+    # We don't need to do anything, RPA will change automatically after RPA
+    # timeout. We should not change the RPA by any other means because this
+    # WID is used by test cases that checks the RPA change according to the
+    # RPA timeout. WID 405 exists only for PTS itself.
+
+    return True
+
+
 def hdl_wid_406(_: WIDParams):
     # Please enter General Connectable Mode using private addresses.
     # Note: IUT is expected to do directed advertising with target address set
@@ -1994,10 +2007,18 @@ def hdl_wid_2004(params: WIDParams):
     return match
 
 
-def hdl_wid_20001(_: WIDParams):
+def hdl_wid_20001(params: WIDParams):
     """
         Please prepare IUT into a connectable mode.
     """
+
+    # GAP/PRIV/CONN/BV-10-C is already in connectable mode due to
+    # previous WIDs, in particular WID 90 orders IUT to enter connectable mode.
+    # We can remove this exception once we keep device connectable mode in
+    # stack gap.
+    if params.test_case_name in ['GAP/PRIV/CONN/BV-10-C']:
+        return True
+
     stack = get_stack()
     btp.gap_set_conn()
 
