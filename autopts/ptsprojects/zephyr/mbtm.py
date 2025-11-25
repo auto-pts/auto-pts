@@ -58,8 +58,6 @@ def set_pixits(ptses):
     pts.set_pixit("MBTM", "TSPX_device_uuid", "00000000000000000000000000000000")
     pts.set_pixit("MBTM", "TSPX_device_uuid2", "001BDC0810210B0E0A0C000B0E0A0C00")
     pts.set_pixit("MBTM", "TSPX_use_pb_gatt_bearer", "FALSE")
-    pts.set_pixit("MBTM", "TSPX_iut_comp_data_page", "2")
-    pts.set_pixit("MBTM", "TSPX_oob_state_change", "FALSE")
     pts.set_pixit("MBTM", "TSPX_enable_IUT_provisioner", "FALSE")
     pts.set_pixit("MBTM", "TSPX_Procedure_Timeout", "60")
     pts.set_pixit("MBTM", "TSPX_Client_BLOB_ID", "1100000000000011")
@@ -67,11 +65,6 @@ def set_pixits(ptses):
     pts.set_pixit("MBTM", "TSPX_Server_Timeout_Base", "5")
     pts.set_pixit("MBTM", "TSPX_Client_Timeout_Base", "5")
     pts.set_pixit("MBTM", "TSPX_Transfer_TTL", "3")
-    pts.set_pixit("MBTM", "TSPX_Firmware_ID", "11000011")
-    pts.set_pixit("MBTM", "TSPX_Firmware_Metadata", "1100000000000011")
-    pts.set_pixit("MBTM", "TSPX_Firmware_Update_URI", "http://www.dummy.com")
-    pts.set_pixit("MBTM", "TSPX_New_Firmware_Image", r"data2.txt")
-    pts.set_pixit("MBTM", "TSPX_Update_Firmware_Image_Index", "0")
 
 
 def test_cases(ptses):
@@ -126,9 +119,6 @@ def test_cases(ptses):
             stack.gap.iut_addr_get_str())),
         TestFunc(lambda: pts.update_pixit_param(
             "MBTM", "TSPX_Client_BLOB_Data",
-            get_test_data_path(pts) + "sample_data_1.txt")),
-        TestFunc(lambda: pts.update_pixit_param(
-            "MBTM", "TSPX_New_Firmware_Image",
             get_test_data_path(pts) + "sample_data_1.txt")),
         TestFunc(lambda: pts.update_pixit_param(
             "MBTM", "TSPX_Server_Timeout_Base", timeout_base)),
