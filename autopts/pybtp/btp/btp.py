@@ -714,6 +714,7 @@ def event_handler(hdr, data):
         VCP_EV,
         VCS_EV,
         VOCS_EV,
+        # GENERATOR append 2
     )
     stack = get_stack()
     if not stack:

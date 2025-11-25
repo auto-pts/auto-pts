@@ -599,7 +599,7 @@ supported_svcs_cmds = {
         "service": 1 << defs.BTP_SERVICE_ID_SDP,
         "supported_commands": defs.BTP_SDP_CMD_READ_SUPPORTED_COMMANDS
     },
-    # GENERATOR append 1
+# GENERATOR append 1
 }
 
 reg_unreg_service = {
@@ -675,7 +675,7 @@ reg_unreg_service = {
                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_PBP),
     "sdp_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_SDP),
-    # GENERATOR append 2
+# GENERATOR append 2
     "read_supp_cmds": (defs.BTP_SERVICE_ID_CORE,
                        defs.BTP_CORE_CMD_READ_SUPPORTED_COMMANDS,
                        defs.BTP_INDEX_NONE, ""),

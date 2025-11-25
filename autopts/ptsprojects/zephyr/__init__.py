@@ -48,6 +48,7 @@ from . import (
                vcp,
                vcs,
                vocs,
+# GENERATOR append 1
 )
 
 __all__ = [
@@ -85,9 +86,8 @@ __all__ = [
     "vcp",
     "vcs",
     "vocs",
+# GENERATOR append 2
 ]
-
-# GENERATOR append 1
 
 # Constants
 ZEPHYR_PROJECT_URL = "https://github.com/zephyrproject-rtos/zephyr"
