@@ -73,13 +73,11 @@ def set_pixits(ptses):
     pts.set_pixit("MESH", "TSPX_OOB_code", "00000000000000000102030405060708")
     pts.set_pixit("MESH", "TSPX_subscription_address_list", "C302")
     pts.set_pixit("MESH", "TSPX_vendor_model_id", "05f11234")
+    pts.set_pixit("MESH", "TSPX_list_of_optional_ad_types", "")
     pts.set_pixit("MESH", "TSPX_maximum_network_message_cache_entries", "2")
     pts.set_pixit("MESH", "TSPX_health_valid_test_ids", "00")
     pts.set_pixit("MESH", "TSPX_iut_comp_data_page", "130")
-    pts.set_pixit("MESH", "TSPX_netkeyindex_value", "0")
     pts.set_pixit("MESH", "TSPX_iut_supports_relay", "FALSE")
-    pts.set_pixit("MESH", "TSPX_application_key",
-                  "3216D1509884B533248541792B877F98")
     pts.set_pixit("MESH", "TSPX_device_key",
                   "00000000000000000000000000000000")
     pts.set_pixit("MESH", "TSPX_enable_IUT_provisioner", "FALSE")
@@ -130,12 +128,10 @@ def set_pixits(ptses):
     pts2.set_pixit("MESH", "TSPX_OOB_code", "00000000000000000102030405060708")
     pts2.set_pixit("MESH", "TSPX_subscription_address_list", "C302")
     pts2.set_pixit("MESH", "TSPX_vendor_model_id", "00000000")
+    pts2.set_pixit("MESH", "TSPX_list_of_optional_ad_types", "")
     pts2.set_pixit("MESH", "TSPX_maximum_network_message_cache_entries", "2")
     pts2.set_pixit("MESH", "TSPX_health_valid_test_ids", "00")
-    pts2.set_pixit("MESH", "TSPX_netkeyindex_value", "0")
     pts2.set_pixit("MESH", "TSPX_iut_supports_relay", "FALSE")
-    pts2.set_pixit("MESH", "TSPX_application_key",
-                   "3216D1509884B533248541792B877F98")
     pts2.set_pixit("MESH", "TSPX_device_key",
                    "00000000000000000000000000000000")
     pts2.set_pixit("MESH", "TSPX_enable_IUT_provisioner", "FALSE")
