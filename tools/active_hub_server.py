@@ -15,7 +15,7 @@
 import argparse
 import sys
 import traceback
-import xmlrpc.client
+import xmlrpc.client  # noqa: F401  #TODO check if needed
 import xmlrpc.server
 from os.path import abspath, dirname
 

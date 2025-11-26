@@ -302,7 +302,7 @@ class AdminStateUnknownError(Exception):
 
 
 if sys.platform == 'win32':
-    import win32com
+    import win32com  # noqa: F401  #TODO check if needed
     import win32com.client
 
     def device_exists(serial_address):
