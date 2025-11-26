@@ -44,6 +44,7 @@ from autopts.ptsprojects.stack.layers.tmap import TMAP
 from autopts.ptsprojects.stack.layers.vcp import VCP
 from autopts.ptsprojects.stack.layers.vcs import VCS
 from autopts.ptsprojects.stack.layers.vocs import VOCS
+
 # GENERATOR append 1
 from autopts.ptsprojects.stack.synch import Synch
 from autopts.pybtp import common
