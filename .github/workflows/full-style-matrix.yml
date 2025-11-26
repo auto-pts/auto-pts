@@ -41,7 +41,7 @@ jobs:
       if: startsWith(matrix.python-version, '3.9') || startsWith(matrix.python-version, '3.10') || startsWith(matrix.python-version, '3.11') || startsWith(matrix.python-version, '3.12') || startsWith(matrix.python-version, '3.13')
       run: |
         pip install -r requirements_ci.txt
-        ruff check .
+        ruff check --target-version py39 .
 
     - name: Compile (only if file exists)
       run: |
