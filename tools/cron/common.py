@@ -448,15 +448,20 @@ def start_vm(config, checkout_repos=False):
         timer.start()
 
         while True:
+            if config['cancel_job'].canceled:
+                raise Exception('VM start canceled')
+
             try:
                 log(client.run_command("echo Connected", None))
                 break
             except BaseException:
-                if timeout_flag.is_set():
-                    return
+                pass
 
-                log("Awaiting VM to start...")
-                sleep(5)
+            if timeout_flag.is_set():
+                raise Exception('VM start timed out')
+
+            log("Awaiting VM to start...")
+            sleep(5)
 
         timer.cancel()
 
@@ -689,6 +694,7 @@ def _await_test_run_end(config, srv_proc, bot_proc):
 
     while not cancel_job.canceled:
         sleep_job(cancel_job, check_interval)
+
         current_time = time()
 
         if _is_test_run_completed(all_stats_file):
@@ -713,6 +719,9 @@ def _await_test_run_end(config, srv_proc, bot_proc):
                 if not os.path.exists(all_stats_file) and not os.path.exists(results_file):
                     log("Bot completed running the test cases.")
                     return srv_proc, bot_proc
+
+                if cancel_job.canceled:
+                    break
 
                 log("AutoPTS bot probably crashed.")
 
@@ -992,13 +1001,13 @@ def start_vm_job(cfg, **kwargs):
 
 
 def close_vm_job(cfg, **kwargs):
-    log(f'Started {start_vm_job.__name__} Job, config: {cfg}')
+    log(f'Started {close_vm_job.__name__} Job, config: {cfg}')
 
     config = load_config(cfg)
 
     close_vm(config)
 
-    log(f'The {start_vm_job.__name__} Job finished')
+    log(f'The {close_vm_job.__name__} Job finished')
 
 
 def merge_db_job(cfg, **kwargs):
