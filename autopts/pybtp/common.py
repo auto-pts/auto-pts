@@ -603,6 +603,10 @@ supported_svcs_cmds = {
         "service": 1 << defs.BTP_SERVICE_ID_A2DP,
         "supported_commands": defs.BTP_A2DP_CMD_READ_SUPPORTED_COMMANDS
     },
+    "AVDTP": {
+        "service": 1 << defs.BTP_SERVICE_ID_AVDTP,
+        "supported_commands": defs.BTP_AVDTP_CMD_READ_SUPPORTED_COMMANDS
+    },
 # GENERATOR append 1
 }
 
