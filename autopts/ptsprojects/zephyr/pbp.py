@@ -70,6 +70,7 @@ def test_cases(ptses):
         TestFunc(stack.cap_init),
         TestFunc(btp.core_reg_svc_cap),
         TestFunc(btp.core_reg_svc_cas),
+        TestFunc(btp.core_reg_svc_pacs),
         TestFunc(btp.core_reg_svc_pbp),
         TestFunc(stack.pbp_init),
         TestFunc(btp.gap_set_extended_advertising_on),
