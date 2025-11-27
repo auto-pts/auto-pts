@@ -14,6 +14,7 @@
 # more details.
 #
 
+from .a2dp import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from .aics import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from .ascs import *  # noqa: F403 # used in many files : TODO import directly in files not with *
 from .bap import *  # noqa: F403 # used in many files : TODO import directly in files not with *
