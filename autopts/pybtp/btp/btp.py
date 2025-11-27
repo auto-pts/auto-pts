@@ -601,6 +601,10 @@ def core_reg_svc_sdp():
     core_reg_svc_univ("sdp_reg", "SDP")
 
 
+def core_reg_svc_a2dp():
+    core_reg_svc_univ("a2dp_reg", "A2DP")
+
+
 # GENERATOR append 1
 
 def core_reg_svc_rsp_succ(service_name):
@@ -687,6 +691,7 @@ def init(get_iut_method):
 def event_handler(hdr, data):
     logging.debug("%s %r %r", event_handler.__name__, hdr, data)
     from .event_map import (
+        A2DP_EV,
         AICS_EV,
         ASCS_EV,
         BAP_EV,
@@ -749,6 +754,7 @@ def event_handler(hdr, data):
         defs.BTP_SERVICE_ID_OTS: (OTS_EV, stack.ots),
         defs.BTP_SERVICE_ID_PBP: (PBP_EV, stack.pbp),
         defs.BTP_SERVICE_ID_SDP: (SDP_EV, stack.sdp),
+        defs.BTP_SERVICE_ID_A2DP: (A2DP_EV, stack.a2dp),
         # GENERATOR append 3
     }
 

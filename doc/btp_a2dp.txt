@@ -1,0 +1,627 @@
+A2DP Service (ID 0x23)
+=====================
+
+Commands and responses:
+
+	Opcode 0x00 - Error response
+
+	Opcode 0x01 - Read Supported Commands command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	<none>
+		Response parameters:	<supported commands> (variable)
+
+		Each bit in response is a flag indicating if command with
+		opcode matching bit number is supported. Bit set to 1 means
+		that command is supported. Bit 0 is reserved and shall always
+		be set to 0. If specific bit is not present in response (less
+		than required bytes received) it shall be assumed that command
+		is not supported.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x02 - Connect command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	address_type (1 octet)
+					address (6 octets)
+		Response parameters:	<none>
+
+		This command is used to create A2DP signaling channel connection.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x03 - Disconnect command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	address_type (1 octet)
+					address (6 octets)
+		Response parameters:	<none>
+
+		This command is used to disconnect A2DP signaling channel connection.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x04 - Register Endpoint command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	media_type (1 octet)
+					tsep (1 octet)
+					codec_type (1 octet)
+					delay_report (1 octet)
+					codec_ie_len (1 octet)
+					codec_ie (variable)
+		Response parameters:	<none>
+
+		This command is used to register a local stream endpoint.
+		
+		Valid media_type:
+			0x00 = Audio
+			0x01 = Video
+			0x02 = Multimedia
+		
+		Valid tsep (Type of Stream Endpoint):
+			0x00 = Source (SRC)
+			0x01 = Sink (SNK)
+		
+		Valid codec_type:
+			0x00 = SBC
+			0x01 = MPEG-1,2 Audio
+			0x02 = MPEG-2,4 AAC
+			0x04 = ATRAC family
+			0xFF = Vendor specific A2DP Codec
+
+		Valid delay_report:
+			0x00 = Delay reporting not supported
+			0x01 = Delay reporting supported
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x05 - Discover command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	address_type (1 octet)
+					address (6 octets)
+		Response parameters:	<none>
+
+		This command is used to initiate A2DP discover procedure to
+		discover remote stream endpoints.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x06 - Get Capabilities command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	address_type (1 octet)
+					address (6 octets)
+					ep_id (1 octet)
+		Response parameters:	<none>
+
+		This command is used to get capabilities of a specific remote
+		endpoint. This retrieves basic capabilities only (does not
+		include optional capabilities like delay reporting).
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x07 - Get All Capabilities command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	address_type (1 octet)
+					address (6 octets)
+					ep_id (1 octet)
+		Response parameters:	<none>
+
+		This command is used to get all capabilities of a specific
+		remote endpoint, including optional capabilities such as
+		delay reporting.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x08 - Set Configuration command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	address_type (1 octet)
+					address (6 octets)
+					local_ep_id (1 octet)
+					remote_ep_id (1 octet)
+					delay_report (1 octet)
+					codec_ie_len (1 octet)
+					codec_ie (variable)
+		Response parameters:	<none>
+
+		This command is used to configure a stream endpoint with
+		specified codec configuration. The local_ep_id identifies
+		the local endpoint and remote_ep_id identifies the remote
+		endpoint to configure.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x09 - Stream Establish command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	address_type (1 octet)
+					address (6 octets)
+					stream_id (1 octet)
+		Response parameters:	<none>
+
+		This command is used to establish (open) a media transport
+		channel for the specified stream.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0A - Stream Release command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	address_type (1 octet)
+					address (6 octets)
+					stream_id (1 octet)
+		Response parameters:	<none>
+
+		This command is used to release (close) a media transport
+		channel for the specified stream.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0B - Stream Start command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	address_type (1 octet)
+					address (6 octets)
+					stream_id (1 octet)
+		Response parameters:	<none>
+
+		This command is used to start streaming media data on the
+		specified stream.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0C - Stream Suspend command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	address_type (1 octet)
+					address (6 octets)
+					stream_id (1 octet)
+		Response parameters:	<none>
+
+		This command is used to suspend an active media stream.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0D - Stream Reconfigure command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	address_type (1 octet)
+					address (6 octets)
+					stream_id (1 octet)
+					delay_report (1 octet)
+					codec_ie_len (1 octet)
+					codec_ie (variable)
+		Response parameters:	<none>
+
+		This command is used to reconfigure an existing stream with
+		new codec parameters without closing the stream.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0E - Stream Abort command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	address_type (1 octet)
+					address (6 octets)
+					stream_id (1 octet)
+		Response parameters:	<none>
+
+		This command is used to abort a media stream immediately.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0F - Get Stream Configuration command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	address_type (1 octet)
+					address (6 octets)
+					stream_id (1 octet)
+		Response parameters:	<none>
+
+		This command is used to retrieve the current configuration
+		of a media stream.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x10 - Stream Delay Report command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	address_type (1 octet)
+					address (6 octets)
+					stream_id (1 octet)
+					delay (2 octets)
+		Response parameters:	<none>
+
+		This command is used to send a delay report to the remote
+		device, indicating the presentation delay in 1/10 milliseconds.
+		The delay value is a 16-bit unsigned integer in little-endian
+		format.
+
+		In case of an error, the error response will be returned.
+
+
+Events:
+	Opcode 0x80 - Connected event
+
+		Controller Index:	<controller id>
+		Event parameters:	address_type (1 octet)
+					address (6 octets)
+					result (1 octet)
+
+		This event indicates that an A2DP signaling channel connection
+		has been established or failed.
+
+		Valid result values:
+			0x00 = Success
+			0x01-0xFF = Error code
+
+	Opcode 0x81 - Disconnected event
+
+		Controller Index:	<controller id>
+		Event parameters:	address_type (1 octet)
+					address (6 octets)
+
+		This event indicates that the A2DP signaling channel has been
+		disconnected.
+
+	Opcode 0x82 - Discovered event
+
+		Controller Index:	<controller id>
+		Event parameters:	address_type (1 octet)
+					address (6 octets)
+					result (1 octet)
+					sep_len (1 octet)
+					sep_info[] (variable)
+
+		This event is sent when remote stream endpoints have been
+		discovered. Each sep_info entry is 2 bytes containing:
+		
+		Byte 0:
+			Bits 0-5: ep_id (SEID - Stream Endpoint ID)
+			Bit 6: in_use flag
+			Bit 7: reserved
+		
+		Byte 1:
+			Bits 0-3: media_type
+			Bit 4: tsep (Type of Stream Endpoint)
+			Bits 5-7: reserved
+
+		Valid result values:
+			0x00 = Success
+			0x01-0xFF = Error code
+
+		Valid media_type values:
+			0x00 = Audio
+			0x01 = Video
+			0x02 = Multimedia
+
+		Valid tsep values:
+			0x00 = Source
+			0x01 = Sink
+
+	Opcode 0x83 - Get Capabilities event
+
+		Controller Index:	<controller id>
+		Event parameters:	address_type (1 octet)
+					address (6 octets)
+					ep_id (1 octet)
+					capabilities[] (variable)
+
+		This event is sent when endpoint capabilities have been
+		retrieved. Each capability entry contains:
+			service_category (1 octet)
+			losc (1 octet) - Length of Service Capability
+			capability_info (losc octets)
+
+		Valid service_category values:
+			0x01 = Media Transport
+			0x02 = Reporting
+			0x03 = Recovery
+			0x04 = Content Protection
+			0x05 = Header Compression
+			0x06 = Multiplexing
+			0x07 = Media Codec
+			0x08 = Delay Reporting
+
+		For Media Codec (0x07), capability_info format:
+			media_type (1 octet)
+			codec_type (1 octet)
+			codec_specific_info (variable)
+
+	Opcode 0x84 - Config Request event
+
+		Controller Index:	<controller id>
+		Event parameters:	address_type (1 octet)
+					address (6 octets)
+					result (1 octet)
+					stream_id (1 octet)
+					delay_report (1 octet)
+					codec_ie_len (1 octet)
+					codec_ie (variable)
+
+		This event is sent when a remote device requests to configure
+		a local stream endpoint.
+
+		Valid result values:
+			0x00 = Success
+			0x01-0xFF = Error code
+
+	Opcode 0x85 - Config Response event
+
+		Controller Index:	<controller id>
+		Event parameters:	address_type (1 octet)
+					address (6 octets)
+					stream_id (1 octet)
+					rsp_err_code (1 octet)
+
+		This event is sent when a configuration response is received
+		from the remote device after sending a Set Configuration command.
+
+		Valid rsp_err_code values:
+			0x00 = Success
+			0x01-0xFF = AVDTP error code
+
+	Opcode 0x86 - Reconfig Request event
+
+		Controller Index:	<controller id>
+		Event parameters:	address_type (1 octet)
+					address (6 octets)
+					result (1 octet)
+					stream_id (1 octet)
+					delay_report (1 octet)
+					codec_ie_len (1 octet)
+					codec_ie (variable)
+
+		This event is sent when a remote device requests to reconfigure
+		an existing stream with new codec parameters.
+
+		Valid result values:
+			0x00 = Success
+			0x01-0xFF = Error code
+
+	Opcode 0x87 - Establish Request event
+
+		Controller Index:	<controller id>
+		Event parameters:	address_type (1 octet)
+					address (6 octets)
+					result (1 octet)
+					stream_id (1 octet)
+
+		This event is sent when a remote device requests to establish
+		(open) a media transport channel.
+
+		Valid result values:
+			0x00 = Success
+			0x01-0xFF = Error code
+
+	Opcode 0x88 - Establish Response event
+
+		Controller Index:	<controller id>
+		Event parameters:	address_type (1 octet)
+					address (6 octets)
+					stream_id (1 octet)
+					rsp_err_code (1 octet)
+
+		This event is sent when an establish response is received from
+		the remote device after sending a Stream Establish command.
+
+		Valid rsp_err_code values:
+			0x00 = Success
+			0x01-0xFF = AVDTP error code
+
+	Opcode 0x89 - Release Request event
+
+		Controller Index:	<controller id>
+		Event parameters:	address_type (1 octet)
+					address (6 octets)
+					result (1 octet)
+					stream_id (1 octet)
+
+		This event is sent when a remote device requests to release
+		(close) a media transport channel.
+
+		Valid result values:
+			0x00 = Success
+			0x01-0xFF = Error code
+
+	Opcode 0x8A - Release Response event
+
+		Controller Index:	<controller id>
+		Event parameters:	address_type (1 octet)
+					address (6 octets)
+					stream_id (1 octet)
+					rsp_err_code (1 octet)
+
+		This event is sent when a release response is received from
+		the remote device after sending a Stream Release command.
+
+		Valid rsp_err_code values:
+			0x00 = Success
+			0x01-0xFF = AVDTP error code
+
+	Opcode 0x8B - Start Request event
+
+		Controller Index:	<controller id>
+		Event parameters:	address_type (1 octet)
+					address (6 octets)
+					result (1 octet)
+					stream_id (1 octet)
+
+		This event is sent when a remote device requests to start
+		streaming media data.
+
+		Valid result values:
+			0x00 = Success
+			0x01-0xFF = Error code
+
+	Opcode 0x8C - Start Response event
+
+		Controller Index:	<controller id>
+		Event parameters:	address_type (1 octet)
+					address (6 octets)
+					stream_id (1 octet)
+					rsp_err_code (1 octet)
+
+		This event is sent when a start response is received from
+		the remote device after sending a Stream Start command.
+
+		Valid rsp_err_code values:
+			0x00 = Success
+			0x01-0xFF = AVDTP error code
+
+	Opcode 0x8D - Suspend Request event
+
+		Controller Index:	<controller id>
+		Event parameters:	address_type (1 octet)
+					address (6 octets)
+					result (1 octet)
+					stream_id (1 octet)
+
+		This event is sent when a remote device requests to suspend
+		an active media stream.
+
+		Valid result values:
+			0x00 = Success
+			0x01-0xFF = Error code
+
+	Opcode 0x8E - Suspend Response event
+
+		Controller Index:	<controller id>
+		Event parameters:	address_type (1 octet)
+					address (6 octets)
+					stream_id (1 octet)
+					rsp_err_code (1 octet)
+
+		This event is sent when a suspend response is received from
+		the remote device after sending a Stream Suspend command.
+
+		Valid rsp_err_code values:
+			0x00 = Success
+			0x01-0xFF = AVDTP error code
+
+	Opcode 0x8F - Abort Request event
+
+		Controller Index:	<controller id>
+		Event parameters:	address_type (1 octet)
+					address (6 octets)
+					result (1 octet)
+					stream_id (1 octet)
+
+		This event is sent when a remote device requests to abort
+		a media stream.
+
+		Valid result values:
+			0x00 = Success
+			0x01-0xFF = Error code
+
+	Opcode 0x90 - Abort Response event
+
+		Controller Index:	<controller id>
+		Event parameters:	address_type (1 octet)
+					address (6 octets)
+					stream_id (1 octet)
+					rsp_err_code (1 octet)
+
+		This event is sent when an abort response is received from
+		the remote device after sending a Stream Abort command.
+
+		Valid rsp_err_code values:
+			0x00 = Success
+			0x01-0xFF = AVDTP error code
+
+	Opcode 0x91 - Get Config Request event
+
+		Controller Index:	<controller id>
+		Event parameters:	address_type (1 octet)
+					address (6 octets)
+					result (1 octet)
+					stream_id (1 octet)
+
+		This event is sent when a remote device requests the current
+		configuration of a stream.
+
+		Valid result values:
+			0x00 = Success
+			0x01-0xFF = Error code
+
+	Opcode 0x92 - Get Config Response event
+
+		Controller Index:	<controller id>
+		Event parameters:	address_type (1 octet)
+					address (6 octets)
+					stream_id (1 octet)
+					rsp_err_code (1 octet)
+					delay_report (1 octet)
+					codec_ie_len (1 octet)
+					codec_ie (variable)
+
+		This event is sent when a get configuration response is
+		received from the remote device after sending a Get Stream
+		Configuration command.
+
+		Valid rsp_err_code values:
+			0x00 = Success
+			0x01-0xFF = AVDTP error code
+
+	Opcode 0x93 - Stream Receive event
+
+		Controller Index:	<controller id>
+		Event parameters:	address_type (1 octet)
+					address (6 octets)
+					stream_id (1 octet)
+					seq_num (2 octets)
+					timestamp (4 octets)
+					data_len (2 octets)
+					data (variable)
+
+		This event is sent when media data is received from the
+		remote device. The seq_num is the RTP sequence number,
+		timestamp is the RTP timestamp, and data contains the
+		media payload.
+
+	Opcode 0x94 - Stream Sent event
+
+		Controller Index:	<controller id>
+		Event parameters:	address_type (1 octet)
+					address (6 octets)
+					stream_id (1 octet)
+
+		This event is sent when media data has been successfully
+		sent to the remote device.
+
+	Opcode 0x95 - Delay Report Request event
+
+		Controller Index:	<controller id>
+		Event parameters:	address_type (1 octet)
+					address (6 octets)
+					result (1 octet)
+					stream_id (1 octet)
+					delay (2 octets)
+
+		This event is sent when a remote device sends a delay report.
+		The delay value is in 1/10 milliseconds (little-endian format).
+
+		Valid result values:
+			0x00 = Success
+			0x01-0xFF = Error code
+
+	Opcode 0x96 - Delay Report Response event
+
+		Controller Index:	<controller id>
+		Event parameters:	address_type (1 octet)
+					address (6 octets)
+					stream_id (1 octet)
+					rsp_err_code (1 octet)
+
+		This event is sent when a delay report response is received
+		from the remote device after sending a Stream Delay Report
+		command.
+
+		Valid rsp_err_code values:
+			0x00 = Success
+			0x01-0xFF = AVDTP error code

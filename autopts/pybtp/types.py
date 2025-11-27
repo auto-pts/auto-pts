@@ -534,3 +534,32 @@ class BAPAnnouncement:
 class CAPAnnouncement:
     GENERAL = 0x0
     TARGETED = 0x1
+
+
+class AVDTPTsep:
+    SOURCE = 0x00
+    SINK = 0x01
+
+
+class AVDTPMediaType:
+    audio = 0x00
+    video = 0x01
+    multimedia = 0x02
+
+
+class AVDTPServiceCategory:
+    MEDIA_TRANSPORT = 0x01
+    REPORTING = 0x02
+    RECOVERY = 0x03
+    CONTENT_PROTECTION = 0x04
+    HEADER_COMPRESSION = 0x05
+    MULTIPLEXING = 0x06
+    MEDIA_CODEC = 0x07
+    DELAYREPORTING = 0x08
+
+class A2DPCodecType:
+    SBC = 0x00
+    MPEG1 = 0x01
+    MPEG2 = 0x02
+    ATRAC = 0x04
+    NON_A2DP = 0xff

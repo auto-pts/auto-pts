@@ -1,3 +1,4 @@
+from .a2dp import A2DP_EV
 from .aics import AICS_EV
 from .ascs import ASCS_EV
 from .bap import BAP_EV
@@ -25,6 +26,7 @@ from .tmap import TMAP_EV
 from .vcp import VCP_EV
 from .vcs import VCS_EV
 from .vocs import VOCS_EV
+
 # GENERATOR append 1
 
 __all__ = [
@@ -55,5 +57,6 @@ __all__ = [
     "VCP_EV",
     "VCS_EV",
     "VOCS_EV",
+    "A2DP_EV",
 # GENERATOR append 2
 ]
