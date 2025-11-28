@@ -33,7 +33,7 @@ def reset_cmd(iutctl):
     Dependency: nRF5x command line tools
     """
 
-    return f'nrfjprog -r -s {iutctl.debugger_snr}'
+    return f'nrfutil device reset --reset-kind RESET_DEFAULT --serial-number {iutctl.debugger_snr}'
 
 
 def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None, *args):
