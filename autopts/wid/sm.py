@@ -101,6 +101,14 @@ def hdl_wid_107(params: WIDParams):
 
 
 def hdl_wid_108(params: WIDParams):
+    """
+    Please start pairing process.
+    """
+
+    # SM/CEN/JW/BV-01-C AuthReq bonding flag needs to be set to 0x00
+    if params.test_case_name in ['SM/CEN/JW/BV-01-C']:
+        btp.gap_set_bondable_off()
+
     btp.gap_pair()
     return True
 
@@ -243,6 +251,20 @@ def hdl_wid_173(_: WIDParams):
 def hdl_wid_174(_: WIDParams):
     btp.gap_pair()
     return True
+
+
+def hdl_wid_175(_: WIDParams):
+    """
+    Please confirm that IUT reports the Confirm Value Failed to the Upper Tester
+    """
+
+    stack = get_stack()
+    _, _, reason = stack.gap.gap_wait_for_pairing_fail(10)
+
+    if reason == defs.BTP_SMP_PAIR_FAIL_REASON_CONFIRM_VALUE_FAILED:
+        return True
+
+    return False
 
 
 def hdl_wid_1009(params: WIDParams):
