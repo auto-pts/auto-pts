@@ -1,0 +1,1075 @@
+AVRCP Service (ID 37)
+=====================
+
+Commands and responses:
+
+        Opcode 0x00 - Error response
+
+        Opcode 0x01 - Read Supported Commands command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     <none>
+                Response parameters:    <supported commands> (variable)
+
+                Each bit in response is a flag indicating if command with
+                opcode matching bit number is supported. Bit set to 1 means
+                that command is supported. Bit 0 is reserved and shall always
+                be set to 0. If specific bit is not present in response (less
+                than required bytes received) it shall be assumed that command
+                is not supported.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x02 - Control Connect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to establish AVRCP control connection
+                with remote device.
+
+                Control Connected Event (or Control Disconnected Event in case
+                of an error) shall be expected after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x03 - Control Disconnect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to disconnect AVRCP control connection
+                with remote device.
+
+                Control Disconnected Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x04 - Browsing Connect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to establish AVRCP browsing connection
+                with remote device.
+
+                Browsing Connected Event (or Browsing Disconnected Event in case
+                of an error) shall be expected after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x05 - Browsing Disconnect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to disconnect AVRCP browsing connection
+                with remote device.
+
+                Browsing Disconnected Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x06 - Unit Info command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to send UNIT INFO command to remote device.
+
+                Unit Info Response Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x07 - Subunit Info command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to send SUBUNIT INFO command to remote device.
+
+                Subunit Info Response Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x08 - Pass Through command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                                        Operation_ID (1 octet)
+                                        State (1 octet)
+                                        Data_Length (1 octet)
+                                        Data (Data_Length octets)
+                Response parameters:    <none>
+
+                This command is used to send PASS THROUGH command to remote device.
+                Operation_ID specifies the operation to be performed.
+                State specifies button press/release state.
+
+                Pass Through Response Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x09 - Get Capabilities command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                                        Capability_ID (1 octet)
+                Response parameters:    <none>
+
+                This command is used to retrieve capabilities from remote device.
+
+                Get Capabilities Response Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x0A - List Player Application Setting Attributes command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to retrieve list of player application
+                setting attributes from remote device.
+
+                List Player Application Setting Attributes Response Event shall
+                be expected after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x0B - List Player Application Setting Values command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                                        Attribute_ID (1 octet)
+                Response parameters:    <none>
+
+                This command is used to retrieve list of player application
+                setting values for specified attribute from remote device.
+
+                List Player Application Setting Values Response Event shall
+                be expected after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x0C - Get Current Player Application Setting Value command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                                        Num_Attributes (1 octet)
+                                        Attribute_IDs (Num_Attributes octets)
+                Response parameters:    <none>
+
+                This command is used to retrieve current player application
+                setting values for specified attributes from remote device.
+
+                Get Current Player Application Setting Value Response Event shall
+                be expected after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x0D - Set Player Application Setting Value command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                                        Num_Attributes (1 octet)
+                                        [array] Attribute_Value (variable)
+
+                Object Attribute_Value is defined as:
+                        Attribute_ID (1 octet)
+                        Value_ID (1 octet)
+
+                Response parameters:    <none>
+
+                This command is used to set player application setting values
+                on remote device.
+
+                Set Player Application Setting Value Response Event shall
+                be expected after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x0E - Get Player Application Setting Attribute Text command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                                        Num_Attributes (1 octet)
+                                        Attribute_IDs (Num_Attributes octets)
+                Response parameters:    <none>
+
+                This command is used to retrieve player application setting
+                attribute text from remote device.
+
+                Get Player Application Setting Attribute Text Response Event shall
+                be expected after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x0F - Get Player Application Setting Value Text command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                                        Attribute_ID (1 octet)
+                                        Num_Values (1 octet)
+                                        Value_IDs (Num_Values octets)
+                Response parameters:    <none>
+
+                This command is used to retrieve player application setting
+                value text from remote device.
+
+                Get Player Application Setting Value Text Response Event shall
+                be expected after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x10 - Inform Displayable Character Set command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to inform remote device about displayable
+                character set.
+
+                Inform Displayable Character Set Response Event shall be expected
+                after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x11 - Inform Battery Status of CT command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to inform remote device about battery
+                status of controller.
+
+                Inform Battery Status of CT Response Event shall be expected
+                after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x12 - Get Element Attributes command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                                        Num_Attributes (1 octet)
+                                        Attribute_IDs (4 * Num_Attributes octets)
+                Response parameters:    <none>
+
+                This command is used to retrieve element attributes from
+                remote device.
+
+                Get Element Attributes Response Event shall be expected after
+                issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x13 - Get Play Status command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to retrieve play status from remote device.
+
+                Get Play Status Response Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x14 - Register Notification command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                                        Event_ID (1 octet)
+                                        Interval (4 octets)
+                Response parameters:    <none>
+
+                This command is used to register for notifications from
+                remote device.
+
+                Register Notification Response Event shall be expected after
+                issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x15 - Request Continuing Response command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to request continuing response from
+                remote device.
+
+                Request Continuing Response Response Event shall be expected
+                after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x16 - Abort Continuing Response command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to abort continuing response from
+                remote device.
+
+                Abort Continuing Response Response Event shall be expected
+                after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x17 - Set Absolute Volume command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                                        Volume (1 octet)
+                Response parameters:    <none>
+
+                This command is used to set absolute volume on remote device.
+
+                Set Absolute Volume Response Event shall be expected after
+                issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x18 - Set Addressed Player command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                                        Player_ID (2 octets)
+                Response parameters:    <none>
+
+                This command is used to set addressed player on remote device.
+
+                Set Addressed Player Response Event shall be expected after
+                issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x19 - Get Folder Items command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                                        Scope (1 octet)
+                                        Start_Item (4 octets)
+                                        End_Item (4 octets)
+                                        Attribute_Count (1 octet)
+                                        Attribute_IDs (4 * Attribute_Count octets)
+                Response parameters:    <none>
+
+                This command is used to retrieve folder items from remote device.
+
+                Get Folder Items Response Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x1A - Get Total Number of Items command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                                        Scope (1 octet)
+                Response parameters:    <none>
+
+                This command is used to retrieve total number of items in
+                specified scope from remote device.
+
+                Get Total Number of Items Response Event shall be expected
+                after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x1B - Set Browsed Player command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                                        Player_ID (2 octets)
+                Response parameters:    <none>
+
+                This command is used to set browsed player on remote device.
+
+                Set Browsed Player Response Event shall be expected after
+                issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x1C - Change Path command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                                        UID_Counter (2 octets)
+                                        Direction (1 octet)
+                                        Folder_UID (8 octets)
+                Response parameters:    <none>
+
+                This command is used to change path on remote device.
+
+                Change Path Response Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x1D - Get Item Attributes command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                                        Scope (1 octet)
+                                        UID (8 octets)
+                                        UID_Counter (2 octets)
+                                        Num_Attributes (1 octet)
+                                        Attribute_IDs (4 * Num_Attributes octets)
+                Response parameters:    <none>
+
+                This command is used to retrieve item attributes from remote device.
+
+                Get Item Attributes Response Event shall be expected after
+                issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x1E - Play Item command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                                        Scope (1 octet)
+                                        UID (8 octets)
+                                        UID_Counter (2 octets)
+                Response parameters:    <none>
+
+                This command is used to play specified item on remote device.
+
+                Play Item Response Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x1F - Search command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                                        String_Length (2 octets)
+                                        String (String_Length octets)
+                Response parameters:    <none>
+
+                This command is used to search for items on remote device.
+
+                Search Response Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x20 - Add to Now Playing command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                                        Scope (1 octet)
+                                        UID (8 octets)
+                                        UID_Counter (2 octets)
+                Response parameters:    <none>
+
+                This command is used to add item to now playing list on
+                remote device.
+
+                Add to Now Playing Response Event shall be expected after
+                issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x21 - General Reject command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to send general reject to remote device.
+
+                General Reject Response Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x22 - TG Register Notification command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                                        Event_ID (1 octet)
+                Response parameters:    <none>
+
+                This command is used to register notification as Target.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x23 - TG Control Playback command
+
+                Controller Index:       <controller id>
+                Command parameters:     Action (1 octet)
+                                        Long_Metadata (1 octet)
+                                        Cover_Art (1 octet)
+                Response parameters:    <none>
+
+                This command is used to control playback as Target.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x24 - TG Change Path command
+
+                Controller Index:       <controller id>
+                Command parameters:     Direction (1 octet)
+                                        Folder_Name_Length (1 octet)
+                                        Folder_Name (Folder_Name_Length octets)
+                Response parameters:    <none>
+
+                This command is used to change path as Target.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x25 - Cover Art CT Connect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to establish Cover Art connection as Controller.
+
+                Cover Art CT Connected Event (or Cover Art CT Disconnected Event
+                in case of an error) shall be expected after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x26 - Cover Art CT Disconnect command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to disconnect Cover Art connection as Controller.
+
+                Cover Art CT Disconnected Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x27 - Cover Art CT Get Image Properties command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                                        Image_Handle_String (7 octets)
+                Response parameters:    <none>
+
+                This command is used to get image properties as Controller.
+
+                Get Image Properties Response Event shall be expected after
+                issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x28 - Cover Art CT Get Image command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                                        Image_Handle_String (7 octets)
+                                        Image_Descriptor_Length (2 octets)
+                                        Image_Descriptor_String (Image_Descriptor_Length octets)
+                Response parameters:    <none>
+
+                This command is used to get image as Controller.
+
+                Get Image Response Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x29 - Cover Art CT Get Linked Thumbnail command
+
+                Controller Index:       <controller id>
+                Command parameters:     Address (6 octets)
+                                        Image_Handle_String (7 octets)
+                Response parameters:    <none>
+
+                This command is used to get linked thumbnail as Controller.
+
+                Get Linked Thumbnail Response Event shall be expected after
+                issuing this command.
+
+                In case of an error, the error response will be returned.
+
+Events:
+        Opcode 0x80 - Control Connected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address (6 octets)
+
+                This event indicates that AVRCP control connection has been
+                established.
+
+        Opcode 0x81 - Control Disconnected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address (6 octets)
+
+                This event indicates that AVRCP control connection has been
+                disconnected.
+
+        Opcode 0x82 - Browsing Connected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address (6 octets)
+
+                This event indicates that AVRCP browsing connection has been
+                established.
+
+        Opcode 0x83 - Browsing Disconnected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address (6 octets)
+
+                This event indicates that AVRCP browsing connection has been
+                disconnected.
+
+        Opcode 0x84 - Unit Info Response Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address (6 octets)
+                                        Unit_Type (1 octet)
+                                        Company_ID (4 octets)
+
+                This event indicates response to Unit Info command.
+
+        Opcode 0x85 - Subunit Info Response Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address (6 octets)
+
+                This event indicates response to Subunit Info command.
+
+        Opcode 0x86 - Pass Through Response Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address (6 octets)
+                                        Status (1 octet)
+                                        Operation_ID_State (1 octet)
+                                        Data_Length (1 octet)
+                                        Data (Data_Length octets)
+
+                This event indicates response to Pass Through command.
+                Operation_ID_State contains state flag in bit 7 and operation ID
+                in bits 6:0.
+
+        Opcode 0x87 - Get Capabilities Response Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address (6 octets)
+                                        Status (1 octet)
+                                        Capability_ID (1 octet)
+                                        Capability_Count (1 octet)
+                                        Capabilities (variable)
+
+                This event indicates response to Get Capabilities command.
+
+        Opcode 0x88 - List Player Application Setting Attributes Response Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address (6 octets)
+                                        Status (1 octet)
+                                        Num_Attributes (1 octet)
+                                        Attribute_IDs (Num_Attributes octets)
+
+                This event indicates response to List Player Application Setting
+                Attributes command.
+
+        Opcode 0x89 - List Player Application Setting Values Response Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address (6 octets)
+                                        Status (1 octet)
+                                        Num_Values (1 octet)
+                                        Value_IDs (Num_Values octets)
+
+                This event indicates response to List Player Application Setting
+                Values command.
+
+        Opcode 0x8A - Get Current Player Application Setting Value Response Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address (6 octets)
+                                        Status (1 octet)
+                                        Num_Attributes (1 octet)
+                                        [array] Attribute_Value (variable)
+
+                Object Attribute_Value is defined as:
+                        Attribute_ID (1 octet)
+                        Value_ID (1 octet)
+
+                This event indicates response to Get Current Player Application
+                Setting Value command.
+
+        Opcode 0x8B - Set Player Application Setting Value Response Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address (6 octets)
+                                        Status (1 octet)
+
+                This event indicates response to Set Player Application Setting
+                Value command.
+
+        Opcode 0x8C - Get Player Application Setting Attribute Text Response Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address (6 octets)
+                                        Status (1 octet)
+                                        Num_Attributes (1 octet)
+                                        [array] Attribute_Text (variable)
+
+                Object Attribute_Text is defined as:
+                        Attribute_ID (1 octet)
+                        Charset_ID (2 octets)
+                        Text_Length (1 octet)
+                        Text (Text_Length octets)
+
+                This event indicates response to Get Player Application Setting
+                Attribute Text command.
+
+        Opcode 0x8D - Get Player Application Setting Value Text Response Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address (6 octets)
+                                        Status (1 octet)
+                                        Num_Values (1 octet)
+                                        [array] Value_Text (variable)
+
+                Object Value_Text is defined as:
+                        Value_ID (1 octet)
+                        Charset_ID (2 octets)
+                        Text_Length (1 octet)
+                        Text (Text_Length octets)
+
+                This event indicates response to Get Player Application Setting
+                Value Text command.
+
+        Opcode 0x8E - Inform Displayable Character Set Response Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address (6 octets)
+
+                This event indicates response to Inform Displayable Character
+                Set command.
+
+        Opcode 0x8F - Inform Battery Status of CT Response Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address (6 octets)
+
+                This event indicates response to Inform Battery Status of CT
+                command.
+
+        Opcode 0x90 - Get Element Attributes Response Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address (6 octets)
+                                        Status (1 octet)
+                                        Num_Attributes (1 octet)
+                                        [array] Attribute (variable)
+
+                Object Attribute is defined as:
+                        Attribute_ID (1 octet)
+                        Charset_ID (2 octets)
+                        Attribute_Length (2 octets)
+                        Attribute_Value (Attribute_Length octets)
+
+                This event indicates response to Get Element Attributes command.
+
+        Opcode 0x91 - Get Play Status Response Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address (6 octets)
+                                        Status (1 octet)
+                                        Song_Length (4 octets)
+                                        Song_Position (4 octets)
+                                        Play_Status (1 octet)
+
+                This event indicates response to Get Play Status command.
+
+        Opcode 0x92 - Register Notification Response Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address (6 octets)
+                                        Status (1 octet)
+                                        Event_ID (1 octet)
+                                        data (variable)
+
+                Valid Event_ID parameter values:
+                        0x01 = PLAYBACK_STATUS_CHANGED
+                        0x02 = TRACK_CHANGED
+                        0x03 = TRACK_REACHED_END
+                        0x04 = TRACK_REACHED_START
+                        0x05 = PLAYBACK_POS_CHANGED
+                        0x06 = BATT_STATUS_CHANGED
+                        0x07 = SYSTEM_STATUS_CHANGED
+                        0x08 = PLAYER_APP_SETTING_CHANGED
+                        0x09 = NOW_PLAYING_CONTENT_CHANGED
+                        0x0a = AVAILABLE_PLAYERS_CHANGED
+                        0x0b = ADDRESSED_PLAYER_CHANGED
+                        0x0c = UIDS_CHANGED
+                        0x0d = VOLUME_CHANGED
+
+                Object data depending on Event_ID is defined as:
+                        For PLAYBACK_STATUS_CHANGED: Play_Status (1 octet)
+                        For TRACK_CHANGED: Track_UID (8 octets)
+                        For TRACK_REACHED_END: None
+                        For TRACK_REACHED_START: None
+                        For PLAYBACK_POS_CHANGED: Song_Position (4 octets)
+                        For BATT_STATUS_CHANGED: Battery_Status (1 octet)
+                        For SYSTEM_STATUS_CHANGED: System_Status (1 octet)
+                        For PLAYER_APP_SETTING_CHANGED: 
+                                Num_Attributes (1 octet)
+                                [array] Attribute_Value (variable)
+                        For NOW_PLAYING_CONTENT_CHANGED: None
+                        For AVAILABLE_PLAYERS_CHANGED: None
+                        For ADDRESSED_PLAYER_CHANGED:
+                                Player_ID (2 octets)
+                                UID_Counter (2 octets)
+                        For UIDS_CHANGED: UID_Counter (2 octets)
+                        For VOLUME_CHANGED: Absolute_Volume (1 octet)
+
+                Object Attribute_Value is defined as:
+                        Attribute_ID (1 octet)
+                        Value_ID (1 octet)
+
+                This event indicates response to Register Notification command.
+
+        Opcode 0x93 - Request Continuing Response Response Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address (6 octets)
+
+                This event indicates response to Request Continuing Response
+                command.
+
+        Opcode 0x94 - Abort Continuing Response Response Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address (6 octets)
+
+                This event indicates response to Abort Continuing Response
+                command.
+
+        Opcode 0x95 - Set Absolute Volume Response Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address (6 octets)
+                                        Status (1 octet)
+                                        Volume (1 octet)
+
+                This event indicates response to Set Absolute Volume command.
+
+        Opcode 0x96 - Set Addressed Player Response Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address (6 octets)
+                                        Status (1 octet)
+
+                This event indicates response to Set Addressed Player command.
+
+        Opcode 0x97 - Get Folder Items Response Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address (6 octets)
+                                        Status (1 octet)
+                                        UID_Counter (2 octets)
+                                        Num_Items (2 octets)
+                                        [array] Item (variable)
+
+                Object Item contains three types of items such as:
+                        Media_Player_Item (Item_Type = 0x01)
+                        Folder_Item (Item_Type = 0x02)
+                        Media_Element_Item (Item_Type = 0x03)
+
+                Object Media_Player_Item is defined as:
+                        Item_Type (1 octet)
+                        Item_Length (2 octets)
+                        Player_ID (2 octets)
+                        Major_Player_Type (1 octet)
+                        Player_Subtype (4 octets)
+                        Play_Status (1 octet)
+                        Feature_Bitmask (16 octets)
+                        Charset_ID (2 octets)
+                        Name_Length (2 octets)
+                        Name (Name_Length octets)
+
+                Object Folder_Item is defined as:
+                        Item_Type (1 octet)
+                        Item_Length (2 octets)
+                        UID (8 octets)
+                        Folder_Type (1 octet)
+                        Playable (1 octets)
+                        Charset_ID (2 octets)
+                        Name_Length (2 octets)
+                        Name (Name_Length octets)
+
+                Object Media_Element_Item is defined as:
+                        Item_Type (1 octet)
+                        Item_Length (2 octets)
+                        UID (8 octets)
+                        Media_Type (1 octet)
+                        Charset_ID (2 octets)
+                        Name_Length (2 octets)
+                        Name (Name_Length octets)
+                        Num_Attributes (1 octet)
+                        [array] Attribute (variable)
+                                                
+                Object Attribute is defined as:
+                        Attribute_ID (1 octet)
+                        Charset_ID (2 octets)
+                        Attribute_Length (2 octets)
+                        Attribute_Value (Attribute_Length octets)
+
+                This event indicates response to Get Folder Items command.
+
+        Opcode 0x98 - Get Total Number of Items Response Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address (6 octets)
+                                        Status (1 octet)
+                                        UID_Counter (2 octets)
+                                        Num_Items (4 octets)
+
+                This event indicates response to Get Total Number of Items
+                command.
+
+        Opcode 0x99 - Set Browsed Player Response Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address (6 octets)
+                                        Status (1 octet)
+                                        UID_Counter (2 octets)
+                                        Num_Items (4 octets)
+                                        Charset_ID (2 octets)
+                                        Folder_Depth (1 octet)
+                                        [array] Folder_Name (variable)
+
+                Object Folder_Name is defined as:
+                        Name_Length (2 octets)
+                        Name (Name_Length octets)
+
+                This event indicates response to Set Browsed Player command.
+
+        Opcode 0x9A - Change Path Response Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address (6 octets)
+                                        Status (1 octet)
+                                        Num_Items (4 octets)
+
+                This event indicates response to Change Path command.
+
+        Opcode 0x9B - Get Item Attributes Response Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address (6 octets)
+                                        Status (1 octet)
+                                        Num_Attributes (1 octet)
+                                        [array] Attribute (variable)
+
+                Object Attribute is defined as:
+                        Attribute_ID (1 octet)
+                        Charset_ID (2 octets)
+                        Attribute_Length (2 octets)
+                        Attribute_Value (Attribute_Length octets)
+
+                This event indicates response to Get Item Attributes command.
+
+        Opcode 0x9C - Play Item Response Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address (6 octets)
+                                        Status (1 octet)
+
+                This event indicates response to Play Item command.
+
+        Opcode 0x9D - Search Response Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address (6 octets)
+                                        Status (1 octet)
+                                        UID_Counter (2 octets)
+                                        Num_Items (4 octets)
+
+                This event indicates response to Search command.
+
+        Opcode 0x9E - Add to Now Playing Response Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address (6 octets)
+                                        Status (1 octet)
+
+                This event indicates response to Add to Now Playing command.
+
+        Opcode 0x9F - General Reject Response Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address (6 octets)
+
+                This event indicates response to General Reject command.
+
+        Opcode 0xA0 - Cover Art CT Connected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address (6 octets)
+
+                This event indicates that Cover Art connection has been
+                established as Controller.
+
+        Opcode 0xA1 - Cover Art CT Disconnected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address (6 octets)
+
+                This event indicates that Cover Art connection has been
+                disconnected as Controller.
+
+        Opcode 0xA2 - Get Image Properties Response Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address (6 octets)
+                                        Response_Code (1 octet)
+                                        Body_Length (2 octets)
+                                        Body (Body_Length octets)
+
+                This event indicates response to Get Image Properties command.
+
+        Opcode 0xA3 - Get Image Response Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address (6 octets)
+                                        Response_Code (1 octet)
+                                        Body_Length (2 octets)
+                                        Body (Body_Length octets)
+
+                This event indicates response to Get Image command.
+
+        Opcode 0xA4 - Get Linked Thumbnail Response Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address (6 octets)
+                                        Response_Code (1 octet)
+                                        Body_Length (2 octets)
+                                        Body (Body_Length octets)
+
+                This event indicates response to Get Linked Thumbnail command.
