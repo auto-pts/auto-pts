@@ -332,7 +332,6 @@ class NrfUtil:
 
     def __init__(self, board_name, debugger_snr):
         self._check_nrfutil()
-        self._check_nrfjprog()
 
         if debugger_snr is None:
             debugger_snr = self.find_debugger(board_name)
@@ -357,15 +356,6 @@ class NrfUtil:
 
         for cmd in NrfUtil._NRFUTIL_CMDS:
             check_nrfutil_cmd(cmd)
-
-    @staticmethod
-    def _check_nrfjprog():
-        from autopts.bot.common import check_call
-
-        try:
-            check_call(["nrfjprog", "--version"], stdout=False, stderr=False)
-        except subprocess.CalledProcessError:
-            raise Exception("nrfjprog not found!") from None
 
     @staticmethod
     def _family2json(family):
@@ -466,6 +456,6 @@ class NrfUtil:
 
         # For multicore devices like nRF53 Series, make sure to recover the network core before the application core:
         if self._is_multi_core(self.family):
-            check_call(f'nrfjprog --recover --coprocessor CP_NETWORK -s {self.debugger_snr}')
+            check_call(f'nrfutil device recover --core Network --serial-number {self.debugger_snr}')
 
-        check_call(f'nrfjprog --recover -s {self.debugger_snr}')
+        check_call(f'nrfutil device recover --core Application --serial-number {self.debugger_snr}')
