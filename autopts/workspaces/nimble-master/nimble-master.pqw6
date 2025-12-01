@@ -1,25 +1,19 @@
-<WORKSPACE_INFORMATION NAME="nimble-master" PATH="nimble-master" CREATED_WITH="Profile Tuning Suite, 8.10.0, 10" BD_ADDR="000000000000" SWITCH_TTCN="FALSE" QDID="331839">
+<WORKSPACE_INFORMATION NAME="nimble-master" PATH="nimble-master" CREATED_WITH="Profile Tuning Suite, 8.11.0, 4" BD_ADDR="000000000000" SWITCH_TTCN="FALSE" QDID="331839">
   <PROJECTS_INFORMATION>
     <PROJECT_INFORMATION NAME="GAP" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
       <PICS>
         <Name>GAP</Name>
         <Rows>
           <Row>
-            <Name>TSPC_GAP_0_1</Name>
-            <Description>BR/EDR Host (C.1, C.4)</Description>
+            <Name>TSPC_GAP_0b_1</Name>
+            <Description>GAP BR/EDR Host (C.1, C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_0_2</Name>
-            <Description>LE Host (C.2, C.4)</Description>
+            <Name>TSPC_GAP_0b_2</Name>
+            <Description>GAP LE Host (C.2, C.3)</Description>
             <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_0_3</Name>
-            <Description>BR/EDR/LE Host (C.3, C.4)</Description>
-            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -282,7 +276,13 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_4_7</Name>
-            <Description>Synchronization Establishment as receiver (C.1)</Description>
+            <Description>Synchronization Establishment as receiver (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_4c_1</Name>
+            <Description>Synchronization Train (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -347,8 +347,26 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_4c_1</Name>
-            <Description>Synchronization Train (C.1)</Description>
+            <Name>TSPC_GAP_4d_1</Name>
+            <Description>Secure Connections (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_4e_1</Name>
+            <Description>Connectionless Peripheral Broadcast Transmitter (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_4e_2</Name>
+            <Description>Connectionless Peripheral Broadcast Receiver (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_4e_3</Name>
+            <Description>Extended Inquiry Response (C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -647,6 +665,12 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_GAP_11a_4</Name>
+            <Description>No longer used (N/A)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_GAP_11b_1</Name>
             <Description>LE security mode 3 (C.1)</Description>
             <Value>TRUE</Value>
@@ -911,6 +935,12 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_GAP_17a_3</Name>
+            <Description>No longer used (N/A)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_GAP_17a_4</Name>
             <Description>Scanning for Periodic Advertising (C.1)</Description>
             <Value>TRUE</Value>
@@ -992,6 +1022,12 @@
             <Name>TSPC_GAP_20_2</Name>
             <Description>Connectable directed events (O)</Description>
             <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_20_2a</Name>
+            <Description>No longer used (N/A)</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1613,6 +1649,12 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_GAP_27_8</Name>
+            <Description>No longer used (N/A)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_GAP_27_9</Name>
             <Description>Central Address Resolution (C.7)</Description>
             <Value>TRUE</Value>
@@ -1716,19 +1758,19 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_27b_6</Name>
-            <Description>Encryption Key (C.5)</Description>
+            <Description>Long Term Key (LTK) (C.5)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_27b_7</Name>
-            <Description>Identity Key (C.6)</Description>
+            <Description>Identity Resolving Key (IRK) (C.6)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_27b_8</Name>
-            <Description>Signing Key (C.7)</Description>
+            <Description>Connection Signature Resolving Key (CSRK) (C.7)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -1741,6 +1783,18 @@
           <Row>
             <Name>TSPC_GAP_27b_10</Name>
             <Description>Peripheral Initiated Security (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_27b_11</Name>
+            <Description>Legacy pairing (C.8)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_27b_12</Name>
+            <Description>LE Secure Connection pairing (C.4)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -2345,6 +2399,12 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_GAP_36_4</Name>
+            <Description>No longer used (N/A)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_GAP_36_5</Name>
             <Description>Resolvable private address generation procedure (C.1)</Description>
             <Value>TRUE</Value>
@@ -2472,25 +2532,37 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_37b_6</Name>
-            <Description>Encryption Key (C.5)</Description>
+            <Description>Long Term Key (LTK) (C.5)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_37b_7</Name>
-            <Description>Identity Key (C.6)</Description>
+            <Description>Identity Resolving Key (IRK) (C.6)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_37b_8</Name>
-            <Description>Signing Key (C.7)</Description>
+            <Description>Connection Signature Resolving Key (CSRK) (C.7)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_37b_9</Name>
             <Description>Out of Band (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_37b_10</Name>
+            <Description>Legacy pairing (C.8)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GAP_37b_11</Name>
+            <Description>LE Secure Connection pairing (C.4)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -2513,34 +2585,10 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_GAP_38_1</Name>
-            <Description>Broadcaster (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_38_2</Name>
-            <Description>Observer (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_38_3</Name>
-            <Description>Peripheral (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_GAP_38_4</Name>
-            <Description>Central (C.1)</Description>
-            <Value>FALSE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
             <Name>TSPC_GAP_41_1</Name>
-            <Description>Security aspects (M)</Description>
+            <Description>No longer used (N/A)</Description>
             <Value>FALSE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_41_2</Name>
@@ -2562,9 +2610,9 @@
           </Row>
           <Row>
             <Name>TSPC_GAP_43_1</Name>
-            <Description>Security aspects (M)</Description>
+            <Description>No longer used (N/A)</Description>
             <Value>FALSE</Value>
-            <Mandatory>TRUE</Mandatory>
+            <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_43_2</Name>
@@ -2605,6 +2653,18 @@
           <Row>
             <Name>TSPC_GAP_45_2</Name>
             <Description>Simultaneous BR/EDR and LE Transports - BR/EDR Central to the same device (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CORE_1b_61</Name>
+            <Description>Controller Core v6.1 or later (C.7)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_CORE_1a_62</Name>
+            <Description>Controller Core v6.2 or later (C.8)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -2730,7 +2790,7 @@
           </Row>
           <Row>
             <Name>TSPC_ALL</Name>
-            <Description>Turns on all the test cases</Description>
+            <Description>Enables all test cases when set.</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -3205,7 +3265,6 @@
     <PROJECT_INFORMATION NAME="GATT" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
       <PICS>
         <Name>GATT</Name>
-        <Version />
         <Rows>
           <Row>
             <Name>TSPC_GATT_1_1</Name>
@@ -3257,7 +3316,7 @@
           </Row>
           <Row>
             <Name>TSPC_GATT_2_3</Name>
-            <Description>No longer used</Description>
+            <Description>No longer used (N/A)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -3299,7 +3358,7 @@
           </Row>
           <Row>
             <Name>TSPC_GATT_3_3</Name>
-            <Description>Discover Primary Services by Service UUID (O)</Description>
+            <Description>Discover Primary Service by Service UUID (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -3341,7 +3400,7 @@
           </Row>
           <Row>
             <Name>TSPC_GATT_3_10</Name>
-            <Description>Read Long Characteristic Values (O)</Description>
+            <Description>Read Long Characteristic Value (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -3353,7 +3412,7 @@
           </Row>
           <Row>
             <Name>TSPC_GATT_3_12</Name>
-            <Description>Write without Response (O)</Description>
+            <Description>Write Without Response (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -3371,7 +3430,7 @@
           </Row>
           <Row>
             <Name>TSPC_GATT_3_15</Name>
-            <Description>Write Long Characteristic Values (O)</Description>
+            <Description>Write Long Characteristic Value (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -3389,31 +3448,31 @@
           </Row>
           <Row>
             <Name>TSPC_GATT_3_18</Name>
-            <Description>Indications (M)</Description>
+            <Description>Indication (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_3_19</Name>
-            <Description>Read Characteristic Descriptors (O)</Description>
+            <Description>Read Characteristic Descriptor (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_3_20</Name>
-            <Description>Read Long Characteristic Descriptors (O)</Description>
+            <Description>Read Long Characteristic Descriptor (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_3_21</Name>
-            <Description>Write Characteristic Descriptors (O)</Description>
+            <Description>Write Characteristic Descriptor (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_3_22</Name>
-            <Description>Write Long Characteristic Descriptors (O)</Description>
+            <Description>Write Long Characteristic Descriptor (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -3485,7 +3544,7 @@
           </Row>
           <Row>
             <Name>TSPC_GATT_3a_3</Name>
-            <Description>GAP BR/EDR (C.2)</Description>
+            <Description>GAP BR/EDR Host (C.2)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -3503,7 +3562,7 @@
           </Row>
           <Row>
             <Name>TSPC_GATT_4_3</Name>
-            <Description>Discover Primary Services by Service UUID (M)</Description>
+            <Description>Discover Primary Service by Service UUID (M)</Description>
             <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
@@ -3545,7 +3604,7 @@
           </Row>
           <Row>
             <Name>TSPC_GATT_4_10</Name>
-            <Description>Read Long Characteristic Values (C.12)</Description>
+            <Description>Read Long Characteristic Value (C.12)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -3557,7 +3616,7 @@
           </Row>
           <Row>
             <Name>TSPC_GATT_4_12</Name>
-            <Description>Write without Response (C.2)</Description>
+            <Description>Write Without Response (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -3575,7 +3634,7 @@
           </Row>
           <Row>
             <Name>TSPC_GATT_4_15</Name>
-            <Description>Write Long Characteristic Values (C.12)</Description>
+            <Description>Write Long Characteristic Value (C.12)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -3593,31 +3652,31 @@
           </Row>
           <Row>
             <Name>TSPC_GATT_4_18</Name>
-            <Description>Indications (C.1)</Description>
+            <Description>Indication (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_4_19</Name>
-            <Description>Read Characteristic Descriptors (C.12)</Description>
+            <Description>Read Characteristic Descriptor (C.12)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_4_20</Name>
-            <Description>Read Long Characteristic Descriptors (C.12)</Description>
+            <Description>Read Long Characteristic Descriptor (C.12)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_4_21</Name>
-            <Description>Write Characteristic Descriptors (C.12)</Description>
+            <Description>Write Characteristic Descriptor (C.12)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_4_22</Name>
-            <Description>Write Long Characteristic Descriptors (O)</Description>
+            <Description>Write Long Characteristic Descriptor (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -3689,7 +3748,13 @@
           </Row>
           <Row>
             <Name>TSPC_GATT_4a_3</Name>
-            <Description>GAP BR/EDR (C.2)</Description>
+            <Description>GAP BR/EDR Host (C.2)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_6_1</Name>
+            <Description>No longer used (N/A)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -3720,6 +3785,12 @@
           <Row>
             <Name>TSPC_GATT_6_6</Name>
             <Description>AdditionalProtocolDescriptorList (C.3)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_GATT_7_1</Name>
+            <Description>No longer used (N/A)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -3767,49 +3838,49 @@
           </Row>
           <Row>
             <Name>TSPC_GATT_8_1</Name>
-            <Description>Support for multiple simultaneous active ATT bearers from same device – ATT over LE and ATT over BR/EDR (C.1)</Description>
+            <Description>Support for multiple simultaneous active ATT bearers from same device - ATT over LE and ATT over BR/EDR (C.1)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_8_2</Name>
-            <Description>Support for multiple simultaneous active ATT bearers from same device – ATT over LE and EATT over LE (C.2)</Description>
+            <Description>Support for multiple simultaneous active ATT bearers from same device - ATT over LE and EATT over LE (C.2)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_8_3</Name>
-            <Description>Support for multiple simultaneous active ATT bearers from same device – ATT over BR/EDR and EATT over BR/EDR (C.3)</Description>
+            <Description>Support for multiple simultaneous active ATT bearers from same device - ATT over BR/EDR and EATT over BR/EDR (C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_8_4</Name>
-            <Description>Support for multiple simultaneous active ATT bearers from same device – ATT over LE and EATT over BR/EDR (C.4)</Description>
+            <Description>Support for multiple simultaneous active ATT bearers from same device - ATT over LE and EATT over BR/EDR (C.4)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_8_5</Name>
-            <Description>Support for multiple simultaneous active ATT bearers from same device – ATT over BR/EDR and EATT over LE (C.5)</Description>
+            <Description>Support for multiple simultaneous active ATT bearers from same device - ATT over BR/EDR and EATT over LE (C.5)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_8_6</Name>
-            <Description>Support for multiple simultaneous active EATT bearers from same device – EATT over BR/EDR and EATT over LE (C.6)</Description>
+            <Description>Support for multiple simultaneous active EATT bearers from same device - EATT over BR/EDR and EATT over LE (C.6)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_8_7</Name>
-            <Description>Support for multiple simultaneous active EATT bearers from same device – EATT over BR/EDR (C.7)</Description>
+            <Description>Support for multiple simultaneous active EATT bearers from same device - EATT over BR/EDR (C.7)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GATT_8_8</Name>
-            <Description>Support for multiple simultaneous active EATT bearers from same device – EATT over LE (C.7)</Description>
+            <Description>Support for multiple simultaneous active EATT bearers from same device - EATT over LE (C.7)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -3976,9 +4047,15 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_GATT_10_13</Name>
+            <Description>Change Database during connection (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_GAP_0_2</Name>
             <Description>LE (C.2)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4024,6 +4101,12 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_CORE_2a_61</Name>
+            <Description>Host Core v6.1 or later (C.7)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_CORE_2b_51</Name>
             <Description>Host Core v5.1 or earlier (C.2)</Description>
             <Value>FALSE</Value>
@@ -4031,7 +4114,7 @@
           </Row>
           <Row>
             <Name>TSPC_ALL</Name>
-            <Description>Turn on all test cases (O)</Description>
+            <Description>Enables all test cases when set.</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -4072,28 +4155,10 @@
             <Value>180000</Value>
           </Row>
           <Row>
-            <Name>TSPX_selected_handle</Name>
-            <Description>Handle selected from the IUT database to be used for invalid transport test cases.</Description>
-            <Type>OCTETSTRING</Type>
-            <Value>0012</Value>
-          </Row>
-          <Row>
             <Name>TSPX_use_implicit_send</Name>
             <Description>Whether to receive a message via Implicit Send when an action or attention is needed by test operator. (Default: TRUE)</Description>
             <Type>BOOLEAN</Type>
             <Value>TRUE</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_iut_use_dynamic_bd_addr</Name>
-            <Description>Device use dynamic bd_addr. (Default: FALSE)</Description>
-            <Type>BOOLEAN</Type>
-            <Value>FALSE</Value>
-          </Row>
-          <Row>
-            <Name>TSPX_iut_setup_att_over_br_edr</Name>
-            <Description>Device use ATT over BR EDR radio. (Default: FALSE)</Description>
-            <Type>BOOLEAN</Type>
-            <Value>FALSE</Value>
           </Row>
           <Row>
             <Name>TSPX_iut_is_client_periphral</Name>
@@ -4189,21 +4254,15 @@
         <Name>L2CAP</Name>
         <Rows>
           <Row>
-            <Name>TSPC_L2CAP_0_1</Name>
-            <Description>BR/EDR (C.1, C.4)</Description>
+            <Name>TSPC_L2CAP_0a_1</Name>
+            <Description>L2CAP BR/EDR Host (C.1, C.3)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_L2CAP_0_2</Name>
-            <Description>LE (C.2, C.4)</Description>
+            <Name>TSPC_L2CAP_0a_2</Name>
+            <Description>L2CAP LE Host (C.2, C.3)</Description>
             <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_L2CAP_0_3</Name>
-            <Description>BR/EDR/LE (C.3, C.4)</Description>
-            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4281,6 +4340,12 @@
           <Row>
             <Name>TSPC_L2CAP_2_7</Name>
             <Description>Send information response (C.16)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_L2CAP_2_8</Name>
+            <Description>No longer used (N/A)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -4772,7 +4837,7 @@
           </Row>
           <Row>
             <Name>TSPC_ALL</Name>
-            <Description>Turn on all test cases (O)</Description>
+            <Description>Enables all test cases when set.</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -5006,51 +5071,57 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_SM_2_1</Name>
-            <Description>Authenticated MITM protection (O)</Description>
+            <Name>TSPC_SM_2a_1</Name>
+            <Description>Legacy pairing (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_SM_2_2</Name>
-            <Description>Unauthenticated no MITM protection (C.1)</Description>
+            <Name>TSPC_SM_2a_2</Name>
+            <Description>LE Secure Connection pairing (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_SM_2_3</Name>
-            <Description>No security requirements (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_SM_2_5</Name>
-            <Description>LE Secure Connections (O)</Description>
+            <Name>TSPC_SM_4a_1</Name>
+            <Description>Just Works (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_SM_3_1</Name>
-            <Description>Encryption Key Size (M)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>TRUE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_SM_4_1</Name>
-            <Description>Just Works (O)</Description>
-            <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
-          </Row>
-          <Row>
-            <Name>TSPC_SM_4_2</Name>
+            <Name>TSPC_SM_4a_2</Name>
             <Description>Passkey Entry (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
-            <Name>TSPC_SM_4_3</Name>
+            <Name>TSPC_SM_4a_3</Name>
             <Description>Out of Band (C.1)</Description>
             <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SM_4b_1</Name>
+            <Description>Just Works (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SM_4b_2</Name>
+            <Description>Passkey Entry (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SM_4b_3</Name>
+            <Description>Out of Band (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_SM_4b_4</Name>
+            <Description>Numeric Comparison (C.1)</Description>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -5061,9 +5132,9 @@
           </Row>
           <Row>
             <Name>TSPC_SM_5_2</Name>
-            <Description>Encryption Setup using LTK (O)</Description>
+            <Description>Encryption Setup using LTK (M)</Description>
             <Value>TRUE</Value>
-            <Mandatory>FALSE</Mandatory>
+            <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_SM_5_3</Name>
@@ -5084,6 +5155,12 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_SM_5_6</Name>
+            <Description>No longer used (N/A)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_SM_6_1</Name>
             <Description>Signing Algorithm - Generation (O)</Description>
             <Value>FALSE</Value>
@@ -5097,37 +5174,37 @@
           </Row>
           <Row>
             <Name>TSPC_SM_7a_1</Name>
-            <Description>Encryption Key (O)</Description>
+            <Description>Long Term Key (LTK) (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_SM_7a_2</Name>
-            <Description>Identity Key (O)</Description>
+            <Description>Identity Resolving Key (IRK) (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_SM_7a_3</Name>
-            <Description>Signing Key (O)</Description>
+            <Description>Connection Signature Resolving Key (CSRK) (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_SM_7b_1</Name>
-            <Description>Encryption Key (O)</Description>
+            <Description>Long Term Key (LTK) (C.1)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_SM_7b_2</Name>
-            <Description>Identity Key (O)</Description>
+            <Description>Identity Resolving Key (IRK) (O)</Description>
             <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_SM_7b_3</Name>
-            <Description>Signing Key (O)</Description>
+            <Description>Connection Signature Resolving Key (CSRK) (O)</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
@@ -5186,6 +5263,12 @@
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
+            <Name>TSPC_CORE_2a_62</Name>
+            <Description>Host Core v6.2 or later (C.6)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
             <Name>TSPC_CORE_2b_54</Name>
             <Description>Host Core v5.4 or earlier (C.5)</Description>
             <Value>FALSE</Value>
@@ -5199,7 +5282,7 @@
           </Row>
           <Row>
             <Name>TSPC_ALL</Name>
-            <Description>Turn on all test cases (O)</Description>
+            <Description>Enables all test cases when set.</Description>
             <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
