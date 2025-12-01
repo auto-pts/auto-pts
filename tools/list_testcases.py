@@ -45,3 +45,5 @@ if __name__ == '__main__':
 
     for test_case_name in test_cases:
         print(test_case_name)
+
+    pts.stop_pts()
