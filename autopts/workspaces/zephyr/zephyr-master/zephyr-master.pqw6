@@ -79,13 +79,13 @@
           <Row>
             <Name>TSPC_AICS_2_9</Name>
             <Description>Autonomous Automatic Only Support (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_AICS_2_10</Name>
             <Description>Autonomous Manual Only Support (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -109,7 +109,7 @@
           <Row>
             <Name>TSPC_AICS_3_3b</Name>
             <Description>Mute Disabled (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1919,7 +1919,7 @@
           <Row>
             <Name>TSPC_BAP_23_21</Name>
             <Description>LE security mode 1 level 4 (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -3161,7 +3161,7 @@
           <Row>
             <Name>TSPC_BAP_46_17</Name>
             <Description>LE security mode 1 level 4 (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4295,7 +4295,7 @@
           <Row>
             <Name>TSPC_BAP_74_12</Name>
             <Description>LE security mode 3 level 3 (C.5)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4373,7 +4373,7 @@
           <Row>
             <Name>TSPC_BAP_74_25</Name>
             <Description>LE security mode 1 level 4 (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -4577,7 +4577,7 @@
           <Row>
             <Name>TSPC_BAP_80_24</Name>
             <Description>LE security mode 1 level 4 (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -6595,13 +6595,13 @@
           <Row>
             <Name>TSPC_CAP_6a_3</Name>
             <Description>Unicast to Broadcast Handover Support (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_CAP_6a_4</Name>
             <Description>Broadcast to Unicast Handover Support (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -6697,13 +6697,13 @@
           <Row>
             <Name>TSPC_CAP_8_5</Name>
             <Description>Unicast to Broadcast Handover procedure (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_CAP_8_6</Name>
             <Description>Broadcast to Unicast Handover procedure (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -6877,13 +6877,13 @@
           <Row>
             <Name>TSPC_CAP_17_3</Name>
             <Description>Unicast to Broadcast Handover Support (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_CAP_17_4</Name>
             <Description>Broadcast to Unicast Handover Support (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -6967,13 +6967,13 @@
           <Row>
             <Name>TSPC_CAP_20_7</Name>
             <Description>Unicast to Broadcast Handover procedure (C.5)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_CAP_20_8</Name>
             <Description>Broadcast to Unicast Handover procedure (C.6)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -7003,7 +7003,7 @@
           <Row>
             <Name>TSPC_CAP_21_4</Name>
             <Description>BAP Broadcast Audio Stream Reconfiguration (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -7177,13 +7177,13 @@
           <Row>
             <Name>TSPC_CAP_27_2</Name>
             <Description>Unicast to Broadcast Handover Support (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_CAP_27_3</Name>
             <Description>Broadcast to Unicast Handover Support (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -7213,13 +7213,13 @@
           <Row>
             <Name>TSPC_CAP_28_3</Name>
             <Description>Unicast to Broadcast Handover procedure (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_CAP_28_4</Name>
             <Description>Broadcast to Unicast Handover procedure (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -8874,19 +8874,19 @@
           <Row>
             <Name>TSPC_CSIP_5_6</Name>
             <Description>OOB SIRK Only (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_CSIP_5_7</Name>
             <Description>Coordinated Set Size Characteristic (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_CSIP_5_8</Name>
             <Description>Notifiable Coordinated Set Size Characteristic (C.7)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -9511,7 +9511,7 @@
           <Row>
             <Name>TSPC_CSIS_2_7</Name>
             <Description>OOB SIRK Only (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -9699,6 +9699,302 @@
               <ValueListItem>EATT Bearer on LE Transport</ValueListItem>
               <ValueListItem>EATT Bearer on BR/EDR Transport</ValueListItem>
             </ValueList>
+          </Row>
+        </Rows>
+      </PIXIT>
+    </PROJECT_INFORMATION>
+    <PROJECT_INFORMATION NAME="DFUM" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
+      <PICS>
+        <Name>DFUM</Name>
+        <Version />
+        <Rows>
+          <Row>
+            <Name>TSPC_DFUM_ALL</Name>
+            <Description>Enables all test cases when set.</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DFUM_0_1</Name>
+            <Description>Mesh Device Firmware Update Model v1.0 (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DFUM_3_1</Name>
+            <Description>Firmware Update Server model (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DFUM_3_2</Name>
+            <Description>Firmware Distribution Server model (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DFUM_3_3</Name>
+            <Description>Firmware Update Client model (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DFUM_3_4</Name>
+            <Description>Firmware Distribution Client model (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DFUM_10_1</Name>
+            <Description>BLOB Transfer Server model (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DFUM_11_1</Name>
+            <Description>Pull BLOB Transfer Mode (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DFUM_11_2</Name>
+            <Description>Push BLOB Transfer Mode (C.2)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DFUM_20_1</Name>
+            <Description>BLOB Transfer Server model (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DFUM_21_1</Name>
+            <Description>Pull BLOB Transfer Mode (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DFUM_21_2</Name>
+            <Description>Push BLOB Transfer Mode (C.2)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DFUM_22_1</Name>
+            <Description>Store Firmware OOB procedure (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DFUM_22_2</Name>
+            <Description>Firmware Retrieval Over HTTPS procedure (C.1)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DFUM_22_3</Name>
+            <Description>Multiple Firmware Image Support (O)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DFUM_30_1</Name>
+            <Description>BLOB Transfer Client model (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DFUM_40_1</Name>
+            <Description>BLOB Transfer Client model (M)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_DFUM_41_1</Name>
+            <Description>Upload Firmware OOB procedure (O)</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_ALL</Name>
+            <Description>Enables all test cases when set.</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+        </Rows>
+      </PICS>
+      <PIXIT>
+        <Name>DFUM</Name>
+        <Version>1.0</Version>
+        <Rows>
+          <Row>
+            <Name>TSPX_bd_addr_iut</Name>
+            <Description>The unique 48-bit Bluetooth device address (BD_ADDR) of the IUT. This was filled in during workspace creation.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>000000000000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_time_guard</Name>
+            <Description>The time in milliseconds, to break PTS from waiting for a required event, if time guard is used by the test case. (Default: 300000)</Description>
+            <Type>INTEGER</Type>
+            <Value>300000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_use_implicit_send</Name>
+            <Description>Whether to receive a message via Implicit Send when an action or attention is needed by test operator. (Default: TRUE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>TRUE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_tester_database_file</Name>
+            <Description>Location of SIG database file. (Default: C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_SMPP_db.xml)</Description>
+            <Type>IA5STRING</Type>
+            <Value>C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_SMPP_db.xml</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_mtu_size</Name>
+            <Description>MTU size. (Default: 23)</Description>
+            <Type>INTEGER</Type>
+            <Value>23</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_delete_link_key</Name>
+            <Description>Whether to delete link key or not. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_delete_ltk</Name>
+            <Description>Whether to delete Long Term Key or not. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_security_enabled</Name>
+            <Description>Whether to set security for the test suite. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_iut_setup_att_over_br_edr</Name>
+            <Description>IUT can optionally test ATT over BR/EDR connection when this flag is set when applicable. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_scan_interval</Name>
+            <Description>The scan interval value N*0.625ms. Default is setto fast scan interval.(Default: 30)</Description>
+            <Type>INTEGER</Type>
+            <Value>30</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_scan_window</Name>
+            <Description>The scan window value N*0.625ms. Default is set to fast scan window.(Default: 30)</Description>
+            <Type>INTEGER</Type>
+            <Value>30</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_scan_filter</Name>
+            <Description>The scan filter setting to allow accept filter accept list only device.(Default: 0 - Fileter none)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>00</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_advertising_interval_min</Name>
+            <Description>The minimum advertising interval value N*0.625ms. PTS will using this value to set advertising parameters.(Default: 160)</Description>
+            <Type>INTEGER</Type>
+            <Value>160</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_advertising_interval_max</Name>
+            <Description>The maximum advertising interval value N*0.625ms. PTS will using this value to set advertising parameters.(Default: 160)</Description>
+            <Type>INTEGER</Type>
+            <Value>160</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_device_uuid</Name>
+            <Description>used for mesh beacon. (Default: 001BDC0810210B0E0A0C000B0E0A0C00)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>001BDC0810210B0E0A0C000B0E0A0C00</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_device_uuid2</Name>
+            <Description>used for tester2 mesh beacon. (Default: 00000000000000000000000000000000)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>00000000000000000000000000000000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_use_pb_gatt_bearer</Name>
+            <Description>PB ADV or PB GATT bearer for PROT test cases. (Default: TRUE - PB-ADV)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_enable_IUT_provisioner</Name>
+            <Description>Indicates if the IUT performs provisioning for client cases. If set to TRUE, PTS expects to get provisioned by the IUT. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_Procedure_Timeout</Name>
+            <Description>The time in seconds. (Default: 60)</Description>
+            <Type>INTEGER</Type>
+            <Value>60</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_Client_BLOB_ID</Name>
+            <Description>Unique identifier for the BLOB being transferred by the BLOB Transfer Client IUT. (Default: 1)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>1100000000000011</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_Client_BLOB_Data</Name>
+            <Description>BLOB being transferred by the IUT.</Description>
+            <Type>IA5STRING</Type>
+            <Value />
+          </Row>
+          <Row>
+            <Name>TSPX_TTL</Name>
+            <Description>TTL. (Default: 2)</Description>
+            <Type>INTEGER</Type>
+            <Value>2</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_Server_Timeout_Base</Name>
+            <Description>Server Timeout Base state. (Default: 5)</Description>
+            <Type>INTEGER</Type>
+            <Value>5</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_Firmware_ID</Name>
+            <Description>Firmware_ID used by device to varify firmware.(Default: 1)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>11000011</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_Firmware_Metadata</Name>
+            <Description>Firmware metadata for the incoming firmware on the IUT. (Default: )</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>1100000000000011</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_Firmware_Update_URI</Name>
+            <Description>URI used for test case execution. (Default: http://www.dummy.com)</Description>
+            <Type>IA5STRING</Type>
+            <Value>http://www.dummy.com</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_New_Firmware_Image</Name>
+            <Description>Firmware being transferred by the IUT.</Description>
+            <Type>IA5STRING</Type>
+            <Value />
+          </Row>
+          <Row>
+            <Name>TSPX_Update_Firmware_Image_Index</Name>
+            <Description>Firmware Image Index value to identiy firmware used for testing. (Default: 0)</Description>
+            <Type>INTEGER</Type>
+            <Value>0</Value>
           </Row>
         </Rows>
       </PIXIT>
@@ -13567,7 +13863,7 @@
           <Row>
             <Name>TSPC_GATT_4_13</Name>
             <Description>Signed Write Without Response (C.6)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -13951,7 +14247,7 @@
           <Row>
             <Name>TSPC_GATT_10_6</Name>
             <Description>Signed Write Command (C.6)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -16246,13 +16542,13 @@
           <Row>
             <Name>TSPC_GMAP_78_1</Name>
             <Description>Front Left Audio Location (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GMAP_78_2</Name>
             <Description>Front Right Audio Location (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -20696,6 +20992,224 @@
             <Description>A list of supported configuration options in the L2CAP_CONFIGURATION_REQ that result in a 0x0000 response. (Default: 01020304050607)</Description>
             <Type>OCTETSTRING</Type>
             <Value>01020304050607</Value>
+          </Row>
+        </Rows>
+      </PIXIT>
+    </PROJECT_INFORMATION>
+    <PROJECT_INFORMATION NAME="MBTM" TC_LOG="tc_log.xml" TC_SCRIPT="tc_sqript.xml" USERDLL="" USE_USERDLL="False" RUNTIME_LOGGING="False">
+      <PICS>
+        <Name>MBTM</Name>
+        <Version />
+        <Rows>
+          <Row>
+            <Name>TSPC_MBTM_ALL</Name>
+            <Description>Enables all test cases when set.</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MBTM_0_1</Name>
+            <Description>Mesh Binary Large Object Transfer Model v1.0 (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MBTM_3_1</Name>
+            <Description>BLOB Transfer Server model (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MBTM_3_2</Name>
+            <Description>BLOB Transfer Client model (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MBTM_10_1</Name>
+            <Description>Pull BLOB Transfer Mode (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MBTM_10_2</Name>
+            <Description>Push BLOB Transfer Mode (C.1)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MBTM_20_1</Name>
+            <Description>Pull BLOB Transfer Mode (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_MBTM_20_2</Name>
+            <Description>Push BLOB Transfer Mode (M)</Description>
+            <Value>TRUE</Value>
+            <Mandatory>TRUE</Mandatory>
+          </Row>
+          <Row>
+            <Name>TSPC_ALL</Name>
+            <Description>Enables all test cases when set.</Description>
+            <Value>FALSE</Value>
+            <Mandatory>FALSE</Mandatory>
+          </Row>
+        </Rows>
+      </PICS>
+      <PIXIT>
+        <Name>MBTM</Name>
+        <Version>1.0</Version>
+        <Rows>
+          <Row>
+            <Name>TSPX_bd_addr_iut</Name>
+            <Description>The unique 48-bit Bluetooth device address (BD_ADDR) of the IUT. This was filled in during workspace creation.</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>000000000000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_time_guard</Name>
+            <Description>The time in milliseconds, to break PTS from waiting for a required event, if time guard is used by the test case. (Default: 300000)</Description>
+            <Type>INTEGER</Type>
+            <Value>300000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_use_implicit_send</Name>
+            <Description>Whether to receive a message via Implicit Send when an action or attention is needed by test operator. (Default: TRUE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>TRUE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_tester_database_file</Name>
+            <Description>Location of SIG database file. (Default: C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_SMPP_db.xml)</Description>
+            <Type>IA5STRING</Type>
+            <Value>C:\Program Files\Bluetooth SIG\Bluetooth PTS\Data\SIGDatabase\PTS_SMPP_db.xml</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_mtu_size</Name>
+            <Description>MTU size. (Default: 23)</Description>
+            <Type>INTEGER</Type>
+            <Value>23</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_delete_link_key</Name>
+            <Description>Whether to delete link key or not. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_delete_ltk</Name>
+            <Description>Whether to delete Long Term Key or not. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_security_enabled</Name>
+            <Description>Whether to set security for the test suite. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_iut_setup_att_over_br_edr</Name>
+            <Description>IUT can optionally test ATT over BR/EDR connection when this flag is set when applicable. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_scan_interval</Name>
+            <Description>The scan interval value N*0.625ms. Default is setto fast scan interval.(Default: 30)</Description>
+            <Type>INTEGER</Type>
+            <Value>30</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_scan_window</Name>
+            <Description>The scan window value N*0.625ms. Default is set to fast scan window.(Default: 30)</Description>
+            <Type>INTEGER</Type>
+            <Value>30</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_scan_filter</Name>
+            <Description>The scan filter setting to allow accept filter accept list only device.(Default: 0 - Fileter none)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>00</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_advertising_interval_min</Name>
+            <Description>The minimum advertising interval value N*0.625ms. PTS will using this value to set advertising parameters.(Default: 160)</Description>
+            <Type>INTEGER</Type>
+            <Value>160</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_advertising_interval_max</Name>
+            <Description>The maximum advertising interval value N*0.625ms. PTS will using this value to set advertising parameters.(Default: 160)</Description>
+            <Type>INTEGER</Type>
+            <Value>160</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_tester_OOB_information</Name>
+            <Description>The 16-bit tester OOB information value. PTS will advertise using this value when in peripheral role.(Default: F87F)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>F87F</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_device_uuid</Name>
+            <Description>used for mesh beacon. (Default: 001BDC0810210B0E0A0C000B0E0A0C00)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>001BDC0810210B0E0A0C000B0E0A0C00</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_device_uuid2</Name>
+            <Description>used for tester2 mesh beacon. (Default: 00000000000000000000000000000000)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>00000000000000000000000000000000</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_use_pb_gatt_bearer</Name>
+            <Description>PB ADV or PB GATT bearer for PROT test cases. (Default: TRUE - PB-ADV)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_enable_IUT_provisioner</Name>
+            <Description>Indicates if the IUT performs provisioning for client cases. If set to TRUE, PTS expects to get provisioned by the IUT. (Default: FALSE)</Description>
+            <Type>BOOLEAN</Type>
+            <Value>FALSE</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_Procedure_Timeout</Name>
+            <Description>The time in seconds. (Default: 60)</Description>
+            <Type>INTEGER</Type>
+            <Value>60</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_Client_BLOB_ID</Name>
+            <Description>Unique identifier for the BLOB being transferred by the BLOB Transfer Client IUT. (Default: 1)</Description>
+            <Type>OCTETSTRING</Type>
+            <Value>1100000000000011</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_Client_BLOB_Data</Name>
+            <Description>BLOB being transferred by the IUT.</Description>
+            <Type>IA5STRING</Type>
+            <Value />
+          </Row>
+          <Row>
+            <Name>TSPX_Transfer_TTL</Name>
+            <Description>TTL. (Default: 3)</Description>
+            <Type>INTEGER</Type>
+            <Value>3</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_Client_Timeout_Base</Name>
+            <Description>Client Timeout Base state. (Default: 5)</Description>
+            <Type>INTEGER</Type>
+            <Value>4</Value>
+          </Row>
+          <Row>
+            <Name>TSPX_Server_Timeout_Base</Name>
+            <Description>Server Timeout Base state. (Default: 5)</Description>
+            <Type>INTEGER</Type>
+            <Value>5</Value>
           </Row>
         </Rows>
       </PIXIT>
@@ -26064,13 +26578,13 @@
           <Row>
             <Name>TSPC_PBP_4_1</Name>
             <Description>PBP v1.0.1 (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_PBP_4_2</Name>
             <Description>PBP v1.0.2 (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -26136,7 +26650,7 @@
           <Row>
             <Name>TSPC_PBP_6_9</Name>
             <Description>Broadcast Name of length 4 to 32 octets (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -26244,13 +26758,13 @@
           <Row>
             <Name>TSPC_PBP_10_1</Name>
             <Description>PBP v1.0.1 (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_PBP_10_2</Name>
             <Description>PBP v1.0.2 (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -26280,7 +26794,7 @@
           <Row>
             <Name>TSPC_PBP_12_3</Name>
             <Description>Broadcast Name of length 4 to 32 octets (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -26382,7 +26896,7 @@
           <Row>
             <Name>TSPC_PBP_14a_1</Name>
             <Description>LE 2M PHY (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -26394,13 +26908,13 @@
           <Row>
             <Name>TSPC_PBP_16_1</Name>
             <Description>PBP v1.0.1 (C.1)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_PBP_16_2</Name>
             <Description>PBP v1.0.2 (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -26418,13 +26932,13 @@
           <Row>
             <Name>TSPC_PBP_17a_1</Name>
             <Description>Broadcast Name of length 4 to 32 octets (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_PBP_18_1</Name>
             <Description>LE 2M PHY (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -26743,7 +27257,7 @@
           <Row>
             <Name>TSPC_SM_7a_3</Name>
             <Description>Connection Signature Resolving Key (CSRK) (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -26761,7 +27275,7 @@
           <Row>
             <Name>TSPC_SM_7b_3</Name>
             <Description>Connection Signature Resolving Key (CSRK) (O)</Description>
-            <Value>TRUE</Value>
+            <Value>FALSE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -27608,7 +28122,7 @@
           <Row>
             <Name>TSPC_TMAP_1_3</Name>
             <Description>Unicast Media Sender (UMS) (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -27908,283 +28422,283 @@
           <Row>
             <Name>TSPC_TMAP_20_1</Name>
             <Description>CG Audio Source accepts external mono input (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_30_1</Name>
             <Description>TMAP v1.0 (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_31_1</Name>
             <Description>TMAP v1.0.1 (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_32_1</Name>
             <Description>Common Audio Profile (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_32_2</Name>
             <Description>Basic Audio Profile (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_32_3</Name>
             <Description>Media Control Profile (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_33_1</Name>
             <Description>Advertise Unicast Media Sender Support (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_34_1</Name>
             <Description>CAP Initiator (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_34_2</Name>
             <Description>CAP Commander (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_34_3</Name>
             <Description>MCP Media Control Server (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_34_4</Name>
             <Description>VCP Volume Controller (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_34_5</Name>
             <Description>Audio Source (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_34_6</Name>
             <Description>BAP Unicast Client (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_34_7</Name>
             <Description>Media (CAP Initiator) (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_35_1</Name>
             <Description>48_1 LC3: 48 kHz Sampling Frequency, 7.5 ms Frame Duration, 75 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_35_2</Name>
             <Description>48_2 LC3: 48 kHz Sampling Frequency, 10 ms Frame Duration, 100 Octets (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_35_3</Name>
             <Description>48_3 LC3: 48 kHz Sampling Frequency, 7.5 ms Frame Duration, 90 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_35_4</Name>
             <Description>48_4 LC3: 48 kHz Sampling Frequency, 10 ms Frame Duration, 120 Octets (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_35_5</Name>
             <Description>48_5 LC3: 48 kHz Sampling Frequency, 7.5 ms Frame Duration, 117 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_35_6</Name>
             <Description>48_6 LC3: 48 kHz Sampling Frequency, 10 ms Frame Duration, 155 Octets (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_35_7</Name>
             <Description>441_1 LC3: 44.1 kHz Sampling Frequency, 8.163 ms Frame Duration, 97 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_35_8</Name>
             <Description>441_2 LC3: 44.1 kHz Sampling Frequency, 10.884 ms Frame Duration, 130 Octets (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_36_1</Name>
             <Description>48_1_1 LC3: 7500 SDU Interval, unframed, 75 Max SDU Size, 5 RTN, 15 Max_Transport_Latency (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_36_2</Name>
             <Description>48_2_1 LC3: 10000 SDU Interval, unframed, 100 Max SDU Size, 5 RTN, 20 Max_Transport_Latency (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_36_3</Name>
             <Description>48_3_1 LC3: 7500 SDU Interval, unframed, 90 Max SDU Size, 5 RTN, 15 Max_Transport_Latency (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_36_4</Name>
             <Description>48_4_1 LC3: 10000 SDU Interval, unframed, 120 Max SDU Size, 5 RTN, 20 Max_Transport_Latency (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_36_5</Name>
             <Description>48_5_1 LC3: 7500 SDU Interval, unframed, 117 Max SDU Size, 5 RTN, 15 Max_Transport_Latency (C.4)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_36_6</Name>
             <Description>48_6_1 LC3: 10000 SDU Interval, unframed, 155 Max SDU Size, 5 RTN, 20 Max_Transport_Latency (C.5)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_36_7</Name>
             <Description>441_1_1 LC3: 8163 SDU Interval, framed, 97 Max SDU Size, 5 RTN, 24 Max_Transport_Latency (C.6)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_36_8</Name>
             <Description>441_2_1 LC3: 10884 SDU Interval, framed, 130 Max SDU Size, 5 RTN, 31 Max_Transport_Latency (C.7)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_36_9</Name>
             <Description>48_1_2 LC3: 7500 SDU Interval, unframed, 75 Max SDU Size, 13 RTN, 75 Max_Transport_Latency (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_36_10</Name>
             <Description>48_2_2 LC3: 10000 SDU Interval, unframed, 100 Max SDU Size, 13 RTN, 95 Max_Transport_Latency (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_36_11</Name>
             <Description>48_3_2 LC3: 7500 SDU Interval, unframed, 90 Max SDU Size, 13 RTN, 75 Max_Transport_Latency (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_36_12</Name>
             <Description>48_4_2 LC3: 10000 SDU Interval, unframed, 120 Max SDU Size, 13 RTN, 100 Max_Transport_Latency (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_36_13</Name>
             <Description>48_5_2 LC3: 7500 SDU Interval, unframed, 117 Max SDU Size, 13 RTN, 75 Max_Transport_Latency (C.4)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_36_14</Name>
             <Description>48_6_2 LC3: 10000 SDU Interval, unframed, 155 Max SDU Size, 13 RTN, 100 Max_Transport_Latency (C.5)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_36_15</Name>
             <Description>441_1_2 LC3: 8163 SDU Interval, framed, 97 Max SDU Size, 13 RTN, 80 Max_Transport_Latency (C.6)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_36_16</Name>
             <Description>441_2_2 LC3: 10884 SDU Interval, framed, 130 Max SDU Size, 13 RTN, 85 Max_Transport_Latency (C.7)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_37_1</Name>
             <Description>Sink Audio Locations characteristic (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_38_1</Name>
             <Description>Front Left Audio Location (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_38_2</Name>
             <Description>Front Right Audio Location (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_38_3</Name>
             <Description>Front Right and Front Left Audio Locations (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_39_1</Name>
             <Description>Two Audio Channels (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_39_2</Name>
             <Description>AC 4: 1 Server, 1 Sink ASE, 2 Channels/Sink, 1 CIS, 1 Audio Stream (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_40_1</Name>
             <Description>Play (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_40_2</Name>
             <Description>Pause (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_41_1</Name>
             <Description>UMS Audio Source accepts external mono input (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -28238,7 +28752,7 @@
           <Row>
             <Name>TSPC_TMAP_54_4</Name>
             <Description>BAP Broadcast Assistant (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -29132,25 +29646,25 @@
           <Row>
             <Name>TSPC_TMAP_130_1</Name>
             <Description>Unicast to Broadcast Handover Support (Initiator) (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_130_2</Name>
             <Description>Broadcast to Unicast Handover Support (Initiator) (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_130_3</Name>
             <Description>Unicast to Broadcast Handover Support (Commander) (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_TMAP_130_4</Name>
             <Description>Broadcast to Unicast Handover Support (Commander) (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
@@ -29246,7 +29760,7 @@
           <Row>
             <Name>TSPC_TMAP_153_3</Name>
             <Description>Unicast Media Sender Support (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
