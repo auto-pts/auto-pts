@@ -40,7 +40,7 @@ if __name__ == '__main__':
 
     pts = PyPTS(lite_start=True)
     pts.start_pts()
-    pts.open_workspace(workspace_path)
+    pts.open_workspace(abspath(workspace_path))
     test_cases = get_test_cases(pts, [], [])
 
     for test_case_name in test_cases:
