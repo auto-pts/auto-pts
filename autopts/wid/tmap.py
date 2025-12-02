@@ -2,6 +2,7 @@
 # auto-pts - The Bluetooth PTS Automation Framework
 #
 # Copyright (c) 2024, Codecoup.
+# Copyright (c) 2025, Nordic Semiconductor ASA.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms and conditions of the GNU General Public License,
@@ -15,14 +16,13 @@
 
 import logging
 import re
-import struct
 from argparse import Namespace
 
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import MMI
 from autopts.pybtp import btp, defs
+from autopts.pybtp.btp.audio import pack_metadata
 from autopts.pybtp.btp.btp import lt2_addr_get, lt2_addr_type_get, pts_addr_get, pts_addr_type_get
-from autopts.pybtp.defs import AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS
 from autopts.pybtp.types import (
     CODEC_CONFIG_SETTINGS,
     QOS_CONFIG_SETTINGS,
@@ -413,26 +413,24 @@ def hdl_wid_503(params: WIDParams):
 wid_504_settings = {
     # test_case_name: (lt count, iut as audio source: streams + channels,
     # sink locations (0 - don't care), iut as audio sink streams, metadata)
-    'TMAP/CG/VRC/BV-01-C': (1, 1, 1, 0, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'TMAP/CG/VRC/BV-05-C': (1, 2, 1, 0, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'TMAP/CG/VRC/BV-06-C': (1, 1, 2, 0, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'TMAP/CG/VRC/BV-07-C': (1, 1, 1, 0, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'TMAP/CG/VRC/BV-08-C': (1, 2, 1, 0, 2, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'TMAP/CG/VRC/BV-11-C': (1, 2, 1, 0, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'TMAP/CG/VRC/BV-12-C': (1, 2, 1, 0, 2, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'TMAP/CG/ASC/BV-01-C': (1, 1, 1, 1, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'TMAP/CG/ASC/BV-02-C': (1, 1, 1, 2, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'TMAP/CG/ASC/BV-03-C': (1, 1, 1, 3, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-
+    "TMAP/CG/VRC/BV-01-C": (1, 1, 1, 0, 1, 1, pack_metadata(stream_context=0x0200)),
+    "TMAP/CG/VRC/BV-05-C": (1, 2, 1, 0, 1, 1, pack_metadata(stream_context=0x0200)),
+    "TMAP/CG/VRC/BV-06-C": (1, 1, 2, 0, 1, 1, pack_metadata(stream_context=0x0200)),
+    "TMAP/CG/VRC/BV-07-C": (1, 1, 1, 0, 1, 1, pack_metadata(stream_context=0x0200)),
+    "TMAP/CG/VRC/BV-08-C": (1, 2, 1, 0, 2, 1, pack_metadata(stream_context=0x0200)),
+    "TMAP/CG/VRC/BV-11-C": (1, 2, 1, 0, 1, 1, pack_metadata(stream_context=0x0200)),
+    "TMAP/CG/VRC/BV-12-C": (1, 2, 1, 0, 2, 1, pack_metadata(stream_context=0x0200)),
+    "TMAP/CG/ASC/BV-01-C": (1, 1, 1, 1, 1, 1, pack_metadata(stream_context=0x0200)),
+    "TMAP/CG/ASC/BV-02-C": (1, 1, 1, 2, 1, 1, pack_metadata(stream_context=0x0200)),
+    "TMAP/CG/ASC/BV-03-C": (1, 1, 1, 3, 1, 1, pack_metadata(stream_context=0x0200)),
     # According to TMAP.TS.p1 LT1 provides audio source and
     # LT2 provides audio sink, however, PTS 8.5.3 seem to have this the other way round
-    'TMAP/CG/VRC/BV-02-C':     (2, 1, 1, 0, 0, 0, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'TMAP/CG/VRC/BV-02-C_LT2': (2, 0, 0, 0, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'TMAP/CG/VRC/BV-03-C':     (2, 1, 1, 0, 0, 0, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'TMAP/CG/VRC/BV-03-C_LT2': (2, 1, 1, 0, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'TMAP/CG/VRC/BV-09-C':     (2, 1, 1, 0, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'TMAP/CG/VRC/BV-09-C_LT2': (2, 1, 1, 0, 1, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-
+    "TMAP/CG/VRC/BV-02-C": (2, 1, 1, 0, 0, 0, pack_metadata(stream_context=0x0200)),
+    "TMAP/CG/VRC/BV-02-C_LT2": (2, 0, 0, 0, 1, 1, pack_metadata(stream_context=0x0200)),
+    "TMAP/CG/VRC/BV-03-C": (2, 1, 1, 0, 0, 0, pack_metadata(stream_context=0x0200)),
+    "TMAP/CG/VRC/BV-03-C_LT2": (2, 1, 1, 0, 1, 1, pack_metadata(stream_context=0x0200)),
+    "TMAP/CG/VRC/BV-09-C": (2, 1, 1, 0, 1, 1, pack_metadata(stream_context=0x0200)),
+    "TMAP/CG/VRC/BV-09-C_LT2": (2, 1, 1, 0, 1, 1, pack_metadata(stream_context=0x0200)),
 }
 
 
@@ -616,7 +614,7 @@ def hdl_wid_506(params: WIDParams):
     # based on cap/hdl_wid_114 using fixed configuration
 
     source_num = 1
-    metadata = struct.pack("<BBH", 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, Context.CONVERSATIONAL | Context.MEDIA)
+    metadata = pack_metadata(stream_context=Context.CONVERSATIONAL | Context.MEDIA)
     qos_set_name = '48_2_1'
     coding_format = 0x06
     vid = 0x0000
