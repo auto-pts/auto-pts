@@ -33,7 +33,7 @@ from autopts.pybtp.btp.audio import pack_metadata
 from autopts.pybtp.btp.cap import announcements
 from autopts.pybtp.btp.gap import gap_set_uuid16_svc_data
 from autopts.pybtp.btp.pacs import pacs_set_available_contexts
-from autopts.pybtp.types import UUID, Addr, ASCSState, BAPAnnouncement, CAPAnnouncement, WIDParams
+from autopts.pybtp.types import BASS_PA_INTERVAL_UNKNOWN, UUID, Addr, ASCSState, BAPAnnouncement, CAPAnnouncement, WIDParams
 from autopts.wid import generic_wid_hdl
 from autopts.wid.bap import (
     BAS_CONFIG_SETTINGS,
@@ -124,9 +124,13 @@ wid_114_settings = {
     "CAP/INI/BST/BV-16-C": (1, pack_metadata(stream_context=0x0200)),
     "CAP/INI/BST/BV-17-C": (2, pack_metadata(stream_context=0x0200)),
     "CAP/INI/UTB/BV-01-C": (2, pack_metadata(stream_context=0x0200)),
+    "CAP/INI/UTB/BV-01-C_LT2": (2, pack_metadata(stream_context=0x0200)),
     "CAP/INI/UTB/BV-02-C": (2, pack_metadata(stream_context=0x0004, ccid_list=[0x00])),
+    "CAP/INI/UTB/BV-02-C_LT2": (2, pack_metadata(stream_context=0x0004, ccid_list=[0x00])),
     "CAP/INI/UTB/BV-03-C": (2, pack_metadata(stream_context=0x0200, ccid_list=[0x00])),
+    "CAP/INI/UTB/BV-03-C_LT2": (2, pack_metadata(stream_context=0x0200, ccid_list=[0x00])),
     "CAP/INI/UTB/BV-04-C": (2, pack_metadata(stream_context=0x0200, ccid_list=[0x00, 0x01])),
+    "CAP/INI/UTB/BV-04-C_LT2": (2, pack_metadata(stream_context=0x0200, ccid_list=[0x00, 0x01])),
     "CAP/INI/BTU/BV-01-C": (1, pack_metadata(stream_context=0x0200)),
     "CAP/INI/BTU/BV-02-C": (1, pack_metadata(stream_context=0x0200, ccid_list=[0x00])),
 }
@@ -135,7 +139,7 @@ wid_114_settings = {
 def hdl_wid_114(params: WIDParams):
     """Please advertise with Broadcast Audio Announcement (0x1852) service data"""
 
-    # btp.gap_adv_off()
+    stack = get_stack()
 
     source_num, metadata = wid_114_settings[params.test_case_name]
     qos_set_name = "16_2_1"
@@ -144,31 +148,30 @@ def hdl_wid_114(params: WIDParams):
     cid = 0x0000
     codec_set_name, *qos_config = BAS_CONFIG_SETTINGS[qos_set_name]
 
-    (sampling_freq, frame_duration, octets_per_frame) = \
-        CODEC_CONFIG_SETTINGS[codec_set_name]
+    (sampling_freq, frame_duration, octets_per_frame) = CODEC_CONFIG_SETTINGS[codec_set_name]
     audio_locations = 0x01
     frames_per_sdu = 0x01
 
-    codec_ltvs_bytes = create_lc3_ltvs_bytes(sampling_freq, frame_duration,
-                                             audio_locations, octets_per_frame,
-                                             frames_per_sdu)
+    codec_ltvs_bytes = create_lc3_ltvs_bytes(sampling_freq, frame_duration, audio_locations, octets_per_frame, frames_per_sdu)
 
     source_id = 0x00
     subgroup_id = 0x00
     presentation_delay = 40000
 
     for _i in range(source_num):
-        btp.cap_broadcast_source_setup_stream(source_id, subgroup_id, coding_format, vid, cid,
-                                              codec_ltvs_bytes, metadata)
+        btp.cap_broadcast_source_setup_stream(source_id, subgroup_id, coding_format, vid, cid, codec_ltvs_bytes, metadata)
 
-    btp.cap_broadcast_source_setup_subgroup(source_id, subgroup_id, coding_format, vid, cid,
-                                            codec_ltvs_bytes, metadata)
+    btp.cap_broadcast_source_setup_subgroup(source_id, subgroup_id, coding_format, vid, cid, codec_ltvs_bytes, metadata)
 
-    # Zephyr stack generates Broadcast_ID itself
-    broadcast_id = 0x123456
-    btp.cap_broadcast_source_setup(source_id, broadcast_id, *qos_config, presentation_delay,
-                                   encryption=False, broadcast_code=None,
-                                   subgroup_codec_level=False)
+    btp.cap_broadcast_source_setup(
+        source_id,
+        stack.cap.local_broadcast_id,
+        *qos_config,
+        presentation_delay,
+        encryption=False,
+        broadcast_code=None,
+        subgroup_codec_level=False,
+    )
 
     btp.cap_broadcast_adv_start(source_id)
 
@@ -268,34 +271,31 @@ def hdl_wid_345(params: WIDParams):
     if params.test_case_name.endswith('LT2'):
         addr = lt2_addr_get()
         addr_type = lt2_addr_type_get()
-        lt1_test_name = params.test_case_name.replace('_LT2', '')
     else:
         addr = pts_addr_get()
         addr_type = pts_addr_type_get()
-        lt1_test_name = params.test_case_name
+
+    test_name = params.test_case_name.removesuffix("_LT2")
 
     # get broadcaster address
-    if lt1_test_name.startswith('CAP/INI/UTB/BV-') or lt1_test_name.startswith('CAP/INI/BTU/BV-'):
-
-        # Setup Broadcast
-        hdl_wid_114(params)
+    if test_name.startswith("CAP/INI/UTB/BV-") or test_name.startswith("CAP/INI/BTU/BV-"):
+        if not params.test_case_name.endswith("LT2"):
+            # Use hdl_wid_114 to setup broadcast source. hdl_wid_345 will be called later to handle transferring the
+            # broadcast information to the lower testers.
+            hdl_wid_114(params)
 
         # IUT is Broadcaster
         broadcaster_addr = stack.gap.iut_addr_get_str()
-        # TODO: Broadcast Advertising Start uses Random Address for NRF5340 in BTstack's BTP Client
-        broadcaster_addr_type = Addr.le_random
-        # TODO: hard-coded in BTstack BTP Client
+        broadcaster_addr_type = Addr.le_random if stack.gap.iut_addr_is_random() else Addr.le_public
+        # TODO: hard-coded in BTstack BTP Client - There is no way with existing commands and events to know or control this.
         advertiser_sid = 0
-        # TODO: hard-coded in BTstack BTP Client, but not used by Add Broadcast Source operation
-        padv_interval = 750
-        # TODO: hard-coded. Unclear if used by PTS
-        broadcast_id = 0x123456
-
+        # Since we don't know the interval used by the IUT we need to use this.
+        # The IUT may determine to replace this value with the actual value when sending the request to the lower testers
+        padv_interval = BASS_PA_INTERVAL_UNKNOWN
+        broadcast_id = stack.cap.local_broadcast_id
     else:
         # A Lower Tester is Broadcaster
-        if lt1_test_name in ['CAP/COM/BST/BV-01-C',
-                             'CAP/COM/BST/BV-02-C',
-                             'CAP/COM/BST/BV-06-C']:
+        if test_name in ["CAP/COM/BST/BV-01-C", "CAP/COM/BST/BV-02-C", "CAP/COM/BST/BV-06-C"]:
             broadcaster_addr = lt3_addr_get()
             broadcaster_addr_type = lt3_addr_type_get()
         else:
@@ -556,9 +556,13 @@ wid_400_settings = {
     "CAP/INI/UST/BV-42-C_LT2": (1, 0, 2, pack_metadata(stream_context=0x0200)),
     # Two Lower Testers, unidirectional
     "CAP/INI/UTB/BV-01-C": (1, 0, 2, pack_metadata(stream_context=0x0200)),
+    "CAP/INI/UTB/BV-01-C_LT2": (1, 0, 2, pack_metadata(stream_context=0x0200)),
     "CAP/INI/UTB/BV-02-C": (1, 0, 2, pack_metadata(stream_context=0x0004, ccid_list=[0x00])),
+    "CAP/INI/UTB/BV-02-C_LT2": (1, 0, 2, pack_metadata(stream_context=0x0004, ccid_list=[0x00])),
     "CAP/INI/UTB/BV-03-C": (1, 0, 2, pack_metadata(stream_context=0x0200, ccid_list=[0x00])),
+    "CAP/INI/UTB/BV-03-C_LT2": (1, 0, 2, pack_metadata(stream_context=0x0200, ccid_list=[0x00])),
     "CAP/INI/UTB/BV-04-C": (1, 0, 2, pack_metadata(stream_context=0x0200, ccid_list=[0x00, 0x01])),
+    "CAP/INI/UTB/BV-04-C_LT2": (1, 0, 2, pack_metadata(stream_context=0x0200, ccid_list=[0x00, 0x01])),
     # Single LT, unidirectional
     "CAP/INI/BTU/BV-01-C": (1, 0, 1, pack_metadata(stream_context=0x0200)),
     "CAP/INI/BTU/BV-02-C": (1, 0, 1, pack_metadata(stream_context=0x0200, ccid_list=[0x00])),
@@ -753,8 +757,10 @@ def hdl_wid_406(params: WIDParams):
     stack = get_stack()
     ev = stack.cap.wait_unicast_stop_completed_ev(cig_id, 20)
     if ev is None:
-        log('hdl_wid_406 exit, unicasst stop event not received')
+        log("hdl_wid_406 exit, unicast stop event not received")
         return False
+
+    # hdl_wid_345 will be used to start the broadcast source and broadcast audio reception
 
     return True
 
@@ -832,10 +838,8 @@ def hdl_wid_413(params: WIDParams):
 
     # IUT is Broadcaster
     broadcaster_addr = stack.gap.iut_addr_get_str()
-    # TODO: Broadcast Advertising Start uses Random Address for NRF5340 in BTstack's BTP Client
-    broadcaster_addr_type = Addr.le_random
-    # TODO: hard-coded. Unclear if used by PTS
-    broadcast_id = 0x123456
+    broadcaster_addr_type = Addr.le_random if stack.gap.iut_addr_is_random() else Addr.le_public
+    broadcast_id = stack.cap.local_broadcast_id
 
     addr = pts_addr_get()
     addr_type = pts_addr_type_get()
@@ -848,8 +852,9 @@ def hdl_wid_413(params: WIDParams):
     subgroups = struct.pack('<IB', bis_sync, metadata_len)
     # TODO: get src_id from Broadcast Add Source
     source_id = 1
-    # TODO: padv_interval most likely isn't used
-    padv_interval = 0
+    # Since we don't know the interval used by the IUT we need to use this.
+    # The IUT may determine to replace this value with the actual value when sending the request to the lower testers
+    padv_interval = BASS_PA_INTERVAL_UNKNOWN
     btp.bap_modify_broadcast_src(source_id, pa_sync, padv_interval, num_subgroups, subgroups, addr_type, addr)
 
     pa_sync_state = 0x0
@@ -886,10 +891,8 @@ def hdl_wid_414(params: WIDParams):
 
     # IUT is Broadcaster
     broadcaster_addr = stack.gap.iut_addr_get_str()
-    # TODO: Broadcast Advertising Start uses Random Address for NRF5340 in BTstack's BTP Client
-    broadcaster_addr_type = Addr.le_random
-    # TODO: hard-coded. Unclear if used by PTS
-    broadcast_id = 0x123456
+    broadcaster_addr_type = Addr.le_random if stack.gap.iut_addr_is_random() else Addr.le_public
+    broadcast_id = stack.cap.local_broadcast_id
 
     padv_sync = 0x02
     ev = stack.bap.wait_broadcast_receive_state_ev(
@@ -1010,6 +1013,17 @@ def hdl_wid_20100(params: WIDParams):
         btp.vcp_discover(addr_type, addr)
         stack.vcp.wait_discovery_completed_ev(addr_type, addr, 10)
 
+    # Discover BASS on CAP tests that need it (CAP Commander for broadcast and CAP Handover)
+    if (
+        params.test_case_name.startswith("CAP/INI/UTB")
+        or params.test_case_name.startswith("CAP/INI/BTU")
+        or params.test_case_name.startswith("CAP/COM/BST")
+    ):
+        btp.bap_discover_scan_delegator(addr_type, addr)
+        ev = stack.bap.wait_scan_delegator_found_ev(addr_type, addr, 10)
+        if ev is None:
+            return False
+
     return True
 
 
@@ -1022,9 +1036,16 @@ def hdl_wid_20101(_: WIDParams):
 
 def hdl_wid_20106(_: WIDParams):
     """
-        Please write to Client Characteristic Configuration Descriptor
-        of ASE Control Point characteristic to enable notification.
+    Please write to Client Characteristic Configuration Descriptor
+    of ASE Control Point characteristic to enable notification.
+
+    or
+
+    Please write to Client Characteristic Configuration Descriptor
+    of Broadcast Receive State characteristic to enable notification.
     """
+
+    # IUTs are expected to subscribe to notifications when discovering in hdl_wid_20100
 
     return True
 
