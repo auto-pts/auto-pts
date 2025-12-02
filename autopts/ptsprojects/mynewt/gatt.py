@@ -121,11 +121,8 @@ def set_pixits(ptses):
     pts.set_pixit("GATT", "TSPX_security_enabled", "FALSE")
     pts.set_pixit("GATT", "TSPX_delete_link_key", "TRUE")
     pts.set_pixit("GATT", "TSPX_time_guard", "180000")
-    pts.set_pixit("GATT", "TSPX_selected_handle", "0012")
     pts.set_pixit("GATT", "TSPX_use_implicit_send", "TRUE")
     pts.set_pixit("GATT", "TSPX_secure_simple_pairing_pass_key_confirmation", "FALSE")
-    pts.set_pixit("GATT", "TSPX_iut_use_dynamic_bd_addr", "FALSE")
-    pts.set_pixit("GATT", "TSPX_iut_setup_att_over_br_edr", "FALSE")
     pts.set_pixit("GATT", "TSPX_iut_is_client_periphral", "FALSE")
     pts.set_pixit("GATT", "TSPX_iut_is_server_central", "FALSE")
     pts.set_pixit("GATT", "TSPX_mtu_size", "23")
@@ -156,10 +153,6 @@ def test_cases_server(ptses):
                         TestFunc(lambda: pts.update_pixit_param(
                             "GATT", "TSPX_bd_addr_iut",
                             stack.gap.iut_addr_get_str())),
-                        TestFunc(lambda: pts.update_pixit_param(
-                            "GATT", "TSPX_iut_use_dynamic_bd_addr",
-                            "TRUE" if stack.gap.iut_addr_is_random()
-                            else "FALSE")),
                         TestFunc(stack.gatt_init)]
 
     pre_conditions_2 = [TestFunc(btp.core_reg_svc_gap),
@@ -170,10 +163,6 @@ def test_cases_server(ptses):
                             stack.gap.iut_addr_get_str())),
                         TestFunc(lambda: set_addr(
                             stack.gap.iut_addr_get_str())),
-                        TestFunc(lambda: pts.update_pixit_param(
-                            "GATT", "TSPX_iut_use_dynamic_bd_addr",
-                            "TRUE" if stack.gap.iut_addr_is_random()
-                            else "FALSE")),
                         TestFunc(btp.gap_set_gendiscov),
                         TestFunc(btp.set_pts_addr, pts_bd_addr, Addr.le_public),
                         TestFunc(btp.gap_set_conn)]
@@ -232,9 +221,6 @@ def test_cases_server(ptses):
     pre_conditions_lt2 = [
                         TestFunc(lambda: pts2.update_pixit_param(
                                 "GATT", "TSPX_bd_addr_iut", iut_addr.get(timeout=90, clear=True))),
-                        TestFunc(lambda: pts2.update_pixit_param(
-                                "GATT", "TSPX_iut_use_dynamic_bd_addr",
-                                "TRUE" if stack.gap.iut_addr_is_random() else "FALSE"))
     ]
 
     test_cases_lt2 = [
