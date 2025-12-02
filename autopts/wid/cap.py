@@ -2,6 +2,7 @@
 # auto-pts - The Bluetooth PTS Automation Framework
 #
 # Copyright (c) 2023, Oticon.
+# Copyright (c) 2025, Nordic Semiconductor ASA.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms and conditions of the GNU General Public License,
@@ -20,11 +21,18 @@ from argparse import Namespace
 
 from autopts.ptsprojects.stack import WildCard, get_stack
 from autopts.pybtp import btp, defs
-from autopts.pybtp.btp import lt2_addr_get, lt2_addr_type_get, lt3_addr_get, lt3_addr_type_get, pts_addr_get, pts_addr_type_get
+from autopts.pybtp.btp import (
+    lt2_addr_get,
+    lt2_addr_type_get,
+    lt3_addr_get,
+    lt3_addr_type_get,
+    pts_addr_get,
+    pts_addr_type_get,
+)
+from autopts.pybtp.btp.audio import pack_metadata
 from autopts.pybtp.btp.cap import announcements
 from autopts.pybtp.btp.gap import gap_set_uuid16_svc_data
 from autopts.pybtp.btp.pacs import pacs_set_available_contexts
-from autopts.pybtp.defs import AUDIO_METADATA_CCID_LIST, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS
 from autopts.pybtp.types import UUID, Addr, ASCSState, BAPAnnouncement, CAPAnnouncement, WIDParams
 from autopts.wid import generic_wid_hdl
 from autopts.wid.bap import (
@@ -98,44 +106,29 @@ def hdl_wid_104(_: WIDParams):
 
 wid_114_settings = {
     # test_case_name: (source_num, metadata)
-    'CAP/INI/BST/BV-01-C': (1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'CAP/INI/BST/BV-02-C': (2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'CAP/INI/BST/BV-03-C': (1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'CAP/INI/BST/BV-04-C': (2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'CAP/INI/BST/BV-05-C': (1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
-                               struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
-    'CAP/INI/BST/BV-06-C': (2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
-                               struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
-    'CAP/INI/BST/BV-07-C': (2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
-                               struct.pack('<BBBB', 3, AUDIO_METADATA_CCID_LIST, 0x00, 0x01)),
-    'CAP/INI/BST/BV-08-C': (1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
-                               struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
-    'CAP/INI/BST/BV-09-C': (2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
-                               struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
-    'CAP/INI/BST/BV-10-C': (2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
-                               struct.pack('<BBBB', 3, AUDIO_METADATA_CCID_LIST, 0x00, 0x01)),
-    'CAP/INI/BST/BV-11-C': (1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'CAP/INI/BST/BV-12-C': (2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'CAP/INI/BST/BV-13-C': (2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'CAP/INI/BST/BV-14-C': (2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
-                               struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
-    'CAP/INI/BST/BV-15-C': (2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
-                               struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
-    'CAP/INI/BST/BV-16-C': (1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'CAP/INI/BST/BV-17-C': (2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'CAP/INI/UTB/BV-01-C': (2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'CAP/INI/UTB/BV-02-C': (2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0004) +
-                        struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
-    'CAP/INI/UTB/BV-03-C': (
-        2,
-        struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)
-        + struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)
-    ),
-    'CAP/INI/UTB/BV-04-C': (2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
-                        struct.pack('<BBBB', 3, AUDIO_METADATA_CCID_LIST, 0x00, 0x01)),
-    'CAP/INI/BTU/BV-01-C': (1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'CAP/INI/BTU/BV-02-C': (1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
-                        struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
+    "CAP/INI/BST/BV-01-C": (1, pack_metadata(stream_context=0x0200)),
+    "CAP/INI/BST/BV-02-C": (2, pack_metadata(stream_context=0x0200)),
+    "CAP/INI/BST/BV-03-C": (1, pack_metadata(stream_context=0x0200)),
+    "CAP/INI/BST/BV-04-C": (2, pack_metadata(stream_context=0x0200)),
+    "CAP/INI/BST/BV-05-C": (1, pack_metadata(stream_context=0x0200, ccid_list=[0x00])),
+    "CAP/INI/BST/BV-06-C": (2, pack_metadata(stream_context=0x0200, ccid_list=[0x00])),
+    "CAP/INI/BST/BV-07-C": (2, pack_metadata(stream_context=0x0200, ccid_list=[0x00, 0x01])),
+    "CAP/INI/BST/BV-08-C": (1, pack_metadata(stream_context=0x0200, ccid_list=[0x00])),
+    "CAP/INI/BST/BV-09-C": (2, pack_metadata(stream_context=0x0200, ccid_list=[0x00])),
+    "CAP/INI/BST/BV-10-C": (2, pack_metadata(stream_context=0x0200, ccid_list=[0x00, 0x01])),
+    "CAP/INI/BST/BV-11-C": (1, pack_metadata(stream_context=0x0200)),
+    "CAP/INI/BST/BV-12-C": (2, pack_metadata(stream_context=0x0200)),
+    "CAP/INI/BST/BV-13-C": (2, pack_metadata(stream_context=0x0200)),
+    "CAP/INI/BST/BV-14-C": (2, pack_metadata(stream_context=0x0200, ccid_list=[0x00])),
+    "CAP/INI/BST/BV-15-C": (2, pack_metadata(stream_context=0x0200, ccid_list=[0x00])),
+    "CAP/INI/BST/BV-16-C": (1, pack_metadata(stream_context=0x0200)),
+    "CAP/INI/BST/BV-17-C": (2, pack_metadata(stream_context=0x0200)),
+    "CAP/INI/UTB/BV-01-C": (2, pack_metadata(stream_context=0x0200)),
+    "CAP/INI/UTB/BV-02-C": (2, pack_metadata(stream_context=0x0004, ccid_list=[0x00])),
+    "CAP/INI/UTB/BV-03-C": (2, pack_metadata(stream_context=0x0200, ccid_list=[0x00])),
+    "CAP/INI/UTB/BV-04-C": (2, pack_metadata(stream_context=0x0200, ccid_list=[0x00, 0x01])),
+    "CAP/INI/BTU/BV-01-C": (1, pack_metadata(stream_context=0x0200)),
+    "CAP/INI/BTU/BV-02-C": (1, pack_metadata(stream_context=0x0200, ccid_list=[0x00])),
 }
 
 
@@ -208,16 +201,12 @@ def hdl_wid_202(_: WIDParams):
 
 
 wid_310_settings = {
-    'CAP/INI/UST/BV-32-C': struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200),
-    'CAP/INI/UST/BV-33-C': struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200),
-    'CAP/INI/UST/BV-34-C': struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
-                           struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00),
-    'CAP/INI/UST/BV-35-C': struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
-                           struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00),
-    'CAP/INI/UST/BV-36-C': struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
-                           struct.pack('<BBBB', 3, AUDIO_METADATA_CCID_LIST, 0x00, 0x01),
-    'CAP/INI/UST/BV-37-C': struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
-                           struct.pack('<BBBB', 3, AUDIO_METADATA_CCID_LIST, 0x00, 0x01),
+    "CAP/INI/UST/BV-32-C": pack_metadata(stream_context=0x0200),
+    "CAP/INI/UST/BV-33-C": pack_metadata(stream_context=0x0200),
+    "CAP/INI/UST/BV-34-C": pack_metadata(stream_context=0x0200, ccid_list=[0x00]),
+    "CAP/INI/UST/BV-35-C": pack_metadata(stream_context=0x0200, ccid_list=[0x00]),
+    "CAP/INI/UST/BV-36-C": pack_metadata(stream_context=0x0200, ccid_list=[0x00, 0x01]),
+    "CAP/INI/UST/BV-37-C": pack_metadata(stream_context=0x0200, ccid_list=[0x00, 0x01]),
 }
 
 
@@ -518,99 +507,61 @@ def hdl_wid_384(_: WIDParams):
 wid_400_settings = {
     # test_case_name: (sink_num, source_num, LT_count, metadata)
     # Two Lower Testers, unidirectional
-    'CAP/INI/UST/BV-01-C': (1, 0, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'CAP/INI/UST/BV-02-C': (0, 1, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'CAP/INI/UST/BV-03-C': (1, 0, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0004) +
-                            struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
-    'CAP/INI/UST/BV-04-C': (0, 1, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0004) +
-                            struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
-    'CAP/INI/UST/BV-05-C': (1, 0, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0002) +
-                            struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
-    'CAP/INI/UST/BV-06-C': (0, 1, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0002) +
-                            struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
-    'CAP/INI/UST/BV-07-C': (1, 0, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
-                            struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
-    'CAP/INI/UST/BV-08-C': (0, 1, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
-                            struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
-    'CAP/INI/UST/BV-09-C': (1, 0, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0080) +
-                            struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
-    'CAP/INI/UST/BV-10-C': (0, 1, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0080) +
-                            struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
-    'CAP/INI/UST/BV-11-C': (1, 0, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
-                            struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
-    'CAP/INI/UST/BV-12-C': (0, 1, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
-                            struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
-    'CAP/INI/UST/BV-13-C': (1, 0, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
-                            struct.pack('<BBBB', 3, AUDIO_METADATA_CCID_LIST, 0x00, 0x01)),
-    'CAP/INI/UST/BV-14-C': (0, 1, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
-                            struct.pack('<BBBB', 3, AUDIO_METADATA_CCID_LIST, 0x00, 0x01)),
+    "CAP/INI/UST/BV-01-C": (1, 0, 2, pack_metadata(stream_context=0x0200)),
+    "CAP/INI/UST/BV-02-C": (0, 1, 2, pack_metadata(stream_context=0x0200)),
+    "CAP/INI/UST/BV-03-C": (1, 0, 2, pack_metadata(stream_context=0x0004, ccid_list=[0x00])),
+    "CAP/INI/UST/BV-04-C": (0, 1, 2, pack_metadata(stream_context=0x0004, ccid_list=[0x00])),
+    "CAP/INI/UST/BV-05-C": (1, 0, 2, pack_metadata(stream_context=0x0002, ccid_list=[0x00])),
+    "CAP/INI/UST/BV-06-C": (0, 1, 2, pack_metadata(stream_context=0x0002, ccid_list=[0x00])),
+    "CAP/INI/UST/BV-07-C": (1, 0, 2, pack_metadata(stream_context=0x0200, ccid_list=[0x00])),
+    "CAP/INI/UST/BV-08-C": (0, 1, 2, pack_metadata(stream_context=0x0200, ccid_list=[0x00])),
+    "CAP/INI/UST/BV-09-C": (1, 0, 2, pack_metadata(stream_context=0x0080, ccid_list=[0x00])),
+    "CAP/INI/UST/BV-10-C": (0, 1, 2, pack_metadata(stream_context=0x0080, ccid_list=[0x00])),
+    "CAP/INI/UST/BV-11-C": (1, 0, 2, pack_metadata(stream_context=0x0200, ccid_list=[0x00])),
+    "CAP/INI/UST/BV-12-C": (0, 1, 2, pack_metadata(stream_context=0x0200, ccid_list=[0x00])),
+    "CAP/INI/UST/BV-13-C": (1, 0, 2, pack_metadata(stream_context=0x0200, ccid_list=[0x00, 0x01])),
+    "CAP/INI/UST/BV-14-C": (0, 1, 2, pack_metadata(stream_context=0x0200, ccid_list=[0x00, 0x01])),
     # Single LT, unidirectional
-    'CAP/INI/UST/BV-15-C': (2, 0, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'CAP/INI/UST/BV-16-C': (0, 2, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'CAP/INI/UST/BV-17-C': (2, 0, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0004) +
-                            struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
-    'CAP/INI/UST/BV-18-C': (0, 2, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0004) +
-                            struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
-    'CAP/INI/UST/BV-19-C': (2, 0, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0002) +
-                            struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
-    'CAP/INI/UST/BV-20-C': (0, 2, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0002) +
-                            struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
-    'CAP/INI/UST/BV-21-C': (2, 0, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
-                            struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
-    'CAP/INI/UST/BV-22-C': (0, 2, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
-                            struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
-    'CAP/INI/UST/BV-23-C': (2, 0, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0080) +
-                            struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
-    'CAP/INI/UST/BV-24-C': (0, 2, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0080) +
-                            struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
-    'CAP/INI/UST/BV-25-C': (2, 0, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
-                            struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
-    'CAP/INI/UST/BV-26-C': (0, 2, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
-                            struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
-    'CAP/INI/UST/BV-27-C': (2, 0, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
-                            struct.pack('<BBBB', 3, AUDIO_METADATA_CCID_LIST, 0x00, 0x01)),
-    'CAP/INI/UST/BV-28-C': (0, 2, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
-                            struct.pack('<BBBB', 3, AUDIO_METADATA_CCID_LIST, 0x00, 0x01)),
+    "CAP/INI/UST/BV-15-C": (2, 0, 1, pack_metadata(stream_context=0x0200)),
+    "CAP/INI/UST/BV-16-C": (0, 2, 1, pack_metadata(stream_context=0x0200)),
+    "CAP/INI/UST/BV-17-C": (2, 0, 1, pack_metadata(stream_context=0x0004, ccid_list=[0x00])),
+    "CAP/INI/UST/BV-18-C": (0, 2, 1, pack_metadata(stream_context=0x0004, ccid_list=[0x00])),
+    "CAP/INI/UST/BV-19-C": (2, 0, 1, pack_metadata(stream_context=0x0002, ccid_list=[0x00])),
+    "CAP/INI/UST/BV-20-C": (0, 2, 1, pack_metadata(stream_context=0x0002, ccid_list=[0x00])),
+    "CAP/INI/UST/BV-21-C": (2, 0, 1, pack_metadata(stream_context=0x0200, ccid_list=[0x00])),
+    "CAP/INI/UST/BV-22-C": (0, 2, 1, pack_metadata(stream_context=0x0200, ccid_list=[0x00])),
+    "CAP/INI/UST/BV-23-C": (2, 0, 1, pack_metadata(stream_context=0x0080, ccid_list=[0x00])),
+    "CAP/INI/UST/BV-24-C": (0, 2, 1, pack_metadata(stream_context=0x0080, ccid_list=[0x00])),
+    "CAP/INI/UST/BV-25-C": (2, 0, 1, pack_metadata(stream_context=0x0200, ccid_list=[0x00])),
+    "CAP/INI/UST/BV-26-C": (0, 2, 1, pack_metadata(stream_context=0x0200, ccid_list=[0x00])),
+    "CAP/INI/UST/BV-27-C": (2, 0, 1, pack_metadata(stream_context=0x0200, ccid_list=[0x00, 0x01])),
+    "CAP/INI/UST/BV-28-C": (0, 2, 1, pack_metadata(stream_context=0x0200, ccid_list=[0x00, 0x01])),
     # Two LTs, one CIS bidirectional, the other CIS unidirectional
-    'CAP/INI/UST/BV-29-C': (1, 1, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0007)),
-    'CAP/INI/UST/BV-29-C_LT2': (1, 0, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0007)),
-    'CAP/INI/UST/BV-30-C': (1, 1, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0007) +
-                            struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
-    'CAP/INI/UST/BV-30-C_LT2': (1, 0, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0007) +
-                                struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
-    'CAP/INI/UST/BV-31-C': (1, 1, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0007) +
-                            struct.pack('<BBBB', 3, AUDIO_METADATA_CCID_LIST, 0x00, 0x01)),
-    'CAP/INI/UST/BV-31-C_LT2': (1, 0, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0007) +
-                                struct.pack('<BBBB', 3, AUDIO_METADATA_CCID_LIST, 0x00, 0x01)),
-
+    "CAP/INI/UST/BV-29-C": (1, 1, 2, pack_metadata(stream_context=0x0007)),
+    "CAP/INI/UST/BV-29-C_LT2": (1, 0, 2, pack_metadata(stream_context=0x0007)),
+    "CAP/INI/UST/BV-30-C": (1, 1, 2, pack_metadata(stream_context=0x0007, ccid_list=[0x00])),
+    "CAP/INI/UST/BV-30-C_LT2": (1, 0, 2, pack_metadata(stream_context=0x0007, ccid_list=[0x00])),
+    "CAP/INI/UST/BV-31-C": (1, 1, 2, pack_metadata(stream_context=0x0007, ccid_list=[0x00, 0x01])),
+    "CAP/INI/UST/BV-31-C_LT2": (1, 0, 2, pack_metadata(stream_context=0x0007, ccid_list=[0x00, 0x01])),
     # Two LTs, unidirectional
-    'CAP/INI/UST/BV-32-C': (0, 1, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'CAP/INI/UST/BV-33-C': (1, 0, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'CAP/INI/UST/BV-34-C': (0, 1, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
-                            struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
-    'CAP/INI/UST/BV-35-C': (1, 0, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
-                            struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
-    'CAP/INI/UST/BV-36-C': (0, 1, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
-                            struct.pack('<BBBB', 3, AUDIO_METADATA_CCID_LIST, 0x00, 0x01)),
-    'CAP/INI/UST/BV-37-C': (1, 0, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
-                            struct.pack('<BBBB', 3, AUDIO_METADATA_CCID_LIST, 0x00, 0x01)),
-    'CAP/INI/UST/BV-40-C': (0, 1, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'CAP/INI/UST/BV-41-C': (1, 0, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-
-    'CAP/INI/UST/BV-42-C': (1, 1, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'CAP/INI/UST/BV-42-C_LT2': (1, 0, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
+    "CAP/INI/UST/BV-32-C": (0, 1, 2, pack_metadata(stream_context=0x0200)),
+    "CAP/INI/UST/BV-33-C": (1, 0, 2, pack_metadata(stream_context=0x0200)),
+    "CAP/INI/UST/BV-34-C": (0, 1, 2, pack_metadata(stream_context=0x0200, ccid_list=[0x00])),
+    "CAP/INI/UST/BV-35-C": (1, 0, 2, pack_metadata(stream_context=0x0200, ccid_list=[0x00])),
+    "CAP/INI/UST/BV-36-C": (0, 1, 2, pack_metadata(stream_context=0x0200, ccid_list=[0x00, 0x01])),
+    "CAP/INI/UST/BV-37-C": (1, 0, 2, pack_metadata(stream_context=0x0200, ccid_list=[0x00, 0x01])),
+    "CAP/INI/UST/BV-40-C": (0, 1, 2, pack_metadata(stream_context=0x0200)),
+    "CAP/INI/UST/BV-41-C": (1, 0, 2, pack_metadata(stream_context=0x0200)),
+    "CAP/INI/UST/BV-42-C": (1, 1, 2, pack_metadata(stream_context=0x0200)),
+    "CAP/INI/UST/BV-42-C_LT2": (1, 0, 2, pack_metadata(stream_context=0x0200)),
     # Two Lower Testers, unidirectional
-    'CAP/INI/UTB/BV-01-C': (1, 0, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'CAP/INI/UTB/BV-02-C': (1, 0, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0004) +
-                            struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
-    'CAP/INI/UTB/BV-03-C': (1, 0, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
-                            struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
-    'CAP/INI/UTB/BV-04-C': (1, 0, 2, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
-                            struct.pack('<BBBB', 3, AUDIO_METADATA_CCID_LIST, 0x00, 0x01)),
+    "CAP/INI/UTB/BV-01-C": (1, 0, 2, pack_metadata(stream_context=0x0200)),
+    "CAP/INI/UTB/BV-02-C": (1, 0, 2, pack_metadata(stream_context=0x0004, ccid_list=[0x00])),
+    "CAP/INI/UTB/BV-03-C": (1, 0, 2, pack_metadata(stream_context=0x0200, ccid_list=[0x00])),
+    "CAP/INI/UTB/BV-04-C": (1, 0, 2, pack_metadata(stream_context=0x0200, ccid_list=[0x00, 0x01])),
     # Single LT, unidirectional
-    'CAP/INI/BTU/BV-01-C': (1, 0, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)),
-    'CAP/INI/BTU/BV-02-C': (1, 0, 1, struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
-                            struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)),
+    "CAP/INI/BTU/BV-01-C": (1, 0, 1, pack_metadata(stream_context=0x0200)),
+    "CAP/INI/BTU/BV-02-C": (1, 0, 1, pack_metadata(stream_context=0x0200, ccid_list=[0x00])),
 }
 
 
@@ -830,8 +781,7 @@ def hdl_wid_409(_: WIDParams):
        to advertise with new BASE information"""
 
     source_id = 0x00
-    metadata = struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0004) + \
-               struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00)
+    metadata = pack_metadata(stream_context=0x0004, ccid_list=[0x00])
 
     btp.cap_broadcast_adv_stop(source_id)
 
@@ -843,11 +793,9 @@ def hdl_wid_409(_: WIDParams):
 
 
 update_settings = {
-    'CAP/INI/BST/BV-13-C': struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
-                           struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x00),
-    'CAP/INI/BST/BV-14-C': struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200) +
-                           struct.pack('<BBB', 2, AUDIO_METADATA_CCID_LIST, 0x01),
-    'CAP/INI/BST/BV-15-C': struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200),
+    "CAP/INI/BST/BV-13-C": pack_metadata(stream_context=0x0200, ccid_list=[0x00]),
+    "CAP/INI/BST/BV-14-C": pack_metadata(stream_context=0x0200, ccid_list=[0x01]),
+    "CAP/INI/BST/BV-15-C": pack_metadata(stream_context=0x0200),
 }
 
 
@@ -1077,6 +1025,7 @@ def hdl_wid_20106(_: WIDParams):
         Please write to Client Characteristic Configuration Descriptor
         of ASE Control Point characteristic to enable notification.
     """
+
     return True
 
 
