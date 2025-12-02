@@ -168,7 +168,7 @@ Commands and responses:
                                         Broadcast Code (16 octet)
                 Response parameters:    Source ID (1 octet)
                                         GAP Settings (4 octets)
-                                        Broadcast Code (16 octet)
+                                        Broadcast ID (3 octets)
 
                 Source ID is a local identifier.
                 Flags is a bit map of settings:

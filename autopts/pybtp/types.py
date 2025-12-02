@@ -16,7 +16,7 @@
 import struct
 from binascii import unhexlify
 from enum import IntEnum, IntFlag
-from typing import NamedTuple
+from typing import Final, NamedTuple
 
 from autopts.pybtp import defs
 
@@ -524,6 +524,10 @@ class BASSPASyncState:
     SYNCED = 0x02
     FAILED = 0x03
     NO_PAST = 0x04
+
+
+# 0xFFFF indicates "unknown" as per the BASS specification
+BASS_PA_INTERVAL_UNKNOWN: Final[int] = 0xFFFF
 
 
 class TMAPRole(IntFlag):
