@@ -1048,12 +1048,19 @@ def hdl_wid_20100(params: WIDParams):
     btp.bap_discover(addr_type, addr)
     stack.bap.wait_discovery_completed_ev(addr_type, addr, 30)
 
-    #  CAP/COM/CRC/BV-07-C - BV-09-C request to write to Mute characteristic in 20106
-    btp.micp_discover(addr_type, addr)
-    stack.micp.wait_discovery_completed_ev(addr_type, addr, 10)
+    if params.test_case_name.removesuffix("_LT2") in ["CAP/COM/CRC/BV-07-C", "CAP/COM/CRC/BV-08-C", "CAP/COM/CRC/BV-09-C"]:
+        btp.micp_discover(addr_type, addr)
+        stack.micp.wait_discovery_completed_ev(addr_type, addr, 10)
 
-    btp.vcp_discover(addr_type, addr)
-    stack.vcp.wait_discovery_completed_ev(addr_type, addr, 10)
+    if params.test_case_name.removesuffix("_LT2") in [
+        "CAP/COM/CRC/BV-01-C",
+        "CAP/COM/CRC/BV-03-C",
+        "CAP/COM/CRC/BV-04-C",
+        "CAP/COM/CRC/BV-05-C",
+        "CAP/COM/CRC/BV-06-C",
+    ]:
+        btp.vcp_discover(addr_type, addr)
+        stack.vcp.wait_discovery_completed_ev(addr_type, addr, 10)
 
     return True
 
