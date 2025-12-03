@@ -105,9 +105,10 @@ def hdl_wid_108(params: WIDParams):
     Please start pairing process.
     """
 
-    # SM/CEN/JW/BV-01-C AuthReq bonding flag needs to be set to 0x00
+    # SM/CEN/JW/BV-01-C AuthReq Bonding Flags set to '00' and the MITM flag set to '0'
     if params.test_case_name in ['SM/CEN/JW/BV-01-C']:
         btp.gap_set_bondable_off()
+        btp.gap_set_mitm_off()
 
     btp.gap_pair()
     return True
