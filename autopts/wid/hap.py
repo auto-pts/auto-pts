@@ -2,6 +2,7 @@
 # auto-pts - The Bluetooth PTS Automation Framework
 #
 # Copyright (c) 2023, Oticon.
+# Copyright (c) 2025, Nordic Semiconductor ASA.
 #
 # This program is free software; you can redistribute it and/or modify it
 # under the terms and conditions of the GNU General Public License,
@@ -15,14 +16,13 @@
 
 import logging
 import re
-import struct
 from argparse import Namespace
 
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import MMI
 from autopts.pybtp import btp, defs
+from autopts.pybtp.btp.audio import pack_metadata
 from autopts.pybtp.btp.btp import lt2_addr_get, lt2_addr_type_get, pts_addr_get, pts_addr_type_get
-from autopts.pybtp.defs import AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS
 from autopts.pybtp.types import (
     CODEC_CONFIG_SETTINGS,
     QOS_CONFIG_SETTINGS,
@@ -399,7 +399,7 @@ def hdl_wid_482(_: WIDParams):
     default_config = create_default_config()
     default_config.codec_set_name = '24_1'
     default_config.qos_set_name = '24_1_1'
-    default_config.metadata_ltvs = struct.pack('<BBH', 3, AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0200)
+    default_config.metadata_ltvs = pack_metadata(stream_context=0x0200)
 
     (default_config.sampling_freq,
      default_config.frame_duration,

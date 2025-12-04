@@ -1,3 +1,18 @@
+#
+# auto-pts - The Bluetooth PTS Automation Framework
+#
+# Copyright (c) 2025, Nordic Semiconductor ASA.
+#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms and conditions of the GNU General Public License,
+# version 2, as published by the Free Software Foundation.
+#
+# This program is distributed in the hope it will be useful, but WITHOUT
+# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+# FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+# more details.
+#
+
 import os
 import shutil
 import struct
@@ -13,10 +28,15 @@ from autopts.bot.common_features import report
 from autopts.client import FakeProxy, TestCaseRunStats
 from autopts.config import FILE_PATHS
 from autopts.ptsprojects.testcase_db import TestCaseTable
+from autopts.pybtp import defs
+from autopts.pybtp.btp.audio import pack_metadata
 from autopts.pybtp.btp.gap import gap_set_uuid16_svc_data
 from autopts.pybtp.types import AdType
 from autoptsclient_bot import import_bot_module, import_bot_projects
-from test.mocks.mocked_test_cases import mock_workspace_test_cases, test_case_list_generation_samples
+from test.mocks.mocked_test_cases import (
+    mock_workspace_test_cases,
+    test_case_list_generation_samples,
+)
 
 DATABASE_FILE = 'test/mocks/zephyr_database.db'
 
@@ -284,6 +304,96 @@ class MyTestCase(unittest.TestCase):
         assert advData[AdType.uuid16_svc_data][0] == struct.pack('<H', 0x0000)
         assert advData[AdType.uuid16_svc_data][1] == struct.pack('<HB', 0xAABB, 1)
         assert advData[AdType.uuid16_svc_data][2] == struct.pack('<HH', 0xFFFF, 0xABCD)
+
+    def test_audio_pack_metadata(self):
+        try:
+            pack_metadata(stream_context=1234, ccid_list=[0x00], program_info="Abc")
+            pack_metadata(stream_context=1234, program_info="Abc")
+            pack_metadata(ccid_list=[0x00], program_info="Abc")
+        except Exception as e:
+            self.fail(f"Function raised unexpected exception: {e}")
+
+    def test_audio_pack_metadata_stream_context(self):
+        # Test invalid inputs
+        with pytest.raises(ValueError, match="Invalid stream_context value"):
+            pack_metadata(stream_context="a")
+
+        with pytest.raises(ValueError, match="Invalid stream_context value"):
+            pack_metadata(stream_context=-1)
+
+        with pytest.raises(ValueError, match="Invalid stream_context value"):
+            pack_metadata(stream_context=0xFFFFFF)
+
+        # Test valid input
+        try:
+            metadata = pack_metadata(stream_context=0)
+            assert metadata == struct.pack("<BBH", 3, defs.AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x0000)
+
+            metadata = pack_metadata(stream_context=0xFFFF)
+            assert metadata == struct.pack("<BBH", 3, defs.AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0xFFFF)
+
+            metadata = pack_metadata(stream_context=0x1234)
+            assert metadata == struct.pack("<BBH", 3, defs.AUDIO_METADATA_STREAMING_AUDIO_CONTEXTS, 0x1234)
+        except Exception as e:
+            self.fail(f"Function raised unexpected exception: {e}")
+
+    def test_audio_pack_metadata_ccid_list(self):
+        # Test invalid inputs
+        with pytest.raises(ValueError, match="Invalid ccid_list value"):
+            pack_metadata(ccid_list="a")
+
+        with pytest.raises(ValueError, match="Invalid ccid_list value"):
+            pack_metadata(ccid_list=0x00)
+
+        with pytest.raises(ValueError, match="Invalid ccid_list value"):
+            pack_metadata(ccid_list=[-1])
+
+        with pytest.raises(ValueError, match="Invalid ccid_list value"):
+            pack_metadata(ccid_list=[0xFFF])
+
+        with pytest.raises(ValueError, match="Invalid ccid_list value"):
+            pack_metadata(ccid_list=[0x00, 0x00])
+
+        # Test valid input
+        try:
+            metadata = pack_metadata(ccid_list=[])
+            assert metadata == struct.pack("<BB", 1, defs.AUDIO_METADATA_CCID_LIST)
+
+            metadata = pack_metadata(ccid_list=[0x00])
+            assert metadata == struct.pack("<BBB", 2, defs.AUDIO_METADATA_CCID_LIST, 0x00)
+
+            metadata = pack_metadata(ccid_list=[0x00, 0x01])
+            assert metadata == struct.pack("<BBBB", 3, defs.AUDIO_METADATA_CCID_LIST, 0x00, 0x01)
+
+        except Exception as e:
+            self.fail(f"Function raised unexpected exception: {e}")
+
+    def test_audio_pack_metadata_program_info(self):
+        # Test invalid inputs
+        with pytest.raises(ValueError, match="Invalid program_info value"):
+            pack_metadata(program_info=1)
+
+        with pytest.raises(ValueError, match="Invalid program_info value"):
+            pack_metadata(program_info="a" * 500)  # long string
+
+        with pytest.raises(ValueError, match="Invalid program_info value"):
+            pack_metadata(program_info="🎵" * 200)  # long string in octets but not chars
+
+        # Test valid input
+        try:
+            metadata = pack_metadata(program_info="")
+            assert metadata == struct.pack("<BB", 1, defs.AUDIO_METADATA_PROGRAM_INFO)
+
+            program_info = "my program info"
+            metadata = pack_metadata(program_info=program_info)
+            assert metadata == struct.pack("<BB", 16, defs.AUDIO_METADATA_PROGRAM_INFO) + program_info.encode()
+
+            program_info = "a" * 254
+            metadata = pack_metadata(program_info="a" * 254)
+            assert metadata == struct.pack("<BB", 255, defs.AUDIO_METADATA_PROGRAM_INFO) + program_info.encode()
+
+        except Exception as e:
+            self.fail(f"Function raised unexpected exception: {e}")
 
 
 if __name__ == '__main__':
