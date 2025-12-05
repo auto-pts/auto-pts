@@ -24,6 +24,8 @@ class CAP:
             defs.BTP_CAP_EV_UNICAST_STOP_COMPLETED: [],
         }
 
+        self.local_broadcast_id = 0x123456
+
     def event_received(self, event_type, event_data_tuple):
         self.event_queues[event_type].append(event_data_tuple)
 

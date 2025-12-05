@@ -168,455 +168,907 @@ def test_cases(ptses):
     ]
 
     custom_test_cases = [
-        ZTestCase("CAP", "CAP/CL/ADV/BV-01-C", cmds=pre_conditions + general_conditions,
-                  generic_wid_hdl=cap_wid_hdl),
-        ZTestCase("CAP", "CAP/CL/ADV/BV-02-C", cmds=pre_conditions + targeted_conditions,
-                  generic_wid_hdl=cap_wid_hdl),
-        ZTestCase("CAP", "CAP/CL/ADV/BV-03-C", cmds=pre_conditions + targeted_conditions,
-                  generic_wid_hdl=cap_wid_hdl),
-        ZTestCase("CAP", "CAP/ACC/ERR/BI-01-C", cmds=pre_conditions + [
-            TestFunc(btp.pacs_set_available_contexts,
-                     PACS_AUDIO_CONTEXT_TYPE_CONVERSATIONAL,
-                     PACS_AUDIO_CONTEXT_TYPE_CONVERSATIONAL)] + targeted_conditions,
-                  generic_wid_hdl=cap_wid_hdl),
-        ZTestCase("CAP", "CAP/ACC/ERR/BI-02-C", cmds=pre_conditions + [
-            TestFunc(btp.pacs_set_available_contexts,
-                     PACS_AUDIO_CONTEXT_TYPE_CONVERSATIONAL,
-                     PACS_AUDIO_CONTEXT_TYPE_CONVERSATIONAL)] + targeted_conditions,
-                  generic_wid_hdl=cap_wid_hdl),
-        ZTestCase("CAP", "CAP/ACC/ERR/BI-03-C", cmds=pre_conditions + [
-            TestFunc(btp.pacs_set_available_contexts,
-                     PACS_AUDIO_CONTEXT_TYPE_CONVERSATIONAL,
-                     PACS_AUDIO_CONTEXT_TYPE_CONVERSATIONAL)] + targeted_conditions,
-                  generic_wid_hdl=cap_wid_hdl),
-        ZTestCase("CAP", "CAP/ACC/ERR/BI-04-C", cmds=pre_conditions + [
-            TestFunc(btp.pacs_set_available_contexts,
-                     PACS_AUDIO_CONTEXT_TYPE_CONVERSATIONAL,
-                     PACS_AUDIO_CONTEXT_TYPE_CONVERSATIONAL)] + targeted_conditions,
-                  generic_wid_hdl=cap_wid_hdl),
-        ZTestCase("CAP", "CAP/INI/UST/BV-01-C", cmds=pre_conditions +
-                  [TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-01-C", 20100),
-                      SynchPoint("CAP/INI/UST/BV-01-C_LT2", 20100)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-01-C", 405),
-                      SynchPoint("CAP/INI/UST/BV-01-C_LT2", 405)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-01-C", 400),
-                      SynchPoint("CAP/INI/UST/BV-01-C_LT2", 400)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-01-C", 20115),
-                      SynchPoint("CAP/INI/UST/BV-01-C_LT2", 20115)]),
-                   ],
-                  generic_wid_hdl=cap_wid_hdl, lt2="CAP/INI/UST/BV-01-C_LT2"),
-        ZTestCase("CAP", "CAP/INI/UST/BV-02-C", cmds=pre_conditions +
-                  [TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-02-C", 20100),
-                      SynchPoint("CAP/INI/UST/BV-02-C_LT2", 20100)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-02-C", 405),
-                      SynchPoint("CAP/INI/UST/BV-02-C_LT2", 405)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-02-C", 400),
-                      SynchPoint("CAP/INI/UST/BV-02-C_LT2", 400)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-02-C", 20115),
-                      SynchPoint("CAP/INI/UST/BV-02-C_LT2", 20115)]),
-                   ],
-                  generic_wid_hdl=cap_wid_hdl, lt2="CAP/INI/UST/BV-02-C_LT2"),
-        ZTestCase("CAP", "CAP/INI/UST/BV-03-C", cmds=pre_conditions +
-                  [TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-03-C", 20100),
-                      SynchPoint("CAP/INI/UST/BV-03-C_LT2", 20100)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-03-C", 405),
-                      SynchPoint("CAP/INI/UST/BV-03-C_LT2", 405)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-03-C", 400),
-                      SynchPoint("CAP/INI/UST/BV-03-C_LT2", 400)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-03-C", 20115),
-                      SynchPoint("CAP/INI/UST/BV-03-C_LT2", 20115)]),
-                   ],
-                  generic_wid_hdl=cap_wid_hdl, lt2="CAP/INI/UST/BV-03-C_LT2"),
-        ZTestCase("CAP", "CAP/INI/UST/BV-04-C", cmds=pre_conditions +
-                  [TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-04-C", 20100),
-                      SynchPoint("CAP/INI/UST/BV-04-C_LT2", 20100)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-04-C", 405),
-                      SynchPoint("CAP/INI/UST/BV-04-C_LT2", 405)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-04-C", 400),
-                      SynchPoint("CAP/INI/UST/BV-04-C_LT2", 400)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-04-C", 20115),
-                      SynchPoint("CAP/INI/UST/BV-04-C_LT2", 20115)]),
-                   ],
-                  generic_wid_hdl=cap_wid_hdl, lt2="CAP/INI/UST/BV-04-C_LT2"),
-        ZTestCase("CAP", "CAP/INI/UST/BV-05-C", cmds=pre_conditions +
-                  [TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-05-C", 20100),
-                      SynchPoint("CAP/INI/UST/BV-05-C_LT2", 20100)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-05-C", 405),
-                      SynchPoint("CAP/INI/UST/BV-05-C_LT2", 405)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-05-C", 400),
-                      SynchPoint("CAP/INI/UST/BV-05-C_LT2", 400)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-05-C", 20115),
-                      SynchPoint("CAP/INI/UST/BV-05-C_LT2", 20115)]),
-                   ],
-                  generic_wid_hdl=cap_wid_hdl, lt2="CAP/INI/UST/BV-05-C_LT2"),
-        ZTestCase("CAP", "CAP/INI/UST/BV-06-C", cmds=pre_conditions +
-                  [TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-06-C", 20100),
-                      SynchPoint("CAP/INI/UST/BV-06-C_LT2", 20100)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-06-C", 405),
-                      SynchPoint("CAP/INI/UST/BV-06-C_LT2", 405)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-06-C", 400),
-                      SynchPoint("CAP/INI/UST/BV-06-C_LT2", 400)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-06-C", 20115),
-                      SynchPoint("CAP/INI/UST/BV-06-C_LT2", 20115)]),
-                   ],
-                  generic_wid_hdl=cap_wid_hdl, lt2="CAP/INI/UST/BV-06-C_LT2"),
-        ZTestCase("CAP", "CAP/INI/UST/BV-07-C", cmds=pre_conditions +
-                  [TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-07-C", 20100),
-                      SynchPoint("CAP/INI/UST/BV-07-C_LT2", 20100)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-07-C", 405),
-                      SynchPoint("CAP/INI/UST/BV-07-C_LT2", 405)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-07-C", 400),
-                      SynchPoint("CAP/INI/UST/BV-07-C_LT2", 400)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-07-C", 20115),
-                      SynchPoint("CAP/INI/UST/BV-07-C_LT2", 20115)]),
-                   ],
-                  generic_wid_hdl=cap_wid_hdl, lt2="CAP/INI/UST/BV-07-C_LT2"),
-        ZTestCase("CAP", "CAP/INI/UST/BV-08-C", cmds=pre_conditions +
-                  [TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-08-C", 20100),
-                      SynchPoint("CAP/INI/UST/BV-08-C_LT2", 20100)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-08-C", 405),
-                      SynchPoint("CAP/INI/UST/BV-08-C_LT2", 405)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-08-C", 400),
-                      SynchPoint("CAP/INI/UST/BV-08-C_LT2", 400)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-08-C", 20115),
-                      SynchPoint("CAP/INI/UST/BV-08-C_LT2", 20115)]),
-                   ],
-                  generic_wid_hdl=cap_wid_hdl, lt2="CAP/INI/UST/BV-08-C_LT2"),
-        ZTestCase("CAP", "CAP/INI/UST/BV-09-C", cmds=pre_conditions +
-                  [TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-09-C", 20100),
-                      SynchPoint("CAP/INI/UST/BV-09-C_LT2", 20100)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-09-C", 405),
-                      SynchPoint("CAP/INI/UST/BV-09-C_LT2", 405)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-09-C", 400),
-                      SynchPoint("CAP/INI/UST/BV-09-C_LT2", 400)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-09-C", 20115),
-                      SynchPoint("CAP/INI/UST/BV-09-C_LT2", 20115)]),
-                   ],
-                  generic_wid_hdl=cap_wid_hdl, lt2="CAP/INI/UST/BV-09-C_LT2"),
-        ZTestCase("CAP", "CAP/INI/UST/BV-10-C", cmds=pre_conditions +
-                  [TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-10-C", 20100),
-                      SynchPoint("CAP/INI/UST/BV-10-C_LT2", 20100)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-10-C", 405),
-                      SynchPoint("CAP/INI/UST/BV-10-C_LT2", 405)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-10-C", 400),
-                      SynchPoint("CAP/INI/UST/BV-10-C_LT2", 400)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-10-C", 20115),
-                      SynchPoint("CAP/INI/UST/BV-10-C_LT2", 20115)]),
-                   ],
-                  generic_wid_hdl=cap_wid_hdl, lt2="CAP/INI/UST/BV-10-C_LT2"),
-        ZTestCase("CAP", "CAP/INI/UST/BV-11-C", cmds=pre_conditions +
-                  [TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-11-C", 20100),
-                      SynchPoint("CAP/INI/UST/BV-11-C_LT2", 20100)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-11-C", 405),
-                      SynchPoint("CAP/INI/UST/BV-11-C_LT2", 405)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-11-C", 400),
-                      SynchPoint("CAP/INI/UST/BV-11-C_LT2", 400)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-11-C", 20115),
-                      SynchPoint("CAP/INI/UST/BV-11-C_LT2", 20115)]),
-                   ],
-                  generic_wid_hdl=cap_wid_hdl, lt2="CAP/INI/UST/BV-11-C_LT2"),
-        ZTestCase("CAP", "CAP/INI/UST/BV-12-C", cmds=pre_conditions +
-                  [TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-12-C", 20100),
-                      SynchPoint("CAP/INI/UST/BV-12-C_LT2", 20100)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-12-C", 405),
-                      SynchPoint("CAP/INI/UST/BV-12-C_LT2", 405)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-12-C", 400),
-                      SynchPoint("CAP/INI/UST/BV-12-C_LT2", 400)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-12-C", 20115),
-                      SynchPoint("CAP/INI/UST/BV-12-C_LT2", 20115)]),
-                   ],
-                  generic_wid_hdl=cap_wid_hdl, lt2="CAP/INI/UST/BV-12-C_LT2"),
-        ZTestCase("CAP", "CAP/INI/UST/BV-13-C", cmds=pre_conditions +
-                  [TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-13-C", 20100),
-                      SynchPoint("CAP/INI/UST/BV-13-C_LT2", 20100)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-13-C", 405),
-                      SynchPoint("CAP/INI/UST/BV-13-C_LT2", 405)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-13-C", 400),
-                      SynchPoint("CAP/INI/UST/BV-13-C_LT2", 400)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-13-C", 20115),
-                      SynchPoint("CAP/INI/UST/BV-13-C_LT2", 20115)]),
-                   ],
-                  generic_wid_hdl=cap_wid_hdl, lt2="CAP/INI/UST/BV-13-C_LT2"),
-        ZTestCase("CAP", "CAP/INI/UST/BV-14-C", cmds=pre_conditions +
-                  [TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-14-C", 20100),
-                      SynchPoint("CAP/INI/UST/BV-14-C_LT2", 20100)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-14-C", 405),
-                      SynchPoint("CAP/INI/UST/BV-14-C_LT2", 405)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-14-C", 400),
-                      SynchPoint("CAP/INI/UST/BV-14-C_LT2", 400)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-14-C", 20115),
-                      SynchPoint("CAP/INI/UST/BV-14-C_LT2", 20115)]),
-                   ],
-                  generic_wid_hdl=cap_wid_hdl, lt2="CAP/INI/UST/BV-14-C_LT2"),
-        ZTestCase("CAP", "CAP/INI/UST/BV-29-C", cmds=pre_conditions +
-                  [TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-29-C", 20100),
-                      SynchPoint("CAP/INI/UST/BV-29-C_LT2", 20100)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-29-C", 405),
-                      SynchPoint("CAP/INI/UST/BV-29-C_LT2", 405)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-29-C", 400),
-                      SynchPoint("CAP/INI/UST/BV-29-C_LT2", 400)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-29-C", 20115),
-                      SynchPoint("CAP/INI/UST/BV-29-C_LT2", 20115)]),
-                   ],
-                  generic_wid_hdl=cap_wid_hdl, lt2="CAP/INI/UST/BV-29-C_LT2"),
-        ZTestCase("CAP", "CAP/INI/UST/BV-30-C", cmds=pre_conditions +
-                  [TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-30-C", 20100),
-                      SynchPoint("CAP/INI/UST/BV-30-C_LT2", 20100)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-30-C", 405),
-                      SynchPoint("CAP/INI/UST/BV-30-C_LT2", 405)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-30-C", 400),
-                      SynchPoint("CAP/INI/UST/BV-30-C_LT2", 400)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-30-C", 20115),
-                      SynchPoint("CAP/INI/UST/BV-30-C_LT2", 20115)]),
-                   ],
-                  generic_wid_hdl=cap_wid_hdl, lt2="CAP/INI/UST/BV-30-C_LT2"),
-        ZTestCase("CAP", "CAP/INI/UST/BV-31-C", cmds=pre_conditions +
-                  [TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-31-C", 20100),
-                      SynchPoint("CAP/INI/UST/BV-31-C_LT2", 20100)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-31-C", 405),
-                      SynchPoint("CAP/INI/UST/BV-31-C_LT2", 405)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-31-C", 400),
-                      SynchPoint("CAP/INI/UST/BV-31-C_LT2", 400)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-31-C", 20115),
-                      SynchPoint("CAP/INI/UST/BV-31-C_LT2", 20115)]),
-                   ],
-                  generic_wid_hdl=cap_wid_hdl, lt2="CAP/INI/UST/BV-31-C_LT2"),
-        ZTestCase("CAP", "CAP/INI/UST/BV-32-C", cmds=pre_conditions +
-                  [TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-32-C", 20100),
-                      SynchPoint("CAP/INI/UST/BV-32-C_LT2", 20100)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-32-C", 405),
-                      SynchPoint("CAP/INI/UST/BV-32-C_LT2", 405)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-32-C", 419),
-                      SynchPoint("CAP/INI/UST/BV-32-C_LT2", 419)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-32-C", 310),
-                      SynchPoint("CAP/INI/UST/BV-32-C_LT2", 310)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-32-C", 20115),
-                      SynchPoint("CAP/INI/UST/BV-32-C_LT2", 20115)]),
-                   ],
-                  generic_wid_hdl=cap_wid_hdl, lt2="CAP/INI/UST/BV-32-C_LT2"),
-        ZTestCase("CAP", "CAP/INI/UST/BV-33-C", cmds=pre_conditions +
-                  [TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-33-C", 20100),
-                      SynchPoint("CAP/INI/UST/BV-33-C_LT2", 20100)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-33-C", 405),
-                      SynchPoint("CAP/INI/UST/BV-33-C_LT2", 405)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-33-C", 419),
-                      SynchPoint("CAP/INI/UST/BV-33-C_LT2", 419)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-33-C", 310),
-                      SynchPoint("CAP/INI/UST/BV-33-C_LT2", 310)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-33-C", 20115),
-                      SynchPoint("CAP/INI/UST/BV-33-C_LT2", 20115)]),
-                   ],
-                  generic_wid_hdl=cap_wid_hdl, lt2="CAP/INI/UST/BV-33-C_LT2"),
-        ZTestCase("CAP", "CAP/INI/UST/BV-34-C", cmds=pre_conditions +
-                  [TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-34-C", 20100),
-                      SynchPoint("CAP/INI/UST/BV-34-C_LT2", 20100)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-34-C", 405),
-                      SynchPoint("CAP/INI/UST/BV-34-C_LT2", 405)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-34-C", 419),
-                      SynchPoint("CAP/INI/UST/BV-34-C_LT2", 419)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                       SynchPoint("CAP/INI/UST/BV-34-C", 310),
-                       SynchPoint("CAP/INI/UST/BV-34-C_LT2", 310)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-34-C", 20115),
-                      SynchPoint("CAP/INI/UST/BV-34-C_LT2", 20115)]),
-                   ],
-                  generic_wid_hdl=cap_wid_hdl, lt2="CAP/INI/UST/BV-34-C_LT2"),
-        ZTestCase("CAP", "CAP/INI/UST/BV-35-C", cmds=pre_conditions +
-                  [TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-35-C", 20100),
-                      SynchPoint("CAP/INI/UST/BV-35-C_LT2", 20100)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-35-C", 405),
-                      SynchPoint("CAP/INI/UST/BV-35-C_LT2", 405)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-35-C", 419),
-                      SynchPoint("CAP/INI/UST/BV-35-C_LT2", 419)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                       SynchPoint("CAP/INI/UST/BV-35-C", 310),
-                       SynchPoint("CAP/INI/UST/BV-35-C_LT2", 310)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-35-C", 20115),
-                      SynchPoint("CAP/INI/UST/BV-35-C_LT2", 20115)]),
-                   ],
-                  generic_wid_hdl=cap_wid_hdl, lt2="CAP/INI/UST/BV-35-C_LT2"),
-        ZTestCase("CAP", "CAP/INI/UST/BV-36-C", cmds=pre_conditions +
-                  [TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-36-C", 20100),
-                      SynchPoint("CAP/INI/UST/BV-36-C_LT2", 20100)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-36-C", 405),
-                      SynchPoint("CAP/INI/UST/BV-36-C_LT2", 405)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-36-C", 419),
-                      SynchPoint("CAP/INI/UST/BV-36-C_LT2", 419)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                       SynchPoint("CAP/INI/UST/BV-36-C", 310),
-                       SynchPoint("CAP/INI/UST/BV-36-C_LT2", 310)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-36-C", 20115),
-                      SynchPoint("CAP/INI/UST/BV-36-C_LT2", 20115)]),
-                   ],
-                  generic_wid_hdl=cap_wid_hdl, lt2="CAP/INI/UST/BV-36-C_LT2"),
-        ZTestCase("CAP", "CAP/INI/UST/BV-37-C", cmds=pre_conditions +
-                  [TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-37-C", 20100),
-                      SynchPoint("CAP/INI/UST/BV-37-C_LT2", 20100)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-37-C", 405),
-                      SynchPoint("CAP/INI/UST/BV-37-C_LT2", 405)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-37-C", 419),
-                      SynchPoint("CAP/INI/UST/BV-37-C_LT2", 419)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-37-C", 310),
-                      SynchPoint("CAP/INI/UST/BV-37-C_LT2", 310)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-37-C", 20115),
-                      SynchPoint("CAP/INI/UST/BV-37-C_LT2", 20115)]),
-                   ],
-                  generic_wid_hdl=cap_wid_hdl, lt2="CAP/INI/UST/BV-37-C_LT2"),
-        ZTestCase("CAP", "CAP/INI/UST/BV-40-C", cmds=pre_conditions +
-                  [TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-40-C", 20100),
-                      SynchPoint("CAP/INI/UST/BV-40-C_LT2", 20100)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-40-C", 405),
-                      SynchPoint("CAP/INI/UST/BV-40-C_LT2", 405)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-40-C", 400),
-                      SynchPoint("CAP/INI/UST/BV-40-C_LT2", 400)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-40-C", 312),
-                      SynchPoint("CAP/INI/UST/BV-40-C_LT2", 312)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-40-C", 309),
-                      SynchPoint("CAP/INI/UST/BV-40-C_LT2", 309)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-40-C", 20115),
-                      SynchPoint("CAP/INI/UST/BV-40-C_LT2", 20115)]),
-                   ],
-                  generic_wid_hdl=cap_wid_hdl, lt2="CAP/INI/UST/BV-40-C_LT2"),
-        ZTestCase("CAP", "CAP/INI/UST/BV-41-C", cmds=pre_conditions +
-                  [TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-41-C", 20100),
-                      SynchPoint("CAP/INI/UST/BV-41-C_LT2", 20100)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-41-C", 405),
-                      SynchPoint("CAP/INI/UST/BV-41-C_LT2", 405)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-41-C", 400),
-                      SynchPoint("CAP/INI/UST/BV-41-C_LT2", 400)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-41-C", 312),
-                      SynchPoint("CAP/INI/UST/BV-41-C_LT2", 312)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-41-C", 20115),
-                      SynchPoint("CAP/INI/UST/BV-41-C_LT2", 20115)]),
-                   ],
-                  generic_wid_hdl=cap_wid_hdl, lt2="CAP/INI/UST/BV-41-C_LT2"),
-        ZTestCase("CAP", "CAP/INI/UST/BV-42-C", cmds=pre_conditions +
-                  [TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-42-C", 20100),
-                      SynchPoint("CAP/INI/UST/BV-42-C_LT2", 20100)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-42-C", 405),
-                      SynchPoint("CAP/INI/UST/BV-42-C_LT2", 405)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-42-C", 400),
-                      SynchPoint("CAP/INI/UST/BV-42-C_LT2", 400)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-42-C", 312),
-                      SynchPoint("CAP/INI/UST/BV-42-C_LT2", 312)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-42-C", 309),
-                      SynchPoint("CAP/INI/UST/BV-42-C_LT2", 309)]),
-                   TestFunc(get_stack().synch.add_synch_element, [
-                      SynchPoint("CAP/INI/UST/BV-42-C", 20115),
-                      SynchPoint("CAP/INI/UST/BV-42-C_LT2", 20115)]),
-                   ],
-                  generic_wid_hdl=cap_wid_hdl, lt2="CAP/INI/UST/BV-42-C_LT2"),
+        ZTestCase("CAP", "CAP/CL/ADV/BV-01-C", cmds=pre_conditions + general_conditions, generic_wid_hdl=cap_wid_hdl),
+        ZTestCase("CAP", "CAP/CL/ADV/BV-02-C", cmds=pre_conditions + targeted_conditions, generic_wid_hdl=cap_wid_hdl),
+        ZTestCase("CAP", "CAP/CL/ADV/BV-03-C", cmds=pre_conditions + targeted_conditions, generic_wid_hdl=cap_wid_hdl),
+        ZTestCase(
+            "CAP",
+            "CAP/ACC/ERR/BI-01-C",
+            cmds=pre_conditions
+            + [
+                TestFunc(
+                    btp.pacs_set_available_contexts,
+                    PACS_AUDIO_CONTEXT_TYPE_CONVERSATIONAL,
+                    PACS_AUDIO_CONTEXT_TYPE_CONVERSATIONAL,
+                )
+            ]
+            + targeted_conditions,
+            generic_wid_hdl=cap_wid_hdl,
+        ),
+        ZTestCase(
+            "CAP",
+            "CAP/ACC/ERR/BI-02-C",
+            cmds=pre_conditions
+            + [
+                TestFunc(
+                    btp.pacs_set_available_contexts,
+                    PACS_AUDIO_CONTEXT_TYPE_CONVERSATIONAL,
+                    PACS_AUDIO_CONTEXT_TYPE_CONVERSATIONAL,
+                )
+            ]
+            + targeted_conditions,
+            generic_wid_hdl=cap_wid_hdl,
+        ),
+        ZTestCase(
+            "CAP",
+            "CAP/ACC/ERR/BI-03-C",
+            cmds=pre_conditions
+            + [
+                TestFunc(
+                    btp.pacs_set_available_contexts,
+                    PACS_AUDIO_CONTEXT_TYPE_CONVERSATIONAL,
+                    PACS_AUDIO_CONTEXT_TYPE_CONVERSATIONAL,
+                )
+            ]
+            + targeted_conditions,
+            generic_wid_hdl=cap_wid_hdl,
+        ),
+        ZTestCase(
+            "CAP",
+            "CAP/ACC/ERR/BI-04-C",
+            cmds=pre_conditions
+            + [
+                TestFunc(
+                    btp.pacs_set_available_contexts,
+                    PACS_AUDIO_CONTEXT_TYPE_CONVERSATIONAL,
+                    PACS_AUDIO_CONTEXT_TYPE_CONVERSATIONAL,
+                )
+            ]
+            + targeted_conditions,
+            generic_wid_hdl=cap_wid_hdl,
+        ),
+        ZTestCase(
+            "CAP",
+            "CAP/INI/UST/BV-01-C",
+            cmds=pre_conditions
+            + [
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-01-C", 20100), SynchPoint("CAP/INI/UST/BV-01-C_LT2", 20100)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-01-C", 405), SynchPoint("CAP/INI/UST/BV-01-C_LT2", 405)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-01-C", 400), SynchPoint("CAP/INI/UST/BV-01-C_LT2", 400)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-01-C", 20115), SynchPoint("CAP/INI/UST/BV-01-C_LT2", 20115)],
+                ),
+            ],
+            generic_wid_hdl=cap_wid_hdl,
+            lt2="CAP/INI/UST/BV-01-C_LT2",
+        ),
+        ZTestCase(
+            "CAP",
+            "CAP/INI/UST/BV-02-C",
+            cmds=pre_conditions
+            + [
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-02-C", 20100), SynchPoint("CAP/INI/UST/BV-02-C_LT2", 20100)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-02-C", 405), SynchPoint("CAP/INI/UST/BV-02-C_LT2", 405)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-02-C", 400), SynchPoint("CAP/INI/UST/BV-02-C_LT2", 400)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-02-C", 20115), SynchPoint("CAP/INI/UST/BV-02-C_LT2", 20115)],
+                ),
+            ],
+            generic_wid_hdl=cap_wid_hdl,
+            lt2="CAP/INI/UST/BV-02-C_LT2",
+        ),
+        ZTestCase(
+            "CAP",
+            "CAP/INI/UST/BV-03-C",
+            cmds=pre_conditions
+            + [
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-03-C", 20100), SynchPoint("CAP/INI/UST/BV-03-C_LT2", 20100)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-03-C", 405), SynchPoint("CAP/INI/UST/BV-03-C_LT2", 405)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-03-C", 400), SynchPoint("CAP/INI/UST/BV-03-C_LT2", 400)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-03-C", 20115), SynchPoint("CAP/INI/UST/BV-03-C_LT2", 20115)],
+                ),
+            ],
+            generic_wid_hdl=cap_wid_hdl,
+            lt2="CAP/INI/UST/BV-03-C_LT2",
+        ),
+        ZTestCase(
+            "CAP",
+            "CAP/INI/UST/BV-04-C",
+            cmds=pre_conditions
+            + [
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-04-C", 20100), SynchPoint("CAP/INI/UST/BV-04-C_LT2", 20100)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-04-C", 405), SynchPoint("CAP/INI/UST/BV-04-C_LT2", 405)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-04-C", 400), SynchPoint("CAP/INI/UST/BV-04-C_LT2", 400)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-04-C", 20115), SynchPoint("CAP/INI/UST/BV-04-C_LT2", 20115)],
+                ),
+            ],
+            generic_wid_hdl=cap_wid_hdl,
+            lt2="CAP/INI/UST/BV-04-C_LT2",
+        ),
+        ZTestCase(
+            "CAP",
+            "CAP/INI/UST/BV-05-C",
+            cmds=pre_conditions
+            + [
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-05-C", 20100), SynchPoint("CAP/INI/UST/BV-05-C_LT2", 20100)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-05-C", 405), SynchPoint("CAP/INI/UST/BV-05-C_LT2", 405)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-05-C", 400), SynchPoint("CAP/INI/UST/BV-05-C_LT2", 400)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-05-C", 20115), SynchPoint("CAP/INI/UST/BV-05-C_LT2", 20115)],
+                ),
+            ],
+            generic_wid_hdl=cap_wid_hdl,
+            lt2="CAP/INI/UST/BV-05-C_LT2",
+        ),
+        ZTestCase(
+            "CAP",
+            "CAP/INI/UST/BV-06-C",
+            cmds=pre_conditions
+            + [
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-06-C", 20100), SynchPoint("CAP/INI/UST/BV-06-C_LT2", 20100)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-06-C", 405), SynchPoint("CAP/INI/UST/BV-06-C_LT2", 405)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-06-C", 400), SynchPoint("CAP/INI/UST/BV-06-C_LT2", 400)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-06-C", 20115), SynchPoint("CAP/INI/UST/BV-06-C_LT2", 20115)],
+                ),
+            ],
+            generic_wid_hdl=cap_wid_hdl,
+            lt2="CAP/INI/UST/BV-06-C_LT2",
+        ),
+        ZTestCase(
+            "CAP",
+            "CAP/INI/UST/BV-07-C",
+            cmds=pre_conditions
+            + [
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-07-C", 20100), SynchPoint("CAP/INI/UST/BV-07-C_LT2", 20100)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-07-C", 405), SynchPoint("CAP/INI/UST/BV-07-C_LT2", 405)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-07-C", 400), SynchPoint("CAP/INI/UST/BV-07-C_LT2", 400)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-07-C", 20115), SynchPoint("CAP/INI/UST/BV-07-C_LT2", 20115)],
+                ),
+            ],
+            generic_wid_hdl=cap_wid_hdl,
+            lt2="CAP/INI/UST/BV-07-C_LT2",
+        ),
+        ZTestCase(
+            "CAP",
+            "CAP/INI/UST/BV-08-C",
+            cmds=pre_conditions
+            + [
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-08-C", 20100), SynchPoint("CAP/INI/UST/BV-08-C_LT2", 20100)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-08-C", 405), SynchPoint("CAP/INI/UST/BV-08-C_LT2", 405)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-08-C", 400), SynchPoint("CAP/INI/UST/BV-08-C_LT2", 400)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-08-C", 20115), SynchPoint("CAP/INI/UST/BV-08-C_LT2", 20115)],
+                ),
+            ],
+            generic_wid_hdl=cap_wid_hdl,
+            lt2="CAP/INI/UST/BV-08-C_LT2",
+        ),
+        ZTestCase(
+            "CAP",
+            "CAP/INI/UST/BV-09-C",
+            cmds=pre_conditions
+            + [
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-09-C", 20100), SynchPoint("CAP/INI/UST/BV-09-C_LT2", 20100)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-09-C", 405), SynchPoint("CAP/INI/UST/BV-09-C_LT2", 405)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-09-C", 400), SynchPoint("CAP/INI/UST/BV-09-C_LT2", 400)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-09-C", 20115), SynchPoint("CAP/INI/UST/BV-09-C_LT2", 20115)],
+                ),
+            ],
+            generic_wid_hdl=cap_wid_hdl,
+            lt2="CAP/INI/UST/BV-09-C_LT2",
+        ),
+        ZTestCase(
+            "CAP",
+            "CAP/INI/UST/BV-10-C",
+            cmds=pre_conditions
+            + [
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-10-C", 20100), SynchPoint("CAP/INI/UST/BV-10-C_LT2", 20100)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-10-C", 405), SynchPoint("CAP/INI/UST/BV-10-C_LT2", 405)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-10-C", 400), SynchPoint("CAP/INI/UST/BV-10-C_LT2", 400)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-10-C", 20115), SynchPoint("CAP/INI/UST/BV-10-C_LT2", 20115)],
+                ),
+            ],
+            generic_wid_hdl=cap_wid_hdl,
+            lt2="CAP/INI/UST/BV-10-C_LT2",
+        ),
+        ZTestCase(
+            "CAP",
+            "CAP/INI/UST/BV-11-C",
+            cmds=pre_conditions
+            + [
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-11-C", 20100), SynchPoint("CAP/INI/UST/BV-11-C_LT2", 20100)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-11-C", 405), SynchPoint("CAP/INI/UST/BV-11-C_LT2", 405)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-11-C", 400), SynchPoint("CAP/INI/UST/BV-11-C_LT2", 400)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-11-C", 20115), SynchPoint("CAP/INI/UST/BV-11-C_LT2", 20115)],
+                ),
+            ],
+            generic_wid_hdl=cap_wid_hdl,
+            lt2="CAP/INI/UST/BV-11-C_LT2",
+        ),
+        ZTestCase(
+            "CAP",
+            "CAP/INI/UST/BV-12-C",
+            cmds=pre_conditions
+            + [
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-12-C", 20100), SynchPoint("CAP/INI/UST/BV-12-C_LT2", 20100)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-12-C", 405), SynchPoint("CAP/INI/UST/BV-12-C_LT2", 405)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-12-C", 400), SynchPoint("CAP/INI/UST/BV-12-C_LT2", 400)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-12-C", 20115), SynchPoint("CAP/INI/UST/BV-12-C_LT2", 20115)],
+                ),
+            ],
+            generic_wid_hdl=cap_wid_hdl,
+            lt2="CAP/INI/UST/BV-12-C_LT2",
+        ),
+        ZTestCase(
+            "CAP",
+            "CAP/INI/UST/BV-13-C",
+            cmds=pre_conditions
+            + [
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-13-C", 20100), SynchPoint("CAP/INI/UST/BV-13-C_LT2", 20100)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-13-C", 405), SynchPoint("CAP/INI/UST/BV-13-C_LT2", 405)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-13-C", 400), SynchPoint("CAP/INI/UST/BV-13-C_LT2", 400)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-13-C", 20115), SynchPoint("CAP/INI/UST/BV-13-C_LT2", 20115)],
+                ),
+            ],
+            generic_wid_hdl=cap_wid_hdl,
+            lt2="CAP/INI/UST/BV-13-C_LT2",
+        ),
+        ZTestCase(
+            "CAP",
+            "CAP/INI/UST/BV-14-C",
+            cmds=pre_conditions
+            + [
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-14-C", 20100), SynchPoint("CAP/INI/UST/BV-14-C_LT2", 20100)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-14-C", 405), SynchPoint("CAP/INI/UST/BV-14-C_LT2", 405)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-14-C", 400), SynchPoint("CAP/INI/UST/BV-14-C_LT2", 400)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-14-C", 20115), SynchPoint("CAP/INI/UST/BV-14-C_LT2", 20115)],
+                ),
+            ],
+            generic_wid_hdl=cap_wid_hdl,
+            lt2="CAP/INI/UST/BV-14-C_LT2",
+        ),
+        ZTestCase(
+            "CAP",
+            "CAP/INI/UST/BV-29-C",
+            cmds=pre_conditions
+            + [
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-29-C", 20100), SynchPoint("CAP/INI/UST/BV-29-C_LT2", 20100)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-29-C", 405), SynchPoint("CAP/INI/UST/BV-29-C_LT2", 405)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-29-C", 400), SynchPoint("CAP/INI/UST/BV-29-C_LT2", 400)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-29-C", 20115), SynchPoint("CAP/INI/UST/BV-29-C_LT2", 20115)],
+                ),
+            ],
+            generic_wid_hdl=cap_wid_hdl,
+            lt2="CAP/INI/UST/BV-29-C_LT2",
+        ),
+        ZTestCase(
+            "CAP",
+            "CAP/INI/UST/BV-30-C",
+            cmds=pre_conditions
+            + [
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-30-C", 20100), SynchPoint("CAP/INI/UST/BV-30-C_LT2", 20100)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-30-C", 405), SynchPoint("CAP/INI/UST/BV-30-C_LT2", 405)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-30-C", 400), SynchPoint("CAP/INI/UST/BV-30-C_LT2", 400)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-30-C", 20115), SynchPoint("CAP/INI/UST/BV-30-C_LT2", 20115)],
+                ),
+            ],
+            generic_wid_hdl=cap_wid_hdl,
+            lt2="CAP/INI/UST/BV-30-C_LT2",
+        ),
+        ZTestCase(
+            "CAP",
+            "CAP/INI/UST/BV-31-C",
+            cmds=pre_conditions
+            + [
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-31-C", 20100), SynchPoint("CAP/INI/UST/BV-31-C_LT2", 20100)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-31-C", 405), SynchPoint("CAP/INI/UST/BV-31-C_LT2", 405)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-31-C", 400), SynchPoint("CAP/INI/UST/BV-31-C_LT2", 400)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-31-C", 20115), SynchPoint("CAP/INI/UST/BV-31-C_LT2", 20115)],
+                ),
+            ],
+            generic_wid_hdl=cap_wid_hdl,
+            lt2="CAP/INI/UST/BV-31-C_LT2",
+        ),
+        ZTestCase(
+            "CAP",
+            "CAP/INI/UST/BV-32-C",
+            cmds=pre_conditions
+            + [
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-32-C", 20100), SynchPoint("CAP/INI/UST/BV-32-C_LT2", 20100)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-32-C", 405), SynchPoint("CAP/INI/UST/BV-32-C_LT2", 405)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-32-C", 419), SynchPoint("CAP/INI/UST/BV-32-C_LT2", 419)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-32-C", 310), SynchPoint("CAP/INI/UST/BV-32-C_LT2", 310)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-32-C", 20115), SynchPoint("CAP/INI/UST/BV-32-C_LT2", 20115)],
+                ),
+            ],
+            generic_wid_hdl=cap_wid_hdl,
+            lt2="CAP/INI/UST/BV-32-C_LT2",
+        ),
+        ZTestCase(
+            "CAP",
+            "CAP/INI/UST/BV-33-C",
+            cmds=pre_conditions
+            + [
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-33-C", 20100), SynchPoint("CAP/INI/UST/BV-33-C_LT2", 20100)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-33-C", 405), SynchPoint("CAP/INI/UST/BV-33-C_LT2", 405)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-33-C", 419), SynchPoint("CAP/INI/UST/BV-33-C_LT2", 419)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-33-C", 310), SynchPoint("CAP/INI/UST/BV-33-C_LT2", 310)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-33-C", 20115), SynchPoint("CAP/INI/UST/BV-33-C_LT2", 20115)],
+                ),
+            ],
+            generic_wid_hdl=cap_wid_hdl,
+            lt2="CAP/INI/UST/BV-33-C_LT2",
+        ),
+        ZTestCase(
+            "CAP",
+            "CAP/INI/UST/BV-34-C",
+            cmds=pre_conditions
+            + [
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-34-C", 20100), SynchPoint("CAP/INI/UST/BV-34-C_LT2", 20100)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-34-C", 405), SynchPoint("CAP/INI/UST/BV-34-C_LT2", 405)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-34-C", 419), SynchPoint("CAP/INI/UST/BV-34-C_LT2", 419)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-34-C", 310), SynchPoint("CAP/INI/UST/BV-34-C_LT2", 310)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-34-C", 20115), SynchPoint("CAP/INI/UST/BV-34-C_LT2", 20115)],
+                ),
+            ],
+            generic_wid_hdl=cap_wid_hdl,
+            lt2="CAP/INI/UST/BV-34-C_LT2",
+        ),
+        ZTestCase(
+            "CAP",
+            "CAP/INI/UST/BV-35-C",
+            cmds=pre_conditions
+            + [
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-35-C", 20100), SynchPoint("CAP/INI/UST/BV-35-C_LT2", 20100)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-35-C", 405), SynchPoint("CAP/INI/UST/BV-35-C_LT2", 405)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-35-C", 419), SynchPoint("CAP/INI/UST/BV-35-C_LT2", 419)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-35-C", 310), SynchPoint("CAP/INI/UST/BV-35-C_LT2", 310)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-35-C", 20115), SynchPoint("CAP/INI/UST/BV-35-C_LT2", 20115)],
+                ),
+            ],
+            generic_wid_hdl=cap_wid_hdl,
+            lt2="CAP/INI/UST/BV-35-C_LT2",
+        ),
+        ZTestCase(
+            "CAP",
+            "CAP/INI/UST/BV-36-C",
+            cmds=pre_conditions
+            + [
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-36-C", 20100), SynchPoint("CAP/INI/UST/BV-36-C_LT2", 20100)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-36-C", 405), SynchPoint("CAP/INI/UST/BV-36-C_LT2", 405)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-36-C", 419), SynchPoint("CAP/INI/UST/BV-36-C_LT2", 419)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-36-C", 310), SynchPoint("CAP/INI/UST/BV-36-C_LT2", 310)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-36-C", 20115), SynchPoint("CAP/INI/UST/BV-36-C_LT2", 20115)],
+                ),
+            ],
+            generic_wid_hdl=cap_wid_hdl,
+            lt2="CAP/INI/UST/BV-36-C_LT2",
+        ),
+        ZTestCase(
+            "CAP",
+            "CAP/INI/UST/BV-37-C",
+            cmds=pre_conditions
+            + [
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-37-C", 20100), SynchPoint("CAP/INI/UST/BV-37-C_LT2", 20100)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-37-C", 405), SynchPoint("CAP/INI/UST/BV-37-C_LT2", 405)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-37-C", 419), SynchPoint("CAP/INI/UST/BV-37-C_LT2", 419)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-37-C", 310), SynchPoint("CAP/INI/UST/BV-37-C_LT2", 310)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-37-C", 20115), SynchPoint("CAP/INI/UST/BV-37-C_LT2", 20115)],
+                ),
+            ],
+            generic_wid_hdl=cap_wid_hdl,
+            lt2="CAP/INI/UST/BV-37-C_LT2",
+        ),
+        ZTestCase(
+            "CAP",
+            "CAP/INI/UST/BV-40-C",
+            cmds=pre_conditions
+            + [
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-40-C", 20100), SynchPoint("CAP/INI/UST/BV-40-C_LT2", 20100)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-40-C", 405), SynchPoint("CAP/INI/UST/BV-40-C_LT2", 405)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-40-C", 400), SynchPoint("CAP/INI/UST/BV-40-C_LT2", 400)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-40-C", 312), SynchPoint("CAP/INI/UST/BV-40-C_LT2", 312)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-40-C", 309), SynchPoint("CAP/INI/UST/BV-40-C_LT2", 309)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-40-C", 20115), SynchPoint("CAP/INI/UST/BV-40-C_LT2", 20115)],
+                ),
+            ],
+            generic_wid_hdl=cap_wid_hdl,
+            lt2="CAP/INI/UST/BV-40-C_LT2",
+        ),
+        ZTestCase(
+            "CAP",
+            "CAP/INI/UST/BV-41-C",
+            cmds=pre_conditions
+            + [
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-41-C", 20100), SynchPoint("CAP/INI/UST/BV-41-C_LT2", 20100)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-41-C", 405), SynchPoint("CAP/INI/UST/BV-41-C_LT2", 405)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-41-C", 400), SynchPoint("CAP/INI/UST/BV-41-C_LT2", 400)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-41-C", 312), SynchPoint("CAP/INI/UST/BV-41-C_LT2", 312)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-41-C", 20115), SynchPoint("CAP/INI/UST/BV-41-C_LT2", 20115)],
+                ),
+            ],
+            generic_wid_hdl=cap_wid_hdl,
+            lt2="CAP/INI/UST/BV-41-C_LT2",
+        ),
+        ZTestCase(
+            "CAP",
+            "CAP/INI/UST/BV-42-C",
+            cmds=pre_conditions
+            + [
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-42-C", 20100), SynchPoint("CAP/INI/UST/BV-42-C_LT2", 20100)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-42-C", 405), SynchPoint("CAP/INI/UST/BV-42-C_LT2", 405)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-42-C", 400), SynchPoint("CAP/INI/UST/BV-42-C_LT2", 400)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-42-C", 312), SynchPoint("CAP/INI/UST/BV-42-C_LT2", 312)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-42-C", 309), SynchPoint("CAP/INI/UST/BV-42-C_LT2", 309)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UST/BV-42-C", 20115), SynchPoint("CAP/INI/UST/BV-42-C_LT2", 20115)],
+                ),
+            ],
+            generic_wid_hdl=cap_wid_hdl,
+            lt2="CAP/INI/UST/BV-42-C_LT2",
+        ),
+        ZTestCase(
+            "CAP",
+            "CAP/INI/UTB/BV-01-C",
+            cmds=pre_conditions
+            + [
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UTB/BV-01-C", 20100), SynchPoint("CAP/INI/UTB/BV-01-C_LT2", 20100)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UTB/BV-01-C", 20106), SynchPoint("CAP/INI/UTB/BV-01-C_LT2", 20106)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UTB/BV-01-C", 405), SynchPoint("CAP/INI/UTB/BV-01-C_LT2", 405)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UTB/BV-01-C", 400), SynchPoint("CAP/INI/UTB/BV-01-C_LT2", 400)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UTB/BV-01-C", 406), SynchPoint("CAP/INI/UTB/BV-01-C_LT2", 406)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UTB/BV-01-C", 345), SynchPoint("CAP/INI/UTB/BV-01-C_LT2", 345)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UTB/BV-01-C", 104), SynchPoint("CAP/INI/UTB/BV-01-C_LT2", 104)],
+                ),
+            ],
+            generic_wid_hdl=cap_wid_hdl,
+            lt2="CAP/INI/UTB/BV-01-C_LT2",
+        ),
+        ZTestCase(
+            "CAP",
+            "CAP/INI/UTB/BV-02-C",
+            cmds=pre_conditions
+            + [
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UTB/BV-02-C", 20100), SynchPoint("CAP/INI/UTB/BV-02-C_LT2", 20100)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UTB/BV-02-C", 20106), SynchPoint("CAP/INI/UTB/BV-02-C_LT2", 20106)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UTB/BV-02-C", 405), SynchPoint("CAP/INI/UTB/BV-02-C_LT2", 405)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UTB/BV-02-C", 400), SynchPoint("CAP/INI/UTB/BV-02-C_LT2", 400)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UTB/BV-02-C", 406), SynchPoint("CAP/INI/UTB/BV-02-C_LT2", 406)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UTB/BV-02-C", 345), SynchPoint("CAP/INI/UTB/BV-02-C_LT2", 345)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UTB/BV-02-C", 104), SynchPoint("CAP/INI/UTB/BV-02-C_LT2", 104)],
+                ),
+            ],
+            generic_wid_hdl=cap_wid_hdl,
+            lt2="CAP/INI/UTB/BV-02-C_LT2",
+        ),
+        ZTestCase(
+            "CAP",
+            "CAP/INI/UTB/BV-03-C",
+            cmds=pre_conditions
+            + [
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UTB/BV-03-C", 20100), SynchPoint("CAP/INI/UTB/BV-03-C_LT2", 20100)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UTB/BV-03-C", 20106), SynchPoint("CAP/INI/UTB/BV-03-C_LT2", 20106)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UTB/BV-03-C", 405), SynchPoint("CAP/INI/UTB/BV-03-C_LT2", 405)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UTB/BV-03-C", 400), SynchPoint("CAP/INI/UTB/BV-03-C_LT2", 400)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UTB/BV-03-C", 406), SynchPoint("CAP/INI/UTB/BV-03-C_LT2", 406)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UTB/BV-03-C", 345), SynchPoint("CAP/INI/UTB/BV-03-C_LT2", 345)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UTB/BV-03-C", 104), SynchPoint("CAP/INI/UTB/BV-03-C_LT2", 104)],
+                ),
+            ],
+            generic_wid_hdl=cap_wid_hdl,
+            lt2="CAP/INI/UTB/BV-03-C_LT2",
+        ),
+        ZTestCase(
+            "CAP",
+            "CAP/INI/UTB/BV-04-C",
+            cmds=pre_conditions
+            + [
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UTB/BV-04-C", 20100), SynchPoint("CAP/INI/UTB/BV-04-C_LT2", 20100)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UTB/BV-04-C", 20106), SynchPoint("CAP/INI/UTB/BV-04-C_LT2", 20106)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UTB/BV-04-C", 405), SynchPoint("CAP/INI/UTB/BV-04-C_LT2", 405)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UTB/BV-04-C", 400), SynchPoint("CAP/INI/UTB/BV-04-C_LT2", 400)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UTB/BV-04-C", 406), SynchPoint("CAP/INI/UTB/BV-04-C_LT2", 406)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UTB/BV-04-C", 345), SynchPoint("CAP/INI/UTB/BV-04-C_LT2", 345)],
+                ),
+                TestFunc(
+                    get_stack().synch.add_synch_element,
+                    [SynchPoint("CAP/INI/UTB/BV-04-C", 104), SynchPoint("CAP/INI/UTB/BV-04-C_LT2", 104)],
+                ),
+            ],
+            generic_wid_hdl=cap_wid_hdl,
+            lt2="CAP/INI/UTB/BV-04-C_LT2",
+        ),
     ]
 
     test_case_name_list = pts.get_test_case_list('CAP')
@@ -647,84 +1099,36 @@ def test_cases(ptses):
     ]
 
     test_cases_lt2 = [
-        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-01-C_LT2",
-                       cmds=pre_conditions_lt2,
-                       generic_wid_hdl=cap_wid_hdl),
-        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-02-C_LT2",
-                       cmds=pre_conditions_lt2,
-                       generic_wid_hdl=cap_wid_hdl),
-        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-03-C_LT2",
-                       cmds=pre_conditions_lt2,
-                       generic_wid_hdl=cap_wid_hdl),
-        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-04-C_LT2",
-                       cmds=pre_conditions_lt2,
-                       generic_wid_hdl=cap_wid_hdl),
-        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-05-C_LT2",
-                       cmds=pre_conditions_lt2,
-                       generic_wid_hdl=cap_wid_hdl),
-        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-06-C_LT2",
-                       cmds=pre_conditions_lt2,
-                       generic_wid_hdl=cap_wid_hdl),
-        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-07-C_LT2",
-                       cmds=pre_conditions_lt2,
-                       generic_wid_hdl=cap_wid_hdl),
-        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-08-C_LT2",
-                       cmds=pre_conditions_lt2,
-                       generic_wid_hdl=cap_wid_hdl),
-        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-09-C_LT2",
-                       cmds=pre_conditions_lt2,
-                       generic_wid_hdl=cap_wid_hdl),
-        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-10-C_LT2",
-                       cmds=pre_conditions_lt2,
-                       generic_wid_hdl=cap_wid_hdl),
-        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-11-C_LT2",
-                       cmds=pre_conditions_lt2,
-                       generic_wid_hdl=cap_wid_hdl),
-        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-12-C_LT2",
-                       cmds=pre_conditions_lt2,
-                       generic_wid_hdl=cap_wid_hdl),
-        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-13-C_LT2",
-                       cmds=pre_conditions_lt2,
-                       generic_wid_hdl=cap_wid_hdl),
-        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-14-C_LT2",
-                       cmds=pre_conditions_lt2,
-                       generic_wid_hdl=cap_wid_hdl),
-        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-29-C_LT2",
-                       cmds=pre_conditions_lt2,
-                       generic_wid_hdl=cap_wid_hdl),
-        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-30-C_LT2",
-                       cmds=pre_conditions_lt2,
-                       generic_wid_hdl=cap_wid_hdl),
-        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-31-C_LT2",
-                       cmds=pre_conditions_lt2,
-                       generic_wid_hdl=cap_wid_hdl),
-        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-32-C_LT2",
-                       cmds=pre_conditions_lt2,
-                       generic_wid_hdl=cap_wid_hdl),
-        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-33-C_LT2",
-                       cmds=pre_conditions_lt2,
-                       generic_wid_hdl=cap_wid_hdl),
-        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-34-C_LT2",
-                       cmds=pre_conditions_lt2,
-                       generic_wid_hdl=cap_wid_hdl),
-        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-35-C_LT2",
-                       cmds=pre_conditions_lt2,
-                       generic_wid_hdl=cap_wid_hdl),
-        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-36-C_LT2",
-                       cmds=pre_conditions_lt2,
-                       generic_wid_hdl=cap_wid_hdl),
-        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-37-C_LT2",
-                       cmds=pre_conditions_lt2,
-                       generic_wid_hdl=cap_wid_hdl),
-        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-40-C_LT2",
-                       cmds=pre_conditions_lt2,
-                       generic_wid_hdl=cap_wid_hdl),
-        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-41-C_LT2",
-                       cmds=pre_conditions_lt2,
-                       generic_wid_hdl=cap_wid_hdl),
-        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-42-C_LT2",
-                       cmds=pre_conditions_lt2,
-                       generic_wid_hdl=cap_wid_hdl),
+        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-01-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
+        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-02-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
+        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-03-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
+        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-04-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
+        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-05-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
+        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-06-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
+        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-07-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
+        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-08-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
+        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-09-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
+        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-10-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
+        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-11-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
+        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-12-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
+        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-13-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
+        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-14-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
+        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-29-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
+        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-30-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
+        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-31-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
+        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-32-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
+        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-33-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
+        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-34-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
+        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-35-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
+        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-36-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
+        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-37-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
+        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-40-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
+        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-41-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
+        ZTestCaseSlave("CAP", "CAP/INI/UST/BV-42-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
+        ZTestCaseSlave("CAP", "CAP/INI/UTB/BV-01-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
+        ZTestCaseSlave("CAP", "CAP/INI/UTB/BV-02-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
+        ZTestCaseSlave("CAP", "CAP/INI/UTB/BV-03-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
+        ZTestCaseSlave("CAP", "CAP/INI/UTB/BV-04-C_LT2", cmds=pre_conditions_lt2, generic_wid_hdl=cap_wid_hdl),
     ]
 
     return tc_list + test_cases_lt2
