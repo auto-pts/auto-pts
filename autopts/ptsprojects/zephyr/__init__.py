@@ -16,6 +16,8 @@
 from . import (
                aics,
                ascs,
+               avctp,
+               avrcp,
                bap,
                bass,
                cap,
@@ -54,6 +56,8 @@ from . import (
 __all__ = [
     "aics",
     "ascs",
+    "avctp",
+    "avrcp",
     "bap",
     "bass",
     "cap",
