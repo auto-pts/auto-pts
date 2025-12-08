@@ -96,6 +96,7 @@ def test_cases(ptses):
         TestFunc(btp.core_reg_svc_gmcs),
         TestFunc(btp.core_reg_svc_cas),
         TestFunc(btp.core_reg_svc_micp),
+        TestFunc(btp.core_reg_svc_ccp),
         TestFunc(stack.aics_init),
         TestFunc(stack.ascs_init),
         TestFunc(stack.bap_init),
@@ -111,6 +112,7 @@ def test_cases(ptses):
         TestFunc(btp.vcs_register, 1, False, 100),
         TestFunc(stack.vcs_init),
         TestFunc(stack.vocs_init),
+        TestFunc(stack.ccp_init),
     ]
 
     adv_end = [
