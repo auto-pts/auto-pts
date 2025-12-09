@@ -59,6 +59,14 @@ class BTPError(Exception):
     """
 
 
+class BTPFatalError(Exception):
+    """Exception raised if BTP error occurs and the IUT needs to be recovered.
+
+    If this exception is raised the status of the running test case is updated
+    accordingly to show that BTP fatal error has occurred.
+    """
+
+
 class BTPInitError(Exception):
     """Exception raised for IUT ready event non-occurence"""
 
