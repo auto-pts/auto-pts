@@ -22,12 +22,12 @@ import logging
 import os
 import readline
 import shlex
+import shutil
 import socket
 import struct
 import subprocess
 import sys
 import threading
-from distutils.spawn import find_executable
 
 from autopts.ptsprojects.testcase import AbstractMethodException
 from autopts.ptsprojects.zephyr.iutctl import BTP_ADDRESS, get_qemu_cmd
@@ -256,7 +256,7 @@ class StartZephyrCmd(Cmd):
             print(f"QEMU kernel image {repr(kernel_image)} not found!")
             return
 
-        if not find_executable('xterm'):
+        if not shutil.which('xterm'):
             print("xterm is needed but not found!")
             return
 

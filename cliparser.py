@@ -18,9 +18,9 @@
 import argparse
 import logging
 import os
+import shutil
 import sys
 import time
-from distutils.spawn import find_executable
 
 from autopts.config import CLIENT_PORT, FILE_PATHS, MAX_SERVER_RESTART_TIME, SERIAL_BAUDRATE, SERVER_PORT
 from autopts.ptsprojects.boards import com_to_tty, get_debugger_snr, get_free_device, get_tty, tty_exists
@@ -364,7 +364,7 @@ class CliParser(argparse.ArgumentParser):
         if not args.qemu_bin:
             return 'QEMU IUT mode: specify qemu_bin parameter to use this mode\n'
 
-        if not find_executable(args.qemu_bin):
+        if not shutil.which(args.qemu_bin):
             return f'QEMU IUT mode: qemu_bin={args.qemu_bin}, but not found!\n'
 
         if args.kernel_image:
