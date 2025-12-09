@@ -27,7 +27,7 @@ from autopts.ptsprojects.testcase import MMI
 from autopts.pybtp import defs
 from autopts.pybtp.common import CONTROLLER_INDEX, CONTROLLER_INDEX_NONE, reg_unreg_service, supported_svcs_cmds
 from autopts.pybtp.iutctl_common import set_event_handler
-from autopts.pybtp.types import BTPError, att_rsp_str
+from autopts.pybtp.types import BTPError, BTPFatalError, att_rsp_str
 
 #  get IUT global method from iutctl
 get_iut = None
@@ -438,7 +438,10 @@ def set_lt3_addr(addr, addr_type):
 
 
 def core_reg_svc_gap():
-    core_reg_svc_univ("gap_reg", "GAP")
+    try:
+        core_reg_svc_univ("gap_reg", "GAP")
+    except BTPError as e:
+        raise BTPFatalError("Failed to register BTP GAP service in the IUT") from e
 
 
 def core_unreg_svc_gap():
