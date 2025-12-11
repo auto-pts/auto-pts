@@ -18,6 +18,9 @@ preview = true
 
 [tool.ruff.lint.per-file-ignores]
 "tools/generate_profile.py" = ["ISC001", "ISC002", "ISC003"]
-"autopts/bot/common.py" = ["ALL"]
-"autopts/ptscontrol.py" = ["ALL"]
-"autoptsserver.py" = ["ALL"]
+"autoptsserver.py" = ["ALL"] # TODO: Review and refactor _dispatch_blocking for proper async compatibility.
+#Current implementation relies on blocking queue polling with try-except inside a loop,
+# which is not compliant with PEP8 and triggers linter warnings (e.g., PERF203).
+# However, replacing this pattern would fundamentally change the logic and thread safety.
+# Proper async adaptation or queue mechanism is required for a clean, PEP8-compliant solution.
+
