@@ -29,6 +29,7 @@ from . import (
                gatt,
                hap,
                has,
+               hfp,
                ias,
                l2cap,
                mbtm,
@@ -86,6 +87,7 @@ __all__ = [
     "vcp",
     "vcs",
     "vocs",
+    "hfp",
 # GENERATOR append 2
 ]
 
