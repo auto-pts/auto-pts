@@ -736,17 +736,6 @@ def hdl_wid_124(_: WIDParams):
     return True
 
 
-def hdl_wid_125(params: WIDParams):
-    match = re.findall(r'(0[xX])?([0-9a-fA-F]{4})', params.description)
-    handle = match[0][1]
-
-    bd_addr = btp.pts_addr_get()
-    bd_addr_type = btp.pts_addr_type_get()
-    btp.gattc_signed_write(bd_addr_type, bd_addr, handle, "01")
-
-    return True
-
-
 def hdl_wid_127(params: WIDParams):
     """
     :params.desc: Please send a LL Connection Parameter Update request using valid parameters.
@@ -780,28 +769,6 @@ def hdl_wid_127(params: WIDParams):
     return True
 
 
-def hdl_wid_130(params: WIDParams):
-    """
-        Please confirm that following occurred:
-        - The IUT received signed data from Lower Tester and ignored the received signed data.
-        - The IUT does not forward the received signed data to the Upper Tester.
-    """
-    stack = get_stack()
-    gatt = stack.gatt
-
-    # GAP/SEC/CSIGN/BI-02-C expects two successes and one failure (invalid sign-counter)
-    # we don't know if any of those were already handled so just wait for up to
-    # 3 writes and then verify if only 2 occured.
-    if params.test_case_name == "GAP/SEC/CSIGN/BI-02-C":
-        for _i in range(gatt.attr_value_get_changed_cnt(handle=gatt.signed_write_handle), 3):
-            gatt.wait_attr_value_changed(handle=gatt.signed_write_handle, timeout=5)
-
-        return gatt.attr_value_get_changed_cnt(handle=gatt.signed_write_handle) == 2
-
-    value = gatt.wait_attr_value_changed(handle=gatt.signed_write_handle, timeout=5)
-    return value is None
-
-
 def hdl_wid_135(_: WIDParams):
     btp.gap_unpair()
     return True
@@ -819,19 +786,6 @@ def hdl_wid_136(_: WIDParams):
     btp.gatts_set_val(0, '01')
     btp.gatts_start_server()
     return True
-
-
-def hdl_wid_137(params: WIDParams):
-    """
-        Please prepare a characteristic that is sign writable which requires also requires authentication.
-        (Security mode 2 level 2)
-        Press OK to continue.
-    """
-    stack = get_stack()
-    gatt = stack.gatt
-
-    value = gatt.wait_attr_value_changed(handle=gatt.signed_write_handle, timeout=5)
-    return value is None
 
 
 def hdl_wid_138(_: WIDParams):
@@ -953,14 +907,6 @@ def hdl_wid_139_mode1_lvl4(_: WIDParams):
             return format(handle, 'x').zfill(4)
 
     return False
-
-
-def hdl_wid_141(params: WIDParams):
-    stack = get_stack()
-    gatt = stack.gatt
-
-    value = gatt.wait_attr_value_changed(handle=gatt.signed_write_handle, timeout=5)
-    return value is not None
 
 
 def hdl_wid_142(_: WIDParams):
@@ -1113,51 +1059,6 @@ def hdl_wid_159(_: WIDParams):
     btp.set_filter_accept_list()
     btp.gap_adv_ind_on(ad=stack.gap.ad, sd=stack.gap.sd, own_addr_type=OwnAddrType.le_resolvable_private_address)
     return True
-
-
-def hdl_wid_161(params: WIDParams):
-    """
-        Please enter the number of bytes in integer format for the length
-        of the signed write characteristic handle 0x003C. ex: 1, 2 or 3.
-    """
-    match = re.findall(r'(0[xX])?([0-9a-fA-F]{4})', params.description)
-    handle = int(match[0][1], 16)
-
-    attr = btp.gatts_get_attrs(handle, handle)
-    if not attr:
-        return None
-
-    (handle, permission, type_uuid) = attr.pop()
-
-    bd_addr = btp.pts_addr_get()
-    bd_addr_type = btp.pts_addr_type_get()
-
-    # Check if characteristic has signed write property
-    value = btp.gatts_get_attr_val(bd_addr_type, bd_addr, handle - 1)
-    if not value:
-        return None
-
-    (att_rsp, val_len, val) = value
-
-    hdr = '<BH'
-    hdr_len = struct.calcsize(hdr)
-    uuid_len = val_len - hdr_len
-
-    (properties, value_handle, chrc_uuid) = struct.unpack(f"<BH{uuid_len}s", val)
-
-    if properties & Prop.auth_swrite == 0:
-        return None
-
-    value = btp.gatts_get_attr_val(bd_addr_type, bd_addr, handle)
-    if not value:
-        return None
-
-    (att_rsp, val_len, val) = value
-
-    stack = get_stack()
-    stack.gatt.signed_write_handle = handle
-
-    return val_len
 
 
 def hdl_wid_162(params: WIDParams):
