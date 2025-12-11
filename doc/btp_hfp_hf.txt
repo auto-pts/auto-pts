@@ -1,0 +1,1045 @@
+HFP HF Service (ID 0x20)
+========================
+
+Commands and responses:
+
+        Opcode 0x00 - Error response
+
+        Opcode 0x01 - Read Supported Commands command/response
+
+                Controller Index:        <non-controller>
+                Command parameters:      <none>
+                Response parameters:     <supported commands> (variable)
+
+                Each bit in response is a flag indicating if command with
+                opcode matching bit number is supported. Bit set to 1 means
+                that command is supported. Bit 0 is reserved and shall always
+                be set to 0. If specific bit is not present in response (less
+                than required bytes received) it shall be assumed that command
+                is not supported.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x02 - Connect command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Channel (1 octet)
+                Response parameters:    <none>
+
+                This command is used to create an HFP HF connection to the
+                remote Audio Gateway (AG).
+                Address is the BD_ADDR of the remote AG.
+                Channel is the RFCOMM channel number.
+
+                Connected Event shall be expected after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x03 - Disconnect command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to disconnect an HFP HF connection.
+                Address is the BD_ADDR of the remote AG.
+
+                Disconnected Event shall be expected after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x04 - CLI command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Enable (1 octet)
+                Response parameters:    <none>
+
+                This command is used to enable or disable Calling Line
+                Identification (CLI) notification.
+                Address is the BD_ADDR of the remote AG.
+                Enable: 0x00 = Disable, 0x01 = Enable
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x05 - VGM command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Gain (1 octet)
+                Response parameters:    <none>
+
+                This command is used to set the microphone gain.
+                Address is the BD_ADDR of the remote AG.
+                Gain: 0-15 (volume level)
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x06 - VGS command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Gain (1 octet)
+                Response parameters:    <none>
+
+                This command is used to set the speaker gain.
+                Address is the BD_ADDR of the remote AG.
+                Gain: 0-15 (volume level)
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x07 - Get Operator command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to query the network operator name.
+                Address is the BD_ADDR of the remote AG.
+
+                Operator Event shall be expected after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x08 - Accept Call command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Call_Index (1 octet)
+                Response parameters:    <none>
+
+                This command is used to accept an incoming call.
+                Address is the BD_ADDR of the remote AG.
+                Call_Index is the index of the call to accept.
+
+                Call Accepted Event shall be expected after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x09 - Reject Call command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Call_Index (1 octet)
+                Response parameters:    <none>
+
+                This command is used to reject an incoming call.
+                Address is the BD_ADDR of the remote AG.
+                Call_Index is the index of the call to reject.
+
+                Call Rejected Event shall be expected after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x0a - Terminate Call command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Call_Index (1 octet)
+                Response parameters:    <none>
+
+                This command is used to terminate an active call.
+                Address is the BD_ADDR of the remote AG.
+                Call_Index is the index of the call to terminate.
+
+                Call Terminated Event shall be expected after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x0b - Hold Incoming command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Call_Index (1 octet)
+                Response parameters:    <none>
+
+                This command is used to put an incoming call on hold.
+                Address is the BD_ADDR of the remote AG.
+                Call_Index is the index of the call to hold.
+
+                Incoming Held Event shall be expected after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x0c - Query Respond Hold Status command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to query the respond and hold status.
+                Address is the BD_ADDR of the remote AG.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x0d - Number Call command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Number_Length (1 octet)
+                                        Number (variable)
+                Response parameters:    <none>
+
+                This command is used to dial a number.
+                Address is the BD_ADDR of the remote AG.
+                Number_Length is the length of the phone number string.
+                Number is the phone number to dial (UTF-8 string).
+
+                Outgoing Event shall be expected after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x0e - Memory Dial command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Location_Length (1 octet)
+                                        Location (variable)
+                Response parameters:    <none>
+
+                This command is used to dial from memory location.
+                Address is the BD_ADDR of the remote AG.
+                Location_Length is the length of the memory location string.
+                Location is the memory location identifier (UTF-8 string).
+
+                Outgoing Event shall be expected after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x0f - Redial command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to redial the last dialed number.
+                Address is the BD_ADDR of the remote AG.
+
+                Outgoing Event shall be expected after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x10 - Audio Connect command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to establish an audio (SCO) connection.
+                Address is the BD_ADDR of the remote AG.
+
+                SCO Connected Event shall be expected after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x11 - Audio Disconnect command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to disconnect an audio (SCO) connection.
+                Address is the BD_ADDR of the remote AG.
+
+                SCO Disconnected Event shall be expected after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x12 - Select Codec command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Codec_ID (1 octet)
+                Response parameters:    <none>
+
+                This command is used to select a codec for audio connection.
+                Address is the BD_ADDR of the remote AG.
+                Codec_ID is the codec identifier.
+
+                Valid Codec_ID values:
+                                0x01 = CVSD
+                                0x02 = mSBC
+                                0x03 = LC3-SWB
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x13 - Set Codecs command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Codec_IDs (1 octet)
+                Response parameters:    <none>
+
+                This command is used to set supported codecs.
+                Address is the BD_ADDR of the remote AG.
+                Codec_IDs is a bitmask of supported codec identifiers.
+
+                Codec_IDs bitmask:
+                                Bit 0 = CVSD
+                                Bit 1 = mSBC
+                                Bit 2 = LC3-SWB
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x14 - Turn Off ECNR command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to disable Echo Cancellation and Noise
+                Reduction (ECNR) in the AG.
+                Address is the BD_ADDR of the remote AG.
+
+                ECNR Turn Off Event shall be expected after issuing this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x15 - Call Waiting Notify command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Enable (1 octet)
+                Response parameters:    <none>
+
+                This command is used to enable or disable call waiting
+                notification.
+                Address is the BD_ADDR of the remote AG.
+                Enable: 0x00 = Disable, 0x01 = Enable
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x16 - Release All Held command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to release all held calls.
+                Address is the BD_ADDR of the remote AG.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x17 - Set UDUB command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to set User Determined User Busy (UDUB)
+                for incoming call.
+                Address is the BD_ADDR of the remote AG.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x18 - Release Active Accept Other command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to release active call and accept the
+                other (held or waiting) call.
+                Address is the BD_ADDR of the remote AG.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x19 - Hold Active Accept Other command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to put active call on hold and accept
+                the other (held or waiting) call.
+                Address is the BD_ADDR of the remote AG.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x1a - Join Conversation command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to add a held call to the conversation
+                (three-way calling).
+                Address is the BD_ADDR of the remote AG.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x1b - Explicit Call Transfer command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to connect two calls and disconnect
+                the HF from the conversation (Explicit Call Transfer).
+                Address is the BD_ADDR of the remote AG.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x1c - Release Specified Call command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Call_Index (1 octet)
+                Response parameters:    <none>
+
+                This command is used to release a specific call.
+                Address is the BD_ADDR of the remote AG.
+                Call_Index is the index of the call to release.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x1d - Private Consultation Mode command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Call_Index (1 octet)
+                Response parameters:    <none>
+
+                This command is used to place all calls on hold except the
+                specified call.
+                Address is the BD_ADDR of the remote AG.
+                Call_Index is the index of the call to keep active.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x1e - Voice Recognition command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Activate (1 octet)
+                Response parameters:    <none>
+
+                This command is used to activate or deactivate voice
+                recognition in the AG.
+                Address is the BD_ADDR of the remote AG.
+                Activate: 0x00 = Deactivate, 0x01 = Activate
+
+                Voice Recognition Event shall be expected after issuing this
+                command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x1f - Ready To Accept Audio command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to indicate that the HF is ready to
+                accept audio connection.
+                Address is the BD_ADDR of the remote AG.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x20 - Request Phone Number command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to request the phone number for voice
+                tagging.
+                Address is the BD_ADDR of the remote AG.
+
+                Request Phone Number Event shall be expected after issuing
+                this command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x21 - Transmit DTMF Code command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Call_Index (1 octet)
+                                        Code (1 octet)
+                Response parameters:    <none>
+
+                This command is used to transmit a DTMF code during an
+                active call.
+                Address is the BD_ADDR of the remote AG.
+                Call_Index is the index of the active call.
+                Code is the DTMF character to transmit (ASCII: 0-9, *, #, A-D).
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x22 - Query Subscriber command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to query the subscriber number
+                information.
+                Address is the BD_ADDR of the remote AG.
+
+                Subscriber Number Event shall be expected after issuing this
+                command.
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x23 - Indicator Status command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Status (1 octet)
+                Response parameters:    <none>
+
+                This command is used to enable or disable indicator status
+                update in the AG.
+                Address is the BD_ADDR of the remote AG.
+                Status: 0x00 = Disable, 0x01 = Enable
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x24 - Enhanced Safety command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Enable (1 octet)
+                Response parameters:    <none>
+
+                This command is used to enable or disable enhanced safety
+                feature.
+                Address is the BD_ADDR of the remote AG.
+                Enable: 0x00 = Disable, 0x01 = Enable
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x25 - Battery command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Level (1 octet)
+                Response parameters:    <none>
+
+                This command is used to report the HF battery level to the AG.
+                Address is the BD_ADDR of the remote AG.
+                Level: 0-100 (battery percentage)
+
+                In case of an error, the error response will be returned.
+
+        Opcode 0x26 - Query List Current Calls command/response
+
+                Controller Index:       <controller id>
+                Command parameters:     Address_Type (1 octet)
+                                        Address (6 octets)
+                Response parameters:    <none>
+
+                This command is used to query the list of current calls.
+                Address is the BD_ADDR of the remote AG.
+
+                Query Call Event(s) shall be expected after issuing this
+                command.
+
+                In case of an error, the error response will be returned.
+
+Events:
+        Opcode 0x80 - Connected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+
+                This event indicates that an HFP HF connection has been
+                established.
+                Address is the BD_ADDR of the remote AG.
+
+        Opcode 0x81 - Disconnected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+
+                This event indicates that an HFP HF connection has been
+                disconnected.
+                Address is the BD_ADDR of the remote AG.
+
+        Opcode 0x82 - SCO Connected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+
+                This event indicates that an audio (SCO) connection has been
+                established.
+                Address is the BD_ADDR of the remote AG.
+
+        Opcode 0x83 - SCO Disconnected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Reason (1 octet)
+
+                This event indicates that an audio (SCO) connection has been
+                disconnected.
+                Address is the BD_ADDR of the remote AG.
+                Reason is the disconnection reason code.
+
+        Opcode 0x84 - Service Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Value (4 octets)
+
+                This event indicates a change in the service availability
+                indicator.
+                Address is the BD_ADDR of the remote AG.
+                Value: 0 = No service, 1 = Service available
+
+        Opcode 0x85 - Outgoing Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Call_Index (1 octet)
+
+                This event indicates that an outgoing call has been initiated.
+                Address is the BD_ADDR of the remote AG.
+                Call_Index is the index of the outgoing call.
+
+        Opcode 0x86 - Remote Ringing Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Call_Index (1 octet)
+
+                This event indicates that the remote party is being alerted
+                (ringing).
+                Address is the BD_ADDR of the remote AG.
+                Call_Index is the index of the call.
+
+        Opcode 0x87 - Incoming Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Call_Index (1 octet)
+
+                This event indicates an incoming call.
+                Address is the BD_ADDR of the remote AG.
+                Call_Index is the index of the incoming call.
+
+        Opcode 0x88 - Incoming Held Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Call_Index (1 octet)
+
+                This event indicates that an incoming call has been put on hold.
+                Address is the BD_ADDR of the remote AG.
+                Call_Index is the index of the held call.
+
+        Opcode 0x89 - Call Accepted Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Call_Index (1 octet)
+
+                This event indicates that a call has been accepted.
+                Address is the BD_ADDR of the remote AG.
+                Call_Index is the index of the accepted call.
+
+        Opcode 0x8a - Call Rejected Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Call_Index (1 octet)
+
+                This event indicates that a call has been rejected.
+                Address is the BD_ADDR of the remote AG.
+                Call_Index is the index of the rejected call.
+
+        Opcode 0x8b - Call Terminated Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Call_Index (1 octet)
+
+                This event indicates that a call has been terminated.
+                Address is the BD_ADDR of the remote AG.
+                Call_Index is the index of the terminated call.
+
+        Opcode 0x8c - Call Held Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Call_Index (1 octet)
+
+                This event indicates that a call has been put on hold.
+                Address is the BD_ADDR of the remote AG.
+                Call_Index is the index of the held call.
+
+        Opcode 0x8d - Call Retrieved Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Call_Index (1 octet)
+
+                This event indicates that a held call has been retrieved.
+                Address is the BD_ADDR of the remote AG.
+                Call_Index is the index of the retrieved call.
+
+        Opcode 0x8e - Signal Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Value (4 octets)
+
+                This event indicates a change in the signal strength indicator.
+                Address is the BD_ADDR of the remote AG.
+                Value: 0-5 (signal strength level)
+
+        Opcode 0x8f - Roam Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Value (4 octets)
+
+                This event indicates a change in the roaming status indicator.
+                Address is the BD_ADDR of the remote AG.
+                Value: 0 = Not roaming, 1 = Roaming
+
+        Opcode 0x90 - Battery Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Value (4 octets)
+
+                This event indicates a change in the battery level indicator.
+                Address is the BD_ADDR of the remote AG.
+                Value: 0-5 (battery charge level)
+
+        Opcode 0x91 - Ring Indication Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Call_Index (1 octet)
+
+                This event indicates an incoming call ring indication.
+                Address is the BD_ADDR of the remote AG.
+                Call_Index is the index of the ringing call.
+
+        Opcode 0x92 - Dialing Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Result (1 octet, signed)
+
+                This event indicates the result of a dialing operation.
+                Address is the BD_ADDR of the remote AG.
+                Result: 0 = Success, negative value = Error code
+
+        Opcode 0x93 - CLIP Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Call_Index (1 octet)
+                                        Type (1 octet)
+                                        Number_Length (1 octet)
+                                        Number (variable)
+
+                This event provides Calling Line Identification Presentation
+                (CLIP) information for an incoming call.
+                Address is the BD_ADDR of the remote AG.
+                Call_Index is the index of the call.
+                Type is the number type (per 3GPP TS 24.008).
+                Number_Length is the length of the phone number string.
+                Number is the calling party number (UTF-8 string).
+
+        Opcode 0x94 - VGM Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Gain (1 octet)
+
+                This event indicates a change in microphone gain from the AG.
+                Address is the BD_ADDR of the remote AG.
+                Gain: 0-15 (volume level)
+
+        Opcode 0x95 - VGS Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Gain (1 octet)
+
+                This event indicates a change in speaker gain from the AG.
+                Address is the BD_ADDR of the remote AG.
+                Gain: 0-15 (volume level)
+
+        Opcode 0x96 - Inband Ring Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Inband (1 octet)
+
+                This event indicates whether in-band ringing is provided by
+                the AG.
+                Address is the BD_ADDR of the remote AG.
+                Inband: 0x00 = Not provided, 0x01 = Provided
+
+        Opcode 0x97 - Operator Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Mode (1 octet)
+                                        Format (1 octet)
+                                        Operator_Length (1 octet)
+                                        Operator_Name (variable)
+
+                This event provides the network operator name.
+                Address is the BD_ADDR of the remote AG.
+                Mode is the operator selection mode.
+                Format is the operator name format (0 = long, 1 = short, 2 = numeric).
+                Operator_Length is the length of the operator name string.
+                Operator_Name is the network operator name (UTF-8 string).
+
+        Opcode 0x98 - Codec Negotiate Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Codec_ID (1 octet)
+
+                This event indicates that codec negotiation has been initiated
+                by the AG.
+                Address is the BD_ADDR of the remote AG.
+                Codec_ID is the codec identifier proposed by the AG.
+
+                Valid Codec_ID values:
+                                0x01 = CVSD
+                                0x02 = mSBC
+                                0x03 = LC3-SWB
+
+        Opcode 0x99 - ECNR Turn Off Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Result (1 octet, signed)
+
+                This event indicates the result of turning off Echo Cancellation
+                and Noise Reduction (ECNR).
+                Address is the BD_ADDR of the remote AG.
+                Result: 0 = Success, negative value = Error code
+
+        Opcode 0x9a - Call Waiting Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Call_Index (1 octet)
+                                        Type (1 octet)
+                                        Number_Length (1 octet)
+                                        Number (variable)
+
+                This event indicates a call waiting notification.
+                Address is the BD_ADDR of the remote AG.
+                Call_Index is the index of the waiting call.
+                Type is the number type (per 3GPP TS 24.008).
+                Number_Length is the length of the phone number string.
+                Number is the waiting call number (UTF-8 string).
+
+        Opcode 0x9b - Voice Recognition Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Activate (1 octet)
+
+                This event indicates a change in voice recognition status.
+                Address is the BD_ADDR of the remote AG.
+                Activate: 0x00 = Deactivated, 0x01 = Activated
+
+        Opcode 0x9c - VRE State Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        State (1 octet)
+
+                This event indicates the Voice Recognition Engine (VRE) state.
+                Address is the BD_ADDR of the remote AG.
+                State is the VRE state value.
+
+                Valid State values:
+                                0x00 = Ready
+                                0x01 = Listening
+                                0x02 = Processing
+                                0x03 = Multi-input mode
+
+        Opcode 0x9d - Textual Representation Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Type (1 octet)
+                                        Operation (1 octet)
+                                        ID_Length (1 octet)
+                                        Text_Length (1 octet)
+                                        Data (variable)
+
+                This event provides textual representation information for
+                voice recognition.
+                Address is the BD_ADDR of the remote AG.
+                Type is the text type.
+                Operation is the text operation.
+                ID_Length is the length of the ID string.
+                Text_Length is the length of the text string.
+                Data contains ID string followed by text string (UTF-8).
+
+                Valid Type values:
+                                0x01 = Phone number
+                                0x02 = Contact name
+                                0x03 = Manufacturer specific
+
+                Valid Operation values:
+                                0x00 = Current
+                                0x01 = Add
+                                0x02 = Remove
+
+        Opcode 0x9e - Request Phone Number Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Number_Length (1 octet)
+                                        Number (variable)
+
+                This event provides the phone number for voice tagging.
+                Address is the BD_ADDR of the remote AG.
+                Number_Length is the length of the phone number string.
+                Number is the phone number (UTF-8 string).
+
+        Opcode 0x9f - Subscriber Number Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Type (1 octet)
+                                        Service (1 octet)
+                                        Number_Length (1 octet)
+                                        Number (variable)
+
+                This event provides subscriber number information.
+                Address is the BD_ADDR of the remote AG.
+                Type is the number type (per 3GPP TS 24.008).
+                Service is the service type.
+                Number_Length is the length of the phone number string.
+                Number is the subscriber number (UTF-8 string).
+
+                Valid Service values:
+                                0x00 = Asynchronous modem
+                                0x01 = Synchronous modem
+                                0x02 = PAD Access (asynchronous)
+                                0x03 = Packet Access (synchronous)
+                                0x04 = Voice
+                                0x05 = Fax
+
+        Opcode 0xa0 - Query Call Event
+
+                Controller Index:       <controller id>
+                Event parameters:       Address_Type (1 octet)
+                                        Address (6 octets)
+                                        Index (1 octet)
+                                        Dir (1 octet)
+                                        Status (1 octet)
+                                        Mode (1 octet)
+                                        Multiparty (1 octet)
+                                        Type (1 octet)
+                                        Number_Length (1 octet)
+                                        Number (variable)
+
+                This event provides information about a current call in
+                response to Query List Current Calls command.
+                Address is the BD_ADDR of the remote AG.
+                Index is the call index (1-based).
+                Dir is the call direction.
+                Status is the call status.
+                Mode is the call mode.
+                Multiparty indicates if call is part of a multiparty call.
+                Type is the number type (per 3GPP TS 24.008).
+                Number_Length is the length of the phone number string.
+                Number is the phone number (UTF-8 string).
+
+                Valid Dir values:
+                                0x00 = Mobile Originated (outgoing)
+                                0x01 = Mobile Terminated (incoming)
+
+                Valid Status values:
+                                0x00 = Active
+                                0x01 = Held
+                                0x02 = Dialing (outgoing only)
+                                0x03 = Alerting (outgoing only)
+                                0x04 = Incoming (incoming only)
+                                0x05 = Waiting (incoming only)
+                                0x06 = Call held by Response and Hold
+
+                Valid Mode values:
+                                0x00 = Voice
+                                0x01 = Data
+                                0x02 = Fax
+
+                Valid Multiparty values:
+                                0x00 = Not a multiparty call
+                                0x01 = Multiparty call
