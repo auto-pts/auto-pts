@@ -22,6 +22,8 @@ from .csis import csis_wid_hdl
 from .gmcs import gmcs_wid_hdl
 from .gtbs import gtbs_wid_hdl
 from .has import has_wid_hdl
+from .hfp_ag import hfp_ag_wid_hdl
+from .hfp_hf import hfp_hf_wid_hdl
 from .ias import ias_wid_hdl
 from .l2cap import l2cap_wid_hdl
 from .mcp import mcp_wid_hdl
@@ -77,6 +79,8 @@ __all__ = [
     "vcp_wid_hdl",
     "vcs_wid_hdl",
     "vocs_wid_hdl",
+    "hfp_hf_wid_hdl",
+    "hfp_ag_wid_hdl",
 # GENERATOR append 2
     "generic_wid_hdl",
 ]
