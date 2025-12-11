@@ -603,6 +603,14 @@ supported_svcs_cmds = {
         "service": 1 << defs.BTP_SERVICE_ID_RFCOMM,
         "supported_commands": defs.BTP_RFCOMM_CMD_READ_SUPPORTED_COMMANDS
     },
+    "HFP_HF": {
+        "service": 1 << defs.BTP_SERVICE_ID_HFP_HF,
+        "supported_commands": defs.BTP_HFP_HF_CMD_READ_SUPPORTED_COMMANDS
+    },
+    "HFP_AG": {
+        "service": 1 << defs.BTP_SERVICE_ID_HFP_AG,
+        "supported_commands": defs.BTP_HFP_AG_CMD_READ_SUPPORTED_COMMANDS
+    },
 # GENERATOR append 1
 }
 
@@ -681,6 +689,10 @@ reg_unreg_service = {
                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_SDP),
     "rfcomm_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
                  defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_RFCOMM),
+    "hfp_hf_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
+                defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_HFP_HF),
+    "hfp_ag_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
+                defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_HFP_AG),
 # GENERATOR append 2
     "read_supp_cmds": (defs.BTP_SERVICE_ID_CORE,
                        defs.BTP_CORE_CMD_READ_SUPPORTED_COMMANDS,
