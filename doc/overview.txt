@@ -120,4 +120,5 @@ ID  Name
  0x1d OTS Service
  0x1e PBP Service
  0x1f SDP Service
+ 0x20 RFCOMM Service
  # GENERATOR append 1
