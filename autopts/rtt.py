@@ -133,6 +133,9 @@ class BTMON:
         self.rtt_reader = RTT()
         self.btmon_process = None
         self.socat_process = None
+        self.log_filename = None
+        self.plain_log_filename = None
+        self.log_filecwd = None
 
     def _on_line_read_callback(self, data, user_data):
         sock, = user_data
@@ -159,12 +162,12 @@ class BTMON:
     def start(self, buffer_name, log_file, device_core, debugger_snr, hci):
         log("%s.%s", self.__class__, self.start.__name__)
 
-        log_filecwd = os.path.dirname(os.path.abspath(log_file))
+        self.log_filecwd = os.path.dirname(os.path.abspath(log_file))
         # btsnoop file
-        log_filename = os.path.basename(log_file)
+        self.log_filename = os.path.basename(log_file)
         # readable log file from btmon output
-        plain_log_filename, *extension = os.path.splitext(log_filename)
-        plain_log_filename += '_text' + ''.join(extension)
+        self.plain_log_filename, *extension = os.path.splitext(self.log_filename)
+        self.plain_log_filename += '_text' + ''.join(extension)
 
         if sys.platform == 'win32':
             # Remember to install btmon and socat in your Ubuntu WSL2 instance,
@@ -173,7 +176,7 @@ class BTMON:
             self._wsl_call('killall socat')
 
             cmd = f'socat -dd pty,raw,echo=0 TCP-LISTEN:{BTMON_PORT},reuseaddr'
-            self.socat_process = self._wsl_popen(cmd, log_filecwd)
+            self.socat_process = self._wsl_popen(cmd, self.log_filecwd)
             if not self.socat_process or self.socat_process.poll():
                 log('Socat failed to start')
                 self.stop()
@@ -194,8 +197,8 @@ class BTMON:
                 self.stop()
                 return
 
-            cmd = ['btmon', '-C', str(130), '-d', pty, '-w', log_filename, '>', plain_log_filename]
-            self.btmon_process = self._wsl_popen(subprocess.list2cmdline(cmd), log_filecwd)
+            cmd = ['btmon', '-C', str(130), '-d', pty, '-w', self.log_filename]
+            self.btmon_process = self._wsl_popen(subprocess.list2cmdline(cmd), self.log_filecwd)
             if not self.btmon_process or self.btmon_process.poll():
                 log('BTMON failed to start')
                 self.stop()
@@ -208,13 +211,10 @@ class BTMON:
             self.rtt_reader.start(buffer_name, device_core, debugger_snr, self._on_line_read_callback, (sock,))
         else:
             if hci is not None:
-                cmd = f"btmon -C 130 -i {hci} -w {log_filename} | grep -v '^= bt:' > {plain_log_filename}"
+                cmd = f"btmon -C 130 -i {hci} -w {self.log_filename}"
             else:
-                cmd = (
-                    f"btmon -C 130 -J {device_core},{debugger_snr} "
-                    f"-w {log_filename} | grep -v '^= bt:' > {plain_log_filename}"
-                )
-            self.btmon_process = subprocess.Popen(cmd, cwd=log_filecwd,
+                cmd = f"btmon -C 130 -J {device_core},{debugger_snr} -w {self.log_filename}"
+            self.btmon_process = subprocess.Popen(cmd, cwd=self.log_filecwd,
                                                   shell=True,
                                                   stdout=subprocess.PIPE,
                                                   stderr=subprocess.PIPE,
@@ -236,6 +236,18 @@ class BTMON:
             self.socat_process.terminate()
             self.socat_process.wait()
             self.socat_process = None
+
+        # copy btmon output to readable log file
+        cmd = f"btmon -r {self.log_filename} -P > {self.plain_log_filename}"
+        if sys.platform == 'win32':
+            proc = self._wsl_popen(cmd, self.log_filecwd)
+        else:
+            proc = subprocess.Popen(cmd, cwd=self.log_filecwd,
+                                    shell=True,
+                                    stdout=subprocess.PIPE,
+                                    stderr=subprocess.PIPE,
+                                    preexec_fn=os.setsid)
+        proc.wait()
 
 
 class RTTLogger:
