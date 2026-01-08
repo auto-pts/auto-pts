@@ -147,7 +147,7 @@ def test_cases(ptses):
                                iut_manufacturer_data
     ad_str_manufacturer_data_len = str(len(ad_str_manufacturer_data) // 2).zfill(2)
 
-    ad_pixit = ad_str_flags_len + ad_str_flags + ad_str_manufacturer_data_len + ad_str_manufacturer_data
+    ad_pixit = ad_str_manufacturer_data_len + ad_str_manufacturer_data
 
     pts_bd_addr = pts.q_bd_addr
     iut_device_name = get_unique_name(pts)
