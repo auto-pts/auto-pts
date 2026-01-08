@@ -30,10 +30,6 @@
         <row>3</row>
       </item>
       <item>
-        <table>0a</table>
-        <row>3</row>
-      </item>
-      <item>
         <table>23</table>
         <row>1</row>
       </item>
@@ -200,10 +196,6 @@
       <item>
         <table>27</table>
         <row>9</row>
-      </item>
-      <item>
-        <table>0</table>
-        <row>2</row>
       </item>
       <item>
         <table>34</table>
@@ -434,10 +426,6 @@
         <row>2</row>
       </item>
       <item>
-        <table>0a</table>
-        <row>5</row>
-      </item>
-      <item>
         <table>21</table>
         <row>12</row>
       </item>
@@ -586,51 +574,141 @@
         <row>2</row>
       </item>
       <item>
-        <table>26</table>
-        <row>1a</row>
-      </item>
-      <item>
         <table>30</table>
         <row>2</row>
       </item>
-    </profile>
-    <profile>
-      <name>SUM ICS</name>
       <item>
-        <table>52</table>
+        <table>27c</table>
         <row>1</row>
       </item>
       <item>
-        <table>31</table>
-        <row>19</row>
+        <table>11c</table>
+        <row>1</row>
       </item>
       <item>
-        <table>34</table>
-        <row>11</row>
+        <table>17a</table>
+        <row>4</row>
       </item>
-    </profile>
-    <profile>
-      <name>PROD</name>
       <item>
-        <table>3</table>
+        <table>27b</table>
+        <row>7</row>
+      </item>
+      <item>
+        <table>37c</table>
         <row>3</row>
       </item>
       <item>
-        <table>1</table>
-        <row>4</row>
+        <table>27b</table>
+        <row>5</row>
+      </item>
+      <item>
+        <table>27b</table>
+        <row>12</row>
+      </item>
+      <item>
+        <table>27b</table>
+        <row>2</row>
+      </item>
+      <item>
+        <table>20</table>
+        <row>8</row>
+      </item>
+      <item>
+        <table>37b</table>
+        <row>6</row>
+      </item>
+      <item>
+        <table>37b</table>
+        <row>1</row>
+      </item>
+      <item>
+        <table>27b</table>
+        <row>1</row>
+      </item>
+      <item>
+        <table>37b</table>
+        <row>2</row>
+      </item>
+      <item>
+        <table>17a</table>
+        <row>5</row>
+      </item>
+      <item>
+        <table>37c</table>
+        <row>1</row>
+      </item>
+      <item>
+        <table>25</table>
+        <row>13</row>
+      </item>
+      <item>
+        <table>37b</table>
+        <row>11</row>
+      </item>
+      <item>
+        <table>37b</table>
+        <row>10</row>
+      </item>
+      <item>
+        <table>0b</table>
+        <row>2</row>
+      </item>
+      <item>
+        <table>37b</table>
+        <row>3</row>
+      </item>
+      <item>
+        <table>8</table>
+        <row>5</row>
+      </item>
+      <item>
+        <table>35</table>
+        <row>13</row>
+      </item>
+      <item>
+        <table>37b</table>
+        <row>8</row>
+      </item>
+      <item>
+        <table>35</table>
+        <row>13a</row>
+      </item>
+      <item>
+        <table>25</table>
+        <row>13a</row>
+      </item>
+      <item>
+        <table>27b</table>
+        <row>11</row>
+      </item>
+      <item>
+        <table>27b</table>
+        <row>8</row>
+      </item>
+      <item>
+        <table>27b</table>
+        <row>3</row>
+      </item>
+      <item>
+        <table>37b</table>
+        <row>5</row>
+      </item>
+      <item>
+        <table>27b</table>
+        <row>6</row>
+      </item>
+      <item>
+        <table>37b</table>
+        <row>7</row>
+      </item>
+      <item>
+        <table>27c</table>
+        <row>3</row>
       </item>
     </profile>
     <profile>
       <name>SM</name>
       <item>
-        <table>2</table>
-        <row>3</row>
-      </item>
-      <item>
-        <table>2</table>
-        <row>5</row>
-      </item>
-      <item>
         <table>6</table>
         <row>2</row>
       </item>
@@ -639,11 +717,15 @@
         <row>2</row>
       </item>
       <item>
-        <table>2</table>
+        <table>2a</table>
         <row>1</row>
       </item>
       <item>
-        <table>7</table>
+        <table>7a</table>
+        <row>3</row>
+      </item>
+      <item>
+        <table>7b</table>
         <row>3</row>
       </item>
       <item>
@@ -651,7 +733,11 @@
         <row>1</row>
       </item>
       <item>
-        <table>4</table>
+        <table>4a</table>
+        <row>1</row>
+      </item>
+      <item>
+        <table>4b</table>
         <row>1</row>
       </item>
       <item>
@@ -659,27 +745,43 @@
         <row>3</row>
       </item>
       <item>
-        <table>2</table>
+        <table>2a</table>
         <row>2</row>
       </item>
       <item>
-        <table>7</table>
+        <table>7a</table>
         <row>1</row>
       </item>
       <item>
-        <table>4</table>
-        <row>2</row>
-      </item>
-      <item>
-        <table>7</table>
-        <row>2</row>
-      </item>
-      <item>
-        <table>3</table>
+        <table>7b</table>
         <row>1</row>
       </item>
       <item>
-        <table>2</table>
+        <table>4a</table>
+        <row>2</row>
+      </item>
+      <item>
+        <table>7a</table>
+        <row>2</row>
+      </item>
+      <item>
+        <table>7b</table>
+        <row>2</row>
+      </item>
+      <item>
+        <table>4b</table>
+        <row>2</row>
+      </item>
+      <item>
+        <table>4a</table>
+        <row>3</row>
+      </item>
+      <item>
+        <table>4b</table>
+        <row>3</row>
+      </item>
+      <item>
+        <table>4b</table>
         <row>4</row>
       </item>
       <item>
@@ -697,6 +799,65 @@
       <item>
         <table>6</table>
         <row>1</row>
+      </item>
+    </profile>
+    <profile>
+      <name>CORE</name>
+      <item>
+        <table>2b</table>
+        <row>61</row>
+      </item>
+      <item>
+        <table>2a</table>
+        <row>53</row>
+      </item>
+      <item>
+        <table>11</table>
+        <row>6</row>
+      </item>
+      <item>
+        <table>2</table>
+        <row>54</row>
+      </item>
+      <item>
+        <table>20a</table>
+        <row>1</row>
+      </item>
+      <item>
+        <table>2b</table>
+        <row>60</row>
+      </item>
+      <item>
+        <table>2a</table>
+        <row>54</row>
+      </item>
+      <item>
+        <table>2a</table>
+        <row>51</row>
+      </item>
+      <item>
+        <table>2</table>
+        <row>1</row>
+      </item>
+      <item>
+        <table>2b</table>
+        <row>62</row>
+      </item>
+      <item>
+        <table>2a</table>
+        <row>50</row>
+      </item>
+      <item>
+        <table>2a</table>
+        <row>52</row>
+      </item>
+      <item>
+        <table>2b</table>
+        <row>54</row>
+      </item>
+      <item>
+        <table>11</table>
+        <row>3</row>
       </item>
     </profile>
   </pics>
