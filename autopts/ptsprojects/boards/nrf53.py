@@ -45,12 +45,10 @@ def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None, project_repo
 
     check_call('rm -rf build/'.split(), cwd=tester_dir)
 
-    bttester_overlay = 'hci_ipc.conf'
-
+    cmd = ["west", "build", "--sysbuild", "-b", board]
     if conf_file and conf_file != 'default' and conf_file != 'prj.conf':
-        bttester_overlay += f';{conf_file}'
+        cmd.extend(("--", f"-DEXTRA_CONF_FILE='{conf_file}'"))
 
-    cmd = ['west', 'build', '--sysbuild', '-b', board, '--', f'-DEXTRA_CONF_FILE=\'{bttester_overlay}\'']
     check_call(env_cmd + cmd, cwd=tester_dir)
     try:
         check_call(env_cmd + ['west', 'flash', '--skip-rebuild', '-i', debugger_snr], cwd=tester_dir)
