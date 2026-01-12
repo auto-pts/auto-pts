@@ -30,6 +30,7 @@ from autopts.pybtp.btp.btp import (
     get_verify_values,
     pts_addr_get,
     pts_addr_type_get,
+    uuid2btp_ba,
 )
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.btp.gap import gap_wait_for_connection
@@ -138,7 +139,7 @@ def gatts_add_svc(svc_type, uuid):
     iutctl = get_iut()
 
     data_ba = bytearray()
-    uuid_ba = bytes.fromhex(uuid.replace("-", ""))
+    uuid_ba = uuid2btp_ba(uuid)
 
     data_ba.extend(chr(svc_type).encode('utf-8'))
     data_ba.extend(chr(len(uuid_ba)).encode('utf-8'))
@@ -177,7 +178,7 @@ def gatts_add_char(hdl, prop, perm, uuid):
 
     data_ba = bytearray()
     hdl_ba = struct.pack('H', hdl)
-    uuid_ba = bytes.fromhex(uuid.replace("-", ""))
+    uuid_ba = uuid2btp_ba(uuid)
 
     data_ba.extend(hdl_ba)
     if isinstance(prop, int):
@@ -235,7 +236,7 @@ def gatts_add_desc(hdl, perm, uuid):
 
     data_ba = bytearray()
     hdl_ba = struct.pack('H', hdl)
-    uuid_ba = binascii.unhexlify(uuid.replace("-", ""))[:: -1]
+    uuid_ba = uuid2btp_ba(uuid)
 
     data_ba.extend(hdl_ba)
 
@@ -310,7 +311,7 @@ def gatts_get_handle_from_uuid(uuid):
     iutctl = get_iut()
     data_ba = bytearray()
 
-    uuid_ba = bytes.fromhex(uuid.replace("-", ""))
+    uuid_ba = uuid2btp_ba(uuid)
     data_ba.extend(chr(len(uuid_ba)).encode('utf-8'))
     data_ba.extend(uuid_ba)
 
@@ -472,9 +473,7 @@ def gatts_get_attrs(start_handle=0x0001, end_handle=0xffff, type_uuid=None):
     data_ba.extend(end_hdl_ba)
 
     if type_uuid:
-        uuid_ba = bytes.fromhex(type_uuid.replace("-", ""))
-        # uuid_ba has bytes in reverse order, must bew swapped
-        uuid_ba = uuid_ba[::-1]
+        uuid_ba = uuid2btp_ba(type_uuid)
         data_ba.extend(chr(len(uuid_ba)).encode('utf-8'))
         data_ba.extend(uuid_ba)
     else:
@@ -568,7 +567,7 @@ def gattc_disc_prim_uuid(bd_addr_type, bd_addr, uuid):
     data_ba = bytearray()
 
     bd_addr_ba = addr2btp_ba(bd_addr)
-    uuid_ba = bytes.fromhex(uuid.replace("-", ""))[::-1]
+    uuid_ba = uuid2btp_ba(uuid)
 
     data_ba.extend(chr(bd_addr_type).encode('utf-8'))
     data_ba.extend(bd_addr_ba)
@@ -755,11 +754,7 @@ def gattc_disc_chrc_uuid(bd_addr_type, bd_addr, start_hdl, stop_hdl, uuid):
     start_hdl_ba = struct.pack('H', start_hdl)
     stop_hdl_ba = struct.pack('H', stop_hdl)
 
-    if "-" in uuid:
-        uuid = uuid.replace("-", "")
-    if uuid.startswith("0x"):
-        uuid = uuid.replace("0x", "")
-    uuid_ba = binascii.unhexlify(uuid)[::-1]
+    uuid_ba = uuid2btp_ba(uuid)
 
     data_ba.extend(chr(bd_addr_type).encode('utf-8'))
     data_ba.extend(bd_addr_ba)
@@ -861,11 +856,7 @@ def gattc_read_uuid(bd_addr_type, bd_addr, start_hdl, end_hdl, uuid):
     start_hdl_ba = struct.pack('H', start_hdl)
     end_hdl_ba = struct.pack('H', end_hdl)
 
-    if "-" in uuid:
-        uuid = uuid.replace("-", "")
-    if uuid.startswith("0x"):
-        uuid = uuid.replace("0x", "")
-    uuid_ba = binascii.unhexlify(uuid)[::-1]
+    uuid_ba = uuid2btp_ba(uuid)
 
     data_ba.extend(chr(bd_addr_type).encode('utf-8'))
     data_ba.extend(bd_addr_ba)
