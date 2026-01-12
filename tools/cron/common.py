@@ -983,9 +983,9 @@ def generic_test_job(cfg, *args, **kwargs):
 def update_repos_job(cfg, **kwargs):
     log(f'Started {cfg} Job')
 
-    cfg_dict = load_config(cfg)
+    config = get_cron_config(cfg, **kwargs)
 
-    update_repos('', cfg_dict['git'])
+    update_repos('', config['git'])
 
     log(f'The {cfg} Job finished')
 
@@ -993,7 +993,7 @@ def update_repos_job(cfg, **kwargs):
 def start_vm_job(cfg, **kwargs):
     log(f'Started {start_vm_job.__name__} Job, config: {cfg}')
 
-    config = load_config(cfg)
+    config = get_cron_config(cfg, **kwargs)
 
     start_vm(config, checkout_repos=True)
 
@@ -1003,7 +1003,7 @@ def start_vm_job(cfg, **kwargs):
 def close_vm_job(cfg, **kwargs):
     log(f'Started {close_vm_job.__name__} Job, config: {cfg}')
 
-    config = load_config(cfg)
+    config = get_cron_config(cfg, **kwargs)
 
     close_vm(config)
 
@@ -1013,7 +1013,7 @@ def close_vm_job(cfg, **kwargs):
 def merge_db_job(cfg, **kwargs):
     log(f'Started {merge_db_job.__name__} Job, config: {cfg}')
 
-    config = load_config(cfg)
+    config = get_cron_config(cfg, **kwargs)
     config = config['cron']['merge_db']
 
     if os.path.exists(config['merged_db_file']):
