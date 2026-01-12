@@ -845,6 +845,7 @@ def hdl_wid_139(params: WIDParams):
     attrs = btp.gatts_get_attrs(type_uuid='2803')
     bd_addr = btp.pts_addr_get()
     bd_addr_type = btp.pts_addr_type_get()
+    non_vnd_handle = 0
 
     if params.test_case_name in ['GAP/SEC/SEM/BV-39-C',
                                  'GAP/SEC/SEM/BV-43-C',
@@ -860,6 +861,8 @@ def hdl_wid_139(params: WIDParams):
         perm = Perm.read_enc
     else:
         perm = Perm.read_authn
+
+    vnds = [value for uuid, value in UUID.__dict__.items() if uuid.startswith("VND")]
 
     for attr in attrs:
         if not attr:
@@ -884,9 +887,14 @@ def hdl_wid_139(params: WIDParams):
 
         (handle, permission, type_uuid) = chrc_value_attr[0]
         if permission & perm:
-            return format(handle, 'x').zfill(4)
+            # Use vendor UUIDs since PTS doesn't obey profile requirements for writes
+            if type_uuid in vnds:
+                return format(handle, 'x').zfill(4)
+            # store first matching non-vendor handle as fallback
+            if non_vnd_handle == 0:
+                non_vnd_handle = format(handle, 'x').zfill(4)
 
-    return False
+    return non_vnd_handle
 
 
 def hdl_wid_139_mode1_lvl2(_: WIDParams):
@@ -949,6 +957,7 @@ def hdl_wid_139_mode1_lvl4(_: WIDParams):
             continue
 
         (handle, permission, type_uuid) = chrc_value_attr[0]
+
         if permission & Perm.write_authn:
             return format(handle, 'x').zfill(4)
 
@@ -1555,8 +1564,10 @@ def hdl_wid_246(_: WIDParams):
     attrs = btp.gatts_get_attrs(type_uuid='2803')
     bd_addr = btp.pts_addr_get()
     bd_addr_type = btp.pts_addr_type_get()
+    non_vnd_handle = 0
 
     perm = Perm.write_authn
+    vnds = [value for uuid, value in UUID.__dict__.items() if uuid.startswith("VND")]
 
     for attr in attrs:
         if not attr:
@@ -1581,17 +1592,24 @@ def hdl_wid_246(_: WIDParams):
 
         (handle, permission, type_uuid) = chrc_value_attr[0]
         if permission & perm:
-            return format(handle, 'x').zfill(4)
+            # Use vendor UUIDs since PTS doesn't obey profile requirements for writes
+            if type_uuid in vnds:
+                return format(handle, 'x').zfill(4)
+            # store first matching non-vendor handle as fallback
+            if non_vnd_handle == 0:
+                non_vnd_handle = format(handle, 'x').zfill(4)
 
-    return 0
+    return non_vnd_handle
 
 
 def hdl_wid_247(_: WIDParams):
     attrs = btp.gatts_get_attrs(type_uuid='2803')
     bd_addr = btp.pts_addr_get()
     bd_addr_type = btp.pts_addr_type_get()
+    non_vnd_handle = 0
 
     perm = Perm.write_authn
+    vnds = [value for uuid, value in UUID.__dict__.items() if uuid.startswith("VND")]
 
     for attr in attrs:
         if not attr:
@@ -1616,17 +1634,24 @@ def hdl_wid_247(_: WIDParams):
 
         (handle, permission, type_uuid) = chrc_value_attr[0]
         if permission & perm:
-            return format(handle, 'x').zfill(4)
+            # Use vendor UUIDs since PTS doesn't obey profile requirements for writes
+            if type_uuid in vnds:
+                return format(handle, 'x').zfill(4)
+            # store first matching non-vendor handle as fallback
+            if non_vnd_handle == 0:
+                non_vnd_handle = format(handle, 'x').zfill(4)
 
-    return 0
+    return non_vnd_handle
 
 
 def hdl_wid_248(_: WIDParams):
     attrs = btp.gatts_get_attrs(type_uuid='2803')
     bd_addr = btp.pts_addr_get()
     bd_addr_type = btp.pts_addr_type_get()
+    non_vnd_handle = 0
 
     perm = Perm.write_enc
+    vnds = [value for uuid, value in UUID.__dict__.items() if uuid.startswith("VND")]
 
     for attr in attrs:
         if not attr:
@@ -1651,9 +1676,14 @@ def hdl_wid_248(_: WIDParams):
 
         (handle, permission, type_uuid) = chrc_value_attr[0]
         if permission & perm:
-            return format(handle, 'x').zfill(4)
+            # Use vendor UUIDs since PTS doesn't obey profile requirements for writes
+            if type_uuid in vnds:
+                return format(handle, 'x').zfill(4)
+            # store first matching non-vendor handle as fallback
+            if non_vnd_handle == 0:
+                non_vnd_handle = format(handle, 'x').zfill(4)
 
-    return False
+    return non_vnd_handle
 
 
 def hdl_wid_265(params: WIDParams):
