@@ -671,7 +671,7 @@ def core_log_message(message):
 
 def btp2uuid(uuid_len, uu):
     if uuid_len == 2:
-        (uu,) = struct.unpack("H", uu)
+        (uu,) = struct.unpack("<H", uu)
         return format(uu, 'x').upper().rjust(4, '0')
     return UUID(bytes=uu[::-1]).urn[9:].replace('-', '').upper()
 
