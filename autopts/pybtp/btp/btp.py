@@ -15,6 +15,7 @@
 
 """Wrapper around btp messages. The functions are added as needed."""
 
+import binascii
 import logging
 import math
 import re
@@ -692,6 +693,34 @@ def btp2uuid(uuid_len, uu):
         return UUID(bytes=uu[::-1]).urn[9:].replace('-', '').upper()
 
     raise ValueError(f"btp2uuid: Invalid BTP UUID length: {uuid_len}")
+
+
+def uuid2btp_ba(uuid):
+    if isinstance(uuid, str):
+        if "-" in uuid:
+            uuid = uuid.replace("-", "")
+        if uuid.startswith("0x"):
+            uuid = uuid.replace("0x", "")
+
+        if len(uuid) not in [BTP_UUID_LEN.UUID_16_STR, BTP_UUID_LEN.UUID_32_STR, BTP_UUID_LEN.UUID_128_STR]:
+            raise ValueError(f"uuid2btp_ba: string length not valid for UUID: {uuid}")
+
+        return binascii.unhexlify(uuid)[::-1]
+
+    if isinstance(uuid, int):
+        # 16-bit UUID
+        if uuid <= 0xFFFF:
+            return struct.pack('<H', uuid)
+        # 32-bit UUID
+        if uuid <= 0xFFFFFFFF:
+            return struct.pack('<I', uuid)
+        # 128-bit UUID
+        if uuid <= 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF:
+            return uuid.to_bytes(16, byteorder='little')
+
+        raise ValueError(f"uuid2btp_ba: integer too large for 128-bit UUID: {uuid}")
+
+    return uuid
 
 
 def get_iut_method():

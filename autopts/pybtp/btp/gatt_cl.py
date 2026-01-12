@@ -27,6 +27,7 @@ from autopts.pybtp.btp.btp import (
     clear_verify_values,
     extend_verify_values,
     get_verify_values,
+    uuid2btp_ba,
 )
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.btp.gap import gap_wait_for_connection
@@ -689,11 +690,7 @@ def gatt_cl_disc_prim_uuid(bd_addr_type, bd_addr, uuid):
     data_ba = bytearray()
 
     bd_addr_ba = addr2btp_ba(bd_addr)
-    if "-" in uuid:
-        uuid = uuid.replace("-", "")
-    if uuid.startswith("0x"):
-        uuid = uuid.replace("0x", "")
-    uuid_ba = binascii.unhexlify(uuid)[::-1]
+    uuid_ba = uuid2btp_ba(uuid)
 
     data_ba.extend(chr(bd_addr_type).encode('utf-8'))
     data_ba.extend(bd_addr_ba)
@@ -812,11 +809,7 @@ def gatt_cl_disc_chrc_uuid(bd_addr_type, bd_addr, start_hdl, stop_hdl, uuid):
     start_hdl_ba = struct.pack('H', start_hdl)
     stop_hdl_ba = struct.pack('H', stop_hdl)
 
-    if "-" in uuid:
-        uuid = uuid.replace("-", "")
-    if uuid.startswith("0x"):
-        uuid = uuid.replace("0x", "")
-    uuid_ba = binascii.unhexlify(uuid)[::-1]
+    uuid_ba = uuid2btp_ba(uuid)
 
     data_ba.extend(chr(bd_addr_type).encode('utf-8'))
     data_ba.extend(bd_addr_ba)
@@ -908,11 +901,7 @@ def gatt_cl_read_uuid(bd_addr_type, bd_addr, start_hdl, end_hdl, uuid):
     start_hdl_ba = struct.pack('H', start_hdl)
     end_hdl_ba = struct.pack('H', end_hdl)
 
-    if "-" in uuid:
-        uuid = uuid.replace("-", "")
-    if uuid.startswith("0x"):
-        uuid = uuid.replace("0x", "")
-    uuid_ba = binascii.unhexlify(uuid)[::-1]
+    uuid_ba = uuid2btp_ba(uuid)
 
     data_ba.extend(chr(bd_addr_type).encode('utf-8'))
     data_ba.extend(bd_addr_ba)
