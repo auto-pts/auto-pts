@@ -673,6 +673,11 @@ def btp2uuid(uuid_len, uu):
     if uuid_len == 2:
         (uu,) = struct.unpack("<H", uu)
         return format(uu, 'x').upper().rjust(4, '0')
+
+    if uuid_len == 4:
+        (uu,) = struct.unpack("<I", uu)
+        return format(uu, 'x').upper().rjust(8, '0')
+
     return UUID(bytes=uu[::-1]).urn[9:].replace('-', '').upper()
 
 
