@@ -15,3 +15,5 @@ venv
 
 .vscode
 .idea
+autopts.egg-info/
+python/

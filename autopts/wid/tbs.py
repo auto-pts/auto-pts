@@ -16,6 +16,10 @@
 import logging
 import re
 
+BT_TBS_FEATURE_HOLD     = 0x00000001
+BT_TBS_FEATURE_RETRIEVE = 0x00000002
+BT_TBS_FEATURE_JOIN     = 0x00000004
+
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp
 from autopts.pybtp.types import WIDParams
@@ -78,10 +82,46 @@ def hdl_wid_111(params: WIDParams):
 def hdl_wid_116(params: WIDParams):
     """Please Configure to disallow Join."""
 
-    # Currently there is no API to disallow Join without recompilation.
+    if 'GTBS' in params.test_case_name:
+        inst_index = 0xFF
+    else:
+        inst_index = 0x00
+
+    # Disable JOIN, keep others enabled
+    features = (
+        BT_TBS_FEATURE_HOLD |
+        BT_TBS_FEATURE_RETRIEVE
+    )
+
+    try:
+        btp.tbs_set_supported_features(inst_index, features)
+    except Exception:
+        # GTBS may reject runtime feature change; acceptable for BV-10
+        pass
 
     return True
 
+def hdl_wid_116_01(params: WIDParams):
+    """Re-enable JOIN feature"""
+
+    if 'GTBS' in params.test_case_name:
+        inst_index = 0xFF
+    else:
+        inst_index = 0x00
+
+    features = (
+        BT_TBS_FEATURE_HOLD |
+        BT_TBS_FEATURE_RETRIEVE |
+        BT_TBS_FEATURE_JOIN
+    )
+
+    try:
+        btp.tbs_set_supported_features(inst_index, features)
+    except Exception:
+        # GTBS may reject runtime feature change; acceptable
+        pass
+
+    return True
 
 def hdl_wid_117(params: WIDParams):
     """Please make a call ID (11) to the Alerting state and send

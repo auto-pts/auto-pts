@@ -47,6 +47,42 @@ LeAdv = namedtuple('LeAdv', 'addr_type addr rssi flags eir')
 CONTROLLER_INDEX = CONTROLLER_INDEX
 CONTROLLER_INDEX_NONE = CONTROLLER_INDEX_NONE
 
+BTP_TBS_SET_SUPPORTED_FEATURES = 0x0C
+
+def tbs_set_supported_features(index: int, features: int):
+    """
+    Set TBS supported features at runtime.
+    """
+    logging.debug("%s index=%d features=0x%x",
+                  tbs_set_supported_features.__name__,
+                  index, features)
+
+    iutctl = get_iut()
+
+    data = struct.pack('<BI', index, features)
+
+    # Send command
+    iutctl.btp_socket.send(
+        defs.BTP_SERVICE_ID_TBS,
+        BTP_TBS_SET_SUPPORTED_FEATURES,
+        index,
+        data
+    )
+
+    # Read and validate response
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
+
+    if tuple_hdr.op == defs.BTP_STATUS:
+        if tuple_data[0][0] != 0x00:
+            raise BTPError("TBS_SET_SUPPORTED_FEATURES failed")
+    else:
+        btp_hdr_check(
+            tuple_hdr,
+            exp_svc_id=defs.BTP_SERVICE_ID_TBS,
+            exp_op=BTP_TBS_SET_SUPPORTED_FEATURES
+        )
+
+    return True
 
 def read_supp_svcs():
     logging.debug("%s", read_supp_svcs.__name__)
