@@ -16,13 +16,13 @@
 import logging
 import re
 
-BT_TBS_FEATURE_HOLD     = 0x00000001
-BT_TBS_FEATURE_RETRIEVE = 0x00000002
-BT_TBS_FEATURE_JOIN     = 0x00000004
-
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp
 from autopts.pybtp.types import WIDParams
+
+BT_TBS_FEATURE_HOLD     = 0x00000001
+BT_TBS_FEATURE_RETRIEVE = 0x00000002
+BT_TBS_FEATURE_JOIN     = 0x00000004
 
 log = logging.debug
 
@@ -101,6 +101,7 @@ def hdl_wid_116(params: WIDParams):
 
     return True
 
+
 def hdl_wid_116_01(params: WIDParams):
     """Re-enable JOIN feature"""
 
@@ -122,6 +123,7 @@ def hdl_wid_116_01(params: WIDParams):
         pass
 
     return True
+
 
 def hdl_wid_117(params: WIDParams):
     """Please make a call ID (11) to the Alerting state and send

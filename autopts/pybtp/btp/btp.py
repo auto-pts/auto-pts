@@ -49,6 +49,7 @@ CONTROLLER_INDEX_NONE = CONTROLLER_INDEX_NONE
 
 BTP_TBS_SET_SUPPORTED_FEATURES = 0x0C
 
+
 def tbs_set_supported_features(index: int, features: int):
     """
     Set TBS supported features at runtime.
@@ -83,6 +84,7 @@ def tbs_set_supported_features(index: int, features: int):
         )
 
     return True
+
 
 def read_supp_svcs():
     logging.debug("%s", read_supp_svcs.__name__)
