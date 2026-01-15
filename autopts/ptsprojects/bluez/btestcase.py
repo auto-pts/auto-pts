@@ -14,7 +14,7 @@
 # more details.
 #
 
-"""Test case that manages Zephyr IUT"""
+"""Test case that manages BlueZ IUT"""
 
 from autopts.ptsprojects.bluez.iutctl import get_iut
 from autopts.ptsprojects.stack import get_stack
