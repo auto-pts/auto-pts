@@ -20,6 +20,7 @@ import math
 import re
 import struct
 from collections import namedtuple
+from enum import IntEnum
 from uuid import UUID
 
 from autopts.ptsprojects.stack import get_stack
@@ -669,16 +670,28 @@ def core_log_message(message):
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_LOG_MESSAGE)
 
 
+class BTP_UUID_LEN(IntEnum):
+    UUID_16 = 2
+    UUID_16_STR = 4
+    UUID_32 = 4
+    UUID_32_STR = 8
+    UUID_128 = 16
+    UUID_128_STR = 32
+
+
 def btp2uuid(uuid_len, uu):
-    if uuid_len == 2:
+    if uuid_len == BTP_UUID_LEN.UUID_16:
         (uu,) = struct.unpack("<H", uu)
         return format(uu, 'x').upper().rjust(4, '0')
 
-    if uuid_len == 4:
+    if uuid_len == BTP_UUID_LEN.UUID_32:
         (uu,) = struct.unpack("<I", uu)
         return format(uu, 'x').upper().rjust(8, '0')
 
-    return UUID(bytes=uu[::-1]).urn[9:].replace('-', '').upper()
+    if uuid_len == BTP_UUID_LEN.UUID_128:
+        return UUID(bytes=uu[::-1]).urn[9:].replace('-', '').upper()
+
+    raise ValueError(f"btp2uuid: Invalid BTP UUID length: {uuid_len}")
 
 
 def get_iut_method():
