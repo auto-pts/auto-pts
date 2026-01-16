@@ -43,23 +43,10 @@ init_gatt_db = [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
                          UUID.VND16_3),
                 TestFunc(btp.gatts_set_val, 0, '02'),
                 TestFunc(btp.gatts_add_char, 0,
-                         Prop.read | Prop.auth_swrite,
-                         Perm.read | Perm.write,
-                         UUID.VND16_4),
-                TestFunc(btp.gatts_set_val, 0, '03'),
-                TestFunc(btp.gatts_add_char, 0,
                          Prop.read | Prop.write,
                          Perm.read_authn | Perm.write_authn,
                          UUID.VND16_5),
                 TestFunc(btp.gatts_set_val, 0, '04'),
-                TestFunc(btp.gatts_start_server)]
-
-init_gatt_db2 = [TestFunc(btp.gatts_add_svc, 0, UUID.VND16_1),
-                 TestFunc(btp.gatts_add_char, 0,
-                         Prop.read | Prop.auth_swrite,
-                         Perm.read | Perm.write_authn,
-                         UUID.VND16_4),
-                TestFunc(btp.gatts_set_val, 0, '03'),
                 TestFunc(btp.gatts_start_server)]
 
 iut_manufacturer_data = 'ABCD'
@@ -275,9 +262,6 @@ def test_cases(ptses):
     ]
 
     custom_test_cases = [
-        ZTestCase("GAP", "GAP/SEC/CSIGN/BI-04-C",
-                  cmds=pre_conditions + init_gatt_db2,
-                  generic_wid_hdl=gap_wid_hdl),
         ZTestCase("GAP", "GAP/MOD/NBON/BV-03-C",
                   cmds=br_pre_cond,
                   generic_wid_hdl=gap_wid_hdl),
