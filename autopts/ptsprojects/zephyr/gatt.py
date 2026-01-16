@@ -212,18 +212,6 @@ def test_cases_server(ptses):
                               Perm.read | Perm.write,
                               UUID.CCC),
 
-                     TestFunc(btp.gatts_add_char, 0,
-                              Prop.read | Prop.write_wo_resp | Prop.auth_swrite,
-                              Perm.read | Perm.write,
-                              UUID.VND16_6),
-                     TestFunc(btp.gatts_set_val, 0, Value.eight_bytes_1),
-
-                    TestFunc(btp.gatts_add_char, 0,
-                              Prop.read | Prop.write_wo_resp | Prop.auth_swrite,
-                              Perm.read_authn | Perm.write_authn,
-                              UUID.VND16_7),
-                     TestFunc(btp.gatts_set_val, 0, Value.eight_bytes_1),
-
                       TestFunc(btp.gatts_add_char, 0,
                               Prop.read | Prop.write | Prop.ext_prop,
                               Perm.read | Perm.write,
