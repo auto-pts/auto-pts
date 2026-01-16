@@ -2042,6 +2042,17 @@ def hdl_wid_20001(_: WIDParams):
         Please prepare IUT into a connectable mode.
     """
     stack = get_stack()
+
+    # PTS race condition workaround: in some cases PTS orders advertising
+    # start, and even establish connection before this WID is received.
+    # IUT that has maximum number of connections as 1, this causes failure.
+    # E.g. GAP/PRIV/CONN/BV-01-C: priory to wid 20001 PTS sends wid 90 and
+    # wid 405 back to back, which leaves IUT in advertising state already.
+    if len(stack.gap.connections) > 0 or \
+            stack.gap.current_settings_get('Advertising') or \
+            stack.gap.current_settings_get('Extended Advertising'):
+        return True
+
     btp.gap_set_conn()
 
     if stack.gap.iut_has_privacy():
