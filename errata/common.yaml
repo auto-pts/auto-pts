@@ -4,6 +4,8 @@
 
 BASS/SR/CP/BV-15-C: https://support.bluetooth.com/hc/en-us/requests/181225
 
+CSIP/CL/SP/BV-07-C: Request ID 170874
+
 GAP/CONN/CPUP/BV-08-C: Laird PTS LE-only dongle required
 GAP/CONN/CPUP/BV-10-C: Laird PTS LE-only dongle required
 GAP/SEC/AUT/BV-13-C: ES-28650
@@ -12,7 +14,5 @@ GAP/SEC/AUT/BV-14-C: ES-28650
 GATT/CL/GAS/BV-01-C: Request ID 172942
 GATT/SR/GAN/BV-01-C: ES-27410
 GATT/SR/GAI/BV-01-C: ES-27410
-
-CSIP/CL/SP/BV-07-C: Request ID 170874
 
 L2CAP/COS/CED/BI-29-C: ES-28495
