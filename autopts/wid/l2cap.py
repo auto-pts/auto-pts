@@ -524,7 +524,13 @@ def hdl_wid_255(params: WIDParams):
 
     if params.test_case_name == "L2CAP/TIM/BV-03-C":
         # This L2CAP test tests a requirement on EATT, not L2CAP
-        btp.eatt_conn(None, None, 1)
+        # IUT may do EATT auto-connection and/or auto-reconnection on collision so to keep this
+        # simple we allow this command to fail. PTS will verify if connection request was sent so
+        # there is no risk of false positive test result.
+        try:
+            btp.eatt_conn(None, None, 1)
+        except BTPError:
+            logging.info("Ignoring error on EATT connection")
     else:
         l2cap = stack.l2cap
         btp.l2cap_conn(None, None, l2cap.psm, l2cap.initial_mtu, l2cap.num_channels, 1, l2cap.hold_credits)
