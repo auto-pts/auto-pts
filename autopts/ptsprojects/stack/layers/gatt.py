@@ -81,7 +81,6 @@ class Gatt:
         self.verify_values = []
         self.notification_events = []
         self.notification_ev_received = Event()
-        self.signed_write_handle = 0
         self.value_len = 0
 
     def attr_value_set(self, handle, value):
