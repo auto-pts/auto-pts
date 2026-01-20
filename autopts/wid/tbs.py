@@ -36,14 +36,17 @@ def tbs_wid_hdl(wid, description, test_case_name):
 # wid handlers section begin
 
 
+# def hdl_wid_101(params: WIDParams):
+#     """Please generate incoming call from the Server"""
+
+#     btp.tbs_remote_incoming(0, 'tel:+19991111234', 'tel:+19991111235',
+#                             'tel:+19991110011')
+
+#     return True
+
 def hdl_wid_101(params: WIDParams):
-    """Please generate incoming call from the Server"""
-
-    btp.tbs_remote_incoming(0, 'tel:+19991111234', 'tel:+19991111235',
-                            'tel:+19991110011')
-
+    """Call already exists (created by IUT at boot)."""
     return True
-
 
 def hdl_wid_106(params: WIDParams):
     """Please make a call ID (1) to the Remotely Held state."""

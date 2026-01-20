@@ -47,6 +47,67 @@ LeAdv = namedtuple('LeAdv', 'addr_type addr rssi flags eir')
 CONTROLLER_INDEX = CONTROLLER_INDEX
 CONTROLLER_INDEX_NONE = CONTROLLER_INDEX_NONE
 
+BTP_TBS_REGISTER_BEARER = 0x0D
+
+def tbs_register_bearer(provider_name: str,
+                        uci: str,
+                        uri_schemes: str,
+                        gtbs: bool,
+                        authorization_required: bool,
+                        technology: int,
+                        supported_features: int):
+
+    logging.debug("tbs_register_bearer() GTBS=%s provider=%s",
+                  gtbs, provider_name)
+
+    iutctl = get_iut()
+
+    # Encode fields with length prefixes
+    data = bytearray()
+
+    # provider name
+    data.append(len(provider_name))
+    data.extend(provider_name.encode("utf-8"))
+
+    # UCI
+    data.append(len(uci))
+    data.extend(uci.encode("utf-8"))
+
+    # URI schemes
+    data.append(len(uri_schemes))
+    data.extend(uri_schemes.encode("utf-8"))
+
+    # Flags + misc
+    data.extend(struct.pack("<BBBBI",
+                            1 if gtbs else 0,
+                            1 if authorization_required else 0,
+                            technology,
+                            0,  # reserved
+                            supported_features))
+
+    # Send command
+    iutctl.btp_socket.send(
+        defs.BTP_SERVICE_ID_TBS,
+        BTP_TBS_REGISTER_BEARER,
+        defs.BTP_INDEX_NONE,
+        bytes(data)
+    )
+
+    # Read reply
+    tuple_hdr, tuple_data = iutctl.btp_socket.read()
+    if tuple_hdr.op == defs.BTP_STATUS:
+        status = tuple_data[0][0]
+
+    # 0x01 = already exists (GTBS/TBS already registered)
+    if status == 0x01:
+        logging.debug("TBS bearer already registered, ignoring")
+        return True
+
+    raise BTPError(f"TBS bearer registration failed, status=0x{status:02x}")
+
+    return True
+
+
 BTP_TBS_SET_SUPPORTED_FEATURES = 0x0C
 
 
