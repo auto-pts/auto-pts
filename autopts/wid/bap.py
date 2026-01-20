@@ -2170,7 +2170,7 @@ def hdl_wid_349(params: WIDParams):
     broadcast_id = ev['broadcast_id']
     padv_interval = ev['padv_interval']
     num_subgroups = 1
-    padv_sync = 0x01
+    padv_sync = PaSyncState.SYNC_INFO_REQ
     bis_sync = 0
     metadata_len = 0
     subgroups = struct.pack('<IB', bis_sync, metadata_len)
@@ -2181,10 +2181,20 @@ def hdl_wid_349(params: WIDParams):
 
     ev = stack.bap.wait_broadcast_receive_state_ev(
         broadcast_id, addr_type, addr, broadcaster_addr_type,
-        broadcaster_addr, padv_sync, timeout=10, remove=False)
+        broadcaster_addr, padv_sync, timeout=10, remove=True)
 
     if ev is None:
         return False
+
+    if ev['pa_sync_state'] == PaSyncState.SYNC_INFO_REQ:
+        btp.bap_send_past(ev['src_id'])
+
+        ev = stack.bap.wait_broadcast_receive_state_ev(
+            broadcast_id, addr_type, addr, broadcaster_addr_type,
+            broadcaster_addr, PaSyncState.SYNCED, timeout=10, remove=True)
+
+        if ev is None:
+            return False
 
     return True
 
