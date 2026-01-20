@@ -50,6 +50,7 @@ def set_pixits(ptses):
     pts.set_pixit("L2CAP", "TSPX_delete_ltk", "FALSE")
     pts.set_pixit("L2CAP", "TSPX_l2ca_inmtu", "02A0")
     pts.set_pixit("L2CAP", "TSPX_iut_supported_max_channels", "5")
+    pts.set_pixit("L2CAP", "TSPX_l2ca_num_concurrent_credit_based_connections", "2")
     pts.set_pixit("L2CAP", "TSPX_tester_mps", "0017")
     pts.set_pixit("L2CAP", "TSPX_tester_mtu", "02A0")
     pts.set_pixit("L2CAP", "TSPX_iut_role_initiator", "True")
@@ -103,10 +104,6 @@ def test_cases(ptses):
                   "L2CAP", "TSPX_psm_encryption_required", format(le_psm, '04x'))),
               TestFunc(lambda: pts.update_pixit_param(
                   "L2CAP", "TSPX_psm_unsupported", format(psm_unsupported, '04x'))),
-              TestFunc(lambda: pts.update_pixit_param(
-                  "L2CAP", "TSPX_iut_supported_max_channels", "2")),
-              TestFunc(lambda: pts.update_pixit_param(
-                  "L2CAP", "TSPX_l2ca_num_concurrent_credit_based_connections", "2")),
               TestFunc(lambda: pts.update_pixit_param(
                   "L2CAP", "TSPX_l2ca_cbmps_min", format(64, '04x'))),
               TestFunc(lambda: pts.update_pixit_param(
