@@ -13,7 +13,7 @@
           <Row>
             <Name>TSPC_GAP_0b_2</Name>
             <Description>GAP LE Host (C.2, C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -451,7 +451,7 @@
           <Row>
             <Name>TSPC_GAP_8_5</Name>
             <Description>LE Extended Advertising (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -697,7 +697,7 @@
           <Row>
             <Name>TSPC_GAP_11c_1</Name>
             <Description>Out of Band (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -943,13 +943,13 @@
           <Row>
             <Name>TSPC_GAP_17a_4</Name>
             <Description>Scanning for Periodic Advertising (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_17a_5</Name>
             <Description>Synchronizing to Periodic Advertising (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1063,7 +1063,7 @@
           <Row>
             <Name>TSPC_GAP_20_8</Name>
             <Description>LE Extended Advertising (O)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1471,13 +1471,13 @@
           <Row>
             <Name>TSPC_GAP_25_13</Name>
             <Description>Minimum 128-bit entropy key (C.5)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_25_13a</Name>
             <Description>Minimum 128-bit entropy key, LE security mode 1 level 4 (C.7)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1729,19 +1729,19 @@
           <Row>
             <Name>TSPC_GAP_27b_1</Name>
             <Description>Peripheral Role (Responder) (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_27b_2</Name>
             <Description>Authenticated MITM protection (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_27b_3</Name>
             <Description>Unauthenticated no MITM protection (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1753,25 +1753,25 @@
           <Row>
             <Name>TSPC_GAP_27b_5</Name>
             <Description>LE Secure Connections (C.4)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_27b_6</Name>
             <Description>Long Term Key (LTK) (C.5)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_27b_7</Name>
             <Description>Identity Resolving Key (IRK) (C.6)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_27b_8</Name>
             <Description>Connection Signature Resolving Key (CSRK) (C.7)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1789,19 +1789,19 @@
           <Row>
             <Name>TSPC_GAP_27b_11</Name>
             <Description>Legacy pairing (C.8)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_27b_12</Name>
             <Description>LE Secure Connection pairing (C.4)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_27c_1</Name>
             <Description>Detect insufficient authentication (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -1813,7 +1813,7 @@
           <Row>
             <Name>TSPC_GAP_27c_3</Name>
             <Description>Detect insufficient encryption (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -2263,13 +2263,13 @@
           <Row>
             <Name>TSPC_GAP_35_13</Name>
             <Description>Minimum 128-bit entropy key (C.4)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_35_13a</Name>
             <Description>Minimum 128-bit entropy key, LE security mode 1 level 4 (C.5)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -2503,19 +2503,19 @@
           <Row>
             <Name>TSPC_GAP_37b_1</Name>
             <Description>Central Role (Initiator) (M)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>TRUE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_37b_2</Name>
             <Description>Authenticated MITM protection (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_37b_3</Name>
             <Description>Unauthenticated no MITM protection (C.2)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -2527,25 +2527,25 @@
           <Row>
             <Name>TSPC_GAP_37b_5</Name>
             <Description>LE Secure Connections (C.4)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_37b_6</Name>
             <Description>Long Term Key (LTK) (C.5)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_37b_7</Name>
             <Description>Identity Resolving Key (IRK) (C.6)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_37b_8</Name>
             <Description>Connection Signature Resolving Key (CSRK) (C.7)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -2557,19 +2557,19 @@
           <Row>
             <Name>TSPC_GAP_37b_10</Name>
             <Description>Legacy pairing (C.8)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_37b_11</Name>
             <Description>LE Secure Connection pairing (C.4)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_GAP_37c_1</Name>
             <Description>Detect insufficient authentication (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -2581,7 +2581,7 @@
           <Row>
             <Name>TSPC_GAP_37c_3</Name>
             <Description>Detect insufficient encryption (C.3)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -3281,37 +3281,37 @@
           <Row>
             <Name>TSPC_SM_2a_1</Name>
             <Description>Legacy pairing (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_SM_2a_2</Name>
             <Description>LE Secure Connection pairing (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_SM_4a_1</Name>
             <Description>Just Works (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_SM_4a_2</Name>
             <Description>Passkey Entry (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_SM_4a_3</Name>
             <Description>Out of Band (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_SM_4b_1</Name>
             <Description>Just Works (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -3323,13 +3323,13 @@
           <Row>
             <Name>TSPC_SM_4b_3</Name>
             <Description>Out of Band (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_SM_4b_4</Name>
             <Description>Numeric Comparison (C.1)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -3455,13 +3455,13 @@
           <Row>
             <Name>TSPC_CORE_2a_53</Name>
             <Description>Host Core v5.3 or later (C.4)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_CORE_2a_54</Name>
             <Description>Host Core v5.4 or later (C.5)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
@@ -3479,13 +3479,13 @@
           <Row>
             <Name>TSPC_CORE_2b_54</Name>
             <Description>Host Core v5.4 or earlier (C.5)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
             <Name>TSPC_CORE_2b_60</Name>
             <Description>Host Core v6.0 or earlier (C.6)</Description>
-            <Value>FALSE</Value>
+            <Value>TRUE</Value>
             <Mandatory>FALSE</Mandatory>
           </Row>
           <Row>
