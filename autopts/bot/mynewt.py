@@ -23,7 +23,7 @@ from autopts import bot
 from autopts.bot.common import BuildAndFlashException
 from autopts.client import Client
 from autopts.ptsprojects.boards import get_board_type, get_build_and_flash
-from autopts.ptsprojects.mynewt.iutctl import get_iut, log
+from autopts.ptsprojects.mynewt.iutctl import init_iutctl, log
 
 PROJECT_NAME = Path(__file__).stem
 
@@ -93,7 +93,7 @@ class MynewtBotCliParser(bot.common.BotCliParser):
 class MynewtBotClient(bot.common.BotClient):
     def __init__(self):
         project = importlib.import_module('autopts.ptsprojects.mynewt')
-        super().__init__(get_iut, project, 'mynewt', MynewtBotConfigArgs,
+        super().__init__(init_iutctl, project, 'mynewt', MynewtBotConfigArgs,
                          MynewtBotCliParser)
 
     def apply_config(self, args, config, value):
@@ -151,7 +151,7 @@ class MynewtBotClient(bot.common.BotClient):
 
 class MynewtClient(Client):
     def __init__(self):
-        super().__init__(get_iut, sys.modules['autopts.ptsprojects.zephyr'], 'mynewt')
+        super().__init__(init_iutctl, sys.modules['autopts.ptsprojects.zephyr'], 'mynewt')
 
 
 BotClient = MynewtBotClient

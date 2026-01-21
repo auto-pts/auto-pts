@@ -19,7 +19,6 @@ import logging
 from autopts.ptsprojects.iutctl import IutCtl
 
 log = logging.debug
-MYNEWT = None
 
 
 class MynewtCtl(IutCtl):
@@ -30,26 +29,11 @@ class MynewtCtl(IutCtl):
         self._rtt_logger_name = 'Terminal'
 
 
-def get_iut():
-    return MYNEWT
-
-
-def init(args):
+def init_iutctl(args):
     """IUT init routine
 
     tty_file -- Path to TTY file. BTP communication with HW DUT will be done
     over this TTY.
     board -- HW DUT board to use for testing.
     """
-    global MYNEWT
-
-    MYNEWT = MynewtCtl(args)
-
-
-def cleanup():
-    """IUT cleanup routine"""
-    global MYNEWT
-
-    if MYNEWT:
-        MYNEWT.stop()
-        MYNEWT = None
+    return MynewtCtl(args)
