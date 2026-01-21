@@ -543,3 +543,166 @@ class BAPAnnouncement:
 class CAPAnnouncement:
     GENERAL = 0x0
     TARGETED = 0x1
+
+
+BLUETOOTH_SIG_VENDOR_ID = 0x001958
+
+
+class AVCTPPassThroughOperation:
+    Operation_Select = 0x00
+    Operation_Up = 0x01
+    Operation_Down = 0x02
+    Operation_Left = 0x03
+    Operation_Right = 0x04
+    Operation_Right_Up = 0x05
+    Operation_Right_Down = 0x06
+    Operation_Left_Up = 0x07
+    Operation_Left_Down = 0x08
+    Operation_Root_Menu = 0x09
+    Operation_Setup_Menu = 0x0A
+    Operation_Contents_Menu = 0x0B
+    Operation_Favorite_Menu = 0x0C
+    Operation_Exit = 0x0D
+    Operation_0 = 0x20
+    Operation_1 = 0x21
+    Operation_2 = 0x22
+    Operation_3 = 0x23
+    Operation_4 = 0x24
+    Operation_5 = 0x25
+    Operation_6 = 0x26
+    Operation_7 = 0x27
+    Operation_8 = 0x28
+    Operation_9 = 0x29
+    Operation_Dot = 0x2A
+    Operation_Enter = 0x2B
+    Operation_Clear = 0x2C
+    Operation_Channel_Up = 0x30
+    Operation_Channel_Down = 0x31
+    Operation_Previous_Channel = 0x32
+    Operation_Sound_Select = 0x33
+    Operation_Input_Select = 0x34
+    Operation_Display_Information = 0x35
+    Operation_Help = 0x36
+    Operation_Page_Up = 0x37
+    Operation_Page_Down = 0x38
+    Operation_Power = 0x40
+    Operation_Volume_Up = 0x41
+    Operation_Volume_Down = 0x42
+    Operation_Mute = 0x43
+    Operation_Play = 0x44
+    Operation_Stop = 0x45
+    Operation_Pause = 0x46
+    Operation_Record = 0x47
+    Operation_Rewind = 0x48
+    Operation_Fast_Forward = 0x49
+    Operation_Eject = 0x4A
+    Operation_Forward = 0x4B
+    Operation_Backward = 0x4C
+    Operation_Angle = 0x50
+    Operation_Subpicture = 0x51
+    Operation_F1 = 0x71
+    Operation_F2 = 0x72
+    Operation_F3 = 0x73
+    Operation_F4 = 0x74
+    Operation_F5 = 0x75
+    Operation_Vendor_Unique = 0x7E
+
+
+class AVRCPVendorUiqueOperationID:
+    Next_Group = 0x0000
+    Previous_Group = 0x0001
+
+
+class AVRCPStatus:
+    INVALID_COMMAND = 0x00
+    INVALID_PARAMETER = 0x01
+    PARAMETER_CONTENT_ERROR = 0x02
+    INTERNAL_ERROR = 0x03
+    OPERATION_COMPLETED = 0x04
+    UID_CHANGED = 0x05
+    INVALID_DIRECTION = 0x07
+    NOT_A_DIRECTORY = 0x08
+    DOES_NOT_EXIST = 0x09
+    INVALID_SCOPE = 0x0A
+    RANGE_OUT_OF_BOUNDS = 0x0B
+    FOLDER_ITEM_IS_NOT_PLAYABLE = 0x0C
+    MEDIA_IN_USE = 0x0D
+    NOW_PLAYING_LIST_FULL = 0x0E
+    SEARCH_NOT_SUPPORTED = 0x0F
+    SEARCH_IN_PROGRESS = 0x10
+    INVALID_PLAYER_ID = 0x11
+    PLAYER_NOT_BROWSABLE = 0x12
+    PLAYER_NOT_ADDRESSED = 0x13
+    NO_VALID_SEARCH_RESULTS = 0x14
+    NO_AVAILABLE_PLAYERS = 0x15
+    ADDRESSED_PLAYER_CHANGED = 0x16
+
+
+class AVRCPMediaAttributes:
+    TITLE = 0x01
+    ARTIST = 0x02
+    ALBUM = 0x03
+    TRACK_NUMBER = 0x04
+    TOTAL_TRACKS = 0x05
+    GENRE = 0x06
+    PLAYING_TIME = 0x07
+    DEFAULT_COVER_ART = 0x08
+
+
+class AVRCPMediaContentNavigationScope:
+    Media_Player_List = 0x00
+    Media_Player_VFS = 0x01
+    Search = 0x02
+    Now_Playing = 0x03
+
+
+class AVRCPNotificationEvents:
+    EVENT_PLAYBACK_STATUS_CHANGED = 0x01
+    EVENT_TRACK_CHANGED = 0x02
+    EVENT_TRACK_REACHED_END = 0x03
+    EVENT_TRACK_REACHED_START = 0x04
+    EVENT_PLAYBACK_POS_CHANGED = 0x05
+    EVENT_BATT_STATUS_CHANGED = 0x06
+    EVENT_SYSTEM_STATUS_CHANGED = 0x07
+    EVENT_PLAYER_APPLICATION_SETTING_CHANGED = 0x08
+    EVENT_NOW_PLAYING_CONTENT_CHANGED = 0x09
+    EVENT_AVAILABLE_PLAYERS_CHANGED = 0x0A
+    EVENT_ADDRESSED_PLAYER_CHANGED = 0x0B
+    EVENT_UIDS_CHANGED = 0x0C
+    EVENT_VOLUME_CHANGED = 0x0D
+
+
+class AVRCPPlayerAppSettingAttrIDs:
+    EQUALIZER = 0x01
+    REPEAT_MODE = 0x02
+    SHUFFLE = 0x03
+    SCAN = 0x04
+
+
+class AVRCPPlayerAppSettingEqualizerValIDs:
+    OFF = 0x01
+    ON = 0x02
+
+
+class AVRCPPlayerAppSettingRepeatModeValIDs:
+    OFF = 0x01
+    SINGLE_TRACK_REPEAT = 0x02
+    ALL_TRACK_REPEAT = 0x03
+    GROUP_REPEAT = 0x04
+
+
+class AVRCPPlayerAppSettingShuffleValIDs:
+    OFF = 0x01
+    ALL_TRACKS_SHUFFLE = 0x02
+    GROUP_SHUFFLE = 0x03
+
+
+class AVRCPPlayerAppSettingScanValIDs:
+    OFF = 0x01
+    ALL_TRACKS_SCAN = 0x02
+    GROUP_SCAN = 0x03
+
+
+class AVRCPChangePathDirection:
+    FOLDER_UP = 0x00
+    FOLDER_DOWN = 0x01

@@ -14,6 +14,8 @@
 #
 from .aics import aics_wid_hdl
 from .ascs import ascs_wid_hdl
+from .avctp import avctp_wid_hdl
+from .avrcp import avrcp_wid_hdl
 from .bap import bap_wid_hdl
 from .bass import bass_wid_hdl
 from .ccp import ccp_wid_hdl
@@ -50,6 +52,8 @@ from .wid import generic_wid_hdl
 __all__ = [
     "aics_wid_hdl",
     "ascs_wid_hdl",
+    "avctp_wid_hdl",
+    "avrcp_wid_hdl",
     "bap_wid_hdl",
     "bass_wid_hdl",
     "ccp_wid_hdl",
