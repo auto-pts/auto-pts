@@ -201,16 +201,9 @@ def test_cases(ptses):
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/IDLE/NAMP/BV-01-C",
-                  pre_conditions +
-                  [TestFunc(btp.core_reg_svc_gatt),
-                   TestFunc(btp.gap_conn, pts_bd_addr, Addr.le_public,
-                            start_wid=78),
-                   TestFunc(btp.gattc_read_uuid, Addr.le_public,
-                            pts_bd_addr, '0001', 'FFFF', UUID.device_name,
-                            start_wid=73),
-                   TestFunc(btp.gattc_read_uuid_rsp, post_wid=73),
-                   TestFunc(btp.gap_disconn, pts_bd_addr, Addr.le_public,
-                            start_wid=77)]),
+                  cmds=pre_conditions +
+                  [TestFunc(btp.core_reg_svc_gatt)],
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/CONN/UCON/BV-06-C",
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
