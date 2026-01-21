@@ -112,7 +112,7 @@ class BotConfigArgs(Namespace):
         self.hid_vid = args.get('hid_vid', None)
         self.hid_pid = args.get('hid_pid', None)
         self.hid_serial = args.get('hid_serial', None)
-        self.kernel_cpu = args.get('kernel_cpu', 'qemu_cortex_m3')
+        self.kernel_cpu = args.get('kernel_cpu', None)
         self.setcap_cmd = args.get('setcap_cmd', None)
         self.hci = args.get('hci', None)
         self.test_cases = args.get('test_cases', [])
@@ -158,10 +158,10 @@ class BotConfigArgs(Namespace):
 
 
 class BotClient(Client):
-    def __init__(self, get_iut, project, name, bot_config_class=BotConfigArgs,
+    def __init__(self, init_iutctl, project, name, bot_config_class=BotConfigArgs,
                  parser_class=BotCliParser):
         # Please extend this bot client
-        super().__init__(get_iut, project, name, parser_class)
+        super().__init__(init_iutctl, project, name, parser_class)
         # Parser of the bot configuration dictionary loaded from config.py
         self.parse_config = bot_config_class
         # The bot configuration dictionary. It will be parsed and overlayed
@@ -418,7 +418,8 @@ class BotClient(Client):
                                                      stats,
                                                      config=config,
                                                      pre_test_case_fn=self._backup_tc_stats,
-                                                     file_paths=copy.deepcopy(self.file_paths))
+                                                     file_paths=copy.deepcopy(self.file_paths),
+                                                     iutctl_instances=self.iutctl_instances)
 
             except BuildAndFlashException:
                 log(f'Build and flash step failed for config {config}')
@@ -517,7 +518,8 @@ class BotClient(Client):
             self.error_txt_content += traceback.format_exc() + "\n"
             raise
         finally:
-            release_device(self.args.tty_file)
+            for iuts_args in self.args.iuts_args:
+                release_device(iuts_args.tty_file)
             report.make_error_txt(self.error_txt_content, self.file_paths['ERROR_TXT_FILE'])
 
         if self.fail_info_parser:

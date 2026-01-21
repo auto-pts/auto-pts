@@ -42,6 +42,7 @@ class Board:
 
         self.name = board_name
         self.iutctl = iutctl
+        self.type = get_board_type(board_name)
         self.reset_cmd = self.get_reset_cmd()
 
     def reset(self):

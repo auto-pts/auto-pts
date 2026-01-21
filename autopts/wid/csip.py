@@ -148,6 +148,19 @@ def hdl_wid_14(params: WIDParams):
     return True
 
 
+def hdl_wid_23(params: WIDParams):
+    """Please make sure there are two IUTs for this test
+       case. IUT1 and IUT2 are two instances of the same
+       implementation.
+    """
+    return True
+
+
+def hdl_wid_24(params: WIDParams):
+    """Please command IUT1 and IUT2 to update the targeted characteristic Coordinated Set Size"""
+    raise NotImplementedError()
+
+
 def hdl_wid_20001(_: WIDParams):
     """
     Please prepare IUT into a connectable mode.
