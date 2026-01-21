@@ -196,6 +196,10 @@ def test_cases(ptses):
                   cmds=pre_conditions +
                   [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
                   generic_wid_hdl=gap_wid_hdl),
+        BTestCase("GAP", "GAP/DISC/RPA/BV-01-C",
+                  cmds=pre_conditions +
+                  [TestFunc(btp.gap_set_io_cap, IOCap.display_only)],
+                  generic_wid_hdl=gap_wid_hdl),
         BTestCase("GAP", "GAP/IDLE/NAMP/BV-01-C",
                   pre_conditions +
                   [TestFunc(btp.core_reg_svc_gatt),
