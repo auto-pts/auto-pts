@@ -56,7 +56,42 @@ TBS = {
     'terminate_call':        (defs.BTP_SERVICE_ID_TBS,
                               defs.BTP_TBS_CMD_TERMINATE_CALL,
                               CONTROLLER_INDEX),
+    'register_bearer':       (defs.BTP_SERVICE_ID_TBS,
+                              defs.BTP_TBS_CMD_REGISTER_BEARER,
+                              CONTROLLER_INDEX),
 }
+
+
+def tbs_register_bearer(gtbs, technology, optional_opcodes, provider_name, uci, uri_scheme_list):
+    """
+    Registers a TBS or GTBS bearer over BTP using a packed payload.
+
+    Params:
+        gtbs (bool)              - True for GTBS, False for TBS.
+        technology (int)         - Bearer technology identifier.
+        optional_opcodes (int)   - Bitmask representing supported optional operations.
+        provider_name (str)      - Bearer provider name string.
+        uci (str)                - Unified Call Identifier string.
+        uri_scheme_list (str)    - Comma-separated list of supported URI schemes.
+
+    Returns:
+        None
+    """
+    provider_name_bytes = provider_name.encode('utf-8')
+    uci_bytes = uci.encode('utf-8')
+    uri_scheme_list_bytes = uri_scheme_list.encode('utf-8')
+    strings = provider_name_bytes + uci_bytes + uri_scheme_list_bytes
+    data = bytearray()
+    data.append(gtbs)
+    data.append(technology)
+    data.extend(struct.pack('<H', optional_opcodes & 0xFFFF))
+    data.append(len(provider_name_bytes))
+    data.append(len(uci_bytes))
+    data.append(len(uri_scheme_list_bytes))
+    data.extend(strings)
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*TBS['register_bearer'], data=data)
+    tbs_command_rsp_succ()
 
 
 def tbs_command_rsp_succ(timeout=20.0):
