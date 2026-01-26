@@ -228,3 +228,19 @@ def hdl_wid_20142(params: WIDParams):
         btp.tbs_remote_incoming(0, ovs_receiver, ovs_caller, ovs_friendly)
 
     return True
+
+
+def hdl_wid_20143(params: WIDParams):
+    """Register TBS or GTBS bearer at the start of the test."""
+    from autopts.pybtp.btp.tbs import tbs_register_bearer_full
+    if 'GTBS' in params.test_case_name:
+        gtbs = 1
+    else:
+        gtbs = 0
+    provider_name = "TestProvider"
+    uci = "TestUCI"
+    uri_scheme_list = "tel"
+    supported_features = 0x0001
+    technology = 0x03
+    tbs_register_bearer_full(provider_name, uci, uri_scheme_list, supported_features, gtbs, technology)
+    return True

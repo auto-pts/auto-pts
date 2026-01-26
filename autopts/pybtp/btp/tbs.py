@@ -56,7 +56,39 @@ TBS = {
     'terminate_call':        (defs.BTP_SERVICE_ID_TBS,
                               defs.BTP_TBS_CMD_TERMINATE_CALL,
                               CONTROLLER_INDEX),
+    'register_bearer':       (defs.BTP_SERVICE_ID_TBS,
+                              defs.BTP_TBS_CMD_REGISTER_BEARER,
+                              CONTROLLER_INDEX),
 }
+
+
+def tbs_register_bearer_full(index, provider_name, uci, uri_scheme_list, supported_features, gtbs, technology):
+    """
+    Register a TBS or GTBS bearer with all fields packed in one message.
+    Layout (matches Zephyr struct):
+        uint16_t supported_features
+        uint8_t  gtbs
+        uint8_t  technology
+        uint8_t  provider_name_len
+        uint8_t  uci_len
+        uint8_t  uri_scheme_list_len
+        uint8_t  strings[] (provider_name + uci + uri_scheme_list)
+    """
+    provider_name_bytes = provider_name.encode('utf-8')
+    uci_bytes = uci.encode('utf-8')
+    uri_scheme_list_bytes = uri_scheme_list.encode('utf-8')
+    strings = provider_name_bytes + uci_bytes + uri_scheme_list_bytes
+    data = bytearray()
+    data.extend(struct.pack('<H', supported_features & 0xFFFF))
+    data.append(gtbs)
+    data.append(technology)
+    data.append(len(provider_name_bytes))
+    data.append(len(uci_bytes))
+    data.append(len(uri_scheme_list_bytes))
+    data.extend(strings)
+    iutctl = get_iut()
+    iutctl.btp_socket.send(*TBS['register_bearer'], data=data)
+    tbs_command_rsp_succ()
 
 
 def tbs_command_rsp_succ(timeout=20.0):
