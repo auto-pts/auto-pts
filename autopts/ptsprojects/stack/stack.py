@@ -49,7 +49,7 @@ from autopts.ptsprojects.stack.layers.vocs import VOCS
 from autopts.ptsprojects.stack.synch import Synch
 from autopts.pybtp import common
 
-STACK = None
+_get_stack = None
 log = logging.debug
 
 
@@ -291,18 +291,13 @@ class Stack:
         # GENERATOR append 4
 
 
-def init_stack():
-    global STACK
-
-    STACK = Stack()
-    STACK.synch_init()
-
-
-def cleanup_stack():
-    global STACK
-
-    STACK = None
+def get_stack(iutctl_id=None):
+    # TODO: Refactor wid handlers so that the stack
+    # is taken from the iutctl instance
+    return _get_stack(iutctl_id)
 
 
-def get_stack():
-    return STACK
+def set_get_stack_method(get_stack_method):
+    global _get_stack
+
+    _get_stack = get_stack_method

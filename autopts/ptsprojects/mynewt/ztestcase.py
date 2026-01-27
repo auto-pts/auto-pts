@@ -15,9 +15,9 @@
 
 """Test case that manages Mynewt IUT"""
 
-from autopts.ptsprojects.mynewt.iutctl import get_iut
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestCaseLT1, TestCaseLT2, TestFunc, TestFuncCleanUp
+from autopts.pybtp.btp import get_iut_method as get_iut
 
 
 class ZTestCase(TestCaseLT1):
@@ -29,7 +29,7 @@ class ZTestCase(TestCaseLT1):
         super().__init__(*args, ptsproject_name="mynewt", **kwargs)
 
         self.stack = get_stack()
-        self.mynewtctl = get_iut()
+        self.mynewtctl = get_iut(iutctl_id=0)
 
         # Init stack.core to be able to receive IUT ready event
         self.cmds.insert(0, TestFunc(self.stack.core_init))
