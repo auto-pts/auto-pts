@@ -707,7 +707,7 @@ def hdl_wid_118(_: WIDParams):
 
 def hdl_wid_120(_: WIDParams):
     """
-        Please press ok to disconnect the link.
+        Does the IUT have an ability to send non-connectable advertising report?
     """
     return True
 
