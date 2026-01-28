@@ -38,6 +38,7 @@ from autopts.ptsprojects.stack.layers.mics import MICS
 from autopts.ptsprojects.stack.layers.ots import OTS
 from autopts.ptsprojects.stack.layers.pacs import PACS
 from autopts.ptsprojects.stack.layers.pbp import PBP
+from autopts.ptsprojects.stack.layers.rfcomm import RFCOMM
 from autopts.ptsprojects.stack.layers.sdp import SDP
 from autopts.ptsprojects.stack.layers.tbs import TBS
 from autopts.ptsprojects.stack.layers.tmap import TMAP
@@ -88,6 +89,7 @@ class Stack:
         self.pbp = None
         self.sdp = None
         self.csis = None
+        self.rfcomm = None
         # GENERATOR append 2
         self.supported_svcs_cmds = common.supported_svcs_cmds
 
@@ -198,6 +200,9 @@ class Stack:
     def csis_init(self, size):
         self.csis = CSIS(size)
 
+    def rfcomm_init(self):
+        self.rfcomm = RFCOMM()
+
     # GENERATOR append 3
 
     def cleanup(self):
@@ -287,6 +292,9 @@ class Stack:
 
         if self.csis:
             self.csis_init(self.csis.set_size)
+
+        if self.rfcomm:
+            self.rfcomm_init()
 
         # GENERATOR append 4
 

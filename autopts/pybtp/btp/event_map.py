@@ -19,6 +19,7 @@ from .mics import MICS_EV
 from .ots import OTS_EV
 from .pacs import PACS_EV
 from .pbp import PBP_EV
+from .rfcomm import RFCOMM_EV
 from .sdp import SDP_EV
 from .tbs import TBS_EV
 from .tmap import TMAP_EV
@@ -50,6 +51,7 @@ __all__ = [
     "OTS_EV",
     "PACS_EV",
     "PBP_EV",
+    "RFCOMM_EV",
     "SDP_EV",
     "TBS_EV",
     "TMAP_EV",
