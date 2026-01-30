@@ -16,9 +16,9 @@
 import logging
 import time
 
-from autopts.ptsprojects.mynewt.iutctl import get_iut
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp
+from autopts.pybtp.btp import get_iut_method as get_iut
 from autopts.pybtp.types import WIDParams
 from autopts.wid import generic_wid_hdl
 

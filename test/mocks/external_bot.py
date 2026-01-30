@@ -22,7 +22,7 @@ from pathlib import Path
 from autopts import bot
 from autopts import client as autoptsclient
 from autopts.bot.common import BotClient, BotConfigArgs
-from autopts.ptsprojects.zephyr.iutctl import get_iut
+from autopts.ptsprojects.zephyr.iutctl import init_iutctl
 
 PROJECT_NAME = Path(__file__).stem
 
@@ -40,7 +40,7 @@ class ExternalBotCliParser(bot.common.BotCliParser):
 class ExternalBotClient(BotClient):
     def __init__(self):
         project = importlib.import_module('autopts.ptsprojects.zephyr')
-        super().__init__(get_iut, project, 'zephyr', ExternalBotConfigArgs,
+        super().__init__(init_iutctl, project, 'zephyr', ExternalBotConfigArgs,
                          ExternalBotCliParser)
         self.config_default = "prj.conf"
 
@@ -54,7 +54,7 @@ class ExternalBotClient(BotClient):
 
 class ExternalClient(autoptsclient.Client):
     def __init__(self):
-        super().__init__(get_iut, 'zephyr', True)
+        super().__init__(init_iutctl, 'zephyr', True)
 
 
 BotClient = ExternalBotClient

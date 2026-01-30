@@ -21,7 +21,6 @@ from autopts.config import AUTOPTS_ROOT_DIR
 from autopts.ptsprojects.iutctl import IutCtl
 
 log = logging.debug
-ZEPHYR = None
 
 CLI_SUPPORT = ['tty', 'hci', 'qemu']
 
@@ -43,23 +42,9 @@ class ZephyrCtl(IutCtl):
             os.remove(flash_bin)
 
 
-def get_iut():
-    return ZEPHYR
-
-
-def init(args):
+def init_iutctl(args):
     """IUT init routine
 
     args -- Argument
     """
-    global ZEPHYR
-
-    ZEPHYR = ZephyrCtl(args)
-
-
-def cleanup():
-    """IUT cleanup routine"""
-    global ZEPHYR
-    if ZEPHYR:
-        ZEPHYR.stop()
-        ZEPHYR = None
+    return ZephyrCtl(args)
