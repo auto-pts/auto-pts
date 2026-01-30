@@ -1,0 +1,263 @@
+A2DP Service (ID 0x23)
+=====================
+
+Commands and responses:
+
+	Opcode 0x00 - Error response
+
+	Opcode 0x01 - Read Supported Commands command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	<none>
+		Response parameters:	<supported commands> (variable)
+
+		Each bit in response is a flag indicating if command with
+		opcode matching bit number is supported. Bit set to 1 means
+		that command is supported. Bit 0 is reserved and shall always
+		be set to 0. If specific bit is not present in response (less
+		than required bytes received) it shall be assumed that command
+		is not supported.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x02 - Register Stream Endpoint command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	sep_type (1 octet)
+					media_type (1 octet)
+		Response parameters:	<none>
+
+		Valid sep_type:
+			0x00 = source
+			0x01 = sink
+		Valid media_type:
+			0x01 = sbc
+
+		This command is used to register stream endpoint.
+		There recommended supported configuration of endpoint in IUT as follow:
+			media type: sbc
+			sampling frequency: all
+			channel mode: all
+			block length: all
+			subbands: all
+			allocation method: all
+			minimum bitpool value: 14
+			maximum bitpool value: 100
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x03 - Connect command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	address (6 octets)
+		Response parameters:	<none>
+
+		This command is used to create a2dp connection.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x04 - Discover command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	<none>
+		Response parameters:	<none>
+
+		This command is used to initiated a2dp discover.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x05 - Set configuration command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	<none>
+		Response parameters:	<none>
+
+		This command is used to set endpoint configuration.
+		If peer device's endpoint are more than one, select the lasted one to set by default.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x06 - Stream establish command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	<none>
+		Response parameters:	<none>
+
+		This command is used to establish streaming.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x07 - Stream start command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	<none>
+		Response parameters:	<none>
+
+		This command is used to start streaming.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x08 - Stream suspend command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	<none>
+		Response parameters:	<none>
+
+		This command is used to suspend streaming.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x09 - Stream release command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	<none>
+		Response parameters:	<none>
+
+		This command is used to release streaming.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0A - Abort command/response
+
+		Controller Index:	<controller id>
+		Command parameters:	<none>
+		Response parameters:	<none>
+
+		This command is used to initiated a2dp command abort process.
+
+		In case of an error, the error response will be returned.e
+
+	Opcode 0x0B - Reconfigure command/response
+
+		Controreller Index:	<controller id>
+		Command parameters:	<none>
+		Response parameters:	<none>
+
+		This command is used to reconfigure endpoint.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0C - Enable delay report command/response
+
+		Controreller Index:	<controller id>
+		Command parameters:	<none>
+		Response parameters:	<none>
+
+		This command is used to enable endpoint's delay report capability.
+
+		In case of an error, the error response will be returned.
+
+	Opcode 0x0D - Send delay report command/response
+
+		Controreller Index:	<controller id>
+		Command parameters:	value (2 octet)
+		Response parameters:	<none>
+
+		This command is used to send delay report.
+
+		In case of an error, the error response will be returned.
+
+        Opcode 0x0E - Get Configuration command/response
+
+		Controreller Index:	<controller id>
+		Command parameters:	<None>
+		Response parameters:	<none>
+
+		This command is used to send delay report.
+
+		In case of an error, the error response will be returned.
+
+
+Events:
+	Opcode 0x80 - Connected event
+
+		Controller Index:	<controller id>
+		Event parameters:	error code (1 octet)
+
+        	This event can be sent when the a2dp connection created successfully or fail.
+
+	Opcode 0x81 - A2dp Discover Response event
+
+		Controller Index:	<controller id>
+		Event parameters:	error code (1 octet)
+
+        	This event can be sent when the a2dp Sdp discover successfully or fail.
+
+	Opcode 0x82 - Get capabilities Response event
+
+		Controller Index:	<controller id>
+		Event parameters:	<none>
+
+        	This event can be sent after getting peer device's all endpoint capabilities.
+
+	Opcode 0x83 - Set configuration response event
+
+		Controller Index:	<controller id>
+		Event parameters:	error code (1 octet)
+
+		This event can be sent when receiving peer device's set configuration response.
+
+	Opcode 0x84 - Stream establish response event
+
+		Controller Index:	<controller id>
+		Event parameters:	error code (1 octet)
+
+		This event can be sent when receiving peer device's stream establish response.
+
+	Opcode 0x85 - Stream release response event
+
+		Controller Index:	<controller id>
+		Event parameters:	error code (1 octet)
+
+		This event can be sent when receiving peer device's stream release response.
+
+	Opcode 0x86 - Stream start response event
+
+		Controller Index:	<controller id>
+		Event parameters:	error code (1 octet)
+
+		This event can be sent when receiving peer device's stream start response.
+
+	Opcode 0x87 - Stream suspend response event
+
+		Controller Index:	<controller id>
+		Event parameters:	error code (1 octet)
+
+		This event can be sent when receiving peer device's stream suspend response.
+
+	Opcode 0x88 - Disconnect event
+
+		Controller Index:	<controller id>
+		Event parameters:	error code (1 octet)
+
+		This event can be sent when a2dp disconnection occurs.
+
+	Opcode 0x89 - Abort response event
+
+		Controller Index:	<controller id>
+		Event parameters:	error code (1 octet)
+
+		This event can be sent when receiving peer device's abort response.
+
+	Opcode 0x8A - Receive media event
+
+		Controller Index:	<controller id>
+		Event parameters:	frame num: (1 octet)
+					length: (1 octet)
+					media data: (variable)
+
+		This event can be sent when receiving peer device's media data.
+
+	Opcode 0x8B - Send delay report event
+
+		Controller Index:	<controller id>
+		Event parameters:	error code (1 octet)
+
+		This event can be sent when receiving peer device's delay report data.
+
+	Opcode 0x8C - Get Configuration report event
+
+		Controller Index:	<controller id>
+		Event parameters:	error code (1 octet)
+
+		This event can be sent when receiving stream Configuration data.
