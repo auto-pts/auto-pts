@@ -29,6 +29,8 @@ from autopts.ptsprojects.stack.layers.gattcl import GattCl
 from autopts.ptsprojects.stack.layers.gmcs import GMCS
 from autopts.ptsprojects.stack.layers.gtbs import GTBS
 from autopts.ptsprojects.stack.layers.hap import HAP
+from autopts.ptsprojects.stack.layers.hfp_ag import HFP_AG
+from autopts.ptsprojects.stack.layers.hfp_hf import HFP_HF
 from autopts.ptsprojects.stack.layers.ias import IAS
 from autopts.ptsprojects.stack.layers.l2cap import L2cap
 from autopts.ptsprojects.stack.layers.mcp import MCP
@@ -88,6 +90,8 @@ class Stack:
         self.pbp = None
         self.sdp = None
         self.csis = None
+        self.hfp_hf = None
+        self.hfp_ag = None
         # GENERATOR append 2
         self.supported_svcs_cmds = common.supported_svcs_cmds
 
@@ -198,6 +202,12 @@ class Stack:
     def csis_init(self, size):
         self.csis = CSIS(size)
 
+    def hfp_hf_init(self):
+        self.hfp_hf = HFP_HF()
+
+    def hfp_ag_init(self):
+        self.hfp_ag = HFP_AG()
+
     # GENERATOR append 3
 
     def cleanup(self):
@@ -287,6 +297,12 @@ class Stack:
 
         if self.csis:
             self.csis_init(self.csis.set_size)
+
+        if self.hfp_hf:
+            self.hfp_hf_init()
+
+        if self.hfp_ag:
+            self.hfp_ag_init()
 
         # GENERATOR append 4
 
