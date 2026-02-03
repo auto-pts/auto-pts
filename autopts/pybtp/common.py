@@ -603,6 +603,10 @@ supported_svcs_cmds = {
         "service": 1 << defs.BTP_SERVICE_ID_A2DP,
         "supported_commands": defs.BTP_A2DP_CMD_READ_SUPPORTED_COMMANDS
     },
+    "AVDTP": {
+        "service": 1 << defs.BTP_SERVICE_ID_AVDTP,
+        "supported_commands": defs.BTP_AVDTP_CMD_READ_SUPPORTED_COMMANDS
+    },
 # GENERATOR append 1
 }
 
@@ -681,6 +685,8 @@ reg_unreg_service = {
                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_SDP),
     "a2dp_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
                  defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_A2DP),
+    "avdtp_reg": (defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_REGISTER_SERVICE,
+                 defs.BTP_INDEX_NONE, defs.BTP_SERVICE_ID_AVDTP),
         # GENERATOR append 2
     "read_supp_cmds": (defs.BTP_SERVICE_ID_CORE,
                        defs.BTP_CORE_CMD_READ_SUPPORTED_COMMANDS,
