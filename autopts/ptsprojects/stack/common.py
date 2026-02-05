@@ -15,6 +15,7 @@
 #
 import inspect
 import logging
+import threading
 from threading import Event, Lock, Timer
 from time import sleep
 
@@ -55,15 +56,22 @@ def wait_for_event(timeout, test, *args, **kwargs):
     flag = Event()
     flag.set()
 
+    lt_thread = threading.current_thread()
+
     t = Timer(timeout, timeout_cb, [timeout, flag, test])
+    t.daemon = True
     t.name = f'EventTimer{t.name}'
     t.start()
+    # This Event Timer Thread blocks the LT1 Thread even if native process crashed
 
     while flag.is_set():
         raise_on_global_end()
 
         result = test(*args, **kwargs)
         if result:
+            t.cancel()
+            return result
+        if lt_thread.args[3].is_set():
             t.cancel()
             return result
 

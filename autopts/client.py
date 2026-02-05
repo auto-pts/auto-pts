@@ -59,7 +59,7 @@ from autopts.utils import (
     have_admin_rights,
     raise_on_global_end,
     set_global_end,
-    ykush_replug_usb,
+    ykush_replug_usb, print_thread_stack_trace,
 )
 from cliparser import CliParser
 
@@ -967,6 +967,10 @@ class LTThread(InterruptableThread):
         self._args = args
         self.locked = False
 
+    @property
+    def args(self):
+        return self._args
+
     def run(self):
         exceptions = self._args[2]
         finish_count = self._args[3]
@@ -1215,6 +1219,7 @@ def run_test_case(ptses, test_case_instances, test_case_name, stats,
                 break
 
             log(f"Waiting for {alive_threads} to finish ...")
+            print_thread_stack_trace()
             thread_list = alive_threads
             time.sleep(1)
 
