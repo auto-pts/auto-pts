@@ -46,15 +46,5 @@ def hdl_wid_49(_: WIDParams):
     return True
 
 
-def hdl_wid_92(_: WIDParams):
-    time.sleep(2)
-    return True
-
-
-def hdl_wid_98(_: WIDParams):
-    time.sleep(5)
-    return True
-
-
 def hdl_wid_118(_: WIDParams):
     return f'{65000:04x}'
