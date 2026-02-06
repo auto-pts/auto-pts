@@ -547,3 +547,21 @@ class BAPAnnouncement:
 class CAPAnnouncement:
     GENERAL = 0x0
     TARGETED = 0x1
+
+
+class OptionalOpcode(IntFlag):
+    LOCAL_HOLD = defs.BIT(0)   # 0x0001
+    JOIN = defs.BIT(1)         # 0x0002
+    ALL = LOCAL_HOLD | JOIN    # 0x0003
+
+
+class BearerTech(IntEnum):
+    CELL_3G = 0x01
+    CELL_4G = 0x02
+    LTE = 0x03
+    WIFI = 0x04
+    CELL_5G = 0x05
+    GSM = 0x06
+    CDMA = 0x07
+    CELL_2G = 0x08
+    WCDMA = 0x09

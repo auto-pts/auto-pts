@@ -21,7 +21,8 @@ from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.tbs_wid import tbs_wid_hdl
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
 from autopts.pybtp import btp
-from autopts.pybtp.types import Addr, IOCap
+from autopts.pybtp.btp.tbs import tbs_register_bearer
+from autopts.pybtp.types import Addr, BearerTech, IOCap, OptionalOpcode
 from autopts.utils import ResultWithFlag
 
 
@@ -68,6 +69,15 @@ def test_cases(ptses):
     def set_addr(addr):
         iut_addr.set(addr)
 
+    def get_optional_opcodes(tc_name):
+        optional_opcodes = OptionalOpcode.ALL
+
+        if tc_name in ["GTBS/SR/CP/BV-10-C", "TBS/SR/CP/BV-10-C"]:
+            # Disable join for these tests
+            optional_opcodes = optional_opcodes & ~OptionalOpcode.JOIN
+
+        return optional_opcodes
+
     pre_conditions = [
         TestFunc(btp.core_reg_svc_gap),
         TestFunc(stack.gap_init, iut_device_name),
@@ -86,16 +96,33 @@ def test_cases(ptses):
         TestFunc(btp.core_reg_svc_tbs),
         TestFunc(lambda: pts.update_pixit_param(
             "TBS", "TSPX_iut_device_name_in_adv_packet_for_random_address", iut_device_name)),
-        TestFunc(stack.tbs_init)
+        TestFunc(stack.tbs_init),
     ]
 
     test_case_name_list = pts.get_test_case_list('TBS')
     tc_list = []
 
     for tc_name in test_case_name_list:
-        instance = ZTestCase("TBS", tc_name,
-                             cmds=pre_conditions,
-                             generic_wid_hdl=tbs_wid_hdl)
+        opcodes = get_optional_opcodes(tc_name)
+        cmds = pre_conditions + [
+            TestFunc(lambda opcodes=opcodes: tbs_register_bearer(
+                provider_name="Generic TBS",
+                uci="un000",
+                uri_scheme_list="tel,skype",
+                optional_opcodes=opcodes,
+                gtbs=True,
+                technology=BearerTech.LTE
+            )),
+            TestFunc(lambda opcodes=opcodes: tbs_register_bearer(
+                provider_name="TBS",
+                uci="un000",
+                uri_scheme_list="tel,skype",
+                optional_opcodes=opcodes,
+                gtbs=False,
+                technology=BearerTech.WIFI
+            )),
+        ]
+        instance = ZTestCase("TBS", tc_name, cmds=cmds, generic_wid_hdl=tbs_wid_hdl)
         tc_list.append(instance)
 
     return tc_list

@@ -138,3 +138,21 @@ Commands and responses:
                 This command is used to terminate a call
 
                 In case of an error, the error response will be returned.
+
+        Opcode 0x0c - Register Bearer
+
+                Controller Index:       <controller id>
+                Command parameters:     GTBS (1 octet)
+                                        Technology (1 octet)
+                                        Optional Opcodes (2 octets)
+                                        Provider Name Length (1 octet)
+                                        UCI Length (1 octet)
+                                        URI Scheme List Length (1 octet)
+                                        Strings (Provider Name + UCI + URI Scheme List, variable length)
+                Response parameters:    <none>
+
+                This command is used to register a TBS or GTBS bearer with all attributes in a single packed message.
+                The GTBS field indicates the bearer type (0 for TBS, 1 for GTBS).
+                All variable-length fields are packed at the end, with their lengths preceding each field.
+
+                In case of an error, the error response will be returned.
