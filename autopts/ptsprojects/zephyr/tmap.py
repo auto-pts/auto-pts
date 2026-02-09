@@ -53,8 +53,8 @@ def set_pixits(ptses):
     pts.set_pixit("TMAP", "TSPX_TARGET_PHY", "LE_2M_PHY")
 
 
-def adv_init(advData):
-    advData[AdType.uuid16_svc_data] = []
+def adv_init(adv_data):
+    adv_data[AdType.uuid16_svc_data] = []
 
 
 def test_cases(ptses):

@@ -76,12 +76,12 @@ def set_pixits(ptses):
     pts.set_pixit("HAP", "TSPX_num_presets", str(num_presets))
 
 
-def set_member_rsi(advData, targeted):
+def set_member_rsi(adv_data, targeted):
     """
         RSI
     """
     rsi = btp.cas_get_member_rsi()
-    advData[AdType.rsi] = struct.pack('<6B', *rsi)
+    adv_data[AdType.rsi] = struct.pack('<6B', *rsi)
 
 
 test_cases_binaural = [
