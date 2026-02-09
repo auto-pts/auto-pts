@@ -253,6 +253,12 @@ class CliParser(argparse.ArgumentParser):
         self.add_argument("--wid_run", nargs=2, metavar=("SERVICE", "WID"),
                           help="Run testcases based on service and wid")
 
+        self.add_argument("--dongle-map", action="append", default=[],
+                          help=("Switch dongle for matching testcases. "
+                                "Format: [PTS_INDEX:]REGEX=DONGLE. "
+                                "Ex1: --dongle-map 'GAP/.*=COM8' "
+                                "Ex2: --dongle-map '1:SM/TC/.*=COM9'"))
+
         self.add_positional_args()
 
     def add_positional_args(self):
