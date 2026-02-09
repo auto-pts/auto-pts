@@ -27,6 +27,9 @@ from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
 from autopts.pybtp import btp, defs
 from autopts.wid import mmdl_wid_hdl
 
+# Value of the TSPX_Server_Timeout_Base PTS parameter for DFUM tests
+FD_TIMEOUT = 8
+
 
 def set_pixits(ptses):
     """Setup MMDL profile PIXITS for workspace. Those values are used for test
@@ -98,7 +101,6 @@ def test_cases(ptses):
     crpl_size = 10  # Maximum capacity of the replay protection list
     auth_method = 0x00
     iut_device_name = get_unique_name(pts)
-    FD_timeout = 8
     timeout_base = 5
 
     pre_conditions = [
@@ -136,11 +138,11 @@ def test_cases(ptses):
                   generic_wid_hdl=mmdl_wid_hdl),
         ZTestCase("DFUM", "DFUM/SR/FD/BV-07-C", cmds=pre_conditions + [
             TestFunc(lambda: pts.update_pixit_param(
-                "DFUM", "TSPX_Server_Timeout_Base", FD_timeout))],
+                "DFUM", "TSPX_Server_Timeout_Base", FD_TIMEOUT))],
                   generic_wid_hdl=mmdl_wid_hdl),
         ZTestCase("DFUM", "DFUM/SR/FD/BV-19-C", cmds=pre_conditions + [
             TestFunc(lambda: pts.update_pixit_param(
-                "DFUM", "TSPX_Server_Timeout_Base", FD_timeout))],
+                "DFUM", "TSPX_Server_Timeout_Base", FD_TIMEOUT))],
                   generic_wid_hdl=mmdl_wid_hdl),
         ZTestCase("DFUM", "DFUM/SR/FD/BV-48-C", cmds=pre_conditions + [
             TestFunc(lambda: pts.update_pixit_param(
@@ -158,7 +160,7 @@ def test_cases(ptses):
                   generic_wid_hdl=mmdl_wid_hdl),
         ZTestCase("DFUM", "DFUM/SR/FD/BV-13-C", cmds=pre_conditions + [
             TestFunc(lambda: pts.update_pixit_param(
-                "DFUM", "TSPX_Server_Timeout_Base", FD_timeout))],
+                "DFUM", "TSPX_Server_Timeout_Base", FD_TIMEOUT))],
                  generic_wid_hdl=mmdl_wid_hdl),
     ]
 

@@ -34,6 +34,11 @@ from os.path import abspath, dirname
 
 from dateutil import parser
 
+# Search modes selectable in main()
+BY_PTS_VER = 0
+BY_AUTOPTS_HASH = 1
+BY_PROJECT_HASH = 2
+
 
 def get_hash_from_reference(repo_path, reference):
     return subprocess.check_output(
@@ -132,10 +137,6 @@ def find_by_project_hash(csv_file_path, project_repo, commit_hash):
 def main():
     autopts_repo = dirname(dirname(dirname(abspath(__file__))))
     sys.path.extend([autopts_repo])
-
-    BY_PTS_VER = 0
-    BY_AUTOPTS_HASH = 1
-    BY_PROJECT_HASH = 2
 
     mode = int(input("""Select mode
 0: Find by PTS version,
