@@ -446,27 +446,27 @@ class BotClient(Client):
             all_stats.save_to_backup(self.file_paths['ALL_STATS_JSON_FILE'])
 
         try:
-            mapping = {'GMCS': 'MCS',
-                       'GTBS': 'TBS'}
+            mapping = {'GMCS': 'MCS', 'GTBS': 'TBS'}
             results = all_stats.get_results()
             descriptions = {}
-            for test_case_name in list(results.keys()):
-                try:
-                    project_name = test_case_name.split('/')[0]
-                    project_name = mapping.get(project_name, project_name)
-                    descriptions[test_case_name] = \
-                        self.ptses[0].get_test_case_description(project_name, test_case_name)
-                except:
-                    log(f'Failed to get description of {test_case_name}')
+
+            test_case_names = list(results.keys())
+            for test_case_name in test_case_names:
+                project_name = test_case_name.split('/')[0]
+                project_name = mapping.get(project_name, project_name)
+                description = self.ptses[0].get_test_case_description(project_name, test_case_name)
+                descriptions[test_case_name] = description
 
             all_stats.update_descriptions(descriptions)
             all_stats.pts_ver = str(self.ptses[0].get_version())
             all_stats.platform = str(self.ptses[0].get_system_model())
             all_stats.system_version = str(self.ptses[0].get_system_version())
+
             if self.args.use_backup:
                 all_stats.save_to_backup(self.file_paths['ALL_STATS_JSON_FILE'])
-        except BaseException as e:
-            log(f'Failed to generate some stats, {e}.')
+
+        except Exception as e:
+            log(f'Failed to generate some stats or descriptions: {e}')
 
         return all_stats
 
