@@ -675,7 +675,7 @@ def core_log_message(message):
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_LOG_MESSAGE)
 
 
-class BTP_UUID_LEN(IntEnum):
+class BtpUuidLen(IntEnum):
     UUID_16 = 2
     UUID_16_STR = 4
     UUID_32 = 4
@@ -685,15 +685,15 @@ class BTP_UUID_LEN(IntEnum):
 
 
 def btp2uuid(uuid_len, uu):
-    if uuid_len == BTP_UUID_LEN.UUID_16:
+    if uuid_len == BtpUuidLen.UUID_16:
         (uu,) = struct.unpack("<H", uu)
         return format(uu, 'x').upper().rjust(4, '0')
 
-    if uuid_len == BTP_UUID_LEN.UUID_32:
+    if uuid_len == BtpUuidLen.UUID_32:
         (uu,) = struct.unpack("<I", uu)
         return format(uu, 'x').upper().rjust(8, '0')
 
-    if uuid_len == BTP_UUID_LEN.UUID_128:
+    if uuid_len == BtpUuidLen.UUID_128:
         return UUID(bytes=uu[::-1]).urn[9:].replace('-', '').upper()
 
     raise ValueError(f"btp2uuid: Invalid BTP UUID length: {uuid_len}")
@@ -706,7 +706,7 @@ def uuid2btp_ba(uuid):
         if uuid.startswith("0x"):
             uuid = uuid.replace("0x", "")
 
-        if len(uuid) not in [BTP_UUID_LEN.UUID_16_STR, BTP_UUID_LEN.UUID_32_STR, BTP_UUID_LEN.UUID_128_STR]:
+        if len(uuid) not in [BtpUuidLen.UUID_16_STR, BtpUuidLen.UUID_32_STR, BtpUuidLen.UUID_128_STR]:
             raise ValueError(f"uuid2btp_ba: string length not valid for UUID: {uuid}")
 
         return binascii.unhexlify(uuid)[::-1]
