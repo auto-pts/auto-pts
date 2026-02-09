@@ -50,7 +50,7 @@ def u16_hdl_uc_str(hdl):
     return f'{hdl:04x}'
 
 
-class PTS_DB:
+class PtsDb:
     PTS_UUID_FMT = '0000{}8c26476f89a7a108033a69c7'
     SVC = PTS_UUID_FMT.format('0001')
     CHR_NO_PERM = PTS_UUID_FMT.format('0002')
