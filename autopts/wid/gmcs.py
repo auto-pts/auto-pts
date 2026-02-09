@@ -47,16 +47,16 @@ def hdl_wid_4(params: WIDParams):
         current_track_id = btp.gmcs_current_track_obj_id_get()
         stack.gmcs.current_track_obj_id = current_track_id
         # Initial condition from Test Spec
-        MEDIA_PROXY_OP_NEXT_TRACK = 0x31
-        btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_NEXT_TRACK, 0)
+        media_proxy_op_next_track = 0x31
+        btp.gmcs_control_point_cmd(media_proxy_op_next_track, 0)
     elif params.test_case_name == 'GMCS/SR/MCP/BV-53-C':
         # Initial condition from Test Spec
-        MEDIA_PROXY_OP_NEXT_GROUP = 0x41
-        btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_NEXT_GROUP, 0)
+        media_proxy_op_next_group = 0x41
+        btp.gmcs_control_point_cmd(media_proxy_op_next_group, 0)
     elif params.test_case_name == 'GMCS/SR/MCP/BV-61-C':
         # Initial condition from Test Spec
-        MEDIA_PROXY_OP_NEXT_GROUP = 0x41
-        btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_NEXT_GROUP, 0)
+        media_proxy_op_next_group = 0x41
+        btp.gmcs_control_point_cmd(media_proxy_op_next_group, 0)
 
     return True
 
@@ -65,9 +65,9 @@ def hdl_wid_7(params: WIDParams):
     """Please configure that current track position set to a position outside
        the First Segment."""
 
-    MEDIA_PROXY_OP_LAST_SEGMENT = 0x23
+    media_proxy_op_last_segment = 0x23
 
-    btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_LAST_SEGMENT, 0)
+    btp.gmcs_control_point_cmd(media_proxy_op_last_segment, 0)
 
     return True
 
@@ -76,9 +76,9 @@ def hdl_wid_8(params: WIDParams):
     """Please configure that current track position set to a position outside
        the Last Segment"""
 
-    MEDIA_PROXY_OP_FIRST_SEGMENT = 0x22
+    media_proxy_op_first_segment = 0x22
 
-    btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_FIRST_SEGMENT, 0)
+    btp.gmcs_control_point_cmd(media_proxy_op_first_segment, 0)
 
     return True
 
@@ -86,9 +86,9 @@ def hdl_wid_8(params: WIDParams):
 def hdl_wid_9(params: WIDParams):
     """Please configure that current track set to NOT the First Track"""
 
-    MEDIA_PROXY_OP_LAST_TRACK = 0x33
+    media_proxy_op_last_track = 0x33
 
-    btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_LAST_TRACK, 0)
+    btp.gmcs_control_point_cmd(media_proxy_op_last_track, 0)
 
     return True
 
@@ -96,9 +96,9 @@ def hdl_wid_9(params: WIDParams):
 def hdl_wid_10(params: WIDParams):
     """Please configure that current track set to NOT the Last Track"""
 
-    MEDIA_PROXY_OP_PREV_TRACK = 0x30
+    media_proxy_op_prev_track = 0x30
 
-    btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_PREV_TRACK, 0)
+    btp.gmcs_control_point_cmd(media_proxy_op_prev_track, 0)
 
     return True
 
@@ -106,12 +106,12 @@ def hdl_wid_10(params: WIDParams):
 def hdl_wid_11(params: WIDParams):
     """Please configure that current track set to the Second Track"""
 
-    MEDIA_PROXY_OP_NEXT_TRACK = 0x31
-    MEDIA_PROXY_OP_FIRST_TRACK = 0x32
+    media_proxy_op_next_track = 0x31
+    media_proxy_op_first_track = 0x32
 
-    btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_FIRST_TRACK, 0)
+    btp.gmcs_control_point_cmd(media_proxy_op_first_track, 0)
 
-    btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_NEXT_TRACK, 0)
+    btp.gmcs_control_point_cmd(media_proxy_op_next_track, 0)
 
     return True
 
@@ -119,12 +119,12 @@ def hdl_wid_11(params: WIDParams):
 def hdl_wid_12(params: WIDParams):
     """Please configure that current track set to the next to the Last Track"""
 
-    MEDIA_PROXY_OP_PREV_TRACK = 0x30
-    MEDIA_PROXY_OP_LAST_TRACK = 0x33
+    media_proxy_op_prev_track = 0x30
+    media_proxy_op_last_track = 0x33
 
-    btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_LAST_TRACK, 0)
-    btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_PREV_TRACK, 0)
-    btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_PREV_TRACK, 0)
+    btp.gmcs_control_point_cmd(media_proxy_op_last_track, 0)
+    btp.gmcs_control_point_cmd(media_proxy_op_prev_track, 0)
+    btp.gmcs_control_point_cmd(media_proxy_op_prev_track, 0)
 
     # Setting current track to last_track - 2 works.
 
@@ -134,11 +134,11 @@ def hdl_wid_12(params: WIDParams):
 def hdl_wid_13(params: WIDParams):
     """Please configure that current group set to the Second Group"""
 
-    MEDIA_PROXY_OP_NEXT_GROUP = 0x41
-    MEDIA_PROXY_OP_FIRST_GROUP = 0x42
+    media_proxy_op_next_group = 0x41
+    media_proxy_op_first_group = 0x42
 
-    btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_FIRST_GROUP, 0)
-    btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_NEXT_GROUP, 0)
+    btp.gmcs_control_point_cmd(media_proxy_op_first_group, 0)
+    btp.gmcs_control_point_cmd(media_proxy_op_next_group, 0)
 
     return True
 
@@ -146,11 +146,11 @@ def hdl_wid_13(params: WIDParams):
 def hdl_wid_14(params: WIDParams):
     """Please configure that current group set to the next to the Last Group"""
 
-    MEDIA_PROXY_OP_PREV_GROUP = 0x40
-    MEDIA_PROXY_OP_LAST_GROUP = 0x43
+    media_proxy_op_prev_group = 0x40
+    media_proxy_op_last_group = 0x43
 
-    btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_LAST_GROUP, 0)
-    btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_PREV_GROUP, 0)
+    btp.gmcs_control_point_cmd(media_proxy_op_last_group, 0)
+    btp.gmcs_control_point_cmd(media_proxy_op_prev_group, 0)
 
     return True
 
@@ -180,8 +180,8 @@ def hdl_wid_44(params: WIDParams):
     if params.test_case_name in ['GMCS/SR/MCP/BV-41-C', 'GMCS/SR/MCP/BV-45-C']:
         # This applies only for testcases where media player is initially
         # in inactive state
-        MEDIA_PROXY_OP_NEXT_TRACK = 0x31
-        btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_NEXT_TRACK, 0)
+        media_proxy_op_next_track = 0x31
+        btp.gmcs_control_point_cmd(media_proxy_op_next_track, 0)
 
     return True
 
@@ -190,19 +190,19 @@ def hdl_wid_45(params: WIDParams):
     """Please configure that current track position is greater than 0 and less than
     the duration of the track."""
 
-    MEDIA_PROXY_OP_STOP = 0x05
-    btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_STOP, 0)
-    MEDIA_PROXY_OP_MOVE_RELATIVE = 0x10
-    btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_MOVE_RELATIVE, 1, 1)
+    media_proxy_op_stop = 0x05
+    btp.gmcs_control_point_cmd(media_proxy_op_stop, 0)
+    media_proxy_op_move_relative = 0x10
+    btp.gmcs_control_point_cmd(media_proxy_op_move_relative, 1, 1)
 
     # PTS seems to also expect IUT to set initial state in this WID
     # (although in test spec this is separate step)
     if params.test_case_name == 'GMCS/SR/MCP/BV-12-C ':
-        MEDIA_PROXY_OP_PLAY = 0x01
-        btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_PLAY, 0)
+        media_proxy_op_play = 0x01
+        btp.gmcs_control_point_cmd(media_proxy_op_play, 0)
     elif params.test_case_name == 'GMCS/SR/MCP/BV-14-C':
-        MEDIA_PROXY_OP_FAST_FORWARD = 0x04
-        btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_FAST_FORWARD, 0)
+        media_proxy_op_fast_forward = 0x04
+        btp.gmcs_control_point_cmd(media_proxy_op_fast_forward, 0)
     elif params.test_case_name == 'GMCS/SR/MCP/BV-75-C':
         btp.gmcs_inactive_state_set()
 
@@ -216,11 +216,11 @@ def hdl_wid_20001(params: WIDParams):
     stack = get_stack()
 
     if params.test_case_name in ['GMCS/SR/MCP/BV-05-C', 'GMCS/SR/MCP/BV-06-C']:
-        MEDIA_PROXY_OP_NEXT_SEGMENT = 0x21
-        btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_NEXT_SEGMENT, 0)
+        media_proxy_op_next_segment = 0x21
+        btp.gmcs_control_point_cmd(media_proxy_op_next_segment, 0)
     elif params.test_case_name == 'GMCS/SR/MCP/BV-09-C':
-        MEDIA_PROXY_OP_PLAY = 0x01
-        btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_PLAY, 0)
+        media_proxy_op_play = 0x01
+        btp.gmcs_control_point_cmd(media_proxy_op_play, 0)
 
     btp.gap_set_conn()
     btp.gap_adv_ind_on(ad=stack.gap.ad)

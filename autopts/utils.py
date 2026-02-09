@@ -27,6 +27,7 @@ import xmlrpc.client
 from collections import defaultdict
 from pathlib import Path
 from time import sleep
+from typing import Final
 
 import hid
 import psutil
@@ -50,6 +51,9 @@ TC_NAME_REGEX = re.compile(r"^test_case_name:\s*(.+)")
 # A mechanism for safely terminating threads
 # after interrupt triggered with Ctrl+C
 GLOBAL_END = False
+
+# Output results to CSV grouped by profile and wid
+OUTPUT_CSV_PATH: Final[Path] = Path(FILE_PATHS['WID_USE_CSV_FILE'])
 
 
 class RunEnd(KeyboardInterrupt):
@@ -576,8 +580,6 @@ def extract_wid_testcases_to_csv(log_dir: Path = None):
                     wid = None
                     test_case_name = None
 
-    # Output results to CSV grouped by profile and wid
-    OUTPUT_CSV_PATH = Path(FILE_PATHS['WID_USE_CSV_FILE'])
     with OUTPUT_CSV_PATH.open('w', newline='', encoding='utf-8') as csvfile:
         writer = csv.writer(csvfile)
         for profile in sorted(profile_wid_map.keys()):
@@ -610,7 +612,6 @@ def load_wid_report() -> dict[tuple[str, str], list[str]]:
     """
     mapping: dict[tuple[str, str], list[str]] = defaultdict(list)
     current_service: str = "<UNSET>"
-    OUTPUT_CSV_PATH = Path(FILE_PATHS['WID_USE_CSV_FILE'])
 
     if not OUTPUT_CSV_PATH.exists():
         raise FileNotFoundError(f"WID report not found: {OUTPUT_CSV_PATH}")

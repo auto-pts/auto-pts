@@ -92,7 +92,7 @@ def test_cases(ptses):
     auth_method = 0x00
     iut_device_name = get_unique_name(pts)
     timeout = 20
-    FD_timeout = 80
+    fd_timeout = 80
     sample_data_path = get_test_data_path(pts)
 
     pre_conditions = [
