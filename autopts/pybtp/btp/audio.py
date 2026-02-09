@@ -19,7 +19,7 @@ import struct
 from dataclasses import dataclass, field
 
 from autopts.pybtp import defs
-from autopts.pybtp.types import LC3_LTV_Config_Type
+from autopts.pybtp.types import LC3LTVConfigType
 
 
 def is_uint8(val: int) -> bool:
@@ -331,27 +331,27 @@ def is_codec_config_supported(
     if coding_format != LC3_CODING_FORMAT:
         return True
 
-    sampling_freq = find_ltv(config, LC3_LTV_Config_Type.SAMPLING_FREQ)
+    sampling_freq = find_ltv(config, LC3LTVConfigType.SAMPLING_FREQ)
     if sampling_freq is not None:
         # Sampling_Frequency 0x01 is 8 kHz, the same as bit 0 of the Supported_Sampling_Frequencies
         code = sampling_freq.value[0]
         if code == 0 or not frequencies & (1 << (code - 1)):
             return False
 
-    frame_duration = find_ltv(config, LC3_LTV_Config_Type.FRAME_DURATION)
+    frame_duration = find_ltv(config, LC3LTVConfigType.FRAME_DURATION)
     if frame_duration is not None:
         # Frame_Duration 0x00 is 7.5 ms, the same as bit 0 of the Supported_Frame_Durations
         if not frame_durations & (1 << frame_duration.value[0]):
             return False
 
-    frame_len = find_ltv(config, LC3_LTV_Config_Type.FRAME_LEN)
+    frame_len = find_ltv(config, LC3LTVConfigType.FRAME_LEN)
     if frame_len is not None:
         octets = int.from_bytes(frame_len.value[:2], "little")
         if not octets_per_frame & 0xFFFF <= octets <= octets_per_frame >> 16:
             return False
 
     # Audio_Channel_Allocation is a bitfield of the audio locations, without it or with none set the audio is mono
-    channel_allocation = find_ltv(config, LC3_LTV_Config_Type.CHANNEL_ALLOCATION)
+    channel_allocation = find_ltv(config, LC3LTVConfigType.CHANNEL_ALLOCATION)
     channels = 1
     if channel_allocation is not None:
         channels = max(1, int.from_bytes(channel_allocation.value[:4], "little").bit_count())
