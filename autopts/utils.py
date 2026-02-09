@@ -52,6 +52,19 @@ TC_NAME_REGEX = re.compile(r"^test_case_name:\s*(.+)")
 GLOBAL_END = False
 
 
+def get_wid_csv_path() -> Path:
+    """Return the path of the WID usage report CSV.
+
+    The path is read from FILE_PATHS on every call, not at import, so that a
+    WID_USE_CSV_FILE override from the bot config (applied later by
+    generate_file_paths()) is respected.
+
+    Returns:
+        Path to the CSV file with WID usage grouped by profile and WID.
+    """
+    return Path(FILE_PATHS['WID_USE_CSV_FILE'])
+
+
 class RunEnd(KeyboardInterrupt):
     pass
 
@@ -584,9 +597,8 @@ def extract_wid_testcases_to_csv(log_dir: Path = None):
                     wid = None
                     test_case_name = None
 
-    # Output results to CSV grouped by profile and wid
-    OUTPUT_CSV_PATH = Path(FILE_PATHS['WID_USE_CSV_FILE'])
-    with OUTPUT_CSV_PATH.open('w', newline='', encoding='utf-8') as csvfile:
+    output_csv_path = get_wid_csv_path()
+    with output_csv_path.open('w', newline='', encoding='utf-8') as csvfile:
         writer = csv.writer(csvfile)
         for profile in sorted(profile_wid_map.keys()):
             writer.writerow([f'{profile}'])
@@ -596,9 +608,9 @@ def extract_wid_testcases_to_csv(log_dir: Path = None):
                 writer.writerow([wid, testcases_combined])
 
     try:
-        wid_path = OUTPUT_CSV_PATH.resolve()
+        wid_path = output_csv_path.resolve()
     except OSError:
-        wid_path = OUTPUT_CSV_PATH.absolute()
+        wid_path = output_csv_path.absolute()
     print(f"WID usage report saved to: {wid_path}")
 
 
@@ -618,12 +630,12 @@ def load_wid_report() -> dict[tuple[str, str], list[str]]:
     """
     mapping: dict[tuple[str, str], list[str]] = defaultdict(list)
     current_service: str = "<UNSET>"
-    OUTPUT_CSV_PATH = Path(FILE_PATHS['WID_USE_CSV_FILE'])
 
-    if not OUTPUT_CSV_PATH.exists():
-        raise FileNotFoundError(f"WID report not found: {OUTPUT_CSV_PATH}")
+    output_csv_path = get_wid_csv_path()
+    if not output_csv_path.exists():
+        raise FileNotFoundError(f"WID report not found: {output_csv_path}")
 
-    with open(OUTPUT_CSV_PATH, newline="", encoding="utf-8") as f:
+    with open(output_csv_path, newline="", encoding="utf-8") as f:
         reader = csv.reader(f)
         for raw in reader:
             row = [col.strip() for col in raw if col is not None]

@@ -67,8 +67,8 @@ def set_pixits(ptses):
         _set_tmap_pixits(pts)
 
 
-def adv_init(advData):
-    advData[AdType.uuid16_svc_data] = []
+def adv_init(adv_data):
+    adv_data[AdType.uuid16_svc_data] = []
 
 
 def test_cases(ptses):
@@ -82,7 +82,7 @@ def test_cases(ptses):
     iut_device_name = get_unique_name(pts)
     stack = get_stack()
 
-    advData = {}
+    adv_data = {}
 
     iut_addr = ResultWithFlag()
 
@@ -154,70 +154,70 @@ def test_cases(ptses):
 
     adv_end = [
         TestFunc(btp.gap_set_extended_advertising_on),
-        TestFunc(btp.gap_start_advertising, ad=advData),
+        TestFunc(btp.gap_start_advertising, ad=adv_data),
     ]
 
     custom_test_cases = [
         ZTestCase('TMAP', 'TMAP/UMR/ASC/BV-04-C', cmds=pre_conditions + [
-                TestFunc(adv_init, advData),
-                TestFunc(gap_set_uuid16_svc_data, advData, UUID.CAS,
+                TestFunc(adv_init, adv_data),
+                TestFunc(gap_set_uuid16_svc_data, adv_data, UUID.CAS,
                            struct.pack('<B', CAPAnnouncement.TARGETED)),
-                TestFunc(gap_set_uuid16_svc_data, advData, UUID.ASCS,
+                TestFunc(gap_set_uuid16_svc_data, adv_data, UUID.ASCS,
                            struct.pack('<BHHB', BAPAnnouncement.TARGETED,
                 Context.LIVE | Context.MEDIA, Context.LIVE, 0))] +
                 adv_end,
                 generic_wid_hdl=tmap_wid_hdl),
         ZTestCase('TMAP', 'TMAP/UMR/ASC/BV-05-C', cmds=pre_conditions + [
-                TestFunc(adv_init, advData),
-                TestFunc(gap_set_uuid16_svc_data, advData, UUID.CAS,
+                TestFunc(adv_init, adv_data),
+                TestFunc(gap_set_uuid16_svc_data, adv_data, UUID.CAS,
                           struct.pack('<B', CAPAnnouncement.TARGETED)),
-                TestFunc(gap_set_uuid16_svc_data, advData, UUID.ASCS,
+                TestFunc(gap_set_uuid16_svc_data, adv_data, UUID.ASCS,
                           struct.pack('<BHHB', BAPAnnouncement.TARGETED,
                 Context.LIVE | Context.MEDIA, Context.LIVE, 0))] +
                 adv_end,
                 generic_wid_hdl=tmap_wid_hdl),
         ZTestCase('TMAP', 'TMAP/UMR/ASC/BV-06-C', cmds=pre_conditions + [
-                TestFunc(adv_init, advData),
-                TestFunc(gap_set_uuid16_svc_data, advData, UUID.CAS,
+                TestFunc(adv_init, adv_data),
+                TestFunc(gap_set_uuid16_svc_data, adv_data, UUID.CAS,
                           struct.pack('<B', CAPAnnouncement.TARGETED)),
-                TestFunc(gap_set_uuid16_svc_data, advData, UUID.ASCS,
+                TestFunc(gap_set_uuid16_svc_data, adv_data, UUID.ASCS,
                           struct.pack('<BHHB', BAPAnnouncement.TARGETED,
                 Context.LIVE | Context.MEDIA, Context.LIVE, 0))] +
                 adv_end,
                 generic_wid_hdl=tmap_wid_hdl),
         ZTestCase('TMAP', 'TMAP/BMR/DDI/BV-01-C', cmds=pre_conditions + [
-                TestFunc(adv_init, advData),
-                TestFunc(gap_set_uuid16_svc_data, advData, UUID.TMAP,
+                TestFunc(adv_init, adv_data),
+                TestFunc(gap_set_uuid16_svc_data, adv_data, UUID.TMAP,
                         struct.pack('<H', TMAPRole.BROADCAST_MEDIA_RECEIVER))] +
                 adv_end,
                 generic_wid_hdl=tmap_wid_hdl),
         ZTestCase('TMAP', 'TMAP/CG/DDI/BV-01-C', cmds=pre_conditions + [
-                TestFunc(adv_init, advData),
-                TestFunc(gap_set_uuid16_svc_data, advData, UUID.TMAP,
+                TestFunc(adv_init, adv_data),
+                TestFunc(gap_set_uuid16_svc_data, adv_data, UUID.TMAP,
                         struct.pack('<H', TMAPRole.CALL_GATEWAY))] +
                 adv_end,
                 generic_wid_hdl=tmap_wid_hdl),
         ZTestCase('TMAP', 'TMAP/CT/DDI/BV-01-C', cmds=pre_conditions + [
-                TestFunc(adv_init, advData),
-                TestFunc(gap_set_uuid16_svc_data, advData, UUID.TMAP,
+                TestFunc(adv_init, adv_data),
+                TestFunc(gap_set_uuid16_svc_data, adv_data, UUID.TMAP,
                         struct.pack('<H', TMAPRole.CALL_TERMINAL))] +
                 adv_end,
                 generic_wid_hdl=tmap_wid_hdl),
         ZTestCase('TMAP', 'TMAP/UMS/DDI/BV-01-C', cmds=pre_conditions + [
-                TestFunc(adv_init, advData),
-                TestFunc(gap_set_uuid16_svc_data, advData, UUID.TMAP,
+                TestFunc(adv_init, adv_data),
+                TestFunc(gap_set_uuid16_svc_data, adv_data, UUID.TMAP,
                         struct.pack('<H', TMAPRole.UNICAST_MEDIA_SENDER))] +
                 adv_end,
                 generic_wid_hdl=tmap_wid_hdl),
         ZTestCase('TMAP', 'TMAP/UMR/DDI/BV-01-C', cmds=pre_conditions + [
-                TestFunc(adv_init, advData),
-                TestFunc(gap_set_uuid16_svc_data, advData, UUID.TMAP,
+                TestFunc(adv_init, adv_data),
+                TestFunc(gap_set_uuid16_svc_data, adv_data, UUID.TMAP,
                         struct.pack('<H', TMAPRole.UNICAST_MEDIA_RECEIVER))] +
                 adv_end,
                 generic_wid_hdl=tmap_wid_hdl),
         ZTestCase('TMAP', 'TMAP/BMS/DDI/BV-01-C', cmds=pre_conditions + [
-                TestFunc(adv_init, advData),
-                TestFunc(gap_set_uuid16_svc_data, advData, UUID.TMAP,
+                TestFunc(adv_init, adv_data),
+                TestFunc(gap_set_uuid16_svc_data, adv_data, UUID.TMAP,
                         struct.pack('<H', TMAPRole.BROADCAST_MEDIA_SENDER))] +
                 adv_end,
                 generic_wid_hdl=tmap_wid_hdl),

@@ -18,6 +18,7 @@ import logging
 from autopts.pybtp import btp
 from autopts.pybtp.types import WIDParams
 from autopts.wid import generic_wid_hdl
+from autopts.wid.gmcs import MediaProxyOp
 from autopts.wid.gmcs import hdl_wid_20141 as _generic_hdl_wid_20141
 from autopts.wid.gmcs import hdl_wid_20142 as _generic_hdl_wid_20142
 
@@ -50,8 +51,7 @@ def hdl_wid_20142(params: WIDParams):
     if params.test_case_name == 'GMCS/SR/SPN/BV-02-C':
         # This relies on the Zephyr Media Player sample: moves to
         # "Track 1.2 with a very long name", which notifies the Track Title.
-        MEDIA_PROXY_OP_NEXT_TRACK = 0x31
-        btp.gmcs_control_point_cmd(MEDIA_PROXY_OP_NEXT_TRACK, 0)
+        btp.gmcs_control_point_cmd(MediaProxyOp.NEXT_TRACK, 0)
         return True
 
     return _generic_hdl_wid_20142(params)
