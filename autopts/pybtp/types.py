@@ -531,12 +531,12 @@ BASS_PA_INTERVAL_UNKNOWN: Final[int] = 0xFFFF
 
 
 class TMAPRole(IntFlag):
-    CALL_GATEWAY = defs.BIT(0)
-    CALL_TERMINAL = defs.BIT(1)
-    UNICAST_MEDIA_SENDER = defs.BIT(2)
-    UNICAST_MEDIA_RECEIVER = defs.BIT(3)
-    BROADCAST_MEDIA_SENDER = defs.BIT(4)
-    BROADCAST_MEDIA_RECEIVER = defs.BIT(5)
+    CALL_GATEWAY = defs.bit(0)
+    CALL_TERMINAL = defs.bit(1)
+    UNICAST_MEDIA_SENDER = defs.bit(2)
+    UNICAST_MEDIA_RECEIVER = defs.bit(3)
+    BROADCAST_MEDIA_SENDER = defs.bit(4)
+    BROADCAST_MEDIA_RECEIVER = defs.bit(5)
 
 
 class BAPAnnouncement:
