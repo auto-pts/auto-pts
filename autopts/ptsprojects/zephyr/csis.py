@@ -48,7 +48,7 @@ def set_pixits(ptses):
     pts.set_pixit("CSIS", "TSPX_use_dynamic_pin", "FALSE")
     pts.set_pixit("CSIS", "TSPX_delete_ltk", "TRUE")
     pts.set_pixit("CSIS", "TSPX_security_enabled", "TRUE")
-    pts.set_pixit("CSIS", "TSPX_Lock_Timeout_Seconds", "60")
+    pts.set_pixit("CSIS", "TSPX_Lock_Timeout", "60")
     pts.set_pixit("CSIS", "TSPX_iut_ATT_transport", "ATT Bearer on LE Transport")
 
 
