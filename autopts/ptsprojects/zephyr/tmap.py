@@ -154,6 +154,24 @@ def test_cases(ptses):
                         struct.pack('<H', TMAPRole.BROADCAST_MEDIA_RECEIVER))] +
                 adv_end,
                 generic_wid_hdl=tmap_wid_hdl),
+        ZTestCase('TMAP', 'TMAP/CG/DDI/BV-01-C', cmds=pre_conditions + [
+                TestFunc(adv_init, advData),
+                TestFunc(gap_set_uuid16_svc_data, advData, UUID.TMAP,
+                        struct.pack('<H', TMAPRole.CALL_GATEWAY))] +
+                adv_end,
+                generic_wid_hdl=tmap_wid_hdl),
+        ZTestCase('TMAP', 'TMAP/CT/DDI/BV-01-C', cmds=pre_conditions + [
+                TestFunc(adv_init, advData),
+                TestFunc(gap_set_uuid16_svc_data, advData, UUID.TMAP,
+                        struct.pack('<H', TMAPRole.CALL_TERMINAL))] +
+                adv_end,
+                generic_wid_hdl=tmap_wid_hdl),
+        ZTestCase('TMAP', 'TMAP/UMS/DDI/BV-01-C', cmds=pre_conditions + [
+                TestFunc(adv_init, advData),
+                TestFunc(gap_set_uuid16_svc_data, advData, UUID.TMAP,
+                        struct.pack('<H', TMAPRole.UNICAST_MEDIA_SENDER))] +
+                adv_end,
+                generic_wid_hdl=tmap_wid_hdl),
         ZTestCase('TMAP', 'TMAP/UMR/DDI/BV-01-C', cmds=pre_conditions + [
                 TestFunc(adv_init, advData),
                 TestFunc(gap_set_uuid16_svc_data, advData, UUID.TMAP,
