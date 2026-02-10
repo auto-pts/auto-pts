@@ -130,7 +130,7 @@ class IUTCtl:
 
     def start_audio(self):
         if self.external_audio is None:
-            if not (self.stack.supported_cmds['VENDOR'] & defs.BIT(vendor.BTP_VENDOR_CMD_ASCS_SETUP)):
+            if not (self.stack.supported_cmds['VENDOR'] & defs.bit(vendor.BTP_VENDOR_CMD_ASCS_SETUP)):
                 raise BTPInitError("Vendor ASCS setup command not supported")
 
             latency = 0
