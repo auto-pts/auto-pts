@@ -52,4 +52,4 @@ jobs:
       run: pytest ./test/unittests.py
 
     - name: Test MMI parser
-      run: python -m test.test-mmi-parser
+      run: python -m test.test_mmi_parser
