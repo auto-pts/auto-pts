@@ -784,8 +784,8 @@ def hdl_wid_100(params: WIDParams):
     bis_ids = sorted(bis_events)
     requested_bis_sync = 0
     for bis_index in bis_ids:
-        # Add the BIS index to the bitfield (BIS index 0x01 => BIT(0), index 0x02 => BIT(1), etc.)
-        requested_bis_sync |= defs.BIT(bis_index - 1)
+        # Add the BIS index to the bitfield (BIS index 0x01 => bit(0), index 0x02 => bit(1), etc.)
+        requested_bis_sync |= defs.bit(bis_index - 1)
 
     btp.bap_broadcast_sink_bis_sync(broadcast_id, requested_bis_sync)
 
