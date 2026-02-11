@@ -39,3 +39,18 @@ def hdl_wid_302(params: WIDParams):
         return True
 
     return autopts.wid.bap.hdl_wid_302(params)
+
+
+def hdl_wid_303(params: WIDParams):
+    """
+    Please configure ASE state to QoS Configured with 16_2_1 in SINK direction.
+    """
+
+    if get_iut().external_audio is not None:
+        logging.debug("External audio supported, skipping WID 303 handling")
+        return True
+
+    # Don't use autopts.wid.bap.hdl_wid_303 which requests to read ASE characteristic
+    # and reply may occur after PTS has disconnected, which causes test case to fail.
+    # So just return True here and let BlueZ handle QoS configuration internally.
+    return True
