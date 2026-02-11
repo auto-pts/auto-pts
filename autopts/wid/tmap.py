@@ -597,12 +597,13 @@ def hdl_wid_506(params: WIDParams):
     # There's no explicit 'stop broadcast / advertising' dialog for TMAP/BMS/ASC/BV-01-I in PTS, therefore,
     # we first stop a potential ongoing advertising + broadcast before starting the new one
 
-    # TODO: store Broadcast/Advertising state and only disable adv + broadcast if it has been started
-
-    source_id = 0x00
-    btp.cap_broadcast_adv_stop(source_id)
-    btp.cap_broadcast_source_stop(source_id)
-    btp.cap_broadcast_source_release(source_id)
+    # Try to stop/release any previous broadcast if source_id is known
+    stack = get_stack()
+    if hasattr(stack.tmap, "source_id"):
+        prev_source_id = stack.tmap.source_id
+        btp.cap_broadcast_adv_stop(prev_source_id)
+        btp.cap_broadcast_source_stop(prev_source_id)
+        btp.cap_broadcast_source_release(prev_source_id)
 
     # Get Audio Locations from description
     audio_locations = 0
@@ -632,6 +633,8 @@ def hdl_wid_506(params: WIDParams):
     subgroup_id = 0x00
     presentation_delay = 40000
 
+    # Always use source_id = 0x00 for the first/only source
+    source_id = 0x00
     for _i in range(source_num):
         btp.cap_broadcast_source_setup_stream(source_id, subgroup_id, coding_format, vid, cid,
                                               codec_ltvs_bytes, metadata)
@@ -644,6 +647,8 @@ def hdl_wid_506(params: WIDParams):
     btp.cap_broadcast_source_setup(source_id, broadcast_id, *qos_config, presentation_delay,
                                    encryption=False, broadcast_code=None,
                                    subgroup_codec_level=False)
+    # Save for next time
+    stack.tmap.source_id = source_id
 
     btp.cap_broadcast_adv_start(source_id)
 
