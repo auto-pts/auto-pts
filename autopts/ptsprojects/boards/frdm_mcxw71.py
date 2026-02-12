@@ -30,16 +30,17 @@ def reset_cmd(iutctl):
     return Jlink(iutctl.debugger_snr, iutctl.device_core).reset_command
 
 
-def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None, *args):
+def build_and_flash(zephyr_wd, tester_app_dir, board, debugger_snr, conf_file=None, *args):
     """Build and flash Zephyr binary
     :param zephyr_wd: Zephyr source path
+    :param tester_app_dir: path to tester application relative to zephyr_wd
     :param board: IUT
     :param debugger_snr serial number
     :param conf_file: configuration file to be used
     """
     logging.debug("%s: %s %s %s", build_and_flash.__name__, zephyr_wd,
                   board, conf_file)
-    tester_dir = os.path.join(zephyr_wd, "tests", "bluetooth", "tester")
+    tester_dir = os.path.join(zephyr_wd, tester_app_dir)
 
     check_call('rm -rf build/'.split(), cwd=tester_dir)
 
