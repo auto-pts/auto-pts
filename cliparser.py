@@ -21,6 +21,7 @@ import os
 import shutil
 import sys
 import time
+from pathlib import Path
 
 from autopts.config import CLIENT_PORT, FILE_PATHS, MAX_SERVER_RESTART_TIME, SERIAL_BAUDRATE, SERVER_PORT
 from autopts.ptsprojects.boards import com_to_tty, get_debugger_snr, get_free_device, get_tty, tty_exists
@@ -161,6 +162,11 @@ class CliParser(argparse.ArgumentParser):
                           default=False, help=argparse.SUPPRESS)
 
         self.add_argument("--project_path", type=str, help=argparse.SUPPRESS)
+
+        # Path to tester application relative to project_path. Used for build and flash in bot mode. Only supported by
+        # Zephyr project.
+        self.add_argument("--tester_app_dir", type=Path, default=Path('tests', 'bluetooth', 'tester'),
+                          help=argparse.SUPPRESS)
 
         self.add_argument('--nb', dest='no_build', action='store_true',
                           help='Skip build and flash in bot mode.', default=False)

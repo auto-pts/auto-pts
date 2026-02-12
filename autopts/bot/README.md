@@ -31,6 +31,7 @@ This may contain few sections:
     - `workspace` - Path to PTS workspace .pqw6 file to use for testing. THe file should be located where automation 
   server is running.
     - `project_path` - path to project source directory
+    - `tester_app_dir` - path to tester application directory relative to project_path. Only works for Zephyr based projects.
     - `cli_port` - AutoPTSClient port(s). If running with multiple servers(PTS dongles), specify the ports in
   config_project.py as follows: 'srv_port': [65001, 65003, 65005]
     - `srv_port` - AutoPTSServer port(s). If running with multiple servers(PTS dongles), specify the ports in

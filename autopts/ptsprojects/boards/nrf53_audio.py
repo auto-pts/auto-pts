@@ -50,10 +50,11 @@ def build_and_flash_core(zephyr_wd, build_dir, board, debugger_snr, configs,
     check_call(env_cmd + cmd, cwd=build_dir)
 
 
-def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None, project_repos=None,
+def build_and_flash(zephyr_wd, tester_app_dir, board, debugger_snr, conf_file=None, project_repos=None,
                     env_cmd=None, *args):
     """Build and flash Zephyr binary
     :param zephyr_wd: Zephyr source path
+    :param tester_app_dir: path to tester application relative to zephyr_wd
     :param board: IUT
     :param debugger_snr serial number
     :param conf_file: configuration file to be used
@@ -61,10 +62,8 @@ def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None, project_repo
     :param env_cmd: a command to for environment activation, e.g. source /path/to/venv/activate
     """
     source_dir = os.getenv("AUTOPTS_SOURCE_DIR_APP")
-    if source_dir is None:
-        source_dir = os.path.join('tests', 'bluetooth', 'tester')
 
-    logging.debug("%s: %s %s %s %s", build_and_flash.__name__, zephyr_wd,
+    logging.debug("%s: %s %s %s %s %s", build_and_flash.__name__, zephyr_wd, tester_app_dir,
                   board, conf_file, source_dir)
 
     app_core_configs = []
@@ -72,7 +71,7 @@ def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None, project_repo
         app_core_configs = [f'EXTRA_CONF_FILE=\'{conf_file}\'']
 
     build_and_flash_core(zephyr_wd,
-                         source_dir,
+                         source_dir if source_dir else tester_app_dir,
                          board,
                          debugger_snr,
                          app_core_configs,

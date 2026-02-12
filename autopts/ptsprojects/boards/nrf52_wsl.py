@@ -36,16 +36,18 @@ def reset_cmd(iutctl):
     return f'nrfutil device reset --reset-kind RESET_DEFAULT --serial-number {iutctl.debugger_snr}'
 
 
-def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None, *args):
+def build_and_flash(zephyr_wd, tester_app_dir, board, debugger_snr, conf_file=None, *args):
     """Build and flash Zephyr binary
     :param zephyr_wd: Zephyr source path
+    :param tester_app_dir: path to tester application relative to zephyr_wd
     :param board: IUT
     :param debugger_snr serial number
     :param conf_file: configuration file to be used
     """
-    logging.debug("%s: %s %s %s", build_and_flash.__name__, zephyr_wd,
+    logging.debug("%s: %s %s %s %s", build_and_flash.__name__, zephyr_wd, tester_app_dir,
                   board, conf_file)
-    tester_dir = os.path.join(zephyr_wd, "tests", "bluetooth", "tester")
+
+    tester_dir = os.path.join(zephyr_wd, tester_app_dir)
 
     cmd = ['west', 'build', '-p', 'auto', '-b', board]
     if conf_file and conf_file != 'default' and conf_file != 'prj.conf':
