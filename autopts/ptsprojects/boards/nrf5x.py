@@ -31,17 +31,18 @@ def reset_cmd(iutctl):
     return f'nrfutil device reset --reset-kind RESET_PIN --serial-number {iutctl.debugger_snr}'
 
 
-def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None, project_repos=None,
+def build_and_flash(zephyr_wd, tester_app_dir, board, debugger_snr, conf_file=None, project_repos=None,
                     env_cmd=None, *args):
     """Build and flash Zephyr binary
     :param zephyr_wd: Zephyr source path
+    :param tester_app_dir: path to tester application relative to zephyr_wd
     :param board: IUT
     :param debugger_snr serial number
     :param conf_file: configuration file to be used
     :param project_repos: a list of repo paths
     :param env_cmd: a command to for environment activation, e.g. source /path/to/venv/activate
     """
-    logging.debug("%s: %s %s %s", build_and_flash.__name__, zephyr_wd,
+    logging.debug("%s: %s %s %s %s", build_and_flash.__name__, zephyr_wd, tester_app_dir,
                   board, conf_file)
 
     if env_cmd:
@@ -49,7 +50,7 @@ def build_and_flash(zephyr_wd, board, debugger_snr, conf_file=None, project_repo
     else:
         env_cmd = []
 
-    tester_dir = os.path.join(zephyr_wd, "tests", "bluetooth", "tester")
+    tester_dir = os.path.join(zephyr_wd, tester_app_dir)
 
     check_call('rm -rf build/'.split(), cwd=tester_dir)
 

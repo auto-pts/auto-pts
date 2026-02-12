@@ -86,6 +86,7 @@ class BotConfigArgs(Namespace):
         self.iut_mode = args.get('iut_mode', None)
         self.workspace = args['workspace']
         self.project_path = args['project_path']
+        self.tester_app_dir = args.get('tester_app_dir', Path('tests', 'bluetooth', 'tester'))
         self.srv_port = args.get('srv_port', [65000])
         self.cli_port = args.get('cli_port', [65001])
         self.ip_addr = args.get('server_ip', ['127.0.0.1'] * len(self.srv_port))

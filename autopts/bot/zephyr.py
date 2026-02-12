@@ -39,21 +39,22 @@ from autopts.ptsprojects.zephyr.iutctl import get_iut, log
 PROJECT_NAME = Path(__file__).stem
 
 
-def build_image(zephyr_wd, cpu_type, conf_file=None, env_cmd=None):
+def build_image(zephyr_wd, tester_app_dir, cpu_type, conf_file=None, env_cmd=None):
     """Build and flash Zephyr binary
     :param zephyr_wd: Zephyr source path
+    :param tester_app_dir: path to the tester application relative to zephyr_wd
     :param cpu_type: IUT
     :param conf_file: configuration file to be used
     :param env_cmd: a command to for environment activation, e.g. source /path/to/venv/activate
     """
-    log(f"{build_image.__name__}: {zephyr_wd} {cpu_type} {conf_file} {env_cmd}")
+    log(f"{build_image.__name__}: {zephyr_wd} {tester_app_dir} {cpu_type} {conf_file} {env_cmd}")
 
     if env_cmd:
         env_cmd = env_cmd.split() + ['&&']
     else:
         env_cmd = []
 
-    tester_dir = os.path.join(zephyr_wd, "tests/bluetooth/tester")
+    tester_dir = os.path.join(zephyr_wd, tester_app_dir)
 
     shutil.rmtree(os.path.join(tester_dir, 'build'), ignore_errors=True)
 
@@ -85,7 +86,7 @@ def flush_serial(tty, rtscts=False, baudrate=115200):
                                'continue;', 'done'])
 
 
-def apply_overlay(zephyr_wd, cfg_name, overlay):
+def apply_overlay(zephyr_wd, tester_app_dir, cfg_name, overlay):
     """Duplicates default_conf configuration file and applies overlay changes
     to it.
     :param zephyr_wd: Zephyr source path
@@ -93,12 +94,10 @@ def apply_overlay(zephyr_wd, cfg_name, overlay):
     :param overlay: defines changes to be applied
     :return: None
     """
-    tester_app_dir = os.getenv("AUTOPTS_SOURCE_DIR_APP")
-    if tester_app_dir is None:
-        tester_app_dir = os.path.join("tests", "bluetooth", "tester")
+    overwrite = os.getenv("AUTOPTS_SOURCE_DIR_APP")
     cwd = os.getcwd()
 
-    os.chdir(os.path.join(zephyr_wd, tester_app_dir))
+    os.chdir(os.path.join(zephyr_wd, overwrite if overwrite else tester_app_dir))
 
     with open(cfg_name, 'w') as config:
         for k, v in list(overlay.items()):
@@ -161,9 +160,9 @@ class ZephyrBotClient(BotClient):
         for name in pre_overlay + [config] + post_overlay:
             if name in self.iut_config and 'overlay' in self.iut_config[name] \
                     and len(self.iut_config[name]['overlay']) and name != 'prj.conf':
-                apply_overlay(args.project_path, name,
+                apply_overlay(args.project_path, args.tester_app_dir, name,
                               self.iut_config[name]['overlay'])
-            elif not os.path.exists(os.path.join(args.project_path, "tests", "bluetooth", "tester", name)):
+            elif not os.path.exists(os.path.join(args.project_path, args.tester_app_dir, name)):
                 log(f'Overlay {name} is not a file.')
                 continue
 
@@ -177,7 +176,7 @@ class ZephyrBotClient(BotClient):
         if args.iut_mode != 'tty':
             iut = self.get_iut()
             if not iut.kernel_image:
-                iut.kernel_image = os.path.join(args.project_path, "tests/bluetooth/tester/build/zephyr/zephyr")
+                iut.kernel_image = os.path.join(args.project_path, args.tester_app_dir, "build/zephyr/zephyr")
                 if args.iut_mode == 'qemu':
                     iut.kernel_image += '.elf'
                 else:
@@ -194,7 +193,7 @@ class ZephyrBotClient(BotClient):
             board_type = get_board_type(args.board_name)
 
             try:
-                build_and_flash(args.project_path, board_type, args.debugger_snr,
+                build_and_flash(args.project_path, args.tester_app_dir, board_type, args.debugger_snr,
                                 overlays, args.project_repos, args.build_env_cmd)
 
                 flush_serial(args.tty_file, rtscts=args.rtscts, baudrate=args.tty_baudrate)
@@ -205,7 +204,7 @@ class ZephyrBotClient(BotClient):
 
             time.sleep(10)
         else:
-            build_image(args.project_path, args.kernel_cpu, overlays, args.build_env_cmd)
+            build_image(args.project_path, args.tester_app_dir, args.kernel_cpu, overlays, args.build_env_cmd)
             if args.setcap_cmd:
                 check_call(args.setcap_cmd.split())
 
