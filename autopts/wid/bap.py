@@ -2575,7 +2575,7 @@ def hdl_wid_20110(params: WIDParams):
     """
 
     handle = re.findall(r'0[xX][0-9a-fA-F]+', params.description)[0]
-    btp.gattc_write(btp.pts_addr_type_get(), btp.pts_addr_get(), handle, '0001')
+    btp.gattc_write(btp.pts_addr_type_get(), btp.pts_addr_get(), handle, '00010203')
     btp.gattc_write_rsp()
 
     return True
