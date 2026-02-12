@@ -1164,9 +1164,14 @@ def hdl_wid_33(_: WIDParams):
     return True
 
 
-def hdl_wid_265(_: WIDParams):
+def hdl_wid_265(params: WIDParams):
     '''
     Please confirm the Upper Tester did receive no data.
     Click Yes if Upper Tester received no data, otherwise click No.
     '''
+    if params.test_case_name in ['L2CAP/CLS/CID/BV-01-C']:
+        l2cap = get_stack().l2cap
+        channel_ids = [channel.id for channel in l2cap.channels]
+        for cid in channel_ids:
+            _safe_l2cap_disconnect(cid)
     return True
