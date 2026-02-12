@@ -437,6 +437,18 @@ iut_config = {
             'GAP/PADV/PASE/BV-12-C',
         ]
     },
+
+    "br_l2cap_ext_feat.conf": {
+        "pre_overlay": "prj_br.conf",
+        "overlay": {
+            'CONFIG_BT_L2CAP_CONNLESS': 'y',
+        },
+        "test_cases": [
+            'L2CAP/EXF/BV-07-C',
+            'L2CAP/EXF/BV-08-C',
+            'L2CAP/FIX/BV-03-C',
+        ]
+    },
 }
 
 retry_config = {
