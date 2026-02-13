@@ -76,8 +76,6 @@ class IUTCtl:
             log("IUT didn't connect!")
             self.stop()
 
-#        self.wait_iut_ready_event()
-
     def wait_iut_ready_event(self):
         """Wait until IUT sends ready event after power up"""
         tuple_hdr, tuple_data = self.btp_socket.read()
