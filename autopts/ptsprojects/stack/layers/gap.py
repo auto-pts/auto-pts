@@ -381,7 +381,8 @@ class Gap:
     def iut_addr_get_str(self):
         addr = self.iut_bd_addr.data["address"]
         if addr:
-            return addr.decode("utf-8")
+            # Handle both bytes (legacy) and string (new)
+            return addr.decode("utf-8") if isinstance(addr, bytes) else addr
         return "000000000000"
 
     def iut_addr_set(self, addr, addr_type):
