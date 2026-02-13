@@ -276,34 +276,34 @@ class MyTestCase(unittest.TestCase):
         assert os.path.exists(FILE_PATHS['REPORT_DIFF_TXT_FILE'])
 
     def test_gap_set_uuid16_svc_data(self):
-        advData = {}
+        adv_data = {}
         # Test invalid inputs
         with pytest.raises(ValueError, match="Invalid UUID16 value"):
-            gap_set_uuid16_svc_data(advData, 0xFFFF1, None)
+            gap_set_uuid16_svc_data(adv_data, 0xFFFF1, None)
         with pytest.raises(ValueError, match="Invalid UUID16 value"):
-            gap_set_uuid16_svc_data(advData, -1, None)
+            gap_set_uuid16_svc_data(adv_data, -1, None)
         with pytest.raises(TypeError):
-            gap_set_uuid16_svc_data(advData, 0xAAAA, 4)
+            gap_set_uuid16_svc_data(adv_data, 0xAAAA, 4)
 
         # Test valid input
         try:
-            gap_set_uuid16_svc_data(advData, 0x0000, None)
-            gap_set_uuid16_svc_data(advData, 0xFFFF, None)
-            gap_set_uuid16_svc_data(advData, 0xAABB, struct.pack('<B', 1))
+            gap_set_uuid16_svc_data(adv_data, 0x0000, None)
+            gap_set_uuid16_svc_data(adv_data, 0xFFFF, None)
+            gap_set_uuid16_svc_data(adv_data, 0xAABB, struct.pack('<B', 1))
 
         except Exception as e:
             self.fail(f"Function raised unexpected exception: {e}")
 
-        assert advData[AdType.uuid16_svc_data][0] == struct.pack('<H', 0x0000)
-        assert advData[AdType.uuid16_svc_data][1] == struct.pack('<H', 0xFFFF)
-        assert advData[AdType.uuid16_svc_data][2] == struct.pack('<HB', 0xAABB, 1)
+        assert adv_data[AdType.uuid16_svc_data][0] == struct.pack('<H', 0x0000)
+        assert adv_data[AdType.uuid16_svc_data][1] == struct.pack('<H', 0xFFFF)
+        assert adv_data[AdType.uuid16_svc_data][2] == struct.pack('<HB', 0xAABB, 1)
 
-        # Update a value in advData
-        gap_set_uuid16_svc_data(advData, 0xFFFF, struct.pack('<H', 0xABCD))
+        # Update a value in adv_data
+        gap_set_uuid16_svc_data(adv_data, 0xFFFF, struct.pack('<H', 0xABCD))
 
-        assert advData[AdType.uuid16_svc_data][0] == struct.pack('<H', 0x0000)
-        assert advData[AdType.uuid16_svc_data][1] == struct.pack('<HB', 0xAABB, 1)
-        assert advData[AdType.uuid16_svc_data][2] == struct.pack('<HH', 0xFFFF, 0xABCD)
+        assert adv_data[AdType.uuid16_svc_data][0] == struct.pack('<H', 0x0000)
+        assert adv_data[AdType.uuid16_svc_data][1] == struct.pack('<HB', 0xAABB, 1)
+        assert adv_data[AdType.uuid16_svc_data][2] == struct.pack('<HH', 0xFFFF, 0xABCD)
 
     def test_audio_pack_metadata(self):
         try:
