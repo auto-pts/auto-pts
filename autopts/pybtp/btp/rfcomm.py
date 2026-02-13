@@ -23,7 +23,7 @@ from autopts.pybtp import defs
 from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, pts_addr_get, pts_addr_type_get
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.btp.gap import gap_wait_for_connection
-from autopts.pybtp.types import addr2btp_ba
+from autopts.pybtp.types import addr_str_to_le_bytes, le_bytes_to_hex_str
 
 RFCOMM = {
     "read_supp_cmds": (defs.BTP_SERVICE_ID_RFCOMM,
@@ -65,7 +65,7 @@ def rfcomm_connect(bd_addr=None, bd_addr_type=defs.BTP_BR_ADDRESS_TYPE, channel=
     bd_addr_type = pts_addr_type_get(bd_addr_type)
 
     bd_addr_type_ba = struct.pack('B', bd_addr_type)
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
 
     data_ba = bytearray()
     data_ba.extend(bd_addr_type_ba)
@@ -84,7 +84,7 @@ def rfcomm_disconnect(bd_addr=None, bd_addr_type=defs.BTP_BR_ADDRESS_TYPE, chann
     bd_addr_type = pts_addr_type_get(bd_addr_type)
 
     bd_addr_type_ba = struct.pack('B', bd_addr_type)
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
 
     data_ba = bytearray()
     data_ba.extend(bd_addr_type_ba)
@@ -108,7 +108,7 @@ def rfcomm_send_data(bd_addr=None, bd_addr_type=defs.BTP_BR_ADDRESS_TYPE, channe
     bd_addr_type = pts_addr_type_get(bd_addr_type)
 
     bd_addr_type_ba = struct.pack('B', bd_addr_type)
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     val_ba = bytes.fromhex(val)
     val_len_ba = struct.pack('H', len(val_ba))
 
@@ -144,7 +144,7 @@ def rfcomm_send_rpn(bd_addr=None, bd_addr_type=defs.BTP_BR_ADDRESS_TYPE, channel
     bd_addr_type = pts_addr_type_get(bd_addr_type)
 
     bd_addr_type_ba = struct.pack('B', bd_addr_type)
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
 
     data_ba = bytearray()
     data_ba.extend(bd_addr_type_ba)
@@ -169,7 +169,7 @@ def rfcomm_get_dlc_info(bd_addr=None, bd_addr_type=defs.BTP_BR_ADDRESS_TYPE, cha
     bd_addr_type = pts_addr_type_get(bd_addr_type)
 
     bd_addr_type_ba = struct.pack('B', bd_addr_type)
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
 
     data_ba = bytearray()
     data_ba.extend(bd_addr_type_ba)
@@ -207,7 +207,7 @@ def rfcomm_connected_ev(rfcomm, data, data_len):
 
     logging.debug("addr:%r, channel:%r, mtu:%r", bd_addr, channel, mtu)
 
-    bd_addr = binascii.hexlify(bd_addr[::-1]).decode()
+    bd_addr = le_bytes_to_hex_str(bd_addr)
     rfcomm.add_channel(bd_addr, channel, mtu)
 
 
@@ -219,7 +219,7 @@ def rfcomm_disconnected_ev(rfcomm, data, data_len):
 
     logging.debug("addr:%r, channel:%r", bd_addr, channel)
 
-    bd_addr = binascii.hexlify(bd_addr[::-1]).decode()
+    bd_addr = le_bytes_to_hex_str(bd_addr)
     rfcomm.remove_channel(bd_addr, channel)
 
 
@@ -234,7 +234,7 @@ def rfcomm_data_received_ev(rfcomm, data, data_len):
 
     logging.debug("addr:%r, channel:%r, data:%s", bd_addr, channel, binascii.hexlify(data_rx))
 
-    bd_addr = binascii.hexlify(bd_addr[::-1]).decode()
+    bd_addr = le_bytes_to_hex_str(bd_addr)
     rfcomm.rx(bd_addr, channel, data_rx)
 
 

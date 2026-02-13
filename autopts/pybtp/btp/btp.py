@@ -15,14 +15,11 @@
 
 """Wrapper around btp messages. The functions are added as needed."""
 
-import binascii
 import logging
 import math
 import re
 import struct
 from collections import namedtuple
-from enum import IntEnum
-from uuid import UUID
 
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import MMI
@@ -673,58 +670,6 @@ def core_log_message(message):
     logging.debug("received %r %r", tuple_hdr, tuple_data)
 
     btp_hdr_check(tuple_hdr, defs.BTP_SERVICE_ID_CORE, defs.BTP_CORE_CMD_LOG_MESSAGE)
-
-
-class BTP_UUID_LEN(IntEnum):
-    UUID_16 = 2
-    UUID_16_STR = 4
-    UUID_32 = 4
-    UUID_32_STR = 8
-    UUID_128 = 16
-    UUID_128_STR = 32
-
-
-def btp2uuid(uuid_len, uu):
-    if uuid_len == BTP_UUID_LEN.UUID_16:
-        (uu,) = struct.unpack("<H", uu)
-        return format(uu, 'x').upper().rjust(4, '0')
-
-    if uuid_len == BTP_UUID_LEN.UUID_32:
-        (uu,) = struct.unpack("<I", uu)
-        return format(uu, 'x').upper().rjust(8, '0')
-
-    if uuid_len == BTP_UUID_LEN.UUID_128:
-        return UUID(bytes=uu[::-1]).urn[9:].replace('-', '').upper()
-
-    raise ValueError(f"btp2uuid: Invalid BTP UUID length: {uuid_len}")
-
-
-def uuid2btp_ba(uuid):
-    if isinstance(uuid, str):
-        if "-" in uuid:
-            uuid = uuid.replace("-", "")
-        if uuid.startswith("0x"):
-            uuid = uuid.replace("0x", "")
-
-        if len(uuid) not in [BTP_UUID_LEN.UUID_16_STR, BTP_UUID_LEN.UUID_32_STR, BTP_UUID_LEN.UUID_128_STR]:
-            raise ValueError(f"uuid2btp_ba: string length not valid for UUID: {uuid}")
-
-        return binascii.unhexlify(uuid)[::-1]
-
-    if isinstance(uuid, int):
-        # 16-bit UUID
-        if uuid <= 0xFFFF:
-            return struct.pack('<H', uuid)
-        # 32-bit UUID
-        if uuid <= 0xFFFFFFFF:
-            return struct.pack('<I', uuid)
-        # 128-bit UUID
-        if uuid <= 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF:
-            return uuid.to_bytes(16, byteorder='little')
-
-        raise ValueError(f"uuid2btp_ba: integer too large for 128-bit UUID: {uuid}")
-
-    return uuid
 
 
 def get_iut_method():

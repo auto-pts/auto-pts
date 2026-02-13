@@ -24,7 +24,7 @@ from autopts.ptsprojects.zephyr.bass_wid import bass_wid_hdl
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
 from autopts.pybtp import btp
 from autopts.pybtp.btp import lt2_addr_get
-from autopts.pybtp.types import UUID, Addr, AdFlags, AdType
+from autopts.pybtp.types import UUID, Addr, AdFlags, AdType, uuid_to_le_hex_str
 
 broadcast_code = '0102680553F1415AA265BBAFC6EA03B8'
 
@@ -91,7 +91,7 @@ def test_cases(ptses):
         AdType.name_full: iut_device_name[::1].hex(),
         AdType.flags: format(AdFlags.br_edr_not_supp |
                              AdFlags.le_gen_discov_mode, '02x'),
-        AdType.uuid16_all: bytes.fromhex(UUID.ASCS)[::-1].hex(),
+        AdType.uuid16_all: uuid_to_le_hex_str(UUID.ASCS),
         AdType.uuid16_svc_data: '4e1801ff0fff0f00',
     }
 

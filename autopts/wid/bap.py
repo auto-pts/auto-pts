@@ -46,6 +46,7 @@ from autopts.pybtp.types import (
     WIDParams,
     create_lc3_ltvs_bytes,
     gap_settings_btp2txt,
+    uuid_to_le_hex_str,
 )
 from autopts.wid.common import _safe_bap_send
 
@@ -2466,7 +2467,7 @@ def hdl_wid_20001(params: WIDParams):
         AdType.name_full: stack.gap.name[::1].hex(),
         AdType.flags: format(AdFlags.br_edr_not_supp |
                              AdFlags.le_gen_discov_mode, '02x'),
-        AdType.uuid16_all: bytes.fromhex(UUID.ASCS)[::-1].hex(),
+        AdType.uuid16_all: uuid_to_le_hex_str(UUID.ASCS),
         AdType.uuid16_svc_data: f'4e18{announcement_type}ff0fff0f00',
     }
 

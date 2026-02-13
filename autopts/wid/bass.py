@@ -19,7 +19,16 @@ import struct
 from autopts.ptsprojects.stack import WildCard, get_stack
 from autopts.pybtp import btp, defs
 from autopts.pybtp.btp import pts_addr_get, pts_addr_type_get
-from autopts.pybtp.types import UUID, AdFlags, AdType, BASSPASyncState, BIGEncryption, WIDParams, gap_settings_btp2txt
+from autopts.pybtp.types import (
+    UUID,
+    AdFlags,
+    AdType,
+    BASSPASyncState,
+    BIGEncryption,
+    WIDParams,
+    gap_settings_btp2txt,
+    uuid_to_le_hex_str,
+)
 
 log = logging.debug
 
@@ -268,7 +277,7 @@ def hdl_wid_20001(_: WIDParams):
         AdType.name_full: stack.gap.name[::1].hex(),
         AdType.flags: format(AdFlags.br_edr_not_supp |
                              AdFlags.le_gen_discov_mode, '02x'),
-        AdType.uuid16_all: bytes.fromhex(UUID.ASCS)[::-1].hex(),
+        AdType.uuid16_all: uuid_to_le_hex_str(UUID.ASCS),
         AdType.uuid16_svc_data: '4e1801ff0fff0f00',
     }
 

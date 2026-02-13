@@ -15,14 +15,13 @@
 
 """Wrapper around btp messages. The functions are added as needed."""
 
-import binascii
 import logging
 import struct
 
 from autopts.pybtp import defs
 from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, pts_addr_get, pts_addr_type_get
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
-from autopts.pybtp.types import BTPError, addr2btp_ba
+from autopts.pybtp.types import BTPError, addr_str_to_le_bytes, le_bytes_to_hex_str
 
 VOCS = {
     'read_supported_cmds': (defs.BTP_SERVICE_ID_VCP,
@@ -59,7 +58,7 @@ def vocs_command_rsp_succ(op=None):
 
 def address_to_ba(bd_addr_type=None, bd_addr=None):
     data = bytearray()
-    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
+    bd_addr_ba = addr_str_to_le_bytes(pts_addr_get(bd_addr))
     bd_addr_type_ba = chr(pts_addr_type_get(bd_addr_type)).encode('utf-8')
     data.extend(bd_addr_type_ba)
     data.extend(bd_addr_ba)
@@ -134,7 +133,7 @@ def vocs_state_ev(vocs, data, data_len):
 
     addr_type, addr, att_status, offset = struct.unpack_from(fmt, data)
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
 
     logging.debug(f'VOCS Offset State: addr {addr} addr_type {addr_type},'
                   f'ATT status {att_status}, offset {offset}')
@@ -151,7 +150,7 @@ def vocs_audio_loc_ev(vocs, data, data_len):
 
     addr_type, addr, att_status, location = struct.unpack_from(fmt, data)
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
 
     logging.debug(f'VOCS Audio Location: addr {addr} addr_type {addr_type},'
                   f' ATT Status {att_status}, Audio Location {location}')
@@ -169,7 +168,7 @@ def vocs_procedure_ev(vocs, data, data_len):
 
     addr_type, addr, att_status, opcode = struct.unpack_from(fmt, data)
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
 
     logging.debug(f'VOCS Procedure Event: addr {addr} addr_type {addr_type},'
                   f' ATT status {att_status}, opcode {opcode}')

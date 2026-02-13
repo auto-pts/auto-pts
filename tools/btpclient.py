@@ -33,6 +33,7 @@ from autopts.ptsprojects.testcase import AbstractMethodException
 from autopts.ptsprojects.zephyr.iutctl import BTP_ADDRESS, get_qemu_cmd
 from autopts.pybtp import btp, defs
 from autopts.pybtp.iutctl_common import BTPSocket
+from autopts.pybtp.types import le_bytes_to_hex_str
 
 BTP_SOCKET = None
 QEMU_PROCESS = None
@@ -684,7 +685,7 @@ def print_controller_info(data):
     (address, supported_settings, current_settings, class_of_device, name,
      short_name) = struct.unpack_from(fmt, data)
 
-    address = binascii.hexlify(address[::-1]).upper()
+    address = le_bytes_to_hex_str(address).upper()
     print(f"IUT BD_ADDR: {address!r}")
     print(f"Supported Settings: {supported_settings!r} {get_settings_names(supported_settings)}")
     print(f"Current Settings: {current_settings!r} {get_settings_names(current_settings)}")

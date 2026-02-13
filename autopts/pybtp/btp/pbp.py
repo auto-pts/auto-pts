@@ -13,14 +13,13 @@
 # more details.
 #
 
-import binascii
 import logging
 import struct
 
 from autopts.pybtp import defs
 from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
-from autopts.pybtp.types import BTPError
+from autopts.pybtp.types import BTPError, le_bytes_to_hex_str
 
 log = logging.debug
 
@@ -117,7 +116,7 @@ def pbp_ev_public_broadcast_announcement_found(pbp, data, data_len):
     addr_type, addr, broadcast_id, advertiser_sid, padv_interval, pba_features, broadcast_name_len = \
         struct.unpack_from(fmt, data)
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
     broadcast_id = int.from_bytes(broadcast_id, "little")
 
     broadcast_name = data[fmt_len:].decode("utf-8")

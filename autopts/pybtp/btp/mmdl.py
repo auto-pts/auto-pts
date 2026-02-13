@@ -23,6 +23,7 @@ from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import defs
 from autopts.pybtp.btp.btp import CONTROLLER_INDEX
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
+from autopts.pybtp.types import le_bytes_to_hex_str
 
 MMDL = {
     "read_supp_cmds": (defs.BTP_SERVICE_ID_MMDL,
@@ -987,7 +988,7 @@ def mmdl_time_get():
     hdr_fmt = '<5sBBHB'
     (tai, subsecond, uncertainty, tai_utc_delta,
      time_zone_offset) = struct.unpack_from(hdr_fmt, rsp)
-    tai = int(binascii.hexlify(tai[::-1]), 16)
+    tai = int(le_bytes_to_hex_str(tai), 16)
     stack = get_stack()
     stack.mesh.recv_status_data_set(
         'Status', [tai, subsecond, uncertainty, tai_utc_delta, time_zone_offset])
@@ -1014,7 +1015,7 @@ def mmdl_time_set(tai, subsecond, uncertainty, tai_utc_delta, time_zone_offset):
 
     (tai, subsecond, uncertainty, tai_utc_delta,
      time_zone_offset) = struct.unpack_from(hdr_fmt, rsp)
-    tai = int(binascii.hexlify(tai[::-1]).lower(), 16)
+    tai = int(le_bytes_to_hex_str(tai), 16)
     stack = get_stack()
     stack.mesh.recv_status_data_set(
         'Status', [tai, subsecond, uncertainty, tai_utc_delta, time_zone_offset])

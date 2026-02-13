@@ -186,7 +186,7 @@ import struct
 from autopts.pybtp import defs
 from autopts.pybtp.btp.btp import CONTROLLER_INDEX, get_iut_method as get_iut, \\
     btp_hdr_check
-from autopts.pybtp.types import BTPError
+from autopts.pybtp.types import BTPError, le_bytes_to_hex_str
 
 log = logging.debug
 
@@ -221,7 +221,7 @@ def {profile_name_lower}_ev_dummy_completed({profile_name_lower}, data, data_len
 
     addr_type, addr, status = struct.unpack_from(fmt, data)
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
 
     logging.debug(f'{profile_name_upper} Dummy event completed: addr {'{'}addr{'}'} addr_type '
                   f'{'{'}addr_type{'}'} status {'{'}status{'}'}')

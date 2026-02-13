@@ -14,14 +14,13 @@
 #
 
 """Wrapper around btp messages. The functions are added as needed."""
-import binascii
 import logging
 import struct
 
 from autopts.pybtp import defs
 from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, pts_addr_get, pts_addr_type_get
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
-from autopts.pybtp.types import BTPError, addr2btp_ba
+from autopts.pybtp.types import BTPError, addr_str_to_le_bytes, le_bytes_to_hex_str
 
 MCP = {
     'read_supported_cmds':           (defs.BTP_SERVICE_ID_MCP,
@@ -116,7 +115,7 @@ def mcp_command_rsp_succ(timeout=20.0):
 
 def address_to_ba(bd_addr_type=None, bd_addr=None):
     data = bytearray()
-    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
+    bd_addr_ba = addr_str_to_le_bytes(pts_addr_get(bd_addr))
     bd_addr_type_ba = chr(pts_addr_type_get(bd_addr_type)).encode('utf-8')
     data.extend(bd_addr_type_ba)
     data.extend(bd_addr_ba)
@@ -421,7 +420,7 @@ def mcp_ev_discovery_completed(mcp, data, data_len):
         obj_name, obj_type, obj_size, obj_prop, obj_created, obj_modified, obj_id, \
         oacp, olcp = struct.unpack_from(fmt, data)
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
 
     logging.debug(f'MCP Discovery: MCS and OTS service characteristic handles:'
                   f'addr {addr} addr_type {addr_type},'
@@ -463,7 +462,7 @@ def mcp_track_duration_ev(mcp, data, data_len):
 
     addr_type, addr, status, duration = struct.unpack_from(fmt, data)
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
 
     logging.debug(f'MCP Track Duration ev: addr {addr} addr_type {addr_type},'
                   f' Status {status}, track duration {duration}')
@@ -481,7 +480,7 @@ def mcp_track_position_ev(mcp, data, data_len):
 
     addr_type, addr, status, position = struct.unpack_from(fmt, data)
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
 
     logging.debug(f'MCP Track Position ev: addr {addr} addr_type {addr_type},'
                   f' Status {status}, track position {position}')
@@ -499,7 +498,7 @@ def mcp_playback_speed_ev(mcp, data, data_len):
 
     addr_type, addr, status, speed = struct.unpack_from(fmt, data)
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
 
     logging.debug(f'MCP Playback speed: addr {addr} addr_type {addr_type},'
                   f' Status {status}, playback speed {speed}')
@@ -517,7 +516,7 @@ def mcp_seeking_speed_ev(mcp, data, data_len):
 
     addr_type, addr, status, speed = struct.unpack_from(fmt, data)
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
 
     logging.debug(f'MCP Seeking speed: addr {addr} addr_type {addr_type},'
                   f' Status {status}, seeking speed {speed}')
@@ -534,7 +533,7 @@ def mcp_icon_obj_id_ev(mcp, data, data_len):
         raise BTPError('Invalid data length')
 
     addr_type, addr, status = struct.unpack_from(fmt, data)
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
     obj_id_bytes = data[-6:]
     obj_id = int.from_bytes(obj_id_bytes, byteorder='little', signed=False)
 
@@ -553,7 +552,7 @@ def mcp_next_track_obj_id_ev(mcp, data, data_len):
         raise BTPError('Invalid data length')
 
     addr_type, addr, status = struct.unpack_from(fmt, data)
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
     obj_id_bytes = data[-6:]
     obj_id = int.from_bytes(obj_id_bytes, byteorder='little', signed=False)
 
@@ -572,7 +571,7 @@ def mcp_parent_group_obj_id_ev(mcp, data, data_len):
         raise BTPError('Invalid data length')
 
     addr_type, addr, status = struct.unpack_from(fmt, data)
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
     obj_id_bytes = data[-6:]
     obj_id = int.from_bytes(obj_id_bytes, byteorder='little', signed=False)
 
@@ -591,7 +590,7 @@ def mcp_current_group_obj_id_ev(mcp, data, data_len):
         raise BTPError('Invalid data length')
 
     addr_type, addr, status = struct.unpack_from(fmt, data)
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
     obj_id_bytes = data[-6:]
     obj_id = int.from_bytes(obj_id_bytes, byteorder='little', signed=False)
 
@@ -611,7 +610,7 @@ def mcp_playing_order_ev(mcp, data, data_len):
 
     addr_type, addr, status, order = struct.unpack_from(fmt, data)
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
 
     logging.debug(f'MCP Playing Order: addr {addr} addr_type {addr_type},'
                   f' Status {status}, playing order {order}')
@@ -629,7 +628,7 @@ def mcp_playing_orders_supported_ev(mcp, data, data_len):
 
     addr_type, addr, status, orders = struct.unpack_from(fmt, data)
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
 
     logging.debug(f'MCP Playing orders supported: addr {addr} addr_type {addr_type},'
                   f' Status {status}, playing orders supported {orders}')
@@ -647,7 +646,7 @@ def mcp_media_state_ev(mcp, data, data_len):
 
     addr_type, addr, status, state = struct.unpack_from(fmt, data)
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
 
     logging.debug(f'MCP Media State: addr {addr} addr_type {addr_type},'
                   f' Status {status}, media state {state}')
@@ -665,7 +664,7 @@ def mcp_opcodes_supported_ev(mcp, data, data_len):
 
     addr_type, addr, status, opcodes = struct.unpack_from(fmt, data)
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
 
     logging.debug(f'MCP Opcodes Supported: addr {addr} addr_type {addr_type},'
                   f' Status {status}, opcodes {opcodes}')
@@ -683,7 +682,7 @@ def mcp_content_control_id_ev(mcp, data, data_len):
 
     addr_type, addr, status, ccid = struct.unpack_from(fmt, data)
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
 
     logging.debug(f'MCP Content Control ID: addr {addr} addr_type {addr_type},'
                   f' Status {status}, content control ID {ccid}')
@@ -700,7 +699,7 @@ def mcp_segments_obj_id_ev(mcp, data, data_len):
         raise BTPError('Invalid data length')
 
     addr_type, addr, status = struct.unpack_from(fmt, data)
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
     obj_id_bytes = data[-6:]
     obj_id = int.from_bytes(obj_id_bytes, byteorder='little', signed=False)
 
@@ -719,7 +718,7 @@ def mcp_current_track_obj_id_ev(mcp, data, data_len):
         raise BTPError('Invalid data length')
 
     addr_type, addr, status = struct.unpack_from(fmt, data)
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
     obj_id_bytes = data[-6:]
     obj_id = int.from_bytes(obj_id_bytes, byteorder='little', signed=False)
 
@@ -740,7 +739,7 @@ def mcp_control_point_ev(mcp, data, data_len):
     addr_type, addr, status, opcode, use_param,\
         param = struct.unpack_from(fmt, data)
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
 
     logging.debug(f'MCP Media Control Point: addr {addr} addr_type {addr_type},'
                   f' Status {status}, Opcode {opcode}, Param {param}')
@@ -759,7 +758,7 @@ def mcp_search_control_point_ev(mcp, data, data_len):
         raise BTPError('Invalid data length')
 
     addr_type, addr, status, param_len, search = struct.unpack_from(fmt, data)
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
 
     param = struct.unpack_from(f'<{len(data) - fmt_size - 1}s',
                                data, offset=fmt_size)[0].decode('utf-8')
@@ -782,7 +781,7 @@ def mcp_cmd_ntf_ev(mcp, data, data_len):
     addr_type, addr, status, requested_opcode,\
         result_code = struct.unpack_from(fmt, data)
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
 
     logging.debug(f'MCP Media Control Point Notification: addr {addr} addr_type {addr_type},'
                   f' Status {status}, Requested Opcode {requested_opcode},'
@@ -801,7 +800,7 @@ def mcp_search_ntf_ev(mcp, data, data_len):
 
     addr_type, addr, status, result_code = struct.unpack_from(fmt, data)
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
 
     logging.debug(f'MCP Search Control Point Notification: addr {addr} addr_type {addr_type},'
                   f' Status {status}, Result Code {result_code}')
