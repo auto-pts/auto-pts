@@ -136,13 +136,13 @@ def hdl_wid_114(params: WIDParams):
 
 wid_311_settings = {
     # lt_count, num sink ASEs, sink locations (0 - don't care), num source ASEs, QoS Set Name
-    'TMAP/UMS/VRC/BV-01-I':     (1, 2, 0, 0, '48_2_1'),
-    'TMAP/UMS/VRC/BV-02-I':     (2, 1, 0, 0, '48_2_1'),
-    'TMAP/UMS/VRC/BV-02-I_LT2': (2, 1, 0, 0, '48_2_1'),
-    'TMAP/UMS/VRC/BV-03-I':     (1, 2, 0, 0, '48_2_1'),
-    'TMAP/UMS/ASC/BV-01-I':     (1, 1, 1, 0, '48_2_1'),
-    'TMAP/UMS/ASC/BV-02-I':     (1, 1, 2, 0, '48_2_1'),
-    'TMAP/UMS/ASC/BV-03-I':     (1, 1, 3, 0, '48_2_1'),
+    'TMAP/UMS/VRC/BV-01-C':     (1, 2, 0, 0, '48_2_1'),
+    'TMAP/UMS/VRC/BV-02-C':     (2, 1, 0, 0, '48_2_1'),
+    'TMAP/UMS/VRC/BV-02-C_LT2': (2, 1, 0, 0, '48_2_1'),
+    'TMAP/UMS/VRC/BV-03-C':     (1, 2, 0, 0, '48_2_1'),
+    'TMAP/UMS/ASC/BV-01-C':     (1, 1, 1, 0, '48_2_1'),
+    'TMAP/UMS/ASC/BV-02-C':     (1, 1, 2, 0, '48_2_1'),
+    'TMAP/UMS/ASC/BV-03-C':     (1, 1, 3, 0, '48_2_1'),
 }
 
 
@@ -175,7 +175,7 @@ def hdl_wid_311(params: WIDParams):
         f"num Source ASEs {num_source_ases}, QoS Config {qos_set_name}"
     )
 
-    metadata = b''
+    metadata = pack_metadata(stream_context=Context.MEDIA)
     default_config = create_default_config()
     default_config.qos_set_name = qos_set_name
 
@@ -594,7 +594,7 @@ def hdl_wid_506(params: WIDParams):
     Please click OK when the IUT is ready to broadcast Basic Audio Announcements with Audio Location Front xxx
     """
 
-    # There's no explicit 'stop broadcast / advertising' dialog for TMAP/BMS/ASC/BV-01-I in PTS, therefore,
+    # There's no explicit 'stop broadcast / advertising' dialog for TMAP/BMS/ASC/BV-01-C in PTS, therefore,
     # we first stop a potential ongoing advertising + broadcast before starting the new one
 
     # TODO: store Broadcast/Advertising state and only disable adv + broadcast if it has been started
