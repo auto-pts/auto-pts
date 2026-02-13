@@ -581,11 +581,10 @@ def extract_wid_testcases_to_csv(log_dir: Path = None):
     with OUTPUT_CSV_PATH.open('w', newline='', encoding='utf-8') as csvfile:
         writer = csv.writer(csvfile)
         for profile in sorted(profile_wid_map.keys()):
-            writer.writerow([f'{profile}'])
             for wid in sorted(profile_wid_map[profile], key=lambda x: int(x)):
                 testcases = sorted(profile_wid_map[profile][wid])
                 testcases_combined = " ".join(testcases)
-                writer.writerow([wid, testcases_combined])
+                writer.writerow([profile, wid, testcases_combined])
 
     try:
         wid_path = OUTPUT_CSV_PATH.resolve()
