@@ -15,15 +15,14 @@
 
 """Wrapper around btp messages. The functions are added as needed."""
 
-import binascii
 import logging
 import struct
 
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import defs
-from autopts.pybtp.btp.btp import CONTROLLER_INDEX, pts_addr_get, pts_addr_type_get, uuid2btp_ba
+from autopts.pybtp.btp.btp import CONTROLLER_INDEX, pts_addr_get, pts_addr_type_get
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
-from autopts.pybtp.types import addr2btp_ba
+from autopts.pybtp.types import addr_str_to_le_bytes, le_bytes_to_hex_str, uuid_to_le_bytes
 
 log = logging.debug
 
@@ -46,9 +45,9 @@ def sdp_search_req(bd_addr=None, bd_addr_type=None, uuid=0x0100):
     iutctl = get_iut()
 
     data_ba = bytearray()
-    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
+    bd_addr_ba = addr_str_to_le_bytes(pts_addr_get(bd_addr))
     bd_addr_type_ba = struct.pack('B', pts_addr_type_get(bd_addr_type))
-    uuid_ba = uuid2btp_ba(uuid)
+    uuid_ba = uuid_to_le_bytes(uuid)
 
     data_ba.extend(bd_addr_type_ba)
     data_ba.extend(bd_addr_ba)
@@ -63,7 +62,7 @@ def sdp_attr_req(bd_addr=None, bd_addr_type=None, service_record_handle=0):
     iutctl = get_iut()
 
     data_ba = bytearray()
-    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
+    bd_addr_ba = addr_str_to_le_bytes(pts_addr_get(bd_addr))
     bd_addr_type_ba = struct.pack('B', pts_addr_type_get(bd_addr_type))
 
     data_ba.extend(bd_addr_type_ba)
@@ -78,9 +77,9 @@ def sdp_search_attr_req(bd_addr=None, bd_addr_type=None, uuid=0x0100):
     iutctl = get_iut()
 
     data_ba = bytearray()
-    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
+    bd_addr_ba = addr_str_to_le_bytes(pts_addr_get(bd_addr))
     bd_addr_type_ba = struct.pack('B', pts_addr_type_get(bd_addr_type))
-    uuid_ba = uuid2btp_ba(uuid)
+    uuid_ba = uuid_to_le_bytes(uuid)
 
     data_ba.extend(bd_addr_type_ba)
     data_ba.extend(bd_addr_ba)
@@ -103,7 +102,7 @@ def sdp_service_record_handle_ev_(sdp, data, data_len):
     hdr_len = struct.calcsize(hdr_fmt)
 
     _, addr, count = struct.unpack_from(hdr_fmt, data)
-    addr = binascii.hexlify(addr[::-1]).decode()
+    addr = le_bytes_to_hex_str(addr)
     handles = struct.unpack_from(f'<{count}I', data, hdr_len)
 
     for handle in handles:

@@ -14,7 +14,6 @@
 #
 
 """Wrapper around btp messages. The functions are added as needed."""
-import binascii
 import logging
 import struct
 
@@ -22,7 +21,14 @@ from autopts.pybtp import defs
 from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, pts_addr_get, pts_addr_type_get
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.btp.gap import __gap_current_settings_update
-from autopts.pybtp.types import BASSPASyncState, BIGEncryption, BTPError, addr2btp_ba
+from autopts.pybtp.types import (
+    BASSPASyncState,
+    BIGEncryption,
+    BTPError,
+    addr_str_to_le_bytes,
+    hex_str_to_le_bytes,
+    le_bytes_to_hex_str,
+)
 
 BAP = {
     'read_supported_cmds': (defs.BTP_SERVICE_ID_BAP,
@@ -96,7 +102,7 @@ def bap_command_rsp_succ(timeout=20.0):
 
 def address_to_ba(bd_addr_type=None, bd_addr=None):
     data = bytearray()
-    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
+    bd_addr_ba = addr_str_to_le_bytes(pts_addr_get(bd_addr))
     bd_addr_type_ba = chr(pts_addr_type_get(bd_addr_type)).encode('utf-8')
     data.extend(bd_addr_type_ba)
     data.extend(bd_addr_ba)
@@ -479,7 +485,7 @@ def bap_set_broadcast_code(src_id, broadcast_code,
 
     if isinstance(broadcast_code, str):
         # The default broadcast code string from PTS is in big endian
-        broadcast_code = bytes.fromhex(broadcast_code)[::-1]
+        broadcast_code = hex_str_to_le_bytes(broadcast_code)
 
     if len(broadcast_code) != 16:
         raise Exception('Invalid Broadcast Code length')
@@ -515,7 +521,7 @@ def bap_ev_discovery_completed_(bap, data, data_len):
 
     addr_type, addr, status = struct.unpack_from(fmt, data)
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
 
     logging.debug(f'BAP Discovery completed: addr {addr} addr_type '
                   f'{addr_type} status {status}')
@@ -533,7 +539,7 @@ def bap_ev_codec_cap_found_(bap, data, data_len):
     addr_type, addr, pac_dir, coding_format, frequencies, frame_durations,\
         octets_per_frame, channel_counts = struct.unpack_from(fmt, data)
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
 
     logging.debug(f'Found codec capabilities: addr {addr} addr_type '
                   f'{addr_type} pac_dir {pac_dir} coding {coding_format:#x} '
@@ -554,7 +560,7 @@ def bap_ev_ase_found_(bap, data, data_len):
 
     addr_type, addr, ase_dir, ase_id = struct.unpack_from(fmt, data)
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
 
     logging.debug(f'Found ASE: addr {addr} addr_type {addr_type}'
                   f' dir {ase_dir} ID {ase_id}')
@@ -572,7 +578,7 @@ def bap_ev_stream_received_(bap, data, data_len):
 
     addr_type, addr, ase_id, iso_data_len = struct.unpack_from(fmt, data[:fmt_len])
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
     iso_data = data[fmt_len:]
 
     logging.debug(f'Stream received: addr {addr} addr_type {addr_type}'
@@ -592,7 +598,7 @@ def bap_ev_baa_found_(bap, data, data_len):
     addr_type, addr, broadcast_id, advertiser_sid, padv_interval = \
         struct.unpack_from(fmt, data[:fmt_len])
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
     broadcast_id = int.from_bytes(broadcast_id, "little")
 
     ev = {'addr_type': addr_type,
@@ -617,7 +623,7 @@ def bap_ev_bis_found_(bap, data, data_len):
     addr_type, addr, broadcast_id, pd, subgroup_id, bis_id, coding_format, vid, cid, \
         ltvs_len = struct.unpack_from(fmt, data[:fmt_len])
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
     broadcast_id = int.from_bytes(broadcast_id, "little")
     pd = int.from_bytes(pd, "little")
     ltvs = data[fmt_len:]
@@ -648,7 +654,7 @@ def bap_ev_bis_synced_received_(bap, data, data_len):
 
     addr_type, addr, broadcast_id, bis_id = struct.unpack_from(fmt, data[:fmt_len])
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
     broadcast_id = int.from_bytes(broadcast_id, "little")
 
     ev = {'addr_type': addr_type,
@@ -672,7 +678,7 @@ def bap_ev_bis_stream_received_(bap, data, data_len):
     addr_type, addr, broadcast_id, bis_id, bis_data_len = \
         struct.unpack_from(fmt, data[:fmt_len])
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
     broadcast_id = int.from_bytes(broadcast_id, "little")
     bis_data = data[fmt_len:]
 
@@ -697,7 +703,7 @@ def bap_ev_scan_delegator_found_(bap, data, data_len):
 
     addr_type, addr = struct.unpack_from(fmt, data[:fmt_len])
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
 
     ev = {'addr_type': addr_type,
           'addr': addr}
@@ -721,8 +727,8 @@ def bap_ev_broadcast_receive_state_(bap, data, data_len):
 
     subgroups = data[fmt_len:]
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
-    broadcaster_addr = binascii.hexlify(broadcaster_addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
+    broadcaster_addr = le_bytes_to_hex_str(broadcaster_addr)
     broadcast_id = int.from_bytes(broadcast_id, "little")
 
     ev = {'addr_type': addr_type,
@@ -753,7 +759,7 @@ def bap_ev_pa_syn_req(bap, data, data_len):
     addr_type, addr, src_id, advertiser_sid, broadcast_id, past_avail, \
         pa_interval = struct.unpack_from(fmt, data[:fmt_len])
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
     broadcast_id = int.from_bytes(broadcast_id, "little")
 
     ev = {'addr_type': addr_type,

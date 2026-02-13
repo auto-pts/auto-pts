@@ -24,7 +24,7 @@ from autopts.pybtp import defs
 from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, pts_addr_get, pts_addr_type_get
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.btp.gap import gap_wait_for_connection
-from autopts.pybtp.types import L2CAPConnectionResponse, addr2btp_ba
+from autopts.pybtp.types import L2CAPConnectionResponse, addr_str_to_le_bytes
 
 L2CAP = {
     "read_supp_cmds": (defs.BTP_SERVICE_ID_L2CAP,
@@ -75,7 +75,7 @@ def l2cap_conn(bd_addr, bd_addr_type, psm, mtu=0, num=1, ecfc=0, hold_credit=0):
     bd_addr = pts_addr_get(bd_addr)
     bd_addr_type = pts_addr_type_get(bd_addr_type)
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     data_ba = bytearray(struct.pack('B', bd_addr_type))
     data_ba.extend(bd_addr_ba)
     data_ba.extend(struct.pack('H', psm))
@@ -125,7 +125,7 @@ def l2cap_conn_v2(bd_addr, bd_addr_type, psm, mtu=0, num=1, ecfc=0, hold_credit=
     bd_addr = pts_addr_get(bd_addr)
     bd_addr_type = pts_addr_type_get(bd_addr_type)
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     data_ba = bytearray(struct.pack('B', bd_addr_type))
     data_ba.extend(bd_addr_ba)
     data_ba.extend(struct.pack('H', psm))
@@ -258,7 +258,7 @@ def l2cap_disconn_eatt_chans(bd_addr, bd_addr_type, channel_count):
     bd_addr = pts_addr_get(bd_addr)
     bd_addr_type = pts_addr_type_get(bd_addr_type)
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     data_ba = bytearray(struct.pack('B', bd_addr_type))
     data_ba.extend(bd_addr_ba)
     data_ba.extend(bytearray(chr(channel_count).encode('utf-8')))
@@ -293,7 +293,7 @@ def l2cap_reconfigure(bd_addr, bd_addr_type, mtu, channels):
     bd_addr = pts_addr_get(bd_addr)
     bd_addr_type = pts_addr_type_get(bd_addr_type)
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     data_ba = bytearray(struct.pack('B', bd_addr_type))
     data_ba.extend(bd_addr_ba)
     data_ba.extend(struct.pack('H', mtu))
@@ -328,7 +328,7 @@ def l2cap_echo_req(bd_addr, bd_addr_type, val, val_mtp=None):
 
     data_ba = bytearray()
 
-    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
+    bd_addr_ba = addr_str_to_le_bytes(pts_addr_get(bd_addr))
     bd_addr_type = pts_addr_type_get(bd_addr_type)
 
     val_ba = bytes.fromhex(val)
@@ -358,7 +358,7 @@ def l2cap_cls_send(bd_addr, bd_addr_type, psm, val, val_mtp=None, options=0):
 
     data_ba = bytearray()
 
-    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
+    bd_addr_ba = addr_str_to_le_bytes(pts_addr_get(bd_addr))
     bd_addr_type = pts_addr_type_get(bd_addr_type)
 
     val_ba = bytes.fromhex(val)

@@ -24,17 +24,23 @@ from autopts.pybtp import defs
 from autopts.pybtp.btp.btp import (
     CONTROLLER_INDEX,
     add_to_verify_values,
-    btp2uuid,
     btp_hdr_check,
     clear_verify_values,
     get_verify_values,
     pts_addr_get,
     pts_addr_type_get,
-    uuid2btp_ba,
 )
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.btp.gap import gap_wait_for_connection
-from autopts.pybtp.types import BTPError, Perm, addr2btp_ba, att_rsp_str
+from autopts.pybtp.types import (
+    BTPError,
+    Perm,
+    addr_str_to_le_bytes,
+    att_rsp_str,
+    le_bytes_to_hex_str,
+    le_bytes_to_uuid,
+    uuid_to_le_bytes,
+)
 
 #  Global temporary objects
 GATT_SVCS = None
@@ -139,7 +145,7 @@ def gatts_add_svc(svc_type, uuid):
     iutctl = get_iut()
 
     data_ba = bytearray()
-    uuid_ba = uuid2btp_ba(uuid)
+    uuid_ba = uuid_to_le_bytes(uuid)
 
     data_ba.extend(chr(svc_type).encode('utf-8'))
     data_ba.extend(chr(len(uuid_ba)).encode('utf-8'))
@@ -178,7 +184,7 @@ def gatts_add_char(hdl, prop, perm, uuid):
 
     data_ba = bytearray()
     hdl_ba = struct.pack('H', hdl)
-    uuid_ba = uuid2btp_ba(uuid)
+    uuid_ba = uuid_to_le_bytes(uuid)
 
     data_ba.extend(hdl_ba)
     if isinstance(prop, int):
@@ -236,7 +242,7 @@ def gatts_add_desc(hdl, perm, uuid):
 
     data_ba = bytearray()
     hdl_ba = struct.pack('H', hdl)
-    uuid_ba = uuid2btp_ba(uuid)
+    uuid_ba = uuid_to_le_bytes(uuid)
 
     data_ba.extend(hdl_ba)
 
@@ -283,7 +289,7 @@ def gatts_notify_mult(bd_addr_type, bd_addr, cnt, handles):
 
     data_ba = bytearray()
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
 
     data_ba.extend(chr(bd_addr_type).encode('utf-8'))
     data_ba.extend(bd_addr_ba)
@@ -311,7 +317,7 @@ def gatts_get_handle_from_uuid(uuid):
     iutctl = get_iut()
     data_ba = bytearray()
 
-    uuid_ba = uuid2btp_ba(uuid)
+    uuid_ba = uuid_to_le_bytes(uuid)
     data_ba.extend(chr(len(uuid_ba)).encode('utf-8'))
     data_ba.extend(uuid_ba)
 
@@ -377,7 +383,7 @@ def gattc_dec_notification_ev_data(frame):
     if len(data) != data_len:
         raise BTPError("Invalid data length")
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode()
+    addr = le_bytes_to_hex_str(addr)
 
     return addr_type, addr, notification_type, handle, data
 
@@ -440,7 +446,7 @@ def dec_gatts_get_attrs_rp(data, data_len):
 
         (type_uuid, attrs) = struct.unpack(f"{type_uuid_len}s{data_len}s", frag)
 
-        type_uuid = btp2uuid(type_uuid_len, type_uuid)
+        type_uuid = le_bytes_to_uuid(type_uuid, type_uuid_len)
 
         attributes.append((handle, permission, type_uuid))
 
@@ -473,7 +479,7 @@ def gatts_get_attrs(start_handle=0x0001, end_handle=0xffff, type_uuid=None):
     data_ba.extend(end_hdl_ba)
 
     if type_uuid:
-        uuid_ba = uuid2btp_ba(type_uuid)
+        uuid_ba = uuid_to_le_bytes(type_uuid)
         data_ba.extend(chr(len(uuid_ba)).encode('utf-8'))
         data_ba.extend(uuid_ba)
     else:
@@ -497,7 +503,7 @@ def gatts_get_attr_val(bd_addr_type, bd_addr, handle):
 
     data_ba = bytearray()
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     if isinstance(handle, str):
         handle = int(handle, 16)
 
@@ -530,7 +536,7 @@ def gattc_exchange_mtu(bd_addr_type, bd_addr):
     gap_wait_for_connection()
 
     data_ba = bytearray()
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
 
     data_ba.extend(chr(bd_addr_type).encode('utf-8'))
     data_ba.extend(bd_addr_ba)
@@ -549,7 +555,7 @@ def gattc_disc_all_prim(bd_addr_type, bd_addr):
 
     data_ba = bytearray()
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
 
     data_ba.extend(chr(bd_addr_type).encode('utf-8'))
     data_ba.extend(bd_addr_ba)
@@ -566,8 +572,8 @@ def gattc_disc_prim_uuid(bd_addr_type, bd_addr, uuid):
 
     data_ba = bytearray()
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
-    uuid_ba = uuid2btp_ba(uuid)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
+    uuid_ba = uuid_to_le_bytes(uuid)
 
     data_ba.extend(chr(bd_addr_type).encode('utf-8'))
     data_ba.extend(bd_addr_ba)
@@ -590,7 +596,7 @@ def _gattc_find_included_req(bd_addr_type, bd_addr, start_hdl, end_hdl):
 
     data_ba = bytearray()
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     start_hdl_ba = struct.pack('H', start_hdl)
     end_hdl_ba = struct.pack('H', end_hdl)
 
@@ -723,7 +729,7 @@ def gattc_disc_all_chrc(bd_addr_type, bd_addr, start_hdl, stop_hdl, svc=None):
 
     data_ba = bytearray()
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     start_hdl_ba = struct.pack('H', start_hdl)
     stop_hdl_ba = struct.pack('H', stop_hdl)
 
@@ -750,11 +756,11 @@ def gattc_disc_chrc_uuid(bd_addr_type, bd_addr, start_hdl, stop_hdl, uuid):
 
     data_ba = bytearray()
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     start_hdl_ba = struct.pack('H', start_hdl)
     stop_hdl_ba = struct.pack('H', stop_hdl)
 
-    uuid_ba = uuid2btp_ba(uuid)
+    uuid_ba = uuid_to_le_bytes(uuid)
 
     data_ba.extend(chr(bd_addr_type).encode('utf-8'))
     data_ba.extend(bd_addr_ba)
@@ -781,7 +787,7 @@ def gattc_disc_all_desc(bd_addr_type, bd_addr, start_hdl, stop_hdl):
 
     data_ba = bytearray()
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     start_hdl_ba = struct.pack('H', start_hdl)
     stop_hdl_ba = struct.pack('H', stop_hdl)
 
@@ -825,7 +831,7 @@ def gattc_read(bd_addr_type, bd_addr, hdl):
 
     data_ba = bytearray()
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     if isinstance(hdl, str):
         hdl = int(hdl, 16)
     hdl_ba = struct.pack('H', hdl)
@@ -852,11 +858,11 @@ def gattc_read_uuid(bd_addr_type, bd_addr, start_hdl, end_hdl, uuid):
 
     data_ba = bytearray()
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     start_hdl_ba = struct.pack('H', start_hdl)
     end_hdl_ba = struct.pack('H', end_hdl)
 
-    uuid_ba = uuid2btp_ba(uuid)
+    uuid_ba = uuid_to_le_bytes(uuid)
 
     data_ba.extend(chr(bd_addr_type).encode('utf-8'))
     data_ba.extend(bd_addr_ba)
@@ -884,7 +890,7 @@ def gattc_read_long(bd_addr_type, bd_addr, hdl, off, modif_off=None):
     if isinstance(hdl, str):
         hdl = int(hdl, 16)
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     hdl_ba = struct.pack('H', hdl)
     off_ba = struct.pack('H', off)
 
@@ -899,7 +905,7 @@ def gattc_read_long(bd_addr_type, bd_addr, hdl, off, modif_off=None):
 def _create_read_multiple_req(bd_addr_type, bd_addr, *hdls):
     data_ba = bytearray()
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     hdls_j = ''.join(hdl for hdl in hdls)
     hdls_byte_table = [hdls_j[i:i + 2] for i in range(0, len(hdls_j), 2)]
     hdls_swp = ''.join([c[1] + c[0] for c in zip(hdls_byte_table[::2],
@@ -950,7 +956,7 @@ def gattc_write_without_rsp(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
 
     data_ba = bytearray()
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     hdl_ba = struct.pack('H', hdl)
     val_ba = binascii.unhexlify(val.encode("utf-8"))
     val_len_ba = struct.pack('H', len(val_ba))
@@ -981,7 +987,7 @@ def gattc_signed_write(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
 
     data_ba = bytearray()
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     hdl_ba = struct.pack('H', hdl)
     if isinstance(val, str):
         val_ba = binascii.unhexlify(bytearray(val, 'utf-8'))
@@ -1017,7 +1023,7 @@ def gattc_write(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
 
     data_ba = bytearray()
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     hdl_ba = struct.pack('H', hdl)
 
     if isinstance(val, str):
@@ -1052,7 +1058,7 @@ def gattc_write_long(bd_addr_type, bd_addr, hdl, off, val, length=None):
 
     iutctl = get_iut()
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     hdl_ba = struct.pack('H', hdl)
     off_ba = struct.pack('H', off)
     val_ba = bytes.fromhex(val)
@@ -1084,7 +1090,7 @@ def gattc_write_reliable(bd_addr_type, bd_addr, hdl, off, val, val_mtp=None):
 
     data_ba = bytearray()
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     hdl_ba = struct.pack('H', hdl)
 
     off_ba = struct.pack('H', off)
@@ -1111,7 +1117,7 @@ def gattc_cfg_notify(bd_addr_type, bd_addr, enable, ccc_hdl):
 
     iutctl = get_iut()
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     ccc_hdl_ba = struct.pack('H', ccc_hdl)
 
     data_ba = bytearray()
@@ -1140,7 +1146,7 @@ def gattc_cfg_indicate(bd_addr_type, bd_addr, enable, ccc_hdl):
 
     iutctl = get_iut()
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     ccc_hdl_ba = struct.pack('H', ccc_hdl)
 
     data_ba = bytearray()
@@ -1171,7 +1177,7 @@ def gattc_notification_ev(bd_addr, bd_addr_type, ev_type):
                   defs.BTP_GATT_EV_NOTIFICATION)
 
     data_ba = bytearray()
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
 
     data_ba.extend(chr(bd_addr_type).encode('utf-8'))
     data_ba.extend(bd_addr_ba)
@@ -1207,7 +1213,7 @@ def gatt_dec_svc_attr(data):
 
     start_hdl, end_hdl, uuid_len = struct.unpack_from(hdr, data)
     (uuid,) = struct.unpack_from(f"{uuid_len}s", data, hdr_len)
-    uuid = btp2uuid(uuid_len, uuid)
+    uuid = le_bytes_to_uuid(uuid, uuid_len)
 
     return (start_hdl, end_hdl, uuid), hdr_len + uuid_len
 
@@ -1246,7 +1252,7 @@ def gatt_dec_chrc_attr(data):
 
     chrc_hdl, val_hdl, props, uuid_len = struct.unpack_from(hdr, data)
     (uuid,) = struct.unpack_from(f"{uuid_len}s", data, hdr_len)
-    uuid = btp2uuid(uuid_len, uuid)
+    uuid = le_bytes_to_uuid(uuid, uuid_len)
 
     return (chrc_hdl, val_hdl, props, uuid), hdr_len + uuid_len
 
@@ -1266,7 +1272,7 @@ def gatt_dec_desc_attr(data):
 
     hdl, uuid_len = struct.unpack_from(hdr, data)
     (uuid,) = struct.unpack_from(f"{uuid_len}s", data, hdr_len)
-    uuid = btp2uuid(uuid_len, uuid)
+    uuid = le_bytes_to_uuid(uuid, uuid_len)
 
     return (hdl, uuid), hdr_len + uuid_len
 
@@ -1818,7 +1824,7 @@ def eatt_conn(bd_addr, bd_addr_type, num=1):
     bd_addr = pts_addr_get(bd_addr)
     bd_addr_type = pts_addr_type_get(bd_addr_type)
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     data_ba = bytearray(chr(bd_addr_type).encode('utf-8'))
     data_ba.extend(bd_addr_ba)
     data_ba.extend(struct.pack('B', num))

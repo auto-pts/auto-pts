@@ -6,7 +6,7 @@ from autopts.pybtp import defs
 from autopts.pybtp.btp.btp import btp_hdr_check, pts_addr_get, pts_addr_type_get
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.common import aics_btp
-from autopts.pybtp.types import BTPError, addr2btp_ba
+from autopts.pybtp.types import BTPError, addr_str_to_le_bytes, le_bytes_to_hex_str
 
 AICS = aics_btp
 
@@ -143,7 +143,7 @@ def aics_gain_setting_prop_get(bd_addr_type=None, bd_addr=None):
 
 def address_to_ba(bd_addr_type=None, bd_addr=None):
     data = bytearray()
-    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
+    bd_addr_ba = addr_str_to_le_bytes(pts_addr_get(bd_addr))
     bd_addr_type_ba = chr(pts_addr_type_get(bd_addr_type)).encode('utf-8')
     data.extend(bd_addr_type_ba)
     data.extend(bd_addr_ba)
@@ -192,7 +192,7 @@ def aics_state_ev(aics, data, data_len):
 
     addr_type, addr, att_status, gain, mute, mode = struct.unpack_from(fmt, data)
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
 
     logging.debug(f'Audio Input Control State: addr {addr} addr_type '
                   f'{addr_type}, att_status {att_status}, gain {gain}, mute {mute}, mode {mode}')
@@ -209,7 +209,7 @@ def aics_gain_setting_prop_ev(aics, data, data_len):
 
     addr_type, addr, att_status, units, minimum, maximum = struct.unpack_from(fmt, data)
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
 
     logging.debug(f'AICS Gain Setting Properties: addr {addr} addr_type '
                   f'{addr_type}, units {units}, minimum {minimum}, maximum {maximum},'
@@ -228,7 +228,7 @@ def aics_input_type_ev(aics, data, data_len):
 
     addr_type, addr, input_type, att_status = struct.unpack_from(fmt, data)
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
 
     logging.debug(f'AICS Input type ev: addr {addr} addr_type '
                   f'{addr_type}, input type {input_type}, att_status {att_status}')
@@ -245,7 +245,7 @@ def aics_status_ev(aics, data, data_len):
 
     addr_type, addr, status, att_status = struct.unpack_from(fmt, data)
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
 
     logging.debug(f'AICS Status ev: addr {addr} addr_type '
                   f'{addr_type}, status {status}, att_status {att_status}')
@@ -263,7 +263,7 @@ def aics_description_ev(aics, data, data_len):
         raise BTPError('Invalid data length')
 
     addr_type, addr, att_status = struct.unpack_from(fmt, data)
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
 
     description = struct.unpack_from(f'<{len(data) - fmt_size - 1}s', data, offset=fmt_size)
     description = binascii.hexlify(description[0]).decode('utf-8')
@@ -283,7 +283,7 @@ def aics_procedure_ev(aics, data, data_len):
 
     addr_type, addr, att_status, opcode = struct.unpack_from(fmt, data)
 
-    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    addr = le_bytes_to_hex_str(addr)
 
     logging.debug(f'AICS Procedure ev: addr {addr} addr_type '
                   f'{addr_type}, att status {att_status}, opcode {opcode}')

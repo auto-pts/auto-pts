@@ -22,17 +22,15 @@ from autopts.ptsprojects.stack import GattCharacteristic, get_stack
 from autopts.pybtp import defs
 from autopts.pybtp.btp.btp import (
     add_to_verify_values,
-    btp2uuid,
     btp_hdr_check,
     clear_verify_values,
     extend_verify_values,
     get_verify_values,
-    uuid2btp_ba,
 )
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
 from autopts.pybtp.btp.gap import gap_wait_for_connection
 from autopts.pybtp.common import gatt_cl
-from autopts.pybtp.types import Perm, addr2btp_ba
+from autopts.pybtp.types import Perm, addr_str_to_le_bytes, le_bytes_to_hex_str, le_bytes_to_uuid, uuid_to_le_bytes
 
 GATTC = gatt_cl
 
@@ -43,7 +41,7 @@ def gatt_cl_mtu_exchanged_ev_(gatt_cl, data, data_len):
     fmt = '<B6sB'
 
     addr_type, addr, status = struct.unpack_from(fmt, data)
-    addr = binascii.hexlify(addr[::-1])
+    addr = le_bytes_to_hex_str(addr)
 
     gatt_cl.mtu_exchanged.data = (addr, addr_type, status)
 
@@ -63,7 +61,7 @@ def gatt_cl_dec_svc_attr(data):
 
     start_hdl, end_hdl, uuid_len = struct.unpack_from(hdr, data)
     (uuid,) = struct.unpack_from(f"{uuid_len}s", data, hdr_len)
-    uuid = btp2uuid(uuid_len, uuid)
+    uuid = le_bytes_to_uuid(uuid, uuid_len)
 
     return (start_hdl, end_hdl, uuid), hdr_len + uuid_len
 
@@ -102,7 +100,7 @@ def gatt_cl_dec_chrc_attr(data):
 
     chrc_hdl, val_hdl, props, uuid_len = struct.unpack_from(hdr, data)
     (uuid,) = struct.unpack_from(f"{uuid_len}s", data, hdr_len)
-    uuid = btp2uuid(uuid_len, uuid)
+    uuid = le_bytes_to_uuid(uuid, uuid_len)
 
     return (chrc_hdl, val_hdl, props, uuid), hdr_len + uuid_len
 
@@ -122,7 +120,7 @@ def gatt_cl_dec_desc_attr(data):
 
     hdl, uuid_len = struct.unpack_from(hdr, data)
     (uuid,) = struct.unpack_from(f"{uuid_len}s", data, hdr_len)
-    uuid = btp2uuid(uuid_len, uuid)
+    uuid = le_bytes_to_uuid(uuid, uuid_len)
 
     return (hdl, uuid), hdr_len + uuid_len
 
@@ -643,7 +641,7 @@ def gatt_cl_exchange_mtu(bd_addr_type, bd_addr):
     gap_wait_for_connection()
 
     data_ba = bytearray()
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
 
     data_ba.extend(chr(bd_addr_type).encode('utf-8'))
     data_ba.extend(bd_addr_ba)
@@ -666,7 +664,7 @@ def gatt_cl_disc_all_prim(bd_addr_type, bd_addr):
 
     data_ba = bytearray()
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
 
     data_ba.extend(chr(bd_addr_type).encode('utf-8'))
     data_ba.extend(bd_addr_ba)
@@ -689,8 +687,8 @@ def gatt_cl_disc_prim_uuid(bd_addr_type, bd_addr, uuid):
 
     data_ba = bytearray()
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
-    uuid_ba = uuid2btp_ba(uuid)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
+    uuid_ba = uuid_to_le_bytes(uuid)
 
     data_ba.extend(chr(bd_addr_type).encode('utf-8'))
     data_ba.extend(bd_addr_ba)
@@ -721,7 +719,7 @@ def gatt_cl_find_included(bd_addr_type, bd_addr, start_hdl, end_hdl):
 
     data_ba = bytearray()
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     start_hdl_ba = struct.pack('H', start_hdl)
     end_hdl_ba = struct.pack('H', end_hdl)
 
@@ -773,7 +771,7 @@ def gatt_cl_disc_all_chrc(bd_addr_type, bd_addr, start_hdl, stop_hdl, svc=None):
 
     data_ba = bytearray()
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     start_hdl_ba = struct.pack('H', start_hdl)
     stop_hdl_ba = struct.pack('H', stop_hdl)
 
@@ -805,11 +803,11 @@ def gatt_cl_disc_chrc_uuid(bd_addr_type, bd_addr, start_hdl, stop_hdl, uuid):
 
     data_ba = bytearray()
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     start_hdl_ba = struct.pack('H', start_hdl)
     stop_hdl_ba = struct.pack('H', stop_hdl)
 
-    uuid_ba = uuid2btp_ba(uuid)
+    uuid_ba = uuid_to_le_bytes(uuid)
 
     data_ba.extend(chr(bd_addr_type).encode('utf-8'))
     data_ba.extend(bd_addr_ba)
@@ -842,7 +840,7 @@ def gatt_cl_disc_all_desc(bd_addr_type, bd_addr, start_hdl, stop_hdl):
 
     data_ba = bytearray()
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     start_hdl_ba = struct.pack('H', start_hdl)
     stop_hdl_ba = struct.pack('H', stop_hdl)
 
@@ -865,7 +863,7 @@ def gatt_cl_read(bd_addr_type, bd_addr, hdl):
 
     data_ba = bytearray()
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     if isinstance(hdl, str):
         hdl = int(hdl, 16)
     hdl_ba = struct.pack('H', hdl)
@@ -897,11 +895,11 @@ def gatt_cl_read_uuid(bd_addr_type, bd_addr, start_hdl, end_hdl, uuid):
 
     data_ba = bytearray()
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     start_hdl_ba = struct.pack('H', start_hdl)
     end_hdl_ba = struct.pack('H', end_hdl)
 
-    uuid_ba = uuid2btp_ba(uuid)
+    uuid_ba = uuid_to_le_bytes(uuid)
 
     data_ba.extend(chr(bd_addr_type).encode('utf-8'))
     data_ba.extend(bd_addr_ba)
@@ -934,7 +932,7 @@ def gatt_cl_read_long(bd_addr_type, bd_addr, hdl, off, modif_off=None):
     if isinstance(hdl, str):
         hdl = int(hdl, 16)
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     hdl_ba = struct.pack('H', hdl)
     off_ba = struct.pack('H', off)
 
@@ -960,7 +958,7 @@ def gatt_cl_read_multiple(bd_addr_type, bd_addr, *hdls):
 
     data_ba = bytearray()
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     hdls_j = ''.join(hdl for hdl in hdls)
     hdls_byte_table = [hdls_j[i:i + 2] for i in range(0, len(hdls_j), 2)]
     hdls_swp = ''.join([c[1] + c[0] for c in zip(hdls_byte_table[::2],
@@ -989,7 +987,7 @@ def gatt_cl_read_multiple_var(bd_addr_type, bd_addr, *hdls):
 
     data_ba = bytearray()
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     hdls_j = ''.join(hdl for hdl in hdls)
     hdls_byte_table = [hdls_j[i:i + 2] for i in range(0, len(hdls_j), 2)]
     hdls_swp = ''.join([c[1] + c[0] for c in zip(hdls_byte_table[::2],
@@ -1024,7 +1022,7 @@ def gatt_cl_write_without_rsp(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
 
     data_ba = bytearray()
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     hdl_ba = struct.pack('H', hdl)
     val_ba = binascii.unhexlify(val.encode("utf-8"))
     val_len_ba = struct.pack('H', len(val_ba))
@@ -1055,7 +1053,7 @@ def gatt_cl_signed_write(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
 
     data_ba = bytearray()
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     hdl_ba = struct.pack('H', hdl)
     if isinstance(val, str):
         val_ba = binascii.unhexlify(bytearray(val, 'utf-8'))
@@ -1094,7 +1092,7 @@ def gatt_cl_write(bd_addr_type, bd_addr, hdl, val, val_mtp=None):
 
     data_ba = bytearray()
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     hdl_ba = struct.pack('H', hdl)
     val_ba = binascii.unhexlify(val)
     val_len_ba = struct.pack('H', len(val_ba))
@@ -1129,7 +1127,7 @@ def gatt_cl_write_long(bd_addr_type, bd_addr, hdl, off, val, length=None):
 
     iutctl = get_iut()
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     hdl_ba = struct.pack('H', hdl)
     off_ba = struct.pack('H', off)
     val_ba = bytes.fromhex(val)
@@ -1166,7 +1164,7 @@ def gatt_cl_write_reliable(bd_addr_type, bd_addr, hdl, off, val, val_mtp=None):
 
     data_ba = bytearray()
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     hdl_ba = struct.pack('H', hdl)
 
     off_ba = struct.pack('H', off)
@@ -1198,7 +1196,7 @@ def gatt_cl_cfg_notify(bd_addr_type, bd_addr, enable, ccc_hdl):
 
     iutctl = get_iut()
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     ccc_hdl_ba = struct.pack('H', ccc_hdl)
 
     data_ba = bytearray()
@@ -1222,7 +1220,7 @@ def gatt_cl_cfg_indicate(bd_addr_type, bd_addr, enable, ccc_hdl):
 
     iutctl = get_iut()
 
-    bd_addr_ba = addr2btp_ba(bd_addr)
+    bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     ccc_hdl_ba = struct.pack('H', ccc_hdl)
 
     data_ba = bytearray()

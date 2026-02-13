@@ -20,7 +20,7 @@ import struct
 from autopts.pybtp import defs
 from autopts.pybtp.btp.btp import CONTROLLER_INDEX, btp_hdr_check, pts_addr_get, pts_addr_type_get
 from autopts.pybtp.btp.btp import get_iut_method as get_iut
-from autopts.pybtp.types import addr2btp_ba
+from autopts.pybtp.types import addr_str_to_le_bytes
 
 HAS = {
     'read_supported_cmds': (defs.BTP_SERVICE_ID_HAS,
@@ -59,7 +59,7 @@ def has_command_rsp_succ(timeout=20.0):
 
 def address_to_ba(bd_addr_type=None, bd_addr=None):
     data = bytearray()
-    bd_addr_ba = addr2btp_ba(pts_addr_get(bd_addr))
+    bd_addr_ba = addr_str_to_le_bytes(pts_addr_get(bd_addr))
     bd_addr_type_ba = chr(pts_addr_type_get(bd_addr_type)).encode('utf-8')
     data.extend(bd_addr_type_ba)
     data.extend(bd_addr_ba)

@@ -23,7 +23,17 @@ from time import sleep
 from autopts.ptsprojects.stack import ConnParams, get_stack
 from autopts.pybtp import btp, defs, types
 from autopts.pybtp.btp.btp import pts_addr_get, pts_addr_type_get
-from autopts.pybtp.types import UUID, AdType, IOCap, OwnAddrType, Perm, Prop, WIDParams, bdaddr_reverse, gap_settings_btp2txt
+from autopts.pybtp.types import (
+    UUID,
+    AdType,
+    IOCap,
+    OwnAddrType,
+    Perm,
+    Prop,
+    WIDParams,
+    addr_str_to_le_bytes,
+    gap_settings_btp2txt,
+)
 from autopts.wid import generic_wid_hdl
 
 log = logging.debug
@@ -1044,7 +1054,7 @@ def hdl_wid_152(_: WIDParams):
     """
     stack = get_stack()
 
-    stack.gap.ad[AdType.public_target_addr] = bdaddr_reverse(btp.pts_addr_get())
+    stack.gap.ad[AdType.public_target_addr] = addr_str_to_le_bytes(btp.pts_addr_get()).hex()
 
     btp.gap_adv_ind_on(ad=stack.gap.ad)
 
@@ -1057,7 +1067,7 @@ def hdl_wid_153(_: WIDParams):
     """
     stack = get_stack()
 
-    stack.gap.ad[AdType.random_target_addr] = bdaddr_reverse(btp.pts_addr_get())
+    stack.gap.ad[AdType.random_target_addr] = addr_str_to_le_bytes(btp.pts_addr_get()).hex()
 
     btp.gap_adv_ind_on(ad=stack.gap.ad)
 
@@ -1081,7 +1091,7 @@ def hdl_wid_155(_: WIDParams):
     stack = get_stack()
 
     device_addr = '{:02d}'.format(stack.gap.iut_bd_addr.data["type"]) + \
-                  bdaddr_reverse(stack.gap.iut_bd_addr.data["address"])
+                  addr_str_to_le_bytes(stack.gap.iut_addr_get_str()).hex()
 
     stack.gap.ad[AdType.le_bt_device_addr] = device_addr
 

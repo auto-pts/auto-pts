@@ -22,7 +22,7 @@ from autopts.ptsprojects.stack import WildCard, get_stack
 from autopts.pybtp import btp
 from autopts.pybtp.btp.audio import pack_metadata
 from autopts.pybtp.defs import AUDIO_METADATA_PROGRAM_INFO
-from autopts.pybtp.types import CODEC_CONFIG_SETTINGS, WIDParams, create_lc3_ltvs_bytes
+from autopts.pybtp.types import CODEC_CONFIG_SETTINGS, WIDParams, create_lc3_ltvs_bytes, hex_str_to_le_bytes
 from autopts.wid.bap import BAS_CONFIG_SETTINGS
 from autopts.wid.common import _safe_bap_send
 
@@ -62,7 +62,7 @@ def hdl_wid_100(_: WIDParams):
         broadcast_code = stack.bap.broadcast_code
         if isinstance(broadcast_code, str):
             # The default broadcast code string from PTS is in big endian
-            broadcast_code = bytes.fromhex(broadcast_code)[::-1]
+            broadcast_code = hex_str_to_le_bytes(broadcast_code)
 
         # TODO set Broadcast code - BTstack BTP implementation uses default PTS broadcast code
 
@@ -249,7 +249,7 @@ def hdl_wid_552(params: WIDParams):
         broadcast_code = stack.bap.broadcast_code
         if isinstance(broadcast_code, str):
             # The default broadcast code string from PTS is in big endian
-            broadcast_code = bytes.fromhex(broadcast_code)[::-1]
+            broadcast_code = hex_str_to_le_bytes(broadcast_code)
 
     btp.cap_broadcast_source_setup(source_id, broadcast_id, *qos_config, presentation_delay,
                                    encryption=encrypted, broadcast_code=broadcast_code,

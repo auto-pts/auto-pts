@@ -13,10 +13,11 @@
 # more details.
 #
 
+import binascii
 import struct
-from binascii import unhexlify
 from enum import IntEnum, IntFlag
-from typing import Final, NamedTuple
+from typing import Final, NamedTuple, Optional, Union
+from uuid import UUID as StdUUID
 
 from autopts.pybtp import defs
 
@@ -42,12 +43,197 @@ gap_settings_btp2txt = {
 }
 
 
-def addr2btp_ba(addr_str):
-    return unhexlify("".join(addr_str.split(':')))[::-1]
+# =============================================================================
+# Byte Order Conversion Utilities
+# =============================================================================
+# BTP protocol uses little-endian byte order, while PTS often uses big-endian.
+# These helpers provide explicit type-based names for byte order conversions.
 
 
-def bdaddr_reverse(addr):
-    return ''.join([addr[i:i + 2] for i in range(0, len(addr), 2)][::-1])
+def is_hex_str(value: str) -> bool:
+    """Return True if value contains only hexadecimal digits."""
+    return all(ch in "0123456789abcdefABCDEF" for ch in value)
+
+
+def hex_str_to_le_bytes(hex_str: str) -> bytes:
+    """Convert a hex string (big-endian) to little-endian bytes.
+
+    PTS often provides values in big-endian hex format, while BTP
+    expects little-endian. This function handles the conversion.
+
+    Args:
+        hex_str: Hex string in big-endian format (e.g., "0001020304050607").
+                 An optional "0x" prefix is stripped automatically.
+                 Must contain an even number of hex digits.
+
+    Returns:
+        Bytes in little-endian format
+
+    Raises:
+        ValueError: If hex_str has an odd number of digits or contains
+                    non-hex characters.
+
+    Example:
+        >>> hex_str_to_le_bytes("0001020304050607")  # For IV conversion
+        b'\\x07\\x06\\x05\\x04\\x03\\x02\\x01\\x00'
+    """
+    if not isinstance(hex_str, str):
+        raise TypeError(f"hex_str_to_le_bytes expects str, got {type(hex_str).__name__}")
+
+    cleaned = hex_str
+    if cleaned.startswith(("0x", "0X")):
+        cleaned = cleaned[2:]
+    if (len(cleaned) & 1) != 0:
+        raise ValueError(
+            f"hex_str_to_le_bytes: odd-length hex string ({len(cleaned)} digits): {cleaned!r}")
+    if not is_hex_str(cleaned):
+        raise ValueError(f"hex_str_to_le_bytes: invalid hex string: {hex_str!r}")
+    return bytes.fromhex(cleaned)[::-1]
+
+
+def le_bytes_to_hex_str(data: bytes) -> str:
+    """Convert little-endian bytes to big-endian hex string.
+
+    Args:
+        data: Bytes in little-endian format
+
+    Returns:
+        Hex string in big-endian format
+
+    Example:
+        >>> le_bytes_to_hex_str(b'\\x07\\x06\\x05\\x04\\x03\\x02\\x01\\x00')
+        '0001020304050607'
+    """
+    return data[::-1].hex()
+
+
+# -- UUID helpers --
+
+def uuid_to_le_bytes(uuid: Union[int, str]) -> bytes:
+    """Convert UUID string or integer to little-endian bytes.
+
+    Handles 16-bit, 32-bit, and 128-bit UUIDs as strings or integers.
+
+    Args:
+        uuid: UUID as hex string (optionally with dashes or "0x" prefix)
+              or as an integer
+
+    Returns:
+        UUID bytes in little-endian format
+
+    Example:
+        >>> uuid_to_le_bytes("184E")
+        b'N\\x18'
+        >>> uuid_to_le_bytes(0x184E)
+        b'N\\x18'
+    """
+    if isinstance(uuid, int):
+        if uuid < 0:
+            raise ValueError("uuid_to_le_bytes: UUID integer must be >= 0")
+        if uuid <= 0xFFFF:
+            return struct.pack('<H', uuid)
+        if uuid <= 0xFFFFFFFF:
+            return struct.pack('<I', uuid)
+        if uuid <= 0xFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF:
+            return uuid.to_bytes(16, byteorder='little')
+        raise ValueError("uuid_to_le_bytes: UUID integer out of 128-bit range")
+
+    if not isinstance(uuid, str):
+        raise TypeError(f"uuid_to_le_bytes expects int|str, got {type(uuid).__name__}")
+
+    cleaned = uuid.replace("-", "")
+    if cleaned.startswith(("0x", "0X")):
+        cleaned = cleaned[2:]
+    if len(cleaned) not in (4, 8, 32):
+        raise ValueError(
+            f"uuid_to_le_bytes: expected 16/32/128-bit UUID (4/8/32 hex chars), got {len(cleaned)}")
+    if not is_hex_str(cleaned):
+        raise ValueError(f"uuid_to_le_bytes: invalid UUID hex string: {uuid!r}")
+    return bytes.fromhex(cleaned)[::-1]
+
+
+def uuid_to_le_hex_str(uuid_str: str) -> str:
+    """Convert UUID string to little-endian hex string.
+
+    Useful for advertising data where UUID needs to be in little-endian
+    hex string format.
+
+    Args:
+        uuid_str: UUID string (e.g., "184E" for ASCS)
+
+    Returns:
+        Hex string in little-endian format
+
+    Example:
+        >>> uuid_to_le_hex_str("184E")  # ASCS UUID
+        '4e18'
+    """
+    return uuid_to_le_bytes(uuid_str).hex()
+
+
+def le_bytes_to_uuid(uuid_bytes: bytes, uuid_len: Optional[int] = None) -> str:
+    """Convert little-endian UUID bytes to big-endian UUID hex string.
+
+    Handles 16-bit, 32-bit, and 128-bit UUIDs.
+
+    Args:
+        uuid_bytes: UUID bytes in little-endian format.
+        uuid_len: Length of UUID in bytes. If omitted, inferred from uuid_bytes.
+
+    Returns:
+        Uppercase hex string of UUID in big-endian format
+
+    Example:
+        >>> le_bytes_to_uuid(b'\\x4e\\x18')
+        '184E'
+    """
+    if not isinstance(uuid_bytes, (bytes, bytearray)):
+        raise TypeError(
+            f"le_bytes_to_uuid: uuid bytes must be bytes-like, got {type(uuid_bytes).__name__}")
+    uuid_bytes = bytes(uuid_bytes)
+
+    if uuid_len is None:
+        uuid_len = len(uuid_bytes)
+    elif not isinstance(uuid_len, int):
+        raise TypeError(f"le_bytes_to_uuid: uuid length must be int, got {type(uuid_len).__name__}")
+    elif uuid_len != len(uuid_bytes):
+        raise ValueError(
+            f"le_bytes_to_uuid: uuid_len={uuid_len} does not match byte length={len(uuid_bytes)}")
+
+    if uuid_len == 2:
+        (uu,) = struct.unpack("<H", uuid_bytes)
+        return format(uu, 'x').upper().rjust(4, '0')
+    if uuid_len == 4:
+        (uu,) = struct.unpack("<I", uuid_bytes)
+        return format(uu, 'x').upper().rjust(8, '0')
+    if uuid_len != 16:
+        raise ValueError(f"le_bytes_to_uuid: unsupported UUID length {uuid_len}")
+    return StdUUID(bytes=uuid_bytes[::-1]).urn[9:].replace('-', '').upper()
+
+
+# -- Address helpers --
+
+def addr_str_to_le_bytes(addr_str: str) -> bytes:
+    """Convert address hex string to little-endian bytes.
+
+    Accepts colon-separated or plain hex strings.
+
+    Args:
+        addr_str: Address string (e.g., "AA:BB:CC:DD:EE:FF" or "AABBCCDDEEFF")
+
+    Returns:
+        Address bytes in little-endian format
+    """
+    if not isinstance(addr_str, str):
+        raise TypeError(f"addr_str_to_le_bytes expects str, got {type(addr_str).__name__}")
+
+    cleaned = "".join(addr_str.split(':'))
+    if len(cleaned) != 12:
+        raise ValueError(
+            f"addr_str_to_le_bytes: expected 12 hex digits (6 bytes), got {len(cleaned)}: {addr_str!r}")
+    if not is_hex_str(cleaned):
+        raise ValueError(f"addr_str_to_le_bytes: invalid address hex string: {addr_str!r}")
+    return binascii.unhexlify(cleaned)[::-1]
 
 
 class BTPError(Exception):

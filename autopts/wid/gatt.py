@@ -31,7 +31,7 @@ from autopts.ptsprojects.stack import (
 )
 from autopts.ptsprojects.testcase import MMI
 from autopts.pybtp import btp
-from autopts.pybtp.types import UUID, BTPError, IOCap, Perm, Prop, WIDParams
+from autopts.pybtp.types import UUID, BTPError, IOCap, Perm, Prop, WIDParams, le_bytes_to_hex_str, le_bytes_to_uuid
 from autopts.wid import generic_wid_hdl
 
 log = logging.debug
@@ -89,7 +89,7 @@ def gatt_server_fetch_db():
         att_rsp, val_len, val = attr_val
 
         if type_uuid in ('2800', '2801'):
-            uuid = btp.btp2uuid(val_len, val)
+            uuid = le_bytes_to_uuid(val, val_len)
 
             if type_uuid == '2800':
                 db.attr_add(handle, GattPrimary(handle, perm, uuid, att_rsp))
@@ -102,7 +102,7 @@ def gatt_server_fetch_db():
             uuid_len = val_len - hdr_len
 
             prop, value_handle, uuid = struct.unpack(f"<BH{uuid_len}s", val)
-            uuid = btp.btp2uuid(uuid_len, uuid)
+            uuid = le_bytes_to_uuid(uuid, uuid_len)
 
             db.attr_add(handle, GattCharacteristic(handle, perm, uuid, att_rsp, prop, value_handle))
         elif type_uuid == '2802':
@@ -110,7 +110,7 @@ def gatt_server_fetch_db():
             hdr_len = struct.calcsize(hdr)
             uuid_len = val_len - hdr_len
             incl_svc_hdl, end_grp_hdl, uuid = struct.unpack(hdr + f"{uuid_len}s", val)
-            uuid = btp.btp2uuid(uuid_len, uuid)
+            uuid = le_bytes_to_uuid(uuid, uuid_len)
 
             db.attr_add(handle, GattServiceIncluded(handle, perm, uuid, att_rsp, incl_svc_hdl, end_grp_hdl))
         else:
@@ -209,7 +209,7 @@ def hdl_wid_17(params: WIDParams):
         (_, uuid_len, uuid) = btp.gatts_get_attr_val(
             btp.pts_addr_type_get(),
             btp.pts_addr_get(), handle)
-        uuid = btp.btp2uuid(uuid_len, uuid)
+        uuid = le_bytes_to_uuid(uuid, uuid_len)
         iut_services.append(uuid)
 
     # Verification
@@ -303,7 +303,7 @@ def hdl_wid_22(params: WIDParams):
 
         (_, uuid_len, uuid) = val
 
-        uuids.append(str(btp.btp2uuid(uuid_len, uuid)))
+        uuids.append(str(le_bytes_to_uuid(uuid, uuid_len)))
         handles.append(start_handle)
 
     for uuid in uuids_from_parse:
@@ -356,7 +356,7 @@ def hdl_wid_23(params: WIDParams):
             continue
 
         (_, uuid_len, uuid) = val
-        iut_service = [start_handle, "unknown", btp.btp2uuid(uuid_len, uuid)]
+        iut_service = [start_handle, "unknown", le_bytes_to_uuid(uuid, uuid_len)]
 
     iut_services.append(iut_service)
 
@@ -431,7 +431,7 @@ def hdl_wid_25(params: WIDParams):
             continue
 
         att_rsp, uuid_len, uuid = svc_val
-        if btp.btp2uuid(uuid_len, uuid) == pts_chrc_uuid:
+        if le_bytes_to_uuid(uuid, uuid_len) == pts_chrc_uuid:
             iut_start_handle = handle
 
     if iut_start_handle is None or iut_end_handle is None:
@@ -569,7 +569,7 @@ def hdl_wid_36(params: WIDParams):
         hdr_len = struct.calcsize(hdr)
         uuid_len = val_len - hdr_len
         incl_svc_hdl, end_grp_hdl, uuid = struct.unpack(hdr + f"{uuid_len}s", val)
-        uuid = btp.btp2uuid(uuid_len, uuid)
+        uuid = le_bytes_to_uuid(uuid, uuid_len)
 
         iut_service = [start_handle, incl_svc_hdl, end_grp_hdl, uuid]
         iut_services.append(iut_service)
@@ -1097,7 +1097,7 @@ def hdl_wid_92(params: WIDParams):
     if value_len == 0:
         value = b'\x01'
 
-    btp.gatts_set_val(handle, hexlify(value[::-1]))
+    btp.gatts_set_val(handle, le_bytes_to_hex_str(value))
 
     return True
 
@@ -1391,7 +1391,7 @@ def hdl_wid_111(_: WIDParams):
 
         handle, perm, type_uuid = chrc_value_attr[0]
         if not perm & Perm.read or not prop & Prop.read:
-            return btp.btp2uuid(uuid_len, chrc_uuid)
+            return le_bytes_to_uuid(chrc_uuid, uuid_len)
 
     return '0000'
 
@@ -1470,7 +1470,7 @@ def hdl_wid_113(_: WIDParams):
         if att_rsp != 8:
             continue
 
-        return btp.btp2uuid(uuid_len, chrc_uuid)
+        return le_bytes_to_uuid(chrc_uuid, uuid_len)
 
     return '0000'
 
@@ -1530,7 +1530,7 @@ def hdl_wid_115(_: WIDParams):
 
         handle, perm, type_uuid = chrc_value_attr[0]
         if perm & Perm.read_authn:
-            return btp.btp2uuid(uuid_len, chrc_uuid)
+            return le_bytes_to_uuid(chrc_uuid, uuid_len)
 
     return '0000'
 
@@ -1570,7 +1570,7 @@ def hdl_wid_119(_: WIDParams):
         uuid_len = val_len - hdr_len
 
         prop, handle, uuid = struct.unpack(f"<BH{uuid_len}s", val)
-        uuid_list.append(btp.btp2uuid(uuid_len, uuid))
+        uuid_list.append(le_bytes_to_uuid(uuid, uuid_len))
 
     if len(uuid_list) == 0:
         logging.error("No attribute found!")
@@ -1692,7 +1692,7 @@ def hdl_wid_122(_: WIDParams):
         if att_rsp != 0x0c:
             continue
 
-        return btp.btp2uuid(uuid_len, chrc_uuid)
+        return le_bytes_to_uuid(chrc_uuid, uuid_len)
 
     return '0000'
 
