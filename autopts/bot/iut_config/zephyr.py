@@ -385,21 +385,6 @@ iut_config = {
             'L2CAP/CLS/CID/BV-01-C',
         ]
     },
-
-    "gap_le_sec_mode3_bis.conf": {
-        "overlay": {
-            'CONFIG_BT_ISO_BROADCASTER': 'y',
-            'CONFIG_BT_ISO_SYNC_RECEIVER': 'y',
-            'CONFIG_BT_ISO_CENTRAL': 'y',
-            'CONFIG_BT_ISO_PERIPHERAL': 'y',
-        },
-        "test_cases": [
-            'GAP/SEC/SEM/BV-31-C',
-            'GAP/SEC/SEM/BV-32-C',
-            'GAP/SEC/SEM/BV-34-C',
-            'GAP/SEC/SEM/BV-35-C',
-        ]
-    },
 }
 
 retry_config = {
