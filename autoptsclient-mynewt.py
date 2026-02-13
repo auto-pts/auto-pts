@@ -19,13 +19,13 @@
 import importlib
 
 from autopts import client as autoptsclient
-from autopts.ptsprojects.mynewt.iutctl import get_iut
+from autopts.ptsprojects.mynewt.iutctl import init_iutctl
 
 
 class MynewtClient(autoptsclient.Client):
     def __init__(self):
         project = importlib.import_module('autopts.ptsprojects.mynewt')
-        super().__init__(get_iut, project, 'mynewt')
+        super().__init__(init_iutctl, project, 'mynewt')
 
 
 def main():

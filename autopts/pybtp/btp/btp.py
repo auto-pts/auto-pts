@@ -24,15 +24,16 @@ from collections import namedtuple
 from enum import IntEnum
 from uuid import UUID
 
-from autopts.ptsprojects.stack import get_stack
+from autopts.ptsprojects.stack import get_stack, set_get_stack_method
 from autopts.ptsprojects.testcase import MMI
 from autopts.pybtp import defs
 from autopts.pybtp.common import CONTROLLER_INDEX, CONTROLLER_INDEX_NONE, reg_unreg_service, supported_svcs_cmds
-from autopts.pybtp.iutctl_common import set_event_handler
+from autopts.pybtp.iutctl_common import get_current_iutctl_id, set_event_handler
 from autopts.pybtp.types import BTPError, BTPFatalError, att_rsp_str
 
 #  get IUT global method from iutctl
 get_iut = None
+_get_iutctl = None
 
 # loading as CORE to maintain backward compatibility with older code snippet
 CORE = reg_unreg_service
@@ -727,15 +728,31 @@ def uuid2btp_ba(uuid):
     return uuid
 
 
-def get_iut_method():
-    return get_iut()
+def get_iut_method(iutctl_id=None):
+    if iutctl_id is None:
+        iutctl_id = get_current_iutctl_id()
+
+    return _get_iutctl(iutctl_id)
 
 
-def init(get_iut_method):
-    global get_iut
+def init(_get_iut_method):
+    global _get_iutctl, get_iut
 
+    _get_iutctl = _get_iut_method
     get_iut = get_iut_method
     set_event_handler(event_handler)
+
+
+def _get_stack(iutctl_id=None):
+    # TODO: Refactor wid handlers so that the stack
+    # is taken from the iutctl instance
+    if iutctl_id is None:
+        iutctl_id = get_current_iutctl_id()
+
+    return _get_iutctl(iutctl_id).get_stack()
+
+
+set_get_stack_method(_get_stack)
 
 
 def event_handler(hdr, data):

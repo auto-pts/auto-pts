@@ -32,9 +32,9 @@ from autopts import bot
 from autopts import client as autoptsclient
 from autopts.bot.common import BotClient, BotConfigArgs, BuildAndFlashException, check_call
 from autopts.config import FILE_PATHS
-from autopts.ptsprojects.boards import get_board_type, get_build_and_flash, tty_to_com
+from autopts.ptsprojects.boards import get_build_and_flash, tty_to_com
 from autopts.ptsprojects.zephyr import ZEPHYR_PROJECT_URL
-from autopts.ptsprojects.zephyr.iutctl import get_iut, log
+from autopts.ptsprojects.zephyr.iutctl import init_iutctl, log
 
 PROJECT_NAME = Path(__file__).stem
 
@@ -143,7 +143,7 @@ class ZephyrBotCliParser(bot.common.BotCliParser):
 class ZephyrBotClient(BotClient):
     def __init__(self):
         project = importlib.import_module('autopts.ptsprojects.zephyr')
-        super().__init__(get_iut, project, 'zephyr', ZephyrBotConfigArgs,
+        super().__init__(init_iutctl, project, 'zephyr', ZephyrBotConfigArgs,
                          ZephyrBotCliParser)
         self.config_default = "prj.conf"
         self.fail_info_parser = zephyr_get_assertion_info
@@ -172,42 +172,43 @@ class ZephyrBotClient(BotClient):
         # The order is used in the -DEXTRA_CONF_FILE="<overlay1>;<...>" option.
         overlays = ';'.join(configs)
 
-        log(f"TTY path: {args.tty_file}")
+        for iut in self.iutctl_instances:
+            log(f"TTY path: {iut.tty_file}")
 
-        if args.iut_mode != 'tty':
-            iut = self.get_iut()
-            if not iut.kernel_image:
-                iut.kernel_image = os.path.join(args.project_path, "tests/bluetooth/tester/build/zephyr/zephyr")
-                if args.iut_mode == 'qemu':
-                    iut.kernel_image += '.elf'
-                else:
-                    iut.kernel_image += '.exe'
+            if iut.iut_mode != 'tty':
+                if not iut.kernel_image:
+                    iut.kernel_image = os.path.join(args.project_path, "tests/bluetooth/tester/build/zephyr/zephyr")
+                    if iut.iut_mode == 'qemu':
+                        iut.kernel_image += '.elf'
+                    else:
+                        iut.kernel_image += '.exe'
 
-        if args.no_build:
-            if args.setcap_cmd:
-                check_call(args.setcap_cmd.split())
+            if args.no_build:
+                if args.setcap_cmd:
+                    check_call(args.setcap_cmd.split())
 
-            return
+                continue
 
-        if args.iut_mode == 'tty':
-            build_and_flash = get_build_and_flash(args.board_name)
-            board_type = get_board_type(args.board_name)
+            if iut.iut_mode == 'tty':
+                build_and_flash = get_build_and_flash(iut.board.name)
+                board_type = iut.board.type
 
-            try:
-                build_and_flash(args.project_path, board_type, args.debugger_snr,
-                                overlays, args.project_repos, args.build_env_cmd)
+                try:
+                    build_and_flash(args.project_path, board_type, iut.debugger_snr,
+                                    overlays, args.project_repos, args.build_env_cmd)
 
-                flush_serial(args.tty_file, rtscts=args.rtscts, baudrate=args.tty_baudrate)
-            except BaseException as e:
-                traceback.print_exception(e)
-                self.error_txt_content += "Build and flash step failed\n"
-                raise BuildAndFlashException from e
+                    flush_serial(iut.tty_file, rtscts=iut.rtscts, baudrate=iut.tty_baudrate)
+                except BaseException as e:
+                    traceback.print_exception(e)
+                    self.error_txt_content += "Build and flash step failed\n"
+                    raise BuildAndFlashException from e
 
-            time.sleep(10)
-        else:
-            build_image(args.project_path, args.kernel_cpu, overlays, args.build_env_cmd)
-            if args.setcap_cmd:
-                check_call(args.setcap_cmd.split())
+                if iut == self.iutctl_instances[-1]:
+                    time.sleep(10)
+            else:
+                build_image(args.project_path, iut.kernel_cpu, overlays, args.build_env_cmd)
+                if args.setcap_cmd:
+                    check_call(args.setcap_cmd.split())
 
     def start(self, args=None):
         super().start(args)
@@ -239,7 +240,7 @@ class ZephyrBotClient(BotClient):
 
 class ZephyrClient(autoptsclient.Client):
     def __init__(self):
-        super().__init__(get_iut, sys.modules['autopts.ptsprojects.zephyr'], 'zephyr')
+        super().__init__(init_iutctl, sys.modules['autopts.ptsprojects.zephyr'], 'zephyr')
 
 
 BotClient = ZephyrBotClient

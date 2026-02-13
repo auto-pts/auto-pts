@@ -23,13 +23,13 @@
 import importlib
 
 from autopts import client as autoptsclient
-from autopts.ptsprojects.zephyr.iutctl import get_iut
+from autopts.ptsprojects.zephyr.iutctl import init_iutctl
 
 
 class ZephyrClient(autoptsclient.Client):
     def __init__(self):
         project = importlib.import_module('autopts.ptsprojects.zephyr')
-        super().__init__(get_iut, project, 'zephyr')
+        super().__init__(init_iutctl, project, 'zephyr')
 
 
 def main():

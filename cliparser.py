@@ -21,6 +21,8 @@ import os
 import shutil
 import sys
 import time
+from itertools import zip_longest
+from types import SimpleNamespace
 
 from autopts.config import CLIENT_PORT, FILE_PATHS, MAX_SERVER_RESTART_TIME, SERIAL_BAUDRATE, SERVER_PORT
 from autopts.ptsprojects.boards import com_to_tty, get_debugger_snr, get_free_device, get_tty, tty_exists
@@ -38,10 +40,13 @@ class CliParser(argparse.ArgumentParser):
         if iut_modes is None:
             iut_modes = IUT_MODES
 
-        self.add_argument("--iut-mode", "--iut_mode", type=str, choices=iut_modes, default=None,
-                          help="Specify the mode of the IUT (Identity Under Test). "
-                               "If the option is not provided, mode will be inferred "
-                               "from the parameters.")
+        act = self.add_argument("--iut-mode", "--iut_mode", type=str, nargs='+',
+                                action="extend", choices=iut_modes, default=[],
+                                help="Specify the mode of the IUT (Identity Under Test). "
+                                "If the option is not provided, mode will be inferred "
+                                "from the parameters.")
+        act.copy_to_iutctl_args = True
+        act.use_first_as_default = False
 
         self.add_argument("-i", "--ip_addr", nargs="+",
                           help="IP address of the PTS automation servers. "
@@ -109,8 +114,11 @@ class CliParser(argparse.ArgumentParser):
                           "specify the ports separated by a space, "
                           "e.g. \"-C 65001 65003 65005\"")
 
-        self.add_argument("--tty-baudrate", "--tty_baudrate", type=int, default=SERIAL_BAUDRATE,
-                          help="The TTY baudrate.")
+        act = self.add_argument("--tty-baudrate", "--tty_baudrate", type=int,
+                                nargs='+', action="extend", default=[SERIAL_BAUDRATE],
+                                help="The TTY baudrate.")
+        act.copy_to_iutctl_args = True
+        act.use_first_as_default = True
 
         self.add_argument("--recovery", action='store_true', default=False,
                           help="Specify if autoptsclient should try to recover"
@@ -125,19 +133,26 @@ class CliParser(argparse.ArgumentParser):
                           help="Specify amount of time in minutes, after which"
                                " super guard will blindly trigger recovery steps.")
 
-        self.add_argument("--ykush", metavar='YKUSH_PORT',
-                          help="Specify ykush downstream port number, so on BTP TIMEOUT "
-                               "the iut device could be powered off and on.")
+        act = self.add_argument("--ykush", metavar='YKUSH_PORT', type=str,
+                                nargs="+", action="extend", default=[],
+                                help="Specify ykush downstream port number, so on BTP TIMEOUT "
+                                "the iut device could be powered off and on.")
+        act.copy_to_iutctl_args = True
+        act.use_first_as_default = False
 
-        self.add_argument("--pylink_reset", action='store_true', default=False,
-                          help="Use pylink reset.")
+        act = self.add_argument("--pylink_reset", action='store_true', default=False,
+                                help="Use pylink reset.")
+        act.copy_to_iutctl_args = True
+        act.use_first_as_default = True
 
         self.add_argument('--nc', dest='copy', action='store_false',
                           help='Do not copy workspace, open original one. '
                                'Warning: workspace file might be modified', default=True)
 
-        self.add_argument("--rtscts", dest='rtscts', action="store_true", default=False,
-                          help="Enable UART hardware flow control.")
+        act = self.add_argument("--rtscts", dest='rtscts', action="store_true", default=False,
+                                help="Enable UART hardware flow control.")
+        act.copy_to_iutctl_args = True
+        act.use_first_as_default = True
 
         # Hidden option to save test cases data in TestCase.db
         self.add_argument("-s", "--store", action="store_true",
@@ -152,106 +167,190 @@ class CliParser(argparse.ArgumentParser):
         self.add_argument("--max_server_restart_time", type=int, default=MAX_SERVER_RESTART_TIME,
                           help=argparse.SUPPRESS)
 
-        self.add_argument("--tty_alias", type=str, default='', help=argparse.SUPPRESS)
+        act = self.add_argument("--tty_alias", type=str, nargs='+', action="extend",
+                                default=[], help=argparse.SUPPRESS)
+        act.copy_to_iutctl_args = True
+        act.use_first_as_default = False
 
-        self.add_argument("--ykush_replug_delay", type=float, default=3, help=argparse.SUPPRESS)
+        act = self.add_argument("--ykush_replug_delay", type=float, nargs='+', action="extend",
+                                default=[3], help=argparse.SUPPRESS)
+        act.copy_to_iutctl_args = True
+        act.use_first_as_default = True
 
-        self.add_argument("--active-hub-server", type=str, help=argparse.SUPPRESS)
-        self.add_argument("--usb-replug-available", "--usb_replug_available", type=bool,
-                          default=False, help=argparse.SUPPRESS)
+        act = self.add_argument("--active-hub-server", type=str, help=argparse.SUPPRESS)
+        act.copy_to_iutctl_args = True
+        act.use_first_as_default = False
 
-        self.add_argument("--project_path", type=str, help=argparse.SUPPRESS)
+        act = self.add_argument("--usb-replug-available", "--usb_replug_available", type=bool,
+                                default=False, help=argparse.SUPPRESS)
+        act.copy_to_iutctl_args = True
+        act.use_first_as_default = False
+
+        act = self.add_argument("--project_path", type=str, help=argparse.SUPPRESS)
+        act.copy_to_iutctl_args = True
+        act.use_first_as_default = True
 
         self.add_argument('--nb', dest='no_build', action='store_true',
                           help='Skip build and flash in bot mode.', default=False)
 
-        self.add_argument("--btattach-bin", "--btattach_bin", default=None,
+        act = self.add_argument("--btattach-bin", "--btattach_bin", default=None,
                           help="The path to the btattach executable, e.g. /usr/bin/btattach")
-        self.add_argument("--btattach-at-every-test-case", "--btattach_at_every_test_case",
-                          action='store_true', default=False,
-                          help="The path to the btattach executable, e.g. /usr/bin/btattach")
-        self.add_argument("--btproxy-bin", "--btproxy_bin", default=None,
-                          help="The path to the btproxy executable, e.g. /usr/bin/btproxy")
-        self.add_argument("--qemu-bin", "--qemu_bin", default=None,
-                          help="The path to the QEMU executable, e.g. /usr/bin/qemu-system-arm")
-        self.add_argument("--qemu-options", "--qemu_options", type=str, default="",
-                          help="Additional options for the qemu, e.g. -cpu cortex-m3 -machine lm3s6965evb")
-        self.add_argument("--kernel-cpu", "--kernel_cpu", default="qemu_cortex_m3",
-                          help="The type of CPU that will be used for building an image, e.g. qemu_cortex_m3")
+        act.copy_to_iutctl_args = True
+        act.use_first_as_default = True
 
-        self.add_argument("--hci", type=int, default=None,
-                          help="Specify the number of the HCI controller")
-        self.add_argument("--hid-vid", "--hid_vid", type=str, default=None,
-                          help="Specify the VID of the USB device used as a HCI controller "
-                          "(hexadecimal string, e.g. '2fe3')")
-        self.add_argument("--hid-pid", "--hid_pid", type=str, default=None,
-                          help="Specify the PID of the USB device used as a HCI controller "
-                          "(hexadecimal string, e.g. '000b')")
-        self.add_argument("--hid-serial", "--hid_serial", type=str, default=None,
-                          help="Specify the serial number of the USB device used as a HCI controller")
-        self.add_argument("--btmgmt-bin", "--btmgmt_bin", type=str, default=None,
-                          help="The path to the btmgmt executable, e.g. /usr/bin/btmgmt")
+        act = self.add_argument("--btattach-at-every-test-case", "--btattach_at_every_test_case",
+                                action='store_true', default=False,
+                                help="The path to the btattach executable, e.g. /usr/bin/btattach")
+        act.copy_to_iutctl_args = True
+        act.use_first_as_default = True
+
+        act = self.add_argument("--btproxy-bin", "--btproxy_bin", default=None,
+                                help="The path to the btproxy executable, e.g. /usr/bin/btproxy")
+        act.copy_to_iutctl_args = True
+        act.use_first_as_default = True
+
+        act = self.add_argument("--qemu-bin", "--qemu_bin", default=None,
+                                help="The path to the QEMU executable, e.g. /usr/bin/qemu-system-arm")
+        act.copy_to_iutctl_args = True
+        act.use_first_as_default = False
+
+        act = self.add_argument("--qemu-options", "--qemu_options", type=str,
+                                nargs='+', action="extend", default=[""],
+                                help="Additional options for the qemu, e.g. -cpu cortex-m3 -machine lm3s6965evb")
+        act.copy_to_iutctl_args = True
+        act.use_first_as_default = True
+
+        act = self.add_argument("--kernel-cpu", "--kernel_cpu", type=str, nargs="+", default=[],
+                                help="The type of CPU that will be used for building an image, e.g. qemu_cortex_m3")
+        act.copy_to_iutctl_args = True
+        act.use_first_as_default = True
+
+        act = self.add_argument("--hci", type=int, default=None,
+                                help="Specify the number of the HCI controller")
+        act.copy_to_iutctl_args = True
+        act.use_first_as_default = False
+
+        act = self.add_argument("--hid-vid", "--hid_vid", type=str, default=None,
+                                help="Specify the VID of the USB device used as a HCI controller "
+                                "(hexadecimal string, e.g. '2fe3')")
+        act.copy_to_iutctl_args = True
+        act.use_first_as_default = False
+
+        act = self.add_argument("--hid-pid", "--hid_pid", type=str, default=None,
+                                help="Specify the PID of the USB device used as a HCI controller "
+                                "(hexadecimal string, e.g. '000b')")
+        act.copy_to_iutctl_args = True
+        act.use_first_as_default = False
+
+        act = self.add_argument("--hid-serial", "--hid_serial", type=str, default=None,
+                                help="Specify the serial number of the USB device used as a HCI controller")
+        act.copy_to_iutctl_args = True
+        act.use_first_as_default = False
+
+        act = self.add_argument("--btmgmt-bin", "--btmgmt_bin", type=str, default=None,
+                                help="The path to the btmgmt executable, e.g. /usr/bin/btmgmt")
+        act.copy_to_iutctl_args = True
+        act.use_first_as_default = True
+
         self.add_argument("--setcap-cmd", "--setcap_cmd", type=str, default=None,
                           help="Command to set HCI access permissions for zephyr.exe in native mode, "
                           "e.g. sudo /usr/sbin/setcap cap_net_raw,cap_net_admin,cap_sys_admin+ep /path/to/zephyr.exe "
                           "To allow sudo setcap without password, add to visudo a line like this: "
                           "youruser ALL=(ALL) NOPASSWD: /usr/sbin/setcap")
 
-        self.add_argument("-t", "--tty-file",
-                          help="If TTY(or COM) is specified, BTP communication "
-                               "with OS running on hardware will be done over "
-                               "this TTY. Hence, QEMU will not be used.")
+        act = self.add_argument("-t", "--tty-file", type=str, nargs='+', action="extend", default=[],
+                                help="If TTY(or COM) is specified, BTP communication "
+                                "with OS running on hardware will be done over "
+                                "this TTY. Hence, QEMU will not be used.")
+        act.copy_to_iutctl_args = True
+        act.use_first_as_default = False
 
-        self.add_argument("--net-tty-file", dest='net_tty_file', type=str, default=None,
-                          help="This can be used to log output from network core of IUT "
-                               "(if additional port is available). Value should match "
-                               "the COM/tty file port that outputs log from the network core. "
-                               "There's no indication which COM port maps to the network "
-                               "core.")
+        act = self.add_argument("--net-tty-file", dest='net_tty_file', type=str,
+                                nargs='+', action="extend", default=[],
+                                help="This can be used to log output from network core of IUT "
+                                "(if additional port is available). Value should match "
+                                "the COM/tty file port that outputs log from the network core. "
+                                "There's no indication which COM port maps to the network "
+                                "core.")
+        act.copy_to_iutctl_args = True
+        act.use_first_as_default = False
 
-        self.add_argument("-j", "--jlink", dest="debugger_snr", type=str, default=None,
-                          help="Specify jlink serial number manually.")
+        act = self.add_argument("-j", "--jlink", dest="debugger_snr", type=str,
+                                nargs='+', action="extend", default=[],
+                                help="Specify jlink serial number manually.")
+        act.copy_to_iutctl_args = True
+        act.use_first_as_default = False
 
-        self.add_argument("-b", "--board", dest='board_name', type=str, choices=board_names,
-                          help="Used DUT board. This option is used to "
-                               "select DUT reset command that is run before "
-                               "each test case. If board is not specified DUT "
-                               "will not be reset.")
+        act = self.add_argument("-b", "--board", dest='board_name', type=str,
+                                nargs='+', action="extend", default=[], choices=board_names,
+                                help="Used DUT board. This option is used to "
+                                "select DUT reset command that is run before "
+                                "each test case. If board is not specified DUT "
+                                "will not be reset.")
+        act.copy_to_iutctl_args = True
+        act.use_first_as_default = False
 
-        self.add_argument("--btmon", action='store_true', default=False,
-                          help="Capture iut btsnoop logs from device over RTT and catch them with btmon. Requires rtt "
-                               "support on IUT. When using with native linux build CAP_NET_RAW,CAP_NET_ADMIN and "
-                               "CAP_SYS_ADMIN permissions are required. "
-                               "e.g. sudo setcap cap_net_raw,cap_net_admin,cap_sys_admin+ep /usr/bin/btmon ")
+        act = self.add_argument("--btmon", action='store_true', default=False,
+                                help="Capture iut btsnoop logs from device over RTT and catch them with btmon. Requires rtt "
+                                "support on IUT. When using with native linux build CAP_NET_RAW,CAP_NET_ADMIN and "
+                                "CAP_SYS_ADMIN permissions are required. "
+                                "e.g. sudo setcap cap_net_raw,cap_net_admin,cap_sys_admin+ep /usr/bin/btmon ")
+        act.copy_to_iutctl_args = True
+        act.use_first_as_default = True
 
-        self.add_argument("--device_core", default='NRF52840_XXAA',
-                          help="Specify the device core for JLink related features, "
-                               "e.g. BTMON or RTT logging.")
+        act = self.add_argument("--device_core", type=str, nargs='+', action="extend",
+                                default=['NRF52840_XXAA'],
+                                help="Specify the device core for JLink related features, "
+                                "e.g. BTMON or RTT logging.")
+        act.copy_to_iutctl_args = True
+        act.use_first_as_default = False
 
-        self.add_argument("--rtt-log",
-                          help="Capture iut logs from device over RTT. "
-                          "Requires rtt support on IUT.",
-                          action='store_true', default=False)
+        act = self.add_argument("--rtt-log",
+                                help="Capture iut logs from device over RTT. "
+                                "Requires rtt support on IUT.",
+                                action='store_true', default=False)
+        act.copy_to_iutctl_args = True
+        act.use_first_as_default = True
 
-        self.add_argument("--rtt-log-syncto",
-                          help="Specify the number of seconds that the RTT logging"
-                          "should continue after the test has finished executing.",
-                          type=float, default=0)
+        act = self.add_argument("--rtt-log-syncto",
+                                help="Specify the number of seconds that the RTT logging"
+                                "should continue after the test has finished executing.",
+                                type=float, default=0)
+        act.copy_to_iutctl_args = True
+        act.use_first_as_default = True
 
-        self.add_argument("--gdb",
+        act = self.add_argument("--gdb",
                           help="Skip board resets to avoid gdb server disconnection.",
                           action='store_true', default=False)
+        act.copy_to_iutctl_args = True
+        act.use_first_as_default = True
 
-        self.add_argument("--btp-tcp-ip", "--btp_tcp_ip", type=str, default='127.0.0.1',
-                          help="IP for external btp client over TCP/IP.")
-        self.add_argument("--btp-tcp-port", "--btp_tcp_port", type=int, default=None,
-                          help="Port for external btp client over TCP/IP.")
+        act = self.add_argument("--btp-tcp-ip", "--btp_tcp_ip", type=str, nargs='+',
+                                action="extend", default=['127.0.0.1'],
+                                help="IP for external btp client over TCP/IP.")
+        act.copy_to_iutctl_args = True
+        act.use_first_as_default = False
 
-        self.add_argument("--btpclient_path", type=str, default=None,
-                          help="Path to btpclient.")
+        act = self.add_argument("--btp-tcp-port", "--btp_tcp_port", type=int, nargs='+',
+                                action="extend", default=[],
+                                help="Port for external btp client over TCP/IP.")
+        act.copy_to_iutctl_args = True
+        act.use_first_as_default = False
+
+        act = self.add_argument("--btpclient-path", "--btpclient_path", type=str, nargs='+',
+                                action="extend", default=[], help="Path to btpclient.")
+        act.copy_to_iutctl_args = True
+        act.use_first_as_default = False
 
         self.add_argument("--wid_run", nargs=2, metavar=("SERVICE", "WID"),
                           help="Run testcases based on service and wid")
+
+        act = self.add_argument("--kernel-image", "--kernel_image", type=str, nargs='+',
+                                action="extend", default=[],
+                                help="OS kernel image to be used for testing,"
+                                "e.g. elf file for qemu, exe for native.")
+        act.copy_to_iutctl_args = True
+        act.use_first_as_default = False
 
         self.add_positional_args()
 
@@ -265,6 +364,48 @@ class CliParser(argparse.ArgumentParser):
         self.add_argument("kernel_image", nargs='?', default=None,
                           help="OS kernel image to be used for testing,"
                           "e.g. elf file for qemu, exe for native.")
+
+    def normalize_to_list(self, x):
+        if x is None:
+            return []
+        if isinstance(x, list):
+            return x
+        return [x]
+
+    def remodel_args(self, args):
+        """Group the args parameters for each IUT."""
+
+        # Filter out options/parameters that can be configured
+        # separately for each IUT.
+        iutctl_fields_actions = [
+            a for a in self._actions
+            if getattr(a, "copy_to_iutctl_args", False)
+        ]
+
+        lists = {
+            a.dest: self.normalize_to_list(getattr(args, a.dest))
+            for a in iutctl_fields_actions
+        }
+
+        iuts = []
+
+        for values in zip_longest(*lists.values(), fillvalue=None):
+            data = dict(zip(lists.keys(), values))
+            dev = SimpleNamespace(**data)
+
+            if iuts:
+                first = iuts[0]
+                # Some options/parameters can be common for all IUTs,
+                # so let's allow those to be provided only once.
+                for a in iutctl_fields_actions:
+                    if getattr(a, "use_first_as_default", False):
+                        name = a.dest
+                        if getattr(dev, name) is None:
+                            setattr(dev, name, getattr(first, name))
+
+            iuts.append(dev)
+
+        args.iuts_args = iuts
 
     def _replug_and_find_tty(self, args):
         log(f'{self._replug_and_find_tty.__name__}')
@@ -437,6 +578,8 @@ class CliParser(argparse.ArgumentParser):
         """
         args = self.parse_args(None, arg_ns)
 
+        self.remodel_args(args)
+
         from autopts.client import init_logging
         init_logging('_' + '_'.join(str(x) for x in args.cli_port),
                      FILE_PATHS.get('BOT_LOG_FILE', None))
@@ -447,11 +590,6 @@ class CliParser(argparse.ArgumentParser):
         if args.btattach_bin and not is_executable(args.btattach_bin):
             return args, f'The btattach_bin={args.btattach_bin} is not an executable file'
 
-        if args.ykush or args.active_hub_server:
-            args.usb_replug_available = True
-        else:
-            args.usb_replug_available = False
-
         args.superguard = 60 * args.superguard
 
         if not args.ip_addr:
@@ -460,13 +598,19 @@ class CliParser(argparse.ArgumentParser):
         if not args.local_addr:
             args.local_addr = ['127.0.0.1'] * len(args.cli_port)
 
-        args.iut_mode = self.get_iut_mode(args)
-        if sys.platform == "win32" and args.iut_mode in ['qemu', 'native']:
-            errmsg = f'The {args.iut_mode} mode is not supported under Windows!'
-            return args, errmsg
+        for iut in args.iuts_args:
+            if iut.ykush or iut.active_hub_server:
+                iut.usb_replug_available = True
+            else:
+                iut.usb_replug_available = False
 
-        check_method = getattr(self, f'check_args_{args.iut_mode}')
-        errmsg = check_method(args)
+            iut.iut_mode = self.get_iut_mode(iut)
+            if sys.platform == "win32" and iut.iut_mode in ['qemu', 'native']:
+                errmsg = f'The {iut.iut_mode} mode is not supported under Windows!'
+                return args, errmsg
+
+            check_method = getattr(self, f'check_args_{iut.iut_mode}')
+            errmsg = check_method(iut)
 
         if args.wid_run:
             self.wid_run_tcs(args)
