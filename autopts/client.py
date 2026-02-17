@@ -41,12 +41,14 @@ from xmlrpc.server import SimpleXMLRPCServer
 from termcolor import colored
 
 from autopts.config import FILE_PATHS
-from autopts.ptsprojects import ptstypes, stack
+from autopts.ptsprojects import ptstypes
 from autopts.ptsprojects.boards import get_available_boards, tty_to_com
 from autopts.ptsprojects.ptstypes import E_FATAL_ERROR
 from autopts.ptsprojects.testcase import PTSCallback, TestCaseLT1, TestCaseLT2, TestCaseLT3
 from autopts.ptsprojects.testcase_db import TestCaseTable
 from autopts.pybtp import btp
+from autopts.pybtp.btp import get_iut_method as get_iut
+from autopts.pybtp.iutctl_common import set_current_iutctl_id
 from autopts.pybtp.types import BTPError, BTPFatalError, BTPInitError, MissingWIDError, SynchError
 from autopts.utils import (
     CounterWithFlag,
@@ -972,6 +974,9 @@ class LTThread(InterruptableThread):
         finish_count = self._args[3]
         try:
             self.locked = self.interrupt_lock.acquire()
+
+            set_current_iutctl_id(0)
+
             self._run_test_case(*self._args)
         except Exception as exc:
             logging.exception(exc)
@@ -982,8 +987,13 @@ class LTThread(InterruptableThread):
                 self.interrupt_lock.release()
 
     def cancel_sync_points(self):
-        stack_inst = stack.get_stack()
-        stack_inst.synch.cancel_synch()
+        i = 0
+        while True:
+            iutctl = get_iut(i)
+            if not iutctl:
+                break
+            iutctl.stack.synch.cancel_synch()
+            i += 1
 
     def interrupt(self):
         self.cancel_sync_points()
@@ -1171,6 +1181,10 @@ def run_test_case(ptses, test_case_instances, test_case_name, stats,
                 f'instances are required for this test case!')
             return f'LT{i}_NOT_AVAILABLE'
 
+    if test_case_lts[0].iut_count > 1 and get_iut(iutctl_id=1) is None:
+        log('Not enough IUT instances configured.')
+        return 'IUT2_NOT_AVAILABLE'
+
     test_case_lts[0].initialize_logging(session_log_dir)
     file_handler = logging.FileHandler(test_case_lts[0].log_filename)
     file_handler.setFormatter(formatter)
@@ -1333,7 +1347,7 @@ def run_test_cases(ptses, test_case_instances, args, stats, **kwargs):
             log(f'exception_msg: {exeption_msg}')
 
             if args.recovery and (exeption_msg != '' or status not in args.not_recover):
-                run_recovery(args, ptses)
+                run_recovery(args, ptses, kwargs["iutctl_instances"])
 
             if test_retry_count is not None:
                 retry_limit = test_retry_count
@@ -1372,18 +1386,19 @@ class Client:
 
     """
 
-    def __init__(self, get_iut, project, name, parser_class=CliParser):
+    def __init__(self, init_iutctl, project, name, parser_class=CliParser):
         """
-        param get_iut: function from autoptsprojects.<project>.iutctl
+        param init_iut: function from autoptsprojects.<project>.iutctl
         param project: name of project
         param name: name of stack
         param parser_class: argument parser
         """
         self.test_cases = None
         self.file_paths = FILE_PATHS
-        self.get_iut = get_iut
+        self._init_iutctl = init_iutctl
         self.autopts_project_name = name
         self.store_tag = name + '_'
+        self.iutctl_instances = []
         setup_project_name(project)
         self.boards = get_available_boards(name)
         self.ptses = []
@@ -1406,7 +1421,7 @@ class Client:
         if not self.args.store or self.test_case_database:
             return
 
-        tc_db_table_name = self.store_tag + str(self.args.board_name)
+        tc_db_table_name = self.store_tag + str(self.args.iuts_args[0].board_name)
 
         if os.path.exists(self.args.database_file) and \
                 not os.path.exists(self.file_paths['TEST_CASE_DB_FILE']):
@@ -1466,15 +1481,19 @@ class Client:
 
         if self.args.test_cases_file:
             tests = [_line for line in self.args.test_cases_file.readlines()
-                if (_line := line.strip()) and not _line.startswith("#")]
+                     if (_line := line.strip()) and not _line.startswith("#")]
             self.args.test_cases.extend(tests)
 
         init_pts(self.args, self.ptses)
 
-        btp.init(self.get_iut)
-        self.init_iutctl(self.args)
+        btp.init(self.get_iutctl)
+        for i, device in enumerate(self.args.iuts_args):
+            device.iut_id = i
+            self.init_iutctl(device)
 
-        stack.init_stack()
+        # This is a part of a workaround that allows threads to receive
+        # a right IUT instance (and its stack) from get_iut() and get_stack().
+        set_current_iutctl_id(0)
 
         self.setup_project_pixits(self.ptses)
         self.setup_test_cases(self.ptses)
@@ -1492,7 +1511,17 @@ class Client:
         return stats
 
     def init_iutctl(self, args):
-        autoprojects.iutctl.init(args)
+        iutctl = self._init_iutctl(args)
+        if not iutctl:
+            raise Exception("iutctl creation failed.")
+
+        self.iutctl_instances.append(iutctl)
+
+    def get_iutctl(self, iutctl_id):
+        if 0 <= iutctl_id < len(self.iutctl_instances):
+            return self.iutctl_instances[iutctl_id]
+
+        return None
 
     def setup_project_pixits(self, ptses):
         setup_project_pixits(ptses)
@@ -1525,7 +1554,10 @@ class Client:
 
     def cleanup(self):
         log(f'{self.__class__.__name__}.{self.cleanup.__name__}')
-        autoprojects.iutctl.cleanup()
+        for iutctl in self.iutctl_instances:
+            iutctl.stop()
+
+        self.iutctl_instances.clear()
         self.shutdown_pts()
 
     def shutdown_pts(self):
@@ -1585,16 +1617,16 @@ def recover_at_exception(func):
 
 
 @recover_at_exception
-def run_recovery(args, ptses):
+def run_recovery(args, ptses, iuts):
     log('Running recovery')
 
-    iut = autoprojects.iutctl.get_iut()
-    iut.stop()
+    for iut in iuts:
+        iut.stop()
 
-    if args.usb_replug_available:
-        iut.btattach_stop()
-        replug_usb(args)
-        iut.btattach_start()
+        if args.usb_replug_available:
+            iut.btattach_stop()
+            replug_usb(args, iut)
+            iut.btattach_start()
 
     for pts in ptses:
         req_sent = False
@@ -1625,13 +1657,13 @@ def run_recovery(args, ptses):
             log('Server is still resetting. Wait a little more.')
             time.sleep(1)
 
-    stack_inst = stack.get_stack()
-    stack_inst.cleanup()
+    for iut in iuts:
+        iut.cleanup_stack()
 
     log('Recovery finished')
 
 
-def replug_usb(args):
+def replug_usb(args, iut):
     log(f'{replug_usb.__name__}')
     if args.ykush:
         if sys.platform == 'win32':
@@ -1653,7 +1685,6 @@ def replug_usb(args):
             time.sleep(1)
 
         args.tty_file = os.path.realpath(args.tty_alias)
-        iut = autoprojects.iutctl.get_iut()
         if iut:
             iut.tty_file = args.tty_file
         log(f'TTY {args.tty_alias} mounted as {args.tty_file}\n')

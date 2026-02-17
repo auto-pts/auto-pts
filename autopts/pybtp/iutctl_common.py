@@ -22,6 +22,7 @@ import socket
 import sys
 import threading
 from abc import abstractmethod
+from contextvars import ContextVar
 from datetime import datetime
 
 import serial
@@ -38,6 +39,8 @@ BTP_ADDRESS = "/tmp/bt-stack-tester"
 
 EVENT_HANDLER = None
 
+_current_iutctl_id = ContextVar("current_iutctl_id")
+
 
 def set_event_handler(event_handler):
     """This is required by BTPWorker to drive stack"""
@@ -46,13 +49,42 @@ def set_event_handler(event_handler):
     EVENT_HANDLER = event_handler
 
 
+def set_current_iutctl(iutctl):
+    """
+    Bonds an IUT instance with the context of the calling thread.
+    """
+    from autopts.pybtp.btp.btp import get_iut_method as get_iut
+
+    _id = 0
+    while True:
+        _iutctl = get_iut(iutctl_id=_id)
+        if _iutctl == iutctl:
+            _current_iutctl_id.set(_id)
+            break
+        _id += 1
+
+
+def set_current_iutctl_id(iutctl_id):
+    """
+    Bonds an IUT instance with the context of the calling thread.
+    """
+    _current_iutctl_id.set(iutctl_id)
+
+
+def get_current_iutctl_id():
+    """
+    Get ID of the IUT instance bonded with the context of the calling thread.
+    """
+    return _current_iutctl_id.get()
+
+
 class BTPSocket:
 
-    def __init__(self, log_dir=None):
+    def __init__(self, log_dir=None, log_file="autopts-iutctl.log"):
         self.conn = None
         self.addr = None
         self.btp_service_id_dict = None
-        self.log_file = open(os.path.join(log_dir, "autopts-iutctl.log"), "a")
+        self.log_file = open(os.path.join(log_dir, log_file), "a")
         self.btp_service_id_dict = self.get_svc_id()
 
     @abstractmethod
@@ -216,8 +248,8 @@ class BTPSocket:
 
 class BTPSocketSrv(BTPSocket):
 
-    def __init__(self, log_dir=None):
-        super().__init__(log_dir)
+    def __init__(self, log_dir=None, log_file=None):
+        super().__init__(log_dir, log_file)
         self.sock = None
 
     def open(self, addres=BTP_ADDRESS, port=0):
@@ -281,10 +313,11 @@ class BTPSocketCli(BTPSocket):
 
 
 class BTPWorker:
-    def __init__(self, sock):
+    def __init__(self, sock, iutctl=None):
         super().__init__()
 
         self._socket = sock
+        self._iutctl = iutctl
         self._rx_queue = queue.Queue()
         self._running = threading.Event()
         self._lock = threading.Lock()
@@ -296,6 +329,13 @@ class BTPWorker:
 
     def _rx_task(self):
         log(f'{threading.current_thread().name} started')
+
+        if self._iutctl:
+            # This a workaround that allows BTPWorker to receive
+            # the right IUT instance (and its stack) when an event handler
+            # calls get_iut() or get_stack().
+            set_current_iutctl_id(self._iutctl.iut_id)
+
         socket_ok = True
         while self._running.is_set() and not get_global_end():
             try:
