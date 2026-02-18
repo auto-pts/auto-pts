@@ -25,7 +25,7 @@ from autopts.pybtp import btp
 from autopts.pybtp.types import UUID, Addr, AdFlags, AdType, IOCap, Perm, Prop
 from autopts.wid.gap import hdl_wid_161
 
-gap_wid_hdl = get_wid_handler("mynewt", "gap")
+gap_wid_hdl = get_wid_handler("bluez", "gap")
 
 
 class SVC:

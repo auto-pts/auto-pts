@@ -17,10 +17,10 @@
 """BAP test cases"""
 
 from autopts.client import get_unique_name
-from autopts.ptsprojects.bluez.bap_wid import bap_wid_hdl
 from autopts.ptsprojects.bluez.btestcase import BTestCase, BTestCaseSlave
 from autopts.ptsprojects.bluez.iutctl import get_iut
 from autopts.ptsprojects.stack import SynchPoint, get_stack
+from autopts.ptsprojects.common_wid import get_wid_handler
 from autopts.ptsprojects.testcase import TestFunc, TestFuncCleanUp
 from autopts.pybtp import btp
 from autopts.pybtp.types import Addr, IOCap
@@ -29,6 +29,8 @@ from autopts.utils import ResultWithFlag
 BROADCAST_CODE = '0102680553F1415AA265BBAFC6EA03B8'
 BROADCAST_ID = 0x123456
 BROADCAST_ID_2 = 0x234567
+
+bap_wid_hdl = get_wid_handler("bluez", "bap")
 
 
 def set_pixits(ptses):
