@@ -22,7 +22,18 @@ from autopts.ptsprojects.zephyr.tmap_wid import tmap_wid_hdl
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
 from autopts.pybtp import btp
 from autopts.pybtp.btp.gap import gap_set_uuid16_svc_data
-from autopts.pybtp.types import UUID, Addr, AdType, BAPAnnouncement, CAPAnnouncement, Context, TMAPRole
+from autopts.pybtp.btp.tbs import tbs_register_bearer
+from autopts.pybtp.types import (
+    UUID,
+    Addr,
+    AdType,
+    BAPAnnouncement,
+    BearerTech,
+    CAPAnnouncement,
+    Context,
+    OptionalOpcode,
+    TMAPRole,
+)
 
 
 def set_pixits(ptses):
@@ -71,6 +82,7 @@ def test_cases(ptses):
     advData = {}
 
     # Generic preconditions for all test case in the profile
+    opcodes = OptionalOpcode.ALL
     pre_conditions = [
         TestFunc(btp.core_reg_svc_gap),
         TestFunc(stack.gap_init, iut_device_name),
@@ -113,7 +125,23 @@ def test_cases(ptses):
         TestFunc(stack.vcs_init),
         TestFunc(stack.vocs_init),
         TestFunc(stack.ccp_init),
-    ]
+        TestFunc(lambda opcodes=opcodes: tbs_register_bearer(
+                provider_name="Generic TBS",
+                uci="un000",
+                uri_scheme_list="tel,skype",
+                optional_opcodes=opcodes,
+                gtbs=True,
+                technology=BearerTech.LTE
+        )),
+        TestFunc(lambda opcodes=opcodes: tbs_register_bearer(
+                provider_name="TBS",
+                uci="un000",
+                uri_scheme_list="tel,skype",
+                optional_opcodes=opcodes,
+                gtbs=False,
+                technology=BearerTech.WIFI
+        )),
+]
 
     adv_end = [
         TestFunc(btp.gap_set_extended_advertising_on),
