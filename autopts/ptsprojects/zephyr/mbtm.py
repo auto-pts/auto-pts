@@ -27,7 +27,7 @@ from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
 from autopts.pybtp import btp, defs
 
-mmdl_wid_hdl = get_wid_handler("zephyr", "mbtm")
+mmdl_wid_hdl = get_wid_handler("zephyr", "mmdl")
 
 
 def set_pixits(ptses):

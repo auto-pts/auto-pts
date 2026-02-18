@@ -24,6 +24,7 @@ from autopts.pybtp.types import AdType, OwnAddrType, WIDParams, gap_settings_btp
 log = logging.debug
 
 
+# wid handlers section begin
 def hdl_wid_3(_: WIDParams):
     """Please create different workspaces and run this test case with 3 instances of PTS."""
 

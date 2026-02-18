@@ -16,8 +16,8 @@
 import struct
 
 from autopts.client import get_unique_name
-from autopts.ptsprojects.stack import SynchPoint, get_stack
 from autopts.ptsprojects.common_wid import get_wid_handler
+from autopts.ptsprojects.stack import SynchPoint, get_stack
 from autopts.ptsprojects.testcase import TestFunc
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
 from autopts.pybtp import btp
@@ -35,6 +35,7 @@ from autopts.pybtp.types import (
     TMAPRole,
 )
 from autopts.utils import ResultWithFlag
+
 tmap_wid_hdl = get_wid_handler("zephyr", "tmap")
 
 

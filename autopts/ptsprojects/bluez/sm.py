@@ -24,7 +24,7 @@ from autopts.ptsprojects.testcase import TestFunc
 from autopts.pybtp import btp
 from autopts.pybtp.types import Addr, IOCap
 
-sm_wid_hdl = get_wid_handler("mynewt", "sm")
+sm_wid_hdl = get_wid_handler("bluez", "sm")
 
 
 def set_pixits(ptses):

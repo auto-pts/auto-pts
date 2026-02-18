@@ -24,6 +24,7 @@ from autopts.pybtp.types import WIDParams
 log = logging.debug
 
 
+# wid handlers section begin
 def hdl_wid_5(params: WIDParams):
     """Please write to Audio Input Control Point with the Set Gain Setting Op Code
     value of 0x01, the Gain Setting parameters set to a random value greater than

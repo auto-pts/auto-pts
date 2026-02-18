@@ -23,6 +23,7 @@ from autopts.pybtp.types import IOCap, WIDParams
 log = logging.debug
 
 
+# wid handlers section begin
 def hdl_wid_100(params: WIDParams):
     btp.gap_conn()
     get_stack().gap.wait_for_connection(30)

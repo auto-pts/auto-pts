@@ -23,7 +23,7 @@ from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
 from autopts.pybtp import btp
 from autopts.pybtp.types import Addr
 
-ccp_wid_hdl = get_wid_handler("zephyr", "cpp")
+ccp_wid_hdl = get_wid_handler("zephyr", "ccp")
 
 
 def set_pixits(ptses):

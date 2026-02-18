@@ -48,6 +48,7 @@ from autopts.wid.common import _safe_bap_send
 log = logging.debug
 
 
+# wid handlers section begin
 def hdl_wid_100(params: WIDParams):
     """
     Please synchronize with Broadcast ISO request

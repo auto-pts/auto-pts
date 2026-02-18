@@ -15,7 +15,7 @@ def get_wid_handler(backend: str, profile: str):
     """
     def handler(wid, description, test_case_name):
         from autopts.wid import generic_wid_hdl
-        log(f"{backend}.{profile} handler, wid={wid}, tc={test_case_name}")
+        log("%r.%r handler, wid=%r, tc=%r", backend, profile, wid, test_case_name)
         if profile == "gatt":
             stack = get_stack()
             ns = [__name__]
