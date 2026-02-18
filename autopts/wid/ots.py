@@ -22,6 +22,7 @@ from autopts.pybtp.types import WIDParams
 log = logging.debug
 
 
+# wid handlers section begin
 def hdl_wid_0(params: WIDParams):
     """Please make sure no object is stored on the IUT"""
 

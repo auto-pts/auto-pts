@@ -23,6 +23,7 @@ from autopts.pybtp.types import WIDParams
 log = logging.debug
 
 
+# wid handlers section begin
 def hdl_wid_1(_: WIDParams):
     """
         Please make sure IUT has been locked by another Lower Tester by executing CSIS_SR_SP_BV_01_C.

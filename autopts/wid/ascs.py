@@ -24,6 +24,7 @@ from autopts.wid.bap import create_lc3_ltvs_bytes
 log = logging.debug
 
 
+# wid handlers section begin
 def hdl_wid_200(_: WIDParams):
     btp.ascs_release(1)
     return True

@@ -24,6 +24,7 @@ from autopts.pybtp.types import UUID, AdFlags, AdType, BASSPASyncState, BIGEncry
 log = logging.debug
 
 
+# wid handlers section begin
 def hdl_wid_100(param: WIDParams):
     """
     Please synchronize with Broadcast ISO request.
