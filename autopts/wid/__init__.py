@@ -18,8 +18,6 @@ from .mesh import (
                    mesh_wid_hdl_rpr_persistent_storage_alt,
 )
 from .micp import micp_wid_hdl
-from .rfcomm import rfcomm_wid_hdl
-
 # GENERATOR append 1
 from .wid import generic_wid_hdl
 
@@ -28,7 +26,6 @@ __all__ = [
     "mesh_wid_hdl_rpr_persistent_storage",
     "mesh_wid_hdl_rpr_persistent_storage_alt",
     "micp_wid_hdl",
-    "rfcomm_wid_hdl",
 # GENERATOR append 2
     "generic_wid_hdl",
 ]

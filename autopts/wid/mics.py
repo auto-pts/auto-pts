@@ -22,6 +22,7 @@ from autopts.pybtp.types import WIDParams
 log = logging.debug
 
 
+# wid handlers section begin
 def hdl_wid_20001(_: WIDParams):
     """Please prepare IUT into a connectable mode. Verify that the
     Implementation Under Test (IUT) can accept GATT connect request from PTS."""

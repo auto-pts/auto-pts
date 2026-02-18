@@ -148,6 +148,7 @@ def dump_services(attrs):
                 print(f"\t\tDescriptor: {desc.uuid} handle {desc.handle}")
 
 
+# wid handlers section begin
 def hdl_wid_104(params: WIDParams):
     """
     Please Write(WRITE_REQ) Call Control Point Op Code:(0x00) and Call ID(1)

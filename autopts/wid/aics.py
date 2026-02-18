@@ -25,6 +25,7 @@ addr_type = 0
 addr = "000000000000"
 
 
+# wid handlers section begin
 def hdl_wid_20001(_: WIDParams):
     stack = get_stack()
     btp.gap_set_conn()
