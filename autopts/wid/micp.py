@@ -40,6 +40,7 @@ def micp_wid_hdl(wid, description, test_case_name, logs=True):
 micp_aics_state_used = False
 
 
+# wid handlers section begin
 def hdl_wid_2(params: WIDParams):
     """
     Please read any characteristic.

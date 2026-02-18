@@ -28,6 +28,7 @@ log = logging.debug
 indication_subbed_already = False
 
 
+# wid handlers section begin
 def hdl_wid_1(_: WIDParams):
     """
     Please prepare IUT into a connectable mode.

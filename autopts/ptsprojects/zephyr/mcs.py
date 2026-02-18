@@ -24,7 +24,7 @@ from autopts.pybtp import btp
 from autopts.pybtp.types import Addr, IOCap
 from autopts.utils import ResultWithFlag
 
-gmcs_wid_hdl = get_wid_handler("zephyr", "mcs")
+gmcs_wid_hdl = get_wid_handler("zephyr", "gmcs")
 
 iut_addr = ResultWithFlag()
 

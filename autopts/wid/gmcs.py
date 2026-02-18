@@ -21,9 +21,8 @@ from autopts.pybtp.types import WIDParams
 
 log = logging.debug
 
+
 # wid handlers section begin
-
-
 def hdl_wid_4(params: WIDParams):
     """Please configure an initial state to Inactive state"""
     stack = get_stack()

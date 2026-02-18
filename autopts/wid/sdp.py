@@ -22,6 +22,7 @@ from autopts.pybtp.types import WIDParams
 log = logging.debug
 
 
+# wid handlers section begin
 def hdl_wid_6000(_: WIDParams):
     '''
     If necessary take action to accept the SDP channel connection.
