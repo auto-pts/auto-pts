@@ -483,7 +483,8 @@ def pull_server_logs(args, tmp_dir, xml_folder):
 
     if args.server_args:
         # Logs available locally
-        _pull_logs(PtsServer)
+        if args.copy_workspace:
+            _pull_logs(PtsServer)
     else:
         # Use xmlrpc proxy to pull logs
         server_addr = args.ip_addr
@@ -499,7 +500,8 @@ def pull_server_logs(args, tmp_dir, xml_folder):
         for addr in servers:
             with ServerProxy(f"http://{addr}:{servers[addr][0]}/",
                              allow_none=True) as proxy:
-                _pull_logs(proxy)
+                if args.copy_workspace:
+                    _pull_logs(proxy)
                 copy_server_log_file(tmp_dir, proxy, servers[addr])
 
     return logs_folder, xml_folder
