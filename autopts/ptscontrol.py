@@ -1069,6 +1069,26 @@ class PyPTS:
 
         return address
 
+    def switch_dongle(self, device, force_reconnect=True):
+        if self.lite_start:
+            self._pts_projects = device or None
+            return 'xxxxxxxxxxxx'
+
+        self._preferred_device = device or None
+
+        if not force_reconnect:
+            return None
+
+        try:
+            self._disconnect_dongle()
+        except Exception as e:
+            log(e)
+
+        self._device = None
+        self.__bd_addr = None
+
+        return self._connect_to_dongle()
+
     def _connect_to_dongle(self):
         log(self._connect_to_dongle.__name__)
 
