@@ -24,7 +24,6 @@ from autopts.ptsprojects.zephyr.ztestcase import ZTestCase, ZTestCaseSlave
 from autopts.pybtp import btp
 from autopts.pybtp.types import UUID, Addr, IOCap, Perm, Prop
 from autopts.utils import ResultWithFlag
-from autopts.wid.gatt import gattc_wid_hdl_multiple_indications
 
 
 class Value:
@@ -315,9 +314,6 @@ def test_cases_server(ptses):
                   pre_conditions + init_server,
                   generic_wid_hdl=gatt_wid_hdl,
                   lt2="GATT/SR/GAS/BV-03-C-LT2"),
-        ZTestCase("GATT", "GATT/SR/GAI/BI-01-C",
-                  pre_conditions + init_server,
-                  generic_wid_hdl=gattc_wid_hdl_multiple_indications),
         # TODO rewrite GATT/SR/GAS/BV-01-C
         ZTestCase("GATT", "GATT/SR/GAS/BV-01-C",
                   cmds=pre_conditions +

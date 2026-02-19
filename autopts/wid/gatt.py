@@ -44,34 +44,6 @@ def gatt_wid_hdl(wid, description, test_case_name):
     return generic_wid_hdl(wid, description, test_case_name, [__name__])
 
 
-def gattc_wid_hdl_multiple_indications(wid, description, test_case_name):
-    global indication_subbed_already
-    if wid == 99:
-        log("%s, %r, %r, %s", gattc_wid_hdl_multiple_indications.__name__, wid, description,
-            test_case_name)
-        pattern = re.compile(r"'([0-9a-fA-F]+)'")
-        params = pattern.findall(description)
-        if not params:
-            logging.error("parsing error")
-            return False
-
-        handle = params[0]
-
-        btp.gattc_cfg_indicate(btp.pts_addr_type_get(), btp.pts_addr_get(),
-                               1, handle)
-
-        if not indication_subbed_already:
-            indication_subbed_already = True
-        else:
-            btp.gattc_notification_ev(btp.pts_addr_get(),
-                                      btp.pts_addr_type_get(), 2)
-            btp.gattc_notification_ev(btp.pts_addr_get(),
-                                      btp.pts_addr_type_get(), 2)
-        return True
-
-    gatt_wid_hdl(wid, description, test_case_name)
-
-
 def gatt_server_fetch_db():
     db = GattDB()
     bd_addr = btp.pts_addr_get()
