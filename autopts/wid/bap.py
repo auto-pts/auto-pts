@@ -328,12 +328,6 @@ AC_CONFIGS: Final[list[AudioConfigTest]] = [
 AC_CONFIGS_DICT: Final[dict[str, AudioConfigTest]] = {cfg.test_case_str: cfg for cfg in AC_CONFIGS}
 
 
-def bap_wid_hdl(wid, description, test_case_name):
-    from autopts.wid import generic_wid_hdl
-    log(f'{bap_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
-    return generic_wid_hdl(wid, description, test_case_name, [__name__])
-
-
 # wid handlers section begin
 def hdl_wid_20100(params: WIDParams):
     if params.test_case_name.endswith('LT2'):

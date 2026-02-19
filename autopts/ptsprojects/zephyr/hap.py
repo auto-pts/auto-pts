@@ -17,14 +17,16 @@
 import struct
 
 from autopts.client import get_unique_name
+from autopts.ptsprojects.common_wid import get_wid_handler
 from autopts.ptsprojects.stack import get_stack
 from autopts.ptsprojects.testcase import TestFunc
-from autopts.ptsprojects.zephyr.hap_wid import hap_wid_hdl
 from autopts.ptsprojects.zephyr.ztestcase import ZTestCase
 from autopts.pybtp import btp
 from autopts.pybtp.btp.gap import gap_set_uuid16_svc_data
 from autopts.pybtp.defs import HAS_TSPX_available_presets_indices, HAS_TSPX_unavailable_presets_indices
 from autopts.pybtp.types import UUID, Addr, AdType, BAPAnnouncement, CAPAnnouncement, Context
+
+hap_wid_hdl = get_wid_handler("zephyr", "hap")
 
 # Options aligned with the overlay-le-audio.conf options
 BTP_HAP_HA_OPTS_DEFAULT = (btp.defs.HAP_HA_OPT_PRESETS_DYNAMIC |

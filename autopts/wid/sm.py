@@ -19,16 +19,11 @@ import re
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp, defs
 from autopts.pybtp.types import IOCap, WIDParams
-from autopts.wid import generic_wid_hdl
 
 log = logging.debug
 
 
-def sm_wid_hdl(wid, description, test_case_name):
-    log(f'{sm_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
-    return generic_wid_hdl(wid, description, test_case_name, [__name__])
-
-
+# wid handlers section begin
 def hdl_wid_100(params: WIDParams):
     btp.gap_conn()
     get_stack().gap.wait_for_connection(30)

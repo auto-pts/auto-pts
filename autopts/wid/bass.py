@@ -24,12 +24,7 @@ from autopts.pybtp.types import UUID, AdFlags, AdType, BASSPASyncState, BIGEncry
 log = logging.debug
 
 
-def bass_wid_hdl(wid, description, test_case_name):
-    from autopts.wid import generic_wid_hdl
-    log(f'{bass_wid_hdl.__name__}, {wid}, {description}, {test_case_name}')
-    return generic_wid_hdl(wid, description, test_case_name, [__name__])
-
-
+# wid handlers section begin
 def hdl_wid_100(param: WIDParams):
     """
     Please synchronize with Broadcast ISO request.
