@@ -76,12 +76,12 @@ def set_pixits(ptses):
     pts.set_pixit("HAP", "TSPX_num_presets", str(num_presets))
 
 
-def set_member_rsi(advData, targeted):
+def set_member_rsi(adv_data, targeted):
     """
         RSI
     """
     rsi = btp.cas_get_member_rsi()
-    advData[AdType.rsi] = struct.pack('<6B', *rsi)
+    adv_data[AdType.rsi] = struct.pack('<6B', *rsi)
 
 
 test_cases_binaural = [
@@ -104,7 +104,7 @@ def test_cases(ptses):
     iut_device_name = get_unique_name(pts)
     stack = get_stack()
 
-    advData = {}
+    adv_data = {}
 
     pre_conditions = [
         TestFunc(btp.core_reg_svc_gap),
@@ -136,12 +136,12 @@ def test_cases(ptses):
     ]
 
     adv_conditions = [
-        TestFunc(gap_set_uuid16_svc_data, advData, UUID.CAS, struct.pack('<B', CAPAnnouncement.TARGETED)),
-        TestFunc(gap_set_uuid16_svc_data, advData, UUID.ASCS, struct.pack('<BHHB', BAPAnnouncement.TARGETED,
+        TestFunc(gap_set_uuid16_svc_data, adv_data, UUID.CAS, struct.pack('<B', CAPAnnouncement.TARGETED)),
+        TestFunc(gap_set_uuid16_svc_data, adv_data, UUID.ASCS, struct.pack('<BHHB', BAPAnnouncement.TARGETED,
                 Context.LIVE | Context.MEDIA, Context.LIVE, 0)),
-        TestFunc(set_member_rsi, advData, True),
+        TestFunc(set_member_rsi, adv_data, True),
         TestFunc(btp.gap_set_extended_advertising_on),
-        TestFunc(btp.gap_adv_ind_on, ad=advData),
+        TestFunc(btp.gap_adv_ind_on, ad=adv_data),
     ]
 
     pre_conditions_ha_binaural = pre_conditions + adv_conditions + [

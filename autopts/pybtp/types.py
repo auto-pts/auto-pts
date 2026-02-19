@@ -389,7 +389,7 @@ class ASCSOperation:
 
 
 # Assigned Numbers (2023), 6.12.4 Codec_Specific_Capabilities LTV Structures
-class LC3_PAC_LTV_Type:
+class Lc3PacLtvType:
     SAMPLING_FREQ = 0x01
     FRAME_DURATION = 0x02
     CHANNELS = 0x03
@@ -398,7 +398,7 @@ class LC3_PAC_LTV_Type:
 
 
 # Assigned Numbers (2023), 6.12.5 Codec_Specific_Configuration LTV structures
-class LC3_LTV_Config_Type:
+class Lc3LtvConfigType:
     SAMPLING_FREQ = 0x01
     FRAME_DURATION = 0x02
     CHANNEL_ALLOCATION = 0x03
@@ -487,14 +487,14 @@ QOS_CONFIG_SETTINGS = {
 def create_lc3_ltvs_bytes(sampling_freq, frame_duration, audio_locations,
                           octets_per_frame, frames_per_sdu):
     ltvs = bytearray()
-    ltvs += struct.pack('<BBB', 2, LC3_LTV_Config_Type.SAMPLING_FREQ, sampling_freq)
-    ltvs += struct.pack('<BBB', 2, LC3_LTV_Config_Type.FRAME_DURATION, frame_duration)
+    ltvs += struct.pack('<BBB', 2, Lc3LtvConfigType.SAMPLING_FREQ, sampling_freq)
+    ltvs += struct.pack('<BBB', 2, Lc3LtvConfigType.FRAME_DURATION, frame_duration)
 
     if audio_locations:
-        ltvs += struct.pack('<BBI', 5, LC3_LTV_Config_Type.CHANNEL_ALLOCATION, audio_locations)
+        ltvs += struct.pack('<BBI', 5, Lc3LtvConfigType.CHANNEL_ALLOCATION, audio_locations)
 
-    ltvs += struct.pack('<BBH', 3, LC3_LTV_Config_Type.FRAME_LEN, octets_per_frame)
-    ltvs += struct.pack('<BBB', 2, LC3_LTV_Config_Type.FRAMES_PER_SDU, frames_per_sdu)
+    ltvs += struct.pack('<BBH', 3, Lc3LtvConfigType.FRAME_LEN, octets_per_frame)
+    ltvs += struct.pack('<BBB', 2, Lc3LtvConfigType.FRAMES_PER_SDU, frames_per_sdu)
 
     return ltvs
 
@@ -531,12 +531,12 @@ BASS_PA_INTERVAL_UNKNOWN: Final[int] = 0xFFFF
 
 
 class TMAPRole(IntFlag):
-    CALL_GATEWAY = defs.BIT(0)
-    CALL_TERMINAL = defs.BIT(1)
-    UNICAST_MEDIA_SENDER = defs.BIT(2)
-    UNICAST_MEDIA_RECEIVER = defs.BIT(3)
-    BROADCAST_MEDIA_SENDER = defs.BIT(4)
-    BROADCAST_MEDIA_RECEIVER = defs.BIT(5)
+    CALL_GATEWAY = defs.bit(0)
+    CALL_TERMINAL = defs.bit(1)
+    UNICAST_MEDIA_SENDER = defs.bit(2)
+    UNICAST_MEDIA_RECEIVER = defs.bit(3)
+    BROADCAST_MEDIA_SENDER = defs.bit(4)
+    BROADCAST_MEDIA_RECEIVER = defs.bit(5)
 
 
 class BAPAnnouncement:

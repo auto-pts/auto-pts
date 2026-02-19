@@ -11,7 +11,7 @@ exclude = [
 ]
 
 [tool.ruff.lint]
-select = ["F", "E", "W", "I", "UP", "ISC", "TID", "PT", "A", "PERF", "B"]
+select = ["F", "E", "N", "W", "I", "UP", "ISC", "TID", "PT", "A", "PERF", "B"]
 ignore = ["F841"] # F841 - there are a lot of variables that are not currently used in the repository but may be in internal tests
 # select = ["E", "W", "F", "I", "UP", "C90", "PYI", "ISC", "TID"]
 preview = true
