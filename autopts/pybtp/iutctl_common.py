@@ -293,6 +293,7 @@ class BTPWorker:
         self._rx_worker.name = f'BTPWorker{self._rx_worker.name}'
 
         self.event_handler_cb = None
+        self.lt_thread = threading.current_thread()
 
     def _rx_task(self):
         log(f'{threading.current_thread().name} started')
@@ -313,10 +314,12 @@ class BTPWorker:
             except socket.timeout:
                 # this one is expected so ignore
                 pass
-            except OSError:
+            except OSError as err:
                 if socket_ok:
                     socket_ok = False
                     log('socket.error: BTPSocket is closed')
+                    self.lt_thread.args[2].put(err)
+                    self.lt_thread.args[3].set_flag()
             except Exception as e:
                 logging.error("%r", e)
 
