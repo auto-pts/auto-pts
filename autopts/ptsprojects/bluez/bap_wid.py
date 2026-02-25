@@ -16,6 +16,8 @@
 import logging
 import re
 
+import autopts.wid.bap
+from autopts.ptsprojects.bluez.iutctl import get_iut
 from autopts.ptsprojects.stack import get_stack
 from autopts.pybtp import btp
 from autopts.pybtp.types import (
@@ -27,7 +29,6 @@ from autopts.pybtp.types import (
     create_lc3_ltvs_bytes,
 )
 from autopts.wid import generic_wid_hdl
-from autopts.wid.bap import create_default_config
 
 log = logging.debug
 
@@ -42,6 +43,10 @@ def hdl_wid_302(params: WIDParams):
     Please configure ASE state to CODEC configured with SINK/SOURCE ASE,
     Freq: X KHz, Frame Duration: X ms
     """
+
+    if get_iut().external_audio is not None:
+        logging.debug("External audio supported, skipping WID 302 handling")
+        return True
 
     numbers = re.findall(r'\d+(?:\.\d+)?', params.description)
     sampling_freq = numbers[0]
@@ -93,7 +98,7 @@ def hdl_wid_302(params: WIDParams):
     btp.ascs_config_qos(ase_id, 0, 0, *qos_config, 0)
     stack.ascs.wait_ascs_operation_complete_ev(addr_type, addr, ase_id, 30)
 
-    config = create_default_config()
+    config = autopts.wid.bap.create_default_config()
     config.addr = addr
     config.addr_type = addr_type
     config.ase_id = ase_id
@@ -102,3 +107,15 @@ def hdl_wid_302(params: WIDParams):
     stack.bap.ase_configs.append(config)
 
     return True
+
+
+def hdl_wid_303(params: WIDParams):
+    """
+    Please configure ASE state to QoS Configured with 16_2_1 in SINK direction.
+    """
+
+    if get_iut().external_audio is not None:
+        logging.debug("External audio supported, skipping WID 303 handling")
+        return True
+
+    return autopts.wid.bap.hdl_wid_303(params)

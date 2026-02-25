@@ -259,6 +259,9 @@ class CliParser(argparse.ArgumentParser):
         self.add_argument("--wid_run", nargs=2, metavar=("SERVICE", "WID"),
                           help="Run testcases based on service and wid")
 
+        self.add_argument("--external-audio", type=str, default=None,
+                          help="External audio support type.")
+
         self.add_positional_args()
 
     def add_positional_args(self):

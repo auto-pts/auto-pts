@@ -19,8 +19,9 @@
 from autopts.client import get_unique_name
 from autopts.ptsprojects.bluez.bap_wid import bap_wid_hdl
 from autopts.ptsprojects.bluez.btestcase import BTestCase
+from autopts.ptsprojects.bluez.iutctl import get_iut
 from autopts.ptsprojects.stack import get_stack
-from autopts.ptsprojects.testcase import TestFunc
+from autopts.ptsprojects.testcase import TestFunc, TestFuncCleanUp
 from autopts.pybtp import btp
 from autopts.pybtp.types import Addr, IOCap
 from autopts.utils import ResultWithFlag
@@ -91,12 +92,14 @@ def test_cases(ptses):
 
     stack.gap_init()
 
+    iut = get_iut()
     iut_addr = ResultWithFlag()
 
     def set_addr(addr):
         iut_addr.set(addr)
 
     pre_conditions = [
+        TestFunc(iut.start_audio),
         TestFunc(btp.core_reg_svc_gap),
         TestFunc(btp.gap_reset),
         TestFunc(btp.gap_set_io_cap, IOCap.display_only),
@@ -117,6 +120,7 @@ def test_cases(ptses):
         TestFunc(lambda: stack.bap.set_broadcast_code(BROADCAST_CODE)),
         TestFunc(lambda: set_addr(
             stack.gap.iut_addr_get_str())),
+        TestFuncCleanUp(iut.stop_audio),
         ]
 
     custom_test_cases = [
