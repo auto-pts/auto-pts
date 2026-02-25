@@ -15,6 +15,7 @@
 #
 
 import logging
+import os
 import shlex
 import subprocess
 
@@ -28,6 +29,7 @@ IUT = None
 
 # IUT log file object
 IUT_LOG_FO = None
+IUT_AUDIO_LOG_FO = None
 CLI_SUPPORT = ['btpclient_path']
 
 
@@ -44,14 +46,17 @@ class IUTCtl:
 
     def __init__(self, args):
         """Constructor."""
-        log("%s.%s btpclient_path=%s", self.__class__, self.__init__.__name__,
-            args.btpclient_path)
+        log("%s.%s btpclient_path=%s external_audio=%s", self.__class__, self.__init__.__name__,
+            args.btpclient_path, args.external_audio)
 
         self.btpclient_path = args.btpclient_path[0]
+        self.external_audio = args.external_audio
         self.btp_socket = None
         self.btp_address = BTP_ADDRESS
         self.socket_srv = None
         self.iut_process = None
+        self.audio_profile = None
+        self.audio_process = None
 
         self.stack = Stack()
         self.stack.synch_init()
@@ -111,8 +116,51 @@ class IUTCtl:
             self.iut_process.wait()  # do not let zombies take over
             self.iut_process = None
 
+        self.stop_audio()
+
     def get_stack(self):
         return self.stack
+
+    def get_external_audio_support(self):
+        """Returns the type of external audio support, or None if not supported"""
+        return self.external_audio
+
+    def start_audio(self):
+        if self.external_audio != "wireplumber":
+            return
+
+        logging.debug("Starting external audio with profile: %s", self.audio_profile)
+        wp_env = os.environ.copy()
+        wp_env["WIREPLUMBER_DEBUG"] = "I,spa.bluez*:D"
+        if self.audio_profile is not None:
+            base_cfg_dir = wp_env.get("WIREPLUMBER_CONFIG_DIR", "")
+            profile_dir = os.path.join(os.path.dirname(__file__), "wireplumber/", self.audio_profile)
+            if base_cfg_dir:
+                wp_env["WIREPLUMBER_CONFIG_DIR"] = base_cfg_dir + ":" + profile_dir
+            else:
+                wp_env["WIREPLUMBER_CONFIG_DIR"] = profile_dir
+        self.audio_process = subprocess.Popen(["wireplumber", "--profile", "bluetooth"],
+                                                env=wp_env,
+                                                stdout=IUT_AUDIO_LOG_FO,
+                                                stderr=IUT_AUDIO_LOG_FO)
+        logging.debug("Starting external audio process with PID: %s", self.audio_process.pid)
+
+    def stop_audio(self):
+        if self.audio_process and self.audio_process.poll() is None:
+            logging.debug("Stopping external audio process with PID: %s", self.audio_process.pid)
+            self.audio_process.terminate()
+            try:
+                self.audio_process.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                logging.debug("External audio process with PID %s did not terminate in time, killing it",
+                                self.audio_process.pid)
+                self.audio_process.kill()
+                self.audio_process.wait()
+            self.audio_process = None
+        self.audio_profile = None
+
+    def set_audio_profile(self, profile):
+        self.audio_profile = profile
 
 
 def get_iut():
@@ -122,16 +170,22 @@ def get_iut():
 def init(args):
     """IUT init routine"""
     global IUT_LOG_FO
+    global IUT_AUDIO_LOG_FO
     global IUT
 
     IUT_LOG_FO = open("iut-bluez.log", "w")
+    IUT_AUDIO_LOG_FO = open("iut-bluez-audio.log", "w")
 
     IUT = IUTCtl(args)
 
 
 def cleanup():
     """IUT cleanup routine"""
-    global IUT_LOG_FO, IUT
+    global IUT_LOG_FO, IUT_AUDIO_LOG_FO, IUT
+    if IUT_AUDIO_LOG_FO:
+        IUT_AUDIO_LOG_FO.close()
+        IUT_AUDIO_LOG_FO = None
+
     if IUT_LOG_FO:
         IUT_LOG_FO.close()
         IUT_LOG_FO = None

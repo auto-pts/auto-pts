@@ -314,6 +314,9 @@ class CliParser(SmartDefaultsMixin, argparse.ArgumentParser):
                           help="OS kernel image to be used for testing,"
                           "e.g. elf file for qemu, exe for native.", iut_param=True)
 
+        self.add_argument("--external-audio", type=str, default=None,
+                          help="External audio support type.")
+
         self.add_positional_args()
 
     def add_positional_args(self):
