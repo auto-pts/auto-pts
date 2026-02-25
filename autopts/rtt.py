@@ -83,9 +83,9 @@ class RTT:
         # the cached lib to prevent memory leak (around 20MB per test case!).
         RTT.lib = RTT.jlink._library
 
-        RTT.jlink.disable_dialog_boxes()
         if not RTT.jlink.opened():
             RTT.jlink.open(serial_no=debugger_snr)
+        RTT.jlink.disable_dialog_boxes()
 
         RTT.jlink.set_tif(pylink.enums.JLinkInterfaces.SWD)
         RTT.jlink.connect(device_core)
