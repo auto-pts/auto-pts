@@ -92,7 +92,47 @@ optional arguments:
 ./autoptsclient-bluez.py "C:\Users\tester\Documents\Profile Tuning Suite\bluez\bluez.pqw6" --btpclient_path=/home/han1/work/bluez/tools/btpclient -i 192.168.0.18 -l 192.168.0.15 -c GAP
 ```
 
+### Using PipeWire for audio
+
+By default the tests run with BlueZ in standalone mode. For audio-related profiles you can route audio through PipeWire instead.
+To do this, run a WirePlumber (the PipeWire session manager) instance with Bluetooth audio disabled so it does not claim Bluetooth
+devices, and start the Auto-PTS client with `--external-audio=wireplumber`:
+
+```bash
+./autoptsclient-bluez.py "C:\Users\tester\Documents\Profile Tuning Suite\bluez\bluez.pqw6" --btpclient_path=/home/han1/work/bluez/tools/btpclient -i 192.168.0.18 -l 192.168.0.15 --external-audio=wireplumber -c BAP
+```
+
+During test runs the test harness will automatically start a secondary WirePlumber instance for the test session using specific
+configurations. This ensures the test-managed WirePlumber does not interfere with the system-wide PipeWire session and keeps Bluetooth
+audio handling disabled for the duration of the tests.
+
+Note:
+
+- During development phase, Auto-PTS or PipeWire developers can run tests with a locally built (uninstalled) PipeWire by starting
+  the build-provided shell in the PipeWire source directory and running the Auto-PTS client from that shell:
+
+  ```bash
+  cd /path/to/pipewire
+  make shell
+  # inside the make-provided shell, run the client as before
+  cd /path/to/auto-pts
+  ./autoptsclient-bluez.py "C:\Users\tester\Documents\Profile Tuning Suite\bluez\bluez.pqw6" --btpclient_path=/home/han1/work/bluez/tools/btpclient -i 192.168.0.18 -l 192.168.0.15 --external-audio=wireplumber -c BAP
+  ```
+
+#### Sample WirePlumber Bluetooth disabling configuration
+For a system install place the file under `~/.config/wireplumber/wireplumber.conf.d/disable-bluetooth.conf`.
+During PipeWire development place it in the PipeWire source tree at `</path/to/pipewire>/subprojects/wireplumber/src/config/wireplumber.conf.d/disable-bluetooth.conf`.
+
+The file contents should be:
+```conf
+wireplumber.profiles = {
+  main = {
+    hardware.bluetooth = disabled
+  }
+}
+```
+
 ### Logs
 
-AutoPTS Clinet log can be found under `logs` folder.
-`btpclient` log is generated to `iut_bluez.log`
+AutoPTS Client log can be found under `logs` folder.
+`btpclient` log is generated to `iut-bluez.log`, PipeWire/WirePlumber log is generated to `iut-bluez-audio.log`.
