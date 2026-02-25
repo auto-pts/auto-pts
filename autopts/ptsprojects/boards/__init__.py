@@ -91,9 +91,9 @@ def pylink_reset(debugger_snr, device_core):
 
     jlink = pylink.JLink()
     try:
-        jlink.disable_dialog_boxes()
         if not jlink.opened():
             jlink.open(serial_no=debugger_snr)
+        jlink.disable_dialog_boxes()
 
         jlink.set_tif(pylink.enums.JLinkInterfaces.SWD)
         jlink.connect(device_core)
