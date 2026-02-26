@@ -400,6 +400,16 @@ iut_config = {
             'GAP/SEC/SEM/BV-35-C',
         ]
     },
+
+    "br_l2cap_ext_feat.conf": {
+        "pre_overlay": "prj_br.conf",
+        "overlay": {
+            'CONFIG_BT_L2CAP_CONNLESS': 'y',
+        },
+        "test_cases": [
+            'L2CAP/EXF/BV-07-C',
+        ]
+    },
 }
 
 retry_config = {
