@@ -16,7 +16,7 @@
 import binascii
 import struct
 from enum import IntEnum, IntFlag
-from typing import Final, NamedTuple, Optional, Union
+from typing import Final, NamedTuple
 from uuid import UUID as StdUUID
 
 from autopts.pybtp import defs
@@ -109,7 +109,7 @@ def le_bytes_to_hex_str(data: bytes) -> str:
 
 # -- UUID helpers --
 
-def uuid_to_le_bytes(uuid: Union[int, str]) -> bytes:
+def uuid_to_le_bytes(uuid: int | str) -> bytes:
     """Convert UUID string or integer to little-endian bytes.
 
     Handles 16-bit, 32-bit, and 128-bit UUIDs as strings or integers.
@@ -171,7 +171,7 @@ def uuid_to_le_hex_str(uuid_str: str) -> str:
     return uuid_to_le_bytes(uuid_str).hex()
 
 
-def le_bytes_to_uuid(uuid_bytes: bytes, uuid_len: Optional[int] = None) -> str:
+def le_bytes_to_uuid(uuid_bytes: bytes, uuid_len: int | None = None) -> str:
     """Convert little-endian UUID bytes to big-endian UUID hex string.
 
     Handles 16-bit, 32-bit, and 128-bit UUIDs.

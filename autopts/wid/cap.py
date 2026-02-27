@@ -661,7 +661,7 @@ def hdl_wid_400(params: WIDParams):
                                                   config.octets_per_frame,
                                                   config.frames_per_sdu)
 
-    bidir_cises = list(zip(sinks, sources))
+    bidir_cises = list(zip(sinks, sources, strict=False))
     bidir_cises_num = len(bidir_cises)
 
     for sink_config, source_config in bidir_cises:

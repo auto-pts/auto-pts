@@ -14,7 +14,6 @@
 #
 import logging
 import re
-import socket
 import struct
 from binascii import hexlify
 from time import sleep
@@ -684,7 +683,7 @@ def hdl_wid_51(params: WIDParams):
 
     try:
         btp.gattc_read_uuid_rsp(True, True)
-    except socket.timeout:
+    except TimeoutError:
         pass
 
     return True
@@ -918,7 +917,7 @@ def hdl_wid_74(params: WIDParams):
 
     try:
         btp.gattc_write_rsp(True, 40)
-    except socket.timeout:
+    except TimeoutError:
         pass
 
     return True
@@ -1309,7 +1308,7 @@ def hdl_wid_108(params: WIDParams):
 
     try:
         btp.gattc_read_uuid_rsp(False, True)
-    except socket.timeout:
+    except TimeoutError:
         return False
 
     return True
@@ -1330,7 +1329,7 @@ def hdl_wid_109(params: WIDParams):
 
     try:
         btp.gattc_read_uuid_rsp(False, True)
-    except socket.timeout:
+    except TimeoutError:
         return False
 
     return True

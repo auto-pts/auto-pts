@@ -913,7 +913,7 @@ def get_error_code(exc):
     elif isinstance(exc, BTPFatalError):
         error_code = ptstypes.E_BTP_FATAL_ERROR
 
-    elif isinstance(exc, socket.timeout):
+    elif isinstance(exc, TimeoutError):
         error_code = ptstypes.E_BTP_TIMEOUT
 
     elif isinstance(exc, xmlrpc.client.Fault):
@@ -1181,7 +1181,7 @@ def run_test_case(ptses, test_case_instances, test_case_name, stats,
     thread_count = 0
     thread_list = []
 
-    for thread_count, (test_case_lt, pts) in enumerate(zip(test_case_lts, ptses), 1):
+    for thread_count, (test_case_lt, pts) in enumerate(zip(test_case_lts, ptses, strict=False), 1):
         thread = LTThread(
             name=f'LT{thread_count}-thread',
             args=(pts, test_case_lt, exceptions, finish_count))

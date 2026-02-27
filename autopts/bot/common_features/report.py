@@ -20,7 +20,6 @@ import re
 import shutil
 import zipfile
 from pathlib import Path
-from typing import Optional
 from xmlrpc.client import ServerProxy
 
 import git
@@ -70,15 +69,8 @@ def make_repo_status(repos_info):
 # .xlsx spreadsheet file
 # ****************************************************************************
 # include List depending on python version
-try:
-    from typing import List  # noqa: UP035, I001
-    T_LIST = List  # noqa: UP006
-except ImportError:
-    # version below 3.9
-    T_LIST = list
 
-
-def find_matching_xml_filename(test_case: str, xml_list: Optional['T_LIST[os.DirEntry]']) -> Optional[str]:
+def find_matching_xml_filename(test_case: str, xml_list: list[os.DirEntry] | None) -> str | None:
     """
     Finds first XML filename in `xml_list` matching the test_case string.
     Matching is based on replacing '/' and '-' with '_' in test_case.
@@ -490,7 +482,7 @@ def pull_server_logs(args, tmp_dir, xml_folder):
         server_port = args.srv_port
 
         servers = {}
-        for address, port in zip(server_addr, server_port):
+        for address, port in zip(server_addr, server_port, strict=False):
             if address in servers:
                 servers[address].append(port)
             else:
