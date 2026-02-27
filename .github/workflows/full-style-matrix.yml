@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+        python-version: ["3.10", "3.11", "3.12", "3.13", "3.14"]
 
     name: Build & Style (${{ matrix.python-version }})
 
@@ -37,11 +37,11 @@ jobs:
 
 
 
-    - name: Run Ruff (Python >= 3.9)
-      if: startsWith(matrix.python-version, '3.9') || startsWith(matrix.python-version, '3.10') || startsWith(matrix.python-version, '3.11') || startsWith(matrix.python-version, '3.12') || startsWith(matrix.python-version, '3.13')
+    - name: Run Ruff (Python >= 3.10)
+      if: startsWith(matrix.python-version, '3.10') || startsWith(matrix.python-version, '3.11') || startsWith(matrix.python-version, '3.12') || startsWith(matrix.python-version, '3.13') || startsWith(matrix.python-version, '3.14')
       run: |
         pip install -r requirements_ci.txt
-        ruff check --target-version py39 .
+        ruff check --target-version py310 .
 
     - name: Compile (only if file exists)
       run: |

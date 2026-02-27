@@ -1,5 +1,4 @@
 import logging
-import socket
 
 from autopts.pybtp import btp
 from autopts.pybtp.types import (
@@ -27,5 +26,5 @@ def _l2cap_send_forever(channel_id):
     try:
         while True:
             btp.l2cap_send_data(channel_id, '00')
-    except (BTPError, socket.timeout):
+    except (BTPError, TimeoutError):
         pass

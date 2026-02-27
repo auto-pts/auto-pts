@@ -310,13 +310,13 @@ class BTPWorker:
 
                 self._rx_queue.put(data)
                 socket_ok = True
-            except socket.timeout:
+            except TimeoutError:
                 # this one is expected so ignore
                 pass
             except OSError:
                 if socket_ok:
                     socket_ok = False
-                    log('socket.error: BTPSocket is closed')
+                    log("socket.error: BTPSocket is closed")
             except Exception as e:
                 logging.error("%r", e)
 
@@ -348,7 +348,7 @@ class BTPWorker:
 
             return data
 
-        raise socket.timeout
+        raise TimeoutError
 
     def send(self, svc_id, op, ctrl_index, data):
         self._lock.acquire()

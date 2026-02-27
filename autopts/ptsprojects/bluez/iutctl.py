@@ -16,7 +16,6 @@
 
 import logging
 import shlex
-import socket
 import subprocess
 
 from autopts.pybtp import defs
@@ -72,7 +71,7 @@ class IUTCtl:
 
         try:
             self.btp_socket.accept()
-        except socket.timeout:
+        except TimeoutError:
             log("IUT didn't connect!")
             self.stop()
 

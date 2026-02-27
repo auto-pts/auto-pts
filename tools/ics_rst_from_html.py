@@ -56,7 +56,7 @@ def make_table(table, profile):
         width_matrix.append(column_widths_in_row)
 
     # matrix transposition, columns became rows
-    width_matrix = map(list, zip(*width_matrix))
+    width_matrix = map(list, zip(*width_matrix, strict=False))
 
     max_width_per_column = [max(column_width) for column_width in width_matrix]
 
@@ -145,7 +145,7 @@ O - optional
 
 '''.format(profile_name.lower(), head_title, len(head_title) * '*', tcrl_ver)
 
-    for table, table_title in zip(tables, table_titles):
+    for table, table_title in zip(tables, table_titles, strict=False):
         rst_content += table_title + '\n'
         rst_content += len(table_title) * '=' + '\n\n'
         rst_content += make_table(table, profile_name) + '\n'

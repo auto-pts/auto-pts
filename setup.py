@@ -18,6 +18,6 @@ setuptools.setup(
         "Operating System :: OS Independent",
     ],
     # package_dir={"": "src"},
-    packages=setuptools.find_packages(include=['autopts']),
-    python_requires=">=3.6",
+    packages=setuptools.find_packages(include=["autopts"]),
+    python_requires=">=3.10",
 )

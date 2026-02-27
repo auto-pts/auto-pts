@@ -961,8 +961,7 @@ def gatt_cl_read_multiple(bd_addr_type, bd_addr, *hdls):
     bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     hdls_j = ''.join(hdl for hdl in hdls)
     hdls_byte_table = [hdls_j[i:i + 2] for i in range(0, len(hdls_j), 2)]
-    hdls_swp = ''.join([c[1] + c[0] for c in zip(hdls_byte_table[::2],
-                                                 hdls_byte_table[1::2])])
+    hdls_swp = "".join([c[1] + c[0] for c in zip(hdls_byte_table[::2], hdls_byte_table[1::2], strict=False)])
     hdls_ba = binascii.unhexlify(hdls_swp)
 
     data_ba.extend(chr(bd_addr_type).encode('utf-8'))
@@ -990,8 +989,7 @@ def gatt_cl_read_multiple_var(bd_addr_type, bd_addr, *hdls):
     bd_addr_ba = addr_str_to_le_bytes(bd_addr)
     hdls_j = ''.join(hdl for hdl in hdls)
     hdls_byte_table = [hdls_j[i:i + 2] for i in range(0, len(hdls_j), 2)]
-    hdls_swp = ''.join([c[1] + c[0] for c in zip(hdls_byte_table[::2],
-                                                 hdls_byte_table[1::2])])
+    hdls_swp = "".join([c[1] + c[0] for c in zip(hdls_byte_table[::2], hdls_byte_table[1::2], strict=False)])
     hdls_ba = binascii.unhexlify(hdls_swp)
 
     data_ba.extend(chr(bd_addr_type).encode('utf-8'))

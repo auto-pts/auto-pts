@@ -23,7 +23,6 @@ import os
 import readline
 import shlex
 import shutil
-import socket
 import struct
 import subprocess
 import sys
@@ -555,7 +554,7 @@ def exec_cmd(choice, params, cmds_dict):
         print("Please enter correct arguments to command!\n")
         logging.debug(e)
         help_cmd.run(cmd_name)
-    except socket.timeout as e:
+    except TimeoutError as e:
         print(f"socket timeout: {e}\n")
     except OSError as e:
         print(f"socket error: {e}\n")
