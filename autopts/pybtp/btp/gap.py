@@ -170,6 +170,7 @@ GAP = {
     "set_ead_key_material": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_SET_EAD_KEY_MATERIAL, CONTROLLER_INDEX),
     "encrypt_ead_data": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_ENCRYPT_EAD_DATA, CONTROLLER_INDEX),
     "decrypt_ead_data": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_DECRYPT_EAD_DATA, CONTROLLER_INDEX),
+    "pawr_configure": (defs.BTP_SERVICE_ID_GAP, defs.BTP_GAP_CMD_PAWR_CONFIGURE, CONTROLLER_INDEX),
 }
 
 
@@ -1601,16 +1602,31 @@ def create_ead_adv(payload):
     return tuple_data
 
 
-def gap_padv_configure(include_tx_power, intvl_min, intvl_max):
-    logging.debug("")
+def gap_padv_configure(include_tx_power, intvl_min, intvl_max, with_responses=False):
+    """Configure Periodic Advertising."""
+    logging.debug("%s %r %r %r %r", gap_padv_configure.__name__, include_tx_power,
+                  intvl_min, intvl_max, with_responses)
 
     iutctl = get_iut()
-    data_ba = bytearray(struct.pack("<BHH", include_tx_power,
-                                    intvl_min, intvl_max))
 
-    iutctl.btp_socket.send(*GAP['padv_configure'], data=data_ba)
+    data_ba = bytearray(struct.pack("<BHH", include_tx_power, intvl_min, intvl_max))
 
-    tuple_data = gap_command_rsp_succ(defs.BTP_GAP_CMD_PADV_CONFIGURE)
+    if with_responses:
+        num_subevents = 10
+        subevent_interval = 15
+        response_slot_delay = 1
+        response_slot_spacing = 4
+        num_response_slots = 5
+        sub_event_cfg = bytearray(struct.pack("<BBBBB", num_subevents, subevent_interval,
+                                              response_slot_delay, response_slot_spacing,
+                                              num_response_slots))
+        data_ba.extend(sub_event_cfg)
+        iutctl.btp_socket.send(*GAP['pawr_configure'], data=data_ba)
+        tuple_data = gap_command_rsp_succ(defs.BTP_GAP_CMD_PAWR_CONFIGURE)
+    else:
+        iutctl.btp_socket.send(*GAP['padv_configure'], data=data_ba)
+        tuple_data = gap_command_rsp_succ(defs.BTP_GAP_CMD_PADV_CONFIGURE)
+
     __gap_current_settings_update(tuple_data)
 
 

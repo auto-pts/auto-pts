@@ -1722,8 +1722,17 @@ def hdl_wid_267(_: WIDParams):
 def hdl_wid_300(params: WIDParams):
     # Please send non-connectable advertise with periodic info.
     stack = get_stack()
-    btp.gap_padv_configure(0, 150, 200)
-    if stack.gap.periodic_data:
+
+    test_cases_with_responses = [
+        'GAP/PADV/PASM/BV-02-C',
+        'GAP/PADV/PAM/BV-02-C'
+    ]
+
+    with_responses = params.test_case_name in test_cases_with_responses
+
+    btp.gap_padv_configure(0, 150, 200, with_responses=with_responses)
+
+    if stack.gap.periodic_data and not with_responses:
         btp.gap_padv_set_data((chr(len(stack.gap.periodic_data[1]) + 1) +
                                chr(stack.gap.periodic_data[0]) +
                                stack.gap.periodic_data[1]).encode())
@@ -1784,12 +1793,20 @@ def hdl_wid_304(_: WIDParams):
     return not stack.gap.wait_periodic_report(10)
 
 
-def hdl_wid_305(_: WIDParams):
+def hdl_wid_305(params: WIDParams):
     # Please enter Periodic Advertising Synchronizability mode,
     # and then perform Periodic Advertising Synchronization Transfer Procedure
+
+    test_cases_with_responses = [
+        'GAP/PADV/PAST/BV-03-C',
+        'GAP/PADV/PAST/BV-04-C'
+    ]
+
+    with_responses = params.test_case_name in test_cases_with_responses
+
     stack = get_stack()
-    btp.gap_padv_configure(0, 150, 200)
-    if stack.gap.periodic_data:
+    btp.gap_padv_configure(0, 150, 200, with_responses=with_responses)
+    if stack.gap.periodic_data and not with_responses:
         btp.gap_padv_set_data((chr(len(stack.gap.periodic_data[1]) + 1) +
                                chr(stack.gap.periodic_data[0]) +
                                stack.gap.periodic_data[1]).encode())
