@@ -1841,7 +1841,7 @@ def hdl_wid_309(_: WIDParams):
     return stack.gap.wait_periodic_transfer_received(10)
 
 
-def hdl_wid_312(_: WIDParams):
+def hdl_wid_312(params: WIDParams):
     # description: Please click OK when IUT is ready to receive periodic
     # advertising subevent data.
     stack = get_stack()
