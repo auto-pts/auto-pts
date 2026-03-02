@@ -1772,7 +1772,7 @@ def hdl_wid_302(_: WIDParams):
     # Periodic Advertising Synchronization Information.
     stack = get_stack()
 
-    btp.gap_padv_create_sync(0, 0, 100, 0)
+    btp.gap_padv_create_sync(0, 0, 500, 0)
     return stack.gap.wait_periodic_established(10)
 
 
@@ -1783,7 +1783,7 @@ def hdl_wid_303(_: WIDParams):
     # Periodic Advertising Synchronization Information.
     stack = get_stack()
 
-    btp.gap_padv_create_sync(0, 0, 100, 1)
+    btp.gap_padv_create_sync(0, 0, 500, 1)
     return stack.gap.wait_periodic_established(10)
 
 
@@ -1819,7 +1819,7 @@ def hdl_wid_307(_: WIDParams):
     # Click OK when IUT is ready to perform Periodic Advertising Synchronization
     # Establishment Procedure without listening for periodic advertising events.
 
-    btp.gap_padv_sync_transfer_recv(0, 10, 1)
+    btp.gap_padv_sync_transfer_recv(0, 500, 1)
     return True
 
 
@@ -1827,7 +1827,10 @@ def hdl_wid_308(_: WIDParams):
     # Click OK when IUT is ready to perform Periodic Advertising Synchronization
     # Establishment Procedure with listening for periodic advertising events.
 
-    btp.gap_padv_sync_transfer_recv(0, 10, 0)
+    # PTS uses 600x1.25 ms = 750 ms for Periodic Advertising Interval (0x0258)
+    # It must be at least 750 ms sync timeout. (skip + 1) * interval.
+    # Therefore we use 5 seconds for sync timeout for test stability.
+    btp.gap_padv_sync_transfer_recv(0, 500, 0)
     return True
 
 
@@ -1843,7 +1846,13 @@ def hdl_wid_312(_: WIDParams):
     # advertising subevent data.
     stack = get_stack()
 
-    btp.gap_padv_create_sync(0, 0, 100, 0)
+    # WID 303 will be called after this WID. WID 303 should start synchronization
+    # procedure as for GAP/PADV/PASE/BV-01-C "without listening for Periodic Advertising".
+    # Otherwise we need to add exception here for flags parameter.
+    if params.test_case_name in ['GAP/PADV/PASE/BV-07-C']:
+        return True
+
+    btp.gap_padv_create_sync(0, 0, 500, 0)
     return stack.gap.wait_periodic_established(20)
 
 
@@ -2787,7 +2796,7 @@ def hdl_wid_352(params: WIDParams):
             return False
 
         log('Synchronizing to broadcast')
-        btp.gap_padv_create_sync(0, 0, 0x200, 0)
+        btp.gap_padv_create_sync(0, 0, 500, 0)
         if not stack.gap.wait_periodic_established(10):
             log('Failed to periodic sync established')
             return False
