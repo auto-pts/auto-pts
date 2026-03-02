@@ -55,6 +55,7 @@ def set_pixits(ptses):
     pts.set_pixit("BAP", "TSPX_VS_Codec_ID", "ffff")
     pts.set_pixit("BAP", "TSPX_VS_Company_ID", "ffff")
     pts.set_pixit("BAP", "TSPX_broadcast_code", BROADCAST_CODE)
+    """ TODO those should be set to -1 """
     pts.set_pixit("BAP", "TSPX_Broadcast_ID", "0")
     pts.set_pixit("BAP", "TSPX_Broadcast_ID_2", "0")
 
