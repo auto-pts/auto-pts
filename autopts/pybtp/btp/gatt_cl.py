@@ -602,6 +602,20 @@ def gatt_cl_notification_rxed_ev_(gatt_cl, data, data_len):
     gatt_cl.notifications.append((value_type, handle, notification_data))
 
 
+def gatt_cl_att_timeout_ev(gatt_cl, data, data_len):
+    logging.debug("%s %r", gatt_cl_att_timeout_ev.__name__, data)
+
+    fmt = '<B6s'
+
+    addr_type, addr = struct.unpack_from(fmt, data[:struct.calcsize(fmt)])
+    addr = binascii.hexlify(addr[::-1]).lower().decode('utf-8')
+    logging.debug("%s received addr_type=%r addr=%r",
+                  gatt_cl_att_timeout_ev.__name__,
+                  addr_type, addr)
+
+    gatt_cl.att_timeout = True
+
+
 GATTC_EV = {
     defs.BTP_GATTC_EV_MTU_EXCHANGED: gatt_cl_mtu_exchanged_ev_,
     defs.BTP_GATTC_EV_DISC_ALL_PRIM_RP: gatt_cl_disc_all_prim_rsp_ev_,
@@ -621,6 +635,7 @@ GATTC_EV = {
     defs.BTP_GATTC_EV_CFG_INDICATE_RP: gatt_cl_write_rsp_ev_,
     defs.BTP_GATTC_EV_EV_NOTIFICATION_RXED: gatt_cl_notification_rxed_ev_,
     defs.BTP_GATTC_EV_READ_MULTIPLE_VAR_RP: gatt_cl_read_mult_var_rsp_ev_,
+    defs.BTP_GATTC_EV_ATT_TIMEOUT: gatt_cl_att_timeout_ev,
 }
 
 
