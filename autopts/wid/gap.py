@@ -1838,6 +1838,32 @@ def hdl_wid_309(_: WIDParams):
     return stack.gap.wait_periodic_transfer_received(10)
 
 
+def hdl_wid_312(_: WIDParams):
+    # description: Please click OK when IUT is ready to receive periodic
+    # advertising subevent data.
+    stack = get_stack()
+
+    btp.gap_padv_create_sync(0, 0, 100, 0)
+    return stack.gap.wait_periodic_established(20)
+
+
+def hdl_wid_313(params: WIDParams):
+    # description: Please confirm IUT received following data.
+    data = params.description.split('\n')[-1]
+    data = data.replace('-', '')
+    # Convert the hex data string to a byte array to compare with received data
+    expected_bytes = bytes.fromhex(data)
+    log(f'Expected data: {data}')
+
+    stack = get_stack()
+
+    if not stack.gap.wait_periodic_report(10, expected_bytes):
+        log(f'Failed to receive periodic advertising data: {expected_bytes}')
+        return False
+
+    return True
+
+
 def hdl_wid_400(_: WIDParams):
     btp.set_filter_accept_list()
     bd_addr = '000000000000'
