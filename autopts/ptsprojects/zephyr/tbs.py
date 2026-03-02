@@ -51,8 +51,7 @@ def set_pixits(ptses):
     pts.set_pixit("TBS", "TSPX_Signal_Strength_Reporting_Interval", 10)
     pts.set_pixit("TBS", "TSPX_Incoming_Call_Target_Caller_ID", "tel:+19991111234")
     pts.set_pixit("TBS", "TSPX_Incoming_friendly_name", "tel:+19991110011")
-    pts.set_pixit("TBS", "TSPX_Outgoing_uri", "tel:+19991111234")
-    pts.set_pixit("TBS", "TSPX_Outgoing_uri2", "tel:+19991111235")
+    pts.set_pixit("TBS", "TSPX_Outgoing_Remote_Caller_URI", "tel:+19991111234")
 
 
 def test_cases(ptses):
