@@ -1853,6 +1853,18 @@ def hdl_wid_403(_: WIDParams):
     return True
 
 
+def hdl_wid_404(_: WIDParams):
+    """
+    Please enter Undirected Connectable Mode using private addresses.
+    """
+    stack = get_stack()
+
+    btp.gap_set_conn()
+    btp.gap_adv_ind_on(ad=stack.gap.ad, sd=stack.gap.sd, own_addr_type=OwnAddrType.le_resolvable_private_address)
+
+    return True
+
+
 def hdl_wid_405(_: WIDParams):
     """
     Please change private addresse and enter Undirected Connectable Mode.
@@ -1876,6 +1888,25 @@ def hdl_wid_406(_: WIDParams):
     btp.gap_direct_adv_on(bd_addr, bd_addr_type, high_duty=0, peer_rpa=1)
 
     return True
+
+
+def hdl_wid_407(_: WIDParams):
+    """
+    Please have Upper Tester orders the IUT to enter Direct Connectable Mode targeting the PTS by
+    its identity address and confirm the IUT refuses the order.
+    """
+    bd_addr = btp.pts_addr_get()
+    bd_addr_type = btp.pts_addr_type_get()
+
+    btp.gap_set_conn()
+
+    # We verify that IUT rejects this request.
+    try:
+        btp.gap_direct_adv_on(bd_addr, bd_addr_type, high_duty=0, peer_rpa=1)
+    except types.BTPError:
+        return True
+
+    return False
 
 
 def hdl_wid_450(_: WIDParams):
